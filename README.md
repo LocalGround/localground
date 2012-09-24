@@ -8,7 +8,7 @@ Local Ground isn't quite ready yet, and is being actively developed.  You're wel
 Please read the prerequisites / installation instructions here:  https://github.com/LocalGround/localground/wiki/Installation
 
 # Acknowledgements / Inspiration
-This tool draws from many good ideas, and would like to especially thank Walking-Papers (http://walking-papers.org/) and Shreddr (https://twitter.com/shreddr_org).
+This tool draws from many good ideas, and we would like to especially thank Walking-Papers (http://walking-papers.org/) and Shreddr (https://twitter.com/shreddr_org).
 
 #Contact Us
 Please contact us at info@localground.org if you have any questions, or join our mailing list at localground@googlegroups.com.
