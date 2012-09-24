@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>D3 - Line Chart - axes and grid using axis()</title>
+    <!-- script type="text/javascript" src="https://raw.github.com/jquery/sizzle/master/sizzle.js"></script -->
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.min.js"></script>
+    <style type="text/css">
+
+body {
+  font: 10px sans-serif;
+}
+
+.rules line, .rules path {
+  shape-rendering: crispEdges;
+  stroke: #000;
+}
+
+.rules .tick {
+}
+.rules .minor {
+  stroke: #BBB;
+}
+.rules .domain {
+  fill: none;
+}
+
+.grid .tick {
+  stroke: #CCC;
+}
+
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript">
+
+
+var w = 760;
+var h = 70;
+var pad = 50;
+var d0 = new Date("Jan 29 2011 UTC");
+var d1 = new Date("March 15 2011 UTC");
+var x = d3.time.scale().domain([d0, d1]).range([0,w]);
+var y = d3.scale.linear().domain([0, 400]).range([h,0]);
+
+var svg = d3.select("body")
+    .append("svg:svg")
+    .attr("height", h + pad)
+    .attr("width", w + pad)
+
+var vis = svg.append("svg:g")
+    .attr("transform", "translate(40,20)")
+
+var rules = vis.append("svg:g").classed("rules", true)
+
+/*function make_x_axis() {
+  return d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .ticks(8)
+}*/
+
+function make_y_axis() {
+  return d3.svg.axis()
+      .scale(y)
+      .orient("left")
+      .ticks(5)
+}
+
+/*rules.append("svg:g").classed("grid x_grid", true)
+    .attr("transform", "translate(0,"+h+")")
+    .call(make_x_axis()
+      .tickSize(-h,0,0)
+      .tickFormat("")
+    )*/
+
+rules.append("svg:g").classed("grid y_grid", true)
+    .call(make_y_axis()
+      .tickSize(-w,0,0)
+      .tickFormat("")
+    )
+
+/*rules.append("svg:g").classed("labels x_labels", true)
+    .attr("transform", "translate(0,"+h+")")
+    .call(make_x_axis()
+      .tickSize(5)
+      .tickFormat(d3.time.format("%Y/%m"))
+    )*/
+
+rules.append("svg:g").classed("labels y_labels", true)
+    .call(make_y_axis()
+      .tickSubdivide(1)
+      .tickSize(10, 5, 0)
+    )
+var data = d3.range(100).map(
+    function() {
+        return {
+            x: Math.random()*(w - 20) + 10,
+            y: Math.random()*(h - 20) + 10,
+            r: Math.random()*6
+        }
+});
+var colors = d3.scale.category20();
+vis.append("g")
+    //.attr("transform", "scale(0.5,0.5)")
+    .selectAll("circle")
+     .data(data)
+   .enter().append("svg:circle")
+     .attr("stroke", "black")
+     .attr("fill", function(d, i) { return colors(i % 20); })
+     .attr("cx", function(d, i) { return d.x; })
+     .attr("cy", function(d, i) { return d.y; })
+     .attr("r", function(d, i) { return d.r; })
+
+    </script>
+  </body>
+</html>

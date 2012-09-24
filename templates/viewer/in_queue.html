@@ -1,0 +1,12 @@
+{% extends "simple.html" %}
+{% load i18n %}
+{% block content %}
+    <h2>Still Waiting...</h2>
+    <br />
+    <p>
+        Map image <a href="/static/scans/{{scan.id}}/{{scan.file_name}}">{{scan.name}}</a>
+        has not been processed yet.  It is currently #{{rank}} of {{scans_in_queue}}
+        in line, and will be processed in approximately {{rank}} minute(s).
+        Thank you for your patience!
+    </p>
+{% endblock %}

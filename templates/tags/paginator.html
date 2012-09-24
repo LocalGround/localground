@@ -1,0 +1,25 @@
+
+   {% if has_previous %}
+      <span class="page">
+      <a href="{{url}}&page={{ previous }}" class="btn pager">&laquo; Back</a>
+      </span>
+   {% endif %}
+
+   {% if show_first %}
+      <span class="page"><a href="{{url}}&page=1" class="btn pager">1</a></span>
+      <span class="ellipsis">...</span>
+   {% endif %}
+   {% for linkpage in page_numbers %}
+      {% ifequal linkpage page %}
+         <span class="btn pager active">{{ page }}</span>
+      {% else %}
+         <span class="page"><a href="{{url}}&page={{ linkpage }}" class="btn pager">{{ linkpage }}</a></span>
+      {% endifequal %}
+   {% endfor %}
+   {% if show_last %}
+      <span class="ellipsis">...</span>
+      <span class="page"><a href="{{url}}&page={{pages}}" class="btn pager">{{ pages }}</a></span>
+   {% endif %}
+   {% if has_next %}
+      <span class="page"><a href="{{url}}&page={{ next }}" class="btn pager">Next &raquo;</a></span>
+   {% endif %}

@@ -1,0 +1,76 @@
+<div class="topbar" data-dropdown="dropdown" >
+    <div class="topbar-inner">
+        <div class="container-fluid">
+            <h3><a href="/">Local Ground</a></h3>
+            <ul class="nav">
+                {% block projects %}
+                <li class="dropdown" id="projects-menu">
+                    <a href="#" class="dropdown-toggle">Projects</a>
+                    <div id="projectListContainer" class="dropdown-menu">
+                        <!-- div class="inset-block dark"
+                            style="margin: 0px 5px 0px 5px; text-align:center;">
+                            <a id="btnPrintMap" class="btn dialog-box" href="#">Create New</a>
+                        </div -->
+                        <ul id="projectList" class="dropdown-menu-inner white-links"></ul>
+                    </div>
+                </li>
+                {% endblock %}
+                {% comment %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle">Views</a>
+                    <div id="groupListContainer" class="dropdown-menu">
+                        <div class="inset-block dark"
+                            style="margin: 0px 5px 0px 5px; text-align:center;">
+                            <a id="btnCreateGroup" class="btn dialog-box" href="#">Create View</a>
+                        </div>
+                        <ul id="groupList" class="dropdown-menu-inner white-links"></ul>
+                    </div>
+                </li>
+                {% endcomment %}
+                <li class="dropdown" id="layers-menu">
+                    <a href="#" class="dropdown-toggle">Layers</a>
+                    <ul id="layerList" class="dropdown-menu white-links"></ul>
+                </li>
+            </ul>
+            
+            <div class="pull-left" style="margin-top:5px;">
+                <input id="addressInput" type="text" placeholder="Search" />
+            </div>
+            
+            
+            <!-- audio player -->
+            <div id="player" class="pull-left top-player playercontroller" style="display:none">
+                <div class="button play"><a>PLAY</a></div>
+                <div class="button pause"><a>PAUSE</a></div>
+                <div class="button stop"><a>STOP</a></div>
+                <div class="timeline"><a href="#slider" class="playerslider">SLIDER</a></div>
+                <div class="counter">
+                    <span class="elapsed">00:00</span>|<span class="duration">00:00</span>
+                </div>
+            </div>
+            <input type="hidden" id="audio_url"
+                   value="http://dev.localground.org/static/media/vanwars/audio/leonardowalkingfromcbitstoyu.mp3" />
+            <!-- end audio player -->
+            
+            {% if user.is_authenticated %}
+                <div class="pull-right">
+                    {% include "includes/menus/profile_menu.html" %}
+                </div>
+                {% if not read_only %}
+                    <div class="pull-right">
+                        <button id="print" class="btn" style="margin-top:5px;">Print</button>
+                        <button id="upload" class="btn" style="margin-top:5px;">Upload</button>
+                    </div>
+                {% endif %}
+            {% else %}
+                <h3 class="pull-right" style="color:#fff;">Public Map Viewer</h3>
+            {% endif %}
+            <div id="loading_message" class="pull-right label success"
+                 style="display:none;margin:10px 10px; 0px 0px">
+                <img src="/site_media/images/ajax-loader-small-green.gif"
+                     style="vertical-align:middle;" />
+                Processing
+            </div>
+        </div>
+    </div><!-- /topbar-inner -->
+</div><!-- /topbar -->

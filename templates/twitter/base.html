@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Local Ground</title>
+		<meta name="description" content="">
+		<meta name="author" content="">
+		
+		<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+		<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		
+		<!-- Le styles -->
+		<link href="/site_media/twitter/bootstrap.css" rel="stylesheet">
+		{% block style_links %}{% endblock %}
+		
+		<style type="text/css">
+			body {
+				padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
+				padding-left: 10px;
+				padding-right: 10px;
+			}
+			{% block extra_styles %}{% endblock %}	
+		</style>
+		{% block jquery_version %}
+			
+		<!-- script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script -->
+		<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.2.min.js"></script>
+		{% endblock %}	
+		<script type="text/javascript" src="/site_media/scripts/json2.js"></script>
+		<script type="text/javascript" src="/site_media/scripts/namespace.js"></script>
+		<script type="text/javascript" src="/site_media/scripts/jquery_cookie.js"></script>
+		<script type="text/javascript" src="/site_media/scripts/site/base.js"></script>
+		<script src="/site_media/twitter/js/bootstrap-dropdown.js"></script>
+		{% block script_links %}{% endblock %}
+		<script>
+			{% block extra_scripts %}{% endblock %}
+			$().ready(function() {
+				$().dropdown();
+				{% block pageload_scripts %}{% endblock %}
+			});
+		</script>
+	</head>
+
+	<body>
+		{% block top_menu %}
+			{% include "includes/menus/top_nav.html" %}
+		{% endblock %}
+        {% block content %}{% endblock %}
+	</body>
+</html>

@@ -1,0 +1,140 @@
+{% extends "profile/data_list.html" %}
+{% block page_title %}Video Files <small>{{selected_project|default_if_none:"Everything"}}</small>{% endblock %}
+{% block style_links %}
+	{{ block.super }}
+    <link href="/site_media/css/audio.css" type="text/css" media="all" rel="stylesheet" />
+{% endblock %}
+{% block script_links %}
+	{{ block.super }}
+    <script type="text/javascript" src="/site_media/scripts/site/account/profile.js"></script>
+{% endblock %}
+{% block extra_styles %}{{block.super}}{% endblock %}
+
+
+{% block extra_scripts %}
+    var o = new localground.profile();
+{% endblock %}
+{% block pageload_scripts %}
+	var opts = {
+        username: '{{user.username}}',
+		updateURL: '{{raw_url}}',
+		pageURL: '{% autoescape off %}{{url}}{% endautoescape %}&page={{page}}',
+		rawURL: '{{raw_url}}',
+		deleteURL: '{{raw_url}}/delete-selected/',
+		moveURL: '{{raw_url}}/move-project/',
+		project_id: '{{selected_project_id}}'
+	};
+	
+	{% if username %}
+		opts.alias = '{{username}}';
+	{% endif %}
+    o.initialize(opts);
+	
+	
+	
+
+	
+{% endblock %}
+
+{% block hidden_form_fields %}
+	{{ block.super }}
+{% endblock %}
+
+{% block controls_menus %}
+	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
+		<a href="#" class="dropdown-toggle">Options</a>
+		<ul class="dropdown-menu" style="width:200px;">
+			<li><a id="delete_objects" href="#">Delete</a></li>
+			<li><a id="add_object" href="#">Upload</a></li>
+			<li><a id="move_project" href="#">Move to another project</a></li>
+		</ul>
+	</li>
+{% endblock %}
+
+{% block row_header %}
+	<tr>
+		<th scope="col" class="column-cb" >
+			<input class="checkall" type="checkbox" name="checkall"/>
+		</th>
+		<th scope="col">File</th>
+		<th scope="col">Name</th>
+		<th scope="col">Map Info</th>
+	</tr>
+{% endblock %}
+
+{% block rows %}
+	{% for o in objects.object_list %}
+		<tr>
+			<td class="column-cb">
+				<input class="checkone" id="cb_{{o.id}}" name="id" type="checkbox" value="{{o.id}}" />
+			</td>
+			<td>
+				<em>Todo:  implement video player</em>
+				<textarea>http://localground.org{{o.path}}</textarea>
+			</td>
+			<td>
+				<div class="clearfix">
+					<label>Name:</label>
+					<div class="input">
+						<input type="text" name="name_{{o.id}}" id="name_{{o.id}}"
+						   value="{{ o.name|default_if_none:"" }}" style="width:140px" />
+					</div>
+				</div>
+				<div class="clearfix">
+					<label>Description:</label>
+					<div class="input">
+						<textarea name="description_{{o.id}}"
+							style="width:150px; margin-top: 2px;" rows="3">{{ o.description|default_if_none:"" }}</textarea>
+					</div>
+				</div>
+				<div class="clearfix">
+					<label>Tags:</label>
+					<div class="input">
+						<textarea class="tags" name="tags_{{o.id}}"
+							style="width:150px; margin-top: 2px;" rows="3">{{ o.tags }}</textarea>
+					</div>
+				</div>
+				<div class="clearfix">
+					<label>Date Taken:</label>
+					<div class="input datetime">
+						<input type="text" name="date_{{o.id}}" id="date_{{o.id}}"
+							value="{{o.created_timestamp|date:"m/d/Y"}}" style="width:88px !important;" />
+						<input type="text" name="time_{{o.id}}" id="time_{{o.id}}"
+							value="{{o.created_timestamp|time:"h:i:s A"}}" style="width:88px !important;" />
+					</div>
+				</div>
+			</td>
+			<td>
+				<div class="thin">
+					<label>ID:</label><div class="input blue">{{ o.id }}</div>
+				</div>
+				<div class="thin">
+					<label>Last Updated:</label>
+					<div class="input blue">
+						on {{o.time_stamp|date:"n/j/Y P" }}<br />
+						by {% if o.user %} {{ o.user}} {% else %} anonymous {% endif %}
+					</div>
+				</div>
+				<div class="thin">
+					<label>Project:</label><div class="input blue">{{ o.project.name }}</div>
+				</div>
+				{% if o.source_scan %}
+					<div class="thin">
+						<label>Map Image:</label><div class="input blue">{{ o.source_scan.name }}</div>
+					</div>
+				{% endif %}
+				{% if o.source_marker %}
+					<div class="thin">
+						<label>Marker:</label><div class="input blue">{{ o.source_marker.get_name }}</div>
+					</div>
+				{% endif %}
+				<div class="thin">
+					<label>Coordinates:</label><div class="input blue">{{ o.display_coords }}</div>
+				</div>
+			</td>
+		</tr>
+	{% endfor %}
+
+{% endblock %}
+
+{% block modals %}{{block.super}}{% endblock %}

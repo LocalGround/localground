@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Local Ground - Twitter Layout Sample</title>
+	<meta name="description" content="">
+	<meta name="author" content="">
+	
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	
+	<!-- Le styles -->
+	<link href="/site_media/twitter/bootstrap.css" rel="stylesheet">
+	<style type="text/css">
+	body {
+		padding-top: 60px;
+	}
+	label {
+		width: 60px;
+	}
+	form .input {
+	  margin-left: 70px;
+	}
+	</style>
+	<script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
+	<script src="/site_media/twitter/js/bootstrap-dropdown.js"></script>
+	<script type="text/javascript" src="/site_media/scripts/json2.js"></script>
+	<script>
+		$().ready(function() {
+			$().dropdown();
+			$('#send').click(function(){
+				alert($('#url').val());
+				$.get( 
+					$('#url').val(),
+					{ print_id: $('#print_id').val() },
+					function(response) {
+						alert(JSON.stringify(response));
+						$('#responseJSON').html(JSON.stringify(response, null, 4));
+					},
+					'json'
+				);
+			})
+		});
+	</script>
+	<!-- Le fav and touch icons -->
+	<link rel="shortcut icon" href="images/favicon.ico">
+	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+</head>
+
+<body>
+	{% include "includes/top_nav.html" %}
+	<div class="container-fluid">
+		<div class="sidebar">
+			<div class="well">
+				<h5>Prints</h5>
+				<ul>
+					<li><a href="#">/api/0/print/</a></li>
+					<li><a href="#">Link</a></li>
+				</ul>
+				<h5>Paper Maps</h5>
+				<ul>
+					<li><a href="#">Link</a></li>
+					<li><a href="#">Link</a></li>
+				</ul>
+				<h5>Media</h5>
+				<ul>
+					<li><a href="#">Link</a></li>
+					<li><a href="#">Link</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="content">
+			<!-- Main hero unit for a primary marketing message or call to action -->
+			<div class="page-header">
+				<h1>API Tester</h1>
+			</div>
+		
+			<hr>
+		
+			<div class="row">
+				<div class="span9">
+					<h2>Request</h2>
+					<form>
+						<fieldset>
+							<div class="clearfix">
+								<label for="xlInput">URL:</label>
+								<div class="input">
+									<input class="xlarge" id="url" name="url" size="30"
+										   type="text" value="/api/0/print/" />
+									<select class="span2" name="normalSelect" id="normalSelect">
+										<option>GET</option>
+										<option>POST</option>
+									</select>
+									<input type="button" id="send" class="btn primary"
+										value="Send" />
+								</div>
+							</div><!-- /clearfix -->
+							
+							<div class="clearfix">
+								<label for="xlInput">Print ID:</label>
+								<div class="input">
+									<input class="medium" id="print_id" size="30" type="text" />
+								</div>
+							</div><!-- /clearfix -->
+							
+							<!-- div class="clearfix">
+								<label for="xlInput">Map ID</label>
+								<div class="input">
+									<input class="medium" id="print_id" name="print_id" size="30" type="text" />
+								</div>
+							</div -->
+						
+						</fieldset>
+					  </form>
+				
+				</div>
+				
+				
+				<div class="span6">
+					<h2>Response</h2>
+					<textarea id="responseJSON" style="border:solid 1px #000;height:400px; width:100%;"></textarea>
+				</div>
+			</div><!-- end row -->
+		
+			<footer>
+				<p>&copy; Local Ground 2011</p>
+			</footer>
+		</div><!-- end content -->
+	</div><!-- end container-fluid -->
+	
+</body>
+</html>

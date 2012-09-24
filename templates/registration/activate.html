@@ -1,0 +1,16 @@
+{% extends "twitter/page_centered.html" %}
+{% load i18n %}
+{% block extra_styles %}
+	{{block.super}}
+    .content p, .content form { margin-left: 20px; }
+	
+{% endblock %}
+{% block page_title %}Activate Account{% endblock %}
+{% block main_content %}
+    {% if account %}
+        <p>{% trans "Account successfully activated" %}</p>
+        <p><a href="{% url auth_login %}">{% trans "Log in" %}</a></p> 
+    {% else %}
+        <p>{% trans "Account activation failed" %}</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "twitter/base.html" %}
+{% block page_title %}My Prints{% endblock %}
+{% block style_links %}
+    <link href="/site_media/css/audio.css" type="text/css" media="all" rel="stylesheet" />
+    <link href="/site_media/scripts/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
+{% endblock %}
+{% block script_links %}
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=drawing"></script>
+    <!-- enable photo dragging -->
+    <!-- script src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js"></script -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/site_media/twitter/js/bootstrap-modal.js"></script>
+    <script type="text/javascript" src="/site_media/twitter/js/bootstrap-tabs.js"></script>
+    <script type="text/javascript" src="/site_media/scripts/lib/infobubble.js"></script>
+    <script type="text/javascript" src="/site_media/scripts/lib/mapTypes.js"></script>
+    
+    <!-- overlay & manager libraries -->
+    <!-- script type="text/javascript" src="/site_media/scripts/map/overlays/overlay.js"></script> 
+    <script type="text/javascript" src="/site_media/scripts/map/overlays/point.js"></script> 
+    <script type="text/javascript" src="/site_media/scripts/map/overlays/photo.js"></script> 
+    <script type="text/javascript" src="/site_media/scripts/map/overlays/audio.js"></script> 
+    <script type="text/javascript" src="/site_media/scripts/map/overlays/note.js"></script> 
+    <script type="text/javascript" src="/site_media/scripts/map/overlays/paper.js"></script> 
+    <script type="text/javascript" src="/site_media/scripts/map/overlays/marker.js"></script --> 
+    <script type="text/javascript" src="/site_media/scripts/map/basemap.js"></script>
+{% endblock %}
+{% block extra_styles %}
+    html, body {
+      margin: 0;
+      padding: 0;
+      height:100%;
+      overflow:hidden;
+    }
+    h4, h5 {
+        line-height: 30px !important;
+    }
+    input[type=checkbox] {
+        /*vertical-align: bottom !important;*/
+        margin: 0px 6px 0px 3px;
+    }
+    .zoom-magnifying-glass {
+        margin: 10px 10px 0px 5px;
+        width: 12px;
+        cursor:pointer;
+    }
+    .white-links > input {
+      margin: 5px 0px 0px 5px;
+    }
+    .white-links > li {
+      padding: 3px;
+    }
+ 
+	#map_canvas {
+		position: absolute;
+		top: 40px;
+	}
+
+{% endblock %}
+{% block extra_scripts %}
+    var isAdmin = false;
+    {% if user.is_superuser %}
+        isAdmin = true;
+    {% endif %}
+    var opts = {
+        isAdmin: isAdmin,
+        username: '{{user.username}}',
+        serverURL: '{{serverURL}}', 
+        overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
+        showOutlines: false   
+    };
+    var basemap = new localground.basemap();   
+{% endblock %}
+{% block pageload_scripts %}
+    basemap.initialize(opts);
+    
+    var url = '/api/0/project/'
+    var params = {
+        id: 94,//india testing...
+        include_processed_maps: 'on',
+        include_markers: 'on',
+        include_audio: 'on',
+        include_photos: 'on',
+        include_notes: 'on'
+    };
+    
+    
+    $.getJSON(
+        url,
+        params,
+        function(result) {
+            //to actually draw the map markers, etc., see:
+            //site_media/scripts/map/viewer.js
+            alert(JSON.stringify(result));
+            alert(result.photos);
+            $.each(result.photos, function() {
+                alert(this.name);
+            })
+        },
+        'json'
+    );
+    
+{% endblock %}
+{% block content %}
+    {% include "includes/menus/top_nav.html" %}
+    <div class="map" id="map_canvas"></div>
+{% endblock %}

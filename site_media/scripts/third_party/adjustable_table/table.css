@@ -1,0 +1,113 @@
+table {
+	width: auto !important;
+}
+.datagrid {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+table.datagrid {
+	table-layout: fixed;
+	border: solid 3px #000;
+}
+
+table.datagrid td {
+	padding: 2px;
+	text-align: left;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+table.datagrid th  {
+	padding: 2px;
+	text-align: left;
+}
+
+table.datagrid th div.grid-col-resize {
+	background: url('grid-split.gif') no-repeat center;
+	cursor:col-resize;
+	width: 6px;
+	height:20px;
+	font-size:1px;
+	float: right;
+	display: block;
+	text-indent:-1000px;
+	overflow:hidden;
+}
+
+.id_col {
+	float:left;
+	margin: 10px 0px 0px 10px;
+	color: #444;
+	/*font: 16px/16px 'lg';*/
+	font-weight: bold;
+	font-size: 14px;
+	height: 25px;
+}
+
+.holder input {
+	border: solid 1px rgba(255, 255, 255, 1);
+	-webkit-box-shadow: none !important;
+	-moz-box-shadow: none !important;
+	box-shadow: none !important;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+	float: left;
+	margin: 0px 0px 0px 0px;
+	color: #444;
+	/*font: 14px/14px 'lg';*/
+	font-weight: bold;
+	font-size: 14px;
+	height: 25px;
+}
+.holder input:hover {
+  	/*background-color: #eee !important;*/
+	border: solid 1px rgba(82, 168, 236, 0.8);
+}
+.holder input:focus {
+	border: solid 1px rgba(82, 168, 236, 0.8);
+	-webkit-box-shadow: none !important;
+	-moz-box-shadow: none !important;
+	 box-shadow: none !important;
+	font-weight: normal;
+}
+#the_form {
+	margin: 20px;
+}
+
+.holder {
+	float:left;
+	margin-bottom: 10px;
+	margin-left: 2px;
+	margin-top: 10px;
+}
+.holder table {
+	margin: 0px !important;
+	padding: 0px !important;
+}
+.holder th, .holder td {
+	padding: 0px; /*10px 0px 10px 10px !important;*/
+}
+.holder td > div {
+	margin: 15px 10px 15px 10px;
+}
+.holder span {
+	margin: -3px 0px 0px 3px !important;
+	font-size: 11px;
+	font-weight: normal;
+}
+
+#addCol {
+	margin: 3px 0px 3px 0px;
+}
+
+.disable_select {
+	/*bug fix for chrome when resizing columns */
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}

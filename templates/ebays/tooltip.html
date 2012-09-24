@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html >
+  <head>
+     <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
+  </head>
+  <body>
+    <div id="chart"></div>
+    
+      <script type="text/javascript">
+      
+        function getAbsoluteXY(element, x, y) {
+            var p = element.nearestViewportElement.createSVGPoint();
+            var matrix = element.getTransformToElement(element.nearestViewportElement);
+            p.x = x; //bbox.x;
+            p.y = y; //bbox.y;
+            var sp = p.matrixTransform(matrix);
+            return sp;
+        }
+          var tooltip = d3.select("body")
+          .append("div")
+          .style("position", "absolute")
+          .style("z-index", "10")
+          .style("visibility", "hidden")
+          .text("a simple tooltip");
+          
+          /*var sampleSVG = d3.select(".example_div")
+          .append("svg:svg")
+          .attr("class", "sample")
+          .attr("width", 300)
+          .attr("height", 300);
+          
+          d3.select(".example_div svg")
+          .append("svg:circle")
+          .attr("stroke", "black")
+          .attr("fill", "aliceblue")
+          .attr("r", 50)
+          .attr("cx", 52)
+          .attr("cy", 52)*/
+          
+        var w = 800, h = 500;
+        var colors = d3.scale.category20();
+
+        var vis = d3.select("#chart").append("svg:svg")
+          .attr("width", w)
+          .attr("height", h);
+
+        var data = d3.range(100).map(
+                        function() {
+                            return {
+                                x: Math.random()*w,
+                                y: Math.random()*h,
+                                r: Math.random()*10
+                            }
+                    });
+
+      vis.append("g")
+        .attr("transform", "scale(0.5,0.5)")
+        .selectAll("circle")
+         .data(data)
+       .enter().append("svg:circle")
+         .attr("stroke", "black")
+         .attr("fill", function(d, i) { return colors(i % 20); })
+         .attr("cx", function(d, i) { return d.x; })
+         .attr("cy", function(d, i) { return d.y; })
+         .attr("r", function(d, i) { return d.r; })
+            // Here we add an SVG title element the contents of which is effectively rendered in a tooltip
+            //.append("svg:title")
+            //  .text(function(d, i) { return "My color is " + colors(i); });
+         .on("mouseover", function(d, i){
+                //alert(d + '=' + this + '=' + d.target);
+                var p = getAbsoluteXY(this, 20, 4);
+                alert(p.x + '-' + p.y);
+                return tooltip.style("visibility", "visible");
+                
+            })
+         .on("mousemove", function(d, i){
+                var circle = d3.select('circle:nth-of-type(' + (i+1) + ')');
+                var r = parseFloat(circle.attr('r'));
+                var top = parseFloat(circle.attr('cy'));
+                var left = parseFloat(circle.attr('cx')) + 2*r + 10;
+                return tooltip
+                        .style("top", top+"px")
+                        .style("left",left+"px")
+                        .text(i + ' - ' + d.r + ' (' + parseInt(left) + ',' + parseInt(top) + ')');
+                })
+         .on("mouseout", function(d, i){
+            return tooltip.style("visibility", "hidden");
+          });
+  
+      </script>
+  </body>
+</html>

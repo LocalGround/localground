@@ -1,0 +1,44 @@
+<div class="topbar" data-dropdown="dropdown" >
+    <div class="topbar-inner">
+        <div class="container-fluid">
+            <h3><a href="/">Local Ground</a></h3>
+            <ul class="nav">
+                {% if user.id == 102 or user.id == 94 %}
+                    <li><a href="/ebays/">EBAYS Viewer</a></li>
+                {% else %}
+                    <li><a href="/maps/editor/">Edit Map</a></li>
+                {% endif %}
+                <li><a href="/upload/">Upload</a></li>
+                <li class="dropdown">
+                    <a href="/" class="dropdown-toggle">About</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/about/">About Us</a></li>
+                        <li><a href="/instructions/">Instructions</a></li>
+                        <li><a href="/research/">Research</a></li>
+                        <li><a href="/contact/">Contact</a></li>
+                        <li><a href="/credits/">Acknowledgements</a></li>
+                        {% if user.is_superuser %}
+                            <li class="divider"></li>
+                            <li><a href="/api/0/tester/print/">For Developers</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+            </ul>
+            {% if user.is_authenticated %}
+                {% include "includes/menus/profile_menu.html" %}
+            {% else %}
+                {% if '/accounts/' in path %}
+                    <!-- do nothing -->
+                {% else %}
+                    <form action="{% url django.contrib.auth.views.login %}" class="pull-right" method="POST">
+                        {% csrf_token %}
+                        <input class="input-small" type="text" placeholder="Username">
+                        <input class="input-small" type="password" placeholder="Password">
+                        <button class="btn" type="submit">Sign in</button>
+                        <input type="hidden" name="next" value="{{path}}" />
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div><!-- /topbar-inner -->
+</div><!-- /topbar -->

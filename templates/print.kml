@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+    <name>Local Ground map images for {{print.map_title }}</name>
+    <description>
+    <![CDATA[
+        List of processed paper map images associated with Print # {{print_pk_print}}      
+    ]]>
+    </description>
+    <Folder>
+        <name>{{print.map_title }}</name>
+    {% for scan in print.scans %}
+        <GroundOverlay>
+            <name>Map #{{scan.id}}</name>
+            <Icon>
+                <href>http://localground.org/static/scans/{{scan.id}}/colorImage.png</href>
+            </Icon>
+            <LatLonBox>
+                <north>{{print.northeast.y}}</north>
+                <south>{{print.southwest.y}}</south>
+                <east>{{print.northeast.x}}</east>
+                <west>{{print.southwest.x}}</west>
+            </LatLonBox>
+        </GroundOverlay>
+    {% endfor %}
+    </Folder>
+</Document>
+</kml>

@@ -1,0 +1,178 @@
+{% extends "simple.html" %}
+{% load i18n %}
+{% block extra_styles %}
+
+    .thumb {
+        text-align: center;
+        margin: 0 auto;
+        background: #fff;
+        padding: 6px;
+        border: 1px solid #ccc;
+        margin: 10px 0;
+        -webkit-box-shadow: 1px 2px 2px rgba(0,0,0,.2);
+        -moz-box-shadow: 1px 2px 2px rgba(0,0,0,.2);
+        box-shadow: 1px 2px 2px rgba(0,0,0,.2);
+    }
+
+    .sliderHeader {
+        background: url('/site_media/images/pixel/white_90.png');
+        text-align: center;
+        font-size:12px;
+        color: #444;
+        padding:5px;
+        font-weight:bold;
+        border-bottom:solid 1px #ccc;
+        height: 30px;
+        float: left;
+    }
+    .container .about { width: 800px; }
+    .tip { margin-top: 10px; margin-right: 5px; }
+    .tooltip { padding: 5px; width: 100px; }
+    .container img { float: left; clear: none; }
+
+
+{% endblock %}
+{% block extra_links %}   
+    <script type="text/javascript" src="/site_media/scripts/fancybox/jquery.fancybox-1.3.1.js"></script>
+    <link rel="stylesheet" type="text/css" href="/site_media/scripts/fancybox/jquery.fancybox-1.3.1.css" media="screen" />
+{% endblock %}
+{% block extra_scripts %}
+    function closeBox() {
+        $.fancybox.close();    
+    }
+    
+    function deleteScan() {
+        var url = '/account/profile/scans/delete/' + $('#scanID').html() + '/';
+        $.getJSON(
+            url,
+            function(result) {
+                //alert(JSON.stringify(result));
+                $.fancybox.close();
+                if(result.success)
+                    window.location.href= window.location.href;
+                else
+                    alert(result.message);
+            },
+        "json");
+    }
+{% endblock %}
+{% block pageload_scripts %}
+    $('#scan_status').change(function() {
+        var params = [];
+        params.push('username=' + $('#username').val());    
+        params.push('scan_status=' + $('#scan_status').val());
+        window.location.href = window.location.pathname + '?' + params.join('&');
+    });
+    
+    $('#username').change(function() {
+        var params = [];
+        if($('#has_processed_images').attr('checked'))
+            params.push('has_processed_images=true');
+        params.push('username=' + $(this).val());
+        window.location.href = window.location.pathname + '?' + params.join('&');    
+    });
+    
+    $('.delete').click(function() {
+        $('#scanID').html($(this).attr('id'));
+        $.fancybox({
+            'content': $('#deleteConfirm').html(),
+            'transitionIn': 'elastic',
+            'transitionOut': 'elastic',
+            'overlayOpacity': 0.7,
+            'showCloseButton': true
+        });
+    });
+    
+    /*$('#deleteConfirmCancel').click(function() {
+        alert("close");
+        $.fancybox.close();
+    });
+    
+    $('#deleteConfirmButton').click(function() {
+        alert("delete");
+        $.fancybox.close();
+    });*/
+{% endblock %}
+
+
+{% block content %}
+
+<h3 style="float: left; clear: both;">Submitted Paper Maps</h3>
+<div style="float:left;width:450px;background-color: #eee;clear:both;padding:5px;margin-top:20px;margin-bottom:20px;">
+    {% if user.is_superuser %}
+        Show processed maps for: {{username}}
+            <select id="username">
+                <option value="all">All Users</option>
+                {% for u in users %}
+                <option value="{{u.user__username}}" {% ifequal username u.user__username %}SELECTED{% endifequal %}>{{u.user__username}}</option>
+                {% endfor%}
+            </select>
+            <br />
+    {% endif %}
+    Map Image Status:
+    <select id="scan_status">
+        <option value="all">All Images</option>  
+        <option value="1" {% if scan_status == "1" %}selected{% endif %}>Images Ready for Processing</option>  
+        <option value="2" {% if scan_status == "2" %}selected{% endif %}>Processed Images</option>    
+        <option value="3" {% if scan_status == "3" %}selected{% endif %}>Images with Errors Encountered</option>    
+    </select>
+</div>
+    {% if is_paginated %}
+        {% load paginator %}
+        <div style="float:left;clear:both;margin-top:20px; margin-bottom:30px;">
+        {% paginator 3 %}
+        </div>
+        <br>
+    {% endif %}
+    
+    
+    {% ifequal scans.object_list|length 0 %} No records found {% endifequal %}
+    {% for scan in scans.object_list %}
+    <div style="float: left;clear:both;">
+        <h3 class="localground" style="float: left;clear:both;margin-top:20px;">Map Image #{{scan.id}}</h3>
+        <img class="thumb" style="max-width:250px;max-height:250px;float: left; margin: 0px 10px 20px 0px;clear: left" src="{{scan.thumb}}" />
+        <div style="padding-bottom: 2px; padding-left: 10px;color:#666;float: left;width: 400px;clear:right;">
+            {{ scan.name }}<br />
+            Created on: <strong>{{ scan.time_created|date:"n/d/y, P" }}</strong> <br />
+            Submitted by:
+            <strong>{% if scan.user %} {{ scan.user}} {% else %} anonymous {% endif %}</strong>
+            <br />
+            Status: <strong>
+            {% if scan.status.id == 1 %}
+               Waiting to be processed
+            {% else %}
+                {% if scan.status.id == 2 %}
+                    Successfully processed
+                {% else %}
+                    Errors encountered
+                {% endif %}
+            {% endif %}
+            </strong>
+            <br />
+            <img class="tip delete" id="{{scan.id}}" title="delete this map image" src="/site_media/images/delete.png" />
+            <a href="/viewer/?scanID={{scan.id}}" target="_blank"><img class="tip" title="View in map" src="/site_media/images/preview.png" /></a> 
+            <a href="/scans/review/{{scan.id}}/" target="_blank"><img class="tip" title="Manually process this map image" src="/site_media/images/edit.png" /></a> 
+        </div>
+    </div>
+    {%  endfor %}
+
+    
+    {% if is_paginated %}
+    <div style="float:left;clear:both;margin-top:20px;">
+        {% paginator 3 %}
+    </div>
+{% endif %}
+
+    <div id="deleteConfirm" style="display: none;">
+        <div style="float:left;display:block;height:100px;">
+            Are you sure you want to delete Map Image #<span id="scanID"></span>?
+            <br />
+            <div style="margin-left: auto;margin-right: auto; width: 150px;margin-top:15px;">
+                <button id="deleteConfirmButton" class="green button" onclick="deleteScan();">yes</button>
+                <button id="deleteConfirmCancel" class="green button" onclick="closeBox();">no</button>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

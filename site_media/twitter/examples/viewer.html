@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Local Ground - Twitter Layout Sample</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/site_media/twitter/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      html, body {
+        margin: 0;
+        padding: 0;
+        height:100%;
+		overflow:hidden;
+      }
+      .white-links > input {
+        margin: 5px 0px 0px 5px;
+      }
+      .white-links > li {
+        padding: 3px;
+      }
+	#map_panel, #map_canvas {
+		position: absolute;
+		top: 40px;
+	}
+	#opener {
+		position: absolute;
+		top: 40px;
+		border-left: solid 1px #444;
+		border-bottom: solid 1px #444;
+		width: 30px;
+		height:44px;
+		cursor: pointer;
+		background-color: #fff;
+		box-shadow: -1px 1px 2px rgba(0,0,0,.3);
+		-moz-box-shadow: -1px 1px 2px rgba(0,0,0,.3);
+		-webkit-box-shadow: -1px 1px 2px rgba(0,0,0,.3);
+	}
+	#opener > div {
+		padding: 10px 5px 0px 5px;
+	}
+	#map_panel {
+		box-shadow: -1px 0px 3px rgba(0,0,0,.3);
+		-moz-box-shadow: -1px 0px 3px rgba(0,0,0,.3);
+		-webkit-box-shadow: -1px 0px 3px rgba(0,0,0,.3);
+		border-left: solid 1px #444;
+		background-color: #fff;
+	}
+    </style>
+    <script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
+	<!-- script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script -->
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>   
+    <script src="/site_media/twitter/js/bootstrap-dropdown.js"></script>
+    <script>
+		$().ready(function() {
+			$().dropdown();
+			$('input').click(function(event) {
+				event.stopPropagation();
+				//alert('should still be visible!');
+			});
+			
+			$('.dropdown-menu > li').hover(
+				function() { $(this).addClass('menu-item-selected'); },
+				function() { $(this).removeClass('menu-item-selected'); }
+			);
+			
+			$(window).resize(function() {
+				initPosition();
+			});
+			  
+			//set width:
+			initPosition();
+			  
+			  
+			var latlng = new google.maps.LatLng(37.855365, -122.272614);
+			var myOptions = {
+				zoom: 6,
+				center: latlng,
+				mapTypeId: google.maps.MapTypeId.TERRAIN,
+				scaleControl: true,
+				panControl: false,
+				streetViewControl: false,
+				zoomControlOptions: {
+					style: google.maps.ZoomControlStyle.SMALL
+				},
+				mapTypeControlOptions: {
+					position: google.maps.ControlPosition.TOP_LEFT,
+					style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+				}
+			};
+			var map = new google.maps.Map(document.getElementById("map_canvas"),
+				myOptions);
+			  
+			$('#map_canvas').css({'top': 40, 'height': $('body').height()-40});
+			$('#opener').click(function() {
+				if($('#opener > div').html() == '&gt;&gt;') {
+					$('#map_canvas').css({'width': $('body').width()});
+					google.maps.event.trigger(map, 'resize');
+					$(this).animate({
+						'left': $('body').width()-$('#opener').width()
+						},
+						'fast',
+						function() {
+							$('#opener > div').html('<<');
+							$('#map_panel').hide();
+						}
+					);
+					//$('#map_panel').hide("slide", { direction: "right" }, 'fast');
+					$('#map_panel').animate({
+						width: 0,
+						left: $('body').width()
+					}, 'fast');
+				}
+				else {
+					$('#opener').animate({
+						'left': $('body').width()-340-$('#opener').width()
+					}, 'fast');
+					$('#map_panel').css({'display': 'block'}).animate({
+							width: 340,
+							left: $('body').width()-340
+						}, 'fast',
+						function() {
+							//callback:  set width:
+							$('#map_canvas').css({
+								'left': 0,
+								'width': $('body').width()-340
+							});
+							google.maps.event.trigger(map, 'resize');
+							$('#opener > div').html('>>');
+						}
+					);
+					
+				}
+			}); 
+			  
+		});
+		
+		function initPosition() {
+			if($('#opener > div').html() == '&gt;&gt;') {
+				$('#map_canvas').css({
+					'left': 0,
+					'width': $('body').width()-340,
+					'height': $('body').height()-40
+				});
+				$('#opener').css({
+					'left': $('body').width()-340-$('#opener').width()
+				});
+				$('#map_panel').css({
+					'left': $('body').width()-340,
+					'width': 341,
+					'height': $('body').height()-41
+				});
+			}
+			else {
+				$('#map_canvas').css({
+					'left': 0,
+					'width': $('body').width(),
+					'height': $('body').height()-40
+				});
+				$('#opener').css({
+					'left': $('body').width()-$('#opener').width()
+				});
+				$('#map_panel').css({
+					'left': $('body').width(),
+					'height': $('body').height()-41
+				});
+			}
+		}
+		
+		
+		
+      
+    </script>
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  </head>
+
+  <body>
+    <div class="topbar" data-dropdown="dropdown" >
+      <div class="topbar-inner">
+        <div class="container-fluid">
+          <h3><a href="/site_media/twitter/examples/local_ground.html">Local Ground</a></h3>
+          <ul class="nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle">My Prints</a>
+              <ul class="dropdown-menu white-links">
+                <li><input type="checkbox" value="s3kn4kdq" /> Print #s3kn4kdq</li>
+                <li><input type="checkbox" value="s3kn4kdq" /> Print #4kdqs3kn</li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle">My Groups</a>
+              <ul class="dropdown-menu white-links">
+                <li><input type="checkbox" value="s3kn4kdq" /> Map #s3kn4kdq</li>
+                <li><input type="checkbox" value="s3kn4kdq" /> Map #4kdqs3kn</li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle">My Data</a>
+              <ul class="dropdown-menu white-links">
+                <li><input type="checkbox" value="s3kn4kdq" /> Grocery Stores</li>
+                <li><input type="checkbox" value="s3kn4kdq" /> Crime</li>
+                <li><input type="checkbox" value="s3kn4kdq" /> Health Stats</li>
+              </ul>
+				<li class="dropdown">
+				<a href="#" class="dropdown-toggle">My Media</a>
+				<ul class="dropdown-menu white-links">
+				  <li><input type="checkbox" value="photo" /> Photos</li>
+				  <li><input type="checkbox" value="audio" /> Audio</li>
+				  <li><input type="checkbox" value="video" /> Video</li>
+				</ul>
+          </ul>
+          <form class="pull-left" action="">
+            <input type="text" placeholder="Search" />
+          </form>
+          <ul class="nav secondary-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle">My Account</a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Prints</a></li>
+                <li><a href="#">Processed Maps</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="divider"></li>
+                <li><a href="#">Groups</a></li>
+                <li><a href="#">Media</a></li>
+                <li><a href="#">Data</a></li>
+                <li class="divider"></li>
+                <li><a href="#">Logout of ______</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div><!-- /topbar-inner -->
+    </div><!-- /topbar -->
+
+      <!-- div class="sidebar">
+        
+      </div -->
+		<div class="map" id="map_canvas"></div>
+		<div id="map_panel">
+			<div style="padding:10px;">
+				<h4>Panel of Things + Legend</h4>
+				<div class="well">
+					<h5>Drawings</h5>
+					<ul>
+						<li><a href="#">Link</a></li>
+						<li><a href="#">Link</a></li>
+						<li><a href="#">Link</a></li>
+						<li><a href="#">Link</a></li>
+					</ul>
+					<h5>Markers</h5>
+					<ul>
+						<li><a href="#">Link</a></li>
+						<li><a href="#">Link</a></li>
+						<li><a href="#">Link</a></li>
+						<li><a href="#">Link</a></li>
+						<li><a href="#">Link</a></li>
+						<li><a href="#">Link</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="opener">
+			<div>>></div>
+		</div>
+
+  </body>
+</html>

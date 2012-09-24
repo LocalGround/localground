@@ -1,0 +1,61 @@
+{% if user.is_authenticated %}
+    {% include "homepage_logged_in.html" %}
+{% else %}
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <title>Local Ground</title>
+            <link rel="stylesheet" href="/site_media/twitter/bootstrap.css" type="text/css" />
+            <style>
+                html, body {}
+                .lg {
+                    font: 50px/50px 'lg' !important;
+                    line-height: 70px !important;
+                    color: #222;
+                }
+                .container {
+                    width: 900px;
+                    background-color: #fff;
+                    padding: 20px;
+                }
+                .hero-unit {
+                    overflow:hidden;
+                    background-image: url('/site_media/images/houses_and_cars.png');
+                    background-repeat: no-repeat;
+                    background-position: right bottom;
+                    height: 250px;
+                }
+            </style>
+        </head>
+    
+        <body>
+    
+            <div class="container">
+            
+                <!-- Main hero unit for a primary marketing message or call to action -->
+                <div class="hero-unit">
+                    <img src="/site_media/images/lg-logo-circle-100.png"
+                         style="float:left; margin-right: 10px;" />
+                    <h1 class="lg">Local Ground</h1>
+                    <div class="row"
+                         style="clear:both;margin-top:20px;margin-bottom: 20px;margin-left: 110px;">
+                        <p>
+                            ...is coming soon.  We're currently finishing up some
+                            new enhancements and have a tentative release scheduled
+                            for September 2012.  If you have questions, please contact
+                            localground.help@gmail.com.  If you are a beta-tester,
+                            please log in <a href="/accounts/login/">here</a>.
+                        </p>
+                    </div>
+                </div>
+                
+                
+          
+    
+            </div> <!-- /container -->
+    
+        </body>
+    
+    </html>
+{% endif %}

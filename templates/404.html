@@ -1,0 +1,9 @@
+{% extends "twitter/page_centered.html" %}
+{% block extra_styles %}
+	{{block.super}}
+    .content p, .content form { margin-left: 20px; }
+{% endblock %}
+{% block page_title %}Page Not Found{% endblock %}
+{% block main_content %}
+  <p>The page you requested does not exist on our website.</p>
+{% endblock %}

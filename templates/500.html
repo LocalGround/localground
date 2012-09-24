@@ -1,0 +1,20 @@
+{% extends "twitter/page_centered.html" %}
+{% block extra_styles %}
+	{{block.super}}
+    .content p, .content form { margin-left: 20px; }
+{% endblock %}
+{% block page_title %}HTTP 500 Error Encountered{% endblock %}
+{% block main_content %}
+  <p>Our application experienced an error when processing your request.  Error details:</p>
+    <ul>
+        <li>Time of error: {% now "jS F Y H:i" %} </li>
+        <li>Page where error occurred:<br />
+            {{ serverURL }}{{ request.META.REQUEST_URI }}
+        </li>
+    </ul>
+    <br />
+    <p>This error has been reported, but your feedback is important to us, and for  
+    further assistance you can email Local Ground's technical support team
+    at <a href="mailto:{{DEFAULT_FROM_EMAIL}}">{{DEFAULT_FROM_EMAIL}}</a>.</p>
+{% endblock %}
+

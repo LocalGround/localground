@@ -1,0 +1,61 @@
+#tabContainer {
+    margin: 0 auto;
+    width: 800px;
+}
+.tabul {
+    padding: 0;
+    margin: 0;
+    padding: 5px 0;
+    z-index: 10;
+}
+.tabul li {
+    display: inline;
+    cursor: pointer;
+    margin-right: 5px;
+    border-top: solid 1px #999;
+    border-left: solid 1px #999;
+    border-right: solid 1px #999;
+}
+.ntabs {
+    top: -1px;
+    padding: 5px;
+    z-index: 200;
+}
+.add {
+    padding: 5px 8px;
+}
+#addtab {
+    font-size: 16px;
+    text-decoration: none;
+    position: relative;
+    color: #333;
+}
+#addtab:hover {
+    color: #999;
+}
+.ctab {
+    position: relative;
+    top: 0px;
+    border-bottom-color: #fff;
+}
+
+.greenTab {
+    background: #D5DBAD;
+    border-bottom-color: #D5DBAD;
+}
+.tabcontent {
+    position: relative;
+    z-index: 100;
+    border: 1px solid #999;
+    background: #fff;
+    padding: 0px;
+    color: #666;
+    height: 320px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 0px 0px 0px 0px;
+}
+
+.bottomPane {
+    height:40px;
+}

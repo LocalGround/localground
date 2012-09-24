@@ -1,0 +1,22 @@
+{% extends "simple.html" %}
+{% load i18n %}
+{% block extra_styles %}
+    th, td { padding:5px; vertical-align: top; }
+    input[type=text], textarea {float: left; width: 340px; }
+    .uploadForm {
+        /*border: solid 1px #000;*/
+        width: 250px;
+    }
+    .uploadForm th { vertical-align: top;}
+    .uploadForm td {
+        /*border: solid 1px #000;*/
+    }
+    .ui-icon { float:right;margin:0px 0px 0px 5px; }
+{% endblock %}
+{% block content %}
+    {{ group }}<br />
+    {% for m in group.markers.all %}
+        {{m.name}} ({{ m.id }})<br />
+    {% endfor %}
+    {{ markers }}
+{% endblock %}

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Local Ground Dashboard</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/site_media/twitter/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+        body {
+          padding-top: 60px;
+        }
+        .container {
+            width: 1070px;
+        }
+        .hero-unit { padding: 20px; min-height: 120px; }
+        .hero-unit h1 { font-size: 50px; line-height: 50px; margin-top:10px; }
+        .hero-unit p {
+            font: 40px/40px 'lg'; padding-left:550px;
+            margin-top: 10px; color: #4EB247;
+            text-shadow: 1px 1px 0px #333;
+        }
+        .colored-pen {
+            font: 14px/14px 'lg';
+            color: #A65BF7;    
+        }
+        .icon { vertical-align: bottom; }
+        .span6 { padding: 5px 10px 5px 20px; width: 310px; }
+        h2 { margin-bottom: 10px; }
+        
+    </style>
+    <script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
+    <script src="/site_media/twitter/js/bootstrap-dropdown.js"></script>
+    <script>
+      $().ready(function() {
+          $().dropdown();
+      });
+    </script>
+  </head>
+
+  <body>
+
+    {% include "includes/menus/top_nav.html" %}
+
+    <div class="container">
+        <div>
+            <div class="hero-unit">
+            <img style="float:left;margin:-10px 20px 0px 0px;" src="/site_media/images/hand_drawn_icons/128x128/earth.png" />
+            <h1>
+                Welcome to Local Ground
+            </h1>
+            <p>Share Your World!</p>
+        </div>
+
+        <!-- Steps 1-3 -->
+        <div class="row">
+            <div class="span6">
+                <h2>
+                    <img class="icon" src="/site_media/images/hand_drawn_icons/48x48/users.png" />
+                    Manage Your Profile
+                </h2>
+                <p>
+                    Set your default map location, configure your preferences,
+                    and tell us about yourself.<br><br>
+                </p>
+                <p><a class="btn info" href="/profile/settings">Set Up &raquo;</a></p>
+            </div>
+            <div class="span6">
+                <h2>
+                    <img class="icon" src="/site_media/images/hand_drawn_icons/48x48/notepad.png" />
+                    Print a Map
+                </h2>
+                <p>
+                    Zoom anywhere in the world and print a paper map of your area
+                    of interest.  You can even create a worksheet to help with data
+                    collection.
+                </p>
+                <p><a class="btn info" href="/instructions/#print">Learn More &raquo;</a></p>
+            </div>
+            <div class="span6">
+                <h2>
+                    <img class="icon" src="/site_media/images/hand_drawn_icons/48x48/comment.png" />
+                    Draw / Annotate
+                </h2>
+                <p>
+                    Once you've printed your map, you can write on it using
+                    a <span class="colored-pen">Colored Pen</span>, scan or take
+                    a photograph of it, and upload it back to the website.
+                </p>
+                <p><a class="btn info" href="/instructions/#draw">Learn More &raquo;</a></p>
+            </div>
+        </div><!-- end row -->
+
+        <hr>
+
+        <!-- Steps 4-6 -->
+         <div class="row">
+            <div class="span6">
+                <h2><img class="icon" src="/site_media/images/hand_drawn_icons/48x48/photo-camera.png" />
+                    Add Media
+                </h2>
+                <p>You can also add other media to your map (things like
+                audio recordings or photos).  Just click the <em>Upload</em>
+                button and drag media onto the web page.</p>
+                <p><a class="btn info" href="/instructions/#upload">Learn More &raquo;</a></p>
+            </div>
+            <div class="span6">
+                <h2><img class="icon" src="/site_media/images/hand_drawn_icons/48x48/computer.png" />
+                    Organize / View
+                </h2>
+                <p>
+                    Once you've submitted all of your data / media, you can edit
+                    and configure your maps, to visualize your data and analyze it.
+                </p>
+                <p><a class="btn info" href="/instructions/#organize">View details &raquo;</a></p>
+            </div>
+            <div class="span6">
+                <h2><img class="icon" src="/site_media/images/hand_drawn_icons/48x48/download.png" />
+                    Download  & Share
+                </h2>
+                <p>
+                    And now that you've created a unique and beautiful map, why
+                    not share it?  You can email your map to others or even
+                    download your data again.
+                </p>
+                <p><a class="btn info" href="/instructions/#share">Configure &raquo;</a></p>
+            </div>
+        </div><!-- end row -->
+        
+        <footer>
+          <p>&copy; Local Ground 2012</p>
+        </footer>
+      </div>
+    </div>
+
+  </body>
+</html>

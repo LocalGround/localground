@@ -1,0 +1,207 @@
+{% extends "simple.html" %}
+{% load i18n %}
+{% block extra_styles %}
+    img { visibility: hidden; }
+    body {
+        background-color: #999;
+    }
+    .slider img { max-height: 140px; }
+    
+    .headerStrip {
+        background-color:#fff;
+        float:left;
+        width:100%;
+        border-bottom: solid 1px #ccc;
+    }
+    .headerStrip > p {
+        float: left;
+        clear:both;
+        margin-bottom:5px;
+    }
+
+    /*.sliderHeader {
+        background: url('/site_media/images/pixel/white_90.png');
+        text-align: center;
+        font-size:12px;
+        color: #444;
+        padding:5px;
+        font-weight:bold;
+        height: 25px;
+        float: left;
+        margin-top:-160px;
+        width:100%;
+    }*/
+    
+    #print_slider {
+        height: 180px;
+    }
+    .mapImage {
+        height: 160px;
+        width: 190px;
+        background-position: -20px -70px;
+        /*background-position: -130px -70px;*/
+    }
+    .printImage {
+        background-repeat: no-repeat;
+    }
+    .container .about { width: 1000px; }
+    .block {
+        width:300px;
+        height:310px;
+        border: solid 1px #999;
+        margin-right: 20px;
+        margin-top: 10px;
+        background-color: #E7EAD3;
+    }
+    .block h3, .block h4, .block p, .block > a { margin: 10px 0px 0px 20px; }
+{% endblock %}
+{% block extra_links %}
+    <link href="/site_media/css/account.css" type="text/css" media="all" rel="stylesheet" />
+    <script type="text/javascript" src="/site_media/scripts/easySlider1.7.js"></script>
+    <link rel="stylesheet" href="/site_media/css/slider.css" type="text/css" />
+    <script type="text/javascript" src="/site_media/scripts/myAccount.js"></script>
+{% endblock %}
+{% block pageload_scripts %}
+    var controller = new MyAccount();
+    controller.initialize({
+        numSliders: {{num_sliders}}
+    });
+
+    
+{% endblock %}
+
+{% block content %}
+<!-- h2> My Local Ground</h2 -->
+
+{% for c in cards %}
+    <div style="float: left;">
+    <div class="block">
+        <div class="headerStrip">
+            <h3 class="localground" style="float: left;margin-bottom: 15px;">{{c.heading}}</h3>
+            <!-- a href="/account/profile/prints/" style="float: left;margin-top:13px;margin-left:10px;">view all &raquo;</a>
+            <p>Your recent prints:</p -->
+        </div>
+        <img src="/site_media/images/paper_bottom_2.png" />
+        <div {% if c.slider_id %}id="{{c.slider_id}}" class="slider" style="float:left;margin-left:60px"{% endif %}>
+            <ul>
+                {% for o in c.objects %}
+                <li style="width:190px; margin-top:0px;">
+                    {% if c.slider_id %}
+                        <div class="printImage">
+                            <div>
+                                <span>{{o.name}}</span>
+                                <br />
+                                <img class="thumb" src="http://localground.org{{o.thumbnail_path}}" /> 
+                            </div>
+                        </div>
+                    {% else %}
+                        {{o.name}}        
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <img src="/site_media/images/paper_bottom_2.png" />
+</div>   
+{% endfor %}
+
+<!-- div style="float: left;">
+    <div class="block">
+        <div class="headerStrip">
+            <h3 class="localground" style="float: left;">Prints</h3>
+            <a href="/account/profile/prints/" style="float: left;margin-top:13px;margin-left:10px;">view all &raquo;</a>
+            <p>Your recent prints:</p>
+        </div>
+        <img src="/site_media/images/paper_bottom_2.png" />
+        <div id="print_slider" class="slider" style="float:left;margin-left:60px">
+            <ul>
+                {% for print in prints %}
+                <li style="width:190px; margin-top:0px;">
+                    <div class="printImage">
+                        <div>
+                            
+                            <span>{{print.map_title}}</span>
+                            <br />
+                            <img class="thumb" src="http://localground.org/static/prints/{{print.pk_print}}/thumbnail.jpg" />
+                            
+                        </div>
+                        <div class="sliderHeader">
+                            {{print.time_created}}
+                            <div style="float:left;clear:both; text-align:center;width:100%;font-weight:normal;font-size: 12px;">
+                                <a href="/print/{{print.pk_print}}/">print again</a> |
+                                <a href="/viewer/?printID={{print.pk_print}}" target="_blank">preview</a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+    </div>
+    <img src="/site_media/images/paper_bottom_2.png" />
+</div>                
+
+<div style="float: left;">
+    <div class="block">
+        <div class="headerStrip">
+            <h3 class="localground" style="float: left;">Paper Map Images</h3>
+            <a href="/account/profile/map-images/" style="float: left;margin-top:13px;margin-left:10px;">view all &raquo;</a>
+            <p style="float: left;clear:both;">Recently processed map images</p>
+        </div>
+        <img src="/site_media/images/paper_bottom_2.png" />
+        <div id="map_image_slider" class="slider" style="float:left;margin-left:60px;margin-top: 0px;">
+            <ul>
+                {% for scan in scans %}
+                <li style="width:190px;">
+                    <div>
+                            
+                        <span>{{scan.name}}</span>
+                        <br />
+                        <img class="thumb" src="http://localground.org/static/scans/{{scan.id}}/{{scan.thumbnail_name}}" />
+                        
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <img src="/site_media/images/paper_bottom_2.png" />
+</div>
+
+<div style="float: left;">
+    <div class="block">
+        <div class="headerStrip">
+            <h3 class="localground">Maps & Collections</h3>
+            <p>123</p>
+        </div>
+        <img src="/site_media/images/paper_bottom_2.png" />
+    </div>
+    <img src="/site_media/images/paper_bottom_2.png" />
+</div>
+
+<div style="float: left;">
+    <div class="block">
+        <h3 class="localground">Photos</h3>
+    </div>
+    <img src="/site_media/images/paper_bottom_2.png" />
+</div>
+
+<div style="float: left;">
+    <div class="block">
+        <h3 class="localground">Places</h3>
+    </div>
+    <img src="/site_media/images/paper_bottom_2.png" />
+</div>
+
+<div style="float: left;">
+    <div class="block">
+        <h3 class="localground">Data</h3>
+    </div>
+    <img src="/site_media/images/paper_bottom_2.png" />
+</div -->
+
+
+{% endblock %}

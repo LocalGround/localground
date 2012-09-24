@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Local Ground</title>
+		{% block style_links %}{% endblock %}
+		
+		<style type="text/css">
+            html, body {
+                overflow-y: auto !important;
+            }
+			{% block extra_styles %}{% endblock %}	
+		</style>
+		<!-- script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script -->
+		<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.2.min.js"></script>
+		<script type="text/javascript" src="/site_media/scripts/namespace.js"></script>
+		<script type="text/javascript" src="/site_media/scripts/site/base.js"></script> 
+		{% block script_links %}{% endblock %}
+		
+		<script>
+            var jQuery = window.top.jQuery;
+            //alert(jQuery);
+			{% block extra_scripts %}
+            //copy stylesheets and scripts form parent:
+            if(window.top && window.top.location.href != document.location.href) {
+                var iframe_head = document.getElementsByTagName('head').item(0);
+                
+                //copy parent scripts:
+                /*var parent_scripts = window.top.document.getElementsByTagName('script');
+                for (var i = 0, max = parent_scripts.length; i < max; i++) {
+                    if (parent_scripts[i].src == 'http://code.jquery.com/jquery-1.5.2.min.js') {
+                        var the_script = document.createElement('script');
+                        var attrib = parent_scripts[i].attributes;
+                        for (var j = 0, attribmax = attrib.length; j < attribmax; j++) {
+                            the_script.setAttribute(attrib[j].nodeName, attrib[j].nodeValue);
+                        }
+                        iframe_head.appendChild(the_script);
+                    }
+                }*/
+                //copy parent styles:
+                var parent_links = window.top.document.getElementsByTagName('link');
+                for (var i = 0, max = parent_links.length; i < max; i++) {
+                    if (parent_links[i].rel && parent_links[i].rel == 'stylesheet') {
+                        var thestyle = document.createElement('link');
+                        var attrib = parent_links[i].attributes;
+                        for (var j = 0, attribmax = attrib.length; j < attribmax; j++) {
+                            thestyle.setAttribute(attrib[j].nodeName, attrib[j].nodeValue);
+                        }
+                        iframe_head.appendChild(thestyle);
+                    }
+                }
+                //alert('parent scripts loaded');
+                //callback();
+                
+            }
+            else {
+                alert('this base template should only be used in the context of an iframe');
+            }
+            {% endblock %}
+		</script>
+		<script>
+			$().ready(function() {
+				{% block pageload_scripts %}{% endblock %}
+			});
+		</script>
+	
+	</head>
+
+	<body style="overflow:hidden;margin: 0px 10px 0px 10px;">
+        {% block content %}{% endblock %}
+	</body>
+</html>
