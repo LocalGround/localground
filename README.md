@@ -11,4 +11,4 @@ Please read the prerequisites / installation instructions here:  https://github.
 This tool draws from many good ideas, and would like to especially thank Walking-Papers (http://walking-papers.org/) and Shreddr (https://twitter.com/shreddr_org).
 
 #Contact Us
-Please contact us at info@localground.orgif you have any questions, or join our mailing list at localground@googlegroups.com.
+Please contact us at info@localground.org if you have any questions, or join our mailing list at localground@googlegroups.com.
