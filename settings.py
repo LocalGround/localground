@@ -122,6 +122,9 @@ TEMPLATE_DIRS = (
     '%s/templates' % FILE_ROOT,
     '%s/account/templates' % FILE_ROOT,
 )
+FIXTURE_DIRS = (
+    '%s/fixtures' % FILE_ROOT,
+)
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'

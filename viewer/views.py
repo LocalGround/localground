@@ -1,5 +1,4 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect
-from localground import globals
 from django.http import HttpResponse
 from localground.lib.api.decorators import process_identity, process_project
 from localground.lib.decorators import get_group_if_authorized

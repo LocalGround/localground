@@ -291,14 +291,14 @@ class Scan(Processor):
         
     
     def save_upload(self, file, user, project):
-        from localground import globals
+        from localground.lib import generic
         from PIL import Image
         
         #1) first, set user, project, and uuid (required for generating file path):
         self.owner = user
         self.last_updated_by = user
         self.project = project
-        self.uuid = globals.generateID()
+        self.uuid = generic.generateID()
         
         #2) save original file to disk:
         file_name_new = self.save_file_to_disk(file)

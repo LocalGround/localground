@@ -1,6 +1,6 @@
 from django.shortcuts import render_to_response
 from localground.uploads.models import *
-from localground import globals
+from localground.lib import generic
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from localground.lib.api.decorators import process_identity, process_project
@@ -48,7 +48,7 @@ def upload(request):
     
     if request.method == 'POST':
         # 1) Write the file to disk:
-        uuID            = globals.generateID()
+        uuID            = generic.generateID()
         f               = request.FILES['Filedata']  #use uploadify when debugging, Filedata otherwise
         file_name       = ''.join(f.name.split(' ')) #removes spaces
         path            = settings.STATIC_ROOT + '/scans/' + uuID
