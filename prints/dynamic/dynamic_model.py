@@ -182,10 +182,8 @@ class ModelClassBuilder(object):
                                 snippet_url= snippet.absolute_virtual_path()
                             ))
                         data.append(field)
-                        if descriptor.is_display_field:
+                        if descriptor.is_display_field or descriptor.col_name == 'col_1':
                             d.update(dict(name=field['value']))
-                        else:
-                            d.update(dict(name=self.__getattribute__('col_1'))) 
                     d.update(dict(fields=data))
                         
                 return d
