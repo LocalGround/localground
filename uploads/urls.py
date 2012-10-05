@@ -5,12 +5,6 @@ from django.views.generic.simple import direct_to_template
 
 #before we started using generic views:
 urlpatterns = patterns('localground.uploads.views',
-    (r'^queue/next/$', 'poll_processor.get_next_scan'),
-    (r'^post/$', 'poll_processor.post_scan_snippet'),
-    (r'^get-scan-config/$', 'poll_processor.get_scan_config'),
-    (r'^save-markers/$', 'poll_processor.save_markers'),
-    (r'^update/$', 'poll_processor.update'),
-    (r'^error/$', 'poll_processor.record_error'),
     (r'^review/(?P<scan_id>\w+)/json/', 'review_scan.get_scan'),
     (r'^review/(?P<scan_id>\w+)/save-data/', 'review_scan.save_manual_edits'),
     (r'^review/(?P<scan_id>\w+)/', 'review_scan.review_scan'),

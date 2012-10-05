@@ -91,9 +91,9 @@ urlpatterns = patterns('',
     #(r'^download/kml/print/(?P<print_id>\w+)/', 'localground.viewer.views.download_kml'),
     
     #testing:
-    (r'^html5/', 'localground.test.views.html5_test'),
-    (r'^sliders/', 'localground.test.views.sliders_test'),
-    (r'^adjust/', 'localground.test.views.adjust_color'),
+    #(r'^html5/', 'localground.test.views.html5_test'),
+    #(r'^sliders/', 'localground.test.views.sliders_test'),
+    #(r'^adjust/', 'localground.test.views.adjust_color'),
     
     #django-tagging:
     url(r'^tagging_autocomplete/list/json$', 'tagging_autocomplete.views.list_tags',
