@@ -625,14 +625,14 @@ class ImageUtilities(General):
             #    return False
 
             
-            perimeter = cv.ArcLength(polygon)
-            
+            area = math.fabs( cv.ContourArea(polygon))
+            perimeter = cv.ArcLength(polygon, isClosed=True)
+            normalized_ratio = area/(perimeter/4)**2
+
             # ensure square-ish shape and not long rectangle of nonsense:
-            # for a square, perimeter = 4*sqrt(area).  Perimeter gets larger as
-            # square approaches long rectangular shape.  So, 4.6*sqrt(area) is a
-            # rough approximation
-            if perimeter < 4.6*math.sqrt(area):
-                return True
+            if normalized_ratio >= .80: return True
+            #if perimeter < 4.6*math.sqrt(area):
+            #    return True
     
         return False
     
@@ -727,9 +727,31 @@ class RectangleFinder(General):
             
             threshold = threshold+increment
         
-    
-    
     def get_qr_rectangle(self):
+        self.qr_rect = None
+        # checks 2 things:
+        # - that the QR code is the "squarest" square in the rectangle array
+        # - that the ratio of the area QR code relative to the image size is ~1%
+        self.logger.log('getting the QR rectangle...') 
+        ratio_best = 0 #initialize to 0 (an impossible ratio)
+        cv_image = self.pil2cv(self.pil_image)
+        size = cv.GetSize(cv_image);
+        total_area = size[0]*size[1]
+        self.logger.log('total area: %s' % (total_area))
+        for rect in self.rectangles:
+            area = math.fabs( cv.ContourArea(rect) )
+            perimeter = cv.ArcLength(rect, isClosed=True)
+            ratio_this = area/(perimeter/4)**2
+            #print rect, area, perimeter, ratio_this
+            print 'perimeter_area_ratio_this:', ratio_this
+            #print 'snippet_to_total_area_ratio:', area/total_area
+            if ratio_this > ratio_best and .01 <= area/total_area <= .05:
+                self.logger.log('best area ratio: %s' % ratio_this)
+                self.qr_rect = rect
+                ratio_best = ratio_this
+        return self.qr_rect
+    
+    def get_qr_rectangle_deprecate_me(self):
         self.qr_rect = None
         # checks 2 things:
         # - that the QR code is the "squarest" square in the rectangle array
@@ -745,10 +767,10 @@ class RectangleFinder(General):
             perimeter = cv.ArcLength(rect)
             # checking "squareness": for a square, perimeter = 4*sqrt(area)
             ratio_this = area/perimeter
-            #print 'perimeter_area_ratio_best:', ratio_best
-            #print 'perimeter_area_ratio_this:', ratio_this
-            #print 'snippet_to_total_area_ratio:', area/total_area
-            if ratio_this < ratio_best and .01 <= area/total_area <= .05:
+            print 'perimeter_area_ratio_best:', ratio_best
+            print 'perimeter_area_ratio_this:', ratio_this
+            print 'snippet_to_total_area_ratio:', area/total_area
+            if ratio_this < ratio_best: # and .01 <= area/total_area <= .05:
                 self.logger.log('best area ratio: %s' % (area/total_area))
                 self.qr_rect = rect
                 ratio_best = ratio_this
@@ -770,11 +792,11 @@ class RectangleFinder(General):
         self.logger.log('Getting miniform...')
         self.miniform_rect = None
         total_area = self.pil_image.size[0]*self.pil_image.size[1]
-        best_ratio = 100000 #dummy value for extraordinarily high ratio
+        ratio_best = 0 #dummy value for impossibly low ratio
         for rect in self.rectangles:
-            area = math.fabs(cv.ContourArea(rect))
-            perimeter = cv.ArcLength(rect)
-            ratio = perimeter/math.sqrt(area)
+            area = math.fabs( cv.ContourArea(rect) )
+            perimeter = cv.ArcLength(rect, isClosed=True)
+            ratio_this = area/(perimeter/4)**2
             #print ratio
             
             #check to see if the rectangle exists in the first third of the
@@ -786,12 +808,13 @@ class RectangleFinder(General):
             # 20% and 70% of the entire map area *and* (3) the rectangle is the
             # most rectangular choice (to exclude trapezoid looking shapes) *and*
             # (4) rectangle starts on second half of the page.
+            print ratio_this, area/total_area
             if 0.15 < area/total_area < 0.5 and \
-                    ratio < best_ratio and \
+                    ratio_this > ratio_best and \
                     ImageUtilities.is_more_rectangular(self.miniform_rect, rect) and \
                     in_second_half:
                 
-                best_ratio = ratio
+                ratio_best = ratio_this
                 self.miniform_rect = rect
         
         self.logger.log('miniform_rect: %s' % (self.miniform_rect))
@@ -812,11 +835,11 @@ class RectangleFinder(General):
         self.logger.log('Getting form...')
         self.form_rect = None
         total_area = self.pil_image.size[0]*self.pil_image.size[1]
-        best_ratio = 100000 #dummy value for extraordinarily high ratio
+        ratio_best = 0 #impossibly low
         for rect in self.rectangles:
-            area = math.fabs(cv.ContourArea(rect))
-            perimeter = cv.ArcLength(rect)
-            ratio = perimeter/math.sqrt(area)
+            area = math.fabs( cv.ContourArea(rect) )
+            perimeter = cv.ArcLength(rect, isClosed=True)
+            ratio_this = area/(perimeter/4)**2
             #print ratio
             
             #check to see if the rectangle exists in the first third of the
@@ -827,16 +850,16 @@ class RectangleFinder(General):
             # most rectangular choice (to exclude trapezoid looking shapes)
             is_more_rectangular = ImageUtilities.is_more_rectangular(self.form_rect, rect)
             if 0.4 < area/total_area < 0.95 and \
-                    ratio < best_ratio and \
+                    ratio_this > ratio_best and \
                     is_more_rectangular:
                 
-                best_ratio = ratio
+                ratio_best = ratio_this
                 self.form_rect = rect
                 
-            print rect, ratio, best_ratio, is_more_rectangular 
+            print rect, ratio_this, ratio_best, is_more_rectangular 
         #override (delete this!):
         #self.form_rect = [(850, 142), (62, 147), (68, 976), (855, 975)]
-	#self.form_rect = [(66, 137), (61, 965), (848, 971), (850, 141)]
+        #self.form_rect = [(66, 137), (61, 965), (848, 971), (850, 141)]
         self.logger.log('form_rect: %s' % (self.form_rect))
         return self.form_rect
     
@@ -1000,27 +1023,27 @@ class RectangleFinder(General):
         cv_image = self.pil2cv(im)
         #output all rectangles:
         for rectangle in self.rectangles:
-            cv.PolyLine(cv_image, [rectangle], True, color, 3, cv.CV_AA, 0)
+            cv.PolyLine(cv_image, [rectangle], True, color, 1, cv.CV_AA, 0)
         
         #output qr-code rectangle (if exists):
         if self.qr_rect is not None:
             r = Quadrilateral(self.qr_rect)
-            cv.PolyLine(cv_image, [r.to_cv_poly()], True, (0, 0, 255), 3, cv.CV_AA, 0)
+            cv.PolyLine(cv_image, [r.to_cv_poly()], True, (0, 0, 255), 1, cv.CV_AA, 0)
             
         #output mini form rectangle (if exists):
         if self.miniform_rect is not None:
             r = Quadrilateral(self.miniform_rect)
-            cv.PolyLine(cv_image, [r.to_cv_poly()], True, (255, 0, 255), 3, cv.CV_AA, 0)
+            cv.PolyLine(cv_image, [r.to_cv_poly()], True, (255, 0, 255), 1, cv.CV_AA, 0)
             
         #output form rectangle (if exists):
         if self.form_rect is not None:
             r = Quadrilateral(self.form_rect)
-            cv.PolyLine(cv_image, [r.to_cv_poly()], True, (255, 0, 255), 3, cv.CV_AA, 0)
+            cv.PolyLine(cv_image, [r.to_cv_poly()], True, (255, 0, 255), 1, cv.CV_AA, 0)
         
         #output map rectangle (if exists):
         if self.map_rect is not None:
             r = Quadrilateral(self.map_rect, contract_by=12)
-            cv.PolyLine(cv_image, [r.to_cv_poly()], True, (255, 0, 0), 3, cv.CV_AA, 0)  
+            cv.PolyLine(cv_image, [r.to_cv_poly()], True, (255, 0, 0), 1, cv.CV_AA, 0)  
         
         if self.logger.is_debug:
             cv.SaveImage(self.logger.tmp_directory + 'rectangles.png', cv_image)
