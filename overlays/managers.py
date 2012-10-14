@@ -22,7 +22,7 @@ class MarkerMixin(object):
         from django.db.models import Count, Q
         #todo:  make a view instead:
         sql = 'select m.id, m.project_id, m.time_stamp, m.name, m.user_id, \
-            m.point, p.photo_count, a.audio_count, r.review_count, \
+            m.point, p.photo_count, a.audio_count, \
             v.video_count, 0 as note_count \
          from overlays_marker m left join \
          (select source_marker_id, count(id) as photo_count \
@@ -31,9 +31,6 @@ class MarkerMixin(object):
          (select source_marker_id, count(id) as audio_count \
           from uploads_audio group by source_marker_id) a \
          on m.id = a.source_marker_id left join \
-         (select source_marker_id, count(id) as review_count \
-          from uploads_review group by source_marker_id) r \
-         on m.id = r.source_marker_id left join \
          (select source_marker_id, count(id) as video_count \
           from uploads_video group by source_marker_id) v \
          on m.id = v.source_marker_id \
@@ -63,7 +60,7 @@ class MarkerMixin(object):
         from django.db.models import Count, Q
         #todo:  make a view instead:
         sql = 'select m.id, m.project_id, m.time_stamp, m.name, m.user_id, \
-            m.point, p.photo_count, a.audio_count, r.review_count, \
+            m.point, p.photo_count, a.audio_count, \
             v.video_count, 0 as note_count \
          from overlays_marker m left join \
          (select source_marker_id, count(id) as photo_count \
@@ -72,9 +69,6 @@ class MarkerMixin(object):
          (select source_marker_id, count(id) as audio_count \
           from uploads_audio group by source_marker_id) a \
          on m.id = a.source_marker_id left join \
-         (select source_marker_id, count(id) as review_count \
-          from uploads_review group by source_marker_id) r \
-         on m.id = r.source_marker_id left join \
          (select source_marker_id, count(id) as video_count \
           from uploads_video group by source_marker_id) v \
          on m.id = v.source_marker_id \
