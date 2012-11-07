@@ -751,47 +751,22 @@ class RectangleFinder(General):
                 ratio_best = ratio_this
         return self.qr_rect
     
-    def get_qr_rectangle_deprecate_me(self):
-        self.qr_rect = None
-        # checks 2 things:
-        # - that the QR code is the "squarest" square in the rectangle array
-        # - that the ratio of the area QR code relative to the image size is ~1%
-        self.logger.log('getting the QR rectangle...') 
-        ratio_best = 2000 #initialize to extremely hige perimeter-to-area ratio
-        cv_image = self.pil2cv(self.pil_image)
-        size = cv.GetSize(cv_image);
-        total_area = size[0]*size[1]
-        self.logger.log('total area: %s' % (total_area))
-        for rect in self.rectangles:
-            area = math.fabs( cv.ContourArea(rect) )
-            perimeter = cv.ArcLength(rect)
-            # checking "squareness": for a square, perimeter = 4*sqrt(area)
-            ratio_this = area/perimeter
-            print 'perimeter_area_ratio_best:', ratio_best
-            print 'perimeter_area_ratio_this:', ratio_this
-            print 'snippet_to_total_area_ratio:', area/total_area
-            if ratio_this < ratio_best: # and .01 <= area/total_area <= .05:
-                self.logger.log('best area ratio: %s' % (area/total_area))
-                self.qr_rect = rect
-                ratio_best = ratio_this
-        return self.qr_rect
-    
     def get_map_rectangle(self, source_print):
         self.logger.log('Getting map rectangle...')
-        self.map_rect = self.select_rectangle(source_print, .2, .7, in_first_half=True)
+        self.map_rect = self.select_rectangle(source_print, .2, .7, in_first_third=True)
         return self.map_rect
     
     def get_miniform_rectangle(self, source_print):
         self.logger.log('Getting miniform rectangle...')
-        self.miniform_rect = self.select_rectangle(source_print, .15, .5, in_first_half=False)
+        self.miniform_rect = self.select_rectangle(source_print, .15, .5, in_first_third=False)
         return self.miniform_rect
     
     def get_form_rectangle(self, source_print):
         self.logger.log('Getting form rectangle...')
-        self.form_rect = self.select_rectangle(source_print, .4, .95, in_first_half=None)
+        self.form_rect = self.select_rectangle(source_print, .4, .95, in_first_third=None)
         return self.form_rect
     
-    def select_rectangle(self, source_print, min_area, max_area, in_first_half=True):
+    def select_rectangle(self, source_print, min_area, max_area, in_first_third=True):
         """
         Finds the rectangle that corresponds to the map_rect; assumes that the
         scanned image has already been rotated.
@@ -810,14 +785,14 @@ class RectangleFinder(General):
             #check to see if the rectangle exists in the first third of the
             #scanned paper image:
             min_y = min([p[1] for p in rect])
-            position_match = (min_y < self.pil_image.size[1]/2) == in_first_half or \
-                            not in_first_half == (min_y >= self.pil_image.size[1]/2) or \
-                            in_first_half is None
+            position_match = (min_y < self.pil_image.size[1]/3) == in_first_third or \
+                            not in_first_third == (min_y >= self.pil_image.size[1]/3) or \
+                            in_first_third is None
             
             # if (1) the total area of the rectangle is within the area range and
             # (2) the rectangle is the most rectangular choice (to exclude trapezoid looking shapes) *and*
             # (3) rectangle starts on second half of the page.
-            print ratio_this, area/total_area
+            print ratio_best, ':', ratio_this, area/total_area, position_match
             if min_area < area/total_area < max_area and \
                     ratio_this > ratio_best and \
                     position_match:
