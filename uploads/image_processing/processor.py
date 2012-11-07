@@ -630,7 +630,7 @@ class ImageUtilities(General):
             normalized_ratio = area/(perimeter/4)**2
 
             # ensure square-ish shape and not long rectangle of nonsense:
-            if normalized_ratio >= .80: return True
+            if normalized_ratio >= .70: return True
             #if perimeter < 4.6*math.sqrt(area):
             #    return True
     
@@ -776,241 +776,57 @@ class RectangleFinder(General):
                 ratio_best = ratio_this
         return self.qr_rect
     
+    def get_map_rectangle(self, source_print):
+        self.logger.log('Getting map rectangle...')
+        self.map_rect = self.select_rectangle(source_print, .2, .7, in_first_half=True)
+        return self.map_rect
     
     def get_miniform_rectangle(self, source_print):
+        self.logger.log('Getting miniform rectangle...')
+        self.miniform_rect = self.select_rectangle(source_print, .15, .5, in_first_half=False)
+        return self.miniform_rect
+    
+    def get_form_rectangle(self, source_print):
+        self.logger.log('Getting form rectangle...')
+        self.form_rect = self.select_rectangle(source_print, .4, .95, in_first_half=None)
+        return self.form_rect
+    
+    def select_rectangle(self, source_print, min_area, max_area, in_first_half=True):
         """
-        Finds the rectangle that corresponds to the miniform; assumes that the
+        Finds the rectangle that corresponds to the map_rect; assumes that the
         scanned image has already been rotated.
         """
         if source_print is None:
             self.logger.log('No print defined')
             return
-        if source_print.layout.id != PrintLayouts.PORTRAIT_WITH_FORM:
-            self.logger.log('layout does not include a form...')
-            return
-        
-        self.logger.log('Getting miniform...')
-        self.miniform_rect = None
+
+        selected_rect = None
         total_area = self.pil_image.size[0]*self.pil_image.size[1]
         ratio_best = 0 #dummy value for impossibly low ratio
         for rect in self.rectangles:
             area = math.fabs( cv.ContourArea(rect) )
             perimeter = cv.ArcLength(rect, isClosed=True)
             ratio_this = area/(perimeter/4)**2
-            #print ratio
-            
             #check to see if the rectangle exists in the first third of the
             #scanned paper image:
             min_y = min([p[1] for p in rect])
-            in_second_half = (min_y > self.pil_image.size[1]/2)
+            position_match = (min_y < self.pil_image.size[1]/2) == in_first_half or \
+                            not in_first_half == (min_y >= self.pil_image.size[1]/2) or \
+                            in_first_half is None
             
-            # if (1) the total area of the rectangle is between
-            # 20% and 70% of the entire map area *and* (3) the rectangle is the
-            # most rectangular choice (to exclude trapezoid looking shapes) *and*
-            # (4) rectangle starts on second half of the page.
+            # if (1) the total area of the rectangle is within the area range and
+            # (2) the rectangle is the most rectangular choice (to exclude trapezoid looking shapes) *and*
+            # (3) rectangle starts on second half of the page.
             print ratio_this, area/total_area
-            if 0.15 < area/total_area < 0.5 and \
+            if min_area < area/total_area < max_area and \
                     ratio_this > ratio_best and \
-                    ImageUtilities.is_more_rectangular(self.miniform_rect, rect) and \
-                    in_second_half:
-                
+                    position_match:
+                    #ImageUtilities.is_more_rectangular(self.map_rect, rect) and \
                 ratio_best = ratio_this
-                self.miniform_rect = rect
+                selected_rect = rect
         
-        self.logger.log('miniform_rect: %s' % (self.miniform_rect))
-        return self.miniform_rect
-    
-    def get_form_rectangle(self, source_print):
-        """
-        Finds the rectangle that corresponds to the miniform; assumes that the
-        scanned image has already been rotated.
-        """
-        if source_print is None:
-            self.logger.log('No print defined')
-            return
-        #if source_print.layout.id != PrintLayouts.PORTRAIT_WITH_FORM:
-        #    self.logger.log('layout does not include a form...')
-        #    return
-        
-        self.logger.log('Getting form...')
-        self.form_rect = None
-        total_area = self.pil_image.size[0]*self.pil_image.size[1]
-        ratio_best = 0 #impossibly low
-        for rect in self.rectangles:
-            area = math.fabs( cv.ContourArea(rect) )
-            perimeter = cv.ArcLength(rect, isClosed=True)
-            ratio_this = area/(perimeter/4)**2
-            #print ratio
-            
-            #check to see if the rectangle exists in the first third of the
-            #scanned paper image:
-            min_y = min([p[1] for p in rect])            
-            # if (1) the total area of the rectangle is between
-            # 20% and 70% of the entire map area *and* (3) the rectangle is the
-            # most rectangular choice (to exclude trapezoid looking shapes)
-            is_more_rectangular = ImageUtilities.is_more_rectangular(self.form_rect, rect)
-            if 0.4 < area/total_area < 0.95 and \
-                    ratio_this > ratio_best and \
-                    is_more_rectangular:
-                
-                ratio_best = ratio_this
-                self.form_rect = rect
-                
-            print rect, ratio_this, ratio_best, is_more_rectangular 
-        #override (delete this!):
-        #self.form_rect = [(850, 142), (62, 147), (68, 976), (855, 975)]
-        #self.form_rect = [(66, 137), (61, 965), (848, 971), (850, 141)]
-        self.logger.log('form_rect: %s' % (self.form_rect))
-        return self.form_rect
-    
-    def get_map_rectangle(self, source_print):
-        """
-        Finds the rectangle that corresponds to the miniform; assumes that the
-        scanned image has already been rotated.
-        """
-        if source_print is None:
-            self.logger.log('No print defined')
-            return
-        
-                
-        class Score:
-            min_bounds = 0.3
-            max_bounds = 0.9
-            def __init__(self, rect):
-                self.rect = rect
-                self.distance = None
-                self.in_first_half = False
-                self.within_area_bounds = False
-                self.right_angle_score = None
-                self.area = math.fabs(cv.ContourArea(rect))
-                self.perimeter = cv.ArcLength(rect)
-                
-            def __str__(self):
-                return '%s \t %s \t %s \t %s' % \
-                (self.distance, self.in_first_half, self.within_area_bounds,
-                    self.right_angle_score
-                )
-
-            def set_bounds_flag(self, total_area):
-                self.within_area_bounds = (self.min_bounds <
-                                                self.area/total_area <
-                                                self.max_bounds)
-            
-            def calculate_distance(self, print_perimeter, print_area):
-                scale_factor = self.perimeter/print_perimeter
-                self.distance = math.fabs(print_area - self.area*scale_factor)
-                
-            def set_in_first_half_flag(self, pil_image):
-                min_y = min([p[1] for p in self.rect])
-                self.in_first_half = (min_y <= pil_image.size[1]/2)
-                
-            def set_cosine_angle(self):
-                self.right_angle_score = ImageUtilities.get_right_angle_score(self.rect)
-                
-            def determine_better_score(self, incumbant, cosine_buffer=0.05):
-                if incumbant is None:
-                    if self.in_first_half and self.within_area_bounds:
-                        return self
-                    return None
-                
-                print '%s \t %s' % (self.distance, incumbant.distance)
-                print '%s \t %s' % (self.right_angle_score, incumbant.right_angle_score)
-                
-                if self.distance < incumbant.distance and \
-                    self.in_first_half and self.within_area_bounds and \
-                    self.right_angle_score < incumbant.right_angle_score:
-                    return self
-                else:
-                    return incumbant
-
-        self.logger.log('Getting map rect...')
-        print_w, print_h = source_print.map_width, source_print.map_height
-        print_rect_ratio = (2*print_w + 2*print_h) / math.sqrt(print_w*print_h)
-        print_perimeter = 2*print_w + 2*print_h
-        print_area = print_w*print_h
-        self.map_rect = None
-        total_area = self.pil_image.size[0]*self.pil_image.size[1]
-        incumbant = None
-        for rect in self.rectangles:
-            print 'calculating score...'
-            rect_score = Score(rect)
-            rect_score.set_bounds_flag(total_area)
-            rect_score.calculate_distance(print_perimeter, print_area)
-            rect_score.set_in_first_half_flag(self.pil_image)
-            rect_score.set_cosine_angle()
-            
-            if incumbant is not None and rect_score.in_first_half:
-                print '-'*50
-                print '%s \t %s \t %s \t %s' % \
-                ('Distance', 'In First Half', 'Within Area', 'Angle Score')
-                print '-'*50
-                print rect_score
-                print incumbant
-                print rect_score.rect
-                print incumbant.rect
-                print '-'*50
-            
-            
-            
-            
-            incumbant = rect_score.determine_better_score(incumbant)
-            if incumbant is not None:
-                self.map_rect = incumbant.rect
-        self.logger.log('map_rect: %s' % (self.map_rect))
-        return self.map_rect
-    
-    def get_map_rectangle1(self, source_print):
-        """
-        Finds the rectangle that corresponds to the map, using metadata about
-        the source map image.  Assumes that the scanned image has already been
-        rotated.
-        """
-        self.logger.log('Getting map rectangle...')
-        
-        if source_print is None:
-            self.logger.log('No print defined')
-            return
-        self.map_rect = None
-        
-        #determine the shape that the rectangle ought to be, given the original
-        #map extents:
-        w, h = source_print.map_width, source_print.map_height
-        perimeter_area_ratio = (2*w + 2*h)/math.sqrt(w*h)
-        total_area = self.pil_image.size[0]*self.pil_image.size[1] #wxh
-        min_difference = 100
-        
-        for rect in self.rectangles:
-            area = math.fabs(cv.ContourArea(rect))
-            perimeter = cv.ArcLength(rect)
-            # find distance between original map's perimeter:sqrt(area) ratio
-            # and the current rectangle's ratio:
-            self.logger.log('rectangle area: %s, total area: %s' %
-                     (math.sqrt(area), total_area))
-            if math.sqrt(area) <= .00001:
-                continue
-            current_difference = math.fabs(perimeter_area_ratio -
-                                            perimeter/math.sqrt(area))
-            
-            #check to see if the rectangle exists in the first third of the
-            #scanned paper image:
-            min_y = min([p[1] for p in rect])
-            in_first_third = (min_y < self.pil_image.size[1]/3)
-            
-            # if (1) ratio of rect is closer to the original ratio of the original
-            # map print *and* (2) the total area of the rectangle is between
-            # 20% and 70% of the entire map area *and* (3) the rectangle is the
-            # most rectangular choice (to exclude trapezoid looking shapes) *and*
-            # (4) rectangle starts on first half of the page.
-            if 0.20 < area/total_area < 0.7 and \
-                    current_difference < 3*min_difference and \
-                    ImageUtilities.is_more_rectangular(self.map_rect, rect) and \
-                    in_first_third:
-                
-                min_difference = current_difference
-                self.map_rect = rect
-        
-        self.logger.log('map_rect: %s' % (self.map_rect))
-        return self.map_rect
+        self.logger.log('selected rectangle: %s' % (selected_rect))
+        return selected_rect
     
     def scale_rectangles(self):
         sf = self.pil_image.size[0]/(self.pil_thumb.size[0]*1.0)
