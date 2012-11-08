@@ -149,7 +149,7 @@ def create_update_project(request, object_type, edit_type, object_id=None,
             extras.update({
                 'success': False,
                 'message': 'There were errors when updating the %s information.  \
-                                Please review message(s) below.' % group_object.model_name
+                                Please review message(s) below.' %  ModelClass.__name__.lower()
             })
     else:
         form = GroupForm(instance=group_object)
