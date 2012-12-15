@@ -198,9 +198,9 @@ def show_group_list(request, object_type='projects', identity=None, return_messa
         'username': identity.username if identity is not None else 'all',
         'object_list': object_list,
         'group_object': group_object,
-        'raw_url': '/profile/%s/' % object_type, #todo: deprecate
-        'url': '/profile/%s/' % object_type,
-        'url_raw': '/profile/%s/' % object_type, #todo: deprecate
+        'raw_url': '/profile/%s/?a=a' % object_type, #todo: deprecate
+        'url': '/profile/%s/?a=a' % object_type,
+        'url_raw': '/profile/%s/?a=a' % object_type, #todo: deprecate
         'object_type': object_type
     })
     if return_message is not None:

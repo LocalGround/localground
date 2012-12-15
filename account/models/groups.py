@@ -14,7 +14,8 @@ class Group(BasePermissions):
     determine whether a user has read/write/manage permissions on an object.
     """
     extents = models.PolygonField(null=True, blank=True)
-    slug = models.SlugField(max_length=100, unique=True, db_index=True)
+    slug = models.SlugField(verbose_name="Friendly URL", max_length=100, unique=True, db_index=True,
+                                help_text='A few words, separated by dashes "-", to be used as part of the url')
     basemap = models.ForeignKey('overlays.WMSOverlay', default=12) #default to grayscale
     
     class Meta:
