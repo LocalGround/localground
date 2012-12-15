@@ -120,6 +120,9 @@ class NamedUpload(Upload):
         elif self.file_name_orig is not None and len(self.file_name_orig) > 0:
             return self.file_name_orig
         return 'Untitled'
+    
+    def orig_url_path(self):
+        return self._encrypt_media_path(self.generate_relative_path() + self.file_name_new)
         
     def to_dict(self, **kwargs):
         d = {
@@ -260,6 +263,13 @@ class Scan(Processor):
         return self._encrypt_media_path('/static/scans/%s/%s' %
                                     (self.uuid, self.processed_image.file_name))
     
+    #todo:  deprecate and use orig_url_path(self) in NamedUpload instead    
+    def orig_map_url_path(self):
+        #return 'http://%s/static/scans/%s/%s' % \
+        #                        (self.host, self.uuid, self.processed_image.file_name)
+        return self._encrypt_media_path('/static/scans/%s/%s' %
+                                    (self.uuid, self.file_name_new))
+    
     #def thumb(self):
     #    return 'http://%s/static/scans/%s/%s' % \
     #        (self.host, self.uuid, self.file_name_thumb)
@@ -271,6 +281,7 @@ class Scan(Processor):
     def orig_file_path(self):
         return 'http://%s/static/scans/%s/%s' % \
                     (self.host, self.uuid, self.file_name_orig)
+        
         
     def get_records_by_form(self, form_id):
         from localground.prints.models import Form
@@ -495,6 +506,9 @@ class Photo(PointObject, NamedUpload):
         
     def absolute_virtual_path_small(self):
         return self.thumb()
+        
+    #def orig_url_path(self):
+    #    return self._encrypt_media_path(self.virtual_path + self.file_name_new)
         
     def absolute_virtual_path_marker_lg(self):
         return self._encrypt_media_path(self.virtual_path + self.file_name_marker_lg)
