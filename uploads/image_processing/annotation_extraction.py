@@ -1,7 +1,28 @@
 #!/usr/bin/env python
 import os, sys
 import Image, ImageDraw, ImageChops, ImageMath, ImageOps
-import cv
+import cv, cv2, numpy, csv
+
+
+path = '/usr/local/django/localground/jobs/stats/'
+destination_path = '/media/psf/Berkeley/Fall 2012/PublicHealth245/FinalProject/'
+R = None            #red band      
+G = None            #green band      
+B = None            #blue band      
+BRIGHTNESS = None   #brightness   
+MSR = None          #mean shift red
+MSG = None          #mean shift green
+MSB = None          #mean shift blue
+MSBRIGHTNESS = None #mean shift brightness
+RAT = None          #adaptive thresholding, red band   
+GAT = None          #adaptive thresholding, green band   
+BAT = None          #adaptive thresholding, blue band 
+BRAT = None         #adaptive thresholding, brightness 
+RSUB = None         #red minus brightness
+GSUB = None         #green minus brightness
+BSUB = None         #blue minus brightness
+ACTUAL = None
+
 
 def setup_environment():
    from django.core.management import setup_environ
@@ -11,75 +32,90 @@ def setup_environment():
    import settings
    setup_environ(settings)
    
-def pil2cv(pil_image):
+def piltocv(pil_image):
     im = pil_image.convert('RGB')
     cv_image = cv.CreateImageHeader(im .size, cv.IPL_DEPTH_8U, 3)  # RGB image
     cv.SetData(cv_image, im .tostring(), im .size[0]*3)
     cv.CvtColor(cv_image, cv_image, cv.CV_RGB2BGR)
     return cv_image
 
-def cv2pil(cv_image, mode="L"):
+def cvtopil(cv_image, mode="L"):
     #mode options: '1', 'CMYK', 'F', 'I', 'L', 'P', 'RGB', 'RGBA', 'RGBX', 'YCbCr'
     return Image.fromstring(mode, cv.GetSize(cv_image), cv_image.tostring())
-   
-def calculate_histogram(img):
-    histHeight = 500            # Height of the histogram
-    histWidth = 1000             # Width of the histogram
-    multiplerValue = 1.5        # The multiplier value basically increases
-                                # the histogram height so that love values
-                                # are easier to see, this in effect chops off
-                                # the top of the histogram.
-    showFstopLines = True       # True/False to hide outline
-    fStopLines = 5
     
+def cv2tocv(cv2_image):
+    source = cv2_image # source is numpy array 
+    bitmap = cv.CreateImageHeader((source.shape[1], source.shape[0]), cv.IPL_DEPTH_8U, 3)
+    cv.SetData(bitmap, source.tostring(), source.dtype.itemsize * 3 * source.shape[1])
+    return bitmap
     
-    # Colours to be used
-    backgroundColor = (51,51,51)    # Background color
-    lineColor = (102,102,102)       # Line color of fStop Markers 
-    red = (255,60,60)               # Color for the red lines
-    green = (51,204,51)             # Color for the green lines
-    blue = (0,102,255)              # Color for the blue lines
+def cvtocv2(cv_image):
+    return numpy.asarray(cv_image[:,:])
+    
+def write_to_file(file_path=path, file_name='output_sm.csv'):
+    h, w = cv.GetSize(R) #returns # of rows (height), # of columns (width)
+    actual_3band = Image.open(path + 'true.png')
+    #resize image:
+    #actual_3band = cvtopil(actual_3band)
+    actual_3band.thumbnail([size,size], Image.NEAREST)
+    actual_3band.save(path + 'true_scaled.png')
+    actual_3band = piltocv(actual_3band)
+    
+    ACTUAL = cv.CreateImage(cv.GetSize(BRIGHTNESS), BRIGHTNESS.depth, 1)
+    cv.CvtColor(actual_3band, ACTUAL, cv.CV_RGB2GRAY)
+    header = [
+        'ROW_NUM', 'COL_NUM', 'R', 'G', 'B', 'BRIGHTNESS', 'RSUB', 'GSUB', 'BSUB',
+        'RAT', 'GAT', 'BAT', 'BRAT', 'MSR', 'MSG', 'MSB',
+        'MSBRIGHTNESS', 'RSUBMS', 'GSUBMS', 'BSUBMS', 'PIXEL_DIFF',
+        'PIXEL_MS_DIFF', 'ACTUAL'
+    ]
+    header_smaller = ['BRIGHTNESS', 'MSBRIGHTNESS', 'PIXEL_DIFF',
+        'PIXEL_MS_DIFF', 'ACTUAL']
+    data = []
+    data_smaller = []
+    print w, h, w*h
+    #h, w = 10, 10
+    #print w, h, w*h
+    for y in range (0, h):
+        for x in range (0, w):
+            r, g, b = int(R[x, y]), int(G[x, y]), int(B[x, y])
+            brightness = int(BRIGHTNESS[x, y])
+            rsub, gsub, bsub = abs(r-brightness), abs(g-brightness), abs(b-brightness)
+            msr, msg, msb = int(MSR[x, y]), int(MSG[x, y]), int(MSB[x, y])
+            brightness_diff = rsub + gsub + bsub
+            msbrightness = int(MSBRIGHTNESS[x, y])
+            msrsub, msgsub, msbsub = abs(msr-msbrightness), abs(msg-msbrightness), abs(msb-msbrightness)
+            msbrightness_diff = msrsub + msgsub + msbsub
+            rat = int(1 if RAT[x, y] == 255 else 0)
+            gat = int(1 if GAT[x, y] == 255 else 0)
+            bat = int(1 if BAT[x, y] == 255 else 0)
+            brat = int(1 if BRAT[x, y] == 255 else 0)
+            actual = int(0 if ACTUAL[x, y] == 255 else 1)
+            
+            data.append([
+                y, x, r, g, b, brightness, rsub, gsub, bsub,
+                rat, gat, bat, brat, msr, msg, msb, msbrightness,
+                msrsub, msgsub, msbsub, brightness_diff, msbrightness_diff, actual
+            ])
+            data_smaller.append([brightness, msbrightness, brightness_diff, msbrightness_diff, actual])
+     
+    with open('%s%s' % (destination_path, file_name), 'wb') as csvfile:
+        csvwriter = csv.writer(csvfile, delimiter=',')
+        csvwriter.writerow(header)
+        for row in data:
+            csvwriter.writerow(row)
+            
+    with open('%s%s' % (destination_path, 'output_rf.csv'), 'wb') as csvfile:
+        csvwriter = csv.writer(csvfile, delimiter=',')
+        csvwriter.writerow(header_smaller)
+        for row in data_smaller:
+            csvwriter.writerow(row)
+    csvfile.close()
+    
 
-    hist = img.histogram()
-    histMax = max(hist)
-    xScale = float(histWidth)/len(hist)                     # xScaling
-    yScale = float((histHeight)*multiplerValue)/histMax     # yScaling 
-    
-    
-    im = Image.new("RGBA", (histWidth, histHeight), backgroundColor)   
-    draw = ImageDraw.Draw(im)
-    
-    
-    # Draw Outline is required
-    if showFstopLines:    
-        xmarker = histWidth/fStopLines
-        x =0
-        for i in range(1,fStopLines+1):
-            draw.line((x, 0, x, histHeight), fill=lineColor)
-            x+=xmarker
-        draw.line((histWidth-1, 0, histWidth-1, 200), fill=lineColor)
-        draw.line((0, 0, 0, histHeight), fill=lineColor)
-    
-    
-    # Draw the RGB histogram lines
-    x=0; c=0;
-    for i in hist:
-        if int(i)==0: pass
-        else:
-            color = red
-            if c>255: color = green
-            if c>511: color = blue
-            draw.line((x, histHeight, x, histHeight-(i*yScale)), fill=color)        
-        if x>255: x=0
-        else: x+=1
-        c+=1
-    
-    # Now save and show the histogram    
-    im.save('histogram.png', 'PNG')
-    im.show()
-    
+
 def threshold_image(pil_image, file_name):
-    cv_i = pil2cv(pil_image)
+    cv_i = piltocv(pil_image)
     #calculate_histogram(pil_image)
     #split channels:
     r = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
@@ -103,8 +139,8 @@ def threshold_image(pil_image, file_name):
         dst = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
         cv.AdaptiveThreshold(band, dst, 255, cv.CV_ADAPTIVE_THRESH_MEAN_C,
                                 cv.CV_THRESH_BINARY, 75, 10)
-        cv.SaveImage("/usr/local/django/localground/jobs/stats/canny/thresh_%s_%s.png" % \
-                        ('adaptive', band_names[idx]), dst)
+        cv.SaveImage("%sthresh_%s_%s.png" % \
+                        (path, 'adaptive', band_names[idx]), dst)
         '''for threshold in range(0, 21, 1):
             dst = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
             #cv.Threshold(band, dst, threshold, 255, cv.CV_THRESH_BINARY )
@@ -116,6 +152,13 @@ def threshold_image(pil_image, file_name):
                         (band_names[idx], threshold), dst)'''
         idx += 1
     cv.SaveImage("/usr/local/django/localground/jobs/stats/canny/%s_mask.png" % file_name, cv_union)
+
+
+#AT = adaptive thresholding
+#SUB = band - grayscaled version of the band
+
+
+
 
 if __name__ == '__main__':
     setup_environment()
@@ -134,122 +177,76 @@ if __name__ == '__main__':
     file_name = 'IMG_20110527_123020.jpg' #Tibet - sunshine
     file_name = '3cj8q5np_photo.jpg' #bad photo
     '''
-    file_name = 'pdf019.png'
+    file_name = 'IMG_20110527_123020.jpg'
+    size = 500
+    pil_i = Image.open('%s%s' % (path, file_name))
     
-    pil_i = Image.open('/usr/local/django/localground/jobs/stats/%s' % file_name)
+    #img = cv2.imread('%s%s' % (path, file_name))
+    #dst = cv.CreateImage(cv.GetSize(img), img.depth, 3)
+    #img = cv2.reduce(img, 64, cv2.cv.CV_REDUCE_SUM, dst)
+    #cv2.imwrite('%s%s' % (path, '__testing.png'))
+
+    dir = file_name.split('.')[0]
+    path = '%scanny/%s/' % (path, dir)
+    try: os.mkdir(path)
+    except: print '%s directory already exists' % path
+    
     pil_i = pil_i.convert('RGBA')
-    pil_i.thumbnail([1000,1000], Image.ANTIALIAS)
-    cv_i = pil2cv(pil_i)
+    pil_i.thumbnail([size,size], Image.ANTIALIAS)
+    
+    #split channels:
+    cv_i = piltocv(pil_i)
+    R = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
+    G = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
+    B = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
+    cv.Split(cv_i, R, G, B, None)
     
     #smooth the image with a Gaussian:
     cv_smoothed = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 3)
     cv.Smooth(cv_i, cv_smoothed, smoothtype=cv.CV_GAUSSIAN, param1=5, param2=3, param3=1, param4=0)
-    pil_smoothed = cv2pil(cv_smoothed, mode='RGB')
+    pil_smoothed = cvtopil(cv_smoothed, mode='RGB')
+    pil_smoothed.save('%sthumbnail_smoothed.png' % path)
+    cv_i = piltocv(pil_smoothed)
 
     #convert to grayscale and subtract
     pil_grayscale =  ImageOps.grayscale(pil_smoothed)
-    pil_grayscale = pil_grayscale.convert('RGB')
-    pil_subtracted = ImageChops.subtract(pil_smoothed, pil_grayscale)
+    BRIGHTNESS = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
+    cv.CvtColor(cv_i, BRIGHTNESS, cv.CV_RGB2GRAY)
     
-    #brightness mask:
-    cv_i = pil2cv(pil_smoothed)
-    #split channels:
-    r = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
-    g = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
-    b = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
-    cv.Split(cv_i, r, g, b, None)
+    #perform mean shift filtering
+    src = cvtocv2(cv_i)
+    MSF = cvtocv2(cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 3))
+    cv2.pyrMeanShiftFiltering(src, 30.0, 30.0, MSF) #source, spatial radius, color radius, destination
+    cv.SaveImage('%sthresh_%s_%s.png' % (path, 'meanshift', 'r'), MSF)
     
+    #split MSF to individual bands
+    MSF = cv2tocv(MSF)
+    MSR = cv.CreateImage(cv.GetSize(MSF), cv_i.depth, 1)
+    MSG = cv.CreateImage(cv.GetSize(MSF), cv_i.depth, 1)
+    MSB = cv.CreateImage(cv.GetSize(MSF), cv_i.depth, 1)
+    MSBRIGHTNESS = cv.CreateImage(cv.GetSize(MSF), cv_i.depth, 1)
+    cv.CvtColor(MSF, MSBRIGHTNESS, cv.CV_RGB2GRAY)
+    cv.Split(MSF, MSR, MSG, MSB, None)
+    
+    #perform adaptive thresholding:
     window_size, adaptive_threshold = 51, 20
-    dst = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
-    cv.AdaptiveThreshold(r, dst, 255, cv.CV_ADAPTIVE_THRESH_MEAN_C,
+    d = {'r': R, 'g': G, 'b': B, 'br': BRIGHTNESS}
+    for key, val in d.items():
+        src = val
+        dst = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
+        cv.Set(dst, cv.CV_RGB(255, 255, 255))
+        cv.AdaptiveThreshold(src, dst, 255, cv.CV_ADAPTIVE_THRESH_MEAN_C,
                             cv.CV_THRESH_BINARY_INV, window_size, adaptive_threshold)
-    cv.SaveImage("/usr/local/django/localground/jobs/stats/canny/thresh_%s_%s.png" % \
-                        ('adaptive', 'r'), dst)
-    mask = dst
-    dst = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 3)
-    cv.Set(dst, cv.CV_RGB(255, 255, 255))
-    orig = pil2cv(pil_i)
-    cv.Copy(orig, dst, mask)
-    cv.SaveImage("/usr/local/django/localground/jobs/stats/canny/thresh_%s_%s.png" % \
-                        ('a_mask', 'r'), dst)
+        cv.SaveImage('%sthresh_%s_%s.png' % (path, 'adaptive', key), dst)
+        if key == 'r':
+            RAT = dst
+        elif key == 'g':
+            GAT = dst
+        elif key == 'b':
+            BAT = dst
+        else:
+            BRAT = dst
     
-    dst = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
-    cv.AdaptiveThreshold(g, dst, 255, cv.CV_ADAPTIVE_THRESH_MEAN_C,
-                            cv.CV_THRESH_BINARY_INV, window_size, adaptive_threshold)
-    cv.SaveImage("/usr/local/django/localground/jobs/stats/canny/thresh_%s_%s.png" % \
-                        ('adaptive', 'g'), dst)
-    
-    dst = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
-    cv.AdaptiveThreshold(b, dst, 255, cv.CV_ADAPTIVE_THRESH_MEAN_C,
-                            cv.CV_THRESH_BINARY_INV, window_size, adaptive_threshold)
-    cv.SaveImage("/usr/local/django/localground/jobs/stats/canny/thresh_%s_%s.png" % \
-                        ('adaptive', 'b'), dst)
-    
-    #meanshift filtering:
-    #dst = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 3)
-    import cv2,  numpy
-    src = cv2.imread('/usr/local/django/localground/jobs/stats/%s' % file_name)
-    dst = cv2.imread('/usr/local/django/localground/jobs/stats/%s' % file_name)
-    #dst = cv.createImage(cv.etSize(cv_i), cv_i.depth, 1)
-    #dst = cv2.pyrMeanShiftFiltering(src, 10.0, 35.0, 3)
-    #dst = numpy.empty(cv.GetSize(cv_i))
-    #src = cv2.imread('/usr/local/django/localground/jobs/stats/%s' % file_name)
-    #dst = cv2.createImage(cv.GetSize(cv_i), cv_i.depth, 1)
-   # print cv.PyrMeanShiftFiltering(src, 5.0)
-    #print src, dst
-    #dst = cv2.createImage(cv.getSize(src), src.depth, 3)
-    #print cv2.pyrMeanShiftFiltering(src, 10.0, 35.0, 3)
-    cv2.pyrMeanShiftFiltering(src, 20.0, 35.0, dst)
-    cv.SaveImage("/usr/local/django/localground/jobs/stats/canny/thresh_%s_%s.png" % \
-                        ('meanshift', 'r'), dst)
-    #seq = []
-    #seq = cv.PyrSegmentation(cv_i, dst, cv.CreateMemStorage(), 1, 1, 1)
-    #cv.SaveImage("/usr/local/django/localground/jobs/stats/canny/thresh_%s_%s.png" % \
-    #                    ('meanshift', 'r'), dst)
-    '''
-    
-    #calculate image brightness:
-    cv_brightness = cv.CreateImage(cv.GetSize(cv_i), cv_i.depth, 1)
-    cv.AddWeighted(r, 1./3., g, 1./3., 0.0, cv_brightness)
-    cv.AddWeighted(cv_brightness, 2./3., b, 1./3., 0.0, cv_brightness)
-    
-   
-    threshold_image(pil_subtracted, file_name.split('.')[0])
-    
-    '''
-    dst = cv.CreateImage(cv.GetSize(cv_smoothed), cv.IPL_DEPTH_16S, 3)
-    laplace = cv.Laplace(cv_smoothed, dst)
-    cv.SaveImage("/usr/local/django/localground/jobs/stats/__laplace.png", dst)
-    '''
-    
-    #can't figure out how to convert the laplacian back to PIL
-    #pil_laplace = cv2pil(dst, mode='RGB')
-    #pil_laplace.show()
-
-    
-    '''
+    write_to_file(file_path=path)
     
     
-    '''
-    X-Variables:
-    *AT = adaptive thresholding
-    *SUB = band - grayscaled version of the band
-    R, G, B, Brightness, RAT, GAT, BAT, RSUB, GSUB, BSUB, Y
-    
-    h, w = cv.GetSize(r) #returns # of rows (height), # of columns (width)
-    header = ['ROW_NUM', 'COL_NUM', 'R', 'G', 'B']
-    data = []
-    print w, h, w*h
-    for y in range (0, h):
-        for x in range (0, w):
-            data.append([y, x, int(r[x, y]), int(g[x, y]), int(b[x, y])])
-     
-    import csv
-    with open('/usr/local/django/localground/jobs/stats/canny/aaadata.csv', 'wb') as csvfile:
-        csvwriter = csv.writer(csvfile, delimiter=',')
-        csvwriter.writerow(header)
-        for row in data:
-            csvwriter.writerow(row)
-    csvfile.close()
-    '''
-
