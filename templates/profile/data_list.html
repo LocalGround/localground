@@ -110,7 +110,7 @@
                         Everyone</a></li>
                     {% for u in users %}
 						<li>
-							<a href="{{url}}?__impersonate={{u.id}}">
+							<a href="{{url}}&__impersonate={{u.id}}">
 							{% if u.username == username %}
 								<div class="sprite ui-icon-check"></div>
 							{% endif %}
