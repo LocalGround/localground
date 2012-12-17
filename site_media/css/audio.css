@@ -63,32 +63,32 @@
 	width: 40px;
 	text-indent: -100em;
 	overflow: hidden;
-	background-image: url(/site_media/scripts/lib/audio-player/control_slider.png);
+	background-image: url(/site_media/scripts/thirdparty/audio-player/control_slider.png);
 }
 .playercontroller .timeline a:visited {
-	background-image: url(/site_media/scripts/lib/audio-player/control_slider.png);
+	background-image: url(/site_media/scripts/thirdparty/audio-player/control_slider.png);
 }
 .playercontroller .timeline a:hover {
-	background-image: url(/site_media/scripts/lib/audio-player/control_slider_blue.png);
+	background-image: url(/site_media/scripts/thirdparty/audio-player/control_slider_blue.png);
 }
 .playercontroller .play {
-	background-image: url(/site_media/scripts/lib/audio-player/control_play.png);
+	background-image: url(/site_media/scripts/thirdparty/audio-player/control_play.png);
 }
 .playercontroller .play:hover {
-	background-image: url(/site_media/scripts/lib/audio-player/control_play_blue.png);
+	background-image: url(/site_media/scripts/thirdparty/audio-player/control_play_blue.png);
 }
 .playercontroller .pause {
-	background-image: url(/site_media/scripts/lib/audio-player/control_pause.png);
+	background-image: url(/site_media/scripts/thirdparty/audio-player/control_pause.png);
 	display: none;
 }
 .playercontroller .pause:hover {
-	background-image: url(/site_media/scripts/lib/audio-player/control_pause_blue.png);
+	background-image: url(/site_media/scripts/thirdparty/audio-player/control_pause_blue.png);
 }
 .playercontroller .stop {
-	background-image: url(/site_media/scripts/lib/audio-player/control_stop.png);
+	background-image: url(/site_media/scripts/thirdparty/audio-player/control_stop.png);
 }
 .playercontroller .stop:hover {
-	background-image: url(/site_media/scripts/lib/audio-player/control_stop_blue.png);
+	background-image: url(/site_media/scripts/thirdparty/audio-player/control_stop_blue.png);
 }
 .counter {
     float: right;

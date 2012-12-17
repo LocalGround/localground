@@ -1,17 +1,17 @@
 {% extends "twitter/page.html" %}
 {% block style_links %}
-    <link href="/site_media/scripts/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
+    <link href="/site_media/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
 	<link href="/site_media/css/themes/bootstrap/jquery-ui-1.8.16.custom.css" type="text/css" media="all" rel="stylesheet" />
 	<link href="/site_media/css/themes/bootstrap/timepicker.css" type="text/css" media="all" rel="stylesheet" />
 {% endblock %}
 {% block script_links %}
     <!-- jquery-ui needs to come before jquery-autocomplete -->
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="/site_media/scripts/jquery-autocomplete/jquery.autocomplete.js"></script>
+	<script type="text/javascript" src="/site_media/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
     <script type="text/javascript" src="/site_media/twitter/js/bootstrap-modal.js"></script>
     <script type="text/javascript" src="/site_media/twitter/js/bootstrap-tabs.js"></script>
-	<script type="text/javascript" src="/site_media/scripts/third_party/jquery.ui.timepicker.js"></script>
-	<script type="text/javascript" src="/site_media/scripts/lib/dialog.js"></script>
+	<script type="text/javascript" src="/site_media/scripts/thirdparty/jquery.ui.timepicker.js"></script>
+	<script type="text/javascript" src="/site_media/scripts/helpers/dialog.js"></script>
 {% endblock %}
 {% block extra_styles %}
 	body {

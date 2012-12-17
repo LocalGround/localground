@@ -79,13 +79,13 @@ localground.player.prototype.renderFlashObject = function(opts) {
         .addClass('playerpreview')
         .attr('id', 'myFlash')
         .attr('type', 'application/x-shockwave-flash')
-        .attr('data', '/site_media/scripts/lib/audio-player/player_mp3_js.swf')
+        .attr('data', '/site_media/scripts/thirdparty/audio-player/player_mp3_js.swf')
         .attr('width', '1')
         .attr('height', '1');
     $flashObj.append(
             $('<param />')
                 .attr('name', 'movie')
-                .attr('value', '/site_media/scripts/lib/audio-player/player_mp3_js.swf')
+                .attr('value', '/site_media/scripts/thirdparty/audio-player/player_mp3_js.swf')
         ).append(
             $('<param />')
                 .attr('name', 'AllowScriptAccess')

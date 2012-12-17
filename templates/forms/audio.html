@@ -9,7 +9,7 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
     {{ form.media.js }}
 	
-	<script type="text/javascript" src="/site_media/scripts/lib/player.js"></script>
+	<script type="text/javascript" src="/site_media/scripts/site/player.js"></script>
     <script type="text/javascript" src="/site_media/scripts/site/account/profile.js"></script>
     <script type="text/javascript" src="/site_media/scripts/site/account/audio.js"></script>
 {% endblock %}
@@ -60,8 +60,8 @@
 				</div>
 			</div>
 			
-			<object class="playerpreview" id="myFlash" type="application/x-shockwave-flash" data="/site_media/scripts/lib/audio-player/player_mp3_js.swf" width="1" height="1">
-				<param name="movie" value="/site_media/scripts/lib/audio-player/player_mp3_js.swf" />
+			<object class="playerpreview" id="myFlash" type="application/x-shockwave-flash" data="/site_media/scripts/thirdparty/audio-player/player_mp3_js.swf" width="1" height="1">
+				<param name="movie" value="/site_media/scripts/thirdparty/audio-player/player_mp3_js.swf" />
 				<param name="AllowScriptAccess" value="always" />
 				<param name="FlashVars" value="listener=o.player&amp;interval=1000" />
 			</object>
