@@ -10,7 +10,7 @@ sys.path.append(workspace)
 #sys.path.append('C:\\yml\\_myScript_\\dj_things\\web_development\\svn_views\\django_src\\trunk')
 #sys.path.append('C:\\yml\\_myScript_\\dj_things\\web_development\\svn_views\\django-registration')
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'localground.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'localground.apps.settings'
 #os.environ["CELERY_LOADER"] = 'django'
 
 import django.core.handlers.wsgi

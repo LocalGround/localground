@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Local Ground</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+		<script type="text/javascript" src="table.js"></script>
+		<link href="/static/css/twitter/bootstrap.css" rel="stylesheet">
+		<link rel="stylesheet" href="table.css" type="text/css" media="screen" />
+		<script type="text/javascript">
+		
+		var o = new gentable();
+		$(document).ready(function() {
+			//$("#table1").ingrid({ height: 350 });
+			var opts = {
+				container: $('#holder'),
+				table: $('#table1'),
+				maxWidth: 700,
+				initDataTypes: true
+			}
+			o.initialize(opts);
+		}); 
+		</script>
+	</head>
+	<body>
+		
+		<form id="the_form" action="/print/forms/create-form/" method="Post">
+			<input name="form_name" value="My New Form" />
+		<div id="holder" class="holder" style="">
+			<table id="table1" class="datagrid" >
+				<thead>
+					<!-- tr>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+					</tr -->
+					<tr>
+						<th>ID</th>
+						<th>Click to name column...</th>
+						<th>Click to name column...</th>
+						<th>Click to name column...</th>
+					</tr>
+				</thead>
+				<tbody>
+				 <tr>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				 </tr>
+				 <tr>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				 </tr>
+				 <tr>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				 </tr>
+				 <tr>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				 </tr>
+				 <tr>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				 </tr>
+				 <tr>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				  <td>&nbsp;</td>
+				 </tr>
+				</tbody>
+			</table>
+			
+			
+		</div>
+		<button class="btn primary" id="gen_sql">Get Layout</button>
+		</form>
+		
+		<ul id="column_options" style="width: 200px;" class="dropdown-menu">
+			<li><a href="#" id="delete_column">Delete Column</a></li>
+			<li class="divider"></li>
+		</ul>
+	</body>
+</html>

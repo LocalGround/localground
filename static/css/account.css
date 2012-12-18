@@ -1,0 +1,55 @@
+li { }
+.thumb { margin: 0px; }
+.row-actions { visibility:hidden; }
+.row-actions a, .rowactions span { font-size: 11px; }
+tr:hover .row-actions,div.comment-item:hover .row-actions{ visibility:visible; }
+
+/*
+.tbl {
+    background-color:#fff;
+    border-style: solid; 
+    border-width: 1px; 
+    border-color:#dfdfdf; 
+    border-collapse:collapse;
+    width: 800px;
+}
+.alternate,.alt{ background-color:#f9f9f9; }
+.tbl td,.tbl th { 
+    border-style: solid; 
+    border-color: #dfdfdf; 
+    border-width: 1px 0px 1px 0px; 
+    padding: 6px; 
+    vertical-align: top;
+    color: #444;
+}
+td, tbody th, span, li, #unregistered { 
+    font-size: 13px;
+}
+.tbl th {
+    text-shadow:rgba(255,255,255,0.8) 0 1px 0;
+    color: #000;
+    font-weight: normal;
+}
+.tbl thead tr th,.tbl tfoot tr th {
+    background: url("http://localground.org/static/css/themes/images/ui-bg_highlight-soft_75_cccccc_1x100.png") repeat-x scroll 50% 50% #CCCCCC;
+    text-align: left;
+}
+
+.sliderHeader {
+    background: url('/static/images/pixel/white_90.png');
+    text-align: center;
+    font-size:12px;
+    color: #444;
+    padding:5px;
+    font-weight:bold;
+    border-bottom:solid 1px #ccc;
+    height: 30px;
+}
+.container .about { width: 800px; }
+.tip { margin-top: 10px; margin-right: 5px; }
+.tooltip { padding: 5px; width: 100px; }
+.print_details span {
+    font-size: 14px/14px;
+    color: #666;
+    font-weight: bold;
+}*/

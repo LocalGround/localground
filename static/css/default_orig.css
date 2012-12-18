@@ -1,0 +1,655 @@
+/* 
+  style.css contains a reset, font normalization and some base styles.
+  
+  credit is left where credit is due.
+  additionally, much inspiration was taken from these projects:
+    yui.yahooapis.com/2.8.1/build/base/base.css
+    camendesign.com/design/
+    praegnanz.de/weblog/htmlcssjs-kickstart
+*/
+
+/* 
+  html5doctor.com Reset Stylesheet (Eric Meyer's Reset Reloaded + HTML5 baseline)
+  v1.4 2009-07-27 | Authors: Eric Meyer & Richard Clark
+  html5doctor.com/html-5-reset-stylesheet/
+*/
+
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, figure, footer, header, 
+hgroup, menu, nav, section, menu,
+time, mark, audio, video {
+  margin:0;
+  padding:0;
+  border:0;
+  outline:0;
+  font-size:100%;
+  vertical-align:baseline;
+  background:transparent;
+}                  
+
+article, aside, figure, footer, header, 
+hgroup, nav, section { display:block; }
+
+nav ul { list-style:none; }
+
+blockquote, q { quotes:none; }
+
+blockquote:before, blockquote:after,
+q:before, q:after { content:''; content:none; }
+
+a { margin:0; padding:0; font-size:100%; vertical-align:baseline; background:transparent; }
+
+ins { background-color:#ff9; color:#000; text-decoration:none; }
+
+mark { background-color:#ff9; color:#000; font-style:italic; font-weight:bold; }
+
+del { text-decoration: line-through; }
+
+abbr[title], dfn[title] { border-bottom:1px dotted #000; cursor:help; }
+
+/* tables still need cellspacing="0" in the markup */
+table { border-collapse:collapse; border-spacing:0; }
+
+hr { display:block; height:1px; border:0; border-top:1px solid #ccc; margin:1em 0; padding:0; }
+
+input, select { vertical-align:middle; }
+/* END RESET CSS */
+
+
+/*
+fonts.css from the YUI Library: developer.yahoo.com/yui/
+          Please refer to developer.yahoo.com/yui/fonts/ for font sizing percentages
+
+There are three custom edits:
+ * remove arial, helvetica from explicit font stack
+ * make the line-height relative and unit-less
+ * remove the pre, code styles
+*/
+body { /*font:13px sans-serif;*/ *font-size:small; *font:x-small; line-height:1.22;
+   font-size: 14px;
+   font-family:
+      "Century Gothic",		/* Windows (HP printer) */
+      "Avant Garde Gothic",	/* HP font name */
+      "Avant Garde",		/* MacOS */
+      "URW Gothic L",		/* Unix+X+FontConfig */
+      "CantarellRegular",
+      /*"Liberation",
+       Fallback options */
+      helvetica,			/* Unix+X, MacOS */
+      sans-serif;
+}
+
+table { font-size:inherit; font:100%; }
+
+select, input, textarea { font:99% sans-serif; }
+
+
+/* normalize monospace sizing 
+ * en.wikipedia.org/wiki/MediaWiki_talk:Common.css/Archive_11#Teletype_style_fix_for_Chrome
+ */
+pre, code, kbd, samp { font-family: monospace, sans-serif; }
+ 
+
+
+/* 
+ * minimal base styles 
+ */
+
+
+/* #444 looks better than black: twitter.com/H_FJ/statuses/11800719859 */ 
+body, select, input, textarea { color:#444; }
+
+/* Headers (h1,h2,etc) have no default font-size or margin,
+   you'll want to define those yourself. */ 
+ 
+/* www.aestheticallyloyal.com/public/optimize-legibility/ */ 
+h1,h2,h3,h4,h5,h6 { font-weight: bold; text-rendering: optimizeLegibility; }
+
+/* maxvoltar.com/archive/-webkit-font-smoothing */
+html { -webkit-font-smoothing: antialiased; }
+
+ 
+/* Accessible focus treatment: people.opera.com/patrickl/experiments/keyboard/test */
+a:hover, a:active { outline: none; }
+
+a, a:active, a:visited { color:#607890; }
+a:hover { color:#036; }
+
+
+ul { margin-left:30px; }
+ol { margin-left:30px; list-style-type: decimal; }
+
+small { font-size:85%; }
+strong, th { font-weight: bold; }
+
+td, td img { vertical-align:top; } 
+
+sub { vertical-align: sub; font-size: smaller; }
+sup { vertical-align: super; font-size: smaller; }
+
+pre { 
+  padding: 15px; 
+  
+  /* www.pathf.com/blogs/2008/05/formatting-quoted-code-in-blog-posts-css21-white-space-pre-wrap/ */
+  white-space: pre; /* CSS2 */
+  white-space: pre-wrap; /* CSS 2.1 */
+  white-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */
+  word-wrap: break-word; /* IE */
+}
+
+/* align checkboxes, radios, text inputs with their label
+   by: Thierry Koblentz tjkdesign.com/ez-css/css/base.css  */
+input[type="radio"] { vertical-align: text-bottom; }
+input[type="checkbox"] { vertical-align: bottom; *vertical-align: baseline; }
+.ie6 input { vertical-align: text-bottom; }
+
+/* hand cursor on clickable input elements */
+label, input[type=button], input[type=submit], button { cursor: pointer; }
+
+
+/* These selection declarations have to be separate.
+   No text-shadow: twitter.com/miketaylr/status/12228805301 
+   Also: hot pink. */
+::-moz-selection{ background: #eee; text-shadow: none; }
+::selection { background:#eee; text-shadow: none; } 
+
+/*  j.mp/webkit-tap-highlight-color */
+a:link { -webkit-tap-highlight-color: #727a35; } 
+
+
+/* always force a scrollbar in non-IE */
+html { overflow-y: scroll; }
+
+/* make buttons play nice in IE:    
+   www.viget.com/inspire/styling-the-button-element-in-internet-explorer/ */
+button {  width: auto; overflow: visible; }
+ 
+/* bicubic resizing for non-native sized IMG: 
+   code.flickr.com/blog/2008/11/12/on-ui-quality-the-little-things-client-side-image-resizing/ */
+.ie7 img { -ms-interpolation-mode: bicubic; }
+
+
+
+/* 
+ * Non-semantic helper classes 
+ */
+
+/* for image replacement */
+.ir { display:block; text-indent:-999em; overflow:hidden; background-repeat: no-repeat; }
+
+/* Hide for both screenreaders and browsers
+   css-discuss.incutio.com/wiki/Screenreader_Visibility */
+.hidden { display:none; visibility:hidden; } 
+
+/* Hide only visually, but have it available for screenreaders 
+   www.webaim.org/techniques/css/invisiblecontent/ 
+   Solution from: j.mp/visuallyhidden - Thanks Jonathan Neal! */
+.visuallyhidden { position:absolute !important;    
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px); }
+
+/* Hide visually and from screenreaders, but maintain layout */
+.invisible { visibility: hidden; }
+
+/* >> The Magnificent CLEARFIX << */
+.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.clearfix { display: inline-block; }
+* html .clearfix { height: 1%; } /* Hides from IE-mac \*/
+.clearfix { display: block; }
+
+
+
+/* General */
+p { line-height: 1.6em; margin-bottom: 10px; }
+.trans {
+    filter:alpha(opacity=90);
+    -moz-opacity:0.9;
+    -khtml-opacity: 0.9;
+    opacity: 0.9;
+}
+
+.trans70 {
+    filter:alpha(opacity=70);
+    -moz-opacity:0.70;
+    -khtml-opacity: 0.70;
+    opacity: 0.70;
+}
+.rounded {
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px; /* future proofing */
+    -khtml-border-radius: 10px; /* for old Konqueror browsers */
+}
+.shadow {
+    box-shadow: 2px 2px 2px #ccc;
+    -moz-box-shadow: 2px 2px 2px #ccc;
+    -webkit-box-shadow: 2px 2px 2px #ccc;
+}
+
+h1 { font-size: 1.5em; }
+h2 { font-size: 1.3em; }
+
+
+.picFrame { float: left;width:100px; height:100px; background-color: #FFF; text-align: center; vertical-align: middle; }
+
+
+/*******************/
+/* Simple Template */
+/*******************/
+.container {
+   width: 90%;
+   margin-left:auto;
+   margin-right:auto;
+}
+.container img { float: left; }
+.container > ol {
+   float: left;
+   width: 300px;
+   height: 200px;
+   margin-left: -100px;
+}
+.container .nav {
+   float: left;
+   clear: left;
+   width:170px;
+   margin-left: 100px;
+   margin-top: -35px;
+   height: 300px;
+}
+.nav ul {
+   list-style: none;
+   margin-left: 0px;
+}
+.nav li {
+   font: 16px/16px "lg";
+   line-height: 1.7em;
+   color: #000;
+   margin-left: 0px;
+   letter-spacing: 0.08em;
+}
+.container .about {
+   float: left;
+   clear: right;
+   margin-left: 30px;
+   width: 500px;
+   margin-top: -35px;
+   margin-bottom: 200px;
+}
+.container .about p, .container .about li {
+   font-size: 14px;
+   line-height: 1.9em;
+   color: #222;
+}
+.nav a, .nav a:visited, .nav a:link {
+   text-decoration: none;
+   color: #000;
+   padding: 2px 5px 2px 10px;
+   float: left;
+   display: block;
+   border: solid 1px #fff;
+}
+.container .nav a { clear: left; }
+.nav  a:hover, .nav  a:active {
+   /*background-color: #eee;*/
+   text-decoration: none;
+   border: dotted 1px #999;
+}
+.container .about ol {
+   margin-bottom: 15px;
+   margin-top: 10px;
+}
+.container .about th {
+   text-align: right;
+   /*vertical-align: bottom;*/
+   vertical-align: middle;
+   color: #666;
+}
+.container .about td {
+   vertical-align: middle;
+}
+
+
+/*****************/
+/* Base Template */
+/*****************/
+
+
+.containerLarge {
+   width: 90%;
+   margin-left:5px;
+}
+.titleImgSmall { float: left; height: 150px; }
+.containerLarge .nav {
+   float: left;
+   clear: left;
+   width: 600px;
+   margin-left: 200px;
+   margin-top: 10px;
+   height: 50px;
+   clear: right;
+}
+.containerLarge .about {
+   float: left;
+   clear: both;
+   margin-left: 205px;
+   width: 800px;
+   margin-top: 5px;
+   margin-bottom: 200px;
+}
+.containerLarge .nav a {
+   display: block;
+   float: left;
+   height: 70px;
+}
+.selectedMenuItem {
+   
+}
+.selectedMenuItem {  
+   background-image: url(/static/images/lg-logo-circle-80.png);
+   background-repeat: no-repeat; 
+   width: 80px;
+   background-position: -3px -8px;
+}
+
+
+
+
+.contentContainer {
+    margin-left:auto;
+    margin-right:auto;
+    width:1200px;
+    background-color: #fff;
+}
+
+.button {
+   display: inline-block;
+   outline: none;
+   cursor: pointer;
+   text-align: center;
+   text-decoration: none;
+   font: 14px/100% Arial, Helvetica, sans-serif;
+   padding: .5em 1em .55em;
+   text-shadow: 0 1px 1px rgba(0,0,0,.3);
+   /*-webkit-border-radius: .5em;
+   -moz-border-radius: .5em;
+   border-radius: .5em;*/
+   -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+   -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+   box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+.button:hover {
+   text-decoration: none;
+}
+.button:active {
+   position: relative;
+   top: 1px;
+}
+
+.orange, .orange:visited {
+   font-weight: bold;
+   color: #fef4e9;
+   border: solid 1px #da7c0c;
+   background: #f78d1d;
+   background: -webkit-gradient(linear, left top, left bottom, from(#faa51a), to(#f47a20));
+   background: -moz-linear-gradient(top,  #faa51a,  #f47a20);
+   filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#faa51a', endColorstr='#f47a20');
+}
+.orange:hover {
+   font-weight: bold;
+   background: #f47c20;
+   background: -webkit-gradient(linear, left top, left bottom, from(#f88e11), to(#f06015));
+   background: -moz-linear-gradient(top,  #f88e11,  #f06015);
+   filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#f88e11', endColorstr='#f06015');
+}
+.orange:active {
+   font-weight: bold;
+   color: #fcd3a5;
+   background: -webkit-gradient(linear, left top, left bottom, from(#f47a20), to(#faa51a));
+   background: -moz-linear-gradient(top,  #f47a20,  #faa51a);
+   filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#f47a20', endColorstr='#faa51a');
+}
+
+.green,.green:visited {
+    font-weight: bold;
+    color: #fff;
+    border: solid 1px #9ca272;
+    background: #9ca272;
+    background: -webkit-gradient(linear, left top, left bottom, from(#9ca272), to(#D4D8B8));
+    background: -moz-linear-gradient(top,  #9ca272,  #D4D8B8);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#D4D8B8', endColorstr='#D4D8B8');
+}
+.green:active {
+    font-weight: bold;
+    color: #444;
+    background: #9ca272;
+}
+.green:hover {
+    font-weight: bold;
+    color: #fff;
+    background: -webkit-gradient(linear, left top, left bottom, from(#D4D8B8), to(#9ca272));
+    background: -moz-linear-gradient(top,  #D4D8B8,  #9ca272);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#D4D8B8', endColorstr='#9ca272');
+}
+
+.navigation {
+   height: 50px;
+   background-color: #E7EFCB;
+   border: solid 1px #ccc;
+   clear: both;
+   /*width: 100%;*/
+   margin-bottom: 40px;
+}
+.navContainer {
+   width: 450px;
+   text-align: center;
+   margin-right: auto;
+   margin-left: auto;
+   margin-top: 13px;
+   font: 24px/24px 'lg'
+}
+.navContainer a, .navContainer a:visited, .navContainer a:link {
+   text-decoration: none;
+   color: #000;
+   padding: 2px 5px 2px 10px;
+   margin-top: 2px;
+}
+.navContainer  a:hover {
+   /*background-color: #eee;*/
+   text-decoration: underline;
+}
+
+#searchDiv {
+    padding: 0px 0px 10px 0px;
+    width: 1000px;
+    text-align: left;
+    float: left;
+    height: 30px;
+}
+#searchDiv img { border: none; }
+
+.bigTextArea {
+    border: solid 1px #999;
+    color: #333;
+    font-size: 12pt;
+    height: 25px;
+    padding: 2px;
+    padding-right: 30px;
+    /*padding: 3px 5px 0;
+    margin-right: 5px;*/
+}
+
+/* Fonts */
+
+.avant-garde {
+   font-family:
+      "Century Gothic",		/* Windows (HP printer) */
+      "Avant Garde Gothic",	/* HP font name */
+      "Avant Garde",		/* MacOS */
+      "URW Gothic L",		/* Unix+X+FontConfig */
+      /* Fallback options */
+      helvetica,			/* Unix+X, MacOS */
+      sans-serif;
+}
+@font-face {
+    font-family: 'Liberation';
+    src: url('/static/css/fonts/liberation/LiberationSans-Regular.ttf');
+    font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+    font-family: 'CantarellRegular';
+    src: url('/static/css/fonts/Cantarell-Regular-webfont.eot');
+    src: url('/static/css/fonts/Cantarell-Regular-webfont.eot?iefix') format('eot'),
+         url('/static/css/fonts/Cantarell-Regular-webfont.woff') format('woff'),
+         url('/static/css/fonts/Cantarell-Regular-webfont.ttf') format('truetype'),
+         url('/static/css/fonts/Cantarell-Regular-webfont.svg#webfont9UOzsjXz') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+@font-face {
+    font-family: 'ChunkFiveRegular';
+    src: url('/static/css/fonts/Chunkfive-webfont.eot');
+    src: local('☺'), url('/static/css/fonts/Chunkfive-webfont.woff') format('woff'), url('/static/css/fonts/Chunkfive-webfont.ttf') format('truetype'), url('/static/css/fonts/Chunkfive-webfont.svg#webfont4CzPTNtF') format('svg');
+    font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+    font-family: 'Note';
+    src: url('/static/css/fonts/Note_this-webfont.eot');
+    src: local('☺'), url('/static/css/fonts/Note_this-webfont.woff') format('woff'), url('/static/css/fonts/Note_this-webfont.ttf') format('truetype'), url('/static/css/fonts/Note_this-webfont.svg#webfont4CzPTNtF') format('svg');
+    font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+    font-family: 'jr';
+    src: url('/static/css/fonts/jr.eot');
+    src: local('☺'), url('/static/css/fonts/jr.woff') format('woff'), url('/static/css/fonts/jr.ttf') format('truetype'), url('/static/css/fonts/jr.svg#webfont4CzPTNtF') format('svg');
+    font-weight: normal;
+	font-style: bold;
+}
+
+@font-face {
+    font-family: 'lg';
+    src: url('/static/css/fonts/handsean.ttf');
+    src: local('☺'), url('/static/css/fonts/handsean.ttf') format('truetype');
+    font-weight: normal;
+	font-style: bold;
+}
+
+h2.fontface, th.fontface, .localground {color: #555; font: 18px/18px 'lg', Arial, sans-serif;letter-spacing: 1px; margin:0px 0px 10px 0px; }
+.loading {
+   z-index: 999;
+   background-color: #fff;
+   filter:alpha(opacity=70);
+   -moz-opacity:0.7;
+   -khtml-opacity: 0.7;
+   opacity: 0.7;
+   text-align: center;
+}
+.loading img {/*margin-top: 200px;*/ }
+
+.tooltip {
+    display:none;
+    background-color: #FFF;
+    font-size:12px;
+    width: 250px; 
+    height: 150px; 
+    padding:25px 15px 25px 25px;
+    
+    box-shadow: 5px 5px 8px #818181; /*shadow for CSS3 capable browsers.*/
+    -webkit-box-shadow: 5px 5px 8px #818181;
+    -moz-box-shadow: 5px 5px 8px #818181;
+    
+    border: solid 1px #999;
+}
+
+.loginForm { padding: 2px; }
+.loginForm th, .loginForm td { padding: 5px; }
+.loginForm input[type=text],  input[type=password],
+.container input[type=text], container input[type=password] {
+   border: solid 1px #999;
+   color: #333;
+   padding: 4px;
+   font-size: 12pt;
+}
+
+.userMessage {
+   /*width: 585px;*/
+   width: 500px;
+   margin: 10px 0px 0px -70px;
+   float: left;
+   display: block;
+}
+
+.userMessageGray {
+   /*width: 585px;*/
+   width: 500px;
+   margin: 30px 0px 0px -70px;
+   float: left;
+   display: block;
+   background-color: #eee;
+}
+
+
+/* 
+ * print styles
+ * inlined to avoid required HTTP connection www.phpied.com/delay-loading-your-print-css/ 
+ */
+@media print {
+  * { background: transparent !important; color: #444 !important; text-shadow: none; }
+
+  a, a:visited { color: #444 !important; text-decoration: underline; }
+
+  a:after { content: " (" attr(href) ")"; } 
+
+  abbr:after { content: " (" attr(title) ")"; }
+  
+  .ir a:after { content: ""; }  /* Don't show links for images */
+  
+  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+  
+  img { page-break-inside: avoid; }
+
+  @page { margin: 0.5cm; }
+
+  p, h2, h3 { orphans: 3; widows: 3; }
+
+  h2, h3{ page-break-after: avoid; }
+}
+
+
+
+/*
+ * Media queries for responsive design
+ */
+
+@media all and (orientation:portrait) { 
+  /* Style adjustments for portrait mode goes here */
+  
+}
+
+@media all and (orientation:landscape) { 
+  /* Style adjustments for landscape mode goes here */
+  
+}
+
+/* Grade-A Mobile Browsers (Opera Mobile, iPhone Safari, Android Chrome)  
+   Consider this: www.cloudfour.com/css-media-query-for-mobile-is-fools-gold/ */
+@media screen and (max-device-width: 480px) {
+  
+  
+  /* Prevent iOS, WinMobile from adjusting font size */
+  html { -webkit-text-size-adjust:none; -ms-text-size-adjust:none; } 
+}
+
+
