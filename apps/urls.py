@@ -27,13 +27,12 @@ same view and parameters. Then, you can use this name in reverse URL matching.
     
 handler500 = 'localground.apps.account.views.server_error' 
 urlpatterns = patterns('',
-    #(r'^404/', direct_to_template, {'template': '404.html'}),
-    (r'^$', direct_to_template, {'template': 'splash.html'}),
-    (r'^about/$', direct_to_template, {'template': 'about.html'}),
-    (r'^instructions/$', direct_to_template, {'template': 'instructions.html'}),
-    (r'^research/$', direct_to_template, {'template': 'research.html'}),
-    (r'^contact/$', direct_to_template, {'template': 'contact.html'}),
-    (r'^credits/$', direct_to_template, {'template': 'credits.html'}),
+    (r'^$', direct_to_template, {'template': 'pages/splash.html'}),
+    (r'^about/$', direct_to_template, {'template': 'pages/about.html'}),
+    (r'^instructions/$', direct_to_template, {'template': 'pages/instructions.html'}),
+    (r'^research/$', direct_to_template, {'template': 'pages/research.html'}),
+    (r'^contact/$', direct_to_template, {'template': 'pages/contact.html'}),
+    (r'^credits/$', direct_to_template, {'template': 'pages/credits.html'}),
     
     
     (r'^profile/', include('localground.apps.account.urls')),
@@ -50,11 +49,10 @@ urlpatterns = patterns('',
     #(r'^admin/', include(admin.site.urls)),
     
     #print:
-    #(r'^$', 'localground.apps.prints.views.configure_print'), #change to splash page
     (r'^print/', include('localground.apps.prints.urls')),
     
     #EBAYS:
-    (r'^ebays/', include('localground.apps.ebays.urls')),
+    (r'^ebays/', include('localground.apps.vis.ebays.urls')),
     
     #upload:  manages the forms-based uploader:
     (r'^upload/$', 'localground.apps.uploads.views.uploader.init_upload_form'),
@@ -75,10 +73,7 @@ urlpatterns = patterns('',
         'embed': True,
         'base_template': 'base/iframe.html'
     }),
-    
-    
-    #(r'^multimedia/$', 'localground.apps.multimedia.views.init_upload_form'),
-    
+        
     #manages scan processing and viewing (the python script posts here):
     (r'^scans/', include('localground.apps.uploads.urls')),
     #(r'^scan/(?P<scan_id>\w+)/', 'localground.apps.viewer.vis.views.show_scan'),
@@ -89,21 +84,7 @@ urlpatterns = patterns('',
     #download:
     #(r'^download/kml/print/(?P<print_id>\w+)/', 'localground.apps.viewer.vis.views.download_kml'),
     
-    #testing:
-    #(r'^html5/', 'localground.apps.test.views.html5_test'),
-    #(r'^sliders/', 'localground.apps.test.views.sliders_test'),
-    #(r'^adjust/', 'localground.apps.test.views.adjust_color'),
-    
     #django-tagging:
     url(r'^tagging_autocomplete/list/json$', 'tagging_autocomplete.views.list_tags',
                                             name='tagging_autocomplete-list'),
 )
-
-#for Varun:
-'''
-if settings.DEBUG:
-     urlpatterns += patterns('',
-         (r'^site_media/(?P<path>.*)$', 'django.views.static.serve',
-             {'document_root': settings.MEDIA_ROOT}),
-     )
-'''

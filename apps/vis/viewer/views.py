@@ -39,7 +39,7 @@ def init(request, identity=None):
         'num_projects': len(projects),
         'groups': json.dumps(groups)
     })
-    return render_to_response('base/viewer.html', context)
+    return render_to_response('map/viewer.html', context)
     
     
 '''TYPE_LU = {
@@ -73,4 +73,4 @@ def public_map(request, object_type, slug, group_object, access_key=None):
             'access_key': access_key
          })
     context['%s_id' % group_object.model_name] = group_object.id    
-    return render_to_response('base/viewer_public.html', context)
+    return render_to_response('map/viewer_public.html', context)

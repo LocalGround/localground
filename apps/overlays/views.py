@@ -204,7 +204,7 @@ def delete_marker(request):
     
 @process_identity
 def show_marker_detail(request, identity=None, embed=False,
-                 template_name='twitter/marker_detail.html', base_template='base/base.html'):
+                 template_name='map/marker_detail.html', base_template='base/base.html'):
     extras = { 'embed': embed, 'base_template': base_template }
     return render_to_response(template_name, extras,
                               context_instance = RequestContext( request))
