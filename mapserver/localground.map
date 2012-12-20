@@ -1,0 +1,113 @@
+MAP
+  NAME "LocalGround"
+  SIZE 512 512
+  UNITS meters
+  EXTENT -124.625 31.875 -113 44 #Specify this, don't make MapServer calculate for you
+  FONTSET "../static/css/fonts/fonts.list" # Assumes that mapserver and static directories on the same level
+  PROJECTION
+    "proj=longlat"
+    "ellps=WGS84"
+    "datum=WGS84"
+    "no_defs"
+  END
+  
+  #Turn on querying capabilities:
+  QUERYMAP
+    STATUS OFF
+    STYLE HILITE  # SELECTED | NORMAL
+    COLOR 255 0 0
+  END
+
+  IMAGECOLOR 255 255 255
+  IMAGETYPE aggpng24
+
+  OUTPUTFORMAT
+    NAME "aggpng24"
+    DRIVER AGG/PNG
+    MIMETYPE "image/png"
+    IMAGEMODE RGBA
+    TRANSPARENT ON
+    EXTENSION "png"
+  END
+  OUTPUTFORMAT
+    NAME "geotiff"
+    DRIVER "GDAL/GTiff"
+    MIMETYPE "image/tiff"
+    IMAGEMODE RGB
+    EXTENSION "tif"
+  END
+  OUTPUTFORMAT
+    NAME "gtfloat32"
+    DRIVER "GDAL/GTiff"
+    MIMETYPE "image/tiff"
+    IMAGEMODE FLOAT32
+    EXTENSION "tif"
+  END
+    
+  LEGEND
+    IMAGECOLOR 255 255 255
+    STATUS ON
+    KEYSIZE 25 15
+    KEYSPACING 5 10
+    LABEL
+      FONT open-sans-regular
+      TYPE truetype
+      SIZE 10
+      COLOR 40 40 40
+      ANGLE 0
+      POSITION AUTO
+      BUFFER 3
+      ANTIALIAS true
+      PARTIALS FALSE
+      FORCE FALSE 
+    END
+  END
+  
+  WEB
+    # Set IMAGEPATH to the path where MapServer should write its output.
+    IMAGEPATH "/tmp/"
+    IMAGEURL "/tmp/"
+    METADATA
+      "ows_title"           "LocalGroundOWS"
+      "ows_srs"             "EPSG:4326 EPSG:900913 EPSG:3857"
+      "wms_feature_info_mime_type" "text/html"
+      ows_enable_request "*"
+      "wcs_label"           "CalAdapt WCS"
+    END
+    TEMPLATE "base.html"
+  END
+  
+  SYMBOL          # Start of symbol definition
+    NAME "circle" # Name of the symbol (referenced in STYLEs)
+    TYPE ellipse  # The type of the symbol
+    FILLED true   # Start of the geometry defining the symbol
+    POINTS
+      1 1
+    END           # end of POINTS
+    FILLED true   # This area symbol should be filled
+  END             # end of SYMBOL
+  
+  SCALEBAR
+    INTERVALS 2
+    UNITS MILES
+    OUTLINECOLOR 0 0 0
+    STYLE 0
+    #STATUS embed
+    TRANSPARENT on
+    ALIGN center
+    POSITION lr
+    LABEL
+      SIZE small
+      COLOR 0 0 0
+      OUTLINECOLOR 255 255 255
+      OUTLINEWIDTH 2
+    END
+  END
+  
+  SYMBOL #North Arrow
+    NAME "northarrow1"
+    TYPE pixmap
+    IMAGE "northarrow1.png"
+  END
+  
+END
