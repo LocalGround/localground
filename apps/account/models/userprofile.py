@@ -21,14 +21,26 @@ class UserProfile(models.Model):
         app_label = "account"
 
 def create_profile_on_insert(sender, instance, created, **kwargs):
-    #When a new user is created, also create a profile_object.
-    #Works just like a database trigger.
+    # When a new user is created, also create a profile_object and a default
+    # project.  Works just like a database trigger.
+    
+    if instance.id == 1: return #disable this signal for syncdb step
     if created:
+        #create a new profile:
         profile = UserProfile()
         profile.email_announcements = True
         profile.default_view_authority = ObjectAuthority.objects.get(id=1)
         profile.user = instance
         profile.save()
+        
+        #create a default project:
+        default_project = Project()
+        default_project.slug = 'default-' + instance.username
+        default_project.name = 'My First Project' 
+        default_project.description = 'Default Local Ground project',
+        default_project.access_authority = ObjectAuthority.objects.get(id=1)
+        default_project.owner = instance
+        default_project.save()
         
 signals.post_save.connect(create_profile_on_insert, sender=User)
 

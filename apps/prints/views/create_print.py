@@ -84,7 +84,7 @@ def generate_print(request, identity=None, is_json=False, project=None, embed=Fa
         
         #create directory:
         uuID        = generic.generateID()
-        path        = settings.STATIC_ROOT + '/prints/' + uuID
+        path        = settings.USER_MEDIA_ROOT + '/prints/' + uuID
         os.mkdir(path) #create new directory
     
         #get basemap (from Google or Cloudmade)

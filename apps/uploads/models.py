@@ -16,6 +16,8 @@ class Base(models.Model):
         if host is None:
             host = self.host
             #host = 'dev.localground.org' #for debugging
+        from django.http import HttpResponse
+        #return path
         return 'http://%s/profile/%s/%s/' % (host, self.model_name_plural, base64.b64encode(path))
         
     @property  
@@ -62,11 +64,11 @@ class Upload(Base):
         raise NotImplementedError
     
     def generate_relative_path(self):
-        return '/static/media/%s/%s/' % (self.owner.username,
+        return '/%s/media/%s/%s/' % (settings.USER_MEDIA_DIR, self.owner.username,
                                                  self._meta.verbose_name_plural)
         
     def generate_absolute_path(self):
-        return '%s/media/%s/%s' % (settings.STATIC_ROOT, self.owner.username,
+        return '%s/media/%s/%s' % (settings.USER_MEDIA_ROOT, self.owner.username,
                                                 self._meta.verbose_name_plural)
     
     def make_directory(self, path):
@@ -249,7 +251,7 @@ class Scan(Processor):
         return '/static/scans/%s/' % (self.uuid)
         
     def generate_absolute_path(self):
-        return '%s/scans/%s/' % (settings.STATIC_ROOT, self.uuid)
+        return '%s/scans/%s/' % (settings.USER_MEDIA_ROOT, self.uuid)
     
     def get_abs_directory_path(self):
         return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
@@ -376,7 +378,7 @@ process_map.delay('zmqv8rlv')
         import shutil, os
         path = self.get_abs_directory_path()
         if os.path.exists(path):
-            dest = '%s/deleted/%s' % (settings.STATIC_ROOT, self.uuid)
+            dest = '%s/deleted/%s' % (settings.USER_MEDIA_ROOT, self.uuid)
             if os.path.exists(dest):
                 from localground.apps.helpers import generic
                 dest = dest + '.dup.' + generic.generateID()
@@ -406,7 +408,7 @@ class Attachment(Processor):
         return 'attachment'
     
     def get_abs_directory_path(self):
-        return '%s/attachments/%s/' % (settings.STATIC_ROOT, self.uuid)
+        return '%s/attachments/%s/' % (settings.USER_MEDIA_ROOT, self.uuid)
         
     def generate_relative_path(self):
         return '/static/attachments/%s/' % (self.uuid)

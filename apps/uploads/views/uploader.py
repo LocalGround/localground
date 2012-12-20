@@ -51,7 +51,7 @@ def upload(request):
         uuID            = generic.generateID()
         f               = request.FILES['Filedata']  #use uploadify when debugging, Filedata otherwise
         file_name       = ''.join(f.name.split(' ')) #removes spaces
-        path            = settings.STATIC_ROOT + '/scans/' + uuID
+        path            = settings.USER_MEDIA_ROOT + '/scans/' + uuID
         os.mkdir(path)
         os.chmod(path, 775)
         destination     = open(path + '/' + file_name, 'wb+')

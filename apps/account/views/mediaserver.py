@@ -14,7 +14,7 @@ def serve_media(request, object_type, hash):
     overhead of repetitive database queries.
     """
     can_view = True
-    relative_image_path = base64.b64decode(hash) #'media/vw/photos/car.png'
+    relative_image_path = base64.b64decode(hash)
     #return HttpResponse(relative_image_path)
     if can_view is False:
         return HttpResponseNotFound()

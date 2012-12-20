@@ -124,8 +124,8 @@ def get_scan(request, scan_id):
 
 def scale_rectangles(scan, qr_rect=None, map_rect=None, direction='up'):
     import Image
-    orig_path = settings.STATIC_ROOT + "/scans/" + scan.id + "/" + scan.file_name
-    thumb_path = settings.STATIC_ROOT + "/scans/" + scan.id + "/" + scan.id + "_thumb.png"
+    orig_path = settings.USER_MEDIA_ROOT + "/scans/" + scan.id + "/" + scan.file_name
+    thumb_path = settings.USER_MEDIA_ROOT + "/scans/" + scan.id + "/" + scan.id + "_thumb.png"
     try:
         orig = Image.open(orig_path)
         thumb = Image.open(thumb_path)

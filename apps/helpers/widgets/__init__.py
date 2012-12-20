@@ -448,14 +448,12 @@ class CustomDateTimeWidget(forms.widgets.DateTimeInput):
     class Media:
         extend = False
         js = (settings.JQUERY_UI_PATH,
-              settings.CUSTOM_MEDIA_PREFIX + "scripts/third_party/jquery.ui.timepicker.js")
+               '/%s/scripts/third_party/jquery.ui.timepicker.js' % settings.STATIC_MEDIA_DIR)
         
         css = {
-                'all': (
-                    settings.CUSTOM_MEDIA_PREFIX +
-                            "css/themes/bootstrap/jquery-ui-1.8.16.custom.css",
-                    settings.CUSTOM_MEDIA_PREFIX +
-                        "css/themes/bootstrap/timepicker.css"
-                    )
+            'all': (
+                '/%s/css/themes/bootstrap/jquery-ui-1.8.16.custom.css' % settings.STATIC_MEDIA_DIR,
+                '/%s/css/themes/bootstrap/timepicker.css' % settings.STATIC_MEDIA_DIR
+            )
         }
     

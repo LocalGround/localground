@@ -18,6 +18,36 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 REGISTRATION_OPEN = True
 ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE = False
 ACCOUNT_ACTIVATION_DAYS = 5
+SESSION_COOKIE_NAME = 'sessionid'
+
+# Custom Local Variables
+SERVER_HOST = 'yoursite.com'
+SERVER_URL = 'http://%s' % SERVER_HOST
+
+FILE_ROOT = '/home/directory/for/localground'
+STATIC_MEDIA_DIR = 'static'
+USER_MEDIA_DIR = 'userdata'
+
+# Absolute path to the directory root of the local ground instance:
+STATIC_ROOT = '%s/%s' % (FILE_ROOT, STATIC_MEDIA_DIR)
+APPS_ROOT = '%s/apps' % FILE_ROOT
+USER_MEDIA_ROOT = '%s/%s' % (FILE_ROOT, USER_MEDIA_DIR)
+FONT_ROOT = '%s/css/fonts/' % STATIC_ROOT
+TEMP_DIR = '%s/tmp/' % FILE_ROOT
+QR_READER_PATH = '%s/barcodereader/' % FILE_ROOT
+
+MAP_FILE = FILE_ROOT + '/mapserver/localground.map'
+TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_MEDIA_DIR
+
+DEFAULT_BASEMAP_ID = 12
+#OS variables:
+USER_ACCOUNT = 'linux-user-account'     #account to use for creating new OS files / directories
+GROUP_ACCOUNT = 'linux-user-group'      #group to use for creating new OS files / directories
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 4621440   #default is 2621440
+CLOUDMADE_KEY = 'CLOUDMADE_KEY'         #http://support.cloudmade.com/answers/api-keys-and-authentication
+IS_GOOGLE_REGISTERED_NONPROFIT = False
+
 
 MANAGERS = ADMINS
 AUTH_PROFILE_MODULE = 'account.UserProfile'
@@ -72,20 +102,7 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-# Absolute path to the directory root of the local ground instance:
-FILE_ROOT = '/home/directory/for/localground'
-MEDIA_ROOT = ''
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
-CUSTOM_MEDIA_PREFIX = '/static/'
 JQUERY_UI_PATH = 'http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js'
 
 # Make this unique, and don't share it with anybody.
@@ -116,14 +133,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 ROOT_URLCONF = 'localground.apps.urls'
-SESSION_COOKIE_NAME = 'sessionid'
 
 TEMPLATE_DIRS = (
-    '%s/templates' % FILE_ROOT,
-    '%s/account/templates' % FILE_ROOT,
+    '%s/templates' % APPS_ROOT,
+    '%s/account/templates' % APPS_ROOT,
 )
 FIXTURE_DIRS = (
-    '%s/fixtures' % FILE_ROOT,
+    '%s/fixtures' % APPS_ROOT,
 )
 
 LOGIN_URL = '/accounts/login/'
@@ -136,6 +152,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.gis',
     'django.contrib.messages',
+    'localground',
     'localground.apps',
     'localground.apps.account',
     'localground.apps.api',
@@ -149,26 +166,6 @@ INSTALLED_APPS = (
     'localground.apps.jobs'
 
 )
-TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/static/scripts/jquery-autocomplete'
-
-#OS variables:
-USER_ACCOUNT = 'linux-user-account'     #account to use for creating new OS files / directories
-GROUP_ACCOUNT = 'linux-user-group'      #group to use for creating new OS files / directories
-
-FILE_UPLOAD_MAX_MEMORY_SIZE = 4621440   #default is 2621440
-CLOUDMADE_KEY = 'CLOUDMADE_KEY'         #http://support.cloudmade.com/answers/api-keys-and-authentication
-IS_GOOGLE_REGISTERED_NONPROFIT = False
-QR_READER_PATH = '%s/utils/' % FILE_ROOT
-
-# Custom Local Variables
-SERVER_HOST = 'yoursite.com'
-SERVER_URL = 'http://%s' % SERVER_HOST
-STATIC_ROOT = '%s/static' % FILE_ROOT
-FONT_ROOT = '%s/static/css/fonts/' % FILE_ROOT
-TEMP_DIR = STATIC_ROOT + '/tmp/'
-MAP_FILE = FILE_ROOT + '/mapserver/localground.map'
-DEFAULT_BASEMAP_ID = 12
-
 # Local settings override project settings
 try:
     LOCAL_SETTINGS

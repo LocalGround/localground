@@ -67,7 +67,7 @@ class Print(Base):
         return self.map_title
     
     def get_abs_directory_path(self):
-        #return '%s/prints/%s/' % (settings.STATIC_ROOT, self.uuid)
+        #return '%s/prints/%s/' % (settings.USER_MEDIA_ROOT, self.uuid)
         return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
         
     def get_abs_virtual_path(self):
@@ -75,7 +75,7 @@ class Print(Base):
         
     @property
     def virtual_path(self):
-        return '/static/prints/%s' % self.uuid
+        return '/static/prints/%s' % (self.uuid)
         
     #def absolute_virtual_path(self):
     #    return self._encrypt_media_path(self.virtual_path + self.file_name_new) 
@@ -179,7 +179,7 @@ class Print(Base):
         import shutil, os
         path = self.get_abs_directory_path()
         if os.path.exists(path):
-            dest = '%s/deleted/%s' % (settings.STATIC_ROOT, self.uuid)
+            dest = '%s/deleted/%s' % (settings.USER_MEDIA_ROOT, self.uuid)
             if os.path.exists(dest):
                 from localground.apps.helpers import generic
                 dest = dest + '.dup.' + generic.generateID()

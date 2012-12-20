@@ -153,7 +153,7 @@ def export_file(format, ext, username, form, project=None, driver=None,
                 extra_filters=None):
     #http://www.bostongis.com/PrinterFriendly.aspx?content_name=ogr_cheatsheet
     from datetime import datetime
-    path = settings.STATIC_ROOT + '/media/%s/downloads/%s' % \
+    path = settings.USER_MEDIA_ROOT + '/media/%s/downloads/%s' % \
                         (username, format)
     virtual_path = settings.SERVER_URL + '/static/media/%s/downloads/%s/' % \
                     (username, format)
