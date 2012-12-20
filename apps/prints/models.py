@@ -75,7 +75,7 @@ class Print(Base):
         
     @property
     def virtual_path(self):
-        return '/static/prints/%s' % (self.uuid)
+        return '/%s/prints/%s' % (settings.USER_MEDIA_DIR, self.uuid)
         
     #def absolute_virtual_path(self):
     #    return self._encrypt_media_path(self.virtual_path + self.file_name_new) 
@@ -106,7 +106,7 @@ class Print(Base):
             'map_title': self.map_title,
             'pdf': self.pdf(),
             'thumbnail': self.thumb(),
-            #'kml': '/static/prints/' + self.id + '/' + self.id + '.kml',
+            #'kml': '/' + settings.USER_MEDIA_DIR + '/prints/' + self.id + '/' + self.id + '.kml',
             'map': self.map(),
             'mapWidth': self.map_width,
             'mapHeight': self.map_height,
