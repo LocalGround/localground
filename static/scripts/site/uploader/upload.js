@@ -1,12 +1,12 @@
 localground.uploader = function(){
     this.counter = 0;
     this.options = {
-        acceptFileTypes: /(\.|\/)(gif|jpe?g|png|mp3|m4a)$/i,
+        acceptFileTypes: /(\.|\/)(gif|jpe?g|png|mp3|m4a|mpeg)$/i,
         maxFileSize: undefined,
         minFileSize: undefined,
         previewSourceFileTypes: /^image\/(gif|jpeg|png)$/,
         imageFileTypes: /^image\/(gif|jpeg|png)$/,
-        audioFileTypes: /^audio\/(x-m4a|mp3|m4a|mp4)$/,
+        audioFileTypes: /^audio\/(x-m4a|mp3|m4a|mp4|mpeg)$/,
         previewSourceMaxFileSize: 5000000, // 5MB
         previewMaxWidth: 800,
         previewMaxHeight: 800
@@ -133,8 +133,7 @@ localground.uploader.prototype.hasError = function(file) {
     if (this.options.maxNumberOfFiles < 0) {
         return 'maxNumberOfFiles';
     }
-    if (!(this.options.acceptFileTypes.test(file.type) ||
-            this.options.acceptFileTypes.test(file.name))) {
+    if (!this.options.acceptFileTypes.test(file.type)) {
         return 'acceptFileTypes';
     }
     if (this.options.maxFileSize &&
@@ -228,7 +227,13 @@ localground.uploader.prototype.getTypeWidget = function(file) {
                                     .val('4'));
         return $widget;
     }
-    return file.type;
+    else {
+        return $('<span />')
+                        .append($('<span />').html(file.type))
+                        .append($('<input type="hidden" />')
+                                    .addClass('media_type')
+                                    .val(file.type)); 
+    }
 };
 
 localground.uploader.prototype.showOmittedFiles = function(data) {
@@ -243,7 +248,7 @@ localground.uploader.prototype.showOmittedFiles = function(data) {
                 $('#alert-message-text').append(
                     'The following files were ignored because they are not supported \
                     by the file uploader:<br>');
-            $('#alert-message-text').append(file.name);
+            $('#alert-message-text').append(file.name + ": " + file.type);
         }
     });
     if(omitted > 0) {
