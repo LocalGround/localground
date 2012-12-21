@@ -140,6 +140,9 @@ localground.viewer.prototype.initialize=function(opts){
     
     this.initArrowNav();
 	
+	//if there's only one project, turn it on by default:
+	if(this.initProjectID == null && this.projects.length == 1)
+		this.initProjectID = this.projects[0].id;	
 	if(this.initProjectID != null)
 		this.toggleProjectData(this.initProjectID, 'projects', true);
 	if(this.initViewID != null)

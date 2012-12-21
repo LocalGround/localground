@@ -392,28 +392,13 @@ localground.marker.prototype.appendMedia = function(media) {
         function(result) {
             //todo:  reload marker info:
             $.extend(me, result.marker);
-            media.googleOverlay.setMap(null);
-            media.getListingElement().hide();
-            switch(media.getObjectType()){
-                /*case 'photo':
-                    ++me.photo_count;
-                    break;
-                case 'audio':
-                    ++me.audio_count;
-                    break;*/
-                case 'marker':
-                    me.getMarkerManager().removeRecord(media);
-                    break;
+            if(media.getObjectType() == 'marker') {
+                me.getMarkerManager().removeRecord(media);
             }
             me.renderListing();
             me.googleOverlay.setIcon(me.markerImage);
+            me.googleOverlay.setOptions({ 'draggable': true });
             me.closeInfoBubble();
-            media.getManager().updateVisibility();
-            /*var str = "";
-            for (var key in manager) {
-                str += key + " -> " + manager[key] + "\n";
-            }
-            alert(str);*/
         },
     'json');
 };
@@ -426,9 +411,6 @@ localground.marker.prototype.removeFromMarker = function($elem, obj) {
     $.getJSON(url, 
         function(result) {
             if(result.obj == null){
-                //alert(result.message);
-                //obj.googleOverlay.setMap(self.map);
-                //obj.getListingElement().show();
                 var spliceIndex = -1;
                 switch(obj.getObjectType()){
                     case 'photo':
@@ -447,10 +429,9 @@ localground.marker.prototype.removeFromMarker = function($elem, obj) {
                         for(i=0; i < me.audioIDs.length; i++){
                             if(me.audioIDs[i] == obj.id) {
                                 me.audioIDs.splice(i, 1);
-                                return;
+                                break;
                             }
                         }
-                        //--me.audio_count;
                         if(me.getAudioCount() == 0)
                             $elem.parent().parent().parent().remove();      
                         else

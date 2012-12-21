@@ -42,23 +42,19 @@ localground.point.prototype.renderOverlay = function(opts) {
 
 localground.point.prototype.dragend = function(latLng) {
     var me = this;
-    //decided not to show the infoBubble when the drag ends.
-	/*this.showInfoBubble({isDrag: true}); //open info bubble when done
-    //if iframe isn't reloading, just refresh lat/lng coords:
-    if($('#the_frame') && $('#the_frame').contents()) {
-        var $f =  $('#the_frame').contents().find('form');
-        var ll = latLng;
-        
-        //update lat/lng values and trigger change event:
-        $f.find('#lat').val(ll.lat());
-        $f.find('#lng').val(ll.lng());
-    }*/
     if(this.candidateMarker) {
         var $innerObj = $('<div />').append(
                 this.getMarkerManager().getLoadingImageSmall()
             ).append(('Adding to marker...'));
+		
+		// after the media item has been added to the marker, reset the position
+		// of the media item and toggle it off in the menu
+		this.googleOverlay.setPosition(new google.maps.LatLng(this.lat, this.lng));
         this.googleOverlay.setMap(null);
-        var $contentContainer = $('<div></div>').css({
+		$('#cb_' + this.overlayType + "_" + this.id).attr('checked', false);
+        
+		// add a message:
+		var $contentContainer = $('<div></div>').css({
                 'width': '150px',
                 'height': '30px',
                 'margin': '5px 0px 5px 10px',
@@ -69,39 +65,9 @@ localground.point.prototype.dragend = function(latLng) {
         self.infoBubble.setFooter(null);    
         self.infoBubble.setContent($contentContainer.get(0)); 
         self.infoBubble.open(self.map, this.candidateMarker.googleOverlay);
-        this.candidateMarker.appendMedia(this); 
-        /*var $innerObj = $('<div />').append($('<div />').html(
-                            'Would you like to add the ' + this.name + ' ' +
-                            this.overlayType + ' with the ' +
-                            this.candidateMarker.name + ' '
-                            + this.candidateMarker.overlayType + '?'));
         
-        $innerObj.append(
-                    $('<a href="#"></a>').html('Yes')
-                    .click(function() {
-                        me.candidateMarker.appendMedia(me);    
-                    }))
-                .append(' | ')
-                .append(
-                    $('<a href="#"></a>').html('No')
-                    .click(function() {
-                        
-                        me.googleOverlay.setMap(self.map);
-                        me.closeInfoBubble();   
-                    }));
-        //set width & height:
-        var $contentContainer = $('<div></div>').css({
-                'width': '250px',
-                'height': '85px',
-                'margin': '5px 0px 5px 10px',
-                'overflow-y': 'auto',
-                'overflow-x': 'hidden'
-            }).append($innerObj);
-        self.infoBubble.setHeaderText(null);
-        self.infoBubble.setFooter(null);    
-        self.infoBubble.setContent($contentContainer.get(0)); 
-        self.infoBubble.open(self.map, this.googleOverlay);
-        */
+		// append the media to the marker:
+		this.candidateMarker.appendMedia(this); 
     }
     else {
         $.getJSON('/api/0/update-latlng/' + this.getObjectType() + '/' + this.id + '/',
