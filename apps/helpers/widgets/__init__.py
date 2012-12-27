@@ -39,10 +39,10 @@ class TagAutocomplete(TagAutocomplete):
     class Media:
         extend = False
         js = (
-            '/site_media/scripts/jquery-autocomplete/jquery.autocomplete.js',
+            '/%s/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js' % settings.STATIC_MEDIA_DIR,
         )
         css = {
-            'all': ('/site_media/scripts/jquery-autocomplete/jquery.autocomplete.css',)
+            'all': ('/%s/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css' % settings.STATIC_MEDIA_DIR,)
         }
         
 class SnippetWidget(HiddenInput):
@@ -186,7 +186,7 @@ class PointWidget(Textarea):
         
         html = self.inner_widget.render("%s" % name, "SRID=%d;POINT(%f %f)" % (self.srid, lng, lat), dict(id='id_%s' % name))
         html += '<input type="text" id="addressInput" value="Enter address..." style="width: %dpx" />'% (self.map_width-100,)
-        html += '<img style="vertical-align:middle;margin-left:-25px;" id="btnSearch" tabIndex="1" src="/site_media/images/icon-searchbox.png" alt="Search for Address" />'
+        html += '<img style="vertical-align:middle;margin-left:-25px;" id="btnSearch" tabIndex="1" src="/%s/images/icon-searchbox.png" alt="Search for Address" />' % settings.STATIC_MEDIA_DIR
         html += '<div class="thumb" id="map_%s" style="width: %dpx; height: %dpx"></div>' % (name, self.map_width, self.map_height)
         
         return mark_safe(js + html)
@@ -359,10 +359,10 @@ class CustomCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
         return mark_safe(js + u'\n'.join(output))
     class Media:
         js = (
-            '/site_media/scripts/jquery-autocomplete/jquery.autocomplete.js',
+            '/%s/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js' % settings.STATIC_MEDIA_DIR,
         )
         css = {
-            'all': ('/site_media/scripts/jquery-autocomplete/jquery.autocomplete.css',)
+            'all': ('/%s/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css' % settings.STATIC_MEDIA_DIR,)
         }
         
    
@@ -448,7 +448,7 @@ class CustomDateTimeWidget(forms.widgets.DateTimeInput):
     class Media:
         extend = False
         js = (settings.JQUERY_UI_PATH,
-               '/%s/scripts/third_party/jquery.ui.timepicker.js' % settings.STATIC_MEDIA_DIR)
+               '/%s/scripts/thirdparty/jquery.ui.timepicker.js' % settings.STATIC_MEDIA_DIR)
         
         css = {
             'all': (

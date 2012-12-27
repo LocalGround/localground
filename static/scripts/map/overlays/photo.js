@@ -8,20 +8,20 @@ localground.photo = function(opts){
     this.iframeURL = '/scans/update-' + this.overlayType + '/embed/?id=' + this.id;
     //initialize icons in the constructor:
     this.image = this.path_marker_sm;
-    this.iconSmall = this.iconLarge = new google.maps.MarkerImage(this.path_marker_sm,
-        // This marker is 20 pixels wide by 32 pixels tall.
-        new google.maps.Size(20, 20),
-        // The origin for this image is 0,0.
-        new google.maps.Point(0,0),
-        // The anchor for this image is the base of the flagpole at 0,32.
-        new google.maps.Point(10, 10));
-    this.iconLarge = this.iconLarge = new google.maps.MarkerImage(this.path_marker_lg,
-        // This marker is 20 pixels wide by 32 pixels tall.
-        new google.maps.Size(52, 52),
-        // The origin for this image is 0,0.
-        new google.maps.Point(0,0),
-        // The anchor for this image is the base of the flagpole at 0,32.
-        new google.maps.Point(26, 26));
+    this.iconSmall = new google.maps.MarkerImage(this.path_marker_sm,
+        new google.maps.Size(20, 20),		// size (width, height)
+        new google.maps.Point(0,0),			// origin (x, y)
+        new google.maps.Point(10, 10));		// anchor (x, y)
+	
+    this.iconLarge = new google.maps.MarkerImage(this.path_marker_lg,
+        new google.maps.Size(52, 52),		// size (width, height)
+        new google.maps.Point(0,0),			// origin (x, y)
+        new google.maps.Point(26, 26));		// anchor (x, y)
+	
+	this.imgSmall = this.path_small;
+	this.imgMediumSm = this.path_medium_sm;
+	this.imgMedium = this.path_medium;
+
 };
 
 localground.photo.prototype = new localground.point();
@@ -61,20 +61,17 @@ localground.photo.prototype.renderListingImage = function() {
 
 localground.photo.prototype.getIcon = function() {
     if(self.map.getZoom() > 16)
-        return this.iconLarge;
+        return this.imgMediumSm;
     else
         return this.iconSmall;
 };
 
 localground.photo.prototype.setImageIcon = function(list) {
     if(this.googleOverlay) {
-        var icon = this.googleOverlay.icon;
-        if(self.map.getZoom() > 16)
-            this.googleOverlay.icon = this.iconLarge;
-        else
-            this.googleOverlay.icon = this.iconSmall;
+        var icon = this.getIcon();
         if(this.googleOverlay.map != null && icon != this.googleOverlay.icon) {
-            this.googleOverlay.setMap(null);
+            this.googleOverlay.setIcon(icon);
+			this.googleOverlay.setMap(null);
             this.googleOverlay.setMap(self.map);    
         }
     }

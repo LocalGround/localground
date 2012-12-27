@@ -10,7 +10,7 @@ context = {
 
 project_context = context.copy()
 project_context.update({
-    'post_url': '/api/0/project/' ,
+    'post_url': '/api/0/projects/' ,
     'test_fields': [
         {'name': 'id', 'type': 'text', 'desc': 'The unique \
          id of the project to which you have access', 'required': True},

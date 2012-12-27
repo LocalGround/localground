@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.forms import ModelForm, fields, formsets, widgets, HiddenInput, models
 from localground.apps.helpers.widgets import UserAutocomplete
 from localground.apps.account.models import Project, View
+from django.conf import settings
 
 class ProjectPermissionsForm(ModelForm):
     class Meta:
@@ -23,11 +24,11 @@ class ProjectPermissionsForm(ModelForm):
         
     class Media:
         js = ('http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js',
-              '/site_media/scripts/third_party/jquery.formset.js',
-              '/site_media/scripts/site/account/createupdategroup.js'
+              '/%s/scripts/thirdparty/jquery.formset.js' % settings.STATIC_MEDIA_DIR,
+              '/%s/scripts/site/account/createupdategroup.js' % settings.STATIC_MEDIA_DIR
              )
         css = {
-            'all': ('/site_media/css/themes/bootstrap/jquery-ui-1.8.16.custom.css',)
+            'all': ('/%s/css/themes/bootstrap/jquery-ui-1.8.16.custom.css' % settings.STATIC_MEDIA_DIR,)
         }
         
 class ProjectCreateForm(ModelForm):
@@ -40,11 +41,11 @@ class ProjectCreateForm(ModelForm):
     
     class Media:
         js = ('http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js',
-              '/site_media/scripts/third_party/jquery.formset.js',
-              '/site_media/scripts/site/account/createupdategroup.js'
+              '/%s/scripts/thirdparty/jquery.formset.js' % settings.STATIC_MEDIA_DIR,
+              '/%s/scripts/site/account/createupdategroup.js' % settings.STATIC_MEDIA_DIR
              )
         css = {
-            'all': ('/site_media/css/themes/bootstrap/jquery-ui-1.8.16.custom.css',)
+            'all': ('/%s/css/themes/bootstrap/jquery-ui-1.8.16.custom.css' % settings.STATIC_MEDIA_DIR,)
         }
         
 class ProjectUpdateForm(ModelForm):
@@ -66,11 +67,11 @@ class ProjectUpdateForm(ModelForm):
     
     class Media:
         js = ('http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js',
-              '/site_media/scripts/third_party/jquery.formset.js',
-              '/site_media/scripts/site/account/createupdategroup.js'
+              '/%s/scripts/thirdparty/jquery.formset.js' % settings.STATIC_MEDIA_DIR,
+              '/%s/scripts/site/account/createupdategroup.js' % settings.STATIC_MEDIA_DIR
              )
         css = {
-            'all': ('/site_media/css/themes/bootstrap/jquery-ui-1.8.16.custom.css',)
+            'all': ('/%s/css/themes/bootstrap/jquery-ui-1.8.16.custom.css' % settings.STATIC_MEDIA_DIR,)
         }
 
  

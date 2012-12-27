@@ -4,6 +4,7 @@ from localground.apps.helpers.widgets import UserAutocomplete
 from django.contrib.auth.models import User
 from localground.apps.account.models import Project
 from django.contrib.contenttypes import generic
+from django.conf import settings
 
 class UserAuthorityObjectForm(ModelForm):
     user = models.ModelChoiceField(queryset=User.objects.all(), widget=UserAutocomplete)
@@ -17,7 +18,7 @@ class UserAuthorityObjectForm(ModelForm):
     class Media:
         js = ('http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js',)
         css = {
-            'all': ('/site_media/css/themes/bootstrap/jquery-ui-1.8.16.custom.css',)
+            'all': ('/%s/css/themes/bootstrap/jquery-ui-1.8.16.custom.css' % settings.STATIC_MEDIA_DIR,)
         }
         
     def __init__(self, *args, **kwargs):
