@@ -60,8 +60,12 @@ localground.photo.prototype.renderListingImage = function() {
 };
 
 localground.photo.prototype.getIcon = function() {
-    if(self.map.getZoom() > 16)
+    if(self.map.getZoom() > 19)
         return this.imgMediumSm;
+	if(self.map.getZoom() > 17)
+        return this.imgSmall;
+	else if(self.map.getZoom() > 16)
+        return this.iconLarge;
     else
         return this.iconSmall;
 };

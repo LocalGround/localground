@@ -250,3 +250,8 @@ localground.manager.prototype.getLoadingImageSmall = function() {
 					'display': 'inline-block'
 				}).attr('src', '/static/images/ajax-loader-small.gif');
 };
+
+localground.manager.prototype.doViewportUpdates = function() {
+	//implemented in child classes
+	return;
+};

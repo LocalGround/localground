@@ -21,3 +21,13 @@ localground.photoManager.prototype.makeViewable = function() {
     $('.thumbsmall').draggable("destroy");
     $('.thumbsmall').removeClass('can_drag').removeClass('ui-draggable').removeClass('activated')
 };
+
+localground.photoManager.prototype.doViewportUpdates = function() {
+	$.each(this.data, function() {
+		this.setImageIcon();
+		if(!this.inView())
+			this.getListingElement().hide();
+		else
+			this.getListingElement().show();
+	});
+};

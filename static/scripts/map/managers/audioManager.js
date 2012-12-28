@@ -19,3 +19,12 @@ localground.audioManager.prototype.addRecords = function(data) {
         me.data.push(new localground.audio(this));        
     });
 };
+
+localground.audioManager.prototype.doViewportUpdates = function() {
+	$.each(this.data, function() {
+		if(!this.inView())
+			this.getListingElement().hide();
+		else
+			this.getListingElement().show();
+	});
+};

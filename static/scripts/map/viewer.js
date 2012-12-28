@@ -117,10 +117,11 @@ localground.viewer.prototype.initialize=function(opts){
     this.initProjectsMenu();
         
     google.maps.event.addListener(this.map, 'zoom_changed', function() {
-        //this just re-renders scale-dependent markers:
-        $.each(self.photoManager.data, function() {
-            this.setImageIcon();
-        });
+        self.doViewportUpdates();
+    });
+	
+	google.maps.event.addListener(this.map, 'bounds_changed', function() {
+        self.doViewportUpdates();
     });
     
     this.infoBubble = new InfoBubble({
@@ -144,9 +145,9 @@ localground.viewer.prototype.initialize=function(opts){
 	if(this.initProjectID == null && this.projects.length == 1)
 		this.initProjectID = this.projects[0].id;	
 	if(this.initProjectID != null)
-		this.toggleProjectData(this.initProjectID, 'projects', true);
+		this.toggleProjectData(this.initProjectID, 'projects', true, false);
 	if(this.initViewID != null)
-		this.toggleProjectData(this.initViewID, 'views', true);
+		this.toggleProjectData(this.initViewID, 'views', true, true);
 };
 
 localground.viewer.prototype.setPosition = function(minimize) {
@@ -157,6 +158,12 @@ localground.viewer.prototype.setPosition = function(minimize) {
 	});
 };
 
+localground.viewer.prototype.doViewportUpdates = function() {
+	$.each(self.managers, function() {
+		try { this.doViewportUpdates(); }
+		catch(e) { }
+	});
+};
 
 localground.viewer.prototype.initProjectsMenu = function() {
     if(this.projects && this.projects.length > 0) {
@@ -168,7 +175,7 @@ localground.viewer.prototype.initProjectsMenu = function() {
                         .attr('title', this.id)
                         .val(this.id);
             $cb.change(function() {
-				return self.toggleProjectData(parseInt($(this).val()), 'projects', $(this).attr('checked'));	
+				return self.toggleProjectData(parseInt($(this).val()), 'projects', $(this).attr('checked'), false);	
 			});
             $cb.checked = false;
             var $li = $('<li></li>')
@@ -202,8 +209,10 @@ localground.viewer.prototype.initProjectsMenu = function() {
     }
 };
 
-localground.viewer.prototype.toggleProjectData = function(groupID, groupType, is_checked) {
+localground.viewer.prototype.toggleProjectData = function(groupID, groupType, 
+														  is_checked, turn_on_everything) {
 	if(is_checked) {
+		$('#' + groupID).attr('checked', true);
 		self.lastProjectSelection = groupID;
 		var params = {
 			include_processed_maps: true,
@@ -244,7 +253,7 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType, is
 				self.resetBounds();
 				
 				//re-organize this:
-				if(self.initProjectID != null || self.initViewID != null) {
+				if(turn_on_everything && (self.initProjectID != null || self.initViewID != null)) {
 					if(!$('#toggle_paper_all').attr('checked')){
 						$('#toggle_paper_all').attr('checked', true);
 						$('#toggle_paper_all').trigger('change');	
@@ -261,8 +270,8 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType, is
 						$('#toggle_marker_all').attr('checked', true);
 						$('#toggle_marker_all').trigger('change');	
 					}
-					self.resetBounds();
 				}
+				self.resetBounds();
 				//$('#toggle_photo_all').attr('checked', true);
 			},
 		'json');

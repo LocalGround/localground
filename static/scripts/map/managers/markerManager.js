@@ -190,4 +190,13 @@ localground.markerManager.prototype.toggleIconChooser = function() {
     });
     $colorPicker.toggle();
     
-}; 
+};
+
+localground.markerManager.prototype.doViewportUpdates = function() {
+	$.each(this.data, function() {
+		if(!this.inView())
+			this.getListingElement().hide();
+		else
+			this.getListingElement().show();
+	});
+};
