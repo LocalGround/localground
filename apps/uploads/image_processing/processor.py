@@ -2,12 +2,6 @@
 import traceback, sys
 import Image, ImageDraw, ImageChops, ImageMath
 import os, stat, urllib, StringIO, cv, math
-#os.environ['LOGNAME'] = 'vanwars'
-#os.environ['USER'] = 'vanwars'
-#os.environ['PWD'] = '/usr/local/django/localground'
-#os.environ['LD_LIBRARY_PATH']='/usr/lib/jvm/java-6-openjdk/jre/lib/amd64/jli/'
-#os.environ['JAVA_HOME']='/usr/lib/jvm/java-6-openjdk/jre'
-#os.environ['PATH']= os.environ['PATH'] + ':' + os.environ['JAVA_HOME'] + '/bin'
 from datetime import datetime 
 from django.conf import settings
 from localground.apps.uploads.models import Scan, StatusCode, \
@@ -860,12 +854,11 @@ class QrCodeUtils(General):
             self.logger.log(points)
             return [float(points[0]), float(points[1])]
             
-        self.logger.log(os.environ)
         
         import subprocess
         cmd = ['java',
             '-cp',
-            '%(path)szxing/javase.jar:%(path)szxing/core.jar' % \
+            '%(path)s/javase.jar:%(path)s/core.jar' % \
                 dict(path=settings.QR_READER_PATH),
             'com.google.zxing.client.j2se.CommandLineRunner',
             img_path
@@ -889,7 +882,7 @@ class QrCodeUtils(General):
        
         self.logger.log('About to read the QR code from the image...')
         decoded, points = None, []
-        cmd = 'java -cp %szxing/javase.jar:%szxing/core.jar \
+        cmd = 'java -cp %s/javase.jar:%s/core.jar \
               com.google.zxing.client.j2se.CommandLineRunner %s' % \
               (settings.QR_READER_PATH, settings.QR_READER_PATH, img_path)
         
@@ -1306,7 +1299,6 @@ class MapUtils(General):
         
         if southwest is not None: map_image.southwest = southwest
         else: map_image.southwest = p.southwest
-        
         map_image.save()
         return map_image
     

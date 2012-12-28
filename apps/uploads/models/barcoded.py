@@ -2,8 +2,9 @@ from django.contrib.gis.db import models
 from datetime import datetime
 from django.conf import settings
 from localground.apps.uploads.managers import ScanManager 
-from localground.apps.uploads.models import Base, NamedUpload
+from localground.apps.uploads.models import Base, NamedUpload, StatusCode, UploadSource
 from localground.apps.helpers.models import BaseObject
+import os
      
 class Processor(BaseObject, NamedUpload):
     uuid = models.CharField(unique=True, max_length=8)
@@ -68,7 +69,7 @@ class Scan(Processor):
         return 'map-image'
         
     def generate_relative_path(self):
-        return '/static/scans/%s/' % (self.uuid)
+        return '/%s/scans/%s/' % (settings.USER_MEDIA_DIR, self.uuid)
         
     def generate_absolute_path(self):
         return '%s/scans/%s/' % (settings.USER_MEDIA_ROOT, self.uuid)
@@ -80,20 +81,20 @@ class Scan(Processor):
         return self.get_abs_directory_path() + self.processed_image.file_name
         
     def processed_map_url_path(self):
-        return self._encrypt_media_path('/static/scans/%s/%s' %
-                                    (self.uuid, self.processed_image.file_name))
+        return self._encrypt_media_path('/%s/scans/%s/%s' %
+                                    (settings.USER_MEDIA_DIR, self.uuid, self.processed_image.file_name))
     
     #todo:  deprecate and use orig_url_path(self) in NamedUpload instead    
     def orig_map_url_path(self):
-        return self._encrypt_media_path('/static/scans/%s/%s' %
-                                    (self.uuid, self.file_name_new))
+        return self._encrypt_media_path('/%s/scans/%s/%s' %
+                                    (settings.USER_MEDIA_DIR, self.uuid, self.file_name_new))
     
     def thumb(self):
-        return self._encrypt_media_path('/static/scans/%s/%s' % (self.uuid, self.file_name_thumb))
+        return self._encrypt_media_path('/%s/scans/%s/%s' % (settings.USER_MEDIA_DIR, self.uuid, self.file_name_thumb))
     
     def orig_file_path(self):
-        return 'http://%s/static/scans/%s/%s' % \
-                    (self.host, self.uuid, self.file_name_orig)
+        return 'http://%s/%s/scans/%s/%s' % \
+                    (self.host, settings.USER_MEDIA_DIR, self.uuid, self.file_name_orig)
         
     def get_records_by_form(self, form_id):
         from localground.apps.prints.models import Form
@@ -206,10 +207,11 @@ class Attachment(Processor):
         return '%s/attachments/%s/' % (settings.USER_MEDIA_ROOT, self.uuid)
         
     def generate_relative_path(self):
-        return '/static/attachments/%s/' % (self.uuid)
+        return '/%s/attachments/%s/' % (settings.USER_MEDIA_DIR, self.uuid)
         
     def thumb(self):
-        return self._encrypt_media_path('/static/attachments/%s/%s' % (self.uuid, self.file_name_thumb))
+        return self._encrypt_media_path('/%s/attachments/%s/%s' % \
+                    (settings.USER_MEDIA_DIR, self.uuid, self.file_name_thumb))
             
     def to_dict(self):
         d = super(Attachment, self).to_dict()
@@ -228,7 +230,7 @@ class ImageOpts(Base):
     extents = models.PolygonField()
     northeast = models.PointField()
     southwest = models.PointField()
-    center = models.PointField()
+    center = models.PointField(blank=True, null=True)
     zoom = models.IntegerField()
     file_name = models.CharField(max_length=255)
     time_stamp = models.DateTimeField(default=datetime.now, blank=True)
@@ -249,7 +251,7 @@ class ImageOpts(Base):
         host = self.source_scan.host
         #host = 'dev.localground.org' #just for debugging purposes
         return self._encrypt_media_path(
-            '/static/scans/%s/%s' % (self.source_scan.uuid, self.file_name),
+            '/%s/scans/%s/%s' % (settings.USER_MEDIA_DIR, self.source_scan.uuid, self.file_name),
             host=host)
     
     def to_dict(self):

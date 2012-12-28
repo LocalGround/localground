@@ -8,6 +8,8 @@ from django.conf import settings
 from django.template import RequestContext
 import simplejson as json
 from localground.apps.account.models import Project
+from datetime import datetime
+
 
 '''from django.core.context_processors import csrf
 try:

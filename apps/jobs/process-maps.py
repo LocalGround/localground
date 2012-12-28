@@ -32,7 +32,21 @@ def setup_environment():
    from django.core.management import setup_environ
    dirs = os.getcwd().split('/')
    settings_path = '/'.join(dirs[:len(dirs)-1])
+   print 'Settings path: %s' % settings_path
    sys.path.append(settings_path)
+   jobs = os.getcwd()
+   apps = os.path.dirname(jobs)
+   localground = os.path.dirname(apps)
+   workspace = os.path.dirname(localground)
+   print '-'*70
+   print 'Custom environment settings:'
+   print 'Current working directory: %s' % jobs
+   print 'Apps directory: %s' % apps
+   print 'Local Ground directory: %s' % localground
+   print 'Current workspace: %s' % workspace
+   print '-'*70
+   sys.path.append(workspace)
+   
    import settings
    setup_environ(settings)
 
