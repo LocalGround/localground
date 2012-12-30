@@ -1,13 +1,14 @@
 var self;
 var show_markers = false;
 localground.viewer = function(){
+	self = this;
     this.projects = [];
-    //this.overlayTypes = ['paper', 'marker', 'photo', 'audio', 'video', 'note'];
     this.overlayTypes = {
 		PHOTO: 'photo',
 		AUDIO: 'audio',
 		VIDEO: 'video',
-		NOTE: 'note',
+		MARKER: 'marker',
+		RECORD: 'record',
 		PAPER: 'paper'
 	};
     this.keycodes = {
@@ -31,7 +32,6 @@ localground.viewer = function(){
     this.projects = [];
     this.accessKey = null;
     this.paperManager = new localground.paperManager();
-    this.noteManager = new localground.noteManager();
     this.photoManager = new localground.photoManager();
     this.audioManager = new localground.audioManager();
     this.markerManager = new localground.markerManager();
@@ -40,7 +40,6 @@ localground.viewer = function(){
         this.markerManager,
         this.photoManager,
         this.audioManager,
-        this.noteManager
     ];
 };
 localground.viewer.prototype = new localground.basemap();           // Here's where the inheritance occurs 
@@ -68,7 +67,7 @@ localground.viewer.prototype.initialize=function(opts){
 	
     $('.unhide').click(function() {
         var object_type = $(this).parent().attr('id').split('_')[1];
-        if(object_type == self.overlayTypes.NOTE) {
+        if(object_type == self.overlayTypes.RECORD) {
             $('#panel_' + object_type).children().each(function() {
                 $(this).children().each(function() {
                     $(this).show();    
@@ -245,11 +244,15 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 				self.markerManager.renderOverlays();
 				//process notes:
 				if(result.notes != null) {
-					$.each(result.notes, function() {
-						self.noteManager.addRecords(this);    
+					var colors = ['1F78B4', 'B2DF8A', '33A02C', 'FB9A99', 'E31A1C', 'FDBF6F',
+                    'A6CEE3'];
+					$.each(result.notes, function(idx) {
+						var tableManager = new localground.tableManager(this, colors[idx]);
+						tableManager.addRecords(this.data);
+						tableManager.renderOverlays();
+						self.managers.push(tableManager);
 					});
 				}
-				self.noteManager.renderOverlays();
 				self.resetBounds();
 				
 				//re-organize this:

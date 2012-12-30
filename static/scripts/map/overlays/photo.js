@@ -4,7 +4,7 @@
 **/
 localground.photo = function(opts){
     $.extend(this, opts);
-    this.overlayType = 'photo';
+	this.managerID = this.overlayType = self.overlayTypes.PHOTO;
     this.iframeURL = '/scans/update-' + this.overlayType + '/embed/?id=' + this.id;
     //initialize icons in the constructor:
     this.image = this.path_marker_sm;
@@ -60,9 +60,7 @@ localground.photo.prototype.renderListingImage = function() {
 };
 
 localground.photo.prototype.getIcon = function() {
-    if(self.map.getZoom() > 19)
-        return this.imgMediumSm;
-	if(self.map.getZoom() > 17)
+	if(self.map.getZoom() > 18)
         return this.imgSmall;
 	else if(self.map.getZoom() > 16)
         return this.iconLarge;

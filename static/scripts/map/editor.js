@@ -123,6 +123,8 @@ localground.editor.prototype.toggleMode = function($elem) {
             //turn on drawing manager:
             this.drawingManager.setMap(this.map);
             
+            //show the delete buttons
+            $('.close').show();
             $.each(this.managers, function() {
                 this.makeEditable();
             });
@@ -131,6 +133,9 @@ localground.editor.prototype.toggleMode = function($elem) {
         default:
             this.mode = 'view';            
             $elem.html('Edit');
+            
+            //hide the delete buttons
+            $('.close').hide();
             
             //turn off drawing manager:
             this.drawingManager.setMap(null);

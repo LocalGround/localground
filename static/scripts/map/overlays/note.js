@@ -2,11 +2,11 @@
  * For convenience, this class depends on the global variable "self" which
  * is the main controller object that uses this class.
 **/
-localground.note = function(opts, color, tableID){
+localground.record = function(opts, color, tableID){
     this.fields = [];
     $.extend(this, opts);
-    this.overlayType = 'note';
-    this.tableID = tableID;
+    this.overlayType = self.overlayTypes.RECORD;
+    this.managerID = this.tableID = tableID;
     this.iframeURL = '/scans/update-record/embed/?id=' + this.id + '&form_id=' +
                         this.tableID;
     this.infoBubbleParams = {
@@ -24,14 +24,12 @@ localground.note = function(opts, color, tableID){
         new google.maps.Point(0,0),
         // The anchor for this image is the base of the flagpole at 0,32.
         new google.maps.Point(7, 7));
-    
-    //this.setNoteName();
 };
 
-localground.note.prototype = new localground.point();
+localground.record.prototype = new localground.point();
 
 
-localground.note.prototype.setNoteName = function() {
+localground.record.prototype.setRecordName = function() {
     for(i=0; i<this.fields.length; i++) {
         if(this.fields[i].col_name == 'col_1')
             if(this.fields[i].value) {
@@ -48,11 +46,11 @@ localground.note.prototype.setNoteName = function() {
     }
 };
 
-localground.note.prototype.getObjectType = function() {
+localground.record.prototype.getObjectType = function() {
 	return 'table_' + this.tableID;
 };
 
-localground.note.prototype.showInfoBubbleView = function(opts) {
+localground.record.prototype.showInfoBubbleView = function(opts) {
     var $contentContainer = $('<div></div>')
                     .css({
                         'width': this.infoBubbleParams.view.width,
@@ -60,7 +58,7 @@ localground.note.prototype.showInfoBubbleView = function(opts) {
                         'margin': '5px 0px 5px 10px',
                         'overflow-y': 'auto',
                         'overflow-x': 'hidden'
-                    }).append(this.renderNote());
+                    }).append(this.renderRecord());
     var showHeader = true;
     self.infoBubble.setHeaderText(showHeader ? this.name.truncate(5) : null);
     self.infoBubble.setFooter(null);    
@@ -68,7 +66,7 @@ localground.note.prototype.showInfoBubbleView = function(opts) {
     self.infoBubble.open(self.map, this.googleOverlay);
 };
 
-localground.note.prototype.saveIframe = function() {
+localground.record.prototype.saveIframe = function() {
     var $f =  $('#the_frame').contents().find('form');
     $('#the_frame').contents().find('form').submit();
     
@@ -80,7 +78,7 @@ localground.note.prototype.saveIframe = function() {
     this.renderListing();
 };
 
-localground.note.prototype.hasFieldSnippets = function() {
+localground.record.prototype.hasFieldSnippets = function() {
     var hasFieldSnippets = false;
     $.each(this.fields, function() {
         if(this.snippet_url) {
@@ -91,7 +89,7 @@ localground.note.prototype.hasFieldSnippets = function() {
     return hasFieldSnippets;
 }
 
-localground.note.prototype.renderNote = function() {
+localground.record.prototype.renderRecord = function() {
     var hasFieldSnippets = this.hasFieldSnippets();
     var $tbl = $('<table></table>').addClass('zebra-striped')
     var $thead = $('<thead></thead>');
@@ -139,8 +137,8 @@ localground.note.prototype.renderNote = function() {
     }
 };
 
-localground.note.prototype.renderMarkerNote = function() {
-    var $note = $('<div />'), $row = null;
+localground.record.prototype.renderMarkerRecord = function() {
+    var $record = $('<div />'), $row = null;
     $.each(this.fields, function() {
         $row = $('<div />');
         $row.append(
@@ -162,13 +160,13 @@ localground.note.prototype.renderMarkerNote = function() {
                         'color': '#666'
                     })
                 .html(this.value))
-        $note.append($row);
+        $record.append($row);
     });
-    return $note;
+    return $record;
 };
 
-localground.note.prototype.renderNoteHover = function() {
-    var $note = $('<div />'), $row = null;
+localground.record.prototype.renderRecordHover = function() {
+    var $record = $('<div />'), $row = null;
     $.each(this.fields, function() {
         $row = $('<div />');
         $row.append(
@@ -191,13 +189,13 @@ localground.note.prototype.renderNoteHover = function() {
                         'color': '#666'
                     })
                 .html(this.value))
-        $note.append($row);
+        $record.append($row);
     });
-    return $note;
+    return $record;
 };
 
 
-localground.note.prototype.renderListingImage = function() {
+localground.record.prototype.renderListingImage = function() {
 	var $img = $('<img />')
 					.addClass(this.getObjectType())
 					.attr('src', this.image)
@@ -210,7 +208,7 @@ localground.note.prototype.renderListingImage = function() {
 		$img.attr('title', this.file_name_orig);   
 	if(this.lat == null) { $img.addClass('can_drag'); }
     var me = this;
-    if($('#note_preview').get(0) == null) {
+    if($('#record_preview').get(0) == null) {
         $('body').append(
             $('<div></div>').css({
                 width: 350,
@@ -220,25 +218,25 @@ localground.note.prototype.renderListingImage = function() {
                 padding: 3,
                 'overflow-y': 'auto'
             })
-            .attr('id', 'note_preview')
+            .attr('id', 'record_preview')
             .addClass('thumb')
             .hide()
         );
     }
     $img.hover(function() {
-            $('#note_preview').empty().append(me.renderNoteHover()).css({
+            $('#record_preview').empty().append(me.renderRecordHover()).css({
                 'top': $(this).offset().top - 75,  
                 'left': $(this).offset().left-360     
             }).show();  
         },
         function() {
-            $('#note_preview').hide();
+            $('#record_preview').hide();
         });
 	return $img;
 };
 
 
-localground.note.prototype.getListingContainer = function() {
+localground.record.prototype.getListingContainer = function() {
     return $('#table_' + this.tableID);
 };
 

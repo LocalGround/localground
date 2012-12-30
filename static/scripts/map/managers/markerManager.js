@@ -1,6 +1,6 @@
 localground.markerManager = function(data){
+    this.id = this.overlayType = self.overlayTypes.MARKER;
     this.name = 'Markers';
-    this.overlayType = 'marker';
     this.data = [];
     this.palettes = [
         { name: 'Qualitative 1',
@@ -60,13 +60,13 @@ localground.markerManager.prototype.removeRecord = function(marker) {
         });
     }
     //detach notes:
-    if(marker.noteIDs) {
-        $.each(marker.noteIDs, function(tableID, noteIDs) {
+    if(marker.recordIDs) {
+        $.each(marker.recordIDs, function(tableID, recordIDs) {
             var table = marker.getNoteManager().tables[tableID];
-            $.each(noteIDs, function() {
-                var note = table.getDataElementByID(this);
-                note.googleOverlay.setMap(self.map);
-                note.getListingElement().show();
+            $.each(recordIDs, function() {
+                var record = table.getDataElementByID(this);
+                record.googleOverlay.setMap(self.map);
+                record.getListingElement().show();
             })
         });
     }

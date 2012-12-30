@@ -23,6 +23,27 @@ class Processor(BaseObject, NamedUpload):
     class Meta:
         app_label = "uploads"
         abstract = True
+        
+    def thumb(self):
+        '''
+        Used for displaying a previously generated thumbnail image
+        '''
+        return self._encrypt_media_path('%s%s' % (self.virtual_path, self.file_name_thumb))
+        
+    def generate_relative_path(self):
+        return '/%s/media/%s/%s/%s/' % (settings.USER_MEDIA_DIR,
+                                    self.owner.username,
+                                    self.directory_name,
+                                    self.uuid)
+        
+    def generate_absolute_path(self):
+        return '%s/media/%s/%s/%s' % (settings.USER_MEDIA_ROOT,
+                                    self.owner.username,
+                                    self.directory_name,
+                                    self.uuid)
+        
+    def get_abs_directory_path(self):
+        return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
     
     def original_image_filesystem(self):
         return self.get_abs_directory_path() + self.file_name_new
@@ -58,44 +79,36 @@ class Scan(Processor):
     processed_image = models.ForeignKey('uploads.ImageOpts', blank=True, null=True)
     deleted = models.BooleanField(default=False)
     objects = ScanManager()
+    directory_name = 'scans'
     
     class Meta:
-        app_label = "uploads"
+        app_label = 'uploads'
         ordering = ['id']
         verbose_name = 'map-image'
         verbose_name_plural = 'map-images'
         
+        
     def get_object_type(self):
         return 'map-image'
-        
+    
+    '''    
     def generate_relative_path(self):
         return '/%s/scans/%s/' % (settings.USER_MEDIA_DIR, self.uuid)
         
     def generate_absolute_path(self):
         return '%s/scans/%s/' % (settings.USER_MEDIA_ROOT, self.uuid)
-    
-    def get_abs_directory_path(self):
-        return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
+    '''
     
     def processed_map_filesystem(self):
         return self.get_abs_directory_path() + self.processed_image.file_name
         
     def processed_map_url_path(self):
-        return self._encrypt_media_path('/%s/scans/%s/%s' %
-                                    (settings.USER_MEDIA_DIR, self.uuid, self.processed_image.file_name))
+        '''
+        Used for displaying a previously generated image
+        '''
+        return self._encrypt_media_path('%s%s' %
+                                    (self.virtual_path, self.processed_image.file_name))
     
-    #todo:  deprecate and use orig_url_path(self) in NamedUpload instead    
-    def orig_map_url_path(self):
-        return self._encrypt_media_path('/%s/scans/%s/%s' %
-                                    (settings.USER_MEDIA_DIR, self.uuid, self.file_name_new))
-    
-    def thumb(self):
-        return self._encrypt_media_path('/%s/scans/%s/%s' % (settings.USER_MEDIA_DIR, self.uuid, self.file_name_thumb))
-    
-    def orig_file_path(self):
-        return 'http://%s/%s/scans/%s/%s' % \
-                    (self.host, settings.USER_MEDIA_DIR, self.uuid, self.file_name_orig)
-        
     def get_records_by_form(self, form_id):
         from localground.apps.prints.models import Form
         form = Form.objects.get(id=form_id)
@@ -154,7 +167,7 @@ class Scan(Processor):
         d = super(Scan, self).to_dict()
         d.update({
             'uuid': self.uuid,
-            'file_path': self.orig_file_path()
+            'file_path': self.orig_url_path()
         })   
         if self.processed_image is not None:
             d.update({
@@ -190,9 +203,10 @@ class Scan(Processor):
         return 'Scan #' + self.uuid
         
 class Attachment(Processor):
-    source_scan         = models.ForeignKey(Scan, blank=True, null=True)
-    is_short_form       = models.BooleanField(default=False)
-    objects             = ScanManager()
+    source_scan = models.ForeignKey(Scan, blank=True, null=True)
+    is_short_form = models.BooleanField(default=False)
+    objects = ScanManager()
+    directory_name = 'attachments'
     
     class Meta:
         app_label = "uploads"
@@ -203,15 +217,8 @@ class Attachment(Processor):
     def get_object_type(self):
         return 'attachment'
     
-    def get_abs_directory_path(self):
-        return '%s/attachments/%s/' % (settings.USER_MEDIA_ROOT, self.uuid)
-        
-    def generate_relative_path(self):
-        return '/%s/attachments/%s/' % (settings.USER_MEDIA_DIR, self.uuid)
-        
-    def thumb(self):
-        return self._encrypt_media_path('/%s/attachments/%s/%s' % \
-                    (settings.USER_MEDIA_DIR, self.uuid, self.file_name_thumb))
+    #def generate_relative_path(self):
+    #    return '/%s/attachments/%s/' % (settings.USER_MEDIA_DIR, self.uuid)
             
     def to_dict(self):
         d = super(Attachment, self).to_dict()
@@ -250,8 +257,8 @@ class ImageOpts(Base):
     def processed_map_url_path(self):
         host = self.source_scan.host
         #host = 'dev.localground.org' #just for debugging purposes
-        return self._encrypt_media_path(
-            '/%s/scans/%s/%s' % (settings.USER_MEDIA_DIR, self.source_scan.uuid, self.file_name),
+        return self._encrypt_media_path('%s%s' %
+                                    (self.source_scan.virtual_path, self.file_name),
             host=host)
     
     def to_dict(self):

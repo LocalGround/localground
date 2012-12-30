@@ -1,6 +1,6 @@
 localground.photoManager = function(data){
-    this.name = 'Photos';
-    this.overlayType = 'photo';
+	this.name = 'Photos';
+    this.id = this.overlayType = self.overlayTypes.PHOTO
     this.data = [];
 };
 

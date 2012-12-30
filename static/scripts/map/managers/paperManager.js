@@ -1,6 +1,6 @@
 localground.paperManager = function(data){
-    this.name = 'Drawings';
-    this.overlayType = 'paper';
+	this.name = 'Drawings';
+    this.id = this.overlayType = self.overlayTypes.PAPER
     this.data = [];
     this.batchTurnOnLimit = 10;
 };

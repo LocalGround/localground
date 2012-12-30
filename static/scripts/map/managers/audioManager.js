@@ -1,6 +1,6 @@
 localground.audioManager = function(data){
     this.name = 'Audio Files';
-    this.overlayType = 'audio';
+    this.id = this.overlayType = self.overlayTypes.AUDIO;
     this.data = [];
     this.player = null;
 };

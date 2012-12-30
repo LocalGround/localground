@@ -7,15 +7,15 @@ localground.marker = function(opts){
     this.photo_count = 0;
     this.audio_count = 0;
     this.video_count = 0;
-    this.note_count = 0;
+    this.record_count = 0;
     this.photoIDs = null;
     this.audioIDs = null;
-    this.noteIDs = null;
+    this.recordIDs = null;
     this.color = 'CCCCCC'
     this.accessKey = null;
     if(opts)
         $.extend(this, opts);
-    this.overlayType = 'marker';
+    this.managerID = this.overlayType = self.overlayTypes.MARKER;
     this.image = this.markerImage = this.iconSmall = this.iconLarge =
         'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
         this.color + '|13|b|';
@@ -34,22 +34,22 @@ localground.marker.prototype.renderListingText = function() {
         messages.push(this.getAudioCount() + ' audio clip(s)');
     if(this.getVideoCount() > 0)
         messages.push(this.getVideoCount() + ' video clip(s)');
-    if(this.getNoteCount() > 0)
-        messages.push(this.getNoteCount() + ' note(s)');
+    if(this.getRecordCount() > 0)
+        messages.push(this.getRecordCount() + ' data records(s)');
     $div_text.append('<br><span>' + messages.join(', ') + '</span>');
     return $div_text;
 };
 
-localground.marker.prototype.getNoteCount = function() {
-    if(this.noteIDs) {
+localground.marker.prototype.getRecordCount = function() {
+    if(this.recordIDs) {
         var cnt = 0;
-        $.each(this.noteIDs, function(tableID, noteIDs){
-            cnt = cnt + noteIDs.length;  
+        $.each(this.recordIDs, function(tableID, recordIDs){
+            cnt = cnt + recordIDs.length;  
         });
         return cnt;
     }
     else {
-        return this.note_count;
+        return this.record_count;
     }
 };
 
@@ -301,23 +301,23 @@ localground.marker.prototype.renderInfoBubbleAudio = function($container) {
 };
 
 localground.marker.prototype.renderInfoBubbleNotes = function($container) { 
-    if(this.noteIDs == null) return;
+    if(this.recordIDs == null) return;
     var me = this;
     $section = this.renderMarkerSection();
     $container.append($section);
     var reviewsRendered = 0;
-    $.each(this.noteIDs, function(key, val){
+    $.each(this.recordIDs, function(key, val){
         var table = me.getNoteManager().tables[key];
         $section.append($('<h4></h4>').html(table.name));
         $.each(val, function(){
-            var note = table.getDataElementByID(this);
+            var record = table.getDataElementByID(this);
             if(reviewsRendered > 0)
                 $section.append('<hr>');
-            $div = note.renderMarkerNote();
+            $div = record.renderMarkerNote();
             if(me.isEditMode()) {
                 $div.prepend('&nbsp;').append(
                     $('<a href="#">remove</a>').click(function(){
-                        me.removeFromMarker($(this), note);
+                        me.removeFromMarker($(this), record);
                     })
                 );
             }    
@@ -441,17 +441,17 @@ localground.marker.prototype.removeFromMarker = function($elem, obj) {
                         alert('not implemented');
                         break;
                     default:
-                        $.each(me.noteIDs, function(tableID, noteIDs){
-                            $.each(noteIDs, function(idx) {
+                        $.each(me.recordIDs, function(tableID, recordIDs){
+                            $.each(recordIDs, function(idx) {
                                 if(obj.tableID == tableID &&
                                    obj.id == this) {
-                                    me.noteIDs[tableID].splice(idx, 1);
+                                    me.recordIDs[tableID].splice(idx, 1);
                                     return;
                                 }
                             });
                         });
                         //--me.audio_count;
-                        if(me.getNoteCount() == 0)
+                        if(me.getRecordCount() == 0)
                             $elem.parent().parent().remove();      
                         else
                             $elem.parent().remove();

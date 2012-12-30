@@ -133,6 +133,7 @@ localground.point.prototype.makeEditable = function() {
     else {
         this.makeGeoreferenceable();
     }
+	this.getListingElement().find('.close').show();
 };
 
 localground.point.prototype.addMarkerEventHandlers = function() {

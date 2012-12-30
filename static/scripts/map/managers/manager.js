@@ -4,15 +4,7 @@
  * is the main controller object that uses this class.
 **/
 localground.manager = function(){
-    this.overlayTypes = {
-		PHOTO: 'photo',
-		AUDIO: 'audio',
-		VIDEO: 'video',
-		NOTE: 'note',
-		PAPER: 'paper'
-	};
     this.name = null;
-    this.overlayTypes = null;
     this.data = [];
 };
 
@@ -164,7 +156,7 @@ localground.manager.prototype.updateVisibility = function() {
 };
 
 localground.manager.prototype.getObjectType = function() {
-    return this.overlayType;
+	return this.overlayType;
 };
 
 localground.manager.prototype.getListingPanel = function() {

@@ -8,14 +8,7 @@ localground.overlay = function(){
     this.id = null;
     this.googleOverlay = null;
     this.overlayType = null;
-	this.overlayTypes = {
-		PHOTO: 'photo',
-		AUDIO: 'audio',
-		VIDEO: 'video',
-		NOTE: 'note',
-		PAPER: 'paper',
-		MARKER: 'marker'
-	};
+	this.managerID = null;
 };
 
 localground.overlay.prototype.isVisible = function() {
@@ -143,9 +136,12 @@ localground.overlay.prototype.renderListing = function() {
 	$div_entry.append(this.renderListingText());
     
 	//add close button
-    $div_entry.append($('<a href="#" title="hide" class="close">&times;</a>')
+    $div_entry.append($('<a href="#" title="Delete" class="close">&times;</a>')
+				.hide()
                 .click(function() {
-                    me.removeItem();
+                    //me.removeItem();
+					var answer = confirm('Are you sure you want to delete ' + me.name + '?');
+					alert(answer);
 					return false;
                 }));
 	
@@ -177,7 +173,7 @@ localground.overlay.prototype.toggleOverlay = function(isOn) {
         if(this.isVisible() && this.googleOverlay && this.googleOverlay.getMap() == null) {
 			if(this.googleOverlay) {
 				this.googleOverlay.setMap(self.map);
-				if(this.getObjectType() == this.overlayTypes.PHOTO)
+				if(this.getObjectType() == self.overlayTypes.PHOTO)
 					this.googleOverlay.icon = this.getIcon();    
 			}
             $cb.attr('checked', true);
@@ -207,23 +203,29 @@ localground.overlay.prototype.makeViewable = function() {
 };
 
 localground.overlay.prototype.getManager = function() {
-	switch(this.overlayType) {
-		case this.overlayTypes.AUDIO:
+	for(i=0; i < self.managers.length; i++) {
+		if(this.managerID == self.managers[i].id) {
+			return self.managers[i];
+		}
+	}
+	alert('no manager detected');
+	/*switch(this.overlayType) {
+		case self.overlayTypes.AUDIO:
 			return self.audioManager;
-		case this.overlayTypes.MARKER:
+		case self.overlayTypes.MARKER:
 			return self.markerManager;
-		case this.overlayTypes.NOTE:
+		case self.overlayTypes.RECORD:
 			//a little bit more complicated -- noteManager is an array of managers:
 			var table_id = this.getObjectType().split('_')[1];
 			return self.noteManager.tables[table_id];
-		case this.overlayTypes.PAPER:
+		case self.overlayTypes.PAPER:
 			return self.paperManager;
-		case this.overlayTypes.PHOTO:
+		case self.overlayTypes.PHOTO:
 			return self.photoManager;
 		default:
 			alert('overlayType "' + this.overlayType + '" not defined.')
 			return null;
-	}
+	}*/
 };
 
 localground.overlay.prototype.getMarkerManager = function() {

@@ -3,6 +3,7 @@ from django.conf import settings
 from localground.apps.uploads.managers import PhotoManager
 from localground.apps.helpers.models import PointObject
 from localground.apps.uploads.models import NamedUpload  
+import os
         
 class Photo(PointObject, NamedUpload):
     source_scan = models.ForeignKey('uploads.Scan', blank=True, null=True)
