@@ -209,37 +209,20 @@ localground.overlay.prototype.getManager = function() {
 		}
 	}
 	alert('no manager detected');
-	/*switch(this.overlayType) {
-		case self.overlayTypes.AUDIO:
-			return self.audioManager;
-		case self.overlayTypes.MARKER:
-			return self.markerManager;
-		case self.overlayTypes.RECORD:
-			//a little bit more complicated -- noteManager is an array of managers:
-			var table_id = this.getObjectType().split('_')[1];
-			return self.noteManager.tables[table_id];
-		case self.overlayTypes.PAPER:
-			return self.paperManager;
-		case self.overlayTypes.PHOTO:
-			return self.photoManager;
-		default:
-			alert('overlayType "' + this.overlayType + '" not defined.')
-			return null;
-	}*/
+	return null;
+};
+
+localground.overlay.prototype.getManagerById = function(id) {
+	for(i=0; i < self.managers.length; i++) {
+		if(id == self.managers[i].id) {
+			return self.managers[i];
+		}
+	}
+	alert('no manager detected');
+	return null;
 };
 
 localground.overlay.prototype.getMarkerManager = function() {
 	return self.markerManager;
 };
 
-localground.overlay.prototype.getPhotoManager = function() {
-	return self.photoManager;
-};
-
-localground.overlay.prototype.getAudioManager = function() {
-	return self.audioManager;
-};
-
-localground.overlay.prototype.getNoteManager = function() {
-	return self.noteManager;
-};

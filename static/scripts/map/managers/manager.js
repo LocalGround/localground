@@ -20,10 +20,11 @@ localground.manager.prototype.getDataElementByID = function(id) {
 };
 
 localground.manager.prototype.addDataContainer = function() {
-    //add a section within the id="panel_note" div for the data:
+    //add a section within the id="panel_record" div for the data:
     if(this.getListingContainer().get(0) == null) {
         var me = this;
 		var $container = $('<div />').attr('id', 'panel_' + this.getObjectType())
+							.addClass('listing_container')
 							.css({
 								'border-left': 'solid 0px #ccc',
 								'margin-bottom': '5px',
@@ -149,10 +150,11 @@ localground.manager.prototype.atLeastOneVisible = function() {
 
 localground.manager.prototype.updateVisibility = function() {
     //if(this.data.length > 0 && this.atLeastOneVisible())
+	var panel = this.getListingPanel();
 	if(this.data.length > 0)
-        this.getListingPanel().show();
-    else
-        this.getListingPanel().hide();
+        panel.show();
+    else if(panel)
+        panel.hide();
 };
 
 localground.manager.prototype.getObjectType = function() {

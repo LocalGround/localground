@@ -124,7 +124,7 @@ localground.editor.prototype.toggleMode = function($elem) {
             this.drawingManager.setMap(this.map);
             
             //show the delete buttons
-            $('.close').show();
+            $('.listing_container > .close').show();
             $.each(this.managers, function() {
                 this.makeEditable();
             });
@@ -135,7 +135,7 @@ localground.editor.prototype.toggleMode = function($elem) {
             $elem.html('Edit');
             
             //hide the delete buttons
-            $('.close').hide();
+            $('.listing_container > .close').hide();
             
             //turn off drawing manager:
             this.drawingManager.setMap(null);

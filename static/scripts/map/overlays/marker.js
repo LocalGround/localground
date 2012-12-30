@@ -127,7 +127,7 @@ localground.marker.prototype.renderInfoBubble = function() {
             'margin': '5px 0px 5px 10px',
             'overflow-y': 'auto',
             'overflow-x': 'hidden'
-        }).append(this.getMarkerManager().getLoadingImage());
+        }).append(this.getManagerById(self.overlayTypes.MARKER).getLoadingImage());
     var showHeader = true;
     self.infoBubble.setHeaderText(showHeader ? this.name.truncate(5) : null);
     if(this.isEditMode()) {
@@ -232,7 +232,7 @@ localground.marker.prototype.renderInfoBubblePhotos = function($container) {
     $container.append($section);
     $section.append($('<h4></h4>').html('Photos'));
     $.each(this.photoIDs, function(idx){
-        var photo = me.getPhotoManager().getDataElementByID(this);
+        var photo = me.getManagerById(self.overlayTypes.PHOTO).getDataElementByID(this);
         //if(idx<4)
         {
             $div = $('<div />').css({
@@ -273,7 +273,7 @@ localground.marker.prototype.renderInfoBubbleAudio = function($container) {
     var $ul = $('<ul />');
     $section.append($ul);
     $.each(this.audioIDs, function(idx){
-        var audio = me.getAudioManager().getDataElementByID(this);
+        var audio = me.getManagerById(self.overlayTypes.AUDIO).getDataElementByID(this);
         var $li = $('<li />')
                         .css({
                             'line-height': '15px',
@@ -300,20 +300,20 @@ localground.marker.prototype.renderInfoBubbleAudio = function($container) {
     });
 };
 
-localground.marker.prototype.renderInfoBubbleNotes = function($container) { 
+localground.marker.prototype.renderInfoBubbleRecords = function($container) { 
     if(this.recordIDs == null) return;
     var me = this;
     $section = this.renderMarkerSection();
     $container.append($section);
     var reviewsRendered = 0;
     $.each(this.recordIDs, function(key, val){
-        var table = me.getNoteManager().tables[key];
+        var table = me.getManagerById(key);
         $section.append($('<h4></h4>').html(table.name));
         $.each(val, function(){
             var record = table.getDataElementByID(this);
             if(reviewsRendered > 0)
                 $section.append('<hr>');
-            $div = record.renderMarkerNote();
+            $div = record.renderMarkerRecord();
             if(me.isEditMode()) {
                 $div.prepend('&nbsp;').append(
                     $('<a href="#">remove</a>').click(function(){
@@ -345,7 +345,7 @@ localground.marker.prototype.showInfoBubbleView = function(opts) {
             me.renderInfoBubbleHeader($container);
             me.renderInfoBubblePhotos($container);
             me.renderInfoBubbleAudio($container);
-            me.renderInfoBubbleNotes($container);
+            me.renderInfoBubbleRecords($container);
             $contentContainer.children().empty();
             $contentContainer.append($container);
         },
@@ -393,7 +393,7 @@ localground.marker.prototype.appendMedia = function(media) {
             //todo:  reload marker info:
             $.extend(me, result.marker);
             if(media.getObjectType() == 'marker') {
-                me.getMarkerManager().removeRecord(media);
+                me.getManagerById(self.overlayTypes.MARKER).removeRecord(media);
             }
             me.renderListing();
             me.googleOverlay.setIcon(me.markerImage);

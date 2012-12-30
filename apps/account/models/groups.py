@@ -80,7 +80,7 @@ class Project(Group):
         
     def to_dict(self, include_auth_users=False, include_processed_maps=False,
                 include_markers=False, include_audio=False, include_photos=False,
-                include_notes=False):
+                include_tables=False):
         d = {
             'id': self.id,
             'name': self.name,  
@@ -97,8 +97,8 @@ class Project(Group):
             d.update({ 'photos': Photo.objects.by_project(self, ordering_field='name').to_dict_list() })
         if include_markers:
             d.update({ 'markers': Marker.objects.by_project_with_counts_dict_list(self) })
-        if include_notes:
-            d.update({ 'notes': self.get_table_data(to_dict=True) })
+        if include_tables:
+            d.update({ 'tables': self.get_table_data(to_dict=True) })
         return d
     
     def get_table_data(self, to_dict=True):
@@ -110,15 +110,15 @@ class Project(Group):
         #       table such that each time the dynamic table's project_id field is
         #       updated, a record is inserted into at_projects_forms (if it
         #       doesn't already exist).
-        notes = []
+        tables = []
         forms = self.form_set.all() #create trigger for this!
         for form in forms:
             recs = form.get_data(project=self, to_dict=to_dict,
                                     include_markers=False, include_scan=False)
             if len(recs) > 0:
-                notes.append(dict(form=form.to_dict(), data=recs))
+                tables.append(dict(form=form.to_dict(), data=recs))
             
-        return notes
+        return tables
     
     def __unicode__(self):
         return self.name
@@ -178,7 +178,7 @@ class View(Group):
     def get_markers_with_counts(self):
         """
         Queries for Markers and also uses raw sql to retrieve how many Audio,
-        Photo, Notes are associated with the marker.
+        Photo, Table Records are associated with the marker.
         """
         marker_ids = [m.id for m in self.markers]
         markers_with_counts = Marker.objects.by_marker_ids_with_counts(marker_ids)
@@ -197,7 +197,7 @@ class View(Group):
         
     def to_dict(self, include_auth_users=False, include_processed_maps=False,
                 include_markers=False, include_audio=False, include_photos=False,
-                include_notes=False):
+                include_tables=False):
         d = {
             'id': self.id,
             'name': self.name,  

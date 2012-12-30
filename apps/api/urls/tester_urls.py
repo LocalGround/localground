@@ -25,7 +25,7 @@ project_context.update({
             of audio', 'default': False, 'required': False },
         {'name': 'include_photos', 'type': 'bool', 'desc': 'Also return a list \
             of photos', 'default': False, 'required': False },
-        {'name': 'include_notes', 'type': 'bool', 'desc': 'Also return a list \
+        {'name': 'include_tables', 'type': 'bool', 'desc': 'Also return a list \
             of lists of tabular data corresponding to this project', 'default': False,
             'required': False }
     ]

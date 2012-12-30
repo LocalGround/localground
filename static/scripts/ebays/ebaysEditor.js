@@ -38,7 +38,7 @@ localground.ebays.prototype.toggleProjectData = function(projectID, is_checked) 
 			include_markers: true,
 			include_audio: true,
 			include_photos: true,
-			include_notes: false,
+			include_tables: false,
 			project_id: projectID
 		};
         self.getAirQualityData();
@@ -62,7 +62,7 @@ localground.ebays.prototype.toggleProjectData = function(projectID, is_checked) 
 				//process markers:
 				self.markerManager.addRecords(result.markers);
 				self.markerManager.renderOverlays();
-				//process notes:
+				//process tables:
 				self.resetBounds();
 			},
 		'json');
@@ -71,7 +71,7 @@ localground.ebays.prototype.toggleProjectData = function(projectID, is_checked) 
 		$.each(self.managers, function() {
 			this.removeByProjectID(projectID);    
 		});
-		self.resetBounds();
+		//self.resetBounds();
 		if($('.cb_project:checked').length == 0) {
 			$('#mode_toggle').hide();
 		}
@@ -83,9 +83,8 @@ localground.ebays.prototype.getAirObservations = function() {
     $.getJSON('/api/0/tables/table/92/',
         function(result){
             var table = {};
-            table.form = {id: 92, name: 'Air Quality Observations'};
-            var m = new localground.table(table, '1F78B4');
-            m.addDataContainer();
+            table.form = {id: 92, name: 'Air Quality Observations', records: result.records};
+            var m = new localground.tableManager(table, '1F78B4');
             m.addRecords(result.records);
             m.renderOverlays();
             self.managers.push(m);
@@ -98,7 +97,7 @@ localground.ebays.prototype.getAirQualityData = function() {
         function(result){
             var table = {};
             table.form = {id: 84, name: 'Air Quality Data'};
-            self.tableManager = new localground.table(table, null);
+            self.tableManager = new localground.tableManager(table, null);
             self.tableManager.addDataContainer();
             $.each(result.file_names, function(){
                 $cb = $('<input type="checkbox" />')
@@ -127,6 +126,8 @@ localground.ebays.prototype.getAirQualityData = function() {
                 });
                 $label = $('<span>' + this + '</span>');
                 self.tableManager.getListingContainer().append($cb).append($label).append('<br>');
+                
+				
             });
         },
     'json');    

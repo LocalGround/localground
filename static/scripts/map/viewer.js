@@ -50,7 +50,9 @@ localground.viewer.prototype.initialize=function(opts){
     
     localground.basemap.prototype.initialize.call(this, opts);
     
-    this.map.mapTypeControlOptions.position = google.maps.ControlPosition.TOP_LEFT;  
+    this.map.mapTypeControlOptions.position = google.maps.ControlPosition.TOP_LEFT;
+	this.mapOptions.streetViewControl = true;
+	this.map.setOptions(this.mapOptions);
     
     $('input:checkbox')
         .attr('checked', false)
@@ -218,7 +220,7 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 			include_markers: true,
 			include_audio: true,
 			include_photos: true,
-			include_notes: true
+			include_tables: true
 		};
 		var url = '/api/0/' + groupType + '/' + groupID + '/';
 		if(self.accessKey != null)
@@ -242,11 +244,11 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 				//process markers:
 				self.markerManager.addRecords(result.markers);
 				self.markerManager.renderOverlays();
-				//process notes:
-				if(result.notes != null) {
+				//process tables:
+				if(result.tables != null) {
 					var colors = ['1F78B4', 'B2DF8A', '33A02C', 'FB9A99', 'E31A1C', 'FDBF6F',
                     'A6CEE3'];
-					$.each(result.notes, function(idx) {
+					$.each(result.tables, function(idx) {
 						var tableManager = new localground.tableManager(this, colors[idx]);
 						tableManager.addRecords(this.data);
 						tableManager.renderOverlays();

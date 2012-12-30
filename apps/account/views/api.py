@@ -24,7 +24,7 @@ def get_group(request, object_type, object_id, group_object, access_key=None, to
         include_markers:        Also return a list of markers
         include_audio:          Also return a list of audio
         include_photos:         Also return a list of photos
-        include_notes:          Also return a list of data list corresponding to
+        include_tables:          Also return a list of data list corresponding to
                                 tabular form data
         alias:                  Admins only:  allows you to pretend you're someone else        
     '''
@@ -38,7 +38,7 @@ def get_group(request, object_type, object_id, group_object, access_key=None, to
         include_markers=check_flag('include_markers'),
         include_audio=check_flag('include_audio'),
         include_photos=check_flag('include_photos'),
-        include_notes=check_flag('include_notes')
+        include_tables=check_flag('include_tables')
     )
     
     dict.update({

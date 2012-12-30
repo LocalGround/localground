@@ -44,7 +44,7 @@ localground.point.prototype.dragend = function(latLng) {
     var me = this;
     if(this.candidateMarker) {
         var $innerObj = $('<div />').append(
-                this.getMarkerManager().getLoadingImageSmall()
+                this.getManagerById(self.overlayTypes.MARKER).getLoadingImageSmall()
             ).append(('Adding to marker...'));
 		
 		// after the media item has been added to the marker, reset the position
@@ -116,7 +116,7 @@ localground.point.prototype.makeEditable = function() {
             'title': 'Drag this icon to re-position it'
         });
         google.maps.event.addListener(this.googleOverlay, "dragstart", function(mEvent) {
-            $('#note_preview').hide();
+            $('#record_preview').hide();
             self.infoBubble.close();
             //self.currentOverlay.closeInfoBubble(); //close info bubble while dragging
             self.currentOverlay = me;
@@ -127,7 +127,7 @@ localground.point.prototype.makeEditable = function() {
             me.googleOverlay.setIcon(me.getIcon());
         });
         google.maps.event.addListener(this.googleOverlay, "drag", function(mEvent) {
-            me.candidateMarker = me.getMarkerManager().intersectMarkers(mEvent, me);
+            me.candidateMarker = me.getManagerById(self.overlayTypes.MARKER).intersectMarkers(mEvent, me);
         });
     }
     else {
