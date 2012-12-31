@@ -24,7 +24,7 @@ localground.overlay.prototype.isViewMode = function() {
 };
 
 localground.overlay.prototype.getObjectType = function() {
-	return this.overlayType;
+	return this.managerID;
 };
 
 localground.overlay.prototype.getListingContainer = function() {
@@ -203,23 +203,11 @@ localground.overlay.prototype.makeViewable = function() {
 };
 
 localground.overlay.prototype.getManager = function() {
-	for(i=0; i < self.managers.length; i++) {
-		if(this.managerID == self.managers[i].id) {
-			return self.managers[i];
-		}
-	}
-	alert('no manager detected');
-	return null;
+	return self.managers[this.managerID];
 };
 
 localground.overlay.prototype.getManagerById = function(id) {
-	for(i=0; i < self.managers.length; i++) {
-		if(id == self.managers[i].id) {
-			return self.managers[i];
-		}
-	}
-	alert('no manager detected');
-	return null;
+	return self.managers[id];
 };
 
 localground.overlay.prototype.getMarkerManager = function() {

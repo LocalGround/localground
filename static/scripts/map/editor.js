@@ -124,10 +124,11 @@ localground.editor.prototype.toggleMode = function($elem) {
             this.drawingManager.setMap(this.map);
             
             //show the delete buttons
-            $('.listing_container > .close').show();
-            $.each(this.managers, function() {
-                this.makeEditable();
-            });
+            $('.listing_container').find('.close').show();
+            for(var key in self.managers) {
+                self.managers[key].makeEditable();
+            }
+            
             
             break;
         default:
@@ -135,15 +136,15 @@ localground.editor.prototype.toggleMode = function($elem) {
             $elem.html('Edit');
             
             //hide the delete buttons
-            $('.listing_container > .close').hide();
+            $('.listing_container').find('.close').hide();
             
             //turn off drawing manager:
             this.drawingManager.setMap(null);
             
             //turn off draggability:
-            $.each(this.managers, function() {
-                this.makeViewable();
-            });
+            for(var key in self.managers) {
+                self.managers[key].makeViewable();
+            }
             break;
     }
     

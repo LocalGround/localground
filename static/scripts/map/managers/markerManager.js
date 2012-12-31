@@ -1,7 +1,5 @@
-localground.markerManager = function(data){
-    this.id = this.overlayType = self.overlayTypes.MARKER;
-    this.name = 'Markers';
-    this.data = [];
+localground.markerManager = function(){
+	this.data = [];
     this.palettes = [
         { name: 'Qualitative 1',
           colors: ['A6CEE3', 'E31A1C', '1F78B4', 'B2DF8A', '33A02C', 'FB9A99',

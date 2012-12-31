@@ -1,7 +1,5 @@
-localground.photoManager = function(data){
-	this.name = 'Photos';
-    this.id = this.overlayType = self.overlayTypes.PHOTO
-    this.data = [];
+localground.photoManager = function(){
+	this.data = [];
 };
 
 localground.photoManager.prototype = new localground.manager();

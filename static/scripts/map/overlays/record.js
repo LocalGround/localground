@@ -6,9 +6,9 @@ localground.record = function(opts, color, tableID){
     this.fields = [];
     $.extend(this, opts);
     this.overlayType = self.overlayTypes.RECORD;
-    this.managerID = this.tableID = tableID;
+	this.managerID = tableID;
     this.iframeURL = '/scans/update-record/embed/?id=' + this.id + '&form_id=' +
-                        this.tableID;
+                        this.managerID;
     this.infoBubbleParams = {
         edit: { width: 785, height: 285 },
         view: { width: 600, height: 290 }
@@ -44,10 +44,6 @@ localground.record.prototype.setRecordName = function() {
                 return;
             }
     }
-};
-
-localground.record.prototype.getObjectType = function() {
-	return 'table_' + this.tableID;
 };
 
 localground.record.prototype.showInfoBubbleView = function(opts) {
@@ -233,10 +229,5 @@ localground.record.prototype.renderListingImage = function() {
             $('#record_preview').hide();
         });
 	return $img;
-};
-
-
-localground.record.prototype.getListingContainer = function() {
-    return $('#table_' + this.tableID);
 };
 

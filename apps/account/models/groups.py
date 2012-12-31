@@ -87,18 +87,38 @@ class Project(Group):
             'description': self.description,
             'owner': self.owner.username
         }
+        data = []
         if include_processed_maps:
-            d.update({ 'processed_maps': 
-                Scan.objects.by_project(self, processed_only=True).to_dict_list()
+            data.append({
+                'id': 'paper',
+                'overlayType': 'paper',
+                'name': 'Drawings',
+                'data': Scan.objects.by_project(self, processed_only=True).to_dict_list()
             })
         if include_audio:
-            d.update({ 'audio': Audio.objects.by_project(self, ordering_field='name').to_dict_list() })
+            data.append({
+                'id': 'audio',
+                'overlayType': 'audio',
+                'name': 'Audio Files',
+                'data': Audio.objects.by_project(self, ordering_field='name').to_dict_list() 
+            })
         if include_photos:
-            d.update({ 'photos': Photo.objects.by_project(self, ordering_field='name').to_dict_list() })
+            data.append({
+                'id': 'photo',
+                'overlayType': 'photo',
+                'name': 'Photos',
+                'data': Photo.objects.by_project(self, ordering_field='name').to_dict_list() 
+            })
         if include_markers:
-            d.update({ 'markers': Marker.objects.by_project_with_counts_dict_list(self) })
+            data.append({
+                'id': 'marker',
+                'overlayType': 'marker',
+                'name': 'Markers',
+                'data': Marker.objects.by_project_with_counts_dict_list(self)
+            })
         if include_tables:
-            d.update({ 'tables': self.get_table_data(to_dict=True) })
+            data.extend(self.get_table_data(to_dict=True))
+        d.update({'data': data})
         return d
     
     def get_table_data(self, to_dict=True):
@@ -110,15 +130,21 @@ class Project(Group):
         #       table such that each time the dynamic table's project_id field is
         #       updated, a record is inserted into at_projects_forms (if it
         #       doesn't already exist).
-        tables = []
+        data = []
         forms = self.form_set.all() #create trigger for this!
         for form in forms:
             recs = form.get_data(project=self, to_dict=to_dict,
                                     include_markers=False, include_scan=False)
             if len(recs) > 0:
-                tables.append(dict(form=form.to_dict(), data=recs))
+                data.append({
+                    'id': form.id,
+                    'overlayType': 'record',
+                    'name': form.name,
+                    'data': recs
+                })
+                #tables.append(dict(form=form.to_dict(), data=recs))
             
-        return tables
+        return data
     
     def __unicode__(self):
         return self.name

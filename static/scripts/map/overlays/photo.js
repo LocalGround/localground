@@ -91,7 +91,7 @@ localground.photo.prototype.showInfoBubbleView = function(opts) {
 
     //build bubble content:
     var htmlString = '<img class="thumb" style="max-width:400px;margin-right:30px;" src="' +
-        this.path_medium + '" />';
+        this.path_medium_sm + '" />';
     if(this.caption && this.caption.length > 4)
         htmlString += '<br /><p>' + this.caption + '</p>';
     

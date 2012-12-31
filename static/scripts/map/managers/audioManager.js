@@ -1,8 +1,5 @@
-localground.audioManager = function(data){
-    this.name = 'Audio Files';
-    this.id = this.overlayType = self.overlayTypes.AUDIO;
-    this.data = [];
-    this.player = null;
+localground.audioManager = function(){
+	this.data = [];
 };
 
 localground.audioManager.prototype = new localground.manager();
@@ -13,10 +10,10 @@ localground.audioManager.prototype.addRecords = function(data) {
     $.each(data, function(){
         me.data.push(new localground.audio(this));        
     });
-    if(this.player == null && this.data.length > 0) {
-        this.player = new localground.player();
-        $('body').append(this.player.renderFlashObject());
-        this.player.initialize();
+    if(self.player == null && this.data.length > 0) {
+        self.player = new localground.player();
+        $('body').append(self.player.renderFlashObject());
+        self.player.initialize();
     }
 };
 

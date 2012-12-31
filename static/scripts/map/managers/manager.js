@@ -4,8 +4,44 @@
  * is the main controller object that uses this class.
 **/
 localground.manager = function(){
-    this.name = null;
-    this.data = [];
+    this.id;
+	this.name;
+	this.overlayType;
+	this.data = [];
+};
+
+localground.manager.generate = function(candidate) {
+	/* static function */
+	var manager = null;
+	switch(candidate.overlayType) {
+		case self.overlayTypes.PHOTO:
+			manager = new localground.photoManager();
+			break;
+		case self.overlayTypes.AUDIO:
+			manager = new localground.audioManager();
+			break;
+		case self.overlayTypes.MARKER:
+			manager = new localground.markerManager();
+			break;
+		case self.overlayTypes.PAPER:
+			manager = new localground.paperManager();
+			break;
+		case self.overlayTypes.RECORD:
+			candidate.color = self.colors[self.colorIndex++];
+			manager = new localground.tableManager();
+			break;
+	}
+	manager.initialize(candidate);
+	return manager;
+}
+
+
+localground.manager.prototype.initialize = function(opts) {
+	this.id = opts.id;
+	this.name = opts.name;
+	this.overlayType = opts.overlayType;
+	this.addRecords(opts.data);
+	this.renderOverlays();
 };
 
 localground.manager.prototype.getDataElementByID = function(id) {
@@ -45,7 +81,7 @@ localground.manager.prototype.addDataContainer = function() {
 					}));
 		$heading.append($('<input />')
 					.attr('type', 'checkbox')
-					.attr('id', 'toggle_' + this.getObjectType() + '_all')
+					.attr('id', 'toggle_' + this.id + '_all')
 					.change(function() {
 						me.toggleOverlays($(this).attr('checked'));  
 					}));
@@ -158,7 +194,7 @@ localground.manager.prototype.updateVisibility = function() {
 };
 
 localground.manager.prototype.getObjectType = function() {
-	return this.overlayType;
+	return this.id;
 };
 
 localground.manager.prototype.getListingPanel = function() {
@@ -197,8 +233,7 @@ localground.manager.prototype.zoomToLayer = function() {
 
 localground.manager.prototype.toggleOverlays = function(isOn) {
     //iterate through each table and turn on/off:
-    //alert('toggle');
-	$.each(this.data, function() {
+    $.each(this.data, function() {
         this.toggleOverlay(isOn);          
     });  
 };

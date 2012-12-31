@@ -72,7 +72,7 @@ localground.player.prototype.renderPlayerObject = function() {
 };
 
 localground.player.prototype.renderFlashObject = function(opts) {
-    var listenerFunction = 'driver.audioManager.player';
+    var listenerFunction = 'driver.player';
     if(opts && opts.listenerFunction != null)
         listenerFunction = opts.listenerFunction;
     var $flashObj = $('<object />')

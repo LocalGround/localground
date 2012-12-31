@@ -1,22 +1,18 @@
-localground.tableManager = function(table, color){
-    this.id = table.form.id;
-    this.name = table.form.name;
-    this.color = color;
-    this.data = [];
-	this.overlayType = self.overlayTypes.RECORD;
-    if(table != null && table.data)
-        this.addRecords(table.data);
-    //this.addDataContainer();
+localground.tableManager = function(){
+	this.color = null;
+	this.data = [];
 };
 
 localground.tableManager.prototype = new localground.manager();
 
-localground.tableManager.prototype.getObjectType = function() {
-    return 'table_' + this.id;
+localground.tableManager.prototype.initialize = function(opts) {
+    this.color = opts.color;
+	localground.manager.prototype.initialize.call(this, opts);
 };
+
 localground.tableManager.prototype.addRecords = function(data) {
     var me = this;
-    $.each(data, function(){
+	$.each(data, function(){
         me.data.push(new localground.record(this, me.color, me.id));        
     });
 };

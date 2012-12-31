@@ -17,6 +17,11 @@ localground.viewer = function(){
         LEFT: 37,
         RIGHT: 39
     }
+	this.colors = [
+		'1F78B4', 'B2DF8A', '33A02C', 'FB9A99',
+		'E31A1C', 'FDBF6F', 'A6CEE3'
+	];
+	this.colorIndex = 0;
 	this.initProjectID = null;
 	this.initViewID = null;
     this.mode = 'view';
@@ -31,16 +36,8 @@ localground.viewer = function(){
     this.markers = [];
     this.projects = [];
     this.accessKey = null;
-    this.paperManager = new localground.paperManager();
-    this.photoManager = new localground.photoManager();
-    this.audioManager = new localground.audioManager();
-    this.markerManager = new localground.markerManager();
-    this.managers = [
-        this.paperManager,
-        this.markerManager,
-        this.photoManager,
-        this.audioManager,
-    ];
+    this.managers = {};
+    this.player = null;
 };
 localground.viewer.prototype = new localground.basemap();           // Here's where the inheritance occurs 
 
@@ -142,13 +139,7 @@ localground.viewer.prototype.initialize=function(opts){
     
     this.initArrowNav();
 	
-	//if there's only one project, turn it on by default:
-	if(this.initProjectID == null && this.projects.length == 1)
-		this.initProjectID = this.projects[0].id;	
-	if(this.initProjectID != null)
-		this.toggleProjectData(this.initProjectID, 'projects', true, false);
-	if(this.initViewID != null)
-		this.toggleProjectData(this.initViewID, 'views', true, true);
+	this.initDefaultProject();
 };
 
 localground.viewer.prototype.setPosition = function(minimize) {
@@ -160,10 +151,10 @@ localground.viewer.prototype.setPosition = function(minimize) {
 };
 
 localground.viewer.prototype.doViewportUpdates = function() {
-	$.each(self.managers, function() {
-		try { this.doViewportUpdates(); }
-		catch(e) { }
-	});
+	for(var key in self.managers) {
+		try { self.managers[key].doViewportUpdates(); }
+		catch(e) { }	
+	}
 };
 
 localground.viewer.prototype.initProjectsMenu = function() {
@@ -231,60 +222,31 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 					alert(result.message);
 					return;
 				}
-				//process paper maps:
 				$('#mode_toggle').show();
-				self.paperManager.addRecords(result.processed_maps);
-				self.paperManager.renderOverlays();     
-				//process photos:
-				self.photoManager.addRecords(result.photos);  
-				self.photoManager.renderOverlays();  
-				//process audio:
-				self.audioManager.addRecords(result.audio); 
-				self.audioManager.renderOverlays();
-				//process markers:
-				self.markerManager.addRecords(result.markers);
-				self.markerManager.renderOverlays();
-				//process tables:
-				if(result.tables != null) {
-					var colors = ['1F78B4', 'B2DF8A', '33A02C', 'FB9A99', 'E31A1C', 'FDBF6F',
-                    'A6CEE3'];
-					$.each(result.tables, function(idx) {
-						var tableManager = new localground.tableManager(this, colors[idx]);
-						tableManager.addRecords(this.data);
-						tableManager.renderOverlays();
-						self.managers.push(tableManager);
-					});
-				}
+				$.each(result.data, function(idx) {
+					if(self.managers[this.id] == null) {
+						self.managers[this.id] = localground.manager.generate(this);
+						//turn everything on, if requested:
+						if(turn_on_everything && (self.initProjectID != null || self.initViewID != null)) {
+							if(!$('#toggle_' + this.id + '_all').attr('checked')){
+								$('#toggle_' + this.id + '_all')
+									.attr('checked', true).trigger('change');	
+							}	
+						}
+					}
+					else {
+						self.managers[this.id].addRecords(this.data);
+						self.managers[this.id].renderOverlays();
+					}
+				});
 				self.resetBounds();
-				
-				//re-organize this:
-				if(turn_on_everything && (self.initProjectID != null || self.initViewID != null)) {
-					if(!$('#toggle_paper_all').attr('checked')){
-						$('#toggle_paper_all').attr('checked', true);
-						$('#toggle_paper_all').trigger('change');	
-					}
-					if(!$('#toggle_photo_all').attr('checked')){
-						$('#toggle_photo_all').attr('checked', true);
-						$('#toggle_photo_all').trigger('change');	
-					}
-					if(!$('#toggle_audio_all').attr('checked')){
-						$('#toggle_audio_all').attr('checked', true);
-						$('#toggle_audio_all').trigger('change');	
-					}
-					if(!$('#toggle_marker_all').attr('checked')){
-						$('#toggle_marker_all').attr('checked', true);
-						$('#toggle_marker_all').trigger('change');	
-					}
-				}
-				self.resetBounds();
-				//$('#toggle_photo_all').attr('checked', true);
 			},
 		'json');
 	} //end if checked
 	else {
-		$.each(self.managers, function() {
-			this.removeByProjectID(groupID);    
-		});
+		for(var key in self.managers) {
+			self.managers[key].removeByProjectID(groupID); 
+		}
 		self.resetBounds();
 		if($('.cb_project:checked').length == 0) {
 			$('#mode_toggle').hide();
@@ -295,13 +257,13 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 
 localground.viewer.prototype.resetBounds = function() {
     this.fullExtent = null, bounds = null;
-    $.each(this.managers, function() {
-        bounds = this.getLayerBounds();
-        if(self.fullExtent == null)
+	for(var key in self.managers) {
+		bounds = self.managers[key].getLayerBounds();
+		if(self.fullExtent == null)
             self.fullExtent = bounds;    
         else if(bounds)
             self.fullExtent.union(bounds);
-    });
+	}
     if(this.fullExtent != null && !this.fullExtent.isEmpty()) {
 		this.map.fitBounds(self.fullExtent);    
     }
@@ -418,7 +380,20 @@ localground.viewer.prototype.generatePrint = function(opts) {
     //instead of directly submitting the form, call the button that
     // triggers the form's submit to get the form validation too!
     $('#the_frame').contents().find('#submit').trigger('click');
-}
+};
+
+localground.viewer.prototype.initDefaultProject = function() {
+	var turn_on_everything = false;
+	if(this.initProjectID != null)
+		turn_on_everything = true;	
+	else if(this.projects.length == 1) //if there's only one project, turn it on by default:
+		this.initProjectID = this.projects[0].id;	
+	if(this.initProjectID != null)
+		this.toggleProjectData(this.initProjectID, 'projects', true, turn_on_everything);
+	if(this.initViewID != null)
+		this.toggleProjectData(this.initViewID, 'views', true, turn_on_everything);	
+};
+
 
 localground.viewer.prototype.initArrowNav = function() {
     $('body').keypress(function(event){
