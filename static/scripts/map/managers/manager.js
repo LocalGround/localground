@@ -23,8 +23,8 @@ localground.manager.generate = function(candidate) {
 		case self.overlayTypes.MARKER:
 			manager = new localground.markerManager();
 			break;
-		case self.overlayTypes.PAPER:
-			manager = new localground.paperManager();
+		case self.overlayTypes.SCAN:
+			manager = new localground.scanManager();
 			break;
 		case self.overlayTypes.RECORD:
 			candidate.color = self.colors[self.colorIndex++];

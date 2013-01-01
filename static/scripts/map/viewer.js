@@ -9,7 +9,7 @@ localground.viewer = function(){
 		VIDEO: 'video',
 		MARKER: 'marker',
 		RECORD: 'record',
-		PAPER: 'paper'
+		SCAN: 'scan'
 	};
     this.keycodes = {
         UP: 38,
@@ -98,20 +98,9 @@ localground.viewer.prototype.initialize=function(opts){
     });
     
     $('#upload').click(function() {
-        /*$('#dialogTitle').html('Upload Maps, Forms & Media');
-        $('#dialogBody').html(
-            $('<div></div>').css({
-                height: 100
-            }).html('Add a form here'));
-        $('#my-modal').modal('show');*/
 		window.open('/upload/', '_blank');
     });
-    
-      
-    //display where all the prints were generated:
-    //if(this.showOutlines)
-    //    this.drawOutlines();
-    
+
     this.initProjectsMenu();
         
     google.maps.event.addListener(this.map, 'zoom_changed', function() {
@@ -135,10 +124,11 @@ localground.viewer.prototype.initialize=function(opts){
             }
         }
     });
-    
-    
+
+	//init pan map with arrow keys
     this.initArrowNav();
 	
+	// turn on default project, if requested
 	this.initDefaultProject();
 };
 
@@ -288,7 +278,7 @@ localground.viewer.prototype.loadPrintForm = function(opts) {
         if($(this).attr('checked'))
             layer_overlays.push($(this).val());           
     });
-    $.each($('.cb_paper'), function() {
+    $.each($('.cb_' + self.overlayTypes.SCAN), function() {
         if($(this).attr('checked'))
             scan_overlays.push($(this).val());           
     });
@@ -396,6 +386,7 @@ localground.viewer.prototype.initDefaultProject = function() {
 
 
 localground.viewer.prototype.initArrowNav = function() {
+	//allows you to pan the map with keybard arrows.
     $('body').keypress(function(event){
         var lat = self.map.getCenter().lat(),
             lng = self.map.getCenter().lng(),
@@ -421,21 +412,6 @@ localground.viewer.prototype.initArrowNav = function() {
             default:
                 return true;
         }
-        /*var color = '33A02C';
-        var img = 'http://chart.apis.google.com/chart?cht=it&chs=10x10&chco=' + 
-            color + ',000000ff,ffffff01&chl=&chx=000000,0&chf=bg,s,00000000&ext=.png';
-        var icon = new google.maps.MarkerImage(img,
-            new google.maps.Size(10, 10),
-            new google.maps.Point(0,0),
-            new google.maps.Point(5, 5));
-        if(this.marker == null)
-            this.marker = new google.maps.Marker({
-                position: newCenter,
-                map: self.map,
-                icon: icon
-            });
-        else
-            this.marker.setPosition(newCenter);*/
         self.map.panTo(newCenter);
         return false;
     });

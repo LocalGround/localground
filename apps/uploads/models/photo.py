@@ -40,7 +40,19 @@ class Photo(PointObject, NamedUpload):
         if self.file_name_medium_sm is not None:
             return self.encrypt_url(self.file_name_medium_sm)
         else:
-            return self.encrypt_url(self.file_name_medium)    
+            return self.absolute_virtual_path_medium()
+    
+    def absolute_virtual_path_medium(self):
+        '''
+        Convenience Function for the template
+        '''
+        return self.encrypt_url(self.file_name_medium)
+    
+    def absolute_virtual_path_large(self):
+        '''
+        Convenience Function for the template
+        '''
+        return self.encrypt_url(self.file_name_large)
         
     def encrypt_url(self, file_name):
         return self._encrypt_media_path(self.virtual_path + file_name)    
@@ -170,6 +182,7 @@ class Photo(PointObject, NamedUpload):
     def to_dict(self):
         d = super(Photo, self).to_dict() 
         d.update({
+            'path_large': self.encrypt_url(self.file_name_large),
             'path_medium': self.encrypt_url(self.file_name_medium),
             'path_small': self.encrypt_url(self.file_name_small),
             'path_marker_lg': self.encrypt_url(self.file_name_marker_lg),

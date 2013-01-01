@@ -44,8 +44,6 @@ class ReturnCodes():
     def get_message(code):
         return ReturnCodes.messages.get(code)
         
-    
-
 class ObjectTypes():
     """
     A look-up table of supported media models (and their string representations).
@@ -55,7 +53,10 @@ class ObjectTypes():
     AUDIO = 'audio'
     VIDEO = 'video'
     MARKER = 'marker'
+    SCAN = 'scan'
+    ATTACHMENT = 'attachment'
     PRINT = 'print'
+    RECORD = 'record'
 
 class BaseObject(models.Model):
     """

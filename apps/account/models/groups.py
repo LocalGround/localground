@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from localground.apps.helpers.models import ObjectTypes
 from localground.apps.account.models.base import Base, BasePermissions
 from localground.apps.account.managers import ProjectManager, ViewManager
 from localground.apps.account.models.permissions import \
@@ -90,29 +91,29 @@ class Project(Group):
         data = []
         if include_processed_maps:
             data.append({
-                'id': 'paper',
-                'overlayType': 'paper',
+                'id': ObjectTypes.SCAN,
+                'overlayType': ObjectTypes.SCAN,
                 'name': 'Drawings',
                 'data': Scan.objects.by_project(self, processed_only=True).to_dict_list()
             })
         if include_audio:
             data.append({
-                'id': 'audio',
-                'overlayType': 'audio',
+                'id': ObjectTypes.AUDIO,
+                'overlayType': ObjectTypes.AUDIO,
                 'name': 'Audio Files',
                 'data': Audio.objects.by_project(self, ordering_field='name').to_dict_list() 
             })
         if include_photos:
             data.append({
-                'id': 'photo',
-                'overlayType': 'photo',
+                'id': ObjectTypes.PHOTO,
+                'overlayType': ObjectTypes.PHOTO,
                 'name': 'Photos',
                 'data': Photo.objects.by_project(self, ordering_field='name').to_dict_list() 
             })
         if include_markers:
             data.append({
-                'id': 'marker',
-                'overlayType': 'marker',
+                'id': ObjectTypes.MARKER,
+                'overlayType': ObjectTypes.MARKER,
                 'name': 'Markers',
                 'data': Marker.objects.by_project_with_counts_dict_list(self)
             })
@@ -138,7 +139,7 @@ class Project(Group):
             if len(recs) > 0:
                 data.append({
                     'id': form.id,
-                    'overlayType': 'record',
+                    'overlayType': ObjectTypes.RECORD,
                     'name': form.name,
                     'data': recs
                 })

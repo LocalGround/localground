@@ -1,7 +1,7 @@
-localground.paper = function(opts){
+localground.scan = function(opts){
     //initialize object properties to null (for readability):
     this.counter = 0; //tracks which processed image the map is currently using
-	this.managerID = this.overlayType = self.overlayTypes.PAPER;
+	this.managerID = this.overlayType = self.overlayTypes.SCAN;
     this.id = null;
     this.overlay_path = null;
     this.north = null;
@@ -12,9 +12,9 @@ localground.paper = function(opts){
     $.extend(this, opts);
 };
 
-localground.paper.prototype = new localground.overlay();
+localground.scan.prototype = new localground.overlay();
 
-localground.paper.prototype.renderOverlay = function() {
+localground.scan.prototype.renderOverlay = function() {
     if(this.north != null && this.googleOverlay == null) {
         this.googleOverlay = new google.maps.GroundOverlay(
             this.overlay_path, 
@@ -25,7 +25,7 @@ localground.paper.prototype.renderOverlay = function() {
     }
 };
 
-localground.paper.prototype.renderListing = function() {
+localground.scan.prototype.renderListing = function() {
 	localground.overlay.prototype.renderListing.call(this);
 			
 	//append image cycler to the div:
@@ -55,18 +55,18 @@ localground.paper.prototype.renderListing = function() {
 	this.getListingCheckbox().after($cycleDiv);
 }
 
-localground.paper.prototype.renderListingImage = function() {
+localground.scan.prototype.renderListingImage = function() {
 	return null;
 };
 
-localground.paper.prototype.zoomToOverlay = function() {
+localground.scan.prototype.zoomToOverlay = function() {
     if(this.googleOverlay != null) {
         self.map.setCenter(this.googleOverlay.getBounds().getCenter());
         self.map.setZoom(this.zoomLevel);
     }
 };
 
-localground.paper.prototype.inView = function() {
+localground.scan.prototype.inView = function() {
     if(this.googleOverlay &&
        self.map.getBounds().contains(this.googleOverlay.getBounds().getCenter())) {
         return true;    
@@ -75,7 +75,7 @@ localground.paper.prototype.inView = function() {
 };
 
 
-localground.paper.prototype.toggleOverlay = function(isOn) {
+localground.scan.prototype.toggleOverlay = function(isOn) {
 	//call default renderer:
 	localground.overlay.prototype.toggleOverlay.call(this, isOn);
 	
@@ -111,7 +111,7 @@ localground.paper.prototype.toggleOverlay = function(isOn) {
     }	
 };
 
-localground.paper.prototype.updateOverlay = function(config) {
+localground.scan.prototype.updateOverlay = function(config) {
     var imageBounds = new google.maps.LatLngBounds(
         new google.maps.LatLng(config.south, config.west),
         new google.maps.LatLng(config.north, config.east)
@@ -137,7 +137,7 @@ localground.paper.prototype.updateOverlay = function(config) {
     'json');
 };
 
-localground.paper.prototype.makeEditable = function() {
+localground.scan.prototype.makeEditable = function() {
 	if(this.googleOverlay.map != null) {
 		if(this.map_images && this.map_images.length > 1) {
 			this.getListingElement().find('.image-cycler').css({display: 'inline-block'});

@@ -51,8 +51,8 @@ localground.ebays.prototype.toggleProjectData = function(projectID, is_checked) 
 				}
 				//process paper maps:
 				$('#mode_toggle').show();
-				self.paperManager.addRecords(result.processed_maps);
-				self.paperManager.renderOverlays();     
+				self.scanManager.addRecords(result.processed_maps);
+				self.scanManager.renderOverlays();     
 				//process photos:
 				self.photoManager.addRecords(result.photos);  
 				self.photoManager.renderOverlays();  

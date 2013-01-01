@@ -251,7 +251,7 @@ localground.profile.prototype.noSelection = function() {
 
 localground.profile.prototype.initImagePreviewer = function() {
     $('.thumb').click(function() {
-        self.imageModal = new ui.dialog({
+		self.imageModal = new ui.dialog({
 			id: 'image-modal',
 			width: 540,
 			height: 350,

@@ -1,18 +1,18 @@
-localground.paperManager = function(){
+localground.scanManager = function(){
 	this.batchTurnOnLimit = 10;
 	this.data = [];
 };
 
-localground.paperManager.prototype = new localground.manager();
+localground.scanManager.prototype = new localground.manager();
 
-localground.paperManager.prototype.addRecords = function(data) {
+localground.scanManager.prototype.addRecords = function(data) {
     var me = this;
     $.each(data, function(){
-        me.data.push(new localground.paper(this));        
+        me.data.push(new localground.scan(this));        
     });
 };
 
-localground.paperManager.prototype.getLayerBounds = function() {
+localground.scanManager.prototype.getLayerBounds = function() {
     var bounds = new google.maps.LatLngBounds();
     $.each(this.data, function() {
         if(this.googleOverlay && this.isVisible()) {
@@ -24,12 +24,12 @@ localground.paperManager.prototype.getLayerBounds = function() {
     return bounds;
 };
 
-localground.paperManager.prototype.makeViewable = function() {
+localground.scanManager.prototype.makeViewable = function() {
 	localground.manager.prototype.makeViewable.call(this);
     $('.image-cycler').css({display: 'none'});
 };
 
-localground.paperManager.prototype.toggleOverlays = function(isOn) {
+localground.scanManager.prototype.toggleOverlays = function(isOn) {
     //iterate through each table and turn on/off:
     var me = this;
     $.each(this.data, function(index) {
