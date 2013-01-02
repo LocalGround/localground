@@ -5,7 +5,7 @@
 localground.record = function(opts, color, tableID){
     this.fields = [];
     $.extend(this, opts);
-    this.overlayType = self.overlayTypes.RECORD;
+    this.overlayType = 'record';
 	this.managerID = tableID;
     this.iframeURL = '/scans/update-record/embed/?id=' + this.id + '&form_id=' +
                         this.managerID;
@@ -14,16 +14,18 @@ localground.record = function(opts, color, tableID){
         view: { width: 600, height: 290 }
     };
     
-    //initialize icons in the constructor:
-    this.image = 'http://chart.apis.google.com/chart?cht=it&chs=15x15&chco='
-    this.image += color + ',000000ff,ffffff01&chl=&chx=000000,0&chf=bg,s,00000000&ext=.png';
-    this.iconSmall = this.iconLarge = new google.maps.MarkerImage(this.image,
-        // This marker is 20 pixels wide by 32 pixels tall.
-        new google.maps.Size(15, 15),
-        // The origin for this image is 0,0.
-        new google.maps.Point(0,0),
-        // The anchor for this image is the base of the flagpole at 0,32.
-        new google.maps.Point(7, 7));
+	if(!opts.noMap) {
+		//initialize icons in the constructor:
+		this.image = 'http://chart.apis.google.com/chart?cht=it&chs=15x15&chco='
+		this.image += color + ',000000ff,ffffff01&chl=&chx=000000,0&chf=bg,s,00000000&ext=.png';
+		this.iconSmall = this.iconLarge = new google.maps.MarkerImage(this.image,
+			// This marker is 20 pixels wide by 32 pixels tall.
+			new google.maps.Size(15, 15),
+			// The origin for this image is 0,0.
+			new google.maps.Point(0,0),
+			// The anchor for this image is the base of the flagpole at 0,32.
+			new google.maps.Point(7, 7));
+	}
 };
 
 localground.record.prototype = new localground.point();
@@ -158,6 +160,44 @@ localground.record.prototype.renderMarkerRecord = function() {
                 .html(this.value))
         $record.append($row);
     });
+    return $record;
+};
+
+localground.record.prototype.renderSlideRecord = function() {
+    var $record = $('<div />'), $row = null;
+    $.each(this.fields, function() {
+        $row = $('<div />');
+        $row.append(
+                $('<div />')
+                    .css({
+                        'width': '120px',
+                        'display': 'inline-block',
+                        'vertical-align': 'top',
+                        'text-align': 'right',
+                        'font-weight': 'bold',
+						'padding': '5px'
+                    })
+                    .html(this.col_alias))
+            .append(
+                $('<div />')
+                    .css({
+                        'width': '300px',
+                        'margin-left': '5px',
+                        'display': 'inline-block',
+                        'color': '#222',
+						'padding': '5px'
+                    })
+                .html(this.value))
+        $record.append($row);
+    });
+	if(this.snippet_url) {
+        $record.append(
+			$('<div />')
+				.append($('<img />')
+					.attr('src', this.snippet_url)
+					.css({'max-width': '460px'})
+			));
+    }
     return $record;
 };
 

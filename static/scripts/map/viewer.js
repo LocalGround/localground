@@ -38,6 +38,8 @@ localground.viewer = function(){
     this.accessKey = null;
     this.managers = {};
     this.player = null;
+	this.slideshow = null;
+	
 };
 localground.viewer.prototype = new localground.basemap();           // Here's where the inheritance occurs 
 
@@ -54,11 +56,20 @@ localground.viewer.prototype.initialize=function(opts){
     $('input:checkbox')
         .attr('checked', false)
         .attr('disabled', false);
+		
+	this.slideshow = new localground.slideshow();
+    this.slideshow.initialize({
+		listenerFunction: 'self.slideshow.player',
+		flashID: 'audio_player'
+	});
+	this.player = new localground.player();
+	this.player.flashID = 'audio_player';
+	this.player.initialize();
    
-    $('#my-modal').modal({
+    /*$('#my-modal').modal({
         keyboard: true,
         backdrop: true
-    });
+    });*/
     
 	/*if(this.initProjectID != null || this.initViewID != null) {
 		$('#opener').trigger('click');

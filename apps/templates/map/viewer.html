@@ -9,26 +9,29 @@
     <!-- enable photo dragging -->
     <script src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js"></script>
     <!-- script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script -->
-    <script type="text/javascript" src="/static/scripts/thirdparty/twitter/bootstrap-modal.js"></script>
+    
+    <!-- script type="text/javascript" src="/static/scripts/thirdparty/twitter/bootstrap-modal.js"></script -->
     <script type="text/javascript" src="/static/scripts/thirdparty/twitter/bootstrap-tabs.js"></script>
+    <script type="text/javascript" src="/static/bootstrap2.2.2/js/bootstrap.js"></script>
     <script type="text/javascript" src="/static/scripts/thirdparty/infobubble.js"></script>
     <script type="text/javascript" src="/static/scripts/helpers/mapTypes.js"></script>
 	<script type="text/javascript" src="/static/scripts/site/player.js"></script>
     
     <!-- overlay & manager libraries -->
-   <script type="text/javascript" src="/static/scripts/map/overlays/overlay.js"></script> 
-   <script type="text/javascript" src="/static/scripts/map/overlays/point.js"></script> 
-   <script type="text/javascript" src="/static/scripts/map/overlays/photo.js"></script> 
-   <script type="text/javascript" src="/static/scripts/map/overlays/audio.js"></script> 
-   <script type="text/javascript" src="/static/scripts/map/overlays/record.js"></script> 
-   <script type="text/javascript" src="/static/scripts/map/overlays/paper.js"></script> 
-   <script type="text/javascript" src="/static/scripts/map/overlays/marker.js"></script> 
-   <script type="text/javascript" src="/static/scripts/map/managers/manager.js"></script>
-   <script type="text/javascript" src="/static/scripts/map/managers/photoManager.js"></script> 
-   <script type="text/javascript" src="/static/scripts/map/managers/audioManager.js"></script> 
-   <script type="text/javascript" src="/static/scripts/map/managers/tableManager.js"></script> 
-   <script type="text/javascript" src="/static/scripts/map/managers/paperManager.js"></script> 
-   <script type="text/javascript" src="/static/scripts/map/managers/markerManager.js"></script> 
+    <script type="text/javascript" src="/static/scripts/map/overlays/overlay.js"></script> 
+    <script type="text/javascript" src="/static/scripts/map/overlays/point.js"></script> 
+    <script type="text/javascript" src="/static/scripts/map/overlays/photo.js"></script> 
+    <script type="text/javascript" src="/static/scripts/map/overlays/audio.js"></script> 
+    <script type="text/javascript" src="/static/scripts/map/overlays/record.js"></script> 
+    <script type="text/javascript" src="/static/scripts/map/overlays/scan.js"></script> 
+    <script type="text/javascript" src="/static/scripts/map/overlays/marker.js"></script> 
+    <script type="text/javascript" src="/static/scripts/map/managers/manager.js"></script>
+    <script type="text/javascript" src="/static/scripts/map/managers/photoManager.js"></script> 
+    <script type="text/javascript" src="/static/scripts/map/managers/audioManager.js"></script> 
+    <script type="text/javascript" src="/static/scripts/map/managers/tableManager.js"></script> 
+    <script type="text/javascript" src="/static/scripts/map/managers/scanManager.js"></script> 
+    <script type="text/javascript" src="/static/scripts/map/managers/markerManager.js"></script>
+    <script type="text/javascript" src="/static/scripts/map/slideshow.js" ></script>
     
     <script type="text/javascript" src="/static/scripts/map/basemap.js"></script>
     <script type="text/javascript" src="/static/scripts/map/viewer.js"></script>
@@ -159,6 +162,45 @@
     .top-player.playercontroller > .counter span.elapsed {
         color: #A7CBF9 !important;
     }
+    
+    
+    /*for slide show */
+    .item > img {
+        margin-left: auto;
+        margin-right: auto;
+        max-height:450px;
+    }
+    .carousel {
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 0px !important;
+        height:450px;
+        width:600px;
+    }
+    .carousel-inner {
+        background-color: #999;
+    }
+    .audio-controller {
+        position: absolute;
+        width: 60px;
+        height: 65px;
+        bottom: 5px;
+        left: auto;
+        right: 5px;
+        display: block;
+        color: #fff;
+    }
+    #slide-modal {
+        width: 600px;
+        margin: -250px 0 0 -300px;
+        border: none !important;
+        background-color: transparent !important;
+        padding: 0px !important;
+    }
+    #slide-modal > .modal-body {
+        padding: 0px !important;
+    }
+            
 {% endblock %}
 {% block extra_scripts %}
     var isAdmin = false;
@@ -268,5 +310,10 @@
 			<button id="do_print" class="btn primary" onclick="driver.generatePrint()">Generate Print</button>
 		</div>
 	</div>
+    
+    <!-- slideshow modal -->
+    <div id="slide-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-body"></div>
+    </div>    
     
 {% endblock %}

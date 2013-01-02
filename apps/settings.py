@@ -1,6 +1,6 @@
 # Django settings for localground project.
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 GDAL_LIBRARY_PATH='/usr/lib/libgdal.so'     #replace with your GDAL path
 

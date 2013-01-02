@@ -34,6 +34,15 @@ class GeneralMixin(object):
             q =  q.order_by(ordering_field)
         return q
     
+    def by_marker(self, marker, ordering_field=None):
+        q = (self.model.objects
+                    .select_related('project', 'source_scan', 'source_marker',
+                                    'owner', 'last_updated_by')
+                    .filter(source_marker=marker))
+        if ordering_field is not None:
+            q =  q.order_by(ordering_field)
+        return q
+    
     def by_project(self, prj, ordering_field=None):
         return self.by_projects([prj.id], ordering_field=ordering_field)
     

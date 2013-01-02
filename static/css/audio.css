@@ -99,3 +99,56 @@
 .counter span.elapsed {
     color: #386CB0;
 }
+
+
+/******************************************************************************/
+/* SMALL AUDIO PLAYER                                                         */
+/******************************************************************************/
+/*http://flash-mp3-player.net/players/normal/documentation/*/
+.playercontroller-small {
+	color: #000;
+	height: 60px;
+	width: 50px;
+	margin: 0 0 1em 0;
+}
+.playercontroller-small .button {
+	width: 50px;
+	height: 50px;
+	background-repeat: no-repeat;
+	float: left;
+    cursor: pointer;
+}
+.playercontroller-small .button a {
+	display: block;
+	height: 50px;
+	text-indent: -100em;
+	overflow: hidden;
+	background-image: none;
+}
+.playercontroller-small .play {
+	/*background-image: url(/static/scripts/thirdparty/audio-player/control_play.png);*/
+	background-image: url(/static/images/pause.png);
+}
+.playercontroller-small .play:hover {
+	/*background-image: url(/static/scripts/thirdparty/audio-player/control_play_blue.png);*/
+	background-image: url(/static/images/play_hover.png);
+}
+.playercontroller-small .pause {
+	/*background-image: url(/static/scripts/thirdparty/audio-player/control_pause.png);*/
+	background-image: url(/static/images/play.png);
+	display: none;
+}
+.playercontroller-small .pause:hover {
+	/*background-image: url(/static/scripts/thirdparty/audio-player/control_pause_blue.png);*/
+	background-image: url(/static/images/pause_hover.png);
+}
+
+.counter-small {
+    font-size: 14px;
+    font-family: monospace;
+    color: #444;
+	text-align: center;
+}
+.counter-small span.elapsed {
+    color: #fff;
+}

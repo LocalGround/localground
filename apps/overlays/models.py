@@ -1,7 +1,9 @@
 from django.contrib.gis.db import models
+from localground.apps.helpers.models import ObjectTypes
 from datetime import datetime    
 from localground.apps.overlays.managers import MarkerManager, WMSOverlayManager
 from localground.apps.helpers.models import PointObject, ReturnCodes
+from localground.apps.uploads.models import Photo, Audio
     
 class Marker(PointObject):
     """
@@ -91,20 +93,24 @@ class Marker(PointObject):
         marker.delete()
         
     def get_photo_ids(self):
-        from localground.apps.uploads.models import Photo
         photo_ids = [o.id for o in
                            list(Photo.objects.filter(source_marker=self))]
         if len(photo_ids) > 0:
             return photo_ids
         return None
     
+    def get_photos(self):
+        return Photo.objects.by_marker(self, ordering_field='name').to_dict_list() 
+    
     def get_audio_ids(self):
-        from localground.apps.uploads.models import Audio
         audio_ids = [o.id for o in
                            list(Audio.objects.filter(source_marker=self))]
         if len(audio_ids) > 0:
             return audio_ids
         return None
+    
+    def get_audio(self):
+        return Audio.objects.by_marker(self, ordering_field='name').to_dict_list() 
     
     def get_note_ids(self):
         notes = {}
@@ -116,6 +122,23 @@ class Marker(PointObject):
                 notes[form.id] = [rec.id for rec in recs]
         if len(notes) > 0:
             return notes
+        return None
+    
+    def get_tables(self):
+        data = []
+        forms = self.project.form_set.all()
+        for form in forms:
+            recs = form.get_data(marker=self, to_dict=True,
+                                    include_markers=False)
+            if len(recs) > 0:
+                data.append({
+                    'id': form.id,
+                    'overlayType': ObjectTypes.RECORD,
+                    'name': form.name,
+                    'data': recs    
+                })
+        if len(data) > 0:
+            return data
         return None
     
     def to_dict(self, aggregate=False, detail=False):
@@ -138,7 +161,10 @@ class Marker(PointObject):
             e.update({
                 'photoIDs': self.get_photo_ids(),
                 'audioIDs': self.get_audio_ids(),
-                'noteIDs': self.get_note_ids()
+                'noteIDs': self.get_note_ids(),
+                'photos': self.get_photos(),
+                'audio': self.get_audio(),
+                'tables': self.get_tables()
             })
         else:
             e.update({ 'project_id': self.project.id })

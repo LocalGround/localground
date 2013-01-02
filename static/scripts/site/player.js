@@ -1,3 +1,5 @@
+//documentation:
+//  http://flash-mp3-player.net/players/js/documentation/
 var me;
 localground.player = function(){
     this.activeControl = null;
@@ -10,6 +12,9 @@ localground.player = function(){
     this.sliderPositionMax = null;
     this.sliderPosition = null;
     this.disableAdvancing = false;
+    this.mp3Counter = 0;
+    this.controllerClass = 'playercontroller';
+    this.flashID = 'swf_player';
 };
 
 localground.player.prototype.initialize = function($elem) {
@@ -36,7 +41,7 @@ localground.player.prototype.initialize = function($elem) {
 };
 
 localground.player.prototype.renderPlayerObject = function() {
-    var $player = $('<div />').addClass('playercontroller');
+    var $player = $('<div />').addClass(this.controllerClass);
     $player.append(
         $('<div />').addClass('button play')
             .append($('<a />').html('PLAY'))       
@@ -75,9 +80,11 @@ localground.player.prototype.renderFlashObject = function(opts) {
     var listenerFunction = 'driver.player';
     if(opts && opts.listenerFunction != null)
         listenerFunction = opts.listenerFunction;
+    if(opts && opts.flashID != null)
+        this.flashID = opts.flashID;
     var $flashObj = $('<object />')
         .addClass('playerpreview')
-        .attr('id', 'myFlash')
+        .attr('id', this.flashID)
         .attr('type', 'application/x-shockwave-flash')
         .attr('data', '/static/scripts/thirdparty/audio-player/player_mp3_js.swf')
         .attr('width', '1')
@@ -151,7 +158,7 @@ localground.player.prototype.onUpdate = function() {
 };
 
 localground.player.prototype.flashPlayer = function() {
-    return document.getElementById("myFlash");
+    return document.getElementById(this.flashID);
 };
 
 localground.player.prototype.reset = function() {
@@ -201,3 +208,71 @@ localground.player.prototype.setVolume = function() {
     var volume = document.getElementById("inputVolume").value;
     me.flashPlayer().SetVariable("method:setVolume", volume);
 };
+
+
+
+localground.playerSmall = function(){
+    this.controllerClass = 'playercontroller-small'
+    this.flashID = 'swf_player';
+};
+
+localground.playerSmall.prototype = new localground.player();
+
+localground.playerSmall.prototype.initialize = function($elem) {
+    me = this;
+    if($elem == null)
+        $elem = $('body');
+    
+    $elem.find('.play').click(function(){ me.play(this); });
+    $elem.find('.pause').click(function(){ me.pause(this); });
+    $elem.find('.stop').click(function(){ me.stop(this); });
+};
+
+localground.playerSmall.prototype.renderPlayerObject = function() {
+    var $player = $('<div />').addClass(this.controllerClass);
+    $player.append(
+        $('<div />').addClass('button play')
+            .append($('<a />').html('PLAY'))       
+    ).append(
+        $('<div />').addClass('button pause')
+            .append($('<a />').html('PAUSE'))       
+    ).append(
+        $('<div />').addClass('counter-small')
+            .append(
+                $('<span />')
+                    .addClass('elapsed')
+                    .html('00:00')
+            )
+    );
+    this.initialize($player);
+    var $input = $('<input />').attr('type', 'hidden');
+    return $('<div />').append($player).append($input);
+};
+
+localground.playerSmall.prototype.onUpdate = function() {
+    var isPlaying = (this.isPlaying == "true");
+    if(this.activeControl) {
+        this.activeControl.parent().find('.elapsed').html(
+                this.formatMilliseconds(this.duration - this.position));
+        
+        this.activeControl.find('.play').css({
+            'display': (isPlaying)?'none':'block'    
+        });
+        this.activeControl.find('.pause').css({
+            'display': (isPlaying)?'block':'none'    
+        });
+    }
+};
+
+localground.playerSmall.prototype.reset = function() {
+    this.position = 0;
+    if(this.activeControl == null) { return; }
+    this.activeControl.find('.play').css({
+        'display': 'block'    
+    });
+    this.activeControl.find('.pause').css({
+        'display': 'none'    
+    });
+};
+
+

@@ -120,7 +120,7 @@ class BaseObject(models.Model):
                 if obj.can_view(identity, access_key=access_key):
                     return obj, ReturnCodes.SUCCESS
                 else:
-                    return obj, ReturnCodes.UNAUTHORIZED
+                    return None, ReturnCodes.UNAUTHORIZED
             except cls.DoesNotExist:
                 return obj, ReturnCodes.OBJECT_DOES_NOT_EXIST
         else:

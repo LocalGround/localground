@@ -242,6 +242,8 @@ def update_latlng(request, object_type, object_id, remove=False, identity=None):
     
 #NOTE:  authentication checking going on in the PointObject.get_instance function
 def get_object(request, object_type, object_id, identity=None, access_key=None):
+    if identity is None:
+        identity = request.user
     obj, return_code = PointObject.get_instance(object_id, object_type, identity, access_key=access_key)
     dict = {
         'success': return_code == ReturnCodes.SUCCESS,

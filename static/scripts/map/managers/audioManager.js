@@ -10,11 +10,6 @@ localground.audioManager.prototype.addRecords = function(data) {
     $.each(data, function(){
         me.data.push(new localground.audio(this));        
     });
-    if(self.player == null && this.data.length > 0) {
-        self.player = new localground.player();
-        $('body').append(self.player.renderFlashObject());
-        self.player.initialize();
-    }
 };
 
 localground.audioManager.prototype.doViewportUpdates = function() {

@@ -347,6 +347,16 @@ localground.marker.prototype.showInfoBubbleView = function(opts) {
             me.renderInfoBubbleAudio($container);
             me.renderInfoBubbleRecords($container);
             $contentContainer.children().empty();
+            
+            $container.append(
+                $('<button class="btn primary">Test</button>').click(function(){
+                    //alert(me.id);
+                    //self.slideshow.get_photos_by_marker_id(me.id, 1);
+                    self.slideshow.render_slides(me, 0);
+                    self.slideshow.render_audio(me, 0);
+                    $('#slide-modal').modal(); 
+                })
+            )
             $contentContainer.append($container);
         },
     'json');    
