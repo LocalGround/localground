@@ -68,10 +68,6 @@ localground.viewer.prototype.initialize=function(opts){
         keyboard: true,
         backdrop: true
     });*/
-    
-	/*if(this.initProjectID != null || this.initViewID != null) {
-		$('#opener').trigger('click');
-	}*/
 	
     $('.unhide').click(function() {
         var object_type = $(this).parent().attr('id').split('_')[1];
@@ -119,14 +115,22 @@ localground.viewer.prototype.initialize=function(opts){
 	google.maps.event.addListener(this.map, 'bounds_changed', function() {
         self.doViewportUpdates();
     });
+	
+	this.tooltip = new InfoBubble({
+		borderRadius: 0,
+        maxHeight: 200,
+        padding: 5,
+		disableAnimation: true,
+		disableAutoPan: true,
+		hideCloseButton: true,
+		arrowSize: 10
+    });
     
     this.infoBubble = new InfoBubble({
-        //maxWidth: 650,
-        //minWidth: 350,
         borderRadius: 0,
         maxHeight: 385,
-        //minHeight: 250,
         padding: 0,
+		disableAnimation: true,
         closeBubbleExtras: function() {
             if(self.currentOverlay) {
                 self.currentOverlay.closeInfoBubble();

@@ -81,6 +81,7 @@ localground.audio.prototype.showInfoBubbleView = function(opts) {
             'overflow-x': 'hidden'
         }).append(htmlString);
     var showHeader = false;
+    self.infoBubble.doNotPad = false;
     self.infoBubble.setHeaderText(showHeader ? this.name.truncate(5) : null);
     self.infoBubble.setFooter(null);    
     self.infoBubble.setContent($contentContainer.get(0)); 

@@ -2,12 +2,14 @@ var self;
 
 localground.audio = function(){
     this.player = null;
+	this.listenerFunction = 'o.player';
 };
 
 localground.audio.prototype = new localground.profile(); // Here's where the inheritance occurs 
 
 localground.audio.prototype.initialize=function(opts){
     localground.profile.prototype.initialize.call(this, opts);
+	$.extend(this, opts);
     
     //add tagging auto-complete
     $('.tags').autocomplete(
@@ -26,7 +28,7 @@ localground.audio.prototype.initialize=function(opts){
     //include /static/scripts/lib/player.js
     this.player = new localground.player();
     this.player.initialize({
-		listenerFunction: 'o.player',
+		listenerFunction: this.listenerFunction,
 		flashID: 'audio_player',
 		renderFlashPlayer: true
 	});

@@ -2655,7 +2655,7 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
 
 /* Next version of bootstrap */
 /* scroll to bottom of this -> http://twitter.github.com/bootstrap/base-css.html for samples */
-[class^="icon-"],[class*=" icon-"]{display:inline-block;width:14px;height:14px;line-height:14px;vertical-align:text-top;background-image:url("../img/glyphicons-halflings.png");background-position:14px 14px;background-repeat:no-repeat;*margin-right:.3em;}[class^="icon-"]:last-child,[class*=" icon-"]:last-child{*margin-left:0;}
+[class^="icon-"],[class*=" icon-"]{display:inline-block;width:14px;height:14px;line-height:14px;vertical-align:text-top;background-image:url("glyphicons-halflings.png");background-position:14px 14px;background-repeat:no-repeat;*margin-right:.3em;}[class^="icon-"]:last-child,[class*=" icon-"]:last-child{*margin-left:0;}
 .icon-white{background-image:url("glyphicons-halflings-white.png");}
 .icon-dark{background-image:url("glyphicons-halflings.png");}
 .icon-glass{background-position:0 0;}
@@ -2918,4 +2918,110 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
   margin-bottom: 0;
 }
 
+/* New side navigation menu */
+
+.bs-docs-sidenav {
+    background-color: #FFFFFF;
+    border-radius: 6px 6px 6px 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
+    margin: 30px 0 0;
+    padding: 0;
+    width: 228px;
+}
+.bs-docs-sidenav > li > a {
+    border: 1px solid #E5E5E5;
+    display: block;
+    margin: 0 0 -1px;
+    padding: 8px 14px;
+}
+.bs-docs-sidenav > li:first-child > a {
+    border-radius: 6px 6px 0 0;
+}
+.bs-docs-sidenav > li:last-child > a {
+    border-radius: 0 0 6px 6px;
+}
+.bs-docs-sidenav > .active > a {
+    border: 0 none;
+    box-shadow: 1px 0 0 rgba(0, 0, 0, 0.1) inset, -1px 0 0 rgba(0, 0, 0, 0.1) inset;
+    padding: 9px 15px;
+    position: relative;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+    z-index: 2;
+}
+.bs-docs-sidenav .icon-chevron-right {
+    float: right;
+    margin-right: -6px;
+    margin-top: 2px;
+    opacity: 0.25;
+}
+.bs-docs-sidenav > li > a:hover {
+    background-color: #F5F5F5;
+}
+.bs-docs-sidenav a:hover .icon-chevron-right {
+    opacity: 0.5;
+}
+.bs-docs-sidenav .active .icon-chevron-right, .bs-docs-sidenav .active a:hover .icon-chevron-right {
+    background-image: url("glyphicons-halflings-white.png");
+    opacity: 1;
+}
+.bs-docs-sidenav.affix {
+    top: 40px;
+}
+.bs-docs-sidenav.affix-bottom {
+    bottom: 270px;
+    position: absolute;
+    top: auto;
+}
+.bs-docs-sidenav {
+    width: 258px;
+}
+.bs-docs-sidenav > li > a {
+}
+.bs-docs-sidenav {
+    margin-right: 0;
+    margin-top: 30px;
+    top: 0;
+    width: 218px;
+}
+.bs-docs-sidenav {
+    margin-top: 20px;
+    width: 166px;
+}
+.bs-docs-sidenav.affix {
+    top: 0;
+}
+.bs-docs-sidenav {
+    margin-bottom: 20px;
+    width: auto;
+}
+.bs-docs-sidenav.affix {
+    position: static;
+    top: 0;
+    width: auto;
+}
+.bs-docs-sidenav .icon-chevron-right {
+    float: right;
+    margin-right: -6px;
+    margin-top: 2px;
+    opacity: 0.25;
+}
+.bs-docs-sidenav > li > a:hover {
+    background-color: #F5F5F5;
+    text-decoration: none;
+}
+.bs-docs-sidenav a:hover .icon-chevron-right {
+    opacity: 0.5;
+}
+.bs-docs-sidenav .active .icon-chevron-right, .bs-docs-sidenav .active a:hover .icon-chevron-right {
+    background-image: url("glyphicons-halflings-white.png");
+    opacity: 1;
+}
+
+.nav-side-menu {
+    list-style: none outside none;
+}
+
+.nav-side-menu > ul > li > a, .nav-side-menu > ul > li > a:hover {
+    text-decoration: none;
+}
 

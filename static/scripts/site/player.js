@@ -28,6 +28,9 @@ localground.player.prototype.initialize = function(opts) {
         if(opts.renderFlashPlayer)
             $('body').append(this.renderFlashObject(opts));
     }
+    //unbind event handlers:
+    $('.play, .pause, .stop, .timeline, .playerslider').unbind('click');
+    
     $('.play').click(function(){ me.play(this); });
     $('.pause').click(function(){ me.pause(this); });
     $('.stop').click(function(){ me.stop(this); })
@@ -101,7 +104,7 @@ localground.player.prototype.renderPlayerObject = function() {
                 ));
             break;
     }
-    this.initialize($player);
+    //this.initialize($player);
     var $input = $('<input />').attr('type', 'hidden');
     return $('<div />').append($player).append($input);
 };
@@ -207,6 +210,7 @@ localground.player.prototype.reset = function() {
 };
 
 localground.player.prototype.play = function(elem) {
+    //alert('play');
     this.activeControl = $(elem).parent(); 
     if (this.mp3URL != $(elem).parent().next().val()) {
         this.reset();                           //resets previous player

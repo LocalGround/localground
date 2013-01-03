@@ -203,6 +203,8 @@
   var old = $.fn.carousel
 
   $.fn.carousel = function (option) {
+     
+    //alert('initializing!');
     return this.each(function () {
       var $this = $(this)
         , data = $this.data('carousel')
@@ -233,7 +235,6 @@
 
  /* CAROUSEL DATA-API
   * ================= */
-
   $(document).on('click.carousel.data-api', '[data-slide]', function (e) {
     var $this = $(this), href
       , $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
@@ -241,6 +242,8 @@
     $target.carousel(options)
     e.preventDefault()
   })
+  
+  
 
 }(window.jQuery);
 

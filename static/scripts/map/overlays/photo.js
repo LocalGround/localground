@@ -109,3 +109,19 @@ localground.photo.prototype.showInfoBubbleView = function(opts) {
     self.infoBubble.open(self.map, this.googleOverlay);
 };
 
+localground.photo.prototype.mouseoverF = function(){
+	var $innerObj = $('<div />')
+						.append($('<img />')
+							.attr('src', self.currentOverlay.path_marker_lg)
+							.css({float: 'left', 'margin-right': '5px'}))
+						.append($('<p />').html(self.currentOverlay.name)
+									.css({'font-weight': 'bold', 'margin-bottom': '0px'})
+						).append($('<p />').html(self.currentOverlay.caption));
+	this.showTip({
+		width: '200px',
+		height: '50px',
+		overflowY: 'hidden',
+		contentContainer: $innerObj 
+	});
+};
+

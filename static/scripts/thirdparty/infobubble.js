@@ -39,6 +39,7 @@ function InfoBubble(opt_options) {
 	this.activeTab_ = null;
 	this.baseZIndex_ = 100;
 	this.isOpen_ = false;
+	this.doNotPad = false;
 	this.closeBubbleExtras = function() {
 		if(opt_options.closeBubbleExtras) {
 			opt_options.closeBubbleExtras();  
@@ -629,8 +630,11 @@ InfoBubble.prototype.getHeader = function() {
 					.html(this.get('headerText')))
 			.get(0));
 	}
-	else {
+	else if(!this.hideCloseButton) {
 		return $('<div></div>').css({'height': '15px'}).get(0);
+	}
+	else {
+		return $('<div></div>').css({'display': 'none'}).get(0);	
 	}
                 
 };
@@ -1306,6 +1310,10 @@ InfoBubble.prototype.imageLoaded_ = function() {
   if (pan && (this.tabs_.length == 0 || this.activeTab_.index == 0)) {
     this.panToView();
   }
+  //try { self.slideshow.carousel.carousel(); }
+  //catch(e){}
+  //alert('image-loaded');
+  $('#slideshow-carousel').carousel();
 };
 
 /**
@@ -1651,6 +1659,7 @@ InfoBubble.prototype.getElementSize_ = function(element, opt_maxWidth,
     //hack:  work around so iframe doesn't un-necessarily reload!
     //alert($(element).height() + ' - ' + $(element).width());
     var w = $(element).width() + 15, h = $(element).height();
+	if(this.doNotPad){ w-=15; }
     var footer = this.get('footer');
     //alert(h);
     // to incorporate header / footer height:

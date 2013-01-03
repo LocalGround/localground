@@ -138,10 +138,20 @@ localground.point.prototype.makeEditable = function() {
 localground.point.prototype.addMarkerEventHandlers = function() {
     var me = this;
     google.maps.event.addListener(this.googleOverlay, "click", function(mEvent) {
-        self.currentOverlay = me;
+        self.tooltip.close();
+		self.currentOverlay = me;
         me.closeInfoBubble();
         me.showInfoBubble();
     });
+	google.maps.event.addListener(this.googleOverlay, "mouseover", function() {
+		self.currentOverlay = me;
+		me.mouseoverF();
+	});
+	google.maps.event.addListener(this.googleOverlay, "mouseout", function() {
+		self.currentOverlay = me;
+		me.mouseoutF();
+	});
+	
     //only adds them if in "edit mode"
     if(this.isEditMode())
         this.makeEditable();
@@ -323,5 +333,36 @@ localground.point.prototype.makeGeoreferenceable = function() {
             $img.removeClass('can_drag').removeClass('activated').draggable('disable');
         }
     }).addClass('activated');
+};
+
+localground.point.prototype.showTip = function(opts){
+	//opts.contentContainer, opts.width, opts.height
+	if(self.infoBubble.isOpen()){ return; }
+	var width = '150px', height = '25px', overflowY = 'auto';
+	if(opts.width){ width = opts.width; }
+	if(opts.height){ height = opts.height; }
+	if(opts.overflowY){ overflowY = opts.overflowY; }
+	var $bubble = $('<div></div>').css({
+			'width': width,
+			'height': height,
+			'margin': '0px 0px 0px 0px',
+			'overflow-y': overflowY,
+			'overflow-x': 'hidden'
+		}).append(opts.contentContainer);
+	self.tooltip.setHeaderText(null);
+	self.tooltip.setFooter(null);    
+	self.tooltip.setContent($bubble.get(0)); 
+	self.tooltip.open(self.map, self.currentOverlay.googleOverlay);
+}
+
+localground.point.prototype.mouseoverF = function(){
+	var $innerObj = $('<div style="text-align:center" />').append(this.name);
+	this.showTip({
+		contentContainer: $innerObj 
+	});
+};
+
+localground.point.prototype.mouseoutF = function(){
+	self.tooltip.close();
 };
 

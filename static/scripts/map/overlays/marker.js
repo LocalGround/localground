@@ -41,16 +41,13 @@ localground.marker.prototype.renderListingText = function() {
 };
 
 localground.marker.prototype.getRecordCount = function() {
-    if(this.recordIDs) {
+    if(this.tables) {
         var cnt = 0;
-        $.each(this.recordIDs, function(tableID, recordIDs){
-            cnt = cnt + recordIDs.length;  
+        $.each(this.tables, function(idx) {
+            cnt += this.data.length;
         });
-        return cnt;
     }
-    else {
-        return this.record_count;
-    }
+    return cnt;
 };
 
 localground.marker.prototype.getPhotoCount = function() {
@@ -122,13 +119,13 @@ localground.marker.prototype.updateMarker = function() {
 localground.marker.prototype.renderInfoBubble = function() {
     var me = this;
     var $contentContainer = $('<div></div>').css({
-            'width': '414px',
-            'height': this.isEditMode() ? 270 : 300,
-            'margin': '5px 0px 5px 10px',
-            'overflow-y': 'auto',
+            'width': this.isEditMode() ? 414 : 600,
+            'height': this.isEditMode() ? 270 : 450,
+            'margin': this.isEditMode() ? '5px 0px 5px 10px' : '0px',
+            'overflow-y': this.isEditMode() ? 'auto' : 'hidden',
             'overflow-x': 'hidden'
         }).append(this.getManagerById(self.overlayTypes.MARKER).getLoadingImage());
-    var showHeader = true;
+    var showHeader = this.isEditMode() ? true : false;
     self.infoBubble.setHeaderText(showHeader ? this.name.truncate(5) : null);
     if(this.isEditMode()) {
         var $footer = $('<div></div>')
@@ -153,6 +150,7 @@ localground.marker.prototype.renderInfoBubble = function() {
     else {
         self.infoBubble.setFooter(null);
     }
+    self.infoBubble.doNotPad = true;
     self.infoBubble.setContent($contentContainer.get(0)); 
     self.infoBubble.open(self.map, this.googleOverlay);
     return $contentContainer; 
@@ -341,6 +339,49 @@ localground.marker.prototype.showInfoBubbleView = function(opts) {
                 return;
             }
             $.extend(me, result.obj);
+            $contentContainer.children().empty();
+            
+            $container = $('<div></div>');
+            $contentContainer.append($container);
+            /*$container.append(
+                $('<button class="btn primary">Test</button>').click(function(){
+                    $('#slide-modal').find('.modal-body').empty();
+                    self.slideshow.render_slideshow(me, $('#slide-modal').find('.modal-body'));
+                    $('#slide-modal').modal();
+                })
+            );*/
+            self.slideshow.render_slideshow({
+                marker: me,
+                $container: $container,
+                applyHack: true
+            });
+        },
+    'json');    
+    
+    if(self == null) {
+        alert('The variable self should be set to the map controller in the \
+                parent class');
+        return;
+    }
+    //ensures that the marker renders on top:
+    this.googleOverlay.setMap(null);
+    this.googleOverlay.setMap(self.map);
+};
+
+localground.marker.prototype.showInfoBubbleView1 = function(opts) {
+    var me = this;
+    //build bubble content:
+    var $contentContainer = this.renderInfoBubble();
+    var url = '/api/0/get/marker/' + this.id + '/';
+    if(this.accessKey != null)
+        url += this.accessKey + '/';
+    $.getJSON(url, 
+        function(result) {
+            if(result.obj == null){
+                alert(result.message);
+                return;
+            }
+            $.extend(me, result.obj);
             $container = $('<div></div>');
             me.renderInfoBubbleHeader($container);
             me.renderInfoBubblePhotos($container);
@@ -350,11 +391,9 @@ localground.marker.prototype.showInfoBubbleView = function(opts) {
             
             $container.append(
                 $('<button class="btn primary">Test</button>').click(function(){
-                    //alert(me.id);
-                    //self.slideshow.get_photos_by_marker_id(me.id, 1);
-                    self.slideshow.render_slides(me, 0);
-                    self.slideshow.render_audio(me, 0);
-                    $('#slide-modal').modal(); 
+                    $('#slide-modal').find('.modal-body').empty();
+                    self.slideshow.render_slideshow(me, $('#slide-modal').find('.modal-body'));
+                    $('#slide-modal').modal();
                 })
             )
             $contentContainer.append($container);
@@ -485,6 +524,16 @@ localground.marker.prototype.removeFromMarker = function($elem, obj) {
             }
         },
         'json');   
+};
+
+localground.marker.prototype.mouseoverF = function(){
+	var $innerObj = $('<div style="text-align:center" />')
+                        .append(this.renderListingText());
+	this.showTip({
+		contentContainer: $innerObj,
+        height: '40px',
+        width: '200px'
+	});
 };
 
 

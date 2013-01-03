@@ -139,7 +139,7 @@ class Marker(PointObject):
                 })
         if len(data) > 0:
             return data
-        return None
+        return []
     
     def to_dict(self, aggregate=False, detail=False):
         e = {

@@ -25,7 +25,10 @@
     var o = new localground.audio();
 {% endblock %}
 {% block pageload_scripts %}
-	var opts = { skip: true };
+	var opts = {
+		skip: true,
+		listenerFunction: 'o.player'
+	};
     o.initialize(opts);
 {% endblock %}
 
