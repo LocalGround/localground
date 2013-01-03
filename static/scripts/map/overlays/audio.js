@@ -44,11 +44,11 @@ localground.audio.prototype.showInfoBubbleView = function(opts) {
                 $('#player').show();
                 $('#audio_url').val(me.path);
                 if($(this).html() == 'play') {
-                    $('.play').triggerHandler('click');
+                    $('#player').find('.play').triggerHandler('click');
                     $(this).html('pause')
                 }
                 else {
-                    $('.pause').triggerHandler('click');
+                    $('#player').find('.pause').triggerHandler('click');
                     $(this).html('play')
                 }
                 return false;
@@ -57,7 +57,7 @@ localground.audio.prototype.showInfoBubbleView = function(opts) {
             .append($('<a class="stop_link" href="#">stop</a>')
             .click(function() {
                 $('#audio_url').val(me.path);
-                $('.stop').triggerHandler('click');
+                $('#player').find('.stop').triggerHandler('click');
                 $(this).parent().find('.play_link').html('play');
                 return false;
             })));

@@ -1,10 +1,13 @@
 localground.slideshow = function(){
-    this.player = new localground.playerSmall();
-    this.player.initialize();
+    this.player = null;
 };
 
 localground.slideshow.prototype.initialize=function(opts){
-    $('body').append(this.player.renderFlashObject(opts));
+    if(opts){ $.extend(this, opts); }
+    this.player = new localground.player({mode: 'small'});
+    this.player.initialize(opts);
+    if(opts.renderFlashPlayer)
+        $('body').append(this.player.renderFlashObject(opts));
 };
 
 localground.slideshow.prototype.generateCarousel = function(id) {
@@ -76,6 +79,8 @@ localground.slideshow.prototype.render_audio = function(marker, counter) {
         $('<div />').addClass('audio-controller')
             .append(playerHtml)
     );
+    
+    this.player.initialize();
     $.each(marker.audio, function(idx) {
         if(idx > 0)
             playerHtml.append($('<input type="hidden" />').val(this.path));    

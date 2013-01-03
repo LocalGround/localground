@@ -37,7 +37,6 @@ localground.viewer = function(){
     this.projects = [];
     this.accessKey = null;
     this.managers = {};
-    this.player = null;
 	this.slideshow = null;
 	
 };
@@ -56,15 +55,14 @@ localground.viewer.prototype.initialize=function(opts){
     $('input:checkbox')
         .attr('checked', false)
         .attr('disabled', false);
-		
+	
+	//init slideshow player:	
 	this.slideshow = new localground.slideshow();
-    this.slideshow.initialize({
+	this.slideshow.initialize({
 		listenerFunction: 'self.slideshow.player',
-		flashID: 'audio_player'
+		flashID: 'audio_player',
+		renderFlashPlayer: true
 	});
-	this.player = new localground.player();
-	this.player.flashID = 'audio_player';
-	this.player.initialize();
    
     /*$('#my-modal').modal({
         keyboard: true,

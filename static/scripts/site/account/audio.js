@@ -25,7 +25,11 @@ localground.audio.prototype.initialize=function(opts){
     
     //include /static/scripts/lib/player.js
     this.player = new localground.player();
-    this.player.initialize();
+    this.player.initialize({
+		listenerFunction: 'o.player',
+		flashID: 'audio_player',
+		renderFlashPlayer: true
+	});
 };
 
 localground.audio.prototype.addObject = function() {
