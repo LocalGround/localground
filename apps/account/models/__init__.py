@@ -6,7 +6,9 @@
 # See "Meta" hack in Stack Overflow thread here:
 # http://stackoverflow.com/questions/1160579/models-py-getting-huge-what-is-the-best-way-to-break-it-up
 
+from localground.apps.account.models.base import Base
 from localground.apps.account.models.groups import Project, View, Scene
 from localground.apps.account.models.userprofile import UserProfile
 from localground.apps.account.models.permissions import \
-    UserAuthorityObject, UserAuthority, ObjectAuthority, EntityGroupAssociation
+    BasePermissions, UserAuthorityObject, UserAuthority, ObjectAuthority
+from localground.apps.account.models.entitygroupassociation import EntityGroupAssociation

@@ -59,11 +59,10 @@ def process_project(function):
         cookies = request.COOKIES
         project = None
         user = request.user
-        alias = kwargs.get('identity', None)
         
         #inner method to get most recent project if default selection isn't valid
-        def get_default_project(alias):
-            projects = Project.objects.filter(owner=alias).order_by('-time_stamp')
+        def get_default_project(user):
+            projects = Project.objects.filter(owner=user).order_by('-time_stamp')
             if len(projects) > 0:
                 return projects[0]
             return None
@@ -76,7 +75,7 @@ def process_project(function):
             }))
             
         # 2) order matters (defer to request param before cookie)
-        project_id = r.get('project_id') or cookies.get('project_id_' + user.username)
+        project_id = r.get('project_id') #or cookies.get('project_id_' + user.username)
         if project_id is not None:
             if project_id in ['all', 'all#', '']:
                 project = None
@@ -99,37 +98,21 @@ def process_project(function):
                 try:
                     project = Project.objects.get(id=int(project_id))
                 except ValueError:
-                    if project_id == cookies.get('project_id_' + request.user.username):
-                        project = get_default_project(alias)
-                    else:
-                        return HttpResponse(json.dumps({
-                            'code': 'failure',
-                            'message': 'The project_id parameter must be an integer. \
-                                You submitted: \'' + project_id + '\''
-                        }))    
+                    project = get_default_project(user)
                 except Project.DoesNotExist:
-                    if project_id == cookies.get('project_id_' + request.user.username):
-                        project = get_default_project(alias)
-                    else:
-                        return HttpResponse(json.dumps({
-                            'code': 'failure',
-                            'message': 'Project #"' + project_id + '" does not exist'
-                        }))
+                    project = get_default_project(user)
+                 
                 #is user authorized?
                 #if project is not None and project.owner != user and not user.is_superuser:
                 if project.can_view(user) == False:
-                    #if project id defined in cookies, pick the most recently updated project:
-                    if project_id == cookies.get('project_id_' + request.user.username):
-                        project = get_default_project(alias)
-                    else:
-                        return HttpResponse(json.dumps({
-                            'code': 'failure',
-                            'message': 'Not authorized to view information for %s' \
-                                % project.name
-                        }))
+                    return HttpResponse(json.dumps({
+                        'code': 'failure',
+                        'message': 'Not authorized to view information for %s' \
+                            % project.name
+                    }))
         else:
             #if no project id defined, pick the most recently updated project:
-            project = get_default_project(alias)
+            project = get_default_project(user)
                  
         # 3) update kwargs dict to return 'identity' entry to calling function:
         if kwargs is None: kwargs = {}

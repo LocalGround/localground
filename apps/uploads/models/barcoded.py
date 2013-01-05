@@ -78,8 +78,8 @@ class Scan(Processor):
     map_rect = models.CharField(max_length=255, blank=True, null=True)
     processed_image = models.ForeignKey('uploads.ImageOpts', blank=True, null=True)
     deleted = models.BooleanField(default=False)
-    objects = ScanManager()
     directory_name = 'scans'
+    objects = ScanManager()
     
     class Meta:
         app_label = 'uploads'
@@ -205,8 +205,8 @@ class Scan(Processor):
 class Attachment(Processor):
     source_scan = models.ForeignKey(Scan, blank=True, null=True)
     is_short_form = models.BooleanField(default=False)
-    objects = ScanManager()
     directory_name = 'attachments'
+    objects = ScanManager()
     
     class Meta:
         app_label = "uploads"

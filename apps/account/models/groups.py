@@ -1,15 +1,17 @@
 from django.contrib.gis.db import models
 from localground.apps.helpers.models import ObjectTypes
-from localground.apps.account.models.base import Base, BasePermissions
+from localground.apps.account.models.base import Base
 from localground.apps.account.managers import ProjectManager, ViewManager
 from localground.apps.account.models.permissions import \
-                UserAuthority, UserAuthorityObject, ObjectAuthority, EntityGroupAssociation
+        BasePermissions, UserAuthority, UserAuthorityObject, \
+        ObjectAuthority
+from localground.apps.account.models.entitygroupassociation import EntityGroupAssociation
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from localground.apps.uploads.models import Scan, Photo, Audio, Video
 from localground.apps.overlays.models import Marker, WMSOverlay
 
-class Group(BasePermissions):
+class Group(Base, BasePermissions):
     """
     Abstract class that extends BasePermissions; provides helper methods to
     determine whether a user has read/write/manage permissions on an object.

@@ -198,6 +198,7 @@ def generate_print(request, identity=None, is_json=False, project=None, embed=Fa
             p.last_updated_by = request.user
             p.extents = extents
             p.layout = layout
+            p.virtual_path = p.generate_relative_path()
             if layout.is_data_entry and form is not None:
                 p.form = form
                 cols = form.get_fields(print_only=True)

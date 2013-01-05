@@ -1,11 +1,12 @@
 from django.contrib.gis.db import models
 from localground.apps.helpers.models import ObjectTypes
 from datetime import datetime    
-from localground.apps.overlays.managers import MarkerManager, WMSOverlayManager
+from localground.apps.overlays.managers import MarkerManager
 from localground.apps.helpers.models import PointObject, ReturnCodes
+from localground.apps.account.models import Base
 from localground.apps.uploads.models import Photo, Audio
     
-class Marker(PointObject):
+class Marker(PointObject): 
     """
     Markers are association objects with a lat/lng.  Markers can be associated
     with one or more photos, audio files, data records, etc.  This object needs
@@ -180,63 +181,7 @@ class Marker(PointObject):
         verbose_name = 'marker'
         verbose_name_plural = 'Map Markers'
         ordering = ['id']
+        app_label = "overlays"
     
     def __unicode__(self):
         return str(self.id)
-    
-class OverlaySource(models.Model):
-    """
-    Stores the source of the overlay (Cloudmade, Google, Stamen, locally produced, etc.)
-    """
-    name                = models.CharField(max_length=255, blank=True)
-    def __unicode__(self):
-        return self.name
-
-class OverlayType(models.Model):
-    """
-    Stores the kind of overlay (Base tileset versus data overlay)
-    """
-    name                = models.CharField(max_length=255, blank=True)
-    description         = models.TextField(blank=True)
-    def __unicode__(self):
-        return self.name
-    
-class WMSOverlay(models.Model):
-    """
-    Stores the specific overlays available in Local Ground.
-    """
-    name                = models.CharField(max_length=255, blank=True)
-    description         = models.TextField(blank=True)
-    wms_url             = models.CharField(max_length=500, blank=True)
-    time_stamp          = models.DateTimeField(default=datetime.now, blank=True)
-    min_zoom            = models.IntegerField(default=1)
-    max_zoom            = models.IntegerField(default=20)
-    overlay_type        = models.ForeignKey(OverlayType)
-    overlay_source      = models.ForeignKey(OverlaySource)
-    extents             = models.PolygonField(null=True, blank=True)
-    auth_groups         = models.ManyToManyField('auth.Group', null=True)
-    is_printable        = models.BooleanField(default=False)
-    provider_id         = models.CharField(max_length=30, blank=True)
-    user                = models.ForeignKey('auth.User', null=True)
-    objects             = WMSOverlayManager()
-
-    class Meta:
-        verbose_name_plural = "Map Services (WMS Overlays)"
-        
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'typeID': self.overlay_type.id,
-            'name': self.name,
-            'sourceID': self.overlay_source.id,
-            'sourceName': self.overlay_source.name,
-            'type': self.overlay_type.name,
-            'url': self.wms_url,
-            'providerID': self.provider_id,
-            'min': self.min_zoom, 
-            'max': self.max_zoom,
-            'is_printable': self.is_printable
-        }
-    
-    def __unicode__(self):
-        return self.name

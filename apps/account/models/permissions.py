@@ -1,8 +1,23 @@
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
+from localground.apps.account.models import Base
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+
+class BasePermissions(models.Model):
+    """
+    Abstract base class for media groups (Project and View objects).
+    """
+    access_authority = models.ForeignKey('account.ObjectAuthority',
+                            db_column='view_authority',
+                            verbose_name='Sharing')
+    access_key = models.CharField(max_length=16, null=True, blank=True)
+    users = generic.GenericRelation('account.UserAuthorityObject')
+    
+    class Meta:
+        abstract = True
+        app_label = "account"
 
 class ObjectAuthority(models.Model):
     """
@@ -69,35 +84,3 @@ class UserAuthorityObject(models.Model):
         app_label = "account"
         db_table = "account_userauthorityobject"
         
-class EntityGroupAssociation(models.Model):
-    """
-    http://weispeaks.wordpress.com/2009/11/04/overcoming-limitations-in-django-using-generic-foreign-keys/
-    Uses the contenttypes framework to create one big "meta-association table"
-    between media elements (photos, audio files, scans, etc.) and groups.  See
-    the reference above for more information about the contenttypes framework.
-    """
-    user = models.ForeignKey('auth.User')
-    time_stamp = models.DateTimeField(default=datetime.now)
-    ordering = models.IntegerField()
-    turned_on = models.BooleanField()
-    
-    #generic "Group" foreign key:
-    group_type = models.ForeignKey(ContentType)
-    group_id = models.PositiveIntegerField()
-    group_object = generic.GenericForeignKey('group_type', 'group_id')
-    
-    #generic "Entity" foreign key, where an entity can be a marker, map image,
-    #photo, audio file, media type, or table record.
-    entity_type = models.ForeignKey(ContentType, related_name="%(app_label)s_%(class)s_related")
-    entity_id = models.PositiveIntegerField()
-    entity_object = generic.GenericForeignKey('entity_type', 'entity_id')
-    
-    def to_dict(self):
-        return {
-            'username': self.id,
-            'ordering': self.ordering,
-            'turned_on': self.turned_on
-        }
-    
-    class Meta:
-        app_label = "account"
