@@ -27,6 +27,7 @@ same view and parameters. Then, you can use this name in reverse URL matching.
     
 handler500 = 'localground.apps.account.views.server_error' 
 urlpatterns = patterns('',
+    #view-free urls
     (r'^$', direct_to_template, {'template': 'pages/splash.html'}),
     (r'^about/$', direct_to_template, {'template': 'pages/about.html'}),
     (r'^instructions/$', direct_to_template, {'template': 'pages/instructions.html'}),
@@ -34,57 +35,50 @@ urlpatterns = patterns('',
     (r'^contact/$', direct_to_template, {'template': 'pages/contact.html'}),
     (r'^credits/$', direct_to_template, {'template': 'pages/credits.html'}),
     
-    
-    (r'^profile/', include('localground.apps.account.urls')),
-                       
-    #disabling new user registration for now:
-    (r'^accounts/', include('localground.apps.registration.urls')),
-    (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
+    #profile
+    (r'^profile/', include('localground.apps.site.urlsprofile')),
     
     #api:
-    (r'^api/0/tester/', include('localground.apps.api.urls.tester_urls')),
-    (r'^api/0/', include('localground.apps.api.urls.api_urls')),
-    
-    #todo:  is this section even needed?  Need to understand it better:
-    #(r'^admin/', include(admin.site.urls)),
-    
-    #print:
-    (r'^print/', include('localground.apps.prints.urls')),
-    
-    #EBAYS:
-    (r'^ebays/', include('localground.apps.vis.ebays.urls')),
-    
-    #upload:  manages the forms-based uploader:
-    (r'^upload/$', 'localground.apps.uploads.views.uploader.init_upload_form'),
-    (r'^upload/embed/$', 'localground.apps.uploads.views.uploader.init_upload_form', {
-        'embed': True,
-        'base_template': 'base/iframe.html'
-    }),
-    #(r'^upload/media/$', 'localground.apps.uploads.views.uploader.init_media_form'),
-    #(r'^upload/post/$', 'localground.apps.uploads.views.uploader.upload'),
-    #(r'^upload/media/post/$', 'localground.apps.uploads.views.uploader.upload_media'),
+    (r'^api/0/tester/', include('localground.apps.site.urlsapitester')),
+    (r'^api/0/', include('localground.apps.site.urlsapi')),
     
     #overlays
-    (r'^overlays/save-marker/$', 'localground.apps.overlays.views.save_marker'),
-    (r'^overlays/delete-marker/$', 'localground.apps.overlays.views.delete_marker'),
-    (r'^overlays/show-marker/$', 'localground.apps.overlays.views.show_marker_detail'),
-    (r'^overlays/show-marker/embed/$', 'localground.apps.overlays.views.show_marker_detail',
+    (r'^overlays/save-marker/$', 'localground.apps.site.views.save_marker'),
+    (r'^overlays/delete-marker/$', 'localground.apps.site.views.delete_marker'),
+    (r'^overlays/show-marker/$', 'localground.apps.site.views.show_marker_detail'),
+    (r'^overlays/show-marker/embed/$', 'localground.apps.site.views.show_marker_detail',
     {
         'embed': True,
         'base_template': 'base/iframe.html'
     }),
-        
-    #manages scan processing and viewing (the python script posts here):
-    (r'^scans/', include('localground.apps.uploads.urls')),
-    #(r'^scan/(?P<scan_id>\w+)/', 'localground.apps.viewer.vis.views.show_scan'),
+
+    #print:
+    (r'^print/', include('localground.apps.site.urlsprints')),
+    
+    #scans
+    #(r'^scans/', include('localground.apps.site.urls')),
     
     #map viewer:
-    (r'^maps/', include('localground.apps.vis.viewer.urls')),
+    (r'^maps/editor/$', 'localground.apps.site.views.maps.init'),
+    (r'^maps/(?P<object_type>projects|views)/(?P<slug>[-\w]+)/$', 'localground.apps.site.views.maps.public_map'),
+    (r'^maps/(?P<object_type>projects|views)/(?P<slug>[-\w]+)/(?P<access_key>\w{16})/$', 'localground.apps.site.views.maps.public_map'),
     
-    #download:
-    #(r'^download/kml/print/(?P<print_id>\w+)/', 'localground.apps.viewer.vis.views.download_kml'),
+    #upload:  manages the forms-based uploader:
+    (r'^upload/$', 'localground.apps.site.views.uploader.init_upload_form'),
+    (r'^upload/embed/$', 'localground.apps.site.views.uploader.init_upload_form', {
+        'embed': True,
+        'base_template': 'base/iframe.html'
+    }),
+    (r'^upload/media/post/$', 'localground.apps.site.views.uploader.upload_media'),
+    
+    #django authentication:
+    (r'^accounts/', include('localground.apps.registration.urls')),
+    (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
     
     #django-tagging:
     url(r'^tagging_autocomplete/list/json$', 'tagging_autocomplete.views.list_tags',
                                             name='tagging_autocomplete-list'),
+    
+    #EBAYS:
+    (r'^ebays/', include('localground.apps.vis.ebays.urls'))
 )

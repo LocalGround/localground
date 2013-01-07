@@ -1,10 +1,10 @@
 from django.contrib.gis.db import models
 from django.db.models import Q
 from datetime import datetime    
-from localground.apps.prints.managers import FormManager
-from localground.apps.prints.models import Field
-from localground.apps.uploads.models import Snippet
-from localground.apps.prints.dynamic import ModelClassBuilder, DynamicFormBuilder
+from localground.apps.site.managers import FormManager
+from localground.apps.site.models import Field
+from localground.apps.site.models.snippet import Snippet
+from localground.apps.site.dynamic import ModelClassBuilder, DynamicFormBuilder
 from django.db import transaction
     
 class Form(models.Model):
@@ -12,13 +12,13 @@ class Form(models.Model):
     table_name = models.CharField(max_length=255)
     owner = models.ForeignKey('auth.User', db_column='user_id')
     time_stamp = models.DateTimeField(default=datetime.now)
-    projects = models.ManyToManyField('account.Project')
+    projects = models.ManyToManyField('Project')
     objects = FormManager()
     _model_class = None
     _data_entry_form_class = None
     
     class Meta:
-        app_label = "prints"
+        app_label = 'site'
     
     @property
     def TableModel(self):
@@ -58,7 +58,7 @@ class Form(models.Model):
         return q.order_by(ordering,)
         
     def get_model_class(self):
-        from localground.apps.prints.dynamic import ModelClassBuilder
+        from localground.apps.site.dynamic import ModelClassBuilder
         mcb = ModelClassBuilder(self)
         return mcb.model_class
     
@@ -324,7 +324,7 @@ class Form(models.Model):
                 col_%(id)s_snippet_id integer, 
                 CONSTRAINT %(table_name)s_col_%(id)s_snippet_id_fkey
                         FOREIGN KEY (col_%(id)s_snippet_id)
-                        REFERENCES uploads_snippet (id) MATCH SIMPLE, ''' % \
+                        REFERENCES site_snippet (id) MATCH SIMPLE, ''' % \
                             dict(
                                 table_name=table_name,
                                 id=id,
@@ -343,15 +343,15 @@ class Form(models.Model):
               CONSTRAINT %(table_name)s_user_id_fkey FOREIGN KEY (user_id)
                   REFERENCES auth_user (id) MATCH SIMPLE,
               CONSTRAINT %(table_name)s_project_id_fkey FOREIGN KEY (project_id)
-                  REFERENCES account_project (id) MATCH SIMPLE,
+                  REFERENCES site_project (id) MATCH SIMPLE,
               CONSTRAINT %(table_name)s_snippet_id_fkey FOREIGN KEY (snippet_id)
-                  REFERENCES uploads_snippet (id) MATCH SIMPLE,
+                  REFERENCES site_snippet (id) MATCH SIMPLE,
               CONSTRAINT %(table_name)s_user_num_snippet_id_fkey FOREIGN KEY (user_num_snippet_id)
-                  REFERENCES uploads_snippet (id) MATCH SIMPLE,
+                  REFERENCES site_snippet (id) MATCH SIMPLE,
               CONSTRAINT %(table_name)s_marker_id_fkey FOREIGN KEY (marker_id)
-                  REFERENCES overlays_marker (id) MATCH SIMPLE,
+                  REFERENCES site_marker (id) MATCH SIMPLE,
               CONSTRAINT %(table_name)s_scan_id_fkey FOREIGN KEY (scan_id)
-                  REFERENCES uploads_scan (id) MATCH SIMPLE,
+                  REFERENCES site_scan (id) MATCH SIMPLE,
               CONSTRAINT enforce_dims_point CHECK (st_ndims(point) = 2),
               CONSTRAINT enforce_geotype_point CHECK (geometrytype(point) = 'POINT'::text OR point IS NULL),
               CONSTRAINT enforce_srid_point CHECK (st_srid(point) = 4326)

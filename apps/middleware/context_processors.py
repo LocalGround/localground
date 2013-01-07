@@ -6,7 +6,7 @@ def persistant_queries(request):
     '/scans/update-record/), this function also adds information about the tilesets
     which are available to the interactive map.
     """
-    from localground.apps.overlays.models import WMSOverlay
+    from localground.apps.site.models import WMSOverlay
     import simplejson as json
     from django.conf import settings
     

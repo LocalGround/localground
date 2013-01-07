@@ -50,7 +50,7 @@ IS_GOOGLE_REGISTERED_NONPROFIT = False
 
 
 MANAGERS = ADMINS
-AUTH_PROFILE_MODULE = 'account.UserProfile'
+AUTH_PROFILE_MODULE = 'site.UserProfile'
 
 HOST = '127.0.0.1'          #Your Database Host
 PORT = '#####'              #Your Database Port
@@ -132,7 +132,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'localground.apps.middleware.context_processors.persistant_queries', #for our application-level context objects
 )
 
-ROOT_URLCONF = 'localground.apps.urls'
+ROOT_URLCONF = 'localground.apps.site.urls'
 
 TEMPLATE_DIRS = (
     '%s/templates' % APPS_ROOT,

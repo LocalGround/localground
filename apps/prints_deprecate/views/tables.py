@@ -189,7 +189,7 @@ def export_file(format, ext, username, form, project=None, driver=None,
             's.uuid || \'/\' || s.file_name_orig from uploads_scan s ' +
             'where s.id = uploads_attachment.source_scan_id',
         'project_name':
-            'select p.name from account_project p where p.id = ' +
+            'select p.name from site_project p where p.id = ' +
             form.table_name + '.project_id',
         'number': form.table_name + '.user_num'
     }

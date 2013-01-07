@@ -1,15 +1,14 @@
 from django.http import HttpResponse
-from localground.apps.helpers.api.decorators import process_identity, process_project
+from localground.apps.site.decorators import process_identity, process_project
 import simplejson as json
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from localground.apps.helpers.models import PointObject, ObjectTypes, ReturnCodes
-from localground.apps.overlays.models import Marker
+from localground.apps.site.models import PointObject, ObjectTypes, ReturnCodes, Marker
 
 
 @process_identity
 def get_photos(request, identity=None):
-    from localground.apps.uploads.models import Photo
+    from localground.apps.site.models import Photo
     r = request.GET
     unmatched = r.get('unmatched', 'false').upper() in ['1','TRUE', 'true']
     try:
@@ -36,8 +35,8 @@ def get_photos(request, identity=None):
 @process_identity
 def update_photo(request, identity=None, embed=False,
                  template_name='forms/photo.html', base_template='base/base.html'):
-    from localground.apps.uploads.models import Photo
-    from localground.apps.uploads.forms import PhotoForm
+    from localground.apps.site.models import Photo
+    from localground.apps.site.forms import PhotoForm
     
     extras = { 'embed': embed, 'base_template': base_template }
     r = request.GET or request.POST
@@ -76,7 +75,7 @@ def update_photo(request, identity=None, embed=False,
     
 @process_identity
 def get_audio(request, identity=None):
-    from localground.apps.uploads.models import Audio
+    from localground.apps.site.models import Audio
     r = request.GET
     unmatched = r.get('unmatched', 'false').upper() in ['1','TRUE', 'true']
     try:
@@ -102,8 +101,8 @@ def get_audio(request, identity=None):
 @process_identity
 def update_audio(request, identity=None, embed=False,
                  template_name='forms/audio.html', base_template='base/base.html'):
-    from localground.apps.uploads.models import Audio
-    from localground.apps.uploads.forms import AudioForm
+    from localground.apps.site.models import Audio
+    from localground.apps.site.forms import AudioForm
     
     extras = { 'embed': embed, 'base_template': base_template }
     r = request.GET or request.POST
@@ -143,7 +142,7 @@ def update_audio(request, identity=None, embed=False,
     
 @process_identity
 def get_scan_photo_options(request, identity=None):
-    from localground.apps.uploads.models import ImageOpts
+    from localground.apps.site.models import ImageOpts
     r = request.GET or request.POST
     scan_uuid = r.get('uuid')
     if scan_uuid is None:
@@ -175,7 +174,7 @@ def get_scan_photo_options(request, identity=None):
          
 @process_identity
 def set_scan_photo(request, identity=None):
-    from localground.apps.uploads.models import Scan, ImageOpts
+    from localground.apps.site.models import Scan, ImageOpts
     r = request.GET or request.POST
     scan_uuid = r.get('scan_uuid')
     map_image_id = r.get('map_image_id')

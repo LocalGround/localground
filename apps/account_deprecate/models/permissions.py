@@ -82,5 +82,4 @@ class UserAuthorityObject(models.Model):
     
     class Meta:
         app_label = "account"
-        db_table = "account_userauthorityobject"
         
