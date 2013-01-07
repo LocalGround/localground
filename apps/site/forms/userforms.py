@@ -9,7 +9,7 @@ class CustomUserChangeForm(UserChangeForm):
         
 class UserProfileForm(ModelForm):
     class Meta:
-        from localground.apps.helpers.widgets import PointWidget, CustomCheckboxSelectMultiple
+        from localground.apps.site.widgets import PointWidget, CustomCheckboxSelectMultiple
         from django import forms
         
         model = UserProfile

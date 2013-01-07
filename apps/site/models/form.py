@@ -66,6 +66,7 @@ class Form(models.Model):
     def create_new_form(dictionary, user):
         from django.db import connection, transaction
         from localground.apps.helpers import generic
+        from localground.apps.site.models import DataType
         r = dictionary
         ids, alias_dict, type_dict, width_dict = [],{},{},{}
         total_width = 0

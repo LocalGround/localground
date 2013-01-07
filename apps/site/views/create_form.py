@@ -1,11 +1,10 @@
-from localground.apps.site.models import Print, Layout, Form, Field, DataType
-from localground.apps.site.decorators import process_identity, process_project
+from localground.apps.site.decorators import process_identity
 from django.http import HttpResponse
-from localground.apps.helpers import generic
 import simplejson as json
 
 @process_identity
 def get_datatypes(request, identity=None):
+    from localground.apps.site.models import DataType
     types = DataType.objects.all().order_by('name')
     return HttpResponse(json.dumps(dict(
         types=[t.to_dict() for t in types]    

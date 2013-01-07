@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from django.forms import ModelForm, fields, formsets, HiddenInput, models
-from localground.apps.helpers.widgets import UserAutocomplete
+from localground.apps.site.widgets import UserAutocomplete
 from django.contrib.auth.models import User
 from localground.apps.site.models import Project
 from django.contrib.contenttypes import generic

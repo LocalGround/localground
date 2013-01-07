@@ -10,7 +10,7 @@
 	<script src="/static/scripts/offline/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
     <script type="text/javascript" src="/static/scripts/thirdparty/twitter/bootstrap-modal.js"></script>
-    <script type="text/javascript" src="/static/scripts/thirdparty/twitter/bootstrap-tabs.js"></script>
+    <script type="text/javascript" src="/static/bootstrap2.2.2/js/bootstrap-tabs.js"></script>
 	<script type="text/javascript" src="/static/scripts/thirdparty/jquery.ui.timepicker.js"></script>
 	<script type="text/javascript" src="/static/scripts/helpers/dialog.js"></script>
 {% endblock %}
@@ -70,7 +70,7 @@
 			{% if projects|length > 0 %}
 				{% block projects_menus %}
 					<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
-					<a href="#" class="dropdown-toggle">Projects</a>
+					<a data-toggle="tab" href="#" class="dropdown-toggle">Projects</a>
 					<ul class="dropdown-menu" style="width:300px;">
 						{% if projects|length > 1 %}
 						<li>
@@ -102,7 +102,7 @@
 			{% endif %}
             {% if user.is_superuser or is_impersonation %}
             <li class="dropdown" data-dropdown="dropdown" style="width:130px;">
-                <a href="#" class="dropdown-toggle">Impersonate</a>
+                <a data-toggle="tab" href="#" class="dropdown-toggle">Impersonate</a>
                 <ul class="dropdown-menu" style="width:180px">
                     <li><a href="{{url}}?alias=all">
                         {% if username == 'all' %}

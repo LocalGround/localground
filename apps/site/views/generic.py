@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.http import HttpResponse
 
 @login_required()
-def change_user_profile(request, template_name='user_prefs.html'):
+def change_user_profile(request, template_name='account/user_prefs.html'):
     """
     Works in conjunction with CustomUserChangeForm, UserProfileForm to allow
     user to modify his/her preferences.

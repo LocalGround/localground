@@ -7,8 +7,8 @@ class ModelClassBuilder(object):
         self.name = 'TableModel'
         self.form = form
         self.dynamic_field_descriptors = form.get_fields()
-        self.app_label = 'prints_%s' % form.table_name   #needs to be unique
-        self.module = 'site.form.%s' % form.table_name      #needs to be unique
+        self.app_label = 'site'
+        self.module = 'localground.apps.site.models.table_%s' % form.table_name      #needs to be unique
         self.options = options = {
             'ordering': ['num'],
             'verbose_name': 'table',
@@ -235,13 +235,13 @@ class ModelClassBuilder(object):
             dict(
                 num=models.IntegerField(null=True, blank=True, db_column='user_num',
                                            verbose_name='Row Number'),
-                num_snippet=models.ForeignKey('site.Snippet', null=True, blank=True,
+                num_snippet=models.ForeignKey('Snippet', null=True, blank=True,
                                                  db_column='user_num_snippet_id'),
-                snippet=models.ForeignKey('site.Snippet', null=True, blank=True),
+                snippet=models.ForeignKey('Snippet', null=True, blank=True),
                 manually_reviewed=models.BooleanField(),
-                source_marker=models.ForeignKey('site.Marker', null=True,
+                source_marker=models.ForeignKey('Marker', null=True,
                                                     db_column='marker_id', blank=True),
-                scan=models.ForeignKey('site.Scan', null=True, blank=True)
+                scan=models.ForeignKey('Scan', null=True, blank=True)
             )
         )
         
@@ -273,7 +273,7 @@ class ModelClassBuilder(object):
                 #also add snippet placeholder:
                 snippet_field_name = '%s_snippet' % n.col_name
                 self.snippet_fields.update({
-                    snippet_field_name: models.ForeignKey('site.Snippet',
+                    snippet_field_name: models.ForeignKey('Snippet',
                                                             null=True, blank=True)
                 })
         self.fields.update(self.dynamic_fields)

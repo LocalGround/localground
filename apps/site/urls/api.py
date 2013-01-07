@@ -12,15 +12,15 @@ urlpatterns = patterns('',
     
     (r'^my-projects/$', 'localground.apps.site.views.api.get_my_projects'),
     
-    (r'^print/$', 'localground.apps.site.views.apiuploads.get_print'),
+    (r'^print/$', 'localground.apps.site.views.apiprints.get_print'),
     
-    (r'^print/(?P<print_id>\w+)/$', 'localground.apps.site.views.apiuploads.get_print'),
+    (r'^print/(?P<print_id>\w+)/$', 'localground.apps.site.views.apiprints.get_print'),
     
-    (r'^my-prints/$', 'localground.apps.site.views.apiuploads.get_user_prints'),
+    (r'^my-prints/$', 'localground.apps.site.views.apiprints.get_user_prints'),
     
     
-    (r'^tables/table/(?P<form_id>\w+)/$', 'localground.apps.site.views.apiuploads.get_table_data'),
-    (r'^tables/table/(?P<form_id>\w+)/get-menu/$', 'localground.apps.site.views.apiuploads.get_menu'),
+    (r'^tables/table/(?P<form_id>\w+)/$', 'localground.apps.site.views.apiprints.get_table_data'),
+    (r'^tables/table/(?P<form_id>\w+)/get-menu/$', 'localground.apps.site.views.apiprints.get_menu'),
 
     
     (r'^my-photos/$', 'localground.apps.site.views.apiviews.get_photos'),

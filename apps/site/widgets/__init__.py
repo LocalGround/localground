@@ -5,7 +5,7 @@ from django.contrib.gis.geos import GEOSGeometry, GEOSException
 from django.forms.widgets import Widget, TextInput, Textarea, HiddenInput
 from tagging_autocomplete.widgets import TagAutocomplete
 from django.conf import settings
-from localground.apps.helpers.widgets.permissions import UserAutocomplete
+from localground.apps.site.widgets.permissions import UserAutocomplete
 
 DEFAULT_WIDTH = 300
 DEFAULT_HEIGHT = 200

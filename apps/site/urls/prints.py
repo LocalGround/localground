@@ -14,9 +14,9 @@ urlpatterns = patterns('localground.apps.site.views',
     (r'^forms/create-form/$', 'create_form.create_form'),
     
     # api: getting a print:
-    (r'^get/$', 'api.get_print'),
-    (r'^get/(?P<print_id>\w+)/$', 'apisite.get_print'),
+    (r'^get/$', 'apiprints.get_print'),
+    (r'^get/(?P<print_id>\w+)/$', 'apiprints.get_print'),
     
     #api: convenience auto-complete function:
-    (r'^auto-complete/$', 'apisite.get_prints_autocomplete'),
+    (r'^auto-complete/$', 'apiprints.get_prints_autocomplete'),
 )

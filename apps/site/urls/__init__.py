@@ -36,27 +36,27 @@ urlpatterns = patterns('',
     (r'^credits/$', direct_to_template, {'template': 'pages/credits.html'}),
     
     #profile
-    (r'^profile/', include('localground.apps.site.urlsprofile')),
+    (r'^profile/', include('localground.apps.site.urls.profile')),
     
     #api:
-    (r'^api/0/tester/', include('localground.apps.site.urlsapitester')),
-    (r'^api/0/', include('localground.apps.site.urlsapi')),
+    (r'^api/0/tester/', include('localground.apps.site.urls.apitester')),
+    (r'^api/0/', include('localground.apps.site.urls.api')),
     
     #overlays
-    (r'^overlays/save-marker/$', 'localground.apps.site.views.save_marker'),
-    (r'^overlays/delete-marker/$', 'localground.apps.site.views.delete_marker'),
-    (r'^overlays/show-marker/$', 'localground.apps.site.views.show_marker_detail'),
-    (r'^overlays/show-marker/embed/$', 'localground.apps.site.views.show_marker_detail',
+    (r'^overlays/save-marker/$', 'localground.apps.site.views.overlays.save_marker'),
+    (r'^overlays/delete-marker/$', 'localground.apps.site.views.overlays.delete_marker'),
+    (r'^overlays/show-marker/$', 'localground.apps.site.views.overlays.show_marker_detail'),
+    (r'^overlays/show-marker/embed/$', 'localground.apps.site.views.overlays.show_marker_detail',
     {
         'embed': True,
         'base_template': 'base/iframe.html'
     }),
 
     #print:
-    (r'^print/', include('localground.apps.site.urlsprints')),
+    (r'^print/', include('localground.apps.site.urls.prints')),
     
     #scans
-    #(r'^scans/', include('localground.apps.site.urls')),
+    (r'^scans/', include('localground.apps.site.urls.uploads')),
     
     #map viewer:
     (r'^maps/editor/$', 'localground.apps.site.views.maps.init'),
@@ -80,5 +80,5 @@ urlpatterns = patterns('',
                                             name='tagging_autocomplete-list'),
     
     #EBAYS:
-    (r'^ebays/', include('localground.apps.vis.ebays.urls'))
+    #(r'^ebays/', include('localground.apps.vis.ebays.urls'))
 )

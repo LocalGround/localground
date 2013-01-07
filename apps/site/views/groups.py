@@ -37,7 +37,7 @@ Form_LU = {
 
 @login_required()
 def create_update_project(request, object_type, edit_type, object_id=None,
-                          embed=False, template='create_update_group.html',
+                          embed=False, template='account/create_update_group.html',
                           base_template='base/base.html'):
     '''
     This view creates and updates permissions for views and projects.  Parameters:
@@ -208,7 +208,7 @@ def show_group_list(request, object_type='projects', identity=None, return_messa
     if request.user.is_superuser or context.get('is_impersonation'):
         context.update({'users': Project.get_users()})
     context.update(prep_paginator(request, object_list))
-    return render_to_response('groups.html', context)
+    return render_to_response('account/groups.html', context)
     
 def _batch_update(request, ModelClass, identity):
     """
