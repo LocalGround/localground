@@ -1,49 +1,37 @@
 from django.contrib.gis.db import models
-from localground.apps.site.models import ObjectTypes
-from localground.apps.site.models.base import Base
-from localground.apps.site.managers import ProjectManager, ViewManager
+#from localground.apps.site.models import ObjectTypes
 from localground.apps.site.models.permissions import \
-        BasePermissions, UserAuthority, UserAuthorityObject, \
-        ObjectAuthority
+        BasePermissions, UserAuthority, ObjectAuthority
 from localground.apps.site.models.entitygroupassociation import EntityGroupAssociation
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
+
 from localground.apps.site.models.barcoded import Scan
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video
 from localground.apps.site.models import Marker, WMSOverlay
+from localground.apps.site.models import (Marker, WMSOverlay, ObjectTypes)
+from localground.apps.site.models.base_new import BaseNamed
+from localground.apps.site.managers import ProjectManager, ViewManager
 
 #!/usr/bin/env python
 from django.contrib.gis.db import models
 from datetime import datetime
 
-class BaseGroup(Base):
-    """
-    Abstract base class for media files (for common core elements).
-    """
+'''class BaseGroup(Base):
+
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     owner = models.ForeignKey('auth.User', db_column='user_id')
     time_stamp = models.DateTimeField(default=datetime.now, db_column='last_updated')
-    
-    '''
-    Who should inherit from this:
-        * Groups:  Project, View, Marker, Scene
-        * Media:  Photo, Audio, Video, Scan, Attachment
-        * Print, Form
-    
-    Other fields
-    
-    last_updated_by = models.ForeignKey('auth.User', db_column='user_id')
-    date_created = models.DateTimeField(default=datetime.now)
-    '''
 
     class Meta:
         abstract = True
         app_label = "site"
+'''
 
-class Group(BaseGroup, BasePermissions):
+class Group(BaseNamed, BasePermissions):
     """
     Abstract class that extends BasePermissions; provides helper methods to
     determine whether a user has read/write/manage permissions on an object.
@@ -107,11 +95,10 @@ class Project(Group):
     where users can file their media.  Has helper functions for retrieving all
     media associated with a particular project (for the JavaScript API).
     """
+    name = 'project'
+    name_plural = 'projects'
     objects = ProjectManager()
     
-    class Meta(Group.Meta):
-        verbose_name = 'project'
-        verbose_name_plural = 'projects'
         
     def to_dict(self, include_auth_users=False, include_processed_maps=False,
                 include_markers=False, include_audio=False, include_photos=False,
@@ -190,6 +177,8 @@ class View(Group):
     A user-generated grouping of media.  Media associations are specified in the
     EntityGroupAssociation Model.  Only partially implemented.
     """
+    name = 'view'
+    name_plural = 'views'
     objects = ViewManager()
     entities = generic.GenericRelation('EntityGroupAssociation',
                                        content_type_field='group_type',
@@ -251,11 +240,6 @@ class View(Group):
                     break
         return [m.to_dict(aggregate=True) for m in markers_with_counts]
         
-        
-    class Meta(Group.Meta):
-        verbose_name = 'view'
-        verbose_name_plural = 'views'
-        
     def to_dict(self, include_auth_users=False, include_processed_maps=False,
                 include_markers=False, include_audio=False, include_photos=False,
                 include_tables=False):
@@ -275,7 +259,7 @@ class View(Group):
             d.update(dict(markers=self.get_markers_with_counts()))
         return d
     
-class Scene(BaseGroup):
+class Scene(BaseNamed):
     """
     Not used anywhere yet, but a stub for the new storytelling interface (where
     each view could be a collection of ordered scenes, configured by the user).

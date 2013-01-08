@@ -1,8 +1,10 @@
 from django.contrib.gis.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
+from localground.apps.site.managers.base import BaseMixin
 
-class GroupMixin(object):
+#class GroupMixin(object):
+class GroupMixin(BaseMixin):
     
     def get_objects_with_counts(self, user, ordering='name'):
         
@@ -43,7 +45,17 @@ class GroupMixin(object):
             q = q.filter(filter_expression)
         q = q.distinct()
         return q.order_by('name')
-
+        
+    
+    def get_all(self, user, ordering_field=None, **kwargs):
+        if user is None:
+            raise GenericLocalGroundError('The user cannot be empty')
+            
+        q = self.model.objects.distinct().select_related('owner', 'last_updated_by')
+        q = q.filter(Q(owner=user) | Q(users__user=user))
+        if ordering_field is not None:
+            q =  q.order_by(ordering_field)
+        return q
 
 class ProjectMixin(GroupMixin):
     def to_dict_list(self, include_auth_users=False, include_processed_maps=False,

@@ -1,14 +1,11 @@
 from django.contrib.gis.db import models
 from django.conf import settings
 from localground.apps.site.managers import AudioManager
-from localground.apps.site.models import PointObject
-from localground.apps.site.models.base import NamedUpload
+from localground.apps.site.models.base_new import BasePoint, BaseUploadedMedia
 import os
 
-class Audio(PointObject, NamedUpload):
-    source_scan = models.ForeignKey('Scan', blank=True, null=True)
-    source_marker = models.ForeignKey('Marker', blank=True, null=True)
-    deleted = models.BooleanField(default=False)
+class Audio(BasePoint, BaseUploadedMedia):
+    name = name_plural = 'audio'
     objects = AudioManager()
     
     def delete(self, *args, **kwargs):
@@ -26,7 +23,7 @@ class Audio(PointObject, NamedUpload):
     
     def save_upload(self, file, user, project):
         #1) first, set user and project (required for generating file path):
-        self.owner = user
+        self.created_by = user
         self.last_updated_by = user
         self.project = project
         

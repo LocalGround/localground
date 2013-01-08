@@ -1,13 +1,12 @@
 from django.contrib.gis.db import models
 from django.conf import settings
 from localground.apps.site.managers import PhotoManager
-from localground.apps.site.models import PointObject
-from localground.apps.site.models.base import NamedUpload  
+from localground.apps.site.models.base_new import BasePoint, BaseUploadedMedia
 import os
-        
-class Photo(PointObject, NamedUpload):
-    source_scan = models.ForeignKey('Scan', blank=True, null=True)
-    source_marker = models.ForeignKey('Marker', blank=True, null=True)
+
+class Photo(BasePoint, BaseUploadedMedia):
+    name = 'photo'
+    name_plural = 'photos'
     file_name_large = models.CharField(max_length=255)
     file_name_medium = models.CharField(max_length=255)
     file_name_medium_sm = models.CharField(max_length=255)
@@ -23,8 +22,6 @@ class Photo(PointObject, NamedUpload):
     class Meta:
         app_label = 'site'
         ordering = ['id']
-        verbose_name = "photo"
-        verbose_name_plural = "photos"
     
     def thumb(self):
         '''

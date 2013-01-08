@@ -132,11 +132,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'localground.apps.middleware.context_processors.persistant_queries', #for our application-level context objects
 )
 
-ROOT_URLCONF = 'localground.apps.site.urls'
+ROOT_URLCONF = 'localground.apps.site.urls_new'
 
 TEMPLATE_DIRS = (
     '%s/templates' % APPS_ROOT,
-    '%s/account/templates' % APPS_ROOT,
 )
 FIXTURE_DIRS = (
     '%s/fixtures' % APPS_ROOT,

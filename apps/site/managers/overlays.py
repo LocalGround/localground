@@ -1,12 +1,13 @@
 from django.contrib.gis.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
+from localground.apps.site.managers.base import BaseMixin, GenericLocalGroundError
 
 #Useful reference for chaining Model Managers together:
 #    http://djangosnippets.org/snippets/2114/
 
 
-class MarkerMixin(object):
+class MarkerMixin(BaseMixin):
     
     def by_project(self, prj):
         return self.model.objects.filter(project=prj)
@@ -127,26 +128,34 @@ class MarkerQuerySet(QuerySet, MarkerMixin):
 class MarkerManager(models.GeoManager, MarkerMixin):
     def get_query_set(self):
         return MarkerQuerySet(self.model, using=self._db)
-        
-        
-class WMSOverlayManager(models.GeoManager):
-    '''
-    todo: we want to deprecate group-level overlays in favor of individual-level
-        site.
-    '''
-    def get_my_overlays(self, user=None, overlay_type=None, is_printable=None):
+
+
+class WMSOverlayMixin(BaseMixin):
+    
+    def get_all(self, user=None, overlay_type=None, is_printable=None, **kwargs):
+        '''
+        todo: we want to deprecate group-level overlays in favor of individual-level
+            site.
+        '''
         q = (self.model.objects
                     .select_related('overlay_source', 'overlay_type'))
-        if user.is_authenticated():
-            q = q.filter(Q(auth_groups=None) | Q(auth_groups__in=user.groups.all()))
-        else:
-            q = q.filter(auth_groups=None)
         if overlay_type is not None:
             q = q.filter(overlay_type__id=overlay_type)
         if is_printable is not None:
             q = q.filter(is_printable=is_printable)
-        
+        return q
+    
+    def get_my_overlays(self, user=None, overlay_type=None, is_printable=None):
+        q = self.get_all(user=user, overlay_type=overlay_type, is_printable=is_printable)
         return [o.to_dict() for o in list(q.distinct())] 
+    
+class WMSOverlayQuerySet(QuerySet, WMSOverlayMixin):
+    pass
+
+        
+class WMSOverlayManager(models.GeoManager, WMSOverlayMixin):
+    def get_query_set(self):
+        return WMSOverlayQuerySet(self.model, using=self._db)
 
 
 

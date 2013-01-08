@@ -2,11 +2,11 @@ from django.contrib.gis.db import models
 from datetime import datetime
 from django.conf import settings
 from localground.apps.site.managers import ScanManager 
-from localground.apps.site.models.base import Base, NamedUpload, StatusCode, UploadSource
-from localground.apps.site.models.baseobject import BaseObject
+from localground.apps.site.models import (BaseMedia, StatusCode,
+                                BaseUploadedMedia, UploadSource, BaseExtents)
 import os
      
-class Processor(BaseObject, NamedUpload):
+class Processor(BaseUploadedMedia):
     uuid = models.CharField(unique=True, max_length=8)
     source_print = models.ForeignKey('Print', blank=True, null=True)
     status = models.ForeignKey('StatusCode')
@@ -74,10 +74,11 @@ class Processor(BaseObject, NamedUpload):
         return o
         
 class Scan(Processor):
+    name = 'map images'
+    name_plural = 'map images'
     #for manual override:
     map_rect = models.CharField(max_length=255, blank=True, null=True)
     processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
-    deleted = models.BooleanField(default=False)
     directory_name = 'scans'
     objects = ScanManager()
     
@@ -203,6 +204,8 @@ class Scan(Processor):
         return 'Scan #' + self.uuid
         
 class Attachment(Processor):
+    name = 'attachment'
+    name_plural = 'attachments'
     source_scan = models.ForeignKey(Scan, blank=True, null=True)
     is_short_form = models.BooleanField(default=False)
     directory_name = 'attachments'
@@ -232,15 +235,8 @@ class Attachment(Processor):
         processor = Processor(self)
         processor.process_attachment()
     
-class ImageOpts(Base):
+class ImageOpts(BaseExtents, BaseMedia):
     source_scan = models.ForeignKey(Scan)
-    extents = models.PolygonField()
-    northeast = models.PointField()
-    southwest = models.PointField()
-    center = models.PointField(blank=True, null=True)
-    zoom = models.IntegerField()
-    file_name = models.CharField(max_length=255)
-    time_stamp = models.DateTimeField(default=datetime.now, blank=True)
     
     class Meta:
         app_label = 'site'    
@@ -272,7 +268,7 @@ class ImageOpts(Base):
     
     def delete():
         #don't want to inadvertently remove the parent scan, so adding this
-        #workaround.  Todo:  update to Django 1.3, to configure "cascade
+        #workaround.  Todo:  update to Django >= 1.3, to configure "cascade
         #delete" settings
         scans = Scan.objects.filter(processed_image=self)
         for s in scans:

@@ -1,9 +1,8 @@
 from django.contrib.gis.db import models
 from localground.apps.site.managers import SnippetManager
-from localground.apps.site.models import PointObject
-from localground.apps.site.models.base import Upload
+from localground.apps.site.models.base_new import BasePoint, BaseMedia
 
-class Snippet(Upload, PointObject):
+class Snippet(BasePoint, BaseMedia):
     source_attachment   = models.ForeignKey('Attachment')
     shape_string_json   = models.CharField(max_length=512, blank=True)
     is_blank            = models.BooleanField(default=False)

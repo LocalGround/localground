@@ -1,35 +1,29 @@
 from django.contrib.gis.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
+from localground.apps.site.managers.base import BaseMixin, GenericLocalGroundError
+
 
 #------------------------------------------
 # Base Class for general functionality
-class GeneralMixin(object):
+#class GeneralMixin(object):
+class GeneralMixin(BaseMixin):
     '''def by_project(self, prj):
         return (self.model.objects
                     .filter(project=prj)
                     .exclude(deleted=True))'''
 
-    def get_model_name(self):
-        n = self.model._meta.verbose_name
-        if self.model._meta.verbose_name == 'scan':
-            n = 'map image'
-        return n
-    def get_model_name_plural(self):
-        n = self.model._meta.verbose_name_plural
-        if self.model._meta.verbose_name_plural == 'scans':
-            n = 'map images'
-        return n
         
-    def get_all(self, ordering_field=None, user=None):
+    def get_all(self, user, project=None, ordering_field=None):
+        if user is None:
+            raise GenericLocalGroundError('The user cannot be empty')
+            
         q = self.model.objects.distinct().select_related('project', 'source_scan',
                                               'source_marker', 'owner',
                                               'last_updated_by')
-        if user is not None:
-            #q = q.filter(Q(project__owner=user) | Q(project__projectuser__user=user))
-            q = q.filter(Q(project__owner=user) | Q(project__users__user=user))
-        else:
-            q = q.all()
+        q = q.filter(Q(project__owner=user) | Q(project__users__user=user))
+        if project is not None:
+             q = q.filter(project=project) 
         if ordering_field is not None:
             q =  q.order_by(ordering_field)
         return q
@@ -326,7 +320,9 @@ class ScanMixin(GeneralMixin):
         return q
     
 
-    def get_all(self, processed_only=False, ordering_field=None, user=None):
+    def get_all(self, user, processed_only=False, ordering_field=None):
+        if user is None:
+            raise GenericLocalGroundError('The user cannot be empty')
         q = self.model.objects.distinct()
         if processed_only:
             q = q.filter(status=2).filter(source_print__isnull=False)
@@ -387,7 +383,10 @@ class ScanManager(models.GeoManager, ScanMixin):
         
 class PhotoMixin(GeneralMixin):
     
-    def get_all(self, ordering_field=None, user=None):
+    def get_all(self, user, ordering_field=None):
+        if user is None:
+            raise GenericLocalGroundError('The user cannot be empty')
+            
         q = self.model.objects.distinct().select_related('project', 'source_scan', 'source_marker',
                                     'owner', 'last_updated_by')
         if user is not None:

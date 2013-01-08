@@ -1,15 +1,12 @@
 from django.contrib.gis.db import models
-from localground.apps.site.managers import VideoManager
-from localground.apps.site.models import PointObject
-from localground.apps.site.models.base import NamedUpload     
+from localground.apps.site.managers import VideoManager  
+from localground.apps.site.models.base_new import BasePoint, BaseUploadedMedia
 import os
 
-class Video(PointObject, NamedUpload):
-    source_scan         = models.ForeignKey('Scan', blank=True, null=True)
-    source_marker       = models.ForeignKey('Marker', blank=True, null=True)
-    path                = models.CharField(max_length=255)
-    deleted             = models.BooleanField(default=False)
-    objects             = VideoManager()
+class Video(BasePoint, BaseUploadedMedia):
+    name = 'video'
+    name_plural = 'videos'
+    objects = VideoManager()
     
     def __unicode__(self):
         return self.path + ': ' + self.name

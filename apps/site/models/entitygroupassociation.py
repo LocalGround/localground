@@ -2,16 +2,15 @@ from django.contrib.gis.db import models
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+from localground.apps.site.models.base_new import BaseAudit
 
-class EntityGroupAssociation(models.Model):
+class EntityGroupAssociation(BaseAudit):
     """
     http://weispeaks.wordpress.com/2009/11/04/overcoming-limitations-in-django-using-generic-foreign-keys/
     Uses the contenttypes framework to create one big "meta-association table"
     between media elements (photos, audio files, scans, etc.) and groups.  See
     the reference above for more information about the contenttypes framework.
     """
-    user = models.ForeignKey('auth.User')
-    time_stamp = models.DateTimeField(default=datetime.now)
     ordering = models.IntegerField()
     turned_on = models.BooleanField()
     

@@ -2,8 +2,9 @@ from django.contrib.gis.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
 from django.db.models import Count
+from localground.apps.site.managers.base import BaseMixin, GenericLocalGroundError
 
-class GeneralMixin(object):
+class GeneralMixin(BaseMixin):
     def to_dict_list(self, include_scan_counts=False):
         if include_scan_counts:
             return [dict(p.to_dict(), num_scans=p.num_scans or 0) for p in self]
@@ -75,17 +76,13 @@ class PrintMixin(GeneralMixin):
         else:
             return [p.to_dict() for p in self]'''
     
-    def get_all(self, ordering_field=None, user=None):
-        #todo:  validate user:
-        q = self.model.objects.select_related('owner', 'last_updated_by').exclude(deleted=True)
-        if ordering_field is not None:
-            q =  q.order_by(ordering_field)
-        return q
+    def get_all(self, user, project, ordering_field=None, **kwargs):
+        return self.by_project(user, project=project, ordering_field=ordering_field)
             
-    def by_project(self, prj, ordering_field=None):
-        return self.by_projects([prj.id], ordering_field=ordering_field)
+    def by_project(self, user, project, ordering_field=None):
+        return self.by_projects(user, [project.id], ordering_field=ordering_field)
     
-    def by_projects(self, project_ids, ordering_field=None):
+    def by_projects(self, user, project_ids, ordering_field=None):
         q = (self.model.objects
                     .select_related('owner', 'last_updated_by')
                     .filter(projects__in=project_ids)

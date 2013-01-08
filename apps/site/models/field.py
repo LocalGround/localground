@@ -1,12 +1,12 @@
 from django.contrib.gis.db import models
+from localground.apps.site.models import BaseAudit
 from datetime import datetime 
     
-class Field(models.Model):
+class Field(BaseAudit):
     form = models.ForeignKey('Form')
     col_name = models.CharField(max_length=255)
     col_alias = models.CharField(max_length=255)
     data_type = models.ForeignKey('DataType')
-    time_stamp = models.DateTimeField(default=datetime.now)
     display_width = models.IntegerField() #percentage
     
     #field to be displayed in viewer

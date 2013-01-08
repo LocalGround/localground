@@ -1,23 +1,19 @@
 from django.contrib.gis.db import models
 from datetime import datetime    
 from localground.apps.site.managers import PrintManager
-from localground.apps.site.models import Base
+#from localground.apps.site.models import Base
 from django.conf import settings
-
-class Print(Base):
+from localground.apps.site.models.base_new import BaseMedia, BaseExtents
+                                                   
+class Print(BaseExtents, BaseMedia):
+    name = 'print'
+    name_plural = 'prints'
     uuid = models.CharField(unique=True, max_length=8)
-    time_stamp = models.DateTimeField(default=datetime.now)
-    owner = models.ForeignKey('auth.User', db_column='user_id')
-    last_updated_by = models.ForeignKey('auth.User',
-                                related_name='%(app_label)s_%(class)s_related')
     map_provider = models.ForeignKey('WMSOverlay',
                             db_column='fk_provider', related_name='prints_print_wmsoverlays')
     layout = models.ForeignKey('Layout')
-    zoom = models.IntegerField()
     map_width = models.IntegerField()
     map_height = models.IntegerField()
-    host = models.CharField(max_length=255)
-    virtual_path = models.CharField(max_length=255)
     map_image_path = models.CharField(max_length=255)
     pdf_path = models.CharField(max_length=255)
     preview_image_path = models.CharField(max_length=255)
@@ -26,10 +22,6 @@ class Print(Base):
     form_column_widths = models.CharField(max_length=200, null=True, blank=True)
     sorted_field_ids = models.CharField(max_length=100, null=True, blank=True,
                                     db_column='form_column_ids')
-    extents = models.PolygonField()
-    center = models.PointField()
-    northeast = models.PointField()
-    southwest = models.PointField()
     form = models.ForeignKey('Form', null=True, blank=True)
     deleted = models.BooleanField(default=False)
     layers = models.ManyToManyField('WMSOverlay', null=True, blank=True)

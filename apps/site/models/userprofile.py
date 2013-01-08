@@ -2,6 +2,8 @@ from django.db.models import signals
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
 from localground.apps.site.models.permissions import ObjectAuthority
+from datetime import datetime
+
 
 class UserProfile(models.Model):
     #https://docs.djangoproject.com/en/dev/topics/auth/#creating-users
@@ -15,6 +17,8 @@ class UserProfile(models.Model):
     contacts = models.ManyToManyField('auth.User', related_name='%(app_label)s_%(class)s_related',
                                       null=True, blank=True,
                                       verbose_name="Users You're Following")
+    date_created = models.DateTimeField(default=datetime.now)
+    time_stamp = models.DateTimeField(default=datetime.now, db_column='last_updated')
     objects = models.GeoManager()
     
     class Meta:

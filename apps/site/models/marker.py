@@ -2,22 +2,28 @@ from django.contrib.gis.db import models
 from localground.apps.site.models import ObjectTypes
 from datetime import datetime    
 from localground.apps.site.managers import MarkerManager
-from localground.apps.site.models import PointObject, ReturnCodes
-from localground.apps.site.models.base import Base
+#from localground.apps.site.models import PointObject, ReturnCodes
+#from localground.apps.site.models.base_new import BasePoint, BaseUploadedMedia, ReturnCodes
+#from localground.apps.site.models.base import Base
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio
+from localground.apps.site.models.video import Video
+
+from localground.apps.site.models import BasePoint, BaseNamed, ReturnCodes
     
-class Marker(PointObject): 
+class Marker(BasePoint, BaseNamed): 
     """
     Markers are association objects with a lat/lng.  Markers can be associated
     with one or more photos, audio files, data records, etc.  This object needs
     to be re-factored to inherit from account/Group Model, since it's an
     association of other media objects (and should behave like a project or a view).
     """
-    name                = models.CharField(max_length=255, blank=True)
-    description         = models.CharField(max_length=1000, blank=True)
-    color               = models.CharField(max_length=6)
-    objects             = MarkerManager()
+    project = models.ForeignKey('Project')
+    
+    # todo:  replace project with generic association to either a project, view,
+    # or presentation :)
+    color = models.CharField(max_length=6)
+    objects = MarkerManager()
     
     @staticmethod 
     def create_instance(user, project, lat, lng, name=None):
@@ -65,7 +71,7 @@ class Marker(PointObject):
             return
         
         #if the object *is* a marker, update all pointers:
-        from localground.apps.site.models import Photo, Audio, Video
+        #from localground.apps.site.models import Photo, Audio, Video
         marker = obj
         #1) set the old marker's data references to the current marker: 
         forms = list(marker.project.form_set.all())
@@ -93,38 +99,13 @@ class Marker(PointObject):
         
         #4) delete the old marker:
         marker.delete()
-        
-    def get_photo_ids(self):
-        photo_ids = [o.id for o in
-                           list(Photo.objects.filter(source_marker=self))]
-        if len(photo_ids) > 0:
-            return photo_ids
-        return None
+
     
     def get_photos(self):
         return Photo.objects.by_marker(self, ordering_field='name').to_dict_list() 
     
-    def get_audio_ids(self):
-        audio_ids = [o.id for o in
-                           list(Audio.objects.filter(source_marker=self))]
-        if len(audio_ids) > 0:
-            return audio_ids
-        return None
-    
     def get_audio(self):
         return Audio.objects.by_marker(self, ordering_field='name').to_dict_list() 
-    
-    def get_note_ids(self):
-        notes = {}
-        forms = self.project.form_set.all()
-        for form in forms:
-            recs = form.get_data(marker=self, to_dict=False,
-                                    include_markers=False)
-            if len(recs) > 0:
-                notes[form.id] = [rec.id for rec in recs]
-        if len(notes) > 0:
-            return notes
-        return None
     
     def get_tables(self):
         data = []
@@ -161,9 +142,6 @@ class Marker(PointObject):
             e.update({ 'project_id': self.project_id })
         elif detail:
             e.update({
-                'photoIDs': self.get_photo_ids(),
-                'audioIDs': self.get_audio_ids(),
-                'noteIDs': self.get_note_ids(),
                 'photos': self.get_photos(),
                 'audio': self.get_audio(),
                 'tables': self.get_tables()
