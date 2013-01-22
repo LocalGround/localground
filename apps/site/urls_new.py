@@ -43,5 +43,13 @@ urlpatterns = patterns('',
     url(r'^tagging_autocomplete/list/json$', 'tagging_autocomplete.views.list_tags',
                                             name='tagging_autocomplete-list'),
     
+    #uploader:
+    (r'^upload/$', 'localground.apps.site.views.uploader.init_upload_form'),
+    (r'^upload/media/post/$', 'localground.apps.site.views.uploader.upload_media'),
+    
+    # media server
+    (r'^profile/(?P<object_type>photos|audio-files|videos|snippets|attachments|map-images|prints|tables)/(?P<hash>[=\w]+)/$', 'localground.apps.site.views.mediaserver.serve_media'),
+  
+    
     
 )

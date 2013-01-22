@@ -10,14 +10,14 @@ class PhotoForm(ModelForm):
         from localground.apps.site.widgets import PointWidget, PointWidgetHidden, \
                                         TagAutocomplete, CustomDateTimeWidget
         model = Photo
-        fields = ('id', 'project', 'source_scan', 'name', 'created_timestamp',
+        fields = ('id', 'project', 'source_scan', 'name', 'date_created',
                   'description', 'attribution', 'point', 'tags')
         widgets = {
             'id': forms.HiddenInput,
             'point': PointWidgetHidden(), #PointWidget(map_width=300, map_height=200),
             'description': forms.Textarea(attrs={'rows': 3}), #any valid html attributes as attrs
             'source_scan': forms.HiddenInput,
-            'created_timestamp': CustomDateTimeWidget,
+            'date_created': CustomDateTimeWidget,
             'tags': TagAutocomplete()
         }
         
@@ -27,11 +27,11 @@ class PhotoInlineForm(ModelForm):
         from localground.apps.site.widgets import \
                                         TagAutocomplete, CustomDateTimeWidget
         model = Photo
-        fields = ('name', 'description', 'tags', 'attribution', 'created_timestamp')
+        fields = ('name', 'description', 'tags', 'attribution', 'date_created')
         widgets = {
             'id': forms.HiddenInput,
             'description': forms.Textarea(attrs={'rows': 3}), #any valid html attributes as attrs
-            'created_timestamp': CustomDateTimeWidget,
+            'date_created': CustomDateTimeWidget,
             'tags': TagAutocomplete()
         }
 

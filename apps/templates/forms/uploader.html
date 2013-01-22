@@ -5,10 +5,11 @@
     <link rel="stylesheet" href="/static/css/jquery.fileupload-ui.css">
 {% endblock %}
 {% block jquery_version %}
-    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.1.min.js"></script>
+    <!-- script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.1.min.js"></script -->
+	<script src="{{ JQUERY_PATH }}"></script>
 {% endblock %}	
 {% block script_links %}
-    <script src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js"></script>
+    <script src="{{ JQUERY_UI_PATH }}"></script>
     <!-- script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script -->
     <script src="/static/scripts/site/uploader/jquery.fileupload.js"></script>
     

@@ -2,6 +2,9 @@
 from django.contrib.gis.db import models
 from datetime import datetime
 from tagging_autocomplete.models import TagAutocompleteField
+from django.conf import settings
+import os
+import base64   
 
 class Base(models.Model):
     name = 'base'
@@ -9,16 +12,6 @@ class Base(models.Model):
     class Meta:
         app_label = 'site'
         abstract = True
-
-    '''
-    @property
-    def model_name(self):
-        return self._meta.verbose_name
-
-    @property
-    def model_name_plural(self):
-        return self._meta.verbose_name_plural
-    '''
     
 class BaseAudit(Base):
     owner = models.ForeignKey('auth.User',)
@@ -105,7 +98,7 @@ class BaseUploadedMedia(BaseNamedMedia):
             #host = 'dev.localground.org' #for debugging
         from django.http import HttpResponse
         #return path
-        return 'http://%s/profile/%s/%s/' % (host, self.model_name_plural, base64.b64encode(path))
+        return 'http://%s/profile/%s/%s/' % (host, self.name_plural, base64.b64encode(path))
          
     def make_directory(self, path):
         from pwd import getpwnam
