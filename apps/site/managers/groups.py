@@ -5,38 +5,6 @@ from localground.apps.site.managers.base import BaseMixin
 
 #class GroupMixin(object):
 class GroupMixin(BaseMixin):
-    
-    def get_objects_with_counts(self, user, ordering='name'):
-        
-        sql = '''select distinct g.id, g.name, g.description, g.last_updated, g.user_id, 
-            s.processed_maps_count, a.audio_count, p.photo_count, m.marker_count 
-            from 
-            site_%s g left join 
-            site_userauthorityobject pu on g.id = pu.object_id left join 
-            (select project_id, count(id) as processed_maps_count from site_scan 
-            group by project_id) s 
-            ON (g.id = s.project_id) 
-            left join 
-            (select project_id, count(id) as audio_count from site_audio 
-            group by project_id) a 
-            ON (g.id = a.project_id) 
-            left join 
-            (select project_id, count(id) as photo_count from site_photo 
-            group by project_id) p 
-            ON (g.id = p.project_id) 
-            left join 
-            (select project_id, count(id) as marker_count from site_marker 
-            group by project_id) m 
-            ON (g.id = m.project_id)
-        ''' % str(self.model.__name__).lower()
-        if user is not None: #only accessible to superusers
-            sql = sql +  ' where g.user_id = %s or pu.user_id = %s' \
-                        % (user.id, user.id)
-        if ordering == 'name':
-            sql = sql +  ' order by g.name'
-        elif ordering == 'id': 
-            sql = sql +  ' order by g.id'
-        return list(self.model.objects.raw(sql))
    
     def get_objects(self, user):
         q = self.model.objects.select_related('owner')
@@ -45,16 +13,22 @@ class GroupMixin(BaseMixin):
             q = q.filter(filter_expression)
         q = q.distinct()
         return q.order_by('name')
-        
     
-    def get_all(self, user, ordering_field=None, **kwargs):
+    def get_listing(self, user, ordering_field='name', with_counts=True, **kwargs):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
-            
+        
         q = self.model.objects.distinct().select_related('owner', 'last_updated_by')
         q = q.filter(Q(owner=user) | Q(users__user=user))
         if ordering_field is not None:
             q =  q.order_by(ordering_field)
+        
+        if with_counts:
+            from django.db.models import Count
+            q = q.annotate(processed_maps_count=Count('scan'))
+            q = q.annotate(photo_count=Count('photo'))
+            q = q.annotate(audio_count=Count('audio'))
+            q = q.annotate(marker_count=Count('marker'))
         return q
 
 class ProjectMixin(GroupMixin):

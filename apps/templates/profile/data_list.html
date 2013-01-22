@@ -6,12 +6,9 @@
 {% endblock %}
 {% block script_links %}
     <!-- jquery-ui needs to come before jquery-autocomplete -->
-	<!-- script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script -->
-	<script src="/static/scripts/offline/jquery-ui.min.js"></script>
+	<script src="{{ JQUERY_UI_PATH }}"></script>
 	<script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
-    <script type="text/javascript" src="/static/scripts/thirdparty/twitter/bootstrap-modal.js"></script>
-    <script type="text/javascript" src="/static/bootstrap2.2.2/js/bootstrap-tabs.js"></script>
-	<script type="text/javascript" src="/static/scripts/thirdparty/jquery.ui.timepicker.js"></script>
+    <script type="text/javascript" src="/static/scripts/thirdparty/jquery.ui.timepicker.js"></script>
 	<script type="text/javascript" src="/static/scripts/helpers/dialog.js"></script>
 {% endblock %}
 {% block extra_styles %}
@@ -53,6 +50,7 @@
 
 <form id="the_form" method="post" action="">
     {% csrf_token %}
+	{{ formset.management_form }}
 	{% block hidden_form_fields %}
 		<input type="hidden" name="page" value="{{page}}" />
 		{% if form %}

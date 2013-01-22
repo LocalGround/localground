@@ -99,6 +99,11 @@ class Project(Group):
     name_plural = 'projects'
     objects = ProjectManager()
     
+    @classmethod
+    def inline_form(cls):
+        from localground.apps.site.forms import ProjectInlineUpdateForm
+        return ProjectInlineUpdateForm
+    
         
     def to_dict(self, include_auth_users=False, include_processed_maps=False,
                 include_markers=False, include_audio=False, include_photos=False,

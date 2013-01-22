@@ -16,6 +16,11 @@ class Photo(BasePoint, BaseUploadedMedia):
     device = models.CharField(max_length=255, blank=True, null=True) 
     objects = PhotoManager()
     
+    @classmethod
+    def inline_form(cls):
+        from localground.apps.site.forms import PhotoInlineForm
+        return PhotoInlineForm
+    
     def __unicode__(self):
         return self.name + ' (' + self.file_name_orig + ')'
     

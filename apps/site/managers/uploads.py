@@ -14,7 +14,7 @@ class GeneralMixin(BaseMixin):
                     .exclude(deleted=True))'''
 
         
-    def get_all(self, user, project=None, ordering_field=None):
+    def get_listing(self, user, project=None, ordering_field=None):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
             
@@ -299,7 +299,7 @@ class GeneralMixin(BaseMixin):
 #------------------------------------------
         
 class ScanMixin(GeneralMixin):
-    def by_project(self, project_id, processed_only=False, ordering_field='name'):
+    '''def by_project(self, project_id, processed_only=False, ordering_field='name'):
         return self.by_projects([project_id], processed_only=processed_only,
             ordering_field=ordering_field)
     
@@ -318,17 +318,18 @@ class ScanMixin(GeneralMixin):
         else:
             q =  q.order_by('id',)
         return q
+    '''
     
 
-    def get_all(self, user, processed_only=False, ordering_field=None):
+    def get_listing(self, user, project=None, processed_only=False, ordering_field=None):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
         q = self.model.objects.distinct()
         if processed_only:
             q = q.filter(status=2).filter(source_print__isnull=False)
-        q = self.model.objects
+        if project is not None:
+            q = q.filter(project=project)
         if user is not None:
-            #q = q.filter(Q(project__owner=user) | Q(project__projectuser__user=user))
             q = q.filter(Q(project__owner=user) | Q(project__users__user=user))
         q = (q.select_related('project__id', 'source_print', 'status',
                               'last_updated_by', 'owner'))
@@ -382,21 +383,6 @@ class ScanManager(models.GeoManager, ScanMixin):
         return ScanQuerySet(self.model, using=self._db)
         
 class PhotoMixin(GeneralMixin):
-    
-    def get_all(self, user, ordering_field=None):
-        if user is None:
-            raise GenericLocalGroundError('The user cannot be empty')
-            
-        q = self.model.objects.distinct().select_related('project', 'source_scan', 'source_marker',
-                                    'owner', 'last_updated_by')
-        if user is not None:
-            #q = q.filter(Q(project__owner=user) | Q(project__projectuser__user=user))
-            q = q.filter(Q(project__owner=user) | Q(project__users__user=user))
-        else:
-            q = q.all()
-        if ordering_field is not None:
-            q =  q.order_by(ordering_field)
-        return q
     
     def get_my_photos(self, user, printID=None, unmatched=False):
         if user is None or not user.is_authenticated():

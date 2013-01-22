@@ -71,7 +71,7 @@
         serverURL: '{{serverURL}}', 
         overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
         embed: {{embed|lower}},
-        cloudmadeKey: '{{cloudmadeKey}}'
+        cloudmadeKey: '{{CLOUDMADE_KEY}}'
     };
     {% if source_print %}
         opts.print = {% autoescape off %}{{ source_print }}{% endautoescape %};

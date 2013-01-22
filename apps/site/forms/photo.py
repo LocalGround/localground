@@ -1,7 +1,8 @@
 #!/usr/bin/env python
+#!/usr/bin/env python
 from django.contrib.auth.forms import UserChangeForm
 from django.forms import ModelForm
-from localground.apps.site.models import Photo, Audio, Video
+from localground.apps.site.models import Photo
 
 class PhotoForm(ModelForm):
     class Meta:
@@ -20,20 +21,17 @@ class PhotoForm(ModelForm):
             'tags': TagAutocomplete()
         }
         
-class AudioForm(PhotoForm):
+class PhotoInlineForm(ModelForm):
     class Meta:
         from django import forms
-        from localground.apps.site.widgets import PointWidget, PointWidgetHidden, \
-                                            TagAutocomplete, CustomDateTimeWidget
-        model = Audio
-        fields = ('id', 'project', 'source_scan', 'source_marker', 'name',
-                  'created_timestamp', 'attribution', 'description', 'point', 'tags')
+        from localground.apps.site.widgets import \
+                                        TagAutocomplete, CustomDateTimeWidget
+        model = Photo
+        fields = ('name', 'description', 'tags', 'attribution', 'created_timestamp')
         widgets = {
             'id': forms.HiddenInput,
-            'point': PointWidgetHidden(), #PointWidget(map_width=300, map_height=200),
             'description': forms.Textarea(attrs={'rows': 3}), #any valid html attributes as attrs
-            'source_scan': forms.HiddenInput,
             'created_timestamp': CustomDateTimeWidget,
-            'source_marker': forms.HiddenInput,
             'tags': TagAutocomplete()
         }
+

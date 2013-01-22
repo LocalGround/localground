@@ -88,8 +88,7 @@ class BaseNamedMedia(BaseMedia):
         
 class BaseUploadedMedia(BaseNamedMedia):
     file_name_new = models.CharField(max_length=255)
-    project = models.ForeignKey('Project',
-                                related_name="+")
+    project = models.ForeignKey('Project')
     attribution = models.CharField(max_length=500, blank=True,
                                    null=True, verbose_name="Author / Creator")
     

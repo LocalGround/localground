@@ -76,7 +76,7 @@ class PrintMixin(GeneralMixin):
         else:
             return [p.to_dict() for p in self]'''
     
-    def get_all(self, user, project, ordering_field=None, **kwargs):
+    def get_listing(self, user, project, ordering_field=None, **kwargs):
         return self.by_project(user, project=project, ordering_field=ordering_field)
             
     def by_project(self, user, project, ordering_field=None):

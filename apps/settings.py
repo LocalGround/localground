@@ -102,8 +102,9 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-
-JQUERY_UI_PATH = 'http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js'
+JQUERY_PATH = 'http://code.jquery.com/jquery-1.8.0.min.js'
+JQUERY_UI_PATH = 'http://code.jquery.com/ui/1.9.2/jquery-ui.min.js'
+BOOTSTRAP_JS_PATH = '/static/bootstrap2.2.2/js/complete/bootstrap.min.js'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '+z2(@u0ev(4k5p())l38j$ea6o$@irxtc_8qgp-^a60qn239**'

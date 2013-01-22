@@ -1,1 +1,101 @@
-{% extends "profile/groups.html" %}
+{% extends "profile/data_list.html" %}
+
+{% block page_title %} {{page_title }} {% endblock %}
+{% block script_links %}
+	{{ block.super }}
+    <script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
+	<script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
+    <script type="text/javascript" src="/static/scripts/site/account/groups.js"></script>
+{% endblock %}
+{% block extra_styles %}
+	{{block.super}}
+	.key { font-weight: bold; }
+{% endblock %}
+{% block extra_scripts %}
+    var o = new localground.groups();
+{% endblock %}
+{% block pageload_scripts %}
+	var opts = {
+        username: '{{user.username}}',
+		updateURL: '{% autoescape off %}{{url}}{% endautoescape %}',
+		pageURL: '{% autoescape off %}{{url}}{% endautoescape %}?page={{page}}',
+		rawURL: '{% autoescape off %}{{url}}{% endautoescape %}',
+		deleteURL: '/profile/{{object_type}}/delete/',
+		addURL: '/profile/{{object_type}}/create/embed/',
+		objectName: '{{ group_object.model_name|capfirst }}',
+		objectType: '{{object_type}}'
+	};
+	{% if username %}
+		opts.alias = '{{username}}';
+	{% endif %}
+    o.initialize(opts);
+{% endblock %}
+
+{% block controls_menus %}
+	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
+		<a href="#" class="dropdown-toggle">Options</a>
+		<ul class="dropdown-menu">
+			<li><a href="#">Share</a></li>
+			<li><a id="delete_objects" href="#">Delete</a></li>
+			<li><a id="add_object" href="#">Create New</a></li>
+		</ul>
+	</li>
+{% endblock %}
+{% block projects_menus %}<!-- no projects -->{% endblock %}
+{% block row_header %}
+	<tr>
+		<th scope="col" class="column-cb" >
+			<input class="checkall" type="checkbox" name="checkall"/>
+		</th>
+		<th scope="col" colspan="2">{{ group_object.model_name|capfirst }} Info</th>
+	</tr>
+{% endblock %}
+
+{% block rows %}
+{% for form in formset.forms %}
+		<tr>
+			<td>
+				<input type="checkbox" value="{{form.instance.id}}"
+							   name="id" id="cb_{{form.instance.id}}"
+							   class="checkone">
+			</td>
+			<td>
+				{% include "includes/forms/generic_form_renderer.html" %}
+				<div class="clearfix">
+					<div class="input">
+						<a href="#" class="share">Share</a>
+					</div>
+				</div>
+			</td>
+			
+			<td>
+				Owner: <span>{% if form.instance.owner %} {{ form.instance.owner}} {% else %} anonymous {% endif %}</span><br>
+				Last Updated: <span>{{form.instance.time_stamp|date:"n/j/Y P" }}</span>.		
+				<ul class="print_details" style="margin-bottom:0px">
+					<li>
+						Map Images: {{form.instance.processed_maps_count}}
+					</li>
+					<li>
+						Photos: {{form.instance.photo_count}}
+					</li>
+					<li>
+						Audio: {{form.instance.audio_count}}
+					</li>
+					<li>
+						Markers: {{form.instance.marker_count}}
+					</li>
+					
+					{% comment %}Remove after debugging: very inefficient! {% endcomment %}
+					<li><strong>Shared with:</strong> {{ form.instance.users.all|join:", " }}</li>
+				</ul>
+			</td>
+		</tr>
+	{% endfor %}
+{% endblock %}
+
+{% block no_objects %}
+	<div class="hero-unit" style="margin-top:0px !important;">
+		<p>You have not created any {{ group_object.model_name_plural }}</p>
+		<button class="btn primary" onclick="o.addObject();return false;">Create {{ group_object.model_name|capfirst }}</button>
+	</div>
+{% endblock %}

@@ -48,6 +48,23 @@ class ProjectCreateForm(ModelForm):
             'all': ('/%s/css/themes/bootstrap/jquery-ui-1.8.16.custom.css' % settings.STATIC_MEDIA_DIR,)
         }
         
+class ProjectInlineUpdateForm(ModelForm):
+    class Meta:
+        from localground.apps.site.widgets import TagAutocomplete
+        model = Project
+        fields = ('name', 'description', 'slug', 'tags')
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 1, 'cols': 160}),
+            'tags': TagAutocomplete()
+        }
+    
+    def __init__(self, *args, **kwargs):
+        """
+        We need access to the user field in the UserAutocomplete widget, so we
+        have to associate the form instance with the widget.
+        """
+        super(ProjectInlineUpdateForm, self).__init__(*args, **kwargs)
+        
 class ProjectUpdateForm(ModelForm):
     class Meta:
         model = Project

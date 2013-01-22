@@ -30,7 +30,7 @@ localground.profile.prototype.initialize = function(opts) {
     //make sure everything's un-checked!
     $('.checkone, .checkall').attr('checked', false);
     
-    $('#add-modal, #delete-modal, #no-selection-modal, #move-modal, #image-modal').modal({
+    /*$('#add-modal, #delete-modal, #no-selection-modal, #move-modal, #image-modal').modal({
         keyboard: true,
         backdrop: true,
         closeExtras: function() {
@@ -63,6 +63,7 @@ localground.profile.prototype.initialize = function(opts) {
             self.mode = 'default';
         }
     });
+	*/
     
     $('#saveChanges').click(function() {
 		$('#the_form').attr('action', self.updateURL);

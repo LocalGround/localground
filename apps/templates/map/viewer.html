@@ -7,12 +7,12 @@
 {% block script_links %}
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3.9&libraries=drawing"></script>
     <!-- enable photo dragging -->
-    <script src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js"></script>
-    <!-- script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script -->
+    <script src="{{ JQUERY_UI_PATH }}"></script>
+    <!-- script src="{{ BOOTSTRAP_JS_PATH }}"></script -->
     
     <!-- script type="text/javascript" src="/static/scripts/thirdparty/twitter/bootstrap-modal.js"></script -->
-    <script type="text/javascript" src="/static/bootstrap2.2.2/js/bootstrap-tabs.js"></script>
-    <script type="text/javascript" src="/static/bootstrap2.2.2/js/bootstrap.js"></script>
+    <!-- script type="text/javascript" src="/static/bootstrap2.2.2/js/bootstrap-tabs.js"></script>
+    <script type="text/javascript" src="/static/bootstrap2.2.2/js/bootstrap.js"></script -->
     <script type="text/javascript" src="/static/scripts/thirdparty/infobubble.js"></script>
     <script type="text/javascript" src="/static/scripts/helpers/mapTypes.js"></script>
 	<script type="text/javascript" src="/static/scripts/site/player.js"></script>
@@ -213,7 +213,7 @@
         serverURL: '{{serverURL}}', 
         overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
         showOutlines: false,
-        cloudmadeKey: '{{cloudmadeKey}}'
+        cloudmadeKey: '{{CLOUDMADE_KEY}}'
     };
     {% if markerID %}
         opts.markerID = {{markerID}};

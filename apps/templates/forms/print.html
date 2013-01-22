@@ -30,7 +30,7 @@
         layouts: {% autoescape off %}{{ layouts }}{% endautoescape %},
         selectedLayoutID: {{ selectedLayout_id }},
         numProjects: {{projects|length}},
-        cloudmadeKey: '{{cloudmadeKey}}'
+        cloudmadeKey: '{{CLOUDMADE_KEY}}'
     };
     {% if form.id %}
         opts.form = {{form.id }};
