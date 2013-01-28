@@ -4,7 +4,6 @@ import simplejson as json
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from localground.apps.helpers.models import PointObject, ObjectTypes, ReturnCodes
-from localground.apps.overlays.models import Marker
 
 
 @process_identity

@@ -301,7 +301,9 @@ class GeneralMixin(object):
             
         
     def to_dict_list(self):
-        return [p.to_dict() for p in self]
+        if len(list(self)) > 0:
+            return [p.to_dict() for p in self]
+        return []
 #------------------------------------------
         
 class ScanMixin(GeneralMixin):

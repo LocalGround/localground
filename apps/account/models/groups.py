@@ -9,7 +9,7 @@ from localground.apps.account.models.entitygroupassociation import EntityGroupAs
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from localground.apps.uploads.models import Scan, Photo, Audio, Video
-from localground.apps.overlays.models import Marker, WMSOverlay
+from localground.apps.overlays.models.wmsoverlay import WMSOverlay
 
 class Group(Base, BasePermissions):
     """
@@ -113,6 +113,7 @@ class Project(Group):
                 'data': Photo.objects.by_project(self, ordering_field='name').to_dict_list() 
             })
         if include_markers:
+            from localground.apps.overlays.models import Marker
             data.append({
                 'id': ObjectTypes.MARKER,
                 'overlayType': ObjectTypes.MARKER,
@@ -134,7 +135,8 @@ class Project(Group):
         #       updated, a record is inserted into at_projects_forms (if it
         #       doesn't already exist).
         data = []
-        forms = self.form_set.all() #create trigger for this!
+        #forms = self.form_set.all() #create trigger for this!
+        forms = Form.objects.filter(projects__id=self.id)
         for form in forms:
             recs = form.get_data(project=self, to_dict=to_dict,
                                     include_markers=False, include_scan=False)
@@ -148,6 +150,7 @@ class Project(Group):
                 #tables.append(dict(form=form.to_dict(), data=recs))
             
         return data
+    
     
     def __unicode__(self):
         return self.name
@@ -202,6 +205,7 @@ class View(Group):
         
     @property
     def markers(self):
+        from localground.apps.overlays.models import Marker
         return self._get_filtered_entities(Marker)
         
     def get_markers_with_counts(self):
@@ -209,6 +213,7 @@ class View(Group):
         Queries for Markers and also uses raw sql to retrieve how many Audio,
         Photo, Table Records are associated with the marker.
         """
+        from localground.apps.overlays.models import Marker
         marker_ids = [m.id for m in self.markers]
         markers_with_counts = Marker.objects.by_marker_ids_with_counts(marker_ids)
         #append turned_on flag:

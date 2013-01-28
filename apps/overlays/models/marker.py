@@ -113,7 +113,7 @@ class Marker(PointObject):
     def get_audio(self):
         return Audio.objects.by_marker(self, ordering_field='name').to_dict_list() 
     
-    def get_note_ids(self):
+    '''def get_note_ids(self):
         notes = {}
         forms = self.project.form_set.all()
         for form in forms:
@@ -124,10 +124,12 @@ class Marker(PointObject):
         if len(notes) > 0:
             return notes
         return None
-    
+    '''
     def get_tables(self):
+        from localground.apps.prints.models import Form
         data = []
-        forms = self.project.form_set.all()
+        forms = Form.objects.filter(projects__id=self.project.id)
+        #forms = self.project.form_set.all()
         for form in forms:
             recs = form.get_data(marker=self, to_dict=True,
                                     include_markers=False)
@@ -162,7 +164,7 @@ class Marker(PointObject):
             e.update({
                 'photoIDs': self.get_photo_ids(),
                 'audioIDs': self.get_audio_ids(),
-                'noteIDs': self.get_note_ids(),
+                #'noteIDs': self.get_note_ids(),
                 'photos': self.get_photos(),
                 'audio': self.get_audio(),
                 'tables': self.get_tables()
