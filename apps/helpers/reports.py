@@ -174,7 +174,7 @@ class Report():
             header_flowables.append(Paragraph('<b>%s</b>' % a, style))
         data.append(header_flowables)
         for n in range(0, num_rows):
-            data.append(['', '', '', ''])
+            data.append(['' for n in field_widths])
             rowheights.append(39)
     
         t=Table(data, field_widths, rowheights)

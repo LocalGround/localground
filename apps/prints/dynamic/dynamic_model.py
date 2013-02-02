@@ -182,8 +182,10 @@ class ModelClassBuilder(object):
                                 snippet_url= snippet.absolute_virtual_path()
                             ))
                         data.append(field)
-                        if descriptor.is_display_field or descriptor.col_name == 'col_1':
+                        if descriptor.is_display_field: # or descriptor.col_name == 'col_1':
                             d.update(dict(name=field['value']))
+                        if d.get('name') is None:
+                            d.update(dict(name='Record #%s' % self.num)) 
                     d.update(dict(fields=data))
                         
                 return d
