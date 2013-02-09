@@ -115,8 +115,9 @@ localground.viewer.prototype.initialize=function(opts){
     //if(this.showOutlines)
     //    this.drawOutlines();
     
-    this.initProjectsMenu();
-	this.initViewsMenu();
+    //this.initProjectsMenu();
+	this.initGroupMenu('project');
+	this.initGroupMenu('view');
         
     google.maps.event.addListener(this.map, 'zoom_changed', function() {
         //this just re-renders scale-dependent markers:
@@ -156,72 +157,29 @@ localground.viewer.prototype.setPosition = function(minimize) {
 	});
 };
 
-
-localground.viewer.prototype.initProjectsMenu = function() {
-    if(this.projects && this.projects.length > 0) {
-        $.each(this.projects, function() {
-            var projectID = this.id;
-            var $span = $('<span></span>').html(this.name);
-            var $cb = $('<input type="checkbox" class="cb_project" />')
-                        .attr('id', this.id)
-                        .attr('title', this.id)
-                        .val(this.id);
-            $cb.change(function() {
-				return self.toggleGroupData(parseInt($(this).val()), 'projects', $(this).attr('checked'));	
-			});
-            $cb.checked = false;
-            var $li = $('<li></li>')
-                .append($cb).append($span)
-                .css({'cursor': 'pointer'})
-                .click(function(){
-                    //kind of a weird hack, but it works:
-                    var $cb = $(this).find('input');
-                    var isChecked = $cb.attr('checked') ? false : true;
-                    $cb.attr('checked', isChecked); //toggle checkbox
-                    $cb.trigger('change');
-                    $cb.attr('checked', isChecked);
-                    return false;
-                });
-            $('#projectList').append($li);   
+localground.viewer.prototype.initGroupMenu = function(groupType) {
+	// groupType must be either 'view' or 'project'
+	var groupList = this.projects;
+	if(groupType == 'view') { groupList = this.views; }
+    if(groupList && groupList.length > 0) {
+        $.each(groupList, function() {
+            self.appendGroupMenuItem(this, groupType);
         });
-        self.extendTwitterDropdowns();
-        $('#projectListContainer').css({
-            'max-height': '250px',
-            'overflow-y': 'auto',
-            'overflow-x': 'hidden',
-            'min-width': '300px',
-            'max-width': '400px'
-        });
-        $('#projectList').css({
-            'width': $('#projectListContainer').width()
-        });
+        self.doGroupMenuTouchups(groupType);
     }
     else {
-        $('#projects-menu').hide(); 
+        $('#' + groupType + 's-menu').hide(); 
     }
 };
 
-
-localground.viewer.prototype.initViewsMenu = function() {
-    if(this.views && this.views.length > 0) {
-        $.each(this.views, function() {
-            self.appendViewMenuItem(this);
-        });
-        self.doViewMenuTouchups();
-    }
-    else {
-        $('#views-menu').hide(); 
-    }
-};
-
-localground.viewer.prototype.appendViewMenuItem = function(item) {
+localground.viewer.prototype.appendGroupMenuItem = function(item, groupType) {
 	var $span = $('<span></span>').html(item.name);
-	var $cb = $('<input type="checkbox" class="cb_view" />')
-				.attr('id', 'cb_view_' + item.id)
+	var $cb = $('<input type="checkbox" class="cb_' + groupType + '" />')
+				.attr('id', 'cb_' + groupType + '_' + item.id)
 				.attr('title', item.id)
 				.val(item.id);
 	$cb.change(function() {
-		return self.toggleGroupData(parseInt($(this).val()), 'views', $(this).attr('checked'));	
+		return self.toggleGroupData(parseInt($(this).val()), groupType + 's', $(this).attr('checked'));	
 	});
 	$cb.checked = false;
 	var $li = $('<li></li>')
@@ -236,20 +194,20 @@ localground.viewer.prototype.appendViewMenuItem = function(item) {
 			$cb.attr('checked', isChecked);
 			return false;
 		});
-	$('#viewList').append($li);   
+	$('#' + groupType + 'List').append($li);   
 };
 
-localground.viewer.prototype.doViewMenuTouchups = function() {
+localground.viewer.prototype.doGroupMenuTouchups = function(groupType) {
 	this.extendTwitterDropdowns();
-	$('#viewListContainer').css({
+	$('#' + groupType + 'ListContainer').css({
 		'max-height': '250px',
 		'overflow-y': 'auto',
 		'overflow-x': 'hidden',
 		'width': '300px',
 		'max-width': '400px'
 	});
-	$('#viewList').css({
-		'width': $('#viewListContainer').width()
+	$('#' + groupType + 'List').css({
+		'width': $('#' + groupType + 'ListContainer').width()
 	});
 };
 

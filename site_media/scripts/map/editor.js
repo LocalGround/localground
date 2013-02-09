@@ -102,8 +102,9 @@ localground.editor.prototype.saveViewConfirm = function() {
             });
             if(!found) {
                 self.views.push(result);
-                self.appendViewMenuItem(result);
-                self.doViewMenuTouchups();
+                self.appendGroupMenuItem(result, 'view');
+                $('#cb_view_' + result.id).attr('checked', true);
+                self.doGroupMenuTouchups('view');
             }
             //alert(JSON.stringify(result));
             $('#views-menu').show();
