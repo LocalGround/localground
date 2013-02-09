@@ -180,6 +180,7 @@ class View(Group):
         Queries for Markers and also uses raw sql to retrieve how many Audio,
         Photo, Notes are associated with the marker.
         """
+        if len(self.markers) == 0: return []
         marker_ids = [m.id for m in self.markers]
         markers_with_counts = Marker.objects.by_marker_ids_with_counts(marker_ids)
         #append turned_on flag:

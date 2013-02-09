@@ -22,9 +22,9 @@ def init(request, identity=None):
     lat, lng, zoom, prints, groups = 21.698265, 14.765625, 3, [], []
     if u.is_authenticated():
         projects = Project.objects.get_objects(identity)
-        if request.user.is_superuser and username == 'all':
-            projects = Project.objects.all().order_by('name')
         projects = [p.to_dict() for p in projects]
+        views = View.objects.get_objects(identity)
+        views = [v.to_dict() for v in views]
         groups = [] #[g.to_dict() for g in MapGroup.objects.my_groups(u)]
         
         if u.get_profile().default_location is not None:
@@ -36,6 +36,7 @@ def init(request, identity=None):
         'lng': lng,
         'zoom': zoom,
         'projects': json.dumps(projects),
+        'views': json.dumps(views),
         'num_projects': len(projects),
         'groups': json.dumps(groups)
     })

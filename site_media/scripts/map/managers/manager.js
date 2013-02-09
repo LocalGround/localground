@@ -127,6 +127,29 @@ localground.manager.prototype.removeByProjectID = function(projectID) {
 	this.updateVisibility();
 };
 
+localground.manager.prototype.removeByViewID = function(viewID) {
+	for(var i = this.data.length-1; i >= 0; i--) {
+		overlay = this.data[i];    
+		if(overlay.view_id == viewID) {
+			//close bubble:
+			if(overlay == self.currentOverlay)
+				self.currentOverlay.closeInfoBubble();
+			//remove marker:
+			if(overlay.googleOverlay) {
+				overlay.googleOverlay.setMap(null);
+				google.maps.event.clearListeners(overlay.googleOverlay, 'drag');
+				google.maps.event.clearListeners(overlay.googleOverlay, 'dragstart');
+				google.maps.event.clearListeners(overlay.googleOverlay, 'dragend');
+			}
+			//remove listing:
+			if(overlay.getListingElement())
+				overlay.getListingElement().remove();
+			this.data.splice(i,1);
+		}
+	}
+	this.updateVisibility();
+};
+
 localground.manager.prototype.addNewOverlay = function(overlay) {
 	this.data.push(overlay);
      
@@ -179,7 +202,7 @@ localground.manager.prototype.getListingContainer = function() {
 	return $('#' + this.getObjectType());
 };
 
-localground.manager.prototype.addRecords = function(data) {
+localground.manager.prototype.addRecords = function(data, opts) {
     alert('abstract: to be implemented in child class');
 };
 

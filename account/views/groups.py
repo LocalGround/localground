@@ -15,6 +15,8 @@ import simplejson as json
 from datetime import datetime
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.contrib.contenttypes.models import ContentType
+            
 
 Form_LU = {
     'projects': {
@@ -83,7 +85,6 @@ def create_update_project(request, object_type, edit_type, object_id=None,
         formset = UserAuthorityObjectFormset(request.POST, instance=group_object, prefix=prefix)
         
         if formset.is_valid() and form.is_valid():
-            from django.contrib.contenttypes.models import ContentType
             # ----------------------------
             # PROJECT FORM POST-PROCESSING
             # ----------------------------
@@ -309,4 +310,88 @@ def delete_groups(request, object_type, identity=None):
     return HttpResponse(json.dumps({'message': message }))
     #re-render page:
     #return get_projects(request, return_message=message)
+    
+    
+def associate_view_with_data(request, object_id=None):
+    from localground.account.models.permissions import EntityGroupAssociation, ObjectAuthority
+    from localground.overlays.models import Marker
+    from localground.uploads.models import Photo, Audio, Scan
+    
+    r = request.POST or request.GET
+    create_new = False
+    if object_id is not None:
+        try:
+            view = View.objects.get(id=object_id)
+        except View.DoesNotExist:
+            create_new = True
+    else:
+        create_new = True
+    if create_new:
+        view = View()
+        view.owner = request.user
+        view.access_authority = ObjectAuthority.objects.get(id=1)
+        view.slug = r.get('name').strip().lower().replace(' ', '-')
+        view.slug += '-%s' % datetime.now().microsecond
+    
+    view.name = r.get('name')
+    view.save()
+    
+    #delete all associations:
+    view.entities.all().delete()
+    
+    try: photo_ids = [int(id) for id in r.get('photo_ids').split(',')]
+    except: photo_ids = []
+    try: audio_ids = [int(id) for id in r.get('audio_ids').split(',')]
+    except: audio_ids = []
+    try: marker_ids = [int(id) for id in r.get('marker_ids').split(',')]
+    except: marker_ids = []
+    try: scan_ids = [int(id) for id in r.get('paper_ids').split(',')]
+    except: scan_ids = []
+    
+    entities = [
+        {'cls': Photo, 'model_name': 'photo', 'ids': photo_ids, 'app_label': 'uploads' },
+        {'cls': Audio, 'model_name': 'audio', 'ids': audio_ids, 'app_label': 'uploads' },
+        {'cls': Scan, 'model_name': 'scan', 'ids': scan_ids, 'app_label': 'uploads' },
+        {'cls': Marker, 'model_name': 'marker', 'ids': marker_ids, 'app_label': 'overlays' },
+    ]
+    for entity in entities:
+        ids = verify(entity.get('cls'), entity.get('ids'), request.user)
+        for id in ids:
+            assoc = EntityGroupAssociation()
+            assoc.user = request.user
+            assoc.ordering = id
+            assoc.turned_on = True
+            assoc.group_type = ContentType.objects.get(app_label='account', model='view')
+            assoc.group_id = view.id
+            assoc.entity_type = ContentType.objects.get(
+                    app_label=entity.get('app_label'), model=entity.get('model_name'))
+            assoc.entity_id = id
+            assoc.save()
+    if r.get('detail') is not None:
+        return HttpResponse(json.dumps(view.to_dict(
+            include_auth_users=True, include_processed_maps=True,
+            include_markers=True, include_audio=True, include_photos=True,
+            include_notes=True     
+        )))
+    else:
+        return HttpResponse(json.dumps(view.to_dict()))
+        
+    
+def verify(cls, ids, user, access_key=None):
+    '''
+    Because GenericForeignKeys don't actually check to make sure that the id is
+    valid (i.e. there are no database constraints that enforce integrity), and
+    we need to be sure that users are authorized to add media to a view, this
+    function makes sure everything's kosher.
+    '''
+    verified_ids = []
+    #query the database to make sure ids correspond to objects
+    objects = list(cls.objects.filter(id__in=ids))
+    
+    # loop through to verify permissions.  Question:  what happens if access
+    # is restricted after a user has created a view?
+    for o in objects:
+        if o.project.can_view(user, access_key=access_key):
+            verified_ids.append(o.id)
+    return verified_ids
      

@@ -183,8 +183,8 @@
     {% if projects %}
         opts.projects = {% autoescape off %}{{ projects }}{% endautoescape %};
     {% endif %}
-    {% if groups %}
-        opts.groups = {% autoescape off %}{{ groups }}{% endautoescape %};
+    {% if views %}
+        opts.views = {% autoescape off %}{{ views }}{% endautoescape %};
     {% endif %}
     {% if lat %}
         opts.center = new google.maps.LatLng({{lat}}, {{lng}});
@@ -222,8 +222,10 @@
             <div id="tab_content" class="tab-content clearfix">
 				<div id="data" class="tab_panel active">
                     <div class="inset-block">
+                        <button id="save_view" style="display:none;float:right; margin: 0px 5px 0px 5px;"
+                                class="btn primary edit-button">Save</button>
                         <button id="mode_toggle" style="display:none;float:right; margin: 0px 5px 0px 5px;"
-                                class="btn">Edit</button>
+                                class="btn edit-button">Edit</button>
                         <span id="editor-message">
                         {% if num_projects > 0 or ebays %}
                             Use the top menus to add your data on the map
@@ -266,6 +268,47 @@
 		<div class="modal-footer">
 			<button class="btn" onclick="driver.hideDialog()">Close</button>
 			<button id="do_print" class="btn primary" onclick="driver.generatePrint()">Generate Print</button>
+		</div>
+	</div>
+    
+    <div id="edit-view" class="modal hide">
+		<div class="modal-header">
+		  <a href="#" class="close">&times;</a>
+		  <h3 id="dialogTitle">Create / Update View</h3>
+		</div>
+		<div class="modal-body" id="edit-view-body">
+            <form id="view-form">
+                <div class="inset-block">
+                    Everything that is currently visible on your map will be saved to
+                    a View.  You may either update an <strong>existing view</strong>,
+                    or create a new one using the menu below:
+                </div>
+                <fieldset>
+                    <div class="clearfix">
+                        <label for="dd-views">Select a View:</label>
+                        <div class="input">
+                            <select id="dd-views"></select>   
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <label for="dd-views">View Name:</label>
+                        <div class="input">
+                            <input type="text" id="view-name" />    
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            <div id="view-saved-message">
+                <br>
+                <div class="alert-message success">
+                    <p>Your view was successfully saved.</p>
+                </div>
+                <br>
+            </div>
+            
+		</div>
+		<div id="view-footer" class="modal-footer">
+			<button id="save-view-confirm" class="btn primary">Save View</button>
 		</div>
 	</div>
     

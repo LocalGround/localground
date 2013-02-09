@@ -7,9 +7,11 @@ localground.paperManager = function(data){
 
 localground.paperManager.prototype = new localground.manager();
 
-localground.paperManager.prototype.addRecords = function(data) {
+localground.paperManager.prototype.addRecords = function(data, opts) {
     var me = this;
     $.each(data, function(){
+        if(opts.view_id)
+            this.view_id = opts.view_id;
         me.data.push(new localground.paper(this));        
     });
 };

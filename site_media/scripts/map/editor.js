@@ -30,7 +30,81 @@ localground.editor.prototype.initialize=function(opts){
     $('#mode_toggle').click(function() {
         self.toggleMode($(this));
     });
+    
+    $('#save_view').click(function() {
+        $('#dd-views').empty();
+        $('#view-form, #view-footer').show();
+        $('#view-saved-message').hide();
+        $.each(self.views, function() {
+            $('#dd-views').append(
+                $('<option></option>').attr('value', this.id).html(this.name)
+            );
+        });
+        $('#dd-views').append(
+            $('<option></option>').attr('value', -1).html('-- Add New --')
+        );
+        
+        //pre-select view that's already turned on, if applicable:
+        if($('.cb_view:checked').length > 0)
+            $('#dd-views').val($('.cb_view:checked:first').val());
+        
+        $('#view-name').val($('#dd-views option:selected').text());
+        $('#edit-view').modal('show');
+    });
+    
+    $('#dd-views').change(function(){
+        if($(this).val() == '-1')
+            $('#view-name').val('');   
+        else
+            $('#view-name').val($('#dd-views').val());
+    });
+    
+    $('#save-view-confirm').click(function(){
+        self.saveViewConfirm();    
+    });
+    
     this.initDrawingManager();
+};
+
+localground.editor.prototype.saveViewConfirm = function() {
+    //alert('save view!');
+    params = {
+        name: $('#view-name').val()   
+    };
+    $.each(self.managers, function() {
+        if(this.overlayType != 'note') {
+            var ids = [];
+            $.each(this.data, function() {
+                if(this.isChecked())
+                    ids.push(this.id);
+            });
+            params[this.overlayType + '_ids'] = ids.join(',');
+        }     
+    });
+    var url = '/profile/views/associate/';
+    if($('#dd-views').val() != '-1')
+        url += $('#dd-views').val() + '/';
+    $.post(
+        url, params,
+        function(result) {
+            var found = false;
+            $.each(self.views, function(){
+                if(this.id == result.id) {
+                    this.name = result.name;
+                    $('#cb_view_' + result.id).next().html(result.name);
+                    found = true;
+                }
+            });
+            if(!found) {
+                self.views.push(result);
+                self.appendViewMenuItem(result);
+            }
+            //alert(JSON.stringify(result));
+            $('#views-menu').show();
+            $('#view-form, #view-footer').hide();
+            $('#view-saved-message').show();
+        },
+    'json');  
 };
 
 localground.editor.prototype.setPosition = function() {
@@ -60,10 +134,10 @@ localground.editor.prototype.initDrawingManager = function() {
         drawingControlOptions: {
             position: google.maps.ControlPosition.TOP_LEFT,
             drawingModes: [
-                google.maps.drawing.OverlayType.MARKER,
-                google.maps.drawing.OverlayType.POLYLINE,
-                google.maps.drawing.OverlayType.RECTANGLE,
-                google.maps.drawing.OverlayType.POLYGON
+                google.maps.drawing.OverlayType.MARKER //,
+                //google.maps.drawing.OverlayType.POLYLINE,
+                //google.maps.drawing.OverlayType.RECTANGLE,
+                //google.maps.drawing.OverlayType.POLYGON
             ]
         },
         map: null

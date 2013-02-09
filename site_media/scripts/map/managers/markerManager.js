@@ -35,9 +35,11 @@ localground.markerManager = function(data){
 };
 localground.markerManager.prototype = new localground.manager();
 
-localground.markerManager.prototype.addRecords = function(data) {
+localground.markerManager.prototype.addRecords = function(data, opts) {
     var me = this;
     $.each(data, function(){
+        if(opts.view_id)
+            this.view_id = opts.view_id;
         me.data.push(new localground.marker(this));        
     });
 };

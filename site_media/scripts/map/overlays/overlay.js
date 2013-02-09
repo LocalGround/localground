@@ -22,6 +22,10 @@ localground.overlay.prototype.isVisible = function() {
 	return this.getListingElement().css('display') != 'none';
 };
 
+localground.overlay.prototype.isChecked = function() {
+	return $('#cb_' + this.getObjectType() + '_' + this.id).attr('checked') ? true : false;	
+};
+
 localground.overlay.prototype.isEditMode = function() {
 	return self.mode == 'edit';
 };

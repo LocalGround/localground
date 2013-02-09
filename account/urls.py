@@ -18,6 +18,8 @@ urlpatterns += patterns('localground.account.views',
     url(r'^(?P<object_type>projects|views)/(?P<edit_type>create)/embed/$', 'groups.create_update_project', {'embed': True}, name='create-group-embed'),
     url(r'^(?P<object_type>projects|views)/(?P<edit_type>create|update|update-sharing)/(?P<object_id>\d+)/$', 'groups.create_update_project', name='update-group'),
     url(r'^(?P<object_type>projects|views)/(?P<edit_type>create|update|update-sharing)/embed/(?P<object_id>\d+)/$', 'groups.create_update_project', {'embed': True}, name='update-group-embed'),
+    url(r'^views/associate/(?P<object_id>\d+)/$', 'groups.associate_view_with_data'),
+    url(r'^views/associate/$', 'groups.associate_view_with_data'),
     url(r'^(?P<object_type>projects|views)/delete/$', 'groups.delete_groups')
 )
 

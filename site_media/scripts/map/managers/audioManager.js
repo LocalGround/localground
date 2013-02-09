@@ -7,7 +7,7 @@ localground.audioManager = function(data){
 
 localground.audioManager.prototype = new localground.manager();
 
-localground.audioManager.prototype.addRecords = function(data) {
+localground.audioManager.prototype.addRecords = function(data, opts) {
     //initialize audio player:
     if(this.player == null) {
         this.player = new localground.player();
@@ -16,6 +16,8 @@ localground.audioManager.prototype.addRecords = function(data) {
     }
     var me = this;
     $.each(data, function(){
+        if(opts.view_id)
+            this.view_id = opts.view_id;
         me.data.push(new localground.audio(this));        
     });
 };

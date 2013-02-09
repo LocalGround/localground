@@ -29,6 +29,7 @@ localground.viewer = function(){
     this.scanID = null;
     this.markers = [];
     this.projects = [];
+    this.views = [];
     this.accessKey = null;
     this.paperManager = new localground.paperManager();
     this.noteManager = new localground.noteManager();
@@ -115,6 +116,7 @@ localground.viewer.prototype.initialize=function(opts){
     //    this.drawOutlines();
     
     this.initProjectsMenu();
+	this.initViewsMenu();
         
     google.maps.event.addListener(this.map, 'zoom_changed', function() {
         //this just re-renders scale-dependent markers:
@@ -141,9 +143,9 @@ localground.viewer.prototype.initialize=function(opts){
     this.initArrowNav();
 	
 	if(this.initProjectID != null)
-		this.toggleProjectData(this.initProjectID, 'projects', true);
+		this.toggleGroupData(this.initProjectID, 'projects', true);
 	if(this.initViewID != null)
-		this.toggleProjectData(this.initViewID, 'views', true);
+		this.toggleGroupData(this.initViewID, 'views', true);
 };
 
 localground.viewer.prototype.setPosition = function(minimize) {
@@ -165,7 +167,7 @@ localground.viewer.prototype.initProjectsMenu = function() {
                         .attr('title', this.id)
                         .val(this.id);
             $cb.change(function() {
-				return self.toggleProjectData(parseInt($(this).val()), 'projects', $(this).attr('checked'));	
+				return self.toggleGroupData(parseInt($(this).val()), 'projects', $(this).attr('checked'));	
 			});
             $cb.checked = false;
             var $li = $('<li></li>')
@@ -187,7 +189,7 @@ localground.viewer.prototype.initProjectsMenu = function() {
             'max-height': '250px',
             'overflow-y': 'auto',
             'overflow-x': 'hidden',
-            'width': '300px',
+            'min-width': '300px',
             'max-width': '400px'
         });
         $('#projectList').css({
@@ -199,7 +201,55 @@ localground.viewer.prototype.initProjectsMenu = function() {
     }
 };
 
-localground.viewer.prototype.toggleProjectData = function(groupID, groupType, is_checked) {
+
+localground.viewer.prototype.initViewsMenu = function() {
+    if(this.views && this.views.length > 0) {
+        $.each(this.views, function() {
+            self.appendViewMenuItem(this);
+        });
+        self.extendTwitterDropdowns();
+        $('#viewListContainer').css({
+            'max-height': '250px',
+            'overflow-y': 'auto',
+            'overflow-x': 'hidden',
+            'width': '300px',
+            'max-width': '400px'
+        });
+        $('#viewList').css({
+            'width': $('#viewListContainer').width()
+        });
+    }
+    else {
+        $('#views-menu').hide(); 
+    }
+};
+
+localground.viewer.prototype.appendViewMenuItem = function(item) {
+	var $span = $('<span></span>').html(item.name);
+	var $cb = $('<input type="checkbox" class="cb_view" />')
+				.attr('id', 'cb_view_' + item.id)
+				.attr('title', item.id)
+				.val(item.id);
+	$cb.change(function() {
+		return self.toggleGroupData(parseInt($(this).val()), 'views', $(this).attr('checked'));	
+	});
+	$cb.checked = false;
+	var $li = $('<li></li>')
+		.append($cb).append($span)
+		.css({'cursor': 'pointer', 'min-width': '300px'})
+		.click(function(){
+			//kind of a weird hack, but it works:
+			var $cb = $(this).find('input');
+			var isChecked = $cb.attr('checked') ? false : true;
+			$cb.attr('checked', isChecked); //toggle checkbox
+			$cb.trigger('change');
+			$cb.attr('checked', isChecked);
+			return false;
+		});
+	$('#viewList').append($li);   
+};
+
+localground.viewer.prototype.toggleGroupData = function(groupID, groupType, is_checked) {
 	if(is_checked) {
 		self.lastProjectSelection = groupID;
 		var params = {
@@ -219,22 +269,25 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType, is
 					return;
 				}
 				//process paper maps:
-				$('#mode_toggle').show();
-				self.paperManager.addRecords(result.processed_maps);
+				$('.edit-button').show();
+				var opts = {}
+				if(groupType == 'views')
+					opts = { view_id: groupID };
+				self.paperManager.addRecords(result.processed_maps, opts);
 				self.paperManager.renderOverlays();     
 				//process photos:
-				self.photoManager.addRecords(result.photos);  
+				self.photoManager.addRecords(result.photos, opts);  
 				self.photoManager.renderOverlays();  
 				//process audio:
-				self.audioManager.addRecords(result.audio); 
+				self.audioManager.addRecords(result.audio, opts); 
 				self.audioManager.renderOverlays();
 				//process markers:
-				self.markerManager.addRecords(result.markers);
+				self.markerManager.addRecords(result.markers, opts);
 				self.markerManager.renderOverlays();
 				//process notes:
 				if(result.notes != null) {
 					$.each(result.notes, function() {
-						self.noteManager.addRecords(this);    
+						self.noteManager.addRecords(this, opts);    
 					});
 				}
 				self.noteManager.renderOverlays();
@@ -266,11 +319,15 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType, is
 	} //end if checked
 	else {
 		$.each(self.managers, function() {
-			this.removeByProjectID(groupID);    
+			if(groupType == 'projects')
+				this.removeByProjectID(groupID);
+			
+			if(groupType == 'views')
+				this.removeByViewID(groupID);  
 		});
 		self.resetBounds();
-		if($('.cb_project:checked').length == 0) {
-			$('#mode_toggle').hide();
+		if($('.cb_project:checked').length + $('.cb_view:checked').length == 0) {
+			$('.edit-button').hide();
 		}
 	}
 	return;

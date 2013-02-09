@@ -1,10 +1,10 @@
-localground.table = function(table, color){
+localground.table = function(table, color, opts){
     this.id = table.form.id;
     this.name = table.form.name;
     this.color = color;
     this.data = [];
     if(table != null && table.data)
-        this.addRecords(table.data);
+        this.addRecords(table.data, opts);
     //this.addDataContainer();
 };
 
@@ -13,9 +13,11 @@ localground.table.prototype = new localground.manager();
 localground.table.prototype.getObjectType = function() {
     return 'table_' + this.id;
 };
-localground.table.prototype.addRecords = function(data) {
+localground.table.prototype.addRecords = function(data, opts) {
     var me = this;
     $.each(data, function(){
+        if(opts.view_id)
+            this.view_id = opts.view_id;
         me.data.push(new localground.note(this, me.color, me.id));        
     });
 };
@@ -60,12 +62,18 @@ localground.noteManager.prototype.removeByProjectID = function(projectID) {
     }
 };
 
-localground.noteManager.prototype.addRecords = function(tableData) {
+localground.noteManager.prototype.removeByViewID = function(viewID) {
+    for(key in this.tables) {
+        this.tables[key].removeByViewID(projectID);
+    }
+};
+
+localground.noteManager.prototype.addRecords = function(tableData, opts) {
     var formID = tableData.form.id;
     if(this.tables[formID] == null)
-        this.tables[formID] = new localground.table(tableData, this.nextColor());
+        this.tables[formID] = new localground.table(tableData, this.nextColor(), opts);
     else
-        this.tables[formID].addRecords(tableData.data);
+        this.tables[formID].addRecords(tableData.data, opts);
 };
 
 localground.noteManager.prototype.toggleOverlays = function(isOn) {
