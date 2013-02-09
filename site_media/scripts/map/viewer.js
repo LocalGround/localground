@@ -207,17 +207,7 @@ localground.viewer.prototype.initViewsMenu = function() {
         $.each(this.views, function() {
             self.appendViewMenuItem(this);
         });
-        self.extendTwitterDropdowns();
-        $('#viewListContainer').css({
-            'max-height': '250px',
-            'overflow-y': 'auto',
-            'overflow-x': 'hidden',
-            'width': '300px',
-            'max-width': '400px'
-        });
-        $('#viewList').css({
-            'width': $('#viewListContainer').width()
-        });
+        self.doViewMenuTouchups();
     }
     else {
         $('#views-menu').hide(); 
@@ -247,6 +237,20 @@ localground.viewer.prototype.appendViewMenuItem = function(item) {
 			return false;
 		});
 	$('#viewList').append($li);   
+};
+
+localground.viewer.prototype.doViewMenuTouchups = function() {
+	this.extendTwitterDropdowns();
+	$('#viewListContainer').css({
+		'max-height': '250px',
+		'overflow-y': 'auto',
+		'overflow-x': 'hidden',
+		'width': '300px',
+		'max-width': '400px'
+	});
+	$('#viewList').css({
+		'width': $('#viewListContainer').width()
+	});
 };
 
 localground.viewer.prototype.toggleGroupData = function(groupID, groupType, is_checked) {

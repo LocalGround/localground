@@ -45,10 +45,15 @@ localground.editor.prototype.initialize=function(opts){
         );
         
         //pre-select view that's already turned on, if applicable:
-        if($('.cb_view:checked').length > 0)
+        if($('.cb_view:checked').length > 0) {
             $('#dd-views').val($('.cb_view:checked:first').val());
-        
-        $('#view-name').val($('#dd-views option:selected').text());
+            $('#view-name').val($('#dd-views option:selected').text());
+        }
+        else {
+            if($(this).val() == '-1')
+            $('#dd-views').val('-1');
+            $('#view-name').val('');
+        }
         $('#edit-view').modal('show');
     });
     
@@ -98,6 +103,7 @@ localground.editor.prototype.saveViewConfirm = function() {
             if(!found) {
                 self.views.push(result);
                 self.appendViewMenuItem(result);
+                self.doViewMenuTouchups();
             }
             //alert(JSON.stringify(result));
             $('#views-menu').show();
