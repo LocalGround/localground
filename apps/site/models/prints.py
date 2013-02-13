@@ -27,7 +27,7 @@ class Print(BaseExtents, BaseMedia):
     layers = models.ManyToManyField('WMSOverlay', null=True, blank=True)
     projects = models.ManyToManyField('Project')
     objects = PrintManager()
-        
+    
     def get_form_column_widths(self):
         if self.form_column_widths is None or len(self.form_column_widths) == 0:
             return []

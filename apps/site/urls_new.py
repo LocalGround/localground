@@ -48,7 +48,7 @@ urlpatterns = patterns('',
     (r'^upload/media/post/$', 'localground.apps.site.views.uploader.upload_media'),
     
     # media server
-    (r'^profile/(?P<object_type>photos|audio-files|videos|snippets|attachments|map-images|prints|tables)/(?P<hash>[=\w]+)/$', 'localground.apps.site.views.mediaserver.serve_media'),
+    (r'^profile/(?P<object_type>photos|audio|videos|snippets|attachments|map-images|prints|tables)/(?P<hash>[=\w]+)/$', 'localground.apps.site.views.mediaserver.serve_media'),
   
     
     

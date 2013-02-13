@@ -5,5 +5,5 @@ from localground.apps.site.forms.groupforms import (
     ProjectInlineUpdateForm, ViewPermissionsForm, ViewCreateForm, ViewUpdateForm
 )
 from localground.apps.site.forms.userforms import CustomUserChangeForm, UserProfileForm
-from localground.apps.site.forms.audio import AudioForm
-from localground.apps.site.forms.photo import PhotoForm, PhotoInlineForm
+from localground.apps.site.forms.base import get_media_form, \
+        get_inline_media_form, get_inline_form

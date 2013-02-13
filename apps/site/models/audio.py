@@ -23,7 +23,7 @@ class Audio(BasePoint, BaseUploadedMedia):
     
     def save_upload(self, file, user, project):
         #1) first, set user and project (required for generating file path):
-        self.created_by = user
+        self.owner = user
         self.last_updated_by = user
         self.project = project
         

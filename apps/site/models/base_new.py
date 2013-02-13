@@ -3,7 +3,7 @@ from django.contrib.gis.db import models
 from datetime import datetime
 from tagging_autocomplete.models import TagAutocompleteField
 from django.conf import settings
-import os
+import os, stat
 import base64   
 
 class Base(models.Model):
@@ -29,6 +29,11 @@ class BaseNamed(BaseAudit):
     description = models.TextField(null=True, blank=True)
     tags = TagAutocompleteField(blank=True, null=True)
     
+    @classmethod
+    def inline_form(cls):
+        from localground.apps.site.forms import get_inline_form
+        return get_inline_form(cls)
+    
     class Meta:
         app_label = 'site'
         abstract = True
@@ -42,6 +47,11 @@ class BaseMedia(BaseAudit):
     virtual_path = models.CharField(max_length=255)
     file_name_orig = models.CharField(max_length=255)
     content_type = models.CharField(max_length=50)
+    
+    @classmethod
+    def inline_form(cls):
+        from localground.apps.site.forms import get_inline_form
+        return get_inline_form(cls)
     
     class Meta:
         abstract = True
@@ -64,11 +74,11 @@ class BaseMedia(BaseAudit):
     
     def generate_relative_path(self):
         return '/%s/media/%s/%s/' % (settings.USER_MEDIA_DIR, self.owner.username,
-                                                 self._meta.verbose_name_plural)
+                                                 self.name_plural)
         
     def generate_absolute_path(self):
         return '%s/media/%s/%s' % (settings.USER_MEDIA_ROOT, self.owner.username,
-                                                self._meta.verbose_name_plural)
+                                                self.name_plural)
         
 class BaseNamedMedia(BaseMedia):
     name = models.CharField(max_length=255)
@@ -88,6 +98,11 @@ class BaseUploadedMedia(BaseNamedMedia):
     class Meta:
         abstract = True
         app_label = 'site'
+        
+    @classmethod
+    def inline_form(cls):
+        from localground.apps.site.forms import get_inline_media_form
+        return get_inline_media_form(cls)
         
     def absolute_virtual_path(self):
         return self._encrypt_media_path(self.virtual_path + self.file_name_new)
