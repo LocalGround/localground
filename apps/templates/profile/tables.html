@@ -62,7 +62,7 @@ Tables <small>{{ form.name }}:
 
 {% block controls_menus %}
 	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
-		<a href="#" class="dropdown-toggle">Options</a>
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
 		<ul class="dropdown-menu" style="width:200px;">
 			{% if is_blank %}
 				<li><a id="delete_objects" href="#">Delete Rows</a></li> 
@@ -97,7 +97,7 @@ Tables <small>{{ form.name }}:
 {% block other_menus %}
 	{% if forms %}
 	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
-		<a href="#" class="dropdown-toggle">Tables</a>
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Tables</a>
 		<ul class="dropdown-menu" style="width:200px;">
 			{% for f in forms %}
 				<li>

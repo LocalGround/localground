@@ -77,7 +77,7 @@
     <div class="row" style="margin-bottom:0px;width:800px;height:40px;">
         <ul class="tabs" style="margin-bottom: 10px">
             <li class="dropdown" data-dropdown="dropdown" style="width:100px;">
-              <a href="#" class="dropdown-toggle">Options</a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
               <ul class="dropdown-menu">
                 <li><a href="#">Add to Map Group</a></li>
                 <li><a href="#">Change Permissions</a></li>
@@ -91,7 +91,7 @@
             </li>
             {% if user.is_superuser %}
             <li class="dropdown" data-dropdown="dropdown" style="width:100px;">
-                <a href="#" class="dropdown-toggle">Users</a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Users</a>
                 <ul class="dropdown-menu">
                     <li><a href="/account/profile/prints/?username=all">
                         {% if username == 'all' %}
