@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-#!/usr/bin/env python
-from django.contrib.auth.forms import UserChangeForm
 from django.forms import ModelForm
-from localground.apps.site.models import Photo
 
 def get_media_form(cls):
     class MediaForm(ModelForm):

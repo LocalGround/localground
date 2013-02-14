@@ -45,6 +45,11 @@ class Group(BaseNamed, BasePermissions):
         abstract = True
         app_label = 'site'
         
+    @classmethod
+    def sharing_form(cls):
+        from localground.apps.site.forms import ProjectInlineUpdateForm
+        return ProjectInlineUpdateForm
+        
     @staticmethod
     def get_users():
         # Returns a list of user that own or have access to at least one project.
@@ -104,6 +109,10 @@ class Project(Group):
         from localground.apps.site.forms import ProjectInlineUpdateForm
         return ProjectInlineUpdateForm
     
+    @classmethod
+    def sharing_form(cls):
+        from localground.apps.site.forms import ProjectPermissionsForm
+        return ProjectPermissionsForm
         
     def to_dict(self, include_auth_users=False, include_processed_maps=False,
                 include_markers=False, include_audio=False, include_photos=False,
@@ -189,6 +198,11 @@ class View(Group):
                                        content_type_field='group_type',
                                        object_id_field='group_id')
     
+    @classmethod
+    def sharing_form(cls):
+        from localground.apps.site.forms import ViewPermissionsForm
+        return ViewPermissionsForm
+        
     def _get_filtered_entities(self, cls):
         """
         Private method that queries the EntityGroupAssociation model for

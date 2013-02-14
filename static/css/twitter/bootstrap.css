@@ -3025,3 +3025,13 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
     text-decoration: none;
 }
 
+/* Typeahead */
+
+.typeahead {
+  z-index: 1051;
+  margin-top: 2px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+

@@ -29,22 +29,31 @@ class UserAutocomplete(TextInput):
             self.autocomplete_url = '/profile/get-contacts/json/'
         autocomplete_id = '%s_%s' % (attrs['id'], 'autocomplete')
         autocomplete_name = '%s_%s' % (name, 'autocomplete')
-        html = '<input type="text" id="%s" name="%s" value="%s" />' % \
+        html = '<input type="text" id="%s" name="%s" value="%s" autocomplete="off" data-provide="typeahead" class="typeahead" />' % \
                                                 (autocomplete_id, autocomplete_name, username)
         
-        js = u'''<script type="text/javascript">
-                $("#%s").autocomplete({
-                    source: '%s',
-                    delay: 200,
-                    multiple: %s,
-                    select: function(event, ui) {
-                        $(this).val(ui.item.label);
-                        return false;
-                }
-            }); 
-            </script>''' % \
-                (autocomplete_id, self.autocomplete_url, str(self.allow_multiples).lower())
-        return mark_safe("\n".join([html, js]))
+        js = '''
+            <script type="text/javascript">
+                //<![CDATA[
+                    $('.typeahead').typeahead({
+                        source: function (query, process) {
+                            return $.getJSON(
+                                '%s',
+                                { query: query },
+                                function (data) {
+                                    var newData = [];
+                                    $.each(data, function(){
+                                        newData.push(this.label);
+                                    });
+                                    return process(newData);
+                                });
+                        }
+                    });
+                //]]>  
+                </script>
+        ''' % self.autocomplete_url
+        
+        return mark_safe(html + js)
         
     def value_from_datadict(self, data, files, name):
         """
@@ -60,10 +69,4 @@ class UserAutocomplete(TextInput):
         except:
             pass
             return None
-        
-    class Media:
-        js = ('http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js',)
-        css = {
-            'all': ('/%s/css/themes/bootstrap/jquery-ui-1.8.16.custom.css' % settings.STATIC_MEDIA_DIR,)
-        }
         

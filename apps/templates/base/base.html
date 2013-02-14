@@ -25,10 +25,6 @@
 		</style>
 		{% block jquery_version %}
 			
-		<!-- script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script -->
-		<!-- script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.2.min.js"></script -->
-		<!-- script src="/static/scripts/offline/jquery-latest.js"></script -->
-		<!-- script src="http://code.jquery.com/jquery-latest.js"></script -->
 		<script type="text/javascript" src="{{ JQUERY_PATH }}"></script>
 		{% endblock %}	
 		<script type="text/javascript" src="/static/scripts/thirdparty/json2.js"></script>
@@ -36,7 +32,6 @@
 		<script type="text/javascript" src="/static/scripts/thirdparty/jquery_cookie.js"></script>
 		<script type="text/javascript" src="/static/scripts/site/base.js"></script>
 		<script type="text/javascript" src="{{ BOOTSTRAP_JS_PATH }}"></script>
-		<!-- script src="/static/scripts/thirdparty/twitter/bootstrap-dropdown.js"></script -->
 		{% block script_links %}{% endblock %}
 		<script>
 			{% block extra_scripts %}{% endblock %}

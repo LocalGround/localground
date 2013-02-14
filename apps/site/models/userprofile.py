@@ -2,6 +2,7 @@ from django.db.models import signals
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
 from localground.apps.site.models.permissions import ObjectAuthority
+from localground.apps.site.models.groups import Project
 from datetime import datetime
 
 
@@ -42,6 +43,7 @@ def create_profile_on_insert(sender, instance, created, **kwargs):
         default_project.slug = 'default-' + instance.username
         default_project.name = 'My First Project' 
         default_project.description = 'Default Local Ground project',
+        default_project.last_updated_by = instance
         default_project.access_authority = ObjectAuthority.objects.get(id=1)
         default_project.owner = instance
         default_project.save()

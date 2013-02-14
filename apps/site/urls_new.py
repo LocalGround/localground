@@ -35,6 +35,15 @@ urlpatterns = patterns('',
     #profile:
     (r'^profile/listing/(?P<object_type>photo|audio|video|scan|project|view|print|attachment|form|wmsoverlay)', 'localground.apps.site.views.profile.object_list_form'),
     
+    #sharing:
+    (r'^profile/sharing/(?P<object_type>project|view)/(?P<object_id>\d+)/', 'localground.apps.site.views.profile.create_update_group_with_sharing'),
+    (r'^profile/sharing/(?P<object_type>project|view)/embed/(?P<object_id>\d+)/', 'localground.apps.site.views.profile.create_update_group_with_sharing', { 'embed': True }),
+    
+    #contacts
+    (r'^profile/get-contacts/$', 'localground.apps.site.views.generic.get_contacts_autocomplete'),
+    (r'^profile/get-contacts/(?P<format>\w+)/$', 'localground.apps.site.views.generic.get_contacts_autocomplete'),
+    (r'^profile/get-my-contacts/$', 'localground.apps.site.views.generic.get_my_contacts_autocomplete'),
+    
     #django authentication:
     (r'^accounts/', include('localground.apps.registration.urls')),
     (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),

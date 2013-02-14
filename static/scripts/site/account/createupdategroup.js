@@ -94,6 +94,7 @@ localground.permissions.prototype.initRow = function($elem, isNew) {
     autocomplete works and the UI is customized for the permissions
     forms (adding new users to views and projects)
     */
+    alert($elem.html());
     var $cell0 = $elem.find('td:eq(0)');
     // if it's a new row, clear out old row's id (pk):
     if(isNew || $cell0.find('input:eq(0)').val() == '') {
@@ -115,20 +116,28 @@ localground.permissions.prototype.replaceWithAutocomplete = function($elem) {
     var $input_old = $elem.find('input:eq(0)');
     var $username_input = $('<input type="text" />')
             .attr('id', $input_old.attr('id'))
-            .attr('name', $input_old.attr('name'));
+            .attr('name', $input_old.attr('name'))
+            .attr('data-provide', 'typeahead')
+            .attr('autocomplete', 'off')
+            .addClass('typeahead');
     $elem.append($username_input);
     $input_old.remove();
     
     // 2) attach auto-complete functionality (using jquery ui):
-    $username_input.autocomplete({
-        source: '/profile/get-contacts/json/',
-        delay: 200,
-        multiple: false,
-        select: function(event, ui) {
-            $(this).val(ui.item.label);
-            return false;
+    $('.typeahead').typeahead({
+        source: function (query, process) {
+            return $.getJSON(
+                '/profile/get-contacts/json/',
+                { query: query },
+                function (data) {
+                    var newData = [];
+                    $.each(data, function(){
+                        newData.push(this.label);
+                    });
+                    return process(newData);
+                });
         }
-    });   
+    });
 };
 
 localground.permissions.prototype.initFormset = function() {	

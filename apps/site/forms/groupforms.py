@@ -23,13 +23,9 @@ class ProjectPermissionsForm(ModelForm):
         self.fields['owner'].widget.form_instance = self
         
     class Media:
-        js = ('http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js',
-              '/%s/scripts/thirdparty/jquery.formset.js' % settings.STATIC_MEDIA_DIR,
+        js = ('/%s/scripts/thirdparty/jquery.formset.js' % settings.STATIC_MEDIA_DIR,
               '/%s/scripts/site/account/createupdategroup.js' % settings.STATIC_MEDIA_DIR
              )
-        css = {
-            'all': ('/%s/css/themes/bootstrap/jquery-ui-1.8.16.custom.css' % settings.STATIC_MEDIA_DIR,)
-        }
         
 class ProjectCreateForm(ModelForm):
     class Meta:
@@ -40,13 +36,9 @@ class ProjectCreateForm(ModelForm):
         }
     
     class Media:
-        js = ('http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js',
-              '/%s/scripts/thirdparty/jquery.formset.js' % settings.STATIC_MEDIA_DIR,
+        js = ('/%s/scripts/thirdparty/jquery.formset.js' % settings.STATIC_MEDIA_DIR,
               '/%s/scripts/site/account/createupdategroup.js' % settings.STATIC_MEDIA_DIR
              )
-        css = {
-            'all': ('/%s/css/themes/bootstrap/jquery-ui-1.8.16.custom.css' % settings.STATIC_MEDIA_DIR,)
-        }
         
 class ProjectInlineUpdateForm(ModelForm):
     class Meta:
@@ -83,13 +75,9 @@ class ProjectUpdateForm(ModelForm):
         self.fields['owner'].widget.form_instance = self
     
     class Media:
-        js = ('http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js',
-              '/%s/scripts/thirdparty/jquery.formset.js' % settings.STATIC_MEDIA_DIR,
+        js = ('/%s/scripts/thirdparty/jquery.formset.js' % settings.STATIC_MEDIA_DIR,
               '/%s/scripts/site/account/createupdategroup.js' % settings.STATIC_MEDIA_DIR
              )
-        css = {
-            'all': ('/%s/css/themes/bootstrap/jquery-ui-1.8.16.custom.css' % settings.STATIC_MEDIA_DIR,)
-        }
 
  
 class ViewPermissionsForm(ProjectPermissionsForm):

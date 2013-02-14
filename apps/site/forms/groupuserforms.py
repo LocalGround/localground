@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from django.forms import ModelForm, fields, formsets, HiddenInput, models
+from django.forms import ModelForm, fields, formsets, HiddenInput, TextInput, models
 from localground.apps.site.widgets import UserAutocomplete
 from django.contrib.auth.models import User
 from localground.apps.site.models import Project
@@ -14,12 +14,6 @@ class UserAuthorityObjectForm(ModelForm):
         name = 'form'
         model = UserAuthorityObject
         fields = ('id', 'user', 'authority', 'object_id', 'content_type')
-    
-    class Media:
-        js = ('http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js',)
-        css = {
-            'all': ('/%s/css/themes/bootstrap/jquery-ui-1.8.16.custom.css' % settings.STATIC_MEDIA_DIR,)
-        }
         
     def __init__(self, *args, **kwargs):
         """
