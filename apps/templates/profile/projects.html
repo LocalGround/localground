@@ -20,8 +20,8 @@
 		updateURL: '{% autoescape off %}{{url}}{% endautoescape %}',
 		pageURL: '{% autoescape off %}{{url}}{% endautoescape %}?page={{page}}',
 		rawURL: '{% autoescape off %}{{url}}{% endautoescape %}',
-		deleteURL: '/profile/{{object_type}}/delete/',
-		addURL: '/profile/{{object_type}}/create/embed/',
+		deleteURL: '/profile/listing/delete/{{object_type}}/',
+		addURL: '/profile/create/{{object_type}}/embed/',
 		objectName: '{{ group_object.model_name|capfirst }}',
 		objectType: '{{object_type}}'
 	};
@@ -35,7 +35,6 @@
 	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
 		<ul class="dropdown-menu">
-			<li><a href="#">Share</a></li>
 			<li><a id="delete_objects" href="#">Delete</a></li>
 			<li><a id="add_object" href="#">Create New</a></li>
 		</ul>

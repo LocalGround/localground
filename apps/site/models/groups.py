@@ -45,11 +45,6 @@ class Group(BaseNamed, BasePermissions):
         abstract = True
         app_label = 'site'
         
-    @classmethod
-    def sharing_form(cls):
-        from localground.apps.site.forms import ProjectInlineUpdateForm
-        return ProjectInlineUpdateForm
-        
     @staticmethod
     def get_users():
         # Returns a list of user that own or have access to at least one project.
@@ -114,6 +109,11 @@ class Project(Group):
         from localground.apps.site.forms import ProjectPermissionsForm
         return ProjectPermissionsForm
         
+    @classmethod
+    def get_form(cls):
+        from localground.apps.site.forms import ProjectCreateForm
+        return ProjectCreateForm
+    
     def to_dict(self, include_auth_users=False, include_processed_maps=False,
                 include_markers=False, include_audio=False, include_photos=False,
                 include_tables=False):
@@ -202,6 +202,11 @@ class View(Group):
     def sharing_form(cls):
         from localground.apps.site.forms import ViewPermissionsForm
         return ViewPermissionsForm
+    
+    @classmethod
+    def get_form(cls):
+        from localground.apps.site.forms import ViewCreateForm
+        return ViewCreateForm
         
     def _get_filtered_entities(self, cls):
         """

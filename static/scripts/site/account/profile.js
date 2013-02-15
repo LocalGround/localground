@@ -221,8 +221,8 @@ localground.profile.prototype.addObject = function() {
         width: 560,
         height: 400,
         iframeURL: this.addURL,
-        showTitle: true,
-        title: 'Create New ' + this.objectName,
+        showTitle: false,
+        //title: 'Create New ' + this.objectName,
         submitButtonText: 'Add ' + this.objectName.toLowerCase(),
         closeExtras: function() {
             if($('#add-modal').find('.hide').html() == 'Done')

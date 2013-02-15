@@ -191,7 +191,7 @@ localground.tables.prototype.initEditor = function() {
         self.edit($(this).attr('target'), false);
         return false;
     });
-    $('#my-modal').modal({
+   /* $('#my-modal').modal({
         keyboard: true,
         backdrop: true,
         closeExtras: function() {
@@ -206,7 +206,7 @@ localground.tables.prototype.initEditor = function() {
             }
             self.mode = 'default';
         }
-    });
+    });*/
     
     $('#save_and_continue').click(function() {
         self.mode = 'edit_object';

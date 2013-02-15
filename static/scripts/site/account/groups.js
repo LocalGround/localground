@@ -24,7 +24,7 @@ localground.groups.prototype.loadShareForm = function(objectID) {
         id: 'share-modal',
         width: 560,
         //height: 400,
-        iframeURL: '/profile/sharing/' + this.objectType + '/embed/' + objectID + '/',
+        iframeURL: '/profile/share/' + this.objectType + '/embed/' + objectID + '/',
         showTitle: false,
         submitButtonText: 'save changes',
         closeExtras: function() {

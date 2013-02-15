@@ -133,7 +133,7 @@ class Form(BaseNamed):
             names.append(n.col_name)
         return names
     
-    def get_data_query(self, project=None, marker=None, identity=None, is_blank=False,
+    def get_data_query(self, project=None, marker=None, user=None, is_blank=False,
                     to_dict=False, include_markers=True, has_geometry=None,
                     attachment=None, manually_reviewed=None):
         # We want to query everything in one go, so we're taking advantage of
@@ -157,17 +157,21 @@ class Form(BaseNamed):
             objects = objects.filter(snippet__source_attachment=attachment)
         if manually_reviewed is not None:
             objects = objects.filter(manually_reviewed=manually_reviewed)   
-        if identity is not None:
+        if user is not None:
             objects = objects.filter(
                     #Q(owner=identity) |
-                    Q(project__owner=identity) |
-                    Q(project__users__user=identity)
+                    Q(project__owner=user) |
+                    Q(project__users__user=user)
                 )
         if has_geometry:
             objects = objects.filter(point__isnull=False)
+        return objects   
+    
+    def get_listing(self, user, project, order_by=['time_stamp'], **kwargs):
+        objects = self.get_data_query(**kwargs)  
+        objects = objects.order_by(*order_by)
         return objects
-        
-        
+    
     def get_data(self, to_dict=False, include_attachment=False,
                  order_by=['time_stamp'], include_scan=False, **kwargs):
         objects = self.get_data_query(**kwargs)  

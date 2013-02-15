@@ -94,7 +94,6 @@ localground.permissions.prototype.initRow = function($elem, isNew) {
     autocomplete works and the UI is customized for the permissions
     forms (adding new users to views and projects)
     */
-    alert($elem.html());
     var $cell0 = $elem.find('td:eq(0)');
     // if it's a new row, clear out old row's id (pk):
     if(isNew || $cell0.find('input:eq(0)').val() == '') {
@@ -112,6 +111,7 @@ localground.permissions.prototype.initRow = function($elem, isNew) {
 };
 
 localground.permissions.prototype.replaceWithAutocomplete = function($elem) {
+    $elem.find('script').remove();
     // 1) delete and re-add text input (workaround to get autocomplete):
     var $input_old = $elem.find('input:eq(0)');
     var $username_input = $('<input type="text" />')

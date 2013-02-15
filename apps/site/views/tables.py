@@ -18,7 +18,7 @@ def get_objects(request, identity=None, project=None, return_message=None,
     r = request.GET or request.POST
     objects = None
     object_type = 'tables'
-    template_name = 'profile/tables.html'
+    template_name = 'profile/table.html'
     is_blank = r.get('is_blank', False) in ['1', 'True', 'true']
     
     #query for user, forms, and projects:
