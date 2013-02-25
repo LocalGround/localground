@@ -23,23 +23,24 @@ localground.ebays.prototype.initialize=function(opts){
         'height': 200
     });
     this.initBottomPanel();
-    $('#100').trigger('click');
+    $('#cb_project_100').trigger('click');
 };
 
-localground.ebays.prototype.toggleProjectData = function(projectID, is_checked) {
-    if(projectID != 100) {
-        return localground.editor.prototype.toggleProjectData.call(this, projectID, is_checked);
+localground.ebays.prototype.toggleGroupData = function(groupID, groupType, is_checked) {
+    if(groupID != 100) {
+		return localground.editor.prototype.toggleGroupData(this, groupID, 'projects', true);
+        //return localground.editor.prototype.toggleProjectData.call(this, projectID, is_checked);
     }
 	if(is_checked) {
-        self.lastProjectSelection = projectID;
+        self.lastProjectSelection = groupID;
 		var params = {
-			id: projectID,
+			id: groupID,
 			include_processed_maps: true,
 			include_markers: true,
 			include_audio: true,
 			include_photos: true,
 			include_notes: false,
-			project_id: projectID
+			project_id: groupID
 		};
         self.getAirQualityData();
         self.getAirObservations();
@@ -51,16 +52,18 @@ localground.ebays.prototype.toggleProjectData = function(projectID, is_checked) 
 				}
 				//process paper maps:
 				$('#mode_toggle').show();
-				self.paperManager.addRecords(result.processed_maps);
+				var opts = {};
+				self.paperManager.addRecords(result.processed_maps, opts);
 				self.paperManager.renderOverlays();     
 				//process photos:
-				self.photoManager.addRecords(result.photos);  
+				self.photoManager.addRecords(result.photos, opts);  
 				self.photoManager.renderOverlays();  
 				//process audio:
-				self.audioManager.addRecords(result.audio); 
+				/*self.audioManager.addRecords([], opts); 
 				self.audioManager.renderOverlays();
+				*/
 				//process markers:
-				self.markerManager.addRecords(result.markers);
+				self.markerManager.addRecords(result.markers, opts);
 				self.markerManager.renderOverlays();
 				//process notes:
 				self.resetBounds();
@@ -69,7 +72,7 @@ localground.ebays.prototype.toggleProjectData = function(projectID, is_checked) 
 	} //end if checked
 	else {
 		$.each(self.managers, function() {
-			this.removeByProjectID(projectID);    
+			this.removeByProjectID(groupID);    
 		});
 		self.resetBounds();
 		if($('.cb_project:checked').length == 0) {
@@ -86,7 +89,7 @@ localground.ebays.prototype.getAirObservations = function() {
             table.form = {id: 92, name: 'Air Quality Observations'};
             var m = new localground.table(table, '1F78B4');
             m.addDataContainer();
-            m.addRecords(result.records);
+            m.addRecords(result.records, {});
             m.renderOverlays();
             self.managers.push(m);
         },

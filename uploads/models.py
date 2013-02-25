@@ -53,10 +53,10 @@ class Upload(Base):
                 (self.host, self.virtual_path, self.file_name_orig)'''
         
     def absolute_virtual_path(self):
-        return self._encrypt_media_path(self.virtual_path + self.file_name_new)
+        return self._encrypt_media_path('%s%s' % (self.virtual_path, self.file_name_new))
         
     def absolute_virtual_path_orig(self):
-        return self._encrypt_media_path(self.virtual_path + self.file_name_orig)
+        return self._encrypt_media_path('%s%s' % (self.virtual_path, self.file_name_orig))
         
     def save_upload(self, *args, **kwargs):
         raise NotImplementedError

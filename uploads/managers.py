@@ -292,6 +292,7 @@ class GeneralMixin(object):
             
         
     def to_dict_list(self):
+        if len(list(self)) == 0: return []
         return [p.to_dict() for p in self]
 #------------------------------------------
         
@@ -417,6 +418,7 @@ class PhotoMixin(GeneralMixin):
     
 class PrintPermissionsMixin(object):
     def to_dict_list(self, include_scan_counts=False):
+        if len(list(self)) == 0: return []
         if include_scan_counts:
             return [dict(p.to_dict(), num_scans=p.num_scans or 0) for p in self]
         else:
