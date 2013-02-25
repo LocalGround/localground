@@ -36,7 +36,7 @@ urlpatterns = patterns('',
     (r'^profile/settings/', 'localground.apps.site.views.profile.change_user_profile'),
     
     #listings:
-    (r'^profile/listing/(?P<object_type>photo|audio|video|scan|project|view|print|attachment|wmsoverlay)', 'localground.apps.site.views.profile.object_list_form'),
+    (r'^profile/listing/(?P<object_type>photo|audio|video|scan|project|view|print|form|attachment|wmsoverlay)', 'localground.apps.site.views.profile.object_list_form'),
     #(r'^profile/listing/(?P<object_type>form)', 'localground.apps.site.views.profile.table_list_form'),
     (r'^profile/listing/delete/(?P<object_type>photo|audio|video|scan|project|view|print|attachment|form|wmsoverlay)/$', 'localground.apps.site.views.profile.delete_batch'),
     
@@ -47,7 +47,7 @@ urlpatterns = patterns('',
     (r'^profile/(?P<action>update|share)/(?P<object_type>project|view)/(?P<object_id>\d+)/', 'localground.apps.site.views.profile.create_update_group_with_sharing'),
   
     #tables
-    (r'^profile/listing/table/', 'localground.apps.site.views.tables.get_objects'),
+    (r'^profile/listing/table/data/', 'localground.apps.site.views.tables.get_objects'),
     #(r'^tables/delete-selected/$', 'tables.delete_objects'),
     #(r'^tables/move-blanks/$', 'tables.update_blank_status'),
     #(r'^tables/move-project/$', 'tables.move_to_project'),

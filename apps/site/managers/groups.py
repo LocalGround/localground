@@ -25,10 +25,10 @@ class GroupMixin(BaseMixin):
         
         if with_counts:
             from django.db.models import Count
-            q = q.annotate(processed_maps_count=Count('scan'))
-            q = q.annotate(photo_count=Count('photo'))
-            q = q.annotate(audio_count=Count('audio'))
-            q = q.annotate(marker_count=Count('marker'))
+            q = q.annotate(processed_maps_count=Count('scan', distinct=True))
+            q = q.annotate(photo_count=Count('photo', distinct=True))
+            q = q.annotate(audio_count=Count('audio', distinct=True))
+            q = q.annotate(marker_count=Count('marker', distinct=True))
         return q
 
 class ProjectMixin(GroupMixin):
