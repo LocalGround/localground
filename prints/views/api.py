@@ -182,10 +182,19 @@ def get_table_data(request, form_id):
     return response
     
 def get_menu(request, form_id):
+    '''
+    Used as a grouping function for the EBAYS data:
+    select distinct col_4, max(col_1) 
+    from table_vanwars_xgb5qaw826 
+    group by col_4
+    order by max(col_1) desc;
+    '''
     from localground.prints.models import Form
+    from django.db.models import Max
     form = Form.objects.get(id=int(form_id))
     recs = (form.TableModel.objects.distinct().values('col_4')
-                    .order_by('-col_4',))
+                .annotate(time_max=Max('col_1')).order_by('-time_max',))
+
     response = HttpResponse(json.dumps({
         'code': 'success',
         'count': len(recs),
