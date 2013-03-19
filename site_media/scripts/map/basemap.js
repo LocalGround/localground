@@ -24,10 +24,11 @@ localground.basemap = function() {
         minZoom: this.minZoom,
         streetViewControl: false,
         scaleControl: true,
-        panControl: false/*,
-        zoomControlOptions: {
-            style: google.maps.ZoomControlStyle.SMALL
-        }*/
+        panControl: false,
+        mapTypeControlOptions: {
+            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+        },
+        position: google.maps.ControlPosition.TOP_LEFT
     };
 };
 localground.basemap.prototype = new localground.base(); // inherits from base 

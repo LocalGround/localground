@@ -390,8 +390,8 @@ localground.viewer.prototype.loadPrintForm = function(opts) {
         'display': 'inline-block',
         'vertical-align': 'middle'
         }).html('Configure Your Map');
-    $('#dialogTitle').parent().prepend(
-        $('<div />')
+    /*$('#dialogTitle').parent().prepend(
+        $('<div id="loading_message" />')
             .css({
                 'display': 'inline-block',
                 'margin': '10px 10px; 0px 0px'
@@ -402,7 +402,7 @@ localground.viewer.prototype.loadPrintForm = function(opts) {
                     .attr('src', '/site_media/images/ajax-loader-small-green.gif')
                     .css({ 'vertical-align': 'middle'})
             ).append(' Loading')
-        );
+        );*/
     var $innerDiv = $('<div id="inner_div"></div>')
         .css({'overflow': 'hidden', 'height': modal_height})
         //.append($loadingImg)
