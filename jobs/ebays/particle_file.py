@@ -60,7 +60,7 @@ class ParticleFile(SpatialFile):
             )
         f.close()
         
-    def populate_database(self):
+    def populate_database(self, title=None):
         self.setup_environment()
         from django.contrib.auth.models import User
         from localground.prints.models import Form
@@ -71,13 +71,15 @@ class ParticleFile(SpatialFile):
         me = User.objects.get(id=1)
         m = form.TableModel
         i = 0
+        if title is None:
+            title = self.start_datetime.strftime('%m-%d-%y @ %I:%M %p'), #Collection Event
         list_of_dictionaries = []
         for rec in self.records:
             d = dict(
                 col_1=rec.date_time,
                 col_2=rec.particle_size,
                 col_3=rec.value,
-                col_4=self.start_datetime.strftime('%m-%d-%y @ %I:%M %p'), #Collection Event
+                col_4=title, #Collection Event
                 col_5=self.file_name, #Source File
                 last_updated_by=me,
                 owner=me,

@@ -22,7 +22,7 @@ def process_carbon_file(file_names):
     cf.to_csv()
     cf.print_records()
     
-def process_particle_file(file_names, lat=None, lng=None):
+def process_particle_file(file_names, lat=None, lng=None, title=None):
     gf, pf = None, None
     for file_name in file_names:
         print 'Processing %s...' % file_name
@@ -48,7 +48,7 @@ def process_particle_file(file_names, lat=None, lng=None):
             rec.lng = lng
             
     pf.to_csv()
-    pf.populate_database()
+    pf.populate_database(title=title)
     #pf.print_records()
 
 
@@ -62,17 +62,28 @@ if __name__ == '__main__':
         arg 1:  path_to_particle_or_carbon_file
         arg 2:  path_to_gps_file
         
+        1 named argument optional:
+        ---------------------------------------------------------------------------
+        title:  -title {{ name_of_data_collection }}
+        
         Examples:
         ---------------------------------------------------------------------------
         $ python driver.py -type particle ../data/my_csv.csv ../data/my_gps_log.log 
+        $ python driver.py -type carbon ../data/my_dat.dat ../data/my_gps_log.log -title '03-19-13 - De Jean Group A'
         $ python driver.py -type carbon ../data/my_dat.dat ../data/my_gps_log.log 
 
     '''
-    file_names, lat, lng = None, None, None
-    if len(sys.argv) not in [4, 5]:
+    file_names, lat, lng, title = None, None, None, None
+    if len(sys.argv) not in [4, 5, 7]:
         print documentation
         exit()
-    if len(sys.argv) == 5:
+    #get title:
+    if len(sys.argv) == 7:
+       title = sys.argv[6]
+       print title
+       
+    #get files:
+    if len(sys.argv) in [5, 7]:
         file_names = [sys.argv[3], sys.argv[4]]
     else:
         file_names = [sys.argv[3]]
@@ -90,9 +101,9 @@ if __name__ == '__main__':
     
     if sys.argv[2] == 'particle':
         #process particle file:
-        process_particle_file(file_names, lat=lat, lng=lng)
+        process_particle_file(file_names, lat=lat, lng=lng, title=title)
     else:
-        process_carbon_file(file_names)
+        process_carbon_file(file_names, title=title)
         
     
 
