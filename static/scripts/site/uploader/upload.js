@@ -1,9 +1,13 @@
+/* Uses:
+    https://github.com/blueimp/jQuery-File-Upload
+*/
 localground.uploader = function(){
     this.counter = 0;
     this.options = {
         acceptFileTypes: /(\.|\/)(gif|jpe?g|png|mp3|m4a|mpeg)$/i,
         maxFileSize: undefined,
         minFileSize: undefined,
+        maxNumberOfFiles: 2,
         previewSourceFileTypes: /^image\/(gif|jpeg|png)$/,
         imageFileTypes: /^image\/(gif|jpeg|png)$/,
         audioFileTypes: /^audio\/(x-m4a|mp3|m4a|mp4|mpeg)$/,
@@ -19,7 +23,7 @@ localground.uploader.prototype.initAjaxGlobalErrorHandling = function() {
     return;    
 };
 localground.uploader.prototype.initialize = function(opts) {
-    //alert('initialize profile');
+    self = this;
     localground.base.prototype.initialize.call(this, opts);
     
     $('#project').change(function(){
@@ -36,6 +40,9 @@ localground.uploader.prototype.initialize = function(opts) {
         url: '/upload/media/post/',
         dropZone: $('body'), //$('#dropzone'),
         add: self.onAdd,
+        change: function(e, data) {
+            alert(data.originalFiles.length);
+        },
         done: function (e, data) {
             data.files[0].isDone = true;
             data.files[0].context.find('.status')
@@ -52,6 +59,7 @@ localground.uploader.prototype.initialize = function(opts) {
                                 //alert(JSON.stringify(result));
                                 data.files[0].cancelled = true;
                                 data.files[0].context.remove();
+                                self.counter -= 1;
                                 if($('#display tbody').find('tr').length == 0)
                                     $('#display').hide();
                                 return false;
@@ -108,14 +116,6 @@ localground.uploader.prototype.initialize = function(opts) {
     });
 };
 
-localground.uploader.prototype.read = function(a, opts) {
-    alert(opts);
-    if(a != 'error decoding QR Code')
-        alert(a);
-    //else
-    //    alert(a);    
-}
-
 localground.uploader.prototype.formatFileSize = function(bytes) {
     if (typeof bytes !== 'number')
         return '';
@@ -130,7 +130,7 @@ localground.uploader.prototype.hasError = function(file) {
     if (file.error) {
         return file.error;
     }
-    if (this.options.maxNumberOfFiles < 0) {
+    if (self.counter > 2) {//self.options.maxNumberOfFiles) {
         return 'maxNumberOfFiles';
     }
     if (!this.options.acceptFileTypes.test(file.type)) {
@@ -147,9 +147,10 @@ localground.uploader.prototype.hasError = function(file) {
     return null;
 };
 
-localground.uploader.prototype.validate = function(files) {
-    valid = !!files.length;
-    $.each(files, function (index, file) {
+localground.uploader.prototype.validate = function(data) {
+    //alert(self.counter);
+    valid = !!data.files.length;
+    $.each(data.files, function (index, file) {
         file.error = self.hasError(file);
         if (file.error) {
             valid = false;
@@ -166,42 +167,16 @@ localground.uploader.prototype.doUpload = function(file) {
     return (notSubmitted && notCancelled && noError);
 };
 
-localground.uploader.prototype.renderBlob = function(file, index) {
-    //alert('adding span');
-    file.context.find('.preview').html(
-        $('<span />').addClass('label info').html('Inspecting image...')
-    );
-                
+localground.uploader.prototype.renderBlob = function(file, index) {         
     return ((loadImage && loadImage( 
         file,
         function (img) {
-            qrcode.callback = function(decoded, opts) {
-                //resize the image to a 1/4 of original and output
-                //decoded string (if applicable)
-                opts.file.context.find('.preview').empty();
-                opts.file.context.find('.preview').append(
-                    $('<img />').css({
-                        width: opts.img.width/4,
-                        height: opts.img.height/4
-                    }).attr('src', opts.img.toDataURL("image/jpeg"))                                                 
-                );
-                if(decoded.toString() != 'error decoding QR Code') {
-                    opts.file.context.find('.media_type').val('2');
-                    //opts.file.context.find('.preview').append('<br>' + decoded);
-                    opts.file.context.find('.preview')
-                        .append($('<br>'))
-                        .append(
-                            $('<span />').addClass('label info')
-                                .css({'text-transform': 'none'})
-                                .html(decoded)
-                        );
-                }
-                else {
-                    opts.file.context.find('.media_type').val('3');
-                }
-                
-            };
-            qrcode.decode(img.toDataURL(), {file: file, img: img});
+            file.context.find('.preview').append(
+                $('<img />').css({
+                    width: img.width/4,
+                    height: img.height/4
+                }).attr('src', img.toDataURL("image/jpeg"))                                                 
+            );
         },
         {
             maxWidth: self.options.previewMaxWidth,
@@ -237,28 +212,36 @@ localground.uploader.prototype.getTypeWidget = function(file) {
 };
 
 localground.uploader.prototype.showOmittedFiles = function(data) {
-    var omitted = 0;
-    //$('#alert-message-text').empty();
+    var omitted = 0, too_many = 0;
+    $('#alert-message-text').empty();
     $.each(data.files, function (index, file) {
-        if(file.error && file.error == 'acceptFileTypes') {
-            ++omitted;
-            if($('#alert-message-text').html().length > 0)
-                $('#alert-message-text').append(', ');
-            else
-                $('#alert-message-text').append(
-                    'The following files were ignored because they are not supported \
-                    by the file uploader:<br>');
-            $('#alert-message-text').append(file.name + ": " + file.type);
+        if(file.error) {
+            if(file.error == 'acceptFileTypes') {
+                ++omitted;
+                if($('#alert-message-text').html().length > 0)
+                    $('#alert-message-text').append(', ');
+                else
+                    $('#alert-message-text').append(
+                        'The following files were ignored because they are not supported \
+                        by the file uploader:<br>');
+                $('#alert-message-text').append(file.name + ": " + file.type);
+            }
+            else if(file.error == 'maxNumberOfFiles') {
+                ++too_many;
+            }
         }
     });
-    if(omitted > 0) {
+    if(omitted + too_many > 0) {
         $('.alert-message').show();
+    }
+    if(too_many > 0) {
+        $('#alert-message-text').append('<br>Some files were not included because only 10 files can be uploaded at a time.');
     }
 };
 
 localground.uploader.prototype.onAdd = function(e, data) {
     //validate files:
-    self.validate(data.files);
+    self.validate(data);
     self.showOmittedFiles(data);
     $.each(data.files, function (index, file) {
         if(file.error) {
@@ -275,12 +258,14 @@ localground.uploader.prototype.onAdd = function(e, data) {
                         if(data.jqXHR)
                             data.jqXHR.abort();
                         file.context.find('.cancel').hide();
+                        self.counter -= 1;
                     });
         $remove = $('<a />').attr('href', '#').addClass('remove')
                     .html('remove')
                     .click(function() {
                         file.cancelled = true;
                         file.context.remove();
+                        self.counter -= 1;
                         if($('#display tbody').find('tr').length == 0)
                             $('#display').hide();    
                     });
@@ -308,6 +293,14 @@ localground.uploader.prototype.onAdd = function(e, data) {
         file.context = $tr;
         return true;
     });
+    
+    // show / hide the table:
+    if(self.counter == 0) {
+        $('#display').hide();
+    }
+    else {
+        $('#display').show();
+    }
 
     //add image preview functionality:
     $(this).fileupload('resize', data).done(function () {
@@ -332,10 +325,8 @@ localground.uploader.prototype.onAdd = function(e, data) {
         });
     });
     
-    //show the table:
-    $('#display').show();
-    
     $('.start').click(function() {
+        //alert(data.files.length + '-' + data.length);
         //file = data.files[0]; (only 1 file is submitted at a time...)
         if(self.doUpload(data.files[0]))
             data.submit();    
@@ -348,9 +339,11 @@ localground.uploader.prototype.onAdd = function(e, data) {
         $.each(data.files, function (index, file) {
             file.cancelled = true;    
         });
+        self.counter = 0
     });
     
 };
+
 
 
     

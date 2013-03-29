@@ -47,7 +47,8 @@ urlpatterns = patterns('',
     (r'^profile/(?P<object_type_plural>projects|views)/(?P<action>create)/embed/$', 'localground.apps.site.views.profile.create_update_group_with_sharing', { 'embed': True }),
     (r'^profile/(?P<object_type_plural>projects|views)/(?P<action>create)/$', 'localground.apps.site.views.profile.create_update_group_with_sharing'),
     #  b) Media
-    (r'^profile/(?P<object_type_plural>photos|audio|map-images)/create/$', 'localground.apps.site.views.uploader.upload_media'),
+    (r'^upload/media/post/$', 'localground.apps.site.views.uploader.upload_media'),
+    #(r'^profile/(?P<object_type_plural>photos|audio|map-images|attachments)/create/$', 'localground.apps.site.views.uploader.upload_media'),
     
     #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     # 2) Read:
@@ -93,7 +94,6 @@ urlpatterns = patterns('',
     
     #uploader:
     (r'^upload/$', 'localground.apps.site.views.uploader.init_upload_form'),
-    (r'^upload/media/post/$', 'localground.apps.site.views.uploader.upload_media'),
     
     # media server
     (r'^profile/(?P<object_type>photos|audio|videos|snippets|attachments|map-images|prints|tables)/(?P<hash>[=\w]+)/$', 'localground.apps.site.views.mediaserver.serve_media'),
