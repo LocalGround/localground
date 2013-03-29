@@ -10,9 +10,9 @@ localground.groups.prototype = new localground.profile(); // Here's where the in
 
 localground.groups.prototype.initialize=function(opts){
     localground.profile.prototype.initialize.call(this, opts);
-    if(opts) {
-        $.extend(this, opts);
-    }
+    //if(opts) {
+    //    $.extend(this, opts);
+    //}
     
     $('.share').click(function(){
         return self.loadShareForm($(this).parents('tr').find('.checkone').val())
@@ -24,7 +24,7 @@ localground.groups.prototype.loadShareForm = function(objectID) {
         id: 'share-modal',
         width: 560,
         //height: 400,
-        iframeURL: '/profile/share/' + this.objectType + '/embed/' + objectID + '/',
+        iframeURL: '/profile/share/' + this.objectType + '/' + objectID + '/embed/',
         showTitle: false,
         submitButtonText: 'save changes',
         closeExtras: function() {

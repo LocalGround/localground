@@ -24,7 +24,9 @@ a name to a URL pattern in order to distinguish it from other patterns using the
 same view and parameters. Then, you can use this name in reverse URL matching.
 --------------------------------------------------------------------------------
 '''
-    
+
+object_types_plural = [ 'photos', 'audio', 'videos', 'map-images', 'projects',
+                        'views', 'prints', 'forms', 'attachments', 'tiles']
 handler500 = 'localground.apps.account.views.server_error' 
 urlpatterns = patterns('',
                        
@@ -35,19 +37,41 @@ urlpatterns = patterns('',
     #user prefs:
     (r'^profile/settings/', 'localground.apps.site.views.profile.change_user_profile'),
     
-    #listings:
-    (r'^profile/listing/(?P<object_type>photo|audio|video|scan|project|view|print|form|attachment|wmsoverlay)', 'localground.apps.site.views.profile.object_list_form'),
-    #(r'^profile/listing/(?P<object_type>form)', 'localground.apps.site.views.profile.table_list_form'),
-    (r'^profile/listing/delete/(?P<object_type>photo|audio|video|scan|project|view|print|attachment|form|wmsoverlay)/$', 'localground.apps.site.views.profile.delete_batch'),
+    ##########
+    ## CRUD ##
+    ##########
+    #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    # 1) Create:
+    #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    #  a) Groups & Views:
+    (r'^profile/(?P<object_type_plural>projects|views)/(?P<action>create)/embed/$', 'localground.apps.site.views.profile.create_update_group_with_sharing', { 'embed': True }),
+    (r'^profile/(?P<object_type_plural>projects|views)/(?P<action>create)/$', 'localground.apps.site.views.profile.create_update_group_with_sharing'),
+    #  b) Media
+    (r'^profile/(?P<object_type_plural>photos|audio|map-images)/create/$', 'localground.apps.site.views.uploader.upload_media'),
     
-    #individual objects:
-    (r'^profile/(?P<action>create)/(?P<object_type>project|view)/embed/', 'localground.apps.site.views.profile.create_update_group_with_sharing', { 'embed': True }),
-    (r'^profile/(?P<action>create)/(?P<object_type>project|view)/', 'localground.apps.site.views.profile.create_update_group_with_sharing'),
-    (r'^profile/(?P<action>update|share)/(?P<object_type>project|view)/embed/(?P<object_id>\d+)/', 'localground.apps.site.views.profile.create_update_group_with_sharing', { 'embed': True }),
-    (r'^profile/(?P<action>update|share)/(?P<object_type>project|view)/(?P<object_id>\d+)/', 'localground.apps.site.views.profile.create_update_group_with_sharing'),
+    #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    # 2) Read:
+    #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    (r'^profile/(?P<object_type_plural>{0})/$'.format('|'.join(object_types_plural)), 'localground.apps.site.views.profile.object_list_form'),
+    
+    #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    # 3) Update:
+    #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    (r'^profile/(?P<object_type_plural>projects|views)/(?P<action>update|share)/(?P<object_id>\d+)/embed/$', 'localground.apps.site.views.profile.create_update_group_with_sharing', { 'embed': True }),
+    (r'^profile/(?P<object_type_plural>projects|views)/(?P<action>update|share)/(?P<object_id>\d+)/$', 'localground.apps.site.views.profile.create_update_group_with_sharing'),
   
+    #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    # 4) Delete
+    #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    (r'^profile/(?P<object_type_plural>{0})/delete/batch/$'.format('|'.join(object_types_plural)), 'localground.apps.site.views.profile.delete_batch'),
+    
+    
+    
+    
+    
+    
     #tables
-    (r'^profile/listing/table/data/', 'localground.apps.site.views.tables.get_objects'),
+    (r'^profile/tables/data/', 'localground.apps.site.views.tables.get_objects'),
     #(r'^tables/delete-selected/$', 'tables.delete_objects'),
     #(r'^tables/move-blanks/$', 'tables.update_blank_status'),
     #(r'^tables/move-project/$', 'tables.move_to_project'),

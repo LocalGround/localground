@@ -12,6 +12,36 @@ class Base(models.Model):
     class Meta:
         app_label = 'site'
         abstract = True
+        
+    @classmethod
+    def get_model_from_plural_object_type(cls, object_type_plural):
+        from django.http import Http404
+        from django.db.models import loading
+        object_type_plural = object_type_plural.replace('-', ' ')
+        for ModelClass in loading.get_models():
+            try:
+                if object_type_plural == ModelClass.name_plural: return ModelClass
+            except:
+                pass
+        raise Http404
+    
+    @classmethod
+    def listing_url(cls):
+        return '/profile/{0}/'.format(cls.name_plural)
+        
+    @classmethod
+    def batch_delete_url(cls):
+        return '/profile/{0}/delete/batch/'.format(cls.name_plural)
+        
+    @classmethod
+    def create_url(cls):
+        return '/profile/{0}/create/'.format(cls.name_plural)
+   
+    def update_url(self):
+        return '/profile/{0}/update/{1}/'.format(self.name_plural, self.id)
+        
+    def delete_url(self):
+        return '/profile/{0}/delete/{1}/'.format(self.name_plural, self.id)
     
 class BaseAudit(Base):
     owner = models.ForeignKey('auth.User',)

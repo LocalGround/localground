@@ -14,19 +14,12 @@ localground.profile = function(){
 localground.profile.prototype = new localground.base(); // inherits from base 
 
 localground.profile.prototype.initialize = function(opts) {
-    //alert('initialize profile');
+    self = this;
     localground.base.prototype.initialize.call(this, opts);
-    if(opts.skip)
-        return;
-    
-    this.pageURL = opts.pageURL || this.pageURL;
-    this.rawURL = opts.rawURL || this.rawURL;
-    this.addURL = opts.addURL || this.addURL;
-    this.updateURL = opts.updateURL || this.updateURL;
-    this.deleteURL = opts.deleteURL || this.deleteURL;
-    this.moveURL = opts.moveURL || this.moveURL;
-    this.objectName = opts.objectName || this.objectName;
-    
+	if(opts) {
+        $.extend(this, opts);
+    }
+     
     //make sure everything's un-checked!
     $('.checkone, .checkall').attr('checked', false);
     

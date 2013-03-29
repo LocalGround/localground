@@ -18,6 +18,8 @@ class Marker(BasePoint, BaseNamed):
     to be re-factored to inherit from account/Group Model, since it's an
     association of other media objects (and should behave like a project or a view).
     """
+    name = 'marker'
+    name_plural = 'markers'
     project = models.ForeignKey('Project')
     
     # todo:  replace project with generic association to either a project, view,
