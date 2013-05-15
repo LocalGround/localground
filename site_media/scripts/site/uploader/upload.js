@@ -133,8 +133,12 @@ localground.uploader.prototype.hasError = function(file) {
     if (this.options.maxNumberOfFiles < 0) {
         return 'maxNumberOfFiles';
     }
-    if (!this.options.acceptFileTypes.test(file.type)) {
-        return 'acceptFileTypes';
+    if (!this.options.acceptFileTypes.test(file.type) &&
+        !this.options.previewSourceFileTypes.test(file.type) &&
+        !this.options.imageFileTypes.test(file.type) &&
+        !this.options.audioFileTypes.test(file.type)) {
+            //alert(file.type + ' - ' + this.options.acceptFileTypes);
+            return 'acceptFileTypes';
     }
     if (this.options.maxFileSize &&
             file.size > this.options.maxFileSize) {
