@@ -14,6 +14,7 @@ from datetime import datetime
 @process_project  
 @login_required
 def init_upload_form(request,
+                     media_type='photos',
                  template_name='forms/uploader.html',
                  base_template='base/base.html',
                  embed=False, identity=None, project=None):
@@ -22,8 +23,20 @@ def init_upload_form(request,
     if request.user.is_superuser and username == 'all':
         projects = Project.objects.all().order_by('name')
     project_id = 'all'
+    media_types = [
+        ('photos', 'Photos', 'png, jpg, jpeg, gif'),
+        ('audio-files', 'Audio Files', 'x-m4a, mp3, m4a, mp4, mpeg'),
+        ('maps', 'Maps', 'png, jpg, jpeg, gif'),
+        ('forms', 'Forms', 'png, jpg, jpeg, gif'),
+        ('air-quality', 'DustTrak Data', 'log (GPS) + csv (DustTrak)'),
+    ]
+    selected_media_type = (None, 'Error')
+    for mt in media_types:
+        if mt[0] == media_type: selected_media_type = mt
     if project is not None: project_id = str(project.id)
     extras = {
+        'media_types': media_types,
+        'selected_media_type': selected_media_type,
         'embed': embed,
         'base_template': base_template,
         'projects': projects,

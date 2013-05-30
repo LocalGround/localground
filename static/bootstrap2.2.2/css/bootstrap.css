@@ -4039,6 +4039,11 @@ input[type="submit"].btn.btn-mini {
           border-radius: 5px;
 }
 
+.nav-pills > li > a:hover {
+  color: #0088cc !important;
+  background-color: #dddddd !important;
+}
+
 .nav-pills > .active > a,
 .nav-pills > .active > a:hover {
   color: #ffffff;

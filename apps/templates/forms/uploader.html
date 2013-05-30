@@ -17,21 +17,50 @@
     <script src="/static/scripts/site/uploader/load-image.min.js"></script>
     <script src="/static/scripts/site/uploader/canvas-to-blob.min.js"></script>
     <script src="/static/scripts/site/uploader/jquery.fileupload-ip.js"></script>
-	
-	<!-- for barcode reader -->
-	<script type="text/javascript" src="/static/scripts/site/uploader/zxing/src/code-reader-minified.js"></script>
 	<script type="text/javascript" src="/static/scripts/site/uploader/upload.js"></script>
 {% endblock %}
 
 {% block extra_styles %}
 	{{block.super}}
+	
+	#uploaded > div {
+		text-align:center;
+		vertical-align:middle;
+		height: 40px;
+		position: absolute;
+		top: 50%;
+		margin-top: -20px;
+		width: 100%;
+	}
+	
+	#dropzone > div {
+		text-align:center;
+		vertical-align:middle;
+		height: 100px;
+		position: absolute;
+		top: 40%;
+		margin-top: -50px;
+		width: 100%;
+	}
+	
+	#uploaded, #dropzone {
+		position: relative;
+		border: 1px solid #eee;
+		border: 1px solid rgba(0, 0, 0, 0.05);
+		-webkit-border-radius: 4px;
+		-moz-border-radius: 4px;
+		border-radius: 4px;
+		padding: 15px;
+	}
     #dropzone {
         background: #EEEEEE;
-        width: 860px;
-        height: 70px;
         text-align: center;
         font-weight: bold;
 		margin-bottom: 0px !important;
+		background-color: #f5f5f5;
+		-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+		-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+		box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
     }
     #dropzone.in {
         width: 860px;
@@ -59,11 +88,10 @@
 	o.initialize({});    
 {% endblock %}
 
-{% block content %}
+{% block content %}    
     
     <div class="container" style="margin-top:20px;">
-		
-        <div class="row fileupload-buttonbar">
+        <!-- div class="row fileupload-buttonbar">
             <div class="span12" style="width:900px;">
                
                 <button type="submit" class="btn primary start"
@@ -85,25 +113,43 @@
 					{% endfor%}
 				</select>
             </div>
-        </div>
+        </div -->
 		
-		<div id="dropzone" class="fade well">
-			Drag files here
-			<br>or<br>
-			<span class="btn success fileinput-button">
-				<i class="icon-plus icon-white"></i>
-				<span>Navigate to your files...</span>
-				<input id="fileupload" type="file" name="files[]" multiple>
-			</span>
+		<ul class="nav nav-pills" style="margin-bottom:10px;">
+			{% for media_type in media_types %}
+				<li {% if selected_media_type.0 == media_type.0 %}class="active"{% endif %}>
+					<a href="/upload/{{media_type.0}}/">{{media_type.1}}</a>
+				</li>
+			{% endfor %}
+		</ul>
+		
+		<div class="row" style="margin-top:50px;">
+			<div id="uploaded" class="span9" style="min-height:250px;display:inline-block; vertical-align:middle">
+				<div style="font-size:20px;color:#666">No {{selected_media_type.1|lower}} uploaded yet</div>
+			</div>
+			<div id="dropzone" class="span5 well" style="font-weight: normal;width:300px;height:250px;">
+				<div>
+					Drag your {{selected_media_type.1|lower}} here
+					<br>-or- <br>
+					<span class="btn success fileinput-button" style="margin-top:10px;margin-bottom:10px;>
+						<i class="icon-plus icon-white"></i>
+						<span>Navigate to your {{selected_media_type.1|lower}}...</span>
+						<input id="fileupload" type="file" name="files[]" multiple>
+					</span>
+					<br><small>Acceptable file types include: <br><span style="color:#333;font-weight:bold;">{{selected_media_type.2}}</span></small>
+				</div>
+			</div>
 		</div>
+		
+		
+		
 		<div class="alert-message"
 			 style="width:868px;display:none;margin-top:10px;margin-bottom:0px;">
 			<a class="close" style="cursor:pointer">×</a>
 			<strong>Warning:</strong>
 			<span id="alert-message-text"></span>
 		</div>  
-		<small>Acceptable file types include PNG, GIF, or JPG/JPEG for images and
-			MP3, MP4 or M4A for audio files.</small><br><br>
+		
 		
         <table id="display" class="table table-striped" style="display:none;width:900px;">
             <thead>

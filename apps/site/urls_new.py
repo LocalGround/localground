@@ -94,6 +94,7 @@ urlpatterns = patterns('',
     
     #uploader:
     (r'^upload/$', 'localground.apps.site.views.uploader.init_upload_form'),
+    (r'^upload/(?P<media_type>photos|audio-files|maps|forms|air-quality)/$', 'localground.apps.site.views.uploader.init_upload_form'),
     
     # media server
     (r'^profile/(?P<object_type>photos|audio|videos|snippets|attachments|map-images|prints|tables)/(?P<hash>[=\w]+)/$', 'localground.apps.site.views.mediaserver.serve_media'),

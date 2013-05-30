@@ -171,6 +171,8 @@ localground.uploader.prototype.renderBlob = function(file, index) {
     return ((loadImage && loadImage( 
         file,
         function (img) {
+            alert(img.toDataURL("image/jpeg"));
+            alert(file.context.find('.preview').html());
             file.context.find('.preview').append(
                 $('<img />').css({
                     width: img.width/4,
@@ -240,6 +242,8 @@ localground.uploader.prototype.showOmittedFiles = function(data) {
 };
 
 localground.uploader.prototype.onAdd = function(e, data) {
+    var $thediv= $('<div />').append($('<span />').addClass('preview'));
+    $('#uploaded').empty().append($thediv);
     //validate files:
     self.validate(data);
     self.showOmittedFiles(data);
@@ -290,7 +294,7 @@ localground.uploader.prototype.onAdd = function(e, data) {
                 .append($('<td class="cell_action"></td>').append($cancel).append($remove));
                 //.append($('<td></td>').append($remove));
         $('#display tbody').append($tr);
-        file.context = $tr;
+        file.context = $thediv; //$tr;
         return true;
     });
     
