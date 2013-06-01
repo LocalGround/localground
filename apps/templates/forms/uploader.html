@@ -23,7 +23,33 @@
 {% block extra_styles %}
 	{{block.super}}
 	
-	#uploaded > div {
+	.progress {
+		height: 8px;
+	}
+	
+	.img-polaroid {
+		float: left;
+		margin-bottom: 5px;
+		margin-top: 5px;
+	}
+	.img-polaroid > p {
+		line-height: 12px;
+		font-size: 11px;
+		color: #999;
+		margin: 0px;
+		text-align: center;
+		overflow: hidden;
+	}
+	
+	.file-container {
+		width: 155px;
+		height: 190px;
+		float: left;
+        margin-left: 8px;
+        margin-right: 8px;
+	}
+	
+	#nothing-here {
 		text-align:center;
 		vertical-align:middle;
 		height: 40px;
@@ -91,16 +117,10 @@
 {% block content %}    
     
     <div class="container" style="margin-top:20px;">
-        <!-- div class="row fileupload-buttonbar">
-            <div class="span12" style="width:900px;">
-               
-                <button type="submit" class="btn primary start"
-						style="float:right;">
-                    <i class="icon-upload icon-white"></i>
-                    <span>Start upload</span>
-                </button>
-                
-				<h4 style="float:left;margin-right:10px;">Select a Project:</h4>
+		<!-- Row #1 -->
+		<div class="row">
+			<!-- Cell #1 -->
+			<div class="span9">
 				<select id="project" name="project">
 					{% for p in projects %}
 						<option value="{{p.id}}"
@@ -111,27 +131,34 @@
 								{% endif %}
 						</option>>
 					{% endfor%}
-				</select>
-            </div>
-        </div -->
-		
-		<ul class="nav nav-pills" style="margin-bottom:10px;">
-			{% for media_type in media_types %}
-				<li {% if selected_media_type.0 == media_type.0 %}class="active"{% endif %}>
-					<a href="/upload/{{media_type.0}}/">{{media_type.1}}</a>
-				</li>
-			{% endfor %}
-		</ul>
-		
-		<div class="row" style="margin-top:50px;">
-			<div id="uploaded" class="span9" style="min-height:250px;display:inline-block; vertical-align:middle">
-				<div style="font-size:20px;color:#666">No {{selected_media_type.1|lower}} uploaded yet</div>
+				</select>	
 			</div>
+			<!-- Cell #2 -->
+			<ul class="nav nav-pills" style="margin-left: 50px;margin-bottom:10px;">
+				{% for media_type in media_types %}
+					<li {% if selected_media_type.0 == media_type.0 %}class="active"{% endif %}>
+						<a href="/upload/{{media_type.0}}/">{{media_type.1}}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+		
+
+		<!-- Row #2 -->
+		<div class="row">
+			<!-- Cell #1 -->
+			<div id="uploaded" class="span9" style="min-height:250px;">
+				<div id="nothing-here" style="font-size:20px;color:#666">
+					No <strong>{{selected_media_type.1|upper}}</strong> uploaded yet
+				</div>
+			</div>
+			
+			<!-- Cell #2 -->
 			<div id="dropzone" class="span5 well" style="font-weight: normal;width:300px;height:250px;">
 				<div>
 					Drag your {{selected_media_type.1|lower}} here
 					<br>-or- <br>
-					<span class="btn success fileinput-button" style="margin-top:10px;margin-bottom:10px;>
+					<span class="btn success fileinput-button" style="margin-top:10px;margin-bottom:10px;">
 						<i class="icon-plus icon-white"></i>
 						<span>Navigate to your {{selected_media_type.1|lower}}...</span>
 						<input id="fileupload" type="file" name="files[]" multiple>
@@ -141,41 +168,15 @@
 			</div>
 		</div>
 		
-		
-		
+		<!-- Alert Message -->
 		<div class="alert-message"
 			 style="width:868px;display:none;margin-top:10px;margin-bottom:0px;">
 			<a class="close" style="cursor:pointer">×</a>
 			<strong>Warning:</strong>
 			<span id="alert-message-text"></span>
-		</div>  
+		</div>
 		
-		
-        <table id="display" class="table table-striped" style="display:none;width:900px;">
-            <thead>
-                <tr>
-                    <th>&nbsp;</th>
-                    <th>Preview</th>
-                    <th>File Info</th>
-                    <th>Project</th>
-                    <th>File Type</th>
-                    <th>Status</th>
-					<th colspan="2">
-						<button id="clear" type="reset" class="btn cancel">
-							<i class="icon-ban-circle icon-dark"></i>
-							<span>Clear</span>
-						</button>	
-					</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+	
     </div>
-    <div id="results"></div>
-    <select id="media_type" class="media_type" style="width:120px;display:none;">
-        <!-- 1=attachment, 2=map, 3=photo, 4=audio, 5=video -->
-        <option value="2">Map / Form</option>
-        <option value="3">Photo</option>
-    </select>
     
 {% endblock %}

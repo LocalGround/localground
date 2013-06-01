@@ -26,9 +26,9 @@ def init_upload_form(request,
     media_types = [
         ('photos', 'Photos', 'png, jpg, jpeg, gif'),
         ('audio-files', 'Audio Files', 'x-m4a, mp3, m4a, mp4, mpeg'),
-        ('maps', 'Maps', 'png, jpg, jpeg, gif'),
-        ('forms', 'Forms', 'png, jpg, jpeg, gif'),
-        ('air-quality', 'DustTrak Data', 'log (GPS) + csv (DustTrak)'),
+        ('maps', 'Paper Maps / Forms', 'png, jpg, jpeg, gif')
+        #,
+        #('air-quality', 'DustTrak Data', 'log (GPS) + csv (DustTrak)'),
     ]
     selected_media_type = (None, 'Error')
     for mt in media_types:
@@ -49,17 +49,19 @@ def init_upload_form(request,
 
 @process_project 
 @login_required
-def upload_media(request, object_type_plural, project=None):
+def upload_media(request, project=None):
     if request.method == 'POST':
         new_object, message = None, None
         #branch processing based on upload type:
-        file = request.FILES.get('files[]')   
-        ModelClass = Base.get_model_from_plural_object_type(object_type_plural)
-        media_object = ModelClass()
-        media_object.save_upload(file, request.user, project)
+        file = request.FILES.get('files[]')
+        media_type = request.POST.get('media_type')
+        if media_type == 'photos':
+            new_object = Photo()
+            new_object.save_upload(file, request.user, project)
+        
         responseObj = {
             'fileName': new_object.file_name_orig,
-            'user': identity.username,
+            'user': request.user.username,
             'content_type': new_object.content_type,
             'time_created': datetime.now().strftime('%m/%d/%Y, %I:%M %p'),
             'update_url': '/profile/%s/?project_id=%s' % \
