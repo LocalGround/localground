@@ -2373,9 +2373,18 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
   background-color: #46A546;
 }
 
-.label.important, .important {
-  background-color: #c43c35;
+.label-important,
+.badge-important,
+.label.important,
+.important{
+  background-color: #b94a48;
 }
+
+.label-important[href],
+.badge-important[href] {
+  background-color: #953b39;
+}
+
 .label.warning, .warning {
   background-color: /*#f89406*/ #FCC374;
 }

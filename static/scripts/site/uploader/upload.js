@@ -4,7 +4,7 @@
 localground.uploader = function(){
     this.counter = 0;
     this.options = {
-        acceptFileTypes: /(\.|\/)(gif|jpe?g|png|mp3|m4a|mpeg)$/i,
+        acceptFileTypes: /(\.|\/)(gif|jpe?g|png|mp3|m4a|x-m4a|mpeg)$/i,
         maxFileSize: undefined,
         minFileSize: undefined,
         maxNumberOfFiles: 20,
@@ -26,6 +26,12 @@ localground.uploader.prototype.initAjaxGlobalErrorHandling = function() {
 localground.uploader.prototype.initialize = function(opts) {
     self = this;
     localground.base.prototype.initialize.call(this, opts);
+    this.options.mediaType = opts.mediaType;
+    //builds a Regex of acceptable file types based on the kind of file being uploaded.
+    this.options.acceptFileTypes = RegExp('(\.|\/)(' +
+                                    opts.acceptFileTypes.split(', ').join('|') +
+                                    ')$', 'i');
+    //alert(this.options.acceptFileTypes);
     
     $('#project').change(function(){
         $('.project').html($('#project option:selected').text());  
@@ -50,9 +56,10 @@ localground.uploader.prototype.initialize = function(opts) {
             data.files[0].isDone = true;
             data.files[0].context.find('.progress').remove();
             
-            $success= $('<div class="badge badge-success" />')
+            if(data.result.success) {
+                $success= $('<div class="badge badge-success" />')
                             .css({
-                                padding: '3px',
+                                padding: '0px 3px 3px 3px',
                                 'border-radius': '20px',
                                 '-webkit-border-radius': '20px',
                                 '-moz-border-radius': '20px',
@@ -63,9 +70,9 @@ localground.uploader.prototype.initialize = function(opts) {
                             })
                             .append($('<i >').addClass('icon-white icon-ok'));
             
-            $delete = $('<a />').attr('href', '#').append('delete')
+                $delete = $('<a />').attr('href', '#').append('delete')
                     .click(function() {
-                        $(this).parent().parent().remove();
+                        $(this).parent().parent().parent().remove();
                         $.getJSON(data.result.delete_url,
                             function(result) {
                                 //alert(JSON.stringify(result));
@@ -77,8 +84,35 @@ localground.uploader.prototype.initialize = function(opts) {
                         'json');    
                         return false;
                     });
-            data.files[0].context.find('.img-container').prepend($success);   
-            data.files[0].context.find('p').append(' | ').append($delete);      
+                data.files[0].context.find('.img-container').prepend($success);   
+                data.files[0].context.find('p').append(' | ').append($delete);
+            }
+            else {
+                $error= $('<div class="badge badge-important" />')
+                        .css({
+                            padding: '0px 0px 3px 3px',
+                            'border-radius': '20px',
+                            '-webkit-border-radius': '20px',
+                            '-moz-border-radius': '20px',
+                            'margin-top': '-10px',
+                            'margin-left': '-10px',
+                            position: 'absolute',
+                            width: '16px'
+                        })
+                        .append($('<i >').addClass('icon-white icon-minus'));
+                $container = data.files[0].context.find('.preview').parent();
+                data.files[0].context.find('.preview').remove();
+                data.files[0].context.find('.img-container').prepend($error);
+                data.files[0].context.find('p')
+                            .css({
+                                color: '#b94a48',
+                                padding: 10,
+                                'font-size': '10px',
+                                'line-height': '12px'
+                            }).html('<strong>Error uploading ' + data.files[0].name +
+                                    ':</strong><br>' + data.result.error_message);
+                $container.append(data.files[0].context.find('p'));
+            }
             
         },
         progress: function (e, data) {
@@ -88,9 +122,8 @@ localground.uploader.prototype.initialize = function(opts) {
             );
         },
         submit: function (e, data) {
-            var $sel = data.files[0].context.find('.media_type');
             data.formData = {
-                media_type: 'photos',
+                media_type: self.options.mediaType,
                 project_id: $('#project').val()
             }
             //alert(JSON.stringify(data.formData));
@@ -189,34 +222,10 @@ localground.uploader.prototype.renderBlob = function(file, index) {
         )));  
 };
 
-localground.uploader.prototype.getTypeWidget = function(file) {
-    //if it's an image, return a select box:
-    if(self.options.imageFileTypes.test(file.type)) {
-        var $widget = $('#media_type').clone().removeAttr('id').show();
-        $widget.val('2');
-        return $widget;
-    }
-    //if it's an audio file, pre-select audio:
-    else if(self.options.audioFileTypes.test(file.type)) {
-        var $widget = $('<span />')
-                        .append($('<span />').html('Audio'))
-                        .append($('<input type="hidden" />')
-                                    .addClass('media_type')
-                                    .val('4'));
-        return $widget;
-    }
-    else {
-        return $('<span />')
-                        .append($('<span />').html(file.type))
-                        .append($('<input type="hidden" />')
-                                    .addClass('media_type')
-                                    .val(file.type)); 
-    }
-};
 
 localground.uploader.prototype.showOmittedFiles = function(data) {
     var omitted = 0, too_many = 0;
-    $('#alert-message-text').empty();
+    //$('#alert-message-text').empty();
     $.each(data.files, function (index, file) {
         if(file.error) {
             if(file.error == 'acceptFileTypes') {
@@ -253,30 +262,6 @@ localground.uploader.prototype.formatFilename = function(filename) {
 
 localground.uploader.prototype.onAdd = function(e, data) {
     $('#nothing-here').remove();
-    var $thediv= $('<div />')
-        .addClass('file-container')
-        .append($('<div class="img-polaroid" />')
-            .append(
-                $('<div class="img-container" />')
-                    .css({
-                        width: 145,
-                        'max-height': 140,
-                        'min-height': 100,
-                        overflow: 'hidden'
-                    })
-                .append(
-                    $('<img />').css({
-                        width: 145
-                    }).addClass('preview')                                               
-                )
-            )
-        ).append(
-            $('<div />')
-                .addClass('progress progress-success progress-striped active')
-                .css({'min-width': '90px'})
-                .append($('<div />').addClass('bar').css({width: '0%'}))
-        );
-    $('#uploaded').prepend($thediv);
     //validate files:
     self.validate(data);
     self.showOmittedFiles(data);
@@ -285,6 +270,30 @@ localground.uploader.prototype.onAdd = function(e, data) {
             //continue to next iteration: return true;
             return true;
         }
+        var $thediv= $('<div />')
+            .addClass('file-container')
+            .append($('<div class="img-polaroid" />')
+                .append(
+                    $('<div class="img-container" />')
+                        .css({
+                            width: 145,
+                            'max-height': 140,
+                            'min-height': 100,
+                            overflow: 'hidden'
+                        })
+                    .append(
+                        $('<img />').css({
+                            width: 145
+                        }).addClass('preview')                                               
+                    )
+                )
+            ).append(
+                $('<div />')
+                    .addClass('progress progress-success progress-striped active')
+                    .css({'min-width': '90px'})
+                    .append($('<div />').addClass('bar').css({width: '0%'}))
+            );
+        $('#uploaded').prepend($thediv);
         $thediv.find('.img-polaroid').append(
             $('<p />').html(
                 self.formatFilename(file.name) + '<br>' + self.formatFileSize(file.size)
@@ -312,7 +321,14 @@ localground.uploader.prototype.onAdd = function(e, data) {
             }
             else {
                 file.context.find('.preview')
-                    .html($('<i />').addClass('icon-headphones icon-dark'));
+                    .html(
+                          $('<i />')
+                            .addClass('icon-headphones icon-dark')
+                            .css({
+                                'margin-left': file.context.width()/2 - 10,
+                                'margin-top': file.context.height()/3 - 10
+                            })
+                    );
                 return false;
             }
         });

@@ -1,8 +1,9 @@
 {% extends base_template %}
 
 {% block style_links %}
-    <link rel="stylesheet" href="/static/css/twitter/bootstrap.css">
-    <link rel="stylesheet" href="/static/css/jquery.fileupload-ui.css">
+    <link rel="stylesheet" href="/static/css/twitter/bootstrap.css" />
+    <link rel="stylesheet" href="/static/css/jquery.fileupload-ui.css" />
+	<link rel="stylesheet" href="/static/scripts/thirdparty/pageguide-master/css/pageguide.css" />
 {% endblock %}
 {% block jquery_version %}
     <!-- script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.1.min.js"></script -->
@@ -18,6 +19,9 @@
     <script src="/static/scripts/site/uploader/canvas-to-blob.min.js"></script>
     <script src="/static/scripts/site/uploader/jquery.fileupload-ip.js"></script>
 	<script type="text/javascript" src="/static/scripts/site/uploader/upload.js"></script>
+	
+	<!-- page guide -->
+	<script type="text/javascript" src="/static/scripts/thirdparty/pageguide-master/js/pageguide.js"></script>
 {% endblock %}
 
 {% block extra_styles %}
@@ -111,7 +115,11 @@
     var o = new localground.uploader();
 {% endblock %}
 {% block pageload_scripts %}
-	o.initialize({});    
+	o.initialize({
+		mediaType: '{{selected_media_type.0}}',
+		acceptFileTypes: '{{selected_media_type.2}}'
+	});
+	var pageguide = tl.pg.init();
 {% endblock %}
 
 {% block content %}    
@@ -143,6 +151,15 @@
 			</ul>
 		</div>
 		
+		
+		<!-- Alert Message -->
+		<div class="alert-message"
+			 style="width:872px;display:none;margin-top:0px;margin-bottom:10px;">
+			<a class="close" style="cursor:pointer">×</a>
+			<strong>Warning:</strong>
+			<span id="alert-message-text"></span>
+		</div>
+		
 
 		<!-- Row #2 -->
 		<div class="row">
@@ -167,16 +184,20 @@
 				</div>
 			</div>
 		</div>
-		
-		<!-- Alert Message -->
-		<div class="alert-message"
-			 style="width:868px;display:none;margin-top:10px;margin-bottom:0px;">
-			<a class="close" style="cursor:pointer">×</a>
-			<strong>Warning:</strong>
-			<span id="alert-message-text"></span>
-		</div>
-		
 	
     </div>
+	
+	<ul id="tlyPageGuide" data-tourtitle="Uploading data/media to your map">
+		<li class="tlypageguide_left" data-tourtarget="#project">
+		  <div>
+				Refers to the selected project....
+		  </div>
+		</li>
+		<li class="tlypageguide_right" data-tourtarget=".nav-pills">
+		  <div>
+				Ensure that you have selected the appropriate media type before uploading... 
+		  </div>
+		</li>
+	  </ul>
     
 {% endblock %}

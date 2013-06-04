@@ -55,20 +55,45 @@ def upload_media(request, project=None):
         #branch processing based on upload type:
         file = request.FILES.get('files[]')
         media_type = request.POST.get('media_type')
-        if media_type == 'photos':
-            new_object = Photo()
-            new_object.save_upload(file, request.user, project)
-        
-        responseObj = {
-            'fileName': new_object.file_name_orig,
-            'user': request.user.username,
-            'content_type': new_object.content_type,
-            'time_created': datetime.now().strftime('%m/%d/%Y, %I:%M %p'),
-            'update_url': '/profile/%s/?project_id=%s' % \
-                                (new_object.get_object_type(), project.id),
-            'delete_url': '/profile/%s/delete/%s/' % \
-                        (new_object.get_object_type(), new_object.id)
-        }
+        success, error_message = True, None
+        try:
+            if media_type == 'photos':
+                new_object = Photo()
+                new_object.save_upload(file, request.user, project)
+            elif media_type == 'audio-files':
+                new_object = Audio()
+                new_object.save_upload(file, request.user, project)
+            elif media_type == 'maps':
+                new_object = Scan()
+                new_object.save_upload(file, request.user, project)
+            else:
+                success = False
+                error_message = 'Unknown file type'
+        except:
+            import sys
+            success = False
+            error_message = str(sys.exc_info()[1])
+            
+        if success:
+            responseObj = {
+                'fileName': new_object.file_name_orig,
+                'user': request.user.username,
+                'content_type': new_object.content_type,
+                'time_created': datetime.now().strftime('%m/%d/%Y, %I:%M %p'),
+                'update_url': '/profile/%s/?project_id=%s' % \
+                                    (new_object.get_object_type(), project.id),
+                'delete_url': '/profile/%s/delete/%s/' % \
+                            (new_object.get_object_type(), new_object.id),
+                'success': True
+            }
+        else:
+            responseObj = {
+                'error_message': error_message,
+                'success': False,
+                'media_type': media_type
+            }
+            if project is not None:
+                responseObj['project_id'] = project.id
         return HttpResponse(json.dumps(responseObj))
     else:
         return HttpResponse(json.dumps(dict(message='Not a post')))
