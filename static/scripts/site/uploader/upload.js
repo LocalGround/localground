@@ -2,9 +2,10 @@
     https://github.com/blueimp/jQuery-File-Upload
 */
 localground.uploader = function(){
-    this.counter = 0;
+    this.errorCount = 0;
+    this.successCount = 0;
     this.options = {
-        acceptFileTypes: /(\.|\/)(gif|jpe?g|png|mp3|m4a|x-m4a|mpeg)$/i,
+        //acceptFileTypes: /(\.|\/)(gif|jpe?g|png|mp3|m4a|x-m4a|mpeg)$/i,
         maxFileSize: undefined,
         minFileSize: undefined,
         maxNumberOfFiles: 20,
@@ -51,6 +52,25 @@ localground.uploader.prototype.initialize = function(opts) {
         dropZone: $('body'), //$('#dropzone'),
         add: self.onAdd,
         done: self.done,
+        stop: function(e){
+            //fires after all uploads are finished:
+            if(self.successCount > 0) {
+                $('#edit-map-link').attr('href', '/maps/editor/' +
+                            $('#project').val() + '/');
+                $('#edit-media-link').attr('href', '/profile/' +
+                            self.options.mediaType + '/?project_id=' + $('#project').val());
+                $('#success').show();
+            }
+            else {
+                $('#success').hide();
+            }
+            if(self.errorCount > 0){ $('#error').show(); }
+            else{ $('#error').hide(); }
+            
+            //reset counters:
+            self.errorCount = 0;
+            self.successCount = 0;
+        },
         progress: function (e, data) {
             data.files[0].context.find('.progress .bar').css(
                 'width',
@@ -62,7 +82,7 @@ localground.uploader.prototype.initialize = function(opts) {
                 media_type: self.options.mediaType,
                 project_id: $('#project').val()
             }
-            alert(JSON.stringify(data.formData));
+            //alert(JSON.stringify(data.formData));
         }
     });
     
@@ -107,9 +127,6 @@ localground.uploader.prototype.hasError = function(file) {
     if (file.error) {
         return file.error;
     }
-    if (self.counter > 20) {//self.options.maxNumberOfFiles) {
-        return 'maxNumberOfFiles';
-    }
     if (!this.options.acceptFileTypes.test(file.type)) {
         return 'acceptFileTypes';
     }
@@ -136,14 +153,6 @@ localground.uploader.prototype.validate = function(data) {
     return valid;
 };
 
-localground.uploader.prototype.doUpload = function(file) {
-    var notSubmitted = file.isDone == null || !file.isDone;
-    var notCancelled = file.cancelled == null || !file.cancelled;
-    var noError = file.error == null;
-    //alert(file.isDone + ' - ' + file.cancelled + ' - ' + file.error);
-    return (notSubmitted && notCancelled && noError);
-};
-
 localground.uploader.prototype.renderBlob = function(file, index) {         
     return ((loadImage && loadImage( 
         file,
@@ -160,8 +169,7 @@ localground.uploader.prototype.renderBlob = function(file, index) {
 
 
 localground.uploader.prototype.showOmittedFiles = function(data) {
-    var omitted = 0, too_many = 0;
-    //$('#alert-message-text').empty();
+    var omitted = 0;
     $.each(data.files, function (index, file) {
         if(file.error) {
             if(file.error == 'acceptFileTypes') {
@@ -174,16 +182,10 @@ localground.uploader.prototype.showOmittedFiles = function(data) {
                         by the file uploader:<br>');
                 $('#alert-message-text').append(file.name + ": " + file.type);
             }
-            else if(file.error == 'maxNumberOfFiles') {
-                ++too_many;
-            }
         }
     });
-    if(omitted + too_many > 0) {
-        $('.alert-message').show();
-    }
-    if(too_many > 0) {
-        $('#alert-message-text').append('<br>Some files were not included because only 10 files can be uploaded at a time.');
+    if(omitted > 0) {
+        $('#alert-message').show();
     }
 };
 
@@ -295,14 +297,15 @@ localground.uploader.prototype.done = function(e, data) {
                         //alert(JSON.stringify(result));
                         data.files[0].cancelled = true;
                         data.files[0].context.remove();
-                        self.counter -= 1;
                         return false;
                     },
                 'json');    
                 return false;
             });
         data.files[0].context.find('.img-container').prepend($success);   
-        data.files[0].context.find('p').append(' | ').append($delete);
+        data.files[0].context.find('p')
+            .append(' | ').append($delete).append('<br>' + $('#project-name').html());
+        self.successCount += 1;
     }
     else {
         $error= $('<div class="badge badge-important" />')
@@ -329,6 +332,7 @@ localground.uploader.prototype.done = function(e, data) {
                     }).html('<strong>Error uploading ' + data.files[0].name +
                             ':</strong><br>' + data.result.error_message);
         $container.append(data.files[0].context.find('p'));
+        self.errorCount += 1;
     }
 };
 

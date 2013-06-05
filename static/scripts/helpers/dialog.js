@@ -7,6 +7,7 @@ ui.dialog = function(opts){
     this.iframeURL = null;
     this.innerContent = null;
     this.showTitle = false;
+    this.showFooter = true;
     this.title = null;
     this.submitButtonText = 'Save';
     this.closeExtras = function() {};
@@ -63,21 +64,30 @@ ui.dialog.prototype.getModal = function() {
         if(this.showTitle) {
             $modal.append(
                 $('<div class="modal-header"></div>').append(
-                    $('<a href="#" class="close">&times;</a>') 
+                    $('<a href="#" class="close">&times;</a>')
+                        .click(function() {
+                            me.hide(); 
+                        })
                 ).append(
                     $('<h3></h3>').html(this.title) 
                 ));    
         }
         else {
             $modal.append(
-                $('<a href="#" class="close">&times;</a>').css({'margin-right': 10}));    
+                $('<a href="#" class="close">&times;</a>')
+                    .css({'margin-right': 10})
+                    .click(function() {
+                        me.hide(); 
+                    }));    
         }
         $modal.append($('<div class="modal-body" style="min-height: ' + this.minHeight + '"></div>'));
-        $modal.append(
-            $('<div class="modal-footer"> \
-                <button class="btn hide">Close</button> \
-                <button class="btn primary">' + me.submitButtonText + '</button> \
-            </div>'));
+        if(this.showFooter) {
+            $modal.append(
+                $('<div class="modal-footer"> \
+                    <button class="btn hide">Close</button> \
+                    <button class="btn primary">' + me.submitButtonText + '</button> \
+                </div>'));
+        }
         $('body').append($modal);
         $modal.find('.hide').click(function(){
             me.hide();     

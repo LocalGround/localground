@@ -6,12 +6,10 @@
 	<link rel="stylesheet" href="/static/scripts/thirdparty/pageguide-master/css/pageguide.css" />
 {% endblock %}
 {% block jquery_version %}
-    <!-- script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.1.min.js"></script -->
 	<script src="{{ JQUERY_PATH }}"></script>
 {% endblock %}	
 {% block script_links %}
     <script src="{{ JQUERY_UI_PATH }}"></script>
-    <!-- script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script -->
     <script src="/static/scripts/site/uploader/jquery.fileupload.js"></script>
     
     <!-- for thumbnailing -->
@@ -26,7 +24,7 @@
 
 {% block extra_styles %}
 	{{block.super}}
-	
+
 	.nav-pills {
 		margin-left: 20px;
 		margin-bottom: 10px;
@@ -39,8 +37,8 @@
 	}
 	.btn-group-plain { float: right; margin-top: 12px; }
 	#project-name { margin-right: 5px; display: inline-block; float: right; }
-	.alert-message {
-		width: 872px;
+	.alert {
+		width: 853px;
 		display: none;
 		margin-top: 0px;
 		margin-bottom: 10px;
@@ -52,6 +50,7 @@
 		margin-top: 5px;
 	}
 	.img-polaroid > p {
+		margin-top: 5px;
 		line-height: 12px;
 		font-size: 11px;
 		color: #999;
@@ -181,10 +180,28 @@
 		
 		
 		<!-- Alert Message -->
-		<div class="alert-message">
+		<div id="alert-message" class="alert alert-block">
 			<a class="close" style="cursor:pointer">×</a>
 			<strong>Warning:</strong>
 			<span id="alert-message-text"></span>
+		</div>
+		
+		<!-- Success Message -->
+		<div id="success" class="alert alert-success">
+			<a class="close" style="cursor:pointer">×</a>
+			<strong>Files uploaded:</strong>
+			<span id="success-message-text">
+				Your files have finished uploading.  You may now add titles &
+				descriptions to your files <a id="edit-media-link" href="#">here</a> or
+				geo-reference you files in the <a id="edit-map-link" href="#">map editor</a>.
+			</span>
+		</div>
+		
+		<!-- Error Message -->
+		<div id="error" class="alert alert-error">
+			<a class="close" style="cursor:pointer">×</a>
+			<strong>Error:</strong>
+			<span id="error-message-text">There were errors when uploading your files.</span>
 		</div>
 		
 
@@ -215,6 +232,7 @@
 	
     </div>
 	
+	<!-- Instructions -->
 	<ul id="tlyPageGuide" data-tourtitle="Uploading data/media to your map">
 		<li class="tlypageguide_left" data-tourtarget=".nav-pills">
 			<div>
