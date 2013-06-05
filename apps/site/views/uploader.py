@@ -26,9 +26,8 @@ def init_upload_form(request,
     media_types = [
         ('photos', 'Photos', 'png, jpg, jpeg, gif'),
         ('audio-files', 'Audio Files', 'x-m4a, mp3, m4a, mp4, mpeg'),
-        ('maps', 'Paper Maps / Forms', 'png, jpg, jpeg, gif')
-        #,
-        #('air-quality', 'DustTrak Data', 'log (GPS) + csv (DustTrak)'),
+        ('maps', 'Paper Maps & Forms', 'png, jpg, jpeg, gif'),
+        ('air-quality', 'DustTrak Data', 'log (GPS) + csv (DustTrak)'),
     ]
     selected_media_type = (None, 'Error')
     for mt in media_types:
@@ -52,11 +51,11 @@ def init_upload_form(request,
 def upload_media(request, project=None):
     if request.method == 'POST':
         new_object, message = None, None
-        #branch processing based on upload type:
         file = request.FILES.get('files[]')
         media_type = request.POST.get('media_type')
         success, error_message = True, None
-        try:
+        try: 
+            #branch processing based on upload type:
             if media_type == 'photos':
                 new_object = Photo()
                 new_object.save_upload(file, request.user, project)

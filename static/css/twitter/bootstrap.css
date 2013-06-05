@@ -1492,7 +1492,7 @@ a.menu:after, .dropdown-toggle:after {
   float: left;
   display: none;
   position: absolute;
-  top: 40px;
+  top: 100%;
   z-index: 900;
   min-width: 160px;
   max-width: 230px;
@@ -1931,6 +1931,39 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
   padding: 0;
   border: 0;
 }
+
+.btn-info {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #49afcd;
+  *background-color: #2f96b4;
+  background-image: -moz-linear-gradient(top, #5bc0de, #2f96b4);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5bc0de), to(#2f96b4));
+  background-image: -webkit-linear-gradient(top, #5bc0de, #2f96b4);
+  background-image: -o-linear-gradient(top, #5bc0de, #2f96b4);
+  background-image: linear-gradient(to bottom, #5bc0de, #2f96b4);
+  background-repeat: repeat-x;
+  border-color: #2f96b4 #2f96b4 #1f6377;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5bc0de', endColorstr='#ff2f96b4', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.btn-info:hover,
+.btn-info:active,
+.btn-info.active,
+.btn-info.disabled,
+.btn-info[disabled] {
+  color: #ffffff;
+  background-color: #2f96b4;
+  *background-color: #2a85a0;
+}
+
+.btn-info:active,
+.btn-info.active {
+  background-color: #24748c \9;
+}
+
 .close {
   float: right;
   color: #000000;
@@ -2672,7 +2705,11 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
 .btn-group.open {
   *z-index: 1000;
 }
-.btn-group.open .dropdown-menu {
+.btn-group-plain {
+  position:relative;
+  display:inline-block;
+}
+.btn-group.open .dropdown-menu, .btn-group-plain.open > .dropdown-menu {
   display: block;
   margin-top: 1px;
   -webkit-border-radius: 5px;
@@ -2693,6 +2730,20 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
 .open.btn-group .caret {
   opacity: 1;
   filter: alpha(opacity=100);
+}
+
+.dark-caret {
+  border-style: solid;
+  border-width: 4px;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  border-top-color: #999;
+  border-right-color: transparent;
+  height: 0px;
+  width: 0px;
+  margin: 0px 0px 0px 2px;
+  display: inline-block;
+  vertical-align: sub;
 }
 
 

@@ -31,11 +31,12 @@ localground.uploader.prototype.initialize = function(opts) {
     this.options.acceptFileTypes = RegExp('(\.|\/)(' +
                                     opts.acceptFileTypes.split(', ').join('|') +
                                     ')$', 'i');
-    //alert(this.options.acceptFileTypes);
     
-    $('#project').change(function(){
-        $('.project').html($('#project option:selected').text());  
+    $('.dropdown-menu > li > a').click(function(){
+        $('#project').val($(this).attr('id'));
+        $('#project-name').html($(this).html());
     });
+    
     $('.close').click(function(){
        $(this).parent().hide();
        $('#alert-message-text').empty();
@@ -49,72 +50,7 @@ localground.uploader.prototype.initialize = function(opts) {
         url: '/upload/media/post/',
         dropZone: $('body'), //$('#dropzone'),
         add: self.onAdd,
-        change: function(e, data) {
-            alert(data.originalFiles.length);
-        },
-        done: function (e, data) {
-            data.files[0].isDone = true;
-            data.files[0].context.find('.progress').remove();
-            
-            if(data.result.success) {
-                $success= $('<div class="badge badge-success" />')
-                            .css({
-                                padding: '0px 3px 3px 3px',
-                                'border-radius': '20px',
-                                '-webkit-border-radius': '20px',
-                                '-moz-border-radius': '20px',
-                                'margin-top': '-10px',
-                                'margin-left': '-10px',
-                                position: 'absolute',
-                                width: '16px'
-                            })
-                            .append($('<i >').addClass('icon-white icon-ok'));
-            
-                $delete = $('<a />').attr('href', '#').append('delete')
-                    .click(function() {
-                        $(this).parent().parent().parent().remove();
-                        $.getJSON(data.result.delete_url,
-                            function(result) {
-                                //alert(JSON.stringify(result));
-                                data.files[0].cancelled = true;
-                                data.files[0].context.remove();
-                                self.counter -= 1;
-                                return false;
-                            },
-                        'json');    
-                        return false;
-                    });
-                data.files[0].context.find('.img-container').prepend($success);   
-                data.files[0].context.find('p').append(' | ').append($delete);
-            }
-            else {
-                $error= $('<div class="badge badge-important" />')
-                        .css({
-                            padding: '0px 0px 3px 3px',
-                            'border-radius': '20px',
-                            '-webkit-border-radius': '20px',
-                            '-moz-border-radius': '20px',
-                            'margin-top': '-10px',
-                            'margin-left': '-10px',
-                            position: 'absolute',
-                            width: '16px'
-                        })
-                        .append($('<i >').addClass('icon-white icon-minus'));
-                $container = data.files[0].context.find('.preview').parent();
-                data.files[0].context.find('.preview').remove();
-                data.files[0].context.find('.img-container').prepend($error);
-                data.files[0].context.find('p')
-                            .css({
-                                color: '#b94a48',
-                                padding: 10,
-                                'font-size': '10px',
-                                'line-height': '12px'
-                            }).html('<strong>Error uploading ' + data.files[0].name +
-                                    ':</strong><br>' + data.result.error_message);
-                $container.append(data.files[0].context.find('p'));
-            }
-            
-        },
+        done: self.done,
         progress: function (e, data) {
             data.files[0].context.find('.progress .bar').css(
                 'width',
@@ -126,7 +62,7 @@ localground.uploader.prototype.initialize = function(opts) {
                 media_type: self.options.mediaType,
                 project_id: $('#project').val()
             }
-            //alert(JSON.stringify(data.formData));
+            alert(JSON.stringify(data.formData));
         }
     });
     
@@ -321,19 +257,79 @@ localground.uploader.prototype.onAdd = function(e, data) {
             }
             else {
                 file.context.find('.preview')
-                    .html(
-                          $('<i />')
-                            .addClass('icon-headphones icon-dark')
-                            .css({
-                                'margin-left': file.context.width()/2 - 10,
-                                'margin-top': file.context.height()/3 - 10
-                            })
-                    );
+                    .attr('src', '/static/images/headphones_large.png')
+                    .css({
+                        width: '64px',
+                        height: '64px' ,
+                        'margin-top': '20px' ,
+                        'margin-left': '40px'       
+                    });
                 return false;
             }
         });
     });
+};
 
+localground.uploader.prototype.done = function(e, data) {
+    data.files[0].isDone = true;
+    data.files[0].context.find('.progress').remove();
+    if(data.result.success) {
+        $success= $('<div class="badge badge-success" />')
+                    .css({
+                        padding: '0px 3px 3px 3px',
+                        'border-radius': '20px',
+                        '-webkit-border-radius': '20px',
+                        '-moz-border-radius': '20px',
+                        'margin-top': '-10px',
+                        'margin-left': '-10px',
+                        position: 'absolute',
+                        width: '16px'
+                    })
+                    .append($('<i >').addClass('icon-white icon-ok'));
+    
+        $delete = $('<a />').attr('href', '#').append('delete')
+            .click(function() {
+                $(this).parent().parent().parent().remove();
+                $.getJSON(data.result.delete_url,
+                    function(result) {
+                        //alert(JSON.stringify(result));
+                        data.files[0].cancelled = true;
+                        data.files[0].context.remove();
+                        self.counter -= 1;
+                        return false;
+                    },
+                'json');    
+                return false;
+            });
+        data.files[0].context.find('.img-container').prepend($success);   
+        data.files[0].context.find('p').append(' | ').append($delete);
+    }
+    else {
+        $error= $('<div class="badge badge-important" />')
+                .css({
+                    padding: '0px 0px 3px 3px',
+                    'border-radius': '20px',
+                    '-webkit-border-radius': '20px',
+                    '-moz-border-radius': '20px',
+                    'margin-top': '-10px',
+                    'margin-left': '-10px',
+                    position: 'absolute',
+                    width: '16px'
+                })
+                .append($('<i >').addClass('icon-white icon-minus'));
+        $container = data.files[0].context.find('.preview').parent();
+        data.files[0].context.find('.preview').remove();
+        data.files[0].context.find('.img-container').prepend($error);
+        data.files[0].context.find('p')
+                    .css({
+                        color: '#b94a48',
+                        padding: 10,
+                        'font-size': '10px',
+                        'line-height': '12px'
+                    }).html('<strong>Error uploading ' + data.files[0].name +
+                            ':</strong><br>' + data.result.error_message);
+        $container.append(data.files[0].context.find('p'));
+    }
 };
 
 

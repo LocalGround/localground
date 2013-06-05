@@ -81,6 +81,7 @@ class Photo(BasePoint, BaseUploadedMedia):
         
         #1) first, set user and project (required for generating file path):
         self.owner = user
+        self.attribution = user.username
         self.last_updated_by = user
         self.project = project
         

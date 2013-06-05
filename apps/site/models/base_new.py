@@ -143,7 +143,7 @@ class BaseUploadedMedia(BaseNamedMedia):
             #host = 'dev.localground.org' #for debugging
         from django.http import HttpResponse
         #return path
-        return 'http://%s/profile/%s/%s/' % (host, self.name_plural, base64.b64encode(path))
+        return 'http://%s/profile/%s/%s/' % (host, self.name_plural.replace(' ', '-'), base64.b64encode(path))
          
     def make_directory(self, path):
         from pwd import getpwnam
