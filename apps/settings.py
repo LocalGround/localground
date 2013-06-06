@@ -154,18 +154,13 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'localground',
     'localground.apps',
-    'localground.apps.account',
-    'localground.apps.api',
-    'localground.apps.helpers',
-    'localground.apps.prints',
-    'localground.apps.uploads',
-    'localground.apps.overlays',
+    'localground.apps.site',
     'localground.apps.registration',     #taken from the django-registration module
     'tagging',                      #for tagging of blog posts in Django
     'django.contrib.admin',
     'localground.apps.jobs'
-
 )
+
 # Local settings override project settings
 try:
     LOCAL_SETTINGS

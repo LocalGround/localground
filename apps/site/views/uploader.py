@@ -25,9 +25,10 @@ def init_upload_form(request,
     project_id = 'all'
     media_types = [
         ('photos', 'Photos', 'png, jpg, jpeg, gif'),
-        ('audio-files', 'Audio Files', 'x-m4a, mp3, m4a, mp4, mpeg'),
+        ('audio-files', 'Audio Files', 'audio/x-m4a, m4a, mp3, m4a, mp4, mpeg'),
         ('maps', 'Paper Maps & Forms', 'png, jpg, jpeg, gif'),
         ('air-quality', 'DustTrak Data', 'log (GPS) + csv (DustTrak)'),
+        ('odk', 'ODK Data', 'zipped ODK form instance'),
     ]
     selected_media_type = (None, 'Error')
     for mt in media_types:
