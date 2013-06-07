@@ -1,5 +1,8 @@
 {% extends "profile/data_list.html" %}
-{% block page_title %}{{object_name_plural|capfirst}} <small>{{selected_project|default_if_none:"Everything"}}</small>{% endblock %}
+{% block page_title %}
+	<img class="header-icon" src="/static/images/camera_large.png" />
+	Manage <span style="color:#ccc">Photos</span>
+{% endblock %}
 
 {% block script_links %}
 	{{ block.super }}
@@ -105,12 +108,11 @@
 				<div class="thin">
 					<label>Coordinates:</label><div class="input blue">{{ form.instance.display_coords }}</div>
 				</div>
-				
-				
 			</td>
 		</tr>
 	{% endfor %}
 {% endblock %}
+
 
 {% block no_objects %}
 	{{ block.super }}

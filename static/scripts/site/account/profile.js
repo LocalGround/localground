@@ -143,7 +143,7 @@ localground.profile.prototype.initialize = function(opts) {
         self.initiateMove();
 	});
     
-    this.resizeControlsRow();
+    //this.resizeControlsRow();
 	
 	$('.datetime')
         .find('input:eq(0)')

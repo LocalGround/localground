@@ -111,7 +111,7 @@ class BaseMedia(BaseAudit):
                                                 self.name_plural)
         
 class BaseNamedMedia(BaseMedia):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, blank=True)
     description = models.TextField(null=True, blank=True)
     tags = TagAutocompleteField(blank=True, null=True)
     

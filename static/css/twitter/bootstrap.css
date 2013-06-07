@@ -259,7 +259,7 @@ a:hover {
   margin-left: -20px;
 }
 .row:before, .row:after {
-  display: table;
+  /*display: table;*/
   content: "";
   zoom: 1;
   *display: inline;
@@ -2133,6 +2133,16 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
   color: #3a87ad;
 }
 
+.alert-muted {
+  color: #666;
+  background-color: #eee;
+  border-color: #ddd;
+}
+
+.alert-muted h4 {
+  color: #666;
+}
+
 .alert-block {
   padding-top: 14px;
   padding-bottom: 14px;
@@ -2492,6 +2502,37 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
 .label-important[href],
 .badge-important[href] {
   background-color: #953b39;
+}
+
+
+.label-warning,
+.badge-warning {
+  background-color: #f89406;
+}
+
+.label-warning[href],
+.badge-warning[href] {
+  background-color: #c67605;
+}
+
+.label-success,
+.badge-success {
+  background-color: #468847;
+}
+
+.label-success[href],
+.badge-success[href] {
+  background-color: #356635;
+}
+
+.label-info,
+.badge-info {
+  background-color: #3a87ad;
+}
+
+.label-info[href],
+.badge-info[href] {
+  background-color: #2d6987;
 }
 
 .label.warning, .warning {

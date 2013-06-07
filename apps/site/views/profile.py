@@ -82,6 +82,8 @@ def object_list_form(request, object_type_plural, project=None, return_message=N
     objects = ModelClass.objects.get_listing(user=request.user, project=project)
     projects = Project.objects.get_objects(request.user)
     project_id = 'all'
+    per_page = 10
+    r = request.POST or request.GET
     if project is not None: project_id = str(project.id)
     
     def getModelClassFormSet(**kwargs):
@@ -117,12 +119,15 @@ def object_list_form(request, object_type_plural, project=None, return_message=N
                 'message': 'There was an error updating the %s' % ModelClass.name_plural
             })
     else:
-        modelformset = ModelClassFormSet(queryset=objects)
+        start = 0
+        if r.get('page') is not None:
+            start = (int(r.get('page'))-1)*per_page
+        modelformset = ModelClassFormSet(queryset=objects[start:start+per_page])
     context.update({
         'formset': modelformset,
         'page_title': 'My %s' % ModelClass.name_plural.capitalize(),
         'username': request.user.username,
-        'url': ModelClass.listing_url(),
+        'url': '%s?1=1' % ModelClass.listing_url(),
         'delete_url': ModelClass.batch_delete_url(),
         'create_url': ModelClass.create_url() + 'embed/',
         'page_title': 'My %s' % ModelClass.name_plural.capitalize(),
@@ -133,7 +138,7 @@ def object_list_form(request, object_type_plural, project=None, return_message=N
         'object_name_plural': ModelClass.name_plural,
         'object_type': ModelClass.name
     })
-    context.update(prep_paginator(request, objects))
+    context.update(prep_paginator(request, objects, per_page=per_page))
     if request.user.is_superuser or context.get('is_impersonation'):
         context.update({'users': Project.get_users()})
     return render_to_response(template_name, context)

@@ -5,8 +5,7 @@ from localground.apps.site.models.base_new import (Base, BaseAudit, BaseNamed,
 #helpers
 from localground.apps.site.models.objecttypes import ObjectTypes
 from localground.apps.site.models.returncodes import ReturnCode, ReturnCodes
-#from localground.apps.site.models.baseobject import BaseObject
-from localground.apps.site.models.pointobject import PointObject
+#from localground.apps.site.models.pointobject import PointObject
 
 #overlays
 from localground.apps.site.models.marker import Marker
@@ -33,8 +32,6 @@ from localground.apps.site.models.layout import Layout
 from localground.apps.site.models.prints import Print
 
 #uploads
-#from localground.apps.site.models.base import Base, Upload, NamedUpload, \
-#                            StatusCode, UploadSource, UploadType, ErrorCode
 from localground.apps.site.models.barcoded import Scan, Attachment, ImageOpts
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio

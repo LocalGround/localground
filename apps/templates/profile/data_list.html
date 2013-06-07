@@ -1,4 +1,5 @@
 {% extends "base/page.html" %}
+{% load paginator %}
 {% block style_links %}
     <link href="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
 	<link href="/static/css/themes/bootstrap/jquery-ui-1.8.16.custom.css" type="text/css" media="all" rel="stylesheet" />
@@ -12,12 +13,11 @@
 	<script type="text/javascript" src="/static/scripts/helpers/dialog.js"></script>
 {% endblock %}
 {% block extra_styles %}
-	body {
-		padding-top: 60px;
-	}
+	.cell1 {width: 500px; display:inline-block; }
+	.cell2 {width: 150px; float:right; display:inline-block; }
+	body { padding-top: 60px; }
+	.row { max-width: 800px; }
 	.container-fluid { padding-right: 0px !important; }
-	/*input[type=text], textarea { width: 190px !important; }
-	select { width: 200px !important; }*/
 	label { width: 85px; }
 	.thin label { padding: 0px; }
 	form .input { margin-left: 95px; }
@@ -59,10 +59,10 @@
 			<input type="hidden" name="form_id" id="form_id" value="{{form.id}}" />
 		{% endif %}
 	{% endblock %}
-    
+	
     <div id="controls_row" class="row"
 		 style="margin-bottom:0px;width:auto;height:38px;">
-        <ul class="tabs" style="margin-bottom: 0px !important;border:none;">
+        <ul class="tabs cell1" style="margin-bottom: 0px !important;border:none;">
 			{% if objects.object_list|length > 0 %}
 				{% block controls_menus %}{% endblock %}
 			{% endif %}
@@ -122,21 +122,47 @@
             </li>
             {% endif %}
         </ul>
+		<div class="cell2">
 		{% block save_button %}
 			{% if objects and objects.object_list|length > 0 %}
 				<button id="saveChanges" class="btn primary" style="float:right;">Save Changes</button>
 			{% endif %}
 		{% endblock %}
+		</div>
 	</div>
+	
+
 	
 	{% if is_paginated %}
 		<div class="row paginator" style="border-top: solid 1px #ddd;height:40px;">
-			{% load paginator %}
 			<div style="float:right;margin: 5px 0px 0px 0px;clear:right;">
 				{% paginator 3 %}
 			</div>
 		</div>
 	{% endif %}
+	
+	<div class="row">
+		<div class="alert alert-muted" style="display: block; ">
+			<a class="close" style="cursor:pointer">×</a>
+			<strong>Filters:</strong>
+		
+			<div class="filter info">project: {{selected_project}}
+				<a href="#" title="remove filter">×</a>
+			</div>
+				
+			<div class="filter info">created by: vanwars
+				<a href="#" title="remove filter">×</a>
+			</div>
+			
+			<div class="filter info">before: 3/2/2012
+				<a href="#" title="remove filter">×</a>
+			</div>
+			
+			<div class="filter info">after: 3/2/2012
+				<a href="#" title="remove filter">×</a>
+			</div>
+		</div>
+	</div>
     
 	<div class="row" id="success-message"
 		 style="height:40px;display:{% if return_message %}block;{%else%}none;{% endif %}">
@@ -152,7 +178,9 @@
 	</div>
 	{% endif %}
 	
-	<div class="row" style="margin-bottom:0px;width:auto;">
+{% comment %}{% endcomment %}
+	
+	<div class="row">
 	{% if objects.object_list|length == 0 %}
 		{% block no_objects %}
 		<div class="hero-unit">
@@ -167,7 +195,7 @@
 		</div>
 		{% endblock %}
 	{% else %}
-		<div id="table-container" style="overflow:auto;">
+		<div id="table-container1" style="overflow:auto;">
 		<table id="the_table" class="zebra-striped" cellspacing="0">
 			<thead>
 				{% block row_header %}{% endblock %}

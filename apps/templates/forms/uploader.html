@@ -139,16 +139,16 @@
     <div class="container">
 		<h1 style="margin:20px 0px 25px -8px;">
 			{% if selected_media_type.0 == 'photos' %}
-				<img style="vertical-align:text-bottom" src="/static/images/camera_large.png" />
+				<img class="header-icon" src="/static/images/camera_large.png" />
 			{% endif %}
 			{% if selected_media_type.0 == 'maps' %}
-				<img style="vertical-align:text-bottom" src="/static/images/clipboard_large.png" />
+				<img class="header-icon" src="/static/images/clipboard_large.png" />
 			{% endif %}
-			{% if selected_media_type.0 == 'audio-files' %}
-				<img style="vertical-align:text-bottom" src="/static/images/headphones_large.png" />
+			{% if selected_media_type.0 == 'audio' %}
+				<img class="header-icon" src="/static/images/headphones_large.png" />
 			{% endif %}
 			{% if selected_media_type.0 == 'air-quality' %}
-				<img style="vertical-align:text-bottom" src="/static/images/upload_large.png" />
+				<img class="header-icon" src="/static/images/upload_large.png" />
 			{% endif %}
 			Upload <span style="color:#ccc">{{ selected_media_type.1}}</span>
 		</h1>

@@ -25,7 +25,7 @@ def init_upload_form(request,
     project_id = 'all'
     media_types = [
         ('photos', 'Photos', 'png, jpg, jpeg, gif'),
-        ('audio-files', 'Audio Files', 'audio/x-m4a, m4a, mp3, m4a, mp4, mpeg'),
+        ('audio', 'Audio Files', 'audio/x-m4a, m4a, mp3, m4a, mp4, mpeg'),
         ('maps', 'Paper Maps & Forms', 'png, jpg, jpeg, gif'),
         ('air-quality', 'DustTrak Data', 'log (GPS) + csv (DustTrak)'),
         ('odk', 'ODK Data', 'zipped ODK form instance'),
@@ -60,7 +60,7 @@ def upload_media(request, project=None):
             if media_type == 'photos':
                 new_object = Photo()
                 new_object.save_upload(file, request.user, project)
-            elif media_type == 'audio-files':
+            elif media_type == 'audio':
                 new_object = Audio()
                 new_object.save_upload(file, request.user, project)
             elif media_type == 'maps':

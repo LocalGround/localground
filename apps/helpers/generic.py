@@ -37,19 +37,19 @@ class FastPaginator(Paginator):
         return self._count
     count = property(_get_count)
 
-def prep_paginator(request, queryset, links_per_page=25):
+def prep_paginator(request, queryset, per_page=25):
     """
     Adds necessary paging variables to the template context.
     """
     #initialize pagination variables:
     r = request.GET or request.POST
     from django.core.paginator import InvalidPage, EmptyPage   
-    paginator = FastPaginator(queryset, links_per_page) # Show 25 contacts per page
+    paginator = FastPaginator(queryset, per_page=per_page) # Show 25 contacts per page
     try:
         page_num = int(r.get('page', request.COOKIES.get('page', '1')))
     except ValueError:
         page_num = 1
-    if links_per_page*(page_num-1) >= paginator.count:
+    if per_page*(page_num-1) >= paginator.count:
         page = 1
          
     try:
@@ -58,17 +58,17 @@ def prep_paginator(request, queryset, links_per_page=25):
         objectPage = paginator.page(paginator.num_pages)
     return {
         'objects': objectPage,
-        'start_num': (page_num-1)*links_per_page+1,
+        'start_num': (page_num-1)*per_page+1,
         'page': page_num,
         'pages': paginator.num_pages,
         'next': objectPage.next_page_number(), #context['next'],
         'previous': objectPage.previous_page_number(), #context['previous'],
         'has_next': objectPage.has_next(), #context['has_next'],
         'has_previous': objectPage.has_previous(), #context['has_next'],context['has_previous'],
-        'results_per_page': links_per_page,
+        'results_per_page': per_page,
         'page_obj': objectPage,
         'paginator': paginator,
-        'is_paginated': paginator.count > links_per_page
+        'is_paginated': paginator.count > per_page
     }
 
 def generateID(num_digits=8):
