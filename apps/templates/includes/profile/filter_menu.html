@@ -1,0 +1,73 @@
+{% if projects|length > 0 %}
+{% block projects_menus %}
+    <li class="dropdown" data-dropdown="dropdown" style="width:100px;">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="icon-dark icon-filter"></i> Filter
+    </a>
+    <ul id="filter-menu" class="dropdown-menu">
+        <li class="clearfix">
+            Filter project
+        </li>
+        <li class="divider"></li>  
+        <li class="clearfix">
+            <label>Project:</label>
+            <div class="input">
+                <select id="project_id">
+                    <option value="">-- All --</option>
+                    {% for p in projects %}
+                        <option value="{{p.id}}"
+                            {% if p.id == selected_project.id %}selected{% endif %}>
+                            {{ p.name }}
+                        </option>
+                    {% endfor%}
+                </select>
+            </div>
+        </li>
+        <li class="clearfix">
+            <label>Name:</label>
+            <div class="input">
+                <input id="name" type="text" />
+            </div>
+        </li>
+        <li class="clearfix">
+            <label>Tags:</label>
+            <div class="input">
+                <input id="tags" type="text" />
+            </div>
+        </li>
+        <li class="clearfix">
+            <label>Edited By:</label>
+            <div class="input">
+                <input id="owner_id" class="input-smallish" type="text" /></div>
+        </li>
+        <li class="clearfix">
+            <label>After:</label>
+            <div class="input">
+                <input id="date_created_after" type="text" />
+            </div>
+        </li>
+        <li class="clearfix">
+            <label>Before:</label>
+            <div class="input">
+                <input type="text" id="date_created_before" />
+            </div>
+        </li>
+        <li>
+            <textarea id="sql"></textarea>   
+        </li>
+        <li class="divider"></li>  
+        <li class="clearfix">
+            <div class="input">
+                <button id="do-query" type="button" class="btn">Add Filters</button>
+            </div>
+        </li>
+    </ul>
+</li>
+{% endblock %}
+{% endif %}
+<script type="text/javascript">
+    $('#filter-menu input, #filter-menu label, #filter-menu select, #filter-menu button, #filter-menu textarea')
+        .click(function(e) { e.stopPropagation(); });
+    $("#tags").autocomplete("/tagging_autocomplete/list/json", { multiple: true });
+                
+</script>

@@ -1,8 +1,7 @@
 {% extends "profile/data_list.html" %}
-{% block page_title %}Attachments
-	{% if projects|length > 0 %}
-		<small>{{selected_project|default_if_none:"Everything"}}</small>
-	{% endif %}
+{% block page_title %}
+	<img class="header-icon" src="/static/images/clipboard_large.png" />
+	Manage <span style="color:#ccc">Attachments</span>
 {% endblock %}
 {% block script_links %}
 	{{ block.super }}

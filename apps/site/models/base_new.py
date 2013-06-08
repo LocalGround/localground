@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 from django.contrib.gis.db import models
-from datetime import datetime
+from datetime import datetime, timedelta
 from tagging_autocomplete.models import TagAutocompleteField
 from django.conf import settings
 import os, stat
-import base64   
+import base64
+
+def get_timestamp_no_milliseconds():
+    dt = datetime.now()
+    return dt - timedelta(microseconds=dt.microsecond)
 
 class Base(models.Model):
     name = 'base'
@@ -46,8 +50,9 @@ class Base(models.Model):
 class BaseAudit(Base):
     owner = models.ForeignKey('auth.User',)
     last_updated_by = models.ForeignKey('auth.User', related_name="%(app_label)s_%(class)s_related")
-    date_created = models.DateTimeField(default=datetime.now)
-    time_stamp = models.DateTimeField(default=datetime.now, db_column='last_updated')
+    date_created = models.DateTimeField(default=get_timestamp_no_milliseconds)
+    time_stamp = models.DateTimeField(default=get_timestamp_no_milliseconds,
+                                                    db_column='last_updated')
     
     class Meta:
         app_label = 'site'

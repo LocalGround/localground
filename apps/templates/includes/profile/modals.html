@@ -1,0 +1,42 @@
+<div id="move-modal" class="modal hide">
+    <div class="modal-header">
+      <a href="#" class="close">&times;</a>
+      <h3>Moving Projects Confirmation</h3>
+    </div>
+    <div class="modal-body" style="max-height:250px;overflow:auto;">
+        Are you sure you want to move the following items(s) to a new project?
+        <div class="clearfix">
+            <label style="width:150px;">Select new project:</label>
+            <div class="input" style="margin-left:160px;">
+                <select name="new_project" id="new_project">
+                    {% for p in projects %}
+                    <option value="{{p.id}}">{{p.name}}</option>
+                {% endfor%}	
+                </select>
+            </div>
+        </div>
+        
+        <div id="move-server-message" class="hero-unit warning"
+             style="padding:10px;margin: 10px 0px 10px 0px;" ></div>
+        
+    </div>
+    <div class="modal-footer">
+        <button class="btn primary" onclick="o.moveConfirm();">Confirm</button>
+        <button class="btn hide" onclick="o.hideDialog()">Cancel</button>
+    </div>
+</div>
+
+
+<!-- div id="image-modal" class="modal hide">
+    <div class="modal-header">
+      <a href="#" class="close">&times;</a>
+      <h3>Image Preview</h3>
+    </div>
+    <div class="modal-body"
+         style="text-align:center;max-height: 400px;overflow-y:auto;overflow-x:hidden;">
+        <img id="preview_image" style="" />
+    </div>
+    <div class="modal-footer">
+        <button class="btn" onclick="o.hideDialog()">Close</button>
+    </div>
+</div -->

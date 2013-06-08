@@ -111,12 +111,17 @@ def object_list_form(request, object_type_plural, project=None, return_message=N
                     instance.save()
                     num_updates += 1
             modelformset.save()
-            context.update({
-                'return_message': '%s %s have been updated' % (num_updates, ModelClass.name_plural)
-            })
+            if num_updates > 0:
+                context.update({
+                    'message': '%s %s have been updated' % (num_updates, ModelClass.name_plural)
+                })
+            else:
+                context.update({
+                    'warning_message': '%s %s have been updated' % (num_updates, ModelClass.name_plural)
+                })
         else:
             context.update({
-                'message': 'There was an error updating the %s' % ModelClass.name_plural
+                'error_message': 'There was an error updating the %s' % ModelClass.name_plural
             })
     else:
         start = 0
@@ -279,7 +284,7 @@ def create_update_group_with_sharing(request, action, object_type_plural, object
         else:
             extras.update({
                 'success': False,
-                'message': 'There were errors when updating the %s information.  \
+                'error_message': 'There were errors when updating the %s information.  \
                                 Please review message(s) below.' %  ModelClass.name
             })
     else:

@@ -1,0 +1,26 @@
+<!-- Alert Message -->
+<div id="error" class="alert alert-error" {% if not error_message %}style="display:none;"{% endif %}>
+    <a class="close" style="cursor:pointer">×</a>
+    <strong>Error:</strong>
+    <span id="error-message-text">
+        {% autoescape off %}{{error_message}}{% endautoescape %}
+    </span>
+</div>
+
+<!-- Warning Message -->
+<div id="warning" class="alert" {% if not warning_message %}style="display:none;"{% endif %}>
+    <a class="close" style="cursor:pointer">×</a>
+    <strong>Notice:</strong>
+    <span id="warning-message-text">
+        {% autoescape off %}{{warning_message}}{% endautoescape %}
+    </span>
+</div>
+
+<!-- Success Message -->
+<div id="success" class="alert alert-success" {% if not message %}style="display:none;"{% endif %}>
+    <a class="close" style="cursor:pointer">×</a>
+    <strong>Success:</strong>
+    <span id="success-message-text">
+        {% autoescape off %}{{message}}{% endautoescape %}
+    </span>
+</div>

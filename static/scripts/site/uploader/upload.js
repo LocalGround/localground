@@ -38,12 +38,7 @@ localground.uploader.prototype.initialize = function(opts) {
         $('#project-name').html($(this).html());
     });
     
-    $('.close').click(function(){
-       $(this).parent().hide();
-       $('#alert-message-text').empty();
-    });
-    
-    $('#alert-message-text').empty();
+    $('#warning-message-text').empty();
     $('#fileupload').fileupload({
         dataType: 'json',
         autoUpload: true,
@@ -55,16 +50,25 @@ localground.uploader.prototype.initialize = function(opts) {
         stop: function(e){
             //fires after all uploads are finished:
             if(self.successCount > 0) {
+                $('#success-message-text').html(
+                        'Your files have finished uploading. You may now add \
+                        titles & descriptions to your files <a id="edit-media-link" href="#">here</a> \
+                        or geo-reference you files in the \
+                        <a id="edit-map-link" href="#">map editor</a>.');
                 $('#edit-map-link').attr('href', '/maps/editor/' +
                             $('#project').val() + '/');
                 $('#edit-media-link').attr('href', '/profile/' +
                             self.options.mediaType + '/?project_id=' + $('#project').val());
                 $('#success').show();
+                
             }
             else {
                 $('#success').hide();
             }
-            if(self.errorCount > 0){ $('#error').show(); }
+            if(self.errorCount > 0){
+                $('#error').show();
+                $('#error-message-text').html('There were errors when uploading your files.');
+            }
             else{ $('#error').hide(); }
             
             //reset counters:
@@ -174,18 +178,18 @@ localground.uploader.prototype.showOmittedFiles = function(data) {
         if(file.error) {
             if(file.error == 'acceptFileTypes') {
                 ++omitted;
-                if($('#alert-message-text').html().length > 0)
-                    $('#alert-message-text').append(', ');
+                if($('#warning-message-text').html().length > 0)
+                    $('#warning-message-text').append(', ');
                 else
-                    $('#alert-message-text').append(
+                    $('#warning-message-text').append(
                         'The following files were ignored because they are not supported \
                         by the file uploader:<br>');
-                $('#alert-message-text').append(file.name + ": " + file.type);
+                $('#warning-message-text').append(file.name + ": " + file.type);
             }
         }
     });
     if(omitted > 0) {
-        $('#alert-message').show();
+        $('#warning').show();
     }
 };
 

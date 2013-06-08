@@ -19,6 +19,23 @@ localground.profile.prototype.initialize = function(opts) {
 	if(opts) {
         $.extend(this, opts);
     }
+	
+	$('#do-query').click(function(){
+		var sql = '', val = '', intRegex = /^\d+$/;
+		$('#filter-menu').find("input, select").each(function(){
+			if($(this).val().length > 0) {
+				if(sql.length > 0)
+					sql += ' and ';
+				sql += $(this).attr('id') + '=';
+				if(intRegex.test($(this).val()))
+					val = parseInt($(this).val());
+				else
+					val	= '\'' + $(this).val() + '\'';
+				sql += val;
+			}
+		});
+		$('#sql').val('SELECT * FROM ' + self.object_type + ' WHERE ' + sql);
+	});
      
     //make sure everything's un-checked!
     $('.checkone, .checkall').attr('checked', false);

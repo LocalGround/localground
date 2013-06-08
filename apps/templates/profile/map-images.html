@@ -1,9 +1,9 @@
 {% extends "profile/data_list.html" %}
-{% block page_title %}Map Images
-	{% if projects|length > 0 %}
-		<small>{{selected_project|default_if_none:"Everything"}}</small>
-	{% endif %}
+{% block page_title %}
+	<img class="header-icon" src="/static/images/clipboard_large.png" />
+	Manage <span style="color:#ccc">Map Images</span>
 {% endblock %}
+
 {% block script_links %}
 	{{ block.super }}
     <script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
@@ -11,10 +11,7 @@
 {% endblock %}
 {% block extra_styles %}
 	{{block.super}}
-	input[type=text], textarea { width: 190px !important; }
 	select { width: 200px !important; }
-	li span { color: #386CB0 !important; }
-	#the_table {width: 850px; }
 {% endblock %}
 
 

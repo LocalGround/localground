@@ -32,4 +32,31 @@
     filter: alpha(opacity=80);
     color: #333;
     background-color: #fff;
-}}
+}
+#filter-menu {
+    width: 480px;
+    max-width: 600px;
+}
+#filter-menu .clearfix {
+    width: 220px;
+    display: inline-block;
+}
+#filter-menu label { width: 75px; }
+#filter-menu .input { margin-left: 80px; }
+#filter-menu input, #filter-menu select {
+    height: 20px;
+    font-size: 12px;
+    line-height: 14px;
+    padding: 1px;
+    width: 120px;
+}
+#filter-menu select {
+    padding: 2px;
+    width: 124px;
+    height: 24px !important;
+}
+#filter-menu textarea {
+    width: 338px;
+    margin-left: 80px;
+    height: 70px;
+}

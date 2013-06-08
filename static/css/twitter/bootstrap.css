@@ -256,7 +256,7 @@ a:hover {
 }
 .row {
   zoom: 1;
-  margin-left: -20px;
+  /*margin-left: -20px;*/
 }
 .row:before, .row:after {
   /*display: table;*/
@@ -270,7 +270,7 @@ a:hover {
 [class*="span"] {
   display: inline;
   float: left;
-  margin-left: 20px;
+  /*margin-left: 20px;*/
 }
 .span1 {
   width: 40px;
@@ -1086,7 +1086,8 @@ th.checkbox_selected   {
   margin-left: -10px;
 }
 .form-stacked .actions {
-  margin-left: -20px;
+  
+  /*margin-left: -20px;*/
   padding-left: 20px;
 }
 /*
@@ -1264,7 +1265,7 @@ table .headerSortUp.purple, table .headerSortDown.purple {
   float: left;
   display: block;
   padding: 8px 20px 12px;
-  margin-left: -20px;
+  /*margin-left: -20px;*/
   color: #ffffff;
   font-size: 20px;
   font-weight: 200;
@@ -2076,7 +2077,7 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
 
 .alert {
   padding: 8px 35px 8px 14px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
   background-color: #fcf8e3;
   border: 1px solid #fbeed5;
@@ -2548,7 +2549,7 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
   background-color: #62cffc;
 }
 .media-grid {
-  margin-left: -20px;
+  /*margin-left: -20px;*/
   margin-bottom: 0;
   zoom: 1;
 }
@@ -2989,6 +2990,7 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
 .icon-folder-open{background-position:-408px -120px;}
 .icon-resize-vertical{background-position:-432px -119px;}
 .icon-resize-horizontal{background-position:-456px -118px;}
+.icon-filter { background-position: -408px -144px; }
 
 
 

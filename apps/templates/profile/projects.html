@@ -1,6 +1,9 @@
 {% extends "profile/data_list.html" %}
 
-{% block page_title %} {{page_title }} {% endblock %}
+{% block page_title %}
+	<img class="header-icon" src="/static/images/folder_large.png" />
+	Manage <span style="color:#ccc">Projects</span>
+{% endblock %}
 {% block script_links %}
 	{{ block.super }}
     <script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>

@@ -25,23 +25,23 @@
 {% block extra_styles %}
 	{{block.super}}
 
+	.row { display: inline-block; }
 	.nav-pills {
-		margin-left: 20px;
-		margin-bottom: 10px;
-		width: 550px;
+		margin-bottom: 5px;
+		width: 552px;
 	}
 	.sel-project {
 		display: inline-block;
-		margin-left: 10px;
-		width: 330px;
+		width: 332px;
+		margin-top: 0px;
+		height: 34px;
 	}
-	.btn-group-plain { float: right; margin-top: 12px; }
-	#project-name { margin-right: 5px; display: inline-block; float: right; }
+	.btn-group-plain { float: right; margin-top: 8px; }
+	#project-name { margin-right: 5px; display: inline-block; float: right; margin-top:6px;}
 	.alert {
 		width: 853px;
 		display: none;
 		margin-top: 0px;
-		margin-bottom: 10px;
 	}
 	.progress { height: 8px; }
 	.img-polaroid {
@@ -73,6 +73,8 @@
 		top: 50%;
 		margin-top: -20px;
 		width: 100%;
+		font-size:20px;
+		color:#666"
 	}
 	
 	#dropzone > div {
@@ -94,7 +96,11 @@
 		border-radius: 4px;
 		padding: 15px;
 	}
+	#uploaded {
+		margin-right: 10px;
+	}
     #dropzone {
+	width: 310px;
         background: #EEEEEE;
         text-align: center;
         font-weight: bold;
@@ -106,8 +112,8 @@
 		font-weight: normal;
     }
     #dropzone.in {
-        width: 860px;
-        height: 220px;
+        /*width: 860px;
+        height: 220px;*/
         font-size: larger;
     }
     #dropzone.hover {
@@ -137,7 +143,7 @@
 
 {% block content %}    
     <div class="container">
-		<h1 style="margin:20px 0px 25px -8px;">
+		<h1 style="margin:20px 0px 20px 0px;">
 			{% if selected_media_type.0 == 'photos' %}
 				<img class="header-icon" src="/static/images/camera_large.png" />
 			{% endif %}
@@ -163,7 +169,7 @@
 				{% endfor %}
 			</ul>
 			<!-- Cell #2 -->
-			<div class="sel-project">
+			<div class="sel-project span5">
 				<div class="btn-group-plain">
 					<a class="dropdown-project" data-toggle="dropdown" href="#">change<span class="dark-caret"></span>
 					</a>
@@ -174,37 +180,15 @@
 						{% endfor%}
 					</ul>
 				</div>
-				<span id="project-name" style="margin-top:8px;color: #333;font-weight:bold;font-size:24px;">{{selected_project}}</span>
+				<span id="project-name" style="color: #333;font-weight:bold;font-size:24px;">{{selected_project}}</span>
 			</div>
 		</div>
 		
-		
-		<!-- Alert Message -->
-		<div id="alert-message" class="alert alert-block">
-			<a class="close" style="cursor:pointer">×</a>
-			<strong>Warning:</strong>
-			<span id="alert-message-text"></span>
+		<!-- alert, error, and success messages -->
+		<div class="row">
+			{% include "includes/messages.html" %}
 		</div>
 		
-		<!-- Success Message -->
-		<div id="success" class="alert alert-success">
-			<a class="close" style="cursor:pointer">×</a>
-			<strong>Files uploaded:</strong>
-			<span id="success-message-text">
-				Your files have finished uploading.  You may now add titles &
-				descriptions to your files <a id="edit-media-link" href="#">here</a> or
-				geo-reference you files in the <a id="edit-map-link" href="#">map editor</a>.
-			</span>
-		</div>
-		
-		<!-- Error Message -->
-		<div id="error" class="alert alert-error">
-			<a class="close" style="cursor:pointer">×</a>
-			<strong>Error:</strong>
-			<span id="error-message-text">There were errors when uploading your files.</span>
-		</div>
-		
-
 		<!-- Row #2 -->
 		<div class="row">
 			<!-- Cell #1 -->
@@ -215,7 +199,7 @@
 			</div>
 			
 			<!-- Cell #2 -->
-			<div id="dropzone" class="span5 well" style="width: 300px; height: 250px;">
+			<div id="dropzone" class="span5 well" style="height: 250px;">
 				<div class="drop-region">
 					Drag your {{selected_media_type.1|lower}} here
 					<br>-or- <br>

@@ -11,9 +11,6 @@
 {% endblock %}
 {% block extra_styles %}
 	{{block.super}}
-	input[type=text], textarea { width: 190px !important; }
-	select { width: 200px !important; }
-	fieldset { margin: 0px !important; }
 {% endblock %}
 
 
@@ -28,7 +25,8 @@
 		rawURL: '{{raw_url}}',
 		deleteURL: '{{delete_url}}',
 		moveURL: '{{raw_url}}move-project/',
-		project_id: '{{selected_project_id}}'
+		project_id: '{{selected_project_id}}',
+		object_type: '{{ object_type }}'
 	};
 	{% if username %}
 		opts.alias = '{{username}}';

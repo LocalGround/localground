@@ -8,6 +8,10 @@ localground.base.prototype.initialize = function(opts) {
     self = this;
     this.setCookies(opts);
     this.initAjaxGlobalErrorHandling();
+	$('.close').click(function(){
+       $(this).parent().hide();
+       $('#alert-message-text').empty();
+    });
 };
 
 localground.base.prototype.disableEnterKey = function(e)
