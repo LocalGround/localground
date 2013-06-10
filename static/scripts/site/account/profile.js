@@ -189,31 +189,9 @@ localground.profile.prototype.deleteConfirm = function() {
     
 	$('#delete-modal').find('.primary').css({'display': 'none'});
     var params = $('#the_form').serialize();
-    $.post(self.deleteURL,
+	$.post(self.deleteURL,
         params,
         function(result) {
-            $('#delete_message').html(result.message);
-            $('#delete-modal').find('.hide').html('Done');
-        },
-        'json')
-        .error(function() {
-            $('#delete-modal').find('.primary').css({'display': 'inline-block'}); 
-            $('#delete-modal').find('.hide').html('Cancel');
-        });
-};
-
-localground.profile.prototype.deleteConfirm1 = function() {
-    self.mode = 'delete_objects';
-    $('#delete_message').empty()
-            .append($('<img />')
-            .css({'margin-left': '200px'})
-            .attr('src', '/static/images/ajax-loader.gif'));
-    $('#delete-modal').find('.primary').css({'display': 'none'});
-    var params = $('#the_form').serialize();
-    $.post(self.deleteURL,
-        params,
-        function(result) {
-            //alert(JSON.stringify(result));
             $('#delete_message').html(result.message);
             $('#delete-modal').find('.hide').html('Done');
         },

@@ -17,12 +17,19 @@
 	.main-content { min-width:750px; max-width: 1500px; }
 	.cell1 {width: 600px; display:inline-block; }
 	.cell2 {width: 150px; float:right; display:inline-block; }
+	#the_table {
+		min-width: 800px;
+		max-width: 1000px;
+		margin-bottom: 0px;
+	}
+	#the_table input[type=text], #the_table textarea { width: 190px !important; }
+	#the_table select { width: 200px !important; }
+	#the_table .input { margin-left: 140px; }
 	
 	.clearfix { margin: 2px 0px 2px 0px !important; }
 	form label { width: 100px; }
-	form .input { margin-left: 110px; }
 	.thin label { padding: 0px; width: 85px; }
-	.thin .input { margin-left: 100px; }
+	.thin .input { margin-left: 100px !important; }
 	.input.blue {  color: #386CB0; padding-top: 0px; }
 	fieldset { padding: 0px !important; margin: 0px !important; }
 	
@@ -32,14 +39,7 @@
 		float:right;
 		margin: 5px 0px 0px 0px;
 	}
-	#the_table {
-		min-width: 800px;
-		max-width: 1000px;
-		margin-bottom: 0px;
-	}
-	#the_table input[type=text], #the_table textarea { width: 190px !important; }
-	#the_table select { width: 200px !important; }
-	#the_table fieldset { margin: 0px !important; }
+	
 	.no-data-found {
 		position: relative;
 		border: 1px solid #eee;
@@ -87,9 +87,7 @@
 					{% block controls_menus %}{% endblock %}
 				{% endif %}
 				{% block other_menus %}{% endblock %}
-				<form id="filter-form">
-					{% include "includes/profile/filter_menu.html" %}
-				</form>
+				{% include "includes/profile/filter_menu.html" %}
 				{% include "includes/profile/impersonation.html" %}
 			</ul>
 			<div class="cell2">
