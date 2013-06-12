@@ -12,7 +12,7 @@ from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video
 from localground.apps.site.models import Marker, WMSOverlay
 from localground.apps.site.models import (Marker, WMSOverlay, ObjectTypes)
-from localground.apps.site.models.base_new import BaseNamed
+from localground.apps.site.models.base import BaseNamed
 from localground.apps.site.managers import ProjectManager, ViewManager
 
 #!/usr/bin/env python

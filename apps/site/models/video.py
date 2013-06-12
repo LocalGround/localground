@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 from localground.apps.site.managers import VideoManager  
-from localground.apps.site.models.base_new import BasePoint, BaseUploadedMedia
+from localground.apps.site.models.base import BasePoint, BaseUploadedMedia
 import os
 
 class Video(BasePoint, BaseUploadedMedia):

@@ -132,7 +132,7 @@ class MarkerManager(models.GeoManager, MarkerMixin):
 
 class WMSOverlayMixin(BaseMixin):
     
-    def get_listing(self, user=None, overlay_type=None, is_printable=None, **kwargs):
+    def get_listing(self, user=None, filter=None, overlay_type=None, is_printable=None, **kwargs):
         '''
         todo: we want to deprecate group-level overlays in favor of individual-level
             site.

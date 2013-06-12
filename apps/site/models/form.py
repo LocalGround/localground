@@ -60,7 +60,7 @@ class Form(BaseNamed):
     @staticmethod     
     def create_new_form(dictionary, user):
         from django.db import connection, transaction
-        from localground.apps.helpers import generic
+        from localground.apps.site.lib.helpers import generic
         r = dictionary
         ids, alias_dict, type_dict, width_dict = [],{},{},{}
         total_width = 0
@@ -133,7 +133,7 @@ class Form(BaseNamed):
             names.append(n.col_name)
         return names
     
-    def get_data_query(self, project=None, marker=None, user=None, is_blank=False,
+    def get_data_query(self, project=None, filter=None, marker=None, user=None, is_blank=False,
                     to_dict=False, include_markers=True, has_geometry=None,
                     attachment=None, manually_reviewed=None):
         # We want to query everything in one go, so we're taking advantage of
@@ -167,7 +167,7 @@ class Form(BaseNamed):
             objects = objects.filter(point__isnull=False)
         return objects   
     
-    def get_listing(self, user, project, order_by=['time_stamp'], **kwargs):
+    def get_listing(self, user, project, filter=None, order_by=['time_stamp'], **kwargs):
         objects = self.get_data_query(**kwargs)  
         objects = objects.order_by(*order_by)
         return objects

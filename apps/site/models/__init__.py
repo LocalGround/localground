@@ -1,4 +1,4 @@
-from localground.apps.site.models.base_new import (Base, BaseAudit, BaseNamed,
+from localground.apps.site.models.base import (Base, BaseAudit, BaseNamed,
                 BaseMedia, BaseUploadedMedia, BasePoint, BaseExtents, StatusCode,
                 UploadSource, UploadType, ErrorCode)
 

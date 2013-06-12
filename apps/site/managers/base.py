@@ -13,7 +13,7 @@ class GenericLocalGroundError(Exception):
 
 class BaseMixin(object):
         
-    def get_listing(self, user, ordering_field=None):
+    def get_listing(self, user, filter=None, ordering_field=None):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
             

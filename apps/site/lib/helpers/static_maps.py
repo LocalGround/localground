@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from PIL import Image, ImageFilter, ImageDraw, ImageFont, ImageOps
 import numpy as np
 import logging
-from localground.apps.helpers.units import Units
+from localground.apps.site.lib.helpers.units import Units
 from django.contrib.gis.geos import Point, LinearRing, Polygon
 import mapscript
 

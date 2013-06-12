@@ -3,7 +3,7 @@ from localground.apps.site.models import ObjectTypes
 from datetime import datetime    
 from localground.apps.site.managers import MarkerManager
 #from localground.apps.site.models import PointObject, ReturnCodes
-#from localground.apps.site.models.base_new import BasePoint, BaseUploadedMedia, ReturnCodes
+#from localground.apps.site.models.base import BasePoint, BaseUploadedMedia, ReturnCodes
 #from localground.apps.site.models.base import Base
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio

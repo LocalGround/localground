@@ -1,4 +1,4 @@
-from localground.apps.helpers.models import PointObject
+from localground.apps.site.lib.helpers.models import PointObject
 from django.contrib.gis.db import models
 from datetime import datetime
 

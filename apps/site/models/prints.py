@@ -3,7 +3,7 @@ from datetime import datetime
 from localground.apps.site.managers import PrintManager
 #from localground.apps.site.models import Base
 from django.conf import settings
-from localground.apps.site.models.base_new import BaseMedia, BaseExtents
+from localground.apps.site.models.base import BaseMedia, BaseExtents
                                                    
 class Print(BaseExtents, BaseMedia):
     name = 'print'
@@ -167,7 +167,7 @@ class Print(BaseExtents, BaseMedia):
         if os.path.exists(path):
             dest = '%s/deleted/%s' % (settings.USER_MEDIA_ROOT, self.uuid)
             if os.path.exists(dest):
-                from localground.apps.helpers import generic
+                from localground.apps.site.lib.helpers import generic
                 dest = dest + '.dup.' + generic.generateID()
             shutil.move(path, dest)
                     

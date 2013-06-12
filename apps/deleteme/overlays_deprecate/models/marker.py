@@ -1,8 +1,8 @@
 from django.contrib.gis.db import models
-from localground.apps.helpers.models import ObjectTypes
+from localground.apps.site.lib.helpers.models import ObjectTypes
 from datetime import datetime    
 from localground.apps.overlays.managers import MarkerManager
-from localground.apps.helpers.models import PointObject, ReturnCodes
+from localground.apps.site.lib.helpers.models import PointObject, ReturnCodes
 from localground.apps.account.models import Base
 from localground.apps.uploads.models import Photo, Audio
     

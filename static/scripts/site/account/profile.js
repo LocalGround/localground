@@ -26,7 +26,7 @@ localground.profile.prototype.initialize = function(opts) {
 			if($(this).val().length > 0) {
 				if(sql.length > 0)
 					sql += ' and ';
-				sql += $(this).attr('id') + '=';
+				sql += $(this).attr('name') + $(this).attr('data-operator');
 				if(intRegex.test($(this).val()))
 					val = parseInt($(this).val());
 				else
@@ -34,7 +34,15 @@ localground.profile.prototype.initialize = function(opts) {
 				sql += val;
 			}
 		});
-		$('#sql').val('SELECT * FROM ' + self.object_type + ' WHERE ' + sql);
+		$('#sql').val(sql);
+		/*$('#sql').load(self.rawURL, {filter: sql}, function(response, status, xhr) {
+			if (status == "error") {
+				var msg = "Sorry but there was an error: ";
+				$("#error").html(msg + xhr.status + " " + xhr.statusText);
+			}
+			$('#sql').val(response);
+		});*/
+		document.location.href = self.rawURL + '?' + $.param({filter: sql});
 	});
      
     //make sure everything's un-checked!

@@ -8,50 +8,30 @@
         <li class="clearfix">
             <div style="margin-left: 10px;">Filter project</div>
         </li>
-        <li class="divider"></li>  
-        <li class="clearfix">
-            <label>Project:</label>
+        <li class="divider"></li>
+        {% for ff in filter_fields %}
+            <li class="clearfix">
+            <label>{{ ff.title }}:</label>
             <div class="input">
-                <select id="project_id">
-                    <option value="">-- All --</option>
-                    {% for p in projects %}
-                        <option value="{{p.id}}"
-                            {% if p.id == selected_project.id %}selected{% endif %}>
-                            {{ p.name }}
-                        </option>
-                    {% endfor%}
-                </select>
+                {% if ff.col_name == 'project__id' %}
+                    <select id="{{ ff.id }}" name="{{ ff.col_name }}" data-operator="{{ ff.operator }}">
+                        <option value="">-- All --</option>
+                        {% for p in projects %}
+                            <option value="{{p.id}}"
+                                {% if p.id == selected_project.id %}selected{% endif %}>
+                                {{ p.name }}
+                            </option>
+                        {% endfor%}
+                    </select>
+                {% else %}
+                    <input id="{{ff.id}}" name="{{ ff.col_name|lower }}" type="text" data-operator="{{ ff.operator }}"
+                        {%if ff.data_type == 'tag' %}class="tags"{% endif %}
+                        {%if ff.data_type == 'date' %}class="date-picker"{% endif %}/>
+                {% endif %}
             </div>
         </li>
-        <li class="clearfix">
-            <label>Name:</label>
-            <div class="input">
-                <input id="name" type="text" />
-            </div>
-        </li>
-        <li class="clearfix">
-            <label>Tags:</label>
-            <div class="input">
-                <input id="tags" type="text" />
-            </div>
-        </li>
-        <li class="clearfix">
-            <label>Edited By:</label>
-            <div class="input">
-                <input id="owner_id" class="input-smallish" type="text" /></div>
-        </li>
-        <li class="clearfix">
-            <label>After:</label>
-            <div class="input">
-                <input id="date_created_after" type="text" />
-            </div>
-        </li>
-        <li class="clearfix">
-            <label>Before:</label>
-            <div class="input">
-                <input type="text" id="date_created_before" />
-            </div>
-        </li>
+        {% endfor %}
+        
         <li>
             <textarea id="sql"></textarea>   
         </li>
@@ -68,6 +48,12 @@
 <script type="text/javascript">
     $('#filter-menu input, #filter-menu label, #filter-menu select, #filter-menu button, #filter-menu textarea')
         .click(function(e) { e.stopPropagation(); });
-    $("#tags").autocomplete("/tagging_autocomplete/list/json", { multiple: true });
-                
+    $(".tags").autocomplete("/tagging_autocomplete/list/json", { multiple: true });
+    $('.date-picker').datepicker({ dateFormat: 'mm/dd/yy' });
+    //alert($('.hasDatepicker').get(0));
+    
+    
+            
+    
+      
 </script>

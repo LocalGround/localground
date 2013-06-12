@@ -14,7 +14,7 @@ class GroupMixin(BaseMixin):
         q = q.distinct()
         return q.order_by('name')
     
-    def get_listing(self, user, ordering_field='name', with_counts=True, **kwargs):
+    def get_listing(self, user, filter=None, ordering_field='name', with_counts=True, **kwargs):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
         

@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
-from localground.apps.helpers.api.decorators import process_identity
-from localground.apps.helpers.decorators import get_group_if_authorized
+from localground.apps.site.lib.helpers.api.decorators import process_identity
+from localground.apps.site.lib.helpers.decorators import get_group_if_authorized
 from localground.apps.account.models import Project  
 import simplejson as json
 

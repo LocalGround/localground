@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
-from localground.apps.site.models.base_new import BaseAudit
+from localground.apps.site.models.base import BaseAudit
 
 class EntityGroupAssociation(BaseAudit):
     """

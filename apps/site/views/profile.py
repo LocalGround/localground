@@ -1,13 +1,14 @@
 #!/usr/bin/env python
-from django.http import Http404
-from localground.apps.helpers.generic import prep_paginator
+from django.http import Http404, HttpResponse
+from localground.apps.site.lib.helpers import prep_paginator, FilterQuery
 from django.template import TemplateDoesNotExist, RequestContext
 from django.shortcuts import render_to_response
 from localground.apps.site.decorators import process_project
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required 
 from django.db.models.loading import get_model
 from datetime import datetime
 from localground.apps.site.models import Base, Project
+import json
 
 @login_required()
 def change_user_profile(request, template_name='account/user_prefs.html'):
@@ -73,17 +74,36 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
                               context_instance = RequestContext( request))
 
 
+
+
+
 @login_required
-@process_project
-def object_list_form(request, object_type_plural, project=None, return_message=None):
+def object_list_form(request, object_type_plural, project=None, filter=None,
+                     return_message=None):
     context = RequestContext(request)
     ModelClass = Base.get_model_from_plural_object_type(object_type_plural)
     template_name = 'profile/%s.html' % ModelClass.name_plural.replace(' ', '-')
-    objects = ModelClass.objects.get_listing(user=request.user, project=project)
+    r = request.POST or request.GET
+    #if filter is not None:
+    #    return HttpResponse(filter)
+    #objects = ModelClass.objects.get_listing(
+    #    user=request.user, project=project, filter=filter)
+    
+    filter_query = None
+    if r.get('filter') is not None:
+        filter_query = FilterQuery(r.get('filter'))
+        if filter_query.error:
+            context.update({'error_message': filter_query.error_message})
+            filter_query = None
+    
+    objects = ModelClass.objects.apply_filter(
+        user=request.user, filter=filter_query)
+    
+    #return HttpResponse(objects)
+    
     projects = Project.objects.get_objects(request.user)
     project_id = 'all'
     per_page = 10
-    r = request.POST or request.GET
     if project is not None: project_id = str(project.id)
     
     def getModelClassFormSet(**kwargs):
@@ -141,7 +161,8 @@ def object_list_form(request, object_type_plural, project=None, return_message=N
         'selected_project': project,
         'selected_project_id': project_id,
         'object_name_plural': ModelClass.name_plural,
-        'object_type': ModelClass.name
+        'object_type': ModelClass.name,
+        'filter_fields': ModelClass.filter_fields()
     })
     context.update(prep_paginator(request, objects, per_page=per_page))
     if request.user.is_superuser or context.get('is_impersonation'):

@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-from localground.apps.helpers.models import ObjectTypes
+from localground.apps.site.lib.helpers.models import ObjectTypes
 from localground.apps.account.models.base import Base
 from localground.apps.account.managers import ProjectManager, ViewManager
 from localground.apps.account.models.permissions import \

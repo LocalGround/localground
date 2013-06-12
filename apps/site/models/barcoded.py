@@ -127,7 +127,7 @@ class Scan(Processor):
         return Marker.objects.get_marker_dict_by_scan(scan_id=self.id)
         
     def save_upload(self, file, user, project):
-        from localground.apps.helpers import generic
+        from localground.apps.site.lib.helpers import generic
         from PIL import Image
         
         #1) first, set user, project, and uuid (required for generating file path):
@@ -189,7 +189,7 @@ class Scan(Processor):
         if os.path.exists(path):
             dest = '%s/deleted/%s' % (settings.USER_MEDIA_ROOT, self.uuid)
             if os.path.exists(dest):
-                from localground.apps.helpers import generic
+                from localground.apps.site.lib.helpers import generic
                 dest = dest + '.dup.' + generic.generateID()
             shutil.move(path, dest)
                     

@@ -18,21 +18,9 @@ class FastPaginator(Paginator):
         "Returns the total number of objects, across all pages."
         if self._count is None:
             try:
-                #get total row count from query:
-                sql = str(self.object_list.query).upper().replace('"', '')
-                count_sql = 'SELECT COUNT(*) FROM ' + sql.split('FROM')[1]    
-                count_sql = count_sql.split('ORDER BY')[0]
-                #handle distinct case:
-                if count_sql.find('DISTINCT') != -1:
-                    count_sql = 'SELECT COUNT(*) from (' + count_sql + ')'
-                cursor = connection.cursor()
-                cursor.execute(count_sql)
-                count = cursor.fetchone()[0]
-                self._count = int(count)
+                self._count = self.object_list.count()
             except:
-                # This error is usually thrown when the object_list is a
-                # list object instead of a QuerySet (which happens when a RawQuerySet)
-                # is used to execute the query
+                # thrown if object_list is a list instead of a QuerySet (which happens when a RawQuerySet)
                 self._count = len(self.object_list)
         return self._count
     count = property(_get_count)

@@ -2,8 +2,8 @@
 Contains views for creating, editing and updating permissions for View and Project objects.
 """
 from django.http import HttpResponse, HttpResponseRedirect
-from localground.apps.helpers.generic import prep_paginator
-from localground.apps.helpers.api.decorators import process_identity
+from localground.apps.site.lib.helpers.generic import prep_paginator
+from localground.apps.site.lib.helpers.api.decorators import process_identity
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes import generic
 from localground.apps.account.models import Project, View, UserAuthorityObject, UserAuthority

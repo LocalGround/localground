@@ -1,9 +1,9 @@
 from django.shortcuts import render_to_response
 from localground.apps.site.decorators import process_identity, process_project
 from localground.apps.site.models import Print, Layout, Form, Field, DataType
-from localground.apps.helpers import generic
-from localground.apps.helpers.static_maps import StaticMap
-from localground.apps.helpers.reports import Report
+from localground.apps.site.lib.helpers import generic
+from localground.apps.site.lib.helpers.static_maps import StaticMap
+from localground.apps.site.lib.helpers.reports import Report
 from localground.apps.site.models import WMSOverlay, Scan, Project, UserProfile
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required

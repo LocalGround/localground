@@ -1,4 +1,4 @@
-from localground.apps.helpers.generic import prep_paginator
+from localground.apps.site.lib.helpers.generic import prep_paginator
 from django.http import HttpResponse
 from localground.apps.site.decorators import process_identity, process_project
 from django.contrib.auth.decorators import login_required

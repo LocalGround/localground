@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.forms import ModelForm, fields, formsets, widgets, HiddenInput, models
-from localground.apps.helpers.widgets import UserAutocomplete
+from localground.apps.site.lib.helpers.widgets import UserAutocomplete
 from localground.apps.account.models import Project, View
 from django.conf import settings
 

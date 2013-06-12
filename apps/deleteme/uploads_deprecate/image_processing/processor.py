@@ -1233,7 +1233,7 @@ class MapUtils(General):
                                         types.GRAYSCALE_SUBTRACTED)
     
     def generate_image_with_map_margins(self):
-        from localground.apps.helpers.units import Units
+        from localground.apps.site.lib.helpers.units import Units
         from django.contrib.gis.geos import Polygon
         
         #determine the width of the map margins (given the current scaling):
@@ -1501,7 +1501,7 @@ class FormUtils(General):
             
     def copy_files_from_scan_dir_to_attachment_dir(self):
         #only execute the following code if no attachment directory exists:
-        from localground.apps.helpers import generic
+        from localground.apps.site.lib.helpers import generic
         import shutil
         path = self.attachment.get_abs_directory_path()
         if os.path.exists(path):

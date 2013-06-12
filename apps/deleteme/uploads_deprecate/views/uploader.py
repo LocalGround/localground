@@ -1,9 +1,9 @@
 from django.shortcuts import render_to_response
 from localground.apps.uploads.models import *
-from localground.apps.helpers import generic
+from localground.apps.site.lib.helpers import generic
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from localground.apps.helpers.api.decorators import process_identity, process_project
+from localground.apps.site.lib.helpers.api.decorators import process_identity, process_project
 from django.conf import settings
 from django.template import RequestContext
 import simplejson as json

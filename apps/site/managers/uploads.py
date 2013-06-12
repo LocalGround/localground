@@ -14,7 +14,7 @@ class GeneralMixin(BaseMixin):
                     .exclude(deleted=True))'''
 
         
-    def get_listing(self, user, project=None, ordering_field=None):
+    def get_listing(self, user, project=None, filter=None, ordering_field=None):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
             
@@ -26,6 +26,22 @@ class GeneralMixin(BaseMixin):
              q = q.filter(project=project) 
         if ordering_field is not None:
             q =  q.order_by(ordering_field)
+        return q
+    
+    def apply_filter(self, user, filter=None, order_by=None):
+        if user is None:
+            raise GenericLocalGroundError('The user cannot be empty')
+            
+        from localground.apps.site.lib.helpers import FilterQuery
+        q = self.model.objects.distinct().select_related('project', 'owner',
+                                              'last_updated_by')
+        q = q.filter(Q(project__owner=user) | Q(project__users__user=user))
+        
+        fq = None
+        if filter is not None:
+            q = filter.extend_query(q)
+        if order_by is not None:
+            q =  q.order_by(order_by)
         return q
     
     def by_marker(self, marker, ordering_field=None):
@@ -321,7 +337,7 @@ class ScanMixin(GeneralMixin):
     '''
     
 
-    def get_listing(self, user, project=None, processed_only=False, ordering_field=None):
+    def get_listing(self, user, project=None, filter=None, processed_only=False, ordering_field=None):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
         q = self.model.objects.distinct()

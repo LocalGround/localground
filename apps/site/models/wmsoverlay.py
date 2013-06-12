@@ -1,7 +1,7 @@
 from django.contrib.gis.db import models
 from datetime import datetime    
 from localground.apps.site.managers import WMSOverlayManager
-from localground.apps.site.models.base_new import BaseNamed, BaseAudit
+from localground.apps.site.models.base import BaseNamed, BaseAudit
     
 class WMSOverlay(BaseNamed):
     name = 'tile'
