@@ -126,7 +126,7 @@ class FilterQuery(object):
         for i in range(0, len(tokens)):
             #even items are the conditions:
             if i % 2 == 0:
-                items = [item.strip() for item in re.split('(<=|<|>=|>|in|!=|=)', tokens[i])]
+                items = [item.strip() for item in re.split('(<=|<|>=|>| in |!=|=)', tokens[i])]
                 item = FilterCondition(items[0], operator=items[1], val=items[2])
                 #odd items are the conjunctions
                 if i > 1:
