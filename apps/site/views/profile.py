@@ -84,10 +84,6 @@ def object_list_form(request, object_type_plural, project=None, filter=None,
     ModelClass = Base.get_model_from_plural_object_type(object_type_plural)
     template_name = 'profile/%s.html' % ModelClass.name_plural.replace(' ', '-')
     r = request.POST or request.GET
-    #if filter is not None:
-    #    return HttpResponse(filter)
-    #objects = ModelClass.objects.get_listing(
-    #    user=request.user, project=project, filter=filter)
     
     filter_query = None
     if r.get('filter') is not None:

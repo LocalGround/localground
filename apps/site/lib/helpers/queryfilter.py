@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 from django.conf import settings
+from localground.apps.site.lib import sqlparse
+from localground.apps.site.lib.sqlparse import tokens as T
+from localground.apps.site.lib.sqlparse.sql import Where, Comparison, Identifier
 
 class DataTypes(object):
     STRING = 'string'
@@ -68,16 +71,11 @@ class FilterCondition(object):
         elif self.data_type == DataTypes.INTEGER:
             self.value = int(self.value)
         if self.data_type == DataTypes.DATE:
-            self.value = datetime(2006, 11, 21, 16, 30)
-            '''
             for format in settings.DATE_INPUT_FORMATS:
                 try:
                     self.value = datetime.strptime(self.value, format)
                     break
-                except: pass
-            '''
-            
-        
+                except: pass 
         
     def get_django_operator(self):
         lookup = {
@@ -103,24 +101,49 @@ class FilterQuery(object):
     def __init__(self, filter_text):
         self.filter_text = filter_text
         self.filter_query = []
-        self.parse()
-        '''
         try:
             self.parse()
-            self.error = False
         except:
             self.error = True
             self.error_message = 'Invalid query "%s"' % self.filter_text
-        '''
         
     def __repr__(self):
         return 'Filter Text: %s\n%s' % (self.filter_text, self.to_dict_list(debug=True))
         
     def to_dict_list(self, debug=False):
         return [c.to_dict(debug=True) for c in self.filter_query]
-        
+      
     def parse(self):
+        self.filter_text = sqlparse.format(self.filter_text, reindent=False, keyword_case='upper')
+        statement = sqlparse.parse(self.filter_text)[0]
+        where_clause = None
+        for i, t in enumerate(statement.tokens):
+            if isinstance(t, Where):
+                where_clause =  t
+                break
+                
+        #print where_clause.tokens
+        for t in where_clause.tokens:
+            a = []
+            if isinstance(t, Comparison):
+                #print t.tokens
+                for e in t.tokens:
+                    #print e, e.ttype
+                    if isinstance(e, Identifier) or e.ttype == T.Operator.Comparison:
+                        a.append(str(e))
+                condition = FilterCondition(a[0], operator=a[1], val=a[2])
+                self.filter_query.append(condition)
+            if t.ttype == T.Keyword and len(self.filter_query) > 0:
+                self.filter_query[-1].conjunction = str(t)
+            
+        
+        
+    
+    def parse1(self):
         import re
+        from localground.apps.site.lib import sqlparse
+        from localground.apps.site.lib.sqlparse import Tokens
+        from localground.apps.site.lib.sqlparse.sql import Where
         tokens = re.split('( and | or )', self.filter_text)
         tokens = [t.strip() for t in tokens]
         for i in range(0, len(tokens)):
