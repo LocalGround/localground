@@ -163,7 +163,7 @@ def process_project(function):
 
 '''
 def parse_filter(function):
-    from localground.apps.site.lib.helpers import FilterQuery
+    from localground.apps.site.lib.helpers import QueryParser
     """
     Needs to be deprecated.  We have a middleware function that does what this
     intended to do.
@@ -174,7 +174,7 @@ def parse_filter(function):
         if r.get('filter') is None: return function(request, *args, **kwargs)    
         
         if kwargs is None: kwargs = {}
-        kwargs.update({'filter': FilterQuery(r.get('filter'))})
+        kwargs.update({'filter': QueryParser(r.get('filter'))})
         return function(request, *args, **kwargs)
     return wrapper
 '''

@@ -132,14 +132,16 @@ class BaseUploadedMedia(BaseNamedMedia):
     
     @classmethod
     def filter_fields(cls):
-        from localground.apps.site.lib.helpers import FilterCondition, DataTypes
+        from localground.apps.site.lib.helpers import Field, DataTypes
         return [
-            FilterCondition('project__id', id='project_id', title='Project', date_type=DataTypes.INTEGER),
-            FilterCondition('name', id='name', title='Name'),
-            FilterCondition('tags', id='tags', title='Tags', date_type=DataTypes.TAG),
-            FilterCondition('owner__id', id='owner_id', title='Edited By'),
-            FilterCondition('date_created', id='date_created_after', title='After', date_type=DataTypes.DATE, operator='>='),
-            FilterCondition('date_created', id='date_created_before', title='Before', date_type=DataTypes.DATE, operator='<=')
+            Field('project__id', id='project_id', title='Project', data_type=DataTypes.INTEGER),
+            Field('name', id='name', title='Name'),
+            Field('tags', id='tags', title='Tags', data_type=DataTypes.TAG),
+            Field('owner__id', id='owner_id', title='Edited By'),
+            Field('date_created', id='date_created_after', title='After',
+                                        data_type=DataTypes.DATE, operator='>='),
+            Field('date_created', id='date_created_before', title='Before',
+                                        data_type=DataTypes.DATE, operator='<=')
         ]
     
     class Meta:

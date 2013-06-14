@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from django.http import Http404, HttpResponse
-from localground.apps.site.lib.helpers import prep_paginator, FilterQuery
+from localground.apps.site.lib.helpers import prep_paginator, QueryParser
 from django.template import TemplateDoesNotExist, RequestContext
 from django.shortcuts import render_to_response
 from localground.apps.site.decorators import process_project
@@ -84,16 +84,16 @@ def object_list_form(request, object_type_plural, project=None, return_message=N
     template_name = 'profile/%s.html' % ModelClass.name_plural.replace(' ', '-')
     r = request.POST or request.GET
     
-    filter_query = None
+    query = None
     if r.get('query') is not None:
-        filter_query = FilterQuery(r.get('query'))
-        #return HttpResponse(json.dumps(filter_query.to_dict_list()))
-        if filter_query.error:
-            context.update({'error_message': filter_query.error_message})
-            filter_query = None
+        query = QueryParser(r.get('query'))
+        #return HttpResponse(json.dumps(query.to_dict_list()))
+        if query.error:
+            context.update({'error_message': query.error_message})
+            query = None
     
     objects = ModelClass.objects.apply_filter(
-        user=request.user, query=filter_query)
+        user=request.user, query=query)
     
     #return HttpResponse(objects)
     

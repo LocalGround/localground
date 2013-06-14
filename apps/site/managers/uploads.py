@@ -32,7 +32,7 @@ class GeneralMixin(BaseMixin):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
             
-        from localground.apps.site.lib.helpers import FilterQuery
+        from localground.apps.site.lib.helpers import QueryParser
         q = self.model.objects.distinct().select_related('project', 'owner',
                                               'last_updated_by')
         q = q.filter(Q(project__owner=user) | Q(project__users__user=user))
