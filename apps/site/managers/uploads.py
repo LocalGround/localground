@@ -28,7 +28,7 @@ class GeneralMixin(BaseMixin):
             q =  q.order_by(ordering_field)
         return q
     
-    def apply_filter(self, user, filter=None, order_by=None):
+    def apply_filter(self, user, query=None, order_by=None):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
             
@@ -38,8 +38,8 @@ class GeneralMixin(BaseMixin):
         q = q.filter(Q(project__owner=user) | Q(project__users__user=user))
         
         fq = None
-        if filter is not None:
-            q = filter.extend_query(q)
+        if query is not None:
+            q = query.extend_query(q)
         if order_by is not None:
             q =  q.order_by(order_by)
         return q

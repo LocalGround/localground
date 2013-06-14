@@ -78,22 +78,22 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
 
 
 @login_required
-def object_list_form(request, object_type_plural, project=None, filter=None,
-                     return_message=None):
+def object_list_form(request, object_type_plural, project=None, return_message=None):
     context = RequestContext(request)
     ModelClass = Base.get_model_from_plural_object_type(object_type_plural)
     template_name = 'profile/%s.html' % ModelClass.name_plural.replace(' ', '-')
     r = request.POST or request.GET
     
     filter_query = None
-    if r.get('filter') is not None:
-        filter_query = FilterQuery(r.get('filter'))
+    if r.get('query') is not None:
+        filter_query = FilterQuery(r.get('query'))
+        #return HttpResponse(json.dumps(filter_query.to_dict_list()))
         if filter_query.error:
             context.update({'error_message': filter_query.error_message})
             filter_query = None
     
     objects = ModelClass.objects.apply_filter(
-        user=request.user, filter=filter_query)
+        user=request.user, query=filter_query)
     
     #return HttpResponse(objects)
     

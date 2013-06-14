@@ -20,7 +20,7 @@ localground.profile.prototype.initialize = function(opts) {
         $.extend(this, opts);
     }
 	
-	$('#do-query').click(function(){
+	$('#make-query').click(function(){
 		var sql = '', val = '', intRegex = /^\d+$/;
 		$('#filter-menu').find("input, select").each(function(){
 			if($(this).val().length > 0) {
@@ -34,6 +34,7 @@ localground.profile.prototype.initialize = function(opts) {
 				sql += val;
 			}
 		});
+		sql = 'SELECT * FROM ' + self.object_type + ' WHERE ' + sql;
 		$('#sql').val(sql);
 		/*$('#sql').load(self.rawURL, {filter: sql}, function(response, status, xhr) {
 			if (status == "error") {
@@ -42,7 +43,9 @@ localground.profile.prototype.initialize = function(opts) {
 			}
 			$('#sql').val(response);
 		});*/
-		document.location.href = self.rawURL + '?' + $.param({filter: sql});
+	});
+	$('#do-query').click(function(){
+		document.location.href = self.rawURL + '?' + $.param({query: $('#sql').val()});
 	});
      
     //make sure everything's un-checked!

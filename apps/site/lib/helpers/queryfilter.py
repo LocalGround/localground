@@ -3,17 +3,20 @@ from django.conf import settings
 from localground.apps.site.lib import sqlparse
 from localground.apps.site.lib.sqlparse import tokens as T
 from localground.apps.site.lib.sqlparse.sql import Where, Comparison, Identifier
+from datetime import datetime
 
 class DataTypes(object):
     STRING = 'string'
     DATE = 'date'
     INTEGER = 'integer'
     TAG = 'tag'
+    LIST = 'list'
+    FLOAT = 'float'
 
 class FilterCondition(object):
     
     def __init__(self, col_name, id=None, title=None, date_type=None,
-                        operator='=', conjunction='and', val=None):
+                        operator='=', conjunction='AND', val=None):
         self.id = id
         self.col_name = col_name
         self.title = title
@@ -21,9 +24,11 @@ class FilterCondition(object):
         self.operator = operator
         self.conjunction = conjunction
         self.value = val
-        if date_type is None:
-            self.set_data_type(val)
-        self.set_value(val)
+        if val is not None:
+            self.parse_value(val)
+        #if date_type is None:
+        #    self.set_data_type(val)
+        #self.set_value(val)
         
     def __repr__(self):
         return str(self.to_dict(debug=True))
@@ -44,7 +49,7 @@ class FilterCondition(object):
                 'django_operator': self.get_django_operator()
             })
         return d
-    
+    '''
     def set_data_type(self, val):
         #not all FilterFields will have values
         if val is None: return
@@ -63,7 +68,6 @@ class FilterCondition(object):
         #not all FilterFields will have values
         if val is None: return
         
-        from datetime import datetime
         self.value = val
         if self.data_type in [DataTypes.STRING, DataTypes.TAG, DataTypes.DATE]:
             #trim single quotes off of either side:
@@ -75,7 +79,37 @@ class FilterCondition(object):
                 try:
                     self.value = datetime.strptime(self.value, format)
                     break
-                except: pass 
+                except: pass
+    '''            
+                
+    def parse_value(self, val):
+        if isinstance(val, list):
+            val = [self.parse_value(v) for v in val]
+            self.value = val
+            self.data_type = DataTypes.LIST
+            return self.value
+        val = val.strip()
+        if val[0] == '\'' and val[-1] == '\'':
+            self.value = val[1:-1]
+            self.data_type = DataTypes.STRING
+            for format in settings.DATE_INPUT_FORMATS:
+                try:
+                    self.value = datetime.strptime(self.value, format)#.strftime('%Y-%m-%d')
+                    self.data_type = DataTypes.DATE
+                    break
+                except: pass
+        else:
+            if val.find('.') != -1:
+                try:
+                    self.value = float(val)
+                    self.data_type = DataTypes.FLOAT
+                except: pass
+            else:
+                try:
+                    self.value = int(val)
+                    self.data_type = DataTypes.INTEGER
+                except: pass
+        return self.value
         
     def get_django_operator(self):
         lookup = {
@@ -84,7 +118,8 @@ class FilterCondition(object):
             '>=': '__gte',
             '<': '__lt',
             '<=': '__lte',
-            'like': '__icontains',
+            'LIKE': '__icontains',
+            'IN': '__in'
         }
         return lookup[self.operator]
         
@@ -97,72 +132,123 @@ class FilterCondition(object):
 
 class FilterQuery(object):
     error = False
+    CONJUNCTIONS = ['AND', 'OR']
+    OPERATORS = ['=', '>', '>=', '<', '<=', 'LIKE', 'IN']
     
-    def __init__(self, filter_text):
-        self.filter_text = filter_text
-        self.filter_query = []
-        try:
+    def __init__(self, query_text, debug=True):
+        self.query_text = query_text
+        self.where_conditions = []
+        if debug:
             self.parse()
-        except:
-            self.error = True
-            self.error_message = 'Invalid query "%s"' % self.filter_text
+        else:
+            try:
+                self.parse()
+            except:
+                self.error = True
+                self.error_message = 'Invalid query "%s"' % self.query_text
         
     def __repr__(self):
-        return 'Filter Text: %s\n%s' % (self.filter_text, self.to_dict_list(debug=True))
+        return 'Filter Text: %s\n%s' % (self.query_text, self.to_dict_list(debug=True))
+        
+    def __str__(self):
+        return 'Filter Text: %s\n%s' % (self.query_text, self.to_dict_list(debug=True))
         
     def to_dict_list(self, debug=False):
-        return [c.to_dict(debug=True) for c in self.filter_query]
-      
+        return [c.to_dict(debug=True) for c in self.where_conditions]
+        
+    def remove_whitespaces(self, tokens):
+        stripped = []
+        for t in tokens:
+            if t.ttype != T.Whitespace: stripped.append(t)
+        return stripped
+    
     def parse(self):
-        self.filter_text = sqlparse.format(self.filter_text, reindent=False, keyword_case='upper')
-        statement = sqlparse.parse(self.filter_text)[0]
+        self.query_text = sqlparse.format(self.query_text, reindent=False, keyword_case='upper')
+        statement = sqlparse.parse(self.query_text)[0]
         where_clause = None
         for i, t in enumerate(statement.tokens):
+            if isinstance(t, Where):
+                where_clause =  t
+            #break
+            
+        tokens = self.remove_whitespaces(where_clause.tokens)
+        tokens.pop(0)
+        for i in range(0, len(tokens)):
+            t = tokens[i]
+            #parse equalities and inequalities:
+            if isinstance(t, Comparison):
+                children = [str(c) for c in self.remove_whitespaces(t.tokens)]
+                fc = FilterCondition(children[0], operator=children[1], val=children[2])
+                if i > 0: fc.conjunction = str(tokens[i-1])
+                self.where_conditions.append(fc)
+                
+            elif t.ttype == T.Keyword:
+                #parse "in" clauses:
+                if str(t) == 'IN':
+                    lst = str(self.remove_whitespaces(tokens[i+1].tokens)[1]).split(',')
+                    fc = FilterCondition(str(tokens[i-1]), operator='IN', val=lst)
+                    if i > 0: fc.conjunction = str(tokens[i-1])
+                    self.where_conditions.append(fc)
+                    
+                #parse "like" clauses:
+                elif str(t) == 'LIKE':
+                    fc = FilterCondition(str(tokens[i-1]), operator='LIKE', val=str(tokens[i+1]))
+                    if i > 0: fc.conjunction = str(tokens[i-1])
+                    self.where_conditions.append(fc)
+      
+    '''
+    def parse(self):
+        self.query_text = sqlparse.format(self.query_text, reindent=False, keyword_case='upper')
+        statement = sqlparse.parse(self.query_text)[0]
+        where_clause = None
+        tokens = self.remove_whitespaces(statement.tokens)
+        for i, t in enumerate(tokens):
             if isinstance(t, Where):
                 where_clause =  t
                 break
                 
         #print where_clause.tokens
-        for t in where_clause.tokens:
+        tokens = self.remove_whitespaces(where_clause.tokens)
+        conjunctions = ['AND',]
+        for i in range(0, len(tokens)):
+            t = tokens[i]
             a = []
+            # 1) saves the statement:
             if isinstance(t, Comparison):
-                #print t.tokens
                 for e in t.tokens:
-                    #print e, e.ttype
                     if isinstance(e, Identifier) or e.ttype == T.Operator.Comparison:
                         a.append(str(e))
-                condition = FilterCondition(a[0], operator=a[1], val=a[2])
-                self.filter_query.append(condition)
-            if t.ttype == T.Keyword and len(self.filter_query) > 0:
-                self.filter_query[-1].conjunction = str(t)
+                    if a[1] not in self.OPERATORS:
+                        self.error = True
+                        self.error_message = 'Only the following operators are \
+                                             supported in the SQL interface: %s' % ', '.join(self.OPERATORS)
+                        return
+                self.where_conditions.append(FilterCondition(a[0], operator=a[1], val=a[2]))
+            # 2) saves the conjunction
+            if t.ttype == T.Keyword and len(self.where_conditions):
+                c = str(t)
+                if c not in ['AND', 'OR']:
+                    self.error = True
+                    self.error_message = 'Only the "AND" and the "OR" operators are supported in the SQL interface.'
+                    return
+                conjunctions.append(str(t))
+        #combines the statement with the conjunction
+        for i, condition in enumerate(self.where_conditions):
+            condition.conjunction = conjunctions[i]
+    '''
             
-        
-        
-    
-    def parse1(self):
-        import re
-        from localground.apps.site.lib import sqlparse
-        from localground.apps.site.lib.sqlparse import Tokens
-        from localground.apps.site.lib.sqlparse.sql import Where
-        tokens = re.split('( and | or )', self.filter_text)
-        tokens = [t.strip() for t in tokens]
-        for i in range(0, len(tokens)):
-            #even items are the conditions:
-            if i % 2 == 0:
-                items = [item.strip() for item in re.split('(<=|<|>=|>| in |!=|=)', tokens[i])]
-                item = FilterCondition(items[0], operator=items[1], val=items[2])
-                #odd items are the conjunctions
-                if i > 1:
-                    item.conjunction = tokens[i-1].strip()
-                self.filter_query.append(item)
                 
     def extend_query(self, q):
         from django.db.models import Q
-        #from datetime import datetime, date
-        #d = { 'date_created__gte': datetime.datetime(2006, 11, 21, 16, 30)}
-        #q = q.filter(date_created__gte=datetime.date(2006, 11, 21))
-        for c in self.filter_query:
-            q = q.filter(**c.get_expression())
+        import operator
+        args = Q(**self.where_conditions[0].get_expression())
+        for i in range(1, len(self.where_conditions)):
+            c = self.where_conditions[i]
+            if c.conjunction == 'AND':
+                args = args & Q(**c.get_expression())
+            else: #OR condition:
+                args = args | Q(**c.get_expression())
+        q = q.filter(args) 
         return q
         
         
