@@ -4,7 +4,7 @@
     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="icon-dark icon-filter"></i> Filter
     </a>
-    <ul id="filter-menu" class="dropdown-menu">
+    <ul id="filter-menu" class="dropdown-menu" style="max-height: 300px;">
         <li class="clearfix">
             <div style="margin-left: 10px;">Filter project</div>
         </li>
@@ -13,18 +13,19 @@
             <li class="clearfix">
             <label>{{ ff.title }}:</label>
             <div class="input">
-                {% if ff.col_name == 'project__id' %}
-                    <select id="{{ ff.id }}" name="{{ ff.col_name }}" data-operator="{{ ff.operator }}">
+                {% if ff.id == 'project_id' %}
+                    <select id="{{ ff.id }}" data-operator="{{ ff.operator }}">
                         <option value="">-- All --</option>
                         {% for p in projects %}
                             <option value="{{p.id}}"
-                                {% if p.id == selected_project.id %}selected{% endif %}>
+                                {% if p.id == ff.value_original %}selected{% endif %}>
                                 {{ p.name }}
                             </option>
                         {% endfor%}
                     </select>
                 {% else %}
-                    <input id="{{ff.id}}" name="{{ ff.col_name|lower }}" type="text" data-operator="{{ ff.operator }}"
+                    <input id="{{ff.id}}" type="text" value="{{ ff.value_original }}"
+                            data-operator="{{ ff.operator }}"
                         {%if ff.data_type == 'tag' %}class="tags"{% endif %}
                         {%if ff.data_type == 'date' %}class="date-picker"{% endif %}/>
                 {% endif %}
@@ -33,7 +34,7 @@
         {% endfor %}
         
         <li>
-            <textarea id="sql"></textarea>   
+            <textarea name="query" id="sql">{{sql}}</textarea>   
         </li>
         <li class="divider"></li>  
         <li class="clearfix">

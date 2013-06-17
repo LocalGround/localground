@@ -12,6 +12,23 @@
     <script type="text/javascript" src="/static/scripts/thirdparty/jquery.ui.timepicker.js"></script>
 	<script type="text/javascript" src="/static/scripts/helpers/dialog.js"></script>
 {% endblock %}
+{% block pageload_scripts %}
+	var opts = {
+        username: '{{user.username}}',
+		updateURL: '{{ path }}',
+		pageURL: '{% autoescape off %}{{ path }}{% endautoescape %}?page={{ page }}{%if sql %}&query={{ sql }}{% endif %}',
+		rawURL: '{{ path }}',
+		deleteURL: '{{delete_url}}',
+		moveURL: '{{raw_url}}move-project/',
+		project_id: '{{selected_project_id}}',
+		object_type: '{{ object_type }}'
+	};
+	{% if username %}
+		opts.alias = '{{username}}';
+	{% endif %}
+    o.initialize(opts);
+{% endblock %}
+
 {% block extra_styles %}
 	h1 { margin-top: 25px; }
 	.main-content { min-width:750px; max-width: 1500px; }
@@ -109,26 +126,21 @@
 			{% include "includes/messages.html" %}
 			
 			<!-- Filters -->
-			<div class="alert alert-muted">
+			{% if has_filters %}
+			<div class="alert alert-muted" style="padding-right: 18px;">
 				<strong>Filters:</strong>
-			
-				<div class="filter info">project: {{selected_project}}
-					<a href="#" title="remove filter">×</a>
-				</div>
-					
-				<div class="filter info">created by: vanwars
-					<a href="#" title="remove filter">×</a>
-				</div>
-				
-				<div class="filter info">before: 3/2/2012
-					<a href="#" title="remove filter">×</a>
-				</div>
-				
-				<div class="filter info">after: 3/2/2012
-					<a href="#" title="remove filter">×</a>
-				</div>
+				{% for ff in filter_fields %}
+					{% if ff.value %}
+					<div class="filter info">{{ff.title|lower}}: {{ff.value_original}}
+						<a class="remove-filter" id="remove_{{ff.id}}" href="#"
+								data-target="{{ff.id}}" title="remove filter">×</a>
+					</div>
+					{% endif %}
+				{% endfor %}
+				<a style="float:right;cursor:pointer" id="remove-filters"
+							href="#" title="remove all filters">remove all</a>
 			</div>
-		
+			{% endif %}
 		</div>
 		
 		<!-- render table or "no data found" message -->

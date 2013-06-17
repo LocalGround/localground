@@ -144,6 +144,9 @@ def object_list_form(request, object_type_plural, project=None, return_message=N
         if r.get('page') is not None:
             start = (int(r.get('page'))-1)*per_page
         modelformset = ModelClassFormSet(queryset=objects[start:start+per_page])
+        
+    filter_fields = ModelClass.filter_fields()
+        
     context.update({
         'formset': modelformset,
         'page_title': 'My %s' % ModelClass.name_plural.capitalize(),
@@ -158,8 +161,22 @@ def object_list_form(request, object_type_plural, project=None, return_message=N
         'selected_project_id': project_id,
         'object_name_plural': ModelClass.name_plural,
         'object_type': ModelClass.name,
-        'filter_fields': ModelClass.filter_fields()
+        'filter_fields': filter_fields
     })
+    has_filters = False
+    if query is not None:
+        for i in range(0, len(filter_fields)):
+            field = query.get_condition(filter_fields[i].col_name)
+            if field is not None:
+                has_filters = True
+                field.update(filter_fields[i])
+                filter_fields[i] = field
+        context.update({
+            'filter_fields': filter_fields,
+            'sql': query.query_text,
+            'has_filters': has_filters,
+            'url': '%s?query=%s' % (ModelClass.listing_url(), query.query_text),
+        })
     context.update(prep_paginator(request, objects, per_page=per_page))
     if request.user.is_superuser or context.get('is_impersonation'):
         context.update({'users': Project.get_users()})

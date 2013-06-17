@@ -26,26 +26,60 @@ localground.profile.prototype.initialize = function(opts) {
 			if($(this).val().length > 0) {
 				if(sql.length > 0)
 					sql += ' and ';
-				sql += $(this).attr('name') + $(this).attr('data-operator');
-				if(intRegex.test($(this).val()))
-					val = parseInt($(this).val());
-				else
-					val	= '\'' + $(this).val() + '\'';
+				sql += $(this).attr('id') + ' ' + $(this).attr('data-operator') + ' ';
+				switch($(this).attr('data-operator').toLowerCase()) {
+					case 'like':
+						val	= '\'%' + $(this).val() + '%\'';
+						break;
+					case 'in':
+						var oldList = $(this).val().split(',');
+						var newList = [];
+						var elem = '';
+						$.each(oldList, function(){
+							elem = this.trim();
+							if(intRegex.test(elem))
+								newList.push(elem);
+							else
+								newList.push('\'' + elem + '\'');
+						});
+						val = '(' + newList.join(', ') + ')';
+						break;
+					default:
+						if(intRegex.test($(this).val()))
+							val = parseInt($(this).val());
+						else
+							val	= '\'' + $(this).val() + '\'';
+						break;
+				}
+				
 				sql += val;
 			}
 		});
-		sql = 'SELECT * FROM ' + self.object_type + ' WHERE ' + sql;
+		if(sql.length > 0) 
+			sql = 'SELECT * FROM ' + self.object_type + ' WHERE ' + sql;
 		$('#sql').val(sql);
-		/*$('#sql').load(self.rawURL, {filter: sql}, function(response, status, xhr) {
-			if (status == "error") {
-				var msg = "Sorry but there was an error: ";
-				$("#error").html(msg + xhr.status + " " + xhr.statusText);
-			}
-			$('#sql').val(response);
-		});*/
 	});
+	
 	$('#do-query').click(function(){
-		document.location.href = self.rawURL + '?' + $.param({query: $('#sql').val()});
+		var url = self.rawURL;
+		if($('#sql').val().length > 0)
+			url += '?' + $.param({query: $('#sql').val()});
+		document.location.href = url; 
+	});
+	
+	$('.remove-filter').click(function(){
+		id = $(this).attr('data-target');
+		$(this).parent().remove();
+		$('#' + id).val('');
+		$('#make-query').trigger('click');
+		$('#do-query').trigger('click');
+		return false;
+	});
+	
+	$('#remove-filters').click(function(){
+		$(this).parent().remove();
+		document.location.href = self.rawURL;
+		return false;
 	});
      
     //make sure everything's un-checked!

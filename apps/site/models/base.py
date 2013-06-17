@@ -132,17 +132,29 @@ class BaseUploadedMedia(BaseNamedMedia):
     
     @classmethod
     def filter_fields(cls):
-        from localground.apps.site.lib.helpers import Field, DataTypes
+        #white_list = ()
+        #for f in Photo._meta.fields: print '%s: %s: %s' % (f.name, f.verbose_name, f.db_type())
+        from localground.apps.site.lib.helpers import QueryField, FieldTypes
+        #owner, last_updated_by, date_created, time_stamp, file_name_orig, name,
+        #description, tags, project, attribution
         return [
-            Field('project__id', id='project_id', title='Project', data_type=DataTypes.INTEGER),
-            Field('name', id='name', title='Name'),
-            Field('tags', id='tags', title='Tags', data_type=DataTypes.TAG),
-            Field('owner__id', id='owner_id', title='Edited By'),
-            Field('date_created', id='date_created_after', title='After',
-                                        data_type=DataTypes.DATE, operator='>='),
-            Field('date_created', id='date_created_before', title='Before',
-                                        data_type=DataTypes.DATE, operator='<=')
+            QueryField('project__id', id='project_id', title='Project ID', data_type=FieldTypes.INTEGER),
+            QueryField('name', id='name', title='Name', operator='like'),
+            QueryField('description', id='description', title='Description', operator='like'),
+            QueryField('tags', id='tags', title='Tags', data_type=FieldTypes.TAG, operator='in'),
+            QueryField('owner__username', id='owned_by', title='Owned By'),
+            QueryField('file_name_new', id='file_name', title='File Name'),
+            QueryField('date_created', id='date_created_after', title='After',
+                                        data_type=FieldTypes.DATE, operator='>='),
+            QueryField('date_created', id='date_created_before', title='Before',
+                                        data_type=FieldTypes.DATE, operator='<=')
         ]
+        
+    @classmethod
+    def get_field_by_id(cls, id):
+        for f in cls.filter_fields():
+            if f.id == id: return f
+        return None
     
     class Meta:
         abstract = True
