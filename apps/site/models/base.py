@@ -58,6 +58,23 @@ class BaseAudit(Base):
         app_label = 'site'
         abstract = True
         
+    @classmethod
+    def filter_fields(cls):
+        from localground.apps.site.lib.helpers import QueryField, FieldTypes
+        return [
+            QueryField('owner__username', id='owned_by', title='Owned By'),
+            QueryField('date_created', id='date_created_after', title='After',
+                                        data_type=FieldTypes.DATE, operator='>='),
+            QueryField('date_created', id='date_created_before', title='Before',
+                                        data_type=FieldTypes.DATE, operator='<=')
+        ]
+        
+    @classmethod
+    def get_field_by_id(cls, id):
+        for f in cls.filter_fields():
+            if f.id == id: return f
+        return None
+        
     
 class BaseNamed(BaseAudit):
     name = models.CharField(max_length=255)
@@ -149,12 +166,6 @@ class BaseUploadedMedia(BaseNamedMedia):
             QueryField('date_created', id='date_created_before', title='Before',
                                         data_type=FieldTypes.DATE, operator='<=')
         ]
-        
-    @classmethod
-    def get_field_by_id(cls, id):
-        for f in cls.filter_fields():
-            if f.id == id: return f
-        return None
     
     class Meta:
         abstract = True

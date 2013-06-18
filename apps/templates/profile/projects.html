@@ -17,22 +17,6 @@
 {% block extra_scripts %}
     var o = new localground.groups();
 {% endblock %}
-{% block pageload_scripts %}
-	var opts = {
-        username: '{{user.username}}',
-		updateURL: '{% autoescape off %}{{url}}{% endautoescape %}',
-		pageURL: '{% autoescape off %}{{url}}{% endautoescape %}?page={{page}}',
-		rawURL: '{% autoescape off %}{{url}}{% endautoescape %}',
-		deleteURL: '{{ delete_url }}',
-		addURL: '{{ create_url }}',
-		objectName: '{{ object_type|capfirst }}',
-		objectType: '{{object_type}}'
-	};
-	{% if username %}
-		opts.alias = '{{username}}';
-	{% endif %}
-    o.initialize(opts);
-{% endblock %}
 
 {% block controls_menus %}
 	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">

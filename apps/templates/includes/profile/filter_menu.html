@@ -24,8 +24,11 @@
                         {% endfor%}
                     </select>
                 {% else %}
-                    <input id="{{ff.id}}" type="text" value="{{ ff.value_original }}"
-                            data-operator="{{ ff.operator }}"
+                    <input id="{{ff.id}}" type="text" data-operator="{{ ff.operator }}"
+                        {%if ff.data_type == 'date' %}value="{{ ff.value_original|date:"m/d/Y" }}"
+                        {% else %}
+                           value="{{ ff.value_original }}"
+                        {% endif %}
                         {%if ff.data_type == 'tag' %}class="tags"{% endif %}
                         {%if ff.data_type == 'date' %}class="date-picker"{% endif %}/>
                 {% endif %}

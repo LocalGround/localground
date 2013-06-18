@@ -1,7 +1,7 @@
 {% extends "profile/data_list.html" %}
 {% block page_title %}
 	<img class="header-icon" src="/static/images/clipboard_large.png" />
-	Manage <span style="color:#ccc">Map Images</span>
+	Manage <span style="color:#ccc">{{ object_name_plural|title }}</span>
 {% endblock %}
 
 {% block script_links %}
@@ -11,7 +11,7 @@
 {% endblock %}
 {% block extra_styles %}
 	{{block.super}}
-	select { width: 200px !important; }
+	#the_table select { width: 200px !important; }
 {% endblock %}
 
 

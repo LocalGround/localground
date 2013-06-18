@@ -1,5 +1,9 @@
 {% extends "profile/data_list.html" %}
-{% block page_title %}Prints <small>{{selected_project|default_if_none:"Everything"}}</small>{% endblock %}
+{% block page_title %}
+	<img class="header-icon" src="/static/images/map_large.png" />
+	Manage <span style="color:#ccc">{{ object_name_plural|title }}</span>
+{% endblock %}
+
 {% block script_links %}
 	{{ block.super }}
     <script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
@@ -7,30 +11,14 @@
 {% endblock %}
 {% block extra_styles %}
 	{{block.super}}
-	input[type=text], textarea { width: 190px !important; }
-	select { width: 200px !important; }
-	li span { color: #386CB0 !important; }
+	#the_table input[type=text], #the_table textarea { width: 190px !important; }
+	#the_table select { width: 200px !important; }
+	/*li span { color: #386CB0 !important; }*/
 {% endblock %}
 
 
 {% block extra_scripts %}
     var o = new localground.prints();
-{% endblock %}
-{% block pageload_scripts %}
-	var opts = {
-        username: '{{user.username}}',
-		updateURL: '{{raw_url}}',
-		pageURL: '{% autoescape off %}{{url}}{% endautoescape %}&page={{page}}',
-		rawURL: '{{raw_url}}',
-		deleteURL: '{{delete_url}}',
-		moveURL: '{{raw_url}}move-project/',
-		project_id: '{{selected_project_id}}'
-	};
-	
-	{% if username %}
-		opts.alias = '{{username}}';
-	{% endif %}
-    o.initialize(opts);
 {% endblock %}
 
 {% block hidden_form_fields %}

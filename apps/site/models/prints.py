@@ -8,6 +8,7 @@ from localground.apps.site.models.base import BaseMedia, BaseExtents
 class Print(BaseExtents, BaseMedia):
     name = 'print'
     name_plural = 'prints'
+    project = models.ForeignKey('Project')
     uuid = models.CharField(unique=True, max_length=8)
     map_provider = models.ForeignKey('WMSOverlay',
                             db_column='fk_provider', related_name='prints_print_wmsoverlays')
@@ -25,8 +26,22 @@ class Print(BaseExtents, BaseMedia):
     form = models.ForeignKey('Form', null=True, blank=True)
     deleted = models.BooleanField(default=False)
     layers = models.ManyToManyField('WMSOverlay', null=True, blank=True)
-    projects = models.ManyToManyField('Project')
+    #projects = models.ManyToManyField('Project')
     objects = PrintManager()
+    
+    @classmethod
+    def filter_fields(cls):
+        from localground.apps.site.lib.helpers import QueryField, FieldTypes
+        return [
+            QueryField('project__id', id='project_id', title='Project ID', data_type=FieldTypes.INTEGER),
+            QueryField('map_title', id='map_title', title='Map Title', operator='like'),
+            QueryField('owner__username', id='owned_by', title='Owned By'),
+            QueryField('map_image_path', id='map_image_path', title='File Name'),
+            QueryField('date_created', id='date_created_after', title='After',
+                                        data_type=FieldTypes.DATE, operator='>='),
+            QueryField('date_created', id='date_created_before', title='Before',
+                                        data_type=FieldTypes.DATE, operator='<=')
+        ]
     
     def get_form_column_widths(self):
         if self.form_column_widths is None or len(self.form_column_widths) == 0:

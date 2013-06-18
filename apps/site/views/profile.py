@@ -78,14 +78,14 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
 
 
 @login_required
-def object_list_form(request, object_type_plural, project=None, return_message=None):
+def object_list_form(request, object_type_plural, return_message=None):
     context = RequestContext(request)
     ModelClass = Base.get_model_from_plural_object_type(object_type_plural)
     template_name = 'profile/%s.html' % ModelClass.name_plural.replace(' ', '-')
     r = request.POST or request.GET
     
     query = None
-    if r.get('query') is not None:
+    if r.get('query') is not None and len(r.get('query').strip()) > 0:
         query = QueryParser(r.get('query'))
         #return HttpResponse(json.dumps(query.to_dict_list()))
         if query.error:
@@ -97,10 +97,9 @@ def object_list_form(request, object_type_plural, project=None, return_message=N
     
     #return HttpResponse(objects)
     
-    projects = Project.objects.get_objects(request.user)
-    project_id = 'all'
+    if object_type_plural != Project.name_plural:
+        context.update({ 'projects': Project.objects.get_listing(request.user) })
     per_page = 10
-    if project is not None: project_id = str(project.id)
     
     def getModelClassFormSet(**kwargs):
         # uses Django 1.2 workaround documented here:
@@ -155,10 +154,7 @@ def object_list_form(request, object_type_plural, project=None, return_message=N
         'delete_url': ModelClass.batch_delete_url(),
         'create_url': ModelClass.create_url() + 'embed/',
         'page_title': 'My %s' % ModelClass.name_plural.capitalize(),
-        'projects': projects,
         'user': request.user,
-        'selected_project': project,
-        'selected_project_id': project_id,
         'object_name_plural': ModelClass.name_plural,
         'object_type': ModelClass.name,
         'filter_fields': filter_fields

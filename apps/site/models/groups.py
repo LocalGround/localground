@@ -45,6 +45,20 @@ class Group(BaseNamed, BasePermissions):
         abstract = True
         app_label = 'site'
         
+    @classmethod
+    def filter_fields(cls):
+        from localground.apps.site.lib.helpers import QueryField, FieldTypes
+        return [
+            QueryField('name', id='name', title='Name', operator='like'),
+            QueryField('description', id='description', title='Description', operator='like'),
+            QueryField('tags', id='tags', title='Tags', data_type=FieldTypes.TAG, operator='in'),
+            QueryField('owner__username', id='owned_by', title='Owned By'),
+            QueryField('date_created', id='date_created_after', title='After',
+                                        data_type=FieldTypes.DATE, operator='>='),
+            QueryField('date_created', id='date_created_before', title='Before',
+                                        data_type=FieldTypes.DATE, operator='<=')
+        ]
+        
     @staticmethod
     def get_users():
         # Returns a list of user that own or have access to at least one project.

@@ -12,14 +12,3 @@
 {% block extra_scripts %}
     var o = new localground.profile();
 {% endblock %}
-{% block pageload_scripts %}
-	var opts = {
-        project_id: '{{selected_project_id}}',
-		object_type: '{{ object_type }}'
-	};
-	{% if username %}
-		opts.alias = '{{username}}';
-	{% endif %}
-    o.initialize(opts);
-	
-{% endblock %}

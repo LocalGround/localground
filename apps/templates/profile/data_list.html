@@ -131,7 +131,12 @@
 				<strong>Filters:</strong>
 				{% for ff in filter_fields %}
 					{% if ff.value %}
-					<div class="filter info">{{ff.title|lower}}: {{ff.value_original}}
+					<div class="filter info">{{ff.title|lower}}: 
+						{%if ff.data_type == 'date' %}
+							{{ ff.value_original|date:"m/d/Y" }}
+                        {% else %}
+							{{ ff.value_original }}
+                        {% endif %}
 						<a class="remove-filter" id="remove_{{ff.id}}" href="#"
 								data-target="{{ff.id}}" title="remove filter">×</a>
 					</div>

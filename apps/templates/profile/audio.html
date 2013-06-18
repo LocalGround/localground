@@ -22,25 +22,6 @@
 {% block extra_scripts %}
     var o = new localground.audio();
 {% endblock %}
-{% block pageload_scripts %}
-	var opts = {
-        username: '{{user.username}}',
-		updateURL: '{{raw_url}}',
-		pageURL: '{% autoescape off %}{{url}}{% endautoescape %}&page={{page}}',
-		rawURL: '{{raw_url}}',
-		deleteURL: '{{delete_url}}',
-		moveURL: '{{raw_url}}/move-project/',
-		project_id: '{{selected_project_id}}',
-		listenerFunction: 'o.player',
-		object_type: '{{ object_type }}'
-	};
-	
-	{% if username %}
-		opts.alias = '{{username}}';
-	{% endif %}
-    o.initialize(opts);
-	
-{% endblock %}
 
 {% block hidden_form_fields %}
 	{{ block.super }}

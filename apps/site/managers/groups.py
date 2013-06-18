@@ -1,34 +1,35 @@
 from django.contrib.gis.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
-from localground.apps.site.managers.base import BaseMixin
+from localground.apps.site.managers.base import GeneralMixin
 
 #class GroupMixin(object):
-class GroupMixin(BaseMixin):
-   
-    def get_objects(self, user):
-        q = self.model.objects.select_related('owner')
-        if user is not None: #only accessible to superusers
-            filter_expression = Q(owner=user) | Q(users__user=user)
-            q = q.filter(filter_expression)
-        q = q.distinct()
-        return q.order_by('name')
+class GroupMixin(GeneralMixin):
     
-    def get_listing(self, user, filter=None, ordering_field='name', with_counts=True, **kwargs):
+    def get_listing(self, user, ordering_field='name', with_counts=True, **kwargs):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
         
         q = self.model.objects.distinct().select_related('owner', 'last_updated_by')
         q = q.filter(Q(owner=user) | Q(users__user=user))
-        if ordering_field is not None:
-            q =  q.order_by(ordering_field)
-        
         if with_counts:
             from django.db.models import Count
             q = q.annotate(processed_maps_count=Count('scan', distinct=True))
             q = q.annotate(photo_count=Count('photo', distinct=True))
             q = q.annotate(audio_count=Count('audio', distinct=True))
             q = q.annotate(marker_count=Count('marker', distinct=True))
+
+        return q
+    
+    def apply_filter(self, user, query=None, order_by='id'):
+        if user is None:
+            raise GenericLocalGroundError('The user cannot be empty')
+            
+        q = self.get_listing(user)
+        if query is not None:
+            q = query.extend_query(q)
+        if order_by is not None:
+            q = q.order_by(order_by)
         return q
 
 class ProjectMixin(GroupMixin):
