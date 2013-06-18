@@ -18,23 +18,6 @@
 {% block extra_scripts %}
     var o = new localground.scans();
 {% endblock %}
-{% block pageload_scripts %}
-	var opts = {
-        username: '{{user.username}}',
-		updateURL: '{{raw_url}}',
-		pageURL: '{% autoescape off %}{{url}}{% endautoescape %}&page={{page}}',
-		rawURL: '{{raw_url}}',
-		deleteURL: '{{delete_url}}',
-		moveURL: '{{raw_url}}move-project/',
-		project_id: '{{selected_project_id}}',
-		objectName: 'Map Image'
-	};
-	
-	{% if username %}
-		opts.alias = '{{username}}';
-	{% endif %}
-    o.initialize(opts);
-{% endblock %}
 
 {% block hidden_form_fields %}
 	{{ block.super }}
@@ -64,94 +47,34 @@
 {% endblock %}
 
 {% block rows %}
-	{% for o in objects.object_list %}
+	{% for form in formset.forms %}
 		<tr>
 			<td>
 				<input class="checkone" id="cb_{{o.id}}" name="id" type="checkbox" value="{{o.id}}" />
 			</td>
 			<td>
-				{% if o.file_name_thumb %}
+				{% if form.instance.file_name_thumb %}
 					<img class="thumb" style="max-width: 200px; max-height: 200px;"
-						 src="{{o.thumb}}" />
-					<input type="hidden" value="{{o.thumb}}">
+						 src="{{form.instance.thumb}}" />
+					<input type="hidden" value="{{form.instance.thumb}}">
 				{% else %}
 					&nbsp;
 				{% endif %}	
 				
 			</td>
 			<td>
-				<div class="clearfix">
-					<!-- label>ID:</label>
-					<div class="input" style="padding-top: 6px;font-weight:bold;">
-						{{o.id}}
-					</div -->
-					<label>uuid:</label>
-					<div class="input" style="padding-top: 6px;font-weight:bold;">
-						{{o.uuid}}
-					</div>
-				</div>
-				<div class="clearfix">
-					<label>Name:</label>
-					<div class="input">
-						<input type="text" name="name_{{o.id}}" id="name_{{o.id}}"
-						   value="{{o.name|default_if_none:""}}" style="width:140px" />
-					</div>
-				</div>
-				<div class="clearfix">
-					<label>Description:</label>
-					<div class="input">
-						<textarea name="description_{{o.id}}"
-							style="width:150px; margin-top: 2px;" rows="3">{{o.description|default_if_none:""}}</textarea>
-					</div>
-				</div>
-				<div class="clearfix">
-					<label>Attribution:</label>
-					<div class="input">
-						<input type="text" name="attribution_{{o.id}}" id="attribution_{{o.id}}"
-						   value="{{o.attribution|default_if_none:""}}" style="width:140px" />
-					</div>
-				</div>
-				<div class="clearfix">
-					<label>Date Created:</label>
-					<div class="input datetime">
-						<input type="text" name="date_{{o.id}}" id="date_{{o.id}}"
-							value="{{o.created_timestamp|date:"m/d/Y"}}" style="width:88px !important;" />
-						<input type="text" name="time_{{o.id}}" id="time_{{o.id}}"
-							value="{{o.created_timestamp|time:"h:i:s A"}}" style="width:88px !important;" />
-					</div>
-				</div>
-					
-				{% if user.is_superuser %}
-				<div class="clearfix">
-				
-					<label>QR Code:</label>
-					<div class="input">
-						<input type="text" name="qrcode_{{o.id}}" id="qrcode_{{o.id}}"
-						   value="{{o.qr_code|default_if_none:""}}" style="width:140px" />
-					</div>
-				</div>
-				<div class="clearfix">
-					<label>Status:</label>
-					<div class="input">
-						<select name="status_{{o.id}}">
-							{% for s in statuses %}
-							<option value="{{s.id}}" {% if o.status.id == s.id %}selected="selected"{% endif %}>{{s.name}}</option>
-							{% endfor %}
-						</select>
-					</div>
-				</div>
-				{% endif %}
+				{% include "includes/forms/generic_form_renderer.html" %}	
 			</td>
 			<td>
 				Last updated by
-				<span>{{ o.last_updated_by}}</span>
-				on <span>{{o.time_stamp|date:"n/j/Y P" }}</span>.		
+				<span>{{ form.instance.last_updated_by}}</span>
+				on <span>{{form.instance.time_stamp|date:"n/j/Y P" }}</span>.		
 				<ul style="margin-bottom:0px">
-					<li>Id: <span>{{ o.uuid }}</span></li>
-					<li>Owned by: <span>{{ o.owner }}</span></li>
-					<li>Project: <span>{{ o.project.name }}</span></li>
-					<li>Status: <span>{{o.status.name}}</span></li>
-					<li>Print: <span>{{o.source_print.name}} </span></li>
+					<li>Id: <span>{{ form.instance.uuid }}</span></li>
+					<li>Owned by: <span>{{ v.owner }}</span></li>
+					<li>Project: <span>{{ form.instance.project.name }}</span></li>
+					<li>Status: <span>{{form.instance.status.name}}</span></li>
+					<li>Print: <span>{{form.instance.source_print.name}} </span></li>
 				</ul>
 			</td>
 		</tr>

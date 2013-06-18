@@ -1,7 +1,7 @@
 from django.contrib.gis.db import models
 from datetime import datetime
 from django.conf import settings
-from localground.apps.site.managers import ScanManager 
+from localground.apps.site.managers import ScanManager, AttachmentManager 
 from localground.apps.site.models import (BaseMedia, StatusCode,
                                 BaseUploadedMedia, UploadSource, BaseExtents)
 import os
@@ -209,7 +209,7 @@ class Attachment(Processor):
     source_scan = models.ForeignKey(Scan, blank=True, null=True)
     is_short_form = models.BooleanField(default=False)
     directory_name = 'attachments'
-    objects = ScanManager()
+    objects = AttachmentManager()
     
     class Meta:
         app_label = 'site'

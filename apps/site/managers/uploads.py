@@ -7,7 +7,7 @@ from localground.apps.site.managers.base import GeneralMixin
 class ScanMixin(GeneralMixin):
     
     def get_listing(self, user, project=None, filter=None, processed_only=False, ordering_field=None):
-        q = super(ScanMixin, self).get_listing(user, filter=filter, ordering_field=ordering_field)
+        q = super(ScanMixin, self).get_listing(user)
         if processed_only:
             q = q.filter(status=2).filter(source_print__isnull=False)
         return q
@@ -30,6 +30,13 @@ class ScanQuerySet(QuerySet, ScanMixin):
 class ScanManager(models.GeoManager, ScanMixin):
     def get_query_set(self):
         return ScanQuerySet(self.model, using=self._db)
+        
+class AttachmentQuerySet(QuerySet, GeneralMixin):
+    pass
+
+class AttachmentManager(models.GeoManager, ScanMixin):
+    def get_query_set(self):
+        return AttachmentQuerySet(self.model, using=self._db)
         
 class PhotoMixin(GeneralMixin):
     pass
