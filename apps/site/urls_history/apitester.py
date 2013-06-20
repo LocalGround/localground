@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from django.views.generic.simple import direct_to_template
+from django.shortcuts import render as direct_to_template
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
@@ -127,39 +127,39 @@ users_context.update({
 
 urlpatterns = patterns('',
     (r'^project/$', login_required(direct_to_template), {
-        'template': 'base/api_tester.html',
+        'template_name': 'base/api_tester.html',
         'extra_context': project_context
     }),
     (r'^my-projects/$', login_required(direct_to_template), {
-        'template': 'base/api_tester.html',
+        'template_name': 'base/api_tester.html',
         'extra_context': my_projects_context
     }),
     (r'^print/$', login_required(direct_to_template), {
-        'template': 'base/api_tester.html',
+        'template_name': 'base/api_tester.html',
         'extra_context': print_context
     }),
     (r'^my-prints/$', login_required(direct_to_template), {
-        'template': 'base/api_tester.html',
+        'template_name': 'base/api_tester.html',
         'extra_context': prints_context
     }),
     (r'^group/$', login_required(direct_to_template), {
-        'template': 'base/api_tester.html',
+        'template_name': 'base/api_tester.html',
         'extra_context': group_context
     }),
     (r'^my-groups/$', login_required(direct_to_template), {
-        'template': 'base/api_tester.html',
+        'template_name': 'base/api_tester.html',
         'extra_context': groups_context
     }),
     (r'^my-photos/$', login_required(direct_to_template), {
-        'template': 'base/api_tester.html',
+        'template_name': 'base/api_tester.html',
         'extra_context': photos_context
     }),
     (r'^my-audio/$', login_required(direct_to_template), {
-        'template': 'base/api_tester.html',
+        'template_name': 'base/api_tester.html',
         'extra_context': audio_context
     }),
     (r'^get-users-from-string/$', login_required(direct_to_template), {
-        'template': 'base/api_tester.html',
+        'template_name': 'base/api_tester.html',
         'extra_context': users_context
     })
    

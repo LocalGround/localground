@@ -44,20 +44,29 @@ def prep_paginator(request, queryset, per_page=25):
         objectPage = paginator.page(page_num)
     except (EmptyPage, InvalidPage):
         objectPage = paginator.page(paginator.num_pages)
-    return {
+    d = {
         'objects': objectPage,
         'start_num': (page_num-1)*per_page+1,
         'page': page_num,
         'pages': paginator.num_pages,
-        'next': objectPage.next_page_number(), #context['next'],
-        'previous': objectPage.previous_page_number(), #context['previous'],
-        'has_next': objectPage.has_next(), #context['has_next'],
-        'has_previous': objectPage.has_previous(), #context['has_next'],context['has_previous'],
+        #'previous': objectPage.previous_page_number(), #context['previous'],
+        #'has_previous': objectPage.has_previous(), #context['has_next'],context['has_previous'],
         'results_per_page': per_page,
         'page_obj': objectPage,
         'paginator': paginator,
         'is_paginated': paginator.count > per_page
     }
+    if objectPage.has_next():
+        d.update({
+            'has_next': objectPage.has_next(),
+            'next': objectPage.next_page_number()
+        })
+    if objectPage.has_previous():
+        d.update({
+            'has_next': objectPage.has_previous(),
+            'next': objectPage.previous_page_number()
+        })
+    return d
 
 def generateID(num_digits=8):
     import random

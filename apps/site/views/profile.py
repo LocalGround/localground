@@ -98,7 +98,7 @@ def object_list_form(request, object_type_plural, return_message=None):
     #return HttpResponse(objects)
     
     if object_type_plural != Project.name_plural:
-        context.update({ 'projects': Project.objects.get_listing(request.user) })
+        context.update({ 'projects': Project.objects.get_objects(request.user) })
     per_page = 10
     
     def getModelClassFormSet(**kwargs):

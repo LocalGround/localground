@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
-from django.views.generic.simple import direct_to_template
+from django.shortcuts import render as direct_to_template
+#from django.shortcuts import render as direct_to_template
 
 # Uncomment the next two lines to enable the admin:
 #from django.contrib import admin
@@ -31,7 +32,7 @@ handler500 = 'localground.apps.account.views.server_error'
 urlpatterns = patterns('',
                        
     #mostly static html:
-    (r'^$', direct_to_template, {'template': 'pages/splash.html'}),
+    (r'^$', direct_to_template, {'template_name': 'pages/splash.html'}),
     (r'^pages/(?P<page_name>\w+)/', 'localground.apps.site.views.pages.about_pages'),
     
     #user prefs:

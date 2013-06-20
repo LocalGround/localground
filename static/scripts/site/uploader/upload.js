@@ -84,7 +84,8 @@ localground.uploader.prototype.initialize = function(opts) {
         submit: function (e, data) {
             data.formData = {
                 media_type: self.options.mediaType,
-                project_id: $('#project').val()
+                project_id: $('#project').val(),
+                csrfmiddlewaretoken: 'C0EKb7rUSafqzRB86PDbLVs0vDB8JJII'
             }
             //alert(JSON.stringify(data.formData));
         }

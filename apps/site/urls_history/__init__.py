@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
-from django.views.generic.simple import direct_to_template
+from django.shortcuts import render as direct_to_template
 
 # Uncomment the next two lines to enable the admin:
 #from django.contrib import admin
@@ -28,12 +28,12 @@ same view and parameters. Then, you can use this name in reverse URL matching.
 handler500 = 'localground.apps.account.views.server_error' 
 urlpatterns = patterns('',
     #view-free urls
-    (r'^$', direct_to_template, {'template': 'pages/splash.html'}),
-    (r'^about/$', direct_to_template, {'template': 'pages/about.html'}),
-    (r'^instructions/$', direct_to_template, {'template': 'pages/instructions.html'}),
-    (r'^research/$', direct_to_template, {'template': 'pages/research.html'}),
-    (r'^contact/$', direct_to_template, {'template': 'pages/contact.html'}),
-    (r'^credits/$', direct_to_template, {'template': 'pages/credits.html'}),
+    (r'^$', direct_to_template, {'template_name': 'pages/splash.html'}),
+    (r'^about/$', direct_to_template, {'template_name': 'pages/about.html'}),
+    (r'^instructions/$', direct_to_template, {'template_name': 'pages/instructions.html'}),
+    (r'^research/$', direct_to_template, {'template_name': 'pages/research.html'}),
+    (r'^contact/$', direct_to_template, {'template_name': 'pages/contact.html'}),
+    (r'^credits/$', direct_to_template, {'template_name': 'pages/credits.html'}),
     
     #profile
     (r'^profile/', include('localground.apps.site.urls.profile')),

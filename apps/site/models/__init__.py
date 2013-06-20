@@ -5,7 +5,6 @@ from localground.apps.site.models.base import (Base, BaseAudit, BaseNamed,
 #helpers
 from localground.apps.site.models.objecttypes import ObjectTypes
 from localground.apps.site.models.returncodes import ReturnCode, ReturnCodes
-#from localground.apps.site.models.pointobject import PointObject
 
 #overlays
 from localground.apps.site.models.marker import Marker

@@ -1,12 +1,12 @@
 from django.contrib.gis.db import models
 from django.db.models import Q
 from django.db.models.query import QuerySet
-from localground.apps.site.managers.base import GeneralMixin
+from localground.apps.site.managers.base import GeneralMixin, GenericLocalGroundError
 
 #class GroupMixin(object):
 class GroupMixin(GeneralMixin):
     
-    def get_listing(self, user, ordering_field='name', with_counts=True, **kwargs):
+    def get_objects(self, user, ordering_field='name', with_counts=True, **kwargs):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
         
@@ -25,7 +25,7 @@ class GroupMixin(GeneralMixin):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
             
-        q = self.get_listing(user)
+        q = self.get_objects(user)
         if query is not None:
             q = query.extend_query(q)
         if order_by is not None:

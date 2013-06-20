@@ -1,4 +1,4 @@
-from localground.apps.site.models.pointobject import PointObject
+from localground.apps.site.models.base import BasePoint
 from django.contrib.gis.db import models
 from datetime import datetime
 
@@ -227,7 +227,7 @@ class ModelClassBuilder(object):
             ))
         
             # Create the class, which automatically triggers ModelBase processing
-            self._model_class = type(self.name, (PointObject, ), attrs)
+            self._model_class = type(self.name, (BasePoint, ), attrs)
         
         return self._model_class   
     

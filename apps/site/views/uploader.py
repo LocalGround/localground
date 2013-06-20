@@ -17,12 +17,8 @@ def init_upload_form(request,
                      media_type='photos',
                  template_name='forms/uploader.html',
                  base_template='base/base.html',
-                 embed=False, identity=None, project=None):
-    username = identity.username if identity is not None else 'all'
-    projects = Project.objects.get_objects(identity)
-    if request.user.is_superuser and username == 'all':
-        projects = Project.objects.all().order_by('name')
-    project_id = 'all'
+                 embed=False, project=None):
+    projects = Project.objects.get_objects(request.user)
     media_types = [
         ('photos', 'Photos', 'png, jpg, jpeg, gif'),
         ('audio', 'Audio Files', 'audio/x-m4a, m4a, mp3, m4a, mp4, mpeg'),
@@ -33,7 +29,6 @@ def init_upload_form(request,
     selected_media_type = (None, 'Error')
     for mt in media_types:
         if mt[0] == media_type: selected_media_type = mt
-    if project is not None: project_id = str(project.id)
     extras = {
         'media_types': media_types,
         'selected_media_type': selected_media_type,
@@ -41,7 +36,7 @@ def init_upload_form(request,
         'base_template': base_template,
         'projects': projects,
         'selected_project': project,
-        'selected_project_id': project_id
+        'selected_project_id': project.id
     }
     return render_to_response(template_name, extras,
                               context_instance = RequestContext( request))

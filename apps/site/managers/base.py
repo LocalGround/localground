@@ -13,7 +13,7 @@ class GenericLocalGroundError(Exception):
 
 class BaseMixin(object):
         
-    def get_listing(self, user, filter=None, ordering_field=None):
+    def get_objects(self, user, filter=None, ordering_field=None):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
             
@@ -47,7 +47,7 @@ class GeneralMixin(BaseMixin):
                     .exclude(deleted=True))'''
 
         
-    def get_listing(self, user, project=None, ordering_field=None):
+    def get_objects(self, user, project=None, ordering_field=None):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
             
@@ -65,7 +65,7 @@ class GeneralMixin(BaseMixin):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
             
-        q = self.get_listing(user)
+        q = self.get_objects(user)
         if query is not None: q = query.extend_query(q)
         if order_by is not None: q = q.order_by(order_by)
         return q
