@@ -82,10 +82,12 @@ localground.uploader.prototype.initialize = function(opts) {
             );
         },
         submit: function (e, data) {
+            var token = $('input[name="csrfmiddlewaretoken"]').val();
+            alert(token);
             data.formData = {
                 media_type: self.options.mediaType,
                 project_id: $('#project').val(),
-                csrfmiddlewaretoken: 'C0EKb7rUSafqzRB86PDbLVs0vDB8JJII'
+                csrfmiddlewaretoken: token
             }
             //alert(JSON.stringify(data.formData));
         }
