@@ -7,5 +7,5 @@
 {% block page_title %}Account Activation Complete{% endblock %}
 {% block main_content %}
     <p>{% trans "Account successfully activated" %}</p>
-    <p><a href="{% url auth_login %}">{% trans "Log in" %}</a></p>
+    <p><a href="{% url "auth_login" %}">{% trans "Log in" %}</a></p>
 {% endblock %}

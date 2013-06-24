@@ -72,6 +72,13 @@ urlpatterns = patterns('',
     
     
     
+    
+    
+    
+    
+    
+    
+    
     #tables
     (r'^profile/tables/data/', 'localground.apps.site.views.tables.get_objects'),
     #(r'^tables/delete-selected/$', 'tables.delete_objects'),
@@ -100,6 +107,6 @@ urlpatterns = patterns('',
     # media server
     (r'^profile/(?P<object_type>photos|audio|videos|snippets|attachments|map-images|prints|tables)/(?P<hash>[=\w]+)/$', 'localground.apps.site.views.mediaserver.serve_media'),
   
-    
+    url(r'^', include('localground.apps.site.api.urls')),
     
 )
