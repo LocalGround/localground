@@ -10,7 +10,7 @@ class CSVRenderer(BaseRenderer):
     Renderer which serializes to CSV
     """
 
-    media_type = 'text/csv'
+    media_type = 'text/json'
     format = 'csv'
     level_sep = '.'
     headers = None
@@ -36,10 +36,10 @@ class CSVRenderer(BaseRenderer):
         rows, keys = [], []
         for elem in l:
             if len(keys) == 0:
-                keys = list(keys)
+                keys = list(elem.keys())
                 keys.sort()
                 rows.append(keys)  
-            rows.append(self.flatten_dict(elem, keys))
+            rows.append(self.make_row(elem, keys))
         return rows
     
     def make_row(self, d, keys):
