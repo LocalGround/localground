@@ -1687,7 +1687,7 @@ a.menu:after, .dropdown-toggle:after {
   margin: 0 0 18px;
   padding: 7px 14px;
   background-color: #f5f5f5;
-  background-repeat: repeat-x;
+  /*background-repeat: repeat-x;
   background-image: -khtml-gradient(linear, left top, left bottom, from(#ffffff), to(#f5f5f5));
   background-image: -moz-linear-gradient(top, #ffffff, #f5f5f5);
   background-image: -ms-linear-gradient(top, #ffffff, #f5f5f5);
@@ -1696,6 +1696,7 @@ a.menu:after, .dropdown-toggle:after {
   background-image: -o-linear-gradient(top, #ffffff, #f5f5f5);
   background-image: linear-gradient(top, #ffffff, #f5f5f5);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f5f5f5', GradientType=0);
+  */
   border: 1px solid #ddd;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
