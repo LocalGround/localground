@@ -17,7 +17,7 @@ from rest_framework.filters import django_filters
 #from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer, JSONPRenderer, XMLRenderer
 
 @api_view(('GET',))
-def api_root(request, format=None, base_name='My API'):
+def Local_Ground_Root(request, format=None):
     return Response({
         'photos': reverse('photo-list', request=request, format=format),
         'audio': reverse('audio-list', request=request, format=format),

@@ -61,7 +61,13 @@
     <ul class="breadcrumb">
         {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
             <li>
-                <a href="{{ breadcrumb_url }}" {% if forloop.last %}class="active"{% endif %}>{{ breadcrumb_name }}</a> {% if not forloop.last %}<span class="divider">&rsaquo;</span>{% endif %}
+                <a href="{{ breadcrumb_url }}" {% if forloop.last %}class="active"{% endif %}>
+                    {% if breadcrumb_name == 'Api Root' %}
+                        API Menu
+                    {% else %}
+                        {{ breadcrumb_name }}
+                    {% endif %}
+                </a> {% if not forloop.last %}<span class="divider">&rsaquo;</span>{% endif %}
             </li>
         {% endfor %}
     </ul>
@@ -74,15 +80,15 @@
             <form id="get-form" class="pull-right">
                 <fieldset>
                     <div class="btn-group format-selection">
-                        <a class="btn btn-primary js-tooltip" href='{{ request.get_full_path }}' rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
+                        <a class="btn btn-primary" href='{{ request.get_full_path }}' rel="nofollow">GET</a>
 
-                        <button class="btn btn-primary dropdown-toggle js-tooltip" data-toggle="dropdown" title="Specify a format for the GET request">
+                        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" title="Specify a format for the GET request">
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
                             {% for format in available_formats %}
                                 <li>
-                                    <a class="js-tooltip format-option" href='{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}' rel="nofollow" title="Make a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
+                                    <a class="format-option" href='{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}' rel="nofollow">{{ format }}</a>
                                 </li>
                             {% endfor %}
                         </ul>
@@ -109,7 +115,15 @@
         {% endif %}
 
         <div class="content-main">
-            <div class="page-header"><h1>{{ name }}</h1></div>
+            <div class="page-header">
+                <h1>
+                    {% if name == 'Api Root' %}
+                        API Menu
+                    {% else %}
+                        {{ name }}
+                    {% endif %}
+                </h1>
+            </div>
             {{ description }}
             <div class="request-info" style="clear: both" >
                 <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
