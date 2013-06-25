@@ -10,7 +10,7 @@ class CSVRenderer(BaseRenderer):
     Renderer which serializes to CSV
     """
 
-    media_type = 'text/json'
+    media_type = 'text/csv'
     format = 'csv'
     level_sep = '.'
     headers = None
