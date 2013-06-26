@@ -107,6 +107,8 @@ urlpatterns = patterns('',
     # media server
     (r'^profile/(?P<object_type>photos|audio|videos|snippets|attachments|map-images|prints|tables)/(?P<hash>[=\w]+)/$', 'localground.apps.site.views.mediaserver.serve_media'),
   
-    url(r'^', include('localground.apps.site.api.urls')),
+    #url(r'^', include('localground.apps.site.api.urls')),
+    
+    url(r'^api/0/', include('localground.apps.site.api.urls')),
     
 )

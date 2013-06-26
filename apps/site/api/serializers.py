@@ -1,10 +1,26 @@
 from django.forms import widgets
 from rest_framework import serializers
 from localground.apps.site.models import Photo, Audio, Project
+from django.contrib.auth.models import User, Group
 from django.db.models.fields import Field
+from localground.apps.site.widgets import TagAutocomplete
+
 
 class BaseSerializer(serializers.HyperlinkedModelSerializer):
-    owner_id = serializers.Field(source='owner.username')
+    class OwnerField(serializers.WritableField):
+        """
+        Color objects are serialized into "rgb(#, #, #)" notation.
+        """
+        def to_native(self, obj):
+            return obj.id
+    
+        def from_native(self, data):
+            return User.objects.get(id=int(data))
+        
+        
+    owner_id = OwnerField(source='owner')
+    tags = serializers.CharField(widget=TagAutocomplete, help_text='Tag your object here')
+    
     project_id = serializers.Field(source='project.id')
     file_name = serializers.Field(source='file_name_new')
     caption = serializers.Field(source='description')
@@ -60,16 +76,27 @@ class PhotoSerializer(BaseSerializer):
         return obj.encrypt_url(obj.file_name_marker_sm)
 
 class AudioSerializer(BaseSerializer):
-    
     class Meta(BaseSerializer.Meta):
         model = Audio
         fields = BaseSerializer.fields
         depth = 1
-             
-class ProjectSerializer(serializers.HyperlinkedModelSerializer):
+        
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ('url', 'username', 'email', 'groups')
+
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('name', )
+        
+class ProjectSerializer(BaseSerializer):
     
     class Meta:
         model = Project
-        fields = ('id', 'name', 'description', 'tags', 'owner')
+        fields = ('id', 'name', 'description', 'tags', 'owner', 'owner_id', 'slug')
+        read_only_fields = ('owner',)
+        exclude = ('last_updated_by',)
         depth = 1
         

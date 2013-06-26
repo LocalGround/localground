@@ -30,7 +30,7 @@
                 {% if '/accounts/' in path %}
                     <!-- do nothing -->
                 {% else %}
-                    <form action="{% url django.contrib.auth.views.login %}" class="pull-right" method="POST">
+                    <form action="{% url "django.contrib.auth.views.login" %}" class="pull-right" method="POST">
                         {% csrf_token %}
                         <input class="input-small" type="text" placeholder="Username">
                         <input class="input-small" type="password" placeholder="Password">

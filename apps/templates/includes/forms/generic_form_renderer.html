@@ -1,6 +1,6 @@
 <fieldset id="params">
+{% csrf_token %}
 {% for field in form %}
-
     {% if not field.is_hidden or show_hidden_fields %}
     <div class="clearfix{% if field.errors %} error{% endif %}">
         {{ field.label_tag }}
@@ -17,11 +17,3 @@
     {% endif %}
 {% endfor %}
 </fieldset>
-{% comment %}
-<div class="clearfix">
-    <label>&nbsp;</label>
-    <div class="input">
-        <input type="submit" value="Save"  class="btn primary" />
-    </div>
-</div>
-{% endcomment %}
