@@ -14,12 +14,17 @@ class FieldTypes(object):
     FLOAT = 'float'
     
 class QueryField(object):
-    def __init__(self, col_name, id=None, title=None, data_type=None, operator='='):
+    def __init__(self, col_name, id=None, title=None, data_type=None, operator='=',
+                    django_col_name=None):
         self.id = id
         self.col_name = col_name
         self.title = title
         self.data_type = data_type
         self.operator = operator
+        self.django_col_name = col_name
+        if self.django_col_name is None:
+            self.django_col_name = col_name   
+            
         
     def __repr__(self):
         return str(self.to_dict())
@@ -34,7 +39,8 @@ class QueryField(object):
 class WhereCondition(QueryField):
     
     def __init__(self, col_name, id=None, title=None, data_type=FieldTypes.STRING,
-                                    operator='=', conjunction='AND', val=None):
+                                    operator='=', django_col_name=None,
+                                    conjunction='AND', val=None):
         
         super(WhereCondition, self).__init__(col_name, id=id, title=title,
                                 data_type=FieldTypes.STRING, operator=operator)
@@ -88,56 +94,84 @@ class WhereCondition(QueryField):
         
     def get_expression(self, cls=None):
         if cls is not None:
-            self.col_name = cls.get_field_by_id(self.col_name).col_name
-        col_name = '%s%s' % (self.col_name, self.get_django_operator())
+            #one last check to make sure the field being queried is valid:
+            legitimate_field = cls.get_field_by_name(self.col_name, self.operator)
+            if legitimate_field is None:
+                raise Exception('The column name "%s" is invalid' % self.col_name)
+        col_name = '%s%s' % (legitimate_field.django_col_name, self.get_django_operator())
+        if col_name.find('tags') != -1:
+            return {'tags__regex': r'^(%s)' % '|'.join(['.*%s.*' % v for v in self.value]) }
         return { col_name: self.value}
     
     def parse_value(self, val):
+        '''
+        Based on the value of each query parameter, this method will detect
+        and convert the parameter according to the appropriate data type.
+        '''
         if val is None: return
         if isinstance(val, list):
-            val = [self.parse_value(v) for v in val]
-            self.value = val
-            self.value_original = ', '.join([str(v) for v in val])
-            self.data_type = FieldTypes.LIST
+            self.parse_list(val)
             return
+        
         val = val.strip()
         if val[0] == '\'' and val[-1] == '\'':
             self.value = val[1:-1]
             self.data_type = FieldTypes.STRING
-            
             if self.operator == 'LIKE':
-                #make the "like" operator django-compatible
-                if self.value[0] == '%' and self.value[-1] == '%':
-                    self.value = self.value[1:-1]
-                elif self.value[0] == '%':
-                    self.value = self.value[1:]
-                    self.operator = 'ENDS'
-                elif self.value[-1] == '%':
-                    self.value = self.value[:-1]
-                    self.operator = 'STARTS'
-                else:
-                    self.operator = '='
+                self.parse_like_clause()
             else:
-                #see if the string is a date:
-                for format in settings.DATE_INPUT_FORMATS + settings.DATETIME_INPUT_FORMATS:
-                    try:
-                        self.value = datetime.strptime(self.value, format)
-                        self.data_type = FieldTypes.DATE
-                        break
-                    except: pass
+                self.parse_date()
         else:
-            if val.find('.') != -1:
-                try:
-                    self.value = float(val)
-                    self.data_type = FieldTypes.FLOAT
-                except: pass
-            else:
-                try:
-                    self.value = int(val)
-                    self.data_type = FieldTypes.INTEGER
-                except: pass
+            self.parse_numeric(val)
         self.value_original = self.value
         return self.value
+    
+    def parse_list(self, val):
+        '''
+        converts the value to a list of values
+        '''
+        val = [self.parse_value(v) for v in val]
+        self.value = val
+        self.value_original = ', '.join([str(v) for v in val])
+        self.data_type = FieldTypes.LIST
+        
+    def parse_like_clause(self):
+        '''
+        make the "like" operator django-compatible
+        '''
+        if self.value[0] == '%' and self.value[-1] == '%':
+            self.value = self.value[1:-1]
+        elif self.value[0] == '%':
+            self.value = self.value[1:]
+            self.operator = 'ENDS'
+        elif self.value[-1] == '%':
+            self.value = self.value[:-1]
+            self.operator = 'STARTS'
+        else:
+            self.operator = '='
+            
+    def parse_date(self):
+        '''
+        Parses the value as a date, if applicable
+        '''
+        for format in settings.DATE_INPUT_FORMATS + settings.DATETIME_INPUT_FORMATS:
+            try:
+                self.value = datetime.strptime(self.value, format)
+                self.data_type = FieldTypes.DATE
+                break
+            except: pass
+            
+    def parse_numeric(self, val):
+        if val.find('.') != -1:
+            try:
+                self.value = float(val)
+                self.data_type = FieldTypes.FLOAT
+            except: pass
+        else:
+            try:
+                self.value = int(val)
+                self.data_type = FieldTypes.INTEGER
+            except: pass
     
 class OrderingCondition(QueryField):
     
@@ -145,7 +179,8 @@ class OrderingCondition(QueryField):
                                     direction='asc'):
         
         super(WhereCondition, self).__init__(col_name, id=id, title=title,
-                                data_type=FieldTypes.STRING, operator=None)
+                                data_type=FieldTypes.STRING, operator=None,
+                                 django_col_name=None)
 
 class QueryParser(object):
     error = False
@@ -162,9 +197,10 @@ class QueryParser(object):
                 self.error = True
                 self.error_message = 'Invalid query "%s"' % self.query_text
         
-    def get_condition(self, col_name):
+    def get_condition(self, col_name, operator):
         for c in self.where_conditions:
-            if c.col_name == col_name:
+            if c.col_name.lower() == col_name.lower() and \
+                c.operator.lower() == operator.lower():
                 return c
         return None
         
@@ -200,7 +236,7 @@ class QueryParser(object):
             if isinstance(t, Comparison):
                 children = [str(c) for c in self.remove_whitespaces(t.tokens)]
                 wc = WhereCondition(children[0], operator=children[1], val=children[2])
-                if i > 0: wc.conjunction = str(tokens[i-1])
+                if len(self.where_conditions) > 0: wc.conjunction = str(tokens[i-1])
                 self.where_conditions.append(wc)
                 
             elif t.ttype == T.Keyword:
@@ -208,24 +244,25 @@ class QueryParser(object):
                 if str(t) == 'IN':
                     lst = str(self.remove_whitespaces(tokens[i+1].tokens)[1]).split(',')
                     wc = WhereCondition(str(tokens[i-1]), operator='IN', val=lst)
-                    if i > 0: wc.conjunction = str(tokens[i-2])
+                    if len(self.where_conditions) > 0: wc.conjunction = str(tokens[i-2])
                     self.where_conditions.append(wc)
                     
                 #parse "like" clauses:
                 elif str(t) == 'LIKE':
                     wc = WhereCondition(str(tokens[i-1]), operator='LIKE', val=str(tokens[i+1]))
-                    if i > 0: wc.conjunction = str(tokens[i-2])
+                    if len(self.where_conditions) > 0: wc.conjunction = str(tokens[i-2])
                     self.where_conditions.append(wc)
              
     def extend_query(self, q):
         from django.db.models import Q
         args = Q(**self.where_conditions[0].get_expression(q.model))
-        for i in range(1, len(self.where_conditions)):
-            c = self.where_conditions[i]
-            if c.conjunction == 'AND':
-                args = args & Q(**c.get_expression(q.model))
-            else: #OR condition:
-                args = args | Q(**c.get_expression(q.model))
+        if len(self.where_conditions) > 1:
+            for i in range(1, len(self.where_conditions)):
+                c = self.where_conditions[i]
+                if c.conjunction == 'AND':
+                    args = args & Q(**c.get_expression(q.model))
+                else: #OR condition:
+                    args = args | Q(**c.get_expression(q.model))
         
         q = q.filter(args)
         return q

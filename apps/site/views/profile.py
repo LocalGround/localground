@@ -162,7 +162,7 @@ def object_list_form(request, object_type_plural, return_message=None):
     has_filters = False
     if query is not None:
         for i in range(0, len(filter_fields)):
-            field = query.get_condition(filter_fields[i].col_name)
+            field = query.get_condition(filter_fields[i].col_name, filter_fields[i].operator)
             if field is not None:
                 has_filters = True
                 field.update(filter_fields[i])

@@ -70,9 +70,10 @@ class BaseAudit(Base):
         ]
         
     @classmethod
-    def get_field_by_id(cls, id):
+    def get_field_by_name(cls, name, operator='='):
         for f in cls.filter_fields():
-            if f.id == id: return f
+            if f.col_name == name and f.operator.lower() == operator.lower():
+                return f
         return None
         
     

@@ -26,7 +26,7 @@ localground.profile.prototype.initialize = function(opts) {
 			if($(this).val().length > 0) {
 				if(sql.length > 0)
 					sql += ' and ';
-				sql += $(this).attr('id') + ' ' + $(this).attr('data-operator') + ' ';
+				sql += $(this).attr('name') + ' ' + $(this).attr('data-operator') + ' ';
 				switch($(this).attr('data-operator').toLowerCase()) {
 					case 'like':
 						val	= '\'%' + $(this).val() + '%\'';

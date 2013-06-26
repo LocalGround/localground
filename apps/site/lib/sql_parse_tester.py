@@ -56,20 +56,27 @@ def parse_where_clause(tokens):
 			children[2] = parse_value(children[2])
 			if i > 0:
 				children.insert(0, str(tokens[i-1]))
-			where_conditions.append(dict(zip(keys, children)))
+				print 'adding conjunction: %s' % (tokens[i-1])
+				where_conditions.append(dict(zip(keys, children)))
+			else:
+				where_conditions.append(dict(zip(['col_name', 'operator', 'value'], children)))
 		elif t.ttype == T.Keyword:
 			#parse "in" clauses:
 			if str(t) == 'IN':
 				lst = str(remove_whitespaces(tokens[i+1].tokens)[1]).split(',')
 				lst = [parse_value(l) for l in lst]
 				children = [str(tokens[i-1]), str(t), lst]
-				if i > 0:
+				if len(where_conditions) > 0:
+					print len(where_conditions)
+					print 'adding conjunction: %s' % (tokens[i-1])
 					children.insert(0, str(tokens[i-1]))
 				where_conditions.append(dict(zip(keys, children)))
 			#parse "like" clauses:
 			elif str(t) == 'LIKE':
 				children = [str(tokens[i-1]), str(t), parse_value(str(tokens[i+1]))]
-				if i > 0:
+				if len(where_conditions) > 0:
+					print len(where_conditions)
+					print 'adding conjunction: %s' % (tokens[i-1])
 					children.insert(0, str(tokens[i-1]))
 				where_conditions.append(dict(zip(keys, children)))
 
@@ -97,6 +104,8 @@ if __name__ == '__main__':
 
 	sql = "where c in ('larry','curly', '2/2/2012') and d in (1,2,3) or f = 'g' and g != 123 and n like '%abc%' order by a, b, group by a, b;"
 	sql = "SELECT * FROM photo WHERE name like 'ss' or tags in ('a', 'b', 'c') and date_created >= '06/02/2013'"
+	sql = "SELECT * FROM photo WHERE description like '%sadasd%' and date_created >= '06/30/2013' and date_created <= '06/02/2013'"
+	sql = "SELECT * FROM photo WHERE date_created >= '06/02/2013'"
 	sql = sqlparse.format(sql, reindent=False, keyword_case='upper')
 	statement = sqlparse.parse(sql)[0]
 	where_clause = None
