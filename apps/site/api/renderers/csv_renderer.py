@@ -1,11 +1,8 @@
 import csv
-from collections import defaultdict
-from rest_framework.renderers import *
 from StringIO import StringIO
-from django.template import RequestContext
-from rest_framework_csv.orderedrows import OrderedRows
+from rest_framework import renderers
 
-class CSVRenderer(BaseRenderer):
+class CSVRenderer(renderers.BaseRenderer):
     """
     Renderer which serializes to CSV
     """
@@ -71,5 +68,4 @@ class CSVRenderer(BaseRenderer):
         rows.append(keys)  
         rows.append(self.get_row(d, keys))
         return rows
-    
-    
+   

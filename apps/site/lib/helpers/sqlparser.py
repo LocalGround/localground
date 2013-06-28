@@ -23,18 +23,23 @@ class QueryField(object):
         self.operator = operator
         self.django_col_name = col_name
         if self.django_col_name is None:
-            self.django_col_name = col_name   
+            self.django_col_name = col_name
+        #self.value = None
             
         
     def __repr__(self):
         return str(self.to_dict())
         
     def to_dict(self):
-        return {
+        d = {
             'col_name': self.col_name,
             'id': self.id,
-            'title': self.title
+            'title': self.title,
+            'operator': self.operator
         }
+        #if self.value is not None:
+        #d.update({ 'value': self.value })
+        return d    
 
 class WhereCondition(QueryField):
     
@@ -71,6 +76,7 @@ class WhereCondition(QueryField):
     def update(self, query_field):
         self.id = query_field.id
         self.title = query_field.title
+        self.value = query_field.value
     
     def get_django_operator(self):
         sql_lookup = {
@@ -93,12 +99,16 @@ class WhereCondition(QueryField):
         return lookup[self.operator]
         
     def get_expression(self, cls=None):
+        '''
         if cls is not None:
             #one last check to make sure the field being queried is valid:
             legitimate_field = cls.get_field_by_name(self.col_name, self.operator)
             if legitimate_field is None:
-                raise Exception('The column name "%s" is invalid' % self.col_name)
+                raise Exception('The column name "%s" is invalid\n%s\n%s\n%s' % \
+                                (self.col_name, str(cls.filter_fields()), self.col_name, self.operator))
         col_name = '%s%s' % (legitimate_field.django_col_name, self.get_django_operator())
+        '''
+        col_name = '%s%s' % (self.django_col_name, self.get_django_operator())
         if col_name.find('tags') != -1:
             return {'tags__regex': r'^(%s)' % '|'.join(['.*%s.*' % v for v in self.value]) }
         return { col_name: self.value}
@@ -185,7 +195,8 @@ class OrderingCondition(QueryField):
 class QueryParser(object):
     error = False
     
-    def __init__(self, query_text, debug=True):
+    def __init__(self, model_class, query_text, debug=True):
+        self.model_class = model_class
         self.query_text = query_text
         self.where_conditions = []
         if debug:
@@ -197,7 +208,7 @@ class QueryParser(object):
                 self.error = True
                 self.error_message = 'Invalid query "%s"' % self.query_text
         
-    def get_condition(self, col_name, operator):
+    def get_field(self, col_name, operator):
         for c in self.where_conditions:
             if c.col_name.lower() == col_name.lower() and \
                 c.operator.lower() == operator.lower():
@@ -220,13 +231,15 @@ class QueryParser(object):
         return stripped
     
     def parse(self):
+        if self.query_text is None:
+            return
         self.query_text = sqlparse.format(self.query_text, reindent=False, keyword_case='upper')
         statement = sqlparse.parse(self.query_text)[0]
         where_clause = None
         for i, t in enumerate(statement.tokens):
             if isinstance(t, Where):
                 where_clause =  t
-            #break
+        if where_clause is None: return
             
         tokens = self.remove_whitespaces(where_clause.tokens)
         tokens.pop(0)
@@ -255,6 +268,8 @@ class QueryParser(object):
              
     def extend_query(self, q):
         from django.db.models import Q
+        if len(self.where_conditions) == 0:
+            return q
         args = Q(**self.where_conditions[0].get_expression(q.model))
         if len(self.where_conditions) > 1:
             for i in range(1, len(self.where_conditions)):
@@ -266,5 +281,19 @@ class QueryParser(object):
         
         q = q.filter(args)
         return q
+    
+    def populate_filter_fields(self):
+        '''
+        Populates the UI filter fields with data, if applicable
+        '''
+        filter_fields = self.model_class.filter_fields()
+        for i in range(0, len(filter_fields)):
+            field = self.get_field(filter_fields[i].col_name, filter_fields[i].operator)
+            if field is not None:
+                #field.update(filter_fields[i])
+                filter_fields[i] = field
+        return filter_fields
+        
+    
         
         

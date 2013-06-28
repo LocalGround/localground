@@ -83,7 +83,7 @@ localground.uploader.prototype.initialize = function(opts) {
         },
         submit: function (e, data) {
             var token = $('input[name="csrfmiddlewaretoken"]').val();
-            alert(token);
+            //alert(token);
             data.formData = {
                 media_type: self.options.mediaType,
                 project_id: $('#project').val(),

@@ -16,9 +16,9 @@ router.register(r'groups', views.GroupViewSet)
 # Additionally, we include the login URLs for the browseable API.
 urlpatterns = patterns('',
     url(r'^', include(router.urls[1:])), # a hack to include both ViewSets and views on the front page
-    url(r'^', views.api_root),
     url(r'^projects/(?P<pk>[0-9]+)/$', views.ProjectDetail.as_view(), name='project-detail'),
     url(r'^projects/', views.ProjectList.as_view(), name='project-list'),
+    url(r'^', views.api_root),
 )
 
 

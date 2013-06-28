@@ -50,11 +50,7 @@ class Photo(BasePoint, BaseUploadedMedia):
         '''
         Convenience Function for the template
         '''
-        return self.encrypt_url(self.file_name_large)
-        
-    def encrypt_url(self, file_name):
-        #return self.virtual_path + file_name
-        return self._encrypt_media_path(self.virtual_path + file_name)    
+        return self.encrypt_url(self.file_name_large)   
         
     def delete(self, *args, **kwargs):
         #remove images from file system:

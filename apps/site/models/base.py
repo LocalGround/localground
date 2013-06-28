@@ -188,6 +188,10 @@ class BaseUploadedMedia(BaseNamedMedia):
         #return path
         return 'http://%s/profile/%s/%s/' % (host, self.name_plural.replace(' ', '-'), base64.b64encode(path))
          
+    def encrypt_url(self, file_name):
+        #return self.virtual_path + file_name
+        return self._encrypt_media_path(self.virtual_path + file_name)
+        
     def make_directory(self, path):
         from pwd import getpwnam
         os.makedirs(path) #create new directory

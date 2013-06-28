@@ -76,10 +76,15 @@ class PhotoSerializer(BaseSerializer):
         return obj.encrypt_url(obj.file_name_marker_sm)
 
 class AudioSerializer(BaseSerializer):
+    
+    file_path = serializers.SerializerMethodField('get_file_path')
     class Meta(BaseSerializer.Meta):
         model = Audio
-        fields = BaseSerializer.fields
+        fields = BaseSerializer.fields + ('file_path',)
         depth = 1
+        
+    def get_file_path(self, obj):
+        return obj.encrypt_url(obj.file_name_new)
         
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

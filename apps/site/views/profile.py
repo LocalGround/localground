@@ -86,7 +86,7 @@ def object_list_form(request, object_type_plural, return_message=None):
     
     query = None
     if r.get('query') is not None and len(r.get('query').strip()) > 0:
-        query = QueryParser(r.get('query'))
+        query = QueryParser(ModelClass, r.get('query'))
         #return HttpResponse(json.dumps(query.to_dict_list()))
         if query.error:
             context.update({'error_message': query.error_message})
@@ -159,18 +159,13 @@ def object_list_form(request, object_type_plural, return_message=None):
         'object_type': ModelClass.name,
         'filter_fields': filter_fields
     })
-    has_filters = False
+
     if query is not None:
-        for i in range(0, len(filter_fields)):
-            field = query.get_condition(filter_fields[i].col_name, filter_fields[i].operator)
-            if field is not None:
-                has_filters = True
-                field.update(filter_fields[i])
-                filter_fields[i] = field
+        filter_fields = query.populate_filter_fields()
         context.update({
             'filter_fields': filter_fields,
             'sql': query.query_text,
-            'has_filters': has_filters,
+            'has_filters': len(query.where_conditions) > 0,
             'url': '%s?query=%s' % (ModelClass.listing_url(), query.query_text),
         })
     context.update(prep_paginator(request, objects, per_page=per_page))

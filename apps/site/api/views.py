@@ -1,9 +1,9 @@
 from localground.apps.site.api import serializers
 from localground.apps.site.api.permissions import IsOwnerOrReadOnly
+from localground.apps.site.api.filters import SQLFilterBackend
 from localground.apps.site.models import Photo, Audio, Project
 from django.contrib.auth.models import User, Group
 from rest_framework import generics, renderers, permissions, viewsets
-from rest_framework import renderers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import django_filters
 from rest_framework.response import Response
@@ -33,6 +33,7 @@ class PhotoViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PhotoSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
+    filter_backends = (SQLFilterBackend,)
 
     def pre_save(self, obj):
         obj.owner = self.request.user
@@ -43,30 +44,13 @@ class AudioViewSet(viewsets.ModelViewSet):
     """
     queryset = Audio.objects.all()
     serializer_class = serializers.AudioSerializer
- 
-class ProjectFilter(django_filters.FilterSet):
-    class Meta:
-        model = Project
-        fields = ['name', 'tags', 'id']
+    filter_backends = (SQLFilterBackend,)
         
-'''
-class ProjectViewSet(viewsets.ModelViewSet):
-    model = Project
-    serializer_class = serializers.ProjectSerializer
-    filter_class = ProjectFilter
-    search_fields = ('name', 'tags')
-
-    def get_queryset(self):
-        """
-        This view should return a list of all the purchases
-        for the currently authenticated user.
-        """
-        user = self.request.user
-        return Project.objects.filter(owner=user)
-'''
 class ProjectList(generics.ListCreateAPIView):
     serializer_class = serializers.ProjectSerializer
     permission_classes = (IsOwnerOrReadOnly,)
+    filter_backends = (SQLFilterBackend,)
+
     paginate_by = 100
     
     def get_queryset(self):
@@ -106,3 +90,20 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = serializers.GroupSerializer
+    
+    
+'''
+class ProjectViewSet(viewsets.ModelViewSet):
+    model = Project
+    serializer_class = serializers.ProjectSerializer
+    filter_class = ProjectFilter
+    search_fields = ('name', 'tags')
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        return Project.objects.filter(owner=user)
+'''

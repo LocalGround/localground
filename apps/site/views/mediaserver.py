@@ -25,7 +25,7 @@ def serve_media(request, object_type, hash):
         if object_type in ['photos', 'snippets', 'attachments', 'map-images']:
             content_type = 'image/%s' % \
                     (relative_image_path.split('.')[-1]).replace('jpg', 'jpeg')
-        elif object_type == 'audio-files':
+        elif object_type.find('audio') != -1:
             content_type = 'audio/mpeg3'
         elif object_type == 'videos':
             content_type = 'application/octet-stream'
