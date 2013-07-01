@@ -6,16 +6,50 @@
 {% endblock %}
 
 {% block style_links %}
-    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap-tweaks.css" %}"/>
+    <!-- link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap-tweaks.css" %}"/ -->
     <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
+    <!-- link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/ -->
     <link href="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
     <link href="/static/css/themes/bootstrap/jquery-ui-1.8.16.custom.css" type="text/css" media="all" rel="stylesheet" />
     <link href="/static/css/themes/bootstrap/timepicker.css" type="text/css" media="all" rel="stylesheet" />
 
 {% endblock %}
+{% block extra_styles %}
+    body{
+        background: url("/static/rest_framework/img/grid.png") repeat-x;
+        background-attachment: fixed;
+    }
+    body, .navbar .navbar-inner .container-fluid {
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+    ul.breadcrumb { margin: 15px 0 0 0; }
+    .form-switcher { margin-bottom: 0; }
+
+    .well {
+        -webkit-box-shadow: none;
+           -moz-box-shadow: none;
+            box-shadow: none;
+    }
+    .well .form-actions { padding-bottom: 0; margin-bottom: 0; }
+    .well form { margin-bottom: 0; }
+    .well form .help-block { color: #999; }
+    .nav-tabs { border: 0; }
+    .nav-tabs > li { float: right;}
+    .nav-tabs li a { margin-right: 0;}
+    .nav-tabs > .active > a { background: #f5f5f5; }
+    .nav-tabs > .active > a:hover { background: #f5f5f5; }
+    .tabbable.first-tab-active .tab-content { border-top-right-radius: 0; }
+    .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
+            border-color: #eeeeee #eeeeee #dddddd;
+            background-color: #eee !important;
+            color: #0069d6 !important;
+    }
+{% endblock %}
+
 {% block script_links %}
     <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
+    <script src="{{ JQUERY_UI_PATH }}"></script>
     <script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
     <script type="text/javascript" src="/static/scripts/thirdparty/jquery.ui.timepicker.js"></script>
 {% endblock %}
@@ -55,11 +89,8 @@
             <form id="get-form" class="pull-right">
                 <fieldset>
                     <div class="btn-group format-selection">
-                        <a class="btn primary" href='{{ request.get_full_path }}' rel="nofollow">GET</a>
-
-                        <button class="btn primary dropdown-toggle" data-toggle="dropdown" title="Specify a format for the GET request">
-                            <span class="caret"></span>
-                        </button>
+                        <a class="btn primary dropdown-toggle" data-toggle="dropdown" title="Specify a format for the GET request"
+                           rel="nofollow">GET <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             {% for format in available_formats %}
                                 <li>
@@ -82,6 +113,18 @@
                 </fieldset>
             </form>
         {% endif %}
+        
+        <form id="filter-form" class="pull-right" style="margin-right:5px;">
+            <fieldset>
+                <div class="btn-group">
+                    <a class="btn info dropdown-toggle" href='#' data-toggle="dropdown">
+                        <i class="icon-dark icon-filter"></i> FILTER
+                        <span class="caret"></span>
+                    </a>
+                    {% include "includes/profile/filter_menu.html" %}
+                </div>
+            </fieldset>
+        </form>
 
         {% if delete_form %}
             <form class="button-form" style="margin-right:5px;" action="{{ request.get_full_path }}" method="POST" class="pull-right">

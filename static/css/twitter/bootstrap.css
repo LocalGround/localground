@@ -1516,6 +1516,11 @@ a.menu:after, .dropdown-toggle:after {
   -moz-background-clip: padding-box;
   background-clip: padding-box;
 }
+
+.dropdown-menu.pull-right {
+  right: 0;
+  left: auto;
+}
 .menu-dropdown li, .dropdown-menu li, .dropdown-menu-inner li, #printList li,
 	#groupList li, #mediaList li {
   float: none;
@@ -1626,7 +1631,8 @@ a.menu:after, .dropdown-toggle:after {
   border: 1px solid #ddd;
   border-bottom-color: transparent;
 }
-.tabs .menu-dropdown, .tabs .dropdown-menu {
+.tabs .menu-dropdown, .tabs .dropdown-menu, .nav-tabs .menu-dropdown,
+  .nav-tabs .dropdown-menu {
   top: 35px;
   border-width: 1px;
   -webkit-border-radius: 0 6px 6px 6px;

@@ -36,10 +36,13 @@
 #filter-menu {
     width: 480px;
     max-width: 600px;
+    margin-top:1px;
+    border-top: solid 1px #ddd;
 }
 #filter-menu .clearfix {
     width: 220px;
     display: inline-block;
+    margin: 2px 0px 2px 0px !important;
 }
 #filter-menu label { width: 75px; }
 #filter-menu .input { margin-left: 80px; }
