@@ -45,6 +45,8 @@
             background-color: #eee !important;
             color: #0069d6 !important;
     }
+    .clearfix { margin: 4px 0px 4px 0px !important; }
+    fieldset { padding: 0px !important; margin: 0px !important; }
 {% endblock %}
 
 {% block script_links %}
@@ -52,6 +54,7 @@
     <script src="{{ JQUERY_UI_PATH }}"></script>
     <script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
     <script type="text/javascript" src="/static/scripts/thirdparty/jquery.ui.timepicker.js"></script>
+    <script type="text/javascript" src="/static/scripts/helpers/filtermenu.js"></script>
 {% endblock %}
 {% block pageload_scripts %}
     prettyPrint();                       
@@ -62,6 +65,13 @@
         $(e.target).parents('.tabbable').removeClass('first-tab-active');
     });
     $('.form-switcher a:first').tab('show');
+    {% if has_filters %}
+        var filtermenu = new ui.filtermenu({
+            object_type: '{{ object_type }}',
+            rawURL: '{{ request.path }}'
+        });
+        filtermenu.initialize();
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -114,18 +124,20 @@
             </form>
         {% endif %}
         
-        <form id="filter-form" class="pull-right" style="margin-right:5px;">
-            <fieldset>
-                <div class="btn-group">
-                    <a class="btn info dropdown-toggle" href='#' data-toggle="dropdown">
-                        <i class="icon-dark icon-filter"></i> FILTER
-                        <span class="caret"></span>
-                    </a>
-                    {% include "includes/profile/filter_menu.html" %}
-                </div>
-            </fieldset>
-        </form>
-
+        {% if has_filters %}
+            <form id="filter-form" class="pull-right" style="margin-right:5px;">
+                <fieldset>
+                    <div class="btn-group">
+                        <a class="btn info dropdown-toggle" href='#' data-toggle="dropdown">
+                            <i class="icon-dark icon-filter"></i> FILTER
+                            <span class="caret"></span>
+                        </a>
+                        {% include "includes/filter_menu.html" %}
+                    </div>
+                </fieldset>
+            </form>
+        {% endif %}
+        
         {% if delete_form %}
             <form class="button-form" style="margin-right:5px;" action="{{ request.get_full_path }}" method="POST" class="pull-right">
                 <fieldset>
@@ -147,6 +159,10 @@
                 </h1>
             </div>
             {{ description }}
+            <div class="row">
+                {% include "includes/messages.html" %}
+                {% include "includes/selected_filters.html" %}
+            </div>
             <div class="request-info" style="clear: both" >
                 <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
             </div>

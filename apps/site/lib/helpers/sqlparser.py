@@ -76,7 +76,7 @@ class WhereCondition(QueryField):
     def update(self, query_field):
         self.id = query_field.id
         self.title = query_field.title
-        self.value = query_field.value
+        #self.value = query_field.value
     
     def get_django_operator(self):
         sql_lookup = {
@@ -290,7 +290,7 @@ class QueryParser(object):
         for i in range(0, len(filter_fields)):
             field = self.get_field(filter_fields[i].col_name, filter_fields[i].operator)
             if field is not None:
-                #field.update(filter_fields[i])
+                field.update(filter_fields[i])
                 filter_fields[i] = field
         return filter_fields
         

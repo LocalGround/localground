@@ -11,6 +11,7 @@
 	<script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
 	<script type="text/javascript" src="/static/scripts/thirdparty/jquery.ui.timepicker.js"></script>
 	<script type="text/javascript" src="/static/scripts/helpers/dialog.js"></script>
+	<script type="text/javascript" src="/static/scripts/helpers/filtermenu.js"></script>
 {% endblock %}
 {% block pageload_scripts %}
 	var opts = {
@@ -108,7 +109,7 @@
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 						<i class="icon-dark icon-filter"></i> Filter
 					</a>
-					{% include "includes/profile/filter_menu.html" %}
+					{% include "includes/filter_menu.html" %}
 				</li>
 				{% include "includes/profile/impersonation.html" %}
 			</ul>
@@ -130,27 +131,7 @@
 		<div class="row">
 			{% include "includes/messages.html" %}
 			
-			<!-- Filters -->
-			{% if has_filters %}
-			<div class="alert alert-muted" style="padding-right: 18px;">
-				<strong>Filters:</strong>
-				{% for ff in filter_fields %}
-					{% if ff.value %}
-					<div class="filter info">{{ff.title|lower}}: 
-						{%if ff.data_type == 'date' %}
-							{{ ff.value_original|date:"m/d/Y" }}
-                        {% else %}
-							{{ ff.value_original }}
-                        {% endif %}
-						<a class="remove-filter" id="remove_{{ff.id}}" href="#"
-								data-target="{{ff.id}}" title="remove filter">×</a>
-					</div>
-					{% endif %}
-				{% endfor %}
-				<a style="float:right;cursor:pointer" id="remove-filters"
-							href="#" title="remove all filters">remove all</a>
-			</div>
-			{% endif %}
+			{% include "includes/selected_filters.html" %}
 		</div>
 		
 		<!-- render table or "no data found" message -->

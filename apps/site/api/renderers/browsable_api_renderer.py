@@ -75,7 +75,10 @@ class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
             model = view.queryset.model or view.model
             query = QueryParser(model, r.get('query'))
             context.update({
-                'filter_fields': query.populate_filter_fields()
+                'filter_fields': query.populate_filter_fields(),
+                'object_type': model.name,
+                'object_name_plural': model.name_plural,
+                'has_filters': True
             })  
         except Exception:
             context.update({

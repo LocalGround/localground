@@ -1,6 +1,6 @@
 <ul id="filter-menu" class="dropdown-menu {% if allowed_methods %}pull-right{% endif %}" style="max-height: 300px;">
     <li class="clearfix">
-        <div style="margin-left: 10px;">Filter project</div>
+        <div style="margin-left: 10px;">Filter {{ object_name_plural|capfirst }}</div>
     </li>
     <li class="divider"></li>
     {% for ff in filter_fields %}

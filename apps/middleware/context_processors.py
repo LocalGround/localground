@@ -7,12 +7,14 @@ def persistant_queries(request):
     which are available to the interactive map.
     """
     from localground.apps.site.models import WMSOverlay
+    from localground.apps.site.models import Project
     import simplejson as json
     from django.conf import settings
     
     context = {
         'path': request.path,
         'user': request.user,
+        'projects': Project.objects.get_objects(request.user),
         #'groups': request.user.groups.all(),
         'is_authenticated': request.user.is_authenticated(),
         'is_impersonation': request.session.get('active_impersonation') is not None,
