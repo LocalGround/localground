@@ -4,8 +4,8 @@
 **/
 localground.photo = function(opts){
     $.extend(this, opts);
-	this.managerID = this.overlayType = self.overlayTypes.PHOTO;
-    this.iframeURL = '/scans/update-' + this.overlayType + '/embed/?id=' + this.id;
+	this.managerID = this.overlay_type = self.overlay_types.PHOTO;
+    this.iframeURL = '/scans/update-' + this.overlay_type + '/embed/?id=' + this.id;
     //initialize icons in the constructor:
     this.image = this.path_marker_sm;
     this.iconSmall = new google.maps.MarkerImage(this.path_marker_sm,

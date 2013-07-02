@@ -64,6 +64,3 @@ StamenType.prototype.getTile = function(coord, zoom, ownerDocument) {
     }).get(0);
 };
 StamenType.prototype.name = this.name;
-
-
-

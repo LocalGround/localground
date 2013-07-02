@@ -5,7 +5,7 @@
 localground.record = function(opts, color, tableID){
     this.fields = [];
     $.extend(this, opts);
-    this.overlayType = 'record';
+    this.overlay_type = 'record';
 	this.managerID = tableID;
     this.iframeURL = '/scans/update-record/embed/?id=' + this.id + '&form_id=' +
                         this.managerID;

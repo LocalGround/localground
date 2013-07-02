@@ -6,57 +6,14 @@
 localground.manager = function(){
     this.id;
 	this.name;
-	this.overlayType;
+	this.overlay_type;
 	this.data = [];
 };
 
-localground.manager.generate = function(candidate) {
-	/* static function */
-	if (candidate.length == 0) {
-	    return null;
-	}
-	this.overlayType = candidate[0].overlay_type;
-	//alert(this.overlayType);
-	//alert(JSON.stringify(candidate));
-	var manager = null;
-	switch(this.overlayType) {
-		case self.overlayTypes.PHOTO:
-			alert('photo manager');
-			manager = new localground.photoManager();
-			break;
-		case self.overlayTypes.AUDIO:
-			//alert('audio manager');
-			manager = new localground.audioManager();
-			break;
-		case self.overlayTypes.MARKER:
-			alert('marker manager');
-			manager = new localground.markerManager();
-			break;
-		case self.overlayTypes.SCAN:
-			alert('scan manager');
-			manager = new localground.scanManager();
-			break;
-		case self.overlayTypes.RECORD:
-			alert('record manager');
-			candidate.color = self.colors[self.colorIndex++];
-			manager = new localground.tableManager();
-			break;
-	}
-	manager.initialize({
-	    id: this.overlayType,
-	    name: this.overlayType.capitalize(),
-	    overlayType: this.overlayType,
-	    data: candidate
-	});
-	return manager;
-}
-
-
 localground.manager.prototype.initialize = function(opts) {
-    //alert(JSON.stringify(opts));
-	this.id = opts.id;
+    this.id = opts.id;
 	this.name = opts.name;
-	this.overlayType = opts.overlayType;
+	this.overlay_type = opts.overlay_type;
 	this.addRecords(opts.data);
 	this.renderOverlays();
 };
@@ -76,7 +33,7 @@ localground.manager.prototype.addDataContainer = function() {
     //add a section within the id="panel_record" div for the data:
     if(this.getListingContainer().get(0) == null) {
         var me = this;
-		alert(this.getObjectType());
+		//alert(this.getObjectType());
 		var $container = $('<div />').attr('id', 'panel_' + this.getObjectType())
 							.addClass('listing_container')
 							.css({
@@ -212,7 +169,7 @@ localground.manager.prototype.updateVisibility = function() {
 };
 
 localground.manager.prototype.getObjectType = function() {
-	return this.id;
+	return this.overlay_type;
 };
 
 localground.manager.prototype.getListingPanel = function() {

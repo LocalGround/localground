@@ -3,7 +3,7 @@ var show_markers = false;
 localground.viewer = function(){
 	self = this;
     this.projects = [];
-    this.overlayTypes = {
+    this.overlay_types = {
 		PHOTO: 'photo',
 		AUDIO: 'audio',
 		VIDEO: 'video',
@@ -45,24 +45,10 @@ localground.viewer.prototype = new localground.basemap();           // Here's wh
 localground.viewer.prototype.initialize=function(opts){
 	self = this;
 	$.extend(this, opts);
-	
-	$.ajaxSetup({
-		beforeSend: function(xhr, settings) {
-			alert(settings);
-			if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-				// Send the token to same-origin, relative URLs only.
-				// Send the token only if the method warrants CSRF protection
-				// Using the CSRFToken value acquired earlier
-				xhr.setRequestHeader("X-CSRFToken", csrftoken);
-			}
-		}
-	});
     
     localground.basemap.prototype.initialize.call(this, opts);
     
     this.map.mapTypeControlOptions.position = google.maps.ControlPosition.TOP_LEFT;
-	this.mapOptions.streetViewControl = true;
-	this.map.setOptions(this.mapOptions);
     
     $('input:checkbox')
         .attr('checked', false)
@@ -83,7 +69,7 @@ localground.viewer.prototype.initialize=function(opts){
 	
     $('.unhide').click(function() {
         var object_type = $(this).parent().attr('id').split('_')[1];
-        if(object_type == self.overlayTypes.RECORD) {
+        if(object_type == self.overlay_types.RECORD) {
             $('#panel_' + object_type).children().each(function() {
                 $(this).children().each(function() {
                     $(this).show();    
@@ -216,6 +202,16 @@ localground.viewer.prototype.initProjectsMenu = function() {
     }
 };
 
+localground.viewer.prototype.getManager = function(key) {
+	var d = { };
+	d[self.overlay_types.PHOTO] = new localground.photoManager();
+	d[self.overlay_types.AUDIO] = new localground.audioManager();
+	d[self.overlay_types.MARKER] = new localground.markerManager();
+	d[self.overlay_types.SCAN] = new localground.scanManager();
+	d[self.overlay_types.RECORD] = new localground.tableManager();
+	return d[key];
+};
+
 localground.viewer.prototype.toggleProjectData = function(groupID, groupType, 
 														  is_checked, turn_on_everything) {
 	if(is_checked) {
@@ -239,22 +235,23 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 					return;
 				}
 				$('#mode_toggle').show();
-				$.each(result, function(key, value) {
-					if (value instanceof Array) {
-						//alert(key + ': ' + JSON.stringify(value));
-						if(self.managers[value.overlay_type] == null) {
-							self.managers[value.overlay_type] = localground.manager.generate(this);
-							//turn everything on, if requested:
+				$.each(result, function(k, v) {
+					if (v.overlay_type) {
+						if(self.managers[v.overlay_type]) {
+							self.managers[v.overlay_type].addRecords(v.data);
+							self.managers[v.overlay_type].renderOverlays();
+						}
+						else {
+							//initialize new manager object:
+							self.managers[v.overlay_type] = self.getManager(v.overlay_type);
+							self.managers[v.overlay_type].initialize(v);
+							//turn everything on, if requested (from URL param):
 							if(turn_on_everything && (self.initProjectID != null || self.initViewID != null)) {
-								if(!$('#toggle_' + value.overlay_type + '_all').attr('checked')){
-									$('#toggle_' + value.overlay_type + '_all')
+								if(!$('#toggle_' + v.overlay_type + '_all').attr('checked')){
+									$('#toggle_' + v.overlay_type + '_all')
 										.attr('checked', true).trigger('change');	
 								}	
 							}
-						}
-						else {
-							self.managers[this.id].addRecords(this);
-							self.managers[this.id].renderOverlays();
 						}
 					}
 				});
@@ -307,7 +304,7 @@ localground.viewer.prototype.loadPrintForm = function(opts) {
         if($(this).attr('checked'))
             layer_overlays.push($(this).val());           
     });
-    $.each($('.cb_' + self.overlayTypes.SCAN), function() {
+    $.each($('.cb_' + self.overlay_types.SCAN), function() {
         if($(this).attr('checked'))
             scan_overlays.push($(this).val());           
     });

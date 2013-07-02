@@ -127,9 +127,33 @@ class ProjectSerializer(BaseSerializer):
 class ProjectDetailSerializer(BaseSerializer):
     photos = PhotoSerializer(many=True, read_only=True, source='photo')
     audio = AudioSerializer(many=True, read_only=True, source='audio')
+    managers = ('photos', 'audio')
     
     class Meta:
         model = Project
         fields = BaseSerializer.fields + ('slug', 'photos', 'audio')
         depth = 1
+        
+    def to_native(self, obj):
+        """
+        Overriding rest_framework.serializers.BaseSerializer's to_native
+        method in order to custom-serialize child media
+        """
+        ret = self._dict_class()
+        ret.fields = {}
+
+        for field_name, field in self.fields.items():
+            field.initialize(parent=self, field_name=field_name)
+            key = self.get_field_key(field_name)
+            value = field.field_to_native(obj, field_name)
+            if key in ProjectDetailSerializer.managers:
+                value = {
+                    'id': key,
+                    'name': key.title(),
+                    'overlay_type': field.Meta.model._meta.verbose_name,
+                    'data': value  
+                }
+            ret[key] = value
+            ret.fields[key] = field
+        return ret
         

@@ -1,3 +1,4 @@
+
 localground.photoManager = function(){
 	this.data = [];
 };
@@ -9,7 +10,6 @@ localground.photoManager.prototype.addRecords = function(data) {
     $.each(data, function(){
         me.data.push(new localground.photo(this));        
     });
-    alert('PHOTO DATA: ' + this.data);
 };
 
 localground.photoManager.prototype.makeViewable = function() {

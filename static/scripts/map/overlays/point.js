@@ -22,8 +22,7 @@ localground.point.prototype.renderOverlay = function(opts) {
     if(opts && opts.turnedOn)
         turnedOn = opts.turnedOn;
     if(this.point != null) {
-		alert(JSON.stringify(this.point));
-        if(this.googleOverlay == null) {
+		if(this.googleOverlay == null) {
             this.googleOverlay = new google.maps.Marker({
                 position: new google.maps.LatLng(this.point.lat, this.point.lng),
                 map: turnedOn ? self.map : null,
@@ -44,14 +43,14 @@ localground.point.prototype.dragend = function(latLng) {
     var me = this;
     if(this.candidateMarker) {
         var $innerObj = $('<div />').append(
-                this.getManagerById(self.overlayTypes.MARKER).getLoadingImageSmall()
+                this.getManagerById(self.overlay_types.MARKER).getLoadingImageSmall()
             ).append(('Adding to marker...'));
 		
 		// after the media item has been added to the marker, reset the position
 		// of the media item and toggle it off in the menu
 		this.googleOverlay.setPosition(new google.maps.LatLng(this.point.lat, this.point.lng));
         this.googleOverlay.setMap(null);
-		$('#cb_' + this.overlayType + "_" + this.id).attr('checked', false);
+		$('#cb_' + this.overlay_type + "_" + this.id).attr('checked', false);
         
 		// add a message:
 		var $contentContainer = $('<div></div>').css({
@@ -86,7 +85,7 @@ localground.point.prototype.dragend = function(latLng) {
         });*/
 		
 		$.ajax({
-			url: '/api/0/' + this.getObjectType() + '/' + this.id + '/.json',
+			url: this.url + '.json',
 			type: 'PUT',
 			data: {
 				lat: latLng.lat(),
@@ -103,7 +102,7 @@ localground.point.prototype.dragend = function(latLng) {
 				}
 			},
 			success: function(data) {
-				alert('Load was performed.');
+				me.point = {};
 				me.point.lat = latLng.lat();
                 me.point.lng = latLng.lng();
 			},
@@ -153,7 +152,10 @@ localground.point.prototype.makeEditable = function() {
             me.googleOverlay.setIcon(me.getIcon());
         });
         google.maps.event.addListener(this.googleOverlay, "drag", function(mEvent) {
-            me.candidateMarker = me.getManagerById(self.overlayTypes.MARKER).intersectMarkers(mEvent, me);
+			var m = me.getManagerById(self.overlay_types.MARKER);
+			if(m){
+				me.candidateMarker = m.intersectMarkers(mEvent, me);
+			}
         });
     }
     else {

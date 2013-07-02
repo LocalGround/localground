@@ -7,7 +7,7 @@ localground.overlay = function(){
 	this.name = null;
     this.id = null;
     this.googleOverlay = null;
-    this.overlayType = null;
+    this.overlay_type = null;
 	this.managerID = null;
 };
 
@@ -24,8 +24,8 @@ localground.overlay.prototype.isViewMode = function() {
 };
 
 localground.overlay.prototype.getObjectType = function() {
-	//alert(this.managerID);
-	return this.managerID;
+	//alert(this.overlay_type);
+	return this.overlay_type;
 };
 
 localground.overlay.prototype.getListingContainer = function() {
@@ -176,7 +176,7 @@ localground.overlay.prototype.toggleOverlay = function(isOn) {
         if(this.isVisible() && this.googleOverlay && this.googleOverlay.getMap() == null) {
 			if(this.googleOverlay) {
 				this.googleOverlay.setMap(self.map);
-				if(this.getObjectType() == self.overlayTypes.PHOTO)
+				if(this.getObjectType() == self.overlay_types.PHOTO)
 					this.googleOverlay.icon = this.getIcon();    
 			}
             $cb.attr('checked', true);

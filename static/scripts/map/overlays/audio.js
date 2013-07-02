@@ -7,10 +7,10 @@ localground.audio = function(opts){
     this.file_name_orig = null;
     this.description = null;
     $.extend(this, opts);
-    this.managerID = this.overlayType = self.overlayTypes.AUDIO;
-    this.iframeURL = '/scans/update-' + this.overlayType + '/embed/?id=' + this.id;
+    this.managerID = this.overlay_type = self.overlay_types.AUDIO;
+    this.iframeURL = '/scans/update-' + this.overlay_type + '/embed/?id=' + this.id;
     //initialize icons in the constructor:
-    this.image = this.iconSmall = this.iconLarge = '/static/images/sound.png';
+    this.image = this.iconSmall = this.iconLarge = '/static/images/headphones_small.png';
 };
 
 localground.audio.prototype = new localground.point();
@@ -42,7 +42,7 @@ localground.audio.prototype.showInfoBubbleView = function(opts) {
             .append($('<a class="play_link" href="#">play</a>')
             .click(function() {
                 $('#player').show();
-                $('#audio_url').val(me.path);
+                $('#audio_url').val(me.file_path);
                 if($(this).html() == 'play') {
                     $('#player').find('.play').triggerHandler('click');
                     $(this).html('pause')
@@ -56,7 +56,7 @@ localground.audio.prototype.showInfoBubbleView = function(opts) {
             .append(' | ')
             .append($('<a class="stop_link" href="#">stop</a>')
             .click(function() {
-                $('#audio_url').val(me.path);
+                $('#audio_url').val(me.file_path);
                 $('#player').find('.stop').triggerHandler('click');
                 $(this).parent().find('.play_link').html('play');
                 return false;
@@ -86,5 +86,19 @@ localground.audio.prototype.showInfoBubbleView = function(opts) {
     self.infoBubble.setFooter(null);    
     self.infoBubble.setContent($contentContainer.get(0)); 
     self.infoBubble.open(self.map, this.googleOverlay);
+};
+
+localground.audio.prototype.mouseoverF = function(){
+	var $innerObj = $('<div />')
+						.append($('<img />')
+							.attr('src', this.image)
+							.css({float: 'left', 'margin-right': '5px'}))
+						.append($('<p />').html(this.name)
+                                .css({'padding-top': '10px'}));
+	this.showTip({
+        height: '40px',
+        overflowY: 'hidden',
+		contentContainer: $innerObj 
+	});
 };
 

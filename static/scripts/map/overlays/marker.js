@@ -15,7 +15,7 @@ localground.marker = function(opts){
     this.accessKey = null;
     if(opts)
         $.extend(this, opts);
-    this.managerID = this.overlayType = self.overlayTypes.MARKER;
+    this.managerID = this.overlay_type = self.overlay_types.MARKER;
     this.image = this.markerImage = this.iconSmall = this.iconLarge =
         'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
         this.color + '|13|b|';
@@ -124,7 +124,7 @@ localground.marker.prototype.renderInfoBubble = function() {
             'margin': this.isEditMode() ? '5px 0px 5px 10px' : '0px',
             'overflow-y': this.isEditMode() ? 'auto' : 'hidden',
             'overflow-x': 'hidden'
-        }).append(this.getManagerById(self.overlayTypes.MARKER).getLoadingImage());
+        }).append(this.getManagerById(self.overlay_types.MARKER).getLoadingImage());
     var showHeader = this.isEditMode() ? true : false;
     self.infoBubble.setHeaderText(showHeader ? this.name.truncate(5) : null);
     if(this.isEditMode()) {
@@ -230,7 +230,7 @@ localground.marker.prototype.renderInfoBubblePhotos = function($container) {
     $container.append($section);
     $section.append($('<h4></h4>').html('Photos'));
     $.each(this.photoIDs, function(idx){
-        var photo = me.getManagerById(self.overlayTypes.PHOTO).getDataElementByID(this);
+        var photo = me.getManagerById(self.overlay_types.PHOTO).getDataElementByID(this);
         //if(idx<4)
         {
             $div = $('<div />').css({
@@ -271,7 +271,7 @@ localground.marker.prototype.renderInfoBubbleAudio = function($container) {
     var $ul = $('<ul />');
     $section.append($ul);
     $.each(this.audioIDs, function(idx){
-        var audio = me.getManagerById(self.overlayTypes.AUDIO).getDataElementByID(this);
+        var audio = me.getManagerById(self.overlay_types.AUDIO).getDataElementByID(this);
         var $li = $('<li />')
                         .css({
                             'line-height': '15px',
@@ -442,7 +442,7 @@ localground.marker.prototype.appendMedia = function(media) {
             //todo:  reload marker info:
             $.extend(me, result.marker);
             if(media.getObjectType() == 'marker') {
-                me.getManagerById(self.overlayTypes.MARKER).removeRecord(media);
+                me.getManagerById(self.overlay_types.MARKER).removeRecord(media);
             }
             me.renderListing();
             me.googleOverlay.setIcon(me.markerImage);
