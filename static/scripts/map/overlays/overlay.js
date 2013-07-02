@@ -24,6 +24,7 @@ localground.overlay.prototype.isViewMode = function() {
 };
 
 localground.overlay.prototype.getObjectType = function() {
+	//alert(this.managerID);
 	return this.managerID;
 };
 
@@ -50,7 +51,7 @@ localground.overlay.prototype.renderListingCheckbox = function() {
 		}
 	}
 	//if the element hasn't been geo-referenced, hide the check box:
-	if(this.lat == null && this.north == null)
+	if(this.point == null && this.north == null)
         $cb.css({ 'visibility': 'hidden' });
 	return $cb;
 };
@@ -79,7 +80,7 @@ localground.overlay.prototype.renderListingImage = function() {
 					.css({'vertical-align': 'baseline'});
 	if(this.file_name_orig != null)
 		$img.attr('title', this.file_name_orig);   
-	if(this.lat == null) { $img.addClass('can_drag'); }
+	if(this.point == null) { $img.addClass('can_drag'); }
 	return $img;
 };
 
@@ -94,7 +95,7 @@ localground.overlay.prototype.renderListingText = function() {
 		'padding-bottom': '3px',
 		'line-height': '15px'
     });
-	if(this.lat || this.north) {
+	if(this.point || this.north) {
         $div_text.append($('<a href="#"></a>')
                 .html(this.name.truncate(4))
                 .attr('title', this.name)
@@ -113,8 +114,10 @@ localground.overlay.prototype.renderListingText = function() {
 
 localground.overlay.prototype.renderListing = function() {
 	var $div_entry = this.getListingElement();
-	if($div_entry == null) {
+	if($div_entry == null)
+	{
 		$div_entry = $('<div></div>').attr('id', this.getObjectType() + '_' + this.id);
+		//alert(this.getObjectType() + ' - ' + $div_entry.attr('id'));
         this.getListingContainer().append($div_entry);	
 	}
 	else {

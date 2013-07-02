@@ -44,6 +44,8 @@ class AudioViewSet(viewsets.ModelViewSet):
     """
     queryset = Audio.objects.all()
     serializer_class = serializers.AudioSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly,)
     filter_backends = (SQLFilterBackend,)
         
 class ProjectList(generics.ListCreateAPIView):
@@ -69,7 +71,7 @@ class ProjectList(generics.ListCreateAPIView):
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     permission_classes = (IsOwnerOrReadOnly,)
-    serializer_class = serializers.ProjectSerializer
+    serializer_class = serializers.ProjectDetailSerializer
     
     def pre_save(self, obj):
         '''

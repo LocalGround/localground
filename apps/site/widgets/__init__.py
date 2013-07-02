@@ -24,6 +24,8 @@ class TagAutocomplete(TagAutocomplete):
         return mark_safe('HELLO!!!!')
     
     def render(self, name, value, attrs=None):
+        if value is None:
+            value = ''
         from django.core.urlresolvers import reverse
         if self.autocomplete_url is None:
             self.autocomplete_url = reverse('tagging_autocomplete-list')
@@ -233,6 +235,48 @@ class PointWidgetHidden(Textarea):
         Given a dictionary of data and this widget's name, returns the value
         of this widget. Returns None if it's not provided.
         """
+        if data.get('lng') is None or data.get('lat') is None:
+            return ''
+        return 'SRID=' + str(self.srid) + ';POINT(' + data.get('lng') + ' ' + data.get('lat') + ')'
+
+class PointWidgetTextbox(Textarea):
+    is_hidden = True
+    
+    def __init__(self, *args, **kw):
+        self.geom_type = 'POINT'
+        self.srid = kw.get("srid", 4326)
+        if kw.get('srid'): kw.pop('srid')
+        super(PointWidgetTextbox, self).__init__(*args, **kw) #init parent Textarea class
+        self.inner_widget = forms.widgets.TextInput() #forms.widgets.TextInput()
+        
+
+    def render(self, name, value, *args, **kwargs):
+        #value is either None, a string/unicode value, or a GEOSGeometry
+        if value is None: #no value
+            lat, lng = DEFAULT_LAT, DEFAULT_LNG
+        elif isinstance(value, basestring): # value is unicode/string
+            try:
+                value = GEOSGeometry(value)
+                lat, lng = value.y, value.x
+            except (GEOSException, ValueError):
+                value = None
+                lat, lng = DEFAULT_LAT, DEFAULT_LNG
+        else: # value is GEOSGeometry
+            lat, lng = value.y, value.x  
+        
+        #renders text form elements (for debugging):
+        html = self.inner_widget.render('lat', lat, dict(id='lat'))
+        html += self.inner_widget.render('lng', lng, dict(id='lng'))
+        
+        return mark_safe(html)
+    
+    def value_from_datadict(self, data, files, name):
+        """
+        Given a dictionary of data and this widget's name, returns the value
+        of this widget. Returns None if it's not provided.
+        """
+        if data.get('lng') is None or data.get('lat') is None:
+            return ''
         return 'SRID=' + str(self.srid) + ';POINT(' + data.get('lng') + ' ' + data.get('lat') + ')'
 
 

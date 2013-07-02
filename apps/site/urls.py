@@ -68,17 +68,7 @@ urlpatterns = patterns('',
     (r'^profile/(?P<object_type_plural>{0})/delete/batch/$'.format('|'.join(object_types_plural)), 'localground.apps.site.views.profile.delete_batch'),
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     #tables
     (r'^profile/tables/data/', 'localground.apps.site.views.tables.get_objects'),
     #(r'^tables/delete-selected/$', 'tables.delete_objects'),
@@ -107,8 +97,10 @@ urlpatterns = patterns('',
     # media server
     (r'^profile/(?P<object_type>photos|audio|videos|snippets|attachments|map-images|prints|tables)/(?P<hash>[=\w]+)/$', 'localground.apps.site.views.mediaserver.serve_media'),
   
-    #url(r'^', include('localground.apps.site.api.urls')),
-    
+    # data API    
     url(r'^api/0/', include('localground.apps.site.api.urls')),
+    
+    # Map Editor
+    (r'^maps/editor/', 'localground.apps.site.views.maps.init'),
     
 )

@@ -9,6 +9,7 @@ localground.audioManager.prototype.addRecords = function(data) {
     $.each(data, function(){
         me.data.push(new localground.audio(this));        
     });
+	//alert(this.data);
 };
 
 localground.audioManager.prototype.doViewportUpdates = function() {

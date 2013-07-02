@@ -43,8 +43,20 @@ localground.viewer = function(){
 localground.viewer.prototype = new localground.basemap();           // Here's where the inheritance occurs 
 
 localground.viewer.prototype.initialize=function(opts){
-    self = this;
+	self = this;
 	$.extend(this, opts);
+	
+	$.ajaxSetup({
+		beforeSend: function(xhr, settings) {
+			alert(settings);
+			if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+				// Send the token to same-origin, relative URLs only.
+				// Send the token only if the method warrants CSRF protection
+				// Using the CSRFToken value acquired earlier
+				xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			}
+		}
+	});
     
     localground.basemap.prototype.initialize.call(this, opts);
     
@@ -210,6 +222,7 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 		$('#' + groupID).attr('checked', true);
 		self.lastProjectSelection = groupID;
 		var params = {
+			format: 'json',
 			include_processed_maps: true,
 			include_markers: true,
 			include_audio: true,
@@ -221,25 +234,28 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 			url += self.accessKey + '/';
 		$.getJSON(url, params,
 			function(result) {
-				if(!result.success) {
-					alert(result.message);
+				if(result.detail) {
+					alert(result.detail);
 					return;
 				}
 				$('#mode_toggle').show();
-				$.each(result.data, function(idx) {
-					if(self.managers[this.id] == null) {
-						self.managers[this.id] = localground.manager.generate(this);
-						//turn everything on, if requested:
-						if(turn_on_everything && (self.initProjectID != null || self.initViewID != null)) {
-							if(!$('#toggle_' + this.id + '_all').attr('checked')){
-								$('#toggle_' + this.id + '_all')
-									.attr('checked', true).trigger('change');	
-							}	
+				$.each(result, function(key, value) {
+					if (value instanceof Array) {
+						//alert(key + ': ' + JSON.stringify(value));
+						if(self.managers[value.overlay_type] == null) {
+							self.managers[value.overlay_type] = localground.manager.generate(this);
+							//turn everything on, if requested:
+							if(turn_on_everything && (self.initProjectID != null || self.initViewID != null)) {
+								if(!$('#toggle_' + value.overlay_type + '_all').attr('checked')){
+									$('#toggle_' + value.overlay_type + '_all')
+										.attr('checked', true).trigger('change');	
+								}	
+							}
 						}
-					}
-					else {
-						self.managers[this.id].addRecords(this.data);
-						self.managers[this.id].renderOverlays();
+						else {
+							self.managers[this.id].addRecords(this);
+							self.managers[this.id].renderOverlays();
+						}
 					}
 				});
 				self.resetBounds();

@@ -124,7 +124,7 @@
             </form>
         {% endif %}
         
-        {% if has_filters %}
+        {% if has_filters and not delete_form %}
             <form id="filter-form" class="pull-right" style="margin-right:5px;">
                 <fieldset>
                     <div class="btn-group">
@@ -139,7 +139,7 @@
         {% endif %}
         
         {% if delete_form %}
-            <form class="button-form" style="margin-right:5px;" action="{{ request.get_full_path }}" method="POST" class="pull-right">
+            <form class="button-form pull-right" style="margin-right:5px;" action="{{ request.get_full_path }}" method="POST" class="pull-right">
                 <fieldset>
                     {% csrf_token %}
                     <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />

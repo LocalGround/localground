@@ -3,8 +3,7 @@ localground.point = function(opts){
     this.image = null;
     this.iconSmall = null;
     this.iconLarge = null;
-    this.lat = null;
-    this.lng = null;
+    this.point = null;
     this.infoBubbleParams = {
         edit: { width: 445, height: 225 },
         view: { width: 445, height: 225 }
@@ -22,10 +21,11 @@ localground.point.prototype.renderOverlay = function(opts) {
     //to override default behavior:
     if(opts && opts.turnedOn)
         turnedOn = opts.turnedOn;
-    if(this.lat != null) {
+    if(this.point != null) {
+		alert(JSON.stringify(this.point));
         if(this.googleOverlay == null) {
             this.googleOverlay = new google.maps.Marker({
-                position: new google.maps.LatLng(this.lat, this.lng),
+                position: new google.maps.LatLng(this.point.lat, this.point.lng),
                 map: turnedOn ? self.map : null,
                 icon: this.iconSmall,
                 id: this.id
@@ -49,7 +49,7 @@ localground.point.prototype.dragend = function(latLng) {
 		
 		// after the media item has been added to the marker, reset the position
 		// of the media item and toggle it off in the menu
-		this.googleOverlay.setPosition(new google.maps.LatLng(this.lat, this.lng));
+		this.googleOverlay.setPosition(new google.maps.LatLng(this.point.lat, this.point.lng));
         this.googleOverlay.setMap(null);
 		$('#cb_' + this.overlayType + "_" + this.id).attr('checked', false);
         
@@ -70,7 +70,7 @@ localground.point.prototype.dragend = function(latLng) {
 		this.candidateMarker.appendMedia(this); 
     }
     else {
-        $.getJSON('/api/0/update-latlng/' + this.getObjectType() + '/' + this.id + '/',
+        /*$.getJSON('/api/0/update-latlng/' + this.getObjectType() + '/' + this.id + '/',
         {
             lat: latLng.lat(),
             lng: latLng.lng()
@@ -83,7 +83,33 @@ localground.point.prototype.dragend = function(latLng) {
                 me.lat = latLng.lat();
                 me.lng = latLng.lng();
             }
-        });
+        });*/
+		
+		$.ajax({
+			url: '/api/0/' + this.getObjectType() + '/' + this.id + '/.json',
+			type: 'PUT',
+			data: {
+				lat: latLng.lat(),
+				lng: latLng.lng(),
+				csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+				format: 'json'
+			},
+			beforeSend: function(xhr, settings) {
+				if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+					// Send the token to same-origin, relative URLs only.
+					// Send the token only if the method warrants CSRF protection
+					// Using the CSRFToken value acquired earlier
+					xhr.setRequestHeader("X-CSRFToken", csrftoken);
+				}
+			},
+			success: function(data) {
+				alert('Load was performed.');
+				me.point.lat = latLng.lat();
+                me.point.lng = latLng.lng();
+			},
+			notmodified: function(data) { alert('Not modified'); },
+			error: function(data) { alert('Error'); }
+		});
     }
 };
 
@@ -193,11 +219,12 @@ localground.point.prototype.zoomToOverlay = function() {
 };
 
 localground.point.prototype.inView = function() {
-    if(this.googleOverlay &&
+	return true;
+    /*if(this.googleOverlay &&
        self.map.getBounds().contains(this.googleOverlay.getPosition())) {
         return true;    
     }
-    return false;   
+    return false;*/  
 };
 
 localground.point.prototype.showInfoBubble = function(opts) {
@@ -291,7 +318,7 @@ localground.point.prototype.closeInfoBubble = function() {
         self.infoBubble.close();
         $('#color-picker').hide(); 
     
-        if(this.isEditMode() && this.lat == null) {
+        if(this.isEditMode() && this.point == null) {
             this.googleOverlay.setMap(null);
             this.googleOverlay = null;
             this.renderListing();

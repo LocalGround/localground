@@ -12,31 +12,48 @@ localground.manager = function(){
 
 localground.manager.generate = function(candidate) {
 	/* static function */
+	if (candidate.length == 0) {
+	    return null;
+	}
+	this.overlayType = candidate[0].overlay_type;
+	//alert(this.overlayType);
+	//alert(JSON.stringify(candidate));
 	var manager = null;
-	switch(candidate.overlayType) {
+	switch(this.overlayType) {
 		case self.overlayTypes.PHOTO:
+			alert('photo manager');
 			manager = new localground.photoManager();
 			break;
 		case self.overlayTypes.AUDIO:
+			//alert('audio manager');
 			manager = new localground.audioManager();
 			break;
 		case self.overlayTypes.MARKER:
+			alert('marker manager');
 			manager = new localground.markerManager();
 			break;
 		case self.overlayTypes.SCAN:
+			alert('scan manager');
 			manager = new localground.scanManager();
 			break;
 		case self.overlayTypes.RECORD:
+			alert('record manager');
 			candidate.color = self.colors[self.colorIndex++];
 			manager = new localground.tableManager();
 			break;
 	}
-	manager.initialize(candidate);
+	manager.initialize({
+	    id: this.overlayType,
+	    name: this.overlayType.capitalize(),
+	    overlayType: this.overlayType,
+	    data: candidate
+	});
 	return manager;
 }
 
 
 localground.manager.prototype.initialize = function(opts) {
+    //alert(JSON.stringify(opts));
 	this.id = opts.id;
 	this.name = opts.name;
 	this.overlayType = opts.overlayType;
@@ -59,6 +76,7 @@ localground.manager.prototype.addDataContainer = function() {
     //add a section within the id="panel_record" div for the data:
     if(this.getListingContainer().get(0) == null) {
         var me = this;
+		alert(this.getObjectType());
 		var $container = $('<div />').attr('id', 'panel_' + this.getObjectType())
 							.addClass('listing_container')
 							.css({

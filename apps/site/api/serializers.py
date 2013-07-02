@@ -3,55 +3,75 @@ from rest_framework import serializers
 from localground.apps.site.models import Photo, Audio, Project
 from django.contrib.auth.models import User, Group
 from django.db.models.fields import Field
-from localground.apps.site.widgets import TagAutocomplete
+from localground.apps.site.widgets import TagAutocomplete, PointWidgetHidden, PointWidgetTextbox
+from django.contrib.gis.geos import GEOSGeometry
+from django.core.exceptions import ValidationError
 
+class OwnerField(serializers.WritableField):
+    def to_native(self, obj):
+        return obj.id
+
+    def from_native(self, data):
+        return User.objects.get(id=int(data))
+    
+class PointField(serializers.WritableField):
+    def field_from_native(self, data, files, field_name, into):
+        try:
+            native = '%s;%s' % (data['lng'], data['lat'])
+        except KeyError:
+            if self.required:
+                raise ValidationError('Both a "lat" variable and a "lng" variable are required')
+            return
+        try:
+            value = self.to_point(native)
+            into['point'] =  self.to_point(native)
+        except:
+            raise Exception('Invalid "lat" or "lng" parameter')
+        
+    def to_point(self, data):
+        lng_lat = data.split(';')
+        lng, lat = lng_lat[0], lng_lat[1]
+        return GEOSGeometry('SRID=%s;POINT(%s %s)' % (4326, lng, lat))
+
+    def to_native(self, obj):
+        if obj is not None:
+            return {
+                'lng': obj.x,
+                'lat': obj.y
+            }
 
 class BaseSerializer(serializers.HyperlinkedModelSerializer):
-    class OwnerField(serializers.WritableField):
-        """
-        Color objects are serialized into "rgb(#, #, #)" notation.
-        """
-        def to_native(self, obj):
-            return obj.id
+    owner_id = OwnerField(source='owner', required=False)
+    tags = serializers.CharField(required=False, widget=TagAutocomplete, help_text='Tag your object here')
+    fields = ('id', 'name', 'description', 'tags', 'owner_id')
     
-        def from_native(self, data):
-            return User.objects.get(id=int(data))
-        
-        
-    owner_id = OwnerField(source='owner')
-    tags = serializers.CharField(widget=TagAutocomplete, help_text='Tag your object here')
-    
+class PointOverlaySerializer(BaseSerializer):
+    point = PointField(widget=PointWidgetTextbox, help_text='Tag your object here')
     project_id = serializers.Field(source='project.id')
     file_name = serializers.Field(source='file_name_new')
     caption = serializers.Field(source='description')
-    lat = serializers.SerializerMethodField('get_lat')
-    lng = serializers.SerializerMethodField('get_lng')
+    overlay_type = serializers.SerializerMethodField('get_overlay_type')
     
-    fields = ('id', 'name', 'description', 'tags', 'owner_id', 'project_id', 
-                    'attribution', 'file_name', 'caption', 'lat', 'lng')
-    
-    def get_lat(self, obj):
-        if obj.point is not None:
-            return obj.point.y
-        return None
-        
-    def get_lng(self, obj):
-        if obj.point is not None:
-            return obj.point.x
-        return None
+    fields = BaseSerializer.fields + ('project_id', 'attribution',
+                            'file_name', 'caption', 'overlay_type', 'point')
+
+    def get_overlay_type(self, obj):
+        return obj._meta.verbose_name
 
 
-class PhotoSerializer(BaseSerializer):
+
+class PhotoSerializer(PointOverlaySerializer):
     path_large = serializers.SerializerMethodField('get_path_large')
     path_medium = serializers.SerializerMethodField('get_path_medium')
     path_medium_sm = serializers.SerializerMethodField('get_path_medium_sm')
     path_small = serializers.SerializerMethodField('get_path_small')
     path_marker_lg = serializers.SerializerMethodField('get_path_marker_lg')
     path_marker_sm = serializers.SerializerMethodField('get_path_path_marker_sm')
+    overlay_type = serializers.SerializerMethodField('get_overlay_type')
 
-    class Meta(BaseSerializer.Meta):
+    class Meta:
         model = Photo
-        fields = BaseSerializer.fields + (
+        fields = PointOverlaySerializer.fields + (
                     'path_large', 'path_medium', 'path_medium_sm',
                     'path_small', 'path_marker_lg', 'path_marker_sm'
                 )
@@ -75,13 +95,13 @@ class PhotoSerializer(BaseSerializer):
     def get_path_path_marker_sm(self, obj):
         return obj.encrypt_url(obj.file_name_marker_sm)
 
-class AudioSerializer(BaseSerializer):
-    
+class AudioSerializer(PointOverlaySerializer):
     file_path = serializers.SerializerMethodField('get_file_path')
-    class Meta(BaseSerializer.Meta):
+    
+    class Meta:
         model = Audio
-        fields = BaseSerializer.fields + ('file_path',)
-        depth = 1
+        fields = PointOverlaySerializer.fields  + ('file_path',)
+        depth = 0
         
     def get_file_path(self, obj):
         return obj.encrypt_url(obj.file_name_new)
@@ -100,8 +120,16 @@ class ProjectSerializer(BaseSerializer):
     
     class Meta:
         model = Project
-        fields = ('id', 'name', 'description', 'tags', 'owner', 'owner_id', 'slug')
+        fields = BaseSerializer.fields + ('owner', 'slug')
         read_only_fields = ('owner',)
-        exclude = ('last_updated_by',)
+        depth = 1
+        
+class ProjectDetailSerializer(BaseSerializer):
+    photos = PhotoSerializer(many=True, read_only=True, source='photo')
+    audio = AudioSerializer(many=True, read_only=True, source='audio')
+    
+    class Meta:
+        model = Project
+        fields = BaseSerializer.fields + ('slug', 'photos', 'audio')
         depth = 1
         
