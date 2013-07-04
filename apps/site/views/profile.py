@@ -80,8 +80,8 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
 @login_required
 def object_list_form(request, object_type_plural, return_message=None):
     context = RequestContext(request)
-    ModelClass = Base.get_model_from_plural_object_type(object_type_plural)
-    template_name = 'profile/%s.html' % ModelClass.name_plural.replace(' ', '-')
+    ModelClass = Base.get_model(model_name_plural=object_type_plural)
+    template_name = 'profile/%s.html' % ModelClass.model_name_plural.replace(' ', '-')
     r = request.POST or request.GET
     
     query = None
@@ -97,7 +97,7 @@ def object_list_form(request, object_type_plural, return_message=None):
     
     #return HttpResponse(objects)
     
-    #if object_type_plural != Project.name_plural:
+    #if object_type_plural != Project.model_name_plural:
     #    context.update({ 'projects': Project.objects.get_objects(request.user) })
     per_page = 10
     
@@ -128,15 +128,15 @@ def object_list_form(request, object_type_plural, return_message=None):
             modelformset.save()
             if num_updates > 0:
                 context.update({
-                    'message': '%s %s have been updated' % (num_updates, ModelClass.name_plural)
+                    'message': '%s %s have been updated' % (num_updates, ModelClass.model_name_plural)
                 })
             else:
                 context.update({
-                    'warning_message': '%s %s have been updated' % (num_updates, ModelClass.name_plural)
+                    'warning_message': '%s %s have been updated' % (num_updates, ModelClass.model_name_plural)
                 })
         else:
             context.update({
-                'error_message': 'There was an error updating the %s' % ModelClass.name_plural
+                'error_message': 'There was an error updating the %s' % ModelClass.model_name_plural
             })
     else:
         start = 0
@@ -148,15 +148,15 @@ def object_list_form(request, object_type_plural, return_message=None):
         
     context.update({
         'formset': modelformset,
-        'page_title': 'My %s' % ModelClass.name_plural.capitalize(),
+        'page_title': 'My %s' % ModelClass.model_name_plural.capitalize(),
         'username': request.user.username,
         'url': '%s?1=1' % ModelClass.listing_url(),
         'delete_url': ModelClass.batch_delete_url(),
         'create_url': ModelClass.create_url() + 'embed/',
-        'page_title': 'My %s' % ModelClass.name_plural.capitalize(),
+        'page_title': 'My %s' % ModelClass.model_name_plural.capitalize(),
         'user': request.user,
-        'object_name_plural': ModelClass.name_plural,
-        'object_type': ModelClass.name,
+        'object_name_plural': ModelClass.model_name_plural,
+        'object_type': ModelClass.model_name,
         'filter_fields': filter_fields
     })
 
@@ -178,7 +178,7 @@ def delete_batch(request, object_type_plural):
     from django.http import HttpResponse
     import json
     r = request.POST
-    ModelClass = Base.get_model_from_plural_object_type(object_type_plural)
+    ModelClass = Base.get_model(model_name_plural=object_type_plural)
     object_ids = r.getlist('id')
     projects = []
     num_deletes = 0
@@ -216,7 +216,7 @@ def create_update_group_with_sharing(request, action, object_type_plural, object
     from localground.apps.site.forms import UserAuthorityObjectForm
     from django.http import HttpResponseRedirect
     r = request.POST or request.GET
-    ModelClass = Base.get_model_from_plural_object_type(object_type_plural)
+    ModelClass = Base.get_model(model_name_plural=object_type_plural)
     GroupForm = ModelClass.get_form()
     if action == 'share':
         GroupForm = ModelClass.sharing_form()

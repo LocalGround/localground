@@ -2,24 +2,21 @@ from django.contrib.gis.db import models
 from localground.apps.site.models import ObjectTypes
 from datetime import datetime    
 from localground.apps.site.managers import MarkerManager
-#from localground.apps.site.models import PointObject, ReturnCodes
-#from localground.apps.site.models.base import BasePoint, BaseUploadedMedia, ReturnCodes
-#from localground.apps.site.models.base import Base
+from localground.apps.site.models.base import BaseUploadedMedia
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video
-
-from localground.apps.site.models import BasePoint, BaseNamed, ReturnCodes
+from django.contrib.contenttypes import generic
+from localground.apps.site.models import BasePoint, BaseNamed, \
+                                        BaseGenericRelations, ReturnCodes
     
-class Marker(BasePoint, BaseNamed): 
+class Marker(BasePoint, BaseGenericRelations): 
     """
     Markers are association objects with a lat/lng.  Markers can be associated
     with one or more photos, audio files, data records, etc.  This object needs
     to be re-factored to inherit from account/Group Model, since it's an
     association of other media objects (and should behave like a project or a view).
     """
-    name = 'marker'
-    name_plural = 'markers'
     project = models.ForeignKey('Project')
     
     # todo:  replace project with generic association to either a project, view,
@@ -65,6 +62,8 @@ class Marker(BasePoint, BaseNamed):
         self.clear_nullable_related(*args, **kwargs)
         super(Marker, self).delete(*args, **kwargs)
         
+    
+    '''
     def append(self, obj, identity):
         #if the object isn't a marker object, just update the source marker:
         if not isinstance(obj, Marker):
@@ -101,7 +100,7 @@ class Marker(BasePoint, BaseNamed):
         
         #4) delete the old marker:
         marker.delete()
-
+    '''
     
     def get_photos(self):
         return Photo.objects.by_marker(self, ordering_field='name').to_dict_list() 
@@ -160,7 +159,7 @@ class Marker(BasePoint, BaseNamed):
 
     class Meta:
         verbose_name = 'marker'
-        verbose_name_plural = 'Map Markers'
+        verbose_name_plural = 'markers'
         ordering = ['id']
         app_label = 'site'
     

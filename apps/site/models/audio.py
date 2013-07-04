@@ -57,7 +57,7 @@ class Audio(BasePoint, BaseUploadedMedia):
         app_label = 'site'
         ordering = ['id']
         verbose_name = 'audio'
-        verbose_name_plural = 'audio-files'
+        verbose_name_plural = 'audio'
     
     def to_dict(self):
         d = super(Audio, self).to_dict() 
@@ -66,4 +66,4 @@ class Audio(BasePoint, BaseUploadedMedia):
         return d
     
     def __unicode__(self):
-        return self.path + ': ' + self.name
+        return self.file_name_new + ': ' + self.name

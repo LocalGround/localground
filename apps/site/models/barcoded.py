@@ -74,8 +74,6 @@ class Processor(BaseUploadedMedia):
         return o
         
 class Scan(Processor):
-    name = 'map images'
-    name_plural = 'map images'
     #for manual override:
     map_rect = models.CharField(max_length=255, blank=True, null=True)
     processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
@@ -204,8 +202,6 @@ class Scan(Processor):
         return 'Scan #' + self.uuid
         
 class Attachment(Processor):
-    name = 'attachment'
-    name_plural = 'attachments'
     source_scan = models.ForeignKey(Scan, blank=True, null=True)
     is_short_form = models.BooleanField(default=False)
     directory_name = 'attachments'

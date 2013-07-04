@@ -418,6 +418,8 @@ localground.marker.prototype.makeViewable = function() {
 
 localground.marker.prototype.createNew = function(googleOverlay, projectID) {
     var me = this;
+    
+    /*
     $.getJSON('/api/0/add/marker/', 
         {
             lat: googleOverlay.getPosition().lat(),
@@ -431,7 +433,36 @@ localground.marker.prototype.createNew = function(googleOverlay, projectID) {
             //remove temporary marker:
             googleOverlay.setMap(null);
         },
-    'json');
+    'json')
+    */
+    $.ajax({
+        url: '/api/0/markers/' + '.json',
+        type: 'POST',
+        data: {
+            lat: googleOverlay.getPosition().lat(),
+            lng: googleOverlay.getPosition().lng(),
+            project_id: projectID,
+            color: 'CCCCCC',
+            csrfmiddlewaretoken: csrftoken,
+            format: 'json'
+        },
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        },
+        success: function(data) {
+            alert(JSON.stringify(data));
+            $.extend(me, data);
+            //add to marker manager:
+            me.getManager().addNewOverlay(me);
+            //remove temporary marker:
+            googleOverlay.setMap(null);
+        },
+        notmodified: function(data) { alert('Not modified'); },
+        error: function(data) { alert('Error'); }
+    });
+    
 };
 
 localground.marker.prototype.appendMedia = function(media) {

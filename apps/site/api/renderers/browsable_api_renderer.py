@@ -77,7 +77,7 @@ class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
             context.update({
                 'filter_fields': query.populate_filter_fields(),
                 'object_type': model.name,
-                'object_name_plural': model.name_plural,
+                'object_name_plural': model.model_name_plural,
                 'has_filters': True
             })  
         except Exception:

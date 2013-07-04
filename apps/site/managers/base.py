@@ -107,7 +107,7 @@ class GeneralMixin(BaseMixin):
         from django.db.models import Q
         
         if item_list is None or len(item_list) == 0:
-            return 'The list of %s must not be empty' % (self.get_model_name_plural())
+            return 'The list of %s must not be empty' % (self.model_name_plural)
         
         
         scan_ids, marker_ids, photo_ids, audio_ids, video_ids, \
@@ -208,9 +208,9 @@ class GeneralMixin(BaseMixin):
         
         if confirm:
             #some grammar pre-processing:
-            object_name, article, verb = self.get_model_name_plural(), 'these', 'are'
+            object_name, article, verb = self.model_name_plural, 'these', 'are'
             if len(item_list) == 1:
-                object_name = self.model._meta.verbose_name
+                object_name = self.model_name
                 article = 'this'
                 verb = 'is'
                 

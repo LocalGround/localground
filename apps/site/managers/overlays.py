@@ -2,21 +2,28 @@ from django.contrib.gis.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
 from localground.apps.site.managers.base import BaseMixin, GenericLocalGroundError
-
+from localground.apps.site.models import Photo, Audio
 #Useful reference for chaining Model Managers together:
 #    http://djangosnippets.org/snippets/2114/
 
 
 class MarkerMixin(BaseMixin):
     
-    def by_project(self, prj):
-        return self.model.objects.filter(project=prj)
+    def get_objects_with_counts(self, user, filter=None, ordering_field=None):
+        # Excellent resource on using extras:
+        # http://timmyomahony.com/blog/2012/11/16/filtering-annotations-django/
         
-    def by_projects(self, project_ids):
-        return self.model.objects.filter(project__id__in=project_ids)
-        
-    def by_project_with_counts(prj):
-        self.by_projects_with_counts([prj.id])
+        q = self.get_objects(user, filter=filter, ordering_field=ordering_field)
+        select = {}
+        group_type_id = Marker.get_content_type().id
+        for cls in [Photo, Audio]:
+            select[cls.model_name + '_count'] = '''
+                SELECT COUNT(entity_id) FROM site_entitygroupassociation e 
+                WHERE e.entity_type_id = %s AND e.group_type_id = %s AND 
+                e.group_id = site_marker.id
+                ''' % (cls.get_content_type().id, group_type_id)     
+        return q.extra(select)
+
     
     def by_projects_with_counts(self, project_ids):
         from localground.apps.site.models import Form

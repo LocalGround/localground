@@ -5,48 +5,79 @@ from tagging_autocomplete.models import TagAutocompleteField
 from django.conf import settings
 import os, stat
 import base64
-
-def get_timestamp_no_milliseconds():
-    dt = datetime.now()
-    return dt - timedelta(microseconds=dt.microsecond)
-
+from django.http import Http404
+from django.contrib.contenttypes.models import ContentType
+from localground.apps.site.lib.helpers import classproperty, get_timestamp_no_milliseconds
+		
 class Base(models.Model):
-    name = 'base'
-    name_plural = 'bases'
-    class Meta:
-        app_label = 'site'
-        abstract = True
-        
-    @classmethod
-    def get_model_from_plural_object_type(cls, object_type_plural):
-        from django.http import Http404
-        from django.db.models import loading
-        object_type_plural = object_type_plural.replace('-', ' ')
-        for ModelClass in loading.get_models():
-            try:
-                if object_type_plural == ModelClass.name_plural: return ModelClass
-            except:
-                pass
-        raise Http404
-    
-    @classmethod
-    def listing_url(cls):
-        return '/profile/{0}/'.format(cls.name_plural)
-        
-    @classmethod
-    def batch_delete_url(cls):
-        return '/profile/{0}/delete/batch/'.format(cls.name_plural)
-        
-    @classmethod
-    def create_url(cls):
-        return '/profile/{0}/create/'.format(cls.name_plural)
-   
-    def update_url(self):
-        return '/profile/{0}/update/{1}/'.format(self.name_plural, self.id)
-        
-    def delete_url(self):
-        return '/profile/{0}/delete/{1}/'.format(self.name_plural, self.id)
-    
+
+	class Meta:
+		app_label = 'site'
+		abstract = True
+		verbose_name = 'base'
+		verbose_name_plural = 'bases'
+		
+	@classmethod
+	def get_model(cls, model_name=None, model_name_plural=None):
+		'''
+		Finds the corresponding model class, based on the arguments
+		'''
+		if model_name is None and model_name_plural is None:
+			raise Exception('Either model_name or model_name_plural is required here.')
+
+		from django.db.models import loading
+		models = loading.get_models()
+		if model_name_plural:
+			model_name_plural = model_name_plural.replace('-', ' ')
+			for m in models:
+				try:
+					if model_name_plural == m.model_name_plural:
+						return m
+				except:
+					pass
+		if model_name:
+			model_name = model_name.replace('-', ' ')
+			for m in models:
+				try:
+					if model_name == m.model_name:
+						return m
+				except:
+					pass
+		raise Http404
+	
+	@classproperty
+	def model_name(cls):
+		return cls._meta.verbose_name
+	
+	@classproperty
+	def model_name_plural(cls):
+		return cls._meta.verbose_name_plural
+										  
+	@classmethod
+	def listing_url(cls):
+		return '/profile/{0}/'.format(cls.model_name_plural)
+		
+	@classmethod
+	def batch_delete_url(cls):
+		return '/profile/{0}/delete/batch/'.format(cls.model_name_plural)
+		
+	@classmethod
+	def create_url(cls):
+		return '/profile/{0}/create/'.format(cls.model_name_plural)
+
+	def update_url(self):
+		return '/profile/{0}/update/{1}/'.format(self.model_name_plural, self.id)
+		
+	def delete_url(self):
+		return '/profile/{0}/delete/{1}/'.format(self.model_name_plural, self.id)
+	
+	@classmethod
+	def get_content_type(cls):
+		'''
+		Finds the ContentType of the model (does a database query)
+		'''
+		return ContentType.objects.get_for_model(cls)
+
 class BaseAudit(Base):
     owner = models.ForeignKey('auth.User',)
     last_updated_by = models.ForeignKey('auth.User', related_name="%(app_label)s_%(class)s_related")
@@ -127,12 +158,13 @@ class BaseMedia(BaseAudit):
     
     def generate_relative_path(self):
         return '/%s/media/%s/%s/' % (settings.USER_MEDIA_DIR, self.owner.username,
-                                                 self.name_plural)
+                                                 self.model_name_plural)
         
     def generate_absolute_path(self):
         return '%s/media/%s/%s' % (settings.USER_MEDIA_ROOT, self.owner.username,
-                                                self.name_plural)
-        
+                                                self.model_name_plural)
+
+
 class BaseNamedMedia(BaseMedia):
     name = models.CharField(max_length=255, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -186,7 +218,7 @@ class BaseUploadedMedia(BaseNamedMedia):
             #host = 'dev.localground.org' #for debugging
         from django.http import HttpResponse
         #return path
-        return 'http://%s/profile/%s/%s/' % (host, self.name_plural.replace(' ', '-'), base64.b64encode(path))
+        return 'http://%s/profile/%s/%s/' % (host, self.model_name_plural.replace(' ', '-'), base64.b64encode(path))
          
     def encrypt_url(self, file_name):
         #return self.virtual_path + file_name
@@ -339,6 +371,82 @@ class BaseUploadedMedia(BaseNamedMedia):
                         #not all child objects have a clear_nullabe_related()
                         #method
                         pass
+
+class BaseGenericRelations(BaseNamed):
+    from django.contrib.contenttypes import generic
+    
+    entities = generic.GenericRelation('EntityGroupAssociation',
+                                       content_type_field='group_type',
+                                       object_id_field='group_id',
+                                       related_name="%(app_label)s_%(class)s_related")
+    
+    class Meta:
+        app_label = 'site'
+        abstract = True
+        
+    def append(self, item, user, ordering=-1, turned_on=False):
+        from localground.apps.site.models import EntityGroupAssociation
+        
+        if not issubclass(item.__class__, BaseUploadedMedia):
+            raise Exception('Only items of type Photo, Audio, or Record can be appended.')
+        assoc = EntityGroupAssociation(
+            group_type=self.get_content_type(),
+            group_id=self.id,
+            entity_type=item.get_content_type(),
+            entity_id=item.id,
+            ordering=ordering,
+            turned_on=turned_on,
+            owner=user,
+            last_updated_by=user,
+            date_created=datetime.now(),
+            time_stamp=datetime.now()
+        )
+        assoc.save()    
+       
+        
+    def _get_filtered_entities(self, cls):
+        """
+        Private method that queries the EntityGroupAssociation model for
+        references to the current view for a given media type (Photo,
+        Audio, Video, Scan, Marker).
+        """
+        qs = (self.entities
+                .filter(entity_type=cls.get_content_type())
+                .prefetch_related('entity_object', 'entity_object__owner')
+                .order_by('ordering',))
+        entities = []
+        for rec in list(qs):
+            o = rec.entity_object
+            o.ordering = rec.ordering
+            o.turned_on = rec.turned_on
+            entities.append(o)
+        return entities
+    
+    @property
+    def photos(self):
+        from localground.apps.site.models.photo import Photo
+        return self._get_filtered_entities(Photo)    
+    
+    @property
+    def audio(self):
+        from localground.apps.site.models.audio import Audio
+        return self._get_filtered_entities(Audio)
+    
+    @property
+    def videos(self):
+        from localground.apps.site.models.video import Video
+        return self._get_filtered_entities(Video)
+    
+    @property
+    def map_images(self):
+        from localground.apps.site.models.scan import Scan
+        return self._get_filtered_entities(Scan)
+        
+    @property
+    def markers(self):
+        from localground.apps.site.models.marker import Marker
+        return self._get_filtered_entities(Marker)
+        
     
 class BasePoint(Base):
     """

@@ -33,3 +33,4 @@ class EntityGroupAssociation(BaseAudit):
     
     class Meta:
         app_label = 'site'
+        unique_together = ('group_type', 'group_id', 'entity_type', 'entity_id')

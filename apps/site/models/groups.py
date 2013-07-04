@@ -12,26 +12,14 @@ from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video
 from localground.apps.site.models import Marker, WMSOverlay
 from localground.apps.site.models import (Marker, WMSOverlay, ObjectTypes)
-from localground.apps.site.models.base import BaseNamed
+from localground.apps.site.models.base import BaseNamed, BaseGenericRelations
 from localground.apps.site.managers import ProjectManager, ViewManager
 
 #!/usr/bin/env python
 from django.contrib.gis.db import models
 from datetime import datetime
 
-'''class BaseGroup(Base):
-
-    name = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True)
-    owner = models.ForeignKey('auth.User', db_column='user_id')
-    time_stamp = models.DateTimeField(default=datetime.now, db_column='last_updated')
-
-    class Meta:
-        abstract = True
-        app_label = "site"
-'''
-
-class Group(BaseNamed, BasePermissions):
+class Group(BaseGenericRelations, BasePermissions):
     """
     Abstract class that extends BasePermissions; provides helper methods to
     determine whether a user has read/write/manage permissions on an object.
@@ -112,6 +100,9 @@ class Project(Group):
     name = 'project'
     name_plural = 'projects'
     objects = ProjectManager()
+    
+    class Meta(Group.Meta):
+        verbose_name_plural = 'projects'
     
     @classmethod
     def inline_form(cls):
@@ -208,10 +199,11 @@ class View(Group):
     name = 'view'
     name_plural = 'views'
     objects = ViewManager()
+    '''
     entities = generic.GenericRelation('EntityGroupAssociation',
                                        content_type_field='group_type',
                                        object_id_field='group_id')
-    
+    '''
     @classmethod
     def sharing_form(cls):
         from localground.apps.site.forms import ViewPermissionsForm
@@ -222,6 +214,7 @@ class View(Group):
         from localground.apps.site.forms import ViewCreateForm
         return ViewCreateForm
         
+    '''
     def _get_filtered_entities(self, cls):
         """
         Private method that queries the EntityGroupAssociation model for
@@ -262,6 +255,7 @@ class View(Group):
     @property
     def markers(self):
         return self._get_filtered_entities(Marker)
+    '''
         
     def get_markers_with_counts(self):
         """
