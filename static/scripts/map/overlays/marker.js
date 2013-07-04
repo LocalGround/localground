@@ -119,8 +119,8 @@ localground.marker.prototype.updateMarker = function() {
 localground.marker.prototype.renderInfoBubble = function() {
     var me = this;
     var $contentContainer = $('<div></div>').css({
-            'width': this.isEditMode() ? 414 : 600,
-            'height': this.isEditMode() ? 270 : 450,
+            'width': this.isEditMode() ? 414 : 480,
+            'height': this.isEditMode() ? 270 : 360,
             'margin': this.isEditMode() ? '5px 0px 5px 10px' : '0px',
             'overflow-y': this.isEditMode() ? 'auto' : 'hidden',
             'overflow-x': 'hidden'
@@ -329,34 +329,22 @@ localground.marker.prototype.showInfoBubbleView = function(opts) {
     var me = this;
     //build bubble content:
     var $contentContainer = this.renderInfoBubble();
-    var url = '/api/0/get/marker/' + this.id + '/';
-    if(this.accessKey != null)
-        url += this.accessKey + '/';
+    var url = '/api/0/markers/' + this.id + '/.json';
     $.getJSON(url, 
         function(result) {
-            if(result.obj == null){
-                alert(result.message);
-                return;
-            }
-            $.extend(me, result.obj);
+            $.extend(me, result);
             $contentContainer.children().empty();
             
             $container = $('<div></div>');
             $contentContainer.append($container);
-            /*$container.append(
-                $('<button class="btn primary">Test</button>').click(function(){
-                    $('#slide-modal').find('.modal-body').empty();
-                    self.slideshow.render_slideshow(me, $('#slide-modal').find('.modal-body'));
-                    $('#slide-modal').modal();
-                })
-            );*/
             self.slideshow.render_slideshow({
                 marker: me,
                 $container: $container,
                 applyHack: true
             });
         },
-    'json');    
+    'json');
+    
     
     if(self == null) {
         alert('The variable self should be set to the map controller in the \
@@ -418,25 +406,8 @@ localground.marker.prototype.makeViewable = function() {
 
 localground.marker.prototype.createNew = function(googleOverlay, projectID) {
     var me = this;
-    
-    /*
-    $.getJSON('/api/0/add/marker/', 
-        {
-            lat: googleOverlay.getPosition().lat(),
-            lng: googleOverlay.getPosition().lng(),
-            project_id: projectID
-        },
-        function(result) {
-            $.extend(me, result.object);
-            //add to marker manager:
-            me.getManager().addNewOverlay(me);
-            //remove temporary marker:
-            googleOverlay.setMap(null);
-        },
-    'json')
-    */
     $.ajax({
-        url: '/api/0/markers/' + '.json',
+        url: '/api/0/markers/?format=json',
         type: 'POST',
         data: {
             lat: googleOverlay.getPosition().lat(),
@@ -452,7 +423,7 @@ localground.marker.prototype.createNew = function(googleOverlay, projectID) {
             }
         },
         success: function(data) {
-            alert(JSON.stringify(data));
+            //alert(JSON.stringify(data));
             $.extend(me, data);
             //add to marker manager:
             me.getManager().addNewOverlay(me);

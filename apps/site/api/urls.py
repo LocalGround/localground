@@ -28,9 +28,9 @@ urlpatterns = patterns('',
 urlpatterns += format_suffix_patterns(patterns('',
     url(r'^(?P<object_name_plural>\w+)/(?P<pk>[0-9]+)/attach/$', views.AttachItemView.as_view(), name='attach'),
     url(r'^projects/(?P<pk>[0-9]+)/$', views.ProjectDetail.as_view(), name='project-detail'),
-    url(r'^projects/', views.ProjectList.as_view(), name='project-list'),
+    url(r'^projects/$', views.ProjectList.as_view(), name='project-list'),
     url(r'^markers/(?P<pk>[0-9]+)/$', views.MarkerDetail.as_view(), name='marker-detail'),
-    url(r'^markers/', views.MarkerList.as_view(), name='marker-list'),
+    url(r'^markers/$', views.MarkerList.as_view(), name='marker-list'),
 ))
 
 

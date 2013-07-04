@@ -147,10 +147,12 @@ class MarkerSerializerCounts(MarkerSerializer):
         depth = 0
         
     def get_photo_count(self, obj):
-        return obj.photo_count
+        try: return obj.photo_count
+        except: return None
     
     def get_audio_count(self, obj):
-        return obj.audio_count
+        try: return obj.audio_count
+        except: return None
     
 
         

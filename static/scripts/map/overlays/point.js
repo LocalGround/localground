@@ -69,35 +69,17 @@ localground.point.prototype.dragend = function(latLng) {
 		this.candidateMarker.appendMedia(this); 
     }
     else {
-        /*$.getJSON('/api/0/update-latlng/' + this.getObjectType() + '/' + this.id + '/',
-        {
-            lat: latLng.lat(),
-            lng: latLng.lng()
-        },
-        function(result) {
-            if(!result.success) {
-                alert('ERROR: ' + result.message);
-            }
-            else {
-                me.lat = latLng.lat();
-                me.lng = latLng.lng();
-            }
-        });*/
-		
+		if(this.url.indexOf('.json') == -1)
+			this.url = this.url + '.json';
 		$.ajax({
-			url: this.url + '.json',
+			url: this.url,
 			type: 'PUT',
 			data: {
 				lat: latLng.lat(),
-				lng: latLng.lng(),
-				csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
-				format: 'json'
+				lng: latLng.lng()
 			},
 			beforeSend: function(xhr, settings) {
 				if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-					// Send the token to same-origin, relative URLs only.
-					// Send the token only if the method warrants CSRF protection
-					// Using the CSRFToken value acquired earlier
 					xhr.setRequestHeader("X-CSRFToken", csrftoken);
 				}
 			},

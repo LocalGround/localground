@@ -1,6 +1,8 @@
 localground.slideshow = function(){
     this.player = null;
     this.id = 'slideshow-carousel';
+    this.height = '360px';
+    this.width = '480px';
 };
 
 localground.slideshow.prototype.initialize=function(opts){
@@ -26,25 +28,15 @@ localground.slideshow.prototype.generateCarousel = function() {
         );
 };
 
-/*localground.slideshow.prototype.showModal = function() {
-    this.generateCarousel();            
-    //initialize player:
-    $('#slide-modal').find('.modal-body').empty();
-    
-    //initialize empty carousel:
-    //$('#slide-modal').find('.modal-body').append(this.carousel);
-    $('#slide-modal').modal();
-};*/
-
             
 localground.slideshow.prototype.render_slideshow = function(opts) {
     var marker = opts.marker, $container = opts.$container;
     $container.append(this.generateCarousel());
+    this.render_title_page(marker);
     this.render_photo_slides(marker);
-    this.render_data_slides(marker);
+    //this.render_data_slides(marker);
     this.render_audio(marker);
-    
-    var $c = $('#' + this.id).carousel();
+    var $c = $('#' + this.id).carousel('pause');
     if(opts.applyHack) {
         $('.left, .right').click('[data-slide]', function(e){
             var $this = $(this), href
@@ -55,36 +47,96 @@ localground.slideshow.prototype.render_slideshow = function(opts) {
     }
 }
 
+localground.slideshow.prototype.render_title_page = function(marker) {
+    var $page = $('<div />');
+    $page.append($('<h1 />')
+                    .css({margin: '5px 0px 10px 5px'})
+                    .append($('<img />')
+                            .addClass('header-icon')
+                            .attr('src', '/static/images/place_marker_large.png'))
+                    .append(marker.name));
+    var $body = $('<div />')
+                    .css({'margin': '0px 0px 0px 70px', color: '#444'})
+                    .append(marker.description);
+    if (marker.photos && marker.photos.data.length > 0) {
+        var $holder = $('<div />')
+                            .css({
+                                'display': 'block',
+                                'margin-left': 'auto',
+                                'margin-right': 'auto'
+                                /*,
+                                'border': 'solid 1px #000'*/
+                            });
+        $.each(marker.photos.data, function(idx) {
+            if (idx < 2) { 
+                $holder.append($('<img />').addClass('thumb')
+                             .css({ height: '90px', 'margin-right': '3px' })
+                             .attr('src', this.path_small));
+            }
+        });
+        $body.append($holder);
+    }
+    $page.append($body);
+    var $item = $('<div />').addClass('item active')
+            .append($('<div />').css({
+                height: this.height,
+                width: this.width,
+                color: '#fff',
+                display: 'block'
+            }).append($page))
+            .append($('<div />').addClass('carousel-caption')
+                .append($('<h4 />').html(marker.name)
+                .append($('<p />').html(marker.description || 'Description!'))
+            ));
+    $('#' + this.id).find('.carousel-inner').append($item);
+};
+
+            
+localground.slideshow.prototype.render_photo_slides = function(marker) {
+    var me = this;
+    $.each(marker.photos.data, function(idx) {
+        var $item = $('<div />').addClass('item')
+                .append($('<div />').css({'height': me.height})
+                        .append(
+                            $('<img />')
+                                .attr('src', this.path_large)
+                                .css({
+                                    'max-height': me.height,
+                                    'display': 'block',
+                                    'margin-left': 'auto',
+                                    'margin-right': 'auto'
+                                })
+                        )
+                )
+                .append(
+                    $('<div />').addClass('carousel-caption')
+                        .append($('<h4 />').html(this.name || 'Untitled Photo'))
+                        .append($('<p />').html(this.caption || 'No caption available.'))
+                );
+        //if(idx == 0) { $item.addClass('active'); }
+        $('#' + me.id).find('.carousel-inner').append($item);
+    });
+};
+
 localground.slideshow.prototype.render_audio = function(marker) {
     var me = this;
-    if(marker.audio == null || marker.audio.length == 0){ return; }
+    if(marker.audio == null || marker.audio.data.length == 0){
+        return;
+    }
     var playerHtml = this.player.renderPlayerObject();
     $('#' + this.id).append(
         $('<div />').addClass('audio-controller')
             .append(playerHtml)
     );
-    $.each(marker.audio, function(idx) {
+    $.each(marker.audio.data, function(idx) {
         if(idx > 0)
-            playerHtml.append($('<input type="hidden" />').val(this.path));    
+            playerHtml.append($('<input type="hidden" />').val(this.file_path));    
         else
-            playerHtml.find('input').val(this.path);
+            playerHtml.find('input').val(this.file_path);
     });
     this.player.initialize();
 };
-            
-localground.slideshow.prototype.render_photo_slides = function(marker) {
-    var me = this;
-    $.each(marker.photos, function(idx) {
-        var $item = $('<div />').addClass('item')
-                .append($('<img />').attr('src', this.path_large))
-                .append($('<div />').addClass('carousel-caption')
-                    .append($('<h4 />').html(this.name))
-                    .append($('<p />').html(this.caption))
-                );
-        if(idx == 0) { $item.addClass('active'); }
-        $('#' + me.id).find('.carousel-inner').append($item);
-    });
-};
+
 localground.slideshow.prototype.render_data_slides = function(marker) {
     var me = this;
     $.each(marker.tables, function(idx) {
@@ -96,8 +148,8 @@ localground.slideshow.prototype.render_data_slides = function(marker) {
             $data.append(record.renderSlideRecord());
             var $item = $('<div />').addClass('item')
                     .append($('<div />').css({
-                        height: '450px',
-                        width: '600px',
+                        height: me.height,
+                        width: me.width,
                         color: '#fff',
                         display: 'block'
                     }).append($data))
