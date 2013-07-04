@@ -1,4 +1,4 @@
-from localground.apps.site.models.base import BasePoint
+from localground.apps.site.models import BasePoint
 from django.contrib.gis.db import models
 from datetime import datetime
 

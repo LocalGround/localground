@@ -1,7 +1,7 @@
 from django.contrib.gis.db import models
 from django.conf import settings
 from localground.apps.site.managers import PhotoManager
-from localground.apps.site.models.base import BasePoint, BaseUploadedMedia
+from localground.apps.site.models import BasePoint, BaseUploadedMedia
 import os
 
 class Photo(BasePoint, BaseUploadedMedia):

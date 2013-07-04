@@ -52,15 +52,15 @@ class AudioViewSet(viewsets.ModelViewSet):
                           IsOwnerOrReadOnly,)
     filter_backends = (SQLFilterBackend,)
     
-class MarkerViewSet(viewsets.ModelViewSet):
-    """
-    This viewset automatically provides `list` and `detail` actions.
-    """
-    queryset = Marker.objects.select_related('project', 'owner').all()
-    serializer_class = serializers.MarkerSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
+class MarkerList(generics.ListCreateAPIView):
+    serializer_class = serializers.MarkerSerializerCounts
+    permission_classes = (IsOwnerOrReadOnly,)
     filter_backends = (SQLFilterBackend,)
+
+    paginate_by = 100
+    
+    def get_queryset(self):
+        return Marker.objects.get_objects_with_counts(self.request.user)
     
     def pre_save(self, obj):
         '''
@@ -70,6 +70,33 @@ class MarkerViewSet(viewsets.ModelViewSet):
         obj.last_updated_by = self.request.user
         obj.date_created = datetime.now()
         obj.time_stamp = datetime.now()
+        
+class MarkerDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Marker.objects.select_related('owner').all() #.prefetch_related('photos', 'audio', 'marker_set')
+    permission_classes = (IsOwnerOrReadOnly,)
+    serializer_class = serializers.MarkerSerializer
+    
+    def pre_save(self, obj):
+        '''
+        For update queries
+        '''
+        obj.last_updated_by = self.request.user
+
+'''    
+class MarkerViewSet(viewsets.ModelViewSet):
+    queryset = Marker.objects.select_related('project', 'owner').all()
+    serializer_class = serializers.MarkerSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly,)
+    filter_backends = (SQLFilterBackend,)
+    
+    def pre_save(self, obj):
+        obj.owner = self.request.user
+        obj.last_updated_by = self.request.user
+        obj.date_created = datetime.now()
+        obj.time_stamp = datetime.now()
+'''       
+
         
 class ProjectList(generics.ListCreateAPIView):
     serializer_class = serializers.ProjectSerializer

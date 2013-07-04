@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 from localground.apps.site.managers import SnippetManager
-from localground.apps.site.models.base import BasePoint, BaseMedia
+from localground.apps.site.models import BasePoint, BaseMedia
 
 class Snippet(BasePoint, BaseMedia):
     source_attachment   = models.ForeignKey('Attachment')

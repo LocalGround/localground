@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 from localground.apps.site.models import ObjectTypes
 from datetime import datetime    
 from localground.apps.site.managers import MarkerManager
-from localground.apps.site.models.base import BaseUploadedMedia
+from localground.apps.site.models import BaseUploadedMedia
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video

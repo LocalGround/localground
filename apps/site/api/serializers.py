@@ -139,7 +139,19 @@ class MarkerSerializer(PointSerializer):
         }
     
 class MarkerSerializerCounts(MarkerSerializer):
-    pass
+    photo_count = serializers.SerializerMethodField('get_photo_count')
+    audio_count = serializers.SerializerMethodField('get_audio_count')
+    class Meta:
+        model = models.Marker
+        fields = PointSerializer.Meta.fields + ('photo_count', 'audio_count', 'color',)
+        depth = 0
+        
+    def get_photo_count(self, obj):
+        return obj.photo_count
+    
+    def get_audio_count(self, obj):
+        return obj.audio_count
+    
 
         
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -153,7 +165,6 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('name', )
         
 class ProjectSerializer(BaseSerializer):
-    
     class Meta:
         model = models.Project
         fields = BaseSerializer.Meta.fields + ('owner', 'slug')
@@ -163,30 +174,40 @@ class ProjectSerializer(BaseSerializer):
 class ProjectDetailSerializer(BaseSerializer):
     #photos = PhotoSerializer(many=True, read_only=True, source='photo')
     #audio = AudioSerializer(many=True, read_only=True, source='audio')
+    #markers = MarkerSerializer(many=True, read_only=True, source='marker_set')
     photos = serializers.SerializerMethodField('get_photos')
     audio = serializers.SerializerMethodField('get_audio')
-    markers = MarkerSerializer(many=True, read_only=True, source='marker_set')
+    markers = serializers.SerializerMethodField('get_markers')
     
     class Meta:
         model = models.Project
-        fields = BaseSerializer.Meta.fields + ('slug', 'photos', 'audio')
+        fields = BaseSerializer.Meta.fields + ('slug', 'photos', 'audio', 'markers')
         depth = 0
         
     def get_photos(self, obj):
-        return self.get_children(models.Photo, obj)    
+        data = PhotoSerializer(
+                models.Photo.objects.get_objects(obj.owner, project=obj)
+            ).data
+        return self.get_children(models.Photo, obj, data)    
     
     def get_audio(self, obj):
-        return self.get_children(models.Audio, obj)
+        data = AudioSerializer(
+                models.Audio.objects.get_objects(obj.owner, project=obj)
+            ).data
+        return self.get_children(models.Audio, obj, data)
     
     def get_markers(self, obj):
-        return self.get_children(models.Marker, obj)
+        data = MarkerSerializerCounts(
+                models.Marker.objects.get_objects_with_counts(obj.owner, project=obj)
+            ).data
+        return self.get_children(models.Marker, obj, data)
     
-    def get_children(self, cls, obj):
+    def get_children(self, cls, obj, data):
         return {
             'id': cls.model_name,
             'name': cls.model_name_plural.title(),
             'overlay_type': cls.model_name,
-            'data': AudioSerializer(cls.objects.get_objects(obj.owner, project=obj), many=True).data
+            'data': data
         }
      
     

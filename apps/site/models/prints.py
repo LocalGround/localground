@@ -3,7 +3,7 @@ from datetime import datetime
 from localground.apps.site.managers import PrintManager
 #from localground.apps.site.models import Base
 from django.conf import settings
-from localground.apps.site.models.base import BaseMedia, BaseExtents
+from localground.apps.site.models import BaseMedia, BaseExtents
                                                    
 class Print(BaseExtents, BaseMedia):
     name = 'print'

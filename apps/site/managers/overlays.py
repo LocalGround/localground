@@ -2,18 +2,30 @@ from django.contrib.gis.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
 from localground.apps.site.managers.base import BaseMixin, GenericLocalGroundError
-from localground.apps.site.models import Photo, Audio
 #Useful reference for chaining Model Managers together:
 #    http://djangosnippets.org/snippets/2114/
 
 
 class MarkerMixin(BaseMixin):
     
-    def get_objects_with_counts(self, user, filter=None, ordering_field=None):
+    def get_objects(self, user, project=None, filter=None, ordering_field=None):
+        if user is None:
+            raise GenericLocalGroundError('The user cannot be empty')
+            
+        q = self.model.objects.distinct().select_related('owner', 'project', 'last_updated_by')
+        q = q.filter(Q(project__owner=user) | Q(project__users__user=user))
+        if project:
+            q = q.filter(project=project)
+        if ordering_field is not None:
+            q =  q.order_by(ordering_field)
+        return q
+    
+    def get_objects_with_counts(self, user, project=None, filter=None, ordering_field=None):
         # Excellent resource on using extras:
         # http://timmyomahony.com/blog/2012/11/16/filtering-annotations-django/
-        
-        q = self.get_objects(user, filter=filter, ordering_field=ordering_field)
+        from localground.apps.site.models import Photo, Audio, Marker
+
+        q = self.get_objects(user, project=project, filter=filter, ordering_field=ordering_field)
         select = {}
         group_type_id = Marker.get_content_type().id
         for cls in [Photo, Audio]:
@@ -22,7 +34,8 @@ class MarkerMixin(BaseMixin):
                 WHERE e.entity_type_id = %s AND e.group_type_id = %s AND 
                 e.group_id = site_marker.id
                 ''' % (cls.get_content_type().id, group_type_id)     
-        return q.extra(select)
+        q = q.extra(select)
+        return q
 
     
     def by_projects_with_counts(self, project_ids):

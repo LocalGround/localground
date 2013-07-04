@@ -1,6 +1,9 @@
 from django.contrib.gis.db import models
 from localground.apps.site.models.abstract.audit import BaseAudit 
-from tagging_autocomplete.models import TagAutocompleteField        
+from tagging_autocomplete.models import TagAutocompleteField
+import base64
+from django.conf import settings
+import os, stat
     
 class BaseMedia(BaseAudit):
     host = models.CharField(max_length=255)

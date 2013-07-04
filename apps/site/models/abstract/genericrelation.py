@@ -2,9 +2,6 @@
 from django.contrib.gis.db import models
 from datetime import datetime, timedelta
 from localground.apps.site.models.abstract.named import BaseNamed
-from django.conf import settings
-import os, stat
-import base64
     
 
 class BaseGenericRelations(BaseNamed):
