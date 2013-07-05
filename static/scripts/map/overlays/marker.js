@@ -19,6 +19,8 @@ localground.marker = function(opts){
     this.image = this.markerImage = this.iconSmall = this.iconLarge =
         'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
         this.color + '|13|b|';
+    this.bubbleWidth = 480;
+    this.bubbleHeight = 360;
 };
 
 localground.marker.prototype = new localground.point();
@@ -75,10 +77,6 @@ localground.marker.prototype.renderMarkerSection = function() {
     return $('<div></div>').css({'margin-bottom': '0px'});
 };
 
-localground.marker.prototype.showInfoBubbleEdit = function(opts) {
-    this.showInfoBubbleView(opts);
-};
-
 localground.marker.prototype.deleteMarker = function() {
     var me = this;
     $.getJSON('/api/0/delete/marker/' + this.id + '/', 
@@ -119,44 +117,27 @@ localground.marker.prototype.updateMarker = function() {
 localground.marker.prototype.renderInfoBubble = function() {
     var me = this;
     var $contentContainer = $('<div></div>').css({
-            'width': this.isEditMode() ? 414 : 480,
-            'height': this.isEditMode() ? 270 : 360,
-            'margin': this.isEditMode() ? '5px 0px 5px 10px' : '0px',
-            'overflow-y': this.isEditMode() ? 'auto' : 'hidden',
+            'width': this.bubbleWidth,
+            'height': this.bubbleHeight,
+            //'width': this.isEditMode() ? 414 : 480,
+            //'height': this.isEditMode() ? 270 : 360,
+            //'margin': this.isEditMode() ? '5px 0px 5px 10px' : '0px',
+            //'overflow-y': this.isEditMode() ? 'auto' : 'hidden',
+            'margin': '0px',
+            'overflow-y': 'hidden',
             'overflow-x': 'hidden'
         }).append(this.getManagerById(self.overlay_types.MARKER).getLoadingImage());
     var showHeader = this.isEditMode() ? true : false;
+    showHeader = false;
     self.infoBubble.setHeaderText(showHeader ? this.name.truncate(5) : null);
-    if(this.isEditMode()) {
-        var $footer = $('<div></div>')
-        .css({ 'margin': '5px 0px 0px 165px' })
-        .append(
-            $('<input id="form_submit" type="button" class="btn primary" />')
-            .val('Save')
-            .css({ 'margin-right': '5px' })
-            .click(function() {
-                me.updateMarker();
-            }))
-        .append(
-            $('<input type="button" class="btn" />')
-            .val('Delete')
-            .click(function() {
-                var confirmDelete = confirm('Are you sure you want to delete this marker?');
-                if(confirmDelete)
-                    me.deleteMarker();  
-            }));
-        self.infoBubble.setFooter($footer.get(0));   
-    }
-    else {
-        self.infoBubble.setFooter(null);
-    }
+    self.infoBubble.setFooter(null);
     self.infoBubble.doNotPad = true;
     self.infoBubble.setContent($contentContainer.get(0)); 
     self.infoBubble.open(self.map, this.googleOverlay);
     return $contentContainer; 
 };
 
-localground.marker.prototype.renderInfoBubbleHeader = function($container) {
+localground.marker.prototype.renderInfoBubbleHeader_deleteme = function($container) {
     var me = this;
     if(this.isEditMode()) {
         $container.append(
@@ -215,7 +196,7 @@ localground.marker.prototype.renderInfoBubbleHeader = function($container) {
     }
 };
 
-localground.marker.prototype.renderInfoBubblePhotos = function($container) {
+localground.marker.prototype.renderInfoBubblePhotos_deleteme = function($container) {
     if(this.photoIDs == null) return;
     var me = this;
     $section = this.renderMarkerSection();
@@ -262,7 +243,7 @@ localground.marker.prototype.renderInfoBubblePhotos = function($container) {
     });
 };
 
-localground.marker.prototype.renderInfoBubbleAudio = function($container) {      
+localground.marker.prototype.renderInfoBubbleAudio_deleteme = function($container) {      
     if(this.audioIDs == null) return;
     var me = this;
     $section = this.renderMarkerSection();
@@ -298,7 +279,7 @@ localground.marker.prototype.renderInfoBubbleAudio = function($container) {
     });
 };
 
-localground.marker.prototype.renderInfoBubbleRecords = function($container) { 
+localground.marker.prototype.renderInfoBubbleRecords_deleteme = function($container) { 
     if(this.recordIDs == null) return;
     var me = this;
     $section = this.renderMarkerSection();
@@ -326,25 +307,25 @@ localground.marker.prototype.renderInfoBubbleRecords = function($container) {
 };
 
 localground.marker.prototype.showInfoBubbleView = function(opts) {
+    this.renderMarkerDetail('buildSlideshow');
+};
+
+localground.marker.prototype.showInfoBubbleEdit = function(opts) {
+    this.renderMarkerDetail('buildEditForm');
+};
+
+localground.marker.prototype.renderMarkerDetail = function(callback){
     var me = this;
-    //build bubble content:
     var $contentContainer = this.renderInfoBubble();
-    var url = '/api/0/markers/' + this.id + '/.json';
-    $.getJSON(url, 
+    $contentContainer.children().empty();
+    $.getJSON(this.url, 
         function(result) {
+            // this is a bit of a hack, but it preserves the scope:
             $.extend(me, result);
-            $contentContainer.children().empty();
-            
-            $container = $('<div></div>');
-            $contentContainer.append($container);
-            self.slideshow.render_slideshow({
-                marker: me,
-                $container: $container,
-                applyHack: true
-            });
+            var callbackF = eval('localground.marker.prototype.' + callback);
+            callbackF.call(me, $contentContainer);
         },
     'json');
-    
     
     if(self == null) {
         alert('The variable self should be set to the map controller in the \
@@ -356,48 +337,111 @@ localground.marker.prototype.showInfoBubbleView = function(opts) {
     this.googleOverlay.setMap(self.map);
 };
 
-localground.marker.prototype.showInfoBubbleView1 = function(opts) {
-    var me = this;
-    //build bubble content:
-    var $contentContainer = this.renderInfoBubble();
-    var url = '/api/0/get/marker/' + this.id + '/';
-    if(this.accessKey != null)
-        url += this.accessKey + '/';
-    $.getJSON(url, 
-        function(result) {
-            if(result.obj == null){
-                alert(result.message);
-                return;
-            }
-            $.extend(me, result.obj);
-            $container = $('<div></div>');
-            me.renderInfoBubbleHeader($container);
-            me.renderInfoBubblePhotos($container);
-            me.renderInfoBubbleAudio($container);
-            me.renderInfoBubbleRecords($container);
-            $contentContainer.children().empty();
-            
-            $container.append(
-                $('<button class="btn primary">Test</button>').click(function(){
-                    $('#slide-modal').find('.modal-body').empty();
-                    self.slideshow.render_slideshow(me, $('#slide-modal').find('.modal-body'));
-                    $('#slide-modal').modal();
-                })
-            )
-            $contentContainer.append($container);
-        },
-    'json');    
-    
-    if(self == null) {
-        alert('The variable self should be set to the map controller in the \
-                parent class');
-        return;
-    }
-    //ensures that the marker renders on top:
-    this.googleOverlay.setMap(null);
-    this.googleOverlay.setMap(self.map);
+localground.marker.prototype.buildSlideshow = function($contentContainer){
+    $container = $('<div></div>');
+    $contentContainer.append($container);
+    self.slideshow.render_slideshow({
+        marker: this,
+        $container: $container,
+        applyHack: true
+    });
+};
 
-    
+localground.marker.prototype.buildEditForm = function($contentContainer){
+    var me = this;
+    $container = $('<div />').css({'padding': '5px'});
+    $contentContainer.append($container);
+    var $ul = $('<ul />')
+					.attr('id', 'marker-tabs')
+					.addClass('tabs');
+    var pages = ['Detail', 'Photos', 'Audio', 'Maps'];
+    $.each(pages, function(index){
+        $ul.append(
+            $('<li />')
+                .append($('<a />')
+                        .attr('href', '#' + pages[index].toLowerCase() + '-' + 'marker')
+                        .attr('data-toggle', 'tab')
+                        .html(pages[index]))
+        );    
+    });
+    $container.append($ul);
+	$tc = $('<div />').addClass("tab-content clearfix");
+    $container.append($tc);
+    $.each(pages, function(index){
+        $tc.append(
+            $('<div />')
+                .addClass('tab-pane')
+                .attr('id', pages[index].toLowerCase() + '-' + 'marker')
+                .append(me.renderPanel(pages[index].toLowerCase()))
+        );    
+    });
+    $('#marker-tabs a:first').tab('show');
+    $('#marker-tabs a').click(function (e) {
+		e.preventDefault();
+		$(this).tab('show');
+	});
+};
+
+localground.marker.prototype.renderPanel = function(key){
+    var $overflower = $('<div />').css({ height: '280px', 'overflow-y': 'auto' });
+                
+    switch (key) {
+        case 'detail':
+            return $overflower.append(this.renderFormPanel());
+        case 'photos':
+            return $overflower.append(this.renderPhotoPanel());
+        case 'audio':
+            return $overflower.append(this.renderAudioPanel());
+        case 'maps':
+            return $overflower.append(this.renderPhotoPanel());
+    }
+    return $overflower;
+};
+
+localground.marker.prototype.renderPhotoPanel = function(){
+    var $container = $('<div />');
+    $.each(this.photos.data, function(idx) {
+        var $holder = $('<div />').css({'display': 'block'});
+        $holder.append(
+            $('<img />').addClass('thumb')
+                 .css({'margin-right': '5px', 'vertical-align': 'top' })
+                 .attr('src', this.path_marker_lg))
+            .append(
+                $('<p />').css({'display': 'inline-block' })
+                    .append(
+                        $('<span />').css({ 'font-weight': 'bold' })
+                            .html(this.name))     
+                    .append($('<br />'))
+                    .append(this.caption)     
+            );
+        $container.append($holder);
+    });
+    return $container;
+};
+
+localground.marker.prototype.renderFormPanel = function(){
+    return "Name:<br>Caption:<br>Tags:<br>Color:<br>Lat/Lng:";  
+};
+
+localground.marker.prototype.renderAudioPanel = function(){
+    var $container = $('<div />');
+    $.each(this.audio.data, function(idx) {
+        var $holder = $('<div />').css({'display': 'block'});
+        $holder.append(
+            $('<img />')
+                 .css({'margin-right': '5px', 'vertical-align': 'top' })
+                 .attr('src', '/static/images/headphones_small.png'))
+            .append(
+                $('<p />').css({'display': 'inline-block' })
+                    .append(
+                        $('<span />').css({ 'font-weight': 'bold' })
+                            .html(this.name))     
+                    .append($('<br />'))
+                    .append(this.caption)     
+            );
+        $container.append($holder);
+    });
+    return $container;
 };
 
 localground.marker.prototype.makeViewable = function() {

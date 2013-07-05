@@ -2617,9 +2617,9 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
    text-align: center;
    margin: 0 auto;
    background: #fff;
-   padding: 6px;
+   padding: 2px;
    border: 1px solid #ccc;
-   margin: 10px 0;
+   margin: 0px 0;
    -webkit-box-shadow: 1px 2px 2px rgba(0,0,0,.2);
    -moz-box-shadow: 1px 2px 2px rgba(0,0,0,.2);
    box-shadow: 1px 2px 2px rgba(0,0,0,.2);
@@ -3100,6 +3100,14 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
           border-radius: 23px;
   opacity: 0.5;
   filter: alpha(opacity=50);
+}
+
+/* For smaller control arrows, override defaults...*/
+.carousel-control {
+  width: 30px;
+  height: 30px;
+  font-size: 40px;
+  line-height: 25px;
 }
 
 .carousel-control.right {

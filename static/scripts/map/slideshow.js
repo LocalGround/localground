@@ -56,16 +56,15 @@ localground.slideshow.prototype.render_title_page = function(marker) {
                             .attr('src', '/static/images/place_marker_large.png'))
                     .append(marker.name));
     var $body = $('<div />')
-                    .css({'margin': '0px 0px 0px 70px', color: '#444'})
+                    .css({'margin': '0px 60px 0px 60px', color: '#444'})
                     .append(marker.description);
     if (marker.photos && marker.photos.data.length > 0) {
         var $holder = $('<div />')
                             .css({
                                 'display': 'block',
                                 'margin-left': 'auto',
-                                'margin-right': 'auto'
-                                /*,
-                                'border': 'solid 1px #000'*/
+                                'margin-right': 'auto',
+                                'text-align': 'center'
                             });
         $.each(marker.photos.data, function(idx) {
             if (idx < 2) { 
@@ -83,11 +82,11 @@ localground.slideshow.prototype.render_title_page = function(marker) {
                 width: this.width,
                 color: '#fff',
                 display: 'block'
-            }).append($page))
-            .append($('<div />').addClass('carousel-caption')
-                .append($('<h4 />').html(marker.name)
-                .append($('<p />').html(marker.description || 'Description!'))
-            ));
+            }).append($page));
+            /*.append($('<div />').addClass('carousel-caption')
+                .append($('<h4 />').html(marker.name))
+                .append($('<p />').html(marker.description || 'Description!')
+            ));*/
     $('#' + this.id).find('.carousel-inner').append($item);
 };
 
