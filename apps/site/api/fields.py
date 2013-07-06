@@ -5,44 +5,55 @@ from django.contrib.auth.models import User
 from localground.apps.site import models
 
 class OwnerField(serializers.WritableField):
-    def to_native(self, obj):
-        return obj.id
+	def to_native(self, obj):
+		return obj.id
 
-    def from_native(self, data):
-        return User.objects.get(id=int(data))
-    
+	def from_native(self, data):
+		return User.objects.get(id=int(data))
+	
 class ProjectField(serializers.WritableField):
-    def to_native(self, obj):
-        return obj.id
+	def to_native(self, obj):
+		return obj.id
 
-    def from_native(self, data):
-        return models.Project.objects.get(id=int(data))
-    
+	def from_native(self, data):
+		id = None
+		try:
+			id = int(data)
+		except:
+			raise serializers.ValidationError("Project ID must be an integer")
+		try:
+			return models.Project.objects.get(id=id)
+		except models.Project.DoesNotExist:
+			raise serializers.ValidationError("Project ID \"%s\" does not exist" % data)
+		except:
+			raise serializers.ValidationError("project_id=%s is invalid" % data)
+		
+	
 class PointField(serializers.WritableField):
-    def field_from_native(self, data, files, field_name, into):
-        try:
-            native = '%s;%s' % (data['lng'], data['lat'])
-        except KeyError:
-            if self.required:
-                raise ValidationError('Both a "lat" variable and a "lng" variable are required')
-            return
-        try:
-            value = self.to_point(native)
-            into['point'] =  self.to_point(native)
-        except:
-            raise Exception('Invalid "lat" or "lng" parameter')
-        
-    def to_point(self, data):
-        lng_lat = data.split(';')
-        lng, lat = lng_lat[0], lng_lat[1]
-        return GEOSGeometry('SRID=%s;POINT(%s %s)' % (4326, lng, lat))
+	def field_from_native(self, data, files, field_name, into):
+		try:
+			native = '%s;%s' % (data['lng'], data['lat'])
+		except KeyError:
+			if self.required:
+				raise serializers.ValidationError('Both a "lat" variable and a "lng" variable are required')
+			return
+		try:
+			value = self.to_point(native)
+			into['point'] =  self.to_point(native)
+		except:
+			raise serializers.ValidationError('Invalid "lat" or "lng" parameter')
+		
+	def to_point(self, data):
+		lng_lat = data.split(';')
+		lng, lat = lng_lat[0], lng_lat[1]
+		return GEOSGeometry('SRID=%s;POINT(%s %s)' % (4326, lng, lat))
 
-    def to_native(self, obj):
-        if obj is not None:
-            return {
-                'lng': obj.x,
-                'lat': obj.y
-            }
+	def to_native(self, obj):
+		if obj is not None:
+			return {
+				'lng': obj.x,
+				'lat': obj.y
+			}
 
 class EntityTypeField(serializers.ChoiceField):
 	choices = [

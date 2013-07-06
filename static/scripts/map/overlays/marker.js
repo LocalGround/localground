@@ -77,7 +77,7 @@ localground.marker.prototype.renderMarkerSection = function() {
     return $('<div></div>').css({'margin-bottom': '0px'});
 };
 
-localground.marker.prototype.deleteMarker = function() {
+/*localground.marker.prototype.deleteMarker = function() {
     var me = this;
     $.getJSON('/api/0/delete/marker/' + this.id + '/', 
         function(result) {
@@ -112,17 +112,13 @@ localground.marker.prototype.updateMarker = function() {
             me.showInfoBubble();
         },
         'json');
-}
+}*/
 
 localground.marker.prototype.renderInfoBubble = function() {
     var me = this;
     var $contentContainer = $('<div></div>').css({
             'width': this.bubbleWidth,
             'height': this.bubbleHeight,
-            //'width': this.isEditMode() ? 414 : 480,
-            //'height': this.isEditMode() ? 270 : 360,
-            //'margin': this.isEditMode() ? '5px 0px 5px 10px' : '0px',
-            //'overflow-y': this.isEditMode() ? 'auto' : 'hidden',
             'margin': '0px',
             'overflow-y': 'hidden',
             'overflow-x': 'hidden'
@@ -136,6 +132,418 @@ localground.marker.prototype.renderInfoBubble = function() {
     self.infoBubble.open(self.map, this.googleOverlay);
     return $contentContainer; 
 };
+
+localground.marker.prototype.showInfoBubbleView = function(opts) {
+    this.renderMarkerDetail('buildSlideshow');
+};
+
+localground.marker.prototype.showInfoBubbleEdit = function(opts) {
+    this.renderMarkerDetail('buildEditForm');
+};
+
+localground.marker.prototype.renderMarkerDetail = function(callback){
+    var me = this;
+    var $contentContainer = this.renderInfoBubble();
+    $contentContainer.children().empty();
+    $.getJSON(this.url, 
+        function(result) {
+            // this is a bit of a hack, but it preserves the scope:
+            $.extend(me, result);
+            var callbackF = eval('localground.marker.prototype.' + callback);
+            callbackF.call(me, $contentContainer);
+        },
+    'json');
+    
+    if(self == null) {
+        alert('The variable self should be set to the map controller in the \
+                parent class');
+        return;
+    }
+    //ensures that the marker renders on top:
+    this.googleOverlay.setMap(null);
+    this.googleOverlay.setMap(self.map);
+};
+
+localground.marker.prototype.buildSlideshow = function($contentContainer){
+    $container = $('<div></div>');
+    $contentContainer.append($container);
+    self.slideshow.render_slideshow({
+        marker: this,
+        $container: $container,
+        applyHack: true
+    });
+};
+
+localground.marker.prototype.buildEditForm = function($contentContainer){
+    var me = this;
+    $container = $('<div />').css({'padding': '5px'});
+    $contentContainer.append($container);
+    var $ul = $('<ul />')
+					.attr('id', 'marker-tabs')
+					.addClass('tabs');
+    var pages = ['Detail', 'Photos', 'Audio', 'Maps', 'Observations'];
+    $.each(pages, function(index){
+        $ul.append(
+            $('<li />')
+                .append($('<a />')
+                        .attr('href', '#' + pages[index].toLowerCase() + '-' + 'marker')
+                        .attr('data-toggle', 'tab')
+                        .html(pages[index]))
+        );    
+    });
+    $container.append($ul);
+	$tc = $('<div />').addClass("tab-content clearfix");
+    $container.append($tc);
+    $.each(pages, function(index){
+        $tc.append(
+            $('<div />')
+                .addClass('tab-pane')
+                .attr('id', pages[index].toLowerCase() + '-' + 'marker')
+                .append(me.renderPanel(pages[index].toLowerCase()))
+        );    
+    });
+    $('#marker-tabs a:first').tab('show');
+    $('#marker-tabs a').click(function (e) {
+		e.preventDefault();
+		$(this).tab('show');
+	});
+};
+
+localground.marker.prototype.renderPanel = function(key){
+    var $overflower = $('<div />').css({ height: '280px', 'overflow-y': 'auto' });
+                
+    switch (key) {
+        case 'detail':
+            return $overflower.append(this.renderFormPanel());
+        case 'photos':
+            return $overflower.append(this.renderPhotoPanel());
+        case 'audio':
+            return $overflower.append(this.renderAudioPanel());
+        //case 'maps':
+        //    return $overflower.append(this.renderPhotoPanel());
+    }
+    return $overflower.append('Not implemented yet.');
+};
+
+localground.marker.prototype.renderPhotoPanel = function(){
+    var $container = $('<div />');
+    $.each(this.photos.data, function(idx) {
+        var $holder = $('<div />').css({'display': 'block'});
+        $holder.append(
+            $('<img />').addClass('thumb')
+                 .css({'margin-right': '5px', 'vertical-align': 'top' })
+                 .attr('src', this.path_marker_lg))
+            .append(
+                $('<p />').css({'display': 'inline-block' })
+                    .append(
+                        $('<span />').css({ 'font-weight': 'bold' })
+                            .html(this.name))     
+                    .append($('<br />'))
+                    .append(this.caption)
+                    .append($('<br />')) 
+                    .append($('<a />').addClass('remove-photo').attr('href', '#').html('remove'))     
+            );
+        $container.append($holder);
+    });
+    return $container;
+};
+
+localground.marker.prototype.renderFormPanel = function(){
+    var me = this;
+    var fields = [
+		{ label: 'Name', name: 'name', type: 'textarea', value: this.name },
+		{ label: 'Caption', name: 'description', value: this.description },
+		{ label: 'Tags', name: 'tags', value: this.tags },
+		{ label: 'Color', name: 'color', value: this.color }
+	];
+	$form = $('<form id="update-marker-form"/>');
+	$.each(fields, function(){
+		$form.append(
+			$('<div />').addClass('clearfix')
+				.append(
+					$('<label />').attr('for', this.name).html(this.label + ':')
+				).append(
+					$('<div />').addClass('input')
+						.append(
+							$('<input />')
+                                .attr('name', this.name)
+                                .attr('id', 'marker_' + this.name)
+                                .attr('type','text')
+                                .attr('value', this.value)
+						)		
+				)
+		);
+	});
+    $form.append(
+        $('<div />').addClass('clearfix')
+            .append(
+                $('<div />').addClass('input')
+                    .append(
+                        $('<button />').addClass('btn primary')
+                            .css({'margin-right': '5px'})
+                            .html('Save')
+                            .click(function(){
+                                me.updateMarker();
+                                return false;
+                            })
+                            
+                    ).append(
+                        $('<button />').addClass('btn')
+                            .html('Delete')
+                            .click(function(){
+                                me.deleteMarker();
+                                return false;
+                            })
+                            
+                    )		
+            )
+    );
+	return $form;  
+};
+
+localground.marker.prototype.renderAudioPanel = function(){
+    var $container = $('<div />');
+    $.each(this.audio.data, function(idx) {
+        var $holder = $('<div />').css({'display': 'block'});
+        $holder.append(
+            $('<img />')
+                 .css({'margin-right': '5px', 'vertical-align': 'top' })
+                 .attr('src', '/static/images/headphones_small.png'))
+            .append(
+                $('<p />').css({'display': 'inline-block' })
+                    .append(
+                        $('<span />').css({ 'font-weight': 'bold' })
+                            .html(this.name))     
+                    .append($('<br />'))
+                    .append(this.caption)
+                    .append($('<br />')) 
+                    .append($('<a />').addClass('remove-audio').attr('href', '#').html('remove'))       
+            );
+        $container.append($holder);
+    });
+    return $container;
+};
+
+
+localground.marker.prototype.updateMarker = function() {
+    var me = this;
+    var url = me.url;
+    if (url.indexOf('.json') == -1)
+        url += '.json';
+    $.ajax({
+        url: url,
+        type: 'PUT',
+        data: {
+            name: $('#marker_name').val(),
+            description: $('#marker_description').val(),
+            tags: $('#marker_tags').val(),
+            color: $('#marker_color').val(),
+            lat: me.point.lat,
+            lng: me.point.lng
+        },
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        },
+        success: function(data) {
+            $.extend(me, data);
+            $('#success').show();
+            $('#success-message-text').html('Your marker has been successfully updated.');
+            me.image = me.markerImage = me.iconSmall = me.iconLarge =
+            'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
+            me.color + '|13|b|';
+            me.googleOverlay.setIcon(me.getIcon());
+            me.renderListing();
+            me.showInfoBubble();
+        },
+        notmodified: function(data) { alert('Not modified'); },
+        error: function(data) {
+            $('#update-marker-form').find('.clearfix').removeClass('error');
+            var result = JSON.parse(data.responseText);
+            for (var key in result) {
+                var $form_element = $('#update-marker-form').find('#marker_' + key);
+                if ($form_element.get(0)) {
+                    $form_element.parent().parent().addClass('error');
+                    $form_element.parent().prepend(result[key]);
+                }
+                else {
+                    $('#error').show();
+                    $('#error-message-text').html(result[key]);
+                }
+            }
+        }
+    });   
+};
+
+localground.marker.prototype.deleteMarker = function() {
+    var me = this;
+    var url = me.url;
+    if (url.indexOf('.json') == -1)
+        url += '.json';
+    $.ajax({
+        url: url,
+        type: 'DELETE',
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        },
+        success: function(data) {
+            $('#success').show();
+            $('#success-message-text').html('Your marker has been successfully deleted.');
+            me.getManager().removeRecord(me);
+        },
+        notmodified: function(data) { alert('Not modified'); },
+        error: function(data) {
+            $('#update-marker-form').find('.clearfix').removeClass('error');
+            var result = JSON.parse(data.responseText);
+            for (var key in result) {
+                $('#error').show();
+                $('#error-message-text').append(result[key]);
+            }
+        }
+    });   
+};
+
+localground.marker.prototype.makeViewable = function() {
+	localground.point.prototype.makeViewable.call(this);
+};
+
+localground.marker.prototype.createNew = function(googleOverlay, projectID) {
+    var me = this;
+    $.ajax({
+        url: '/api/0/markers/?format=json',
+        type: 'POST',
+        data: {
+            lat: googleOverlay.getPosition().lat(),
+            lng: googleOverlay.getPosition().lng(),
+            project_id: projectID,
+            color: 'CCCCCC',
+            csrfmiddlewaretoken: csrftoken,
+            format: 'json'
+        },
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        },
+        success: function(data) {
+            //alert(JSON.stringify(data));
+            $.extend(me, data);
+            //add to marker manager:
+            me.getManager().addNewOverlay(me);
+            //remove temporary marker:
+            googleOverlay.setMap(null);
+        },
+        notmodified: function(data) { alert('Not modified'); },
+        error: function(data) { alert('Error'); }
+    });
+    
+};
+
+localground.marker.prototype.appendMedia = function(media) {
+    var me = this;
+    $.getJSON('/api/0/marker/append/' + this.id + '/' + media.getObjectType() +
+              '/' + media.id + '/', 
+        function(result) {
+            //todo:  reload marker info:
+            $.extend(me, result.marker);
+            if(media.getObjectType() == 'marker') {
+                me.getManagerById(self.overlay_types.MARKER).removeRecord(media);
+            }
+            me.renderListing();
+            me.googleOverlay.setIcon(me.markerImage);
+            me.googleOverlay.setOptions({ 'draggable': true });
+            me.closeInfoBubble();
+        },
+    'json');
+};
+
+localground.marker.prototype.removeFromMarker = function($elem, obj) {
+    var me = this;
+    var url = '/api/0/marker/remove/' + obj.getObjectType() +
+        '/' + obj.id + '/';
+   
+    $.getJSON(url, 
+        function(result) {
+            if(result.obj == null){
+                var spliceIndex = -1;
+                switch(obj.getObjectType()){
+                    case 'photo':
+                        for(i=0; i < me.photoIDs.length; i++){
+                            if(me.photoIDs[i] == obj.id) {
+                                me.photoIDs.splice(i, 1);
+                                break;
+                            }
+                        }
+                        if(me.getPhotoCount() == 0)
+                            $elem.parent().parent().remove();      
+                        else
+                            $elem.parent().remove();
+                        break;
+                    case 'audio':
+                        for(i=0; i < me.audioIDs.length; i++){
+                            if(me.audioIDs[i] == obj.id) {
+                                me.audioIDs.splice(i, 1);
+                                break;
+                            }
+                        }
+                        if(me.getAudioCount() == 0)
+                            $elem.parent().parent().parent().remove();      
+                        else
+                            $elem.parent().remove();
+                        break;
+                    case 'video':
+                        alert('not implemented');
+                        break;
+                    default:
+                        $.each(me.recordIDs, function(tableID, recordIDs){
+                            $.each(recordIDs, function(idx) {
+                                if(obj.tableID == tableID &&
+                                   obj.id == this) {
+                                    me.recordIDs[tableID].splice(idx, 1);
+                                    return;
+                                }
+                            });
+                        });
+                        //--me.audio_count;
+                        if(me.getRecordCount() == 0)
+                            $elem.parent().parent().remove();      
+                        else
+                            $elem.parent().remove();
+                        break;
+                }
+                obj.markerID = null;
+                
+                //if container's invisible, show it:
+                obj.getManager().addDataContainer();
+                
+                //render child object in the viewer:
+                obj.renderOverlay({turnedOn: true});
+                obj.renderListing();
+                
+                //update container visibility:
+                obj.getManager().updateVisibility();
+                
+                //re-render marker listing:
+                me.renderListing();
+                return;
+            }
+        },
+        'json');   
+};
+
+localground.marker.prototype.mouseoverF = function(){
+	var $innerObj = $('<div style="text-align:center" />')
+                        .append(this.renderListingText());
+	this.showTip({
+		contentContainer: $innerObj,
+        height: '40px',
+        width: '200px'
+	});
+};
+
 
 localground.marker.prototype.renderInfoBubbleHeader_deleteme = function($container) {
     var me = this;
@@ -306,280 +714,5 @@ localground.marker.prototype.renderInfoBubbleRecords_deleteme = function($contai
     });
 };
 
-localground.marker.prototype.showInfoBubbleView = function(opts) {
-    this.renderMarkerDetail('buildSlideshow');
-};
-
-localground.marker.prototype.showInfoBubbleEdit = function(opts) {
-    this.renderMarkerDetail('buildEditForm');
-};
-
-localground.marker.prototype.renderMarkerDetail = function(callback){
-    var me = this;
-    var $contentContainer = this.renderInfoBubble();
-    $contentContainer.children().empty();
-    $.getJSON(this.url, 
-        function(result) {
-            // this is a bit of a hack, but it preserves the scope:
-            $.extend(me, result);
-            var callbackF = eval('localground.marker.prototype.' + callback);
-            callbackF.call(me, $contentContainer);
-        },
-    'json');
-    
-    if(self == null) {
-        alert('The variable self should be set to the map controller in the \
-                parent class');
-        return;
-    }
-    //ensures that the marker renders on top:
-    this.googleOverlay.setMap(null);
-    this.googleOverlay.setMap(self.map);
-};
-
-localground.marker.prototype.buildSlideshow = function($contentContainer){
-    $container = $('<div></div>');
-    $contentContainer.append($container);
-    self.slideshow.render_slideshow({
-        marker: this,
-        $container: $container,
-        applyHack: true
-    });
-};
-
-localground.marker.prototype.buildEditForm = function($contentContainer){
-    var me = this;
-    $container = $('<div />').css({'padding': '5px'});
-    $contentContainer.append($container);
-    var $ul = $('<ul />')
-					.attr('id', 'marker-tabs')
-					.addClass('tabs');
-    var pages = ['Detail', 'Photos', 'Audio', 'Maps'];
-    $.each(pages, function(index){
-        $ul.append(
-            $('<li />')
-                .append($('<a />')
-                        .attr('href', '#' + pages[index].toLowerCase() + '-' + 'marker')
-                        .attr('data-toggle', 'tab')
-                        .html(pages[index]))
-        );    
-    });
-    $container.append($ul);
-	$tc = $('<div />').addClass("tab-content clearfix");
-    $container.append($tc);
-    $.each(pages, function(index){
-        $tc.append(
-            $('<div />')
-                .addClass('tab-pane')
-                .attr('id', pages[index].toLowerCase() + '-' + 'marker')
-                .append(me.renderPanel(pages[index].toLowerCase()))
-        );    
-    });
-    $('#marker-tabs a:first').tab('show');
-    $('#marker-tabs a').click(function (e) {
-		e.preventDefault();
-		$(this).tab('show');
-	});
-};
-
-localground.marker.prototype.renderPanel = function(key){
-    var $overflower = $('<div />').css({ height: '280px', 'overflow-y': 'auto' });
-                
-    switch (key) {
-        case 'detail':
-            return $overflower.append(this.renderFormPanel());
-        case 'photos':
-            return $overflower.append(this.renderPhotoPanel());
-        case 'audio':
-            return $overflower.append(this.renderAudioPanel());
-        case 'maps':
-            return $overflower.append(this.renderPhotoPanel());
-    }
-    return $overflower;
-};
-
-localground.marker.prototype.renderPhotoPanel = function(){
-    var $container = $('<div />');
-    $.each(this.photos.data, function(idx) {
-        var $holder = $('<div />').css({'display': 'block'});
-        $holder.append(
-            $('<img />').addClass('thumb')
-                 .css({'margin-right': '5px', 'vertical-align': 'top' })
-                 .attr('src', this.path_marker_lg))
-            .append(
-                $('<p />').css({'display': 'inline-block' })
-                    .append(
-                        $('<span />').css({ 'font-weight': 'bold' })
-                            .html(this.name))     
-                    .append($('<br />'))
-                    .append(this.caption)     
-            );
-        $container.append($holder);
-    });
-    return $container;
-};
-
-localground.marker.prototype.renderFormPanel = function(){
-    return "Name:<br>Caption:<br>Tags:<br>Color:<br>Lat/Lng:";  
-};
-
-localground.marker.prototype.renderAudioPanel = function(){
-    var $container = $('<div />');
-    $.each(this.audio.data, function(idx) {
-        var $holder = $('<div />').css({'display': 'block'});
-        $holder.append(
-            $('<img />')
-                 .css({'margin-right': '5px', 'vertical-align': 'top' })
-                 .attr('src', '/static/images/headphones_small.png'))
-            .append(
-                $('<p />').css({'display': 'inline-block' })
-                    .append(
-                        $('<span />').css({ 'font-weight': 'bold' })
-                            .html(this.name))     
-                    .append($('<br />'))
-                    .append(this.caption)     
-            );
-        $container.append($holder);
-    });
-    return $container;
-};
-
-localground.marker.prototype.makeViewable = function() {
-	localground.point.prototype.makeViewable.call(this);
-};
-
-localground.marker.prototype.createNew = function(googleOverlay, projectID) {
-    var me = this;
-    $.ajax({
-        url: '/api/0/markers/?format=json',
-        type: 'POST',
-        data: {
-            lat: googleOverlay.getPosition().lat(),
-            lng: googleOverlay.getPosition().lng(),
-            project_id: projectID,
-            color: 'CCCCCC',
-            csrfmiddlewaretoken: csrftoken,
-            format: 'json'
-        },
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        },
-        success: function(data) {
-            //alert(JSON.stringify(data));
-            $.extend(me, data);
-            //add to marker manager:
-            me.getManager().addNewOverlay(me);
-            //remove temporary marker:
-            googleOverlay.setMap(null);
-        },
-        notmodified: function(data) { alert('Not modified'); },
-        error: function(data) { alert('Error'); }
-    });
-    
-};
-
-localground.marker.prototype.appendMedia = function(media) {
-    var me = this;
-    $.getJSON('/api/0/marker/append/' + this.id + '/' + media.getObjectType() +
-              '/' + media.id + '/', 
-        function(result) {
-            //todo:  reload marker info:
-            $.extend(me, result.marker);
-            if(media.getObjectType() == 'marker') {
-                me.getManagerById(self.overlay_types.MARKER).removeRecord(media);
-            }
-            me.renderListing();
-            me.googleOverlay.setIcon(me.markerImage);
-            me.googleOverlay.setOptions({ 'draggable': true });
-            me.closeInfoBubble();
-        },
-    'json');
-};
-
-localground.marker.prototype.removeFromMarker = function($elem, obj) {
-    var me = this;
-    var url = '/api/0/marker/remove/' + obj.getObjectType() +
-        '/' + obj.id + '/';
-   
-    $.getJSON(url, 
-        function(result) {
-            if(result.obj == null){
-                var spliceIndex = -1;
-                switch(obj.getObjectType()){
-                    case 'photo':
-                        for(i=0; i < me.photoIDs.length; i++){
-                            if(me.photoIDs[i] == obj.id) {
-                                me.photoIDs.splice(i, 1);
-                                break;
-                            }
-                        }
-                        if(me.getPhotoCount() == 0)
-                            $elem.parent().parent().remove();      
-                        else
-                            $elem.parent().remove();
-                        break;
-                    case 'audio':
-                        for(i=0; i < me.audioIDs.length; i++){
-                            if(me.audioIDs[i] == obj.id) {
-                                me.audioIDs.splice(i, 1);
-                                break;
-                            }
-                        }
-                        if(me.getAudioCount() == 0)
-                            $elem.parent().parent().parent().remove();      
-                        else
-                            $elem.parent().remove();
-                        break;
-                    case 'video':
-                        alert('not implemented');
-                        break;
-                    default:
-                        $.each(me.recordIDs, function(tableID, recordIDs){
-                            $.each(recordIDs, function(idx) {
-                                if(obj.tableID == tableID &&
-                                   obj.id == this) {
-                                    me.recordIDs[tableID].splice(idx, 1);
-                                    return;
-                                }
-                            });
-                        });
-                        //--me.audio_count;
-                        if(me.getRecordCount() == 0)
-                            $elem.parent().parent().remove();      
-                        else
-                            $elem.parent().remove();
-                        break;
-                }
-                obj.markerID = null;
-                
-                //if container's invisible, show it:
-                obj.getManager().addDataContainer();
-                
-                //render child object in the viewer:
-                obj.renderOverlay({turnedOn: true});
-                obj.renderListing();
-                
-                //update container visibility:
-                obj.getManager().updateVisibility();
-                
-                //re-render marker listing:
-                me.renderListing();
-                return;
-            }
-        },
-        'json');   
-};
-
-localground.marker.prototype.mouseoverF = function(){
-	var $innerObj = $('<div style="text-align:center" />')
-                        .append(this.renderListingText());
-	this.showTip({
-		contentContainer: $innerObj,
-        height: '40px',
-        width: '200px'
-	});
-};
 
 

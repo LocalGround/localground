@@ -2,17 +2,13 @@
 {% block page_title %}My Prints{% endblock %}
 {% block style_links %}
     <link href="/static/css/audio.css" type="text/css" media="all" rel="stylesheet" />
+    <link href="/static/css/map.css" type="text/css" media="all" rel="stylesheet" />
     <link href="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
 {% endblock %}
 {% block script_links %}
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing"></script>
     <!-- enable photo dragging -->
     <script src="{{ JQUERY_UI_PATH }}"></script>
-    <!-- script src="{{ BOOTSTRAP_JS_PATH }}"></script -->
-    
-    <!-- script type="text/javascript" src="/static/scripts/thirdparty/twitter/bootstrap-modal.js"></script -->
-    <!-- script type="text/javascript" src="/static/bootstrap2.2.2/js/bootstrap-tabs.js"></script>
-    <script type="text/javascript" src="/static/bootstrap2.2.2/js/bootstrap.js"></script -->
     <script type="text/javascript" src="/static/scripts/thirdparty/infobubble.js"></script>
     <script type="text/javascript" src="/static/scripts/helpers/mapTypes.js"></script>
 	<script type="text/javascript" src="/static/scripts/site/player.js"></script>
@@ -37,178 +33,7 @@
     <script type="text/javascript" src="/static/scripts/map/viewer.js"></script>
     <script type="text/javascript" src="/static/scripts/map/editor.js"></script>
 {% endblock %}
-{% block extra_styles %}
-    html, body {
-      margin: 0;
-      padding: 0;
-      height:100%;
-      overflow:hidden;
-    }
-    h4, h5 {
-        line-height: 30px !important;
-    }
-    input[type=checkbox] {
-        /*vertical-align: bottom !important;*/
-        margin: 0px 6px 0px 3px;
-    }
-    .zoom-magnifying-glass {
-        margin: 10px 10px 0px 5px;
-        width: 12px;
-        cursor:pointer;
-    }
-    .white-links > input {
-      margin: 5px 0px 0px 5px;
-    }
-    .white-links > li {
-      padding: 3px;
-    }
- 
-	#map_panel, #map_canvas {
-		position: absolute;
-		top: 40px;
-	}
-	#opener {
-		position: absolute;
-		top: 40px;
-		border-left: solid 1px #444;
-		border-bottom: solid 1px #444;
-		width: 30px;
-		height:45px;
-		cursor: pointer;
-		background-color: #fff;
-		box-shadow: -1px 1px 2px rgba(0,0,0,.3);
-		-moz-box-shadow: -1px 1px 2px rgba(0,0,0,.3);
-		-webkit-box-shadow: -1px 1px 2px rgba(0,0,0,.3);
-        display: none;
-	}
-	#opener > div {
-		padding: 14px 5px 0px 5px;
-	}
-	#map_panel {
-		box-shadow: -1px 0px 3px rgba(0,0,0,.3);
-		-moz-box-shadow: -1px 0px 3px rgba(0,0,0,.3);
-		-webkit-box-shadow: -1px 0px 3px rgba(0,0,0,.3);
-		border-left: solid 1px #444;
-		background-color: #fff;
-        display: none;
-	}
-    
-    .show-hide {
-        cursor: pointer;
-    }
-    .toggle-header { overflow: hidden; }
-    .overlayPanel {
-        margin-left: 12px;
-        display: none;
-        /*margin-bottom: 10px;*/
-    }
-    .overlayPanel > div {
-        border-bottom: solid #eee 1px;
-    }
-    /*.overlayPanel img, .overlayPanel input {
-        float: left;
-        display: block;
-    }
-    #panel_marker span { margin-left: 30px;}
-    */
-    .close {
-        margin-right: 10px !important;
-        margin-top: 2px;
-    }
-    #panel_marker .close {
-        margin-top: 10px;
-    }
-    /*#panel_photo .close, #panel_audio .close {
-        margin-top: -25px;
-    }*/
-    
-    .activated {
-        cursor: pointer;
-        border-color: #77BC3E;
-    }
-    
-    .activated:hover {
-        border-color: #0069d6;
-        -webkit-box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
-        -moz-box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
-        box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
-    }
-    #projectListContainer {
-        overflow-x: hidden;
-    }
-    #projectList li, #mediaList li {
-        display: block;
-        float: none;
-    }
-    .unhide { margin-right: 5px; display: none; }
-    /* important for Google Map controls; overrides boostrap.css */
-    .gmnoprint label {
-        width: auto !important;
-        float: none !important;
-    }
-    
-    /* special audio styles: */
-    .top-player.playercontroller {
-        border: solid 2px #000;
-        display:inline-block;
-        margin:8px 0px 0px 20px;
-    }
-    .top-player.playercontroller > .counter {
-        margin-left: 186px;
-        margin-top: -20px;
-        float: none !important;
-        color: #CCC !important;
-    }
-    .top-player.playercontroller > .counter span.elapsed {
-        color: #A7CBF9 !important;
-    }
-    
-    
-    /*for slide show */
-    .item > img {
-        margin-left: auto;
-        margin-right: auto;
-        max-height:360px;
-    }
-    .carousel {
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: 0px !important;
-        height:360px;
-        width:480px;
-    }
-    .carousel-inner {
-        background-color: #eee;
-    }
-	.carousel-caption {
-		padding: 5px 15px 5px 15px !important;
-	}
-    .audio-controller {
-        position: absolute;
-        width: 54px;
-        height: 60px;
-        bottom: 2px;
-        left: auto;
-        right: 2px;
-        display: block;
-        color: #fff;
-    }
-    #slide-modal {
-        width: 600px;
-        margin: -250px 0 0 -300px;
-        border: none !important;
-        background-color: transparent !important;
-        padding: 0px !important;
-    }
-    #slide-modal > .modal-body {
-        padding: 0px !important;
-    }
-	.playercontroller-small > .counter {
-		width: 48px;
-		text-align: center;
-	}
-            
-{% endblock %}
+{% block extra_styles %}{% endblock %}
 {% block extra_scripts %}
     var isAdmin = false;
     {% if user.is_superuser %}
@@ -255,7 +80,11 @@
     <div class="map" id="map_canvas"></div>
     <div id="map_panel">
         <div style="padding:10px;">
-            <!-- h4>Load Your Data Here!</h4 -->
+            
+			<!-- alert, error, and success messages -->
+			<div class="row">
+				{% include "includes/messages.html" %}
+			</div>
             <ul class="tabs" data-tabs="tabs">
 				<li class="active">
 					<a data-toggle="tab" href="#data">Data & Media</a>

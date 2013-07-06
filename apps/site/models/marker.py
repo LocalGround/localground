@@ -46,22 +46,6 @@ class Marker(BasePoint, BaseGenericRelations):
             return 'Marker #%s' % (self.id)
         return self.name
 
-    def clear_nullable_related(self, *args, **kwargs):
-        # 1) clear foreign key references to un-managed models (dynamic forms):
-        forms = list(self.project.form_set.all())
-        for form in forms:
-            related = list(form.TableModel.objects.filter(source_marker=self))
-            for rec in related:
-                rec.source_marker = None
-                rec.save()
-                
-        # 2) clear foreign key references to managed models:
-        super(Marker, self).clear_nullable_related(*args, **kwargs)
-        
-    def delete(self, *args, **kwargs):
-        self.clear_nullable_related(*args, **kwargs)
-        super(Marker, self).delete(*args, **kwargs)
-        
     
     '''
     def append(self, obj, identity):

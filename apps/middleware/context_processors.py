@@ -14,8 +14,6 @@ def persistant_queries(request):
     context = {
         'path': request.path,
         'user': request.user,
-        'projects': Project.objects.get_objects(request.user),
-        #'groups': request.user.groups.all(),
         'is_authenticated': request.user.is_authenticated(),
         'is_impersonation': request.session.get('active_impersonation') is not None,
         'serverURL': settings.SERVER_URL,
@@ -25,6 +23,10 @@ def persistant_queries(request):
         'BOOTSTRAP_JS_PATH': settings.BOOTSTRAP_JS_PATH,
         'ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE': settings.ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE
     }
+    if request.user.is_authenticated():
+        context.update({
+            'projects': Project.objects.get_objects(request.user)
+        })
     
     add_overlays = False
     for p in ['/print/', '/maps/', '/ebays/', '/viewer/', '/scans/update-record/']:

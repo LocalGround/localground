@@ -11,7 +11,29 @@ from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework import status
-from datetime import datetime
+from localground.apps.site.lib.helpers import get_timestamp_no_milliseconds
+
+class AuditCreate(object):
+    
+    def pre_save(self, obj):
+        '''
+        For database inserts
+        '''
+        from localground.apps.site.models import ObjectAuthority
+        obj.owner = self.request.user
+        obj.last_updated_by = self.request.user
+        obj.timestamp = get_timestamp_no_milliseconds()
+        
+class AuditUpdate(object):
+    def pre_save(self, obj):
+        '''
+        For database updates
+        '''
+        from localground.apps.site.models import ObjectAuthority
+        obj.last_updated_by = self.request.user
+        obj.timestamp = get_timestamp_no_milliseconds()
+
+
 
 @api_view(('GET',))
 @permission_classes((IsOwnerOrReadOnly, ))
@@ -25,8 +47,7 @@ def api_root(request, format=None):
         'markers': reverse('marker-list', request=request, format=format)
     })
 
-
-class PhotoViewSet(viewsets.ModelViewSet):
+class PhotoViewSet(viewsets.ModelViewSet, AuditUpdate):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
@@ -38,11 +59,12 @@ class PhotoViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
     filter_backends = (SQLFilterBackend,)
-
+    
     def pre_save(self, obj):
-        obj.owner = self.request.user
+        AuditUpdate.pre_save(self, obj)
+
         
-class AudioViewSet(viewsets.ModelViewSet):
+class AudioViewSet(viewsets.ModelViewSet, AuditUpdate):
     """
     This viewset automatically provides `list` and `detail` actions.
     """
@@ -52,7 +74,10 @@ class AudioViewSet(viewsets.ModelViewSet):
                           IsOwnerOrReadOnly,)
     filter_backends = (SQLFilterBackend,)
     
-class MarkerList(generics.ListCreateAPIView):
+    def pre_save(self, obj):
+        AuditUpdate.pre_save(self, obj)
+    
+class MarkerList(generics.ListCreateAPIView, AuditCreate):
     serializer_class = serializers.MarkerSerializerCounts
     permission_classes = (IsOwnerOrReadOnly,)
     filter_backends = (SQLFilterBackend,)
@@ -63,42 +88,18 @@ class MarkerList(generics.ListCreateAPIView):
         return Marker.objects.get_objects_with_counts(self.request.user)
     
     def pre_save(self, obj):
-        '''
-        For insert queries
-        '''
-        obj.owner = self.request.user
-        obj.last_updated_by = self.request.user
-        obj.date_created = datetime.now()
-        obj.time_stamp = datetime.now()
+        AuditCreate.pre_save(self, obj)
+          
         
-class MarkerDetail(generics.RetrieveUpdateDestroyAPIView):
+class MarkerDetail(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
     queryset = Marker.objects.select_related('owner').all() #.prefetch_related('photos', 'audio', 'marker_set')
     permission_classes = (IsOwnerOrReadOnly,)
     serializer_class = serializers.MarkerSerializer
     
     def pre_save(self, obj):
-        '''
-        For update queries
-        '''
-        obj.last_updated_by = self.request.user
-
-'''    
-class MarkerViewSet(viewsets.ModelViewSet):
-    queryset = Marker.objects.select_related('project', 'owner').all()
-    serializer_class = serializers.MarkerSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
-    filter_backends = (SQLFilterBackend,)
-    
-    def pre_save(self, obj):
-        obj.owner = self.request.user
-        obj.last_updated_by = self.request.user
-        obj.date_created = datetime.now()
-        obj.time_stamp = datetime.now()
-'''       
-
+        AuditUpdate.pre_save(self, obj)
         
-class ProjectList(generics.ListCreateAPIView):
+class ProjectList(generics.ListCreateAPIView, AuditCreate):
     serializer_class = serializers.ProjectSerializer
     permission_classes = (IsOwnerOrReadOnly,)
     filter_backends = (SQLFilterBackend,)
@@ -110,24 +111,17 @@ class ProjectList(generics.ListCreateAPIView):
         return Project.objects.select_related('owner').filter(owner=user)
     
     def pre_save(self, obj):
-        '''
-        For insert queries
-        '''
-        from localground.apps.site.models import ObjectAuthority
-        obj.owner = self.request.user
-        #obj.last_updated_by = self.request.user
-        #obj.access_authority = ObjectAuthority.objects.get(id=1)
+        AuditCreate.pre_save(self, obj)
+        obj.access_authority = ObjectAuthority.objects.get(id=1)
     
-class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
+class ProjectDetail(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
     queryset = Project.objects.select_related('owner').all() #.prefetch_related('photos', 'audio', 'marker_set')
     permission_classes = (IsOwnerOrReadOnly,)
     serializer_class = serializers.ProjectDetailSerializer
     
     def pre_save(self, obj):
-        '''
-        For update queries
-        '''
-        obj.last_updated_by = self.request.user
+        AuditUpdate.pre_save(self, obj)
+    
     
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -143,13 +137,11 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = serializers.GroupSerializer
     
-
- 
-    
-class AttachItemView(generics.ListCreateAPIView):
+class AttachItemView(generics.ListCreateAPIView, AuditCreate):
     queryset = EntityGroupAssociation.objects.all()
     serializer_class = serializers.AssociationSerializer
 
+    '''
     def get(self, request, pk, format=None, *args, **kwargs):
         from localground.apps.site.models import Base
         object_name_plural = kwargs.get('object_name_plural')
@@ -169,16 +161,14 @@ class AttachItemView(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    '''
+    
     def pre_save(self, obj):
-        '''ordering, turned_on, group_type, group_id, "group_object",
-        entity_type, entity_id, "entity_object"
-        '''
+        AuditCreate.pre_save(self, obj)
+        
         from localground.apps.site.models import Base
         pk = self.kwargs.get('pk')
         object_name_plural = self.kwargs.get('object_name_plural')
         cls = Base.get_model(model_name_plural=object_name_plural)
         setattr(obj, 'group_type', cls.get_content_type())
         setattr(obj, 'group_id', pk)
-        setattr(obj, 'owner', self.request.user)
-        setattr(obj, 'last_updated_by', self.request.user)
