@@ -250,26 +250,21 @@ localground.marker.prototype.renderPhotoPanel = function(){
 
 localground.marker.prototype.renderFormPanel = function(){
     var me = this;
-    var fields = [
-		{ label: 'Name', name: 'name', type: 'textarea', value: this.name },
-		{ label: 'Caption', name: 'description', value: this.description },
-		{ label: 'Tags', name: 'tags', value: this.tags },
-		{ label: 'Color', name: 'color', value: this.color }
-	];
-	$form = $('<form id="update-marker-form"/>');
+    var fields = this.getManager().getUpdateSchema();
+    $form = $('<form id="update-marker-form"/>');
 	$.each(fields, function(){
 		$form.append(
 			$('<div />').addClass('clearfix')
 				.append(
-					$('<label />').attr('for', this.name).html(this.label + ':')
+					$('<label />').attr('for', this.field_name).html(this.label + ':')
 				).append(
 					$('<div />').addClass('input')
 						.append(
 							$('<input />')
-                                .attr('name', this.name)
-                                .attr('id', 'marker_' + this.name)
+                                .attr('name', this.field_name)
+                                .attr('id', 'marker_' + this.field_name)
                                 .attr('type','text')
-                                .attr('value', this.value)
+                                .attr('value', me[this.field_name])
 						)		
 				)
 		);

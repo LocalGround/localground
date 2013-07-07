@@ -6,9 +6,10 @@ from localground.apps.site import widgets, models
 from localground.apps.site.api import fields
 
 class BaseSerializer(serializers.HyperlinkedModelSerializer):
-    tags = serializers.CharField(required=False, widget=widgets.TagAutocomplete, help_text='Tag your object here')
-    name = serializers.WritableField(required=False)
+    tags = fields.TagField(required=False, widget=widgets.TagAutocomplete, help_text='Tag your object here')
+    name = serializers.CharField(required=False, label='name')
     attach_url = serializers.SerializerMethodField('get_attach_url')
+    description = fields.DescriptionField()
     #managers = ('photos', 'audio', 'markers')
     #owner_id = fields.OwnerField(source='owner', required=False)
     #attach_url = serializers.HyperlinkedIdentityField(view_name='photos-attach', lookup_field='pk')
@@ -116,7 +117,7 @@ class AudioSerializer(MediaPointSerializer):
 class MarkerSerializer(PointSerializer):
     photos = serializers.SerializerMethodField('get_photos')
     audio = serializers.SerializerMethodField('get_audio')
-    color = serializers.WritableField(default='CCCCCC')
+    color = fields.ColorField(default='CCCCCC')
     class Meta:
         model = models.Marker
         fields = PointSerializer.Meta.fields + ('photos', 'audio', 'color',)
@@ -206,7 +207,7 @@ class ProjectDetailSerializer(BaseSerializer):
     
     def get_children(self, cls, obj, data):
         return {
-            'id': cls.model_name,
+            'id': cls.model_name_plural,
             'name': cls.model_name_plural.title(),
             'overlay_type': cls.model_name,
             'data': data

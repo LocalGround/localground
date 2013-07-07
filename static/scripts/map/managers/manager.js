@@ -8,6 +8,8 @@ localground.manager = function(){
 	this.name;
 	this.overlay_type;
 	this.data = [];
+	this.createSchema = null;
+	this.updateSchema = null;
 };
 
 localground.manager.prototype.initialize = function(opts) {
@@ -258,4 +260,49 @@ localground.manager.prototype.getLoadingImageSmall = function() {
 localground.manager.prototype.doViewportUpdates = function() {
 	//implemented in child classes
 	return;
+};
+
+localground.manager.prototype.getCreateSchema = function() {
+	if (this.createSchema == null) {
+		var url = '/api/0/' + this.id + '/.json';
+		this.createSchema = this.getSchema(url, 'POST')
+	}
+	return this.createSchema;
+};
+
+localground.manager.prototype.getUpdateSchema = function() {
+	if (this.updateSchema == null) {
+		var url = '/api/0/' + this.id + '/' + this.data[0].id  + '/.json';
+		this.updateSchema = this.getSchema(url, 'PUT')
+	}
+	return this.updateSchema;
+};
+
+localground.manager.prototype.getSchema = function(url, method) {
+	var schema = [];
+	$.ajax({
+		url: url,
+		type: 'POST',
+		async: false,
+		data: {
+			_method: 'OPTIONS'
+		},
+		beforeSend: function(xhr, settings) {
+			if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+				xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			}
+		},
+		success: function(data) {
+			fields = data.actions[method];
+			$.each(fields, function(k, v){
+				if(!this.read_only){
+					v['field_name'] = k;
+					if (v['label'] == null)
+						v['label'] = k;
+					schema.push(v);
+				}
+			});
+		}
+	});
+	return schema;
 };

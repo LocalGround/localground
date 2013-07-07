@@ -10,8 +10,19 @@ class OwnerField(serializers.WritableField):
 
 	def from_native(self, data):
 		return User.objects.get(id=int(data))
+
+class ColorField(serializers.WritableField):
+	type_label='color'
+	
+class DescriptionField(serializers.WritableField):
+	type_label='memo'
+	
+class TagField(serializers.WritableField):
+	type_label='tags'
 	
 class ProjectField(serializers.WritableField):
+	type_label='integer'
+	
 	def to_native(self, obj):
 		return obj.id
 
@@ -30,6 +41,7 @@ class ProjectField(serializers.WritableField):
 		
 	
 class PointField(serializers.WritableField):
+	type_label = 'point'
 	def field_from_native(self, data, files, field_name, into):
 		try:
 			native = '%s;%s' % (data['lng'], data['lat'])
