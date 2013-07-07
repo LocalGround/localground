@@ -189,6 +189,11 @@ localground.overlay.prototype.toggleOverlay = function(isOn) {
     }
 };
 
+localground.overlay.prototype.refresh = function() {
+    this.renderListing();
+    this.showInfoBubble();
+}
+
 localground.overlay.prototype.zoomToOverlay = function() {
 	alert('implement zoomToOverlay in child class');
 };

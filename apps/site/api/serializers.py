@@ -9,44 +9,14 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
     tags = fields.TagField(required=False, widget=widgets.TagAutocomplete, help_text='Tag your object here')
     name = serializers.CharField(required=False, label='name')
     attach_url = serializers.SerializerMethodField('get_attach_url')
-    description = fields.DescriptionField()
-    #managers = ('photos', 'audio', 'markers')
-    #owner_id = fields.OwnerField(source='owner', required=False)
-    #attach_url = serializers.HyperlinkedIdentityField(view_name='photos-attach', lookup_field='pk')
-    
+    description = fields.DescriptionField(required=False, label='caption')
+        
     class Meta:
         fields = ('id', 'name', 'description', 'tags', 'attach_url')
         
     def get_attach_url(self, obj):
         return '%s/api/0/%s/%s/attach/' % (settings.SERVER_URL, obj.model_name_plural, obj.id)
-    
-    '''
-    def to_native(self, obj):
-        """
-        Overriding rest_framework.serializers.BaseSerializer's to_native
-        method in order to custom-serialize child media
-        """
-        ret = self._dict_class()
-        ret.fields = {}
 
-        for field_name, field in self.fields.items():
-            field.initialize(parent=self, field_name=field_name)
-            key = self.get_field_key(field_name)
-            value = field.field_to_native(obj, field_name)
-            try:
-                if key in ProjectDetailSerializer.managers:
-                    value = {
-                        'id': key,
-                        'name': key.title(),
-                        'overlay_type': field.Meta.model.model_name,
-                        'data': value  
-                    }
-            except:
-                pass
-            ret[key] = value
-            ret.fields[key] = field
-        return ret
-    '''
     
 class PointSerializer(BaseSerializer):
     point = fields.PointField(widget=widgets.PointWidgetTextbox, help_text='Tag your object here')
@@ -117,7 +87,8 @@ class AudioSerializer(MediaPointSerializer):
 class MarkerSerializer(PointSerializer):
     photos = serializers.SerializerMethodField('get_photos')
     audio = serializers.SerializerMethodField('get_audio')
-    color = fields.ColorField(default='CCCCCC')
+    color = fields.ColorField(required=False)
+    point = fields.PointField(widget=widgets.PointWidgetTextbox, required=False)
     class Meta:
         model = models.Marker
         fields = PointSerializer.Meta.fields + ('photos', 'audio', 'color',)

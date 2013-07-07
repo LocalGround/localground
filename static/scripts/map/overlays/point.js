@@ -78,11 +78,6 @@ localground.point.prototype.dragend = function(latLng) {
 				lat: latLng.lat(),
 				lng: latLng.lng()
 			},
-			beforeSend: function(xhr, settings) {
-				if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-					xhr.setRequestHeader("X-CSRFToken", csrftoken);
-				}
-			},
 			success: function(data) {
 				me.point = {};
 				me.point.lat = latLng.lat();

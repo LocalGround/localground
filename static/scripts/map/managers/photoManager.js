@@ -17,8 +17,13 @@ localground.photoManager.prototype.makeViewable = function() {
 	localground.manager.prototype.makeViewable.call(this);
     
     //destroy draggable event handlers:
-    $('.thumbsmall').draggable("destroy");
-    $('.thumbsmall').removeClass('can_drag').removeClass('ui-draggable').removeClass('activated')
+	try {
+		$('.thumbsmall').draggable("destroy");
+		$('.thumbsmall').removeClass('can_drag').removeClass('ui-draggable').removeClass('activated')
+	} catch(e) {
+		alert(e);
+	}
+    
 };
 
 localground.photoManager.prototype.doViewportUpdates = function() {

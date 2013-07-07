@@ -68,6 +68,7 @@ class PointField(serializers.WritableField):
 			}
 
 class EntityTypeField(serializers.ChoiceField):
+	#name='entity'
 	choices = [
 		('photo','photo'),
 		('audio', 'audio'),

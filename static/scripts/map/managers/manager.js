@@ -287,11 +287,6 @@ localground.manager.prototype.getSchema = function(url, method) {
 		data: {
 			_method: 'OPTIONS'
 		},
-		beforeSend: function(xhr, settings) {
-			if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-				xhr.setRequestHeader("X-CSRFToken", csrftoken);
-			}
-		},
 		success: function(data) {
 			fields = data.actions[method];
 			$.each(fields, function(k, v){

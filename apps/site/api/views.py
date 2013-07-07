@@ -161,28 +161,6 @@ class AttachItemView(generics.ListCreateAPIView, AuditCreate):
     queryset = EntityGroupAssociation.objects.all()
     serializer_class = serializers.AssociationSerializer
 
-    '''
-    def get(self, request, pk, format=None, *args, **kwargs):
-        from localground.apps.site.models import Base
-        object_name_plural = kwargs.get('object_name_plural')
-        cls = Base.get_model(model_name_plural=object_name_plural)
-        #o = self.get_object(object_name_plural, pk)
-        objects = self.queryset.filter(group_type=cls.get_content_type(), group_id=pk)
-        serializer = serializers.AssociationSerializer(objects)
-        return Response(serializer.data)
-
-    def post(self, request, pk, format=None, *args, **kwargs):
-        serializer = serializers.AssociationSerializer(data=request.DATA)
-        if serializer.is_valid():
-            self.pre_save(serializer.object)
-            self.object = serializer.save(force_insert=True)
-            self.post_save(self.object, created=True)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED,
-                            headers=headers)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    '''
-    
     def pre_save(self, obj):
         AuditCreate.pre_save(self, obj)
         

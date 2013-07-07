@@ -77,43 +77,6 @@ localground.marker.prototype.renderMarkerSection = function() {
     return $('<div></div>').css({'margin-bottom': '0px'});
 };
 
-/*localground.marker.prototype.deleteMarker = function() {
-    var me = this;
-    $.getJSON('/api/0/delete/marker/' + this.id + '/', 
-        function(result) {
-            if(!result.success){
-                alert(result.message);
-                return;
-            }
-            me.getManager().removeRecord(me);
-        },
-        'json');
-};
-
-localground.marker.prototype.updateMarker = function() {
-   var me = this;
-   $.getJSON('/api/0/update/marker/' + this.id + '/',
-        {
-            name: $('#marker_name').val(),
-            description: $('#marker_desc').val(),
-            color: $('#marker_color').val()
-        },
-        function(result) {
-            if(!result.success){
-                alert(result.message);
-                return;
-            }
-            $.extend(me, result.object);
-            me.image = me.markerImage = me.iconSmall = me.iconLarge =
-            'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
-            me.color + '|13|b|';
-            me.googleOverlay.setIcon(me.getIcon());
-            me.renderListing();
-            me.showInfoBubble();
-        },
-        'json');
-}*/
-
 localground.marker.prototype.renderInfoBubble = function() {
     var me = this;
     var $contentContainer = $('<div></div>').css({
@@ -251,49 +214,11 @@ localground.marker.prototype.renderPhotoPanel = function(){
 localground.marker.prototype.renderFormPanel = function(){
     var me = this;
     var fields = this.getManager().getUpdateSchema();
-    $form = $('<form id="update-marker-form"/>');
-	$.each(fields, function(){
-		$form.append(
-			$('<div />').addClass('clearfix')
-				.append(
-					$('<label />').attr('for', this.field_name).html(this.label + ':')
-				).append(
-					$('<div />').addClass('input')
-						.append(
-							$('<input />')
-                                .attr('name', this.field_name)
-                                .attr('id', 'marker_' + this.field_name)
-                                .attr('type','text')
-                                .attr('value', me[this.field_name])
-						)		
-				)
-		);
-	});
-    $form.append(
-        $('<div />').addClass('clearfix')
-            .append(
-                $('<div />').addClass('input')
-                    .append(
-                        $('<button />').addClass('btn primary')
-                            .css({'margin-right': '5px'})
-                            .html('Save')
-                            .click(function(){
-                                me.updateMarker();
-                                return false;
-                            })
-                            
-                    ).append(
-                        $('<button />').addClass('btn')
-                            .html('Delete')
-                            .click(function(){
-                                me.deleteMarker();
-                                return false;
-                            })
-                            
-                    )		
-            )
-    );
-	return $form;  
+    var form = new ui.form({
+        schema: fields,
+        object: this
+    });
+    return form.render();
 };
 
 localground.marker.prototype.renderAudioPanel = function(){
@@ -319,38 +244,61 @@ localground.marker.prototype.renderAudioPanel = function(){
     return $container;
 };
 
+localground.marker.prototype.refresh = function() {
+    this.image = this.markerImage = this.iconSmall = this.iconLarge =
+    'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
+    this.color + '|13|b|';
+    this.googleOverlay.setIcon(this.getIcon());
+    localground.overlay.prototype.refresh.call(this);
+};
 
-localground.marker.prototype.updateMarker = function() {
+localground.marker.prototype.makeViewable = function() {
+	localground.point.prototype.makeViewable.call(this);
+};
+
+localground.marker.prototype.createNew = function(googleOverlay, projectID) {
     var me = this;
-    var url = me.url;
-    if (url.indexOf('.json') == -1)
-        url += '.json';
     $.ajax({
-        url: url,
-        type: 'PUT',
+        url: '/api/0/markers/?format=json',
+        type: 'POST',
         data: {
-            name: $('#marker_name').val(),
-            description: $('#marker_description').val(),
-            tags: $('#marker_tags').val(),
-            color: $('#marker_color').val(),
-            lat: me.point.lat,
-            lng: me.point.lng
-        },
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
+            lat: googleOverlay.getPosition().lat(),
+            lng: googleOverlay.getPosition().lng(),
+            project_id: projectID,
+            color: me.color,
+            format: 'json'
         },
         success: function(data) {
+            //alert(JSON.stringify(data));
             $.extend(me, data);
-            $('#success').show();
-            $('#success-message-text').html('Your marker has been successfully updated.');
-            me.image = me.markerImage = me.iconSmall = me.iconLarge =
-            'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
-            me.color + '|13|b|';
-            me.googleOverlay.setIcon(me.getIcon());
+            //add to marker manager:
+            me.getManager().addNewOverlay(me);
+            //remove temporary marker:
+            googleOverlay.setMap(null);
+        },
+        notmodified: function(data) { alert('Not modified'); },
+        error: function(data) { alert('Error'); }
+    }); 
+};
+
+localground.marker.prototype.appendMedia = function(media) {
+    var me = this, url = me.attach_url;
+    if (url.indexOf('.json') == -1) { url += '.json'; }
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: {
+            entity_type: media.overlay_type,
+            id: media.id,
+            ordering: 10
+        },
+        success: function(data) {
+            me[media.overlay_type + '_count'] += 1;
             me.renderListing();
-            me.showInfoBubble();
+            me.googleOverlay.setIcon(me.markerImage);
+            me.googleOverlay.setOptions({ 'draggable': true });
+            me.closeInfoBubble();
+            //showInfoBubbleView
         },
         notmodified: function(data) { alert('Not modified'); },
         error: function(data) {
@@ -368,77 +316,8 @@ localground.marker.prototype.updateMarker = function() {
                 }
             }
         }
-    });   
-};
-
-localground.marker.prototype.deleteMarker = function() {
-    var me = this;
-    var url = me.url;
-    if (url.indexOf('.json') == -1)
-        url += '.json';
-    $.ajax({
-        url: url,
-        type: 'DELETE',
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        },
-        success: function(data) {
-            $('#success').show();
-            $('#success-message-text').html('Your marker has been successfully deleted.');
-            me.getManager().removeRecord(me);
-        },
-        notmodified: function(data) { alert('Not modified'); },
-        error: function(data) {
-            $('#update-marker-form').find('.clearfix').removeClass('error');
-            var result = JSON.parse(data.responseText);
-            for (var key in result) {
-                $('#error').show();
-                $('#error-message-text').append(result[key]);
-            }
-        }
-    });   
-};
-
-localground.marker.prototype.makeViewable = function() {
-	localground.point.prototype.makeViewable.call(this);
-};
-
-localground.marker.prototype.createNew = function(googleOverlay, projectID) {
-    var me = this;
-    $.ajax({
-        url: '/api/0/markers/?format=json',
-        type: 'POST',
-        data: {
-            lat: googleOverlay.getPosition().lat(),
-            lng: googleOverlay.getPosition().lng(),
-            project_id: projectID,
-            color: 'CCCCCC',
-            csrfmiddlewaretoken: csrftoken,
-            format: 'json'
-        },
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        },
-        success: function(data) {
-            //alert(JSON.stringify(data));
-            $.extend(me, data);
-            //add to marker manager:
-            me.getManager().addNewOverlay(me);
-            //remove temporary marker:
-            googleOverlay.setMap(null);
-        },
-        notmodified: function(data) { alert('Not modified'); },
-        error: function(data) { alert('Error'); }
-    });
-    
-};
-
-localground.marker.prototype.appendMedia = function(media) {
-    var me = this;
+    }); 
+    /*
     $.getJSON('/api/0/marker/append/' + this.id + '/' + media.getObjectType() +
               '/' + media.id + '/', 
         function(result) {
@@ -452,7 +331,7 @@ localground.marker.prototype.appendMedia = function(media) {
             me.googleOverlay.setOptions({ 'draggable': true });
             me.closeInfoBubble();
         },
-    'json');
+    'json');*/
 };
 
 localground.marker.prototype.removeFromMarker = function($elem, obj) {
