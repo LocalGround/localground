@@ -19,7 +19,8 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
 
     
 class PointSerializer(BaseSerializer):
-    point = fields.PointField(widget=widgets.PointWidgetTextbox, help_text='Tag your object here')
+    point = fields.PointField(widget=widgets.PointWidgetTextbox,
+                              help_text='Tag your object here', required=False)
     project_id = fields.ProjectField(source='project', required=False)
     overlay_type = serializers.SerializerMethodField('get_overlay_type')
     
@@ -113,6 +114,7 @@ class MarkerSerializer(PointSerializer):
 class MarkerSerializerCounts(MarkerSerializer):
     photo_count = serializers.SerializerMethodField('get_photo_count')
     audio_count = serializers.SerializerMethodField('get_audio_count')
+    point = fields.PointField(widget=widgets.PointWidgetTextbox, required=True)
     class Meta:
         model = models.Marker
         fields = PointSerializer.Meta.fields + ('photo_count', 'audio_count', 'color',)
@@ -200,20 +202,41 @@ class AssociationSerializer(serializers.ModelSerializer):
         model = models.EntityGroupAssociation
         fields = ('ordering', 'turned_on', 'entity_type', 'entity_object',
                     'group_object', 'id')
-        depth = 2
 
     def get_group_object(self, obj):
         return obj.group_object
     
     def get_entity_object(self, obj):
         return obj.entity_object
+    
         
-        '''
+    '''
+    def validate(self, attrs):
+
+        from localground.apps.site.models import Base
+        object_name_plural = attrs.get('object_name_plural')
+        cls = Base.get_model(model_name_plural=object_name_plural)
+        try:
+            #if obj found, raise an error...
+            models.EntityGroupAssociation.objects.get(
+                group_id=attrs.get('pk'),
+                group_type=cls.get_content_type(),
+                entity_id=attrs['entity_id'],
+                entity_type=attrs['entity_type']
+            )
+            raise serializers.ValidationError("Constraint error")
+        except Exception:
+            pass
+        
+        return attrs
+    '''
+        
+    '''
         ----------------------
         EntityGroupAssociation
         ----------------------
         ordering, turned_on, group_type, group_id, "group_object",
         entity_type, entity_id, "entity_object"
-        '''
+    '''
     
         

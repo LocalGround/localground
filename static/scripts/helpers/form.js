@@ -2,7 +2,7 @@ ui.form = function(opts){
 	/* Elements that are set by opts */
 	this.schema;
 	this.object;
-	this.exclude = ['point', 'project_id'];
+	this.exclude;// = ['point', 'project_id'];
 	$.extend(this, opts);
 	this.id ='update-' + this.object.overlay_type + '-form';
 };
@@ -144,7 +144,8 @@ ui.form.prototype.delete = function() {
 			$form.find('.clearfix').removeClass('error');
             $('#success').show();
             $('#success-message-text').html('Your ' + obj.overlay_type + ' has been successfully deleted.');
-            obj.getManager().removeRecord(obj);
+            var manager = obj.getManager();
+			manager.removeRecord(obj);
         },
         notmodified: function(data) { alert('Not modified'); },
         error: function(data) {

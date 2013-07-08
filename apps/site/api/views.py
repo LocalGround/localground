@@ -1,4 +1,6 @@
 from localground.apps.site.api import serializers
+from rest_framework.serializers import ValidationError
+
 from localground.apps.site.api.permissions import IsOwnerOrReadOnly
 from localground.apps.site.api.filters import SQLFilterBackend
 from localground.apps.site.models import Photo, Audio, Project, Marker, EntityGroupAssociation
@@ -160,6 +162,21 @@ class GroupViewSet(viewsets.ModelViewSet):
 class AttachItemView(generics.ListCreateAPIView, AuditCreate):
     queryset = EntityGroupAssociation.objects.all()
     serializer_class = serializers.AssociationSerializer
+
+    def create(request, *args, **kwargs):
+        '''
+        This is a hack:  not sure how to handle generic database errors.
+        There's probably a more generic solution.
+        '''
+        from django.db import connection, IntegrityError, DatabaseError
+        try:
+            return generics.ListCreateAPIView.create(request, *args, **kwargs)
+        except IntegrityError, e:
+            connection._rollback()
+            messages = str(e).strip().split('\n')
+            d = { 'global': messages }
+            return Response(d, status=status.HTTP_400_BAD_REQUEST)
+ 
 
     def pre_save(self, obj):
         AuditCreate.pre_save(self, obj)

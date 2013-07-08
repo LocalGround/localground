@@ -3,13 +3,25 @@ from localground.apps.site.models.abstract.audit import BaseAudit
 from tagging_autocomplete.models import TagAutocompleteField
 import base64
 from django.conf import settings
+from django.contrib.contenttypes import generic
 import os, stat
     
 class BaseMedia(BaseAudit):
+    '''
+    Important:  the "groups" generic relation is needed to ensure cascading
+    deletes.  For example, if a photo gets deleted, you also want to ensure
+    that its associations w/any markers / views also get deleted.  The reverse
+    relationship needs to be defined here in order for this to occur:
+    http://stackoverflow.com/questions/6803018/why-wont-my-genericforeignkey-cascade-when-deleting
+    '''
     host = models.CharField(max_length=255)
     virtual_path = models.CharField(max_length=255)
     file_name_orig = models.CharField(max_length=255)
     content_type = models.CharField(max_length=50)
+    groups = generic.GenericRelation('EntityGroupAssociation',
+                                       content_type_field='entity_type',
+                                       object_id_field='entity_id',
+                                       related_name="%(app_label)s_%(class)s_related")
     
     @classmethod
     def inline_form(cls):

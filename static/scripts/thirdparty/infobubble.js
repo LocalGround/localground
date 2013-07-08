@@ -725,7 +725,8 @@ InfoBubble.prototype['setBorderRadius'] = InfoBubble.prototype.setBorderRadius;
  * @return {number} The radius of the border.
  */
 InfoBubble.prototype.getBorderRadius_ = function() {
-  return parseInt(this.get('borderRadius'), 10) || 0;
+	//alert(this.get('borderRadius'));
+  return parseInt(this.get('borderRadius'), 10) || 5;
 };
 
 

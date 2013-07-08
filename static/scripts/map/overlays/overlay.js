@@ -222,3 +222,47 @@ localground.overlay.prototype.getMarkerManager = function() {
 	return self.markerManager;
 };
 
+localground.overlay.prototype.renderDetail = function() {
+	$c = $('<div />');
+	$c.append(
+			$('<p />').css({
+				'font-weight': 'bold',
+				'color': '#444',
+				'margin': '5px 15px 5px 15px'
+			}).html(this.name)
+		).append(
+			$('<div />').css({
+				'height': '1px',
+				'margin': '5px 0',
+				'overflow': 'hidden',
+				'background-color': '#eee',
+				'border-bottom': '1px solid #ffffff'	
+			})
+		).append(
+			$('<p />').css({
+				'margin': '5px 15px 5px 15px'
+			}).html(this.caption)
+		);
+	$tags = this.renderTags();
+	if($tags) { $c.append($tags); }
+	return $c;
+};
+
+localground.overlay.prototype.renderTags = function() {
+	if(this.tags && this.tags.length > 0) {
+		tags = this.tags.split(',');
+		var $tags = $('<div />').css({
+			'margin': '0px 15px 0px 15px'
+		});
+		for (i=0; i < tags.length; i++) {
+			$tags.append(
+				$('<span />').addClass('label label-info')
+				.css({'margin-right': '5px'})
+				.append('<i class="icon-tag icon-white"></i>')
+				.append(tags[i]));
+		}
+		return $tags;
+	}
+	return null;
+};
+

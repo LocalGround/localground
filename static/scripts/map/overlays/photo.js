@@ -21,7 +21,8 @@ localground.photo = function(opts){
 	this.imgSmall = this.path_small;
 	this.imgMediumSm = this.path_medium_sm;
 	this.imgMedium = this.path_medium;
-
+    this.bubbleWidth = 320;
+    this.bubbleHeight = 330;
 };
 
 localground.photo.prototype = new localground.point();
@@ -79,34 +80,63 @@ localground.photo.prototype.setImageIcon = function(list) {
     }
 };
 
+localground.photo.prototype.showInfoBubbleEdit = function(opts){
+    var $contentContainer = this.renderInfoBubble({
+								height: '400px',
+								width: this.bubbleWidth + 30
+							});
+	var me = this;
+    var fields = this.getManager().getUpdateSchema();
+    var form = new ui.form({
+        schema: fields,
+        object: this,
+        exclude: ['point', 'project_id']
+    });
+	var $container = $('<div />');
+	$container.append(this.getPhotoPreview({
+						max_height: this.bubbleHeight - 160,
+						width: (this.bubbleWidth + 30)
+					}));
+	$container.append(form.render());
+	$contentContainer.append($container);
+};
+
+localground.photo.prototype.getPhotoPreview = function(opts) {
+	var max_height = this.bubbleHeight - 100;
+	var width = this.bubbleWidth;
+	if (opts) {
+		max_height = opts.max_height || max_height;
+		width = opts.width || width;
+	}
+	return  $('<div />')
+		.css({
+			'width': width,
+			'max-height': max_height,
+			'overflow': 'hidden'
+		})
+		.append(
+			$('<img />').css({
+				'display': 'block',
+				'width': width,
+				'margin-right': 'auto',
+				'margin-left': 'auto',
+				'margin-top': '0px'
+			}).attr('src', this.path_medium)
+		);
+};
+
 localground.photo.prototype.showInfoBubbleView = function(opts) {
-    if(self == null) {
-        alert('The variable self should be set to the map controller in the \
-                parent class');
-        return;
-    }
     //ensures that the marker renders on top:
     this.googleOverlay.setMap(null);
     this.googleOverlay.setMap(self.map);
 
     //build bubble content:
-    var htmlString = '<img class="thumb" style="max-width:400px;margin-right:30px;" src="' +
-        this.path_medium_sm + '" />';
-    if(this.caption && this.caption.length > 4)
-        htmlString += '<br /><p>' + this.caption + '</p>';
-    
-    var $contentContainer = $('<div></div>').css({
-            'width': '440px',
-            'height': '320px',
-            'margin': '5px 0px 5px 10px',
-            'overflow-y': 'auto',
-            'overflow-x': 'hidden'
-        }).append(htmlString);
-    var showHeader = true;
-    self.infoBubble.setHeaderText(showHeader ? this.name.truncate(5) : null);
-    self.infoBubble.setFooter(null);    
-    self.infoBubble.setContent($contentContainer.get(0)); 
-    self.infoBubble.open(self.map, this.googleOverlay);
+	var $container = $('<div />');
+	$container.append(this.getPhotoPreview());
+	$container.append(this.renderDetail());
+	
+	var $contentContainer = this.renderInfoBubble();
+	$contentContainer.append($container);
 };
 
 localground.photo.prototype.mouseoverF = function(){

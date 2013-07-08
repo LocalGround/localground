@@ -110,6 +110,22 @@ localground.manager.prototype.renderOverlays = function() {
     this.updateVisibility();
 };
 
+localground.manager.prototype.removeRecord = function(elem){
+	//unset marker overlay & splice:
+    elem.closeInfoBubble();
+    elem.googleOverlay.setMap(null);
+    elem.getListingElement().remove();
+    var index = -1;
+    $.each(this.data, function(idx){
+        if(this.id == elem.id) {
+            index = idx;
+            return
+        }
+    });
+    this.data.splice(index, 1);
+    this.updateVisibility();	
+};
+
 localground.manager.prototype.removeByProjectID = function(projectID) {
 	for(var i = this.data.length-1; i >= 0; i--) {
 		overlay = this.data[i];    

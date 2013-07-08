@@ -77,25 +77,6 @@ localground.marker.prototype.renderMarkerSection = function() {
     return $('<div></div>').css({'margin-bottom': '0px'});
 };
 
-localground.marker.prototype.renderInfoBubble = function() {
-    var me = this;
-    var $contentContainer = $('<div></div>').css({
-            'width': this.bubbleWidth,
-            'height': this.bubbleHeight,
-            'margin': '0px',
-            'overflow-y': 'hidden',
-            'overflow-x': 'hidden'
-        }).append(this.getManagerById(self.overlay_types.MARKER).getLoadingImage());
-    var showHeader = this.isEditMode() ? true : false;
-    showHeader = false;
-    self.infoBubble.setHeaderText(showHeader ? this.name.truncate(5) : null);
-    self.infoBubble.setFooter(null);
-    self.infoBubble.doNotPad = true;
-    self.infoBubble.setContent($contentContainer.get(0)); 
-    self.infoBubble.open(self.map, this.googleOverlay);
-    return $contentContainer; 
-};
-
 localground.marker.prototype.showInfoBubbleView = function(opts) {
     this.renderMarkerDetail('buildSlideshow');
 };
@@ -108,26 +89,32 @@ localground.marker.prototype.renderMarkerDetail = function(callback){
     var me = this;
     var $contentContainer = this.renderInfoBubble();
     $contentContainer.children().empty();
-    $.getJSON(this.url, 
-        function(result) {
-            // this is a bit of a hack, but it preserves the scope:
-            $.extend(me, result);
-            var callbackF = eval('localground.marker.prototype.' + callback);
-            callbackF.call(me, $contentContainer);
-        },
-    'json');
     
-    if(self == null) {
-        alert('The variable self should be set to the map controller in the \
-                parent class');
-        return;
-    }
+    // this is a bit of a hack, but it preserves the scope:
+    var callbackF = eval('localground.marker.prototype.' + callback);
     //ensures that the marker renders on top:
-    this.googleOverlay.setMap(null);
-    this.googleOverlay.setMap(self.map);
+    //this.googleOverlay.setMap(null);
+    //this.googleOverlay.setMap(self.map);
+    var r;
+    //if (this.requery || this.photos == null)
+    {
+       //requery for the latest marker data:
+       $.getJSON(this.url, 
+            function(result) {
+                $.extend(me, result);
+                me.requery = false;
+                callbackF.call(me, $contentContainer);
+            },
+        'json');    
+    }
+    /*else {
+        $.extend(me, r);
+        callbackF.call(me, $contentContainer);    
+    }*/
 };
 
 localground.marker.prototype.buildSlideshow = function($contentContainer){
+    //alert(JSON.stringify(this.photos));
     $container = $('<div></div>');
     $contentContainer.append($container);
     self.slideshow.render_slideshow({
@@ -216,7 +203,8 @@ localground.marker.prototype.renderFormPanel = function(){
     var fields = this.getManager().getUpdateSchema();
     var form = new ui.form({
         schema: fields,
-        object: this
+        object: this,
+        exclude: ['point', 'project_id']
     });
     return form.render();
 };
@@ -293,6 +281,7 @@ localground.marker.prototype.appendMedia = function(media) {
             ordering: 10
         },
         success: function(data) {
+            me.requery = true;
             me[media.overlay_type + '_count'] += 1;
             me.renderListing();
             me.googleOverlay.setIcon(me.markerImage);

@@ -36,7 +36,7 @@ localground.slideshow.prototype.render_slideshow = function(opts) {
     this.render_photo_slides(marker);
     //this.render_data_slides(marker);
     this.render_audio(marker);
-    var $c = $('#' + this.id).carousel('pause');
+    var $c = $('#' + this.id).carousel();
     if(opts.applyHack) {
         $('.left, .right').click('[data-slide]', function(e){
             var $this = $(this), href
@@ -82,12 +82,16 @@ localground.slideshow.prototype.render_title_page = function(marker) {
                 width: this.width,
                 color: '#fff',
                 display: 'block'
-            }).append($page));
-            /*.append($('<div />').addClass('carousel-caption')
+            }).append($page))
+            .append($('<div />').addClass('carousel-caption')
                 .append($('<h4 />').html(marker.name))
                 .append($('<p />').html(marker.description || 'Description!')
-            ));*/
-    $('#' + this.id).find('.carousel-inner').append($item);
+            ));
+    /*alert(this.id);
+    alert($('#' + this.id).get(0));
+    alert($('#' + this.id).find('.carousel-inner').get(0));*/
+    //$('#' + this.id).find('.carousel-inner').append($item);
+    $('.carousel-inner').append($item);
 };
 
             

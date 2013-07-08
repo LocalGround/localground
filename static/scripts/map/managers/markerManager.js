@@ -70,6 +70,8 @@ localground.markerManager.prototype.removeRecord = function(marker) {
             })
         });
     }
+	localground.manager.prototype.removeRecord.call(this, marker);
+	/*
     //unset marker overlay & splice:
     marker.closeInfoBubble();
     marker.googleOverlay.setMap(null);
@@ -83,6 +85,7 @@ localground.markerManager.prototype.removeRecord = function(marker) {
     });
     this.data.splice(index, 1);
     this.updateVisibility();
+    */
 };
 
 localground.markerManager.prototype.intersectMarkers = function(mEvent, point) {

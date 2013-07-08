@@ -9,6 +9,8 @@ localground.point = function(opts){
         view: { width: 445, height: 225 }
     };
     this.candidateMarker = null; //used if marker is to be merged with another marker
+	this.bubbleWidth = 480;
+    this.bubbleHeight = 360;
 };
 
 localground.point.prototype = new localground.overlay();
@@ -234,7 +236,7 @@ localground.point.prototype.deleteOverlay = function() {
     alert('show delete confirmation / un-georeference options here');  
 };
 
-localground.point.prototype.showInfoBubbleEdit = function() {
+/*localground.point.prototype.showInfoBubbleEdit = function() {
     //this section reloads the iframe completely
     var me = this;
     var $contentContainer = $('<div></div>')
@@ -288,7 +290,7 @@ localground.point.prototype.showInfoBubbleEdit = function() {
     self.infoBubble.setFooter($footer.get(0));
     self.infoBubble.setContent($contentContainer.get(0)); 
     self.infoBubble.open(self.map, this.googleOverlay);  
-};
+};*/
 
 localground.point.prototype.closeInfoBubble = function() {
     //since this function is called in the infobubble class, use the
@@ -370,5 +372,32 @@ localground.point.prototype.mouseoverF = function(){
 
 localground.point.prototype.mouseoutF = function(){
 	self.tooltip.close();
+};
+
+localground.point.prototype.renderInfoBubble = function(opts) {
+    var me = this;
+	var width = this.bubbleWidth;
+	var height = this.bubbleHeight;
+	var margin = '0px';
+	var overflow_y = 'hidden';
+	if (opts) {
+		width = opts.width || width;
+		height = opts.height || height;
+		margin = opts.margin || margin;
+		overflow_y = opts.overflow_y || overflow_y;
+	}
+    var $contentContainer = $('<div></div>').css({
+            'width': width,
+            'height': height,
+            'margin': margin,
+            'overflow-y': overflow_y,
+            'overflow-x': 'hidden'
+        });
+    self.infoBubble.setHeaderText(null);
+    self.infoBubble.setFooter(null);
+    self.infoBubble.doNotPad = true;
+    self.infoBubble.setContent($contentContainer.get(0)); 
+    self.infoBubble.open(self.map, this.googleOverlay);
+    return $contentContainer; 
 };
 

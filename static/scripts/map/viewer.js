@@ -115,7 +115,7 @@ localground.viewer.prototype.initialize=function(opts){
     });
 	
 	this.tooltip = new InfoBubble({
-		borderRadius: 0,
+		borderRadius: 5,
         maxHeight: 200,
         padding: 5,
 		disableAnimation: true,
@@ -125,7 +125,7 @@ localground.viewer.prototype.initialize=function(opts){
     });
     
     this.infoBubble = new InfoBubble({
-        borderRadius: 0,
+        borderRadius: 5,
         maxHeight: 385,
         padding: 0,
 		disableAnimation: true,

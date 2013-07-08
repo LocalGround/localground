@@ -1,4 +1,3 @@
-
 localground.photoManager = function(){
 	this.data = [];
 };
@@ -21,7 +20,7 @@ localground.photoManager.prototype.makeViewable = function() {
 		$('.thumbsmall').draggable("destroy");
 		$('.thumbsmall').removeClass('can_drag').removeClass('ui-draggable').removeClass('activated')
 	} catch(e) {
-		alert(e);
+		//alert(e);
 	}
     
 };
