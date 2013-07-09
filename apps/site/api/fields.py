@@ -42,6 +42,7 @@ class ProjectField(serializers.WritableField):
 	
 class PointField(serializers.WritableField):
 	type_label = 'point'
+	label = 'Point'
 	def field_from_native(self, data, files, field_name, into):
 		try:
 			native = '%s;%s' % (data['lng'], data['lat'])

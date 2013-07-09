@@ -3,7 +3,7 @@ from rest_framework.serializers import ValidationError
 
 from localground.apps.site.api.permissions import IsOwnerOrReadOnly
 from localground.apps.site.api.filters import SQLFilterBackend
-from localground.apps.site.models import Photo, Audio, Project, Marker, EntityGroupAssociation
+from localground.apps.site.models import Photo, Audio, Project, Marker, EntityGroupAssociation, ObjectAuthority
 from django.contrib.auth.models import User, Group
 from rest_framework import generics, renderers, permissions, viewsets
 from rest_framework.decorators import api_view, permission_classes
@@ -22,7 +22,6 @@ class AuditCreate(object):
         '''
         For database inserts
         '''
-        from localground.apps.site.models import ObjectAuthority
         obj.owner = self.request.user
         obj.last_updated_by = self.request.user
         obj.timestamp = get_timestamp_no_milliseconds()
@@ -51,7 +50,6 @@ class AuditUpdate(AuditCreate):
         '''
         For database updates
         '''
-        from localground.apps.site.models import ObjectAuthority
         obj.last_updated_by = self.request.user
         obj.timestamp = get_timestamp_no_milliseconds()
 
@@ -173,8 +171,12 @@ class AttachItemView(generics.ListCreateAPIView, AuditCreate):
             return generics.ListCreateAPIView.create(request, *args, **kwargs)
         except IntegrityError, e:
             connection._rollback()
+            # For a verbose error:
             messages = str(e).strip().split('\n')
             d = { 'global': messages }
+            
+            #For a vanilla error:
+            d = { 'global': 'This relationship already exists in the system' }
             return Response(d, status=status.HTTP_400_BAD_REQUEST)
  
 

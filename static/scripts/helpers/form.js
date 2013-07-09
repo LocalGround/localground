@@ -11,6 +11,7 @@ ui.form.prototype.render = function() {
     var me = this;
 	var obj = this.object;
     $form = $('<form />').attr('id', this.id);
+	this.addMessages($form);
 	$.each(this.schema, function(){
 		if($.inArray(this.field_name, me.exclude) == -1) {
 			var $controlContainer = $('<div />').addClass('input');
@@ -92,7 +93,23 @@ ui.form.prototype.renderControl = function(elem) {
 	return $elem;
 };
 
+ui.form.prototype.addMessages = function($container) {
+	var messages = ['alert-warning', 'alert-error', 'alert-success'];
+	for(i=0; i < messages.length; i++) {
+		var label = messages[i].split('-')[1];
+		var $msg = $('<div />')
+						.addClass('alert').addClass(messages[i])
+						.attr('id', this.id + '-' + label)
+						.css({display: 'none'});
+		$msg.append($('<a class="close" style="cursor:pointer">×</a>'));
+		$msg.append($('<strong />').html(label + ': '));
+		$msg.append($('<span />').attr('id', this.id + '-' + label + '-text'));
+		$container.append($msg);
+	}
+}
+
 ui.form.prototype.update = function() {
+	var me = this;
 	var obj = this.object, $form = $('#' + this.id), url = obj.url;
     if (url.indexOf('.json') == -1) { url += '.json'; }
 	
@@ -109,9 +126,16 @@ ui.form.prototype.update = function() {
         data: data,
         success: function(data) {
             $.extend(obj, data);
-            $('#success').show();
-            $('#success-message-text').html('Your ' + obj.overlay_type + ' has been successfully updated.');
-			obj.refresh();
+			var msg = 'Your ' + obj.overlay_type + ' has been successfully updated.';
+			id = '#' + me.id;
+			//$(id).find('.alert-success').show();
+			//id = '\#' + me.id;
+			//alert(id + ':' + '#update-photo-form');
+			//$('#' + me.id + '-success').show();
+			//$('#' + me.id + '-success-text').html(msg);
+			$('#update-photo-form-success').show();
+			$('#update-photo-form-success-text').html(msg);
+            obj.refresh();
         },
         notmodified: function(data) { alert('Not modified'); },
         error: function(data) {
@@ -124,8 +148,8 @@ ui.form.prototype.update = function() {
                     $form_element.parent().prepend(result[key]);
                 }
                 else {
-                    $('#error').show();
-                    $('#error-message-text').html(result[key]);
+                    $('#' + me.id).find('.alert-error').show();
+					$('#' + me.id).find('.alert-error').find('.message-text').html(result[key]);
                 }
             }
         }
