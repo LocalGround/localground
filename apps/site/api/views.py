@@ -5,16 +5,28 @@ from localground.apps.site.api.permissions import IsOwnerOrReadOnly
 from localground.apps.site.api.filters import SQLFilterBackend
 from localground.apps.site.models import Photo, Audio, Project, Marker, EntityGroupAssociation, ObjectAuthority
 from django.contrib.auth.models import User, Group
-from rest_framework import generics, renderers, permissions, viewsets
+from rest_framework import generics, renderers, permissions, viewsets, views, mixins
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import django_filters
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.views import APIView
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from rest_framework import status
 from localground.apps.site.lib.helpers import get_timestamp_no_milliseconds
 from rest_framework.utils.formatting import get_view_name, get_view_description
+
+
+@api_view(('GET',))
+@permission_classes((IsOwnerOrReadOnly, ))
+def api_root(request, format=None):
+    return Response({
+        'photos': reverse('photo-list', request=request, format=format),
+        'audio': reverse('audio-list', request=request, format=format),
+        'projects': reverse('project-list', request=request, format=format),
+        'users': reverse('user-list', request=request, format=format),
+        'groups': reverse('group-list', request=request, format=format),
+        'markers': reverse('marker-list', request=request, format=format)
+    })
 
 class AuditCreate(object):
     
@@ -53,19 +65,6 @@ class AuditUpdate(AuditCreate):
         obj.last_updated_by = self.request.user
         obj.timestamp = get_timestamp_no_milliseconds()
 
-
-
-@api_view(('GET',))
-@permission_classes((IsOwnerOrReadOnly, ))
-def api_root(request, format=None):
-    return Response({
-        'photos': reverse('photo-list', request=request, format=format),
-        'audio': reverse('audio-list', request=request, format=format),
-        'projects': reverse('project-list', request=request, format=format),
-        'users': reverse('user-list', request=request, format=format),
-        'groups': reverse('group-list', request=request, format=format),
-        'markers': reverse('marker-list', request=request, format=format)
-    })
 
 class PhotoViewSet(viewsets.ModelViewSet, AuditUpdate):
     """
@@ -111,7 +110,7 @@ class MarkerList(generics.ListCreateAPIView, AuditCreate):
         AuditCreate.pre_save(self, obj)
           
         
-class MarkerDetail(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
+class MarkerInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
     queryset = Marker.objects.select_related('owner').all() #.prefetch_related('photos', 'audio', 'marker_set')
     permission_classes = (IsOwnerOrReadOnly,)
     serializer_class = serializers.MarkerSerializer
@@ -134,7 +133,7 @@ class ProjectList(generics.ListCreateAPIView, AuditCreate):
         AuditCreate.pre_save(self, obj)
         obj.access_authority = ObjectAuthority.objects.get(id=1)
     
-class ProjectDetail(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
+class ProjectInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
     queryset = Project.objects.select_related('owner').all() #.prefetch_related('photos', 'audio', 'marker_set')
     permission_classes = (IsOwnerOrReadOnly,)
     serializer_class = serializers.ProjectDetailSerializer
@@ -156,11 +155,21 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = serializers.GroupSerializer
-    
-class AttachItemView(generics.ListCreateAPIView, AuditCreate):
-    queryset = EntityGroupAssociation.objects.all()
-    serializer_class = serializers.AssociationSerializer
 
+class RelatedMediaList(generics.ListCreateAPIView,
+                     AuditCreate):
+    model = EntityGroupAssociation
+    serializer_class = serializers.AssociationSerializer
+    #http://stackoverflow.com/questions/3210491/association-of-entities-in-a-rest-service
+
+    def get_queryset(self):
+        from localground.apps.site.models import Base
+        entity_type = Base.get_model(
+                        model_name_plural=self.kwargs.get('entity_name_plural')
+                    ).get_content_type()
+        return self.model.objects.filter(entity_type=entity_type)
+        
+    
     def create(request, *args, **kwargs):
         '''
         This is a hack:  not sure how to handle generic database errors.
@@ -173,19 +182,44 @@ class AttachItemView(generics.ListCreateAPIView, AuditCreate):
             connection._rollback()
             # For a verbose error:
             messages = str(e).strip().split('\n')
-            d = { 'global': messages }
+            d = { 'non_field_errors': messages }
             
             #For a vanilla error:
-            d = { 'global': 'This relationship already exists in the system' }
+            d = { 'non_field_errors': ['This relationship already exists in the system'] }
             return Response(d, status=status.HTTP_400_BAD_REQUEST)
  
-
     def pre_save(self, obj):
         AuditCreate.pre_save(self, obj)
         
         from localground.apps.site.models import Base
-        pk = self.kwargs.get('pk')
-        object_name_plural = self.kwargs.get('object_name_plural')
-        cls = Base.get_model(model_name_plural=object_name_plural)
-        setattr(obj, 'group_type', cls.get_content_type())
-        setattr(obj, 'group_id', pk)
+        group_type = Base.get_model(
+                        model_name_plural=self.kwargs.get('group_name_plural')
+                    ).get_content_type()
+        entity_type = Base.get_model(
+                        model_name_plural=self.kwargs.get('entity_name_plural')
+                    ).get_content_type()
+        setattr(obj, 'group_type', group_type)
+        setattr(obj, 'group_id', self.kwargs.get('group_id'))
+        setattr(obj, 'entity_type', entity_type)
+
+class RelatedMediaInstance(generics.RetrieveUpdateDestroyAPIView):
+    queryset = EntityGroupAssociation.objects.all()
+    serializer_class = serializers.AssociationSerializerDetail
+    
+    def get_object(self, queryset=None):
+        from localground.apps.site.models import Base
+        group_type = Base.get_model(
+                        model_name_plural=self.kwargs.get('group_name_plural')
+                    ).get_content_type()
+        entity_type = Base.get_model(
+                        model_name_plural=self.kwargs.get('entity_name_plural')
+                    ).get_content_type()
+        
+        filter_kwargs = {
+            'group_id': int(self.kwargs.get('group_id')),
+            'entity_id': int(self.kwargs.get('id')),
+            'group_type': group_type,
+            'entity_type': entity_type
+        }
+        return generics.get_object_or_404(self.queryset, **filter_kwargs)
+    

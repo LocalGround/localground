@@ -26,10 +26,11 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += format_suffix_patterns(patterns('',
-    url(r'^(?P<object_name_plural>\w+)/(?P<pk>[0-9]+)/attach/$', views.AttachItemView.as_view(), name='attach'),
-    url(r'^projects/(?P<pk>[0-9]+)/$', views.ProjectDetail.as_view(), name='project-detail'),
+    url(r'^(?P<group_name_plural>markers|views)/(?P<group_id>[0-9]+)/(?P<entity_name_plural>\w+)/$', views.RelatedMediaList.as_view(), name='related-media-list'),
+    url(r'^(?P<group_name_plural>markers|views)/(?P<group_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$', views.RelatedMediaInstance.as_view(), name='related-media-detail'),
+    url(r'^projects/(?P<pk>[0-9]+)/$', views.ProjectInstance.as_view(), name='project-detail'),
     url(r'^projects/$', views.ProjectList.as_view(), name='project-list'),
-    url(r'^markers/(?P<pk>[0-9]+)/$', views.MarkerDetail.as_view(), name='marker-detail'),
+    url(r'^markers/(?P<pk>[0-9]+)/$', views.MarkerInstance.as_view(), name='marker-detail'),
     url(r'^markers/$', views.MarkerList.as_view(), name='marker-list'),
 ))
 

@@ -8,14 +8,14 @@ from localground.apps.site.api import fields
 class BaseSerializer(serializers.HyperlinkedModelSerializer):
     tags = fields.TagField(required=False, widget=widgets.TagAutocomplete, help_text='Tag your object here')
     name = serializers.CharField(required=False, label='name')
-    attach_url = serializers.SerializerMethodField('get_attach_url')
+    #attach_url = serializers.SerializerMethodField('get_attach_url')
     description = fields.DescriptionField(required=False, label='caption')
         
     class Meta:
-        fields = ('id', 'name', 'description', 'tags', 'attach_url')
+        fields = ('id', 'name', 'description', 'tags') #, 'attach_url')
         
-    def get_attach_url(self, obj):
-        return '%s/api/0/%s/%s/attach/' % (settings.SERVER_URL, obj.model_name_plural, obj.id)
+    #def get_attach_url(self, obj):
+    #    return '%s/api/0/%s/%s/attach/' % (settings.SERVER_URL, obj.model_name_plural, obj.id)
 
     
 class PointSerializer(BaseSerializer):
@@ -89,52 +89,6 @@ class AudioSerializer(MediaPointSerializer):
     def get_file_path(self, obj):
         return obj.encrypt_url(obj.file_name_new)
     
-class MarkerSerializer(PointSerializer):
-    photos = serializers.SerializerMethodField('get_photos')
-    audio = serializers.SerializerMethodField('get_audio')
-    color = fields.ColorField(required=False)
-    point = fields.PointField(widget=widgets.PointWidgetTextbox, required=False)
-    class Meta:
-        model = models.Marker
-        fields = PointSerializer.Meta.fields + ('photos', 'audio', 'color',)
-        depth = 0
-        
-    def get_photos(self, obj):
-        return {
-            'id': models.Photo.model_name,
-            'name': models.Photo.model_name_plural.title(),
-            'overlay_type': models.Photo.model_name,
-            'data': [PhotoSerializer(p).data for p in obj.photos]
-        }
-    
-    def get_audio(self, obj):
-        return {
-            'id': models.Audio.model_name,
-            'name': models.Audio.model_name_plural.title(),
-            'overlay_type': models.Audio.model_name,
-            'data': [AudioSerializer(a).data for a in obj.audio]
-        }
-    
-class MarkerSerializerCounts(MarkerSerializer):
-    photo_count = serializers.SerializerMethodField('get_photo_count')
-    audio_count = serializers.SerializerMethodField('get_audio_count')
-    point = fields.PointField(help_text='Assign lat/lng field',
-                              widget=widgets.PointWidgetTextbox,
-                              required=True) 
-    class Meta:
-        model = models.Marker
-        fields = PointSerializer.Meta.fields + ('photo_count', 'audio_count', 'color',)
-        depth = 0
-        
-    def get_photo_count(self, obj):
-        try: return obj.photo_count
-        except: return None
-    
-    def get_audio_count(self, obj):
-        try: return obj.audio_count
-        except: return None
-    
-
         
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -191,39 +145,133 @@ class ProjectDetailSerializer(BaseSerializer):
             'overlay_type': cls.model_name,
             'data': data
         }
-     
+ 
+class MarkerSerializer(PointSerializer):
+    photos = serializers.SerializerMethodField('get_photos')
+    photo_links = serializers.SerializerMethodField('get_url_photos')
+    audio_links = serializers.SerializerMethodField('get_url_audio')
+    audio = serializers.SerializerMethodField('get_audio')
+    color = fields.ColorField(required=False)
+    point = fields.PointField(widget=widgets.PointWidgetTextbox, required=False)
+    class Meta:
+        model = models.Marker
+        fields = PointSerializer.Meta.fields + \
+            ('photos', 'audio', 'color', 'photo_links', 'audio_links')
+        depth = 0
+        
+    def _get_url_children(self, obj, model_name_plural):
+        return '%s/api/0/%s/%s/%s/' % (settings.SERVER_URL,
+                    self.Meta.model.model_name_plural, obj.id,
+                    model_name_plural)
+        
+    def get_url_photos(self, obj):
+        return self._get_url_children(obj, 'photos')
+    
+    def get_url_audio(self, obj):
+        return self._get_url_children(obj, 'audio') 
+    
+    def serialize_nested_objects(self, id, Serializer, data, cls):
+        serialized = []
+        for item in data:
+            d = Serializer(item).data
+            d.update({
+                'relation': '%s/api/0/%s/%s/%s/%s/' % (settings.SERVER_URL,
+                    'markers', id, cls.model_name_plural, item.id)    
+            })
+            serialized.append(d)
+        return serialized
+        
+    def get_photos(self, obj):
+        return {
+            'id': models.Photo.model_name,
+            'name': models.Photo.model_name_plural.title(),
+            'overlay_type': models.Photo.model_name,
+            'data': self.serialize_nested_objects(obj.id, PhotoSerializer, obj.photos, models.Photo)
+        }
+    
+    def get_audio(self, obj):
+        return {
+            'id': models.Audio.model_name,
+            'name': models.Audio.model_name_plural.title(),
+            'overlay_type': models.Audio.model_name,
+            'data': self.serialize_nested_objects(obj.id, AudioSerializer, obj.audio, models.Audio)
+        }
+    
+class MarkerSerializerCounts(MarkerSerializer):
+    photo_count = serializers.SerializerMethodField('get_photo_count')
+    audio_count = serializers.SerializerMethodField('get_audio_count')
+    point = fields.PointField(help_text='Assign lat/lng field',
+                              widget=widgets.PointWidgetTextbox,
+                              required=True) 
+    class Meta:
+        model = models.Marker
+        fields = PointSerializer.Meta.fields + ('photo_count', 'audio_count',
+                                    'color', 'photo_links', 'audio_links')
+        depth = 0
+        
+    def get_photo_count(self, obj):
+        try: return obj.photo_count
+        except: return None
+    
+    def get_audio_count(self, obj):
+        try: return obj.audio_count
+        except: return None    
     
 class AssociationSerializer(serializers.ModelSerializer):
-    entity_object = serializers.SerializerMethodField('get_entity_object')
-    entity_type = fields.EntityTypeField(source='entity_type', required=True,
-                                  choices=[
-                                    ('photo','photo'),
-                                    ('audio', 'audio'),
-                                    ('marker', 'marker')
-                                    ])
-    group_object = serializers.SerializerMethodField('get_group_object')
-    id = serializers.WritableField(source="entity_id", required=True)
+    relation = serializers.SerializerMethodField('get_relation')
+    id = serializers.IntegerField(source="entity_id", required=True)
         
     class Meta:
         model = models.EntityGroupAssociation
-        fields = ('ordering', 'turned_on', 'entity_type', 'entity_object',
-                    'group_object', 'id')
+        fields = ('id', 'ordering', 'turned_on', 'relation')
 
-    def get_group_object(self, obj):
-        return obj.group_object
-    
-    def get_entity_object(self, obj):
-        return obj.entity_object
-    
-        
+    def validate(self, attrs):
+        """
+        Ensure that the media being attached is legit
+        """
+        from localground.apps.site.models import Base
+        view = self.context.get('view')
+        id = attrs.get('entity_id') or view.kwargs.get('id')
+        try:
+            id = int(id)
+        except Exception:
+            raise serializers.ValidationError('%s must be a whole number' % id)
+        try:
+            #get access to URL params throught the view
+            cls = Base.get_model(
+                model_name_plural=view.kwargs.get('entity_name_plural')
+            )
+        except:
+            raise serializers.ValidationError(
+                '\"%s\" is not a valid media type' % view.kwargs.get('entity_type')
+            )
+        try:
+            cls.objects.get(id=id)
+        except cls.DoesNotExist:
+            raise serializers.ValidationError('%s #%s does not exist in the system' %
+                        (cls.model_name, id))
+        return attrs
 
-        
-    '''
-        ----------------------
-        EntityGroupAssociation
-        ----------------------
-        ordering, turned_on, group_type, group_id, "group_object",
-        entity_type, entity_id, "entity_object"
-    '''
+    def get_relation(self, obj):
+        view = self.context.get('view')
+        return '%s/api/0/%s/%s/%s/%s/' % (settings.SERVER_URL,
+                    view.kwargs.get('group_name_plural'), obj.group_id,
+                    view.kwargs.get('entity_name_plural'), obj.entity_id)
     
+    
+class AssociationSerializerDetail(AssociationSerializer):
+    parent = serializers.SerializerMethodField('get_parent')
+    child = serializers.SerializerMethodField('get_child')
+    class Meta:
+        model = models.EntityGroupAssociation
+        fields = ('ordering', 'turned_on', 'parent', 'child')
         
+    def get_parent(self, obj):
+        view = self.context.get('view')
+        return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
+                    view.kwargs.get('group_name_plural'), obj.group_id)
+    
+    def get_child(self, obj):
+        view = self.context.get('view')
+        return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
+                    view.kwargs.get('entity_name_plural'), obj.entity_id)

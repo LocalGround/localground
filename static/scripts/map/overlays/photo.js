@@ -122,6 +122,7 @@ localground.photo.prototype.getPhotoPreview = function(opts) {
 				'margin-left': 'auto',
 				'margin-top': '0px'
 			}).attr('src', this.path_medium)
+			.addClass('dragclass')
 		);
 };
 
@@ -140,11 +141,12 @@ localground.photo.prototype.showInfoBubbleView = function(opts) {
 };
 
 localground.photo.prototype.mouseoverF = function(){
+	if(self.hideTip){ return; }
 	var $innerObj = $('<div />')
 						.append($('<img />')
 							.attr('src', self.currentOverlay.path_marker_lg)
 							.css({float: 'left', 'margin-right': '5px'}))
-						.append($('<p />').html(self.currentOverlay.name)
+						.append($('<p />').html(self.currentOverlay.getName())
 									.css({'font-weight': 'bold', 'margin-bottom': '0px'})
 						).append($('<p />').html(self.currentOverlay.caption));
 	this.showTip({
@@ -155,3 +157,56 @@ localground.photo.prototype.mouseoverF = function(){
 	});
 };
 
+//localground.photo.prototype.makeDraggable = function(){
+//	alert('make draggable!')
+//	//Stop Opera selecting anything whilst dragging.
+//	if (window.opera){
+//		document.write("<input type='hidden' id='Q' value=' '>");
+//	}
+//	
+//	var n = 500;
+//	var dragok = false;
+//	var y,x,d,dy,dx;
+//	
+//	function move(e){
+//		
+//	if (!e) e = window.event;
+//	 if (dragok){
+//	  var lft=dx + e.clientX - x,top=dy + e.clientY - y;
+//	  d.style.marginLeft = lft + "px";
+//	  d.style.marginTop  = top + "px";
+//	  return false;
+//	 }
+//	}
+//	
+//	function down(e){
+//		if (!e) e = window.event;
+//		var temp = (typeof e.target != "undefined")?e.target:e.srcElement;
+//		if (temp.tagName != "HTML"|"BODY" && temp.className != "dragclass" && temp.className != "thumbsmall"){
+//		 temp = (typeof temp.parentNode != "undefined")?temp.parentNode:temp.parentElement;
+//		 }
+//		if (temp.className == "dragclass" || temp.className == "thumbsmall"){
+//			if (window.opera){
+//				document.getElementById("Q").focus();
+//			}
+//			dragok = true;
+//			temp.style.zIndex = n++;
+//			d = temp;
+//			dx = parseInt(temp.style.marginLeft+0);
+//			dy = parseInt(temp.style.marginTop+0);
+//			x = e.clientX;
+//			y = e.clientY;
+//			document.onmousemove = move;
+//			return false;
+//		}
+//	}
+//	
+//	function up(){
+//		dragok = false;
+//		document.onmousemove = null;
+//	}
+//	
+//	document.onmousedown = down;
+//	document.onmouseup = up;
+//
+//};

@@ -80,11 +80,12 @@ localground.audio.prototype.showInfoBubbleEdit = function(opts){
 };
 
 localground.audio.prototype.mouseoverF = function(){
-	var $innerObj = $('<div />')
+	if(self.hideTip){ return; }
+    var $innerObj = $('<div />')
 						.append($('<img />')
 							.attr('src', this.image)
 							.css({float: 'left', 'margin-right': '5px'}))
-						.append($('<p />').html(this.name)
+						.append($('<p />').html(this.getName())
                                 .css({'padding-top': '10px'}));
 	this.showTip({
         height: '40px',

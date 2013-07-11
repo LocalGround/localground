@@ -58,7 +58,7 @@ localground.record.prototype.showInfoBubbleView = function(opts) {
                         'overflow-x': 'hidden'
                     }).append(this.renderRecord());
     var showHeader = true;
-    self.infoBubble.setHeaderText(showHeader ? this.name.truncate(5) : null);
+    self.infoBubble.setHeaderText(showHeader ? this.getName().truncate(5) : null);
     self.infoBubble.setFooter(null);    
     self.infoBubble.setContent($contentContainer.get(0)); 
     self.infoBubble.open(self.map, this.googleOverlay);

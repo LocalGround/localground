@@ -10,7 +10,12 @@ ui.form = function(opts){
 ui.form.prototype.render = function() {
     var me = this;
 	var obj = this.object;
-    $form = $('<form />').attr('id', this.id);
+	$scrollable = $('<div />').css({
+		height: '226px',
+		'overflow-y': 'auto',
+		'margin': '2px 2px 0px 0px'
+	});
+    $form = $('<form />').attr('id', this.id).css({'margin': '0px'});
 	this.addMessages($form);
 	$.each(this.schema, function(){
 		if($.inArray(this.field_name, me.exclude) == -1) {
@@ -61,8 +66,8 @@ ui.form.prototype.render = function() {
 	//add JavaScripts, if needed:
 	//$('.tags')
 	//	.autocomplete("/tagging_autocomplete/list/json", { multiple: true });            
-	
-	return $form;  
+	$scrollable.append($form);
+	return $scrollable;  
 };
 
 ui.form.prototype.renderControl = function(elem) {
@@ -99,11 +104,13 @@ ui.form.prototype.addMessages = function($container) {
 		var label = messages[i].split('-')[1];
 		var $msg = $('<div />')
 						.addClass('alert').addClass(messages[i])
-						.attr('id', this.id + '-' + label)
-						.css({display: 'none'});
-		$msg.append($('<a class="close" style="cursor:pointer">×</a>'));
+						.css({display: 'none', margin: '6px'});
+		$msg.append($('<a class="close" style="cursor:pointer">×</a>')
+						.click(function(){
+							$(this).parent().hide();
+						 }));
 		$msg.append($('<strong />').html(label + ': '));
-		$msg.append($('<span />').attr('id', this.id + '-' + label + '-text'));
+		$msg.append($('<span class="message-text" />'));
 		$container.append($msg);
 	}
 }
@@ -128,14 +135,9 @@ ui.form.prototype.update = function() {
             $.extend(obj, data);
 			var msg = 'Your ' + obj.overlay_type + ' has been successfully updated.';
 			id = '#' + me.id;
-			//$(id).find('.alert-success').show();
-			//id = '\#' + me.id;
-			//alert(id + ':' + '#update-photo-form');
-			//$('#' + me.id + '-success').show();
-			//$('#' + me.id + '-success-text').html(msg);
-			$('#update-photo-form-success').show();
-			$('#update-photo-form-success-text').html(msg);
-            obj.refresh();
+			$(id).find('.alert-success').show();
+			$(id).find('.alert-success').find('.message-text').html(msg);
+			obj.refresh();
         },
         notmodified: function(data) { alert('Not modified'); },
         error: function(data) {

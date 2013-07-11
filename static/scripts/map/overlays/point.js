@@ -68,7 +68,7 @@ localground.point.prototype.dragend = function(latLng) {
         self.infoBubble.open(self.map, this.candidateMarker.googleOverlay);
         
 		// append the media to the marker:
-		this.candidateMarker.appendMedia(this); 
+		this.candidateMarker.attachMedia(this); 
     }
     else {
 		if(this.url.indexOf('.json') == -1)
@@ -121,6 +121,8 @@ localground.point.prototype.makeEditable = function() {
         });
         google.maps.event.addListener(this.googleOverlay, "dragstart", function(mEvent) {
             $('#record_preview').hide();
+			self.tooltip.close();
+			self.hideTip = true;
             self.infoBubble.close();
             //self.currentOverlay.closeInfoBubble(); //close info bubble while dragging
             self.currentOverlay = me;
@@ -129,6 +131,7 @@ localground.point.prototype.makeEditable = function() {
         google.maps.event.addListener(this.googleOverlay, "dragend", function(mEvent) {
             me.dragend(mEvent.latLng);
             me.googleOverlay.setIcon(me.getIcon());
+			self.hideTip = false;
         });
         google.maps.event.addListener(this.googleOverlay, "drag", function(mEvent) {
 			var m = me.getManagerById(self.overlay_types.MARKER);
@@ -364,6 +367,7 @@ localground.point.prototype.showTip = function(opts){
 }
 
 localground.point.prototype.mouseoverF = function(){
+	if(self.hideTip){ return; }
 	var $innerObj = $('<div style="text-align:center" />').append(this.name);
 	this.showTip({
 		contentContainer: $innerObj 

@@ -84,9 +84,14 @@ localground.overlay.prototype.renderListingImage = function() {
 	return $img;
 };
 
+localground.overlay.prototype.getName = function() {
+	var name = this.name;
+	if(name == null || name.length == 0)
+		name = 'Untitled';
+	return name;
+};
+
 localground.overlay.prototype.renderListingText = function() {
-	if(this.name == null)
-		this.name = 'Untitled';
 	var me = this;
 	var $div_text = $('<div></div>').css({
         'display': 'inline-block',
@@ -97,8 +102,8 @@ localground.overlay.prototype.renderListingText = function() {
     });
 	if(this.point || this.north) {
         $div_text.append($('<a href="#"></a>')
-                .html(this.name.truncate(4))
-                .attr('title', this.name)
+                .html(this.getName().truncate(4))
+                .attr('title', this.getName())
                 .click(function() {
                     me.zoomToOverlay();
 					return false;
@@ -106,8 +111,8 @@ localground.overlay.prototype.renderListingText = function() {
     }
     else {
         $div_text.append($('<span></span>')
-                .html(this.name.truncate(4) + '<br />')
-                .attr('title', this.name));
+                .html(this.getName().truncate(4) + '<br />')
+                .attr('title', this.getName()));
     }
 	return $div_text;
 };
@@ -117,8 +122,7 @@ localground.overlay.prototype.renderListing = function() {
 	if($div_entry == null)
 	{
 		$div_entry = $('<div></div>').attr('id', this.getObjectType() + '_' + this.id);
-		//alert(this.getObjectType() + ' - ' + $div_entry.attr('id'));
-        this.getListingContainer().append($div_entry);	
+		this.getListingContainer().append($div_entry);	
 	}
 	else {
 		$div_entry.children().remove();	
@@ -131,8 +135,7 @@ localground.overlay.prototype.renderListing = function() {
     $div_entry.append($cb);
     
 	//add image (if applicable):
-    //$img = this.renderListingImage()
-	//if($img)
+
 	$div_entry.append(this.renderListingImage());
 		
 	//add text:
@@ -143,7 +146,7 @@ localground.overlay.prototype.renderListing = function() {
 				.hide()
                 .click(function() {
                     //me.removeItem();
-					var answer = confirm('Are you sure you want to delete ' + me.name + '?');
+					var answer = confirm('Are you sure you want to delete ' + me.getName() + '?');
 					alert(answer);
 					return false;
                 }));
@@ -191,7 +194,7 @@ localground.overlay.prototype.toggleOverlay = function(isOn) {
 
 localground.overlay.prototype.refresh = function() {
     this.renderListing();
-    this.showInfoBubble();
+    //this.showInfoBubble();
 }
 
 localground.overlay.prototype.zoomToOverlay = function() {
@@ -229,7 +232,7 @@ localground.overlay.prototype.renderDetail = function() {
 				'font-weight': 'bold',
 				'color': '#444',
 				'margin': '5px 15px 5px 15px'
-			}).html(this.name)
+			}).html(this.getName())
 		).append(
 			$('<div />').css({
 				'height': '1px',

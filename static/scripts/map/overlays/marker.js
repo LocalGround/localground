@@ -73,6 +73,14 @@ localground.marker.prototype.getVideoCount = function() {
         return this.video_count;
 };
 
+localground.overlay.prototype.getName = function(name) {
+	if(name == null)
+        name = this.name;
+	if(name == null || name.length == 0)
+		name = 'Untitled';
+	return name;
+};
+
 localground.marker.prototype.renderMarkerSection = function() {
     return $('<div></div>').css({'margin-bottom': '0px'});
 };
@@ -86,6 +94,11 @@ localground.marker.prototype.showInfoBubbleEdit = function(opts) {
 };
 
 localground.marker.prototype.renderMarkerDetail = function(callback){
+    /*
+     * Theoretically, we shouldn't have to requery the server each time
+     * we want to see the detailed marker display, but there's a bug in the
+     * code.
+    */
     var me = this;
     var $contentContainer = this.renderInfoBubble();
     $contentContainer.children().empty();
@@ -176,8 +189,10 @@ localground.marker.prototype.renderPanel = function(key){
 };
 
 localground.marker.prototype.renderPhotoPanel = function(){
+    var me = this;
     var $container = $('<div />');
     $.each(this.photos.data, function(idx) {
+        var mini_me = this; //for scope purposes
         var $holder = $('<div />').css({'display': 'block'});
         $holder.append(
             $('<img />').addClass('thumb')
@@ -187,15 +202,36 @@ localground.marker.prototype.renderPhotoPanel = function(){
                 $('<p />').css({'display': 'inline-block' })
                     .append(
                         $('<span />').css({ 'font-weight': 'bold' })
-                            .html(this.name))     
+                            .html(me.getName(this.name)))     
                     .append($('<br />'))
                     .append(this.caption)
                     .append($('<br />')) 
-                    .append($('<a />').addClass('remove-photo').attr('href', '#').html('remove'))     
+                    .append($('<a />').addClass('remove-photo')
+                                .html('remove').click(function(){
+                                    var $parent = $(this).parent().parent();
+                                    me.detachMedia($parent, mini_me);
+                                    return false;
+                                }))     
             );
         $container.append($holder);
     });
     return $container;
+};
+
+localground.marker.prototype.detachMedia = function($parent, media) {
+    var me = this, url = media.relation;
+    if (url.indexOf('.json') == -1) { url += '.json'; }                              
+    $.ajax({
+        url: url,
+        type: 'DELETE',
+        success: function(data) {
+            $parent.remove();
+            me[media.overlay_type + '_count'] -= 1;
+            me.renderListing();
+        },
+        notmodified: function(data) { alert('Not modified'); },
+        error: function(data) { alert('Error'); }
+    });  
 };
 
 localground.marker.prototype.renderFormPanel = function(){
@@ -221,7 +257,7 @@ localground.marker.prototype.renderAudioPanel = function(){
                 $('<p />').css({'display': 'inline-block' })
                     .append(
                         $('<span />').css({ 'font-weight': 'bold' })
-                            .html(this.name))     
+                            .html(me.getName(this.name)))     
                     .append($('<br />'))
                     .append(this.caption)
                     .append($('<br />')) 
@@ -269,16 +305,16 @@ localground.marker.prototype.createNew = function(googleOverlay, projectID) {
     }); 
 };
 
-localground.marker.prototype.appendMedia = function(media) {
-    var me = this, url = me.attach_url;
+localground.marker.prototype.attachMedia = function(media) {
+    var me = this;
+    url = this[media.overlay_type + '_links'];
     if (url.indexOf('.json') == -1) { url += '.json'; }
     $.ajax({
         url: url,
         type: 'POST',
         data: {
-            entity_type: media.overlay_type,
             id: media.id,
-            ordering: 10
+            ordering: 1
         },
         success: function(data) {
             me.requery = true;
@@ -287,7 +323,6 @@ localground.marker.prototype.appendMedia = function(media) {
             me.googleOverlay.setIcon(me.markerImage);
             me.googleOverlay.setOptions({ 'draggable': true });
             me.closeInfoBubble();
-            //showInfoBubbleView
         },
         notmodified: function(data) { alert('Not modified'); },
         error: function(data) {
@@ -306,99 +341,12 @@ localground.marker.prototype.appendMedia = function(media) {
             }
         }
     }); 
-    /*
-    $.getJSON('/api/0/marker/append/' + this.id + '/' + media.getObjectType() +
-              '/' + media.id + '/', 
-        function(result) {
-            //todo:  reload marker info:
-            $.extend(me, result.marker);
-            if(media.getObjectType() == 'marker') {
-                me.getManagerById(self.overlay_types.MARKER).removeRecord(media);
-            }
-            me.renderListing();
-            me.googleOverlay.setIcon(me.markerImage);
-            me.googleOverlay.setOptions({ 'draggable': true });
-            me.closeInfoBubble();
-        },
-    'json');*/
 };
 
-localground.marker.prototype.removeFromMarker = function($elem, obj) {
-    var me = this;
-    var url = '/api/0/marker/remove/' + obj.getObjectType() +
-        '/' + obj.id + '/';
-   
-    $.getJSON(url, 
-        function(result) {
-            if(result.obj == null){
-                var spliceIndex = -1;
-                switch(obj.getObjectType()){
-                    case 'photo':
-                        for(i=0; i < me.photoIDs.length; i++){
-                            if(me.photoIDs[i] == obj.id) {
-                                me.photoIDs.splice(i, 1);
-                                break;
-                            }
-                        }
-                        if(me.getPhotoCount() == 0)
-                            $elem.parent().parent().remove();      
-                        else
-                            $elem.parent().remove();
-                        break;
-                    case 'audio':
-                        for(i=0; i < me.audioIDs.length; i++){
-                            if(me.audioIDs[i] == obj.id) {
-                                me.audioIDs.splice(i, 1);
-                                break;
-                            }
-                        }
-                        if(me.getAudioCount() == 0)
-                            $elem.parent().parent().parent().remove();      
-                        else
-                            $elem.parent().remove();
-                        break;
-                    case 'video':
-                        alert('not implemented');
-                        break;
-                    default:
-                        $.each(me.recordIDs, function(tableID, recordIDs){
-                            $.each(recordIDs, function(idx) {
-                                if(obj.tableID == tableID &&
-                                   obj.id == this) {
-                                    me.recordIDs[tableID].splice(idx, 1);
-                                    return;
-                                }
-                            });
-                        });
-                        //--me.audio_count;
-                        if(me.getRecordCount() == 0)
-                            $elem.parent().parent().remove();      
-                        else
-                            $elem.parent().remove();
-                        break;
-                }
-                obj.markerID = null;
-                
-                //if container's invisible, show it:
-                obj.getManager().addDataContainer();
-                
-                //render child object in the viewer:
-                obj.renderOverlay({turnedOn: true});
-                obj.renderListing();
-                
-                //update container visibility:
-                obj.getManager().updateVisibility();
-                
-                //re-render marker listing:
-                me.renderListing();
-                return;
-            }
-        },
-        'json');   
-};
 
 localground.marker.prototype.mouseoverF = function(){
-	var $innerObj = $('<div style="text-align:center" />')
+	if(self.hideTip){ return; }
+    var $innerObj = $('<div style="text-align:center" />')
                         .append(this.renderListingText());
 	this.showTip({
 		contentContainer: $innerObj,
