@@ -94,6 +94,36 @@ localground.marker.prototype.showInfoBubbleEdit = function(opts) {
 };
 
 localground.marker.prototype.renderMarkerDetail = function(callback){
+    var me = this;
+    var callbackF = eval('localground.marker.prototype.' + callback);
+    var $contentContainer = this.renderInfoBubble();
+    $contentContainer.children().empty();
+    if (this.requery || this.photos == null) {
+        //requery for the latest marker data:
+        $.getJSON(this.url, 
+            function(result) {
+                $.extend(me, result);
+                me.requery = false;
+                callbackF.call(me, $contentContainer);
+            },
+        'json');      
+    }
+    else {
+        // Hack:  w/o the setTimeout method, twitter's widgets
+        // don't work well with the infoBubble.  Tried catching th3
+        // domready event, but it didn't work:
+        // ----------------------------------------------------------
+        // google.maps.event.addListenerOnce(self.infoBubble, 'domready', function(){
+        //    //do stuff
+        // });
+        window.setTimeout(function() {
+            callbackF.call(me, $contentContainer);
+        }, 200);
+         
+    }
+};
+
+localground.marker.prototype.renderMarkerDetail1 = function(callback){
     /*
      * Theoretically, we shouldn't have to requery the server each time
      * we want to see the detailed marker display, but there's a bug in the
@@ -127,12 +157,12 @@ localground.marker.prototype.renderMarkerDetail = function(callback){
 };
 
 localground.marker.prototype.buildSlideshow = function($contentContainer){
-    //alert(JSON.stringify(this.photos));
+    //alert($contentContainer.get(0));
     $container = $('<div></div>');
     $contentContainer.append($container);
     self.slideshow.render_slideshow({
         marker: this,
-        $container: $container,
+        $container: $contentContainer,
         applyHack: true
     });
 };
@@ -144,14 +174,21 @@ localground.marker.prototype.buildEditForm = function($contentContainer){
     var $ul = $('<ul />')
 					.attr('id', 'marker-tabs')
 					.addClass('tabs');
-    var pages = ['Detail', 'Photos', 'Audio', 'Maps', 'Observations'];
+    var pages = [
+        { id: 'detail', name: 'Detail'},
+        { id: 'photo', name: 'Photos'},
+        { id: 'audio', name: 'Audio'},
+        { id: 'scan', name: 'Maps'},
+        { id: 'data', name: 'Observations'}
+    ];
     $.each(pages, function(index){
         $ul.append(
             $('<li />')
                 .append($('<a />')
-                        .attr('href', '#' + pages[index].toLowerCase() + '-' + 'marker')
-                        .attr('data-toggle', 'tab')
-                        .html(pages[index]))
+                    .attr('href', '#' + pages[index].id + '-' + 'marker')
+                    .attr('data-toggle', 'tab')
+                    .addClass('tab-' + pages[index].id)
+                    .html(pages[index].name))
         );    
     });
     $container.append($ul);
@@ -161,8 +198,8 @@ localground.marker.prototype.buildEditForm = function($contentContainer){
         $tc.append(
             $('<div />')
                 .addClass('tab-pane')
-                .attr('id', pages[index].toLowerCase() + '-' + 'marker')
-                .append(me.renderPanel(pages[index].toLowerCase()))
+                .attr('id', pages[index].id + '-' + 'marker')
+                .append(me.renderPanel(pages[index].id))
         );    
     });
     $('#marker-tabs a:first').tab('show');
@@ -178,28 +215,43 @@ localground.marker.prototype.renderPanel = function(key){
     switch (key) {
         case 'detail':
             return $overflower.append(this.renderFormPanel());
-        case 'photos':
+        case 'photo':
             return $overflower.append(this.renderPhotoPanel());
         case 'audio':
             return $overflower.append(this.renderAudioPanel());
         //case 'maps':
         //    return $overflower.append(this.renderPhotoPanel());
     }
-    return $overflower.append('Not implemented yet.');
+    return this.noChildrenMessage($overflower, 'Coming Soon');
+};
+
+localground.marker.prototype.noChildrenMessage = function($container, msg){
+    $container.addClass('no-data-found').css({
+        'height': this.bubbleHeight - 110
+    });
+    $container.append($('<div />').html(msg))
+    return $container;   
 };
 
 localground.marker.prototype.renderPhotoPanel = function(){
     var me = this;
     var $container = $('<div />');
+    if (this.photos.data.length == 0) {
+        return this.noChildrenMessage($container, 'No photos have been added');
+    }
     $.each(this.photos.data, function(idx) {
         var mini_me = this; //for scope purposes
-        var $holder = $('<div />').css({'display': 'block'});
+        var $holder = $('<div />').css({
+            'display': 'block',
+            'margin-bottom': '6px',
+            'border-bottom': 'solid 1px #eee'
+        });
         $holder.append(
             $('<img />').addClass('thumb')
                  .css({'margin-right': '5px', 'vertical-align': 'top' })
                  .attr('src', this.path_marker_lg))
             .append(
-                $('<p />').css({'display': 'inline-block' })
+                $('<p />').css({'display': 'inline-block', 'width': '385px' })
                     .append(
                         $('<span />').css({ 'font-weight': 'bold' })
                             .html(me.getName(this.name)))     
@@ -218,22 +270,6 @@ localground.marker.prototype.renderPhotoPanel = function(){
     return $container;
 };
 
-localground.marker.prototype.detachMedia = function($parent, media) {
-    var me = this, url = media.relation;
-    if (url.indexOf('.json') == -1) { url += '.json'; }                              
-    $.ajax({
-        url: url,
-        type: 'DELETE',
-        success: function(data) {
-            $parent.remove();
-            me[media.overlay_type + '_count'] -= 1;
-            me.renderListing();
-        },
-        notmodified: function(data) { alert('Not modified'); },
-        error: function(data) { alert('Error'); }
-    });  
-};
-
 localground.marker.prototype.renderFormPanel = function(){
     var me = this;
     var fields = this.getManager().getUpdateSchema();
@@ -242,26 +278,48 @@ localground.marker.prototype.renderFormPanel = function(){
         object: this,
         exclude: ['point', 'project_id']
     });
-    return form.render();
+    return form.render({
+        height: 270,
+        margin: '0px'
+    });
 };
 
 localground.marker.prototype.renderAudioPanel = function(){
+    var me = this;
     var $container = $('<div />');
+    if (this.audio.data.length == 0) {
+        return this.noChildrenMessage($container, 'No audio has been added');
+    }
     $.each(this.audio.data, function(idx) {
-        var $holder = $('<div />').css({'display': 'block'});
+        var mini_me = this;
+        var $holder = $('<div />').css({
+            'display': 'block',
+            'margin-bottom': '6px',
+            'border-bottom': 'solid 1px #eee'
+        });
         $holder.append(
             $('<img />')
                  .css({'margin-right': '5px', 'vertical-align': 'top' })
-                 .attr('src', '/static/images/headphones_small.png'))
+                 .attr('src', '/static/images/headphones_medium.png'))
             .append(
-                $('<p />').css({'display': 'inline-block' })
+                    $('<p />').css({
+                        'display': 'inline-block', 
+                        'width': '380px',
+                    })
                     .append(
                         $('<span />').css({ 'font-weight': 'bold' })
                             .html(me.getName(this.name)))     
                     .append($('<br />'))
                     .append(this.caption)
                     .append($('<br />')) 
-                    .append($('<a />').addClass('remove-audio').attr('href', '#').html('remove'))       
+                    .append($('<a />')
+                            .addClass('remove-audio')
+                            .html('remove')
+                            .click(function(){
+                                var $parent = $(this).parent().parent();
+                                me.detachMedia($parent, mini_me);
+                                return false;
+                    }))       
             );
         $container.append($holder);
     });
@@ -339,8 +397,46 @@ localground.marker.prototype.attachMedia = function(media) {
                     $('#error-message-text').html(result[key]);
                 }
             }
+            me.googleOverlay.setIcon(me.markerImage);
+            me.googleOverlay.setOptions({ 'draggable': true });
+            me.closeInfoBubble();
         }
     }); 
+};
+
+localground.marker.prototype.detachMedia = function($parent, media) {
+    var me = this, url = media.relation;
+    if (url.indexOf('.json') == -1) { url += '.json'; }                              
+    $.ajax({
+        url: url,
+        type: 'DELETE',
+        success: function(data) {
+            me.renderListing();
+            var group_name = media.overlay_type;
+            switch (media.overlay_type) {
+                case 'photo':
+                    group_name = 'photos';
+                    break;
+                case 'scan':
+                    group_name = 'scans';
+                    break;
+            }
+            $.each(me[group_name].data, function(idx){
+                if(this.id == media.id) {
+                    me[group_name].data.splice(idx, 1);
+                    return;
+                }
+            });
+            me[media.overlay_type + '_count'] -= 1;
+            var $contentContainer = $('#bubble_container');
+            $contentContainer.empty();
+            me.buildEditForm($contentContainer);
+            //figure out how to select the right tab
+            $('.tab-' + media.overlay_type).tab('show');
+        },
+        notmodified: function(data) { alert('Not modified'); },
+        error: function(data) { alert('Error'); }
+    });  
 };
 
 
@@ -353,176 +449,6 @@ localground.marker.prototype.mouseoverF = function(){
         height: '40px',
         width: '200px'
 	});
-};
-
-
-localground.marker.prototype.renderInfoBubbleHeader_deleteme = function($container) {
-    var me = this;
-    if(this.isEditMode()) {
-        $container.append(
-            $('<div />').addClass('clearfix')
-                .append($('<img />')
-                            .attr('src', this.image)
-                            .attr('id', 'color-preview')
-                            .css({
-                                'float':'left',
-                                'margin-right': '5px',
-                                'cursor':' pointer'
-                            })
-                            .click(function(){
-                                me.getManager().toggleIconChooser();    
-                            })
-                ).append($('<h4></h4>').html('Marker Information'))
-            );
-        var $form =  $('<form class="embed" style="clear:both" />');
-        var $div = $('<div />').addClass('clearfix');
-        $div.append(
-            $('<label />').html('Name')
-        ).append(
-            $('<div />').addClass('input').append(
-                $('<input type="text" />')
-                    .attr('id', 'marker_name')
-                    .attr('value', this.name))
-        )
-        $form.append($div);
-        $div = $('<div />').addClass('clearfix');
-        $div.append(
-            $('<label />').html('Description')
-        ).append(
-            $('<div />').addClass('input').append(
-                $('<textarea />')
-                    .attr('id', 'marker_desc')
-                    .html(this.description))
-        )
-        $form.append($div);
-        $div = $('<div />').addClass('clearfix');
-        $div.append(
-            $('<label />').html('Color')
-        ).append(
-            $('<div />').addClass('input').append(
-                $('<input />')
-                    .attr('id', 'marker_color')
-                    .val(this.color))
-        )
-        $form.append($div);
-        $container.append($form);
-    }
-    else {
-        if(this.description && this.description.length > 0)
-            $container.append(
-                $('<p></p>').html(this.description)                        
-            );
-    }
-};
-
-localground.marker.prototype.renderInfoBubblePhotos_deleteme = function($container) {
-    if(this.photoIDs == null) return;
-    var me = this;
-    $section = this.renderMarkerSection();
-    if(this.isEditMode())
-        $section.attr('id', 'marker_photos').css({
-            width: 400    
-        });
-    else
-        $section.attr('id', 'marker_photos').css({
-            width: 3000    
-        });
-    $container.append($section);
-    $section.append($('<h4></h4>').html('Photos'));
-    $.each(this.photoIDs, function(idx){
-        var photo = me.getManagerById(self.overlay_types.PHOTO).getDataElementByID(this);
-        //if(idx<4)
-        {
-            $div = $('<div />').css({
-                'width': '130px',
-                'height': '116px',
-                'margin-right': '3px',
-                'display': 'inline-block'
-            })
-            $photoDiv = $('<div />').css({
-                'overflow': 'hidden',
-                'width': '128px',
-                'height': '96px',
-                'border': 'solid 1px #666'
-            }).append(
-                $('<img />')
-                    .attr('src', photo.path_small)
-                    .css({ 'min-width': '128px' })
-            );
-            $div.append($photoDiv);
-            if(me.isEditMode()) {
-                $div.append(
-                    $('<a href="#">remove</a>').click(function(){
-                        me.removeFromMarker($(this), photo);
-                    })
-                );
-            }
-            $section.append($div);
-        }
-    });
-};
-
-localground.marker.prototype.renderInfoBubbleAudio_deleteme = function($container) {      
-    if(this.audioIDs == null) return;
-    var me = this;
-    $section = this.renderMarkerSection();
-    $container.append($section);
-    $section.append($('<h4></h4>').html('Audio Files'));
-    var $ul = $('<ul />');
-    $section.append($ul);
-    $.each(this.audioIDs, function(idx){
-        var audio = me.getManagerById(self.overlay_types.AUDIO).getDataElementByID(this);
-        var $li = $('<li />')
-                        .css({
-                            'line-height': '15px',
-                            'margin-bottom': '8px'
-                    }).append(audio.name);
-        $li.append($('<br>'))
-            .append($('<a class="play_link" href="#">play</a>')
-                .click(function() {
-                    $('#player').show();
-                    $('#audio_url').val(audio.path);
-                    $('.play').triggerHandler('click');
-                    return false;
-                })
-            );
-        
-        if(me.isEditMode()) {
-            $li.append('&nbsp;|&nbsp;').append(
-                $('<a href="#">remove</a>').click(function(){
-                    me.removeFromMarker($(this), audio);
-                })
-            );
-        }
-        $ul.append($li);
-    });
-};
-
-localground.marker.prototype.renderInfoBubbleRecords_deleteme = function($container) { 
-    if(this.recordIDs == null) return;
-    var me = this;
-    $section = this.renderMarkerSection();
-    $container.append($section);
-    var reviewsRendered = 0;
-    $.each(this.recordIDs, function(key, val){
-        var table = me.getManagerById(key);
-        $section.append($('<h4></h4>').html(table.name));
-        $.each(val, function(){
-            var record = table.getDataElementByID(this);
-            if(reviewsRendered > 0)
-                $section.append('<hr>');
-            $div = record.renderMarkerRecord();
-            if(me.isEditMode()) {
-                $div.prepend('&nbsp;').append(
-                    $('<a href="#">remove</a>').click(function(){
-                        me.removeFromMarker($(this), record);
-                    })
-                );
-            }    
-            $section.append($div);
-            ++reviewsRendered;
-        });
-    });
 };
 
 

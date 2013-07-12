@@ -84,7 +84,7 @@ localground.slideshow.prototype.render_title_page = function(marker) {
                 display: 'block'
             }).append($page))
             .append($('<div />').addClass('carousel-caption')
-                .append($('<h4 />').html(marker.name))
+                .append($('<h4 />').html(marker.getName()))
                 .append($('<p />').html(marker.description || 'Description!')
             ));
     /*alert(this.id);
@@ -119,6 +119,7 @@ localground.slideshow.prototype.render_photo_slides = function(marker) {
         //if(idx == 0) { $item.addClass('active'); }
         $('#' + me.id).find('.carousel-inner').append($item);
     });
+    //alert('.carousel-inner' + $('#' + me.id).find('.carousel-inner').get(0));
 };
 
 localground.slideshow.prototype.render_audio = function(marker) {

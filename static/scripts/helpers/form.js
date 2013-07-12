@@ -7,13 +7,21 @@ ui.form = function(opts){
 	this.id ='update-' + this.object.overlay_type + '-form';
 };
 
-ui.form.prototype.render = function() {
+ui.form.prototype.render = function(opts) {
     var me = this;
 	var obj = this.object;
+	var height = 226;
+	var overflow_y = 'auto';
+	var margin = '2px 2px 0px 0px';
+	if (opts) {
+		height = opts.height || height;
+		overflow_y = opts.overflow_y || overflow_y;
+		margin = opts.margin || margin;
+	}
 	$scrollable = $('<div />').css({
-		height: '226px',
-		'overflow-y': 'auto',
-		'margin': '2px 2px 0px 0px'
+		height: height,
+		'overflow-y': overflow_y,
+		'margin': margin
 	});
     $form = $('<form />').attr('id', this.id).css({'margin': '0px'});
 	this.addMessages($form);

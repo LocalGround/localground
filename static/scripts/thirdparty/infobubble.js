@@ -1263,6 +1263,7 @@ InfoBubble.prototype['getContent'] = InfoBubble.prototype.getContent;
  * Sets the marker content and adds loading events to images
  */
 InfoBubble.prototype.content_changed = function() {
+	//alert('content changed');
   if (!this.content_) {
     // The Content area doesnt exist.
     return;
@@ -1311,10 +1312,7 @@ InfoBubble.prototype.imageLoaded_ = function() {
   if (pan && (this.tabs_.length == 0 || this.activeTab_.index == 0)) {
     this.panToView();
   }
-  //try { self.slideshow.carousel.carousel(); }
-  //catch(e){}
-  //alert('image-loaded');
-  $('#slideshow-carousel').carousel();
+
 };
 
 /**

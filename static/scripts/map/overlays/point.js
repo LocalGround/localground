@@ -390,18 +390,23 @@ localground.point.prototype.renderInfoBubble = function(opts) {
 		margin = opts.margin || margin;
 		overflow_y = opts.overflow_y || overflow_y;
 	}
-    var $contentContainer = $('<div></div>').css({
+    var $contentContainer = $('<div></div>')
+		.attr('id', 'bubble_container')
+		.css({
             'width': width,
             'height': height,
             'margin': margin,
             'overflow-y': overflow_y,
             'overflow-x': 'hidden'
         });
+    self.infoBubble.open(self.map, this.googleOverlay);
     self.infoBubble.setHeaderText(null);
     self.infoBubble.setFooter(null);
     self.infoBubble.doNotPad = true;
     self.infoBubble.setContent($contentContainer.get(0)); 
-    self.infoBubble.open(self.map, this.googleOverlay);
+	//google.maps.event.addListenerOnce(self.infoBubble, 'domready', function(){
+    //    alert('triggered!');
+    //});
     return $contentContainer; 
 };
 

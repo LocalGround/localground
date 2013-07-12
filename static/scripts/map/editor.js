@@ -61,9 +61,9 @@ localground.editor.prototype.initDrawingManager = function() {
             position: google.maps.ControlPosition.TOP_LEFT,
             drawingModes: [
                 google.maps.drawing.OverlayType.MARKER,
-                google.maps.drawing.OverlayType.POLYLINE,
-                google.maps.drawing.OverlayType.RECTANGLE,
-                google.maps.drawing.OverlayType.POLYGON
+                //google.maps.drawing.OverlayType.POLYLINE,
+                //google.maps.drawing.OverlayType.RECTANGLE,
+                //google.maps.drawing.OverlayType.POLYGON
             ]
         },
         map: null
