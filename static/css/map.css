@@ -138,7 +138,8 @@ input[type=checkbox] {
 	width:480px;
 }
 .carousel-inner {
-	background-color: #eee;
+	/*background-color: #eee;*/
+	background-image: url('/static/images/fabric_bg.png');
 }
 .carousel-caption {
 	padding: 5px 15px 5px 15px !important;

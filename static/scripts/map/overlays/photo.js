@@ -94,7 +94,7 @@ localground.photo.prototype.showInfoBubbleEdit = function(opts){
     });
 	var $container = $('<div />');
 	$container.append(this.getPhotoPreview({
-						max_height: this.bubbleHeight - 160,
+						height: this.bubbleHeight - 160,
 						width: (this.bubbleWidth + 30)
 					}));
 	$container.append(form.render());
@@ -102,22 +102,25 @@ localground.photo.prototype.showInfoBubbleEdit = function(opts){
 };
 
 localground.photo.prototype.getPhotoPreview = function(opts) {
-	var max_height = this.bubbleHeight - 100;
+	var height = this.bubbleHeight - 100;
 	var width = this.bubbleWidth;
 	if (opts) {
-		max_height = opts.max_height || max_height;
+		height = opts.height || height;
 		width = opts.width || width;
 	}
 	return  $('<div />')
 		.css({
-			'width': width,
-			'max-height': max_height,
-			'overflow': 'hidden'
+			'max-width': width,
+			'height': height,
+			'overflow': 'hidden',
+			'background-image': 'url("/static/images/fabric_bg.png")'
 		})
 		.append(
 			$('<img />').css({
 				'display': 'block',
-				'width': width,
+				'max-width': width,
+				'max-height': height + 40,
+				'min-height': height,
 				'margin-right': 'auto',
 				'margin-left': 'auto',
 				'margin-top': '0px'
