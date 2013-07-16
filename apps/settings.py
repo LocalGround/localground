@@ -26,6 +26,7 @@ SERVER_URL = 'http://%s' % SERVER_HOST
 
 FILE_ROOT = '/home/directory/for/localground'
 STATIC_MEDIA_DIR = 'static'
+STATIC_URL = '/static/'
 USER_MEDIA_DIR = 'userdata'
 
 # Absolute path to the directory root of the local ground instance:
@@ -158,8 +159,26 @@ INSTALLED_APPS = (
     'localground.apps.registration',     #taken from the django-registration module
     'tagging',                      #for tagging of blog posts in Django
     'django.contrib.admin',
-    'localground.apps.jobs'
+    'localground.apps.jobs',
+    'rest_framework',
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    'PAGINATE_BY': 10,
+    'DEFAULT_RENDERER_CLASSES': (
+        #'localground.apps.site.api.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.JSONPRenderer',
+        'localground.apps.site.api.renderers.CSVRenderer',
+        'rest_framework.renderers.XMLRenderer'
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+    ),
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
+}
 
 # Local settings override project settings
 try:

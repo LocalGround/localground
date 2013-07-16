@@ -1,0 +1,65 @@
+<VirtualHost *:80>
+    # FILE_ROOT 	= Please replace this with code directory
+    # SERVER_HOST 	= Please replace with the domain name (e.g. localground.org)
+    # CGI_PATH		= Please replace with the cgi directory
+    # MAP_CGI_PATH	= Please replace with the directory where the map / tile cgi scripts are located
+
+    DocumentRoot "{{FILE_ROOT}}"
+    ServerName {{SERVER_HOST}}
+
+    # ------------------------------------------------------------------
+    # For serving user-generated media (images, audio, data, etc.)
+    # Be sure to install and enable mod_xsendfile, for basic static file
+    # security (https://tn123.org/mod_xsendfile/)
+    # ------------------------------------------------------------------
+    WSGIPassAuthorization On
+    XSendFile on
+    XSendFilePath {{FILE_ROOT}}/userdata
+    <Directory "{{FILE_ROOT}}/userdata">
+       Deny from all
+    </Directory>
+
+    # --------------------------------------
+    # For static files (css, js, and images)
+    #---------------------------------------
+    Alias /static/ "{{FILE_ROOT}}/static/"
+    <Directory "{{FILE_ROOT}}/static">
+        Order allow,deny
+        Options Indexes
+        Allow from all
+        IndexOptions FancyIndexing
+    </Directory>
+
+    # -------------------
+    # To make Django work
+    # -------------------
+    WSGIScriptAlias / "{{FILE_ROOT}}/apache/app_config.wsgi"
+    <Directory "{{FILE_ROOT}}/apache">
+        Allow from all
+    </Directory>
+
+    # ----------------------------------------------------------------
+    # MapServer Configuration, if you're going to use it (useful for
+    # creating tiles and for reprojecting images) to be printed on you
+    # paper maps.  Adjust these paths to meet your needs...
+    # ----------------------------------------------------------------
+    SetEnvIf Request_URI "/ows/ms.fcgi" MS_MAPFILE={{FILE_ROOT}}/mapserver/localground.map
+    # MapServer FastCGI location
+    ScriptAlias /ows/ {{MAP_CGI_PATH}}/
+    <Directory "{{MAP_CGI_PATH}}">
+        AllowOverride None
+        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+    ScriptAlias /cgi-bin/ {{CGI_PATH}}/
+    <Directory "{{CGI_PATH}}">
+        AllowOverride None
+        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+</VirtualHost>
+
