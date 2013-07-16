@@ -43,7 +43,10 @@ localground.ebays.prototype.toggleGroupData = function(groupID, groupType, is_ch
 			project_id: groupID
 		};
         self.getAirQualityData();
-        self.getAirObservations();
+	window.setTimeout(function() {
+        	self.getAirObservations();
+	}, 200);
+	window.setTimeout(function() {
 		$.getJSON('/api/0/projects/', params,
 			function(result) {
 				if(!result.success) {
@@ -69,6 +72,7 @@ localground.ebays.prototype.toggleGroupData = function(groupID, groupType, is_ch
 				self.resetBounds();
 			},
 		'json');
+		}, 1000);
 	} //end if checked
 	else {
 		$.each(self.managers, function() {
@@ -83,10 +87,22 @@ localground.ebays.prototype.toggleGroupData = function(groupID, groupType, is_ch
 };
 
 localground.ebays.prototype.getAirObservations = function() {
+    $.getJSON('/api/0/tables/table/149/',
+        function(result){
+            var table = {};
+            table.form = {id: 149, name: 'Observations: 2013'};
+            var m = new localground.table(table, 'B2DF8A');
+            m.addDataContainer();
+            m.addRecords(result.records, {});
+            m.renderOverlays();
+            self.managers.push(m);
+        },
+    'json');
+
     $.getJSON('/api/0/tables/table/92/',
         function(result){
             var table = {};
-            table.form = {id: 92, name: 'Air Quality Observations'};
+            table.form = {id: 92, name: 'Observations: 2012'};
             var m = new localground.table(table, '1F78B4');
             m.addDataContainer();
             m.addRecords(result.records, {});

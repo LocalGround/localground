@@ -55,6 +55,9 @@ localground.manager.prototype.addDataContainer = function() {
 					.attr('id', 'toggle_' + this.getObjectType() + '_all')
 					.change(function() {
 						me.toggleOverlays($(this).attr('checked'));  
+						if($(this).attr('checked')){
+							me.showConvenient($(this));
+						}
 					}));
         
         $heading.append($('<h4 />').html(this.name).css({'display': 'inline'}));
@@ -244,6 +247,16 @@ localground.manager.prototype.showHide = function($elem) {
         $elem.parent().next().slideDown();    
     }
 };
+
+localground.manager.prototype.showConvenient = function($elem) {
+    var $prev = $elem.prev();
+    if(!$prev.hasClass('ui-icon-bottom-triangle-small')) {
+        $prev.removeClass('ui-icon-right-triangle-small')
+            .addClass('ui-icon-bottom-triangle-small');
+        $prev.parent().next().slideDown();
+    }
+};
+
 
 localground.manager.prototype.makeEditable = function() {
 	$.each(this.data, function() {
