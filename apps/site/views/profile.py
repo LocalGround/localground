@@ -25,8 +25,7 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
     try:
         profile = UserProfile.objects.get(user=request.user)
     except UserProfile.DoesNotExist:
-        profile = UserProfile()
-        profile.user = request.user
+        profile = UserProfile.create(request.user)
     
     successfully_updated = False
     r = request.POST or request.GET

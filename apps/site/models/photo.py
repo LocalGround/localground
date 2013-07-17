@@ -5,8 +5,6 @@ from localground.apps.site.models import BasePoint, BaseUploadedMedia
 import os
 
 class Photo(BasePoint, BaseUploadedMedia):
-    name = 'photo'
-    name_plural = 'photos'
     file_name_large = models.CharField(max_length=255)
     file_name_medium = models.CharField(max_length=255)
     file_name_medium_sm = models.CharField(max_length=255)
@@ -22,6 +20,7 @@ class Photo(BasePoint, BaseUploadedMedia):
     class Meta:
         app_label = 'site'
         ordering = ['id']
+        verbose_name = 'photos'
         verbose_name_plural = 'photos'
     
     def thumb(self):

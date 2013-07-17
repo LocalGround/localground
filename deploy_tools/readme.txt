@@ -64,7 +64,12 @@ Run ./setup.sh to configure Apache and your settings_local.py,
 the database, and the application.  This could also be done
 manually, if you prefer.
 
-Todos to complete script:
-	* Check that the mod_xsendfile is installed and enabled
-	* Run script to create a new PostGIS database, if requested,  Also check 
-
+=====
+TODOS
+=====
+* Check that the mod_xsendfile is installed and enabled
+* Run script to create a new PostGIS database, if requested,  Also check 
+* Automate some of this with Fabric (though the bash script might be good enough for now):
+	http://chimera.labs.oreilly.com/books/1234000000754/ch08.html#_automating_deployment_with_fabric
+	http://dan.bravender.us/2012/5/11/git-based_fabric_deploys_are_awesome.html
+	

@@ -1,9 +1,21 @@
 #!/bin/bash
+# ----------------------------------------------------------------------------------
+# To redirect the output of this script to a log file, call it
+# as follows:
+# $./setup.sh | perl -ne '$|=1; print localtime . ": [./setup.sh] $_"' >> setup.log
+echo
+echo
+echo "///////////////////////////////////////////////////"
+TIMESTAMP=$(date +%m/%d/%y\ %H:%M:%S)
+echo "Configuring Local Ground Server ($TIMESTAMP)"
+echo "///////////////////////////////////////////////////"
+echo
 
-######################################
-# Set your application parameters here
-######################################
-
+################################
+# Default application parameters
+################################
+# Override these variables with your own by creating a file called
+# "local_config.sh" and setting your own values for these variables
 FILE_ROOT="/path/to/localground"
 SERVER_HOST="localground.org"
 CGI_PATH="/usr/lib/cgi-bin"
@@ -24,6 +36,16 @@ CLOUDMADE_KEY="YOUR_CLOUDMADE_API_KEY"
 sites_available="/etc/apache2/sites-available"
 sites_enabled="/etc/apache2/sites-enabled"
 
+##############################
+# Override with local config #
+##############################
+
+if [ -f local_config.sh ]
+then
+    source local_config.sh
+fi
+
+
 ##################
 # Helper Functions
 ##################
@@ -42,28 +64,36 @@ set_val()
 escape()
 {
 	tmp=$(echo $1 | sed 's/\//\\\//g')
+        #tmp=$(echo $tmp | sed 's/\ /\\ /g')
 	echo $tmp | sed 's/\./\\./g'
 }
 
+sudo_noprompt()
+{
+	echo "Executing \"$1\" with sudo privs..."
+	if [ -z "$SUDOPASS" ]
+	then
+		echo $SUDOPASS | sudo -S $1
+	else
+		sudo $1	
+	fi
+}
 
-
-###########################
 # Prompt user for variables
-###########################
-FILE_ROOT=$(set_val "Please enter the path to your code (defaults to \"$FILE_ROOT\")? " $FILE_ROOT)
-SERVER_HOST=$(set_val "Please enter your domain name (defaults to \"$SERVER_HOST\")? " $SERVER_HOST)
-CGI_PATH=$(set_val "Please enter the path to your cgi-bin directory (defaults to \"$CGI_PATH\")? " $CGI_PATH)
-MAP_CGI_PATH=$(set_val "Please enter your map server & tilecache cgi path (defaults to \"$MAP_CGI_PATH\")? " $MAP_CGI_PATH)
-DB_HOST=$(set_val "Please enter your postgres database host name (defaults to \"$DB_HOST\")? " $DB_HOST)
-DB_PORT=$(set_val "Please enter your postgres database port number (defaults to \"$DB_PORT\")? " $DB_PORT)
-DB_USER=$(set_val "Please enter your postgres database username (defaults to \"$DB_USER\")? " $DB_USER)
-DB_PASSWORD=$(set_val "Please enter your postgres database password (defaults to \"$DB_PASSWORD\")? " $DB_PASSWORD)
-DB_NAME=$(set_val "Please enter your postgres database name (defaults to \"$DB_NAME\")? " $DB_NAME)
-GDAL_PATH=$(set_val "Please enter your GDAL path (defaults to \"$GDAL_PATH\")? " $GDAL_PATH)
-ADMIN_EMAIL_ADDRESS=$(set_val "Please enter your admin email address (defaults to \"$ADMIN_EMAIL_ADDRESS\")? " $ADMIN_EMAIL_ADDRESS)
-USER_ACCOUNT=$(set_val "Please enter the Linux user account that you would like the system to use when writing files (defaults to \"$USER_ACCOUNT\")? " $USER_ACCOUNT)
-GROUP_ACCOUNT=$(set_val "Please enter the Linux group account that you would like the system to use when writing files (defaults to \"$GROUP_ACCOUNT\")? " $GROUP_ACCOUNT)
-CLOUDMADE_KEY=$(set_val "Please enter your CloudMade API key (defaults to \"$CLOUDMADE_KEY\")? " $CLOUDMADE_KEY)
+FILE_ROOT=$(set_val "Please enter the path to your code (defaults to \"$FILE_ROOT\"): " $FILE_ROOT)
+SERVER_HOST=$(set_val "Please enter your domain name (defaults to \"$SERVER_HOST\"): " $SERVER_HOST)
+CGI_PATH=$(set_val "Please enter the path to your cgi-bin directory (defaults to \"$CGI_PATH\"): " $CGI_PATH)
+MAP_CGI_PATH=$(set_val "Please enter your map server & tilecache cgi path (defaults to \"$MAP_CGI_PATH\"): " $MAP_CGI_PATH)
+DB_HOST=$(set_val "Please enter your postgres database host name (defaults to \"$DB_HOST\"): " $DB_HOST)
+DB_PORT=$(set_val "Please enter your postgres database port number (defaults to \"$DB_PORT\"): " $DB_PORT)
+DB_USER=$(set_val "Please enter your postgres database username (defaults to \"$DB_USER\"): " $DB_USER)
+DB_PASSWORD=$(set_val "Please enter your postgres database password: " $DB_PASSWORD)
+DB_NAME=$(set_val "Please enter your postgres database name (defaults to \"$DB_NAME\"): " $DB_NAME)
+GDAL_PATH=$(set_val "Please enter your GDAL path (defaults to \"$GDAL_PATH\"): " $GDAL_PATH)
+ADMIN_EMAIL_ADDRESS=$(set_val "Please enter your admin email address (defaults to \"$ADMIN_EMAIL_ADDRESS\"): " $ADMIN_EMAIL_ADDRESS)
+USER_ACCOUNT=$(set_val "Please enter the Linux user account that you would like the system to use when writing files (defaults to \"$USER_ACCOUNT\"): " $USER_ACCOUNT)
+WEBSERVER_ACCOUNT=$(set_val "Please enter the Linux group account that you would like the system to use when writing files (defaults to \"$WEBSERVER_ACCOUNT\"): " $WEBSERVER_ACCOUNT)
+CLOUDMADE_KEY=$(set_val "Please enter your CloudMade API key (defaults to \"$CLOUDMADE_KEY\"): " $CLOUDMADE_KEY)
 
 echo
 echo "Your code path is: \"$FILE_ROOT\""
@@ -77,7 +107,7 @@ echo "Your database name is: \"$DB_NAME\""
 echo "Your GDAL path is: \"$GDAL_PATH\""
 echo "Your admin email address is: \"$ADMIN_EMAIL_ADDRESS\""
 echo "Your Linux user account is: \"$USER_ACCOUNT\""
-echo "Your Linux group account is: \"$GROUP_ACCOUNT\""
+echo "Your Linux web server account is: \"$WEBSERVER_ACCOUNT\""
 echo "Your Cloudmade Key is: \"$CLOUDMADE_KEY\""
 echo
 
@@ -88,12 +118,6 @@ sed "s/{{FILE_ROOT}}/$(escape $FILE_ROOT)/g" apache_config > apache_config.tmp
 sed -i "s/{{SERVER_HOST}}/$(escape $SERVER_HOST)/g" apache_config.tmp
 sed -i "s/{{CGI_PATH}}/$(escape $CGI_PATH)/g" apache_config.tmp
 sed -i "s/{{MAP_CGI_PATH}}/$(escape $MAP_CGI_PATH)/g" apache_config.tmp
-
-# Enable Virtual Host in Apache:
-echo "Moving apache config file \"$SERVER_HOST\" to \"$sites_available\" directory..."
-sudo mv apache_config.tmp $sites_available/$SERVER_HOST
-echo "Enabling..."
-sudo a2ensite $SERVER_HOST
 
 #############################################
 # Substitute variables into settings_local.py
@@ -108,20 +132,41 @@ sed -i "s/{{DB_PASSWORD}}/$(escape $DB_PASSWORD)/g" settings_local.py.tmp
 sed -i "s/{{DB_NAME}}/$(escape $DB_NAME)/g" settings_local.py.tmp
 sed -i "s/{{ADMIN_EMAIL_ADDRESS}}/$(escape $ADMIN_EMAIL_ADDRESS)/g" settings_local.py.tmp
 sed -i "s/{{USER_ACCOUNT}}/$(escape $USER_ACCOUNT)/g" settings_local.py.tmp
-sed -i "s/{{GROUP_ACCOUNT}}/$(escape $GROUP_ACCOUNT)/g" settings_local.py.tmp
+sed -i "s/{{GROUP_ACCOUNT}}/$(escape $WEBSERVER_ACCOUNT)/g" settings_local.py.tmp
 sed -i "s/{{CLOUDMADE_KEY}}/$(escape $CLOUDMADE_KEY)/g" settings_local.py.tmp
+
+# Moving Apache Config File to /etc/apache2/sites-available directory
+echo "Moving apache config file \"$SERVER_HOST\" to \"$sites_available\" directory......"
+sudo_noprompt "mv apache_config.tmp $sites_available/$SERVER_HOST"
+#echo $SUDOPASS | sudo -S mv apache_config.tmp $sites_available/$SERVER_HOST
+echo "Enabling..."
+#echo $SUDOPASS | sudo -S a2ensite $SERVER_HOST
+sudo_noprompt "a2ensite $SERVER_HOST"
 
 ###########################################
 # Update file permissions and make a media 
 # directory to store user-generated content 
 ###########################################
-sudo mkdir ../userdata/media
-sudo chown -R $USER_ACCOUNT:$GROUP_ACCOUNT ../userdata/media
-sudo chmod -R 755 ../userdata/media
+#sudo mkdir ../userdata/media
+#sudo chown -R $USER_ACCOUNT:$WEBSERVER_ACCOUNT ../userdata/media
+#sudo chmod -R 755 ../userdata/media
+sudo_noprompt "mkdir ../userdata/media"
+sudo_noprompt "chown -R $WEBSERVER_ACCOUNT:$WEBSERVER_ACCOUNT ../userdata/media"
+sudo_noprompt "chmod -R 755 ../userdata/media"
 
-#Move settings_local.py to apps directory
+#Copying settings_local.py to apps directory
 mv settings_local.py.tmp ../apps/settings_local.py
 
-# Restarting Apache:
-sudo service apache2 restart
+###########################################
+# Destroying and Re-Creating the Database #
+###########################################
+echo "Dropping and rebuilding the database \"$DB_NAME\"..."
+sudo -u postgres dropdb $DB_NAME
+sudo -u postgres createdb -T template_postgis -O $DB_USER -E 'UTF8' -e $DB_NAME
 
+
+# Restarting Apache:
+#sudo service apache2 restart
+sudo_noprompt "service apache2 restart"
+cd ../apps
+python manage.py syncdb --noinput
