@@ -42,7 +42,7 @@ sites_enabled="/etc/apache2/sites-enabled"
 
 if [ -f local_config.sh ]
 then
-    source local_config.sh
+	source local_config.sh
 fi
 
 
@@ -70,12 +70,14 @@ escape()
 
 sudo_noprompt()
 {
-	echo "Executing \"$1\" with sudo privs..."
+	SUDO_MESSAGE="Executing \"$1\" with sudo privs:"
 	if [ -z "$SUDOPASS" ]
 	then
-		echo $SUDOPASS | sudo -S $1
+		echo "$SUDO_MESSAGE: authentication needed from sudoers file or prompt"
+                sudo $1
 	else
-		sudo $1	
+		echo "$SUDO_MESSAGE: sudo password set"
+		echo $SUDOPASS | sudo -S $1
 	fi
 }
 
@@ -161,9 +163,8 @@ mv settings_local.py.tmp ../apps/settings_local.py
 # Destroying and Re-Creating the Database #
 ###########################################
 echo "Dropping and rebuilding the database \"$DB_NAME\"..."
-sudo -u postgres dropdb $DB_NAME
-sudo -u postgres createdb -T template_postgis -O $DB_USER -E 'UTF8' -e $DB_NAME
-
+sudo_noprompt "sudo -u postgres dropdb $DB_NAME"
+sudo_noprompt "sudo -u postgres createdb -T template_postgis -O $DB_USER -E UTF8 -e $DB_NAME"
 
 # Restarting Apache:
 #sudo service apache2 restart
