@@ -123,7 +123,11 @@ Map.prototype.load_points = function(dataset_name, records) {
             ++counter;
         }
     });
-    this.map.fitBounds(this.bounds);
+    //alert(this.bounds.getCenter().lng());
+    //only fit bounds if a lat/lng reading exists
+    if(this.bounds.getCenter().lng() != -180 && this.bounds.getCenter().lat() != 0) {
+        this.map.fitBounds(this.bounds);
+    }
     
     this.stats = new Stats();
     this.stats.init(dataset_name, this.all_values, this.all_dates);
