@@ -54,8 +54,13 @@ class DataFile(object):
             
             
     def setup_environment(self):
+	import os
         from django.core.management import setup_environ
-        settings_path = '/usr/local/django/localground'
+        #settings_path = '/usr/local/django/localground'
+	#settings_path = '/var/www/django/localground'
+	path = os.getcwd()
+	path = os.path.abspath(os.path.join(path, os.pardir))
+	settings_path = os.path.abspath(os.path.join(path, os.pardir))
         sys.path.append(settings_path)
         import settings
         setup_environ(settings)
