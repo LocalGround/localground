@@ -171,3 +171,11 @@ sudo_noprompt "sudo -u postgres createdb -T template_postgis -O $DB_USER -E UTF8
 sudo_noprompt "service apache2 restart"
 cd ../apps
 python manage.py syncdb --noinput
+
+###########
+# Run Tests
+###########
+echo
+echo
+echo 'Running Django Tests...'
+python manage.py test site
