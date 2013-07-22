@@ -129,6 +129,7 @@ Tables <small>{{ form.name }}:
 		<th scope="col">Transcribe</th>
 		<th scope="col">ID</th>
 		<th scope="col">Uploaded By</th>
+		<th scope="col">Attachment</th>
 		<th scope="col">Num</th>
 		{% for field in form.get_fields %}
 			<th scope="col">{{field.col_alias}}</th>
@@ -159,6 +160,7 @@ Tables <small>{{ form.name }}:
 					{% if o.owner %} {{ o.owner}} {% else %} anonymous {% endif %}
 				{% endif %}
 			</td>
+			<td>{{o.snippet.source_attachment.name}}</td>
 			{% if style and style != 'default' %}
 				{% if style == 'snippet' %}
 					<td>{% autoescape off %}{{ o.get_row_num_snippet }}{% endautoescape %}</td>

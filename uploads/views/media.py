@@ -167,7 +167,8 @@ def _batch_update(request, object_type, class_name, identity):
         if is_barcoded:
             something_changed = something_changed or \
                                 str(o.status.id) != (status_dict.get(id, str(o.status.id))) \
-                                or o.qr_code != qr_dict.get(id)
+                                or o.qr_code != qr_dict.get(id) or \
+                                o.attribution != attrib_dict.get(id)
         elif not is_print:
             #if is_project:
             #    something_changed = something_changed or 

@@ -55,7 +55,7 @@ def get_objects(request, identity=None, project=None, return_message=None,
                 attachment = None
         records = form.get_data(project=project, identity=identity,
                                     is_blank=is_blank, has_geometry=False,
-                                    attachment=attachment)
+                                    attachment=attachment, order_by=['-snippet__source_attachment__id', 'id'])
     
     #build urls (for restful interface):
     url = '/profile/%s/?is_blank=%s&format_type=%s' % (object_type, is_blank, format_type)
