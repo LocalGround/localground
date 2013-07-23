@@ -40,12 +40,24 @@ localground.note.prototype.setNoteName = function() {
             }
             else {
                 if(this.num)
-                    this.name = 'Observation #' + this.num;
-                else
+                    this.name = 'Record #' + this.num;
+                else if(this.id)
+		    this.name = 'Record #' + this.id;
+		else
                     this.name = 'Untitled';
                 return;
             }
     }
+};
+
+localground.note.prototype.setName = function() {
+    if(this.num)
+	this.name = 'Record #' + this.num;
+    else if(this.id)
+	this.name = 'Record #' + this.id;
+    else
+	this.name = 'Untitled';
+    return this.name;
 };
 
 localground.note.prototype.getObjectType = function() {
@@ -73,7 +85,8 @@ localground.note.prototype.saveIframe = function() {
     $('#the_frame').contents().find('form').submit();
     
     //update the object & the right-hand panel text:
-    this.name =  $f.find('#id_col_1').val();
+    this.num = $f.find('#id_num').val();
+    this.name =  this.setName();//$f.find('#id_col_1').val();
     for(i=0; i<this.fields.length; i++) {
         this.fields[i].value = $f.find('#id_' + this.fields[i].col_name).val();
     }

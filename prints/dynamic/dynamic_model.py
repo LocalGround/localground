@@ -185,7 +185,10 @@ class ModelClassBuilder(object):
                         if descriptor.is_display_field: # or descriptor.col_name == 'col_1':
                             d.update(dict(name=field['value']))
                         if d.get('name') is None:
-                            d.update(dict(name='Record #%s' % self.num))    
+			    if self.num is not None and len(str(self.num)) > 0:
+                            	d.update(dict(name='Record #%s' % self.num))    
+			    else:
+				d.update(dict(name='Record #%s' % self.id))
                     d.update(dict(fields=data))
                         
                 return d
