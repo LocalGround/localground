@@ -91,7 +91,7 @@ localground.ebays.prototype.getAirObservations = function() {
         function(result){
             var table = {};
             table.form = {id: 149, name: 'Observations: 2013'};
-            var m = new localground.table(table, 'B2DF8A');
+            var m = new localground.table(table, '1F78B4'); //'B2DF8A');
             m.addDataContainer();
             m.addRecords(result.records, {});
             m.renderOverlays();
@@ -99,7 +99,7 @@ localground.ebays.prototype.getAirObservations = function() {
         },
     'json');
 
-    $.getJSON('/api/0/tables/table/92/',
+    /*$.getJSON('/api/0/tables/table/92/',
         function(result){
             var table = {};
             table.form = {id: 92, name: 'Observations: 2012'};
@@ -110,6 +110,7 @@ localground.ebays.prototype.getAirObservations = function() {
             self.managers.push(m);
         },
     'json');
+    */
 };
 
 localground.ebays.prototype.getAirQualityData = function() {
