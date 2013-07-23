@@ -1,24 +1,11 @@
 from django.contrib.gis.db import models
-from localground.apps.site.models.abstract.base import Base
-from localground.apps.site.lib.helpers import get_timestamp_no_milliseconds
-from datetime import datetime    
+from localground.apps.site.models.abstract.named import BaseNamed  
 from localground.apps.site.managers import WMSOverlayManager
-from tagging_autocomplete.models import TagAutocompleteField 
     
-class WMSOverlay(Base):
+class WMSOverlay(BaseNamed):
     """
     Stores the specific overlays available in Local Ground.
-    Not using model inheritance here b/c I want owner field to have
-    optional null values.
     """
-    owner = models.ForeignKey('auth.User', null=True)
-    last_updated_by = models.ForeignKey('auth.User', null=True, related_name="%(app_label)s_%(class)s_related")
-    date_created = models.DateTimeField(default=get_timestamp_no_milliseconds)
-    time_stamp = models.DateTimeField(default=get_timestamp_no_milliseconds,
-                                                    db_column='last_updated')
-    name = models.CharField(max_length=255, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    tags = TagAutocompleteField(blank=True, null=True)
     wms_url = models.CharField(max_length=500, blank=True)
     min_zoom = models.IntegerField(default=1)
     max_zoom = models.IntegerField(default=20)
