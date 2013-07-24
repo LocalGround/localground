@@ -25,8 +25,9 @@ class AudioForm(PhotoForm):
         from localground.lib.widgets import PointWidget, PointWidgetHidden, \
                                             TagAutocomplete, CustomDateTimeWidget
         model = Audio
-        fields = ('id', 'project', 'source_scan', 'source_marker', 'name',
+        fields = ('id', 'source_scan', 'source_marker', 'name',
                   'created_timestamp', 'attribution', 'description', 'point', 'tags')
+		  # , 'project'
         widgets = {
             'id': forms.HiddenInput,
             'point': PointWidgetHidden(), #PointWidget(map_width=300, map_height=200),
