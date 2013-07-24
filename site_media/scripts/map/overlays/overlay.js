@@ -116,7 +116,7 @@ localground.overlay.prototype.renderListingText = function() {
     }
     else {
         $div_text.append($('<span></span>')
-                .html(this.name.truncate(4) + '<br />')
+                .html(this.name.truncate(4)) // + '<br />')
                 .attr('title', this.name));
     }
 	return $div_text;

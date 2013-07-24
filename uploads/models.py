@@ -715,6 +715,7 @@ class Audio(PointObject, NamedUpload):
         d = super(Audio, self).to_dict() 
         if self.description is not None and len(self.description) > 5:
             d.update({ 'description': self.description })
+	d.update({'created_by': self.owner.username})
         return d
     
     def __unicode__(self):

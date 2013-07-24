@@ -63,13 +63,14 @@ localground.audio.prototype.showInfoBubbleView = function(opts) {
             })));
     //add name, description, and tags
     if(this.description) {
-        $c.append($('<p></p>').html(this.description));
+        $c.append($('<p></p>').html(this.description).css({'margin-bottom': '0px'}));
         chars += this.description.length;
     }
     if(this.tags & this.tags.length > 2) {
-        $c.append($('<p></p>').html('tags: ' + this.tags));
+        $c.append($('<p></p>').html('tags: ' + this.tags).css({'margin-bottom': '0px'}));
         chars += this.description.length;
     }
+    $c.append($('<div />').html('created by: ' + this.created_by).css({'font-style': 'italic'}));
     htmlString = $c;
     var extra = chars/50.0*22;
     //set width & height:
@@ -87,3 +88,8 @@ localground.audio.prototype.showInfoBubbleView = function(opts) {
     self.infoBubble.open(self.map, this.googleOverlay);
 };
 
+localground.audio.prototype.renderListingText = function() {
+    var $div_text = localground.overlay.prototype.renderListingText.call(this);
+    $div_text.append('<br><span>Created by: ' + this.created_by + '</span>');
+    return $div_text;
+};
