@@ -155,6 +155,14 @@ class RelatedMediaList(generics.ListCreateAPIView,
 
     def get_queryset(self):
         from localground.apps.site.models import Base
+        model = Base.get_model(
+                model_name_plural=self.kwargs.get('group_name_plural')
+            )
+        try:
+            marker = model.objects.get(id=int(self.kwargs.get('group_id')))
+        except model.DoesNotExist:
+            raise Http404
+        
         entity_type = Base.get_model(
                         model_name_plural=self.kwargs.get('entity_name_plural')
                     ).get_content_type()

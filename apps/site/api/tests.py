@@ -129,9 +129,11 @@ class ApiRelatedMediaListTest(TestCase, APITestMixin):
 	def setUp(self):
 		APITestMixin.setUp(self)
 		self.marker = self.get_marker()
+		url = '/api/0/markers/%s/%s/'
 		self.urls = [
-			'/api/0/markers/%s/photos/' % self.marker.id,
-			'/api/0/markers/%s/audio/' % self.marker.id
+			url % (self.marker.id, 'photos'),
+			url % (self.marker.id, 'audio'),
+			url % (self.marker.id, 'map-images')
 		]
 		self.view = views.RelatedMediaList.as_view()
 		
@@ -141,6 +143,7 @@ class ApiRelatedMediaListTest(TestCase, APITestMixin):
 			self._resolve_url_view(
 				url,
 				group_id=self.marker.id,
-				entity_name_plural=url.split('/')[-2]
+				entity_name_plural=url.split('/')[-2],
+				group_name_plural='markers'
 			)
 		
