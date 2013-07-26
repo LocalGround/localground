@@ -24,7 +24,7 @@ class Marker(BasePoint, BaseGenericRelations):
     color = models.CharField(max_length=6)
     objects = MarkerManager()
     
-    @staticmethod 
+    @classmethod 
     def create_instance(user, project, lat, lng, name=None):
         try:
             from django.contrib.gis.geos import Point

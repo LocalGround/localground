@@ -97,11 +97,10 @@ class Project(Group):
     where users can file their media.  Has helper functions for retrieving all
     media associated with a particular project (for the JavaScript API).
     """
-    name = 'project'
-    name_plural = 'projects'
     objects = ProjectManager()
     
     class Meta(Group.Meta):
+        verbose_name = 'project'
         verbose_name_plural = 'projects'
     
     @classmethod

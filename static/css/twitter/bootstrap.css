@@ -1745,6 +1745,7 @@ footer {
   margin-top: 17px;
   padding-top: 17px;
   border-top: 1px solid #eee;
+  clear: both;
 }
 .page-header {
   margin-bottom: 17px;

@@ -175,7 +175,9 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.XMLRenderer'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        'rest_framework.permissions.IsAuthenticated',
+        'localground.apps.site.api.permissions.IsAllowedGivenProjectPermissionSettings',
     ),
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
 }

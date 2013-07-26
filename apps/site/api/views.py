@@ -1,7 +1,6 @@
 from localground.apps.site.api import serializers
 from rest_framework.serializers import ValidationError
-
-from localground.apps.site.api.permissions import IsOwnerOrReadOnly
+from localground.apps.site.api.permissions import IsAllowedGivenProjectPermissionSettings
 from localground.apps.site.api.filters import SQLFilterBackend
 from localground.apps.site.models import Photo, Audio, Project, Marker, EntityGroupAssociation, ObjectAuthority
 from django.contrib.auth.models import User, Group
@@ -17,8 +16,8 @@ from rest_framework.utils.formatting import get_view_name, get_view_description
 
 
 @api_view(('GET',))
-@permission_classes((IsOwnerOrReadOnly, ))
-def api_root(request, format=None):
+@permission_classes((permissions.IsAuthenticated, IsAllowedGivenProjectPermissionSettings, ))
+def api_root(request, format=None, **kwargs):
     return Response({
         'photos': reverse('photo-list', request=request, format=format),
         'audio': reverse('audio-list', request=request, format=format),
@@ -75,8 +74,6 @@ class PhotoViewSet(viewsets.ModelViewSet, AuditUpdate):
     """
     queryset = Photo.objects.select_related('project', 'owner').all()
     serializer_class = serializers.PhotoSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
     filter_backends = (SQLFilterBackend,)
     
     def pre_save(self, obj):
@@ -89,8 +86,6 @@ class AudioViewSet(viewsets.ModelViewSet, AuditUpdate):
     """
     queryset = Audio.objects.select_related('project', 'owner').all()
     serializer_class = serializers.AudioSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
     filter_backends = (SQLFilterBackend,)
     
     def pre_save(self, obj):
@@ -98,7 +93,6 @@ class AudioViewSet(viewsets.ModelViewSet, AuditUpdate):
     
 class MarkerList(generics.ListCreateAPIView, AuditCreate):
     serializer_class = serializers.MarkerSerializerCounts
-    permission_classes = (IsOwnerOrReadOnly,)
     filter_backends = (SQLFilterBackend,)
 
     paginate_by = 100
@@ -112,7 +106,6 @@ class MarkerList(generics.ListCreateAPIView, AuditCreate):
         
 class MarkerInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
     queryset = Marker.objects.select_related('owner').all() #.prefetch_related('photos', 'audio', 'marker_set')
-    permission_classes = (IsOwnerOrReadOnly,)
     serializer_class = serializers.MarkerSerializer
     
     def pre_save(self, obj):
@@ -120,7 +113,6 @@ class MarkerInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
         
 class ProjectList(generics.ListCreateAPIView, AuditCreate):
     serializer_class = serializers.ProjectSerializer
-    permission_classes = (IsOwnerOrReadOnly,)
     filter_backends = (SQLFilterBackend,)
 
     paginate_by = 100
@@ -135,7 +127,6 @@ class ProjectList(generics.ListCreateAPIView, AuditCreate):
     
 class ProjectInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
     queryset = Project.objects.select_related('owner').all() #.prefetch_related('photos', 'audio', 'marker_set')
-    permission_classes = (IsOwnerOrReadOnly,)
     serializer_class = serializers.ProjectDetailSerializer
     
     def pre_save(self, obj):
