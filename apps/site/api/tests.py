@@ -1,16 +1,32 @@
 from django.core.urlresolvers import resolve
-from django.test import Client, TestCase
+from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
 from django.test.client import RequestFactory
 from django.contrib.auth.models import User
 from django.middleware import csrf
 
+class Client(test.Client):
+	'''
+	Extending Client to support PATCH method
+	'''
+	def patch(self, path, data='', content_type='application/octet-stream',
+			follow=False, **extra):
+		"""
+		Send a resource to the server using PATCH.
+		"""
+		response = self.generic('PATCH', path, data=data,
+								content_type=content_type, **extra)
+		if follow:
+			response = self._handle_redirects(response, **extra)
+		return response
+
+
 class APIDataMixin(object):
 	user_password = 'top_secret'
 	
 	def get_csrf_token(self):
-		c = Client()
+		c = test.Client()
 		response = c.get('/accounts/login/')
 		return unicode(response.context['csrf_token'])
 	
@@ -88,7 +104,7 @@ class APITestMixin(APIDataMixin):
 			#print func_name, view_name
 			self.assertEqual(func_name, view_name)
 	
-class ApiHomePageTest(TestCase, APITestMixin):
+class ApiHomePageTest(test.TestCase, APITestMixin):
 	def setUp(self):
 		APITestMixin.setUp(self)
 		self.urls = ['/api/0/']
@@ -103,7 +119,7 @@ class ApiHomePageTest(TestCase, APITestMixin):
 				]: self.assertIn(item, response.content)
 
 
-class ApiProjectListTest(TestCase, APITestMixin):
+class ApiProjectListTest(test.TestCase, APITestMixin):
 	
 	def setUp(self):
 		APITestMixin.setUp(self)
@@ -111,7 +127,7 @@ class ApiProjectListTest(TestCase, APITestMixin):
 		self.view = views.ProjectList.as_view()
 		
 
-class ApiMarkerListTest(TestCase, APITestMixin):
+class ApiMarkerListTest(test.TestCase, APITestMixin):
 	
 	def setUp(self):
 		APITestMixin.setUp(self)
@@ -119,7 +135,7 @@ class ApiMarkerListTest(TestCase, APITestMixin):
 		self.view = views.MarkerList.as_view()
 		
 
-class ApiMarkerInstanceTest(TestCase, APITestMixin):
+class ApiMarkerInstanceTest(test.TestCase, APITestMixin):
 	
 	def setUp(self):
 		APITestMixin.setUp(self)
@@ -128,7 +144,7 @@ class ApiMarkerInstanceTest(TestCase, APITestMixin):
 		self.view = views.MarkerInstance.as_view()
 	
 	
-class ApiRelatedMediaListTest(TestCase, APITestMixin):
+class ApiRelatedMediaListTest(test.TestCase, APITestMixin):
 	def setUp(self):
 		APITestMixin.setUp(self)
 		self.marker = self.get_marker()
@@ -151,6 +167,7 @@ class ApiRelatedMediaListTest(TestCase, APITestMixin):
 			last_updated_by=self.user
 		)
 		r.save()
+		return r
 	
 	def test_page_404_if_invalid_marker_id(self, **kwargs):
 		url = '/api/0/markers/%s/%s/'
@@ -237,6 +254,61 @@ class ApiRelatedMediaListTest(TestCase, APITestMixin):
 						group_id=self.marker.id,
 					)
 			self.assertEqual(len(queryset), 0)
+			
+	def test_update_relation_using_put(self, **kwargs):
+		'''
+		Test Client still a bit idiosyncratic.  Unlike for POST
+		requests, for PUT requests, you need to 1) manually set
+		the content type (which means that you also have to
+		urlencode the params dictionary)
+		https://github.com/jgorset/django-respite/issues/38
+		'''
+		group_type = models.Marker.get_content_type()
+		for i, url in enumerate(self.urls):
+			entity_type = models.Base.get_model(
+					model_name_plural=url.split('/')[-2]
+				).get_content_type()
+			
+			# Attach media to marker
+			relation = self.create_relation(entity_type, id=1)
+			self.assertEqual(relation.ordering, 1)
+			self.assertEqual(relation.turned_on, False)
+			import urllib
+			response = self.client.put('%s1/' % url,
+				data=urllib.urlencode({
+					'ordering': 5,
+					'turned_on': True
+				}),
+				HTTP_X_CSRFTOKEN=self.csrf_token,
+				content_type = "application/x-www-form-urlencoded"
+			)
+			self.assertEqual(response.status_code, 200)
+			updated_relation = models.EntityGroupAssociation.objects.get(id=relation.id)
+			self.assertEqual(updated_relation.ordering, 5)
+			self.assertEqual(updated_relation.turned_on, True)
+			
+	def test_update_relation_using_patch(self, **kwargs):
+		group_type = models.Marker.get_content_type()
+		for i, url in enumerate(self.urls):
+			entity_type = models.Base.get_model(
+					model_name_plural=url.split('/')[-2]
+				).get_content_type()
+			
+			# Attach media to marker
+			relation = self.create_relation(entity_type, id=1)
+			self.assertEqual(relation.turned_on, False)
+			import urllib
+			response = self.client.patch('%s1/' % url,
+				data=urllib.urlencode({
+					'turned_on': True
+				}),
+				HTTP_X_CSRFTOKEN=self.csrf_token,
+				content_type = "application/x-www-form-urlencoded"
+			)
+			self.assertEqual(response.status_code, 200)
+			updated_relation = models.EntityGroupAssociation.objects.get(id=relation.id)
+			self.assertEqual(updated_relation.turned_on, True)
+		
 				
 
 		
