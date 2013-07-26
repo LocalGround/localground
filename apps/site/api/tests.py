@@ -8,7 +8,8 @@ from django.middleware import csrf
 
 class Client(test.Client):
 	'''
-	Extending Client to support PATCH method
+	Extended Client to support PATCH method based on this code discussion:
+	https://code.djangoproject.com/ticket/17797
 	'''
 	def patch(self, path, data='', content_type='application/octet-stream',
 			follow=False, **extra):

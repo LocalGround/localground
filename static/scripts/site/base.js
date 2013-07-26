@@ -143,6 +143,8 @@ localground.base.prototype.initAjaxGlobalErrorHandling = function() {
             $('#loading_message').show();
 			if (!me.csrfSafeMethod(settings.type) && me.sameOrigin(settings.url)) {
                 xhr.setRequestHeader("X-CSRFToken", me.getCookie('csrftoken'));
+                //might want to try this for PUT requests:
+				//xhr.setRequestHeader("HTTP_X_CSRFTOKEN", me.getCookie('csrftoken'));
             }
         },
 		complete:function(){
