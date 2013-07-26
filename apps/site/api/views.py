@@ -9,8 +9,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import django_filters
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from django.http import Http404, HttpResponse
-from rest_framework import status
+from django.http import Http404, HttpResponseBadRequest, HttpResponse
+from rest_framework import status, exceptions
 from localground.apps.site.lib.helpers import get_timestamp_no_milliseconds
 from rest_framework.utils.formatting import get_view_name, get_view_description
 
@@ -192,14 +192,20 @@ class RelatedMediaList(generics.ListCreateAPIView,
  
     def pre_save(self, obj):
         AuditCreate.pre_save(self, obj)
-        
         from localground.apps.site.models import Base
-        group_type = Base.get_model(
+        group_model = Base.get_model(
                         model_name_plural=self.kwargs.get('group_name_plural')
-                    ).get_content_type()
-        entity_type = Base.get_model(
+                    )
+        group_type = group_model.get_content_type()
+        entity_model = Base.get_model(
                         model_name_plural=self.kwargs.get('entity_name_plural')
-                    ).get_content_type()
+                    )
+        entity_type = entity_model.get_content_type()
+        if self.kwargs.get('entity_name_plural') in ['markers', 'views']:
+            raise exceptions.ParseError(
+                'You cannot attach a %s to a %s' % (
+                    entity_model.model_name, group_model.model_name
+            ))
         setattr(obj, 'group_type', group_type)
         setattr(obj, 'group_id', self.kwargs.get('group_id'))
         setattr(obj, 'entity_type', entity_type)

@@ -5,6 +5,8 @@ from localground.apps.site import models
 from rest_framework.routers import DefaultRouter
 from rest_framework.urlpatterns import format_suffix_patterns
 
+entities = ['audio', 'photos', 'map-images']
+
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
 router.register(r'photos', views.PhotoViewSet)
@@ -26,8 +28,8 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += format_suffix_patterns(patterns('',
-    url(r'^(?P<group_name_plural>markers|views)/(?P<group_id>[0-9]+)/(?P<entity_name_plural>[\w-]+)/$', views.RelatedMediaList.as_view(), name='related-media-list'),
-    url(r'^(?P<group_name_plural>markers|views)/(?P<group_id>[0-9]+)/(?P<entity_name_plural>[\w-]+)/(?P<id>[0-9]+)/$', views.RelatedMediaInstance.as_view(), name='related-media-detail'),
+    url(r'^(?P<group_name_plural>markers|views)/(?P<group_id>[0-9]+)/(?P<entity_name_plural>%s)/$' % '|'.join(entities), views.RelatedMediaList.as_view(), name='related-media-list'),
+    url(r'^(?P<group_name_plural>markers|views)/(?P<group_id>[0-9]+)/(?P<entity_name_plural>%s)/(?P<id>[0-9]+)/$' % '|'.join(entities), views.RelatedMediaInstance.as_view(), name='related-media-detail'),
     url(r'^projects/(?P<pk>[0-9]+)/$', views.ProjectInstance.as_view(), name='project-detail'),
     url(r'^projects/$', views.ProjectList.as_view(), name='project-list'),
     url(r'^markers/(?P<pk>[0-9]+)/$', views.MarkerInstance.as_view(), name='marker-detail'),
