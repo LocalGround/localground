@@ -178,4 +178,4 @@ python manage.py syncdb --noinput
 echo
 echo
 echo 'Running Django Tests...'
-python manage.py test site
+python manage.py test site --verbosity=2
