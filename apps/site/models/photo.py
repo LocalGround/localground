@@ -20,7 +20,7 @@ class Photo(BasePoint, BaseUploadedMedia):
     class Meta:
         app_label = 'site'
         ordering = ['id']
-        verbose_name = 'photos'
+        verbose_name = 'photo'
         verbose_name_plural = 'photos'
     
     def thumb(self):
