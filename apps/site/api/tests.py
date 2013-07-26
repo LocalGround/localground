@@ -139,7 +139,19 @@ class ApiRelatedMediaListTest(TestCase, APITestMixin):
 			#url % (self.marker.id, 'map-images')
 		]
 		self.view = views.RelatedMediaList.as_view()
-			
+		
+	def create_relation(self, entity_type, id=1, ordering=1):
+		r = models.EntityGroupAssociation(
+			entity_type=entity_type,
+			entity_id=id,
+			group_type=models.Marker.get_content_type(),
+			group_id=self.marker.id,
+			ordering=ordering,
+			owner=self.user,
+			last_updated_by=self.user
+		)
+		r.save()
+	
 	def test_page_404_if_invalid_marker_id(self, **kwargs):
 		url = '/api/0/markers/%s/%s/'
 		urls = [
@@ -152,43 +164,79 @@ class ApiRelatedMediaListTest(TestCase, APITestMixin):
 			
 			
 	def test_attach_media_to_marker(self, **kwargs):
-		from localground.apps.site.models import Base
-		
+		group_type = models.Marker.get_content_type()
 		for i, url in enumerate(self.urls):
-			entity_name_plural = url.split('/')[-2]
-			entity_model = Base.get_model(model_name_plural=entity_name_plural)
+			entity_type = models.Base.get_model(
+					model_name_plural=url.split('/')[-2]
+				).get_content_type()
 			
 			# 1) make sure that no objects are appended to the marker:
-			self.assertEqual(
-				len(
-					models.EntityGroupAssociation.objects.filter(
-						entity_type=entity_model.get_content_type(),
-						group_type=models.Marker.get_content_type(),
+			queryset = models.EntityGroupAssociation.objects.filter(
+						entity_type=entity_type,
+						group_type=group_type,
 						group_id=self.marker.id,
 					)
-				), 0
-			)
+			self.assertEqual(len(queryset), 0)
 			
 			# 2) append object to marker:
 			response = self.client.post(url, {
-					'csrfmiddlewaretoken': self.csrf_token,
 					'id': 1,
 					'ordering': i
 				},
-				**{'X-CSRFToken': self.csrf_token}
+				HTTP_X_CSRFTOKEN=self.csrf_token
 			)
 			self.assertEqual(response.status_code, 201)
 			
 			#3) Make sure it's in there:
-			self.assertEqual(
-				len(
-					models.EntityGroupAssociation.objects.filter(
-						entity_type=entity_model.get_content_type(),
-						group_type=models.Marker.get_content_type(),
+			#have to re-instantiate the query b/c it's cached: 
+			queryset = models.EntityGroupAssociation.objects.filter(
+						entity_type=entity_type,
+						group_type=group_type,
 						group_id=self.marker.id,
 					)
-				), 1
+			self.assertEqual(len(queryset), 1)
+			
+	
+	def test_remove_media_from_marker(self, **kwargs):
+		'''
+		Important note:  the HTTP_X_CSRFTOKEN header must be set for
+		a successful delete using Session Authentication
+		(had to dig through Django's middleware/csrf.py to sort that out)
+		'''
+		group_type = models.Marker.get_content_type()
+		for i, url in enumerate(self.urls):
+			entity_type = models.Base.get_model(
+					model_name_plural=url.split('/')[-2]
+				).get_content_type()
+			
+			# 0)  Attach media to marker
+			self.create_relation(entity_type, id=1)
+			
+			# 1) make sure that the object is appended to the marker:
+			queryset = models.EntityGroupAssociation.objects.filter(
+						entity_type=entity_type,
+						entity_id=1,
+						group_type=group_type,
+						group_id=self.marker.id,
+					)
+			self.assertEqual(len(queryset), 1)
+			
+			# 2) remove object from marker:
+			response = self.client.delete('%s1/' % url,
+				HTTP_X_CSRFTOKEN=self.csrf_token
 			)
+			#print response.content
+			self.assertEqual(response.status_code, 200)
+			
+			# 3) ensure object has been removed from the marker:
+			#have to re-instantiate the query b/c it's cached: 
+			queryset = models.EntityGroupAssociation.objects.filter(
+						entity_type=entity_type,
+						entity_id=1,
+						group_type=group_type,
+						group_id=self.marker.id,
+					)
+			self.assertEqual(len(queryset), 0)
 				
 
 		
