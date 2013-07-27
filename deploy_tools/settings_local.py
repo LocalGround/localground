@@ -54,10 +54,6 @@ FIXTURE_DIRS = (
     '%s/fixtures' % APPS_ROOT,
 )
 
-INSTALLED_APPS += (
-    'django_jenkins',
-)
-
 #Turns on Django Debugging
 '''
 INSTALLED_APPS += ('debug_toolbar',)
