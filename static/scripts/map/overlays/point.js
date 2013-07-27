@@ -135,7 +135,7 @@ localground.point.prototype.makeEditable = function() {
         });
         google.maps.event.addListener(this.googleOverlay, "drag", function(mEvent) {
 			var m = me.getManagerById(self.overlay_types.MARKER);
-			if(m){
+			if(m && me.overlay_type != self.overlay_types.MARKER){
 				me.candidateMarker = m.intersectMarkers(mEvent, me);
 			}
         });
