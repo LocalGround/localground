@@ -126,22 +126,19 @@ class ApiHomePageTest(test.TestCase, APITestMixin):
 					'projects', 'photos', 'audio', 'users', 'groups', 'markers'
 				]: self.assertIn(item, response.content)
 
-
 class ApiProjectListTest(test.TestCase, APITestMixin):
 	
 	def setUp(self):
 		APITestMixin.setUp(self)
 		self.urls =  ['/api/0/projects/']
-		self.view = views.ProjectList.as_view()
-		
+		self.view = views.ProjectList.as_view()	
 
 class ApiMarkerListTest(test.TestCase, APITestMixin):
 	
 	def setUp(self):
 		APITestMixin.setUp(self)
 		self.urls =  ['/api/0/markers/']
-		self.view = views.MarkerList.as_view()
-		
+		self.view = views.MarkerList.as_view()	
 
 class ApiMarkerInstanceTest(test.TestCase, APITestMixin):
 	
