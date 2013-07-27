@@ -169,8 +169,9 @@ mv settings_local.py.tmp ../apps/settings_local.py
 # Restarting Apache:
 #sudo service apache2 restart
 sudo_noprompt "service apache2 restart"
-cd ../apps
-python manage.py syncdb --noinput
+
+#cd ../apps
+#python manage.py syncdb --noinput
 
 ###########
 # Run Tests
