@@ -765,3 +765,26 @@ class Video(PointObject, NamedUpload):
     #def to_dict(self):
     #    d = super(Video, self).to_dict()
     #    return d
+
+
+class Kml(models.Model):
+    url = models.CharField(max_length=255)
+    attribution = models.CharField(max_length=500, blank=True,
+                                   null=True, verbose_name="Author / Creator")
+    name = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    tags = TagAutocompleteField(blank=True, null=True)
+    created_timestamp = models.DateTimeField(blank=True, null=True,
+                                                verbose_name="Date Created")
+    project = models.ForeignKey('account.Project')
+    owner = models.ForeignKey('auth.User', db_column='user_id')
+
+    def to_dict(self):
+	return {
+	    'id': self.id,
+	    'url': self.url,
+	    'project_id': self.project.id,
+	    'name': self.name,
+	    'description': self.description,
+	    'attribution': self.attribution
+	}

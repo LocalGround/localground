@@ -47,14 +47,14 @@ class GroupMixin(object):
 
 class ProjectMixin(GroupMixin):
     def to_dict_list(self, include_auth_users=False, include_processed_maps=False,
-                include_markers=False, include_audio=True, include_photos=False):
+                include_markers=False, include_audio=True, include_photos=False, include_kmls=True):
         dict_list = []
         
         # similar to p.to_dict(), but queries optimized at the list level 
         # rather than at the object level:
-        from localground.uploads.models import Scan, Audio, Photo
+        from localground.uploads.models import Scan, Audio, Photo, Kml
         from localground.overlays.models import Marker
-        scan_set, audio_set, photo_set, marker_set = None, None, None, None
+        scan_set, audio_set, photo_set, marker_set, kml_set = None, None, None, None, None
         project_ids = [p.id for p in self]
         if len(project_ids) > 0:
             if include_processed_maps:
@@ -65,6 +65,9 @@ class ProjectMixin(GroupMixin):
                 photo_set = Photo.objects.by_projects(project_ids)
             if include_markers:
                 marker_set = Marker.objects.by_projects(project_ids)
+	    if include_kmls:
+		kml_set = Kml.objects.filter(project__id__in=project_ids)
+
             
         def get_list(p, obj_set):
             arr = []
@@ -82,7 +85,8 @@ class ProjectMixin(GroupMixin):
                 'processed_maps': get_list(p, scan_set), 
                 'photos': get_list(p, photo_set), 
                 'audio': get_list(p, audio_set), 
-                'markers': get_list(p, marker_set)   
+                'markers': get_list(p, marker_set),
+		'kmls': get_list(p, kml_set)   
             })
             dict_list.append(e)
         

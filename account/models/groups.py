@@ -5,7 +5,7 @@ from localground.account.models.permissions import \
                 UserAuthority, UserAuthorityObject, ObjectAuthority, EntityGroupAssociation
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
-from localground.uploads.models import Scan, Photo, Audio, Video
+from localground.uploads.models import Scan, Photo, Audio, Video, Kml
 from localground.overlays.models import Marker, WMSOverlay
 
 class Group(BasePermissions):
@@ -80,7 +80,7 @@ class Project(Group):
         
     def to_dict(self, include_auth_users=False, include_processed_maps=False,
                 include_markers=False, include_audio=False, include_photos=False,
-                include_notes=False):
+                include_notes=False, include_kmls=True):
         d = {
             'id': self.id,
             'name': self.name,  
@@ -99,6 +99,9 @@ class Project(Group):
             d.update({ 'markers': Marker.objects.by_project_with_counts_dict_list(self) })
         if include_notes:
             d.update({ 'notes': self.get_table_data(to_dict=True) })
+	if include_kmls:
+	    kmls = Kml.objects.select_related('owner', 'project').filter(project=self)
+	    d.update({'kmls': [kml.to_dict() for kml in kmls]})
         return d
     
     def get_table_data(self, to_dict=True):
