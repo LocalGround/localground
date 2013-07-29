@@ -61,7 +61,7 @@ localground.overlay.prototype.renderListingCheckbox = function() {
 		}
 	}
 	//if the element hasn't been geo-referenced, hide the check box:
-	if(this.lat == null && this.north == null)
+	if(this.lat == null && this.north == null && this.overlayType != 'kml')
         $cb.css({ 'visibility': 'hidden' });
 	return $cb;
 };
@@ -105,7 +105,7 @@ localground.overlay.prototype.renderListingText = function() {
 		'padding-bottom': '3px',
 		'line-height': '15px'
     });
-	if(this.lat || this.north) {
+	if(this.lat || this.north || this.url) {
         $div_text.append($('<a href="#"></a>')
                 .html(this.name.truncate(4))
                 .attr('title', this.name)

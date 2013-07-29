@@ -36,11 +36,13 @@ localground.viewer = function(){
     this.photoManager = new localground.photoManager();
     this.audioManager = new localground.audioManager();
     this.markerManager = new localground.markerManager();
+    this.kmlManager = new localground.markerManager();
     this.managers = [
         this.paperManager,
         this.markerManager,
         this.photoManager,
         this.audioManager,
+        this.kmlManager,
         this.noteManager
     ];
 };
@@ -246,6 +248,9 @@ localground.viewer.prototype.toggleGroupData = function(groupID, groupType, is_c
 				//process markers:
 				self.markerManager.addRecords(result.markers, opts);
 				self.markerManager.renderOverlays();
+				//process kml:
+				self.kmlManager.addRecords(result.kmls, opts);
+				self.kmlManager.renderOverlays();
 				//process notes:
 				if(result.notes != null) {
 					$.each(result.notes, function() {
@@ -298,11 +303,13 @@ localground.viewer.prototype.toggleGroupData = function(groupID, groupType, is_c
 localground.viewer.prototype.resetBounds = function() {
     this.fullExtent = null, bounds = null;
     $.each(this.managers, function() {
+		if (this.overlayType != 'kml') {
         bounds = this.getLayerBounds();
-        if(self.fullExtent == null)
-            self.fullExtent = bounds;    
-        else if(bounds)
-            self.fullExtent.union(bounds);
+			if(self.fullExtent == null)
+				self.fullExtent = bounds;    
+			else if(bounds)
+				self.fullExtent.union(bounds);
+		}
     });
     if(this.fullExtent != null && !this.fullExtent.isEmpty()) {
 		this.map.fitBounds(self.fullExtent);    
