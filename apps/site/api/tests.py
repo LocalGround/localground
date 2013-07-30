@@ -2,119 +2,15 @@ from django.core.urlresolvers import resolve
 from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
+from localground.apps.site.tests import ViewMixin
 from django.test.client import RequestFactory
 from django.contrib.auth.models import User
 from django.middleware import csrf
 from rest_framework import status
-
-class Client(test.Client):
-	'''
-	Extended Client to support PATCH method based on this code discussion:
-	https://code.djangoproject.com/ticket/17797
-	'''
-	def patch(self, path, data='', content_type='application/octet-stream',
-			follow=False, **extra):
-		"""
-		Send a resource to the server using PATCH.
-		"""
-		response = self.generic('PATCH', path, data=data,
-								content_type=content_type, **extra)
-		if follow:
-			response = self._handle_redirects(response, **extra)
-		return response
-
-
-class APIDataMixin(object):
-	user_password = 'top_secret'
 	
-	def get_csrf_token(self):
-		c = test.Client()
-		response = c.get('/accounts/login/')
-		return unicode(response.context['csrf_token'])
-	
-	def create_user(self):
-		return User.objects.create_user('tester',
-			first_name='test', email='', password=self.user_password
-		)
-	def get_user(self, user_id=2):
-		return User.objects.get(id=user_id)
-
-	def create_project(self, user):
-		p = models.Project(
-			name='Test Project',
-			owner=user,
-			last_updated_by=user,
-			access_authority=models.ObjectAuthority.objects.get(id=1)
-		)
-		p.save()
-		return p
-	
-	def get_project(self, project_id=1):
-		return models.Project.objects.get(id=project_id)
-	
-	def create_marker(self, user, project):
-		from django.contrib.gis.geos import Point
-		#create a marker:
-		lat = 37.8705
-		lng = -122.2819
-		m = models.Marker(
-			project=project,
-			owner=user,
-			color='CCCCCC',
-			last_updated_by=user,
-			point=Point(lng, lat, srid=4326)
-		)
-		m.save()
-		return m
-	
-	def get_marker(self, marker_id=1):
-		return models.Marker.objects.get(id=marker_id)
-
-class APITestMixin(APIDataMixin):
-	fixtures = ['initial_data.json', 'test_data.json']
-	
+class ApiHomePageTest(test.TestCase, ViewMixin):
 	def setUp(self):
-		self.user = self.get_user()
-		self.project = self.get_project()
-		self.csrf_token = self.get_csrf_token()
-		self.factory = RequestFactory()
-		self.client = self._get_client()
-		
-	def _get_client(self):
-		c = Client(enforce_csrf_checks=True)
-		c.login(username='tester', password=self.user_password)
-		c.cookies['csrftoken'] = self.csrf_token
-		return c
-	
-	def test_page_403_status_anonymous_user(self, urls=None):
-		if urls is None:
-			urls = self.urls
-		c = Client() #don't use credentialed client
-		for url in urls:
-			response = c.get(url)
-			self.assertEqual(response.status_code, 403)
-	
-	def test_page_200_status_basic_user(self, urls=None, **kwargs):
-		if urls is None:
-			urls = self.urls
-		for url in urls:
-			response = self.client.get(url)
-			self.assertEqual(response.status_code, status.HTTP_200_OK)
-			
-		
-	def test_page_resolves_to_view(self, urls=None):
-		if urls is None:
-			urls = self.urls
-		for url in urls:
-			func = resolve(url).func
-			func_name = '{}.{}'.format(func.__module__, func.__name__)
-			view_name = '{}.{}'.format(self.view.__module__, self.view.__name__)
-			#print url, func_name, view_name
-			self.assertEqual(func_name, view_name)
-	
-class ApiHomePageTest(test.TestCase, APITestMixin):
-	def setUp(self):
-		APITestMixin.setUp(self)
+		ViewMixin.setUp(self)
 		self.urls = ['/api/0/']
 		self.view = views.api_root
 	
@@ -126,24 +22,24 @@ class ApiHomePageTest(test.TestCase, APITestMixin):
 					'projects', 'photos', 'audio', 'users', 'groups', 'markers'
 				]: self.assertIn(item, response.content)
 
-class ApiProjectListTest(test.TestCase, APITestMixin):
+class ApiProjectListTest(test.TestCase, ViewMixin):
 	
 	def setUp(self):
-		APITestMixin.setUp(self)
+		ViewMixin.setUp(self)
 		self.urls =  ['/api/0/projects/']
 		self.view = views.ProjectList.as_view()	
 
-class ApiMarkerListTest(test.TestCase, APITestMixin):
+class ApiMarkerListTest(test.TestCase, ViewMixin):
 	
 	def setUp(self):
-		APITestMixin.setUp(self)
+		ViewMixin.setUp(self)
 		self.urls =  ['/api/0/markers/']
 		self.view = views.MarkerList.as_view()	
 
-class ApiMarkerInstanceTest(test.TestCase, APITestMixin):
+class ApiMarkerInstanceTest(test.TestCase, ViewMixin):
 	
 	def setUp(self):
-		APITestMixin.setUp(self)
+		ViewMixin.setUp(self)
 		self.marker = self.get_marker()
 		self.urls = ['/api/0/markers/%s/' % self.marker.id]
 		self.view = views.MarkerInstance.as_view()
@@ -164,9 +60,9 @@ class APIRelatedMediaMixin(object):
 		return r
 
 	
-class ApiRelatedMediaListTest(test.TestCase, APITestMixin, APIRelatedMediaMixin):
+class ApiRelatedMediaListTest(test.TestCase, ViewMixin, APIRelatedMediaMixin):
 	def setUp(self):
-		APITestMixin.setUp(self)
+		ViewMixin.setUp(self)
 		self.marker = self.get_marker()
 		url = '/api/0/markers/%s/%s/'
 		self.urls = [
@@ -231,9 +127,9 @@ class ApiRelatedMediaListTest(test.TestCase, APITestMixin, APIRelatedMediaMixin)
 		)
 		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 	
-class ApiRelatedMediaInstanceTest(test.TestCase, APITestMixin, APIRelatedMediaMixin):		
+class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin):		
 	def setUp(self):
-		APITestMixin.setUp(self)
+		ViewMixin.setUp(self)
 		self.marker = self.get_marker()
 		self.create_relation(models.Photo.get_content_type(), id=1)
 		self.create_relation(models.Audio.get_content_type(), id=1)
@@ -250,7 +146,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, APITestMixin, APIRelatedMediaMi
 			url % (self.marker.id, 'photos', 1),
 			url % (self.marker.id, 'audio', 1)
 		]
-		APITestMixin.test_page_403_status_anonymous_user(self, urls=urls)
+		ViewMixin.test_page_403_status_anonymous_user(self, urls=urls)
 	
 	def test_page_200_status_basic_user(self, **kwargs):
 		url = '/api/0/markers/%s/%s/%s/'
@@ -258,7 +154,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, APITestMixin, APIRelatedMediaMi
 			url % (self.marker.id, 'photos', 1),
 			url % (self.marker.id, 'audio', 1)
 		]
-		APITestMixin.test_page_200_status_basic_user(self, urls=urls)
+		ViewMixin.test_page_200_status_basic_user(self, urls=urls)
 		
 	def test_page_resolves_to_view(self):
 		url = '/api/0/markers/%s/%s/%s/'
@@ -266,7 +162,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, APITestMixin, APIRelatedMediaMi
 			url % (self.marker.id, 'photos', 1),
 			url % (self.marker.id, 'audio', 1)
 		]
-		APITestMixin.test_page_resolves_to_view(self, urls=urls)
+		ViewMixin.test_page_resolves_to_view(self, urls=urls)
 		
 	def test_remove_media_from_marker(self, **kwargs):
 		'''
