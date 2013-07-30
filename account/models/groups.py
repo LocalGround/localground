@@ -178,6 +178,10 @@ class View(Group):
     def markers(self):
         return self._get_filtered_entities(Marker)
         
+    @property
+    def kmls(self):
+        return self._get_filtered_entities(Kml)
+
     def get_markers_with_counts(self):
         """
         Queries for Markers and also uses raw sql to retrieve how many Audio,
@@ -201,7 +205,7 @@ class View(Group):
         
     def to_dict(self, include_auth_users=False, include_processed_maps=False,
                 include_markers=False, include_audio=False, include_photos=False,
-                include_notes=False):
+                include_notes=False, include_kmls=True):
         d = {
             'id': self.id,
             'name': self.name,  
@@ -214,6 +218,8 @@ class View(Group):
             d.update(dict(audio=[rec.to_dict() for rec in self.audio_files]))
         if include_photos:
             d.update(dict(photos=[rec.to_dict() for rec in self.photos]))
+	if include_kmls:
+            d.update(dict(kmls=[rec.to_dict() for rec in self.kmls]))
         if include_markers:
             d.update(dict(markers=self.get_markers_with_counts()))
         return d

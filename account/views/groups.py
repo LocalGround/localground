@@ -315,7 +315,7 @@ def delete_groups(request, object_type, identity=None):
 def associate_view_with_data(request, object_id=None):
     from localground.account.models.permissions import EntityGroupAssociation, ObjectAuthority
     from localground.overlays.models import Marker
-    from localground.uploads.models import Photo, Audio, Scan
+    from localground.uploads.models import Photo, Audio, Scan, Kml
     
     r = request.POST or request.GET
     create_new = False
@@ -347,11 +347,15 @@ def associate_view_with_data(request, object_id=None):
     except: marker_ids = []
     try: scan_ids = [int(id) for id in r.get('paper_ids').split(',')]
     except: scan_ids = []
+    try: kml_ids = [int(id) for id in r.get('kml_ids').split(',')]
+    except: kml_ids = []
+
     
     entities = [
         {'cls': Photo, 'model_name': 'photo', 'ids': photo_ids, 'app_label': 'uploads' },
         {'cls': Audio, 'model_name': 'audio', 'ids': audio_ids, 'app_label': 'uploads' },
         {'cls': Scan, 'model_name': 'scan', 'ids': scan_ids, 'app_label': 'uploads' },
+        {'cls': Kml, 'model_name': 'kml', 'ids': kml_ids, 'app_label': 'uploads' },
         {'cls': Marker, 'model_name': 'marker', 'ids': marker_ids, 'app_label': 'overlays' },
     ]
     for entity in entities:
@@ -371,7 +375,7 @@ def associate_view_with_data(request, object_id=None):
         return HttpResponse(json.dumps(view.to_dict(
             include_auth_users=True, include_processed_maps=True,
             include_markers=True, include_audio=True, include_photos=True,
-            include_notes=True     
+            include_notes=Truei, include_kmls=True     
         )))
     else:
         return HttpResponse(json.dumps(view.to_dict()))

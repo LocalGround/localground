@@ -8,7 +8,8 @@ localground.viewer = function(){
 		AUDIO: 'audio',
 		VIDEO: 'video',
 		NOTE: 'note',
-		PAPER: 'paper'
+		PAPER: 'paper',
+		KML: 'kml'
 	};
     this.keycodes = {
         UP: 38,
@@ -36,7 +37,7 @@ localground.viewer = function(){
     this.photoManager = new localground.photoManager();
     this.audioManager = new localground.audioManager();
     this.markerManager = new localground.markerManager();
-    this.kmlManager = new localground.markerManager();
+    this.kmlManager = new localground.kmlManager();
     this.managers = [
         this.paperManager,
         this.markerManager,
@@ -249,7 +250,7 @@ localground.viewer.prototype.toggleGroupData = function(groupID, groupType, is_c
 				self.markerManager.addRecords(result.markers, opts);
 				self.markerManager.renderOverlays();
 				//process kml:
-				self.kmlManager.addRecords(result.kmls, opts);
+				self.kmlManager.addRecords(result.kmls || [], opts);
 				self.kmlManager.renderOverlays();
 				//process notes:
 				if(result.notes != null) {
