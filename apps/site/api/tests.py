@@ -58,7 +58,6 @@ class APIRelatedMediaMixin(object):
 		)
 		r.save()
 		return r
-
 	
 class ApiRelatedMediaListTest(test.TestCase, ViewMixin, APIRelatedMediaMixin):
 	def setUp(self):
@@ -140,13 +139,13 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 		]
 		self.view = views.RelatedMediaInstance.as_view()
 		
-	def test_page_403_status_anonymous_user(self):
+	def test_page_403_or_302_status_anonymous_user(self):
 		url = '/api/0/markers/%s/%s/%s/'
 		urls = [
 			url % (self.marker.id, 'photos', 1),
 			url % (self.marker.id, 'audio', 1)
 		]
-		ViewMixin.test_page_403_status_anonymous_user(self, urls=urls)
+		ViewMixin.test_page_403_or_302_status_anonymous_user(self, urls=urls)
 	
 	def test_page_200_status_basic_user(self, **kwargs):
 		url = '/api/0/markers/%s/%s/%s/'

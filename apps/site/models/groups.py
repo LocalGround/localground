@@ -188,6 +188,14 @@ class Project(Group):
     
     def __unicode__(self):
         return self.name
+    
+    @classmethod
+    def get_default_project(self, user):
+        from django.db.models import Q
+        return Project.objects.filter(
+                Q(owner=user) | Q(users__user=user)
+            ).order_by('-time_stamp')[0]
+    
 
     
 class View(Group):

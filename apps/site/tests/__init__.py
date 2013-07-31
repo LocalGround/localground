@@ -105,13 +105,16 @@ class ViewMixin(ModelMixin):
 		c.cookies['csrftoken'] = self.csrf_token
 		return c
 	
-	def test_page_403_status_anonymous_user(self, urls=None):
+	def test_page_403_or_302_status_anonymous_user(self, urls=None):
 		if urls is None:
 			urls = self.urls
 		c = Client() #don't use credentialed client
 		for url in urls:
 			response = c.get(url)
-			self.assertEqual(response.status_code, 403)
+			self.assertIn(response.status_code, [
+				status.HTTP_302_FOUND,
+				status.HTTP_403_FORBIDDEN
+			])
 	
 	def test_page_200_status_basic_user(self, urls=None, **kwargs):
 		if urls is None:
@@ -119,7 +122,6 @@ class ViewMixin(ModelMixin):
 		for url in urls:
 			response = self.client.get(url)
 			self.assertEqual(response.status_code, status.HTTP_200_OK)
-			
 		
 	def test_page_resolves_to_view(self, urls=None):
 		if urls is None:
@@ -133,3 +135,4 @@ class ViewMixin(ModelMixin):
 	
 
 from localground.apps.site.api.tests import *
+from localground.apps.site.tests.views import *

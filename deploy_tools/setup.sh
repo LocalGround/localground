@@ -45,7 +45,6 @@ then
 	source local_config.sh
 fi
 
-
 ##################
 # Helper Functions
 ##################
@@ -64,13 +63,12 @@ set_val()
 escape()
 {
 	tmp=$(echo $1 | sed 's/\//\\\//g')
-        #tmp=$(echo $tmp | sed 's/\ /\\ /g')
 	echo $tmp | sed 's/\./\\./g'
 }
 
 sudo_noprompt()
 {
-	SUDO_MESSAGE="Executing \"$1\" with sudo privs:"
+	SUDO_MESSAGE="Executing \"$1\" with sudo privs"
 	if [ -z "$SUDOPASS" ]
 	then
 		echo "$SUDO_MESSAGE: authentication needed from sudoers file or prompt"
@@ -153,8 +151,9 @@ sudo_noprompt "a2ensite $SERVER_HOST"
 #sudo chown -R $USER_ACCOUNT:$WEBSERVER_ACCOUNT ../userdata/media
 #sudo chmod -R 755 ../userdata/media
 sudo_noprompt "mkdir ../userdata/media"
-sudo_noprompt "chown -R $WEBSERVER_ACCOUNT:$WEBSERVER_ACCOUNT ../userdata/media"
-sudo_noprompt "chmod -R 755 ../userdata/media"
+sudo_noprompt "mkdir ../userdata/prints"
+sudo_noprompt "chown -R $WEBSERVER_ACCOUNT:$WEBSERVER_ACCOUNT ../userdata"
+sudo_noprompt "chmod -R 755 ../userdata"
 
 #Copying settings_local.py to apps directory
 mv settings_local.py.tmp ../apps/settings_local.py
@@ -173,10 +172,17 @@ sudo_noprompt "service apache2 restart"
 #cd ../apps
 #python manage.py syncdb --noinput
 
+
+#####################
+# Add GIS projections
+#####################
+sudo_noprompt "chmod +x gis.sh"
+./gis.sh
+
 ###########
 # Run Tests
 ###########
 echo
 echo
 echo 'Running Django Tests...'
-python manage.py test site --verbosity=2
+python ../apps/manage.py test site --verbosity=2

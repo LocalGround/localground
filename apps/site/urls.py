@@ -101,6 +101,7 @@ urlpatterns = patterns('',
     url(r'^api/0/', include('localground.apps.site.api.urls')),
     
     # Map Editor
-    (r'^maps/editor/', 'localground.apps.site.views.maps.init'),
+    (r'^maps/edit/', 'localground.apps.site.views.maps.init'),
+    (r'^maps/print/', 'localground.apps.site.views.create_print.generate_print'),
     
 )
