@@ -1,11 +1,10 @@
-from django.contrib.gis.db import models
-from datetime import datetime    
+from django.contrib.gis.db import models   
 from localground.apps.site.managers import PrintManager
 from django.conf import settings
 from localground.apps.site.models.abstract.media import BaseNamedMedia
 from localground.apps.site.models.abstract.geometry import BaseExtents
-import os, urllib, StringIO, Image, ImageDraw
-from django.contrib.gis.geos import Point, LinearRing, Polygon
+import Image
+from django.contrib.gis.geos import Polygon
 
 												   
 class Print(BaseExtents, BaseNamedMedia):
@@ -168,6 +167,7 @@ class Print(BaseExtents, BaseNamedMedia):
 							has_extra_form_page=False):
 		from localground.apps.site import models
 		from localground.apps.lib.helpers import generic, StaticMap, Report
+		import os
 
 		#create directory:
 		uuid        = generic.generateID()

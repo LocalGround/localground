@@ -159,7 +159,7 @@ INSTALLED_APPS = (
     'localground.apps.registration',     #taken from the django-registration module
     'tagging',                      #for tagging of blog posts in Django
     'django.contrib.admin',
-    'localground.apps.jobs',
+    #'localground.apps.lib.jobs',
     'rest_framework',
 )
 

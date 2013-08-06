@@ -1,16 +1,10 @@
 from django.shortcuts import render_to_response
-from localground.apps.site.models import Print, Layout, Form, Field, DataType
-from localground.apps.lib.helpers import generic
-from localground.apps.lib.helpers.static_maps import StaticMap
-from localground.apps.lib.helpers.reports import Report
 from localground.apps.site import models
-from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.conf import settings  
 from django.template import RequestContext 
-import simplejson as json
+import json
 from django.contrib.gis.geos import Point
-import os, urllib, StringIO
 
 @login_required()
 def generate_print(request, is_json=False, project=None, embed=False,
