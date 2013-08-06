@@ -1,113 +1,9 @@
-from django.core.urlresolvers import resolve
 from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.tests import ViewMixin
-from django.test.client import RequestFactory
-from django.contrib.auth.models import User
-from django.middleware import csrf
 from rest_framework import status
-	
-class ApiHomePageTest(test.TestCase, ViewMixin):
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls = ['/api/0/']
-		self.view = views.api_root
-	
-	def test_page_has_required_links(self):
-		for url in self.urls:
-			response = self.client.get(url)
-			if response.status_code == status.HTTP_200_OK:
-				for item in [
-					'projects', 'photos', 'audio', 'users', 'groups', 'markers'
-				]: self.assertIn(item, response.content)
 
-class ApiProjectListTest(test.TestCase, ViewMixin):
-	
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls =  ['/api/0/projects/']
-		self.view = views.ProjectList.as_view()	
-
-class ApiMarkerListTest(test.TestCase, ViewMixin):
-	
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls =  ['/api/0/markers/']
-		self.view = views.MarkerList.as_view()	
-
-class ApiMarkerInstanceTest(test.TestCase, ViewMixin):
-	
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.marker = self.get_marker()
-		self.urls = ['/api/0/markers/%s/' % self.marker.id]
-		self.view = views.MarkerInstance.as_view()
-		
-class ApiTileListTest(test.TestCase, ViewMixin):
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls =  ['/api/0/tiles/']
-		self.view = views.TileViewSet.as_view({'get': 'list'})	
-
-class ApiTileInstanceTest(test.TestCase, ViewMixin):
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls = ['/api/0/tiles/1/', '/api/0/tiles/2/', '/api/0/tiles/3/']
-		self.view = views.TileViewSet.as_view({'get': 'detail'})
-		
-class ApiLayoutListTest(test.TestCase, ViewMixin):
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls =  ['/api/0/layouts/']
-		self.view = views.LayoutViewSet.as_view({'get': 'list'})	
-
-class ApiLayoutInstanceTest(test.TestCase, ViewMixin):
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls = ['/api/0/layouts/1/', '/api/0/layouts/3/', '/api/0/layouts/4/']
-		self.view = views.LayoutViewSet.as_view({'get': 'detail'})
-	
-class ApiOverlayTypeListTest(test.TestCase, ViewMixin):
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls =  ['/api/0/overlaytypes/']
-		self.view = views.OverlayTypeViewSet.as_view({'get': 'list'})	
-
-class ApiOverlayTypeInstanceTest(test.TestCase, ViewMixin):
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls = ['/api/0/overlaytypes/1/', '/api/0/overlaytypes/2/']
-		self.view = views.OverlayTypeViewSet.as_view({'get': 'detail'})
-		
-class ApiOverlaySourceListTest(test.TestCase, ViewMixin):
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls =  ['/api/0/overlaysources/']
-		self.view = views.OverlaySourceViewSet.as_view({'get': 'list'})	
-
-class ApiOverlaySourceInstanceTest(test.TestCase, ViewMixin):
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls = ['/api/0/overlaysources/1/', '/api/0/overlaysources/2/']
-		self.view = views.OverlaySourceViewSet.as_view({'get': 'detail'})
-		
-class ApiPrintListTest(test.TestCase, ViewMixin):
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls =  ['/api/0/prints/']
-		self.view = views.PrintViewSet.as_view({'get': 'list'})	
-
-'''
-class ApiPrintInstanceTest(test.TestCase, ViewMixin):
-	# Todo:  need to create a print before I test it.
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls = ['/api/0/prints/1/', '/api/0/prints/2/']
-		self.view = views.PrintViewSet.as_view({'get': 'detail'})
-'''
-
-	
 class APIRelatedMediaMixin(object):
 	
 	def create_relation(self, entity_type, id=1, ordering=1):
@@ -326,5 +222,3 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 			self.assertEqual(updated_relation.turned_on, True)
 			
 	
-
-		
