@@ -115,6 +115,9 @@ select { width: 180px !important; }
     top: 0px;
     position: fixed;
     z-index: 2000000;
+	{% if not embed %}
+		margin-top: 40px !important;	
+	{% endif %}
 }
 .layout_control {
     vertical-align: middle !important;
@@ -125,6 +128,12 @@ select { width: 180px !important; }
     margin:5px 0px 0px 10px;
     border-bottom: solid 1px #000;
 }
+{% if embed %}
+	body {
+		padding-top: 0px !important;
+	}
+{% endif %}
+
 {% endblock %}
 
 {% block content %}

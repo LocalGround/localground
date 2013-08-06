@@ -312,7 +312,7 @@ localground.viewer.prototype.loadPrintForm = function(opts) {
         center_lat: this.map.getCenter().lat(),
         center_lng: this.map.getCenter().lng(),
         zoom: this.map.getZoom(),
-        basemap_id: basemap_config.id
+        map_provider: basemap_config.id
     };
     if(layer_overlays.length > 0)
         params.layer_ids = layer_overlays.join(',');
