@@ -28,7 +28,7 @@ same view and parameters. Then, you can use this name in reverse URL matching.
 
 object_types_plural = [ 'photos', 'audio', 'videos', 'map-images', 'projects',
 						'views', 'prints', 'forms', 'attachments', 'tiles']
-handler500 = 'localground.apps.account.views.server_error' 
+#handler500 = 'localground.apps.account.views.server_error' 
 urlpatterns = patterns('',
 					   
 	#mostly static html:

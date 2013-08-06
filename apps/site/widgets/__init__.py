@@ -265,7 +265,8 @@ class PointWidgetTextbox(Textarea):
 					value = GEOSGeometry(value)
 					lat, lng = value.y, value.x
 				elif isinstance(value, dict):
-					lat, lng = value.get('%s_lat' % name), value.get('%s_lng' % name)
+					lat, lng = value.get('lat'), value.get('lng')
+					#lat, lng = value.get('%s_lat' % name), value.get('%s_lng' % name)
 				else: # value is GEOSGeometry
 					lat, lng = value.y, value.x
 			except:
@@ -273,8 +274,10 @@ class PointWidgetTextbox(Textarea):
 		
 		
 		#renders text form elements (for debugging):
-		html = self.inner_widget.render('%s_lat' % name, lat, dict(id='id_%s_lat' % name, style='width:100px;'))
-		html += self.inner_widget.render('%s_lng' % name, lng, dict(id='id_%s_lng' % name, style='width:100px;'))
+		html = self.inner_widget.render('lat', lat, dict(id='id_lat', style='width:100px;'))
+		html += self.inner_widget.render('lng', lng, dict(id='id_lng', style='width:100px;'))
+		#html = self.inner_widget.render('%s_lat' % name, lat, dict(id='id_%s_lat' % name, style='width:100px;'))
+		#html += self.inner_widget.render('%s_lng' % name, lng, dict(id='id_%s_lng' % name, style='width:100px;'))
 		
 		return mark_safe(html)
 

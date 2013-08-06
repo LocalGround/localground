@@ -45,7 +45,8 @@ class PointField(serializers.WritableField):
 	label = 'Point'
 	def field_from_native(self, data, files, field_name, into):
 		try:
-			native = '%s;%s' % (data['%s_lng' % self.label], data['%s_lat' % self.label])
+			native = '%s;%s' % (data['lng'], data['lat'])
+			#native = '%s;%s' % (data['%s_lng' % self.type_label], data['%s_lat' % self.type_label])
 		except KeyError:
 			if self.required:
 				raise serializers.ValidationError('Both a "lat" variable and a "lng" variable are required')
