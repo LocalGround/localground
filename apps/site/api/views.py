@@ -2,7 +2,7 @@ from localground.apps.site.api import serializers
 from rest_framework.serializers import ValidationError
 from localground.apps.site.api.permissions import IsAllowedGivenProjectPermissionSettings
 from localground.apps.site.api.filters import SQLFilterBackend
-from localground.apps.site.models import Photo, Audio, Project, Marker, EntityGroupAssociation, ObjectAuthority
+from localground.apps.site import models
 from django.contrib.auth.models import User, Group
 from rest_framework import generics, renderers, permissions, viewsets, views, mixins
 from rest_framework.decorators import api_view, permission_classes
@@ -24,7 +24,12 @@ def api_root(request, format=None, **kwargs):
         'projects': reverse('project-list', request=request, format=format),
         'users': reverse('user-list', request=request, format=format),
         'groups': reverse('group-list', request=request, format=format),
-        'markers': reverse('marker-list', request=request, format=format)
+        'markers': reverse('marker-list', request=request, format=format),
+        'prints': reverse('print-list', request=request, format=format),
+        'tiles': reverse('wmsoverlay-list', request=request, format=format),
+        'layouts': reverse('layout-list', request=request, format=format),
+        'overlaytypes': reverse('overlaytype-list', request=request, format=format),
+        'overlaysources': reverse('overlaysource-list', request=request, format=format)
     })
 
 class AuditCreate(object):
@@ -72,7 +77,7 @@ class PhotoViewSet(viewsets.ModelViewSet, AuditUpdate):
 
     Additionally we also provide an extra `highlight` action. 
     """
-    queryset = Photo.objects.select_related('project', 'owner').all()
+    queryset = models.Photo.objects.select_related('project', 'owner').all()
     serializer_class = serializers.PhotoSerializer
     filter_backends = (SQLFilterBackend,)
     
@@ -84,13 +89,57 @@ class AudioViewSet(viewsets.ModelViewSet, AuditUpdate):
     """
     This viewset automatically provides `list` and `detail` actions.
     """
-    queryset = Audio.objects.select_related('project', 'owner').all()
+    queryset = models.Audio.objects.select_related('project', 'owner').all()
     serializer_class = serializers.AudioSerializer
     filter_backends = (SQLFilterBackend,)
     
     def pre_save(self, obj):
         AuditUpdate.pre_save(self, obj)
+        
+        
+class PrintViewSet(viewsets.ModelViewSet, AuditUpdate):
+    """
+    This viewset automatically provides `list` and `detail` actions.
+    """
+    queryset = models.Print.objects.select_related('project', 'owner').all()
+    serializer_class = serializers.PrintSerializer
+    filter_backends = (SQLFilterBackend,)
     
+    def pre_save(self, obj):
+        AuditUpdate.pre_save(self, obj)
+        
+class TileViewSet(viewsets.ModelViewSet, AuditUpdate):
+    queryset = models.WMSOverlay.objects.select_related('overlay_type', 'overlay_source').all()
+    serializer_class = serializers.WMSOverlaySerializer
+    filter_backends = (SQLFilterBackend,)
+    
+    def pre_save(self, obj):
+        AuditUpdate.pre_save(self, obj)
+        
+class LayoutViewSet(viewsets.ModelViewSet, AuditUpdate):
+    queryset = models.Layout.objects.all()
+    serializer_class = serializers.LayoutSerializer
+    filter_backends = (SQLFilterBackend,)
+    
+    def pre_save(self, obj):
+        AuditUpdate.pre_save(self, obj)
+        
+class OverlayTypeViewSet(viewsets.ModelViewSet, AuditUpdate):
+    queryset = models.OverlayType.objects.all()
+    serializer_class = serializers.OverlayTypeSerializer
+    filter_backends = (SQLFilterBackend,)
+    
+    def pre_save(self, obj):
+        AuditUpdate.pre_save(self, obj)
+        
+class OverlaySourceViewSet(viewsets.ModelViewSet, AuditUpdate):
+    queryset = models.OverlaySource.objects.all()
+    serializer_class = serializers.OverlaySourceSerializer
+    filter_backends = (SQLFilterBackend,)
+    
+    def pre_save(self, obj):
+        AuditUpdate.pre_save(self, obj)
+
 class MarkerList(generics.ListCreateAPIView, AuditCreate):
     serializer_class = serializers.MarkerSerializerCounts
     filter_backends = (SQLFilterBackend,)
@@ -98,14 +147,14 @@ class MarkerList(generics.ListCreateAPIView, AuditCreate):
     paginate_by = 100
     
     def get_queryset(self):
-        return Marker.objects.get_objects_with_counts(self.request.user)
+        return models.Marker.objects.get_objects_with_counts(self.request.user)
     
     def pre_save(self, obj):
         AuditCreate.pre_save(self, obj)
           
         
 class MarkerInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
-    queryset = Marker.objects.select_related('owner').all() #.prefetch_related('photos', 'audio', 'marker_set')
+    queryset = models.Marker.objects.select_related('owner').all() #.prefetch_related('photos', 'audio', 'marker_set')
     serializer_class = serializers.MarkerSerializer
     
     def pre_save(self, obj):
@@ -119,14 +168,14 @@ class ProjectList(generics.ListCreateAPIView, AuditCreate):
     
     def get_queryset(self):
         user = self.request.user
-        return Project.objects.select_related('owner').filter(owner=user)
+        return models.Project.objects.select_related('owner').filter(owner=user)
     
     def pre_save(self, obj):
         AuditCreate.pre_save(self, obj)
         obj.access_authority = ObjectAuthority.objects.get(id=1)
     
 class ProjectInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
-    queryset = Project.objects.select_related('owner').all() #.prefetch_related('photos', 'audio', 'marker_set')
+    queryset = models.Project.objects.select_related('owner').all() #.prefetch_related('photos', 'audio', 'marker_set')
     serializer_class = serializers.ProjectDetailSerializer
     
     def pre_save(self, obj):
@@ -149,13 +198,12 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 class RelatedMediaList(generics.ListCreateAPIView,
                      AuditCreate):
-    model = EntityGroupAssociation
+    model = models.EntityGroupAssociation
     serializer_class = serializers.AssociationSerializer
     #http://stackoverflow.com/questions/3210491/association-of-entities-in-a-rest-service
 
     def get_queryset(self):
-        from localground.apps.site.models import Base
-        group_model = Base.get_model(
+        group_model = models.Base.get_model(
                 model_name_plural=self.kwargs.get('group_name_plural')
             )
         try:
@@ -163,7 +211,7 @@ class RelatedMediaList(generics.ListCreateAPIView,
         except group_model.DoesNotExist:
             raise Http404
         
-        entity_type = Base.get_model(
+        entity_type = models.Base.get_model(
                         model_name_plural=self.kwargs.get('entity_name_plural')
                     ).get_content_type()
         return self.model.objects.filter(
@@ -192,12 +240,11 @@ class RelatedMediaList(generics.ListCreateAPIView,
  
     def pre_save(self, obj):
         AuditCreate.pre_save(self, obj)
-        from localground.apps.site.models import Base
-        group_model = Base.get_model(
+        group_model = models.Base.get_model(
                         model_name_plural=self.kwargs.get('group_name_plural')
                     )
         group_type = group_model.get_content_type()
-        entity_model = Base.get_model(
+        entity_model = models.Base.get_model(
                         model_name_plural=self.kwargs.get('entity_name_plural')
                     )
         entity_type = entity_model.get_content_type()
@@ -211,15 +258,14 @@ class RelatedMediaList(generics.ListCreateAPIView,
         setattr(obj, 'entity_type', entity_type)
 
 class RelatedMediaInstance(generics.RetrieveUpdateDestroyAPIView):
-    queryset = EntityGroupAssociation.objects.all()
+    queryset = models.EntityGroupAssociation.objects.all()
     serializer_class = serializers.AssociationSerializerDetail
     
     def get_object(self, queryset=None):
-        from localground.apps.site.models import Base
-        group_type = Base.get_model(
+        group_type = models.Base.get_model(
                         model_name_plural=self.kwargs.get('group_name_plural')
                     ).get_content_type()
-        entity_type = Base.get_model(
+        entity_type = models.Base.get_model(
                         model_name_plural=self.kwargs.get('entity_name_plural')
                     ).get_content_type()
         

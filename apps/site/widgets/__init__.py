@@ -265,7 +265,7 @@ class PointWidgetTextbox(Textarea):
 					value = GEOSGeometry(value)
 					lat, lng = value.y, value.x
 				elif isinstance(value, dict):
-					lat, lng = value.get('lat'), value.get('lng')
+					lat, lng = value.get('%s_lat' % name), value.get('%s_lng' % name)
 				else: # value is GEOSGeometry
 					lat, lng = value.y, value.x
 			except:
@@ -273,21 +273,10 @@ class PointWidgetTextbox(Textarea):
 		
 		
 		#renders text form elements (for debugging):
-		html = self.inner_widget.render('lat', lat, dict(id='lat', style='width:100px;'))
-		html += self.inner_widget.render('lng', lng, dict(id='lng', style='width:100px;'))
+		html = self.inner_widget.render('%s_lat' % name, lat, dict(id='id_%s_lat' % name, style='width:100px;'))
+		html += self.inner_widget.render('%s_lng' % name, lng, dict(id='id_%s_lng' % name, style='width:100px;'))
 		
 		return mark_safe(html)
-		
-	'''
-	def value_from_datadict(self, data, files, name):
-		"""
-		Given a dictionary of data and this widget's name, returns the value
-		of this widget. Returns None if it's not provided.
-		"""
-		if data.get('lng') is None or data.get('lat') is None:
-			return ''
-		return 'SRID=' + str(self.srid) + ';POINT(' + data.get('lng') + ' ' + data.get('lat') + ')'
-	'''
 
 class CustomCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
 	'''

@@ -4,7 +4,8 @@ from localground.apps.site.lib.helpers import classproperty
 from django.contrib.contenttypes.models import ContentType
 		
 class Base(models.Model):
-
+	RESTRICT_BY_PROJECT = False
+	RESTRICT_BY_USER = False
 	class Meta:
 		app_label = 'site'
 		abstract = True

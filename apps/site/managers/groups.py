@@ -12,12 +12,12 @@ class GroupMixin(GeneralMixin):
         
         q = self.model.objects.distinct().select_related('owner', 'last_updated_by')
         q = q.filter(Q(owner=user) | Q(users__user=user))
-        if with_counts:
-            from django.db.models import Count
-            q = q.annotate(processed_maps_count=Count('scan', distinct=True))
-            q = q.annotate(photo_count=Count('photo', distinct=True))
-            q = q.annotate(audio_count=Count('audio', distinct=True))
-            q = q.annotate(marker_count=Count('marker', distinct=True))
+        #if with_counts:
+        #    from django.db.models import Count
+        #    q = q.annotate(processed_maps_count=Count('scan', distinct=True))
+        #    q = q.annotate(photo_count=Count('photo', distinct=True))
+        #    q = q.annotate(audio_count=Count('audio', distinct=True))
+        #    q = q.annotate(marker_count=Count('marker', distinct=True))
 
         return q
     

@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
+from localground.apps.site.models.abstract.base import Base
 
-class Layout(models.Model):
+class Layout(Base):
     name = models.CharField(max_length=255)
     display_name = models.CharField(max_length=255, blank=True)
     map_width_pixels = models.IntegerField()
@@ -14,6 +15,7 @@ class Layout(models.Model):
     
     class Meta:
         app_label = 'site'
+        ordering = ('id',)
     
     def to_dict(self):
         return {
@@ -23,3 +25,5 @@ class Layout(models.Model):
             'map_width': self.map_width_pixels,
             'map_height': self.map_height_pixels
         }
+    def __unicode__(self):
+        return '%s. %s' % (self.id, self.display_name)

@@ -1,14 +1,11 @@
 from django.contrib.gis.db import models
 from datetime import datetime    
 from localground.apps.site.managers import PrintManager
-#from localground.apps.site.models import Base
 from django.conf import settings
-from localground.apps.site.models import BaseMedia, BaseExtents
+from localground.apps.site.models.abstract.media import BaseNamedMedia
+from localground.apps.site.models.abstract.geometry import BaseExtents
                                                    
-class Print(BaseExtents, BaseMedia):
-    name = 'print'
-    name_plural = 'prints'
-    project = models.ForeignKey('Project')
+class Print(BaseExtents, BaseNamedMedia):
     uuid = models.CharField(unique=True, max_length=8)
     map_provider = models.ForeignKey('WMSOverlay',
                             db_column='fk_provider', related_name='prints_print_wmsoverlays')
@@ -18,15 +15,12 @@ class Print(BaseExtents, BaseMedia):
     map_image_path = models.CharField(max_length=255)
     pdf_path = models.CharField(max_length=255)
     preview_image_path = models.CharField(max_length=255)
-    map_title = models.CharField(max_length=255, null=True, blank=True, )
-    description = models.TextField(null=True, blank=True)
     form_column_widths = models.CharField(max_length=200, null=True, blank=True)
     sorted_field_ids = models.CharField(max_length=100, null=True, blank=True,
                                     db_column='form_column_ids')
     form = models.ForeignKey('Form', null=True, blank=True)
     deleted = models.BooleanField(default=False)
     layers = models.ManyToManyField('WMSOverlay', null=True, blank=True)
-    #projects = models.ManyToManyField('Project')
     objects = PrintManager()
     
     @classmethod
@@ -73,10 +67,6 @@ class Print(BaseExtents, BaseMedia):
     def get_abs_virtual_path(self):
         return 'http://%s%s' % (self.host, self.virtual_path)
         
-    #@property
-    #def virtual_path(self):
-    #    return '/%s/prints/%s' % (settings.USER_MEDIA_DIR, self.uuid)
-    
     def generate_relative_path(self):
         return '/%s/%s/%s/' % (settings.USER_MEDIA_DIR,
                                      self._meta.verbose_name_plural, self.uuid)

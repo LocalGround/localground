@@ -166,11 +166,8 @@ mv settings_local.py.tmp ../apps/settings_local.py
 #sudo_noprompt "sudo -u postgres createdb -T template_postgis -O $DB_USER -E UTF8 -e $DB_NAME"
 
 # Restarting Apache:
-#sudo service apache2 restart
-sudo_noprompt "service apache2 restart"
-
-#cd ../apps
-#python manage.py syncdb --noinput
+#sudo_noprompt "service apache2 restart"
+#python ../apps/manage.py syncdb --noinput
 
 
 #####################

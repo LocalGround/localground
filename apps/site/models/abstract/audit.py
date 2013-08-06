@@ -8,7 +8,6 @@ class BaseAudit(Base):
     date_created = models.DateTimeField(default=get_timestamp_no_milliseconds)
     time_stamp = models.DateTimeField(default=get_timestamp_no_milliseconds,
                                                     db_column='last_updated')
-    
     class Meta:
         app_label = 'site'
         abstract = True

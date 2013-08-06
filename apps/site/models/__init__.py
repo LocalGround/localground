@@ -13,6 +13,7 @@ from localground.apps.site.models.abstract.named import BaseNamed
 from localground.apps.site.models.abstract.media import BaseMedia, BaseUploadedMedia
 from localground.apps.site.models.abstract.geometry import BasePoint, BaseExtents
 from localground.apps.site.models.abstract.genericrelation import BaseGenericRelations
+from localground.apps.site.models.abstract.mixins import ProjectMixin
 
 #lookups
 from localground.apps.site.models.lookups import StatusCode, UploadSource, \

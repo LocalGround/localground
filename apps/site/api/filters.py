@@ -21,7 +21,11 @@ class SQLFilterBackend(filters.BaseFilterBackend):
     def __has_privileges(self, user, q):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
-        if issubclass(q.model, models.groups.Group): #q.model == models.Project:
+        if q.model.RESTRICT_BY_PROJECT:
+            return q.filter(Q(project__owner=user) | Q(project__users__user=user))
+        elif q.model.RESTRICT_BY_USER:
             return q.filter(Q(owner=user) | Q(users__user=user))
-        return q.filter(Q(project__owner=user) | Q(project__users__user=user))
+        else:
+            return q
+        
     

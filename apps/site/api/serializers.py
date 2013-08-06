@@ -6,272 +6,352 @@ from localground.apps.site import widgets, models
 from localground.apps.site.api import fields
 
 class BaseSerializer(serializers.HyperlinkedModelSerializer):
-    tags = fields.TagField(required=False, widget=widgets.TagAutocomplete, help_text='Tag your object here')
-    name = serializers.CharField(required=False, label='name')
-    #attach_url = serializers.SerializerMethodField('get_attach_url')
-    description = fields.DescriptionField(required=False, label='caption')
-        
-    class Meta:
-        fields = ('id', 'name', 'description', 'tags') #, 'attach_url')
-        
-    #def get_attach_url(self, obj):
-    #    return '%s/api/0/%s/%s/attach/' % (settings.SERVER_URL, obj.model_name_plural, obj.id)
-
-    
+	tags = fields.TagField(label='tags', required=False, widget=widgets.TagAutocomplete, help_text='Tag your object here')
+	name = serializers.CharField(required=False, label='name')
+	description = fields.DescriptionField(required=False, label='caption')
+	overlay_type = serializers.SerializerMethodField('get_overlay_type')
+		
+	class Meta:
+		fields = ('id', 'name', 'description', 'tags', 'overlay_type')
+		
+	def get_overlay_type(self, obj):
+		return obj._meta.verbose_name
+	
 class PointSerializer(BaseSerializer):
-    from django.forms.widgets import Textarea
-    point = fields.PointField(help_text='Assign lat/lng field',
-                              #widget=Textarea,
-                              widget=widgets.PointWidgetTextbox,
-                              required=False)
-                              
-    project_id = fields.ProjectField(source='project', required=False)
-    overlay_type = serializers.SerializerMethodField('get_overlay_type')
-    
-    class Meta:
-        fields = BaseSerializer.Meta.fields + ('project_id', 'point',
-                                                    'overlay_type')
+	point = fields.PointField(help_text='Assign lat/lng field',
+							  widget=widgets.PointWidgetTextbox,
+							  required=False)
+							  
+	project_id = fields.ProjectField(source='project', required=False)
+	
+	class Meta:
+		fields = BaseSerializer.Meta.fields + ('project_id', 'point')
+		
+class ExtentsSerializer(BaseSerializer):
+	project_id = fields.ProjectField(label='project_id', source='project', required=False)
+	northeast = fields.PointField(label='northeast', help_text='Assign north (lat) and east (lng) coordinates',
+							  widget=widgets.PointWidgetTextbox,
+							  required=False)
+	southwest = fields.PointField(label='southwest', help_text='Assign south (lat) and west (lng) coordinates',
+							  widget=widgets.PointWidgetTextbox,
+							  required=False)
+	center = fields.PointField(label='center', help_text='Assign lat/lng field',
+							  widget=widgets.PointWidgetTextbox,
+							  required=False)
 
-    def get_overlay_type(self, obj):
-        return obj._meta.verbose_name
-
+	class Meta:
+		fields = BaseSerializer.Meta.fields + ('project_id', 'northeast',
+											   'southwest', 'center')
+		
 class MediaPointSerializer(PointSerializer):
-    file_name = serializers.Field(source='file_name_new')
-    caption = serializers.Field(source='description')
-    
-    class Meta:
-        fields = PointSerializer.Meta.fields + ('attribution',
-                            'file_name', 'caption')
-    
+	file_name = serializers.Field(source='file_name_new')
+	caption = serializers.Field(source='description')
+	
+	class Meta:
+		fields = PointSerializer.Meta.fields + ('attribution',
+							'file_name', 'caption')
+		
+	
 class PhotoSerializer(MediaPointSerializer):
-    path_large = serializers.SerializerMethodField('get_path_large')
-    path_medium = serializers.SerializerMethodField('get_path_medium')
-    path_medium_sm = serializers.SerializerMethodField('get_path_medium_sm')
-    path_small = serializers.SerializerMethodField('get_path_small')
-    path_marker_lg = serializers.SerializerMethodField('get_path_marker_lg')
-    path_marker_sm = serializers.SerializerMethodField('get_path_path_marker_sm')
-    overlay_type = serializers.SerializerMethodField('get_overlay_type')
+	path_large = serializers.SerializerMethodField('get_path_large')
+	path_medium = serializers.SerializerMethodField('get_path_medium')
+	path_medium_sm = serializers.SerializerMethodField('get_path_medium_sm')
+	path_small = serializers.SerializerMethodField('get_path_small')
+	path_marker_lg = serializers.SerializerMethodField('get_path_marker_lg')
+	path_marker_sm = serializers.SerializerMethodField('get_path_path_marker_sm')
+	overlay_type = serializers.SerializerMethodField('get_overlay_type')
 
-    class Meta:
-        model = models.Photo
-        fields = MediaPointSerializer.Meta.fields + (
-                    'path_large', 'path_medium', 'path_medium_sm',
-                    'path_small', 'path_marker_lg', 'path_marker_sm'
-                )
-        depth = 1
-    
-    def get_path_large(self, obj):
-        return obj.encrypt_url(obj.file_name_large)
-    
-    def get_path_medium(self, obj):
-        return obj.encrypt_url(obj.file_name_medium)
-    
-    def get_path_medium_sm(self, obj):
-        return obj.encrypt_url(obj.file_name_medium_sm)
-    
-    def get_path_small(self, obj):
-        return obj.encrypt_url(obj.file_name_small)
-    
-    def get_path_marker_lg(self, obj):
-        return obj.encrypt_url(obj.file_name_marker_lg)
-    
-    def get_path_path_marker_sm(self, obj):
-        return obj.encrypt_url(obj.file_name_marker_sm)
+	class Meta:
+		model = models.Photo
+		fields = MediaPointSerializer.Meta.fields + (
+					'path_large', 'path_medium', 'path_medium_sm',
+					'path_small', 'path_marker_lg', 'path_marker_sm'
+				)
+		depth = 1
+	
+	def get_path_large(self, obj):
+		return obj.encrypt_url(obj.file_name_large)
+	
+	def get_path_medium(self, obj):
+		return obj.encrypt_url(obj.file_name_medium)
+	
+	def get_path_medium_sm(self, obj):
+		return obj.encrypt_url(obj.file_name_medium_sm)
+	
+	def get_path_small(self, obj):
+		return obj.encrypt_url(obj.file_name_small)
+	
+	def get_path_marker_lg(self, obj):
+		return obj.encrypt_url(obj.file_name_marker_lg)
+	
+	def get_path_path_marker_sm(self, obj):
+		return obj.encrypt_url(obj.file_name_marker_sm)
 
 class AudioSerializer(MediaPointSerializer):
-    file_path = serializers.SerializerMethodField('get_file_path')
-    
-    class Meta:
-        model = models.Audio
-        fields = MediaPointSerializer.Meta.fields  + ('file_path',)
-        depth = 0
-        
-    def get_file_path(self, obj):
-        return obj.encrypt_url(obj.file_name_new)
-    
-        
+	file_path = serializers.SerializerMethodField('get_file_path')
+	
+	class Meta:
+		model = models.Audio
+		fields = MediaPointSerializer.Meta.fields  + ('file_path',)
+		depth = 0
+		
+	def get_file_path(self, obj):
+		return obj.encrypt_url(obj.file_name_new)
+	
+		
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ('url', 'username', 'email', 'groups')
+	class Meta:
+		model = User
+		fields = ('url', 'username', 'email', 'groups')
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Group
-        fields = ('name', )
-        
+	class Meta:
+		model = Group
+		fields = ('name', )
+		
 class ProjectSerializer(BaseSerializer):
-    class Meta:
-        model = models.Project
-        fields = BaseSerializer.Meta.fields + ('owner', 'slug')
-        read_only_fields = ('owner',)
-        depth = 0
-        
+	class Meta:
+		model = models.Project
+		fields = BaseSerializer.Meta.fields + ('owner', 'slug')
+		read_only_fields = ('owner',)
+		depth = 0
+		
 class ProjectDetailSerializer(BaseSerializer):
-    #photos = PhotoSerializer(many=True, read_only=True, source='photo')
-    #audio = AudioSerializer(many=True, read_only=True, source='audio')
-    #markers = MarkerSerializer(many=True, read_only=True, source='marker_set')
-    photos = serializers.SerializerMethodField('get_photos')
-    audio = serializers.SerializerMethodField('get_audio')
-    markers = serializers.SerializerMethodField('get_markers')
-    
-    class Meta:
-        model = models.Project
-        fields = BaseSerializer.Meta.fields + ('slug', 'photos', 'audio', 'markers')
-        depth = 0
-        
-    def get_photos(self, obj):
-        data = PhotoSerializer(
-                models.Photo.objects.get_objects(obj.owner, project=obj)
-            ).data
-        return self.get_children(models.Photo, obj, data)    
-    
-    def get_audio(self, obj):
-        data = AudioSerializer(
-                models.Audio.objects.get_objects(obj.owner, project=obj)
-            ).data
-        return self.get_children(models.Audio, obj, data)
-    
-    def get_markers(self, obj):
-        data = MarkerSerializerCounts(
-                models.Marker.objects.get_objects_with_counts(obj.owner, project=obj)
-            ).data
-        return self.get_children(models.Marker, obj, data)
-    
-    def get_children(self, cls, obj, data):
-        return {
-            'id': cls.model_name_plural,
-            'name': cls.model_name_plural.title(),
-            'overlay_type': cls.model_name,
-            'data': data
-        }
+	#photos = PhotoSerializer(many=True, read_only=True, source='photo')
+	#audio = AudioSerializer(many=True, read_only=True, source='audio')
+	#markers = MarkerSerializer(many=True, read_only=True, source='marker_set')
+	photos = serializers.SerializerMethodField('get_photos')
+	audio = serializers.SerializerMethodField('get_audio')
+	markers = serializers.SerializerMethodField('get_markers')
+	
+	class Meta:
+		model = models.Project
+		fields = BaseSerializer.Meta.fields + ('slug', 'photos', 'audio', 'markers')
+		depth = 0
+		
+	def get_photos(self, obj):
+		data = PhotoSerializer(
+				models.Photo.objects.get_objects(obj.owner, project=obj)
+			).data
+		return self.get_children(models.Photo, obj, data)    
+	
+	def get_audio(self, obj):
+		data = AudioSerializer(
+				models.Audio.objects.get_objects(obj.owner, project=obj)
+			).data
+		return self.get_children(models.Audio, obj, data)
+	
+	def get_markers(self, obj):
+		data = MarkerSerializerCounts(
+				models.Marker.objects.get_objects_with_counts(obj.owner, project=obj)
+			).data
+		return self.get_children(models.Marker, obj, data)
+	
+	def get_children(self, cls, obj, data):
+		return {
+			'id': cls.model_name_plural,
+			'name': cls.model_name_plural.title(),
+			'overlay_type': cls.model_name,
+			'data': data
+		}
  
 class MarkerSerializer(PointSerializer):
-    photos = serializers.SerializerMethodField('get_photos')
-    photo_links = serializers.SerializerMethodField('get_url_photos')
-    audio_links = serializers.SerializerMethodField('get_url_audio')
-    audio = serializers.SerializerMethodField('get_audio')
-    color = fields.ColorField(required=False)
-    point = fields.PointField(widget=widgets.PointWidgetTextbox, required=False)
-    class Meta:
-        model = models.Marker
-        fields = PointSerializer.Meta.fields + \
-            ('photos', 'audio', 'color', 'photo_links', 'audio_links')
-        depth = 0
-        
-    def _get_url_children(self, obj, model_name_plural):
-        return '%s/api/0/%s/%s/%s/' % (settings.SERVER_URL,
-                    self.Meta.model.model_name_plural, obj.id,
-                    model_name_plural)
-        
-    def get_url_photos(self, obj):
-        return self._get_url_children(obj, 'photos')
-    
-    def get_url_audio(self, obj):
-        return self._get_url_children(obj, 'audio') 
-    
-    def serialize_nested_objects(self, id, Serializer, data, cls):
-        serialized = []
-        for item in data:
-            d = Serializer(item).data
-            d.update({
-                'relation': '%s/api/0/%s/%s/%s/%s/' % (settings.SERVER_URL,
-                    'markers', id, cls.model_name_plural, item.id)    
-            })
-            serialized.append(d)
-        return serialized
-        
-    def get_photos(self, obj):
-        return {
-            'id': models.Photo.model_name,
-            'name': models.Photo.model_name_plural.title(),
-            'overlay_type': models.Photo.model_name,
-            'data': self.serialize_nested_objects(obj.id, PhotoSerializer, obj.photos, models.Photo)
-        }
-    
-    def get_audio(self, obj):
-        return {
-            'id': models.Audio.model_name,
-            'name': models.Audio.model_name_plural.title(),
-            'overlay_type': models.Audio.model_name,
-            'data': self.serialize_nested_objects(obj.id, AudioSerializer, obj.audio, models.Audio)
-        }
-    
+	photos = serializers.SerializerMethodField('get_photos')
+	photo_links = serializers.SerializerMethodField('get_url_photos')
+	audio_links = serializers.SerializerMethodField('get_url_audio')
+	audio = serializers.SerializerMethodField('get_audio')
+	color = fields.ColorField(required=False)
+	point = fields.PointField(widget=widgets.PointWidgetTextbox, required=False)
+	class Meta:
+		model = models.Marker
+		fields = PointSerializer.Meta.fields + \
+			('photos', 'audio', 'color', 'photo_links', 'audio_links')
+		depth = 0
+		
+	def _get_url_children(self, obj, model_name_plural):
+		return '%s/api/0/%s/%s/%s/' % (settings.SERVER_URL,
+					self.Meta.model.model_name_plural, obj.id,
+					model_name_plural)
+		
+	def get_url_photos(self, obj):
+		return self._get_url_children(obj, 'photos')
+	
+	def get_url_audio(self, obj):
+		return self._get_url_children(obj, 'audio') 
+	
+	def serialize_nested_objects(self, id, Serializer, data, cls):
+		serialized = []
+		for item in data:
+			d = Serializer(item).data
+			d.update({
+				'relation': '%s/api/0/%s/%s/%s/%s/' % (settings.SERVER_URL,
+					'markers', id, cls.model_name_plural, item.id)    
+			})
+			serialized.append(d)
+		return serialized
+		
+	def get_photos(self, obj):
+		return {
+			'id': models.Photo.model_name,
+			'name': models.Photo.model_name_plural.title(),
+			'overlay_type': models.Photo.model_name,
+			'data': self.serialize_nested_objects(obj.id, PhotoSerializer, obj.photos, models.Photo)
+		}
+	
+	def get_audio(self, obj):
+		return {
+			'id': models.Audio.model_name,
+			'name': models.Audio.model_name_plural.title(),
+			'overlay_type': models.Audio.model_name,
+			'data': self.serialize_nested_objects(obj.id, AudioSerializer, obj.audio, models.Audio)
+		}
+	
 class MarkerSerializerCounts(MarkerSerializer):
-    photo_count = serializers.SerializerMethodField('get_photo_count')
-    audio_count = serializers.SerializerMethodField('get_audio_count')
-    point = fields.PointField(help_text='Assign lat/lng field',
-                              widget=widgets.PointWidgetTextbox,
-                              required=True) 
-    class Meta:
-        model = models.Marker
-        fields = PointSerializer.Meta.fields + ('photo_count', 'audio_count',
-                                    'color', 'photo_links', 'audio_links')
-        depth = 0
-        
-    def get_photo_count(self, obj):
-        try: return obj.photo_count
-        except: return None
-    
-    def get_audio_count(self, obj):
-        try: return obj.audio_count
-        except: return None    
-    
+	photo_count = serializers.SerializerMethodField('get_photo_count')
+	audio_count = serializers.SerializerMethodField('get_audio_count')
+	point = fields.PointField(help_text='Assign lat/lng field',
+							  widget=widgets.PointWidgetTextbox,
+							  required=True) 
+	class Meta:
+		model = models.Marker
+		fields = PointSerializer.Meta.fields + ('photo_count', 'audio_count',
+									'color', 'photo_links', 'audio_links')
+		depth = 0
+		
+	def get_photo_count(self, obj):
+		try: return obj.photo_count
+		except: return None
+	
+	def get_audio_count(self, obj):
+		try: return obj.audio_count
+		except: return None    
+	
 class AssociationSerializer(serializers.ModelSerializer):
-    relation = serializers.SerializerMethodField('get_relation')
-    id = serializers.IntegerField(source="entity_id", required=True)
-        
-    class Meta:
-        model = models.EntityGroupAssociation
-        fields = ('id', 'ordering', 'turned_on', 'relation')
+	relation = serializers.SerializerMethodField('get_relation')
+	id = serializers.IntegerField(source="entity_id", required=True)
+		
+	class Meta:
+		model = models.EntityGroupAssociation
+		fields = ('id', 'ordering', 'turned_on', 'relation')
 
-    def validate(self, attrs):
-        """
-        Ensure that the media being attached is legit
-        """
-        from localground.apps.site.models import Base
-        view = self.context.get('view')
-        id = attrs.get('entity_id') or view.kwargs.get('id')
-        try:
-            id = int(id)
-        except Exception:
-            raise serializers.ValidationError('%s must be a whole number' % id)
-        try:
-            #get access to URL params throught the view
-            cls = Base.get_model(
-                model_name_plural=view.kwargs.get('entity_name_plural')
-            )
-        except:
-            raise serializers.ValidationError(
-                '\"%s\" is not a valid media type' % view.kwargs.get('entity_type')
-            )
-        try:
-            cls.objects.get(id=id)
-        except cls.DoesNotExist:
-            raise serializers.ValidationError('%s #%s does not exist in the system' %
-                        (cls.model_name, id))
-        return attrs
+	def validate(self, attrs):
+		"""
+		Ensure that the media being attached is legit
+		"""
+		from localground.apps.site.models import Base
+		view = self.context.get('view')
+		id = attrs.get('entity_id') or view.kwargs.get('id')
+		try:
+			id = int(id)
+		except Exception:
+			raise serializers.ValidationError('%s must be a whole number' % id)
+		try:
+			#get access to URL params throught the view
+			cls = Base.get_model(
+				model_name_plural=view.kwargs.get('entity_name_plural')
+			)
+		except:
+			raise serializers.ValidationError(
+				'\"%s\" is not a valid media type' % view.kwargs.get('entity_type')
+			)
+		try:
+			cls.objects.get(id=id)
+		except cls.DoesNotExist:
+			raise serializers.ValidationError('%s #%s does not exist in the system' %
+						(cls.model_name, id))
+		return attrs
 
-    def get_relation(self, obj):
-        view = self.context.get('view')
-        return '%s/api/0/%s/%s/%s/%s/' % (settings.SERVER_URL,
-                    view.kwargs.get('group_name_plural'), obj.group_id,
-                    view.kwargs.get('entity_name_plural'), obj.entity_id)
-    
-    
+	def get_relation(self, obj):
+		view = self.context.get('view')
+		return '%s/api/0/%s/%s/%s/%s/' % (settings.SERVER_URL,
+					view.kwargs.get('group_name_plural'), obj.group_id,
+					view.kwargs.get('entity_name_plural'), obj.entity_id)
+	
+	
 class AssociationSerializerDetail(AssociationSerializer):
-    parent = serializers.SerializerMethodField('get_parent')
-    child = serializers.SerializerMethodField('get_child')
-    class Meta:
-        model = models.EntityGroupAssociation
-        fields = ('ordering', 'turned_on', 'parent', 'child')
-        
-    def get_parent(self, obj):
-        view = self.context.get('view')
-        return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
-                    view.kwargs.get('group_name_plural'), obj.group_id)
-    
-    def get_child(self, obj):
-        view = self.context.get('view')
-        return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
-                    view.kwargs.get('entity_name_plural'), obj.entity_id)
+	parent = serializers.SerializerMethodField('get_parent')
+	child = serializers.SerializerMethodField('get_child')
+	class Meta:
+		model = models.EntityGroupAssociation
+		fields = ('ordering', 'turned_on', 'parent', 'child')
+		
+	def get_parent(self, obj):
+		view = self.context.get('view')
+		return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
+					view.kwargs.get('group_name_plural'), obj.group_id)
+	
+	def get_child(self, obj):
+		view = self.context.get('view')
+		return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
+					view.kwargs.get('entity_name_plural'), obj.entity_id)
+	
+
+class PrintSerializer(ExtentsSerializer):
+	pdf = serializers.SerializerMethodField('get_pdf')
+	thumb = serializers.SerializerMethodField('get_thumb')
+	uuid = serializers.SerializerMethodField('get_uuid')
+	instructions = serializers.Field(label='instructions', source='description')
+	title = serializers.Field(label='instructions', source='name')
+	'''
+	orientation:landscape
+	print_type:map_form
+	form_id:-1
+	form_name:Enter table name...
+	map_title:fsdfsdfdsf
+	instructions:fdsfdsfdsfdsf
+	width:726
+	height:770
+	zoom:17
+	center_lng:-122.27138443782042
+	center_lat:37.87271516314582
+	layer_ids:
+	scan_ids:
+	basemap_id:12
+	generate_pdf:on
+	layout:2
+	'''
+	
+	class Meta:
+		model = models.Print
+		fields = ('id', 'uuid', 'title', 'instructions', 'tags', 'overlay_type', 'pdf', 'thumb',
+					'map_width', 'map_height', 'zoom', 'map_provider', 'layout',
+					'northeast', 'southwest', 'center')
+		depth = 0
+		
+	def get_pdf(self, obj):
+		return obj.pdf()
+	
+	def get_thumb(self, obj):
+		return obj.thumb()
+	
+	def get_uuid(self, obj):
+		return obj.uuid
+	
+class WMSOverlaySerializer(serializers.HyperlinkedModelSerializer):
+	
+	class Meta:
+		model = models.WMSOverlay
+		fields = ( 'id', 'name', 'tags', 'overlay_type', 'overlay_source')
+		depth = 0
+
+class LayoutSerializer(serializers.ModelSerializer):
+	
+	class Meta:
+		model = models.Layout
+		fields = ( 'id', 'name', 'display_name')
+		depth = 0
+
+class OverlayTypeSerializer(serializers.ModelSerializer):
+	
+	class Meta:
+		model = models.OverlayType
+		fields = ( 'id', 'name')
+		depth = 0
+		
+class OverlaySourceSerializer(serializers.ModelSerializer):
+	
+	class Meta:
+		model = models.OverlaySource
+		fields = ( 'id', 'name')
+		depth = 0
+

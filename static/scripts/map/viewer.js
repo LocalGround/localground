@@ -321,7 +321,7 @@ localground.viewer.prototype.loadPrintForm = function(opts) {
     if(self.lastProjectSelection != null)
         params.project_id = self.lastProjectSelection;
 
-    var url = 'http://' + document.location.hostname + '/print/generate/'
+    var url = 'http://' + document.location.hostname + '/maps/print/'
     if(opts.iframe) {
         url += 'embed/?' + $.param(params);
     }

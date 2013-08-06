@@ -1,5 +1,7 @@
 from django.contrib.gis.db import models
-from localground.apps.site.models.abstract.audit import BaseAudit 
+from localground.apps.site.models.abstract.audit import BaseAudit
+from localground.apps.site.models.abstract.mixins import ProjectMixin
+
 from tagging_autocomplete.models import TagAutocompleteField
 import base64
 from django.conf import settings
@@ -51,8 +53,35 @@ class BaseMedia(BaseAudit):
     def generate_absolute_path(self):
         return '%s/media/%s/%s' % (settings.USER_MEDIA_ROOT, self.owner.username,
                                                 self.model_name_plural)
+    
+    def absolute_virtual_path(self):
+        return self._encrypt_media_path(self.virtual_path + self.file_name_new)
+        
+    def _encrypt_media_path(self, path, host=None):
+        if host is None:
+            host = self.host
+            #host = 'dev.localground.org' #for debugging
+        from django.http import HttpResponse
+        #return path
+        return 'http://%s/profile/%s/%s/' % (host, self.model_name_plural.replace(' ', '-'), base64.b64encode(path))
+         
+    def encrypt_url(self, file_name):
+        #return self.virtual_path + file_name
+        return self._encrypt_media_path(self.virtual_path + file_name)
+        
+    def make_directory(self, path):
+        from pwd import getpwnam
+        os.makedirs(path) #create new directory
+        #get OS ids:
+        uid = getpwnam(settings.USER_ACCOUNT).pw_uid
+        gid = getpwnam(settings.GROUP_ACCOUNT).pw_gid
+        #os.chown(path, uid, gid);
+        #need to "or" permissions flags together:
+        permissions = stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH
+        os.chmod(path, permissions)
+  
 
-class BaseNamedMedia(BaseMedia):
+class BaseNamedMedia(BaseMedia, ProjectMixin):
     name = models.CharField(max_length=255, blank=True)
     description = models.TextField(null=True, blank=True)
     tags = TagAutocompleteField(blank=True, null=True)
@@ -63,7 +92,6 @@ class BaseNamedMedia(BaseMedia):
         
 class BaseUploadedMedia(BaseNamedMedia):
     file_name_new = models.CharField(max_length=255)
-    project = models.ForeignKey('Project', related_name='%(class)s')
     attribution = models.CharField(max_length=500, blank=True,
                                    null=True, verbose_name="Author / Creator")
     
@@ -91,37 +119,6 @@ class BaseUploadedMedia(BaseNamedMedia):
         abstract = True
         app_label = 'site'
         
-    @classmethod
-    def inline_form(cls):
-        from localground.apps.site.forms import get_inline_media_form
-        return get_inline_media_form(cls)
-        
-    def absolute_virtual_path(self):
-        return self._encrypt_media_path(self.virtual_path + self.file_name_new)
-        
-    def _encrypt_media_path(self, path, host=None):
-        if host is None:
-            host = self.host
-            #host = 'dev.localground.org' #for debugging
-        from django.http import HttpResponse
-        #return path
-        return 'http://%s/profile/%s/%s/' % (host, self.model_name_plural.replace(' ', '-'), base64.b64encode(path))
-         
-    def encrypt_url(self, file_name):
-        #return self.virtual_path + file_name
-        return self._encrypt_media_path(self.virtual_path + file_name)
-        
-    def make_directory(self, path):
-        from pwd import getpwnam
-        os.makedirs(path) #create new directory
-        #get OS ids:
-        uid = getpwnam(settings.USER_ACCOUNT).pw_uid
-        gid = getpwnam(settings.GROUP_ACCOUNT).pw_gid
-        #os.chown(path, uid, gid);
-        #need to "or" permissions flags together:
-        permissions = stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH
-        os.chmod(path, permissions)
-        
     def save_file_to_disk(self, file):
         #create directory if it doesn't exist:
         media_path = self.generate_absolute_path()
@@ -143,7 +140,12 @@ class BaseUploadedMedia(BaseNamedMedia):
             destination.write(chunk)
         destination.close()
         return file_name_new
-    
+        
+    @classmethod
+    def inline_form(cls):
+        from localground.apps.site.forms import get_inline_media_form
+        return get_inline_media_form(cls)
+        
     def get_object_type(self):
         return self._meta.verbose_name
     

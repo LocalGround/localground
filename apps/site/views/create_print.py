@@ -34,8 +34,6 @@ def generate_print(request, is_json=False, project=None, embed=False,
 		#create new form:
 		elif r.get('form_id') == '-1':
 			form = Form.create_new_form(r, request.user)
-			#sql = Form.create_new_form(r, request.user)
-			#return HttpResponse(sql)
 	
 	
 	forms = Form.objects.filter(owner=request.user).order_by('name',)
@@ -94,7 +92,6 @@ def generate_print(request, is_json=False, project=None, embed=False,
 		bbox = (northeast.coords, southwest.coords)
 		bbox = [element for tupl in bbox for element in tupl]
 		extents = Polygon.from_bbox(bbox)
-	  
 		overlay_image = m.get_map(layers, southwest=southwest, northeast=northeast,
 								  scans=scans, height=map_height, width=map_width,
 								  show_north_arrow=True)
@@ -178,6 +175,7 @@ def generate_print(request, is_json=False, project=None, embed=False,
 		if layout.is_data_entry:
 			p = Print()
 			p.uuid = uuID
+			p.project = project
 			p.zoom = zoom
 			p.map_width = map_width
 			p.map_height = map_height
@@ -186,7 +184,7 @@ def generate_print(request, is_json=False, project=None, embed=False,
 			p.map_image_path = 'map.jpg'
 			p.pdf_path = filename
 			p.preview_image_path = 'thumbnail.jpg'
-			p.map_title = map_title
+			p.name = map_title
 			p.description = instructions
 			p.center = center
 			p.northeast = northeast
@@ -205,12 +203,11 @@ def generate_print(request, is_json=False, project=None, embed=False,
 			
 			for l in layers:
 				p.layers.add(l)
-			p.projects.add(project)
 			p.save()
 
 		extras.update({
-			'map': p.thumb(), #'/static/prints/' + uuID + '/thumbnail.jpg',
-			'pdf': p.pdf() #'/static/prints/' + uuID + '/' + filename
+			'map': p.thumb(),
+			'pdf': p.pdf()
 		})
 		
 	extras.update({

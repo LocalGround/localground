@@ -13,18 +13,17 @@ router.register(r'photos', views.PhotoViewSet)
 router.register(r'audio', views.AudioViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
-#router.register(r'markers', views.MarkerViewSet)
+router.register(r'prints', views.PrintViewSet)
+router.register(r'tiles', views.TileViewSet)
+router.register(r'layouts', views.LayoutViewSet)
+router.register(r'overlaytypes', views.OverlayTypeViewSet)
+router.register(r'overlaysources', views.OverlaySourceViewSet)
 
 # The API URLs are now determined automatically by the router.
 # Additionally, we include the login URLs for the browseable API.
 urlpatterns = patterns('',
     url(r'^$', views.api_root),
-    #url(r'^projects/(?P<pk>[0-9]+)/attach/$',
-    #    views.AttachElement.as_view(), name='photos-attach'),
     url(r'^', include(router.urls[1:])), # a hack to include both ViewSets and views on the front page
-    
-        
-    #url(r'^', views.api_root),
 )
 
 urlpatterns += format_suffix_patterns(patterns('',

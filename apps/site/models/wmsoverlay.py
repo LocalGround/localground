@@ -22,6 +22,7 @@ class WMSOverlay(BaseNamed):
         app_label = 'site'
         verbose_name = 'tile'
         verbose_name_plural = 'tiles'
+        ordering = ('id',)
         
     def to_dict(self):
         return {
@@ -39,4 +40,5 @@ class WMSOverlay(BaseNamed):
         }
     
     def __unicode__(self):
-        return self.name
+        return '%s. %s' % (self.id, self.name)
+    

@@ -26,5 +26,13 @@ class IsAllowedGivenProjectPermissionSettings(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:            
             return True
 
-        # Write permissions are only allowed to the owner of the snippet
-        return obj.owner == request.user
+        # If permissions validation needed (set at the Model Class level),
+        # check here:
+        if obj.RESTRICT_BY_PROJECT:
+            return obj.project.owner==request.user or request.user in obj.project.users
+        elif obj.RESTRICT_BY_USER:
+            return obj.owner == request.user or request.user in obj.users
+        else:
+            return True
+    
+    

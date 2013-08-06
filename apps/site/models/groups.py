@@ -24,6 +24,7 @@ class Group(BaseGenericRelations, BasePermissions):
     Abstract class that extends BasePermissions; provides helper methods to
     determine whether a user has read/write/manage permissions on an object.
     """
+    RESTRICT_BY_USER = True
     extents = models.PolygonField(null=True, blank=True)
     slug = models.SlugField(verbose_name="Friendly URL", max_length=100, unique=True, db_index=True,
                                 help_text='A few words, separated by dashes "-", to be used as part of the url')

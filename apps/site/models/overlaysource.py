@@ -1,6 +1,7 @@
+from localground.apps.site.models.abstract.base import Base
 from django.contrib.gis.db import models
 
-class OverlaySource(models.Model):
+class OverlaySource(Base):
     """
     Stores the source of the overlay (Cloudmade, Google, Stamen, locally produced, etc.)
     """
