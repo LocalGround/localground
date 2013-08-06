@@ -42,7 +42,7 @@ class ProjectField(serializers.WritableField):
 	
 class PointField(serializers.WritableField):
 	type_label = 'point'
-	label = 'Point'
+	label = 'point'
 	def field_from_native(self, data, files, field_name, into):
 		try:
 			native = '%s;%s' % (data['lng'], data['lat'])
@@ -53,7 +53,7 @@ class PointField(serializers.WritableField):
 			return
 		try:
 			value = self.to_point(native)
-			into['point'] =  self.to_point(native)
+			into[self.label] =  self.to_point(native)
 		except:
 			raise serializers.ValidationError('Invalid "lat" or "lng" parameter')
 		

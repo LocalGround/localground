@@ -29,19 +29,12 @@ class PointSerializer(BaseSerializer):
 		
 class ExtentsSerializer(BaseSerializer):
 	project_id = fields.ProjectField(label='project_id', source='project', required=False)
-	northeast = fields.PointField(label='northeast', help_text='Assign north (lat) and east (lng) coordinates',
-							  widget=widgets.PointWidgetTextbox,
-							  required=False)
-	southwest = fields.PointField(label='southwest', help_text='Assign south (lat) and west (lng) coordinates',
-							  widget=widgets.PointWidgetTextbox,
-							  required=False)
 	center = fields.PointField(label='center', help_text='Assign lat/lng field',
 							  widget=widgets.PointWidgetTextbox,
 							  required=False)
 
 	class Meta:
-		fields = BaseSerializer.Meta.fields + ('project_id', 'northeast',
-											   'southwest', 'center')
+		fields = BaseSerializer.Meta.fields + ('project_id', 'center')
 		
 class MediaPointSerializer(PointSerializer):
 	file_name = serializers.Field(source='file_name_new')
@@ -285,48 +278,6 @@ class AssociationSerializerDetail(AssociationSerializer):
 		return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
 					view.kwargs.get('entity_name_plural'), obj.entity_id)
 	
-
-class PrintSerializer(ExtentsSerializer):
-	pdf = serializers.SerializerMethodField('get_pdf')
-	thumb = serializers.SerializerMethodField('get_thumb')
-	uuid = serializers.SerializerMethodField('get_uuid')
-	instructions = serializers.Field(label='instructions', source='description')
-	title = serializers.Field(label='instructions', source='name')
-	'''
-	orientation:landscape
-	print_type:map_form
-	form_id:-1
-	form_name:Enter table name...
-	map_title:fsdfsdfdsf
-	instructions:fdsfdsfdsfdsf
-	width:726
-	height:770
-	zoom:17
-	center_lng:-122.27138443782042
-	center_lat:37.87271516314582
-	layer_ids:
-	scan_ids:
-	basemap_id:12
-	generate_pdf:on
-	layout:2
-	'''
-	
-	class Meta:
-		model = models.Print
-		fields = ('id', 'uuid', 'title', 'instructions', 'tags', 'overlay_type', 'pdf', 'thumb',
-					'map_width', 'map_height', 'zoom', 'map_provider', 'layout',
-					'northeast', 'southwest', 'center')
-		depth = 0
-		
-	def get_pdf(self, obj):
-		return obj.pdf()
-	
-	def get_thumb(self, obj):
-		return obj.thumb()
-	
-	def get_uuid(self, obj):
-		return obj.uuid
-	
 class WMSOverlaySerializer(serializers.HyperlinkedModelSerializer):
 	
 	class Meta:
@@ -354,4 +305,29 @@ class OverlaySourceSerializer(serializers.ModelSerializer):
 		model = models.OverlaySource
 		fields = ( 'id', 'name')
 		depth = 0
+
+
+class PrintSerializer(ExtentsSerializer):
+	pdf = serializers.SerializerMethodField('get_pdf')
+	thumb = serializers.SerializerMethodField('get_thumb')
+	uuid = serializers.SerializerMethodField('get_uuid')
+	instructions = serializers.WritableField(label='instructions', source='description')
+	map_title = serializers.WritableField(label='map_title', source='name')
+	
+	class Meta:
+		model = models.Print
+		fields = ('id', 'uuid', 'project_id', 'map_title', 'instructions',
+					'tags', 'overlay_type', 'pdf', 'thumb', 'zoom',
+					'map_provider', 'layout', 'center')
+		depth = 0
+		
+	def get_pdf(self, obj):
+		return obj.pdf()
+	
+	def get_thumb(self, obj):
+		return obj.thumb()
+	
+	def get_uuid(self, obj):
+		return obj.uuid
+	
 

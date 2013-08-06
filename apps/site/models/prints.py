@@ -164,7 +164,7 @@ class Print(BaseExtents, BaseNamedMedia):
 	def generate_print(cls, user, project, layout, map_provider, zoom,
 							center, host, map_title=None, instructions=None,
 							form=None, layer_ids=None, scan_ids=None,
-							has_extra_form_page=False):
+							has_extra_form_page=False, do_save=True):
 		from localground.apps.site import models
 		from localground.apps.lib.helpers import generic, StaticMap, Report
 		import os
@@ -299,11 +299,15 @@ class Print(BaseExtents, BaseNamedMedia):
 			cols = form.get_fields(print_only=True)
 			p.form_column_widths = ','.join([str(c.display_width) for c in cols])
 			p.sorted_field_ids = ','.join([str(c.id) for c in cols])
-		p.save()
+		
+		
+		if do_save:
+			p.save()
 		
 		if layers:
 			for l in layers: p.layers.add(l)
-		p.save()
+		if do_save:
+			p.save()
 		return p
 		
 	
