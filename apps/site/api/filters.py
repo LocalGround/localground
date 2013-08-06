@@ -1,5 +1,5 @@
 from rest_framework import filters
-from localground.apps.site.lib.helpers import QueryParser
+from localground.apps.lib.helpers import QueryParser
 from localground.apps.site import models
 from django.db.models import Q
 from django.template import RequestContext

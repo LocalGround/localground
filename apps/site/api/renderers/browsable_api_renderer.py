@@ -1,7 +1,7 @@
 from django.template import RequestContext, loader
 from rest_framework import renderers, exceptions, parsers, status, VERSION
 from rest_framework.settings import api_settings
-from localground.apps.site.lib.helpers import QueryParser
+from localground.apps.lib.helpers import QueryParser
 
 class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer): 
     

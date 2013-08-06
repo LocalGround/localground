@@ -5,8 +5,8 @@
 
 """SQL formatter"""
 
-from localground.apps.site.lib.sqlparse  import filters
-from localground.apps.site.lib.sqlparse.exceptions import SQLParseError
+from localground.apps.lib.sqlparse  import filters
+from localground.apps.lib.sqlparse.exceptions import SQLParseError
 
 
 def validate_options(options):

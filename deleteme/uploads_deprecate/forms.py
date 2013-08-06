@@ -5,7 +5,7 @@ from localground.apps.uploads.models import Photo, Audio, Video
 class PhotoForm(ModelForm):
     class Meta:
         from django import forms
-        from localground.apps.site.lib.helpers.widgets import PointWidget, PointWidgetHidden, \
+        from localground.apps.lib.helpers.widgets import PointWidget, PointWidgetHidden, \
                                         TagAutocomplete, CustomDateTimeWidget
         model = Photo
         fields = ('id', 'project', 'source_scan', 'name', 'created_timestamp',
@@ -22,7 +22,7 @@ class PhotoForm(ModelForm):
 class AudioForm(PhotoForm):
     class Meta:
         from django import forms
-        from localground.apps.site.lib.helpers.widgets import PointWidget, PointWidgetHidden, \
+        from localground.apps.lib.helpers.widgets import PointWidget, PointWidgetHidden, \
                                             TagAutocomplete, CustomDateTimeWidget
         model = Audio
         fields = ('id', 'project', 'source_scan', 'source_marker', 'name',

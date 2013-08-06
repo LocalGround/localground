@@ -1,7 +1,7 @@
 from django.contrib.gis.db import models
 from django.conf import settings
 from localground.apps.uploads.managers import AudioManager
-from localground.apps.site.lib.helpers.models import PointObject
+from localground.apps.lib.helpers.models import PointObject
 from localground.apps.uploads.models import NamedUpload
 
 class Audio(PointObject, NamedUpload):

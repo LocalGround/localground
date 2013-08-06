@@ -75,7 +75,7 @@ def send_invitation(request):
     functionality (when assigning users to groups).
     """
     import re
-    from localground.apps.site.lib.helpers.emailer import Email
+    from localground.apps.lib.helpers.emailer import Email
     r = request.GET or request.POST
     email_string = r.get('recipients')
     subject = r.get('subject', None)

@@ -36,7 +36,7 @@ class Group(BaseGenericRelations, BasePermissions):
         
     @classmethod
     def filter_fields(cls):
-        from localground.apps.site.lib.helpers import QueryField, FieldTypes
+        from localground.apps.lib.helpers import QueryField, FieldTypes
         return [
             QueryField('name', id='name', title='Name', operator='like'),
             QueryField('description', id='description', title='Description', operator='like'),

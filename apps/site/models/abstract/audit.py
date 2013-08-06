@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 from localground.apps.site.models.abstract.base import Base
-from localground.apps.site.lib.helpers import get_timestamp_no_milliseconds
+from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 
 class BaseAudit(Base):
     owner = models.ForeignKey('auth.User',)
@@ -14,7 +14,7 @@ class BaseAudit(Base):
         
     @classmethod
     def filter_fields(cls):
-        from localground.apps.site.lib.helpers import QueryField, FieldTypes
+        from localground.apps.lib.helpers import QueryField, FieldTypes
         return [
             QueryField('owner__username', id='owned_by', title='Owned By'),
             QueryField('date_created', id='date_created_after', title='After',

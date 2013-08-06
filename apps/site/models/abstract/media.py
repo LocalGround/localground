@@ -99,7 +99,7 @@ class BaseUploadedMedia(BaseNamedMedia):
     def filter_fields(cls):
         #white_list = ()
         #for f in Photo._meta.fields: print '%s: %s: %s' % (f.name, f.verbose_name, f.db_type())
-        from localground.apps.site.lib.helpers import QueryField, FieldTypes
+        from localground.apps.lib.helpers import QueryField, FieldTypes
         #owner, last_updated_by, date_created, time_stamp, file_name_orig, name,
         #description, tags, project, attribution
         return [

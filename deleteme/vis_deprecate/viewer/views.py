@@ -1,7 +1,7 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.http import HttpResponse
-from localground.apps.site.lib.helpers.api.decorators import process_identity, process_project
-from localground.apps.site.lib.helpers.decorators import get_group_if_authorized
+from localground.apps.lib.helpers.api.decorators import process_identity, process_project
+from localground.apps.lib.helpers.decorators import get_group_if_authorized
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.template import RequestContext    

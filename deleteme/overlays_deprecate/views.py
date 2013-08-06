@@ -5,7 +5,7 @@ from django.http import HttpResponse
 import simplejson as json
 from localground.apps.uploads.models import *
 from django.contrib.gis.geos import GEOSGeometry
-from localground.apps.site.lib.helpers.api.decorators import process_identity
+from localground.apps.lib.helpers.api.decorators import process_identity
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 

@@ -15,7 +15,7 @@ from django.http import HttpResponse
 from django.conf import settings
 
 #other:
-from localground.apps.site.lib.helpers.units import Units
+from localground.apps.lib.helpers.units import Units
 
 class Report():
     """

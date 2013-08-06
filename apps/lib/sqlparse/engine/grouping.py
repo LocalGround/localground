@@ -2,8 +2,8 @@
 
 import itertools
 
-from localground.apps.site.lib.sqlparse  import sql
-from localground.apps.site.lib.sqlparse  import tokens as T
+from localground.apps.lib.sqlparse  import sql
+from localground.apps.lib.sqlparse  import tokens as T
 
 try:
     next

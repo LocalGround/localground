@@ -7,7 +7,7 @@ import os, stat
 import base64
 from django.http import Http404
 from django.contrib.contenttypes.models import ContentType
-from localground.apps.site.lib.helpers import classproperty, get_timestamp_no_milliseconds
+from localground.apps.lib.helpers import classproperty, get_timestamp_no_milliseconds
 		
 class Base(models.Model):
 
@@ -91,7 +91,7 @@ class BaseAudit(Base):
         
     @classmethod
     def filter_fields(cls):
-        from localground.apps.site.lib.helpers import QueryField, FieldTypes
+        from localground.apps.lib.helpers import QueryField, FieldTypes
         return [
             QueryField('owner__username', id='owned_by', title='Owned By'),
             QueryField('date_created', id='date_created_after', title='After',
@@ -184,7 +184,7 @@ class BaseUploadedMedia(BaseNamedMedia):
     def filter_fields(cls):
         #white_list = ()
         #for f in Photo._meta.fields: print '%s: %s: %s' % (f.name, f.verbose_name, f.db_type())
-        from localground.apps.site.lib.helpers import QueryField, FieldTypes
+        from localground.apps.lib.helpers import QueryField, FieldTypes
         #owner, last_updated_by, date_created, time_stamp, file_name_orig, name,
         #description, tags, project, attribution
         return [

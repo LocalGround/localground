@@ -60,7 +60,7 @@ class Form(BaseNamed):
     @staticmethod     
     def create_new_form(dictionary, user):
         from django.db import connection, transaction
-        from localground.apps.site.lib.helpers import generic
+        from localground.apps.lib.helpers import generic
         r = dictionary
         ids, alias_dict, type_dict, width_dict = [],{},{},{}
         total_width = 0

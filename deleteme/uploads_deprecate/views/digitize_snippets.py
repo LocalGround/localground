@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from django.http import HttpResponse
-from localground.apps.site.lib.helpers.api.decorators import process_identity, process_project
+from localground.apps.lib.helpers.api.decorators import process_identity, process_project
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from localground.apps.uploads.models import Scan, Audio, Photo, Video, StatusCode

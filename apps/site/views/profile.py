@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from django.http import Http404, HttpResponse
-from localground.apps.site.lib.helpers import prep_paginator, QueryParser
+from localground.apps.lib.helpers import prep_paginator, QueryParser
 from django.template import TemplateDoesNotExist, RequestContext
 from django.shortcuts import render_to_response
 from localground.apps.site.decorators import process_project

@@ -1,6 +1,6 @@
 from django.shortcuts import render_to_response
 from localground.apps.site.models import *
-from localground.apps.site.lib.helpers import generic
+from localground.apps.lib.helpers import generic
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from localground.apps.site.decorators import process_identity, process_project

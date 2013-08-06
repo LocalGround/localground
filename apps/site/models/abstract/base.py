@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 from django.http import Http404
-from localground.apps.site.lib.helpers import classproperty
+from localground.apps.lib.helpers import classproperty
 from django.contrib.contenttypes.models import ContentType
 		
 class Base(models.Model):

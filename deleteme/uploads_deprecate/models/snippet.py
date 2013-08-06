@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 from localground.apps.uploads.managers import SnippetManager
-from localground.apps.site.lib.helpers.models import PointObject
+from localground.apps.lib.helpers.models import PointObject
 from localground.apps.uploads.models import Upload
 
 class Snippet(Upload, PointObject):

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from django.conf import settings
-from localground.apps.site.lib import sqlparse
-from localground.apps.site.lib.sqlparse import tokens as T
-from localground.apps.site.lib.sqlparse.sql import Where, Comparison, Identifier
+from localground.apps.lib import sqlparse
+from localground.apps.lib.sqlparse import tokens as T
+from localground.apps.lib.sqlparse.sql import Where, Comparison, Identifier
 from datetime import datetime
 
 class FieldTypes(object):

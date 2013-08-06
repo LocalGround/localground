@@ -14,9 +14,9 @@ apps = os.path.dirname(site)
 workspace = os.path.dirname(apps)
 sys.path.append(workspace)
 
-from localground.apps.site.lib import sqlparse
-from localground.apps.site.lib.sqlparse import tokens as T
-from localground.apps.site.lib.sqlparse.sql import Where, Comparison, Identifier, Token
+from localground.apps.lib import sqlparse
+from localground.apps.lib.sqlparse import tokens as T
+from localground.apps.lib.sqlparse.sql import Where, Comparison, Identifier, Token
 	
 def remove_whitespaces(tokens):
 	s = []

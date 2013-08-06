@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.contrib.auth.models import User
-from localground.apps.site.lib.helpers.api.decorators import process_identity
+from localground.apps.lib.helpers.api.decorators import process_identity
 import json
 
 @require_http_methods(["GET"])

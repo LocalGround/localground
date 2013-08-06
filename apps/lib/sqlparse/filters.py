@@ -4,13 +4,13 @@ import re
 
 from os.path import abspath, join
 
-from localground.apps.site.lib.sqlparse  import sql, tokens as T
-from localground.apps.site.lib.sqlparse.engine import FilterStack
-from localground.apps.site.lib.sqlparse.lexer import tokenize
-from localground.apps.site.lib.sqlparse.pipeline import Pipeline
-from localground.apps.site.lib.sqlparse.tokens import (Comment, Comparison, Keyword, Name, Punctuation,
+from localground.apps.lib.sqlparse  import sql, tokens as T
+from localground.apps.lib.sqlparse.engine import FilterStack
+from localground.apps.lib.sqlparse.lexer import tokenize
+from localground.apps.lib.sqlparse.pipeline import Pipeline
+from localground.apps.lib.sqlparse.tokens import (Comment, Comparison, Keyword, Name, Punctuation,
                              String, Whitespace)
-from localground.apps.site.lib.sqlparse.utils import memoize_generator
+from localground.apps.lib.sqlparse.utils import memoize_generator
 
 
 # --------------------------

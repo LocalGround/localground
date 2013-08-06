@@ -6,9 +6,9 @@ Created on 17/05/2012
 Several utility functions to extract info from the SQL sentences
 '''
 
-from localground.apps.site.lib.sqlparse.filters import ColumnsSelect, Limit
-from localground.apps.site.lib.sqlparse.pipeline import Pipeline
-from localground.apps.site.lib.sqlparse.tokens import Keyword, Whitespace
+from localground.apps.lib.sqlparse.filters import ColumnsSelect, Limit
+from localground.apps.lib.sqlparse.pipeline import Pipeline
+from localground.apps.lib.sqlparse.tokens import Keyword, Whitespace
 
 
 def getlimit(stream):

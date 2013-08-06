@@ -1,4 +1,4 @@
-from localground.apps.site.lib.sqlparse  import tokens
+from localground.apps.lib.sqlparse  import tokens
 
 KEYWORDS = {
     'ABORT': tokens.Keyword,

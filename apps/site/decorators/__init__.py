@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 import json
 from localground.apps.site.models import Project, View
-#from localground.apps.site.lib import sqlparse
+#from localground.apps.lib import sqlparse
 
 def get_group_if_authorized(function):
     '''
@@ -163,7 +163,7 @@ def process_project(function):
 
 '''
 def parse_filter(function):
-    from localground.apps.site.lib.helpers import QueryParser
+    from localground.apps.lib.helpers import QueryParser
     """
     Needs to be deprecated.  We have a middleware function that does what this
     intended to do.

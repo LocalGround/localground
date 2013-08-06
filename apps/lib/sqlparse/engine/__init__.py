@@ -5,9 +5,9 @@
 
 """filter"""
 
-from localground.apps.site.lib.sqlparse  import lexer
-from localground.apps.site.lib.sqlparse.engine import grouping
-from localground.apps.site.lib.sqlparse.engine.filter import StatementFilter
+from localground.apps.lib.sqlparse  import lexer
+from localground.apps.lib.sqlparse.engine import grouping
+from localground.apps.lib.sqlparse.engine.filter import StatementFilter
 
 # XXX remove this when cleanup is complete
 Filter = object

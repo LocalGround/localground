@@ -5,7 +5,7 @@
 import re
 import sys
 
-from localground.apps.site.lib.sqlparse  import tokens as T
+from localground.apps.lib.sqlparse  import tokens as T
 
 
 class Token(object):

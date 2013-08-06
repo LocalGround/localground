@@ -1,7 +1,7 @@
 from localground.apps.prints.models import Print, Layout, Form, Field, DataType
-from localground.apps.site.lib.helpers.api.decorators import process_identity, process_project
+from localground.apps.lib.helpers.api.decorators import process_identity, process_project
 from django.http import HttpResponse
-from localground.apps.site.lib.helpers import generic
+from localground.apps.lib.helpers import generic
 import simplejson as json
 
 @process_identity

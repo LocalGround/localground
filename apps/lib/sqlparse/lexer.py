@@ -15,8 +15,8 @@
 import re
 import sys
 
-from localground.apps.site.lib.sqlparse  import tokens
-from localground.apps.site.lib.sqlparse.keywords import KEYWORDS, KEYWORDS_COMMON
+from localground.apps.lib.sqlparse  import tokens
+from localground.apps.lib.sqlparse.keywords import KEYWORDS, KEYWORDS_COMMON
 from cStringIO import StringIO
 
 
@@ -217,7 +217,7 @@ class Lexer(object):
         self.filters = []
 
     def add_filter(self, filter_, **options):
-        from localground.apps.site.lib.sqlparse.filters import Filter
+        from localground.apps.lib.sqlparse.filters import Filter
         if not isinstance(filter_, Filter):
             filter_ = filter_(**options)
         self.filters.append(filter_)

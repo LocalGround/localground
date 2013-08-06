@@ -10,12 +10,12 @@ __version__ = '0.1.8-dev'
 
 
 # Setup namespace
-from localground.apps.site.lib.sqlparse  import engine
-from localground.apps.site.lib.sqlparse  import filters
-from localground.apps.site.lib.sqlparse  import formatter
+from localground.apps.lib.sqlparse  import engine
+from localground.apps.lib.sqlparse  import filters
+from localground.apps.lib.sqlparse  import formatter
 
 # Deprecated in 0.1.5. Will be removed in 0.2.0
-from localground.apps.site.lib.sqlparse.exceptions import SQLParseError
+from localground.apps.lib.sqlparse.exceptions import SQLParseError
 
 
 def parse(sql, encoding=None):
@@ -70,7 +70,7 @@ def split(sql, encoding=None):
     return [unicode(stmt).strip() for stmt in stack.run(sql, encoding)]
 
 
-from localground.apps.site.lib.sqlparse.engine.filter import StatementFilter
+from localground.apps.lib.sqlparse.engine.filter import StatementFilter
 
 
 def split2(stream):

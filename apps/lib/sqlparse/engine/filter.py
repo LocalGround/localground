@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from localground.apps.site.lib.sqlparse.sql import Statement, Token
-from localground.apps.site.lib.sqlparse  import tokens as T
+from localground.apps.lib.sqlparse.sql import Statement, Token
+from localground.apps.lib.sqlparse  import tokens as T
 
 
 class StatementFilter:

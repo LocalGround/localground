@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from django.http import Http404, HttpResponseBadRequest, HttpResponse
 from rest_framework import status, exceptions
-from localground.apps.site.lib.helpers import get_timestamp_no_milliseconds
+from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from rest_framework.utils.formatting import get_view_name, get_view_description
 
 

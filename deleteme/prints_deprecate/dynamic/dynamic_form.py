@@ -1,4 +1,4 @@
-from localground.apps.site.lib.helpers.widgets import SnippetWidget, CustomDateTimeWidget
+from localground.apps.lib.helpers.widgets import SnippetWidget, CustomDateTimeWidget
 from django import forms
 from django.forms import widgets
 from django.utils.safestring import mark_safe
