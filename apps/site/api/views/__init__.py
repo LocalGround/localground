@@ -9,11 +9,11 @@ from localground.apps.site.api.filters import SQLFilterBackend
 from localground.apps.site import models
 from django.contrib.auth.models import User, Group
 
-from localground.apps.site.api.views.abstract import AuditCreate, AuditUpdate
-from localground.apps.site.api.views.prints import PrintList, PrintInstance, LayoutViewSet
-from localground.apps.site.api.views.projects import ProjectList, ProjectInstance
-from localground.apps.site.api.views.markers import MarkerList, MarkerInstance
-from localground.apps.site.api.views.associations \
+from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
+from localground.apps.site.api.views.print_views import PrintList, PrintInstance, LayoutViewSet
+from localground.apps.site.api.views.project_views import ProjectList, ProjectInstance
+from localground.apps.site.api.views.marker_views import MarkerList, MarkerInstance
+from localground.apps.site.api.views.association_views \
 					import RelatedMediaList, RelatedMediaInstance
 
 @api_view(('GET',))

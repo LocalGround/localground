@@ -1,6 +1,6 @@
 from rest_framework import generics
 from localground.apps.site.api import serializers, filters
-from localground.apps.site.api.views.abstract import AuditCreate, AuditUpdate
+from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
 from localground.apps.site import models
 
 class ProjectList(generics.ListCreateAPIView, AuditCreate):
