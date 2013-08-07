@@ -14,6 +14,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
 	instructions = serializers.WritableField(label='instructions', source='description', blank=True, widget=widgets.Textarea)
 	map_title = serializers.WritableField(label='map_title', source='name', blank=True)
 	tags = fields.TagField(label='tags', required=False, widget=TagAutocomplete, help_text='Tag your object here')
+	edit_url = serializers.SerializerMethodField('get_configuration_url')
 	
 	def get_pdf(self, obj):
 		return obj.pdf()
@@ -24,8 +25,15 @@ class PrintSerializerMixin(serializers.ModelSerializer):
 	def get_uuid(self, obj):
 		return obj.uuid
 	
+	def get_configuration_url(self, obj):
+		return obj.configuration_url
+	
 	class Meta:
 		abstract = True
+		fields = ('id', 'uuid', 'project_id', 'map_title', 'instructions',
+					'tags', 'pdf', 'thumb', 'zoom', 'map_provider', 'map_provider_url',
+					'layout', 'layout_url', 'center', 'overlay_type', 'edit_url')
+		
 	
 
 class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
@@ -34,25 +42,20 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
 	
 	class Meta:
 		model = models.Print
-		fields = ('id', 'uuid', 'project_id', 'map_title', 'instructions',
-					'tags', 'overlay_type', 'pdf', 'thumb', 'zoom', 'map_provider',
-					'map_provider_url', 'layout', 'layout_url', 'center')
+		fields = PrintSerializerMixin.Meta.fields
 		fields_read_only = ('id', 'uuid')
 		depth = 0
 		
 
-
-class PrintSerializerDetail(serializers.HyperlinkedModelSerializer, PrintSerializerMixin):
+class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
 	center = serializers.SerializerMethodField('get_center')
 	layout = serializers.SerializerMethodField('get_layout')
 	map_provider = serializers.SerializerMethodField('get_map_provider')
+	project_id = serializers.SerializerMethodField('get_project')
 	
 	class Meta:
 		model = models.Print
-		fields = ('id', 'uuid', 'map_title', 'instructions',
-					'tags', 'pdf', 'thumb', 'zoom', 'map_provider', 'map_provider_url',
-					'layout', 'layout_url', 'center')
-		
+		fields = PrintSerializerMixin.Meta.fields
 		read_only_fields = ('zoom',)
 		depth = 0
 		
@@ -68,5 +71,8 @@ class PrintSerializerDetail(serializers.HyperlinkedModelSerializer, PrintSeriali
 	
 	def get_layout(self, obj):
 		return obj.layout.id
+	
+	def get_project(self, obj):
+		return obj.project.id
 	
 	

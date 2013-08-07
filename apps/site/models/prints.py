@@ -1,14 +1,19 @@
 from django.contrib.gis.db import models   
 from localground.apps.site.managers import PrintManager
 from django.conf import settings
-from localground.apps.site.models.abstract.media import BaseNamedMedia
+from localground.apps.site.models.abstract.media import BaseMedia
+from localground.apps.site.models.abstract.mixins import ProjectMixin
 from localground.apps.site.models.abstract.geometry import BaseExtents
 import Image
+from tagging_autocomplete.models import TagAutocompleteField
 from django.contrib.gis.geos import Polygon
 
 												   
-class Print(BaseExtents, BaseNamedMedia):
+class Print(BaseExtents, BaseMedia, ProjectMixin):
 	uuid = models.CharField(unique=True, max_length=8)
+	name = models.CharField(max_length=255, blank=True, verbose_name="Map Title")
+	description = models.TextField(null=True, blank=True, verbose_name="Instructions")
+	tags = TagAutocompleteField(blank=True, null=True)
 	map_provider = models.ForeignKey('WMSOverlay',
 							db_column='fk_provider', related_name='prints_print_wmsoverlays')
 	layout = models.ForeignKey('Layout')
@@ -39,6 +44,22 @@ class Print(BaseExtents, BaseNamedMedia):
 										data_type=FieldTypes.DATE, operator='<=')
 		]
 	
+	@classmethod
+	def inline_form(cls):
+		from django import forms
+		class PrintInlineForm(forms.ModelForm):
+			class Meta:
+				from localground.apps.site.widgets import TagAutocomplete
+				model = cls
+				fields = ('name', 'description', 'tags')
+				widgets = {
+					'id': forms.HiddenInput,
+					#'name': forms.Textarea(attrs={'rows': 3}), #any valid html attributes as attrs
+					'description': forms.Textarea(attrs={'rows': 3}), #any valid html attributes as attrs
+					'tags': TagAutocomplete()
+				}
+		return PrintInlineForm
+	
 	def get_form_column_widths(self):
 		if self.form_column_widths is None or len(self.form_column_widths) == 0:
 			return []
@@ -59,9 +80,6 @@ class Print(BaseExtents, BaseNamedMedia):
 						f.display_width = widths[i]
 						fields_sorted.append(f)
 			return fields_sorted                
-	
-	def name(self):
-		return self.map_title
 		
 	def get_abs_directory_path(self):
 		return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
@@ -72,6 +90,19 @@ class Print(BaseExtents, BaseNamedMedia):
 	def generate_relative_path(self):
 		return '/%s/%s/%s/' % (settings.USER_MEDIA_DIR,
 									 self._meta.verbose_name_plural, self.uuid)
+	
+	def configuration_url(self):
+		import urllib
+		data = urllib.urlencode({
+			'center_lat': self.center.y,
+			'center_lng': self.center.x,
+			'zoom': self.zoom,
+			'map_provider': self.map_provider.id,
+			'project_id': self.project.id,
+			'map_title': self.name,
+			'instructions': self.description
+		})
+		return 'http://' + self.host + '/maps/print/?' + data
 		
 	def thumb(self):
 		path = '%s%s' % (self.virtual_path, self.preview_image_path)
