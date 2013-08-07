@@ -6,8 +6,6 @@ from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 from django.conf import settings
 
-
-
 class MarkerSerializer(PointSerializer):
 	photos = serializers.SerializerMethodField('get_photos')
 	photo_links = serializers.SerializerMethodField('get_url_photos')

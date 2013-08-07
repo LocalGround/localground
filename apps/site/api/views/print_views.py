@@ -49,7 +49,7 @@ class PrintList(generics.ListCreateAPIView, AuditCreate):
 		
 class PrintInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
 	queryset = models.Print.objects.select_related('project', 'layout', 'map_provider').all()
-	serializer_class = serializers.PrintSerializer
+	serializer_class = serializers.PrintSerializerDetail
 	
 	def pre_save(self, obj):
 		AuditUpdate.pre_save(self, obj)
