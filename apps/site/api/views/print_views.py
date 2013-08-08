@@ -32,20 +32,6 @@ class PrintList(generics.ListCreateAPIView, AuditCreate):
 		#(this may be unsafe):
 		for f in p._meta.fields:
 			obj.__dict__[f.name] = getattr(p, f.name)
-			
-		'''
-		obj.uuid = p.uuid
-		obj.extents = p.extents
-		obj.northeast = p.northeast
-		obj.southwest = p.southwest
-		obj.virtual_path = p.virtual_path
-		obj.host = p.host
-		obj.map_image_path = p.map_image_path 
-		obj.pdf_path = p.pdf_path
-		obj.preview_image_path = p.preview_image_path
-		obj.map_width = p.map_width
-		obj.map_height = p.map_height
-		'''
 		
 class PrintInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
 	queryset = models.Print.objects.select_related('project', 'layout', 'map_provider').all()

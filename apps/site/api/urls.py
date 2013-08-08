@@ -9,8 +9,8 @@ entities = ['audio', 'photos', 'map-images']
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
-router.register(r'photos', views.PhotoViewSet)
 router.register(r'audio', views.AudioViewSet)
+router.register(r'photos', views.PhotoViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 #router.register(r'prints', views.PrintViewSet)
@@ -34,7 +34,9 @@ urlpatterns += format_suffix_patterns(patterns('',
 	url(r'^markers/(?P<pk>[0-9]+)/$', views.MarkerInstance.as_view(), name='marker-detail'),
 	url(r'^markers/$', views.MarkerList.as_view(), name='marker-list'),
 	url(r'^prints/(?P<pk>[0-9]+)/$', views.PrintInstance.as_view(), name='print-detail'),
-	url(r'^prints/$', views.PrintList.as_view(), name='print-list')
+	url(r'^prints/$', views.PrintList.as_view(), name='print-list'),
+	url(r'^forms/(?P<pk>[0-9]+)/$', views.FormInstance.as_view(), name='form-detail'),
+	url(r'^forms/$', views.FormList.as_view(), name='form-list')
 ))
 
 

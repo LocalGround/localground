@@ -15,6 +15,7 @@ from localground.apps.site.api.views.project_views import ProjectList, ProjectIn
 from localground.apps.site.api.views.marker_views import MarkerList, MarkerInstance
 from localground.apps.site.api.views.association_views \
 					import RelatedMediaList, RelatedMediaInstance
+from localground.apps.site.api.views.form_views import FormList, FormInstance
 
 @api_view(('GET',))
 #@permission_classes((permissions.IsAuthenticated, IsAllowedGivenProjectPermissionSettings, ))
@@ -22,6 +23,7 @@ def api_root(request, format=None, **kwargs):
 	from django.utils.datastructures import SortedDict
 	d = SortedDict()
 	d['audio'] = reverse('audio-list', request=request, format=format)
+	d['forms'] = reverse('form-list', request=request, format=format)
 	d['groups'] = reverse('group-list', request=request, format=format)
 	d['layouts'] = reverse('layout-list', request=request, format=format)
 	d['markers'] = reverse('marker-list', request=request, format=format)

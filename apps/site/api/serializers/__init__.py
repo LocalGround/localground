@@ -10,6 +10,7 @@ from localground.apps.site.api.serializers.marker_serializer import MarkerSerial
 from localground.apps.site.api.serializers.association_serializer import AssociationSerializer, AssociationSerializerDetail
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
+from localground.apps.site.api.serializers.form_serializer import FormSerializer
 from localground.apps.site.api.serializers.print_serializer import PrintSerializer, PrintSerializerDetail
 		
 class UserSerializer(serializers.HyperlinkedModelSerializer):

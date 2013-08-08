@@ -1,5 +1,6 @@
 # import tests to run within this module
 from localground.apps.site.api.tests.association_tests import *
+from localground.apps.site.api.tests.form_tests import *
 from localground.apps.site.api.tests.homepage_tests import *
 from localground.apps.site.api.tests.marker_tests import *
 from localground.apps.site.api.tests.print_tests import *

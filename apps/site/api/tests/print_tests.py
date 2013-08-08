@@ -27,7 +27,7 @@ class ApiPrintListTest(test.TestCase, ViewMixin):
 	def test_create_print_using_post(self, **kwargs):
 		lat, lng = 54.16, 60.4
 		map_title = 'A Map Title'
-		instructions = 'Some nstructions.'
+		instructions = 'Some instructions.'
 		layout = 1
 		map_provider = 1
 		zoom = 17
@@ -62,25 +62,6 @@ class ApiPrintListTest(test.TestCase, ViewMixin):
 
 
 class ApiPrintInstanceTest(test.TestCase, ViewMixin):
-	def create_print(self):
-		from django.contrib.gis.geos import Point
-		p = models.Print.generate_print(
-			self.user,
-			self.project,
-			models.Layout.objects.get(id=1),
-			models.WMSOverlay.objects.get(id=1),
-			17,
-			Point(61.4, 55, srid=4326),
-			'http://localground.stage',
-			map_title='A title',
-			instructions='A description',
-			form=None,
-			layer_ids=None,
-			scan_ids=None,
-			has_extra_form_page=False,
-			do_save=True
-		)
-		return p
 	
 	def setUp(self):
 		ViewMixin.setUp(self)

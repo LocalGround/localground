@@ -188,7 +188,7 @@ def delete_batch(request, object_type_plural):
             g.delete()
             num_deletes = num_deletes+1
             
-    message = message + '%s %s(s) were deleted.' % (num_deletes, ModelClass.name)
+    message = message + '%s %s(s) were deleted.' % (num_deletes, ModelClass.model_name)
     return HttpResponse(json.dumps({'message': message }))
  
 @login_required()
@@ -320,7 +320,7 @@ def create_update_group_with_sharing(request, action, object_type_plural, object
         'formset': formset,
         'prefix': prefix,
         'group_object': group_object,
-        'object_name': ModelClass.name,
+        'object_name': ModelClass.model_name,
         'parent_id': object_id,
         'show_hidden_fields': True,
         'base_template': base_template,
@@ -333,7 +333,7 @@ def create_update_group_with_sharing(request, action, object_type_plural, object
     if (r.get('success', 'false') in ['1', 'true', 'True']):
         extras.update({
             'success': True,
-            'message': 'The %s information was successfully updated.' % ModelClass.name
+            'message': 'The %s information was successfully updated.' % ModelClass.model_name
         })
     return render_to_response(template, extras,
         context_instance=RequestContext(request))

@@ -81,7 +81,41 @@ class ModelMixin(object):
 	
 	def get_marker(self, marker_id=1):
 		return models.Marker.objects.get(id=marker_id)
-
+	
+	def create_print(self, layout_id=1, map_provider=1,
+					 lat=55, lng=61.4, zoom=17,
+					 map_title='A title',
+					 instructions='A description'):
+		from django.contrib.gis.geos import Point
+		p = models.Print.generate_print(
+			self.user,
+			self.project,
+			models.Layout.objects.get(id=layout_id),
+			models.WMSOverlay.objects.get(id=map_provider),
+			zoom,
+			Point(lng, lat, srid=4326),
+			'http://localground.stage',
+			map_title=map_title,
+			instructions=instructions,
+			form=None,
+			layer_ids=None,
+			scan_ids=None,
+			has_extra_form_page=False,
+			do_save=True
+		)
+		return p
+	
+	def create_form(self, name='A title',
+					 description='A description'):
+		from django.contrib.gis.geos import Point
+		f = models.Form(
+			owner=self.user,
+			name=name,
+			description=description,
+			last_updated_by=self.user
+		)
+		f.save()
+		return f
 
 class ViewMixin(ModelMixin):
 	fixtures = ['initial_data.json', 'test_data.json']
