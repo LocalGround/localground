@@ -3349,6 +3349,11 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
   border-radius: 4px;
 }
 
+.typeahead.loading
+{
+    background:url('/static/images/ajax-loader-small.gif') no-repeat right center;
+}
+
 /* Images */
 .img-polaroid {
   padding: 4px;

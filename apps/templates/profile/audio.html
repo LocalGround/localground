@@ -125,14 +125,5 @@
 {% endblock %}
 
 {% block no_objects %}
-	<div class="hero-unit">
-		<p>
-			{% if projects|length > 0 and selected_project != None %}
-				Your project, <em>{{selected_project}}</em>, does not have
-				any {{object_type}} files.
-			{% else %}
-				You do not have any {{object_type}} files.
-			{% endif %}
-		</p>
-	</div>
+	{{ block.super }}
 {% endblock %}

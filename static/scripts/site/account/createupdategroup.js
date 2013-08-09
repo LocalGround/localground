@@ -124,19 +124,31 @@ localground.permissions.prototype.replaceWithAutocomplete = function($elem) {
     $input_old.remove();
     
     // 2) attach auto-complete functionality (using jquery ui):
-    $('.typeahead').typeahead({
-        source: function (query, process) {
-            return $.getJSON(
-                '/profile/get-contacts/json/',
-                { query: query },
-                function (data) {
-                    var newData = [];
-                    $.each(data, function(){
-                        newData.push(this.label);
+    $('.typeahead').each(function() {
+        var $this = $(this);
+        $this.typeahead({
+            source: function (query, process) {
+                $this.addClass('loading');
+                return $.getJSON(
+                    '/profile/get-contacts/json/',
+                    { query: query },
+                    function (data) {
+                        var newData = [];
+                        $.each(data, function(){
+                            newData.push(this.label);
+                        });
+                        process(newData);
+                        //scroll the scrollbar:
+                        var container = $('body');
+                        var scrollTo = $this;
+                        container.animate({
+                            scrollTop: scrollTo.offset().top - 120
+                        });
+                        $this.removeClass('loading');
+                        return 
                     });
-                    return process(newData);
-                });
-        }
+            }
+        });
     });
 };
 

@@ -25,6 +25,12 @@
 	{% if embed %}
 		body {
 			padding-top: 0px !important;
+			padding-right: 10px !important;
+		}
+	{% else %}
+		body {
+			padding-right: 40px !important;
+			padding-left: 40px !important;
 		}
 	{% endif %}
 {% endblock %}
@@ -110,6 +116,8 @@
 			<div class="clearfix">
                 <input type="submit" value="Save Changes" class="btn primary" />
             </div>
+		{% else %}
+			<br><br><br><br><br><br><br><br>	
 		{% endif %}
 		</p>
 	</form>

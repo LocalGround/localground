@@ -300,10 +300,12 @@ def create_update_group_with_sharing(request, action, object_type_plural, object
             # update permissions) so that form doesn't post twice:
             #url = '{0}{1}/?success=true'.format(request.path, group_object.id)
             #url = url.replace('create', 'update') #create URL should redirect to update URL
+            url = group_object.update_url()
             if action == 'share':
-                url = group_object.share_url() + 'embed/?success=true'
-            else:
-                url = group_object.update_url() + 'embed/?success=true'
+                url = group_object.share_url()
+            if embed:
+                url += 'embed/'
+            url += '?success=true'
             return HttpResponseRedirect(url)
         else:
             extras.update({

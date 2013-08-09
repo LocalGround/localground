@@ -61,33 +61,33 @@
 			</td>
 			<td>
 				<div class="thin">
-					<label>ID:</label><div class="input blue">{{ form.instance.id }}</div>
+					<label>ID:</label><div class="input">{{ form.instance.id }}</div>
 				</div>
 				<div class="thin">
 					<label>Last Updated:</label>
-					<div class="input blue">
+					<div class="input">
 						on {{form.instance.time_stamp|date:"n/j/Y P" }}<br />
 						by {{ form.instance.last_updated_by}}
 					</div>
 				</div>
 				<div class="thin">
-					<label>Project:</label><div class="input blue">{{ form.instance.project.name }}</div>
+					<label>Project:</label><div class="input">{{ form.instance.project.name }}</div>
 				</div>
 				<div class="thin">
-					<label>Owned by:</label><div class="input blue">{{  form.instance.owner }}</div>
+					<label>Owned by:</label><div class="input">{{  form.instance.owner }}</div>
 				</div>
 				{% if form.instance.source_scan %}
 					<div class="thin">
-						<label>Map Image:</label><div class="input blue">{{ form.instance.source_scan.name }}</div>
+						<label>Map Image:</label><div class="input">{{ form.instance.source_scan.name }}</div>
 					</div>
 				{% endif %}
 				{% if form.instance.source_marker %}
 					<div class="thin">
-						<label>Marker:</label><div class="input blue">{{ form.instance.source_marker.get_name }}</div>
+						<label>Marker:</label><div class="input">{{ form.instance.source_marker.get_name }}</div>
 					</div>
 				{% endif %}
 				<div class="thin">
-					<label>Coordinates:</label><div class="input blue">{{ form.instance.display_coords }}</div>
+					<label>Coordinates:</label><div class="input">{{ form.instance.display_coords }}</div>
 				</div>
 			</td>
 		</tr>

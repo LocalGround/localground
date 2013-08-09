@@ -66,7 +66,8 @@ ui.dialog.prototype.getModal = function() {
                 $('<div class="modal-header"></div>').append(
                     $('<a href="#" class="close">&times;</a>')
                         .click(function() {
-                            me.hide(); 
+                            me.hide();
+                            me.closeExtras();
                         })
                 ).append(
                     $('<h3></h3>').html(this.title) 
@@ -78,6 +79,7 @@ ui.dialog.prototype.getModal = function() {
                     .css({'margin-right': 10})
                     .click(function() {
                         me.hide(); 
+                        me.closeExtras();
                     }));    
         }
         $modal.append($('<div class="modal-body" style="min-height: ' + this.minHeight + '"></div>'));
@@ -90,7 +92,8 @@ ui.dialog.prototype.getModal = function() {
         }
         $('body').append($modal);
         $modal.find('.hide').click(function(){
-            me.hide();     
+            me.hide();    
+            me.closeExtras(); 
         });
         
         //add an update / save button:
@@ -155,10 +158,11 @@ ui.dialog.prototype.getIframe = function() {
                 'visibility': 'visible'
             });
             var is_success = (
-                $('#the_frame').contents().find('.alert-message.success').get(0) != null
+                $('#the_frame').contents().find('#success-message-text').html().length > 20
             );
-            if(is_success)
+            if(is_success) {
                 me.$modal.find('.hide').html('Done');
+            }
             $('#loading-image').remove();
         });  
 };
