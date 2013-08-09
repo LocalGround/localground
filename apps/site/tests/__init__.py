@@ -43,8 +43,8 @@ class ModelMixin(object):
 			self._project = self.get_project()
 		return self._project
 	
-	def create_user(self):
-		return User.objects.create_user('tester',
+	def create_user(self, username='tester'):
+		return User.objects.create_user(username,
 			first_name='test', email='', password=self.user_password
 		)
 	

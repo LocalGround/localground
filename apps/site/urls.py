@@ -59,9 +59,9 @@ urlpatterns = patterns('',
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	# 3) Update:
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	(r'^profile/(?P<object_type_plural>projects|views)/(?P<action>update|share)/(?P<object_id>\d+)/embed/$', 'localground.apps.site.views.profile.create_update_group_with_sharing', { 'embed': True }),
-	(r'^profile/(?P<object_type_plural>projects|views)/(?P<action>update|share)/(?P<object_id>\d+)/$', 'localground.apps.site.views.profile.create_update_group_with_sharing'),
-  
+	(r'^profile/(?P<object_type_plural>projects|views)/(?P<object_id>\d+)/(?P<action>update|share)/embed/$', 'localground.apps.site.views.profile.create_update_group_with_sharing', { 'embed': True }),
+	(r'^profile/(?P<object_type_plural>projects|views)/(?P<object_id>\d+)/(?P<action>update|share)/$', 'localground.apps.site.views.profile.create_update_group_with_sharing'),
+
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	# 4) Delete
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

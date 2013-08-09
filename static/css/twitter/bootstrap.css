@@ -2108,6 +2108,7 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
   top: -2px;
   right: -21px;
   line-height: 20px;
+  float: right !important;
 }
 
 .alert-success {

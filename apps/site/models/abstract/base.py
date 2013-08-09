@@ -61,10 +61,11 @@ class Base(models.Model):
 		return '/profile/{0}/create/'.format(cls.model_name_plural)
 
 	def update_url(self):
-		return '/profile/{0}/update/{1}/'.format(self.model_name_plural, self.id)
+		return '/profile/{0}/{1}/update/'.format(self.model_name_plural, self.id)
 		
 	def delete_url(self):
-		return '/profile/{0}/delete/{1}/'.format(self.model_name_plural, self.id)
+		#use the API to delete:
+		return '/api/0/{0}/{1}/'.format(self.model_name_plural, self.id)
 	
 	@classmethod
 	def get_content_type(cls):

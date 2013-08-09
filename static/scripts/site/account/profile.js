@@ -9,6 +9,8 @@ localground.profile = function(){
 	this.deleteModal = null;
 	this.noSelectionModal = null;
 	this.imageModal = null;
+	this.object_type = null;
+	this.object_type_plural = null;
 };
 
 localground.profile.prototype = new localground.base(); // inherits from base 
@@ -18,6 +20,7 @@ localground.profile.prototype.initialize = function(opts) {
     localground.base.prototype.initialize.call(this, opts);
 	if(opts) {
         $.extend(this, opts);
+		this.objectName = this.object_type
     }
     var filtermenu = new ui.filtermenu({
 	object_type: self.object_type,

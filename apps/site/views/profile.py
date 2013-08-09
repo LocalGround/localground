@@ -73,10 +73,7 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
                               context_instance = RequestContext( request))
 
 
-
-
-
-@login_required
+@login_required()
 def object_list_form(request, object_type_plural, return_message=None):
     context = RequestContext(request)
     ModelClass = Base.get_model(model_name_plural=object_type_plural)
@@ -193,7 +190,7 @@ def delete_batch(request, object_type_plural):
  
 @login_required()
 def create_update_group_with_sharing(request, action, object_type_plural, object_id=None,
-                          embed=False, template='account/create_update_group.html',
+                          embed=False, template='profile/create_update_group.html',
                           base_template='base/base.html'):
     
     '''
@@ -303,13 +300,16 @@ def create_update_group_with_sharing(request, action, object_type_plural, object
             # update permissions) so that form doesn't post twice:
             #url = '{0}{1}/?success=true'.format(request.path, group_object.id)
             #url = url.replace('create', 'update') #create URL should redirect to update URL
-            url = group_object.update_url() + 'embed/?success=true'
+            if action == 'share':
+                url = group_object.share_url() + 'embed/?success=true'
+            else:
+                url = group_object.update_url() + 'embed/?success=true'
             return HttpResponseRedirect(url)
         else:
             extras.update({
                 'success': False,
                 'error_message': 'There were errors when updating the %s information.  \
-                                Please review message(s) below.' %  ModelClass.name
+                                Please review message(s) below.' %  ModelClass.model_name
             })
     else:
         form = GroupForm(instance=group_object)
