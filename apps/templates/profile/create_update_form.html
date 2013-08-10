@@ -64,7 +64,7 @@
 	<form id="the_form" method="post" action="." {% if embed %}class="embed"{% endif %}>
 		{% csrf_token %}
 		
-		<h3>{{ object_name|capfirst }} Access</h3>
+		<h3>{{ object_name|capfirst }} Description</h3>
 		{% if form.instance.pk %}
 			<input type="hidden" name="id" value="{{ form.instance.pk }}" />
 			<!-- id_name field to populate slugs -->
@@ -72,12 +72,13 @@
 		{% endif %}
 		{% include "includes/forms/generic_form_renderer.html" %}
 		
-		<h3>User Access</h3>
+		<h3>Fields</h3>
 		<table id="tbl">
 			<thead>
 				<tr>
-					<th>User</th>
-					<th>Role</th>
+					<th>Column Name</th>
+					<th>Data Type</th>
+					<th>Printable?</th>
 					<th style="display:none;">Hidden Fields</th>
 					<th style="width: 10px;">&nbsp;</th>
 				</tr>	
@@ -93,6 +94,7 @@
 						{{ form.authority }}
 						{{ form.authority.errors }}
 					</td>
+					<td>CHECKBOX</td> 
 					<td style="display:none;">
 						{% if form.instance.pk %}
 							{{ form.id }}
@@ -106,19 +108,15 @@
 		</table>
 		<div id="user-share-div" class="well">
 			<button class="btn success add-row" style="float:right;">
-				Add Users
+				Add Column
 			</button>
-			In addition to the project's privacy settings, you can also
-			share this project with specific Local Ground users.
 		</div>
 		{{ formset.management_form }}
 		{% if not embed %}
 			{% comment %} only show submit button if not in an iframe {% endcomment %}
 			<div class="clearfix">
                 <input type="submit" value="Save Changes" class="btn primary" />
-            </div>
-		{% else %}
-			<br><br><br><br><br><br><br><br>	
+            </div>	
 		{% endif %}
 		</p>
 	</form>

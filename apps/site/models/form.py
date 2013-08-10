@@ -17,6 +17,11 @@ class Form(BaseNamed):
 		app_label = 'site'
 		verbose_name = 'form'
 		verbose_name_plural = 'forms'
+		
+	@classmethod
+	def inline_form(cls):
+		from localground.apps.site.forms import get_inline_form_with_tags
+		return get_inline_form_with_tags(cls)
 	
 	@property
 	def TableModel(self):

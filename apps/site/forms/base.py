@@ -48,3 +48,17 @@ def get_inline_form(cls):
                 'description': forms.Textarea(attrs={'rows': 3})
             }
     return InlineForm
+
+def get_inline_form_with_tags(cls):
+    from localground.apps.site.widgets import TagAutocomplete
+    class InlineForm(ModelForm):
+        class Meta:
+            from django import forms
+            model = cls
+            fields = ('name', 'description', 'tags')
+            widgets = {
+                'id': forms.HiddenInput,
+                'description': forms.Textarea(attrs={'rows': 3}),
+                'tags': TagAutocomplete()
+            }
+    return InlineForm

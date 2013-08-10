@@ -7,7 +7,7 @@
 {% block script_links %}
 	{{ block.super }}
     <script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
-    <script type="text/javascript" src="/static/scripts/site/account/prints.js"></script>
+    <script type="text/javascript" src="/static/scripts/site/account/forms.js"></script>
 {% endblock %}
 {% block extra_styles %}
 	{{block.super}}
@@ -18,7 +18,7 @@
 
 
 {% block extra_scripts %}
-    var o = new localground.prints();
+    var o = new localground.forms();
 {% endblock %}
 
 {% block hidden_form_fields %}
@@ -41,9 +41,8 @@
 		<th scope="col" class="column-cb" >
 			<input class="checkall" type="checkbox" name="checkall"/>
 		</th>
-		<th scope="col">Image</th>
 		<th scope="col">Name</th>
-		<th scope="col">Map Info</th>
+		<th scope="col">Form Info</th>
 	</tr>
 {% endblock %}
 
@@ -54,16 +53,16 @@
 				<input class="checkone" id="cb_{{form.instance.id}}" name="id" type="checkbox" value="{{form.instance.id}}" />
 			</td>
 			<td>
-                <img class="thumb" style="max-width: 200px; max-height: 200px;"
-                     src="{{form.instance.thumb}}" />
-                <input type="hidden" value="{{form.instance.map}}">
-			</td>
-			<td>
 				{% include "includes/forms/generic_form_renderer.html" %}
+				<div class="clearfix">
+					<div class="input">
+						<a href="#" class="fields">Add Fields</a>
+					</div>
+				</div>
 			</td>
 			<td>
                 <div class="thin">
-					<label>ID:</label><div class="input">{{ form.instance.uuid }}</div>
+					<label>ID:</label><div class="input">{{ form.instance.id }}</div>
 				</div>
 				<div class="thin">
 					<label>Created:</label>
@@ -80,20 +79,8 @@
 					</div>
 				</div>
 				<div class="thin">
-					<label>Re-Print:</label><div class="input"><a href="{{form.instance.configuration_url}}" target="_blank">create similar print</a></div>
+					<label>fields:</label><div class="input">{{form.instance.get_fields}}</div>
 				</div>
-				<div class="thin">
-					<label>Download:</label><div class="input"><a href="{{form.instance.pdf}}">download</a></div>
-				</div>
-                {% comment %}
-				<div class="thin">
-					<label>Project:</label><div class="input">{{ selected_project.name }}</div>
-				</div>
-                {% endcomment %}
-                <div class="thin">
-                    <label>Map Images:</label><div class="input">To be implemented...</div>
-                </div>
-				
 			</td>
 		</tr>
 	{% endfor %}

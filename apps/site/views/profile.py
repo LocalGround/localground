@@ -7,7 +7,7 @@ from localground.apps.site.decorators import process_project
 from django.contrib.auth.decorators import login_required 
 from django.db.models.loading import get_model
 from datetime import datetime
-from localground.apps.site.models import Base, Project
+from localground.apps.site.models import Base, Project, Form
 import json
 
 @login_required()
@@ -91,10 +91,6 @@ def object_list_form(request, object_type_plural, return_message=None):
     objects = ModelClass.objects.apply_filter(
         user=request.user, query=query)
     
-    #return HttpResponse(objects)
-    
-    #if object_type_plural != Project.model_name_plural:
-    #    context.update({ 'projects': Project.objects.get_objects(request.user) })
     per_page = 10
     
     def getModelClassFormSet(**kwargs):
@@ -336,6 +332,51 @@ def create_update_group_with_sharing(request, action, object_type_plural, object
         extras.update({
             'success': True,
             'message': 'The %s information was successfully updated.' % ModelClass.model_name
+        })
+    return render_to_response(template, extras,
+        context_instance=RequestContext(request))
+
+
+@login_required()
+def update_form_fields(request, object_id=None,
+                          embed=False, template='profile/create_update_form.html',
+                          base_template='base/base.html'):
+    
+    from django.forms import models, formsets
+    from django.contrib.contenttypes import generic
+    from localground.apps.site.models import UserAuthorityObject, UserAuthority
+    from localground.apps.site.forms import UserAuthorityObjectForm
+    from django.http import HttpResponseRedirect
+    r = request.POST or request.GET
+    
+    form_object = Form.objects.get(id=object_id)
+    fields = form_object.get_fields()
+    if len(fields) == 0: extra = 1
+    prefix = 'field'
+    if embed: base_template = 'base/iframe.html'
+    
+    
+    extras = {}
+    if request.method == 'POST':
+        pass
+    else:
+        #form = GroupForm(instance=group_object)
+        #formset = UserAuthorityObjectFormset(instance=group_object, prefix=prefix)
+        pass
+    extras.update({
+        'form': form_object.inline_form()(instance=form_object),
+        'formset': None,
+        'prefix': prefix,
+        'group_object': form_object,
+        'object_name': form_object.model_name,
+        'parent_id': form_object.id,
+        'show_hidden_fields': True,
+        'base_template': base_template,
+        'embed': embed
+    })
+    if form_object:
+        extras.update({ 
+            'owner': form_object.owner.username
         })
     return render_to_response(template, extras,
         context_instance=RequestContext(request))
