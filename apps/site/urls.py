@@ -61,8 +61,8 @@ urlpatterns = patterns('',
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	(r'^profile/(?P<object_type_plural>projects|views)/(?P<object_id>\d+)/(?P<action>update|share)/embed/$', 'localground.apps.site.views.profile.create_update_group_with_sharing', { 'embed': True }),
 	(r'^profile/(?P<object_type_plural>projects|views)/(?P<object_id>\d+)/(?P<action>update|share)/$', 'localground.apps.site.views.profile.create_update_group_with_sharing'),
-	(r'^profile/forms/(?P<object_id>\d+)/embed/$', 'localground.apps.site.views.profile.update_form_fields', { 'embed': True }),
-	(r'^profile/forms/(?P<object_id>\d+)/$', 'localground.apps.site.views.profile.update_form_fields'),
+	(r'^profile/forms/(?P<object_id>\d+)/embed/$', 'localground.apps.site.views.forms.update_form_fields', { 'embed': True }),
+	(r'^profile/forms/(?P<object_id>\d+)/$', 'localground.apps.site.views.forms.update_form_fields'),
 
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	# 4) Delete
@@ -104,8 +104,8 @@ urlpatterns = patterns('',
 	
 	# Map Editor
 	(r'^maps/edit/', 'localground.apps.site.views.maps.init'),
-	(r'^maps/print/$', 'localground.apps.site.views.create_print.generate_print'),
-	(r'^maps/print/embed/$', 'localground.apps.site.views.create_print.generate_print',
+	(r'^maps/print/$', 'localground.apps.site.views.prints.generate_print'),
+	(r'^maps/print/embed/$', 'localground.apps.site.views.prints.generate_print',
 		{'embed': True, 'base_template': 'base/iframe.html'}),
 	
 )

@@ -79,7 +79,12 @@
 					</div>
 				</div>
 				<div class="thin">
-					<label>fields:</label><div class="input">{{form.instance.get_fields}}</div>
+					<label>fields:</label>
+					<div class="input">
+					{% for f in form.instance.get_fields %}
+						{{f.col_alias}},
+					{% endfor %}
+					</div>
 				</div>
 			</td>
 		</tr>

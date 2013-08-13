@@ -10,6 +10,13 @@ class DataType(models.Model):
             name=self.name,
             sql=self.sql
         )
+    
+    def __str__(self):
+        return self.name
+    
+    def __repr__(self):
+        return self.name
+    
  
     class Meta:
         app_label = 'site'

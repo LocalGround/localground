@@ -15,7 +15,9 @@ localground.forms.prototype.initialize=function(opts){
     //}
     
     $('.fields').click(function(){
-        return self.loadFieldsForm($(this).parents('tr').find('.checkone').val())
+		alert('fields clicked');
+        self.loadFieldsForm($(this).parents('tr').find('.checkone').val());
+		return false;
     });
 }
 
@@ -34,5 +36,4 @@ localground.forms.prototype.loadFieldsForm = function(objectID) {
         }
     });
     this.fieldsModal.show();
-    return false;
 };

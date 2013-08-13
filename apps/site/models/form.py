@@ -330,63 +330,10 @@ class Form(BaseNamed):
 		Snippet.objects.filter(id__in=snippet_ids).delete()
 		return num_deletes
 	
-	@staticmethod
-	def _old_sql(form, table_name, ids):
-		sql = '''CREATE TABLE %(table_name)s
-		(
-		  id serial NOT NULL,
-		  user_num integer,
-		  user_num_snippet_id integer, ''' % dict(table_name=table_name)   
-		for id in ids:
-			if id != 0:
-				sql += '''
-				col_%(id)s %(sql)s, 
-				col_%(id)s_snippet_id integer, 
-				CONSTRAINT %(table_name)s_col_%(id)s_snippet_id_fkey
-						FOREIGN KEY (col_%(id)s_snippet_id)
-						REFERENCES site_snippet (id) MATCH SIMPLE, ''' % \
-							dict(
-								table_name=table_name,
-								id=id,
-								sql=type_dict.get(id).sql
-							) 
-		sql += '''
-			time_stamp timestamp with time zone NOT NULL,
-			  user_id integer,
-			  project_id integer,
-			  snippet_id integer,
-			  marker_id integer,
-			  scan_id integer,
-			  point geometry,
-			  manually_reviewed boolean NOT NULL DEFAULT false,
-			  CONSTRAINT %(table_name)s_pkey PRIMARY KEY (id),
-			  CONSTRAINT %(table_name)s_user_id_fkey FOREIGN KEY (created_by)
-				  REFERENCES auth_user (id) MATCH SIMPLE,
-			  CONSTRAINT %(table_name)s_project_id_fkey FOREIGN KEY (project_id)
-				  REFERENCES site_project (id) MATCH SIMPLE,
-			  CONSTRAINT %(table_name)s_snippet_id_fkey FOREIGN KEY (snippet_id)
-				  REFERENCES site_snippet (id) MATCH SIMPLE,
-			  CONSTRAINT %(table_name)s_user_num_snippet_id_fkey FOREIGN KEY (user_num_snippet_id)
-				  REFERENCES site_snippet (id) MATCH SIMPLE,
-			  CONSTRAINT %(table_name)s_marker_id_fkey FOREIGN KEY (marker_id)
-				  REFERENCES site_marker (id) MATCH SIMPLE,
-			  CONSTRAINT %(table_name)s_scan_id_fkey FOREIGN KEY (scan_id)
-				  REFERENCES site_scan (id) MATCH SIMPLE,
-			  CONSTRAINT enforce_dims_point CHECK (st_ndims(point) = 2),
-			  CONSTRAINT enforce_geotype_point CHECK (geometrytype(point) = 'POINT'::text OR point IS NULL),
-			  CONSTRAINT enforce_srid_point CHECK (st_srid(point) = 4326)
-			)
-			WITH (
-			  OIDS=FALSE
-			);
-			CREATE TRIGGER %(table_name)s_timestamp
-				BEFORE UPDATE OR INSERT
-				ON %(table_name)s
-				FOR EACH ROW
-				EXECUTE PROCEDURE update_timestamp();''' % dict(table_name=table_name)
-		cursor = connection.cursor()
-		cursor.execute(sql)
-		transaction.commit_unless_managed()
+	def source_table_exists(self):
+		from django.db import connection, transaction
+		tables = connection.introspection.table_names()
+		return self.table_name in tables
 	
 	
 	

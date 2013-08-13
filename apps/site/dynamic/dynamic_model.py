@@ -182,7 +182,7 @@ class ModelClassBuilder(object):
                                 snippet_url= snippet.absolute_virtual_path()
                             ))
                         data.append(field)
-                        if descriptor.is_display_field: # or descriptor.col_name == 'col_1':
+                        if descriptor.is_display_field:
                             d.update(dict(name=field['value']))
                         if d.get('name') is None:
                             d.update(dict(name='Record #%s' % self.num)) 
@@ -291,12 +291,16 @@ class ModelClassBuilder(object):
         from django.core.management.color import no_style
         from django.db import connection, transaction
         
-        cursor = connection.cursor()
         tables = connection.introspection.table_names()
+        
+        if self.model_class._meta.db_table in tables:
+            #don't create table if it already exists
+            return
+
         seen_models = connection.introspection.installed_models(tables)
         created_models = set()
         pending_references = {}
-        
+        cursor = connection.cursor()
         sql, references = connection.creation.sql_create_model(self.model_class, no_style(), seen_models)
         seen_models.add(self.model_class)
         created_models.add(self.model_class)
@@ -306,9 +310,33 @@ class ModelClassBuilder(object):
                 sql.extend(connection.creation.sql_for_pending_references(refto, no_style(), pending_references))
         sql.extend(connection.creation.sql_for_pending_references(self.model_class, no_style(), pending_references))
         
-        #append point geometry by calling the PostGIS function:
-        sql.append("select AddGeometryColumn('public','%s','point',4326,'POINT',2)" % self.form.table_name);
-        for statement in sql:
-            cursor.execute(statement)
-        transaction.commit_unless_managed()
+        errors_encountered = False
+        try:
+            for statement in sql:
+                cursor.execute(statement)
+        except Exception:
+            self.stderr.write("Failed to install index for %s.%s model: %s\n" % \
+                                            (app_name, model._meta.object_name, e))
+            errors_encountered = True
+            
+        #transaction.commit_unless_managed()
+        
+        # Install SQL indices for newly created model
+        if not errors_encountered:
+            for model in seen_models:
+                if model in created_models:
+                    index_sql = connection.creation.sql_indexes_for_model(model, no_style())
+                    if index_sql:
+                        try:
+                            for sql in index_sql:
+                                cursor.execute(sql)
+                        except Exception as e:
+                            self.stderr.write("Failed to install index for %s.%s model: %s\n" % \
+                                                (app_name, model._meta.object_name, e))
+                            errors_encountered = True
+                                
+        if errors_encountered:
+            transaction.rollback_unless_managed()
+        else:
+            transaction.commit_unless_managed()
     

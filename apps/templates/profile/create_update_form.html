@@ -14,7 +14,7 @@
 		max-width:600px;
 		margin-top: 0px; 
 	}
-	#user-share-div {
+	#fields-div {
 		padding-top: 15px;
 		padding-bottom: 15px;
 		display: inline-block;
@@ -41,17 +41,19 @@
 {% endblock %}
 {% block script_links %}
 	{{ form.media.js }}
+	<script type="text/javascript" src="/static/scripts/thirdparty/jquery.formset.js"></script>
+	<script type="text/javascript" src="/static/scripts/site/account/formfields.js"></script>
 {% endblock %}
 {% block extra_scripts %}
 	{{ block.super }}
 	var opts = {
-		noUsers: {{ no_users }},
-		prefix: '{{ prefix }}'
+		noFields: {{no_fields|lower}},
+		prefix: '{{prefix}}'
 	};
 	{% if message and not success %}
 		opts.formError = true;
 	{% endif %}
-	var o = new localground.permissions();
+	var o = new localground.formfields();
 {% endblock %}
 {% block pageload_scripts %}
 	o.init(opts);
@@ -79,34 +81,45 @@
 					<th>Column Name</th>
 					<th>Data Type</th>
 					<th>Printable?</th>
+					<th>Display on Map?</th>
 					<th style="display:none;">Hidden Fields</th>
 					<th style="width: 10px;">&nbsp;</th>
 				</tr>	
 			</thead>
 			<tbody>
 			{% for form in formset.forms %}
+				
 				<tr id="{{ form.prefix }}-row">
-					<td {% if form.user.errors %}class="error"{% endif %}>
-						<span>{{ form.instance.user.username }}</span>
-						{{ form.user }}
+					<td {% if form.col_alias.errors or form.non_field_errors %}class="error"{% endif %}>
+						{{ form.col_alias }}
+						{{ form.col_alias.errors }}
+						{{ form.non_field_errors|lower }}
 					</td>
-					<td {% if form.authority.errors %}class="error"{% endif %}>
-						{{ form.authority }}
-						{{ form.authority.errors }}
+					<td {% if form.data_type.errors or form.non_field_errors %}class="error"{% endif %}>
+						{{ form.data_type }}
+						<span>{{ form.instance.data_type.name }}</span>
+						{{ form.data_type.errors }}
 					</td>
-					<td>CHECKBOX</td> 
+					<td {% if form.is_printable.errors or form.non_field_errors %}class="error"{% endif %}>
+						{{ form.is_printable }}
+						{{ form.is_printable.errors }}
+					</td>
+					<td {% if form.is_display_field.errors or form.non_field_errors %}class="error"{% endif %}>
+						{{ form.is_display_field }}
+						{{ form.is_display_field.errors }}
+					</td>
 					<td style="display:none;">
 						{% if form.instance.pk %}
 							{{ form.id }}
 							{{ form.DELETE }}
 						{% endif %}
 					</td>
-					<td>&nbsp;</td>
+					<td {% if form.non_field_errors %}class="error"{% endif %}>&nbsp;</td>
 				</tr>
 			{% endfor %}
 			</tbody>
 		</table>
-		<div id="user-share-div" class="well">
+		<div id="field-div" class="well">
 			<button class="btn success add-row" style="float:right;">
 				Add Column
 			</button>
