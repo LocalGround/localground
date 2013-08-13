@@ -10,64 +10,42 @@ import simplejson as json
 from django.conf import settings
 import os
     
-@process_identity
-@process_project 
-def get_objects(request, identity=None, project=None, return_message=None,
-                    format_type='table'):
+@login_required()
+def get_objects(request, object_id, return_message=None, format_type='table'):
     context = RequestContext(request)
     r = request.GET or request.POST
-    objects = None
     object_type = 'tables'
-    template_name = 'profile/table.html'
+    template_name = 'profile/tables.html'
     is_blank = r.get('is_blank', False) in ['1', 'True', 'true']
+    project, project_id = None, None
+    if r.get('project_id'):
+        project_id = r.get('project_id')
+        project = Project.objects.get(id=project_id)
     
-    #query for user, forms, and projects:
-    username = identity.username if identity is not None else 'all'
-     
-    forms, projects = None, None
-    if request.user.is_superuser and username == 'all':
-        projects = Project.objects.all().order_by('name')
-        forms = Form.objects.all_forms()
-    else:
-        projects = Project.objects.get_objects(identity)
-        forms = Form.objects.my_forms(user=identity)
-    project_id = 'all'
-    if project is not None: project_id = str(project.id)
-    
-    form_id = int(r.get('form_id', request.COOKIES.get('form_id_' + request.user.username, -1)))
-    form = None
-    try:
-        if form_id != -1:
-            form = Form.objects.get(id=form_id)
-    except Form.DoesNotExist:
-        form = None
-        #context.update(dict(message='Form ID #%s not found' % form_id))
-    if form is None and len(forms) > 0:
-        form = forms[0] 
+    forms = Form.objects.my_forms(user=request.user)
+    form = Form.objects.get(id=object_id)
     records = []
-    if form is not None:
-        attachment = None
-        if r.get('attachment_id') is not None:
-            try:
-                attachment = Attachment.objects.get(id=int(r.get('attachment_id')))
-            except:
-                attachment = None
-        records = form.get_data(project=project, identity=identity,
-                                    is_blank=is_blank, has_geometry=False,
-                                    attachment=attachment)
-    
-    #build urls (for restful interface):
+    attachment = None
+    if r.get('attachment_id') is not None:
+        try:
+            attachment = Attachment.objects.get(id=int(r.get('attachment_id')))
+        except Attachment.DoesNotExist:
+            pass
+    records = form.get_data(project=project,
+                                is_blank=is_blank, has_geometry=False,
+                                attachment=attachment)
+
     url = '/profile/%s/?is_blank=%s&format_type=%s' % (object_type, is_blank, format_type)
     context.update({
-        'username': username,
+        'username': request.user.username,
         'url': url,
         'raw_url': '/profile/%s/' % (object_type),
-        'projects': list(projects),
         'form': form,
         'forms': list(forms),
         'selected_project': project,
         'selected_project_id': project_id,
         'object_type': 'table',
+        'object_name_plural': '%s records' % form.name,
         'format_type': format_type,
         'is_blank': is_blank,
         'style': r.get('style',

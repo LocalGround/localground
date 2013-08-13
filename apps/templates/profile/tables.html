@@ -276,20 +276,5 @@ Tables <small>{{ form.name }}:
 	
 {% endblock %}
 {% block no_objects %}
-	<div class="hero-unit">
-		{% if not forms or forms|length == 0 %}
-			<p>You have not created any tables</p>
-		{% else %}
-			{% if form %}
-				<p>No {% if is_blank %} blank {% endif %} records found for the
-				<em><strong>{{form.name}}</strong></em> table{% if selected_project %}
-					for the <em><strong>{{selected_project.name}}</strong></em>
-					project{% endif %}.
-				</p>
-			{% else %}
-				<p>No form has been selected</p>
-			{% endif %}
-		{% endif %}
-	</div>
+	{{ block.super }}
 {% endblock %}
-{% block footer %}<!--make footer empty -->{% endblock %}

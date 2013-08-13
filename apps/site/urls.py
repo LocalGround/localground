@@ -63,6 +63,7 @@ urlpatterns = patterns('',
 	(r'^profile/(?P<object_type_plural>projects|views)/(?P<object_id>\d+)/(?P<action>update|share)/$', 'localground.apps.site.views.profile.create_update_group_with_sharing'),
 	(r'^profile/forms/(?P<object_id>\d+)/embed/$', 'localground.apps.site.views.forms.update_form_fields', { 'embed': True }),
 	(r'^profile/forms/(?P<object_id>\d+)/$', 'localground.apps.site.views.forms.update_form_fields'),
+	(r'^profile/forms/(?P<object_id>\d+)/data/$', 'localground.apps.site.views.tables.get_objects'),
 
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	# 4) Delete
@@ -72,7 +73,7 @@ urlpatterns = patterns('',
 	
 
 	#tables
-	(r'^profile/tables/data/', 'localground.apps.site.views.tables.get_objects'),
+	#(r'^profile/tables/data/', 'localground.apps.site.views.tables.get_objects'),
 	#(r'^tables/delete-selected/$', 'tables.delete_objects'),
 	#(r'^tables/move-blanks/$', 'tables.update_blank_status'),
 	#(r'^tables/move-project/$', 'tables.move_to_project'),
