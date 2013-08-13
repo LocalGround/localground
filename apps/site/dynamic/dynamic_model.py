@@ -2,17 +2,23 @@ from localground.apps.site.models import BasePoint, BaseAudit
 from django.contrib.gis.db import models
 from datetime import datetime
 
+'''
+Important TODO:
+Since Tables now inherit form BaseAudit, we'll need to write a batch script that
+adds the auditing columns to the user-generated tables.
+'''
+
 class ModelClassBuilder(object):
     def __init__(self, form):
         self.name = 'TableModel'
         self.form = form
         self.dynamic_field_descriptors = form.get_fields()
         self.app_label = 'site'
-        self.module = 'localground.apps.site.models.table_%s' % form.table_name      #needs to be unique
+        self.module = 'localground.apps.site.models.%s' % form.table_name      #needs to be unique
         self.options = options = {
             'ordering': ['num'],
-            'verbose_name': 'table',
-            'verbose_name': 'tables',
+            'verbose_name': form.table_name,
+            'verbose_name_plural': form.table_name + 's',
             'db_table': form.table_name
         }
         self.fields = {}
@@ -319,8 +325,6 @@ class ModelClassBuilder(object):
                                             (app_name, model._meta.object_name, e))
             errors_encountered = True
             
-        #transaction.commit_unless_managed()
-        
         # Install SQL indices for newly created model
         if not errors_encountered:
             for model in seen_models:

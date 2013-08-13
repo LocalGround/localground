@@ -101,14 +101,11 @@ Tables <small>{{ form.name }}:
 		<ul class="dropdown-menu" style="width:200px;">
 			{% for f in forms %}
 				<li>
-					<a href="{{url}}&form_id={{f.id}}">
+					<a href="/profile/forms/{{f.id}}/data/{{suffix}}">
 						{% if f.id == form.id %}
 							<div class="sprite ui-icon-check"></div>
 						{% endif %}
 						{{f.name}}
-						{% if username == 'all' %}
-							({{f.user.username}})
-						{% endif %}
 					</a>
 				</li>
 			{% endfor %}

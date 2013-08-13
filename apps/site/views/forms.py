@@ -53,8 +53,7 @@ def update_form_fields(request, object_id=None,
 	extras = {}
 	if request.method == 'POST':
 		from localground.apps.lib.helpers import get_timestamp_no_milliseconds
-		from localground.apps.lib.helpers import generic
-
+		
 		form = form_object.inline_form()(request.POST, instance=form_object)
 		formset = FieldFormset(request.POST, instance=form_object, prefix=prefix)
 		
@@ -66,9 +65,7 @@ def update_form_fields(request, object_id=None,
 				form_object.owner = request.user
 				form_object.date_created = get_timestamp_no_milliseconds()
 				is_new = True
-			if form_object.table_name == '':
-				form_object.table_name = 'table_%s_%s' % (form_object.owner.username, generic.generateID(num_digits=10))
-
+			
 			form_object.last_updated_by = request.user
 			form_object.save()
 			# -----------------------------------

@@ -4,10 +4,11 @@ from datetime import datetime
 from localground.apps.site.managers import FormManager
 from localground.apps.site.models import Field, BaseNamed, Snippet, DataType
 from localground.apps.site.dynamic import ModelClassBuilder, DynamicFormBuilder
+from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 	
 class Form(BaseNamed):
-	table_name = models.CharField(max_length=255)
+	table_name = models.CharField(max_length=255, unique=True)
 	projects = models.ManyToManyField('Project')
 	objects = FormManager()
 	_model_class = None
@@ -78,6 +79,26 @@ class Form(BaseNamed):
 		mcb = ModelClassBuilder(self)
 		return mcb.model_class
 	
+	def save(self, user=None, *args, **kwargs):
+		from localground.apps.lib.helpers import generic
+		is_new = self.pk is None
+		
+		# 1. ensure that user doesn't inadvertently change the data type of the column    
+		if is_new:
+			if user and self.owner is None:
+				self.owner = user
+			self.date_created = get_timestamp_no_milliseconds()
+			self.table_name = 'table_%s_%s' % (self.owner.username, generic.generateID(num_digits=10))
+		
+		if user:
+			self.last_updated_by = user 
+		self.time_stamp = get_timestamp_no_milliseconds()    
+		super(Form, self).save(*args, **kwargs)
+		
+		if is_new:
+			self.sync_db()
+	
+	'''
 	@staticmethod     
 	def create_new_form(dictionary, user):
 		from django.db import connection, transaction
@@ -137,9 +158,10 @@ class Form(BaseNamed):
 				field.is_printable = True
 				field.has_snippet_field = True
 				field.save()
-		 
+				
 		form.sync_db()
 		return form
+	'''
 	
 	def get_num_field(self):
 		dummy_num_field = Field()
@@ -147,7 +169,7 @@ class Form(BaseNamed):
 		dummy_num_field.col_name = 'num'
 		dummy_num_field.ordering = 0
 		return dummy_num_field
-  
+
 	def get_snipped_field_names(self):
 		names = ['num']
 		for n in self.get_fields():
@@ -168,7 +190,7 @@ class Form(BaseNamed):
 						.select_related(*related_fields)
 						.distinct()
 						.filter(Q(snippet__is_blank=is_blank) | Q(snippet__isnull=True)))
-					   #.filter(snippet__is_blank=is_blank))
+						#.filter(snippet__is_blank=is_blank))
 		
 		if project is not None:
 			objects = objects.filter(project=project)

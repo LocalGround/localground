@@ -35,16 +35,16 @@ def get_objects(request, object_id, return_message=None, format_type='table'):
                                 is_blank=is_blank, has_geometry=False,
                                 attachment=attachment)
 
-    url = '/profile/%s/?is_blank=%s&format_type=%s' % (object_type, is_blank, format_type)
+    raw_url = '/profile/forms/%s/data/' % object_id
     context.update({
         'username': request.user.username,
-        'url': url,
-        'raw_url': '/profile/%s/' % (object_type),
+        'suffix': '?is_blank=%s&format_type=%s' % (is_blank, format_type),
+        'raw_url': raw_url,
         'form': form,
         'forms': list(forms),
         'selected_project': project,
         'selected_project_id': project_id,
-        'object_type': 'table',
+        'object_type': 'forms',
         'object_name_plural': '%s records' % form.name,
         'format_type': format_type,
         'is_blank': is_blank,

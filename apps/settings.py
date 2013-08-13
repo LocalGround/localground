@@ -150,16 +150,14 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    #'django.contrib.sites',
     'django.contrib.gis',
     'django.contrib.messages',
     'localground',
     'localground.apps',
     'localground.apps.site',
     'localground.apps.registration',     #taken from the django-registration module
-    'tagging',                      #for tagging of blog posts in Django
+    'tagging',                          #for tagging of blog posts in Django
     'django.contrib.admin',
-    #'localground.apps.lib.jobs',
     'rest_framework',
 )
 

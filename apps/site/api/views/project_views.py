@@ -6,12 +6,13 @@ from localground.apps.site import models
 class ProjectList(generics.ListCreateAPIView, AuditCreate):
 	serializer_class = serializers.ProjectSerializer
 	filter_backends = (filters.SQLFilterBackend,)
+	queryset = models.Project.objects.distinct().select_related('owner').all()
 
 	paginate_by = 100
 	
 	def get_queryset(self):
 		user = self.request.user
-		return models.Project.objects.select_related('owner').filter(owner=user)
+		return models.Project.objects.distinct().select_related('owner').filter(owner=user)
 	
 	def pre_save(self, obj):
 		AuditCreate.pre_save(self, obj)
