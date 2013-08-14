@@ -37,6 +37,9 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		new_field_2.save(user=self.user)
 		
 		self.assertEqual(2, len(self.form.get_fields()))
+		
+		# query the new form:
+		self.assertEqual(len(self.form.get_data()), 0)
 
 		
 	def test_add_fields_view(self, **kwargs):
