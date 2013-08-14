@@ -30,6 +30,8 @@ class ModelMixin(object):
 	def setUp(self):
 		self._user = None
 		self._project = None
+		self._csrf_token = None
+		self.client = self._get_client()
 	
 	@property  
 	def user(self):
@@ -42,6 +44,20 @@ class ModelMixin(object):
 		if self._project is None:
 			self._project = self.get_project()
 		return self._project
+	
+	@property  
+	def csrf_token(self):
+		if self._csrf_token is None:
+			c = Client()
+			response = c.get('/accounts/login/')
+			self._csrf_token = unicode(response.context['csrf_token'])
+		return self._csrf_token
+		
+	def _get_client(self):
+		c = Client(enforce_csrf_checks=True)
+		c.login(username='tester', password=self.user_password)
+		c.cookies['csrftoken'] = self.csrf_token
+		return c
 	
 	def create_user(self, username='tester'):
 		return User.objects.create_user(username,
@@ -122,22 +138,6 @@ class ViewMixin(ModelMixin):
 	
 	def setUp(self):
 		ModelMixin.setUp(self)
-		self._csrf_token = None
-		self.client = self._get_client()
-		
-	@property  
-	def csrf_token(self):
-		if self._csrf_token is None:
-			c = Client()
-			response = c.get('/accounts/login/')
-			self._csrf_token = unicode(response.context['csrf_token'])
-		return self._csrf_token
-		
-	def _get_client(self):
-		c = Client(enforce_csrf_checks=True)
-		c.login(username='tester', password=self.user_password)
-		c.cookies['csrftoken'] = self.csrf_token
-		return c
 	
 	def test_page_403_or_302_status_anonymous_user(self, urls=None):
 		if urls is None:

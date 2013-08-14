@@ -54,37 +54,37 @@ class Field(BaseAudit):
 		if self.form.source_table_exists():
 			from django.db import connection, transaction, DatabaseError
 			from localground.apps.site.models import Snippet
-			cursor = connection.cursor()
+			sql = []
+			sql.append(
+				'ALTER TABLE %s ADD COLUMN %s %s' %
+				(self.form.table_name, self.col_name, self.data_type.sql)
+			)
+			#if self.has_snippet_field:
+			sql.append(
+				'ALTER TABLE %s ADD COLUMN %s_snippet_id integer' %
+				(self.form.table_name, self.col_name)
+			)
+			sql.append('''
+				ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
+				FOREIGN KEY(%(column_name)s)
+				REFERENCES %(snippet_table)s(id) MATCH SIMPLE
+				''' % dict(
+						table_name=self.form.table_name,
+						column_name='%s_snippet_id' % self.col_name,
+						snippet_table=Snippet._meta.db_table
+					)
+			)
+			
+			# EXECUTE QUERY
 			try:
-				#if no error thrown, then the column exists.  Do nothing.
-				cursor.execute('select %s from %s' % (self.col_name, self.form.table_name))
-			except DatabaseError:
-				# alter the table and create (1) the column, (2) the corresponding
-				# snippet placeholder, and (3) the constraint:
-				transaction.rollback_unless_managed()
-				errors_encountered = False
-				sql = []
-				sql.append(
-					'ALTER TABLE %s ADD COLUMN %s %s' %
-					(self.form.table_name, self.col_name, self.data_type.sql)
-				)
-				#if self.has_snippet_field:
-				sql.append(
-					'ALTER TABLE %s ADD COLUMN %s_snippet_id integer' %
-					(self.form.table_name, self.col_name)
-				)
-				sql.append('''
-					ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
-					FOREIGN KEY(%(column_name)s)
-					REFERENCES %(snippet_table)s(id) MATCH SIMPLE
-					''' % dict(
-							table_name=self.form.table_name,
-							column_name='%s_snippet_id' % self.col_name,
-							snippet_table=Snippet._meta.db_table
-						)
-				)
+				cursor = connection.cursor()
 				for statement in sql:
 					cursor.execute(statement)
 				transaction.commit_unless_managed()
+			
+			except Exception as e:
+				import sys
+				sys.stderr.write('ERROR: %s' % e)
+				transaction.rollback_unless_managed()
 	
 			

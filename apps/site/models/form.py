@@ -85,7 +85,7 @@ class Form(BaseNamed):
 		
 		# 1. ensure that user doesn't inadvertently change the data type of the column    
 		if is_new:
-			if user and self.owner is None:
+			if user and not hasattr(self, 'owner'):
 				self.owner = user
 			self.date_created = get_timestamp_no_milliseconds()
 			self.table_name = 'table_%s_%s' % (self.owner.username, generic.generateID(num_digits=10))
