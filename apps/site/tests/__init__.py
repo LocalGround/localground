@@ -23,6 +23,7 @@ class Client(test.Client):
 	
 class ModelMixin(object):
 	user_password = 'top_secret'
+	fixtures = ['initial_data.json', 'test_data.json']
 	
 	class Meta:
 		anstract = True

@@ -67,7 +67,7 @@ def update_form_fields(request, object_id=None,
 				is_new = True
 			
 			form_object.last_updated_by = request.user
-			form_object.save()
+			form_object.save(user=request.user)
 			# -----------------------------------
 			# PROJECTUSER FORM(S) POST-PROCESSING
 			# -----------------------------------

@@ -26,10 +26,13 @@ class Form(BaseNamed):
 	
 	@property
 	def TableModel(self):
+		'''
 		if self._model_class is None:
 			mcb = ModelClassBuilder(self)
 			self._model_class = mcb.model_class
 		return self._model_class
+		'''
+		return ModelClassBuilder(self).model_class
 	
 	@property
 	def DataEntryFormClass(self):
@@ -176,12 +179,12 @@ class Form(BaseNamed):
 			names.append(n.col_name)
 		return names
 	
-	def get_data_query(self, project=None, filter=None, marker=None, user=None, is_blank=False,
-					to_dict=False, include_markers=True, has_geometry=None,
+	def get_data_query(self, project=None, filter=None, user=None, is_blank=False,
+					to_dict=False, has_geometry=None,
 					attachment=None, manually_reviewed=None):
 		# We want to query everything in one go, so we're taking advantage of
 		# the "select_related" functionality (no lazy queries please!)
-		related_fields = ['source_marker', 'snippet', 'num_snippet', 'project',
+		related_fields = ['snippet', 'num_snippet', 'project',
 						  'snippet__source_attachment', 'owner']
 					#'attachment', 'owner']
 		for f in self.get_fields():
@@ -194,15 +197,12 @@ class Form(BaseNamed):
 		
 		if project is not None:
 			objects = objects.filter(project=project)
-		if marker is not None:
-			objects = objects.filter(source_marker=marker)
 		if attachment is not None:
 			objects = objects.filter(snippet__source_attachment=attachment)
 		if manually_reviewed is not None:
 			objects = objects.filter(manually_reviewed=manually_reviewed)   
 		if user is not None:
 			objects = objects.filter(
-					#Q(owner=identity) |
 					Q(project__owner=user) |
 					Q(project__users__user=user)
 				)
@@ -356,6 +356,15 @@ class Form(BaseNamed):
 		from django.db import connection, transaction
 		tables = connection.introspection.table_names()
 		return self.table_name in tables
+	
+	def delete(self, destroy_everything=False, **kwargs):
+		if destroy_everything:
+			table_name = self.table_name
+			from django.db import connection, transaction
+			cursor = connection.cursor()
+			cursor.execute('drop table %s' % table_name)
+		super(Form, self).delete(**kwargs)
+	
 	
 	
 	

@@ -3,11 +3,12 @@ from localground.apps.site.views import forms
 from localground.apps.site import models
 from localground.apps.site.tests import ViewMixin, ModelMixin
 from rest_framework import status
+from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import urllib
 		
-class UpdateFormTest(test.TestCase, ViewMixin):
+class UpdateFormTest(test.TestCase, ModelMixin):
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ModelMixin.setUp(self)
 		self.form = self.create_form(name="Class Form")
 		self.urls = [
 			'/profile/forms/%s/' % self.form.id,
@@ -29,7 +30,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		
 		# add second field to form:
 		new_field_2 = models.Field(col_alias='Field 2', 
-			data_type=models.DataType.objects.get(id=4),
+			data_type=models.DataType.objects.get(id=1),
 			display_width=10,
 			ordering=1,
 			form=self.form
@@ -40,9 +41,40 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		
 		# query the new form:
 		self.assertEqual(len(self.form.get_data()), 0)
+		
+		# add a new record
+		#requery:
+		form = models.Form.objects.get(id=self.form.id)
+		record = form.TableModel()
+		record.project = self.project
+		record.num = 1
+		record.time_stamp = get_timestamp_no_milliseconds()
+		record.date_created = get_timestamp_no_milliseconds()
+		record.owner = self.user
+		record.last_updated_by = self.user
+		record.col_1 = 'Column Value 1'
+		record.col_2 = 'Column Value 2'
+		record.save()
+		
+		form = models.Form.objects.get(id=self.form.id)
+		rec = form.TableModel.objects.all()[0]
+		print rec.id, rec.num, rec.last_updated_by
+		print rec.col_1
+		
+		'''
+		print new_field_1.col_name, new_field_2.col_name
+		print form.get_fields()
+		l = sorted(list(dir(form.TableModel)))
+		for n in l:
+			print n
+		
+		for rec in form.get_data():
+			print rec.get_dynamic_data_default()
+			print rec.dynamic_field_descriptors
+		'''
 
 		
-	def test_add_fields_view(self, **kwargs):
+	def ___test_add_fields_view(self, **kwargs):
 		from localground.apps.site.models import Field
 		
 		name = 'new name'

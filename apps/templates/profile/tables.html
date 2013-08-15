@@ -148,7 +148,7 @@ Tables <small>{{ form.name }}:
 			</td>
 			<td><a class="edit" href="#" target="{{o.id}}">{{o.id}}</a></td>
 			<td>
-				{{o.snippet.source_attachment.attribution}}
+				{{o.snippet.source_attachment.attribution}} - {{style}}
 			</td>
 			{% if style and style != 'default' %}
 				{% if style == 'snippet' %}
@@ -163,7 +163,9 @@ Tables <small>{{ form.name }}:
 					{% endfor %}
 				{% endif %}
 			{% else %}
-				<td>{% autoescape off %}{{ o.get_row_num_default }}{% endautoescape %}</td>
+				<td>
+					{% autoescape off %}{{ o.get_row_num_default }}{% endautoescape %}
+				</td>
 				{% for data in o.get_dynamic_data_default %}
 					<td>{% autoescape off %}{{ data }}{% endautoescape %}</td>
 				{% endfor %}
