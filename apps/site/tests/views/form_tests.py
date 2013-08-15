@@ -19,23 +19,24 @@ class UpdateFormTest(test.TestCase, ModelMixin):
 	def test_add_fields(self, **kwargs):
 		from localground.apps.site import models
 		
+		print 'adding 2 fields...'
 		# add field to form:
-		new_field_1 = models.Field(col_alias='Field 1', 
+		f1 = models.Field(col_alias='Field 1', 
 			data_type=models.DataType.objects.get(id=1),
 			display_width=10,
 			ordering=1,
 			form=self.form
 		)
-		new_field_1.save(user=self.user)
+		f1.save(user=self.user)
 		
 		# add second field to form:
-		new_field_2 = models.Field(col_alias='Field 2', 
+		f2 = models.Field(col_alias='Field 2', 
 			data_type=models.DataType.objects.get(id=1),
 			display_width=10,
-			ordering=1,
+			ordering=2,
 			form=self.form
 		)
-		new_field_2.save(user=self.user)
+		f2.save(user=self.user)
 		
 		self.assertEqual(2, len(self.form.get_fields()))
 		
@@ -57,9 +58,16 @@ class UpdateFormTest(test.TestCase, ModelMixin):
 		record.save()
 		
 		form = models.Form.objects.get(id=self.form.id)
-		rec = form.TableModel.objects.all()[0]
-		print rec.id, rec.num, rec.last_updated_by
-		print rec.col_1
+		rec = form.get_data().all()[0]
+		for f in rec.dynamic_fields:
+			print f.col_name
+		for p in form.get_fields():
+			print p.col_name
+			
+		#print form.TableModel._meta.get_all_field_names()
+		
+		print rec.id, rec.num, rec.last_updated_by, rec.col_1
+			
 		
 		'''
 		print new_field_1.col_name, new_field_2.col_name

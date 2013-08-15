@@ -1,6 +1,8 @@
 from localground.apps.site.models import BasePoint, BaseAudit, ProjectMixin
 from django.contrib.gis.db import models
 from datetime import datetime
+from django.db.models.loading import cache
+# http://stackoverflow.com/questions/3712688/creation-of-dynamic-model-fields-in-django
 
 '''
 Important TODO:
@@ -198,37 +200,44 @@ class ModelClassBuilder(object):
             'verbose_name_plural': form.table_name + 's',
             'db_table': form.table_name
         }
-        self.fields = {}
+        self.additional_fields = {}
         self.dynamic_fields = {}
         self.snippet_fields = {}
         self._model_class = None
      
     @property
     def model_class(self):
-        if self._model_class is None:
-            self.add_dynamic_fields_to_model()
-            
-            class ModelClassBuilder:
-                pass
+        #if self._model_class is None:
+        self.add_dynamic_fields_to_model()
         
-            if self.app_label:
-                # app_label must be set using the Meta inner class
-                setattr(ModelClassBuilder, 'app_label', self.app_label)
+        class ModelClassBuilder:
+            pass
+    
+        if self.app_label:
+            # app_label must be set using the Meta inner class
+            setattr(ModelClassBuilder, 'app_label', self.app_label)
+    
+        # Update Meta with any options that were provided
+        if self.options is not None:
+            for key, value in self.options.iteritems():
+                setattr(ModelClassBuilder, key, value)
+    
+        # Set up a dictionary to simulate declarations within a class
+        try:
+            del cache.app_models[self.app_label][self.name.lower()]
+        except KeyError:
+            pass
+        attrs = {'__module__': self.module, 'Meta': ModelClassBuilder}
+    
+        # Add in any fields that were provided
+        attrs.update(self.additional_fields)
         
-            # Update Meta with any options that were provided
-            if self.options is not None:
-                for key, value in self.options.iteritems():
-                    setattr(ModelClassBuilder, key, value)
         
-            # Set up a dictionary to simulate declarations within a class
-            attrs = {'__module__': self.module, 'Meta': ModelClassBuilder}
-        
-            # Add in any fields that were provided
-            attrs.update(self.fields)
-            
-            
-            # Create the class, which automatically triggers ModelBase processing
-            self._model_class = type(self.name, (DynamicModelMixin, ), attrs)
+        # Create the class, which automatically triggers ModelBase processing
+        self._model_class = type(self.name, (DynamicModelMixin, ), attrs)
+        import sys
+        sys.stderr.write('\n%s' % self._model_class._meta.get_all_field_names())
+        sys.stderr.write('\n%s' % self.additional_fields)
         return self._model_class   
     
         
@@ -263,10 +272,10 @@ class ModelClassBuilder(object):
                     snippet_field_name: models.ForeignKey('Snippet',
                                                             null=True, blank=True)
                 })
-        self.fields.update(self.dynamic_fields)
-        self.fields.update(self.snippet_fields)
+        self.additional_fields.update(self.dynamic_fields)
+        self.additional_fields.update(self.snippet_fields)
         #import sys
-        #sys.stderr.write('%s' % self.fields)
+        #sys.stderr.write('%s' % self.additional_fields)
 
     
     def sync_db(self):
