@@ -32,14 +32,15 @@ class Field(BaseAudit):
 		is_new = self.pk is None
 		
 		# 1. ensure that user doesn't inadvertently change the data type of the column    
-		if not is_new:
-			o = Field.objects.get(id=self.pk)
-			if o.data_type != self.data_type:
-				raise Exception('You are not allowed to change the column type of an existing column')              
-		else:
+		if is_new:
 			self.owner = user
 			self.date_created = get_timestamp_no_milliseconds()
 			self.col_name = 'col_placeholder'
+		else:
+			o = Field.objects.get(id=self.pk)
+			if o.data_type != self.data_type:
+				raise Exception('You are not allowed to change the column type of an existing column')              
+		
 		self.last_updated_by = user 
 		self.time_stamp = get_timestamp_no_milliseconds()    
 		super(Field, self).save(*args, **kwargs)

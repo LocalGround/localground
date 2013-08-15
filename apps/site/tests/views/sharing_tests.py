@@ -1,5 +1,5 @@
 from django import test
-from localground.apps.site.views import profile
+from localground.apps.site.views import sharing
 from localground.apps.site import models
 from localground.apps.site.tests import ViewMixin
 import urllib
@@ -14,7 +14,7 @@ class ObjectShareFormProfileTest(test.TestCase, ViewMixin):
 			'/profile/projects/create/',
 			'/profile/projects/create/embed/'
 		]
-		self.view = profile.create_update_group_with_sharing
+		self.view = sharing.create_update_group_with_sharing
 		
 	def test_share_unshare_project(self, **kwargs):
 		slug = 'test-project-slug'

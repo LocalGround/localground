@@ -235,9 +235,9 @@ class ModelClassBuilder(object):
         
         # Create the class, which automatically triggers ModelBase processing
         self._model_class = type(self.name, (DynamicModelMixin, ), attrs)
-        import sys
-        sys.stderr.write('\n%s' % self._model_class._meta.get_all_field_names())
-        sys.stderr.write('\n%s' % self.additional_fields)
+        #import sys
+        #sys.stderr.write('\n%s' % self._model_class._meta.get_all_field_names())
+        #sys.stderr.write('\n%s' % self.additional_fields)
         return self._model_class   
     
         

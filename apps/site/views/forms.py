@@ -23,7 +23,7 @@ def create_form(request, identity=None, is_json=False):
 	)))
 
 @login_required()
-def update_form_fields(request, object_id=None,
+def create_update_form(request, object_id=None,
 						  embed=False, template='profile/create_update_form.html',
 						  base_template='base/base.html'):
 	
@@ -33,6 +33,13 @@ def update_form_fields(request, object_id=None,
 	from django.shortcuts import render_to_response
 	from django.template import RequestContext
 	r = request.POST or request.GET
+	extras = {}
+	
+	if (r.get('success', 'false') in ['1', 'true', 'True']):
+		extras.update({
+			'success': True,
+			'message': 'The %s information was successfully saved.' % Form.model_name
+		})
 	
 	class FieldForm(ModelForm):
 		class Meta:
@@ -41,8 +48,10 @@ def update_form_fields(request, object_id=None,
 	
 	from django.forms.models import inlineformset_factory
 	
-	form_object = Form.objects.get(id=object_id)
-	fields = form_object.get_fields()
+	form_object, fields = None, []
+	if object_id is not None:
+		form_object = Form.objects.get(id=object_id)
+		fields = form_object.get_fields()
 	extra = 0
 	if len(fields) == 0: extra = 1
 	if embed: base_template = 'base/iframe.html'
@@ -50,40 +59,32 @@ def update_form_fields(request, object_id=None,
 	
 	prefix = 'field'
 	
-	extras = {}
 	if request.method == 'POST':
-		from localground.apps.lib.helpers import get_timestamp_no_milliseconds
-		
-		form = form_object.inline_form()(request.POST, instance=form_object)
+		form = Form.inline_form()(request.POST, instance=form_object)
 		formset = FieldFormset(request.POST, instance=form_object, prefix=prefix)
 		
 		if formset.is_valid() and form.is_valid():
 			form_object = form.instance
-			form_object.time_stamp = get_timestamp_no_milliseconds()
-			
-			if form_object.pk is None:
-				form_object.owner = request.user
-				form_object.date_created = get_timestamp_no_milliseconds()
-				is_new = True
-			
-			form_object.last_updated_by = request.user
 			form_object.save(user=request.user)
+			
 			# -----------------------------------
 			# PROJECTUSER FORM(S) POST-PROCESSING
 			# -----------------------------------
-			marked_for_delete = formset.deleted_forms
+			
+			# add / update fields:
 			for i, form in enumerate(formset.forms):
 				if form.has_changed():
 					instance = form.instance
 					if not instance in formset.deleted_forms:
 						instance.display_width = 10
 						instance.ordering = i
+						if instance.pk is None:
+							instance.form = form_object
 						instance.save(user=request.user)
-			if len(marked_for_delete) > 0:
-				formset.save()
-				
-			#syncdb
-			form_object.sync_db()
+			
+			# remove unwanted fields here:
+			for form in formset.deleted_forms:
+				form.instance.delete()
 			
 			url = '/profile/forms/%s/' % form_object.id
 			if embed:
@@ -97,16 +98,14 @@ def update_form_fields(request, object_id=None,
 								Please review message(s) below.' %  Field.model_name
 			})
 	else:
-		form = form_object.inline_form()(instance=form_object)
+		form = Form.inline_form()(instance=form_object)
 		formset = FieldFormset(instance=form_object, prefix=prefix)
 	
 	extras.update({
 		'form': form,
 		'formset': formset,
 		'prefix': prefix,
-		'group_object': form_object,
-		'object_name': form_object.model_name,
-		'parent_id': form_object.id,
+		'object_name': Form.model_name,
 		'show_hidden_fields': True,
 		'base_template': base_template,
 		'embed': embed,

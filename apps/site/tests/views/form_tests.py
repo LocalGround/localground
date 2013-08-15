@@ -6,21 +6,22 @@ from rest_framework import status
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import urllib
 		
-class UpdateFormTest(test.TestCase, ModelMixin):
+class UpdateFormTest(test.TestCase, ViewMixin):
 	def setUp(self):
-		ModelMixin.setUp(self)
+		ViewMixin.setUp(self)
 		self.form = self.create_form(name="Class Form")
 		self.urls = [
 			'/profile/forms/%s/' % self.form.id,
-			'/profile/forms/%s/embed/' % self.form.id
+			'/profile/forms/%s/embed/' % self.form.id,
+			'/profile/forms/create/',
+			'/profile/forms/create/embed/'
 		]
-		self.view = forms.update_form_fields
+		self.view = forms.create_update_form
 		
-	def test_add_fields(self, **kwargs):
+	def test_add_fields_to_existing_form(self, **kwargs):
 		from localground.apps.site import models
 		
-		print 'adding 2 fields...'
-		# add field to form:
+		# add 2 fields to form:
 		f1 = models.Field(col_alias='Field 1', 
 			data_type=models.DataType.objects.get(id=1),
 			display_width=10,
@@ -59,39 +60,9 @@ class UpdateFormTest(test.TestCase, ModelMixin):
 		
 		form = models.Form.objects.get(id=self.form.id)
 		rec = form.get_data().all()[0]
-		for f in rec.dynamic_fields:
-			print f.col_name
-		for p in form.get_fields():
-			print p.col_name
-			
-		#print form.TableModel._meta.get_all_field_names()
-		
 		print rec.id, rec.num, rec.last_updated_by, rec.col_1
-			
 		
-		'''
-		print new_field_1.col_name, new_field_2.col_name
-		print form.get_fields()
-		l = sorted(list(dir(form.TableModel)))
-		for n in l:
-			print n
-		
-		for rec in form.get_data():
-			print rec.get_dynamic_data_default()
-			print rec.dynamic_field_descriptors
-		'''
-
-		
-	def ___test_add_fields_view(self, **kwargs):
-		from localground.apps.site.models import Field
-		
-		name = 'new name'
-		description = 'new d'
-		tags = 'a, b, c'
-		
-		# form should not have any fields:
-		self.assertEqual(len(self.form.get_fields()), 0)
-		
+	def make_post_dictionary(self, name, description, tags):
 		# add 2 fields:
 		data = {
 			'name': name,
@@ -111,6 +82,20 @@ class UpdateFormTest(test.TestCase, ModelMixin):
 			'field-MAX_NUM_FORMS': 1000
 		}
 		data.update(management_form)
+		return data
+	
+	
+	def test_add_fields_to_existing_form_using_view(self, **kwargs):
+		from localground.apps.site.models import Field
+		
+		name = 'new name'
+		description = 'new d'
+		tags = 'a, b, c'
+		
+		# form should not have any fields:
+		self.assertEqual(len(self.form.get_fields()), 0)
+		
+		data = self.make_post_dictionary(name, description, tags)
 		
 		response = self.client.post(self.urls[0],
 			data=urllib.urlencode(data),
@@ -134,7 +119,7 @@ class UpdateFormTest(test.TestCase, ModelMixin):
 		fields = form.get_fields()
 		self.assertEqual(len(fields), 2)
 
-		'''
+		
 		from django.db import connection, transaction
 		cursor = connection.cursor()
 		
@@ -142,5 +127,48 @@ class UpdateFormTest(test.TestCase, ModelMixin):
 		for field in fields:
 			#if an exception isn't thrown, it works
 			a = cursor.execute('select %s from %s' % (field.col_name, field.form.table_name))		
-		'''
+		
+		
+	
+		
+	def test_add_new_form_using_view(self, **kwargs):
+		from localground.apps.site.models import Field, Form
+		
+		name = 'brand new form!'
+		description = 'new d'
+		tags = 'a, b, c'
+		
+		
+		data = self.make_post_dictionary(name, description, tags)
+		
+		response = self.client.post('/profile/forms/create/',
+			data=urllib.urlencode(data),
+			HTTP_X_CSRFTOKEN=self.csrf_token,
+			content_type = "application/x-www-form-urlencoded"
+		)
+		
+		#successfully redirected
+		self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+		
+		# re-query 
+		form = models.Form.objects.get(name=name)
+		
+		
+		# form data should be changed
+		self.assertEqual(form.description, description)
+		self.assertEqual(form.tags, tags)
+		
+		# form should have 2 fields:
+		fields = form.get_fields()
+		self.assertEqual(len(fields), 2)
+
+		
+		from django.db import connection, transaction
+		cursor = connection.cursor()
+		
+		# there should be a new table created with both fields present:
+		for field in fields:
+			#if an exception isn't thrown, it works
+			a = cursor.execute('select %s from %s' % (field.col_name, field.form.table_name))		
+		
 		

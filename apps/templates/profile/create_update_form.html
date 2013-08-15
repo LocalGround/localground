@@ -129,7 +129,9 @@
 			{% comment %} only show submit button if not in an iframe {% endcomment %}
 			<div class="clearfix">
                 <input type="submit" value="Save Changes" class="btn primary" />
-            </div>	
+            </div>
+		{% else %}
+			<br><br><br><br><br><br>
 		{% endif %}
 		</p>
 	</form>

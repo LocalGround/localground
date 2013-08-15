@@ -357,7 +357,7 @@ class Form(BaseNamed):
 		tables = connection.introspection.table_names()
 		return self.table_name in tables
 	
-	def delete(self, destroy_everything=False, **kwargs):
+	def delete(self, destroy_everything=True, **kwargs):
 		if destroy_everything:
 			table_name = self.table_name
 			from django.db import connection, transaction

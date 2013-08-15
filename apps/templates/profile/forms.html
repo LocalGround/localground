@@ -1,6 +1,6 @@
 {% extends "profile/data_list.html" %}
 {% block page_title %}
-	<img class="header-icon" src="/static/images/map_large.png" />
+	<img class="header-icon" src="/static/images/data_large.png" />
 	Manage <span style="color:#ccc">{{ object_name_plural|title }}</span>
 {% endblock %}
 
@@ -18,7 +18,9 @@
 
 
 {% block extra_scripts %}
-    var o = new localground.forms();
+    var o = new localground.forms({
+		addURL: '{{ create_url }}'
+	});
 {% endblock %}
 
 {% block hidden_form_fields %}
@@ -30,8 +32,7 @@
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
 		<ul class="dropdown-menu">
 			<li><a id="delete_objects" href="#">Delete</a></li>
-			<li><a id="add_object" href="#">Upload</a></li>
-			<li><a id="move_project" href="#">Move to another project</a></li>
+			<li><a id="add_object" href="#">Create New</a></li>
 		</ul>
 	</li>
 {% endblock %}
@@ -56,7 +57,8 @@
 				{% include "includes/forms/generic_form_renderer.html" %}
 				<div class="clearfix">
 					<div class="input">
-						<a href="#" class="fields">Add Fields</a>
+						<a href="#" class="fields">Add Fields</a> |
+						<a href="/profile/forms/{{form.instance.id}}/data/">View Data</a>
 					</div>
 				</div>
 			</td>

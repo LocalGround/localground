@@ -1,7 +1,7 @@
 {% extends "profile/data_list.html" %}
-{% block page_title %}
-Tables <small>{{ form.name }}:
-	{{selected_project|default_if_none:"Everything"}}
+{% block page_title %}	
+<img class="header-icon" src="/static/images/data_large.png" />
+	Form Data <span style="color:#ccc">{{ form.name }}</span>
 	{% if is_blank %} > <span style="color: red;">Blanks</span> {% endif %}
 </small>
 {% endblock %}
@@ -97,7 +97,7 @@ Tables <small>{{ form.name }}:
 {% block other_menus %}
 	{% if forms %}
 	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Tables</a>
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Forms</a>
 		<ul class="dropdown-menu" style="width:200px;">
 			{% for f in forms %}
 				<li>

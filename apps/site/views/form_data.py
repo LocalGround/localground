@@ -15,7 +15,7 @@ def get_objects(request, object_id, return_message=None, format_type='table'):
     context = RequestContext(request)
     r = request.GET or request.POST
     object_type = 'tables'
-    template_name = 'profile/tables.html'
+    template_name = 'profile/form_data.html'
     is_blank = r.get('is_blank', False) in ['1', 'True', 'true']
     project, project_id = None, None
     if r.get('project_id'):

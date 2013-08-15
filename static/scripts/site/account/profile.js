@@ -194,14 +194,12 @@ localground.profile.prototype.deleteConfirm = function() {
 };
 
 localground.profile.prototype.addObject = function() {
-	//alert(this.addURL);
-    this.addModal = new ui.dialog({
+	this.addModal = new ui.dialog({
         id: 'add-modal',
-        width: 560,
+        width: self.modalWidth || 560,
         height: 400,
         iframeURL: this.addURL,
         showTitle: false,
-        //title: 'Create New ' + this.objectName,
         submitButtonText: 'Add ' + this.objectName.toLowerCase(),
         closeExtras: function() {
             if($('#add-modal').find('.hide').html() == 'Done')
