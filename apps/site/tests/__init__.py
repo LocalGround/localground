@@ -134,6 +134,40 @@ class ModelMixin(object):
 		)
 		f.save()
 		return f
+	
+	def create_imageopt(self, scan):
+		p = scan.source_print
+		img = models.ImageOpts(
+			source_scan=scan,
+			file_name_orig='some_file_name.png',
+			host=scan.host,
+			virtual_path=scan.virtual_path,
+			extents=p.extents,
+			zoom=p.zoom,
+			northeast=p.northeast,
+			southwest=p.southwest,
+			center=p.center
+		)
+		img.save(user=scan.owner)
+		return img
+	
+	
+	def create_scan(self, user, project):
+		p = self.create_print(map_title='A scan-linked print')
+		scan = models.Scan(
+			project=project,
+			owner=user,
+			last_updated_by=user,
+			source_print=p,
+			name='Scan Name',
+			description='Scan Description',
+			status=models.StatusCode.get_status(models.StatusCode.PROCESSED_SUCCESSFULLY),
+			upload_source=models.UploadSource.get_source(models.UploadSource.WEB_FORM)
+		)
+		scan.save()
+		scan.processed_image = self.create_imageopt(scan)
+		scan.save()
+		return scan
 
 class ViewMixin(ModelMixin):
 	fixtures = ['initial_data.json', 'test_data.json']

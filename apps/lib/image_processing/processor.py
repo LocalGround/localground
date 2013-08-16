@@ -65,7 +65,7 @@ class Processor(General):
         except IOError:
             self.logger.tmp_directory = settings.TEMP_DIR
             raise ProcessingError(self.logger, self.obj,
-                        StatusCodes.DIRECTORY_MISSING,
+                        models.StatusCode.DIRECTORY_MISSING,
                         message='Exiting:  Map image not found in file system',
                         terminate=False)
             
@@ -81,7 +81,7 @@ class Processor(General):
         self.obj.qr_rect = self.finder.get_qr_rectangle()
         if self.obj.qr_rect is None:
             raise ProcessingError(self.logger, self.obj,
-                        StatusCodes.QR_RECT_NOT_FOUND,
+                        models.StatusCode.QR_RECT_NOT_FOUND,
                         message='Exiting:  No QR rectangle found',
                         terminate=True)
                
@@ -99,7 +99,7 @@ class Processor(General):
         #exit if no print_id found:
         if print_id is None:
             raise ProcessingError(self.logger, self.obj,
-                        StatusCodes.QR_CODE_NOT_READ,
+                        models.StatusCode.QR_CODE_NOT_READ,
                         message='Exiting:  QR-Code not read',
                         terminate=True)
         
@@ -114,7 +114,7 @@ class Processor(General):
         except models.Print.DoesNotExist:
             #return if code not in database:
             raise ProcessingError(self.logger, self.obj,
-                        StatusCodes.PRINT_NOT_FOUND,
+                        models.StatusCode.PRINT_NOT_FOUND,
                         message='Exiting:  QR-Code %s not in database' % print_id,
                         terminate=True)
             
@@ -160,7 +160,7 @@ class Processor(General):
             if self.scan.map_rect is None:
                 self.logger.log('Exiting:  No map rectangle found')
                 self.scan.status = models.StatusCode.objects.get(
-                                        id=StatusCodes.MAP_RECT_NOT_FOUND)
+                                        id=models.StatusCode.MAP_RECT_NOT_FOUND)
                 self.scan.save()
                 return
         
@@ -172,7 +172,7 @@ class Processor(General):
 
             #save all changes made to the scan:
             self.scan.status = models.StatusCode.objects.get(
-                                    id=StatusCodes.PROCESSED_SUCCESSFULLY)
+                                    id=models.StatusCode.PROCESSED_SUCCESSFULLY)
             self.scan.save()
             self.finder.draw_rectangles()
         
@@ -262,20 +262,6 @@ class PrintLayouts:
     PORTRAIT = 1
     LANDSCAPE = 2
     PORTRAIT_WITH_FORM = 3
-    
-class StatusCodes:
-    #Error statuses (be sure to sync w/uploads_statuscode table):
-    READY_FOR_PROCESSING = 1
-    PROCESSED_SUCCESSFULLY = 2
-    PROCESSED_MANUALLY = 3
-    ERROR_UNKNOWN = 4
-    DIRECTORY_MISSING = 5
-    PRINT_NOT_FOUND = 6
-    QR_CODE_NOT_READ = 7
-    QR_RECT_NOT_FOUND = 8
-    MAP_RECT_NOT_FOUND = 9
-    FORM_RECT_NOT_FOUND = 10
-    FILE_WRITE_PRIVS = 11
     
 class ImageProcessingTypes:
     #cropped to map bounds:
@@ -1283,10 +1269,13 @@ class MapUtils(General):
         img.save(path)
         
         p = self.scan.source_print
-        map_image = models.ImageOpts()
-        map_image.source_scan = self.scan
-        map_image.file_name = file_name
-        map_image.zoom = p.zoom
+        map_image = models.ImageOpts(
+            source_scan=self.scan,
+            file_name_orig=file_name,
+            zoom=p.zoom,
+            host=self.scan.host,
+            virtual_path=self.scan.virtual_path
+        )
         
         if extents is not None: map_image.extents = extents
         else: map_image.extents = p.extents
@@ -1391,7 +1380,7 @@ class FormUtils(General):
         #create attachment (if one doesn't already exist):
         self.create_attachment_from_scan()
         
-        #if self.attachment.status.id == StatusCodes.PROCESSED_SUCCESSFULLY:
+        #if self.attachment.status.id == models.StatusCode.PROCESSED_SUCCESSFULLY:
         #    self.logger.log('models.Attachment #%s has already been successfully processed' %
         #                    self.attachment.uuid)
         #    return
@@ -1447,7 +1436,7 @@ class FormUtils(General):
             s.save()
             
         self.attachment.status = models.StatusCode.objects.get(
-                                        id=StatusCodes.PROCESSED_SUCCESSFULLY)
+                                        id=models.StatusCode.PROCESSED_SUCCESSFULLY)
         self.attachment.save()
         return
     
@@ -1488,7 +1477,7 @@ class FormUtils(General):
             #generate a new attachment record
             self.attachment = self.scan.copy_as(models.Attachment)
             self.attachment.status = models.StatusCode.objects.get(
-                                        id=StatusCodes.READY_FOR_PROCESSING)
+                                        id=models.StatusCode.READY_FOR_PROCESSING)
             if self.is_mini:
                 self.attachment.source_scan = self.scan
             self.attachment.is_short_form = self.is_mini
@@ -1526,7 +1515,7 @@ class FormUtils(General):
                         shutil.copyfile(src, dest)
                     except Exception:
                         raise ProcessingError(self.logger, self.scan,
-                            StatusCodes.FILE_WRITE_PRIVS,
+                            models.StatusCode.FILE_WRITE_PRIVS,
                             terminate=True)
             else:
                 #copy directory
@@ -1535,7 +1524,7 @@ class FormUtils(General):
                 #todo:  delete from scans directory when done...
         except IOError:
             raise ProcessingError(self.logger, self.scan,
-                        StatusCodes.DIRECTORY_MISSING,
+                        models.StatusCode.DIRECTORY_MISSING,
                         message='The directory "%s" does not exist' % 
                                 self.scan.get_abs_directory_path(),
                                 terminate=True)

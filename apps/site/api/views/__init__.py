@@ -10,6 +10,7 @@ from localground.apps.site import models
 from django.contrib.auth.models import User, Group
 
 from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
+from localground.apps.site.api.views.scan_views import ScanViewSet
 from localground.apps.site.api.views.print_views import PrintList, PrintInstance, LayoutViewSet
 from localground.apps.site.api.views.project_views import ProjectList, ProjectInstance
 from localground.apps.site.api.views.marker_views import MarkerList, MarkerInstance
@@ -27,6 +28,7 @@ def api_root(request, format=None, **kwargs):
 	d['groups'] = reverse('group-list', request=request, format=format)
 	d['layouts'] = reverse('layout-list', request=request, format=format)
 	d['markers'] = reverse('marker-list', request=request, format=format)
+	d['map-images'] = reverse('scan-list', request=request, format=format)
 	d['overlaysources'] = reverse('overlaysource-list', request=request, format=format)
 	d['overlaytypes'] = reverse('overlaytype-list', request=request, format=format)
 	d['photos'] = reverse('photo-list', request=request, format=format)

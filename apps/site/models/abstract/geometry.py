@@ -103,18 +103,43 @@ class BaseExtents(Base):
 		return self.display_coords()
 		
 class StatusCode(models.Model):
+	READY_FOR_PROCESSING = 1
+	PROCESSED_SUCCESSFULLY = 2
+	PROCESSED_MANUALLY = 3
+	ERROR_UNKNOWN = 4
+	DIRECTORY_MISSING = 5
+	PRINT_NOT_FOUND = 6
+	QR_CODE_NOT_READ = 7
+	QR_RECT_NOT_FOUND = 8
+	MAP_RECT_NOT_FOUND = 9
+	FORM_RECT_NOT_FOUND = 10
+	FILE_WRITE_PRIVS = 11
+	
 	name = models.CharField(max_length=255)
 	description = models.CharField(max_length=2000, null=True, blank=True)
+	
 	def __unicode__(self):
 		return str(self.id) + ': ' + self.name
 		
 	class Meta:
 		app_label = 'site'
+		
+	@classmethod
+	def get_status(cls,  code_id):
+		return StatusCode.objects.get(id=code_id)
+	
 
 class UploadSource(models.Model):
+	WEB_FORM = 1
+	EMAIL = 2
+	MANUAL = 3
 	name = models.CharField(max_length=255)
 	def __unicode__(self):
 		return str(self.id) + '. ' + self.name
 		
 	class Meta:
 		app_label = 'site'
+		
+	@classmethod
+	def get_source(cls, source_id):
+		return UploadSource.objects.get(id=source_id)

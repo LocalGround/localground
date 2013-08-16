@@ -9,7 +9,7 @@ localground.viewer = function(){
 		VIDEO: 'video',
 		MARKER: 'marker',
 		RECORD: 'record',
-		SCAN: 'scan'
+		SCAN: 'map-image'
 	};
     this.keycodes = {
         UP: 38,

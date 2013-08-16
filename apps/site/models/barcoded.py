@@ -100,14 +100,14 @@ class Scan(Processor):
 	'''
 	
 	def processed_map_filesystem(self):
-		return self.get_abs_directory_path() + self.processed_image.file_name
+		return self.get_abs_directory_path() + self.processed_image.file_name_orig
 		
 	def processed_map_url_path(self):
 		'''
 		Used for displaying a previously generated image
 		'''
 		return self._encrypt_media_path('%s%s' %
-									(self.virtual_path, self.processed_image.file_name))
+									(self.virtual_path, self.processed_image.file_name_orig))
 	
 	def get_records_by_form(self, form_id):
 		from localground.apps.site.models import Form

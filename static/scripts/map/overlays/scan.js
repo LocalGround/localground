@@ -62,7 +62,7 @@ localground.scan.prototype.renderListingImage = function() {
 localground.scan.prototype.zoomToOverlay = function() {
     if(this.googleOverlay != null) {
         self.map.setCenter(this.googleOverlay.getBounds().getCenter());
-        self.map.setZoom(this.zoomLevel);
+        self.map.setZoom(this.zoom);
     }
 };
 
@@ -79,6 +79,9 @@ localground.scan.prototype.inView = function() {
 localground.scan.prototype.toggleOverlay = function(isOn) {
 	//call default renderer:
 	localground.overlay.prototype.toggleOverlay.call(this, isOn);
+	
+	///disabling the image cycler for the upcoming workshop
+	return;
 	
 	//extra processing for edit mode:
 	var $elem = this.getListingCheckbox();

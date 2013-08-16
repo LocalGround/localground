@@ -1,5 +1,6 @@
 from localground.apps.site.api.serializers.base_serializer import BaseSerializer
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
+from localground.apps.site.api.serializers.scan_serializer import ScanSerializer
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 from localground.apps.site.api.serializers.marker_serializer import MarkerSerializerCounts
 from rest_framework import serializers
@@ -16,10 +17,13 @@ class ProjectDetailSerializer(BaseSerializer):
 	photos = serializers.SerializerMethodField('get_photos')
 	audio = serializers.SerializerMethodField('get_audio')
 	markers = serializers.SerializerMethodField('get_markers')
+	scans = serializers.SerializerMethodField('get_scans')
 	
 	class Meta:
 		model = models.Project
-		fields = BaseSerializer.Meta.fields + ('slug', 'photos', 'audio', 'markers')
+		fields = BaseSerializer.Meta.fields + (
+			'slug', 'photos', 'audio', 'markers', 'scans'
+		)
 		depth = 0
 		
 	def get_photos(self, obj):
@@ -33,6 +37,12 @@ class ProjectDetailSerializer(BaseSerializer):
 				models.Audio.objects.get_objects(obj.owner, project=obj)
 			).data
 		return self.get_children(models.Audio, obj, data)
+	
+	def get_scans(self, obj):
+		data = ScanSerializer(
+				models.Scan.objects.get_objects(obj.owner, project=obj)
+			).data
+		return self.get_children(models.Scan, obj, data)
 	
 	def get_markers(self, obj):
 		data = MarkerSerializerCounts(
