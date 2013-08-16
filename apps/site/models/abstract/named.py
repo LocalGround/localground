@@ -8,9 +8,9 @@ class BaseNamed(BaseAudit):
     tags = TagAutocompleteField(blank=True, null=True)
     
     @classmethod
-    def inline_form(cls):
+    def inline_form(cls, user):
         from localground.apps.site.forms import get_inline_form
-        return get_inline_form(cls)
+        return get_inline_form(cls, user)
     
     class Meta:
         app_label = 'site'

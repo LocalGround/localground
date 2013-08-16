@@ -25,7 +25,7 @@ def create_form(request, identity=None, is_json=False):
 @login_required()
 def create_update_form(request, object_id=None,
 						  embed=False, template='profile/create_update_form.html',
-						  base_template='base/base.html'):
+						  base_template='base/profile.html'):
 	
 	from localground.apps.site.models import Form, Field
 	from django.forms import models, formsets, ModelForm
@@ -60,7 +60,7 @@ def create_update_form(request, object_id=None,
 	prefix = 'field'
 	
 	if request.method == 'POST':
-		form = Form.inline_form()(request.POST, instance=form_object)
+		form = Form.inline_form(user=request.user)(request.POST, instance=form_object)
 		formset = FieldFormset(request.POST, instance=form_object, prefix=prefix)
 		
 		if formset.is_valid() and form.is_valid():
@@ -98,7 +98,7 @@ def create_update_form(request, object_id=None,
 								Please review message(s) below.' %  Field.model_name
 			})
 	else:
-		form = Form.inline_form()(instance=form_object)
+		form = Form.inline_form(user=request.user)(instance=form_object)
 		formset = FieldFormset(instance=form_object, prefix=prefix)
 	
 	extras.update({

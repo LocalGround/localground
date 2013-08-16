@@ -104,7 +104,12 @@ def object_list_form(request, object_type_plural, return_message=None):
             formfield_callback=create_formfield,
             **kwargs
         )
-    ModelClassFormSet = getModelClassFormSet(form=ModelClass.inline_form())    
+    
+    '''
+    ServiceFormSet = formset_factory(ServiceForm, extra=3)
+    ServiceFormSet.form = staticmethod(curry(ServiceForm, affiliate=request.affiliate))
+    '''
+    ModelClassFormSet = getModelClassFormSet(form=ModelClass.inline_form(request.user))
     if request.method == "POST":
         modelformset = ModelClassFormSet(request.POST, queryset=objects)
         if modelformset.is_valid():

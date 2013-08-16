@@ -1,0 +1,35 @@
+{% extends "base/page.html" %}
+{% block style_links %}{% endblock %}
+{% block script_links %}{% endblock %}
+{% block pageload_scripts %}{% endblock %}
+
+{% block extra_styles %}
+	h1 { margin-top: 25px; }
+	.main-content { min-width:750px; max-width: 1500px; }
+	.cell1 {width: 600px; display:inline-block; }
+	.cell2 {width: 150px; float:right; display:inline-block; }
+	#the_table {
+		min-width: 800px;
+		max-width: 1000px;
+		margin-bottom: 0px;
+	}
+	#the_table input[type=text], #the_table textarea { width: 190px !important; }
+	#the_table select { width: 200px !important; }
+	#the_table .input { margin-left: 140px; }
+	
+	.clearfix { margin: 2px 0px 2px 0px !important; }
+	form label { width: 100px; }
+	.thin label { padding: 0px; width: 85px; }
+	.thin .input { margin-left: 100px !important; }
+	.input {  color: #666; padding-top: 0px; }
+	select {
+		width: 220px; /* 10 pixels longer than a form input */
+	}
+	fieldset { padding: 0px !important; margin: 0px !important; }
+{% endblock %}
+
+{% block left_pane %}
+	{% include "includes/menus/left_pane_account.html" %}
+{% endblock %}
+
+{% block main_content %}{% endblock %}

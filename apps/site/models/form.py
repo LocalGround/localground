@@ -2,14 +2,13 @@ from django.contrib.gis.db import models
 from django.db.models import Q
 from datetime import datetime    
 from localground.apps.site.managers import FormManager
-from localground.apps.site.models import Field, BaseNamed, Snippet, DataType
+from localground.apps.site.models import Field, ProjectMixin, BaseNamed, Snippet, DataType
 from localground.apps.site.dynamic import ModelClassBuilder, DynamicFormBuilder
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 	
-class Form(BaseNamed):
+class Form(BaseNamed, ProjectMixin):
 	table_name = models.CharField(max_length=255, unique=True)
-	projects = models.ManyToManyField('Project')
 	objects = FormManager()
 	_model_class = None
 	_data_entry_form_class = None
@@ -20,9 +19,9 @@ class Form(BaseNamed):
 		verbose_name_plural = 'forms'
 		
 	@classmethod
-	def inline_form(cls):
+	def inline_form(cls, user):
 		from localground.apps.site.forms import get_inline_form_with_tags
-		return get_inline_form_with_tags(cls)
+		return get_inline_form_with_tags(cls, user)
 	
 	@property
 	def TableModel(self):

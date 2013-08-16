@@ -60,40 +60,7 @@
 	<input type="hidden" id="is_blank" name="is_blank" value="{{is_blank}}" />
 {% endblock %}
 
-{% block controls_menus %}
-	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
-		<ul class="dropdown-menu" style="width:200px;">
-			{% if is_blank %}
-				<li><a id="delete_objects" href="#">Delete Rows</a></li> 
-				<li><a id="not_blank" href="#">Not Blank</a></li> 
-			{% else %}
-				<li><a id="download" href="#">Download Data</a></li>
-				<li><a id="update_table" href="#">Update Table</a></li>
-				<li class="divider"></li>
-				<li><a id="delete_objects" href="#">Delete Rows</a></li>
-				<li><a id="move_project" href="#">Move rows to another project</a></li>
-				<li><a id="blank" href="#">Set to "Blank"</a></li>
-				<li class="divider"></li>
-				<li><a href="{{url}}&style=default">Default View
-					{% if style == None or style == 'default' %}
-						<div class="sprite ui-icon-check"></div>
-					{% endif %}
-				</a></li>
-				<li><a href="{{url}}&style=transcribed">Transcribed View
-					{% if style == 'transcribed' %}
-						<div class="sprite ui-icon-check"></div>
-					{% endif %}
-				</a></li>
-				<li><a href="{{url}}&style=snippet">Snippet View
-					{% if style == 'snippet' %}
-						<div class="sprite ui-icon-check"></div>
-					{% endif %}
-				</a></li> 
-			{% endif %}
-		</ul>
-	</li>
-{% endblock %}
+{% block controls_menus %}{% endblock %}
 {% block other_menus %}
 	{% if forms %}
 	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
@@ -112,6 +79,38 @@
 		</ul>
 	</li>
 	{% endif %}
+	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
+		<ul class="dropdown-menu" style="width:200px;">
+			{% if is_blank %}
+				<li><a id="delete_objects" href="#">Delete Rows</a></li> 
+				<li><a id="not_blank" href="#">Not Blank</a></li> 
+			{% else %}
+				<li><a id="download" href="#">Download Data</a></li>
+				<li><a id="update_table" href="#">Update Table</a></li>
+				<li class="divider"></li>
+				<li><a id="delete_objects" href="#">Delete Rows</a></li>
+				<li><a id="move_project" href="#">Move rows to another project</a></li>
+				<li><a id="blank" href="#">Set to "Blank"</a></li>
+				<li class="divider"></li>
+				<li><a href="{{url}}?style=default">Default View
+					{% if style == None or style == 'default' %}
+						<div class="sprite ui-icon-check"></div>
+					{% endif %}
+				</a></li>
+				<li><a href="{{url}}?style=transcribed">Transcribed View
+					{% if style == 'transcribed' %}
+						<div class="sprite ui-icon-check"></div>
+					{% endif %}
+				</a></li>
+				<li><a href="{{url}}?style=snippet">Snippet View
+					{% if style == 'snippet' %}
+						<div class="sprite ui-icon-check"></div>
+					{% endif %}
+				</a></li> 
+			{% endif %}
+		</ul>
+	</li>
 {% endblock %}
 
 {% block save_button %}
@@ -146,9 +145,9 @@
 			<td class="column-cb">
 				<input class="checkone" id="cb_{{o.id}}" name="id" type="checkbox" value="{{o.id}}" />
 			</td>
-			<td><a class="edit" href="#" target="{{o.id}}">{{o.id}}</a></td>
+			<td><a class="edit" href="{{url}}{{o.id}}/">{{o.id}}</a></td>
 			<td>
-				{{o.snippet.source_attachment.attribution}} - {{style}}
+				{{o.snippet.source_attachment.attribution}}
 			</td>
 			{% if style and style != 'default' %}
 				{% if style == 'snippet' %}

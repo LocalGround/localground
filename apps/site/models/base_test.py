@@ -114,9 +114,9 @@ class BaseNamed(BaseAudit):
     tags = TagAutocompleteField(blank=True, null=True)
     
     @classmethod
-    def inline_form(cls):
+    def inline_form(cls, user):
         from localground.apps.site.forms import get_inline_form
-        return get_inline_form(cls)
+        return get_inline_form(cls, user)
     
     class Meta:
         app_label = 'site'
@@ -133,9 +133,9 @@ class BaseMedia(BaseAudit):
     content_type = models.CharField(max_length=50)
     
     @classmethod
-    def inline_form(cls):
+    def inline_form(cls, user):
         from localground.apps.site.forms import get_inline_form
-        return get_inline_form(cls)
+        return get_inline_form(cls, user)
     
     class Meta:
         abstract = True
@@ -205,9 +205,9 @@ class BaseUploadedMedia(BaseNamedMedia):
         app_label = 'site'
         
     @classmethod
-    def inline_form(cls):
+    def inline_form(cls, user):
         from localground.apps.site.forms import get_inline_media_form
-        return get_inline_media_form(cls)
+        return get_inline_media_form(cls, user)
         
     def absolute_virtual_path(self):
         return self._encrypt_media_path(self.virtual_path + self.file_name_new)

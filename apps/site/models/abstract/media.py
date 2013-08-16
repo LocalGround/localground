@@ -26,9 +26,9 @@ class BaseMedia(BaseAudit):
 									   related_name="%(app_label)s_%(class)s_related")
 	
 	@classmethod
-	def inline_form(cls):
+	def inline_form(cls, user):
 		from localground.apps.site.forms import get_inline_form
-		return get_inline_form(cls)
+		return get_inline_form(cls, user)
 	
 	class Meta:
 		abstract = True
@@ -142,9 +142,9 @@ class BaseUploadedMedia(BaseNamedMedia):
 		return file_name_new
 		
 	@classmethod
-	def inline_form(cls):
+	def inline_form(cls, user):
 		from localground.apps.site.forms import get_inline_media_form
-		return get_inline_media_form(cls)
+		return get_inline_media_form(cls, user)
 		
 	def get_object_type(self):
 		return self._meta.verbose_name

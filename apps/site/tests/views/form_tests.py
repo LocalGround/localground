@@ -56,7 +56,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		record.last_updated_by = self.user
 		record.col_1 = 'Column Value 1'
 		record.col_2 = 'Column Value 2'
-		record.save()
+		record.save(user=self.user)
 		
 		form = models.Form.objects.get(id=self.form.id)
 		rec = form.get_data().all()[0]
@@ -91,11 +91,14 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		name = 'new name'
 		description = 'new d'
 		tags = 'a, b, c'
+		project = self.project.id
+		
+		
+		data = self.make_post_dictionary(name, description, tags)
+		data.update({'project': project})
 		
 		# form should not have any fields:
 		self.assertEqual(len(self.form.get_fields()), 0)
-		
-		data = self.make_post_dictionary(name, description, tags)
 		
 		response = self.client.post(self.urls[0],
 			data=urllib.urlencode(data),
@@ -137,9 +140,11 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		name = 'brand new form!'
 		description = 'new d'
 		tags = 'a, b, c'
+		project = self.project.id
 		
 		
 		data = self.make_post_dictionary(name, description, tags)
+		data.update({'project': project})
 		
 		response = self.client.post('/profile/forms/create/',
 			data=urllib.urlencode(data),

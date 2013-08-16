@@ -11,7 +11,7 @@ from django.conf import settings
 import os
     
 @login_required()
-def get_objects(request, object_id, return_message=None, format_type='table'):
+def get_objects(request, object_id, format_type='table'):
     context = RequestContext(request)
     r = request.GET or request.POST
     object_type = 'tables'
@@ -51,13 +51,110 @@ def get_objects(request, object_id, return_message=None, format_type='table'):
         'style': r.get('style',
                     request.COOKIES.get('style_' + request.user.username, 'default'))
     })
-    if return_message is not None:
-        context.update({ 'return_message': return_message })
     if request.user.is_superuser:
         context.update({'users': Project.get_users()})
     context.update(prep_paginator(request, records))
     return render_to_response(template_name, context)
     
+    
+@login_required()
+def get_record(request, object_id, rec_id=None, template_name='profile/digitize_snippet_lite.html',
+         base_template='base/profile.html', embed=False, include_map=False):
+    r = request.POST or request.GET
+    record = None
+    form_object = Form.objects.get(id=object_id)
+    if rec_id:
+        record = form_object.TableModel.objects.get(id=rec_id)
+    
+    context = RequestContext(request)
+
+    if request.POST:
+        record_form = form_object.DataEntryFormClass(request.POST, instance=record)
+        if record_form.is_valid():
+            
+            record_form.instance.save(user=request.user)
+            #query for next record
+            if r.get('next_record') in ['1', 'true', True]:
+                record_new = form_object.get_next_record(last_id=id)
+                if record_new is not None:
+                    record = record_new
+                    record_form = form_object.DataEntryFormClass(instance=record)
+                    context.update({
+                        'success': True,
+                        'message': 'The previous data record was successfully \
+                                    updated.  You are now viewing the next \
+                                     record in the table.'
+                    })
+                else:
+                    context.update({
+                        'success': True,
+                        'message': 'The data record was successfully updated.  \
+                                    There are no more records to edit.',
+                        'no_more': True
+                    })    
+                    
+            else:
+                context.update({
+                    'success': True,
+                    'message': 'The data record was successfully updated.'
+                })
+                
+        else:
+            context.update({
+                'success': False,
+                'error_message': 'There were errors when updating this data record.  \
+                                Please review message(s) below.'
+            })
+    else:
+        record_form = form_object.DataEntryFormClass(instance=record)
+    
+    context.update({
+        'base_template': base_template,
+        'embed': embed,
+        'form': record_form,
+        'form_object': form_object,
+        'record': record,
+        'include_map': include_map,
+        'form_id': object_id,
+        'table_name': form_object.table_name
+    })
+
+    if not include_map:
+        return render_to_response(template_name, context)
+        
+    #add information about source attachment:
+    if record.snippet is not None and record.snippet.source_attachment is not None:
+        #include source print and source attachment:
+        source_attachment = record.snippet.source_attachment
+        context.update({
+            'source_attachment': json.dumps(source_attachment.to_dict()),
+            'source_print': json.dumps(source_attachment.source_print.to_dict())
+        })
+
+        if source_attachment.source_scan is not None:
+             context.update({
+                'source_scan': json.dumps(source_attachment.source_scan.to_dict())
+             })
+             
+        #include source print:
+        if source_attachment.source_print:
+            context.update({
+                'candidate_scans':
+                    json.dumps(source_attachment.source_print.get_scans(to_dict=True))
+            })
+    return render_to_response(template_name, context)
+
+
+
+
+
+
+
+
+
+
+
+
 @process_identity  
 def delete_objects(request, identity=None):
     r = request.GET or request.POST
@@ -84,47 +181,6 @@ def move_to_project(request, identity=None):
               at_prints_projects table.  Not implemented yet."
     return HttpResponse(json.dumps({'message': message }))
 
-'''
-def _make_shapefile(username, table_name):
-    import zipfile, fnmatch
-    media_path, shapefile_path = _make_download_directory(username, table_name)
-  
-    command_array = [
-        'pgsql2shp',
-        '-f', '%s/%s.kml' % (shapefile_path, table_name),
-        '-h',  settings.HOST,
-        '-p', settings.PORT,
-        '-u', settings.USERNAME,
-        '-P %s' % settings.PASSWORD,
-        settings.DATABASE,
-        table_name
-    ]
-    command = "'" + "' '".join(command_array) + "'"
-    result = os.popen(command)
-    responses = []
-    for line in result.readlines():
-       responses.append(line)
-
-    #add to zip file:   
-    zip_filename = '%s_%s.zip' % (table_name, format)
-    zip_filepath = '%s/%s' % (media_path, zip_filename)
-    zip_archive= zipfile.ZipFile(zip_filepath, mode='w')
-    for nm in os.listdir(shapefile_path):
-        if fnmatch.fnmatch(nm,table_name + '*'):
-            full= os.path.join( shapefile_path, nm )
-            zip_archive.write(full, arcname='%s/%s' % (format, nm))
-    zip_archive.close()
-
-    
-    return HttpResponse(json.dumps({
-        #'message': command,
-        'path': settings.SERVER_URL + '/static/media/' + username + '/downloads/' +
-                zip_filename,
-        'file_name': zip_filename,
-        'media_path': media_path,
-        'shapefile_path': shapefile_path,
-        'responses': responses
-    }))'''
     
 def export_file(format, ext, username, form, project=None, driver=None,
                 extra_filters=None):

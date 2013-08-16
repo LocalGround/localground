@@ -45,20 +45,9 @@ class Print(BaseExtents, BaseMedia, ProjectMixin):
 		]
 	
 	@classmethod
-	def inline_form(cls):
-		from django import forms
-		class PrintInlineForm(forms.ModelForm):
-			class Meta:
-				from localground.apps.site.widgets import TagAutocomplete
-				model = cls
-				fields = ('name', 'description', 'tags')
-				widgets = {
-					'id': forms.HiddenInput,
-					#'name': forms.Textarea(attrs={'rows': 3}), #any valid html attributes as attrs
-					'description': forms.Textarea(attrs={'rows': 3}), #any valid html attributes as attrs
-					'tags': TagAutocomplete()
-				}
-		return PrintInlineForm
+	def inline_form(cls, user):
+		from localground.apps.site.forms import get_inline_form_with_tags
+		return get_inline_form_with_tags(cls, user)
 	
 	def get_form_column_widths(self):
 		if self.form_column_widths is None or len(self.form_column_widths) == 0:

@@ -27,7 +27,8 @@
 	{{ block.super }}
 {% endblock %}
 
-{% block controls_menus %}
+{% block other_menus %}
+	{{ block.super }}
 	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
 		<ul class="dropdown-menu">
@@ -65,6 +66,9 @@
 			<td>
                 <div class="thin">
 					<label>ID:</label><div class="input">{{ form.instance.id }}</div>
+				</div>
+				<div class="thin">
+					<label>Project:</label><div class="input">{{ form.instance.project.name }}</div>
 				</div>
 				<div class="thin">
 					<label>Created:</label>

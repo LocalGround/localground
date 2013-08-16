@@ -29,11 +29,10 @@ class DynamicFormBuilder(object):
             class Meta:
                 from django.forms import widgets
                 model = self.form.TableModel
-                fields = ('id', 'point', 'scan') + tuple(field_names)
+                fields = ('id', 'point') + tuple(field_names)
                 widgets = {
                     'id': widgets.HiddenInput,
-                    'point': widgets.HiddenInput,
-                    'scan': widgets.HiddenInput
+                    'point': widgets.HiddenInput
                 }
                 
                 def get_widget_class(model_field):
@@ -103,7 +102,7 @@ class DynamicFormBuilder(object):
                 if model_instance.snippet is not None and \
                     model_instance.snippet.source_attachment is not None:
                     attachment = model_instance.snippet.source_attachment
-                    attachment.source_scan = model_instance.scan
+                    #attachment.source_scan = model_instance.scan
                 
                 if commit:
                     if attachment is not None:

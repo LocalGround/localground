@@ -6,7 +6,7 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 @login_required()
 def create_update_group_with_sharing(request, action, object_type_plural, object_id=None,
                           embed=False, template='profile/create_update_group.html',
-                          base_template='base/base.html'):
+                          base_template='base/profile.html'):
     
     '''
     This view creates and updates permissions for views and projects.  Parameters:

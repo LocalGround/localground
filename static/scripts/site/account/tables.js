@@ -45,7 +45,7 @@ localground.tables.prototype.initialize=function(opts){
     
     
     this.initDownloadControls();
-    this.initEditor();
+    //this.initEditor();
     
 };
 
@@ -182,6 +182,7 @@ localground.tables.prototype.doDownload = function(format) {
     return false;
 };
 
+/*
 localground.tables.prototype.initEditor = function() {
     $('.edit').click(function() {
         self.edit($(this).attr('target'), true);
@@ -191,22 +192,6 @@ localground.tables.prototype.initEditor = function() {
         self.edit($(this).attr('target'), false);
         return false;
     });
-   /* $('#my-modal').modal({
-        keyboard: true,
-        backdrop: true,
-        closeExtras: function() {
-            switch(self.mode) {
-                //only reload page if they didn't cancel the action
-                case 'edit_object':
-                    document.location.href = self.pageURL;
-                    break;
-                default:
-                    //do nothing
-                    break;
-            }
-            self.mode = 'default';
-        }
-    });*/
     
     $('#save_and_continue').click(function() {
         self.mode = 'edit_object';
@@ -229,6 +214,8 @@ localground.tables.prototype.initEditor = function() {
         $('#my-modal').modal('hide');
     });  
 };
+
+*/
 
 localground.tables.prototype.initImagePreviewer = function() {
     var modal_width = 900, modal_height = 300;

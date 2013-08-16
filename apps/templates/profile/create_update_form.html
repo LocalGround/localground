@@ -1,39 +1,6 @@
 {% extends base_template %}
 {% block extra_styles %}
 	{{block.super}}
-	fieldset { padding-top: 0px; }
-	input[type=text], textarea { width: 200px !important; }
-	th, td { padding: 5px !important; }
-	form .clearfix { margin-bottom: 5px !important; }
-	.error { background-color: #fae5e3 !important; }
-	.close { float: none !important; }
-	tr.row1 td { background-color: #eeeeee; }
-    tr.row2 td { background-color: #ffffff; }
-	#tbl {
-		min-width: 360px;
-		max-width:600px;
-		margin-top: 0px; 
-	}
-	#fields-div {
-		padding-top: 15px;
-		padding-bottom: 15px;
-		display: inline-block;
-		min-width: 360px;
-		max-width:600px;
-	}
-	{% if embed %}
-		body {
-			padding-top: 0px !important;
-			padding-right: 10px !important;
-			margin-top: 0px;
-		}
-	{% else %}
-		body {
-			padding-right: 40px !important;
-			padding-left: 40px !important;
-			margin-top: 20px;
-		}
-	{% endif %}
 {% endblock %}
 
 {% block style_links %}
@@ -58,8 +25,8 @@
 {% block pageload_scripts %}
 	o.init(opts);
 {% endblock %}
-{% block content %}
-	<div class="row">
+{% block main_content %}
+    <div class="row">
 		{% include "includes/messages.html" %}
 	</div>
     

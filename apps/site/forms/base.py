@@ -1,8 +1,14 @@
 #!/usr/bin/env python
 from django.forms import ModelForm
 
-def get_media_form(cls):
+def get_media_form(cls, user):
     class MediaForm(ModelForm):
+        
+        def __init__(self, *args, **kwargs):
+            super(MediaInlineForm, self).__init__(*args, **kwargs)
+            from localground.apps.site import models
+            self.fields["project"].queryset = models.Project.objects.get_objects(user)
+        
         class Meta:
             from django import forms
             from localground.apps.site.widgets import PointWidget, PointWidgetHidden, \
@@ -21,14 +27,20 @@ def get_media_form(cls):
     return MediaForm
         
 
-def get_inline_media_form(cls):
+def get_inline_media_form(cls, user):
     class MediaInlineForm(ModelForm):
+        
+        def __init__(self, *args, **kwargs):
+            super(MediaInlineForm, self).__init__(*args, **kwargs)
+            from localground.apps.site import models
+            self.fields["project"].queryset = models.Project.objects.get_objects(user)
+        
         class Meta:
             from django import forms
             from localground.apps.site.widgets import \
                                             TagAutocomplete, CustomDateTimeWidget
             model = cls
-            fields = ('name', 'description', 'tags', 'attribution', 'date_created')
+            fields = ('name', 'description', 'tags', 'project', 'attribution', 'date_created')
             widgets = {
                 'id': forms.HiddenInput,
                 'description': forms.Textarea(attrs={'rows': 3}), #any valid html attributes as attrs
@@ -37,7 +49,7 @@ def get_inline_media_form(cls):
             }
     return MediaInlineForm
 
-def get_inline_form(cls):
+def get_inline_form(cls, user):
     class InlineForm(ModelForm):
         class Meta:
             from django import forms
@@ -49,13 +61,20 @@ def get_inline_form(cls):
             }
     return InlineForm
 
-def get_inline_form_with_tags(cls):
-    from localground.apps.site.widgets import TagAutocomplete
+def get_inline_form_with_tags(cls, user):
+    from localground.apps.site.widgets import TagAutocomplete 
+    
     class InlineForm(ModelForm):
+        
+        def __init__(self, *args, **kwargs):
+            super(InlineForm, self).__init__(*args, **kwargs)
+            from localground.apps.site import models
+            self.fields["project"].queryset = models.Project.objects.get_objects(user)
+            
         class Meta:
             from django import forms
             model = cls
-            fields = ('name', 'description', 'tags')
+            fields = ('name', 'description', 'tags', 'project')
             widgets = {
                 'id': forms.HiddenInput,
                 'description': forms.Textarea(attrs={'rows': 3}),

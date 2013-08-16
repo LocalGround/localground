@@ -103,13 +103,16 @@ class Project(Group):
 	media associated with a particular project (for the JavaScript API).
 	"""
 	objects = ProjectManager()
+	def __str__(self):
+		return '%s - %s' % self.id, self.name
+	
 	
 	class Meta(Group.Meta):
 		verbose_name = 'project'
 		verbose_name_plural = 'projects'
 	
 	@classmethod
-	def inline_form(cls):
+	def inline_form(cls, user=None):
 		from localground.apps.site.forms import ProjectInlineUpdateForm
 		return ProjectInlineUpdateForm
 	
