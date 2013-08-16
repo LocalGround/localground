@@ -5,6 +5,7 @@ from datetime import datetime
    
 LOCK_FILE_PATH = 'process-maps.py.lock'
 def is_locked():
+   return False
    try:
       open(LOCK_FILE_PATH)
       return True
@@ -31,11 +32,12 @@ def remove_lock_file():
 def setup_environment():
    from django.core.management import setup_environ
    dirs = os.getcwd().split('/')
-   settings_path = '/'.join(dirs[:len(dirs)-1])
+   settings_path = '/'.join(dirs[:len(dirs)-2])
    print 'Settings path: %s' % settings_path
    sys.path.append(settings_path)
    jobs = os.getcwd()
-   apps = os.path.dirname(jobs)
+   lib = os.path.dirname(jobs)
+   apps = os.path.dirname(lib)
    localground = os.path.dirname(apps)
    workspace = os.path.dirname(localground)
    print '-'*70
@@ -62,12 +64,12 @@ if __name__ == '__main__':
    #write lock file to indicate that there's already a process running:
    create_lock_file()
    
-   from localground.apps.uploads.models import Scan, Attachment
+   from localground.apps.site import models
    
    ############################
    # First, process all scans #
    ############################
-   scans = Scan.objects.filter(status__id=1)
+   scans = models.Scan.objects.filter(status__id=1)
    print('%s scans are about to be processed' % len(scans))
    
    #loop through the scans and process them:
@@ -88,7 +90,7 @@ if __name__ == '__main__':
    #################################
    # Next, process all attachments #
    #################################
-   attachments = Attachment.objects.filter(status__id=1)
+   attachments = models.Attachment.objects.filter(status__id=1)
    print('%s attachments are about to be processed' % len(attachments))
    
    #loop through the scans and process them:

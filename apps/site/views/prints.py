@@ -25,9 +25,6 @@ def generate_print(request, is_json=False, project=None, embed=False,
 		#get existing form:
 		if r.get('form_id') != '-1' and r.get('form_id') is not None:
 			form = models.Form.objects.get(id=int(r.get('form_id', 1)))
-		#create new form:
-		elif r.get('form_id') == '-1':
-			form = models.Form.create_new_form(r, request.user)
 	
 	
 	forms = models.Form.objects.filter(owner=request.user).order_by('name',)
@@ -77,7 +74,7 @@ def generate_print(request, is_json=False, project=None, embed=False,
 				request.get_host(),
 				map_title=r.get('map_title', None),
 				instructions=r.get('instructions', None),
-				form=None,
+				form=form,
 				layer_ids=None,
 				scan_ids=None,
 				has_extra_form_page=has_extra_form_page

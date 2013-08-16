@@ -4,9 +4,7 @@ import Image, ImageDraw, ImageChops, ImageMath
 import os, stat, urllib, StringIO, cv, math
 from datetime import datetime 
 from django.conf import settings
-from localground.apps.uploads.models import Scan, StatusCode, \
-                                    ImageOpts, Snippet, Attachment
-from localground.apps.prints.models import Print
+from localground.apps.site import models
 import simplejson as json
 
 class General:        
@@ -43,7 +41,7 @@ class Processor(General):
     def __init__(self, obj, **kwargs):
         General.__init__(self)
         self.obj = obj
-        if isinstance(obj, Scan):
+        if isinstance(obj, models.Scan):
             self.scan = obj
         else:
             self.attachment = obj
@@ -112,8 +110,8 @@ class Processor(General):
         #query for source print; exit if no print found:
         try:
             self.logger.log('Querying for print %s' % print_id)
-            self.obj.source_print = Print.objects.get(uuid=print_id)
-        except Print.DoesNotExist:
+            self.obj.source_print = models.Print.objects.get(uuid=print_id)
+        except models.Print.DoesNotExist:
             #return if code not in database:
             raise ProcessingError(self.logger, self.obj,
                         StatusCodes.PRINT_NOT_FOUND,
@@ -161,7 +159,7 @@ class Processor(General):
             self.scan.map_rect = self.finder.get_map_rectangle(self.scan.source_print)
             if self.scan.map_rect is None:
                 self.logger.log('Exiting:  No map rectangle found')
-                self.scan.status = StatusCode.objects.get(
+                self.scan.status = models.StatusCode.objects.get(
                                         id=StatusCodes.MAP_RECT_NOT_FOUND)
                 self.scan.save()
                 return
@@ -173,14 +171,14 @@ class Processor(General):
             self.map_processor.process_map_image(self.scan.map_rect)
 
             #save all changes made to the scan:
-            self.scan.status = StatusCode.objects.get(
+            self.scan.status = models.StatusCode.objects.get(
                                     id=StatusCodes.PROCESSED_SUCCESSFULLY)
             self.scan.save()
             self.finder.draw_rectangles()
         
         elif self.page_num == 2:
             #remove scan from database, because it's been copied to the
-            #Attachments table:
+            #models.Attachments table:
             self.logger.tmp_directory = (
                 self.form_processor.attachment.get_abs_directory_path() +
                 'debug/')
@@ -235,7 +233,7 @@ class ProcessingError(Exception):
             logger.log(message)
             logger.log(traceback.format_exc())
             #logger.log(sys.argv[0])
-        obj.status = StatusCode.objects.get(id=status_code)
+        obj.status = models.StatusCode.objects.get(id=status_code)
         obj.save()
         logger.log(datetime.now())
         logger.log('Status code for %s: %s' %
@@ -255,17 +253,17 @@ class ProcessingError(Exception):
     def __str__(self):
         return repr(self.msg)
 
-class BasemapTypes():
+class BasemapTypes:
     MAP_TYPE_HYBRID_SATELLITE = 3
     MAP_TYPE_SATELLITE = 9
     
-class PrintLayouts():
+class PrintLayouts:
     #Sync with prints_layout table
     PORTRAIT = 1
     LANDSCAPE = 2
     PORTRAIT_WITH_FORM = 3
     
-class StatusCodes():
+class StatusCodes:
     #Error statuses (be sure to sync w/uploads_statuscode table):
     READY_FOR_PROCESSING = 1
     PROCESSED_SUCCESSFULLY = 2
@@ -279,7 +277,7 @@ class StatusCodes():
     FORM_RECT_NOT_FOUND = 10
     FILE_WRITE_PRIVS = 11
     
-class ImageProcessingTypes():
+class ImageProcessingTypes:
     #cropped to map bounds:
     ORIG = 'map.png'
     COLOR_TO_ALPHA = 'color_to_alpha.png'
@@ -854,7 +852,6 @@ class QrCodeUtils(General):
             self.logger.log(points)
             return [float(points[0]), float(points[1])]
             
-        
         import subprocess
         cmd = ['java',
             '-cp',
@@ -1123,7 +1120,7 @@ class MapUtils(General):
         #clear out all old map images:
         self.scan.processed_image = None
         self.scan.save()
-        ImageOpts.objects.filter(source_scan=self.scan).delete()
+        models.ImageOpts.objects.filter(source_scan=self.scan).delete()
         
         #get image statistics, to assist with color processing:
         self.stats = ImageQuality(self.pil_image, logger=self.logger)
@@ -1286,7 +1283,7 @@ class MapUtils(General):
         img.save(path)
         
         p = self.scan.source_print
-        map_image = ImageOpts()
+        map_image = models.ImageOpts()
         map_image.source_scan = self.scan
         map_image.file_name = file_name
         map_image.zoom = p.zoom
@@ -1299,7 +1296,10 @@ class MapUtils(General):
         
         if southwest is not None: map_image.southwest = southwest
         else: map_image.southwest = p.southwest
-        map_image.save()
+        
+        map_image.center = p.center
+        
+        map_image.save(user=self.scan.owner)
         return map_image
     
 class ImageQuality():
@@ -1370,7 +1370,7 @@ class FormUtils(General):
         self.obj = obj
         self.scan = None
         self.attachment = None
-        if isinstance(obj, Scan):
+        if isinstance(obj, models.Scan):
             self.scan = obj
         else:
             self.attachment = obj
@@ -1392,7 +1392,7 @@ class FormUtils(General):
         self.create_attachment_from_scan()
         
         #if self.attachment.status.id == StatusCodes.PROCESSED_SUCCESSFULLY:
-        #    self.logger.log('Attachment #%s has already been successfully processed' %
+        #    self.logger.log('models.Attachment #%s has already been successfully processed' %
         #                    self.attachment.uuid)
         #    return
 
@@ -1446,7 +1446,7 @@ class FormUtils(General):
             #print s.is_blank
             s.save()
             
-        self.attachment.status = StatusCode.objects.get(
+        self.attachment.status = models.StatusCode.objects.get(
                                         id=StatusCodes.PROCESSED_SUCCESSFULLY)
         self.attachment.save()
         return
@@ -1454,7 +1454,7 @@ class FormUtils(General):
     
     def create_attachment_from_scan(self):
         '''
-        If the scan should really be an attachment, create an Attachment object
+        If the scan should really be an attachment, create an models.Attachment object
         and move the scan directory under the attachments directory in the
         file system
         '''
@@ -1462,18 +1462,18 @@ class FormUtils(General):
         if self.attachment is not None:
             return
         
-        #otherwise, check to see if there's already an Attachment record for
+        #otherwise, check to see if there's already an models.Attachment record for
         #the current scan:
         if self.is_mini:
-            attachments = (Attachment.objects
+            attachments = (models.Attachment.objects
                        .filter(source_scan=self.scan)
                        .filter(is_short_form=self.is_mini))
             if len(attachments) == 1:
                 self.attachment = attachments[0]
         else:
             try:
-                self.attachment = Attachment.objects.get(uuid=self.scan.uuid)
-            except Attachment.DoesNotExist:
+                self.attachment = models.Attachment.objects.get(uuid=self.scan.uuid)
+            except models.Attachment.DoesNotExist:
                 self.attachment = None
                 
         if self.attachment is not None:
@@ -1482,17 +1482,17 @@ class FormUtils(General):
             self.copy_files_from_scan_dir_to_attachment_dir()
             return
         else:
-            #create new attachment from the Scan (they share the same parent
+            #create new attachment from the models.Scan (they share the same parent
             # abstract class):
             
             #generate a new attachment record
-            self.attachment = self.scan.copy_as(Attachment)
-            self.attachment.status = StatusCode.objects.get(
+            self.attachment = self.scan.copy_as(models.Attachment)
+            self.attachment.status = models.StatusCode.objects.get(
                                         id=StatusCodes.READY_FOR_PROCESSING)
             if self.is_mini:
                 self.attachment.source_scan = self.scan
             self.attachment.is_short_form = self.is_mini
-            self.attachment.name = 'Attachment %s' % self.attachment.uuid
+            self.attachment.name = 'models.Attachment %s' % self.attachment.uuid
             self.attachment.save()
             self.copy_files_from_scan_dir_to_attachment_dir()
             if not self.is_mini:
@@ -1561,7 +1561,7 @@ class FormUtils(General):
     
     def save_snippet(self, file_name, pixel_count):
         self.logger.log('Saving snippet %s...' % file_name)
-        s = Snippet()
+        s = models.Snippet()
         s.pixel_count = pixel_count #not in db, but useful for now
         s.project = self.attachment.project
         s.source_attachment = self.attachment
