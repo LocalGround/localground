@@ -5,7 +5,6 @@ from datetime import datetime
    
 LOCK_FILE_PATH = 'process-maps.py.lock'
 def is_locked():
-   return False
    try:
       open(LOCK_FILE_PATH)
       return True

@@ -147,13 +147,23 @@ sudo_noprompt "a2ensite $SERVER_HOST"
 # Update file permissions and make a media 
 # directory to store user-generated content 
 ###########################################
-#sudo mkdir ../userdata/media
-#sudo chown -R $USER_ACCOUNT:$WEBSERVER_ACCOUNT ../userdata/media
-#sudo chmod -R 755 ../userdata/media
 sudo_noprompt "mkdir ../userdata/media"
 sudo_noprompt "mkdir ../userdata/prints"
+# add the $USER_ACCOUNT to the webserver group, so that cronjobs can
+# write files to userdata.  To verify: $ groups $USER_ACCOUNT
+sudo_noprompt "usermod -a -G $WEBSERVER_ACCOUNT $USER_ACCOUNT"
 sudo_noprompt "chown -R $WEBSERVER_ACCOUNT:$WEBSERVER_ACCOUNT ../userdata"
-sudo_noprompt "chmod -R 755 ../userdata"
+sudo_noprompt "chmod -R 775 ../userdata"
+sudo_noprompt "find userdata -type d -exec chmod 2775 {} \;"
+sudo_noprompt "find userdata -type f -exec chmod ug+rw {} \;"
+
+# sudo usermod -a -G www-data my_account
+# sudo chgrp -R userdata
+# sudo chmod -R g+w userdata
+# sudo find userdata -type d -exec chmod 2775 {} \;
+# sudo find userdata -type f -exec chmod ug+rw {} \;
+
+
 
 #Copying settings_local.py to apps directory
 mv settings_local.py.tmp ../apps/settings_local.py
