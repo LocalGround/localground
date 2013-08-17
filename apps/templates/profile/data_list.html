@@ -12,14 +12,17 @@
 	<script type="text/javascript" src="/static/scripts/thirdparty/jquery.ui.timepicker.js"></script>
 	<script type="text/javascript" src="/static/scripts/helpers/dialog.js"></script>
 	<script type="text/javascript" src="/static/scripts/helpers/filtermenu.js"></script>
+	<script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
 {% endblock %}
-{% block pageload_scripts %}
+{% block extra_scripts %}
+	var o;
 	var opts = {
         username: '{{user.username}}',
 		updateURL: '{{ path }}',
 		pageURL: '{% autoescape off %}{{ path }}{% endautoescape %}?page={{ page }}{%if sql %}&query={{ sql }}{% endif %}',
 		rawURL: '{{ path }}',
 		deleteURL: '{{delete_url}}',
+		addURL: '{{ create_url }}',
 		moveURL: '{{raw_url}}move-project/',
 		project_id: '{{selected_project_id}}',
 		object_type: '{{ object_type }}',
@@ -28,7 +31,6 @@
 	{% if username %}
 		opts.alias = '{{username}}';
 	{% endif %}
-    o.initialize(opts);
 {% endblock %}
 
 {% block extra_styles %}

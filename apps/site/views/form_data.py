@@ -40,11 +40,12 @@ def get_objects(request, object_id, format_type='table'):
         'username': request.user.username,
         'suffix': '?is_blank=%s&format_type=%s' % (is_blank, format_type),
         'raw_url': raw_url,
+        'create_url': '%screate/embed/' % raw_url, 
         'form': form,
         'forms': list(forms),
         'selected_project': project,
         'selected_project_id': project_id,
-        'object_type': 'forms',
+        'object_type': 'record',
         'object_name_plural': '%s records' % form.name,
         'format_type': format_type,
         'is_blank': is_blank,
@@ -108,6 +109,7 @@ def get_record(request, object_id, rec_id=None, template_name='profile/digitize_
     else:
         record_form = form_object.DataEntryFormClass(instance=record)
     
+    if embed: base_template = 'base/iframe.html'
     context.update({
         'base_template': base_template,
         'embed': embed,

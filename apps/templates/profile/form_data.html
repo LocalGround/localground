@@ -5,16 +5,13 @@
 	{% if is_blank %} > <span style="color: red;">Blanks</span> {% endif %}
 </small>
 {% endblock %}
-{% block style_links %}
-	{{ block.super }}
-{% endblock %}
+
 {% block script_links %}
 	{{ block.super }}
-    <script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
     <script type="text/javascript" src="/static/scripts/site/account/tables.js"></script>
 {% endblock %}
 {% block extra_styles %}
-{{block.super}}
+	{{block.super}}
 	html, body {
       height:100%;
       overflow:hidden;
@@ -28,31 +25,23 @@
 	}
 {% endblock %}
 
-
 {% block extra_scripts %}
-    var o = new localground.tables();
-{% endblock %}
-{% block pageload_scripts %}
-	var opts = {
-        username: '{{user.username}}',
-		updateURL: '{{raw_url}}',
-		pageURL: '{% autoescape off %}{{url}}{% endautoescape %}&page={{page}}',
-		rawURL: '{{raw_url}}',
-		deleteURL: '{{raw_url}}delete-selected/',
-		blanksURL: '{{raw_url}}move-blanks/',
-		moveURL: '{{raw_url}}move-project/',
-		project_id: '{{selected_project_id}}',
-		style: '{{style}}',
-		page: {{page|default_if_none:"1"}}
-	};
+    {{ block.super }}
+	opts.style = '{{style}}';
+	opts.page = {{page|default_if_none:"1"}};
+	opts.blanksURL = '{{raw_url}}move-blanks/';
+	
 	{% if form %}
 		opts.formID = {{form.id}};
 	{% endif %}
 	{% if username %}
 		opts.alias = '{{username}}';
 	{% endif %}
+{% endblock %}
+
+{% block pageload_scripts %}
+	o = new localground.tables();
     o.initialize(opts);
-	
 {% endblock %}
 
 {% block hidden_form_fields %}
@@ -89,6 +78,7 @@
 				<li><a id="download" href="#">Download Data</a></li>
 				<li><a id="update_table" href="#">Update Table</a></li>
 				<li class="divider"></li>
+				<li><a id="add_object" href="#">Add New</a></li>
 				<li><a id="delete_objects" href="#">Delete Rows</a></li>
 				<li><a id="move_project" href="#">Move rows to another project</a></li>
 				<li><a id="blank" href="#">Set to "Blank"</a></li>
@@ -270,9 +260,5 @@
 		</div>
 	</div>
 	
-	
-	
 {% endblock %}
-{% block no_objects %}
-	{{ block.super }}
-{% endblock %}
+

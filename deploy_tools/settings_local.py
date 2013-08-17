@@ -20,7 +20,7 @@ APPS_ROOT = '%s/apps' % FILE_ROOT
 USER_MEDIA_ROOT = '%s/%s' % (FILE_ROOT, USER_MEDIA_DIR)
 FONT_ROOT = '%s/css/fonts/' % STATIC_ROOT
 TEMP_DIR = '%s/tmp/' % FILE_ROOT
-QR_READER_PATH = '%s/barcodereader/' % FILE_ROOT
+QR_READER_PATH = '%s/lib/barcodereader' % APPS_ROOT
 
 MAP_FILE = FILE_ROOT + '/mapserver/localground.map'
 TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_MEDIA_DIR

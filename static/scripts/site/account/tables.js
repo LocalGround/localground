@@ -264,16 +264,6 @@ localground.tables.prototype.resizeTable = function() {
   
 };
 
-localground.tables.prototype.addObject = function() {
-    var $msg = $('<div id="load_msg">Coming soon!</div>')
-                    .css({
-                        'width': '520px',
-                        'height': '100px',
-                        'text-align': 'center'
-                    });
-    $('#add-modal-body').empty().append($msg);
-    $('#add-modal').modal('show');
-};
 
 localground.tables.prototype.edit = function(markerID, embed) {
     if(!embed) {

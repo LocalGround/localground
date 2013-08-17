@@ -2,20 +2,21 @@
 
 {% block page_title %}
 	<img class="header-icon" src="/static/images/folder_large.png" />
-	Manage <span style="color:#ccc">Projects</span>
+	Manage <span style="color:#ccc">{{ object_name_plural|title }}</span>
 {% endblock %}
 {% block script_links %}
 	{{ block.super }}
     <script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
-	<script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
-    <script type="text/javascript" src="/static/scripts/site/account/groups.js"></script>
+	<script type="text/javascript" src="/static/scripts/site/account/groups.js"></script>
 {% endblock %}
 {% block extra_styles %}
 	{{block.super}}
 	.key { font-weight: bold; }
 {% endblock %}
-{% block extra_scripts %}
-    var o = new localground.groups();
+
+{% block pageload_scripts %}
+	o = new localground.groups();
+	o.initialize(opts);
 {% endblock %}
 
 {% block controls_menus %}
@@ -79,9 +80,3 @@
 	{% endfor %}
 {% endblock %}
 
-{% block no_objects %}
-	<div class="hero-unit" style="margin-top:0px !important;">
-		<p>You have not created any {{ object_name_plural }}.</p>
-		<button class="btn primary" onclick="o.addObject();return false;">Create {{ group_object.model_name|capfirst }}</button>
-	</div>
-{% endblock %}

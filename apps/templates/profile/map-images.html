@@ -1,7 +1,8 @@
 {% extends "profile/data_list.html" %}
+{% load unslugify %}
 {% block page_title %}
 	<img class="header-icon" src="/static/images/clipboard_large.png" />
-	Manage <span style="color:#ccc">{{ object_name_plural|title }}</span>
+	Manage <span style="color:#ccc">{{ object_name_plural|unslugify|title }}</span>
 {% endblock %}
 
 {% block script_links %}
@@ -14,9 +15,9 @@
 	#the_table select { width: 200px !important; }
 {% endblock %}
 
-
-{% block extra_scripts %}
-    var o = new localground.scans();
+{% block pageload_scripts %}
+	o = new localground.scans();
+    o.initialize(opts);
 {% endblock %}
 
 {% block hidden_form_fields %}

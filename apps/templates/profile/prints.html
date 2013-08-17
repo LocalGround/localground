@@ -6,7 +6,6 @@
 
 {% block script_links %}
 	{{ block.super }}
-    <script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
     <script type="text/javascript" src="/static/scripts/site/account/prints.js"></script>
 {% endblock %}
 {% block extra_styles %}
@@ -16,9 +15,9 @@
 	/*li span { color: #386CB0 !important; }*/
 {% endblock %}
 
-
-{% block extra_scripts %}
-    var o = new localground.prints();
+{% block pageload_scripts %}
+	o = new localground.prints();
+    o.initialize(opts);
 {% endblock %}
 
 {% block hidden_form_fields %}

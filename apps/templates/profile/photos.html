@@ -6,16 +6,15 @@
 
 {% block script_links %}
 	{{ block.super }}
-    <script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
     <script type="text/javascript" src="/static/scripts/site/account/photos.js"></script>
 {% endblock %}
 {% block extra_styles %}
 	{{block.super}}
 {% endblock %}
 
-
-{% block extra_scripts %}
-    var o = new localground.photos();
+{% block pageload_scripts %}
+	o = new localground.photos();
+    o.initialize(opts);
 {% endblock %}
 
 {% block hidden_form_fields %}
@@ -29,7 +28,7 @@
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
 		<ul class="dropdown-menu" style="width:200px;">
 			<li><a id="delete_objects" href="#">Delete</a></li>
-			<li><a id="add_object" href="#">Upload</a></li>
+			<!-- li><a id="add_object" href="#">Upload</a></li -->
 			<li><a id="move_project" href="#">Move to another project</a></li>
 		</ul>
 	</li>

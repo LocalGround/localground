@@ -73,8 +73,8 @@ localground.profile.prototype.initialize = function(opts) {
         return false;
     });
     
-    $('#add_object').click(function() {
-        self.mode = 'add_object';
+	$('#add_object').click(function() {
+		self.mode = 'add_object';
         self.addObject();
     });
     

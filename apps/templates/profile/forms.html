@@ -6,25 +6,17 @@
 
 {% block script_links %}
 	{{ block.super }}
-    <script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
     <script type="text/javascript" src="/static/scripts/site/account/forms.js"></script>
 {% endblock %}
 {% block extra_styles %}
 	{{block.super}}
 	#the_table input[type=text], #the_table textarea { width: 190px !important; }
 	#the_table select { width: 200px !important; }
-	/*li span { color: #386CB0 !important; }*/
 {% endblock %}
 
-
-{% block extra_scripts %}
-    var o = new localground.forms({
-		addURL: '{{ create_url }}'
-	});
-{% endblock %}
-
-{% block hidden_form_fields %}
-	{{ block.super }}
+{% block pageload_scripts %}
+	o = new localground.forms();
+	o.initialize(opts);
 {% endblock %}
 
 {% block other_menus %}
@@ -95,8 +87,4 @@
 			</td>
 		</tr>
 	{% endfor %}
-{% endblock %}
-
-{% block no_objects %}
-	{{ block.super }}
 {% endblock %}

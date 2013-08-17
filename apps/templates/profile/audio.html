@@ -8,19 +8,16 @@
 	{{ block.super }}
     <link href="/static/css/audio.css" type="text/css" media="all" rel="stylesheet" />
 {% endblock %}
+
 {% block script_links %}
 	{{ block.super }}
 	<script type="text/javascript" src="/static/scripts/site/player.js"></script>
-    <script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
     <script type="text/javascript" src="/static/scripts/site/account/audio.js"></script>
 {% endblock %}
-{% block extra_styles %}
-	{{block.super}}
-{% endblock %}
 
-
-{% block extra_scripts %}
-    var o = new localground.audio();
+{% block pageload_scripts %}
+	o = new localground.audio();
+	o.initialize(opts);
 {% endblock %}
 
 {% block hidden_form_fields %}
@@ -32,7 +29,6 @@
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
 		<ul class="dropdown-menu" style="width:200px;">
 			<li><a id="delete_objects" href="#">Delete</a></li>
-			<li><a id="add_object" href="#">Upload</a></li>
 			<li><a id="move_project" href="#">Move to another project</a></li>
 		</ul>
 	</li>
@@ -103,27 +99,4 @@
 		</tr>
 	{% endfor %}
 
-{% endblock %}
-
-{% block modals %}
-	{{ block.super }}
-	<!-- object class="playerpreview" id="myFlash" type="application/x-shockwave-flash" data="/static/scripts/thirdparty/audio-player/player_mp3_js.swf" width="1" height="1">
-		<param name="movie" value="/static/scripts/thirdparty/audio-player/player_mp3_js.swf" />
-		<param name="AllowScriptAccess" value="always" />
-		<param name="FlashVars" value="listener=o.player&amp;interval=1000" />
-	</object -->
-	{% comment %}
-	<ul>
-		<li>url : <span id="info_url">undefined</span></li>
-		<li>chargement : <span id="info_bytes">undefined</span></li>
-		<li>isPlaying : <span id="info_playing">undefined</span></li>
-		<li>position : <span id="info_position">undefined</span></li>
-		<li>duration : <span id="info_duration">undefined</span></li>
-		<li>volume : <span id="info_volume">undefined</span></li>
-	</ul>
-	{% endcomment %}
-{% endblock %}
-
-{% block no_objects %}
-	{{ block.super }}
 {% endblock %}
