@@ -5,15 +5,26 @@ from django.conf import settings
 from django.template import RequestContext 
 import json
 from django.contrib.gis.geos import Point
+from django.forms.models import inlineformset_factory
+from localground.apps.site.forms import FieldLayoutForm
 
 @login_required()
-def generate_print(request, is_json=False, project=None, embed=False,
+def generate_print(request, is_json=False, embed=False,
 				 template_name='map/print.html', base_template='base/print_fullscreen.html'):
 	
-	project = models.Project.get_default_project(request.user)
+	prefix = 'field_layout'
 	r = request.GET or request.POST
 	is_form_requested = r.get('short_form') is not None or \
 						r.get('long_form') is not None
+	
+	FieldLayoutFormset = inlineformset_factory(
+		models.Print, models.FieldLayout, FieldLayoutForm, extra=1, max_num=100)
+	
+	project = None
+	if r.get('project_id'):
+		project = models.Project.objects.get(id=r.get('project_id'))
+	else:
+		project = models.Project.get_default_project(request.user)
 	
 	#initialize variables / data based on query params:
 	map_provider = models.WMSOverlay.objects.get(
@@ -25,7 +36,6 @@ def generate_print(request, is_json=False, project=None, embed=False,
 		#get existing form:
 		if r.get('form_id') != '-1' and r.get('form_id') is not None:
 			form = models.Form.objects.get(id=int(r.get('form_id', 1)))
-	
 	
 	forms = models.Form.objects.filter(owner=request.user).order_by('name',)
 	layers, layer_ids = [], []
@@ -79,11 +89,25 @@ def generate_print(request, is_json=False, project=None, embed=False,
 				scan_ids=scan_ids,
 				has_extra_form_page=has_extra_form_page
 			)
+		
+		# save the form layout to the database:
+		formset = FieldLayoutFormset(request.POST, instance=p, prefix=prefix)
+		if formset.is_valid():
+			for fieldlayoutform in formset.forms:
+				if fieldlayoutform.has_changed():
+					instance = fieldlayoutform.instance
+					if not instance in formset.deleted_forms:
+						instance.save(user=request.user)
+			for fieldlayoutform in formset.deleted_forms:
+				fieldlayoutform.instance.delete()
+		
 
 		extras.update({
 			'map': p.thumb(),
 			'pdf': p.pdf()
 		})
+	else:
+		formset = FieldLayoutFormset(prefix=prefix)
 		
 	extras.update({
 		'embed': embed,
@@ -104,7 +128,9 @@ def generate_print(request, is_json=False, project=None, embed=False,
 		'map_title': map_title,
 		'instructions': instructions,
 		'forms': json.dumps([f.to_dict() for f in forms]),
-		'selected_project': project
+		'selected_project': project,
+		'prefix': prefix,
+		'formset': formset
 	})
 	if form is not None:
 		extras.update({'form': json.dumps(form.to_dict())})

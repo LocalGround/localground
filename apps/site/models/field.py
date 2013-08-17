@@ -21,6 +21,10 @@ class Field(BaseAudit):
 	def to_dict(self):
 		return dict(alias=self.col_alias, width_pct=self.display_width)
 	
+	def __str__(self):
+		return self.col_alias
+	
+	
 	class Meta:
 		app_label = 'site'
 		verbose_name = 'field'

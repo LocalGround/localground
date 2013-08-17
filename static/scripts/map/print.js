@@ -36,6 +36,7 @@ localground.print.prototype.initialize=function(opts){
             );
         });
         $('#form').change(function(){
+            alert(changed);
             self.form = self.getForm($('#form').val());
             //self.toggleFormControls();
             self.renderForm();
@@ -182,6 +183,8 @@ localground.print.prototype.initialize=function(opts){
         $('#center_lat').val(self.map.getCenter().lat());
         $('#center_lng').val(self.map.getCenter().lng());
     });
+    
+    this.initFormset();
 
 };
 
@@ -532,5 +535,56 @@ localground.print.prototype.getForm = function(id) {
             return;
         }
     });
+    alert(JSON.stringify(the_form))
     return the_form;
 };
+
+localground.print.prototype.initFormset = function() {	
+    $('#tbl tbody tr').formset({
+        extraClasses: ['row1', 'row2'],
+        prefix: this.prefix,
+        addText: 'add new field',
+        deleteText: '&times;',
+        deleteCssClass: 'close',
+        added: self.initNewRow,
+        removed: function() {
+            var visibleRows = 0;
+            $('#tbl tbody tr').each(function(){
+                if($(this).is(':visible')) ++visibleRows;
+            });
+            if(visibleRows == 1) {
+                $('#tbl').hide();
+                $('#field-div').show();
+                $('#tbl').find('.add-row').trigger('click');
+            }
+        }
+    });
+	
+	$('#tbl').find('tr').each(function(){
+		self.initRow($(this), false);
+	});
+};
+
+
+localground.print.prototype.initNewRow = function($elem) {
+    self.initRow($elem, true);   
+};
+
+localground.print.prototype.initRow = function($elem, isNew) {
+    /***
+    This function adds some extra functionality so that the
+    UI is customized for the fields forms (adding new users to views and projects)
+    */
+    var $cell1 = $elem.find('td:eq(1)');
+	// if it's a new row, clear out old row's id (pk):
+    if(isNew) {
+        $elem.find('td:eq(0)').find('input').val('');
+		$cell1.find('span').remove();
+    }
+    else {
+        if($cell1.hasClass('error')) {
+			$cell1.find('span').remove();  	
+		}
+    }
+};
+

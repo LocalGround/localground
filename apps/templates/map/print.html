@@ -7,6 +7,7 @@
 {% block script_links %}
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3.9"></script>
     <script type="text/javascript" src="/static/scripts/helpers/mapTypes.js"></script>
+	<script type="text/javascript" src="/static/scripts/thirdparty/jquery.formset.js"></script>
     <script type="text/javascript" src="/static/scripts/map/basemap.js"></script>
     <script type="text/javascript" src="/static/scripts/map/print.js"></script>
     <script type="text/javascript" src="/static/scripts/thirdparty/adjustable_table/table.js"></script>
@@ -29,7 +30,8 @@
         layouts: {% autoescape off %}{{ layouts }}{% endautoescape %},
         selectedLayoutID: {{ selectedLayout_id }},
         numProjects: {{projects|length}},
-        cloudmadeKey: '{{CLOUDMADE_KEY}}'
+        cloudmadeKey: '{{CLOUDMADE_KEY}}',
+		prefix: '{{ prefix }}'
     };
     {% if form.id %}
         opts.form = {{form.id }};
@@ -127,11 +129,23 @@ select { width: 180px !important; }
     margin:5px 0px 0px 10px;
     border-bottom: solid 1px #000;
 }
-.hidden-form { margin-left: 10px; }
+.hidden-form {
+	margin: 10px !important;
+	background-color: #fff;
+	clear: both;
+	padding: 10px;
+}
 .hidden-form span {
 	display: inline-block;
 	width: 85px;
 }
+#tbl {
+	margin-top: 10px !important;
+	width: 200px !important;
+}
+#tbl span { display: inline !important; }
+#tbl input { width: 30px !important; }
+#tbl td { padding: 3px !important; }
 {% if embed %}
 	body {
 		padding-top: 0px !important;
@@ -289,8 +303,43 @@ select { width: 180px !important; }
                 <span>basemap_id:</span><input type="text" name="basemap_id" value="{{ basemap_id }}" /><br>
                 <span>generate_pdf:</span><input type="text" name="generate_pdf" value="on" /><br>
                 <span>layout:</span><input type="text" name="layout" id="layout" value="{{selectedLayout}}" /><br>
-                <span>form_id:</span><input type="text" name="form_id" id="form_id" value="" />
-            </div>
+                <span>form_id:</span><input type="text" name="form_id" id="form_id" value="" /><br>
+				<span>project_id:</span><input type="text" name="project_id" id="project_id" value="{{selected_project.id}}" />
+            
+				<table id="tbl">
+					<tr>
+						<td>Field</td>
+						<td>Width</td>
+						<td>Ordering</td>
+						<td>ID</td>
+					</tr>
+					{% for form in formset.forms %}
+						<tr id="{{ form.prefix }}-row">
+							<td {% if form.field.errors or form.non_field_errors %}class="error"{% endif %}>
+								{{ form.field }}
+								<span>{{ form.instance.field.name }}</span>
+								{{ form.field.errors }}
+							</td>
+							<td {% if form.width.errors or form.non_field_errors %}class="error"{% endif %}>
+								{{ form.width }}
+								{{ form.width.errors }}
+							</td>
+							<td {% if form.ordering.errors or form.non_field_errors %}class="error"{% endif %}>
+								{{ form.ordering }}
+								{{ form.ordering.errors }}
+							</td>
+							<td>
+								{% if form.instance.pk %}
+									{{ form.id }}
+									{{ form.DELETE }}
+								{% endif %}
+							</td>
+						</tr>
+					{% endfor %}
+				</table>
+				{{ formset.management_form }}
+			
+			</div>
         </div>
         
         <ul id="column_options" style="width: 200px;" class="dropdown-menu"></ul>

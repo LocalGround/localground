@@ -12,27 +12,8 @@ localground.formfields.prototype.init = function(opts){
     if(opts) {
         $.extend(this, opts);
     }
-    //1) initialize the form and the dynamic form generator:
+    // initialize the form and the dynamic form generator:
     this.initFormset();
-    //2) if no sharing has been established, hide the users table, and initialize
-    //   an empty record:
-    $('#field-div').find('.add-row').click(function(){
-        $('#tbl').show();
-        self.initRow($('#tbl').find('tr:eq(1)'), true);
-        $('#field-div').hide();
-        return false;
-    });
-    if(this.noFields && !this.formError) {
-        $('#tbl').hide();
-        $('#field-div').show();
-    }
-	else {
-		$('#field-div').hide();
-	}
-	
-	$('#tbl').find('tr').each(function(){
-		self.initRow($(this), false);
-	});
 };
 
 localground.formfields.prototype.initNewRow = function($elem) {
@@ -60,7 +41,6 @@ localground.formfields.prototype.initRow = function($elem, isNew) {
 			$cell1.find('span').remove();  	
 		}
     }
-    
 };
 
 localground.formfields.prototype.initFormset = function() {	
@@ -83,5 +63,24 @@ localground.formfields.prototype.initFormset = function() {
             }
         }
     });
+	
+	$('#field-div').find('.add-row').click(function(){
+        $('#tbl').show();
+        self.initRow($('#tbl').find('tr:eq(1)'), true);
+        $('#field-div').hide();
+        return false;
+    });
+	
+    if(this.noFields && !this.formError) {
+        $('#tbl').hide();
+        $('#field-div').show();
+    }
+	else {
+		$('#field-div').hide();
+	}
+	
+	$('#tbl').find('tr').each(function(){
+		self.initRow($(this), false);
+	});
 };
 
