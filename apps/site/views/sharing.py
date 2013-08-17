@@ -33,15 +33,15 @@ def create_update_group_with_sharing(request, action, object_type_plural, object
         GroupForm = ModelClass.sharing_form()
     if embed: base_template = 'base/iframe.html'
     prefix = 'groupuser'
-    group_object = None
+    source_object = None
     no_shared_users = True
     extra = 0
 
     #query for model object to update (if object_id is specified):
     try:
         if object_id is not None:
-            group_object = ModelClass.objects.get(id=object_id)
-            no_shared_users = len(group_object.users.all()) == 0
+            source_object = ModelClass.objects.get(id=object_id)
+            no_shared_users = len(source_object.users.all()) == 0
     except ModelClass.DoesNotExist:
         pass
     if no_shared_users == True: extra = 1
@@ -53,8 +53,8 @@ def create_update_group_with_sharing(request, action, object_type_plural, object
                             extra=extra, can_delete=True)
     extras = {}
     if request.method == 'POST':
-        form = GroupForm(request.POST, instance=group_object)
-        formset = UserAuthorityObjectFormset(request.POST, instance=group_object, prefix=prefix)
+        form = GroupForm(request.POST, instance=source_object)
+        formset = UserAuthorityObjectFormset(request.POST, instance=source_object, prefix=prefix)
         
         if formset.is_valid() and form.is_valid():
             from django.contrib.contenttypes.models import ContentType
@@ -94,7 +94,7 @@ def create_update_group_with_sharing(request, action, object_type_plural, object
                         previous_owner.save()
             instance.last_updated_by = request.user
             instance.save()
-            group_object = instance   
+            source_object = instance   
             # -----------------------------------
             # PROJECTUSER FORM(S) POST-PROCESSING
             # -----------------------------------
@@ -106,18 +106,18 @@ def create_update_group_with_sharing(request, action, object_type_plural, object
                         instance.granted_by = request.user
                         instance.time_stamp = get_timestamp_no_milliseconds()
                         instance.content_type = content_type
-                        instance.object_id = group_object.id
+                        instance.object_id = source_object.id
                         instance.save()
             if len(marked_for_delete) > 0:
                 formset.save()
             
             # If success, determine which URL to redirect to (either update project or
             # update permissions) so that form doesn't post twice:
-            #url = '{0}{1}/?success=true'.format(request.path, group_object.id)
+            #url = '{0}{1}/?success=true'.format(request.path, source_object.id)
             #url = url.replace('create', 'update') #create URL should redirect to update URL
-            url = group_object.update_url()
+            url = source_object.update_url()
             if action == 'share':
-                url = group_object.share_url()
+                url = source_object.share_url()
             if embed:
                 url += 'embed/'
             url += '?success=true'
@@ -129,23 +129,23 @@ def create_update_group_with_sharing(request, action, object_type_plural, object
                                 Please review message(s) below.' %  ModelClass.model_name
             })
     else:
-        form = GroupForm(instance=group_object)
-        formset = UserAuthorityObjectFormset(instance=group_object, prefix=prefix)
+        form = GroupForm(instance=source_object)
+        formset = UserAuthorityObjectFormset(instance=source_object, prefix=prefix)
     extras.update({
         'form': form,
         'no_users': str(no_shared_users).lower(),
         'formset': formset,
         'prefix': prefix,
-        'group_object': group_object,
+        'source_object': source_object,
         'object_name': ModelClass.model_name,
         'parent_id': object_id,
         'show_hidden_fields': True,
         'base_template': base_template,
         'embed': embed
     })
-    if group_object:
+    if source_object:
         extras.update({ 
-            'owner': group_object.owner.username
+            'owner': source_object.owner.username
         })
     if (r.get('success', 'false') in ['1', 'true', 'True']):
         extras.update({

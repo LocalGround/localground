@@ -2,14 +2,14 @@ from django.contrib.gis.db import models
 from localground.apps.site.managers import PrintManager
 from django.conf import settings
 from localground.apps.site.models.abstract.media import BaseMedia
-from localground.apps.site.models.abstract.mixins import ProjectMixin
+from localground.apps.site.models.abstract.mixins import ProjectMixin, BaseGenericRelationMixin
 from localground.apps.site.models.abstract.geometry import BaseExtents
 import Image
 from tagging_autocomplete.models import TagAutocompleteField
 from django.contrib.gis.geos import Polygon
 
 												   
-class Print(BaseExtents, BaseMedia, ProjectMixin):
+class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 	uuid = models.CharField(unique=True, max_length=8)
 	name = models.CharField(max_length=255, blank=True, verbose_name="Map Title")
 	description = models.TextField(null=True, blank=True, verbose_name="Instructions")
@@ -27,7 +27,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin):
 									db_column='form_column_ids')
 	form = models.ForeignKey('Form', null=True, blank=True)
 	deleted = models.BooleanField(default=False)
-	layers = models.ManyToManyField('WMSOverlay', null=True, blank=True)
+	#layers = models.ManyToManyField('WMSOverlay', null=True, blank=True)
 	objects = PrintManager()
 	
 	@classmethod
@@ -48,6 +48,20 @@ class Print(BaseExtents, BaseMedia, ProjectMixin):
 	def inline_form(cls, user):
 		from localground.apps.site.forms import get_inline_form_with_tags
 		return get_inline_form_with_tags(cls, user)
+	
+	@property
+	def embedded_layers(self):
+		from localground.apps.site.models import WMSOverlay
+		if not hasattr(self, '_embedded_layers'):
+			self._embedded_layers = self.grab(WMSOverlay)
+		return self._embedded_layers
+	
+	@property
+	def embedded_scans(self):
+		from localground.apps.site.models import Scan
+		if not hasattr(self, '_embedded_scans'):
+			self._embedded_scans = self.grab(Scan)
+		return self._embedded_scans
 	
 	def get_form_column_widths(self):
 		if self.form_column_widths is None or len(self.form_column_widths) == 0:
@@ -89,7 +103,8 @@ class Print(BaseExtents, BaseMedia, ProjectMixin):
 			'map_provider': self.map_provider.id,
 			'project_id': self.project.id,
 			'map_title': self.name,
-			'instructions': self.description
+			'instructions': self.description,
+			'scan_ids': ','.join([str(s.id) for s in self.embedded_scans])
 		})
 		return 'http://' + self.host + '/maps/print/?' + data
 		
@@ -123,7 +138,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin):
 			'map': self.map(),
 			'mapWidth': self.map_width,
 			'mapHeight': self.map_height,
-			'zoomLevel': self.zoom,
+			'zoom': self.zoom,
 			'north': self.northeast.y,
 			'south': self.southwest.y,
 			'east': self.northeast.x,
@@ -325,7 +340,10 @@ class Print(BaseExtents, BaseMedia, ProjectMixin):
 			p.save()
 		
 		if layers:
-			for l in layers: p.layers.add(l)
+			for layer in layers: p.stash(l, user)
+		if scans:
+			for scan in scans: p.stash(scan, user)
+		
 		if do_save:
 			p.save()
 		return p

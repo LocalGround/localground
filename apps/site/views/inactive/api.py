@@ -5,14 +5,14 @@ from localground.apps.site.models import Project
 import simplejson as json
 
 @get_group_if_authorized
-def get_group(request, object_type, object_id, group_object, access_key=None, to_json=True):
+def get_group(request, object_type, object_id, source_object, access_key=None, to_json=True):
     '''
     Public view that returns serialized json for a particular Project or View.
     
     Required Parameters (from URL):
     object_type -- either a View or a Project
     object_id -- an id to the corresponding View or Project model
-    group_object -- populated by the @get_group_if_authorized decorator
+    source_object -- populated by the @get_group_if_authorized decorator
     access
     
     Optional Yes/No parameters (from request.GET params):
@@ -31,7 +31,7 @@ def get_group(request, object_type, object_id, group_object, access_key=None, to
     def check_flag(param):
         return request.GET.get(param, 'false') in ['True', 'true', '1', 'on']
         
-    dict = group_object.to_dict(
+    dict = source_object.to_dict(
         include_auth_users=check_flag('include_auth_users'),
         include_processed_maps=check_flag('include_processed_maps'),
         include_markers=check_flag('include_markers'),

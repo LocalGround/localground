@@ -36,7 +36,7 @@ def generate_print(request, is_json=False, project=None, embed=False,
 	scans, scan_ids = [], []
 	if r.get('scan_ids') is not None and len(r.get('scan_ids')) > 0:
 		scan_ids = [n for n in r.get('scan_ids').split(',')]
-		scans = models.Scan.objects.select_related('source_print').filter(id__in=scan_ids)
+		scans = models.Scan.objects.select_related('source_print').filter(id__in=scan_ids).to_dict_list()
 				 
 	layouts = models.Layout.objects.filter(is_active=True).order_by('id',)
 	layout_id = int(r.get('layout', 1))
@@ -98,7 +98,7 @@ def generate_print(request, is_json=False, project=None, embed=False,
 		'layer_ids': json.dumps(layer_ids),
 		'layer_id_string': r.get('layer_ids'),
 		'scan_id_string': r.get('scan_ids'),
-		'scans': json.dumps(scans.to_dict_list()),
+		'scans': json.dumps(scans),
 		'layouts': json.dumps([l.to_dict() for l in layouts]),
 		'selectedLayout_id': layout.id,
 		'map_title': map_title,

@@ -137,7 +137,7 @@ def group_case(tlist):
                     include_semicolon=True, recurse=True)
 
 
-def group_identifier(tlist):
+def source_identifier(tlist):
     def _consume_cycle(tl, i):
         # TODO: Usage of Wildcard token is ambivalent here.
         x = itertools.cycle((
@@ -178,7 +178,7 @@ def group_identifier(tlist):
             return t2
 
     # bottom up approach: group subgroups first
-    [group_identifier(sgroup) for sgroup in tlist.get_sublists()
+    [source_identifier(sgroup) for sgroup in tlist.get_sublists()
      if not isinstance(sgroup, sql.Identifier)]
 
     # real processing
@@ -200,8 +200,8 @@ def group_identifier(tlist):
         token = _next_token(tlist, idx)
 
 
-def group_identifier_list(tlist):
-    [group_identifier_list(sgroup) for sgroup in tlist.get_sublists()
+def source_identifier_list(tlist):
+    [source_identifier_list(sgroup) for sgroup in tlist.get_sublists()
      if not isinstance(sgroup, sql.IdentifierList)]
     idx = 0
     # Allowed list items
@@ -315,7 +315,7 @@ def group_aliased(tlist):
         token = tlist.token_next_by_instance(idx, clss)
 
 
-def group_typecasts(tlist):
+def source_typecasts(tlist):
     _group_left_right(tlist, T.Punctuation, '::', sql.Identifier)
 
 
@@ -356,14 +356,14 @@ def group(tlist):
             group_functions,
             group_where,
             group_case,
-            group_identifier,
+            source_identifier,
             group_order,
-            group_typecasts,
+            source_typecasts,
             group_as,
             group_aliased,
             group_assignment,
             group_comparison,
-            group_identifier_list,
+            source_identifier_list,
             group_if,
             group_for]:
         func(tlist)

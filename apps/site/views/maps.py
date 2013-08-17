@@ -46,10 +46,10 @@ def init(request, identity=None):
 }'''
 
 @get_group_if_authorized
-def public_map(request, object_type, slug, group_object, access_key=None):
+def public_map(request, object_type, slug, source_object, access_key=None):
     u = request.user
     #ModelClass = TYPE_LU.get(object_type)
-    #group_object = get_object_or_404(ModelClass, slug=slug)
+    #source_object = get_object_or_404(ModelClass, slug=slug)
     context = RequestContext(request)
     #set defaults:
     lat, lng, zoom, prints, groups = 21.698265, 14.765625, 3, [], []
@@ -61,8 +61,8 @@ def public_map(request, object_type, slug, group_object, access_key=None):
         'lat': lat,
         'lng': lng,
         'zoom': zoom,
-        'group_object': group_object,
-        'basemap_id': group_object.basemap.id,
+        'source_object': source_object,
+        'basemap_id': source_object.basemap.id,
         'num_projects': 1,
         'read_only': True
     })
@@ -70,5 +70,5 @@ def public_map(request, object_type, slug, group_object, access_key=None):
         context.update({
             'access_key': access_key
          })
-    context['%s_id' % group_object.model_name] = group_object.id    
+    context['%s_id' % source_object.model_name] = source_object.id    
     return render_to_response('map/viewer_public.html', context)

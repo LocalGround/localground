@@ -73,3 +73,54 @@ class Base(models.Model):
 		Finds the ContentType of the model (does a database query)
 		'''
 		return ContentType.objects.get_for_model(cls)
+	
+
+	def stash(self, *args, **kwargs):
+		# same as append
+		self.append(*args, **kwargs)
+		
+	def grab(self, cls):
+		# same as _get_filtered_entities
+		return self._get_filtered_entities(cls)
+		
+	def _get_filtered_entities(self, cls):
+		"""
+		Private method that queries the GenericAssociation model for
+		references to the current view for a given media type (Photo,
+		Audio, Video, Scan, Marker).
+		"""
+		qs = (self.entities
+				.filter(entity_type=cls.get_content_type())
+				.prefetch_related('entity_object', 'entity_object__owner')
+				.order_by('ordering',))
+		entities = []
+		for rec in list(qs):
+			o = rec.entity_object
+			o.ordering = rec.ordering
+			o.turned_on = rec.turned_on
+			entities.append(o)
+		return entities
+	
+	def append(self, item, user, ordering=1, turned_on=False):
+		'''
+		Creates an association between the object and whatever the item specified
+		"ordering" and "turned_on" args are optional.
+		'''
+		from localground.apps.site.models import GenericAssociation
+		
+		if not issubclass(item.__class__, BaseUploadedMedia):
+			raise Exception('Only items of type Photo, Audio, or Record can be appended.')
+		
+		assoc = GenericAssociation(
+			source_type=self.get_content_type(),
+			source_id=self.id,
+			entity_type=item.get_content_type(),
+			entity_id=item.id,
+			ordering=ordering,
+			turned_on=turned_on,
+			owner=user,
+			last_updated_by=user,
+			date_created=datetime.now(),
+			time_stamp=datetime.now()
+		)
+		assoc.save() 

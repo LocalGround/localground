@@ -375,9 +375,9 @@ class BaseUploadedMedia(BaseNamedMedia):
 class BaseGenericRelations(BaseNamed):
     from django.contrib.contenttypes import generic
     
-    entities = generic.GenericRelation('EntityGroupAssociation',
-                                       content_type_field='group_type',
-                                       object_id_field='group_id',
+    entities = generic.GenericRelation('GenericAssociation',
+                                       content_type_field='source_type',
+                                       object_id_field='source_id',
                                        related_name="%(app_label)s_%(class)s_related")
     
     class Meta:
@@ -385,13 +385,13 @@ class BaseGenericRelations(BaseNamed):
         abstract = True
         
     def append(self, item, user, ordering=-1, turned_on=False):
-        from localground.apps.site.models import EntityGroupAssociation
+        from localground.apps.site.models import GenericAssociation
         
         if not issubclass(item.__class__, BaseUploadedMedia):
             raise Exception('Only items of type Photo, Audio, or Record can be appended.')
-        assoc = EntityGroupAssociation(
-            group_type=self.get_content_type(),
-            group_id=self.id,
+        assoc = GenericAssociation(
+            source_type=self.get_content_type(),
+            source_id=self.id,
             entity_type=item.get_content_type(),
             entity_id=item.id,
             ordering=ordering,
@@ -406,7 +406,7 @@ class BaseGenericRelations(BaseNamed):
         
     def _get_filtered_entities(self, cls):
         """
-        Private method that queries the EntityGroupAssociation model for
+        Private method that queries the GenericAssociation model for
         references to the current view for a given media type (Photo,
         Audio, Video, Scan, Marker).
         """

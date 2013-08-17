@@ -13,7 +13,7 @@ from localground.apps.site.models.abstract.named import BaseNamed
 from localground.apps.site.models.abstract.media import BaseMedia, BaseUploadedMedia
 from localground.apps.site.models.abstract.geometry import BasePoint, BaseExtents
 from localground.apps.site.models.abstract.genericrelation import BaseGenericRelations
-from localground.apps.site.models.abstract.mixins import ProjectMixin
+from localground.apps.site.models.abstract.mixins import ProjectMixin, BaseGenericRelationMixin
 
 #lookups
 from localground.apps.site.models.lookups import StatusCode, UploadSource, \
@@ -31,7 +31,7 @@ from localground.apps.site.models.groups import Group, Project, View, Scene
 from localground.apps.site.models.userprofile import UserProfile
 from localground.apps.site.models.permissions import \
     BasePermissions, UserAuthorityObject, UserAuthority, ObjectAuthority
-from localground.apps.site.models.entitygroupassociation import EntityGroupAssociation
+from localground.apps.site.models.genericassociation import GenericAssociation
 
 #snippet
 from localground.apps.site.models.snippet import Snippet

@@ -20,7 +20,7 @@ class BaseMedia(BaseAudit):
 	virtual_path = models.CharField(max_length=255)
 	file_name_orig = models.CharField(max_length=255)
 	content_type = models.CharField(max_length=50)
-	groups = generic.GenericRelation('EntityGroupAssociation',
+	groups = generic.GenericRelation('GenericAssociation',
 									   content_type_field='entity_type',
 									   object_id_field='entity_id',
 									   related_name="%(app_label)s_%(class)s_related")

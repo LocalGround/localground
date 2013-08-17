@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 #from localground.apps.site.models import ObjectTypes
 from localground.apps.site.models.permissions import \
 		BasePermissions, UserAuthority, ObjectAuthority
-from localground.apps.site.models.entitygroupassociation import EntityGroupAssociation
+from localground.apps.site.models.genericassociation import GenericAssociation
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
@@ -209,15 +209,15 @@ class Project(Group):
 class View(Group):
 	"""
 	A user-generated grouping of media.  Media associations are specified in the
-	EntityGroupAssociation Model.  Only partially implemented.
+	GenericAssociation Model.  Only partially implemented.
 	"""
 	name = 'view'
 	name_plural = 'views'
 	objects = ViewManager()
 	'''
-	entities = generic.GenericRelation('EntityGroupAssociation',
-									   content_type_field='group_type',
-									   object_id_field='group_id')
+	entities = generic.GenericRelation('GenericAssociation',
+									   content_type_field='source_type',
+									   object_id_field='source_id')
 	'''
 	@classmethod
 	def sharing_form(cls):
@@ -232,7 +232,7 @@ class View(Group):
 	'''
 	def _get_filtered_entities(self, cls):
 		"""
-		Private method that queries the EntityGroupAssociation model for
+		Private method that queries the GenericAssociation model for
 		references to the current view for a given media type (Photo,
 		Audio, Video, Scan, Marker).
 		

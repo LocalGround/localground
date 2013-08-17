@@ -27,13 +27,13 @@ class MarkerMixin(BaseMixin):
 
         q = self.get_objects(user, project=project, filter=filter, ordering_field=ordering_field)
         select = {}
-        group_type_id = Marker.get_content_type().id
+        source_type_id = Marker.get_content_type().id
         for cls in [Photo, Audio]:
             select[cls.model_name + '_count'] = '''
-                SELECT COUNT(entity_id) FROM site_entitygroupassociation e 
-                WHERE e.entity_type_id = %s AND e.group_type_id = %s AND 
-                e.group_id = site_marker.id
-                ''' % (cls.get_content_type().id, group_type_id)     
+                SELECT COUNT(entity_id) FROM site_genericassociation e 
+                WHERE e.entity_type_id = %s AND e.source_type_id = %s AND 
+                e.source_id = site_marker.id
+                ''' % (cls.get_content_type().id, source_type_id)     
         q = q.extra(select)
         return q
 

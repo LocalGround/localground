@@ -7,7 +7,7 @@ class AssociationSerializer(serializers.ModelSerializer):
 	id = serializers.IntegerField(source="entity_id", required=True)
 		
 	class Meta:
-		model = models.EntityGroupAssociation
+		model = models.GenericAssociation
 		fields = ('id', 'ordering', 'turned_on', 'relation')
 
 	def validate(self, attrs):
@@ -40,7 +40,7 @@ class AssociationSerializer(serializers.ModelSerializer):
 	def get_relation(self, obj):
 		view = self.context.get('view')
 		return '%s/api/0/%s/%s/%s/%s/' % (settings.SERVER_URL,
-					view.kwargs.get('group_name_plural'), obj.group_id,
+					view.kwargs.get('group_name_plural'), obj.source_id,
 					view.kwargs.get('entity_name_plural'), obj.entity_id)
 	
 	
@@ -48,13 +48,13 @@ class AssociationSerializerDetail(AssociationSerializer):
 	parent = serializers.SerializerMethodField('get_parent')
 	child = serializers.SerializerMethodField('get_child')
 	class Meta:
-		model = models.EntityGroupAssociation
+		model = models.GenericAssociation
 		fields = ('ordering', 'turned_on', 'parent', 'child')
 		
 	def get_parent(self, obj):
 		view = self.context.get('view')
 		return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
-					view.kwargs.get('group_name_plural'), obj.group_id)
+					view.kwargs.get('group_name_plural'), obj.source_id)
 	
 	def get_child(self, obj):
 		view = self.context.get('view')

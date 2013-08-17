@@ -61,8 +61,11 @@
 				{% include "includes/forms/generic_form_renderer.html" %}
 			</td>
 			<td>
+				<div class="thin">
+					<label>Id:</label><div class="input">{{ form.instance.id }}</div>
+				</div>
                 <div class="thin">
-					<label>ID:</label><div class="input">{{ form.instance.uuid }}</div>
+					<label>uuid:</label><div class="input">{{ form.instance.uuid }}</div>
 				</div>
 				<div class="thin">
 					<label>Created:</label>

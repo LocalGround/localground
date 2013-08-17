@@ -7,11 +7,11 @@ from rest_framework import status
 class APIRelatedMediaMixin(object):
 	
 	def create_relation(self, entity_type, id=1, ordering=1):
-		r = models.EntityGroupAssociation(
+		r = models.GenericAssociation(
 			entity_type=entity_type,
 			entity_id=id,
-			group_type=models.Marker.get_content_type(),
-			group_id=self.marker.id,
+			source_type=models.Marker.get_content_type(),
+			source_id=self.marker.id,
 			ordering=ordering,
 			owner=self.user,
 			last_updated_by=self.user
@@ -43,17 +43,17 @@ class ApiRelatedMediaListTest(test.TestCase, ViewMixin, APIRelatedMediaMixin):
 			
 			
 	def test_attach_media_to_marker(self, **kwargs):
-		group_type = models.Marker.get_content_type()
+		source_type = models.Marker.get_content_type()
 		for i, url in enumerate(self.urls):
 			entity_type = models.Base.get_model(
 					model_name_plural=url.split('/')[-2]
 				).get_content_type()
 			
 			# 1) make sure that no objects are appended to the marker:
-			queryset = models.EntityGroupAssociation.objects.filter(
+			queryset = models.GenericAssociation.objects.filter(
 						entity_type=entity_type,
-						group_type=group_type,
-						group_id=self.marker.id,
+						source_type=source_type,
+						source_id=self.marker.id,
 					)
 			self.assertEqual(len(queryset), 0)
 			
@@ -68,10 +68,10 @@ class ApiRelatedMediaListTest(test.TestCase, ViewMixin, APIRelatedMediaMixin):
 			
 			#3) Make sure it's in there:
 			#have to re-instantiate the query b/c it's cached: 
-			queryset = models.EntityGroupAssociation.objects.filter(
+			queryset = models.GenericAssociation.objects.filter(
 						entity_type=entity_type,
-						group_type=group_type,
-						group_id=self.marker.id,
+						source_type=source_type,
+						source_id=self.marker.id,
 					)
 			self.assertEqual(len(queryset), 1)
 			
@@ -129,7 +129,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 		a successful delete using Session Authentication
 		(had to dig through Django's middleware/csrf.py to sort that out)
 		'''
-		group_type = models.Marker.get_content_type()
+		source_type = models.Marker.get_content_type()
 		for i, url in enumerate(self.urls):
 			entity_type = models.Base.get_model(
 					model_name_plural=url.split('/')[-2]
@@ -140,11 +140,11 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 			self.create_relation(entity_type, id=entity_id)
 			
 			# 1) make sure that the object is appended to the marker:
-			queryset = models.EntityGroupAssociation.objects.filter(
+			queryset = models.GenericAssociation.objects.filter(
 						entity_type=entity_type,
 						entity_id=entity_id,
-						group_type=group_type,
-						group_id=self.marker.id,
+						source_type=source_type,
+						source_id=self.marker.id,
 					)
 			self.assertEqual(len(queryset), 1)
 			
@@ -157,11 +157,11 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 			
 			# 3) ensure object has been removed from the marker:
 			#have to re-instantiate the query b/c it's cached: 
-			queryset = models.EntityGroupAssociation.objects.filter(
+			queryset = models.GenericAssociation.objects.filter(
 						entity_type=entity_type,
 						entity_id=entity_id,
-						group_type=group_type,
-						group_id=self.marker.id,
+						source_type=source_type,
+						source_id=self.marker.id,
 					)
 			self.assertEqual(len(queryset), 0)
 			
@@ -173,7 +173,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 		urlencode the params dictionary)
 		https://github.com/jgorset/django-respite/issues/38
 		'''
-		group_type = models.Marker.get_content_type()
+		source_type = models.Marker.get_content_type()
 		for i, url in enumerate(self.urls):
 			entity_type = models.Base.get_model(
 					model_name_plural=url.split('/')[-2]
@@ -194,12 +194,12 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 				content_type = "application/x-www-form-urlencoded"
 			)
 			self.assertEqual(response.status_code, status.HTTP_200_OK)
-			updated_relation = models.EntityGroupAssociation.objects.get(id=relation.id)
+			updated_relation = models.GenericAssociation.objects.get(id=relation.id)
 			self.assertEqual(updated_relation.ordering, 5)
 			self.assertEqual(updated_relation.turned_on, True)
 			
 	def test_update_relation_using_patch(self, **kwargs):
-		group_type = models.Marker.get_content_type()
+		source_type = models.Marker.get_content_type()
 		for i, url in enumerate(self.urls):
 			entity_type = models.Base.get_model(
 					model_name_plural=url.split('/')[-2]
@@ -218,7 +218,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 				content_type = "application/x-www-form-urlencoded"
 			)
 			self.assertEqual(response.status_code, status.HTTP_200_OK)
-			updated_relation = models.EntityGroupAssociation.objects.get(id=relation.id)
+			updated_relation = models.GenericAssociation.objects.get(id=relation.id)
 			self.assertEqual(updated_relation.turned_on, True)
 			
 	

@@ -26,16 +26,16 @@ def get_group_if_authorized(function):
         ModelClass = TYPE_LU.get(object_type)
         try:
             if slug is not None:
-                group_object = ModelClass.objects.get(slug=slug)
+                source_object = ModelClass.objects.get(slug=slug)
             elif object_id is not None:
-                group_object = ModelClass.objects.get(id=object_id)
+                source_object = ModelClass.objects.get(id=object_id)
             else:
-                group_object = ModelClass.objects.get(id=r.get('id'))    
+                source_object = ModelClass.objects.get(id=r.get('id'))    
         except:
             return _render_exception('Not found', to_json=to_json)
-        if not group_object.can_view(request.user, access_key):
+        if not source_object.can_view(request.user, access_key):
             return _render_exception('Not authorized', to_json=to_json)   
-        return function(request, object_type, slug, group_object, access_key=access_key, *args, **kwargs)
+        return function(request, object_type, slug, source_object, access_key=access_key, *args, **kwargs)
     return wrapper
 
 def _render_exception(message, to_json=False):
