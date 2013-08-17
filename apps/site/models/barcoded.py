@@ -164,22 +164,9 @@ class Scan(Processor):
 		#add.delay(2, 4) 
 		
 	def to_dict(self):
-		d = super(Scan, self).to_dict()
-		d.update({
-			'uuid': self.uuid,
-			'file_path': self.orig_url_path()
-		})   
-		if self.processed_image is not None:
-			d.update({
-				'map_image_id': self.processed_image.id,
-				'north': self.processed_image.northeast.y,
-				'south': self.processed_image.southwest.y,
-				'east': self.processed_image.northeast.x,
-				'west': self.processed_image.southwest.x,
-				'zoomLevel': self.processed_image.zoom,
-				'overlay_path': self.processed_map_url_path() 
-			})
-		return d
+		from localground.apps.site.api.serializers import ScanSerializer
+		return ScanSerializer(self).data
+		
 	
 	def delete(self, *args, **kwargs):
 		#first remove directory, then delete from db:
@@ -221,11 +208,8 @@ class Attachment(Processor):
 	#    return '/%s/attachments/%s/' % (settings.USER_MEDIA_DIR, self.uuid)
 			
 	def to_dict(self):
-		d = super(Attachment, self).to_dict()
-		d.update({
-			'thumb_path': self.thumb()
-		})
-		return d
+		from localground.apps.site.api.serializers import AttachmentSerializer
+		return AttachmentSerializer(self).data
 		
 	def process(self):
 		from localground.apps.site.image_processing.processor import Processor

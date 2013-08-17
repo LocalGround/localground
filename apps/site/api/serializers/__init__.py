@@ -12,7 +12,7 @@ from localground.apps.site.api.serializers.photo_serializer import PhotoSerializ
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 from localground.apps.site.api.serializers.form_serializer import FormSerializer
 from localground.apps.site.api.serializers.print_serializer import PrintSerializer, PrintSerializerDetail
-from localground.apps.site.api.serializers.scan_serializer import ScanSerializer
+from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializer, AttachmentSerializer
 		
 class UserSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:

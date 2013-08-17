@@ -3,6 +3,16 @@ from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.site.api import fields
 
+class AttachmentSerializer(BaseSerializer):
+	overlay_type = serializers.SerializerMethodField('get_overlay_type')
+	
+	class Meta:
+		model = models.Attachment
+		fields = BaseSerializer.Meta.fields + (
+			'overlay_type',
+		)
+
+
 class ScanSerializer(BaseSerializer):
 	overlay_type = serializers.SerializerMethodField('get_overlay_type')
 	project_id = fields.ProjectField(source='project', required=False)

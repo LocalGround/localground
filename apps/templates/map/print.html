@@ -127,6 +127,11 @@ select { width: 180px !important; }
     margin:5px 0px 0px 10px;
     border-bottom: solid 1px #000;
 }
+.hidden-form { margin-left: 10px; }
+.hidden-form span {
+	display: inline-block;
+	width: 85px;
+}
 {% if embed %}
 	body {
 		padding-top: 0px !important;
@@ -273,18 +278,18 @@ select { width: 180px !important; }
                 </div>
             </div>
             
-            <div class="clearfix" style="display:none;">
-                <input name="width" value="{{ width }}" />
-                <input name="height" value="{{ height }}" />
-                <input id="zoom" name="zoom" value="{{ zoom }}" />
-                <input id="center_lng" name="center_lng" value="{{ center_lng }}" />
-                <input id="center_lat" name="center_lat" value="{{ center_lat }}" />
-                <input name="layer_ids" value="{{ layer_id_string|default_if_none:"" }}" />
-                <input name="scan_ids" value="{{ scan_id_string|default_if_none:"" }}" />
-                <input type="text" name="basemap_id" value="{{ basemap_id }}" />
-                <input type="text" name="generate_pdf" value="on" />
-                <input type="text" name="layout" id="layout" value="{{selectedLayout}}" />
-                <!-- input type="text" name="form_id" id="form_id" value="" /-->
+            <div class="clearfix hidden-form" style="display:block;">
+                <span>width:</span><input name="width" value="{{ width }}" /><br>
+                <span>height:</span><input name="height" value="{{ height }}" /><br>
+                <span>zoom:</span><input id="zoom" name="zoom" value="{{ zoom }}" /><br>
+                <span>center_lat:</span><input id="center_lng" name="center_lng" value="{{ center_lng }}" /><br>
+                <span>center_lng:</span><input id="center_lat" name="center_lat" value="{{ center_lat }}" /><br>
+                <span>layer_ids:</span><input name="layer_ids" value="{{ layer_id_string|default_if_none:"" }}" /><br>
+                <span>scan_ids:</span><input name="scan_ids" value="{{ scan_id_string|default_if_none:"" }}" /><br>
+                <span>basemap_id:</span><input type="text" name="basemap_id" value="{{ basemap_id }}" /><br>
+                <span>generate_pdf:</span><input type="text" name="generate_pdf" value="on" /><br>
+                <span>layout:</span><input type="text" name="layout" id="layout" value="{{selectedLayout}}" /><br>
+                <span>form_id:</span><input type="text" name="form_id" id="form_id" value="" />
             </div>
         </div>
         

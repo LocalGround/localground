@@ -71,7 +71,8 @@
 				<span>{{ form.instance.last_updated_by}}</span>
 				on <span>{{form.instance.time_stamp|date:"n/j/Y P" }}</span>.		
 				<ul style="margin-bottom:0px">
-					<li>Id: <span>{{ form.instance.uuid }}</span></li>
+					<li>Id: <span>{{ form.instance.id }}</span></li>
+					<li>uuid: <span>{{ form.instance.uuid }}</span></li>
 					<li>Owned by: <span>{{ v.owner }}</span></li>
 					<li>Project: <span>{{ form.instance.project.name }}</span></li>
 					<li>Status: <span>{{form.instance.status.name}}</span></li>
