@@ -1,18 +1,9 @@
-'''
-from localground.apps.site.models.base import (Base, BaseAudit, BaseNamed,
-                BaseMedia, BaseUploadedMedia, BasePoint, BaseExtents, StatusCode,
-                BaseGenericRelations, UploadSource, UploadType, ErrorCode)
-#helpers
-from localground.apps.site.models.objecttypes import ObjectTypes
-from localground.apps.site.models.returncodes import ReturnCode, ReturnCodes
-'''
 #abstract
 from localground.apps.site.models.abstract.base import Base
 from localground.apps.site.models.abstract.audit import BaseAudit
 from localground.apps.site.models.abstract.named import BaseNamed
 from localground.apps.site.models.abstract.media import BaseMedia, BaseUploadedMedia
 from localground.apps.site.models.abstract.geometry import BasePoint, BaseExtents
-from localground.apps.site.models.abstract.genericrelation import BaseGenericRelations
 from localground.apps.site.models.abstract.mixins import ProjectMixin, BaseGenericRelationMixin
 
 #lookups

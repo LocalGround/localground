@@ -8,7 +8,7 @@ from django.contrib.gis.geos import Point
 
 @login_required()
 def generate_print(request, is_json=False, project=None, embed=False,
-				 template_name='map/print.html', base_template='base/base.html'):
+				 template_name='map/print.html', base_template='base/print_fullscreen.html'):
 	
 	project = models.Project.get_default_project(request.user)
 	r = request.GET or request.POST

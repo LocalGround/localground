@@ -8,9 +8,9 @@ from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video
 from django.contrib.contenttypes import generic
 from localground.apps.site.models import BasePoint, BaseNamed, \
-                                        BaseGenericRelations, ReturnCodes
+                                        BaseGenericRelationMixin, ReturnCodes
     
-class Marker(BasePoint, BaseGenericRelations): 
+class Marker(BasePoint, BaseNamed, BaseGenericRelationMixin): 
     """
     Markers are association objects with a lat/lng.  Markers can be associated
     with one or more photos, audio files, data records, etc.  This object needs

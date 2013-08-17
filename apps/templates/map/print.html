@@ -140,7 +140,7 @@ select { width: 180px !important; }
 
 {% endblock %}
 
-{% block content %}
+{% block main_content %}
 {% if not pdf %}
     <form id="the_form" method="post" action="." {% if embed %}class="embed"{% endif %}>
         {% csrf_token %}

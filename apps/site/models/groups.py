@@ -1,8 +1,7 @@
+#!/usr/bin/env python
 from django.contrib.gis.db import models
-#from localground.apps.site.models import ObjectTypes
 from localground.apps.site.models.permissions import \
 		BasePermissions, UserAuthority, ObjectAuthority
-from localground.apps.site.models.genericassociation import GenericAssociation
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
@@ -10,16 +9,16 @@ from localground.apps.site.models.barcoded import Scan
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video
-from localground.apps.site.models import Marker, WMSOverlay
-from localground.apps.site.models import (Marker, WMSOverlay, ObjectTypes)
-from localground.apps.site.models import BaseNamed, BaseGenericRelations
+from localground.apps.site.models import \
+	Marker, WMSOverlay, ObjectTypes, BaseNamed, BaseGenericRelationMixin
+
 from localground.apps.site.managers import ProjectManager, ViewManager
 
-#!/usr/bin/env python
+
 from django.contrib.gis.db import models
 from datetime import datetime
 
-class Group(BaseGenericRelations, BasePermissions):
+class Group(BaseNamed, BaseGenericRelationMixin, BasePermissions):
 	"""
 	Abstract class that extends BasePermissions; provides helper methods to
 	determine whether a user has read/write/manage permissions on an object.
@@ -214,11 +213,7 @@ class View(Group):
 	name = 'view'
 	name_plural = 'views'
 	objects = ViewManager()
-	'''
-	entities = generic.GenericRelation('GenericAssociation',
-									   content_type_field='source_type',
-									   object_id_field='source_id')
-	'''
+	
 	@classmethod
 	def sharing_form(cls):
 		from localground.apps.site.forms import ViewPermissionsForm
@@ -228,49 +223,6 @@ class View(Group):
 	def get_form(cls):
 		from localground.apps.site.forms import ViewCreateForm
 		return ViewCreateForm
-		
-	'''
-	def _get_filtered_entities(self, cls):
-		"""
-		Private method that queries the GenericAssociation model for
-		references to the current view for a given media type (Photo,
-		Audio, Video, Scan, Marker).
-		
-		Required arguments:
-		cls -- the class name of the media type you want to find.
-		
-		"""
-		qs = (self.entities
-				.filter(entity_type=ContentType.objects.get_for_model(cls))
-				.order_by('ordering',))
-		entities = []
-		for rec in list(qs):
-			o = rec.entity_object
-			o.ordering = rec.ordering
-			o.turned_on = rec.turned_on
-			entities.append(o)
-		return entities
-	
-	@property
-	def photos(self):
-		return self._get_filtered_entities(Photo)    
-	
-	@property
-	def audio_files(self):
-		return self._get_filtered_entities(Audio)
-	
-	@property
-	def videos(self):
-		return self._get_filtered_entities(Video)
-	
-	@property
-	def map_images(self):
-		return self._get_filtered_entities(Scan)
-		
-	@property
-	def markers(self):
-		return self._get_filtered_entities(Marker)
-	'''
 		
 	def get_markers_with_counts(self):
 		"""
