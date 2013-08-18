@@ -37,6 +37,12 @@ class LayoutSerializer(serializers.ModelSerializer):
 		model = models.Layout
 		fields = ( 'id', 'name', 'display_name')
 		depth = 0
+		
+class DataTypeSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = models.Layout
+		fields = ( 'id', 'name')
+		depth = 0
 
 class OverlayTypeSerializer(serializers.ModelSerializer):
 	

@@ -17,7 +17,8 @@ class DataType(models.Model):
     def __repr__(self):
         return self.name
     
- 
     class Meta:
         app_label = 'site'
+        verbose_name = 'data-type'
+        verbose_name_plural = 'data-types'
         ordering = ['name']

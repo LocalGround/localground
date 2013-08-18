@@ -11,3 +11,5 @@ class OverlaySource(Base):
     
     class Meta:
         app_label = 'site'
+        verbose_name = 'overlay-source'
+        verbose_name_plural = 'overlay-sources'

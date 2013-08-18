@@ -20,3 +20,10 @@ class FormInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
 	def pre_save(self, obj):
 		AuditUpdate.pre_save(self, obj)
 		
+class DataTypeViewSet(viewsets.ModelViewSet, AuditUpdate):
+	queryset = models.DataType.objects.all().order_by('name',)
+	serializer_class = serializers.DataTypeSerializer
+	
+	def pre_save(self, obj):
+		AuditUpdate.pre_save(self, obj)
+		

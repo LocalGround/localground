@@ -15,6 +15,7 @@ localground.print.prototype = new localground.basemap();           // Here's whe
 
 localground.print.prototype.initialize=function(opts){
     self = this;
+    $.extend(this, opts);
     this.center             = opts.center || new google.maps.LatLng(37.855365, -122.272614);
     this.zoom               = opts.zoom || 13;
     this.layouts            = opts.layouts || this.layouts,
@@ -23,9 +24,26 @@ localground.print.prototype.initialize=function(opts){
     this.scans              = opts.scans || this.scans;
     this.selectedProjectID  = opts.selectedProjectID || this.selectedProjectID;
     this.numProjects        = opts.numProjects || this.numProjects;
-    if(opts.formID != null) {
+    if(opts.formID != null) 
         this.form = this.getForm(opts.formID);
-    }
+    
+    this.initFormsMenu();
+    this.initProjectsMenu();
+    this.initLayout();
+    this.initMap(opts);
+    this.initLayoutFormset();
+    
+    $('#the_form').submit(self.validateForm);
+    $('input').keypress(function(event){
+        if(event.keyCode == 13){
+            return false;
+        }
+        return true;
+    });
+
+};
+
+localground.print.prototype.initFormsMenu = function() {
     if(this.form != null)
         $('#form_id').val(this.form.id);
         
@@ -36,7 +54,7 @@ localground.print.prototype.initialize=function(opts){
             );
         });
         $('#form').change(function(){
-            alert(changed);
+            alert('changed');
             self.form = self.getForm($('#form').val());
             //self.toggleFormControls();
             self.renderForm();
@@ -54,12 +72,10 @@ localground.print.prototype.initialize=function(opts){
         return false;
     });
     
-    $('input').keypress(function(event){
-        if(event.keyCode == 13){
-            return false;
-        }
-        return true;
-    });
+    $('#form_name').val('Enter table name...');
+};
+
+localground.print.prototype.initProjectsMenu = function() {
     $('#project_id').val(this.selectedProjectID);
     $('#project_id').change(function(){
         if($(this).val() == 'add')
@@ -77,10 +93,10 @@ localground.print.prototype.initialize=function(opts){
         $('#cancel_add_new_project').hide();
     }
     
-    //quick controls initialization
-    $('#form_name').val('Enter table name...');
     $('#project_name').val('Enter new project name...');
-    
+};
+
+localground.print.prototype.initMap = function(opts) {
     //override map options (turn off everything):
     this.mapOptions = {
         scrollwheel: false,
@@ -97,21 +113,30 @@ localground.print.prototype.initialize=function(opts){
     localground.basemap.prototype.initialize.call(this, opts);
     
     google.maps.event.addListener(self.map, 'bounds_changed', function() {
-        //alert(self.map.getZoom());
         $('#zoom').val(self.map.getZoom());
     });
-    //turn on overlay tiles:
+    
+    // render overlay tiles:
     if(opts.initial_overlays){
         $.each(opts.initial_overlays, function() {
             self.addTileOverlay(this, true);   
         });
     }
+    
+    // render scans
     if(this.scans) {
         $.each(this.scans, function() {
             self.addGroundOverlay(this);
         });
     }
-    
+
+    google.maps.event.addListener(this.map, 'idle', function() {
+        $('#center_lat').val(self.map.getCenter().lat());
+        $('#center_lng').val(self.map.getCenter().lng());
+    });  
+};
+
+localground.print.prototype.initLayout = function() {
     $("#txtMapTitle")
         .keypress(function(event){
             if(event.keyCode == 13){
@@ -133,75 +158,6 @@ localground.print.prototype.initialize=function(opts){
           $(this).css({'background-color': '#fff'});
         }
     );
-    this.initLayoutControls();
-    
-    $('#the_form').submit(function() {
-        var messages = [];
-        var msg = 'Enter new project name...';
-        if($('#project_id').val() == '-1')
-            messages.push('Please assign this print to a project by selecting \
-                          a project from the menu.');
-        if($('#project_id').val() == 'add') {
-            if($('#project_name').val() == msg || $('#project_name').val() == '') {
-                messages.push('Please give your new project a name');
-            }
-        }
-        
-        //if it's a new form, must have a name and column names:
-        msg = 'Enter table name...';
-        if($('#form').val() == '-1' && ($('#short_form').attr('checked') ||
-                                        $('#long_form').attr('checked'))) {
-            if($('#form_name').val() == msg || $('#form_name').val() == '') {
-                messages.push('Please give your new table a name');
-            }
-            $('.column_alias').each(function() {
-                if($(this).val() == 'Click to name column...') {
-                    messages.push('Please name all of your table columns and \
-                                  assign them a data type.');
-                    return false;
-                }
-                return true;
-            });
-        }
-        if(messages.length == 0)
-            return true;
-        //alert(messages.join('\n'));
-        
-        try {
-            self.displayMessage(messages, {
-                title: 'Please fix the following items in order to generate your print:',
-                error: true
-            });
-        } catch(e) {
-            alert(e);
-            return false;
-        }
-        return false;
-    });
-    
-    google.maps.event.addListener(this.map, 'idle', function() {
-        $('#center_lat').val(self.map.getCenter().lat());
-        $('#center_lng').val(self.map.getCenter().lng());
-    });
-    
-    this.initFormset();
-
-};
-
-localground.print.prototype.toggleNewProject = function(show) {
-    if(show) {
-        $('#project_id').hide();
-        $('#project_name').show();
-        $('#cancel_add_new_project').show();
-    }
-    else {
-        $('#project_id').val('-1').show();
-        $('#project_name').hide();
-        $('#cancel_add_new_project').hide();
-    }
-};
-
-localground.print.prototype.initLayoutControls = function() {
     $('.layout_control').click(function() {
         self.form = self.getForm($('#form').val());
         //alert(self.form);
@@ -238,6 +194,68 @@ localground.print.prototype.initLayoutControls = function() {
     }
     $('#second_page').hide();
     this.setLayout();
+};
+
+localground.print.prototype.initLayoutFormset = function() {	
+    $('#tbl tbody tr').formset({
+        extraClasses: ['row1', 'row2'],
+        prefix: this.prefix,
+        addText: 'add new field',
+        deleteText: '&times;',
+        deleteCssClass: 'close',
+        added: self.initNewRow,
+        removed: function() {
+            var visibleRows = 0;
+            $('#tbl tbody tr').each(function(){
+                if($(this).is(':visible')) ++visibleRows;
+            });
+            if(visibleRows == 1) {
+                $('#tbl').hide();
+                $('#field-div').show();
+                $('#tbl').find('.add-row').trigger('click');
+            }
+        }
+    });
+	
+	$('#tbl').find('tr').each(function(){
+		self.initRow($(this), false);
+	});
+};
+
+
+localground.print.prototype.initNewRow = function($elem) {
+    self.initRow($elem, true);   
+};
+
+localground.print.prototype.initRow = function($elem, isNew) {
+    /***
+    This function adds some extra functionality so that the
+    UI is customized for the fields forms (adding new users to views and projects)
+    */
+    var $cell1 = $elem.find('td:eq(1)');
+	// if it's a new row, clear out old row's id (pk):
+    if(isNew) {
+        $elem.find('td:eq(0)').find('input').val('');
+		$cell1.find('span').remove();
+    }
+    else {
+        if($cell1.hasClass('error')) {
+			$cell1.find('span').remove();  	
+		}
+    }
+};
+
+localground.print.prototype.toggleNewProject = function(show) {
+    if(show) {
+        $('#project_id').hide();
+        $('#project_name').show();
+        $('#cancel_add_new_project').show();
+    }
+    else {
+        $('#project_id').val('-1').show();
+        $('#project_name').hide();
+        $('#cancel_add_new_project').hide();
+    }
 };
 
 localground.print.prototype.setLayout = function(){
@@ -390,7 +408,7 @@ localground.print.prototype.createTable = function(num_rows, table_id) {
     }
     $('#' + table_id)
         .attr('style', 'width: ' + this.table_width + 'px !important')
-        .removeAttr('resizeable')
+        //.removeAttr('resizeable')
         .empty()
         .append($thead).append($tbody)
         .show();      
@@ -403,7 +421,7 @@ localground.print.prototype.renderForm = function() {
     
     if(!short_form && !long_form) { return; }
     
-    if(is_new)
+    //if(is_new)
     {
         var resizeable_table_exists = (this.resizableTable != null &&
                                        this.resizableTable.table.attr('resizeable') != null);
@@ -425,19 +443,23 @@ localground.print.prototype.renderForm = function() {
             this.createTable(num_rows, id);    
             var $tbl = $('#' + id);
             this.resizableTable = null; //should avoid a memory leak...
-            this.resizableTable = new gentable();
-            this.resizableTable.getDataTypes();
+            var opts = {
+                prefix: this.prefix,
+                columns: this.form.columns
+            };
+            this.resizableTable = new gentable(opts);
+            //this.resizableTable.getDataTypes();
             this.data_types_initialized = true;
             var opts = {
                 container: $container,
                 table: $tbl ,
-                maxWidth: this.table_width - 10,
+                maxWidth: this.table_width - 20,
                 afterUpdateFunction: this.afterTableUpdate
             }
             this.resizableTable.initialize(opts);
         }
     }
-    else {
+    /*else {
         //populate table based on existing form:
         if(short_form) {
             this.createTable(4, 'paper_form_short');
@@ -449,7 +471,7 @@ localground.print.prototype.renderForm = function() {
             this.createTable(13, 'paper_form');
            // $('#second_page').show();
         }
-    }
+    }*/
 };
 
 localground.print.prototype.toggleFormControls = function() {
@@ -535,56 +557,52 @@ localground.print.prototype.getForm = function(id) {
             return;
         }
     });
-    alert(JSON.stringify(the_form))
+    alert(JSON.stringify(the_form));
+    $('#form_id').val($('#form').val())
     return the_form;
 };
 
-localground.print.prototype.initFormset = function() {	
-    $('#tbl tbody tr').formset({
-        extraClasses: ['row1', 'row2'],
-        prefix: this.prefix,
-        addText: 'add new field',
-        deleteText: '&times;',
-        deleteCssClass: 'close',
-        added: self.initNewRow,
-        removed: function() {
-            var visibleRows = 0;
-            $('#tbl tbody tr').each(function(){
-                if($(this).is(':visible')) ++visibleRows;
-            });
-            if(visibleRows == 1) {
-                $('#tbl').hide();
-                $('#field-div').show();
-                $('#tbl').find('.add-row').trigger('click');
-            }
+localground.print.prototype.validateForm = function() {
+    var messages = [];
+    var msg = 'Enter new project name...';
+    if($('#project_id').val() == '-1')
+        messages.push('Please assign this print to a project by selecting \
+                      a project from the menu.');
+    if($('#project_id').val() == 'add') {
+        if($('#project_name').val() == msg || $('#project_name').val() == '') {
+            messages.push('Please give your new project a name');
         }
-    });
-	
-	$('#tbl').find('tr').each(function(){
-		self.initRow($(this), false);
-	});
-};
-
-
-localground.print.prototype.initNewRow = function($elem) {
-    self.initRow($elem, true);   
-};
-
-localground.print.prototype.initRow = function($elem, isNew) {
-    /***
-    This function adds some extra functionality so that the
-    UI is customized for the fields forms (adding new users to views and projects)
-    */
-    var $cell1 = $elem.find('td:eq(1)');
-	// if it's a new row, clear out old row's id (pk):
-    if(isNew) {
-        $elem.find('td:eq(0)').find('input').val('');
-		$cell1.find('span').remove();
     }
-    else {
-        if($cell1.hasClass('error')) {
-			$cell1.find('span').remove();  	
-		}
+    
+    //if it's a new form, must have a name and column names:
+    msg = 'Enter table name...';
+    if($('#form').val() == '-1' && ($('#short_form').attr('checked') ||
+                                    $('#long_form').attr('checked'))) {
+        if($('#form_name').val() == msg || $('#form_name').val() == '') {
+            messages.push('Please give your new table a name');
+        }
+        $('.column_alias').each(function() {
+            if($(this).val() == 'Click to name column...') {
+                messages.push('Please name all of your table columns and \
+                              assign them a data type.');
+                return false;
+            }
+            return true;
+        });
     }
+    if(messages.length == 0)
+        return true;
+    //alert(messages.join('\n'));
+    
+    try {
+        self.displayMessage(messages, {
+            title: 'Please fix the following items in order to generate your print:',
+            error: true
+        });
+    } catch(e) {
+        alert(e);
+        return false;
+    }
+    return false;
 };
 

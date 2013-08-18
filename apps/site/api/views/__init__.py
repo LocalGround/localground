@@ -16,7 +16,7 @@ from localground.apps.site.api.views.project_views import ProjectList, ProjectIn
 from localground.apps.site.api.views.marker_views import MarkerList, MarkerInstance
 from localground.apps.site.api.views.association_views \
 					import RelatedMediaList, RelatedMediaInstance
-from localground.apps.site.api.views.form_views import FormList, FormInstance
+from localground.apps.site.api.views.form_views import FormList, FormInstance, DataTypeViewSet
 
 @api_view(('GET',))
 #@permission_classes((permissions.IsAuthenticated, IsAllowedGivenProjectPermissionSettings, ))
@@ -27,10 +27,11 @@ def api_root(request, format=None, **kwargs):
 	d['forms'] = reverse('form-list', request=request, format=format)
 	d['groups'] = reverse('group-list', request=request, format=format)
 	d['layouts'] = reverse('layout-list', request=request, format=format)
+	d['data-types'] = reverse('datatype-list', request=request, format=format)
 	d['markers'] = reverse('marker-list', request=request, format=format)
 	d['map-images'] = reverse('scan-list', request=request, format=format)
-	d['overlaysources'] = reverse('overlaysource-list', request=request, format=format)
-	d['overlaytypes'] = reverse('overlaytype-list', request=request, format=format)
+	d['overlay-sources'] = reverse('overlaysource-list', request=request, format=format)
+	d['overlay-types'] = reverse('overlaytype-list', request=request, format=format)
 	d['photos'] = reverse('photo-list', request=request, format=format)
 	d['prints'] = reverse('print-list', request=request, format=format)
 	d['projects'] = reverse('project-list', request=request, format=format)

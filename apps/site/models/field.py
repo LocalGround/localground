@@ -19,7 +19,7 @@ class Field(BaseAudit):
 	ordering = models.IntegerField()
 	
 	def to_dict(self):
-		return dict(alias=self.col_alias, width_pct=self.display_width)
+		return dict(alias=self.col_alias, id=self.id)
 	
 	def __str__(self):
 		return self.col_alias

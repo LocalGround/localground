@@ -14,10 +14,11 @@ router.register(r'photos', views.PhotoViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 router.register(r'map-images', views.ScanViewSet)
+router.register(r'data-types', views.DataTypeViewSet)
 router.register(r'tiles', views.TileViewSet)
 router.register(r'layouts', views.LayoutViewSet)
-router.register(r'overlaytypes', views.OverlayTypeViewSet)
-router.register(r'overlaysources', views.OverlaySourceViewSet)
+router.register(r'overlay-types', views.OverlayTypeViewSet)
+router.register(r'overlay-sources', views.OverlaySourceViewSet)
 
 # The API URLs are now determined automatically by the router.
 # Additionally, we include the login URLs for the browseable API.
