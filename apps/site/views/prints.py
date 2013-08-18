@@ -94,14 +94,9 @@ def generate_print(request, is_json=False, embed=False,
 		formset = FieldLayoutFormset(request.POST, instance=p, prefix=prefix)
 		if formset.is_valid():
 			for fieldlayoutform in formset.forms:
-				if fieldlayoutform.has_changed():
-					instance = fieldlayoutform.instance
-					if not instance in formset.deleted_forms:
-						instance.save(user=request.user)
-			for fieldlayoutform in formset.deleted_forms:
-				fieldlayoutform.instance.delete()
+				fieldlayoutform.instance.save(user=request.user)
 		
-
+		p.generate_pdf(has_extra_form_page=has_extra_form_page)
 		extras.update({
 			'map': p.thumb(),
 			'pdf': p.pdf()

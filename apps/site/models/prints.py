@@ -63,6 +63,11 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 			self._embedded_scans = self.grab(Scan)
 		return self._embedded_scans
 	
+	def get_form_field_layout(self):
+		return self.fieldlayout_set.all()
+	
+	
+	'''
 	def get_form_column_widths(self):
 		if self.form_column_widths is None or len(self.form_column_widths) == 0:
 			return []
@@ -82,7 +87,8 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 					if f.id == id:
 						f.display_width = widths[i]
 						fields_sorted.append(f)
-			return fields_sorted                
+			return fields_sorted
+	'''
 		
 	def get_abs_directory_path(self):
 		return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
@@ -199,16 +205,14 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 	def generate_print(cls, user, project, layout, map_provider, zoom,
 							center, host, map_title=None, instructions=None,
 							form=None, layer_ids=None, scan_ids=None,
-							has_extra_form_page=False, do_save=True):
+							has_extra_form_page=False):
 		from localground.apps.site import models
 		from localground.apps.lib.helpers import generic, StaticMap, Report
 		import os
 
 		#create directory:
 		uuid        = generic.generateID()
-		path        = settings.USER_MEDIA_ROOT + '/prints/' + uuid
-		os.mkdir(path) #create new directory
-	
+		
 		layers, scans = None, None
 		if layer_ids is not None:
 			layers = models.WMSOverlay.objects.filter(id__in=layer_ids)
@@ -220,11 +224,10 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 		#set variables from database layout configuration
 		map_width = layout.map_width_pixels
 		map_height = layout.map_height_pixels
-		qr_size = layout.qr_size_pixels
-		border_width = layout.border_width
+		filename = file_name='Print_' + uuid + '.pdf'
 		
-		m = StaticMap()
 		#use static map helper function to calculate additional geometric calculations
+		m = StaticMap()
 		info = m.get_basemap_and_extents(
 					map_provider, zoom, center, map_width, map_height)
 		map_image = info.get('map_image')
@@ -233,6 +236,70 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 		bbox = (northeast.coords, southwest.coords)
 		bbox = [element for tupl in bbox for element in tupl]
 		extents = Polygon.from_bbox(bbox)
+		
+		
+		# Save the print
+		p = Print()
+		p.uuid = uuid
+		p.project = project
+		p.zoom = zoom
+		p.map_width = map_width
+		p.map_height = map_height
+		p.map_provider = map_provider
+		p.owner = user
+		p.last_updated_by = user
+		p.layout = layout
+		p.host = host
+		p.map_image_path = 'map.jpg'
+		p.pdf_path = filename
+		p.preview_image_path = 'thumbnail.jpg'
+		p.name = map_title
+		p.description = instructions
+		p.center = center
+		p.northeast = northeast
+		p.southwest = southwest
+		p.extents = extents
+		p.virtual_path = p.generate_relative_path()
+		if layout.is_data_entry and form is not None:
+			p.form = form
+		
+		p.save()
+		
+		if layers:
+			for layer in layers: p.stash(l, user)
+		if scans:
+			for scan in scans: p.stash(scan, user)
+		return p
+		
+		
+	def generate_pdf(self, has_extra_form_page=False):
+		from localground.apps.site import models
+		from localground.apps.lib.helpers import generic, StaticMap, Report
+		import os
+		
+		#use static map helper function to calculate additional geometric calculations
+		m = StaticMap()
+		map_width = self.layout.map_width_pixels
+		map_height = self.layout.map_height_pixels
+		path        = settings.USER_MEDIA_ROOT + '/prints/' + self.uuid
+		os.mkdir(path) #create new directory
+		file_name='Print_' + self.uuid + '.pdf'
+		
+		layers = self.embedded_layers
+		scans = self.embedded_scans
+		
+		info = m.get_basemap_and_extents(
+					self.map_provider, self.zoom, self.center, map_width, map_height)
+		map_image = info.get('map_image')
+		northeast = info.get('northeast')
+		southwest = info.get('southwest')
+		bbox = (northeast.coords, southwest.coords)
+		bbox = [element for tupl in bbox for element in tupl]
+		extents = Polygon.from_bbox(bbox)
+		qr_size = self.layout.qr_size_pixels
+		border_width = self.layout.border_width
+		
+		
 		overlay_image = m.get_map(layers, southwest=southwest, northeast=northeast,
 								  scans=scans, height=map_height, width=map_width,
 								  show_north_arrow=True)
@@ -240,7 +307,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 		map_image.paste(overlay_image, (0, 0), overlay_image)
 		
 
-		if layout.is_data_entry:
+		if self.layout.is_data_entry:
 			map_image = map_image.convert("L") #convert to black and white
 		
 		map_image.save(path + '/map.jpg')
@@ -257,15 +324,14 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 		thumbnail.save(path + '/thumbnail.jpg')
 		
 		#generate QR code
-		qr_image_1 = StaticMap.generate_qrcode(uuid, 1, path, qr_size, border_width)
-		qr_image_2 = StaticMap.generate_qrcode(uuid, 2, path, qr_size, border_width)
+		qr_image_1 = StaticMap.generate_qrcode(self.uuid, 1, path, qr_size, border_width)
+		qr_image_2 = StaticMap.generate_qrcode(self.uuid, 2, path, qr_size, border_width)
 		qr_size = qr_image_1.size[0]
 		
 		#generate PDF
-		filename = file_name='Print_' + uuid + '.pdf'
 		pdf_report = Report(
-			path, file_name=filename, is_landscape=layout.is_landscape,
-			author=user.username, title=map_title)
+			path, file_name=self.pdf_path, is_landscape=self.layout.is_landscape,
+			author=self.owner.username, title=self.name)
 		
 		##########
 		# Page 1 #
@@ -274,19 +340,19 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 		#   (x & y dependencies are additive from bottom up)
 		
 		#add footer:
-		if layout.is_data_entry:
-			pdf_report.add_footer(qr_image_1, uuid, instructions)
+		if self.layout.is_data_entry:
+			pdf_report.add_footer(qr_image_1, self.uuid, self.description)
 			
 		#add form:
-		if layout.is_mini_form and form is not None:
-			pdf_report.add_form(4, form, is_mini_form=True) 
+		if self.layout.is_mini_form and self.form is not None:
+			pdf_report.add_form(4, self.form, self, is_mini_form=True) 
 			
 		#add map:
-		pdf_report.add_map(map_image, is_data_entry=layout.is_data_entry,
-						   has_mini_form=layout.is_mini_form)
+		pdf_report.add_map(map_image, is_data_entry=self.layout.is_data_entry,
+						   has_mini_form=self.layout.is_mini_form)
 		
 		#add header:
-		pdf_report.add_header(is_data_entry=layout.is_data_entry, is_map_page=True)
+		pdf_report.add_header(is_data_entry=self.layout.is_data_entry, is_map_page=True)
 		
 		##########
 		# Page 2 #
@@ -298,55 +364,16 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 			pdf_report.set_orientation(False)
 			
 			#add footer:
-			pdf_report.add_footer(qr_image_2, uuid, instructions)
+			pdf_report.add_footer(qr_image_2, self.uuid, self.description)
 			
 			#add form:
-			pdf_report.add_form(13, form, is_mini_form=False) 
+			pdf_report.add_form(13, self.form, self, is_mini_form=False) 
 			
 			#add header:
-			pdf_report.add_header(is_data_entry=layout.is_data_entry, is_map_page=False)
+			pdf_report.add_header(is_data_entry=self.layout.is_data_entry, is_map_page=False)
 
 		pdf_report.save()
-		
-		p = Print()
-		p.uuid = uuid
-		p.project = project
-		p.zoom = zoom
-		p.map_width = map_width
-		p.map_height = map_height
-		p.map_provider = map_provider
-		p.host = host
-		p.map_image_path = 'map.jpg'
-		p.pdf_path = filename
-		p.preview_image_path = 'thumbnail.jpg'
-		p.name = map_title
-		p.description = instructions
-		p.center = center
-		p.northeast = northeast
-		p.southwest = southwest
-		p.owner = user
-		p.last_updated_by = user
-		p.extents = extents
-		p.layout = layout
-		p.virtual_path = p.generate_relative_path()
-		if layout.is_data_entry and form is not None:
-			p.form = form
-			cols = form.get_fields(print_only=True)
-			p.form_column_widths = ','.join([str(c.display_width) for c in cols])
-			p.sorted_field_ids = ','.join([str(c.id) for c in cols])
-		
-		
-		if do_save:
-			p.save()
-		
-		if layers:
-			for layer in layers: p.stash(l, user)
-		if scans:
-			for scan in scans: p.stash(scan, user)
-		
-		if do_save:
-			p.save()
-		return p
+	
 		
 	
 	

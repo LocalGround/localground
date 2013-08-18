@@ -156,11 +156,11 @@ class Report():
             self.canvas.drawRightString(x, y, 'Name:')
             self.canvas.line(x+5,y, self.origin_x + width, y) 
         
-    def add_form(self, num_rows, form, is_mini_form=False):
-        cols = form.get_fields(print_only=True)
+    def add_form(self, num_rows, form, print_object, is_mini_form=False):
+        cols = print_object.get_form_field_layout()
         field_aliases, field_widths = ['ID'], [5]
-        field_aliases.extend([c.col_alias for c in cols])
-        field_widths.extend([c.display_width for c in cols])
+        field_aliases.extend([c.field.col_alias for c in cols])
+        field_widths.extend([c.width for c in cols])
         field_widths = [n/100.0*self.inner_width for n in field_widths] #normalize
         x, y = self.origin_x, self.origin_y + self.qr_size
         width = self.inner_width
