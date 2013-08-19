@@ -28,7 +28,8 @@ class General:
         print('this is the uid %s and this is the gid %s' % (uid, gid))
         os.chown(path, uid, gid);
         #need to "or" permissions flags together:
-        permissions = stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH
+        #permissions = stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH
+        permissions = '775'
         os.chmod(path, permissions)
 
 
