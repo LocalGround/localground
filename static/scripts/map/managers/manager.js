@@ -14,7 +14,7 @@ localground.manager = function(){
 
 localground.manager.prototype.initialize = function(opts) {
     this.id = opts.id;
-	this.name = opts.name;
+	this.name = opts.name.replace('-', ' ');
 	this.overlay_type = opts.overlay_type;
 	this.addRecords(opts.data);
 	this.renderOverlays();
@@ -164,9 +164,6 @@ localground.manager.prototype.addNewOverlay = function(overlay) {
 };
 
 localground.manager.prototype.atLeastOneVisible = function() {
-	/*
-	  Not sure what the purpose of this function is...
-	*/
 	var oneVisible = false;
 	$.each(this.data, function() {
 		if(this.isVisible()) {
@@ -178,9 +175,8 @@ localground.manager.prototype.atLeastOneVisible = function() {
 };
 
 localground.manager.prototype.updateVisibility = function() {
-    //if(this.data.length > 0 && this.atLeastOneVisible())
 	var panel = this.getListingPanel();
-	if(this.data.length > 0)
+	if(this.data.length > 0 && this.atLeastOneVisible())
         panel.show();
     else if(panel)
         panel.hide();

@@ -158,6 +158,31 @@ localground.overlay.prototype.renderListing = function() {
 		$div_entry.show();
 	}
 };
+localground.overlay.prototype.showOverlay = function() {
+	this.getListingElement().show();
+	try {
+		this.getManager().updateVisibility();
+	} catch(e) {
+		//alert(e);
+	}
+};
+
+localground.overlay.prototype.hideOverlay = function() {
+    //show un-hide:
+	if(this.googleOverlay) {
+		this.googleOverlay.setMap(null);
+		if(this == self.currentOverlay) {
+			self.currentOverlay.closeInfoBubble();
+		}
+	}
+	this.getListingElement().find('input[type=checkbox]').attr('checked', false);
+	this.getListingElement().hide();
+	try {
+		this.getManager().updateVisibility();
+	} catch(e) {
+		//alert(e);
+	}
+};
 
 localground.overlay.prototype.removeItem = function(item, prefix) {
     //show un-hide:

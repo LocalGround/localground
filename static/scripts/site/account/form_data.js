@@ -25,7 +25,7 @@ localground.tables.prototype.initialize=function(opts){
     this.resizeControlsRow();
     $(window).resize(function() {
         self.resizeTable();
-        self.resizeControlsRow();
+        //self.resizeControlsRow();
     });
     
     $('#update_table').click(function(){

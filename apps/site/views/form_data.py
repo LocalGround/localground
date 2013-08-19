@@ -36,10 +36,12 @@ def get_objects(request, object_id, format_type='table'):
                                 attachment=attachment)
 
     raw_url = '/profile/forms/%s/data/' % object_id
+    suffix = '?is_blank=%s&format_type=%s' % (is_blank, format_type)
     context.update({
         'username': request.user.username,
-        'suffix': '?is_blank=%s&format_type=%s' % (is_blank, format_type),
+        'suffix': suffix,
         'raw_url': raw_url,
+        'url': '%s%s' % (raw_url, suffix),
         'create_url': '%screate/embed/' % raw_url, 
         'form': form,
         'forms': list(forms),
@@ -72,8 +74,9 @@ def get_record(request, object_id, rec_id=None, template_name='profile/digitize_
     if request.POST:
         record_form = form_object.DataEntryFormClass(request.POST, instance=record)
         if record_form.is_valid():
-            
-            record_form.instance.save(user=request.user)
+            instance = record_form.instance
+            instance.manually_reviewed = True
+            instance.save(user=request.user)
             #query for next record
             if r.get('next_record') in ['1', 'true', True]:
                 record_new = form_object.get_next_record(last_id=id)

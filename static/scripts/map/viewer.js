@@ -141,6 +141,8 @@ localground.viewer.prototype.initialize=function(opts){
 	
 	// turn on default project, if requested
 	this.initDefaultProject();
+	
+	this.initFiltering();
 };
 
 localground.viewer.prototype.setPosition = function(minimize) {
@@ -212,6 +214,28 @@ localground.viewer.prototype.getManager = function(key) {
 	return d[key];
 };
 
+
+localground.viewer.prototype.initFiltering = function() {
+	$('#apply_filter').click(function(){
+		var term = $('#txt_filter').val();
+		$.each(self.managers, function(k, v) {
+			//alert(k + ' - ' + v);
+			$.each(v.data, function(){
+				if (
+					(this.name && this.name.indexOf(term) != -1) ||
+					(this.tags && this.tags.indexOf(term) != -1)
+				){
+					//alert(this.overlay_type + ' - ' + this.name);
+					this.showOverlay();
+				}
+				else {
+					this.hideOverlay();
+				}
+			});
+		});
+	});
+};
+
 localground.viewer.prototype.toggleProjectData = function(groupID, groupType, 
 														  is_checked, turn_on_everything) {
 	if(is_checked) {
@@ -236,6 +260,7 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 				}
 				$('#mode_toggle').show();
 				$.each(result, function(k, v) {
+					//alert(v.overlay_type);
 					if (v.overlay_type) {
 						if(self.managers[v.overlay_type]) {
 							self.managers[v.overlay_type].addRecords(v.data);

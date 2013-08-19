@@ -111,7 +111,7 @@ class DynamicModelMixin(BasePoint, BaseAudit):
 					include_data=False, include_scan=False,
 					include_attachment=False, **kwargs):
 		d = dict(
-			form_id=self.form_id,
+			form_id=self.form.id,
 			id=self.id,
 			num=self.num,
 			reviewed=self.manually_reviewed  

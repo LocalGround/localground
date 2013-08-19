@@ -8,7 +8,7 @@
 
 {% block script_links %}
 	{{ block.super }}
-    <script type="text/javascript" src="/static/scripts/site/account/tables.js"></script>
+    <script type="text/javascript" src="/static/scripts/site/account/form_data.js"></script>
 {% endblock %}
 {% block extra_styles %}
 	{{block.super}}
@@ -135,7 +135,7 @@
 			<td class="column-cb">
 				<input class="checkone" id="cb_{{o.id}}" name="id" type="checkbox" value="{{o.id}}" />
 			</td>
-			<td><a class="edit" href="{{url}}{{o.id}}/">{{o.id}}</a></td>
+			<td><a class="edit" href="{{raw_url}}{{o.id}}/">{{o.id}}</a></td>
 			<td>
 				{{o.snippet.source_attachment.attribution}}
 			</td>

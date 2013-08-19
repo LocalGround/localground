@@ -166,12 +166,6 @@ localground.profile.prototype.initialize = function(opts) {
     
 };
 
-localground.profile.prototype.resizeControlsRow = function() {
-    $('#controls_row, .paginator').width($('#the_table').width());
-    $('.alert-message').width($('#the_table').width()-30); 
-    $('.tabs').width($('.tabs').width()-200);
-};
-
 localground.profile.prototype.deleteConfirm = function() {
 	$('#delete_message').empty()
             .append($('<img />')

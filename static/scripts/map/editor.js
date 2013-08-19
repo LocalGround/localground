@@ -37,7 +37,7 @@ localground.editor.prototype.setPosition = function() {
     localground.basemap.prototype.setPosition.call(this);
     if($('#opener > div > div').hasClass('ui-icon-right-triangle')) {
         $('#panel_data').css({
-            'height': $('#map_panel').height()-129,
+            'height': $('#map_panel').height() - 149, //129,
             'overflow-y': 'auto'
         })
     }

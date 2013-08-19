@@ -208,8 +208,9 @@ class Form(BaseNamed, ProjectMixin):
 			objects = objects.filter(point__isnull=False)
 		return objects   
 	
-	def get_objects(self, user, project, filter=None, order_by=['time_stamp'], **kwargs):
-		objects = self.get_data_query(**kwargs)  
+	def get_objects(self, user, project, filter=None,
+					manually_reviewed=True, order_by=['time_stamp'], **kwargs):
+		objects = self.get_data_query(manually_reviewed=manually_reviewed, **kwargs)  
 		objects = objects.order_by(*order_by)
 		return objects
 	

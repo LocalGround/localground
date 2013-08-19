@@ -18,11 +18,12 @@ class ProjectDetailSerializer(BaseSerializer):
 	audio = serializers.SerializerMethodField('get_audio')
 	markers = serializers.SerializerMethodField('get_markers')
 	scans = serializers.SerializerMethodField('get_scans')
+	records = serializers.SerializerMethodField('get_table_data')
 	
 	class Meta:
 		model = models.Project
 		fields = BaseSerializer.Meta.fields + (
-			'slug', 'photos', 'audio', 'markers', 'scans'
+			'slug', 'photos', 'audio', 'markers', 'scans', 'records'
 		)
 		depth = 0
 		
@@ -49,6 +50,10 @@ class ProjectDetailSerializer(BaseSerializer):
 				models.Marker.objects.get_objects_with_counts(obj.owner, project=obj)
 			).data
 		return self.get_children(models.Marker, obj, data)
+	
+	def get_table_data(self, obj):
+		return obj.get_table_data()[0]
+	
 	
 	def get_children(self, cls, obj, data):
 		return {

@@ -178,16 +178,15 @@ class Project(Group):
 		#       updated, a record is inserted into at_projects_forms (if it
 		#       doesn't already exist).
 		data = []
-		forms = self.form_set.all() #create trigger for this!
+		forms = Form.objects.filter(project=self)
 		for form in forms:
-			recs = form.get_data(project=self, to_dict=to_dict,
-									include_markers=False, include_scan=False)
+			recs = form.get_objects(user=self.owner, project=self, manually_reviewed=True)
 			if len(recs) > 0:
 				data.append({
 					'id': form.id,
-					'overlayType': ObjectTypes.RECORD,
+					'overlay_type': ObjectTypes.RECORD,
 					'name': form.name,
-					'data': recs
+					'data': [r.to_dict() for r in recs]
 				})
 				#tables.append(dict(form=form.to_dict(), data=recs))
 			
