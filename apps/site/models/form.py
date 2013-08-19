@@ -1,6 +1,5 @@
 from django.contrib.gis.db import models
-from django.db.models import Q
-from datetime import datetime    
+from django.db.models import Q 
 from localground.apps.site.managers import FormManager
 from localground.apps.site.models import Field, ProjectMixin, BaseNamed, Snippet, DataType
 from localground.apps.site.dynamic import ModelClassBuilder, DynamicFormBuilder
@@ -265,10 +264,9 @@ class Form(BaseNamed, ProjectMixin):
 		#populate content that exists for all dynamic tables:
 		e.snippet = d.get('snippet')
 		e.project = d.get('project')
-		e.source_marker = d.get('marker')
 		e.num = d.get('num')
 		e.num_snippet = d.get('num_snippet')
-		e.time_stamp = datetime.now()
+		e.time_stamp = get_timestamp_no_milliseconds()
 		e.owner = user
 		e.point = d.get('point')
 		e.scan = d.get('scan')
@@ -278,9 +276,8 @@ class Form(BaseNamed, ProjectMixin):
 		for n in fields:
 			e.__setattr__(n.col_name, d.get(n.col_name))
 			e.__setattr__('%s_snippet' % n.col_name, d.get('%s_snippet' % n.col_name))
-		e.save()
-		self.projects.add(e.project)
-		self.save()
+		e.save(user=user)
+		self.save(user=user)
 		return e
 	
 	def update_record(self, dictionary, user):

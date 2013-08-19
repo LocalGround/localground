@@ -1478,6 +1478,7 @@ class FormUtils(General):
             self.attachment = self.scan.copy_as(models.Attachment)
             self.attachment.status = models.StatusCode.objects.get(
                                         id=models.StatusCode.READY_FOR_PROCESSING)
+            self.attachment.virtual_path = self.attachment.generate_relative_path()
             if self.is_mini:
                 self.attachment.source_scan = self.scan
             self.attachment.is_short_form = self.is_mini
@@ -1602,10 +1603,10 @@ class FormUtils(General):
         d.update({'num_snippet': s})
         
         #create dynamic field snippets:
-        for f in self.source_print.get_fields_sorted_by_print():
-            self.logger.log(f.display_width)
+        for f in self.source_print.get_form_field_layout():
+            self.logger.log(f.width)
             left = int(right)
-            right = int(min(right + w*f.display_width/100.0, w))
+            right = int(min(right + w*f.width/100.0, w))
             bbox = [
                 max(left-buffer, 0),
                 top,
@@ -1614,10 +1615,10 @@ class FormUtils(General):
             ]
             self.logger.log(bbox)
             snippet = row_snippet.copy().crop(bbox)
-            file_name = '%s_snippet%s.png' % (f.col_name, row_index)
+            file_name = '%s_snippet%s.png' % (f.field.col_name, row_index)
             snippet.save(self.attachment.get_abs_directory_path() + file_name)
             s = self.save_snippet(file_name, pixel_count)
-            d.update({'%s_snippet' % f.col_name: s})
+            d.update({'%s_snippet' % f.field.col_name: s})
                 
         #insert an empty form record that references the snippet:
         d.update(

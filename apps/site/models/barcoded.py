@@ -55,7 +55,9 @@ class Processor(BaseUploadedMedia):
 		o.uuid = self.uuid
 		o.project = self.project
 		o.host = self.host
+		o.virtual_path = self.virtual_path
 		o.owner = self.owner
+		o.attribution = self.attribution
 		o.source_print = self.source_print
 		o.status = self.status
 		o.file_name_thumb = self.file_name_thumb
