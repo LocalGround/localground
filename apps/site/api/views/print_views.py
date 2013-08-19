@@ -11,8 +11,8 @@ class PrintList(generics.ListCreateAPIView, AuditCreate):
 	paginate_by = 100
 	
 	def pre_save(self, obj):
-		AuditCreate.pre_save(self, obj)
-		p = models.Print.generate_print(
+		AuditCreate.pre_save(self, obj)		
+		p = models.Print.insert_print_record(
 			self.request.user,
 			obj.project,
 			obj.layout,
@@ -25,9 +25,9 @@ class PrintList(generics.ListCreateAPIView, AuditCreate):
 			form=None,
 			layer_ids=None,
 			scan_ids=None,
-			has_extra_form_page=False,
 			do_save=False
 		)
+		p.generate_pdf(has_extra_form_page=False)
 		#copy data from unsaved print object into API object
 		#(this may be unsafe):
 		for f in p._meta.fields:

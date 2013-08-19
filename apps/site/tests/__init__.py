@@ -104,7 +104,7 @@ class ModelMixin(object):
 					 map_title='A title',
 					 instructions='A description'):
 		from django.contrib.gis.geos import Point
-		p = models.Print.generate_print(
+		p = models.Print.insert_print_record(
 			self.user,
 			self.project,
 			models.Layout.objects.get(id=layout_id),
@@ -116,10 +116,9 @@ class ModelMixin(object):
 			instructions=instructions,
 			form=None,
 			layer_ids=None,
-			scan_ids=None,
-			has_extra_form_page=False,
-			do_save=True
+			scan_ids=None
 		)
+		p.generate_pdf(has_extra_form_page=False)
 		return p
 	
 	def create_form(self, name='A title',

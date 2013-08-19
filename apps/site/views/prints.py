@@ -74,7 +74,7 @@ def generate_print(request, is_json=False, embed=False,
 			form is not None
 	
 	if r.get('generate_pdf') is not None:
-		p = models.Print.generate_print(
+		p = models.Print.insert_print_record(
 				request.user,
 				project,
 				layout,
@@ -86,8 +86,7 @@ def generate_print(request, is_json=False, embed=False,
 				instructions=r.get('instructions'),
 				form=form,
 				layer_ids=None,
-				scan_ids=scan_ids,
-				has_extra_form_page=has_extra_form_page
+				scan_ids=scan_ids
 			)
 		
 		# save the form layout to the database:

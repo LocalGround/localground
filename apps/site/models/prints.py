@@ -202,16 +202,12 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 	
 	
 	@classmethod
-	def generate_print(cls, user, project, layout, map_provider, zoom,
+	def insert_print_record(cls, user, project, layout, map_provider, zoom,
 							center, host, map_title=None, instructions=None,
 							form=None, layer_ids=None, scan_ids=None,
-							has_extra_form_page=False):
+							do_save=True):
 		from localground.apps.site import models
-		from localground.apps.lib.helpers import generic, StaticMap, Report
-		import os
-
-		#create directory:
-		uuid        = generic.generateID()
+		from localground.apps.lib.helpers import generic, StaticMap
 		
 		layers, scans = None, None
 		if layer_ids is not None:
@@ -221,15 +217,12 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 		if instructions is not None: #preserve line breaks in the pdf report
 			instructions = '<br/>'.join(instructions.splitlines())
 		
-		#set variables from database layout configuration
-		map_width = layout.map_width_pixels
-		map_height = layout.map_height_pixels
-		filename = file_name='Print_' + uuid + '.pdf'
-		
 		#use static map helper function to calculate additional geometric calculations
 		m = StaticMap()
 		info = m.get_basemap_and_extents(
-					map_provider, zoom, center, map_width, map_height)
+					map_provider, zoom, center,
+					layout.map_width_pixels, layout.map_height_pixels
+				)
 		map_image = info.get('map_image')
 		northeast = info.get('northeast')
 		southwest = info.get('southwest')
@@ -237,21 +230,20 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 		bbox = [element for tupl in bbox for element in tupl]
 		extents = Polygon.from_bbox(bbox)
 		
-		
 		# Save the print
 		p = Print()
-		p.uuid = uuid
+		p.uuid = generic.generateID()
 		p.project = project
 		p.zoom = zoom
-		p.map_width = map_width
-		p.map_height = map_height
+		p.map_width = layout.map_width_pixels
+		p.map_height = layout.map_height_pixels
 		p.map_provider = map_provider
 		p.owner = user
 		p.last_updated_by = user
 		p.layout = layout
 		p.host = host
 		p.map_image_path = 'map.jpg'
-		p.pdf_path = filename
+		p.pdf_path = 'Print_' + p.uuid + '.pdf'
 		p.preview_image_path = 'thumbnail.jpg'
 		p.name = map_title
 		p.description = instructions
@@ -262,13 +254,13 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 		p.virtual_path = p.generate_relative_path()
 		if layout.is_data_entry and form is not None:
 			p.form = form
-		
-		p.save()
-		
-		if layers:
-			for layer in layers: p.stash(l, user)
-		if scans:
-			for scan in scans: p.stash(scan, user)
+			
+		if do_save:
+			p.save()
+			if layers:
+				for layer in layers: p.stash(l, user)
+			if scans:
+				for scan in scans: p.stash(scan, user)
 		return p
 		
 		

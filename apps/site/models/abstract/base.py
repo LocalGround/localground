@@ -2,6 +2,7 @@ from django.contrib.gis.db import models
 from django.http import Http404
 from localground.apps.lib.helpers import classproperty
 from django.contrib.contenttypes.models import ContentType
+
 		
 class Base(models.Model):
 	RESTRICT_BY_PROJECT = False
@@ -107,9 +108,11 @@ class Base(models.Model):
 		"ordering" and "turned_on" args are optional.
 		'''
 		from localground.apps.site.models import GenericAssociation
+		from localground.apps.site.models.abstract.media import BaseUploadedMedia
+		from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 		
 		if not issubclass(item.__class__, BaseUploadedMedia):
-			raise Exception('Only items of type Photo, Audio, or Record can be appended.')
+			raise Exception('Only items of type Photo, Audio, Record, or Map Image can be appended.')
 		
 		assoc = GenericAssociation(
 			source_type=self.get_content_type(),
@@ -120,7 +123,7 @@ class Base(models.Model):
 			turned_on=turned_on,
 			owner=user,
 			last_updated_by=user,
-			date_created=datetime.now(),
-			time_stamp=datetime.now()
+			date_created=get_timestamp_no_milliseconds(),
+			time_stamp=get_timestamp_no_milliseconds()
 		)
 		assoc.save() 

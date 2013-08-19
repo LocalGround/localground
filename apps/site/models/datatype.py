@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
+from localground.apps.site.models import Base
 
-class DataType(models.Model):
+class DataType(Base):
     name = models.CharField(max_length=255)
     sql = models.CharField(max_length=500)
     
