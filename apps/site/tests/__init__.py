@@ -134,6 +134,22 @@ class ModelMixin(object):
 		f.save()
 		return f
 	
+	def create_form_with_fields(self, name='A title',
+					 description='A description', num_fields=2):
+		f = self.create_form(name, description)
+		for i in range(0, num_fields):
+			# add 2 fields to form:
+			fld = models.Field(col_alias='Field %s' % (i+1), 
+				data_type=models.DataType.objects.get(id=(i+1)),
+				display_width=10,
+				ordering=1,
+				form=f
+			)	
+			fld.save(user=self.user)
+		return f
+		
+	
+	
 	def create_imageopt(self, scan):
 		p = scan.source_print
 		img = models.ImageOpts(

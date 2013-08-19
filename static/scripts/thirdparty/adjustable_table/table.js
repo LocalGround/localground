@@ -18,8 +18,6 @@ gentable = function(opts){
 	this.initDataTypes = false;
 	this.afterUpdateFunction = this.adjustHiddenFields();
 	$.extend(this, opts);
-	//alert(opts.prefix);
-	alert(opts.columns);
 };
 
 //table.prototype = new base(); // inherits from base 
@@ -110,7 +108,7 @@ gentable.prototype.renderHeaderCell = function($elem, idx) {
 		me.afterUpdateFunction();
 	});
 	
-	if (idx > 0) {
+	if (idx > 0 && me.columns.length > 1) {
 		// make column headers resizable
 		var handle = $('<div />')
 						.html(me.resizeHandleHtml == '' ? '-' : me.resizeHandleHtml)
@@ -220,7 +218,7 @@ gentable.prototype.resizeIt = function($th, col_num, w, adjust_next) {
 };
 
 gentable.prototype.initTable = function() {
-	alert(this.maxWidth);
+	//alert(this.maxWidth);
 	var me = this;
 	this.tableID = this.table.attr('id');
 	var $tbl = $('<table cellpadding="0" cellspacing="0"></table>')

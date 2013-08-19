@@ -54,7 +54,6 @@ localground.print.prototype.initFormsMenu = function() {
             );
         });
         $('#form').change(function(){
-            alert('changed');
             self.form = self.getForm($('#form').val());
             //self.toggleFormControls();
             self.renderForm();
@@ -421,57 +420,38 @@ localground.print.prototype.renderForm = function() {
     
     if(!short_form && !long_form) { return; }
     
-    //if(is_new)
-    {
-        var resizeable_table_exists = (this.resizableTable != null &&
-                                       this.resizableTable.table.attr('resizeable') != null);
-        var id = 'paper_form', $container = $('#holder2'), num_rows = 14;
-        if(short_form)
-            id = 'paper_form_short', $container = $('#holder1'), num_rows = 4;
-        //if resizeable table already exists, copy into the correct place:
-        if(resizeable_table_exists)
-        {
-            if(this.resizableTable.table.attr('id') != id) {
-                this.resizableTable.table.attr('id', id);
-                this.resizableTable.move($container, num_rows);
+    var resizeable_table_exists = (this.resizableTable != null &&
+                                   this.resizableTable.table.attr('resizeable') != null);
+    var id = 'paper_form', $container = $('#holder2'), num_rows = 14;
+    if(short_form)
+        id = 'paper_form_short', $container = $('#holder1'), num_rows = 4;
+    
+    if (resizeable_table_exists) {
+        //clear out the field layout fields:
+        $('#tbl').find('tr').each(function(idx){
+            if ($(this).find('.close').get(0) && idx > 1) {
+                $(this).find('.close').trigger('click');
             }
-            if(short_form && long_form)
-                this.resizableTable.afterUpdateFunction();
-        }
-        //otherwise, create new:
-        else {
-            this.createTable(num_rows, id);    
-            var $tbl = $('#' + id);
-            this.resizableTable = null; //should avoid a memory leak...
-            var opts = {
-                prefix: this.prefix,
-                columns: this.form.columns
-            };
-            this.resizableTable = new gentable(opts);
-            //this.resizableTable.getDataTypes();
-            this.data_types_initialized = true;
-            var opts = {
-                container: $container,
-                table: $tbl ,
-                maxWidth: this.table_width - 20,
-                afterUpdateFunction: this.afterTableUpdate
-            }
-            this.resizableTable.initialize(opts);
-        }
+        });
     }
-    /*else {
-        //populate table based on existing form:
-        if(short_form) {
-            this.createTable(4, 'paper_form_short');
-            //$('#holder1').show(); 
-            if(long_form)
-                this.afterTableUpdate(); //clone slave table & add rows
-        }
-        else if(long_form) {
-            this.createTable(13, 'paper_form');
-           // $('#second_page').show();
-        }
-    }*/
+        
+    this.createTable(num_rows, id);    
+    var $tbl = $('#' + id);
+    this.resizableTable = null; //should avoid a memory leak...
+    var opts = {
+        prefix: this.prefix,
+        columns: this.form.columns
+    };
+    this.resizableTable = new gentable(opts);
+    //this.resizableTable.getDataTypes();
+    this.data_types_initialized = true;
+    var opts = {
+        container: $container,
+        table: $tbl ,
+        maxWidth: this.table_width - 10,
+        afterUpdateFunction: this.afterTableUpdate
+    }
+    this.resizableTable.initialize(opts);
 };
 
 localground.print.prototype.toggleFormControls = function() {
@@ -557,7 +537,7 @@ localground.print.prototype.getForm = function(id) {
             return;
         }
     });
-    alert(JSON.stringify(the_form));
+    //alert(JSON.stringify(the_form));
     $('#form_id').val($('#form').val())
     return the_form;
 };
