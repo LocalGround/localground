@@ -70,11 +70,16 @@ class BaseMedia(BaseAudit):
 		return self._encrypt_media_path(self.virtual_path + file_name)
 		
 	def make_directory(self, path):
+		import sys
 		from pwd import getpwnam
 		os.makedirs(path) #create new directory
 		#get OS ids:
 		uid = getpwnam(settings.USER_ACCOUNT).pw_uid
 		gid = getpwnam(settings.GROUP_ACCOUNT).pw_gid
+		sys.stderr.write(settings.USER_ACCOUNT)
+		sys.stderr.write(settings.USER_ACCOUNT)
+		sys.stderr.write(uid)
+		sys.stderr.write(gid)
 		os.chown(path, uid, gid);
 		#need to "or" permissions flags together:
 		permissions = 775 #stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH
