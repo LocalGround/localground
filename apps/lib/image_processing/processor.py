@@ -19,6 +19,9 @@ class General:
         return cv_image
     
     def make_directory(self, path):
+        from localground.apps.site.models import BaseMedia
+        BaseMedia.make_directory(path)
+        '''
         from pwd import getpwnam
         os.makedirs(path) #create new directory
         #get OS ids:
@@ -31,6 +34,7 @@ class General:
         #permissions = stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH
         permissions = '775'
         os.chmod(path, permissions)
+        '''
 
 
 class Processor(General):

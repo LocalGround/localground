@@ -147,21 +147,18 @@ sudo_noprompt "a2ensite $SERVER_HOST"
 # Update file permissions and make a media 
 # directory to store user-generated content 
 ###########################################
+sudo_noprompt "mkdir ../userdata"
 sudo_noprompt "mkdir ../userdata/media"
 sudo_noprompt "mkdir ../userdata/prints"
 # add the $USER_ACCOUNT to the webserver group, so that cronjobs can
 # write files to userdata.  To verify: $ groups $USER_ACCOUNT
+# IMPORTANT:
+# Basically, make sure all user-generated data is owned by group www-data
+# and has 775 permissions
 sudo_noprompt "usermod -a -G $WEBSERVER_ACCOUNT $USER_ACCOUNT"
-sudo_noprompt "chown -R $WEBSERVER_ACCOUNT:$WEBSERVER_ACCOUNT ../userdata"
+sudo_noprompt "chown -R $USER_ACCOUNT:$WEBSERVER_ACCOUNT ../userdata"
 sudo_noprompt "chmod -R 775 ../userdata"
-sudo_noprompt "find userdata -type d -exec chmod 2775 {} \;"
-sudo_noprompt "find userdata -type f -exec chmod ug+rw {} \;"
 
-# sudo usermod -a -G www-data my_account
-# sudo chgrp -R userdata
-# sudo chmod -R g+w userdata
-# sudo find userdata -type d -exec chmod 2775 {} \;
-# sudo find userdata -type f -exec chmod ug+rw {} \;
 
 
 
@@ -191,5 +188,5 @@ sudo_noprompt "chmod +x gis.sh"
 ###########
 echo
 echo
-echo 'Running Django Tests...'
-sudo_noprompt "-u $USER_ACCOUNT python ../apps/manage.py test site --verbosity=2"
+#echo 'Running Django Tests...'
+#sudo_noprompt "-u $USER_ACCOUNT python ../apps/manage.py test site --verbosity=2"

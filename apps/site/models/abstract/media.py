@@ -69,21 +69,30 @@ class BaseMedia(BaseAudit):
 		#return self.virtual_path + file_name
 		return self._encrypt_media_path(self.virtual_path + file_name)
 		
-	def make_directory(self, path):
-		import sys
+	@classmethod
+	def make_directory(cls, path):
+		'''
+		I had problems making os.makedirs(path) work in terms of
+		setting the appropriate permissions, so I'm using this looping
+		function instead.  FYI, the user account needs to be the apache
+		account.  Any other way ends in tears.
+		'''
 		from pwd import getpwnam
-		os.makedirs(path) #create new directory
-		#get OS ids:
-		uid = getpwnam(settings.USER_ACCOUNT).pw_uid
+		uid = os.getuid()
 		gid = getpwnam(settings.GROUP_ACCOUNT).pw_gid
-		sys.stderr.write(settings.USER_ACCOUNT)
-		sys.stderr.write(settings.USER_ACCOUNT)
-		sys.stderr.write(uid)
-		sys.stderr.write(gid)
-		os.chown(path, uid, gid);
-		#need to "or" permissions flags together:
-		permissions = 775 #stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH
-		os.chmod(path, permissions)
+		# same as 775:
+		permissions = stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH 
+		if not os.path.exists(path):
+			p = ""
+			paths = path.split("/")
+			paths.reverse()
+			while len(paths) > 0:
+				p += paths.pop() + '/'
+				if not os.path.exists(p):
+					#print '"%s" does not exist' % p
+					os.mkdir(p)
+					os.chown(p, uid, gid)
+					os.chmod(p, permissions)
 
 
 class BaseNamedMedia(BaseMedia, ProjectMixin):

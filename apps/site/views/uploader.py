@@ -50,24 +50,24 @@ def upload_media(request, project=None):
         file = request.FILES.get('files[]')
         media_type = request.POST.get('media_type')
         success, error_message = True, None
-        try: 
-            #branch processing based on upload type:
-            if media_type == 'photos':
-                new_object = Photo()
-                new_object.save_upload(file, request.user, project)
-            elif media_type == 'audio':
-                new_object = Audio()
-                new_object.save_upload(file, request.user, project)
-            elif media_type == 'maps':
-                new_object = Scan()
-                new_object.save_upload(file, request.user, project)
-            else:
-                success = False
-                error_message = 'Unknown file type'
-        except:
-            import sys
+        #try: 
+        #branch processing based on upload type:
+        if media_type == 'photos':
+            new_object = Photo()
+            new_object.save_upload(file, request.user, project)
+        elif media_type == 'audio':
+            new_object = Audio()
+            new_object.save_upload(file, request.user, project)
+        elif media_type == 'maps':
+            new_object = Scan()
+            new_object.save_upload(file, request.user, project)
+        else:
             success = False
-            error_message = str(sys.exc_info()[1])
+            error_message = 'Unknown file type'
+        #except:
+        #    import sys
+        #    success = False
+        #    error_message = str(sys.exc_info()[1])
             
         if success:
             responseObj = {
