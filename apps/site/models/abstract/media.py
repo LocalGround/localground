@@ -75,9 +75,9 @@ class BaseMedia(BaseAudit):
 		#get OS ids:
 		uid = getpwnam(settings.USER_ACCOUNT).pw_uid
 		gid = getpwnam(settings.GROUP_ACCOUNT).pw_gid
-		#os.chown(path, uid, gid);
+		os.chown(path, uid, gid);
 		#need to "or" permissions flags together:
-		permissions = stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH
+		permissions = 775 #stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH
 		os.chmod(path, permissions)
 
 
