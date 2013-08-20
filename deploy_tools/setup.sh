@@ -150,6 +150,7 @@ sudo_noprompt "a2ensite $SERVER_HOST"
 sudo_noprompt "mkdir ../userdata"
 sudo_noprompt "mkdir ../userdata/media"
 sudo_noprompt "mkdir ../userdata/prints"
+sudo_noprompt "mkdir ../userdata/deleted"
 # add the $USER_ACCOUNT to the webserver group, so that cronjobs can
 # write files to userdata.  To verify: $ groups $USER_ACCOUNT
 # IMPORTANT:
@@ -158,8 +159,6 @@ sudo_noprompt "mkdir ../userdata/prints"
 sudo_noprompt "usermod -a -G $WEBSERVER_ACCOUNT $USER_ACCOUNT"
 sudo_noprompt "chown -R $USER_ACCOUNT:$WEBSERVER_ACCOUNT ../userdata"
 sudo_noprompt "chmod -R 775 ../userdata"
-
-
 
 
 #Copying settings_local.py to apps directory
