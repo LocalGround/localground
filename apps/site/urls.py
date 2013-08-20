@@ -68,6 +68,8 @@ urlpatterns = patterns('',
 	(r'^profile/forms/(?P<object_id>\d+)/data/$', 'localground.apps.site.views.form_data.get_objects'),
 	(r'^profile/forms/(?P<object_id>\d+)/data/create/embed/$', 'localground.apps.site.views.form_data.get_record', { 'embed': True }),
 	(r'^profile/forms/(?P<object_id>\d+)/data/create/$', 'localground.apps.site.views.form_data.get_record'),
+	(r'^profile/forms/(?P<object_id>\d+)/data/delete/batch/embed/$', 'localground.apps.site.views.form_data.delete_batch', { 'embed': True }),
+	(r'^profile/forms/(?P<object_id>\d+)/data/delete/batch$', 'localground.apps.site.views.form_data.delete_batch'),
 	(r'^profile/forms/(?P<object_id>\d+)/data/(?P<rec_id>\d+)/embed/$', 'localground.apps.site.views.form_data.get_record', { 'embed': True }),
 	(r'^profile/forms/(?P<object_id>\d+)/data/(?P<rec_id>\d+)/$', 'localground.apps.site.views.form_data.get_record'),
 

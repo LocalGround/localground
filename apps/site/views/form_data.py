@@ -43,6 +43,7 @@ def get_objects(request, object_id, format_type='table'):
         'raw_url': raw_url,
         'url': '%s%s' % (raw_url, suffix),
         'create_url': '%screate/embed/' % raw_url, 
+        'delete_url': '%sdelete/batch/embed/' % raw_url, 
         'form': form,
         'forms': list(forms),
         'selected_project': project,
@@ -121,7 +122,7 @@ def get_record(request, object_id, rec_id=None, template_name='profile/digitize_
         'record': record,
         'include_map': include_map,
         'form_id': object_id,
-        'table_name': form_object.table_name
+        'table_name': form_object.table_name,
     })
 
     if not include_map:
@@ -149,16 +150,26 @@ def get_record(request, object_id, rec_id=None, template_name='profile/digitize_
             })
     return render_to_response(template_name, context)
 
+@login_required()
+def delete_batch(request, object_id, base_template='base/profile.html', embed=False, ):
+    from django.http import HttpResponse
+    import json
+    r = request.POST
+    ModelClass = Form.objects.get(id=object_id).TableModel
+    rec_ids = r.getlist('id')
+    num_deletes = 0
+    if embed: base_template = 'base/iframe.html'
+    message = ''
+    if len(rec_ids) > 0:
+        groups = list(ModelClass.objects.filter(id__in=rec_ids))
+        for g in groups:
+            g.delete()
+            num_deletes = num_deletes+1
+            
+    message = message + '%s %s(s) were deleted.' % (num_deletes, ModelClass.model_name)
+    return HttpResponse(json.dumps({'message': message }))
 
-
-
-
-
-
-
-
-
-
+'''
 
 @process_identity  
 def delete_objects(request, identity=None):
@@ -371,3 +382,4 @@ def download(request, format='shapefile', identity=None):
                                 project=project, driver='ESRI Shapefile',
                                 extra_filters=filters)
 
+'''

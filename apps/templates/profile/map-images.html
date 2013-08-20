@@ -51,7 +51,7 @@
 	{% for form in formset.forms %}
 		<tr>
 			<td>
-				<input class="checkone" id="cb_{{o.id}}" name="id" type="checkbox" value="{{o.id}}" />
+				<input class="checkone" id="cb_{{form.instance.id}}" name="id" type="checkbox" value="{{form.instance.id}}" />
 			</td>
 			<td>
 				{% if form.instance.file_name_thumb %}
