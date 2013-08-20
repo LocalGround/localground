@@ -3,6 +3,7 @@ from django.core.urlresolvers import resolve
 from rest_framework import status
 from localground.apps.site import models
 from django.contrib.auth.models import User
+from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 
 class Client(test.Client):
 	'''
@@ -136,20 +137,52 @@ class ModelMixin(object):
 	
 	def create_form_with_fields(self, name='A title',
 					 description='A description', num_fields=2):
+		'''
+		TEXT = 1
+		INTEGER = 2
+		DATE_TIME = 3
+		BOOL = 4
+		DECIMAL = 5
+		RATING = 6
+		'''
 		f = self.create_form(name, description)
 		for i in range(0, num_fields):
 			# add 2 fields to form:
 			fld = models.Field(col_alias='Field %s' % (i+1), 
 				data_type=models.DataType.objects.get(id=(i+1)),
 				display_width=10,
-				ordering=1,
+				ordering=(i+1),
 				form=f
 			)	
 			fld.save(user=self.user)
 		return f
+	
+	def insert_form_data_record(self, form):
 		
+		from django.contrib.gis.geos import Point
+		#create a marker:
+		lat = 37.8705
+		lng = -122.2819
+		record = form.TableModel()
+		record.num = 1
+		record.point = Point(lng, lat, srid=4326)
+		
+		#generate different dummy types depending on the data_type
+		for field in form.get_fields():
+			if field.data_type.id in [models.DataType.INTEGER, models.DataType.RATING]:
+				setattr(record, field.col_name, 5)
+			elif field.data_type.id == models.DataType.BOOL:
+				setattr(record, field.col_name, True)	
+			elif field.data_type.id == models.DataType.DATE_TIME:
+				setattr(record, field.col_name, get_timestamp_no_milliseconds())
+			elif field.data_type.id == models.DataType.DECIMAL:
+				setattr(record, field.col_name, 3.14159)
+			else:
+				setattr(record, field.col_name, 'some text')
+		record.save(user=self.user)
+		return record
 	
-	
+
 	def create_imageopt(self, scan):
 		p = scan.source_print
 		img = models.ImageOpts(
@@ -205,6 +238,7 @@ class ViewMixin(ModelMixin):
 		if urls is None:
 			urls = self.urls
 		for url in urls:
+			#print url
 			response = self.client.get(url)
 			self.assertEqual(response.status_code, status.HTTP_200_OK)
 		

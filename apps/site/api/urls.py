@@ -36,6 +36,8 @@ urlpatterns += format_suffix_patterns(patterns('',
 	url(r'^markers/$', views.MarkerList.as_view(), name='marker-list'),
 	url(r'^prints/(?P<pk>[0-9]+)/$', views.PrintInstance.as_view(), name='print-detail'),
 	url(r'^prints/$', views.PrintList.as_view(), name='print-list'),
+	url(r'^forms/(?P<form_id>[0-9]+)/data/(?P<pk>[0-9]+)/$', views.FormDataInstance.as_view(), name='form-data-instance'),
+	url(r'^forms/(?P<form_id>[0-9]+)/data/$', views.FormDataList.as_view(), name='form-data-list'),
 	url(r'^forms/(?P<pk>[0-9]+)/$', views.FormInstance.as_view(), name='form-detail'),
 	url(r'^forms/$', views.FormList.as_view(), name='form-list')
 ))

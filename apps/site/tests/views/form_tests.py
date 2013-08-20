@@ -44,23 +44,27 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		# query the new form:
 		self.assertEqual(len(self.form.get_data()), 0)
 		
-		# add a new record
 		#requery:
 		form = models.Form.objects.get(id=self.form.id)
+		
+		#insert a record
+		timestamp = get_timestamp_no_milliseconds()
 		record = form.TableModel()
-		record.project = self.project
 		record.num = 1
-		record.time_stamp = get_timestamp_no_milliseconds()
-		record.date_created = get_timestamp_no_milliseconds()
 		record.owner = self.user
-		record.last_updated_by = self.user
-		record.col_1 = 'Column Value 1'
-		record.col_2 = 'Column Value 2'
+		setattr(record, f1.col_name, 'Column Value 1')
+		setattr(record, f2.col_name, 'Column Value 2')
 		record.save(user=self.user)
 		
 		form = models.Form.objects.get(id=self.form.id)
 		rec = form.get_data().all()[0]
-		print rec.id, rec.num, rec.last_updated_by, rec.col_1
+		self.assertEqual('Column Value 1', getattr(rec, f1.col_name))
+		self.assertEqual('Column Value 2', getattr(rec, f2.col_name))
+		self.assertIsNotNone(rec.time_stamp)
+		self.assertIsNotNone(rec.date_created)
+		self.assertEqual(self.user, rec.owner)
+		self.assertEqual(self.user, rec.last_updated_by)
+		self.assertEqual(1, rec.num)
 		
 	def make_post_dictionary(self, name, description, tags):
 		# add 2 fields:

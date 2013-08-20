@@ -15,8 +15,9 @@ from localground.apps.site.api.views.print_views import PrintList, PrintInstance
 from localground.apps.site.api.views.project_views import ProjectList, ProjectInstance
 from localground.apps.site.api.views.marker_views import MarkerList, MarkerInstance
 from localground.apps.site.api.views.association_views \
-					import RelatedMediaList, RelatedMediaInstance
-from localground.apps.site.api.views.form_views import FormList, FormInstance, DataTypeViewSet
+			import RelatedMediaList, RelatedMediaInstance
+from localground.apps.site.api.views.form_views \
+			import FormList, FormInstance, FormDataList, FormDataInstance, DataTypeViewSet
 
 @api_view(('GET',))
 #@permission_classes((permissions.IsAuthenticated, IsAllowedGivenProjectPermissionSettings, ))

@@ -197,8 +197,8 @@ class ModelClassBuilder(object):
 		self.module = 'localground.apps.site.models.%s' % form.table_name      #needs to be unique
 		self.options = options = {
 			'ordering': ['num'],
-			'verbose_name': form.table_name,
-			'verbose_name_plural': form.table_name + 's',
+			'verbose_name': 'record', #form.table_name,
+			'verbose_name_plural': 'records', #form.table_name + 's',
 			'db_table': form.table_name
 		}
 		self.additional_fields = {}

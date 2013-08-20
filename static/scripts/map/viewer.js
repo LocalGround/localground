@@ -259,7 +259,7 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 					return;
 				}
 				$('#mode_toggle').show();
-				$.each(result, function(k, v) {
+				$.each(result.children, function(k, v) {
 					//alert(v.overlay_type);
 					if (v.overlay_type) {
 						if(self.managers[v.overlay_type]) {
