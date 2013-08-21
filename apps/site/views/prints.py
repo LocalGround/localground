@@ -38,6 +38,7 @@ def generate_print(request, is_json=False, embed=False,
 			form = models.Form.objects.get(id=int(r.get('form_id', 1)))
 	
 	forms = models.Form.objects.filter(owner=request.user).order_by('name',)
+	#forms = models.Form.objects.filter(project=project).order_by('name',)
 	layers, layer_ids = [], []
 	if r.get('layer_ids') is not None and len(r.get('layer_ids')) > 0:
 		layer_ids = [int(n) for n in r.get('layer_ids').split(',')]

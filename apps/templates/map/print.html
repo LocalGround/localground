@@ -51,6 +51,7 @@
 html, body {
     margin: 0px !important;
     background-color: #999 !important;
+	overflow-x: hidden !important;
 }
 {% endif %}
 form { 
@@ -303,8 +304,7 @@ select { width: 180px !important; }
                 <span>map_provider:</span><input type="text" name="map_provider" value="{{ basemap_id }}" /><br>
                 <span>generate_pdf:</span><input type="text" name="generate_pdf" value="on" /><br>
                 <span>layout:</span><input type="text" name="layout" id="layout" value="{{selectedLayout}}" /><br>
-                <span>form_id:</span><input type="text" name="form_id" id="form_id" value="" /><br>
-				<span>project_id:</span><input type="text" name="project_id" id="project_id" value="{{selected_project.id}}" />
+                <span>project_id:</span><input type="text" name="project_id" id="project_id" value="{{selected_project.id}}" />
             
 				<table id="tbl">
 					<tr>

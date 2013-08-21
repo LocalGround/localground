@@ -59,6 +59,9 @@ localground.print.prototype.initFormsMenu = function() {
             self.renderForm();
         });
     }
+    else {
+        $('#form_options').hide();
+    }
     $('#form').append(
         $('<option />').attr('id', -1).val(-1).html('-- Create New --')
     );
@@ -276,7 +279,10 @@ localground.print.prototype.setLayout = function(){
         short_form = long_form = false;
         $('#no_save_warning').show();
     } else {
-        $('#header, #footer, #form_options, #project_options').show();
+        $('#header, #footer, #project_options').show();
+        if(this.forms.length > 0){
+           $('#form_options').show();
+        }
         $('#no_save_warning').hide();
     }
     if(is_landscape) {

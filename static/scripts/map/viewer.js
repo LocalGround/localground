@@ -124,6 +124,10 @@ localground.viewer.prototype.initialize=function(opts){
 		hideCloseButton: true,
 		arrowSize: 10
     });
+	
+	/*$('.close').click(function(){
+		$(this).parent().parent().hide();
+    });*/
     
     this.infoBubble = new InfoBubble({
         borderRadius: 5,
@@ -345,6 +349,9 @@ localground.viewer.prototype.loadPrintForm = function(opts) {
         return false;
     }
     $('#do_print').show();
+	$('#my-modal').find('.close').click(function(){
+		$('#close_print_modal').trigger('click');
+	});
     var layer_overlays = [], scan_overlays = [];
     $.each($('#layerList').find('input'), function() {
         if($(this).attr('checked'))
