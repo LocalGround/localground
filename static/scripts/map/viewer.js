@@ -38,6 +38,7 @@ localground.viewer = function(){
     this.accessKey = null;
     this.managers = {};
 	this.slideshow = null;
+	this.dataCount = 0;
 	
 };
 localground.viewer.prototype = new localground.basemap();           // Here's where the inheritance occurs 
@@ -225,16 +226,25 @@ localground.viewer.prototype.getManager = function(data_list) {
 
 
 localground.viewer.prototype.initFiltering = function() {
-	$('#apply_filter').click(function(){
+	//input1.bind('keypress', function(event) {
+	$('#txt_filter').bind('keyup', function(event){
 		var term = $('#txt_filter').val().toLowerCase();
+		
+		self.dataCount = 0;
 		$.each(self.managers, function(k, v) {
-			//alert(k + ' - ' + v);
 			$.each(v.data, function(){
-				if (
+				var show = (
 					(this.name && this.name.toLowerCase().indexOf(term) != -1) ||
 					(this.tags && this.tags.toLowerCase().indexOf(term) != -1)
-				){
-					//alert(this.overlay_type + ' - ' + this.name);
+				);
+				//for tabular data, search each field too:
+				if (this.overlay_type == 'record') {
+					$.each(this.recs, function(){
+						show = show || this.toString().toLowerCase().indexOf(term) != -1;	
+					});
+				}
+				if(show || term.length == 0) {
+					++self.dataCount;
 					this.showOverlay();
 				}
 				else {
@@ -242,6 +252,7 @@ localground.viewer.prototype.initFiltering = function() {
 				}
 			});
 		});
+		$('#filter_counter').html(self.dataCount);
 	});
 };
 
@@ -267,8 +278,8 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 					alert(result.detail);
 					return;
 				}
-				$('#mode_toggle').show();
 				$.each(result.children, function(k, v) {
+					self.dataCount += v.data.length;
 					if(self.managers[v.id]) {
 						self.managers[v.id].addRecords(v.data);
 						self.managers[v.id].renderOverlays();
@@ -286,6 +297,10 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 						}
 					}
 				});
+				$('#mode_toggle, #filter_section').show();
+				$('#editor_message').hide();
+				$('#filter_counter').html(self.dataCount);
+				
 				self.resetBounds();
 			},
 		'json');

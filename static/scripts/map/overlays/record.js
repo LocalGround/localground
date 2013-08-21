@@ -216,19 +216,20 @@ localground.record.prototype.renderSlideRecord = function() {
 };
 
 localground.record.prototype.renderRecordHover = function() {
-    var $record = $('<div />'), $row = null;
+    var me = this;
+	var $record = $('<div />'), $row = null;
 	$.each(this.recs, function(idx, val) {
         $row = $('<div />');
         $row.append(
                 $('<div />')
                     .css({
-                        'width': '60px',
+                        'width': '70px',
                         'display': 'inline-block',
                         'vertical-align': 'top',
                         'text-align': 'left',
                         'font-weight': 'bold'
                     })
-                    .html(idx + ':'))
+                    .html(me.getManager().headers[idx] + ':'))
             .append(
                 $('<div />')
                     .css({
@@ -282,27 +283,30 @@ localground.record.prototype.renderListingImage = function() {
     if($('#record_preview').get(0) == null) {
         $('body').append(
             $('<div></div>').css({
-                width: 350,
-                height: 150,
+                width: 250,
+                height: 120,
                 'background-color': '#FFF',
                 position: 'absolute',
-                padding: 3,
-                'overflow-y': 'auto'
+                padding: 0,
+                'overflow-y': 'hidden'
             })
             .attr('id', 'record_preview')
-            .addClass('thumb')
+            //.addClass('thumb')
             .hide()
         );
     }
-    //$img.hover(function() {
-    //        $('#record_preview').empty().append(me.renderRecordHover()).css({
-    //            'top': $(this).offset().top - 75,  
-    //            'left': $(this).offset().left-360     
-    //        }).show();  
-    //    },
-    //    function() {
-    //        $('#record_preview').hide();
-    //    });
+    $img.hover(function() {
+			//me.renderRecordHover()
+			var $tbl = me.renderRecord();
+			$tbl.removeClass('zebra-striped').addClass('tbl-slim');
+            $('#record_preview').empty().append($tbl).css({
+                'top': $(this).offset().top - 75,  
+                'left': $(this).offset().left - $('#record_preview').width() - 10    
+            }).show();  
+        },
+        function() {
+            $('#record_preview').hide();
+        });
 	return $img;
 };
 

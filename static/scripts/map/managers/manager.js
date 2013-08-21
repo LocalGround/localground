@@ -60,7 +60,10 @@ localground.manager.prototype.addDataContainer = function() {
 					.attr('type', 'checkbox')
 					.attr('id', 'toggle_' + this.id + '_all')
 					.change(function() {
-						me.toggleOverlays($(this).attr('checked'));  
+						me.toggleOverlays($(this).attr('checked'));
+						if ($(this).prev().hasClass('ui-icon-right-triangle-small')) {
+							me.showHide($(this).prev());
+						}
 					}));
         
         $heading.append($('<h4 />').html(this.name).css({'display': 'inline'}));

@@ -194,3 +194,8 @@ form .input { margin-left: 85px; }
 	color: #999;
 	font-weight: bold;
 }
+
+.tbl-slim td, .tbl-slim th {
+  padding: 2px !important;
+  background-color: #eee;
+}
