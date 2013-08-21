@@ -2,16 +2,17 @@
  * For convenience, this class depends on the global variable "self" which
  * is the main controller object that uses this class.
 **/
-localground.record = function(opts, color, tableID){
+localground.record = function(opts, color){
     this.fields = [];
     $.extend(this, opts);
     this.overlay_type = 'record';
-	this.managerID = tableID;
     this.iframeURL = '/scans/update-record/embed/?id=' + this.id + '&form_id=' +
                         this.managerID;
+	this.bubbleWidth = 340;
+	this.bubbleHeight = 250;
     this.infoBubbleParams = {
-        edit: { width: 785, height: 285 },
-        view: { width: 600, height: 290 }
+        edit: { width: 340, height: 200 },
+        view: { width: 340, height: 200 }
     };
     
 	if(!opts.noMap) {
@@ -26,29 +27,20 @@ localground.record = function(opts, color, tableID){
 			// The anchor for this image is the base of the flagpole at 0,32.
 			new google.maps.Point(7, 7));
 	}
+	this.setRecordName();
 };
 
 localground.record.prototype = new localground.point();
 
 
 localground.record.prototype.setRecordName = function() {
-    for(i=0; i<this.fields.length; i++) {
-        if(this.fields[i].col_name == 'col_1')
-            if(this.fields[i].value) {
-                this.name = this.fields[i].value;
-                return;
-            }
-            else {
-                if(this.num)
-                    this.name = 'Observation #' + this.num;
-                else
-                    this.name = 'Untitled';
-                return;
-            }
-    }
+    if (this.num)
+		this.name =  "Record #" + this.id;
+	else
+		this.name =  "Record #" + this.id;
 };
 
-localground.record.prototype.showInfoBubbleView = function(opts) {
+/*localground.record.prototype.showInfoBubbleView = function(opts) {
     var $contentContainer = $('<div></div>')
                     .css({
                         'width': this.infoBubbleParams.view.width,
@@ -62,22 +54,39 @@ localground.record.prototype.showInfoBubbleView = function(opts) {
     self.infoBubble.setFooter(null);    
     self.infoBubble.setContent($contentContainer.get(0)); 
     self.infoBubble.open(self.map, this.googleOverlay);
+};*/
+localground.record.prototype.showInfoBubbleView = function(opts) {
+    //ensures that the marker renders on top:
+    this.googleOverlay.setMap(null);
+    this.googleOverlay.setMap(self.map);
+
+    //build bubble content:
+	var $container = $('<div />');
+	$container.append(this.renderRecord());
+	
+	var $contentContainer = this.renderInfoBubble();
+	$contentContainer.append($container);
 };
+
+localground.record.prototype.showInfoBubbleEdit= function(opts) {
+	this.showInfoBubbleView(opts);
+};
+
 
 localground.record.prototype.saveIframe = function() {
     var $f =  $('#the_frame').contents().find('form');
     $('#the_frame').contents().find('form').submit();
     
     //update the object & the right-hand panel text:
-    this.name =  $f.find('#id_col_1').val();
-    for(i=0; i<this.fields.length; i++) {
+    this.name =  "Record #" + this.id;
+    /*for(i=0; i<this.fields.length; i++) {
         this.fields[i].value = $f.find('#id_' + this.fields[i].col_name).val();
-    }
+    }*/
     this.renderListing();
 };
 
 localground.record.prototype.hasFieldSnippets = function() {
-    var hasFieldSnippets = false;
+    /*var hasFieldSnippets = false;
     $.each(this.fields, function() {
         if(this.snippet_url) {
             hasFieldSnippets = true;
@@ -85,9 +94,12 @@ localground.record.prototype.hasFieldSnippets = function() {
         }
     });
     return hasFieldSnippets;
+    */
+	return false;
 }
 
 localground.record.prototype.renderRecord = function() {
+	var me = this;
     var hasFieldSnippets = this.hasFieldSnippets();
     var $tbl = $('<table></table>').addClass('zebra-striped')
     var $thead = $('<thead></thead>');
@@ -105,24 +117,26 @@ localground.record.prototype.renderRecord = function() {
     $row = $('<tr></tr>')
         .append($('<td></td>').html('ID').css({'font-weight': 'bold'}))
         .append($('<td></td>').html(this.id));
-    $row.append($('<td></td>').html('&nbsp;'));
+    if(hasFieldSnippets)
+		$row.append($('<td></td>').html('&nbsp;'));
     $tbody.append($row);
     
-    $.each(this.fields, function() {
+	var headers = me.getManager().headers;
+	$.each(this.recs, function(idx, val) {
         $row = $('<tr></tr>')
-                .append($('<td></td>').html(this.col_alias).css({'font-weight': 'bold'}))
-                .append($('<td></td>').html(this.value));
-        if(this.snippet_url)
+                .append($('<td></td>').html(headers[idx]).css({'font-weight': 'bold'}))
+                .append($('<td></td>').html(val));
+        /*
+		 *if(this.snippet_url)
             $row.append($('<td></td>').append($('<img />').attr('src', this.snippet_url)));
         else
             $row.append($('<td></td>').html('&nbsp;'));
-        $tbody.append($row); 
+        */
+		$tbody.append($row); 
     });
     $tbl.append($tbody);
-    if(hasFieldSnippets) {
-        return $tbl;
-    }
-    else if(this.snippet_url) {
+	return $tbl;
+    /*if(this.snippet_url) {
         return $('<div />')
                     .append($('<img />')
                         .attr('src', this.snippet_url)
@@ -132,7 +146,7 @@ localground.record.prototype.renderRecord = function() {
     }
     else {
         return $tbl;    
-    }
+    }*/
 };
 
 localground.record.prototype.renderMarkerRecord = function() {
@@ -203,18 +217,18 @@ localground.record.prototype.renderSlideRecord = function() {
 
 localground.record.prototype.renderRecordHover = function() {
     var $record = $('<div />'), $row = null;
-    $.each(this.fields, function() {
+	$.each(this.recs, function(idx, val) {
         $row = $('<div />');
         $row.append(
                 $('<div />')
                     .css({
-                        'width': '90px',
+                        'width': '60px',
                         'display': 'inline-block',
                         'vertical-align': 'top',
                         'text-align': 'left',
                         'font-weight': 'bold'
                     })
-                    .html(this.col_alias + ':'))
+                    .html(idx + ':'))
             .append(
                 $('<div />')
                     .css({
@@ -224,25 +238,46 @@ localground.record.prototype.renderRecordHover = function() {
                         'text-align': 'left',
                         'color': '#666'
                     })
-                .html(this.value))
+                .html(val))
         $record.append($row);
     });
     return $record;
 };
 
-
 localground.record.prototype.renderListingImage = function() {
 	var $img = $('<img />')
-					.addClass(this.getObjectType())
+					.addClass(this.managerID)
 					.attr('src', this.image)
-					.attr('id', 'img_' + this.getObjectType() + '_' + this.id)
-					.css({
-                        'vertical-align': 'baseline',
-                        'cursor': 'pointer'
-                    });
+					.attr('id', 'img_' + this.managerID + '_' + this.id)
+					.css({'vertical-align': 'baseline'});
 	if(this.file_name_orig != null)
 		$img.attr('title', this.file_name_orig);   
-	if(this.lat == null) { $img.addClass('can_drag'); }
+	if(this.point == null) { $img.addClass('can_drag'); }
+	return $img;
+};
+
+/*
+localground.record.prototype.renderListingImage = function() {
+	var $img = $('<img />')
+					.addClass(this.managerID)
+					.attr('src', this.image)
+					.attr('id', 'img_' + this.managerID + '_' + this.id)
+					.css({'vertical-align': 'baseline'});
+	if(this.file_name_orig != null)
+		$img.attr('title', this.file_name_orig);   
+	if(this.point == null) { $img.addClass('can_drag'); }
+	return $img;
+};
+*/
+localground.record.prototype.renderListingImage = function() {
+	var $img = $('<img />')
+					.addClass(this.managerID)
+					.attr('src', this.image)
+					.attr('id', 'img_' + this.managerID + '_' + this.id)
+					.css({'vertical-align': 'baseline'});
+	if(this.file_name_orig != null)
+		$img.attr('title', this.file_name_orig);   
+	if(this.point == null) { $img.addClass('can_drag'); }
     var me = this;
     if($('#record_preview').get(0) == null) {
         $('body').append(
@@ -259,15 +294,16 @@ localground.record.prototype.renderListingImage = function() {
             .hide()
         );
     }
-    $img.hover(function() {
-            $('#record_preview').empty().append(me.renderRecordHover()).css({
-                'top': $(this).offset().top - 75,  
-                'left': $(this).offset().left-360     
-            }).show();  
-        },
-        function() {
-            $('#record_preview').hide();
-        });
+    //$img.hover(function() {
+    //        $('#record_preview').empty().append(me.renderRecordHover()).css({
+    //            'top': $(this).offset().top - 75,  
+    //            'left': $(this).offset().left-360     
+    //        }).show();  
+    //    },
+    //    function() {
+    //        $('#record_preview').hide();
+    //    });
 	return $img;
 };
+
 

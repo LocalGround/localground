@@ -183,7 +183,7 @@ class Form(BaseNamed, ProjectMixin):
 		# We want to query everything in one go, so we're taking advantage of
 		# the "select_related" functionality (no lazy queries please!)
 		related_fields = ['snippet', 'num_snippet', 'project',
-						  'snippet__source_attachment', 'owner']
+						  'snippet__source_attachment', 'owner', 'form', 'form__project__id']
 					#'attachment', 'owner']
 		for f in self.get_fields():
 			related_fields.append(f.col_name + '_snippet')

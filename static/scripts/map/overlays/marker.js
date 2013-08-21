@@ -13,9 +13,9 @@ localground.marker = function(opts){
     this.recordIDs = null;
     this.color = 'CCCCCC'
     this.accessKey = null;
+    this.managerID = null;
     if(opts)
         $.extend(this, opts);
-    this.managerID = this.overlay_type = self.overlay_types.MARKER;
     this.image = this.markerImage = this.iconSmall = this.iconLarge =
         'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
         this.color + '|13|b|';

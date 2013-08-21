@@ -29,13 +29,16 @@ localground.overlay.prototype.getObjectType = function() {
 };
 
 localground.overlay.prototype.getListingContainer = function() {
-	return $('#' + this.getObjectType());
+	//alert('#' + this.managerID);
+	$c = $('#' + this.managerID);
+	//alert($c.html());
+	return $c;
 };
 
 localground.overlay.prototype.renderListingCheckbox = function() {
 	var me = this;
-	var $cb = $('<input class="cb_' + this.getObjectType() + '" type="checkbox" />')
-        .attr('id', 'cb_' + this.getObjectType() + '_' + this.id)
+	var $cb = $('<input class="cb_' + this.managerID + '" type="checkbox" />')
+        .attr('id', 'cb_' + this.managerID + '_' + this.id)
         .val(this.id)
         .css({'vertical-align': 'baseline'})
         .change(function() {
@@ -57,26 +60,27 @@ localground.overlay.prototype.renderListingCheckbox = function() {
 };
 
 localground.overlay.prototype.getListingElement = function() {
-	var $elem = $('#' + this.getObjectType() + '_' + this.id);
+	//alert(this.managerID + '_' + this.id)
+	var $elem = $('#' + this.managerID + '_' + this.id);
 	if($elem.get(0) != null)
 		return $elem;
 	return null;
 };
 
 localground.overlay.prototype.getListingCheckbox = function() {
-	return $('#cb_' + this.getObjectType() + '_' + this.id);
+	return $('#cb_' + this.managerID + '_' + this.id);
 };
 
 localground.overlay.prototype.getListingImage = function() {
-	return $('#img_' + this.getObjectType() + '_' + this.id);
+	return $('#img_' + this.managerID + '_' + this.id);
 };
 
 
 localground.overlay.prototype.renderListingImage = function() {
 	var $img = $('<img />')
-					.addClass(this.getObjectType())
+					.addClass(this.managerID)
 					.attr('src', this.image)
-					.attr('id', 'img_' + this.getObjectType() + '_' + this.id)
+					.attr('id', 'img_' + this.managerID + '_' + this.id)
 					.css({'vertical-align': 'baseline'});
 	if(this.file_name_orig != null)
 		$img.attr('title', this.file_name_orig);   
@@ -121,8 +125,10 @@ localground.overlay.prototype.renderListing = function() {
 	var $div_entry = this.getListingElement();
 	if($div_entry == null)
 	{
-		$div_entry = $('<div></div>').attr('id', this.getObjectType() + '_' + this.id);
-		this.getListingContainer().append($div_entry);	
+		//alert('adding new listing ' + this.managerID + '_' + this.id);
+		$div_entry = $('<div></div>').attr('id', this.managerID + '_' + this.id);
+		this.getListingContainer().append($div_entry);
+		//alert($div_entry.attr('id') + 'has been appended');
 	}
 	else {
 		$div_entry.children().remove();	
@@ -198,7 +204,7 @@ localground.overlay.prototype.removeItem = function(item, prefix) {
 };
 
 localground.overlay.prototype.toggleOverlay = function(isOn) {
-    var $cb = $('#cb_' + this.getObjectType() + '_' + this.id);
+    var $cb = $('#cb_' + this.managerID + '_' + this.id);
     //if checked, make markers visible and check everything:
     if(isOn) {
         if(this.isVisible() && this.googleOverlay && this.googleOverlay.getMap() == null) {

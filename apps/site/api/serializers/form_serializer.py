@@ -37,7 +37,6 @@ class BaseRecordSerializer(serializers.ModelSerializer):
 		return obj._meta.verbose_name
 	
 	def get_detail_url(self, obj):
-		view = self.context.get('view')
 		return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
 					obj.form.id, obj.id)
 
@@ -71,4 +70,31 @@ class DynamicFormDataSerializerBuilder(object):
 				read_only_fields = BaseRecordSerializer.Meta.read_only_fields
 				
 		return FormDataSerializer
+	
+
+def create_compact_serializer(form):
+	"""
+	generate a dynamic serializer from dynamic model
+	"""
+	col_names = [f.col_name for f in form.get_fields()]
+	
+	class FormDataSerializer(BaseRecordSerializer):
+		recs = serializers.SerializerMethodField('get_recs')
+		url = serializers.SerializerMethodField('get_detail_url')
+		project_id = serializers.SerializerMethodField('get_project_id')
+			
+		class Meta:
+			model = form.TableModel
+			fields = ('id', 'num', 'recs', 'url', 'point', 'project_id')
+			
+		def get_recs(self, obj):
+			return [getattr(obj, col_name) for col_name in col_names]
+		
+		def get_detail_url(self, obj):
+			return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
+						obj.form.id, obj.id)
+		def get_project_id(self, obj):
+			return obj.form.project.id
+
+	return FormDataSerializer
 	

@@ -1,7 +1,7 @@
 localground.scan = function(opts){
     //initialize object properties to null (for readability):
     this.counter = 0; //tracks which processed image the map is currently using
-	this.managerID = this.overlay_type = self.overlay_types.SCAN;
+	this.managerID = null;
     this.id = null;
     this.overlay_path = null;
     this.north = null;

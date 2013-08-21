@@ -6,8 +6,8 @@ localground.audio = function(opts){
     this.path = null;
     this.file_name_orig = null;
     this.description = null;
+	this.managerID = null;
     $.extend(this, opts);
-    this.managerID = this.overlay_type = self.overlay_types.AUDIO;
     this.iframeURL = '/scans/update-' + this.overlay_type + '/embed/?id=' + this.id;
     //initialize icons in the constructor:
     this.image = this.iconSmall = this.iconLarge = '/static/images/headphones_small.png';

@@ -3,8 +3,8 @@
  * For convenience, this class depends on the global variable "self" which
  * is the main controller object that uses this class.
 **/
-localground.manager = function(){
-    this.id;
+localground.manager = function(id){
+    this.id = id;
 	this.name;
 	this.overlay_type;
 	this.data = [];
@@ -36,14 +36,14 @@ localground.manager.prototype.addDataContainer = function() {
     if(this.getListingContainer().get(0) == null) {
         var me = this;
 		//alert(this.getObjectType());
-		var $container = $('<div />').attr('id', 'panel_' + this.getObjectType())
+		var $container = $('<div />').attr('id', 'panel_' + this.id)
 							.addClass('listing_container')
 							.css({
 								'border-left': 'solid 0px #ccc',
 								'margin-bottom': '5px',
 								'padding': '5px 0px 0px 0px'
 							});
-        var $heading = $('<div />').attr('id', 'header_' + this.getObjectType())
+        var $heading = $('<div />').attr('id', 'header_' + this.id)
 							.css({
 								'border-bottom': 'solid 1px #ccc',
 								'padding-bottom': '5px',
@@ -74,7 +74,7 @@ localground.manager.prototype.addDataContainer = function() {
                                     
         $('#panel_data').append($container)
 		$container.append($heading);
-        var $body = $('<div />').attr('id', this.getObjectType())
+        var $body = $('<div />').attr('id', this.id)
                         .addClass('overlayPanel');
         $body.append(
             $('<div />')
@@ -101,7 +101,7 @@ localground.manager.prototype.renderOverlays = function() {
     this.addDataContainer();
 	$.each(this.data, function() {
         //return if item has already been drawn:
-        if($('#' + this.getObjectType() + '_' + this.id).get(0) != null) {
+        if($('#' + this.id + '_' + this.id).get(0) != null) {
             return;
         }
         this.renderOverlay();
@@ -187,15 +187,15 @@ localground.manager.prototype.getObjectType = function() {
 };
 
 localground.manager.prototype.getListingPanel = function() {
-	return $('#panel_' + this.getObjectType());
+	return $('#panel_' + this.id);
 };
 
 localground.manager.prototype.getListingHeader = function() {
-	return $('#header_' + this.getObjectType());
+	return $('#header_' + this.id);
 };
 
 localground.manager.prototype.getListingContainer = function() {
-	return $('#' + this.getObjectType());
+	return $('#' + this.id);
 };
 
 localground.manager.prototype.addRecords = function(data) {

@@ -1,5 +1,6 @@
-localground.photoManager = function(){
+localground.photoManager = function(id){
 	this.data = [];
+	this.id = id;
 };
 
 localground.photoManager.prototype = new localground.manager();
@@ -7,6 +8,7 @@ localground.photoManager.prototype = new localground.manager();
 localground.photoManager.prototype.addRecords = function(data) {
     var me = this;
     $.each(data, function(){
+		this.managerID = me.id;
         me.data.push(new localground.photo(this));        
     });
 };

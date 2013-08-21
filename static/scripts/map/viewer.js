@@ -204,26 +204,35 @@ localground.viewer.prototype.initProjectsMenu = function() {
     }
 };
 
-localground.viewer.prototype.getManager = function(key) {
-	var d = { };
-	d[self.overlay_types.PHOTO] = new localground.photoManager();
-	d[self.overlay_types.AUDIO] = new localground.audioManager();
-	d[self.overlay_types.MARKER] = new localground.markerManager();
-	d[self.overlay_types.SCAN] = new localground.scanManager();
-	d[self.overlay_types.RECORD] = new localground.tableManager();
-	return d[key];
+localground.viewer.prototype.getManager = function(data_list) {
+	switch (data_list.id) {
+		case 'photos':
+			return new localground.photoManager(data_list.id);
+		case 'audio':
+			return new localground.audioManager(data_list.id);
+		case 'markers':
+			return new localground.markerManager(data_list.id);
+		case 'map-images':
+			return new localground.scanManager(data_list.id);
+		default:
+			return new localground.tableManager({
+				id: data_list.id,
+				color: self.colors[++self.colorIndex],
+				headers: data_list.headers
+			});		
+	}
 };
 
 
 localground.viewer.prototype.initFiltering = function() {
 	$('#apply_filter').click(function(){
-		var term = $('#txt_filter').val();
+		var term = $('#txt_filter').val().toLowerCase();
 		$.each(self.managers, function(k, v) {
 			//alert(k + ' - ' + v);
 			$.each(v.data, function(){
 				if (
-					(this.name && this.name.indexOf(term) != -1) ||
-					(this.tags && this.tags.indexOf(term) != -1)
+					(this.name && this.name.toLowerCase().indexOf(term) != -1) ||
+					(this.tags && this.tags.toLowerCase().indexOf(term) != -1)
 				){
 					//alert(this.overlay_type + ' - ' + this.name);
 					this.showOverlay();
@@ -260,23 +269,20 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 				}
 				$('#mode_toggle').show();
 				$.each(result.children, function(k, v) {
-					//alert(v.overlay_type);
-					if (v.overlay_type) {
-						if(self.managers[v.overlay_type]) {
-							self.managers[v.overlay_type].addRecords(v.data);
-							self.managers[v.overlay_type].renderOverlays();
-						}
-						else {
-							//initialize new manager object:
-							self.managers[v.overlay_type] = self.getManager(v.overlay_type);
-							self.managers[v.overlay_type].initialize(v);
-							//turn everything on, if requested (from URL param):
-							if(turn_on_everything && (self.initProjectID != null || self.initViewID != null)) {
-								if(!$('#toggle_' + v.overlay_type + '_all').attr('checked')){
-									$('#toggle_' + v.overlay_type + '_all')
-										.attr('checked', true).trigger('change');	
-								}	
-							}
+					if(self.managers[v.id]) {
+						self.managers[v.id].addRecords(v.data);
+						self.managers[v.id].renderOverlays();
+					}
+					else {
+						//initialize new manager object:
+						self.managers[v.id] = self.getManager(v);
+						self.managers[v.id].initialize(v);
+						//turn everything on, if requested (from URL param):
+						if(turn_on_everything && (self.initProjectID != null || self.initViewID != null)) {
+							if(!$('#toggle_' + v.id + '_all').attr('checked')){
+								$('#toggle_' + v.id + '_all')
+									.attr('checked', true).trigger('change');	
+							}	
 						}
 					}
 				});

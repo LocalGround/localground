@@ -1,5 +1,5 @@
-localground.markerManager = function(){
-	this.id = "markers";
+localground.markerManager = function(id){
+	this.id = id
 	this.title = "Markers";
 	this.data = [];
     this.palettes = [
@@ -38,6 +38,7 @@ localground.markerManager.prototype = new localground.manager();
 localground.markerManager.prototype.addRecords = function(data) {
     var me = this;
     $.each(data, function(){
+		this.managerID = me.id;
         me.data.push(new localground.marker(this));        
     });
 };

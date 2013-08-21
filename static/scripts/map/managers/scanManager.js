@@ -1,6 +1,7 @@
-localground.scanManager = function(){
+localground.scanManager = function(id){
 	this.batchTurnOnLimit = 10;
 	this.data = [];
+	this.id = id;
 };
 
 localground.scanManager.prototype = new localground.manager();
@@ -8,6 +9,7 @@ localground.scanManager.prototype = new localground.manager();
 localground.scanManager.prototype.addRecords = function(data) {
     var me = this;
     $.each(data, function(){
+		this.managerID = me.id;
         me.data.push(new localground.scan(this));        
     });
 };
