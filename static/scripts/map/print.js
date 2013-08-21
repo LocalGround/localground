@@ -33,7 +33,7 @@ localground.print.prototype.initialize=function(opts){
     this.initMap(opts);
     this.initLayoutFormset();
     
-    $('#the_form').submit(self.validateForm);
+    //$('#the_form').submit(self.validateForm);
     $('input').keypress(function(event){
         if(event.keyCode == 13){
             return false;
@@ -542,7 +542,17 @@ localground.print.prototype.getForm = function(id) {
     return the_form;
 };
 
-localground.print.prototype.validateForm = function() {
+/*localground.print.prototype.validateForm = function() {
+    alert('validating form');
+    if(!$('#short_form').attr('checked') && !$('#long_form').attr('checked')) {
+        alert('NO FORM INCLUDED');
+        $('#tbl').find('tr').each(function(idx){
+            if ($(this).find('.close').get(0)) {
+                $(this).find('.close').trigger('click');
+            }
+        });
+    }
+    return;
     var messages = [];
     var msg = 'Enter new project name...';
     if($('#project_id').val() == '-1')
@@ -585,4 +595,5 @@ localground.print.prototype.validateForm = function() {
     }
     return false;
 };
+*/
 

@@ -88,10 +88,9 @@ def generate_print(request, is_json=False, embed=False,
 				layer_ids=None,
 				scan_ids=scan_ids
 			)
-		
 		# save the form layout to the database:
 		formset = FieldLayoutFormset(request.POST, instance=p, prefix=prefix)
-		if formset.is_valid():
+		if formset.is_valid() and form is not None:
 			for fieldlayoutform in formset.forms:
 				fieldlayoutform.instance.save(user=request.user)
 		

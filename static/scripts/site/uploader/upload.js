@@ -28,10 +28,7 @@ localground.uploader.prototype.initialize = function(opts) {
     self = this;
     localground.base.prototype.initialize.call(this, opts);
     this.options.mediaType = opts.mediaType;
-    //builds a Regex of acceptable file types based on the kind of file being uploaded.
-    this.options.acceptFileTypes = RegExp('(\.|\/)(' +
-                                    opts.acceptFileTypes.split(', ').join('|') +
-                                    ')$', 'i');
+    this.options.acceptFileTypes = opts.acceptFileTypes.split(', ');
     
     $('.dropdown-menu > li > a').click(function(){
         $('#project').val($(this).attr('id'));
@@ -131,10 +128,12 @@ localground.uploader.prototype.formatFileSize = function(bytes) {
 };
 
 localground.uploader.prototype.hasError = function(file) {
+    var ext = file.name.split('.')[1];
     if (file.error) {
         return file.error;
     }
-    if (!this.options.acceptFileTypes.test(file.type)) {
+    if (this.options.acceptFileTypes.indexOf(file.type) == -1 &&
+        this.options.acceptFileTypes.indexOf(ext) == -1) {
         return 'acceptFileTypes';
     }
     if (this.options.maxFileSize &&

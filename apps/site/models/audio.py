@@ -47,6 +47,7 @@ class Audio(BasePoint, BaseUploadedMedia):
         
         #4) save object to database:  
         self.file_name_orig = file.name
+        self.name = file.name
         self.file_name_new = file_name_new
         self.content_type = ext.replace('.', '') #file extension      
         self.host = settings.SERVER_HOST

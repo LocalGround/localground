@@ -21,7 +21,7 @@ def init_upload_form(request,
     projects = Project.objects.get_objects(request.user)
     media_types = [
         ('photos', 'Photos', 'png, jpg, jpeg, gif'),
-        ('audio', 'Audio Files', 'audio/x-m4a, m4a, mp3, m4a, mp4, mpeg'),
+        ('audio', 'Audio Files', 'audio\/x-m4a, m4a, mp3, m4a, mp4, mpeg, video\/3gpp, 3gp, aif, aiff, ogg'),
         ('maps', 'Paper Maps & Forms', 'png, jpg, jpeg, gif'),
         ('air-quality', 'DustTrak Data', 'log (GPS) + csv (DustTrak)'),
         ('odk', 'ODK Data', 'zipped ODK form instance'),

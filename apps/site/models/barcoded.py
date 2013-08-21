@@ -152,6 +152,7 @@ class Scan(Processor):
 		self.status = StatusCode.objects.get(id=1)
 		self.upload_source = UploadSource.objects.get(id=1)
 		self.file_name_orig = file.name
+		self.name = file.name
 		self.file_name_new = file_name_new
 		self.file_name_thumb = thumbnail_name
 		self.content_type = ext.replace('.', '') #file extension      

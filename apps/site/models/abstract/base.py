@@ -95,11 +95,23 @@ class Base(models.Model):
 				.prefetch_related('entity_object', 'entity_object__owner')
 				.order_by('ordering',))
 		entities = []
+		stale_references = []
 		for rec in list(qs):
 			o = rec.entity_object
-			o.ordering = rec.ordering
-			o.turned_on = rec.turned_on
-			entities.append(o)
+			if o is not None:
+				o.ordering = rec.ordering
+				o.turned_on = rec.turned_on
+				entities.append(o)
+			else:
+				stale_references.append(rec.id)
+		
+		# Because the ContentTypes framework doesn't use traditional relational
+		# database controls (no constraints), it's possible that the referenced
+		# objects no longer exist.  If this is the case, delete the irrelevant
+		# pointers:
+		if len(stale_references) > 0:
+			self.entities.filter(id__in=stale_references).delete()
+		
 		return entities
 	
 	def append(self, item, user, ordering=1, turned_on=False):

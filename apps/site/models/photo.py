@@ -105,6 +105,7 @@ class Photo(BasePoint, BaseUploadedMedia):
          
         #4) save object to database:  
         self.file_name_orig = file.name
+        self.name = file.name
         self.file_name_new = file_name_new
         self.file_name_large = photo_paths[1]
         self.file_name_medium = photo_paths[2]
