@@ -284,11 +284,13 @@ localground.record.prototype.renderListingImage = function() {
         $('body').append(
             $('<div></div>').css({
                 width: 250,
-                height: 120,
+                height: 140,
                 'background-color': '#FFF',
                 position: 'absolute',
                 padding: 0,
-                'overflow-y': 'hidden'
+                'overflow-y': 'hidden',
+				'background-color': 'none',
+				'border': 'none'
             })
             .attr('id', 'record_preview')
             //.addClass('thumb')
