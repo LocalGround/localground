@@ -194,7 +194,7 @@ localground.profile.prototype.addObject = function() {
         height: 400,
         iframeURL: this.addURL,
         showTitle: false,
-        submitButtonText: 'Add ' + this.objectName.toLowerCase(),
+        submitButtonText: 'Save ' + this.objectName.toLowerCase(),
         closeExtras: function() {
             if($('#add-modal').find('.hide').html() == 'Done')
                 document.location.href = self.pageURL;

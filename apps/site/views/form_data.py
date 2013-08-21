@@ -67,6 +67,9 @@ def get_record(request, object_id, rec_id=None, template_name='profile/digitize_
     r = request.POST or request.GET
     record = None
     form_object = Form.objects.get(id=object_id)
+    no_more = False
+    record_new = form_object.get_next_record(last_id=rec_id)
+    if record_new is None: no_more = True
     if rec_id:
         record = form_object.TableModel.objects.get(id=rec_id)
     
@@ -80,7 +83,6 @@ def get_record(request, object_id, rec_id=None, template_name='profile/digitize_
             instance.save(user=request.user)
             #query for next record
             if r.get('next_record') in ['1', 'true', True]:
-                record_new = form_object.get_next_record(last_id=id)
                 if record_new is not None:
                     record = record_new
                     record_form = form_object.DataEntryFormClass(instance=record)
@@ -94,8 +96,7 @@ def get_record(request, object_id, rec_id=None, template_name='profile/digitize_
                     context.update({
                         'success': True,
                         'message': 'The data record was successfully updated.  \
-                                    There are no more records to edit.',
-                        'no_more': True
+                                    There are no more records to edit.'
                     })    
                     
             else:
@@ -123,6 +124,7 @@ def get_record(request, object_id, rec_id=None, template_name='profile/digitize_
         'include_map': include_map,
         'form_id': object_id,
         'table_name': form_object.table_name,
+        'no_more': no_more
     })
 
     if not include_map:

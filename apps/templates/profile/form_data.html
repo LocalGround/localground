@@ -113,6 +113,7 @@
 			<input class="checkall" type="checkbox" name="checkall"/>
 		</th>
 		<th scope="col">ID</th>
+		<th scope="col">Edit</th>
 		<th scope="col">Uploaded By</th>
 		<th scope="col">Num</th>
 		{% for field in form.get_fields %}
@@ -135,7 +136,8 @@
 			<td class="column-cb">
 				<input class="checkone" id="cb_{{o.id}}" name="id" type="checkbox" value="{{o.id}}" />
 			</td>
-			<td><a class="edit" href="{{raw_url}}{{o.id}}/">{{o.id}}</a></td>
+			<td>{{o.id}}</td>
+			<td><a class="edit" href="{{raw_url}}{{o.id}}/">edit</a></td>
 			<td>
 				{{o.snippet.source_attachment.attribution}}
 			</td>
@@ -162,7 +164,7 @@
 			<td>{{ o.display_coords }}</td>
 			<td>{% if o.owner %} {{ o.owner}} {% else %} anonymous {% endif %}</td>
 			<td>{{o.time_stamp|date:"n/j/Y P" }}</td>
-			<td>{{ o.project.name }}</td>
+			<td>{{ o.form.project.name }}</td>
 			<td>{% if o.marker %}{{ o.marker.get_name }}{% else %} -- {% endif %}</td>
 			<td>
 				{% if o.snippet %}

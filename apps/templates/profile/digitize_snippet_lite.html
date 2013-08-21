@@ -53,10 +53,23 @@
         .timepicker({
             showPeriod: true,
             showLeadingZero: true
-        });top
+        });
+	$('#save_and_continue').click(function() {
+        $('#next_record').val("true");
+    });
+    $('#save').click(function() {
+        $('#next_record').val("false");
+    });
 {% endblock %}
 
 {% block main_content %}
+	{% if not embed%}
+		<ul class="breadcrumb" style="margin-bottom: 5px;">
+			<li><a href="/profile/forms/">Forms</a> <span class="divider">/</span></li>
+			<li><a href="/profile/forms/{{record.form.id}}/data/">Form Data</a> <span class="divider">/</span></li>
+			<li class="active">Record</li>
+		</ul>
+	{% endif %}
     <div class="row">
 		{% include "includes/messages.html" %}
 	</div>
@@ -76,10 +89,16 @@
             <div class="clearfix">
                 <label>&nbsp;</label>
                 <div class="input">
-                    <input id="save" type="submit" value="Save" class="btn primary" />
-                </div>
+					{% if no_more %}
+						<input id="save" type="submit" value="Save" class="btn primary" />
+					{% else %}
+						<input id="save_and_continue" type="submit" value="Save & Continue" class="btn primary" />
+						<input id="save" type="submit" value="Save" class="btn" />
+					{% endif %}
+				</div>
             </div>
         {% endif %}
+		<input name="next_record" id="next_record" type="hidden" />
     </form>
     
 {% endblock %}

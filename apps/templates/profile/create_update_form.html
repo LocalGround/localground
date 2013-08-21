@@ -1,6 +1,10 @@
 {% extends base_template %}
 {% block extra_styles %}
 	{{block.super}}
+	{% if embed %}
+		table td > input[type=text], table td > select { width: 150px !important; }
+		table td, table th { padding: 3px !important; }
+	{% endif %}
 {% endblock %}
 
 {% block style_links %}
