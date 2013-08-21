@@ -349,7 +349,9 @@ localground.viewer.prototype.loadPrintForm = function(opts) {
         return false;
     }
     $('#do_print').show();
+	$('#my-modal').find('.close').unbind('click');
 	$('#my-modal').find('.close').click(function(){
+		//alert('triggering');
 		$('#close_print_modal').trigger('click');
 	});
     var layer_overlays = [], scan_overlays = [];
