@@ -4,6 +4,7 @@
 **/
 localground.record = function(opts, color){
     this.fields = [];
+	this.size = 25;
     $.extend(this, opts);
     this.overlay_type = 'record';
     this.iframeURL = '/scans/update-record/embed/?id=' + this.id + '&form_id=' +
@@ -17,15 +18,16 @@ localground.record = function(opts, color){
     
 	if(!opts.noMap) {
 		//initialize icons in the constructor:
-		this.image = 'http://chart.apis.google.com/chart?cht=it&chs=15x15&chco='
-		this.image += color + ',000000ff,ffffff01&chl=&chx=000000,0&chf=bg,s,00000000&ext=.png';
+		this.image = 'http://chart.apis.google.com/chart?cht=it&chs=';
+		this.image += this.size + 'x' + this.size + '&chco=' + color;
+		this.image += ',000000ff,ffffff01&chl=&chx=000000,0&chf=bg,s,00000000&ext=.png';
 		this.iconSmall = this.iconLarge = new google.maps.MarkerImage(this.image,
 			// This marker is 20 pixels wide by 32 pixels tall.
-			new google.maps.Size(15, 15),
+			new google.maps.Size(this.size, this.size),
 			// The origin for this image is 0,0.
 			new google.maps.Point(0,0),
 			// The anchor for this image is the base of the flagpole at 0,32.
-			new google.maps.Point(7, 7));
+			new google.maps.Point(parseInt(this.size/2), parseInt(this.size/2)));
 	}
 	this.setRecordName();
 };
@@ -66,6 +68,7 @@ localground.record.prototype.showInfoBubbleView = function(opts) {
 	
 	var $contentContainer = this.renderInfoBubble();
 	$contentContainer.append($container);
+	$('#bubble_container').css({'overflow-y': 'auto'});
 };
 
 localground.record.prototype.showInfoBubbleEdit= function(opts) {
