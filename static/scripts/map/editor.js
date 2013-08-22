@@ -114,37 +114,42 @@ localground.editor.prototype.deleteSelectedShape = function() {
     }
 };
 
+localground.editor.prototype.makeEditable = function() {
+    //turn on drawing manager:
+    this.drawingManager.setMap(this.map);
+    
+    //show the delete buttons
+    $('.listing_container').find('.close').show();
+    for(var key in self.managers) {
+        self.managers[key].makeEditable();
+    }
+};
+
+localground.editor.prototype.makeViewable = function() {
+    //hide the delete buttons
+    $('.listing_container').find('.close').hide();
+    
+    //turn off drawing manager:
+    this.drawingManager.setMap(null);
+    
+    //turn off draggability:
+    for(var key in self.managers) {
+        self.managers[key].makeViewable();
+    }
+};
+
 
 localground.editor.prototype.toggleMode = function($elem) {
     switch($elem.html()) {
         case 'Edit':
             this.mode = 'edit';
-            $elem.html('Done');
-            //turn on drawing manager:
-            this.drawingManager.setMap(this.map);
-            
-            //show the delete buttons
-            $('.listing_container').find('.close').show();
-            for(var key in self.managers) {
-                self.managers[key].makeEditable();
-            }
-            
-            
+            $elem.html('Done'); 
+            this.makeEditable();
             break;
         default:
             this.mode = 'view';            
             $elem.html('Edit');
-            
-            //hide the delete buttons
-            $('.listing_container').find('.close').hide();
-            
-            //turn off drawing manager:
-            this.drawingManager.setMap(null);
-            
-            //turn off draggability:
-            for(var key in self.managers) {
-                self.managers[key].makeViewable();
-            }
+            this.makeViewable();
             break;
     }
     

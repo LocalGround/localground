@@ -283,7 +283,6 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 					return;
 				}
 				$.each(result.children, function(k, v) {
-					self.dataCount += v.data.length;
 					if(self.managers[v.id]) {
 						self.managers[v.id].addRecords(v.data);
 						self.managers[v.id].renderOverlays();
@@ -301,22 +300,27 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 						}
 					}
 				});
+				if (self.mode == 'edit') {
+					self.makeEditable();
+				}
+				//re-apply filter to data as new data is added
+				$('#txt_filter').trigger('keyup');
 				$('#mode_toggle, #filter_section').show();
 				$('#editor_message').hide();
-				$('#filter_counter').html(self.dataCount);
-				
 				self.resetBounds();
 			},
 		'json');
 	} //end if checked
 	else {
 		for(var key in self.managers) {
-			self.managers[key].removeByProjectID(groupID); 
+			self.managers[key].removeByProjectID(groupID);
 		}
 		self.resetBounds();
 		if($('.cb_project:checked').length == 0) {
 			$('#mode_toggle').hide();
 		}
+		//re-apply filter to data as new data is added
+		$('#txt_filter').trigger('keyup');
 	}
 	return;
 };
@@ -496,4 +500,12 @@ localground.viewer.prototype.initArrowNav = function() {
         self.map.panTo(newCenter);
         return false;
     });
+};
+
+localground.viewer.prototype.makeEditable = function() {
+    return;
+};
+
+localground.viewer.prototype.makeViewable = function() {
+    return;
 };

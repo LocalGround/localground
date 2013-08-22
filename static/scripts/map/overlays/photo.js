@@ -38,9 +38,9 @@ localground.photo.prototype.renderListingImage = function() {
         $('body').append($imgPreview );
     }
     var $img = $('<img />')
-					.addClass(this.getObjectType())
+					.addClass(this.managerID)
 					.attr('src', this.image)
-					.attr('id', 'img_' + this.getObjectType() + '_' + this.id)
+					.attr('id', 'img_' + this.managerID + '_' + this.id)
 					.css({'vertical-align': 'baseline'})
                     .hover(function() {
                         $imgPreview.attr('src', me.path_small).css({

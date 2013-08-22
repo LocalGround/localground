@@ -128,7 +128,8 @@ localground.uploader.prototype.formatFileSize = function(bytes) {
 };
 
 localground.uploader.prototype.hasError = function(file) {
-    var ext = file.name.split('.')[1];
+    var pieces = file.name.split('.')
+    var ext = pieces[pieces.length-1];
     if (file.error) {
         return file.error;
     }

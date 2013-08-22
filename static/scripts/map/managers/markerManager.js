@@ -47,7 +47,7 @@ localground.markerManager.prototype.removeRecord = function(marker) {
     //detach photos:
     if(marker.photoIDs) {
         $.each(marker.photoIDs, function() {
-            var photo = marker.getManagerById(self.overlay_types.PHOTO).getDataElementByID(this);
+            var photo = marker.getManagerById('photos').getDataElementByID(this);
             photo.googleOverlay.setMap(self.map);
             photo.getListingElement().show();
         });
@@ -55,7 +55,7 @@ localground.markerManager.prototype.removeRecord = function(marker) {
     //detach audio files:
     if(marker.audioIDs) {
         $.each(marker.audioIDs, function() {
-            var audio = marker.getManagerById(self.overlay_types.AUDIO).getDataElementByID(this);
+            var audio = marker.getManagerById('audio').getDataElementByID(this);
             audio.googleOverlay.setMap(self.map);
             audio.getListingElement().show();
         });

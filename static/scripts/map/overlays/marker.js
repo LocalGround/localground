@@ -16,7 +16,7 @@ localground.marker = function(opts){
     this.managerID = null;
     if(opts)
         $.extend(this, opts);
-    this.image = this.markerImage = this.iconSmall = this.iconLarge =
+	this.image = this.markerImage = this.iconSmall = this.iconLarge =
         'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
         this.color + '|13|b|';
     this.bubbleWidth = 480;
@@ -351,9 +351,12 @@ localground.marker.prototype.createNew = function(googleOverlay, projectID) {
             format: 'json'
         },
         success: function(data) {
-            //alert(JSON.stringify(data));
+			data.managerID = 'markers';
             $.extend(me, data);
             //add to marker manager:
+			$.each(self.managers, function(){
+				alert(this.id + ' - ' + me.id);
+			});
             me.getManager().addNewOverlay(me);
             //remove temporary marker:
             googleOverlay.setMap(null);

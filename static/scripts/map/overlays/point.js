@@ -45,14 +45,14 @@ localground.point.prototype.dragend = function(latLng) {
     var me = this;
     if(this.candidateMarker) {
         var $innerObj = $('<div />').append(
-                this.getManagerById(self.overlay_types.MARKER).getLoadingImageSmall()
+                this.getManagerById('markers').getLoadingImageSmall()
             ).append(('Adding to marker...'));
 		
 		// after the media item has been added to the marker, reset the position
 		// of the media item and toggle it off in the menu
 		this.googleOverlay.setPosition(new google.maps.LatLng(this.point.lat, this.point.lng));
         this.googleOverlay.setMap(null);
-		$('#cb_' + this.overlay_type + "_" + this.id).attr('checked', false);
+		$('#cb_' + this.managerID + "_" + this.id).attr('checked', false);
         
 		// add a message:
 		var $contentContainer = $('<div></div>').css({
@@ -84,6 +84,8 @@ localground.point.prototype.dragend = function(latLng) {
 				me.point = {};
 				me.point.lat = latLng.lat();
                 me.point.lng = latLng.lng();
+				//re-render listing:
+				me.renderListing();
 			},
 			notmodified: function(data) { alert('Not modified'); },
 			error: function(data) { alert('Error'); }
@@ -134,7 +136,7 @@ localground.point.prototype.makeEditable = function() {
 			self.hideTip = false;
         });
         google.maps.event.addListener(this.googleOverlay, "drag", function(mEvent) {
-			var m = me.getManagerById(self.overlay_types.MARKER);
+			var m = me.getManagerById('markers');
 			if(m && me.overlay_type != self.overlay_types.MARKER){
 				me.candidateMarker = m.intersectMarkers(mEvent, me);
 			}
@@ -315,11 +317,11 @@ localground.point.prototype.closeInfoBubble = function() {
 };
 
 localground.point.prototype.makeGeoreferenceable = function() {
-    if(this.googleOverlay != null)
+	if(this.googleOverlay != null)
         return;
     var $img = this.getListingImage();
     var $cb = this.getListingCheckbox();
-    var me = this;
+	var me = this;
     $img.draggable({helper: 'clone',
         stop: function(e) {
             $cb.css({'visibility': 'visible'}).attr('checked', true);
