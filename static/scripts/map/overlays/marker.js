@@ -354,9 +354,6 @@ localground.marker.prototype.createNew = function(googleOverlay, projectID) {
 			data.managerID = 'markers';
             $.extend(me, data);
             //add to marker manager:
-			$.each(self.managers, function(){
-				alert(this.id + ' - ' + me.id);
-			});
             me.getManager().addNewOverlay(me);
             //remove temporary marker:
             googleOverlay.setMap(null);

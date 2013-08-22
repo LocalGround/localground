@@ -133,6 +133,7 @@ localground.point.prototype.makeEditable = function() {
         google.maps.event.addListener(this.googleOverlay, "dragend", function(mEvent) {
             me.dragend(mEvent.latLng);
             me.googleOverlay.setIcon(me.getIcon());
+			self.map.panTo(mEvent.latLng);
 			self.hideTip = false;
         });
         google.maps.event.addListener(this.googleOverlay, "drag", function(mEvent) {
@@ -342,6 +343,8 @@ localground.point.prototype.makeGeoreferenceable = function() {
             me.addMarkerEventHandlers();
             self.currentOverlay = me;
             me.dragend(me.googleOverlay.getPosition());
+			//center the map at the new location:
+			self.map.panTo(location);
             //after image has been dragged, deactivate it:
             $img.removeClass('can_drag').removeClass('activated').draggable('disable');
         }

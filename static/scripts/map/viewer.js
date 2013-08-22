@@ -239,7 +239,8 @@ localground.viewer.prototype.initFiltering = function() {
 			$.each(v.data, function(){
 				var show = (
 					(this.name && this.name.toLowerCase().indexOf(term) != -1) ||
-					(this.tags && this.tags.toLowerCase().indexOf(term) != -1)
+					(this.tags && this.tags.toLowerCase().indexOf(term) != -1) ||
+					(this.attribution && this.attribution.toLowerCase().indexOf(term) != -1)
 				);
 				//for tabular data, search each field too:
 				if (this.overlay_type == 'record') {

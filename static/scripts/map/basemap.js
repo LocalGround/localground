@@ -75,6 +75,11 @@ localground.basemap.prototype.initialize=function(opts) {
                 self.search();
             }
         });
+        
+    /*google.maps.event.addListener(this.map, 'click', function(evt){
+        self.map.panTo(evt.latLng);
+    });
+    */
 };
 
 localground.basemap.prototype.isGoogleMapsAPIRunning = function() {
