@@ -97,7 +97,9 @@ class FormMixin(object):
         q = self.model.objects.distinct().select_related('project', 'source_scan',
                                               'source_marker', 'owner',
                                               'last_updated_by')
-        q = q.filter(owner=user)
+        #q = q.filter(owner=user)
+        q = q.filter(Q(project__owner=user) | Q(project__users__user=user))
+        
         if ordering_field is not None:
             q =  q.order_by(ordering_field)
         return q
