@@ -7,7 +7,7 @@ from localground.apps.site.managers.base import GeneralMixin
 class ScanMixin(GeneralMixin):
     
     def get_objects(self, user, project=None, filter=None, processed_only=False, ordering_field=None):
-        q = super(ScanMixin, self).get_objects(user)
+        q = super(ScanMixin, self).get_objects(user, project=project, ordering_field=ordering_field)
         if processed_only:
             q = q.filter(status=2).filter(source_print__isnull=False)
         return q

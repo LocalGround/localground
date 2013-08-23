@@ -52,24 +52,24 @@ class DynamicFormDataSerializerBuilder(object):
 			self._serializer = self._create_serializer()
 		return self._serializer
 	
-	def _create_serializer(self):
-		"""
-		generate a dynamic serializer from dynamic model
-		"""
-		form_fields = []
-		form_fields.append(self.form.get_num_field())
-		form_fields.extend(list(self.form.get_fields()))
-		
-		field_names = [f.col_name for f in form_fields]
-				
-		class FormDataSerializer(BaseRecordSerializer):
-			class Meta:
-				from django.forms import widgets
-				model = self.form.TableModel
-				fields = BaseRecordSerializer.Meta.fields + tuple(field_names)
-				read_only_fields = BaseRecordSerializer.Meta.read_only_fields
-				
-		return FormDataSerializer
+def create_serializer(self, form):
+	"""
+	generate a dynamic serializer from dynamic model
+	"""
+	form_fields = []
+	form_fields.append(self.form.get_num_field())
+	form_fields.extend(list(self.form.get_fields()))
+	
+	field_names = [f.col_name for f in form_fields]
+			
+	class FormDataSerializer(BaseRecordSerializer):
+		class Meta:
+			from django.forms import widgets
+			model = self.form.TableModel
+			fields = BaseRecordSerializer.Meta.fields + tuple(field_names)
+			read_only_fields = BaseRecordSerializer.Meta.read_only_fields
+			
+	return FormDataSerializer
 	
 
 def create_compact_serializer(form):

@@ -44,8 +44,8 @@ class ProjectDetailSerializer(BaseSerializer):
 	
 	def get_table_records(self, obj, form):
 		'''
-		builder = DynamicFormDataSerializerBuilder(form)
-		data = builder.SerializerClass(
+		SerializerClass = create_serializer(form)
+		data = SerializerClass(
 				form.get_objects(obj.owner)
 			).data
 		'''
@@ -79,7 +79,7 @@ class ProjectDetailSerializer(BaseSerializer):
 	
 	def get_scans(self, obj):
 		data = ScanSerializer(
-				models.Scan.objects.get_objects(obj.owner, project=obj)
+				models.Scan.objects.get_objects(obj.owner, project=obj, processed_only=True)
 			).data
 		return self.serialize_list(models.Scan, data)
 	
