@@ -18,6 +18,17 @@ class Base(models.Model):
 		'''
 		Finds the corresponding model class, based on the arguments
 		'''
+		name = model_name or model_name_plural
+		if name.find('form_') == -1:
+			return cls._get_model_managed(model_name=model_name, model_name_plural=model_name_plural)
+		else:
+			id = name.split('_')[-1]
+			from localground.apps.site.models import Form
+			form = Form.objects.get(id=id)
+			return form.TableModel
+	
+	@classmethod
+	def _get_model_managed(cls, model_name=None, model_name_plural=None):
 		if model_name is None and model_name_plural is None:
 			raise Exception('Either model_name or model_name_plural is required here.')
 
@@ -39,7 +50,8 @@ class Base(models.Model):
 						return m
 				except:
 					pass
-		raise Http404
+		raise Http404 
+	
 	
 	@classproperty
 	def model_name(cls):

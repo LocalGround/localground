@@ -1,11 +1,13 @@
-from rest_framework import generics
+from rest_framework import generics, status, exceptions
 from localground.apps.site.api import serializers, filters
 from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
 from localground.apps.site import models
-from django.http import Http404
+from django.http import Http404, HttpResponse
+from rest_framework.response import Response
 
 class RelatedMediaList(generics.ListCreateAPIView,
 					 AuditCreate):
+	#return HttpResponse(self.kwargs.get('entity_name_plural'))
 	model = models.GenericAssociation
 	serializer_class = serializers.AssociationSerializer
 	#http://stackoverflow.com/questions/3210491/association-of-entities-in-a-rest-service

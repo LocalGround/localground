@@ -34,8 +34,7 @@ class FormDataMixin(object):
 			form = models.Form.objects.get(id=self.kwargs.get('form_id'))
 		except models.Form.DoesNotExist:
 			raise Http404
-		builder = serializers.DynamicFormDataSerializerBuilder(form)
-		return builder.SerializerClass
+		return serializers.create_record_serializer(form)
 	
 	def get_queryset(self):
 		try:

@@ -76,15 +76,16 @@ class ApiRelatedMediaListTest(test.TestCase, ViewMixin, APIRelatedMediaMixin):
 			self.assertEqual(len(queryset), 1)
 			
 	def test_cannot_attach_marker_to_marker(self, **kwargs):
-		self.create_marker(self.user, self.project)
+		m1 = self.create_marker(self.user, self.project)
 		url = '/api/0/markers/%s/markers/' % self.marker.id
 		response = self.client.post(url, {
-				'id': 1,
+				'id': m1.id,
 				'ordering': 1
 			},
 			HTTP_X_CSRFTOKEN=self.csrf_token
 		)
-		self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+		#Cannot attach marker to marker
+		self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 	
 class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin):		
 	def setUp(self):

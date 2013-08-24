@@ -351,15 +351,33 @@ class Form(BaseNamed, ProjectMixin):
 	
 	def source_table_exists(self):
 		from django.db import connection, transaction
-		tables = connection.introspection.table_names()
-		return self.table_name in tables
+		try:
+			table_name = self.table_name
+			cursor = connection.cursor()
+			cursor.execute('select count(id) from  %s' % table_name)
+			#if no error raised then table exists:
+			return True
+		except Exception:
+			# Table doesn't exist
+			transaction.rollback_unless_managed()
+			return False
 	
 	def delete(self, destroy_everything=True, **kwargs):
 		if destroy_everything:
-			table_name = self.table_name
-			from django.db import connection, transaction
-			cursor = connection.cursor()
-			cursor.execute('drop table %s' % table_name)
+			#drop the underlying table if it exists:
+			if self.source_table_exists():
+				from django.db import connection
+				cursor = connection.cursor()
+				cursor.execute('drop table %s' % self.table_name)
+		
+		#remove referenced ContentType	
+		try:
+			from django.contrib.contenttypes.models import ContentType
+			ct = ContentType.objects.get(name='form_%s' % self.id)
+			ct.delete()
+		except ContentType.DoesNotExist:
+			pass
+		
 		super(Form, self).delete(**kwargs)
 	
 	

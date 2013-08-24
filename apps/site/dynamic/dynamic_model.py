@@ -1,4 +1,5 @@
 from localground.apps.site.models import BasePoint, BaseAudit, ProjectMixin
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
 from datetime import datetime
 from django.db.models.loading import cache
@@ -197,8 +198,8 @@ class ModelClassBuilder(object):
 		self.module = 'localground.apps.site.models.%s' % form.table_name      #needs to be unique
 		self.options = options = {
 			'ordering': ['num'],
-			'verbose_name': 'record', #form.table_name,
-			'verbose_name_plural': 'records', #form.table_name + 's',
+			'verbose_name': 'form_%s' % form.id, #form.table_name,
+			'verbose_name': 'form_%s' % form.id,
 			'db_table': form.table_name
 		}
 		self.additional_fields = {}
@@ -213,11 +214,11 @@ class ModelClassBuilder(object):
 		
 		class ModelClassBuilder:
 			pass
-	
+
 		if self.app_label:
 			# app_label must be set using the Meta inner class
 			setattr(ModelClassBuilder, 'app_label', self.app_label)
-	
+		
 		# Update Meta with any options that were provided
 		if self.options is not None:
 			for key, value in self.options.iteritems():
@@ -271,7 +272,7 @@ class ModelClassBuilder(object):
 										 verbose_name=n.col_alias)
 			elif n.data_type.id in [2, 6]:
 			   field = models.IntegerField(null=True, blank=True,
-										   verbose_name=n.col_alias)
+										 verbose_name=n.col_alias)
 			elif n.data_type.id == 3:
 				field = models.DateTimeField(null=True, blank=True,
 											 verbose_name=n.col_alias )
@@ -354,4 +355,15 @@ class ModelClassBuilder(object):
 			transaction.rollback_unless_managed()
 		else:
 			transaction.commit_unless_managed()
+			
+		'''
+		Add to ContentTypes also:
+		'''
+		from django.utils.encoding import smart_text
+		ct = ContentType(
+			name=smart_text(self.model_class._meta.verbose_name_raw),
+			app_label=self.model_class._meta.app_label,
+			model=self.form.table_name,
+		)
+		ct.save()
 	

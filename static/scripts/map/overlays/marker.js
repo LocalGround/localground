@@ -365,9 +365,8 @@ localground.marker.prototype.createNew = function(googleOverlay, projectID) {
 
 localground.marker.prototype.attachMedia = function(media) {
     var me = this;
-    url = this[media.overlay_type + '_links'];
-    if (url.indexOf('.json') == -1) { url += '.json'; }
-    $.ajax({
+	var url = this.url + media.managerID + '/.json';
+	$.ajax({
         url: url,
         type: 'POST',
         data: {
@@ -412,7 +411,9 @@ localground.marker.prototype.detachMedia = function($parent, media) {
         type: 'DELETE',
         success: function(data) {
             me.renderListing();
-            var group_name = media.overlay_type;
+            var group_name = media.managerID;
+			//todo:  this is throwing an error:  needs to be re-thought.  Fix
+			// after Marker JSON is revamped to include dynamic data records
             switch (media.overlay_type) {
                 case 'photo':
                     group_name = 'photos';

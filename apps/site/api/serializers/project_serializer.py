@@ -2,7 +2,7 @@ from localground.apps.site.api.serializers.base_serializer import BaseSerializer
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
 from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializer
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
-from localground.apps.site.api.serializers.form_serializer import DynamicFormDataSerializerBuilder, create_compact_serializer
+from localground.apps.site.api.serializers.form_serializer import create_record_serializer, create_compact_record_serializer
 from localground.apps.site.api.serializers.marker_serializer import MarkerSerializerCounts
 from rest_framework import serializers
 from localground.apps.site import models
@@ -44,12 +44,12 @@ class ProjectDetailSerializer(BaseSerializer):
 	
 	def get_table_records(self, obj, form):
 		'''
-		SerializerClass = create_serializer(form)
+		SerializerClass = create_record_serializer(form)
 		data = SerializerClass(
 				form.get_objects(obj.owner)
 			).data
 		'''
-		SerializerClass = create_compact_serializer(form)
+		SerializerClass = create_compact_record_serializer(form)
 		data = SerializerClass(
 				form.get_objects(obj.owner)
 			).data

@@ -39,40 +39,28 @@ class BaseRecordSerializer(serializers.ModelSerializer):
 	def get_detail_url(self, obj):
 		return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
 					obj.form.id, obj.id)
-
-class DynamicFormDataSerializerBuilder(object):
 	
-	def __init__(self, form):
-		self.form = form
-		self._serializer = None
-
-	@property
-	def SerializerClass(self):
-		if self._serializer is None:
-			self._serializer = self._create_serializer()
-		return self._serializer
-	
-def create_serializer(self, form):
+def create_record_serializer(form):
 	"""
 	generate a dynamic serializer from dynamic model
 	"""
 	form_fields = []
-	form_fields.append(self.form.get_num_field())
-	form_fields.extend(list(self.form.get_fields()))
+	form_fields.append(form.get_num_field())
+	form_fields.extend(list(form.get_fields()))
 	
 	field_names = [f.col_name for f in form_fields]
 			
 	class FormDataSerializer(BaseRecordSerializer):
 		class Meta:
 			from django.forms import widgets
-			model = self.form.TableModel
+			model = form.TableModel
 			fields = BaseRecordSerializer.Meta.fields + tuple(field_names)
 			read_only_fields = BaseRecordSerializer.Meta.read_only_fields
 			
 	return FormDataSerializer
 	
 
-def create_compact_serializer(form):
+def create_compact_record_serializer(form):
 	"""
 	generate a dynamic serializer from dynamic model
 	"""
