@@ -9,6 +9,10 @@ class ProjectMixin(models.Model):
 	
 class BaseGenericRelationMixin(models.Model):
 	from django.contrib.contenttypes import generic
+	_photos = None
+	_audio = None
+	_map_images = None
+	_markers = None
 	
 	entities = generic.GenericRelation('GenericAssociation',
 									   content_type_field='source_type',
@@ -20,26 +24,36 @@ class BaseGenericRelationMixin(models.Model):
 	
 	@property
 	def photos(self):
-		from localground.apps.site.models.photo import Photo
-		return self._get_filtered_entities(Photo)    
+		if self._photos is None:
+			from localground.apps.site.models.photo import Photo
+			self._photos = self._get_filtered_entities(Photo)
+		return self._photos
 	
 	@property
 	def audio(self):
-		from localground.apps.site.models.audio import Audio
-		return self._get_filtered_entities(Audio)
+		if self._audio is None:
+			from localground.apps.site.models.audio import Audio
+			self._audio = self._get_filtered_entities(Audio)
+		return self._audio
 	
 	@property
 	def videos(self):
-		from localground.apps.site.models.video import Video
-		return self._get_filtered_entities(Video)
+		if self._videos is None:
+			from localground.apps.site.models.video import Video
+			self._videos = self._get_filtered_entities(Video)
+		return self._videos
 	
 	@property
 	def map_images(self):
-		from localground.apps.site.models.scan import Scan
-		return self._get_filtered_entities(Scan)
+		if self._map_images is None:
+			from localground.apps.site.models.barcoded import Scan
+			self._map_images = self._get_filtered_entities(Scan)
+		return self._map_images
 		
 	@property
 	def markers(self):
-		from localground.apps.site.models.marker import Marker
-		return self._get_filtered_entities(Marker)
+		if self._markers is None:
+			from localground.apps.site.models.marker import Marker
+			self._markers = self._get_filtered_entities(Marker)
+		return self._markers
 	

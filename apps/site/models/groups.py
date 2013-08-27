@@ -156,6 +156,7 @@ class Project(Group):
 				'name': 'Photos',
 				'data': Photo.objects.by_project(self, ordering_field='name').to_dict_list() 
 			})
+		'''
 		if include_markers:
 			data.append({
 				'id': ObjectTypes.MARKER,
@@ -163,9 +164,11 @@ class Project(Group):
 				'name': 'Markers',
 				'data': Marker.objects.by_project_with_counts_dict_list(self)
 			})
+		
 		if include_tables:
 			data.extend(self.get_table_data(to_dict=True))
 		d.update({'data': data})
+		'''
 		return d
 	
 	def get_table_data(self, to_dict=True):
@@ -178,7 +181,8 @@ class Project(Group):
 		#       updated, a record is inserted into at_projects_forms (if it
 		#       doesn't already exist).
 		data = []
-		forms = Form.objects.filter(project=self)
+		forms = Form.objects.prefetch_related('project', 'field_set', 'field_set__data_type').filter(project=self)	
+		#forms = Form.objects.filter(project=self)
 		for form in forms:
 			recs = form.get_objects(user=self.owner, project=self, manually_reviewed=True)
 			if len(recs) > 0:

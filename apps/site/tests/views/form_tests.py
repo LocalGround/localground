@@ -180,4 +180,11 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 			#if an exception isn't thrown, it works
 			a = cursor.execute('select %s from %s' % (field.col_name, field.form.table_name))		
 		
+		# there shoud be a new ContentType that has a pointer to the form's
+		# TableModel class:
+		from django.contrib.contenttypes.models import ContentType
+		ct = ContentType.objects.get(
+			model=form.TableModel._meta.object_name.lower(),
+			app_label=form.TableModel._meta.app_label)
+		self.assertEqual(form.TableModel, ct.model_class())
 		

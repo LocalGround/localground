@@ -22,6 +22,12 @@ class DynamicModelMixin(BasePoint, BaseAudit):
 	
 	class Meta:
 		abstract = True
+		
+	def __str__(self):
+		return '%s, Rec #%s' % (self._meta.object_name.lower(), self.id)
+	
+	def __repr__(self):
+		return '<%s>' % self.__str__()
 	
 	@property
 	def form(self):
@@ -192,7 +198,7 @@ class DynamicModelMixin(BasePoint, BaseAudit):
 
 class ModelClassBuilder(object):
 	def __init__(self, form):
-		self.name = 'TableModel'
+		self.name = 'form_%s' % form.id
 		self.form = form
 		self.app_label = 'site'
 		self.module = 'localground.apps.site.models.%s' % form.table_name      #needs to be unique
@@ -363,7 +369,7 @@ class ModelClassBuilder(object):
 		ct = ContentType(
 			name=smart_text(self.model_class._meta.verbose_name_raw),
 			app_label=self.model_class._meta.app_label,
-			model=self.form.table_name,
+			model=self.model_class._meta.object_name.lower(),
 		)
 		ct.save()
 	

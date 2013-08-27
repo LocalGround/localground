@@ -6,146 +6,192 @@ from localground.apps.site.models import BaseUploadedMedia
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video
+from localground.apps.site.models.barcoded import Scan
 from django.contrib.contenttypes import generic
 from localground.apps.site.models import BasePoint, BaseNamed, \
-                                        BaseGenericRelationMixin, ReturnCodes
-    
+										BaseGenericRelationMixin, ReturnCodes
+	
 class Marker(BasePoint, BaseNamed, BaseGenericRelationMixin): 
-    """
-    Markers are association objects with a lat/lng.  Markers can be associated
-    with one or more photos, audio files, data records, etc.  This object needs
-    to be re-factored to inherit from account/Group Model, since it's an
-    association of other media objects (and should behave like a project or a view).
-    """
-    project = models.ForeignKey('Project')
-    
-    # todo:  replace project with generic association to either a project, view,
-    # or presentation :)
-    color = models.CharField(max_length=6)
-    objects = MarkerManager()
-    
-    @classmethod 
-    def create_instance(user, project, lat, lng, name=None):
-        try:
-            from django.contrib.gis.geos import Point
-            marker = Marker()
-            marker.project = project
-            marker.owner = user
-            marker.color = 'CCCCCC'
-            marker.last_updated_by = user
-            marker.point = Point(lng, lat, srid=4326)
-            if name is not None:
-                marker.name = name
-            marker.save()
-            return marker, ReturnCodes.SUCCESS
-        except Exception:
-            return None, ReturnCodes.UNKNOWN_ERROR
-    
-    def get_name(self):
-        if self.name is None or len(self.name) == 0:
-            return 'Marker #%s' % (self.id)
-        return self.name
+	"""
+	Markers are association objects with a lat/lng.  Markers can be associated
+	with one or more photos, audio files, data records, etc.  This object needs
+	to be re-factored to inherit from account/Group Model, since it's an
+	association of other media objects (and should behave like a project or a view).
+	"""
+	project = models.ForeignKey('Project')
+	
+	# todo:  replace project with generic association to either a project, view,
+	# or presentation :)
+	color = models.CharField(max_length=6)
+	_records_dict = None
+	objects = MarkerManager()
+	
+	@classmethod 
+	def create_instance(user, project, lat, lng, name=None):
+		try:
+			from django.contrib.gis.geos import Point
+			marker = Marker()
+			marker.project = project
+			marker.owner = user
+			marker.color = 'CCCCCC'
+			marker.last_updated_by = user
+			marker.point = Point(lng, lat, srid=4326)
+			if name is not None:
+				marker.name = name
+			marker.save()
+			return marker, ReturnCodes.SUCCESS
+		except Exception:
+			return None, ReturnCodes.UNKNOWN_ERROR
+	
+	def get_name(self):
+		if self.name is None or len(self.name) == 0:
+			return 'Marker #%s' % (self.id)
+		return self.name
 
-    
-    '''
-    def append(self, obj, identity):
-        #if the object isn't a marker object, just update the source marker:
-        if not isinstance(obj, Marker):
-            obj.source_marker = self
-            obj.save()
-            return
-        
-        #if the object *is* a marker, update all pointers:
-        #from localground.apps.site.models import Photo, Audio, Video
-        marker = obj
-        #1) set the old marker's data references to the current marker: 
-        forms = list(marker.project.form_set.all())
-        for form in forms:
-            related = list(form.TableModel.objects.filter(source_marker=marker))
-            for rec in related:
-                rec.source_marker = self
-                rec.save()
-        
-        #2) set the old marker's media references to the current marker:
-        media_list = []         
-        media_list.extend(list(Photo.objects.filter(source_marker=marker)))
-        media_list.extend(list(Audio.objects.filter(source_marker=marker)))
-        media_list.extend(list(Video.objects.filter(source_marker=marker)))
-        for o in media_list:
-            o.source_marker = self
-            o.save()
-            
-        #3) update marker attributes:
-        self.name = '%s + %s' % (self.name, marker.name)
-        self.description = '%s + %s' % (self.description, marker.description)
-        self.last_updated_by = identity
-        self.time_stamp = datetime.now()
-        self.save()
-        
-        #4) delete the old marker:
-        marker.delete()
-    '''
-    
-    def get_photos(self):
-        return Photo.objects.by_marker(self, ordering_field='name').to_dict_list() 
-    
-    def get_audio(self):
-        return Audio.objects.by_marker(self, ordering_field='name').to_dict_list() 
-    
-    def get_tables(self):
-        data = []
-        forms = self.project.form_set.all()
-        for form in forms:
-            recs = form.get_data(marker=self, to_dict=True,
-                                    include_markers=False)
-            if len(recs) > 0:
-                data.append({
-                    'id': form.id,
-                    'overlayType': ObjectTypes.RECORD,
-                    'name': form.name,
-                    'data': recs    
-                })
-        if len(data) > 0:
-            return data
-        return []
-    
-    def to_dict(self, aggregate=False, detail=False):
-        e = {
-            'id': self.id,
-            'lat': self.point.y,
-            'lng': self.point.x,
-            'name': self.get_name(),
-            'description': self.description,
-            'color': self.color
-        }
-        if aggregate:
-            e.update({ 'photo_count': self.photo_count })
-            e.update({ 'audio_count': self.audio_count })
-            #e.update({ 'review_count': self.review_count })
-            e.update({ 'video_count': self.video_count })
-            e.update({ 'note_count': self.note_count })
-            e.update({ 'project_id': self.project_id })
-        elif detail:
-            e.update({
-                'photos': self.get_photos(),
-                'audio': self.get_audio(),
-                'tables': self.get_tables()
-            })
-        else:
-            e.update({ 'project_id': self.project.id })
-        if self.project.access_key is not None:
-             e.update({ 'accessKey': self.project.access_key })
-        
-        #add turned_on flag (only exists for views)
-        try: e.update(dict(turned_on=self.turned_on))
-        except AttributeError: pass
-        return e
+	@property
+	def records(self):
+		"""
+		Gets all of the records in the marker.
+		"""
+		from django.contrib.contenttypes.models import ContentType
+		from localground.apps.site.models import Form
+		
+		if self._records_dict is None:
+			content_type_ids = (self.entities
+									.values_list('entity_type', flat=True)
+									.exclude(
+										entity_type__in=[
+											Photo.get_content_type(),
+											Audio.get_content_type(),
+											Scan.get_content_type()
+										]	
+									)
+									.distinct()
+								)
+			cts = ContentType.objects.filter(id__in=content_type_ids)
+			try:	
+				table_names = [ct.model_class()._meta.db_table for ct in cts]
+			except Exception:
+				Form.cache_dynamic_models()
+				table_names = [ct.model_class()._meta.db_table for ct in cts]
+			forms = Form.objects.prefetch_related('project', 'field_set', 'field_set__data_type').filter(table_name__in=table_names)
+			form_dict = {}
+			for f in forms:
+				form_dict['form_%s' % f.id] = f
+			
+			self._records_dict = {}
+			for ct in cts:
+				cls = ct.model_class()
+				recs = self._get_filtered_entities(cls)
+				if len(recs) > 0:
+					form = form_dict[cls._meta.object_name.lower()]
+					self._records_dict[form] = recs
+			
+			
+		return self._records_dict	
+		
 
-    class Meta:
-        verbose_name = 'marker'
-        verbose_name_plural = 'markers'
-        ordering = ['id']
-        app_label = 'site'
-    
-    def __unicode__(self):
-        return str(self.id)
+	
+	'''
+	def append(self, obj, identity):
+		#if the object isn't a marker object, just update the source marker:
+		if not isinstance(obj, Marker):
+			obj.source_marker = self
+			obj.save()
+			return
+		
+		#if the object *is* a marker, update all pointers:
+		#from localground.apps.site.models import Photo, Audio, Video
+		marker = obj
+		#1) set the old marker's data references to the current marker: 
+		forms = list(marker.project.form_set.all())
+		for form in forms:
+			related = list(form.TableModel.objects.filter(source_marker=marker))
+			for rec in related:
+				rec.source_marker = self
+				rec.save()
+		
+		#2) set the old marker's media references to the current marker:
+		media_list = []         
+		media_list.extend(list(Photo.objects.filter(source_marker=marker)))
+		media_list.extend(list(Audio.objects.filter(source_marker=marker)))
+		media_list.extend(list(Video.objects.filter(source_marker=marker)))
+		for o in media_list:
+			o.source_marker = self
+			o.save()
+			
+		#3) update marker attributes:
+		self.name = '%s + %s' % (self.name, marker.name)
+		self.description = '%s + %s' % (self.description, marker.description)
+		self.last_updated_by = identity
+		self.time_stamp = datetime.now()
+		self.save()
+		
+		#4) delete the old marker:
+		marker.delete()
+	
+	
+	def get_photos(self):
+		return Photo.objects.by_marker(self, ordering_field='name').to_dict_list() 
+	
+	def get_audio(self):
+		return Audio.objects.by_marker(self, ordering_field='name').to_dict_list() 
+	
+	def get_tables(self):
+		data = []
+		forms = self.project.form_set.all()
+		for form in forms:
+			recs = form.get_data(marker=self, to_dict=True,
+									include_markers=False)
+			if len(recs) > 0:
+				data.append({
+					'id': form.id,
+					'overlayType': ObjectTypes.RECORD,
+					'name': form.name,
+					'data': recs    
+				})
+		if len(data) > 0:
+			return data
+		return []
+	
+	def to_dict(self, aggregate=False, detail=False):
+		e = {
+			'id': self.id,
+			'lat': self.point.y,
+			'lng': self.point.x,
+			'name': self.get_name(),
+			'description': self.description,
+			'color': self.color
+		}
+		if aggregate:
+			e.update({ 'photo_count': self.photo_count })
+			e.update({ 'audio_count': self.audio_count })
+			#e.update({ 'review_count': self.review_count })
+			e.update({ 'video_count': self.video_count })
+			e.update({ 'note_count': self.note_count })
+			e.update({ 'project_id': self.project_id })
+		elif detail:
+			e.update({
+				'photos': self.get_photos(),
+				'audio': self.get_audio(),
+				'tables': self.get_tables()
+			})
+		else:
+			e.update({ 'project_id': self.project.id })
+		if self.project.access_key is not None:
+			 e.update({ 'accessKey': self.project.access_key })
+		
+		#add turned_on flag (only exists for views)
+		try: e.update(dict(turned_on=self.turned_on))
+		except AttributeError: pass
+		return e
+	'''
+
+	class Meta:
+		verbose_name = 'marker'
+		verbose_name_plural = 'markers'
+		ordering = ['id']
+		app_label = 'site'
+	
+	def __unicode__(self):
+		return str(self.id)

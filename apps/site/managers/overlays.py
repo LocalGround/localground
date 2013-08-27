@@ -20,20 +20,33 @@ class MarkerMixin(BaseMixin):
             q =  q.order_by(ordering_field)
         return q
     
-    def get_objects_with_counts(self, user, project=None, filter=None, ordering_field=None):
+    def get_objects_with_counts(self, user, project=None, filter=None, forms=None, ordering_field=None):
         # Excellent resource on using extras:
         # http://timmyomahony.com/blog/2012/11/16/filtering-annotations-django/
-        from localground.apps.site.models import Photo, Audio, Marker
+        from localground.apps.site.models import Photo, Audio, Marker, Form
 
         q = self.get_objects(user, project=project, filter=filter, ordering_field=ordering_field)
+        
+        # figure out the tables to which the markers' children belong:
+        child_classes = [Photo, Audio]
+        dynamic_forms = forms
+        if forms is None:
+            dynamic_forms = Form.objects.prefetch_related('project', 'field_set', 'field_set__data_type')
+            if project:
+                dynamic_forms = dynamic_forms.filter(project=project)
+            else:
+                dynamic_forms = dynamic_forms.get_objects(user)   
+        for form in dynamic_forms:
+            child_classes.append(form.TableModel)
+        
+        # build a custom query that includes child counts:
         select = {}
-        source_type_id = Marker.get_content_type().id
-        for cls in [Photo, Audio]:
+        for cls in child_classes:
             select[cls.model_name + '_count'] = '''
                 SELECT COUNT(entity_id) FROM site_genericassociation e 
                 WHERE e.entity_type_id = %s AND e.source_type_id = %s AND 
                 e.source_id = site_marker.id
-                ''' % (cls.get_content_type().id, source_type_id)     
+                ''' % (cls.get_content_type().id, Marker.get_content_type().id)     
         q = q.extra(select)
         return q
 

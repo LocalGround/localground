@@ -12,9 +12,7 @@ class ProjectSerializer(BaseSerializer):
 		model = models.Project
 		fields = BaseSerializer.Meta.fields + ('owner', 'slug')
 		read_only_fields = ('owner',)
-		depth = 0
-		
-		
+		depth = 0	
 		
 class ProjectDetailSerializer(BaseSerializer):
 	children = serializers.SerializerMethodField('get_children')
@@ -27,15 +25,16 @@ class ProjectDetailSerializer(BaseSerializer):
 		depth = 0
 		
 	def get_children(self, obj):
+		forms = models.Form.objects.select_related('project').prefetch_related('field_set', 'field_set__data_type').filter(project=obj)
+		
 		children = {
 			'photos': self.get_photos(obj),
 			'audio': self.get_audio(obj),
 			'scans': self.get_scans(obj),
-			'markers': self.get_markers(obj)
+			'markers': self.get_markers(obj, forms)
 		}
 		
 		#add table data:
-		forms = models.Form.objects.filter(project=obj)
 		for form in forms:
 			form_data = self.get_table_records(obj, form)
 			if len(form_data.get('data')) > 0:
@@ -43,12 +42,6 @@ class ProjectDetailSerializer(BaseSerializer):
 		return children
 	
 	def get_table_records(self, obj, form):
-		'''
-		SerializerClass = create_record_serializer(form)
-		data = SerializerClass(
-				form.get_objects(obj.owner)
-			).data
-		'''
 		SerializerClass = create_compact_record_serializer(form)
 		data = SerializerClass(
 				form.get_objects(obj.owner)
@@ -83,9 +76,9 @@ class ProjectDetailSerializer(BaseSerializer):
 			).data
 		return self.serialize_list(models.Scan, data)
 	
-	def get_markers(self, obj):
+	def get_markers(self, obj, forms):
 		data = MarkerSerializerCounts(
-				models.Marker.objects.get_objects_with_counts(obj.owner, project=obj)
+				models.Marker.objects.get_objects_with_counts(obj.owner, project=obj, forms=forms)
 			).data
 		return self.serialize_list(models.Marker, data)
 	

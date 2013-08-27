@@ -17,7 +17,7 @@ class MarkerList(generics.ListCreateAPIView, AuditCreate):
 		  
 		
 class MarkerInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
-	queryset = models.Marker.objects.select_related('owner').all() #.prefetch_related('photos', 'audio', 'marker_set')
+	queryset = models.Marker.objects.select_related('owner', 'project')
 	serializer_class = serializers.MarkerSerializer
 	
 	def pre_save(self, obj):

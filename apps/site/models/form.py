@@ -22,15 +22,30 @@ class Form(BaseNamed, ProjectMixin):
 		from localground.apps.site.forms import get_inline_form_with_tags
 		return get_inline_form_with_tags(cls, user)
 	
+	@classmethod
+	def cache_dynamic_models(cls):
+		from django.conf import settings
+		# Add Dynamic Models to cache:
+		# Useful link:  https://dynamic-models.readthedocs.org/en/latest/pdfindex.html?highlight=re
+		# Not sure where to call this...probably in a try/except block
+		from localground.apps.site.models import Form
+		from django.db.models.loading import cache
+		# the prefetch_related really cuts down on queries...but the DYNAMIC_MODELS_CACHED
+		# flag isn't working!  Need to come up w/something else
+		forms = Form.objects.prefetch_related('field_set', 'field_set__data_type').all()
+		for form in forms:
+			m = form.TableModel
+			cache.app_models[m._meta.app_label][m._meta.object_name.lower()] = m
+
+	
 	@property
 	def TableModel(self):
-		'''
-		if self._model_class is None:
-			mcb = ModelClassBuilder(self)
-			self._model_class = mcb.model_class
-		return self._model_class
-		'''
-		return ModelClassBuilder(self).model_class
+		# This may be dangerous -- pretty sure the cache spans multiple
+		# sessions.  If weird bugs appear, this is a suspect method
+		from django.db.models.loading import cache
+		if cache.app_models['site'].get('form_%s' % self.id) is None:
+			cache.app_models['site']['form_%s' % self.id] = ModelClassBuilder(self).model_class
+		return cache.app_models['site']['form_%s' % self.id]
 	
 	@property
 	def DataEntryFormClass(self):
@@ -71,10 +86,16 @@ class Form(BaseNamed, ProjectMixin):
 			return q[0]
 		
 	def get_fields(self, ordering='ordering', print_only=False):
+		'''
 		q = Field.objects.filter(form=self)
 		if print_only:
 			q = q.filter(is_printable=True)
 		return q.order_by(ordering,)
+		'''
+		if print_only:
+			f = self.field_set.filter(is_printable=True)
+		else:
+			return self.field_set.all()
 		
 	def get_model_class(self):
 		mcb = ModelClassBuilder(self)

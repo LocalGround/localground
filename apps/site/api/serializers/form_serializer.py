@@ -80,9 +80,9 @@ def create_compact_record_serializer(form):
 		
 		def get_detail_url(self, obj):
 			return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
-						obj.form.id, obj.id)
+						form.id, obj.id)
 		def get_project_id(self, obj):
-			return obj.form.project.id
+			return form.project.id
 
 	return FormDataSerializer
 	

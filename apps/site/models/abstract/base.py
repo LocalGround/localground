@@ -84,8 +84,19 @@ class Base(models.Model):
 	def get_content_type(cls):
 		'''
 		Finds the ContentType of the model (does a database query)
+		Caching not really working...perhaps use application-level caching?
 		'''
-		return ContentType.objects.get_for_model(cls)
+		#return 
+		#key = cls._meta.object_name.lower()
+		'''
+		key = (cls._meta.app_label, cls._meta.object_name.lower())
+		cache = ContentType.objects._cache[ContentType.objects.db]
+		if cache.get(key) is None:
+			cache[key] = ContentType.objects.get_for_model(cls)
+		return cache.get(key)
+		'''
+		return ContentType.objects.get_for_model(cls,for_concrete_model=False)
+			
 	
 
 	def stash(self, *args, **kwargs):
@@ -104,17 +115,21 @@ class Base(models.Model):
 		"""
 		qs = (self.entities
 				.filter(entity_type=cls.get_content_type())
-				.prefetch_related('entity_object', 'entity_object__owner')
 				.order_by('ordering',))
+		ids = [rec.entity_id for rec in qs]
+		objects = cls.objects.select_related('project', 'project__owner', 'owner').filter(id__in=ids)
+
 		entities = []
 		stale_references = []
-		for rec in list(qs):
-			o = rec.entity_object
-			if o is not None:
-				o.ordering = rec.ordering
-				o.turned_on = rec.turned_on
-				entities.append(o)
-			else:
+		for rec in qs:
+			found = False
+			for o in objects:
+				if rec.entity_id == o.id:
+					found = True
+					o.ordering = rec.ordering
+					o.turned_on = rec.turned_on
+					break
+			if not found:
 				stale_references.append(rec.id)
 		
 		# Because the ContentTypes framework doesn't use traditional relational
@@ -124,7 +139,8 @@ class Base(models.Model):
 		if len(stale_references) > 0:
 			self.entities.filter(id__in=stale_references).delete()
 		
-		return entities
+		return objects
+	
 	
 	def append(self, item, user, ordering=1, turned_on=False):
 		'''
