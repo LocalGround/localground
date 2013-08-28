@@ -124,7 +124,7 @@ localground.record.prototype.renderRecord = function() {
 		$row.append($('<td></td>').html('&nbsp;'));
     $tbody.append($row);
     
-	var headers = me.getManager().headers;
+	var headers = me.headers || me.getManager().headers;
 	$.each(this.recs, function(idx, val) {
         $row = $('<tr></tr>')
                 .append($('<td></td>').html(headers[idx]).css({'font-weight': 'bold'}))

@@ -34,7 +34,7 @@ localground.slideshow.prototype.render_slideshow = function(opts) {
     $container.append(this.generateCarousel());
     this.render_title_page(marker);
     this.render_photo_slides(marker);
-    //this.render_data_slides(marker);
+    this.render_data_slides(marker);
     this.render_audio(marker);
     var $c = $('#' + this.id).carousel();
     if(opts.applyHack) {
@@ -122,6 +122,49 @@ localground.slideshow.prototype.render_photo_slides = function(marker) {
     //alert('.carousel-inner' + $('#' + me.id).find('.carousel-inner').get(0));
 };
 
+localground.slideshow.prototype.render_data_slides = function(marker){
+    var me = this;
+    if (marker.record_count == 0) {
+        return;
+    }
+	for (k in marker.children) {
+		if (k.indexOf('form_') != -1 &&
+				marker.children[k].data &&
+				marker.children[k].data.length > 0) {
+			var group_name = k;
+			var table = marker.children[k];
+			
+			$.each(table.data, function(){
+                this.headers = table.headers;
+                var record = new localground.record(this, null);
+                var $tbl = record.renderRecord();
+                $tbl.removeClass('zebra-striped')
+                    .css({
+                        'margin': '0px auto 0px auto',
+                        'background-color': '#fff',
+                        'width': '340px'
+                    });
+                var $item = $('<div />').addClass('item')
+                                .append($('<div />').css({
+                                                'height': me.height
+                                        })
+                                        .append($('<br>'))
+                                        .append($('<br>'))
+                                        .append($tbl)
+                                )
+                                .append(
+                                    $('<div />').addClass('carousel-caption')
+                                        .append($('<h4 />').html(table.name))
+                                        .append($('<p />').html('No caption available.'))
+                                );
+
+                $('#' + me.id).find('.carousel-inner').append($item);
+			});
+		}
+	}
+};
+
+
 localground.slideshow.prototype.render_audio = function(marker) {
     var me = this;
     if(marker.children.audio == null || marker.children.audio.data.length == 0){
@@ -141,27 +184,4 @@ localground.slideshow.prototype.render_audio = function(marker) {
     this.player.initialize();
 };
 
-localground.slideshow.prototype.render_data_slides = function(marker) {
-    var me = this;
-    $.each(marker.tables, function(idx) {
-        var tableName = this.name;
-        $.each(this.data, function(){
-            var $data = $('<div />').css({'padding': '20px 0px 0px 70px'});
-            this.noMap = true;
-            var record = new localground.record(this, null, this.id);
-            $data.append(record.renderSlideRecord());
-            var $item = $('<div />').addClass('item')
-                    .append($('<div />').css({
-                        height: me.height,
-                        width: me.width,
-                        color: '#fff',
-                        display: 'block'
-                    }).append($data))
-                    .append($('<div />').addClass('carousel-caption')
-                        .append($('<h4 />').html(tableName)
-                        .append($('<p />').html('&nbsp;'))
-                    ));
-            $('#' + me.id).find('.carousel-inner').append($item);
-        });
-    });
-};
+
