@@ -54,6 +54,11 @@ class Field(BaseAudit):
 			self.col_name = 'col_%s' % self.pk
 			super(Field, self).save(*args, **kwargs)
 			self.add_column_to_table()
+			
+		# 3. reset the application cache with the new table structure:
+		from django.db.models.loading import cache
+		from localground.apps.site.dynamic import ModelClassBuilder
+		cache.app_models['site']['form_%s' % self.form.id] = ModelClassBuilder(self.form).model_class
 	
 	def add_column_to_table(self):
 		if self.form.source_table_exists():

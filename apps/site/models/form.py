@@ -93,7 +93,7 @@ class Form(BaseNamed, ProjectMixin):
 		return q.order_by(ordering,)
 		'''
 		if print_only:
-			f = self.field_set.filter(is_printable=True)
+			return self.field_set.filter(is_printable=True)
 		else:
 			return self.field_set.all()
 		
