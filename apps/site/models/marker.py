@@ -3,10 +3,6 @@ from localground.apps.site.models import ObjectTypes
 from datetime import datetime    
 from localground.apps.site.managers import MarkerManager
 from localground.apps.site.models import BaseUploadedMedia
-from localground.apps.site.models.photo import Photo
-from localground.apps.site.models.audio import Audio
-from localground.apps.site.models.video import Video
-from localground.apps.site.models.barcoded import Scan
 from django.contrib.contenttypes import generic
 from localground.apps.site.models import BasePoint, BaseNamed, \
 										BaseGenericRelationMixin, ReturnCodes
@@ -48,45 +44,30 @@ class Marker(BasePoint, BaseNamed, BaseGenericRelationMixin):
 			return 'Marker #%s' % (self.id)
 		return self.name
 
-	@property
-	def records(self):
+	def get_records(self, forms=None):
 		"""
 		Gets all of the records in the marker.
 		"""
 		from django.contrib.contenttypes.models import ContentType
-		from localground.apps.site.models import Form
+		from localground.apps.site import models
 		
 		if self._records_dict is None:
-			content_type_ids = (self.entities
-									.values_list('entity_type', flat=True)
-									.exclude(
-										entity_type__in=[
-											Photo.get_content_type(),
-											Audio.get_content_type(),
-											Scan.get_content_type()
-										]	
-									)
-									.distinct()
-								)
-			cts = ContentType.objects.filter(id__in=content_type_ids)
-			try:	
-				table_names = [ct.model_class()._meta.db_table for ct in cts]
-			except Exception:
-				Form.cache_dynamic_models()
-				table_names = [ct.model_class()._meta.db_table for ct in cts]
-			forms = Form.objects.prefetch_related('project', 'field_set', 'field_set__data_type').filter(table_name__in=table_names)
-			form_dict = {}
-			for f in forms:
-				form_dict['form_%s' % f.id] = f
+			#query for forms and form content types if they're null:
+			if forms is None:
+				forms = (models.Form.objects
+					.select_related('project')
+					.prefetch_related('field_set', 'field_set__data_type')
+					.filter(project=obj.project)
+				)
+				table_models = [form.TableModel for form in forms]
+				ContentType.objects.get_for_models(*table_models, concrete_model=False)
 			
 			self._records_dict = {}
-			for ct in cts:
-				cls = ct.model_class()
+			for form in forms:
+				cls = form.TableModel
 				recs = self._get_filtered_entities(cls)
 				if len(recs) > 0:
-					form = form_dict[cls._meta.object_name.lower()]
 					self._records_dict[form] = recs
-			
 			
 		return self._records_dict	
 		

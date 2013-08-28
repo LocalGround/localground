@@ -86,18 +86,8 @@ class Base(models.Model):
 		Finds the ContentType of the model (does a database query)
 		Caching not really working...perhaps use application-level caching?
 		'''
-		#return 
-		#key = cls._meta.object_name.lower()
-		'''
-		key = (cls._meta.app_label, cls._meta.object_name.lower())
-		cache = ContentType.objects._cache[ContentType.objects.db]
-		if cache.get(key) is None:
-			cache[key] = ContentType.objects.get_for_model(cls)
-		return cache.get(key)
-		'''
 		return ContentType.objects.get_for_model(cls,for_concrete_model=False)
 			
-	
 
 	def stash(self, *args, **kwargs):
 		# same as append

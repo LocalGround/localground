@@ -58,7 +58,7 @@ localground.slideshow.prototype.render_title_page = function(marker) {
     var $body = $('<div />')
                     .css({'margin': '0px 60px 0px 60px', color: '#444'})
                     .append(marker.description);
-    if (marker.photos && marker.photos.data.length > 0) {
+    if (marker.children.photos && marker.children.photos.data.length > 0) {
         var $holder = $('<div />')
                             .css({
                                 'display': 'block',
@@ -66,7 +66,7 @@ localground.slideshow.prototype.render_title_page = function(marker) {
                                 'margin-right': 'auto',
                                 'text-align': 'center'
                             });
-        $.each(marker.photos.data, function(idx) {
+        $.each(marker.children.photos.data, function(idx) {
             if (idx < 2) { 
                 $holder.append($('<img />').addClass('thumb')
                              .css({ height: '90px', 'margin-right': '3px' })
@@ -97,7 +97,7 @@ localground.slideshow.prototype.render_title_page = function(marker) {
             
 localground.slideshow.prototype.render_photo_slides = function(marker) {
     var me = this;
-    $.each(marker.photos.data, function(idx) {
+    $.each(marker.children.photos.data, function(idx) {
         var $item = $('<div />').addClass('item')
                 .append($('<div />').css({'height': me.height})
                         .append(
@@ -124,7 +124,7 @@ localground.slideshow.prototype.render_photo_slides = function(marker) {
 
 localground.slideshow.prototype.render_audio = function(marker) {
     var me = this;
-    if(marker.audio == null || marker.audio.data.length == 0){
+    if(marker.children.audio == null || marker.children.audio.data.length == 0){
         return;
     }
     var playerHtml = this.player.renderPlayerObject();
@@ -132,7 +132,7 @@ localground.slideshow.prototype.render_audio = function(marker) {
         $('<div />').addClass('audio-controller')
             .append(playerHtml)
     );
-    $.each(marker.audio.data, function(idx) {
+    $.each(marker.children.audio.data, function(idx) {
         if(idx > 0)
             playerHtml.append($('<input type="hidden" />').val(this.file_path));    
         else
@@ -164,47 +164,4 @@ localground.slideshow.prototype.render_data_slides = function(marker) {
             $('#' + me.id).find('.carousel-inner').append($item);
         });
     });
-};
-
-
-            
-localground.slideshow.prototype.get_photos_by_marker_id = function(id) {
-    var me = this;
-    var url = '/api/0/get/marker/' + id + '/';
-    $.getJSON(url, {},
-        function(result) {
-            if(!result.success) {
-                alert(result.message);
-                return;
-            }
-            me.render_slides(result.obj);
-            me.render_audio(result.obj);
-            $('#slide-modal').modal();    
-        },
-    'json');   
-};
-            
-localground.slideshow.prototype.get_photos_by_project_id = function(id) {
-    var me = this;
-    var params = {
-        include_processed_maps: true,
-        include_markers: true,
-        include_audio: true,
-        include_photos: true
-    };
-    var url = '/api/0/projects/' + 97 + '/';
-    $.getJSON(url, params,
-        function(result) {
-            if(!result.success) {
-                alert(result.message);
-                return;
-            }
-            $.each(result.data, function() {
-                if(this.id == 'photo') {
-                    me.render_photos(this.data);
-                    me.render_audio([]);
-                }
-            });
-        },
-    'json');   
 };

@@ -25,8 +25,20 @@ class ProjectDetailSerializer(BaseSerializer):
 		depth = 0
 		
 	def get_children(self, obj):
-		forms = models.Form.objects.select_related('project').prefetch_related('field_set', 'field_set__data_type').filter(project=obj)
-		
+		from django.contrib.contenttypes.models import ContentType
+		from localground.apps.site import models
+		candidates = [
+			models.Photo, models.Audio, models.Scan, models.Project, models.Marker
+		]
+		forms = (models.Form.objects
+					.select_related('project')
+					.prefetch_related('field_set', 'field_set__data_type')
+					.filter(project=obj)
+				)
+		for form in forms:
+			candidates.append(form.TableModel)
+		#this caches the ContentTypes so that we don't keep executing one-off queries
+		ContentType.objects.get_for_models(*candidates, concrete_model=False)
 		children = {
 			'photos': self.get_photos(obj),
 			'audio': self.get_audio(obj),
@@ -81,9 +93,6 @@ class ProjectDetailSerializer(BaseSerializer):
 				models.Marker.objects.get_objects_with_counts(obj.owner, project=obj, forms=forms)
 			).data
 		return self.serialize_list(models.Marker, data)
-	
-	#def get_table_data(self, obj):
-	#	return obj.get_table_data()[0]
 	
 	
 	def serialize_list(self, cls, data, name=None, overlay_type=None,

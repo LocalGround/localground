@@ -9,10 +9,6 @@ from localground.apps.site.api import fields
 from django.conf import settings
 
 class MarkerSerializer(PointSerializer):
-	#photos = serializers.SerializerMethodField('get_photos')
-	#photo_links = serializers.SerializerMethodField('get_url_photos')
-	#audio_links = serializers.SerializerMethodField('get_url_audio')
-	#audio = serializers.SerializerMethodField('get_audio')
 	children = serializers.SerializerMethodField('get_children')
 	color = fields.ColorField(required=False)
 	point = fields.PointField(widget=widgets.PointWidgetTextbox, required=False)
@@ -20,10 +16,27 @@ class MarkerSerializer(PointSerializer):
 		model = models.Marker
 		fields = PointSerializer.Meta.fields + \
 			('children', 'color')
-					#, 'photos', 'audio', 'photo_links', 'audio_links')
 		depth = 0
 	
 	def get_children(self, obj):
+		# ~21 queries per marker is the best I can do if data from 2 separate
+		# forms is attached to a single marker.  This query could be optimized
+		# further if needed.
+		from django.contrib.contenttypes.models import ContentType
+		from localground.apps.site import models
+		candidates = [
+			models.Photo, models.Audio, models.Scan, models.Project, models.Marker
+		]
+		forms = (models.Form.objects
+					.select_related('project')
+					.prefetch_related('field_set', 'field_set__data_type')
+					.filter(project=obj.project)
+				)
+		for form in forms:
+			candidates.append(form.TableModel)
+		
+		#this caches the ContentTypes so that we don't keep executing one-off queries
+		ContentType.objects.get_for_models(*candidates, concrete_model=False)
 		children = {
 			'audio': self.get_audio(obj),
 			'photos': self.get_photos(obj),
@@ -31,35 +44,38 @@ class MarkerSerializer(PointSerializer):
 		}
 		
 		#add table data:
-		for form, records in obj.records.items():
+		form_dict = obj.get_records(forms=forms).items()
+		for form, records in form_dict:
 			SerializerClass = create_compact_record_serializer(form)
 			d = self.serialize_list(
+					obj,
 					form.TableModel,
 					SerializerClass(records).data,
 					name=form.name,
 					overlay_type='record',
 					model_name_plural='form_%s' % form.id
 				)
-			#d.update({
-			#	'headers': [f.col_alias for f in form.get_fields()]	
-			#})
+			d.update({
+				'headers': [f.col_alias for f in form.get_fields()]	
+			})
 			children['form_%s' % form.id] = d
+		
 		return children
 		
 		
 	def get_photos(self, obj):
 		data = PhotoSerializer(obj.photos).data
-		return self.serialize_list(models.Photo, data)    
+		return self.serialize_list(obj, models.Photo, data)    
 	
 	def get_audio(self, obj):
 		data = AudioSerializer(obj.audio).data
-		return self.serialize_list(models.Audio, data)
+		return self.serialize_list(obj, models.Audio, data)
 	
 	def get_map_images(self, obj):
 		data = ScanSerializer(obj.map_images).data
-		return self.serialize_list(models.Scan, data)
+		return self.serialize_list(obj, models.Scan, data)
 	
-	def serialize_list(self, cls, data, name=None, overlay_type=None,
+	def serialize_list(self, obj, cls, data, name=None, overlay_type=None,
 					   model_name_plural=None):
 		if name is None:
 			name = cls.model_name_plural.title()
@@ -71,7 +87,8 @@ class MarkerSerializer(PointSerializer):
 			'id': model_name_plural,
 			'name': name,
 			'overlay_type': overlay_type,
-			'data': data
+			'data': data,
+			'attach_url': '%s/api/0/markers/%s/%s/' % (settings.SERVER_URL, obj.id, model_name_plural)
 		}
 	
 	'''
@@ -125,8 +142,7 @@ class MarkerSerializerCounts(MarkerSerializer):
 	class Meta:
 		model = models.Marker
 		fields = PointSerializer.Meta.fields + ('photo_count', 'audio_count',
-									'color', 'record_count') #
-		#'photo_links', 'audio_links')
+									'color', 'record_count')
 		depth = 0
 		
 	def get_photo_count(self, obj):
