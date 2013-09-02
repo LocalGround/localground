@@ -135,6 +135,7 @@ class MarkerSerializer(PointSerializer):
 class MarkerSerializerCounts(MarkerSerializer):
 	photo_count = serializers.SerializerMethodField('get_photo_count')
 	audio_count = serializers.SerializerMethodField('get_audio_count')
+	map_image_count = serializers.SerializerMethodField('get_map_image_count')
 	record_count = serializers.SerializerMethodField('get_dynamic_data_count')
 	point = fields.PointField(help_text='Assign lat/lng field',
 							  widget=widgets.PointWidgetTextbox,
@@ -142,7 +143,7 @@ class MarkerSerializerCounts(MarkerSerializer):
 	class Meta:
 		model = models.Marker
 		fields = PointSerializer.Meta.fields + ('photo_count', 'audio_count',
-									'color', 'record_count')
+									'record_count', 'map_image_count', 'color')
 		depth = 0
 		
 	def get_photo_count(self, obj):
@@ -151,6 +152,10 @@ class MarkerSerializerCounts(MarkerSerializer):
 	
 	def get_audio_count(self, obj):
 		try: return obj.audio_count
+		except: return None
+		
+	def get_map_image_count(self, obj):
+		try: return obj.map_image_count
 		except: return None
 		
 	def get_dynamic_data_count(self, obj):

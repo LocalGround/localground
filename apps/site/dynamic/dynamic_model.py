@@ -18,6 +18,7 @@ class DynamicModelMixin(BasePoint, BaseAudit):
 	num_snippet = models.ForeignKey('Snippet', null=True, blank=True,
 									 db_column='user_num_snippet_id')
 	snippet = models.ForeignKey('Snippet', null=True, blank=True)
+	project = models.ForeignKey('Project')
 	manually_reviewed = models.BooleanField()
 	
 	class Meta:
@@ -128,9 +129,9 @@ class DynamicModelMixin(BasePoint, BaseAudit):
 		if self.point is not None:
 			d.update(dict(lat=self.point.y, lng=self.point.x))
 		if include_project:
-			d.update(dict(project=self.form.project.to_dict()))
+			d.update(dict(project=self.project.to_dict()))
 		else:
-			d.update(dict(project_id=self.form.project.id))
+			d.update(dict(project_id=self.project.id))
 		if include_attachment and self.snippet is not None \
 			and self.snippet.source_attachment is not None:
 			d.update(dict(attachment={
@@ -254,7 +255,7 @@ class ModelClassBuilder(object):
 				self.date_created = get_timestamp_no_milliseconds()
 			self.last_updated_by = user 
 			self.time_stamp = get_timestamp_no_milliseconds()
-			self.project = self.form.project
+			#self.project = self.form.project
 			super(self.__class__, self).save(*args, **kwargs)
 			
 		attrs.update(dict(

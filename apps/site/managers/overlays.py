@@ -23,12 +23,12 @@ class MarkerMixin(BaseMixin):
     def get_objects_with_counts(self, user, project=None, filter=None, forms=None, ordering_field=None):
         # Excellent resource on using extras:
         # http://timmyomahony.com/blog/2012/11/16/filtering-annotations-django/
-        from localground.apps.site.models import Photo, Audio, Marker, Form
+        from localground.apps.site.models import Photo, Audio, Scan, Marker, Form
 
         q = self.get_objects(user, project=project, filter=filter, ordering_field=ordering_field)
         
         # figure out the tables to which the markers' children belong:
-        child_classes = [Photo, Audio]
+        child_classes = [Photo, Audio, Scan]
         dynamic_forms = forms
         if forms is None:
             dynamic_forms = Form.objects.prefetch_related('project', 'field_set', 'field_set__data_type')

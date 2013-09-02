@@ -3,25 +3,6 @@ from django.http import HttpResponse
 import simplejson as json
 from django.contrib.auth.decorators import login_required 
 
-@process_identity
-def get_datatypes(request, identity=None):
-	from localground.apps.site.models import DataType
-	types = DataType.objects.all().order_by('name')
-	return HttpResponse(json.dumps(dict(
-		types=[t.to_dict() for t in types]    
-	)))
-	
-
-@process_identity
-def create_form(request, identity=None, is_json=False):
-	from django.db import connection, transaction
-	r = request.POST or request.GET
-	form = Form.create_new_form(r)
-	
-	return HttpResponse(json.dumps(dict(
-		form=form.to_dict()
-	)))
-
 @login_required()
 def create_update_form(request, object_id=None,
 						  embed=False, template='profile/create_update_form.html',
@@ -60,16 +41,22 @@ def create_update_form(request, object_id=None,
 	prefix = 'field'
 	
 	if request.method == 'POST':
-		form = Form.inline_form(user=request.user)(request.POST, instance=form_object)
+		form = Form.create_form(user=request.user)(request.POST, instance=form_object)
 		formset = FieldFormset(request.POST, instance=form_object, prefix=prefix)
 		
 		if formset.is_valid() and form.is_valid():
 			form_object = form.instance
 			form_object.save(user=request.user)
 			
-			# -----------------------------------
-			# PROJECTUSER FORM(S) POST-PROCESSING
-			# -----------------------------------
+			#saved authorized projects:
+			form_object.projects.clear()
+			for p in request.POST.getlist('projects'):
+				form_object.projects.add(p)
+			form_object.save()
+			
+			# ------------------------
+			# FIELD(S) POST-PROCESSING
+			# ------------------------
 			
 			# add / update fields:
 			for i, form in enumerate(formset.forms):
@@ -98,7 +85,7 @@ def create_update_form(request, object_id=None,
 								Please review message(s) below.' %  Field.model_name
 			})
 	else:
-		form = Form.inline_form(user=request.user)(instance=form_object)
+		form = Form.create_form(user=request.user)(instance=form_object)
 		formset = FieldFormset(instance=form_object, prefix=prefix)
 	
 	extras.update({
@@ -117,4 +104,26 @@ def create_update_form(request, object_id=None,
 		})
 	return render_to_response(template, extras,
 		context_instance=RequestContext(request))
+
+
+
+'''
+@process_identity
+def get_datatypes(request, identity=None):
+	from localground.apps.site.models import DataType
+	types = DataType.objects.all().order_by('name')
+	return HttpResponse(json.dumps(dict(
+		types=[t.to_dict() for t in types]    
+	)))
+	
+@process_identity
+def create_form(request, identity=None, is_json=False):
+	from django.db import connection, transaction
+	r = request.POST or request.GET
+	form = Form.create_new_form(r)
+	
+	return HttpResponse(json.dumps(dict(
+		form=form.to_dict()
+	)))
+'''
 	

@@ -55,11 +55,19 @@ class Base(models.Model):
 	
 	@classproperty
 	def model_name(cls):
-		return cls._meta.verbose_name
+		return cls._meta.verbose_name.replace('-', '_')
+	
+	@classproperty
+	def pretty_name(cls):
+		return cls._meta.verbose_name.replace('-', ' ')
 	
 	@classproperty
 	def model_name_plural(cls):
 		return cls._meta.verbose_name_plural
+	
+	@classproperty
+	def pretty_name_plural(cls):
+		return cls._meta.verbose_name_plural.replace('-', ' ')
 										  
 	@classmethod
 	def listing_url(cls):

@@ -8,6 +8,7 @@ localground.marker = function(opts){
     this.audio_count = 0;
     this.video_count = 0;
     this.record_count = 0;
+    this.map_image_count = 0;
     this.photoIDs = null;
     this.audioIDs = null;
     this.recordIDs = null;
@@ -130,7 +131,7 @@ localground.marker.prototype.buildEditForm = function($contentContainer){
         { id: 'detail', name: 'Detail'},
         { id: 'photo', name: 'Photos'},
         { id: 'audio', name: 'Audio'},
-        { id: 'scan', name: 'Maps'},
+        { id: 'map_image', name: 'Maps'},
         { id: 'record', name: 'Form Data'}
     ];
     $.each(pages, function(index){
@@ -171,10 +172,10 @@ localground.marker.prototype.renderPanel = function(key){
             return this.renderPhotoPanel($overflower);
         case 'audio':
             return this.renderAudioPanel($overflower);
+        case 'map_image':
+			return this.renderMapPanel($overflower);
 		case 'record':
 			return this.renderRecordPanel($overflower);
-        //case 'maps':
-        //    return $overflower.append(this.renderPhotoPanel());
     }
     return this.noChildrenMessage($overflower, 'Coming Soon');
 };
@@ -224,6 +225,21 @@ localground.marker.prototype.renderPhotoPanel = function($container){
     return $container;
 };
 
+localground.marker.prototype.renderMapPanel = function($container){
+	if (this.map_image_count == 0) {
+        $container = this.noChildrenMessage($container, 'No map images have been added');
+		$container.find('div').append(
+			$('<button />').addClass('btn primary')
+				.css({'margin-top': '10px'})
+				.html("Append Visible Maps")
+				.click(function(){
+					alert('append');	
+				})
+		);
+		return $container;
+    }
+};
+
 localground.marker.prototype.renderRecordPanel = function($container){
     var me = this;
     //var $container = $('<div />');
@@ -254,6 +270,7 @@ localground.marker.prototype.renderRecordPanel = function($container){
 				);	
 			});
 			$tbl.append($header_row);
+			var cell_val;
 			$.each(table.data, function(){
 				var mini_me = this;
 				var $detach = $('<a />').html('detach');
@@ -271,9 +288,9 @@ localground.marker.prototype.renderRecordPanel = function($container){
 							.append($('<td />').append($detach))
 							.append($('<td />').html(this.id))
 							.append($('<td />').html(this.num));
-				$.each(this.recs, function(){
+				$.each(this.recs, function(elem){
 					$row.append(
-						$('<td />').html(this.toString())
+						$('<td />').html(elem ? elem.toString() : '')
 					);	
 				});
 				$tbl.append($row);
@@ -382,7 +399,8 @@ localground.marker.prototype.createNew = function(googleOverlay, projectID) {
 
 localground.marker.prototype.attachMedia = function(media) {
     var me = this;
-	var url = this.url + media.managerID + '/.json';
+	var url = this.url.split('.json')[0] + media.managerID + '/.json';
+	//alert(url);
 	$.ajax({
         url: url,
         type: 'POST',

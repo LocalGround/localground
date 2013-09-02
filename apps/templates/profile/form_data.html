@@ -164,7 +164,7 @@
 			<td>{{ o.display_coords }}</td>
 			<td>{% if o.owner %} {{ o.owner}} {% else %} anonymous {% endif %}</td>
 			<td>{{o.time_stamp|date:"n/j/Y P" }}</td>
-			<td>{{ o.form.project.name }}</td>
+			<td>{{ o.project.name }}</td>
 			<td>{% if o.marker %}{{ o.marker.get_name }}{% else %} -- {% endif %}</td>
 			<td>
 				{% if o.snippet %}

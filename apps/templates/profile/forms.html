@@ -60,7 +60,12 @@
 					<label>ID:</label><div class="input">{{ form.instance.id }}</div>
 				</div>
 				<div class="thin">
-					<label>Project:</label><div class="input">{{ form.instance.project.name }}</div>
+					<label>Projects:</label>
+					<div class="input">
+						{% for p in form.instance.projects.all %}
+							{{p.name}}{% if not forloop.last %}, {% endif %}
+						{% endfor %}
+					</div>
 				</div>
 				<div class="thin">
 					<label>Created:</label>
@@ -79,8 +84,9 @@
 				<div class="thin">
 					<label>fields:</label>
 					<div class="input">
+					
 					{% for f in form.instance.get_fields %}
-						{{f.col_alias}},
+						{{f.col_alias}}{% if not forloop.last %}, {% endif %}
 					{% endfor %}
 					</div>
 				</div>

@@ -11,17 +11,17 @@ class DynamicFormBuilder(object):
     @property
     def data_entry_form_class(self):
         if self._data_entry_form_class is None:
-            self._data_entry_form_class = self._create_data_entry_form()
+            self._data_entry_form_class = self._create_data_entry_form(self.form)
         return self._data_entry_form_class
     
-    def _create_data_entry_form(self):
+    def _create_data_entry_form(self, form):
         """
         generate a dynamic form from dynamic model that also shows user the
         snippets s/he needs to transcribe:
         """
         form_fields = []
-        form_fields.append(self.form.get_num_field())
-        form_fields.extend(list(self.form.get_fields()))
+        form_fields.append(form.get_num_field())
+        form_fields.extend(list(form.get_fields()))
         
         field_names = [f.col_name for f in form_fields]
                 
@@ -29,7 +29,7 @@ class DynamicFormBuilder(object):
             class Meta:
                 from django.forms import widgets
                 model = self.form.TableModel
-                fields = ('id', 'point') + tuple(field_names)
+                fields = ('id', 'point', 'project') + tuple(field_names)
                 widgets = {
                     'id': widgets.HiddenInput,
                     'point': widgets.HiddenInput
@@ -56,7 +56,7 @@ class DynamicFormBuilder(object):
                     return widget
                 
                 for f in form_fields:
-                    form_field = self.form.TableModel._meta.get_field(f.col_name)
+                    form_field = form.TableModel._meta.get_field(f.col_name)
                     default_widget_class = get_widget_class(form_field)
                     
                     class SnippetWidget(default_widget_class):
@@ -86,6 +86,7 @@ class DynamicFormBuilder(object):
                 widget (so that the snippet widget has access to the other form vals)
                 """
                 super(DynamicForm, self).__init__(*args, **kwargs)
+                self.fields["project"].queryset = form.projects.all()
                 for n in field_names:
                     self.fields[n].widget.form_instance = self
             

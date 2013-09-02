@@ -6,8 +6,9 @@ from localground.apps.site.dynamic import ModelClassBuilder, DynamicFormBuilder
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 	
-class Form(BaseNamed, ProjectMixin):
+class Form(BaseNamed):
 	table_name = models.CharField(max_length=255, unique=True)
+	projects = models.ManyToManyField('Project')
 	objects = FormManager()
 	_model_class = None
 	_data_entry_form_class = None
@@ -19,8 +20,49 @@ class Form(BaseNamed, ProjectMixin):
 		
 	@classmethod
 	def inline_form(cls, user):
-		from localground.apps.site.forms import get_inline_form_with_tags
-		return get_inline_form_with_tags(cls, user)
+		from localground.apps.site.widgets import TagAutocomplete 
+		from django.forms import ModelForm
+		class InlineForm(ModelForm):
+			
+			def __init__(self, *args, **kwargs):
+				super(InlineForm, self).__init__(*args, **kwargs)
+				from localground.apps.site import models
+				
+			class Meta:
+				from django import forms
+				model = cls
+				fields = ('name', 'description', 'tags')
+				widgets = {
+					'id': forms.HiddenInput,
+					'description': forms.Textarea(attrs={'rows': 3}),
+					'tags': TagAutocomplete()
+				}
+		return InlineForm
+	
+	@classmethod
+	def create_form(cls, user):
+		from localground.apps.site.widgets import TagAutocomplete 
+		from django.forms import ModelForm
+		class InlineForm(ModelForm):
+			
+			def __init__(self, *args, **kwargs):
+				super(InlineForm, self).__init__(*args, **kwargs)
+				from localground.apps.site import models
+				self.fields["projects"].queryset = models.Project.objects.get_objects(user)
+				self.fields["projects"].help_text = 'Give one or more of your projects \
+									access to this form.  Users who have access to the \
+									projects you select will also have access to this form.'
+			class Meta:
+				from django import forms
+				model = cls
+				fields = ('name', 'description', 'tags', 'projects')
+				widgets = {
+					'id': forms.HiddenInput,
+					'description': forms.Textarea(attrs={'rows': 3}),
+					'tags': TagAutocomplete(),
+					'projects': forms.widgets.CheckboxSelectMultiple
+				}
+		return InlineForm
 	
 	@classmethod
 	def cache_dynamic_models(cls):
