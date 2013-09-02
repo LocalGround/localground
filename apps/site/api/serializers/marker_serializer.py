@@ -1,7 +1,4 @@
 from localground.apps.site.api.serializers.base_serializer import PointSerializer
-from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
-from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
-from localground.apps.site.api.serializers.scan_serializer import ScanSerializer
 from localground.apps.site.api.serializers.form_serializer import create_compact_record_serializer
 from rest_framework import serializers
 from localground.apps.site import models, widgets
@@ -63,14 +60,17 @@ class MarkerSerializer(PointSerializer):
 		
 		
 	def get_photos(self, obj):
+		from localground.apps.site.api.serializers import PhotoSerializer
 		data = PhotoSerializer(obj.photos).data
 		return self.serialize_list(obj, models.Photo, data)    
 	
 	def get_audio(self, obj):
+		from localground.apps.site.api.serializers import AudioSerializer
 		data = AudioSerializer(obj.audio).data
 		return self.serialize_list(obj, models.Audio, data)
 	
 	def get_map_images(self, obj):
+		from localground.apps.site.api.serializers import ScanSerializer
 		data = ScanSerializer(obj.map_images).data
 		return self.serialize_list(obj, models.Scan, data)
 	

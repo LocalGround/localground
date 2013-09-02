@@ -167,13 +167,13 @@ mv settings_local.py.tmp ../apps/settings_local.py
 ###########################################
 # Destroying and Re-Creating the Database #
 ###########################################
-#echo "Dropping and rebuilding the database \"$DB_NAME\"..."
-#sudo_noprompt "-u postgres dropdb $DB_NAME"
-#sudo_noprompt "-u postgres createdb -T template_postgis -O $DB_USER -E UTF8 -e $DB_NAME"
+echo "Dropping and rebuilding the database \"$DB_NAME\"..."
+sudo_noprompt "-u postgres dropdb $DB_NAME"
+sudo_noprompt "-u postgres createdb -T template_postgis -O $DB_USER -E UTF8 -e $DB_NAME"
 
 # Restarting Apache:
-#sudo_noprompt "service apache2 restart"
-#python ../apps/manage.py syncdb --noinput
+sudo_noprompt "service apache2 restart"
+python ../apps/manage.py syncdb --noinput
 
 
 #####################
