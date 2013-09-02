@@ -55,9 +55,9 @@ class Marker(BasePoint, BaseNamed, BaseGenericRelationMixin):
 			#query for forms and form content types if they're null:
 			if forms is None:
 				forms = (models.Form.objects
-					.select_related('project')
-					.prefetch_related('field_set', 'field_set__data_type')
-					.filter(project=obj.project)
+					#.select_related('project')
+					.prefetch_related('field_set', 'field_set__data_type', 'projects')
+					.filter(projects=obj.project)
 				)
 				table_models = [form.TableModel for form in forms]
 				ContentType.objects.get_for_models(*table_models, concrete_model=False)

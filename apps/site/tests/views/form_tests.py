@@ -54,6 +54,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		record.owner = self.user
 		setattr(record, f1.col_name, 'Column Value 1')
 		setattr(record, f2.col_name, 'Column Value 2')
+		record.project=self.project
 		record.save(user=self.user)
 		
 		form = models.Form.objects.get(id=self.form.id)
@@ -64,6 +65,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		self.assertIsNotNone(rec.date_created)
 		self.assertEqual(self.user, rec.owner)
 		self.assertEqual(self.user, rec.last_updated_by)
+		self.assertEqual(record.project, self.project)
 		self.assertEqual(1, rec.num)
 		
 	def make_post_dictionary(self, name, description, tags):
@@ -99,7 +101,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		
 		
 		data = self.make_post_dictionary(name, description, tags)
-		data.update({'project': project})
+		data.update({'projects': project})
 		
 		# form should not have any fields:
 		self.assertEqual(len(self.form.get_fields()), 0)
@@ -148,7 +150,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		
 		
 		data = self.make_post_dictionary(name, description, tags)
-		data.update({'project': project})
+		data.update({'projects': project})
 		
 		response = self.client.post('/profile/forms/create/',
 			data=urllib.urlencode(data),

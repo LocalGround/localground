@@ -7,15 +7,21 @@ from django.forms import widgets
 from django.conf import settings
 
 class FormSerializer(BaseSerializer):
-	project_id = fields.ProjectField(label='project_id', source='project', required=False)
+	project_ids = fields.ProjectsField(
+					label='project_ids',
+					source='projects',
+					required=True,
+					help_text='A comma-separated list of all of the projects to which this form should belong'
+				)
 	data_url = serializers.SerializerMethodField('get_data_url')
 	class Meta:
 		model = models.Form
-		fields = BaseSerializer.Meta.fields + ('project_id', 'data_url')
+		fields = BaseSerializer.Meta.fields + ('data_url', 'project_ids')
 		depth = 0
 		
 	def get_data_url(self, obj):
 		return '%s/api/0/forms/%s/data/' % (settings.SERVER_URL, obj.pk)
+	
 
 
 from rest_framework import serializers
@@ -28,9 +34,10 @@ class BaseRecordSerializer(serializers.ModelSerializer):
 							  required=False)
 	overlay_type = serializers.SerializerMethodField('get_overlay_type')
 	url = serializers.SerializerMethodField('get_detail_url')
+	project_id = fields.ProjectField(label='project_id', source='project', required=True)
 		
 	class Meta:
-		fields = ('id', 'overlay_type', 'url', 'point', 'manually_reviewed')
+		fields = ('id', 'overlay_type', 'url', 'point', 'manually_reviewed', 'project_id')
 		read_only_fields = ('manually_reviewed',)
 		
 	def get_overlay_type(self, obj):

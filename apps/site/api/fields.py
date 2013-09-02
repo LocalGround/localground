@@ -38,7 +38,26 @@ class ProjectField(serializers.WritableField):
 			raise serializers.ValidationError("Project ID \"%s\" does not exist" % data)
 		except:
 			raise serializers.ValidationError("project_id=%s is invalid" % data)
-		
+	
+class ProjectsField(serializers.WritableField):
+	type_label='integer'
+	
+	def to_native(self, obj):
+		return ', '.join([str(p.id) for p in obj.all()])
+
+	def from_native(self, data):
+		ids = None
+		try:
+			ids = data.split(',')
+			ids = [int(id.strip()) for id in ids]
+		except:
+			raise serializers.ValidationError("Project IDs must be a list of comma-separated integers")
+		try:
+			return [ models.Project.objects.get(id__in=ids) ]
+		except models.Project.DoesNotExist:
+			raise serializers.ValidationError("Project IDs \"%s\" do not exist" % data)
+		except:
+			raise serializers.ValidationError("project_ids=%s is invalid" % data)
 	
 class PointField(serializers.WritableField):
 	type_label = 'point'

@@ -129,9 +129,10 @@ class ModelMixin(object):
 			owner=self.user,
 			name=name,
 			description=description,
-			last_updated_by=self.user,
-			project=self.project
+			last_updated_by=self.user
 		)
+		f.save()
+		f.projects.add(self.project)
 		f.save()
 		return f
 	

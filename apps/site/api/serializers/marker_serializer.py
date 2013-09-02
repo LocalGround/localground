@@ -28,9 +28,8 @@ class MarkerSerializer(PointSerializer):
 			models.Photo, models.Audio, models.Scan, models.Project, models.Marker
 		]
 		forms = (models.Form.objects
-					.select_related('project')
-					.prefetch_related('field_set', 'field_set__data_type')
-					.filter(project=obj.project)
+					.prefetch_related('field_set', 'field_set__data_type', 'projects')
+					.filter(projects=obj.project)
 				)
 		for form in forms:
 			candidates.append(form.TableModel)

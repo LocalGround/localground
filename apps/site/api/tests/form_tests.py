@@ -36,7 +36,8 @@ class FormDataTestMixin(object):
 		d = {
 			'lat': lat,
 			'lng': lng,
-			'num': num
+			'num': num,
+			'project_id': self.project.id
 		}
 		#add dynamic form values:
 		fields = self.form.get_fields()
