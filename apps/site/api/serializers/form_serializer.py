@@ -76,11 +76,11 @@ def create_compact_record_serializer(form):
 	class FormDataSerializer(BaseRecordSerializer):
 		recs = serializers.SerializerMethodField('get_recs')
 		url = serializers.SerializerMethodField('get_detail_url')
-		project_id = serializers.SerializerMethodField('get_project_id')
+		project_ids = serializers.SerializerMethodField('get_project_ids')
 			
 		class Meta:
 			model = form.TableModel
-			fields = ('id', 'num', 'recs', 'url', 'point', 'project_id', 'overlay_type')
+			fields = ('id', 'num', 'recs', 'url', 'point', 'project_ids', 'overlay_type')
 			
 		def get_recs(self, obj):
 			return [getattr(obj, col_name) for col_name in col_names]
@@ -89,8 +89,8 @@ def create_compact_record_serializer(form):
 			return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
 						form.id, obj.id)
 		
-		def get_project_id(self, obj):
-			return form.project.id
+		def get_project_ids(self, obj):
+			return [p.id for p in form.projects.all()]
 		
 		def get_overlay_type(self, obj):
 			return 'record'

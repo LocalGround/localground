@@ -31,9 +31,9 @@ class ProjectDetailSerializer(BaseSerializer):
 			models.Photo, models.Audio, models.Scan, models.Project, models.Marker
 		]
 		forms = (models.Form.objects
-					.select_related('project')
+					.select_related('projects')
 					.prefetch_related('field_set', 'field_set__data_type')
-					.filter(project=obj)
+					.filter(projects=obj)
 				)
 		for form in forms:
 			candidates.append(form.TableModel)

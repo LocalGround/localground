@@ -33,7 +33,7 @@ class IsAllowedGivenProjectPermissionSettings(permissions.BasePermission):
         if obj.RESTRICT_BY_PROJECT:
             return obj.project.owner==request.user or request.user in obj.project.users
         elif obj.RESTRICT_BY_USER:
-            return obj.owner == request.user or request.user in obj.users
+            return obj.owner == request.user or request.user in obj.users.all()
         return True
     
     
