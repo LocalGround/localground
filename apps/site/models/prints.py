@@ -108,8 +108,8 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 			'zoom': self.zoom,
 			'map_provider': self.map_provider.id,
 			'project_id': self.project.id,
-			'map_title': self.name,
-			'instructions': self.description,
+			'map_title': self.name.encode('utf8'),
+			'instructions': self.description.encode('utf8'),
 			'scan_ids': ','.join([str(s.id) for s in self.embedded_scans])
 		})
 		return 'http://' + self.host + '/maps/print/?' + data
