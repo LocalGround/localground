@@ -18,22 +18,30 @@ class IsAllowedGivenProjectPermissionSettings(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
+        '''
+        Important:  this is only called for a single object;
+                    is not called for a list.
+        '''
         if not request.user.is_authenticated():
             return False
           
         # Users don't necessarily have access to "SAFE" methods.
         # This needs to be modified.
-        if request.method in permissions.SAFE_METHODS:            
-            return True
+        #if request.method in permissions.SAFE_METHODS:            
+        #    return True
 
         # If permissions validation needed (set at the Model Class level),
         # check here:
-        #if not hasattr(obj, 'RESTRICT_BY_PROJECT') and not hasattr(obj, 'RESTRICT_BY_USER'):
-        #    return True
         if obj.RESTRICT_BY_PROJECT:
             return obj.project.owner==request.user or request.user in obj.project.users
+        elif obj.RESTRICT_BY_PROJECTS:
+            from django.db.models import Q
+            projects = obj.projects.filter(Q(owner=request.user) |
+                                            Q(users__user=request.user))
+            return len(projects) > 0 or obj.owner == request.user
         elif obj.RESTRICT_BY_USER:
-            return obj.owner == request.user or request.user in obj.users.all()
+            #return True
+            return obj.owner == request.user or len(obj.users.filter(user=request.user)) > 0
         return True
     
     

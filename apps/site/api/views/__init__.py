@@ -1,10 +1,10 @@
-from rest_framework import generics, exceptions, permissions, viewsets
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import generics, exceptions, viewsets #, permissions
+from rest_framework.decorators import api_view #, permission_classes
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from localground.apps.site.api import serializers
-from localground.apps.site.api.permissions import IsAllowedGivenProjectPermissionSettings
+#from localground.apps.site.api.permissions import IsAllowedGivenProjectPermissionSettings
 from localground.apps.site.api.filters import SQLFilterBackend
 from localground.apps.site import models
 from django.contrib.auth.models import User, Group

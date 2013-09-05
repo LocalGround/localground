@@ -1,12 +1,15 @@
 from django.contrib.gis.db import models
 from django.db.models import Q 
 from localground.apps.site.managers import FormManager
-from localground.apps.site.models import Field, ProjectMixin, BaseNamed, Snippet, DataType
+from localground.apps.site.models import Field, ProjectMixin, BaseNamed, Snippet, DataType, Project
 from localground.apps.site.dynamic import ModelClassBuilder, DynamicFormBuilder
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 	
 class Form(BaseNamed):
+	RESTRICT_BY_PROJECTS = True
+	RESTRICT_BY_PROJECT = False
+	RESTRICT_BY_USER = False
 	table_name = models.CharField(max_length=255, unique=True)
 	projects = models.ManyToManyField('Project')
 	objects = FormManager()
@@ -240,6 +243,33 @@ class Form(BaseNamed):
 			names.append(n.col_name)
 		return names
 	
+	def get_data_query_lite(self, user=None, project=None, filter=None,
+					   has_geometry=None, manually_reviewed=None,
+					   order_by=['-time_stamp'], limit=1000):
+		# We want to query everything in one go, so we're taking advantage of
+		# the "select_related" functionality (no lazy queries please!)
+		related_fields = ['project', 'owner', 'form']
+		objects =  (self.TableModel.objects
+						.select_related(*related_fields))		
+		if project is not None:
+			objects = objects.filter(project=project)
+		if manually_reviewed is not None:
+			objects = objects.filter(manually_reviewed=manually_reviewed)   
+		if user is not None:
+			# this user query is slow:
+			#objects = objects.filter(
+			#		Q(project__owner=user) |
+			#		Q(project__users__user=user)
+			#	)
+			# use this instead:
+			objects = objects.filter(project__id__in=[
+				p.id for p in Project.objects.filter(Q(owner=user) | Q(users__user=user)).distinct()	
+			])
+		if has_geometry:
+			objects = objects.filter(point__isnull=False)
+		objects = objects.order_by(*order_by)
+		return objects[0:limit]
+	
 	def get_data_query(self, project=None, filter=None, user=None, is_blank=False,
 					to_dict=False, has_geometry=None,
 					attachment=None, manually_reviewed=None):
@@ -269,11 +299,11 @@ class Form(BaseNamed):
 				)
 		if has_geometry:
 			objects = objects.filter(point__isnull=False)
-		return objects   
+		return objects
 	
 	def get_objects(self, user, project=None, filter=None,
-					manually_reviewed=True, order_by=['time_stamp'], **kwargs):
-		objects = self.get_data_query(manually_reviewed=manually_reviewed, **kwargs)  
+					manually_reviewed=None, order_by=['time_stamp'], **kwargs):
+		objects = self.get_data_query(manually_reviewed=manually_reviewed, user=user, project=project, **kwargs)  
 		objects = objects.order_by(*order_by)
 		return objects
 	

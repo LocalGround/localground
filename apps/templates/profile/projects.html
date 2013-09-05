@@ -56,6 +56,7 @@
 			</td>
 			
 			<td>
+				ID: <span>{{ form.instance.id}}</span><br>
 				Owner: <span>{% if form.instance.owner %} {{ form.instance.owner}} {% else %} anonymous {% endif %}</span><br>
 				Last Updated: <span>{{form.instance.time_stamp|date:"n/j/Y P" }}</span>.		
 				<ul class="print_details" style="margin-bottom:0px">
