@@ -2,6 +2,7 @@ from django.contrib.gis.db import models
 from django.conf import settings
 from localground.apps.site.managers import PhotoManager
 from localground.apps.site.models import BasePoint, BaseUploadedMedia
+from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os
 
 class Photo(BasePoint, BaseUploadedMedia):
@@ -70,6 +71,47 @@ class Photo(BasePoint, BaseUploadedMedia):
         
         #execute default behavior
         super(Photo, self).delete(*args, **kwargs)
+        
+    def rotate_left(self, user):
+        self._rotate(user, degrees=90)
+    
+    def rotate_right(self, user):
+        self._rotate(user, degrees=270)
+        
+    def _rotate(self, user, degrees):
+        from PIL import Image, ImageOps
+        media_path = self.get_absolute_path()
+        
+        #do the rotation:
+        im = Image.open(media_path + self.file_name_new)
+        file_name, ext = os.path.splitext(self.file_name_new)
+        im=im.rotate(degrees)
+        im.save(media_path + self.file_name_new)
+        
+        #create thumbnails:
+        sizes = [1000, 500, 250, 128, 50, 20]
+        photo_paths = []
+        for s in sizes:
+            if s in [50,25]:
+                #ensure that perfect squares:
+                im.thumbnail((s*2,s*2), Image.ANTIALIAS)
+                im = im.crop([0,0,s-2,s-2])
+                im = ImageOps.expand(im, border=2, fill=(255,255,255,255))
+            else:
+                im.thumbnail((s,s), Image.ANTIALIAS)
+            abs_path = '%s%s_%s%s' % (media_path, file_name, s, ext)
+            im.save(abs_path)
+            photo_paths.append('%s_%s%s' % (file_name, s, ext))
+        
+        self.file_name_large = photo_paths[0]
+        self.file_name_medium = photo_paths[1]
+        self.file_name_medium_sm = photo_paths[2]
+        self.file_name_small = photo_paths[3]
+        self.file_name_marker_lg = photo_paths[4] 
+        self.file_name_marker_sm = photo_paths[5] 
+        self.last_updated_by = user
+        self.time_stamp = get_timestamp_no_milliseconds()
+        self.save()
     
         
     def save_upload(self, file, user, project):

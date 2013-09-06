@@ -1,4 +1,4 @@
-from rest_framework import generics, exceptions, viewsets #, permissions
+from rest_framework import generics, exceptions, viewsets, status #, permissions
 from rest_framework.decorators import api_view #, permission_classes
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -53,6 +53,30 @@ class PhotoViewSet(viewsets.ModelViewSet, AuditUpdate):
 	
 	def pre_save(self, obj):
 		AuditUpdate.pre_save(self, obj)
+		
+from rest_framework.decorators import api_view
+
+@api_view(['PUT', 'PATCH', 'GET'])
+def rotate_left(request, pk, format='html'):
+	try:
+		photo = models.Photo.objects.get(id=pk)
+		photo.rotate_left(request.user)
+		return Response(serializers.PhotoSerializer(photo).data,
+			status=status.HTTP_200_OK)
+	except models.Photo.DoesNotExist:
+		return Response({"error": "Photo #%s not found on the server" % pk}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['PUT', 'PATCH'])
+def rotate_right(request, pk, format='html'):
+	try:
+		photo = models.Photo.objects.get(id=pk)
+		photo.rotate_right(request.user)
+		return Response(serializers.PhotoSerializer(photo).data,
+			status=status.HTTP_200_OK)
+	except models.Photo.DoesNotExist:
+		return Response({"error": "Photo #%s not found on the server" % pk}, status=status.HTTP_404_NOT_FOUND)
+	
+
 
 		
 class AudioViewSet(viewsets.ModelViewSet, AuditUpdate):

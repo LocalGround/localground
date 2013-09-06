@@ -41,7 +41,9 @@ urlpatterns += format_suffix_patterns(patterns('',
 	url(r'^forms/(?P<form_id>[0-9]+)/data/(?P<pk>[0-9]+)/$', views.FormDataInstance.as_view(), name='form-data-instance'),
 	url(r'^forms/(?P<form_id>[0-9]+)/data/$', views.FormDataList.as_view(), name='form-data-list'),
 	url(r'^forms/(?P<pk>[0-9]+)/$', views.FormInstance.as_view(), name='form-detail'),
-	url(r'^forms/$', views.FormList.as_view(), name='form-list')
+	url(r'^forms/$', views.FormList.as_view(), name='form-list'),
+	url(r'^photos/(?P<pk>[0-9]+)/rotate-left/$', views.rotate_left, name='rotate-left'),
+	url(r'^photos/(?P<pk>[0-9]+)/rotate-right/$', views.rotate_right, name='rotate-right')
 ))
 
 

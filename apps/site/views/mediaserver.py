@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.conf import settings
-import os
-import base64
+import os, base64, time
 
 # sudo apt-get install libapache2-mod-xsendfile
 # http://localground/profile/<plural-object-type>/<the-hash>/
@@ -32,7 +31,7 @@ def serve_media(request, object_type, hash):
         else:
             content_type = 'application/octet-stream'
         response['Content-Type'] = content_type
-        response['Content-Disposition'] = 'attachment; filename="%s/%s"' % \
-            (object_type, relative_image_path.split('/')[-1])
+        response['Content-Disposition'] = 'attachment; filename="%s/%s?%s"' % \
+            (object_type, relative_image_path.split('/')[-1], time.time())
         return response
 

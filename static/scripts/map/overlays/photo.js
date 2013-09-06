@@ -97,11 +97,47 @@ localground.photo.prototype.showInfoBubbleEdit = function(opts){
 						height: this.bubbleHeight - 160,
 						width: (this.bubbleWidth + 30)
 					}));
+	$container.append(
+			$('<div />')
+				.css({'text-align': 'center'})
+				.append($('<a href="#" />').html('rotate left').click(
+					function(){
+						$.ajax({
+							url: '/api/0/photos/' + me.id + '/rotate-left/.json',
+							type: 'PUT',
+							success: function(data) {
+								$.extend(me, data);
+								$('#preview_' + me.id).attr('src', data.path_medium);
+							},
+							notmodified: function(data) { alert('Not modified'); },
+							error: function(data) { alert('Error'); }
+						});
+						return false;
+					}
+				))
+				.append(' | ')
+				.append($('<a href="#" />').html('rotate right').click(
+					function(){
+						$.ajax({
+							url: '/api/0/photos/' + me.id + '/rotate-right/.json',
+							type: 'PUT',
+							success: function(data) {
+								$.extend(me, data);
+								$('#preview_' + me.id).attr('src', data.path_medium);
+							},
+							notmodified: function(data) { alert('Not modified'); },
+							error: function(data) { alert('Error'); }
+						});
+						return false;
+					}
+				))	
+		);
 	$container.append(form.render());
 	$contentContainer.append($container);
 };
 
 localground.photo.prototype.getPhotoPreview = function(opts) {
+	var me = this;
 	var height = this.bubbleHeight - 100;
 	var width = this.bubbleWidth;
 	if (opts) {
@@ -124,7 +160,9 @@ localground.photo.prototype.getPhotoPreview = function(opts) {
 				'margin-right': 'auto',
 				'margin-left': 'auto',
 				'margin-top': '0px'
-			}).attr('src', this.path_medium)
+			})
+			.attr('src', this.path_medium)
+			.attr('id', 'preview_' + me.id)
 			.addClass('dragclass')
 		);
 };
