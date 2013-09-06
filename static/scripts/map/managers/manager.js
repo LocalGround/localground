@@ -115,8 +115,10 @@ localground.manager.prototype.renderOverlays = function() {
 
 localground.manager.prototype.removeRecord = function(elem){
 	//unset marker overlay & splice:
-    elem.closeInfoBubble();
-    elem.googleOverlay.setMap(null);
+    if (elem.googleOverlay) {
+		elem.closeInfoBubble();
+		elem.googleOverlay.setMap(null);
+	}
     elem.getListingElement().remove();
     var index = -1;
     $.each(this.data, function(idx){

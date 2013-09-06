@@ -59,11 +59,13 @@ ui.form.prototype.render = function(opts) {
                             
                     ).append(
                         $('<button />').addClass('btn')
-                            .html('Delete')
+                            .html('Cancel')
                             .click(function(){
                                 /*var f = 'obj.delete' + obj.overlay_type.capitalize() + '()';
 								eval(f);*/
-								me.delete();
+								//me.delete();
+								//return false;
+								self.currentOverlay.closeInfoBubble();
 								return false;
                             })
                             
@@ -146,6 +148,7 @@ ui.form.prototype.update = function() {
 			$(id).find('.alert-success').show();
 			$(id).find('.alert-success').find('.message-text').html(msg);
 			obj.refresh();
+			self.currentOverlay.closeInfoBubble();
         },
         notmodified: function(data) { alert('Not modified'); },
         error: function(data) {

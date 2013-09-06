@@ -153,7 +153,9 @@ localground.overlay.prototype.renderListing = function() {
                 .click(function() {
                     //me.removeItem();
 					var answer = confirm('Are you sure you want to delete ' + me.getName() + '?');
-					alert(answer);
+					if (answer) {
+						me.delete();
+					}
 					return false;
                 }));
 	
@@ -298,5 +300,23 @@ localground.overlay.prototype.renderTags = function() {
 		return $tags;
 	}
 	return null;
+};
+
+localground.overlay.prototype.delete = function() {
+    var me = this;
+	var url = this.url;
+    if (url.indexOf('.json') == -1) { url += '.json'; }
+    $.ajax({
+        url: url,
+        type: 'DELETE',
+        success: function(data) {
+			var manager = me.getManager();
+			manager.removeRecord(me);
+        },
+        notmodified: function(data) { alert('Not modified'); },
+        error: function(data) {
+            alert('error');
+        }
+    });   
 };
 
