@@ -10,6 +10,8 @@ from django.contrib.gis.geos import Polygon
 
 												   
 class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
+	RESTRICT_BY_PROJECT = True
+	
 	uuid = models.CharField(unique=True, max_length=8)
 	name = models.CharField(max_length=255, blank=True, verbose_name="Map Title")
 	description = models.TextField(null=True, blank=True, verbose_name="Instructions")

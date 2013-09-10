@@ -25,6 +25,8 @@ class SQLFilterBackend(filters.BaseFilterBackend):
             return q.filter(Q(project__owner=user) | Q(project__users__user=user))
         elif q.model.RESTRICT_BY_USER:
             return q.filter(Q(owner=user) | Q(users__user=user))
+        elif q.model.RESTRICT_BY_PROJECTS:
+            return q.filter(Q(projects__owner=user) | Q(projects__users__user=user))
         else:
             return q
         
