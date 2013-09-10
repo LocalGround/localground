@@ -1,10 +1,10 @@
 from django import test
 from localground.apps.site.api import views
-from localground.apps.site.tests import ViewMixin
+from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 
-class ApiProjectListTest(test.TestCase, ViewMixin):
+class ApiProjectListTest(test.TestCase, ViewMixinAPI):
 	
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.urls =  ['/api/0/projects/']
 		self.view = views.ProjectList.as_view()	

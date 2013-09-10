@@ -1,7 +1,7 @@
 from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
-from localground.apps.site.tests import ViewMixin
+from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 from rest_framework import status
 
 class APIRelatedMediaMixin(object):
@@ -19,9 +19,9 @@ class APIRelatedMediaMixin(object):
 		r.save()
 		return r
 	
-class ApiRelatedMediaListTest(test.TestCase, ViewMixin, APIRelatedMediaMixin):
+class ApiRelatedMediaListTest(test.TestCase, ViewMixinAPI, APIRelatedMediaMixin):
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.marker = self.get_marker()
 		url = '/api/0/markers/%s/%s/'
 		self.urls = [
@@ -38,7 +38,7 @@ class ApiRelatedMediaListTest(test.TestCase, ViewMixin, APIRelatedMediaMixin):
 			url % (999, 'audio')
 		]
 		for url in urls:
-			response = self.client.get(url)
+			response = self.client_user.get(url)
 			self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 			
 			
@@ -58,7 +58,7 @@ class ApiRelatedMediaListTest(test.TestCase, ViewMixin, APIRelatedMediaMixin):
 			self.assertEqual(len(queryset), 0)
 			
 			# 2) append object to marker:
-			response = self.client.post(url, {
+			response = self.client_user.post(url, {
 					'id': 1,
 					'ordering': i
 				},
@@ -78,7 +78,7 @@ class ApiRelatedMediaListTest(test.TestCase, ViewMixin, APIRelatedMediaMixin):
 	def test_cannot_attach_marker_to_marker(self, **kwargs):
 		m1 = self.create_marker(self.user, self.project)
 		url = '/api/0/markers/%s/markers/' % self.marker.id
-		response = self.client.post(url, {
+		response = self.client_user.post(url, {
 				'id': m1.id,
 				'ordering': 1
 			},
@@ -87,9 +87,9 @@ class ApiRelatedMediaListTest(test.TestCase, ViewMixin, APIRelatedMediaMixin):
 		#Cannot attach marker to marker
 		self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 	
-class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin):		
+class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixinAPI, APIRelatedMediaMixin):		
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.marker = self.get_marker()
 		self.create_relation(models.Photo.get_content_type(), id=1)
 		self.create_relation(models.Audio.get_content_type(), id=1)
@@ -106,7 +106,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 			url % (self.marker.id, 'photos', 1),
 			url % (self.marker.id, 'audio', 1)
 		]
-		ViewMixin.test_page_403_or_302_status_anonymous_user(self, urls=urls)
+		ViewMixinAPI.test_page_403_or_302_status_anonymous_user(self, urls=urls)
 	
 	def test_page_200_status_basic_user(self, **kwargs):
 		url = '/api/0/markers/%s/%s/%s/'
@@ -114,7 +114,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 			url % (self.marker.id, 'photos', 1),
 			url % (self.marker.id, 'audio', 1)
 		]
-		ViewMixin.test_page_200_status_basic_user(self, urls=urls)
+		ViewMixinAPI.test_page_200_status_basic_user(self, urls=urls)
 		
 	def test_page_resolves_to_view(self):
 		url = '/api/0/markers/%s/%s/%s/'
@@ -122,7 +122,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 			url % (self.marker.id, 'photos', 1),
 			url % (self.marker.id, 'audio', 1)
 		]
-		ViewMixin.test_page_resolves_to_view(self, urls=urls)
+		ViewMixinAPI.test_page_resolves_to_view(self, urls=urls)
 		
 	def test_remove_media_from_marker(self, **kwargs):
 		'''
@@ -150,7 +150,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 			self.assertEqual(len(queryset), 1)
 			
 			# 2) remove object from marker:
-			response = self.client.delete('%s%s/' % (url, entity_id),
+			response = self.client_user.delete('%s%s/' % (url, entity_id),
 				HTTP_X_CSRFTOKEN=self.csrf_token
 			)
 			#print response.content
@@ -186,7 +186,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 			self.assertEqual(relation.ordering, 1)
 			self.assertEqual(relation.turned_on, False)
 			import urllib
-			response = self.client.put('%s%s/' % (url, entity_id),
+			response = self.client_user.put('%s%s/' % (url, entity_id),
 				data=urllib.urlencode({
 					'ordering': 5,
 					'turned_on': True
@@ -211,7 +211,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixin, APIRelatedMediaMixin
 			relation = self.create_relation(entity_type, id=entity_id)
 			self.assertEqual(relation.turned_on, False)
 			import urllib
-			response = self.client.patch('%s%s/' % (url, entity_id),
+			response = self.client_user.patch('%s%s/' % (url, entity_id),
 				data=urllib.urlencode({
 					'turned_on': True
 				}),

@@ -61,17 +61,17 @@ class MarkerSerializer(PointSerializer):
 		
 	def get_photos(self, obj):
 		from localground.apps.site.api.serializers import PhotoSerializer
-		data = PhotoSerializer(obj.photos).data
+		data = PhotoSerializer(obj.photos, many=True).data
 		return self.serialize_list(obj, models.Photo, data)    
 	
 	def get_audio(self, obj):
 		from localground.apps.site.api.serializers import AudioSerializer
-		data = AudioSerializer(obj.audio).data
+		data = AudioSerializer(obj.audio, many=True).data
 		return self.serialize_list(obj, models.Audio, data)
 	
 	def get_map_images(self, obj):
 		from localground.apps.site.api.serializers import ScanSerializer
-		data = ScanSerializer(obj.map_images).data
+		data = ScanSerializer(obj.map_images, many=True).data
 		return self.serialize_list(obj, models.Scan, data)
 	
 	def serialize_list(self, obj, cls, data, name=None, overlay_type=None,

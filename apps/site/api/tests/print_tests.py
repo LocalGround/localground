@@ -1,25 +1,25 @@
 from django import test
 from localground.apps.site import models
 from localground.apps.site.api import views
-from localground.apps.site.tests import ViewMixin
+from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib
 from rest_framework import status
 
-class ApiLayoutListTest(test.TestCase, ViewMixin):
+class ApiLayoutListTest(test.TestCase, ViewMixinAPI):
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.urls =  ['/api/0/layouts/']
 		self.view = views.LayoutViewSet.as_view({'get': 'list'})	
 
-class ApiLayoutInstanceTest(test.TestCase, ViewMixin):
+class ApiLayoutInstanceTest(test.TestCase, ViewMixinAPI):
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.urls = ['/api/0/layouts/1/', '/api/0/layouts/3/', '/api/0/layouts/4/']
 		self.view = views.LayoutViewSet.as_view({'get': 'detail'})
 		
-class ApiPrintListTest(test.TestCase, ViewMixin):
+class ApiPrintListTest(test.TestCase, ViewMixinAPI):
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.url = '/api/0/prints/'
 		self.urls =  [self.url]
 		self.view = views.PrintList.as_view()
@@ -32,7 +32,7 @@ class ApiPrintListTest(test.TestCase, ViewMixin):
 		map_provider = 1
 		zoom = 17
 		
-		response = self.client.post(self.url,
+		response = self.client_user.post(self.url,
 			data=urllib.urlencode({
 				'lat': lat,
 				'lng': lng,
@@ -61,10 +61,10 @@ class ApiPrintListTest(test.TestCase, ViewMixin):
 
 
 
-class ApiPrintInstanceTest(test.TestCase, ViewMixin):
+class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI):
 	
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.print_object = self.create_print()
 		self.url = '/api/0/prints/%s/' % self.print_object.id
 		self.urls = [self.url]
@@ -74,7 +74,7 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixin):
 	
 	def test_update_print_using_patch(self, **kwargs):
 		name, description, tags = 'A', 'B', 'C'
-		response = self.client.patch(self.url,
+		response = self.client_user.patch(self.url,
 			data=urllib.urlencode({
 				'map_title': name,
 				'instructions': description,
@@ -91,7 +91,7 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixin):
 		
 	def test_update_print_using_put(self, **kwargs):
 		name, description, tags = 'A', 'B', 'C'
-		response = self.client.put(self.url,
+		response = self.client_user.put(self.url,
 			data=urllib.urlencode({
 				'map_title': name,
 				'instructions': description,
@@ -113,7 +113,7 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixin):
 		self.model.objects.get(id=print_id)
 		
 		#delete photo:
-		response = self.client.delete(self.url,
+		response = self.client_user.delete(self.url,
 			HTTP_X_CSRFTOKEN=self.csrf_token
 		)
 		self.assertEqual(response.status_code, status.HTTP_200_OK)

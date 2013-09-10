@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.conf import settings
 from django.shortcuts import render as direct_to_template
 #from django.shortcuts import render as direct_to_template

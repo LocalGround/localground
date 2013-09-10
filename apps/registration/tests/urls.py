@@ -10,7 +10,7 @@ handled.
 
 """
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.shortcuts import render as direct_to_template
 
 from registration.views import activate

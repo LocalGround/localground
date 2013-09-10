@@ -1,19 +1,19 @@
 from django import test
 from localground.apps.site import models
 from localground.apps.site.api import views
-from localground.apps.site.tests import ViewMixin
+from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib
 from rest_framework import status
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 
-class ApiFormListTest(test.TestCase, ViewMixin):
+class ApiFormListTest(test.TestCase, ViewMixinAPI):
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.urls =  ['/api/0/forms/']
 		self.view = views.FormList.as_view()	
 
 '''
-class ApiFormInstanceTest(test.TestCase, ViewMixin):
+class ApiFormInstanceTest(test.TestCase, ViewMixinAPI):
 	def setUp(self):
 		ViewMixin.setUp(self)
 		self.urls = ['/api/0/forms/1/', '/api/0/forms/2/', '/api/0/forms/3/']
@@ -54,10 +54,10 @@ class FormDataTestMixin(object):
 		for i in range(0, 5):
 			self.assertEqual(d.get(fields[i].col_name), getattr(rec, fields[i].col_name))
 
-class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixin):
+class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
 	
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.form = self.create_form_with_fields(name="Class Form", num_fields=6)
 		self.url = '/api/0/forms/%s/data/' % self.form.id
 		self.urls = [self.url]
@@ -69,7 +69,7 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixin):
 		d = FormDataTestMixin.create_form_post_data(self)
 		
 		#post:
-		response = self.client.post(self.url,
+		response = self.client_user.post(self.url,
 			data=urllib.urlencode(d),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"
@@ -104,7 +104,7 @@ class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixin):
 	def test_update_record_using_put(self, **kwargs):
 		print 'posting to:', self.url
 		d = FormDataTestMixin.create_form_post_data(self)
-		response = self.client.put(self.url,
+		response = self.client_user.put(self.url,
 			data=urllib.urlencode(d),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"

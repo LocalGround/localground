@@ -1,14 +1,15 @@
 from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
-from localground.apps.site.tests import ViewMixin
+from localground.apps.site.api.tests.base_tests import ViewMixinAPI
+
 import urllib
 from rest_framework import status
 			
-class ApiPhotoListTest(test.TestCase, ViewMixin):
+class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
 	
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.urls =  ['/api/0/photos/']
 		self.view = views.PhotoViewSet.as_view({'get': 'list'})
 		
@@ -18,10 +19,10 @@ class ApiPhotoListTest(test.TestCase, ViewMixin):
 		self.assertEqual(1, 1)
 			
 
-class ApiPhotoInstanceTest(test.TestCase, ViewMixin):
+class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 	
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.photo = models.Photo.objects.get(id=1)
 		self.url = '/api/0/photos/%s/' % self.photo.id
 		self.urls = [self.url]
@@ -30,7 +31,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixin):
 	def test_update_photo_using_put(self, **kwargs):
 		lat, lng, name, description, color = 54.16, 60.4, 'New Photo Name', \
 							'Test description', 'FF0000'
-		response = self.client.put(self.url,
+		response = self.client_user.put(self.url,
 			data=urllib.urlencode({
 				'lat': lat,
 				'lng': lng,
@@ -49,7 +50,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixin):
 			
 	def test_update_photo_using_patch(self, **kwargs):
 		lat, lng = 54.16, 60.4
-		response = self.client.patch(self.url,
+		response = self.client_user.patch(self.url,
 			data=urllib.urlencode({
 				'lat': lat,
 				'lng': lng
@@ -69,7 +70,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixin):
 		models.Photo.objects.get(id=photo_id)
 		
 		#delete photo:
-		response = self.client.delete(self.url,
+		response = self.client_user.delete(self.url,
 			HTTP_X_CSRFTOKEN=self.csrf_token
 		)
 		self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -59,7 +59,7 @@ class PrintViewTest(test.TestCase, ViewMixin):
 		}
 		d.update(management_form)
 		
-		response = self.client.post(self.url,
+		response = self.client_user.post(self.url,
 			data=urllib.urlencode(d),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"
@@ -85,3 +85,4 @@ class PrintProfileTest(test.TestCase, ViewMixin):
 		ViewMixin.setUp(self)
 		self.urls = ['/profile/prints/']
 		self.view = profile.object_list_form
+		

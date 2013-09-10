@@ -30,16 +30,25 @@ class ModelMixin(object):
 		anstract = True
 	
 	def setUp(self):
+		self._superuser = None
 		self._user = None
 		self._project = None
 		self._csrf_token = None
-		self.client = self._get_client()
+		self._client_anonymous = None
+		self._client_user = None
+		self._client_superuser = None
 	
 	@property  
 	def user(self):
 		if self._user is None:
 			self._user = self.get_user()
 		return self._user
+	
+	@property  
+	def superuser(self):
+		if self._superuser is None:
+			self._superuser = self.create_superuser()
+		return self._superuser
 	
 	@property  
 	def project(self):
@@ -55,19 +64,42 @@ class ModelMixin(object):
 			self._csrf_token = unicode(response.context['csrf_token'])
 		return self._csrf_token
 		
-	def _get_client(self):
-		c = Client(enforce_csrf_checks=True)
-		c.login(username='tester', password=self.user_password)
-		c.cookies['csrftoken'] = self.csrf_token
-		return c
+	@property
+	def client_anonymous(self):
+		if self._client_anonymous is None:
+			self._client_anonymous = Client(enforce_csrf_checks=True)
+		return self._client_anonymous
+	
+	@property
+	def client_user(self):
+		if self._client_user is None:
+			self._client_user = Client(enforce_csrf_checks=True)
+			self._client_user.login(username='tester', password=self.user_password)
+			self._client_user.cookies['csrftoken'] = self.csrf_token
+		return self._client_user
+	
+	@property
+	def client_superuser(self):
+		if self._client_superuser is None:
+			self._client_superuser = Client(enforce_csrf_checks=True)
+			self._client_superuser.login(
+				username=self.superuser.username,
+				password=self.user_password
+			)
+			self._client_superuser.cookies['csrftoken'] = self.csrf_token
+		return self._client_superuser
 	
 	def create_user(self, username='tester'):
 		return User.objects.create_user(username,
 			first_name='test', email='', password=self.user_password
 		)
 	
-	def get_user(self, user_id=1):
-		return User.objects.get(id=user_id)
+	def create_superuser(self, username='superuser'):
+		return User.objects.create_superuser(username,
+			first_name='superuser', email='', password=self.user_password)
+	
+	def get_user(self, username='tester'):
+		return User.objects.get(username=username)
 
 	def create_project(self, user):
 		p = models.Project(
@@ -227,9 +259,8 @@ class ViewMixin(ModelMixin):
 	def test_page_403_or_302_status_anonymous_user(self, urls=None):
 		if urls is None:
 			urls = self.urls
-		c = Client() #don't use credentialed client
 		for url in urls:
-			response = c.get(url)
+			response = self.client_anonymous.get(url)
 			self.assertIn(response.status_code, [
 				status.HTTP_302_FOUND,
 				status.HTTP_403_FORBIDDEN
@@ -240,7 +271,7 @@ class ViewMixin(ModelMixin):
 			urls = self.urls
 		for url in urls:
 			#print url
-			response = self.client.get(url)
+			response = self.client_user.get(url)
 			self.assertEqual(response.status_code, status.HTTP_200_OK)
 		
 	def test_page_resolves_to_view(self, urls=None):
@@ -254,5 +285,6 @@ class ViewMixin(ModelMixin):
 			self.assertEqual(func_name, view_name)
 	
 
+# import tests from other directories:
 from localground.apps.site.api.tests import *
 from localground.apps.site.tests.views import *

@@ -26,7 +26,7 @@ class ObjectListFormProfileTest(test.TestCase, ViewMixin):
 	
 		# Delete over HTTP (using POST)
 		url = '/profile/%s/delete/batch/' % model.model_name_plural
-		response = self.client.post(url,
+		response = self.client_user.post(url,
 			data='id=%s&id=%s' % (ids[0], ids[1]),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"

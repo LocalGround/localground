@@ -1,4 +1,4 @@
-from rest_framework import generics, exceptions, viewsets, status #, permissions
+from rest_framework import generics, exceptions, viewsets, status, permissions
 from rest_framework.decorators import api_view #, permission_classes
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -14,13 +14,19 @@ from localground.apps.site.api.views.scan_views import ScanViewSet
 from localground.apps.site.api.views.print_views import PrintList, PrintInstance, LayoutViewSet
 from localground.apps.site.api.views.project_views import ProjectList, ProjectInstance
 from localground.apps.site.api.views.marker_views import MarkerList, MarkerInstance
-from localground.apps.site.api.views.association_views \
-			import RelatedMediaList, RelatedMediaInstance
-from localground.apps.site.api.views.form_views \
-			import FormList, FormInstance, FormDataList, FormDataInstance, DataTypeViewSet
+from localground.apps.site.api.views.association_views import (
+	RelatedMediaList, RelatedMediaInstance
+)
+from localground.apps.site.api.views.form_views import (
+	FormList, FormInstance, FormDataList, FormDataInstance
+)
+from localground.apps.site.api.views.admin_views import (
+	TileViewSet, OverlayTypeViewSet, OverlaySourceViewSet,
+	UserViewSet, GroupViewSet, DataTypeViewSet
+)
+
 
 @api_view(('GET',))
-#@permission_classes((permissions.IsAuthenticated, IsAllowedGivenProjectPermissionSettings, ))
 def api_root(request, format=None, **kwargs):
 	from django.utils.datastructures import SortedDict
 	d = SortedDict()
@@ -91,41 +97,3 @@ class AudioViewSet(viewsets.ModelViewSet, AuditUpdate):
 		AuditUpdate.pre_save(self, obj)
 		
 		
-class TileViewSet(viewsets.ModelViewSet, AuditUpdate):
-	queryset = models.WMSOverlay.objects.select_related('overlay_type', 'overlay_source').all()
-	serializer_class = serializers.WMSOverlaySerializer
-	filter_backends = (SQLFilterBackend,)
-	
-	def pre_save(self, obj):
-		AuditUpdate.pre_save(self, obj)
-		
-class OverlayTypeViewSet(viewsets.ModelViewSet, AuditUpdate):
-	queryset = models.OverlayType.objects.all()
-	serializer_class = serializers.OverlayTypeSerializer
-	filter_backends = (SQLFilterBackend,)
-	
-	def pre_save(self, obj):
-		AuditUpdate.pre_save(self, obj)
-		
-class OverlaySourceViewSet(viewsets.ModelViewSet, AuditUpdate):
-	queryset = models.OverlaySource.objects.all()
-	serializer_class = serializers.OverlaySourceSerializer
-	filter_backends = (SQLFilterBackend,)
-	
-	def pre_save(self, obj):
-		AuditUpdate.pre_save(self, obj)
-	
-	
-class UserViewSet(viewsets.ModelViewSet):
-	"""
-	API endpoint that allows users to be viewed or edited.
-	"""
-	queryset = User.objects.all()
-	serializer_class = serializers.UserSerializer
-
-class GroupViewSet(viewsets.ModelViewSet):
-	"""
-	API endpoint that allows groups to be viewed or edited.
-	"""
-	queryset = Group.objects.all()
-	serializer_class = serializers.GroupSerializer

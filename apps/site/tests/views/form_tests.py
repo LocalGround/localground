@@ -90,7 +90,6 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		data.update(management_form)
 		return data
 	
-	
 	def test_add_fields_to_existing_form_using_view(self, **kwargs):
 		from localground.apps.site.models import Field
 		
@@ -106,7 +105,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		# form should not have any fields:
 		self.assertEqual(len(self.form.get_fields()), 0)
 		
-		response = self.client.post(self.urls[0],
+		response = self.client_user.post(self.urls[0],
 			data=urllib.urlencode(data),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"
@@ -137,9 +136,6 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 			#if an exception isn't thrown, it works
 			a = cursor.execute('select %s from %s' % (field.col_name, field.form.table_name))		
 		
-		
-	
-		
 	def test_add_new_form_using_view(self, **kwargs):
 		from localground.apps.site.models import Field, Form
 		
@@ -152,7 +148,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		data = self.make_post_dictionary(name, description, tags)
 		data.update({'projects': project})
 		
-		response = self.client.post('/profile/forms/create/',
+		response = self.client_user.post('/profile/forms/create/',
 			data=urllib.urlencode(data),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"

@@ -117,11 +117,4 @@ class FormDataInstance(generics.RetrieveUpdateDestroyAPIView, FormDataMixin):
 		kwargs['partial'] = True
 		kwargs['user'] = request.user
 		return self.update(request, *args, **kwargs)
-
-class DataTypeViewSet(viewsets.ModelViewSet, AuditUpdate):
-	queryset = models.DataType.objects.all().order_by('name',)
-	serializer_class = serializers.DataTypeSerializer
-	
-	def pre_save(self, obj):
-		AuditUpdate.pre_save(self, obj)
 		

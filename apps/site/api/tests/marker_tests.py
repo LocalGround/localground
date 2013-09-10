@@ -1,14 +1,14 @@
 from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
-from localground.apps.site.tests import ViewMixin
+from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib
 from rest_framework import status
 			
-class ApiMarkerListTest(test.TestCase, ViewMixin):
+class ApiMarkerListTest(test.TestCase, ViewMixinAPI):
 	
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.urls =  ['/api/0/markers/']
 		self.view = views.MarkerList.as_view()
 		
@@ -16,7 +16,7 @@ class ApiMarkerListTest(test.TestCase, ViewMixin):
 		for i, url in enumerate(self.urls):
 			lat, lng, name, description, color = 54.16, 60.4, 'New Marker 1', \
 								'Test description1', 'FF0000'
-			response = self.client.post(url,
+			response = self.client_user.post(url,
 				data=urllib.urlencode({
 					'lat': lat,
 					'lng': lng,
@@ -37,10 +37,10 @@ class ApiMarkerListTest(test.TestCase, ViewMixin):
 			self.assertEqual(new_marker.point.x, lng)
 			self.assertEqual(new_marker.project.id, self.project.id)
 
-class ApiMarkerInstanceTest(test.TestCase, ViewMixin):
+class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI):
 	
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.marker = self.get_marker()
 		self.urls = ['/api/0/markers/%s/' % self.marker.id]
 		self.view = views.MarkerInstance.as_view()
@@ -49,7 +49,7 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixin):
 		for i, url in enumerate(self.urls):
 			lat, lng, name, description, color = 54.16, 60.4, 'New Marker Name', \
 								'Test description', 'FF0000'
-			response = self.client.put(url,
+			response = self.client_user.put(url,
 				data=urllib.urlencode({
 					'lat': lat,
 					'lng': lng,
@@ -71,7 +71,7 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixin):
 	def test_update_marker_using_patch(self, **kwargs):
 		for i, url in enumerate(self.urls):
 			lat, lng = 54.16, 60.4
-			response = self.client.patch(url,
+			response = self.client_user.patch(url,
 				data=urllib.urlencode({
 					'lat': lat,
 					'lng': lng
@@ -91,7 +91,7 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixin):
 		models.Marker.objects.get(id=marker_id)
 		
 		#delete marker:
-		response = self.client.delete('/api/0/markers/%s/' % marker_id,
+		response = self.client_user.delete('/api/0/markers/%s/' % marker_id,
 			HTTP_X_CSRFTOKEN=self.csrf_token
 		)
 		self.assertEqual(response.status_code, status.HTTP_200_OK)

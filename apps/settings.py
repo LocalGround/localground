@@ -166,16 +166,13 @@ REST_FRAMEWORK = {
     'PAGINATE_BY': 10,
     'DEFAULT_RENDERER_CLASSES': (
         'localground.apps.site.api.renderers.BrowsableAPIRenderer',
-        #'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.JSONPRenderer',
         'localground.apps.site.api.renderers.CSVRenderer',
         'rest_framework.renderers.XMLRenderer'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
-        #'rest_framework.permissions.IsAuthenticated',
-        #'rest_framework.permissions.IsAdminUser',
+        'rest_framework.permissions.IsAuthenticated',
         'localground.apps.site.api.permissions.IsAllowedGivenProjectPermissionSettings',
     ),
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)

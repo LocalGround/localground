@@ -18,7 +18,7 @@ up your own URL patterns for these views instead.
 """
 
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.shortcuts import render as direct_to_template
 
 from localground.apps.registration.views import activate
