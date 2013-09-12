@@ -265,54 +265,10 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 														  is_checked, turn_on_everything) {
 	if(is_checked) {
 		$('#' + groupID).attr('checked', true);
-		self.lastProjectSelection = groupID;
-		var params = {
-			format: 'json',
-			include_processed_maps: true,
-			include_markers: true,
-			include_audio: true,
-			include_photos: true,
-			include_tables: true
-		};
-		var url = '/api/0/' + groupType + '/' + groupID + '/';
-		if(self.accessKey != null)
-			url += self.accessKey + '/';
-		$.getJSON(url, params,
-			function(result) {
-				if(result.detail) {
-					alert(result.detail);
-					return;
-				}
-				$.each(result.children, function(k, v) {
-					if(self.managers[v.id]) {
-						self.managers[v.id].addRecords(v.data);
-						self.managers[v.id].renderOverlays();
-					}
-					else {
-						//initialize new manager object:
-						self.managers[v.id] = self.getManager(v);
-						self.managers[v.id].initialize(v);
-						//turn everything on, if requested (from URL param):
-						if(turn_on_everything && (self.initProjectID != null || self.initViewID != null)) {
-							if(!$('#toggle_' + v.id + '_all').attr('checked')){
-								$('#toggle_' + v.id + '_all')
-									.attr('checked', true).trigger('change');	
-							}	
-						}
-					}
-				});
-				if (self.mode == 'edit') {
-					self.makeEditable();
-				}
-				//re-apply filter to data as new data is added
-				$('#txt_filter').trigger('keyup');
-				$('#mode_toggle, #filter_section').show();
-				$('#editor_message').hide();
-				self.resetBounds();
-			},
-		'json');
-	} //end if checked
+		this.getProjectData(groupID, groupType, is_checked, turn_on_everything);	
+	}
 	else {
+		//remove data from project:
 		for(var key in self.managers) {
 			self.managers[key].removeByProjectID(groupID);
 		}
@@ -324,6 +280,57 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 		$('#txt_filter').trigger('keyup');
 	}
 	return;
+};
+
+localground.viewer.prototype.getProjectData = function(groupID, groupType, 
+										is_checked, turn_on_everything, access_key) {
+	self.lastProjectSelection = groupID;
+	var params = {
+		format: 'json',
+		include_processed_maps: true,
+		include_markers: true,
+		include_audio: true,
+		include_photos: true,
+		include_tables: true,
+		access_key: access_key
+	};
+	var url = '/api/0/' + groupType + '/' + groupID + '/';
+	if(self.accessKey != null)
+		url += self.accessKey + '/';
+	$.getJSON(url, params,
+		function(result) {
+			if(result.detail) {
+				alert(result.detail);
+				return;
+			}
+			$.each(result.children, function(k, v) {
+				if(self.managers[v.id]) {
+					self.managers[v.id].addRecords(v.data);
+					self.managers[v.id].renderOverlays();
+				}
+				else {
+					//initialize new manager object:
+					self.managers[v.id] = self.getManager(v);
+					self.managers[v.id].initialize(v);
+					//turn everything on, if requested (from URL param):
+					if(turn_on_everything) {
+						if(!$('#toggle_' + v.id + '_all').attr('checked')){
+							$('#toggle_' + v.id + '_all')
+								.attr('checked', true).trigger('change');	
+						}	
+					}
+				}
+			});
+			if (self.mode == 'edit') {
+				self.makeEditable();
+			}
+			//re-apply filter to data as new data is added
+			$('#txt_filter').trigger('keyup');
+			$('#mode_toggle, #filter_section').show();
+			$('#editor_message').hide();
+			self.resetBounds();
+		},
+	'json');
 };
 
 localground.viewer.prototype.resetBounds = function() {

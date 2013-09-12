@@ -1,58 +1,24 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.http import HttpResponse
-from localground.apps.site.decorators import process_identity, process_project, \
-                                                get_group_if_authorized
+from localground.apps.site.decorators import get_group_if_authorized
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.template import RequestContext    
 import simplejson as json
 from django.core.context_processors import csrf
-from localground.apps.site.models import Scan, Print, Project, View
+from django.contrib.auth.models import User
+from localground.apps.site.models import Base, Scan, Print, Project, View
 from django.core.exceptions import ObjectDoesNotExist
 
-@login_required()
-@process_identity
-def init(request, identity=None):
+def show_map_viewer(request, username, slug, access_key=None):
     u = request.user
+    source_object = Project.objects.get(
+        slug=slug, owner=User.objects.get(username=username)
+    )
     context = RequestContext(request)
-    username = identity.username if identity is not None else 'all'
-    #set defaults:
-    lat, lng, zoom, prints, groups = 21.698265, 14.765625, 3, [], []
-    if u.is_authenticated():
-        projects = Project.objects.get_objects(identity)
-        if request.user.is_superuser and username == 'all':
-            projects = Project.objects.all().order_by('name')
-        projects = [p.to_dict() for p in projects]
-        groups = [] #[g.to_dict() for g in MapGroup.objects.my_groups(u)]
-        
-        if u.get_profile().default_location is not None:
-            lat = u.get_profile().default_location.y
-            lng = u.get_profile().default_location.x
-            zoom = 14
-    context.update({
-        'lat': lat,
-        'lng': lng,
-        'zoom': zoom,
-        'projects': json.dumps(projects),
-        'num_projects': len(projects),
-        'groups': json.dumps(groups)
-    })
-    return render_to_response('map/viewer.html', context)
     
-    
-'''TYPE_LU = {
-    'projects': Project,
-    'views': View
-}'''
-
-@get_group_if_authorized
-def public_map(request, object_type, slug, source_object, access_key=None):
-    u = request.user
-    #ModelClass = TYPE_LU.get(object_type)
-    #source_object = get_object_or_404(ModelClass, slug=slug)
-    context = RequestContext(request)
     #set defaults:
-    lat, lng, zoom, prints, groups = 21.698265, 14.765625, 3, [], []
+    lat, lng, zoom = 21.698265, 14.765625, 3
     if u.is_authenticated() and u.get_profile().default_location is not None:
             lat = u.get_profile().default_location.y
             lng = u.get_profile().default_location.x
@@ -62,7 +28,7 @@ def public_map(request, object_type, slug, source_object, access_key=None):
         'lng': lng,
         'zoom': zoom,
         'source_object': source_object,
-        'basemap_id': source_object.basemap.id,
+        'basemap_id': 4, #source_object.basemap.id,
         'num_projects': 1,
         'read_only': True
     })
@@ -71,4 +37,29 @@ def public_map(request, object_type, slug, source_object, access_key=None):
             'access_key': access_key
          })
     context['%s_id' % source_object.model_name] = source_object.id    
-    return render_to_response('map/viewer_public.html', context)
+    return render_to_response('map/viewer.html', context)
+
+
+@login_required()
+def show_map_editor(request):
+    u = request.user
+    context = RequestContext(request)
+    username = u.username
+    #set defaults:
+    lat, lng, zoom = 21.698265, 14.765625, 3
+    if u.is_authenticated():
+        projects = Project.objects.get_objects(u)
+        projects = [p.to_dict() for p in projects]
+        if u.get_profile().default_location is not None:
+            lat = u.get_profile().default_location.y
+            lng = u.get_profile().default_location.x
+            zoom = 14
+    context.update({
+        'lat': lat,
+        'lng': lng,
+        'zoom': zoom,
+        'projects': json.dumps(projects),
+        'num_projects': len(projects)
+    })
+    return render_to_response('map/editor.html', context)
+

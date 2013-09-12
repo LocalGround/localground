@@ -1,0 +1,46 @@
+{% extends "map/viewer.html" %}
+{% block script_links %}
+    {{ block.super }}
+    <script type="text/javascript" src="/static/scripts/map/editor.js"></script>
+{% endblock %}
+{% block extra_styles %}{% endblock %}
+{% block extra_scripts %}
+    var isAdmin = false;
+    {% if user.is_superuser %}
+        isAdmin = true;
+    {% endif %}
+    var opts = {
+        isAdmin: isAdmin,
+        username: '{{user.username}}',
+        serverURL: '{{serverURL}}', 
+        overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
+        showOutlines: false,
+        cloudmadeKey: '{{CLOUDMADE_KEY}}'
+    };
+    {% if markerID %}
+        opts.markerID = {{markerID}};
+    {% endif %}
+    //opts.markerID = 294;
+    {% if markers %}
+       opts.markers = {% autoescape off %}{{ markers }}{% endautoescape %};
+    {% endif %}
+    {% if projects %}
+        opts.projects = {% autoescape off %}{{ projects }}{% endautoescape %};
+    {% endif %}
+	
+	{% comment %}
+    {% if groups %}
+        opts.groups = {% autoescape off %}{{ groups }}{% endautoescape %};
+    {% endif %}
+	{% endcomment %}
+    
+	{% if lat %}
+        opts.center = new google.maps.LatLng({{lat}}, {{lng}});
+        opts.zoom = {{ zoom }};
+    {% endif %}   
+    var driver = null;  
+{% endblock %}
+{% block pageload_scripts %}
+    driver = new localground.editor(); 
+    driver.initialize(opts);
+{% endblock %}

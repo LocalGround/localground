@@ -112,7 +112,9 @@ urlpatterns = patterns('',
 	url(r'^api/0/', include('localground.apps.site.api.urls')),
 	
 	# Map Editor
-	(r'^maps/edit/', 'localground.apps.site.views.maps.init'),
+	(r'^maps/edit/', 'localground.apps.site.views.maps.show_map_editor'),
+	(r'^maps/view/(?P<username>[\w|-|.|_]+)/(?P<slug>[\w-]+)/$', 'localground.apps.site.views.maps.show_map_viewer'),
+	(r'^maps/view/(?P<username>[\w|-|.|_]+)/(?P<slug>[\w-]+)/(?P<access_key>\w+)/$', 'localground.apps.site.views.maps.show_map_viewer'),
 	(r'^maps/print/$', 'localground.apps.site.views.prints.generate_print'),
 	(r'^maps/print/embed/$', 'localground.apps.site.views.prints.generate_print',
 		{'embed': True, 'base_template': 'base/iframe.html'}),

@@ -32,7 +32,6 @@
     
     <script type="text/javascript" src="/static/scripts/map/basemap.js"></script>
     <script type="text/javascript" src="/static/scripts/map/viewer.js"></script>
-    <script type="text/javascript" src="/static/scripts/map/editor.js"></script>
 {% endblock %}
 {% block extra_styles %}{% endblock %}
 {% block extra_scripts %}
@@ -46,7 +45,8 @@
         serverURL: '{{serverURL}}', 
         overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
         showOutlines: false,
-        cloudmadeKey: '{{CLOUDMADE_KEY}}'
+        cloudmadeKey: '{{CLOUDMADE_KEY}}',
+		initialMapLayerID: {{basemap_id}}
     };
     {% if markerID %}
         opts.markerID = {{markerID}};
@@ -54,9 +54,6 @@
     //opts.markerID = 294;
     {% if markers %}
        opts.markers = {% autoescape off %}{{ markers }}{% endautoescape %};
-    {% endif %}
-    {% if projects %}
-        opts.projects = {% autoescape off %}{{ projects }}{% endautoescape %};
     {% endif %}
     {% if groups %}
         opts.groups = {% autoescape off %}{{ groups }}{% endautoescape %};
@@ -68,8 +65,15 @@
     var driver = null;  
 {% endblock %}
 {% block pageload_scripts %}
-    driver = new localground.editor(); 
+    driver = new localground.viewer(); 
     driver.initialize(opts);
+	$('#edit_control_panel').hide();
+	var access_key = null;
+	{% if access_key %}
+		access_key = '{{ access_key }}';
+	{% endif %}
+	//alert(access_key);
+	driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
 {% endblock %}
 {% block top_menu %}
 	{% include "includes/menus/top_nav_map.html" %}
@@ -93,14 +97,10 @@
                 <li>
 					<a data-toggle="tab" href="#legend">Legend</a>
 				</li>
-                
-                <li>
-					<a data-toggle="tab" href="#download">Download</a>
-				</li>
             </ul>
             <div id="tab_content" class="tab-content clearfix">
 				<div id="data" class="tab_panel active">
-                    <div class="inset-block">
+                    <div class="inset-block" id="edit_control_panel">
                         <button id="mode_toggle" style="display:none;float:right; margin: 0px 5px 0px 5px;"
                                 class="btn">Edit</button>
                         <span id="editor_message">
@@ -128,9 +128,6 @@
                 </div>
                 <div id="legend" class="tab_panel">
                     <div id="panel_legend"></div>
-                </div>
-                <div id="download" class="tab_panel">Download
-                    <div id="panel_download"></div>
                 </div>
             </div>
         </div>

@@ -176,6 +176,9 @@ class WMSOverlayMixin(BaseMixin):
             q = q.filter(overlay_type__id=overlay_type)
         if is_printable is not None:
             q = q.filter(is_printable=is_printable)
+        # for now, exclude any overlays; only include base tiles, until we can
+        # figure out what to do:
+        q = q.filter(overlay_type__id=1)
         return q
     
     def get_my_overlays(self, user=None, overlay_type=None, is_printable=None):

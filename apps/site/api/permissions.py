@@ -22,8 +22,8 @@ class IsAllowedGivenProjectPermissionSettings(permissions.BasePermission):
         Important:  this is only called for a single object;
                     is not called for a list.
         '''
-        if not request.user.is_authenticated():
-            return False
+        #if not request.user.is_authenticated():
+        #    return False
           
         # Users don't necessarily have access to "SAFE" methods.
         # This needs to be modified.
@@ -40,8 +40,10 @@ class IsAllowedGivenProjectPermissionSettings(permissions.BasePermission):
                                             Q(users__user=request.user))
             return len(projects) > 0 or obj.owner == request.user
         elif obj.RESTRICT_BY_USER:
-            #return True
-            return obj.owner == request.user or len(obj.users.filter(user=request.user)) > 0
+            #if request.user.is_anonymous:
+            return obj.can_view(request.user, access_key=request.GET.get('access_key'))
+            #else:    
+            #    return obj.owner == request.user or len(obj.users.filter(user=request.user)) > 0
         return True
     
     
