@@ -256,7 +256,8 @@ localground.basemap.prototype.search = function() {
                 if (status != google.maps.GeocoderStatus.ZERO_RESULTS)
                 {
                     self.map.setCenter(results[0].geometry.location);
-                    self.map.setZoom(17);
+                    self.map.fitBounds(results[0].geometry.viewport);
+                    //self.map.setZoom(17);
                     /*var url= 'http://findicons.com/files/icons/2015/24x24_free_application/24/red_star.png';
                     //var url = 'http://chart.googleapis.com/chart?chst=d_bubble_text_small&chld=bb|You Are Here|9ca272|000000'
                     var image = new google.maps.MarkerImage(

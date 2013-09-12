@@ -186,8 +186,8 @@ localground.point.prototype.getIcon = function() {
 localground.point.prototype.zoomToOverlay = function() {
     this.closeInfoBubble();
     if(this.googleOverlay != null) {
-        if(self.map.getZoom() < 18)
-            self.map.setZoom(18);
+        //if(self.map.getZoom() < 18)
+        //    self.map.setZoom(18);
         if(!this.inView()) {
             self.map.setCenter(this.googleOverlay.position);
         }
