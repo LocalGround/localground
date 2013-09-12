@@ -2,6 +2,7 @@ from rest_framework import generics
 from localground.apps.site.api import serializers, filters
 from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
 from localground.apps.site import models
+from localground.apps.site.api.permissions import IsAllowedGivenProjectPermissionSettings
 
 class ProjectList(generics.ListCreateAPIView, AuditCreate):
 	serializer_class = serializers.ProjectSerializer
@@ -21,6 +22,7 @@ class ProjectList(generics.ListCreateAPIView, AuditCreate):
 class ProjectInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
 	queryset = models.Project.objects.select_related('owner').all()
 	serializer_class = serializers.ProjectDetailSerializer
+	permission_classes = (IsAllowedGivenProjectPermissionSettings, )
 	
 	def pre_save(self, obj):
 		AuditUpdate.pre_save(self, obj)

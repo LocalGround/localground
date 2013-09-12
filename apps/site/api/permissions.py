@@ -40,10 +40,10 @@ class IsAllowedGivenProjectPermissionSettings(permissions.BasePermission):
                                             Q(users__user=request.user))
             return len(projects) > 0 or obj.owner == request.user
         elif obj.RESTRICT_BY_USER:
-            #if request.user.is_anonymous:
-            return obj.can_view(request.user, access_key=request.GET.get('access_key'))
-            #else:    
-            #    return obj.owner == request.user or len(obj.users.filter(user=request.user)) > 0
+            if request.method in permissions.SAFE_METHODS:
+                return obj.can_view(request.user, access_key=request.GET.get('access_key'))
+            else:    
+                return obj.owner == request.user or len(obj.users.filter(user=request.user)) > 0
         return True
     
     
