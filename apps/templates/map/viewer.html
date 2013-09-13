@@ -33,7 +33,20 @@
     <script type="text/javascript" src="/static/scripts/map/basemap.js"></script>
     <script type="text/javascript" src="/static/scripts/map/viewer.js"></script>
 {% endblock %}
-{% block extra_styles %}{% endblock %}
+{% block extra_styles %}
+	/*
+	.streetview-btn {
+		margin-right: 10px;
+		width: 40px;
+		height: 40px;
+		font-size: 2em;
+		padding: 1.2em 1.4em;
+		font-family: sans-serif;
+		background-color: #f00;
+		position: absolute;
+		z-index: 2000000;
+	}*/	
+{% endblock %}
 {% block extra_scripts %}
     var isAdmin = false;
     {% if user.is_superuser %}
@@ -83,7 +96,7 @@
     
     <!-- main content -->
     <div class="map" id="map_canvas"></div>
-    <div id="map_panel">
+	<div id="map_panel">
         <div style="padding:10px;">
             
 			<!-- alert, error, and success messages -->
@@ -159,6 +172,9 @@
     <div id="slide-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-body"></div>
     </div>
+	<button id="streetview_close_button"
+			style="padding:3px;margin-top:10px;display:none;">exit streetview</button>
+    
 	{% csrf_token %}
     
 {% endblock %}

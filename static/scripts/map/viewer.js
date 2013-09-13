@@ -50,6 +50,7 @@ localground.viewer.prototype.initialize=function(opts){
     localground.basemap.prototype.initialize.call(this, opts);
     
     this.map.mapTypeControlOptions.position = google.maps.ControlPosition.TOP_LEFT;
+	this.map.streetViewControl = true;
     
     $('input:checkbox')
         .attr('checked', false)
@@ -63,11 +64,6 @@ localground.viewer.prototype.initialize=function(opts){
 		renderFlashPlayer: true
 	});
    
-    /*$('#my-modal').modal({
-        keyboard: true,
-        backdrop: true
-    });*/
-	
     $('.unhide').click(function() {
         var object_type = $(this).parent().attr('id').split('_')[1];
         if(object_type == self.overlay_types.RECORD) {
@@ -148,6 +144,8 @@ localground.viewer.prototype.initialize=function(opts){
 	this.initDefaultProject();
 	
 	this.initFiltering();
+	
+	this.setStreetViewCloseButton();
 };
 
 localground.viewer.prototype.setPosition = function(minimize) {
@@ -517,3 +515,38 @@ localground.viewer.prototype.makeEditable = function() {
 localground.viewer.prototype.makeViewable = function() {
     return;
 };
+
+localground.viewer.prototype.setStreetViewCloseButton = function() {
+	/*
+	A hack to make a more visible "exit streetview" button.
+	*/
+	window.addEventListener('DOMContentLoaded', function( e ){
+	
+		// Get close button and insert it into streetView
+		// #button can be anyt dom element
+		var closeButton = document.querySelector('#streetview_close_button'),
+			controlPosition = google.maps.ControlPosition.TOP_LEFT;
+		// Assumes map has been initiated 
+		var streetView = self.map.getStreetView();
+	
+		// Hide useless and tiny default close button
+		streetView.setOptions({ enableCloseButton: false });
+	
+		// Add to street view
+		streetView.controls[ controlPosition ].push( closeButton );
+	
+		// Listen for click event on custom button
+		// Can also be $(document).on('click') if using jQuery
+		google.maps.event.addDomListener(closeButton, 'click', function(){
+			streetView.setVisible(false);
+		});
+	
+	});
+	
+	google.maps.event.addListener(this.map, 'idle', function() {
+		$('#streetview_close_button').css({ display: 'block' });
+	});
+};
+
+
+
