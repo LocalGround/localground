@@ -33,7 +33,8 @@ class IsAllowedGivenProjectPermissionSettings(permissions.BasePermission):
         # If permissions validation needed (set at the Model Class level),
         # check here:
         if obj.RESTRICT_BY_PROJECT:
-            return obj.project.owner==request.user or request.user in obj.project.users
+            return obj.project.owner==request.user or \
+                    request.user in [o.user for o in obj.project.users.select_related('user').all()]
         elif obj.RESTRICT_BY_PROJECTS:
             from django.db.models import Q
             projects = obj.projects.filter(Q(owner=request.user) |
