@@ -25,13 +25,14 @@ class Group(BaseNamed, BaseGenericRelationMixin, BasePermissions):
 	"""
 	RESTRICT_BY_USER = True
 	extents = models.PolygonField(null=True, blank=True)
-	slug = models.SlugField(verbose_name="Friendly URL", max_length=100, unique=True, db_index=True,
+	slug = models.SlugField(verbose_name="Friendly URL", max_length=100, db_index=True,
 								help_text='A few words, separated by dashes "-", to be used as part of the url')
 	basemap = models.ForeignKey('WMSOverlay', default=12) #default to grayscale
 	
 	class Meta:
 		abstract = True
 		app_label = 'site'
+		unique_together = ('slug', 'owner')
 		
 	@classmethod
 	def filter_fields(cls):
