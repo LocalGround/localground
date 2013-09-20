@@ -5,105 +5,19 @@ localground.ebays = function(){
 
 localground.ebays.prototype = new localground.editor();
 
-
 localground.ebays.prototype.initialize=function(opts){
     localground.editor.prototype.initialize.call(this, opts);
-	//return;
-    this.map.setOptions({streetViewControl: true});
-    $('#chart_opener').css({
-        'z-index': 1000000,
-        'position': 'absolute',
-        'top': $('body').height() - $('#chart_opener').height(),
-        'left': 0
-    });
-    $('#chart_panel').css({
-        'z-index': 1000000,
-        'position': 'absolute',
-        'top': $('body').height(),
-        'left': 0,
-        'height': 200
-    });
-    this.initBottomPanel();
-    $('#100').trigger('click');
-};
-
-localground.ebays.prototype.toggleProjectData = function(projectID, is_checked) {
-    if(projectID != 100) {
-        return localground.editor.prototype.toggleProjectData.call(this, projectID, is_checked);
-    }
-	if(is_checked) {
-        self.lastProjectSelection = projectID;
-		var params = {
-			id: projectID,
-			include_processed_maps: true,
-			include_markers: true,
-			include_audio: true,
-			include_photos: true,
-			include_tables: false,
-			project_id: projectID
-		};
-        self.getAirQualityData();
-        /*self.getAirObservations();
-		$.getJSON('/api/0/projects/', params,
-			function(result) {
-				if(!result.success) {
-					alert(result.message);
-					return;
-				}
-				//process paper maps:
-				$('#mode_toggle').show();
-				self.scanManager.addRecords(result.processed_maps);
-				self.scanManager.renderOverlays();     
-				//process photos:
-				self.photoManager.addRecords(result.photos);  
-				self.photoManager.renderOverlays();  
-				//process audio:
-				self.audioManager.addRecords(result.audio); 
-				self.audioManager.renderOverlays();
-				//process markers:
-				self.markerManager.addRecords(result.markers);
-				self.markerManager.renderOverlays();
-				//process tables:
-				self.resetBounds();
-			},
-		'json');
-		*/
-	} //end if checked
-	else {
-		$.each(self.managers, function() {
-			this.removeByProjectID(projectID);    
-		});
-		//self.resetBounds();
-		if($('.cb_project:checked').length == 0) {
-			$('#mode_toggle').hide();
-		}
-	}
-    return true;
-};
-
-localground.ebays.prototype.getAirObservations = function() {
-    $.getJSON('/api/0/tables/table/92/',
-        function(result){
-            var table = {};
-            table.form = {id: 92, name: 'Air Quality Observations', records: result.records};
-            var m = new localground.tableManager(table, '1F78B4');
-            m.addRecords(result.records);
-            m.renderOverlays();
-            self.managers.push(m);
-        },
-    'json');
+	this.initCustomLayout();
+    this.getAirQualityData();
 };
 
 localground.ebays.prototype.getAirQualityData = function() {
     $.getJSON('/api/0/forms/84/data/tracks/',
         function(result){
-            var table = {};
-            table.form = {id: 84, name: 'Air Quality Data'};
-            //self.tableManager = new localground.tableManager(table, null);
-			self.tableManager = new localground.tableManager({
+            self.tableManager = new localground.tableManager({
 				id: 84,
 				color: self.colors[++self.colorIndex],
-				name: 'Air Quality Data'
+				name: 'Particulate Matter Data'
 			});
 			self.tableManager.addDataContainer();
             $.each(result.results, function(){
@@ -176,8 +90,23 @@ localground.ebays.prototype.updateChartPanelLayout = function() {
     google.maps.event.trigger(this.map, 'resize');
 };
 
-localground.ebays.prototype.initBottomPanel = function() {
+localground.ebays.prototype.initCustomLayout = function() {
     var self = this;
+	
+	$('#chart_opener').css({
+        'z-index': 1000000,
+        'position': 'absolute',
+        'top': $('body').height() - $('#chart_opener').height(),
+        'left': 0
+    });
+    $('#chart_panel').css({
+        'z-index': 1000000,
+        'position': 'absolute',
+        'top': $('body').height(),
+        'left': 0,
+        'height': 200
+    });
+	
     $(window).resize(function() {
         self.updateChartPanelLayout();
     });
