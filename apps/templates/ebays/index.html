@@ -1,19 +1,18 @@
-{% extends "map/viewer.html" %}
+{% extends "map/editor.html" %}
 
 {% block style_links %}
-
+	{{ block.super }}
 {% endblock %}
 {% block script_links %}
     {{ block.super }}
     <script type="text/javascript" src="/static/scripts/ebays/ebaysEditor.js"></script>
     <script type="text/javascript" src="/static/scripts/ebays/d3.v2.min.js"></script>
-    
     <script type="text/javascript" src="/static/scripts/ebays/geographic.js"></script>
     <script type="text/javascript" src="/static/scripts/ebays/charting.js"></script>
 {% endblock %}
 {% block pageload_scripts %}
-    editor = new localground.ebays(); 
-    editor.initialize(opts);
+    driver = new localground.ebays(); 
+    driver.initialize(opts);
 {% endblock %}
 {% block extra_styles %}
     {{ block.super }}
@@ -175,7 +174,6 @@
         margin-right: 5px;
     }
 {% endblock %}
-
     {% block other_layout_elements %}
         <div id="chart_panel">
             <div style="padding:10px;" id="chart_holder"></div>

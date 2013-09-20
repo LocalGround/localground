@@ -18,7 +18,21 @@ class FastPaginator(Paginator):
         "Returns the total number of objects, across all pages."
         if self._count is None:
             try:
-                self._count = self.object_list.count()
+                '''
+                Convert to a form that looks like this (fast):
+                    SELECT COUNT(a.col_4) FROM (SELECT DISTINCT col_4 FROM table_vanwars_xgb5qaw826) a
+                
+                ...instead of this (slow):
+                SELECT COUNT(DISTINCT col_4) FROM "table_vanwars_xgb5qaw826"
+
+                '''
+                #self._count = self.object_list.count()
+                sql = '%s' % self.object_list.query
+                sql = 'select count(a) from (' + sql + ') a'
+                from django.db import connection
+                cursor = connection.cursor()
+                cursor.execute(sql)
+                self._count = int(cursor.fetchone()[0])
             except:
                 # thrown if object_list is a list instead of a QuerySet (which happens when a RawQuerySet)
                 self._count = len(self.object_list)

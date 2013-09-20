@@ -72,8 +72,8 @@ class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
         view = renderer_context['view']
         context = self.get_render_context(data, accepted_media_type, renderer_context)
         
-        try:    
-            model = view.model or view.queryset.model
+        try:
+            model = view.model or view.get_queryset().model
             query = QueryParser(model, r.get('query'))
             context.update({
                 'filter_fields': query.populate_filter_fields(),

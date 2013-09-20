@@ -12,6 +12,7 @@ class FieldTypes(object):
     TAG = 'tag'
     LIST = 'list'
     FLOAT = 'float'
+    BOOLEAN = 'boolean'
     
 class QueryField(object):
     def __init__(self, col_name, id=None, title=None, data_type=None, operator='=',

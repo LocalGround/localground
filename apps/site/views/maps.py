@@ -63,3 +63,27 @@ def show_map_editor(request):
     })
     return render_to_response('map/editor.html', context)
 
+@login_required()
+def show_ebays_map(request):
+    u = request.user
+    context = RequestContext(request)
+    #set defaults:
+    lat, lng, zoom = 21.698265, 14.765625, 3
+    
+    projects = Project.objects.get_objects(u)
+    projects = [p.to_dict() for p in projects]
+
+    if u.get_profile().default_location is not None:
+        lat = u.get_profile().default_location.y
+        lng = u.get_profile().default_location.x
+        zoom = 14
+    context.update({
+        'lat': lat,
+        'lng': lng,
+        'zoom': zoom,
+        'projects': json.dumps(projects),
+        'ebays': True
+    })
+    return render_to_response('ebays/index.html', context)
+
+

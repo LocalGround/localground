@@ -28,8 +28,6 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += format_suffix_patterns(patterns('',
-	#url(r'^(?P<group_name_plural>markers|views|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>%s)/$' % '|'.join(entities), views.RelatedMediaList.as_view(), name='related-media-list'),
-	#url(r'^(?P<group_name_plural>markers|views|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>%s)/(?P<id>[0-9]+)/$' % '|'.join(entities), views.RelatedMediaInstance.as_view(), name='related-media-detail'),
 	url(r'^(?P<group_name_plural>markers|views|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/$', views.RelatedMediaList.as_view(), name='related-media-list'),
 	url(r'^(?P<group_name_plural>markers|views|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$', views.RelatedMediaInstance.as_view(), name='related-media-detail'),
 	url(r'^projects/(?P<pk>[0-9]+)/$', views.ProjectInstance.as_view(), name='project-detail'),
@@ -43,7 +41,10 @@ urlpatterns += format_suffix_patterns(patterns('',
 	url(r'^forms/(?P<pk>[0-9]+)/$', views.FormInstance.as_view(), name='form-detail'),
 	url(r'^forms/$', views.FormList.as_view(), name='form-list'),
 	url(r'^photos/(?P<pk>[0-9]+)/rotate-left/$', views.rotate_left, name='rotate-left'),
-	url(r'^photos/(?P<pk>[0-9]+)/rotate-right/$', views.rotate_right, name='rotate-right')
+	url(r'^photos/(?P<pk>[0-9]+)/rotate-right/$', views.rotate_right, name='rotate-right'),
+	
+	#Todo: generalize this one:
+	url(r'^forms/84/data/tracks/$', views.TrackList.as_view(), name='air-quality-tracks')
 ))
 
 

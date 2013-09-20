@@ -34,7 +34,7 @@ class FormDataMixin(object):
 			form = models.Form.objects.get(id=self.kwargs.get('form_id'))
 		except models.Form.DoesNotExist:
 			raise Http404
-		return serializers.create_record_serializer(form)
+		return serializers.create_compact_record_serializer(form)
 	
 	def get_queryset(self):
 		try:
@@ -45,6 +45,8 @@ class FormDataMixin(object):
 	
 
 class FormDataList(generics.ListCreateAPIView, FormDataMixin):
+	filter_backends = (filters.SQLFilterBackend,)
+	paginate_by = 5000
 	
 	def pre_save(self, obj):
 		obj.manually_reviewed = True

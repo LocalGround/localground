@@ -3,6 +3,7 @@ from localground.apps.site.widgets import SnippetWidget, CustomDateTimeWidget
 from localground.apps.site.api import fields
 from rest_framework import serializers
 from localground.apps.site import models
+import datetime
 from django.forms import widgets
 from django.conf import settings
 
@@ -83,7 +84,15 @@ def create_compact_record_serializer(form):
 			fields = ('id', 'num', 'recs', 'url', 'point', 'project_id', 'overlay_type')
 			
 		def get_recs(self, obj):
-			return [getattr(obj, col_name) for col_name in col_names]
+			#return [getattr(obj, col_name) for col_name in col_names]
+			recs = []
+			for col_name in col_names:
+				val = getattr(obj, col_name)
+				if type(val) is datetime.datetime:
+					val = val.strftime('%m/%d/%y, %I:%M:%S %p')
+				recs.append(val)
+			return recs
+				
 		
 		def get_detail_url(self, obj):
 			return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,

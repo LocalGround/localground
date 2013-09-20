@@ -29,7 +29,7 @@ class DynamicModelMixin(BasePoint, BaseAudit):
 	
 	def __repr__(self):
 		return '<%s>' % self.__str__()
-	
+		
 	@property
 	def form(self):
 		if not hasattr(self, '_form'):
@@ -258,8 +258,43 @@ class ModelClassBuilder(object):
 			#self.project = self.form.project
 			super(self.__class__, self).save(*args, **kwargs)
 			
+		@classmethod
+		def filter_fields(cls):
+			from localground.apps.lib.helpers import QueryField, FieldTypes
+			query_fields = [
+				QueryField('project__id', id='project_id', title='Project ID', data_type=FieldTypes.INTEGER),
+				#QueryField('col_4', title='col_4', operator='like'),
+				QueryField('date_created', id='date_created_after', title='After',
+											data_type=FieldTypes.DATE, operator='>='),
+				QueryField('date_created', id='date_created_before', title='Before',
+											data_type=FieldTypes.DATE, operator='<=')
+			]
+			for n in self.form.get_fields():
+				if n.data_type.id == 1:
+					query_fields.append(
+						QueryField(n.col_name, title=n.col_alias, operator='like')	
+					)
+				elif n.data_type.id in [2, 6]:
+					query_fields.append(
+						QueryField(n.col_name, title=n.col_alias, data_type=FieldTypes.INTEGER)	
+					)
+				elif n.data_type.id == 3:
+					query_fields.append(
+						QueryField(n.col_name, title=n.col_alias, data_type=FieldTypes.DATE)	
+					)
+				elif n.data_type.id == 4:
+					query_fields.append(
+						QueryField(n.col_name, title=n.col_alias, data_type=FieldTypes.BOOLEAN)	
+					)
+				elif n.data_type.id == 5:
+					query_fields.append(
+						QueryField(n.col_name, title=n.col_alias, data_type=FieldTypes.FLOAT)	
+					)	
+			return query_fields
+			
 		attrs.update(dict(
-			save=save
+			save=save,
+			filter_fields=filter_fields
 		))
 		
 		# Create the class, which automatically triggers ModelBase processing
@@ -268,6 +303,8 @@ class ModelClassBuilder(object):
 		#sys.stderr.write('\n%s' % self._model_class._meta.get_all_field_names())
 		#sys.stderr.write('\n%s' % self.additional_fields)
 		return self._model_class   
+	
+
 	
 		
 	def add_dynamic_fields_to_model(self):
@@ -279,7 +316,7 @@ class ModelClassBuilder(object):
 										 verbose_name=n.col_alias)
 			elif n.data_type.id in [2, 6]:
 			   field = models.IntegerField(null=True, blank=True,
-										 verbose_name=n.col_alias)
+										   verbose_name=n.col_alias)
 			elif n.data_type.id == 3:
 				field = models.DateTimeField(null=True, blank=True,
 											 verbose_name=n.col_alias )

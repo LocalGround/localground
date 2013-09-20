@@ -8,6 +8,7 @@ localground.ebays.prototype = new localground.editor();
 
 localground.ebays.prototype.initialize=function(opts){
     localground.editor.prototype.initialize.call(this, opts);
+	//return;
     this.map.setOptions({streetViewControl: true});
     $('#chart_opener').css({
         'z-index': 1000000,
@@ -42,7 +43,7 @@ localground.ebays.prototype.toggleProjectData = function(projectID, is_checked) 
 			project_id: projectID
 		};
         self.getAirQualityData();
-        self.getAirObservations();
+        /*self.getAirObservations();
 		$.getJSON('/api/0/projects/', params,
 			function(result) {
 				if(!result.success) {
@@ -66,6 +67,7 @@ localground.ebays.prototype.toggleProjectData = function(projectID, is_checked) 
 				self.resetBounds();
 			},
 		'json');
+		*/
 	} //end if checked
 	else {
 		$.each(self.managers, function() {
@@ -93,15 +95,21 @@ localground.ebays.prototype.getAirObservations = function() {
 };
 
 localground.ebays.prototype.getAirQualityData = function() {
-    $.getJSON('/api/0/tables/table/84/get-menu/',
+    $.getJSON('/api/0/forms/84/data/tracks/',
         function(result){
             var table = {};
             table.form = {id: 84, name: 'Air Quality Data'};
-            self.tableManager = new localground.tableManager(table, null);
-            self.tableManager.addDataContainer();
-            $.each(result.file_names, function(){
+            //self.tableManager = new localground.tableManager(table, null);
+			self.tableManager = new localground.tableManager({
+				id: 84,
+				color: self.colors[++self.colorIndex],
+				name: 'Air Quality Data'
+			});
+			self.tableManager.addDataContainer();
+            $.each(result.results, function(){
+				//alert(this.name);
                 $cb = $('<input type="checkbox" />')
-                            .val(this)
+                            .val(this.name)
                             .css({'vertical-align': 'middle'});
                 $cb.change(function(){
                     var val = $(this).val();
@@ -124,7 +132,7 @@ localground.ebays.prototype.getAirQualityData = function() {
                         })
                     }
                 });
-                $label = $('<span>' + this + '</span>');
+                $label = $('<span>' + this.name + '</span>');
                 self.tableManager.getListingContainer().append($cb).append($label).append('<br>');
                 
 				

@@ -38,9 +38,6 @@ urlpatterns = patterns('',
 	#user prefs:
 	(r'^profile/settings/', 'localground.apps.site.views.profile.change_user_profile'),
 	
-	##########
-	## CRUD ##
-	##########
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	# 1) Create:
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -78,7 +75,6 @@ urlpatterns = patterns('',
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	(r'^profile/(?P<object_type_plural>{0})/delete/batch/$'.format('|'.join(object_types_plural)), 'localground.apps.site.views.profile.delete_batch'),
 	
-	
 
 	#tables
 	#(r'^profile/tables/data/', 'localground.apps.site.views.tables.get_objects'),
@@ -111,7 +107,8 @@ urlpatterns = patterns('',
 	# data API    
 	url(r'^api/0/', include('localground.apps.site.api.urls')),
 	
-	# Map Editor
+	# interactive maps
+	(r'^maps/ebays/', 'localground.apps.site.views.maps.show_ebays_map'),
 	(r'^maps/edit/', 'localground.apps.site.views.maps.show_map_editor'),
 	(r'^maps/view/(?P<username>[\w|-|.|_]+)/(?P<slug>[\w-]+)/$', 'localground.apps.site.views.maps.show_map_viewer'),
 	(r'^maps/view/(?P<username>[\w|-|.|_]+)/(?P<slug>[\w-]+)/(?P<access_key>\w+)/$', 'localground.apps.site.views.maps.show_map_viewer'),
