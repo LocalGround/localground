@@ -47,7 +47,10 @@ class CSVRenderer(renderers.BaseRenderer):
     def get_row(self, d, keys):
         row = []
         for k in keys:
-            row.append(d.get(k))
+            if k in ['lat', 'lng'] and d.get('point'):
+                row.append(d.get('point').get(k))
+            else:
+                row.append(d.get(k))
         return row
 
     def get_rows(self, l):
@@ -56,6 +59,10 @@ class CSVRenderer(renderers.BaseRenderer):
             if len(keys) == 0:
                 keys = list(elem.keys())
                 keys.sort()
+                if 'point' in keys:
+                    keys.append('lat')
+                    keys.append('lng')
+                    keys.remove('point')
                 rows.append(keys)  
             rows.append(self.get_row(elem, keys))
         return rows

@@ -34,7 +34,7 @@ class FormDataMixin(object):
 			form = models.Form.objects.get(id=self.kwargs.get('form_id'))
 		except models.Form.DoesNotExist:
 			raise Http404
-		if self.request.method == 'GET':
+		if self.request.method == 'GET' and self.kwargs['format'] != 'csv':
 			return serializers.create_compact_record_serializer(form)
 		else:
 			return serializers.create_record_serializer(form)
