@@ -8,6 +8,7 @@ def persistant_queries(request):
     """
     from localground.apps.site.models import WMSOverlay
     from localground.apps.site.models import Project
+    from localground.apps.site.models import Form
     import simplejson as json
     from django.conf import settings
     
@@ -21,7 +22,8 @@ def persistant_queries(request):
         'JQUERY_PATH': settings.JQUERY_PATH,
         'JQUERY_UI_PATH': settings.JQUERY_UI_PATH,
         'BOOTSTRAP_JS_PATH': settings.BOOTSTRAP_JS_PATH,
-        'ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE': settings.ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE
+        'ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE': settings.ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE,
+        'show_air_quality': Form.objects.get(id=84).has_access(request.user)
     }
     if request.user.is_authenticated():
         context.update({

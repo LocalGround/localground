@@ -36,10 +36,9 @@ class IsAllowedGivenProjectPermissionSettings(permissions.BasePermission):
             return obj.project.owner==request.user or \
                     request.user in [o.user for o in obj.project.users.select_related('user').all()]
         elif obj.RESTRICT_BY_PROJECTS:
-            from django.db.models import Q
-            projects = obj.projects.filter(Q(owner=request.user) |
-                                            Q(users__user=request.user))
-            return len(projects) > 0 or obj.owner == request.user
+            # TODO: implement security methods for every Local Ground
+            # object at the record- and batch-query level.
+            return obj.has_access(request.user)
         elif obj.RESTRICT_BY_USER:
             if request.method in permissions.SAFE_METHODS:
                 return obj.can_view(request.user, access_key=request.GET.get('access_key'))

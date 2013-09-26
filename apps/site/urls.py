@@ -108,7 +108,7 @@ urlpatterns = patterns('',
 	url(r'^api/0/', include('localground.apps.site.api.urls')),
 	
 	# interactive maps
-	(r'^maps/ebays/', 'localground.apps.site.views.maps.show_ebays_map'),
+	(r'^maps/air-quality/', 'localground.apps.site.views.maps.show_ebays_map'),
 	(r'^maps/edit/', 'localground.apps.site.views.maps.show_map_editor'),
 	(r'^maps/view/(?P<username>[\w|-|.|_]+)/(?P<slug>[\w-]+)/$', 'localground.apps.site.views.maps.show_map_viewer'),
 	(r'^maps/view/(?P<username>[\w|-|.|_]+)/(?P<slug>[\w-]+)/(?P<access_key>\w+)/$', 'localground.apps.site.views.maps.show_map_viewer'),

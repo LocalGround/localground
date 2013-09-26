@@ -92,6 +92,13 @@ class Form(BaseNamed):
 			cache.app_models['site']['form_%s' % self.id] = ModelClassBuilder(self).model_class
 		return cache.app_models['site']['form_%s' % self.id]
 	
+
+	def has_access(self, user):
+		from django.db.models import Q
+		projects = self.projects.filter(Q(owner=user) |
+										Q(users__user=user))
+		return len(projects) > 0 or self.owner == user
+	
 	@property
 	def DataEntryFormClass(self):
 		if self._data_entry_form_class is None:

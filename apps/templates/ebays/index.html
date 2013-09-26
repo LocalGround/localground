@@ -173,15 +173,46 @@
         font-weight: bold;
         margin-right: 5px;
     }
+	.legend-class img {
+		vertical-align: bottom;
+	}
 {% endblock %}
-    {% block other_layout_elements %}
-        <div id="chart_panel">
-            <div style="padding:10px;" id="chart_holder"></div>
-        </div>
-        <div id="chart_opener">
-            <div>
-                <div class="sprite ui-icon-top-triangle"></div>   
-            </div>
-        </div>
-        <div id="tooltip"></div>
-    {% endblock %}
+
+{% block legend %}
+	<h4>Particulate Matter Concentrations</h4>
+	<div class="legend-class">
+		<div class="clearfix">
+			<img src="/static/images/ebays/green.png"> <strong>Good:</strong> <em>less than 50 &microg/m&sup3;</em>
+		</div>
+		<div class="clearfix">
+			<img src="/static/images/ebays/yellow.png"> <strong>Moderate:</strong> <em>between 50 and 99 &microg/m&sup3;</em>
+		</div>
+		<div class="clearfix">
+			<img src="/static/images/ebays/orange.png"> <strong>Unhealthy for Some:</strong> <em>between 100 and 150 &micro/L&sup3; </em>
+		</div>
+		<div class="clearfix">
+			<img src="/static/images/ebays/red.png"> <strong>Unhealthy:</strong> <em>between 150 and 199 &micro/L&sup3;</em>
+		</div>
+		<div class="clearfix">
+			<img src="/static/images/ebays/purple.png"> <strong>Very Unhealthy:</strong> <em>between 200 and 300 &micro/L&sup3;</em>
+		</div>
+		<div class="clearfix">
+			<img src="/static/images/ebays/maroon.png"> <strong> Hazardous:</strong> <em>more than 300 &micro/L&sup3;</em> 
+		</div>
+		<div class="inset-block" style="margin-top:10px;">
+			For more information on the ratings, visit <a href="http://www.airnow.gov/index.cfm?action=aqibasics.aqi" target="_blank">http://www.airnow.gov</a>
+		</div>
+	</div>
+{% endblock %}
+
+{% block other_layout_elements %}
+	<div id="chart_panel">
+		<div style="padding:10px;" id="chart_holder"></div>
+	</div>
+	<div id="chart_opener">
+		<div>
+			<div class="sprite ui-icon-top-triangle"></div>   
+		</div>
+	</div>
+	<div id="tooltip"></div>
+{% endblock %}

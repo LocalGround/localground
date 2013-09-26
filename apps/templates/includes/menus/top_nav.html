@@ -6,7 +6,22 @@
                 {% if user.id == 102 or user.id == 94 %}
                     <li><a href="/ebays/">EBAYS Viewer</a></li>
                 {% else %}
-                    <li><a href="/maps/edit/">Edit Map</a></li>
+                    {% comment %}
+                    Need to come up with a more generalized solution.
+                    The "show_air_quality" variable is populated in the
+                    context_processor.py page
+                    {% endcomment %}
+                    {% if show_air_quality %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown">Maps</a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="/maps/edit/">Generic Map Editor</a></li>
+                                <li><a href="/maps/air-quality/">Air Quality Map</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li><a href="/maps/edit/">Edit Map</a></li>
+                    {% endif %}
                 {% endif %}
                 <li><a href="/upload/">Upload</a></li>
                 <li class="dropdown">

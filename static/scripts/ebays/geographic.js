@@ -52,6 +52,8 @@ Map.prototype.init = function(map, overlay){
     this.chart = new Chart();
 
 };
+
+/*
 Map.prototype.get_icon = function(index, show_outline) {
     var val = this.points[index].value;
     var suffix = '_no_outline';
@@ -69,7 +71,27 @@ Map.prototype.get_icon = function(index, show_outline) {
         return this.image_path + 'purple' + suffix + '.png';
     else //250-500
         return this.image_path + 'purple' + suffix + '.png';
+};*/
+
+Map.prototype.get_icon = function(index, show_outline) {
+    var val = this.points[index].value;
+    var suffix = '_no_outline';
+    if(show_outline != null)
+        suffix = '';
+    if(val <= 50)
+        return this.image_path + 'green' + suffix + '.png';
+    else if(val <= 100)
+        return this.image_path + 'yellow' + suffix + '.png';
+    else if(val <= 150)
+        return this.image_path + 'orange' + suffix + '.png';
+    else if(val <= 200)
+        return this.image_path + 'red' + suffix + '.png';
+    else if(val <= 300)
+        return this.image_path + 'purple' + suffix + '.png';
+    else 
+        return this.image_path + 'maroon' + suffix + '.png';
 };
+
 
 Map.prototype.render_data = function(val, idx) {
     var self = this;

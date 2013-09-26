@@ -76,7 +76,7 @@ Chart.prototype.init = function(opts) {
 };
 
 
-Chart.prototype.get_bar_color = function(val) {
+/*Chart.prototype.get_bar_color = function(val) {
     if(val <= 15)
         return '#33ff00';
     else if(val <= 40)
@@ -101,6 +101,37 @@ Chart.prototype.get_rating = function(val) {
     else if(val <= 150)
         return 'Unhealthy';
     else if(val <= 250)
+        return 'Very Unhealthy';
+    else
+        return 'Hazardous';
+};
+*/
+
+Chart.prototype.get_bar_color = function(val) {
+    if(val <= 50)
+        return '#33ff00';
+    else if(val <= 100)
+        return '#FFFF33';
+    else if(val <= 150)
+        return '#FEB24C';
+    else if(val <= 200)
+        return '#ff0000';
+    else if(val <= 300)
+        return '#4A1486';
+    else
+        return '#7E0023';
+};
+
+Chart.prototype.get_rating = function(val) {
+    if(val <= 50)
+        return 'Good';
+    else if(val <= 100)
+        return 'Moderate';
+    else if(val <= 150)
+        return 'Unhealthy for Some';
+    else if(val <= 200)
+        return 'Unhealthy';
+    else if(val <= 300)
         return 'Very Unhealthy';
     else
         return 'Hazardous';
