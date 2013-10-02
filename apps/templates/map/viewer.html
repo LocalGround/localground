@@ -1,5 +1,5 @@
 {% extends "base/base.html" %}
-{% block page_title %}My Prints{% endblock %}
+{% block page_title %}Map{% endblock %}
 {% block style_links %}
     <link href="/static/css/audio.css" type="text/css" media="all" rel="stylesheet" />
     <link href="/static/css/map.css" type="text/css" media="all" rel="stylesheet" />
@@ -59,7 +59,7 @@
         overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
         showOutlines: false,
         cloudmadeKey: '{{CLOUDMADE_KEY}}',
-		initialMapLayerID: {{basemap_id}}
+		initialMapLayerID: {{ basemap_id|default:"12" }}
     };
     {% if markerID %}
         opts.markerID = {{markerID}};
@@ -103,7 +103,25 @@
 			<div class="row">
 				{% include "includes/messages.html" %}
 			</div>
-            <ul class="tabs" data-tabs="tabs">
+			<div class="inset-block" id="edit_control_panel">
+				<button id="mode_toggle" style="display:none;float:right; margin: 0px 5px 0px 5px;"
+						class="btn">Edit</button>
+				<span id="editor_message">
+				{% if num_projects > 0 or ebays %}
+					Use the top menus to add your data on the map
+				{% else %}
+					You have not defined any projects.  In order to create
+					your first project, you can either (1) print a map by clicking the
+					print button (above), or (2) create a new one
+					<a href="/profile/projects/">here</a>.
+				{% endif %}
+				</span>
+				<span id="filter_section" style="display:none;">
+					<input type="text" id="txt_filter" style="width: 200px !important;" />
+					<span id="filter_counter" style="display:inline-block;padding-left: 5px;width:20px;font-weight:bold;font-size:20px;"></span>
+				</span>
+			</div>
+            <ul class="tabs" data-tabs="tabs" style="margin-bottom: 10px !important;">
 				<li class="active">
 					<a data-toggle="tab" href="#data">Data & Media</a>
 				</li>
@@ -112,25 +130,9 @@
 				</li>
             </ul>
             <div id="tab_content" class="tab-content clearfix">
+				
 				<div id="data" class="tab_panel active">
-                    <div class="inset-block" id="edit_control_panel">
-                        <button id="mode_toggle" style="display:none;float:right; margin: 0px 5px 0px 5px;"
-                                class="btn">Edit</button>
-                        <span id="editor_message">
-                        {% if num_projects > 0 or ebays %}
-                            Use the top menus to add your data on the map
-                        {% else %}
-                            You have not defined any projects.  In order to create
-                            your first project, you can either (1) print a map by clicking the
-                            print button (above), or (2) create a new one
-                            <a href="/profile/projects/">here</a>.
-                        {% endif %}
-                        </span>
-						<span id="filter_section" style="display:none;">
-							<input type="text" id="txt_filter" style="width: 200px !important;" />
-							<span id="filter_counter" style="display:inline-block;padding-left: 5px;width:20px;font-weight:bold;font-size:20px;"></span>
-						</span>
-                    </div>
+                    
 					
 					<!-- div class="row">
 						<input type="text" id="txt_filter" style="" />

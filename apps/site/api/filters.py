@@ -17,7 +17,6 @@ class SQLFilterBackend(filters.BaseFilterBackend):
         else:
             return queryset
     
-    
     def __has_privileges(self, user, q):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')

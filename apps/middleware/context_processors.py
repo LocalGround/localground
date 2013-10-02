@@ -22,12 +22,12 @@ def persistant_queries(request):
         'JQUERY_PATH': settings.JQUERY_PATH,
         'JQUERY_UI_PATH': settings.JQUERY_UI_PATH,
         'BOOTSTRAP_JS_PATH': settings.BOOTSTRAP_JS_PATH,
-        'ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE': settings.ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE,
-        'show_air_quality': Form.objects.get(id=84).has_access(request.user)
+        'ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE': settings.ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE
     }
     if request.user.is_authenticated():
         context.update({
-            'projects': Project.objects.get_objects(request.user)
+            'projects': Project.objects.get_objects(request.user),
+            'show_air_quality': Form.objects.get(id=84).has_access(request.user)
         })
     
     add_overlays = False

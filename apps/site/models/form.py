@@ -1,16 +1,19 @@
 from django.contrib.gis.db import models
 from django.db.models import Q 
 from localground.apps.site.managers import FormManager
-from localground.apps.site.models import Field, ProjectMixin, BaseNamed, Snippet, DataType, Project
+from localground.apps.site.models import Field, ProjectMixin, \
+		BaseNamed, Snippet, DataType, Project
 from localground.apps.site.dynamic import ModelClassBuilder, DynamicFormBuilder
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 	
 class Form(BaseNamed):
 	RESTRICT_BY_PROJECTS = True
-	RESTRICT_BY_PROJECT = False
-	RESTRICT_BY_USER = False
 	table_name = models.CharField(max_length=255, unique=True)
+	access_authority = models.ForeignKey('ObjectAuthority',
+							db_column='view_authority',
+							verbose_name='Sharing')
+	access_key = models.CharField(max_length=16, null=True, blank=True)
 	projects = models.ManyToManyField('Project')
 	objects = FormManager()
 	_model_class = None
@@ -58,7 +61,7 @@ class Form(BaseNamed):
 			class Meta:
 				from django import forms
 				model = cls
-				fields = ('name', 'description', 'tags', 'projects')
+				fields = ('name', 'description', 'tags', 'access_authority', 'access_key', 'projects')
 				widgets = {
 					'id': forms.HiddenInput,
 					'description': forms.Textarea(attrs={'rows': 3}),
@@ -93,11 +96,18 @@ class Form(BaseNamed):
 		return cache.app_models['site']['form_%s' % self.id]
 	
 
-	def has_access(self, user):
-		from django.db.models import Q
-		projects = self.projects.filter(Q(owner=user) |
-										Q(users__user=user))
-		return len(projects) > 0 or self.owner == user
+	def has_access(self, user, access_key=None):
+		if self.access_authority.id == 3:
+			return True
+		elif self.access_authority.id == 2 and self.access_key == access_key:
+			return True
+		elif self.owner == user:
+			return True
+		else:
+			from django.db.models import Q
+			projects = self.projects.filter(Q(owner=user) |
+									Q(users__user=user))
+			return len(projects) > 0
 	
 	@property
 	def DataEntryFormClass(self):

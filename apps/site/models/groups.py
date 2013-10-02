@@ -61,6 +61,8 @@ class Group(BaseNamed, BaseGenericRelationMixin, BasePermissions):
 	def share_url(self):
 		return '/profile/{0}/{1}/share/'.format(self.model_name_plural, self.id)
 	
+
+	'''
 	def _has_authority(self, user, user_authority_id, access_key=None):
 		# 1) if user is superuser or user is owner, then has authority:
 		#if user and (user.is_superuser or user == self.owner):
@@ -84,15 +86,16 @@ class Group(BaseNamed, BaseGenericRelationMixin, BasePermissions):
 				if rec.authority.id >= user_authority_id:
 					return True
 		return False
+	'''
 	
-	def can_view(self, user, access_key=None):
-		return self._has_authority(user, UserAuthority.CAN_VIEW, access_key)
+	#def can_view(self, user, access_key=None):
+	#	return self._has_authority(user, UserAuthority.CAN_VIEW, access_key)
 
-	def can_edit(self):
-		return self._has_authority(user, UserAuthority.CAN_EDIT)
+	#def can_edit(self):
+	#	return self._has_authority(user, UserAuthority.CAN_EDIT)
 	
-	def can_manage(self):
-		return self._has_authority(user, UserAuthority.CAN_MANAGE)
+	#def can_manage(self):
+	#	return self._has_authority(user, UserAuthority.CAN_MANAGE)
 	
 	
 class Project(Group):

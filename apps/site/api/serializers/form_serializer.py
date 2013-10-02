@@ -89,7 +89,7 @@ def create_compact_record_serializer(form):
 			for col_name in col_names:
 				val = getattr(obj, col_name)
 				if type(val) is datetime.datetime:
-					val = val.strftime('%m/%d/%y, %I:%M:%S %p')
+					val = val.strftime('%m/%d/%Y, %I:%M:%S %p')
 				recs.append(val)
 			return recs
 				

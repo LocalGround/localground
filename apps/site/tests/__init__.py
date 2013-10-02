@@ -111,6 +111,36 @@ class ModelMixin(object):
 		p.save()
 		return p
 	
+	def create_view(self, user):
+		v = models.View(
+			name='Test View',
+			owner=user,
+			last_updated_by=user,
+			access_authority=models.ObjectAuthority.objects.get(id=1)
+		)
+		v.save()
+		return v
+	
+	def _add_project_user(self, project, user, authority_id):
+		uao = models.UserAuthorityObject(
+			object_id=project.id,
+			content_type=project.get_content_type(),
+			user=user,
+			authority=models.UserAuthority.objects.get(id=authority_id),
+			time_stamp=get_timestamp_no_milliseconds(),
+			granted_by=project.owner
+		)
+		uao.save()
+
+	def add_project_viewer(self, project, user):
+		self._add_project_user(project, user, models.UserAuthority.CAN_VIEW)
+
+	def add_project_editor(self, project, user):
+		self._add_project_user(project, user, models.UserAuthority.CAN_EDIT)
+	
+	def add_project_manager(self, project, user):
+		self._add_project_user(project, user, models.UserAuthority.CAN_MANAGE)
+	
 	def get_project(self, project_id=1):
 		return models.Project.objects.get(id=project_id)
 	
@@ -288,3 +318,4 @@ class ViewMixin(ModelMixin):
 # import tests from other directories:
 from localground.apps.site.api.tests import *
 from localground.apps.site.tests.views import *
+from localground.apps.site.tests.security import *

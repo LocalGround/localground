@@ -146,8 +146,10 @@ Map.prototype.load_points = function(dataset_name, records) {
             ++counter;
         }
     });
-    this.map.fitBounds(this.bounds);
     
+    if(this.bounds != null && !this.bounds.isEmpty()) {
+        this.map.fitBounds(this.bounds);
+    }
     this.stats = new Stats();
     this.stats.init(dataset_name, this.all_values, this.all_dates);
     

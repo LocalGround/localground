@@ -63,8 +63,24 @@ def show_map_editor(request):
     })
     return render_to_response('map/editor.html', context)
 
+
+def show_ebays_map_viewer(request):
+    context = RequestContext(request)
+    #set defaults:
+    lat, lng, zoom = 21.698265, 14.765625, 3
+    
+    context.update({
+        'lat': lat,
+        'lng': lng,
+        'zoom': zoom,
+        'ebays': True,
+        'basemap_id': 4,
+        'read_only': True
+    })
+    return render_to_response('ebays/viewer.html', context)
+
 @login_required()
-def show_ebays_map(request):
+def show_ebays_map_editor(request):
     u = request.user
     context = RequestContext(request)
     #set defaults:
@@ -82,8 +98,9 @@ def show_ebays_map(request):
         'lng': lng,
         'zoom': zoom,
         'projects': json.dumps(projects),
-        'ebays': True
+        'ebays': True,
+        'basemap_id': 4
     })
-    return render_to_response('ebays/index.html', context)
+    return render_to_response('ebays/editor.html', context)
 
 

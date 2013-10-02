@@ -165,4 +165,13 @@ class Base(models.Model):
 			date_created=get_timestamp_no_milliseconds(),
 			time_stamp=get_timestamp_no_milliseconds()
 		)
-		assoc.save() 
+		assoc.save()
+	
+	'''
+	def can_view(self, user=None):	
+		raise NotImplementedError("Please Implement this method")
+	
+	def can_edit(self, user):
+		raise NotImplementedError("Please Implement this method")
+	'''
+
