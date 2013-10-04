@@ -237,6 +237,4 @@ class Photo(BasePoint, BaseUploadedMedia):
                 'lat': self.point.y,
                 'lng': self.point.x
             })
-        if self.source_marker is not None:
-            d.update({ 'markerID': self.source_marker.id })
         return d

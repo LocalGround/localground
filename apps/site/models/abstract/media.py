@@ -165,12 +165,10 @@ class BaseUploadedMedia(BaseNamedMedia):
 		return self._meta.verbose_name
 	
 	def can_view(self, user, access_key=None):
-		return self.project.can_view(user, access_key=access_key)
+		return self.project.can_view(user=user, access_key=access_key)
 	
 	def can_edit(self, user):
-		return True
+		return self.project.can_edit(user)
 	
-	def can_manage(self, user):
-		return True
 
 	

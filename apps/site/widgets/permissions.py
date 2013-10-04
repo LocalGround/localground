@@ -39,7 +39,7 @@ class UserAutocomplete(TextInput):
                         source: function (query, process) {
                             return $.getJSON(
                                 '%s',
-                                { query: query },
+                                { q: query },
                                 function (data) {
                                     var newData = [];
                                     $.each(data, function(){

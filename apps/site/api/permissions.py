@@ -38,12 +38,19 @@ class IsAllowedGivenProjectPermissionSettings(permissions.BasePermission):
         elif obj.RESTRICT_BY_PROJECTS:
             # TODO: implement security methods for every Local Ground
             # object at the record- and batch-query level.
-            return obj.has_access(request.user)
+            return obj.can_view(request.user)
         elif obj.RESTRICT_BY_USER:
             if request.method in permissions.SAFE_METHODS:
                 return obj.can_view(request.user, access_key=request.GET.get('access_key'))
             else:    
                 return obj.owner == request.user or len(obj.users.filter(user=request.user)) > 0
         return True
+    
+class IsViewableGivenPermissionSettings(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        return obj.can_view(request.user, access_key=request.GET.get('access_key'))
+    
+    
     
     

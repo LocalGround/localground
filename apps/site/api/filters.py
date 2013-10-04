@@ -10,13 +10,13 @@ class SQLFilterBackend(filters.BaseFilterBackend):
     """
     def filter_queryset(self, request, queryset, view):
         r = request.GET or request.POST
-        queryset = self.__has_privileges(request.user, queryset)
         if r.get('query'):
             query = QueryParser(queryset.model, r.get('query'))
             return query.extend_query(queryset)
         else:
             return queryset
     
+    '''
     def __has_privileges(self, user, q):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
@@ -28,5 +28,6 @@ class SQLFilterBackend(filters.BaseFilterBackend):
             return q.filter(Q(projects__owner=user) | Q(projects__users__user=user))
         else:
             return q
+    '''
         
     

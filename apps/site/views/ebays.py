@@ -2,6 +2,7 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext    
 import simplejson as json
+from localground.apps.site.models import Project
 
 def show_ebays_map_viewer(request):
     context = RequestContext(request)

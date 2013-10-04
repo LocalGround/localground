@@ -117,11 +117,8 @@ class Scan(Processor):
 		return form.TableModel.objects.filter(scan=self)
 		
 	def get_markers(self):
-		reviews = list(Review.objects.select_related('source_marker')
-					.filter(source_scan=self)
-					.order_by('source_marker__name',)
-		)
-		return [r.source_marker for r in reviews]
+		# todo:  implement this...
+		return []
 		
 	def get_marker_dictionary(self):
 		from localground.apps.site.models import Marker

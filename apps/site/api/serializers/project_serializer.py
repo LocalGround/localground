@@ -56,7 +56,7 @@ class ProjectDetailSerializer(BaseSerializer):
 	def get_table_records(self, obj, form):
 		SerializerClass = create_compact_record_serializer(form)
 		data = SerializerClass(
-				form.get_data_query_lite(obj.owner, limit=1000)
+				form.get_data_query_lite(obj.owner, project=obj, limit=1000)
 			).data
 		d = self.serialize_list(
 				form.TableModel,

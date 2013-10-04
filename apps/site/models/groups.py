@@ -57,45 +57,6 @@ class Group(BaseNamed, BaseGenericRelationMixin, BasePermissions):
 				Q(project__isnull=False) | Q(userauthorityobject__isnull=False)
 				).order_by('username',)
 	
-		
-	def share_url(self):
-		return '/profile/{0}/{1}/share/'.format(self.model_name_plural, self.id)
-	
-
-	'''
-	def _has_authority(self, user, user_authority_id, access_key=None):
-		# 1) if user is superuser or user is owner, then has authority:
-		#if user and (user.is_superuser or user == self.owner):
-		if user and user == self.owner:
-			return True
-		
-		# 2) if just view permissions, check if project/view is public or
-		#    if a valid key has been supplied:
-		if user_authority_id == UserAuthority.CAN_VIEW:
-			if self.access_authority.id == ObjectAuthority.PUBLIC:
-				return True
-			elif self.access_authority.id == ObjectAuthority.PUBLIC_WITH_LINK:
-				if access_key == self.access_key:
-					return True
-				
-		# 3) finally, if user is logged in, see if user has been granted
-		#    the appropriate authority: 
-		if user and user.is_authenticated():
-			recs = self.users.select_related('authority__id').filter(user=user)
-			for rec in recs:
-				if rec.authority.id >= user_authority_id:
-					return True
-		return False
-	'''
-	
-	#def can_view(self, user, access_key=None):
-	#	return self._has_authority(user, UserAuthority.CAN_VIEW, access_key)
-
-	#def can_edit(self):
-	#	return self._has_authority(user, UserAuthority.CAN_EDIT)
-	
-	#def can_manage(self):
-	#	return self._has_authority(user, UserAuthority.CAN_MANAGE)
 	
 	
 class Project(Group):

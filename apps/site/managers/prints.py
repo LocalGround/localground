@@ -2,17 +2,17 @@ from django.contrib.gis.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
 from django.db.models import Count
-from localground.apps.site.managers.base import GeneralMixin
+from localground.apps.site.managers.base import ObjectMixin
 
 
-class PrintPermissionsQuerySet(QuerySet, GeneralMixin):
+class PrintPermissionsQuerySet(QuerySet, ObjectMixin):
     pass
 
-class PrintPermissionsManager(models.GeoManager, GeneralMixin):
+class PrintPermissionsManager(models.GeoManager, ObjectMixin):
     def get_query_set(self):
         return PrintPermissionsQuerySet(self.model, using=self._db)
 
-class PrintMixin(GeneralMixin):
+class PrintMixin(ObjectMixin):
     
     def to_dict_list(self, include_scan_counts=False):
         if include_scan_counts:
@@ -76,54 +76,3 @@ class PrintManager(models.GeoManager, PrintMixin):
     def get_query_set(self):
         return PrintQuerySet(self.model, using=self._db)
         
-        
-class FormMixin(object):
-    # For now, only the owner can view / edit a form.
-    # Todo: restrict viewing data to the row-level, based on project
-    # permissions.
-    def my_forms(self, user=None):
-        # a form is associated with one or more projects
-        return self.model.objects.distinct().filter(
-                Q(owner=user)
-            ).order_by('name',)
-    
-    def all_forms(self):
-        return self.model.objects.all().order_by('name',)
-    
-    def get_objects(self, user, project=None, ordering_field=None):
-        if user is None:
-            raise GenericLocalGroundError('The user cannot be empty')
-            
-        q = self.model.objects.distinct().select_related('project', 'source_scan',
-                                              'source_marker', 'owner',
-                                              'last_updated_by')
-        q = q.filter(
-                Q(owner=user) |
-                Q(projects__owner=user) |
-                Q(projects__users__user=user)
-            )
-        
-        if ordering_field is not None:
-            q =  q.order_by(ordering_field)
-        return q
-    
-    def apply_filter(self, user, query=None, order_by='id'):
-        if user is None:
-            raise GenericLocalGroundError('The user cannot be empty')
-            
-        q = self.get_objects(user)
-        if query is not None:
-            q = query.extend_query(q)
-        if order_by is not None:
-            q = q.order_by(order_by)
-        return q
-        
-
-class FormQuerySet(QuerySet, FormMixin):
-    pass        
-
-class FormManager(models.GeoManager, FormMixin):
-    def get_query_set(self):
-        return FormQuerySet(self.model, using=self._db)
-    
-    

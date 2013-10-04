@@ -53,6 +53,9 @@ class BasePermissions(models.Model):
 	def can_manage(self, user):
 		return self._has_user_permissions(user, UserAuthority.CAN_MANAGE)
 	
+	def share_url(self):
+		return '/profile/{0}/{1}/share/'.format(self.model_name_plural, self.id)
+	
 	class Meta:
 		abstract = True
 		app_label = 'site'

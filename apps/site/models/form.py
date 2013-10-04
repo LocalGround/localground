@@ -2,18 +2,15 @@ from django.contrib.gis.db import models
 from django.db.models import Q 
 from localground.apps.site.managers import FormManager
 from localground.apps.site.models import Field, ProjectMixin, \
-		BaseNamed, Snippet, DataType, Project
+		BaseNamed, Snippet, DataType, Project, BasePermissions
 from localground.apps.site.dynamic import ModelClassBuilder, DynamicFormBuilder
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 	
-class Form(BaseNamed):
-	RESTRICT_BY_PROJECTS = True
+class Form(BaseNamed, BasePermissions):
+	slug = models.SlugField(verbose_name="Friendly URL", max_length=100, db_index=True,
+								help_text='A few words, separated by dashes "-", to be used as part of the url')
 	table_name = models.CharField(max_length=255, unique=True)
-	access_authority = models.ForeignKey('ObjectAuthority',
-							db_column='view_authority',
-							verbose_name='Sharing')
-	access_key = models.CharField(max_length=16, null=True, blank=True)
 	projects = models.ManyToManyField('Project')
 	objects = FormManager()
 	_model_class = None
@@ -23,27 +20,58 @@ class Form(BaseNamed):
 		app_label = 'site'
 		verbose_name = 'form'
 		verbose_name_plural = 'forms'
+		unique_together = ('slug', 'owner')
+		
+	def can_view(self, user=None, access_key=None):
+		# check user it has object permissions:
+		has_object_permissions = super(Form, self).can_view(user=user, access_key=access_key)
+		if has_object_permissions:
+			return True
+		
+		# if s/he doesn't, check if user has project permissions:
+		for p in self.projects.all():
+			if p.can_view(user=user, access_key=access_key):
+				return True
+		return False
+			
+	def can_edit(self, user):
+		# check user it has object permissions:
+		has_object_permissions = super(Form, self).can_edit(user)
+		if has_object_permissions:
+			return True
+		
+		# if s/he doesn't, check if user has project permissions:
+		for p in self.projects.all():
+			if p.can_edit(user):
+				return True
+		return False
+	
+	def can_manage(self, user):
+		# check user it has object permissions:
+		has_object_permissions = super(Form, self).can_manage(user)
+		if has_object_permissions:
+			return True
+		
+		# if s/he doesn't, check if user has project permissions:
+		for p in self.projects.all():
+			if p.can_manage(user):
+				return True
+		return False
 		
 	@classmethod
 	def inline_form(cls, user):
-		from localground.apps.site.widgets import TagAutocomplete 
-		from django.forms import ModelForm
-		class InlineForm(ModelForm):
-			
-			def __init__(self, *args, **kwargs):
-				super(InlineForm, self).__init__(*args, **kwargs)
-				from localground.apps.site import models
-				
-			class Meta:
-				from django import forms
-				model = cls
-				fields = ('name', 'description', 'tags')
-				widgets = {
-					'id': forms.HiddenInput,
-					'description': forms.Textarea(attrs={'rows': 3}),
-					'tags': TagAutocomplete()
-				}
-		return InlineForm
+		from localground.apps.site.forms import FormInlineUpdateForm
+		return FormInlineUpdateForm
+	
+	@classmethod
+	def get_form(cls):
+		from localground.apps.site.forms import FormCreateForm
+		return FormCreateForm
+	
+	@classmethod
+	def sharing_form(cls):
+		from localground.apps.site.forms import FormPermissionsForm
+		return FormPermissionsForm
 	
 	@classmethod
 	def create_form(cls, user):

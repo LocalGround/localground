@@ -56,8 +56,8 @@ urlpatterns = patterns('',
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	# 3) Update:
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	(r'^profile/(?P<object_type_plural>projects|views)/(?P<object_id>\d+)/(?P<action>update|share)/embed/$', 'localground.apps.site.views.sharing.create_update_group_with_sharing', { 'embed': True }),
-	(r'^profile/(?P<object_type_plural>projects|views)/(?P<object_id>\d+)/(?P<action>update|share)/$', 'localground.apps.site.views.sharing.create_update_group_with_sharing'),
+	(r'^profile/(?P<object_type_plural>projects|views|forms)/(?P<object_id>\d+)/(?P<action>update|share)/embed/$', 'localground.apps.site.views.sharing.create_update_group_with_sharing', { 'embed': True }),
+	(r'^profile/(?P<object_type_plural>projects|views|forms)/(?P<object_id>\d+)/(?P<action>update|share)/$', 'localground.apps.site.views.sharing.create_update_group_with_sharing'),
 	(r'^profile/forms/create/embed/$', 'localground.apps.site.views.forms.create_update_form', { 'embed': True }),
 	(r'^profile/forms/create/$', 'localground.apps.site.views.forms.create_update_form'),
 	(r'^profile/forms/(?P<object_id>\d+)/embed/$', 'localground.apps.site.views.forms.create_update_form', { 'embed': True }),

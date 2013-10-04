@@ -101,12 +101,12 @@ class ModelMixin(object):
 	def get_user(self, username='tester'):
 		return User.objects.get(username=username)
 
-	def create_project(self, user):
+	def create_project(self, user, name='Test Project', authority_id=1):
 		p = models.Project(
-			name='Test Project',
+			name=name,
 			owner=user,
 			last_updated_by=user,
-			access_authority=models.ObjectAuthority.objects.get(id=1)
+			access_authority=models.ObjectAuthority.objects.get(id=authority_id)
 		)
 		p.save()
 		return p
@@ -187,11 +187,15 @@ class ModelMixin(object):
 	def create_form(self, name='A title',
 					 description='A description'):
 		from django.contrib.gis.geos import Point
+		oa = models.ObjectAuthority.objects.get(
+				id=models.ObjectAuthority.PRIVATE
+			)
 		f = models.Form(
 			owner=self.user,
 			name=name,
 			description=description,
-			last_updated_by=self.user
+			last_updated_by=self.user,
+			access_authority=oa
 		)
 		f.save()
 		f.projects.add(self.project)
@@ -279,6 +283,19 @@ class ModelMixin(object):
 		scan.processed_image = self.create_imageopt(scan)
 		scan.save()
 		return scan
+	
+	def create_photo(self, user, project, name='Photo Name',
+					 file_name='my_photo.jpg'):
+		photo = models.Photo(
+			project=project,
+			owner=user,
+			last_updated_by=user,
+			name=name,
+			description='Photo Description',
+			file_name_orig=file_name
+			)
+		photo.save()
+		return photo
 
 class ViewMixin(ModelMixin):
 	fixtures = ['initial_data.json', 'test_data.json']

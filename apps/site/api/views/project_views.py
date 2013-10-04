@@ -3,17 +3,21 @@ from localground.apps.site.api import serializers, filters
 from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
 from localground.apps.site import models
 from localground.apps.site.api.permissions import IsAllowedGivenProjectPermissionSettings
+from django.db.models import Q
+
 
 class ProjectList(generics.ListCreateAPIView, AuditCreate):
 	serializer_class = serializers.ProjectSerializer
 	filter_backends = (filters.SQLFilterBackend,)
-	queryset = models.Project.objects.distinct().select_related('owner').all()
 
 	paginate_by = 100
 	
 	def get_queryset(self):
 		user = self.request.user
-		return models.Project.objects.distinct().select_related('owner').filter(owner=user)
+		return (models.Project.objects.distinct()
+					.select_related('owner', 'last_updated_by')
+					.filter(Q(owner=user) | Q(users__user=user))
+				)
 	
 	def pre_save(self, obj):
 		AuditCreate.pre_save(self, obj)

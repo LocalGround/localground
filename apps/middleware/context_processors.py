@@ -26,9 +26,20 @@ def persistant_queries(request):
     }
     if request.user.is_authenticated():
         context.update({
-            'projects': Project.objects.get_objects(request.user),
+            'projects': Project.objects.get_objects(request.user)
+        })
+    
+    '''
+    TODO:
+    This "show_air_quality" flag is a serious hack.  Needs to devise a generalized
+    method for showing particular views to particular people (rather than hard-coding)
+    '''
+    try:
+        context.update({
             'show_air_quality': Form.objects.get(id=84).has_access(request.user)
         })
+    except Exception:
+        pass
     
     add_overlays = False
     for p in ['/print/', '/maps/', '/ebays/', '/viewer/', '/scans/update-record/']:

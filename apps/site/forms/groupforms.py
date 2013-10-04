@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.forms import ModelForm, fields, formsets, widgets, HiddenInput, models
 from localground.apps.site.widgets import UserAutocomplete
-from localground.apps.site.models import Project, View
+from localground.apps.site.models import Project, View, Form
 from django.conf import settings
 
 class ProjectPermissionsForm(ModelForm):
@@ -29,10 +29,12 @@ class ProjectPermissionsForm(ModelForm):
         
 class ProjectCreateForm(ModelForm):
     class Meta:
+        from localground.apps.site.widgets import TagAutocomplete
         model = Project
-        fields = ('name', 'description','access_authority', 'access_key', 'slug')
+        fields = ('name', 'description', 'tags', 'access_authority', 'access_key', 'slug')
         widgets = {
-            'description': forms.Textarea(attrs={'rows':4, 'cols':160})
+            'description': forms.Textarea(attrs={'rows':3, 'cols':160}),
+            'tags': TagAutocomplete()
         }
     
     class Media:
@@ -91,5 +93,21 @@ class ViewCreateForm(ProjectCreateForm):
 class ViewUpdateForm(ProjectUpdateForm):
     class Meta(ProjectUpdateForm.Meta):
         model = View
+        
+class FormPermissionsForm(ProjectPermissionsForm):
+    class Meta(ProjectPermissionsForm.Meta):
+        model = Form
+
+class FormInlineUpdateForm(ProjectInlineUpdateForm):
+    class Meta(ProjectInlineUpdateForm.Meta):
+        model = Form       
+        
+class FormCreateForm(ProjectCreateForm):
+    class Meta(ProjectCreateForm.Meta):
+        model = Form
+      
+class FormUpdateForm(ProjectUpdateForm):
+    class Meta(ProjectUpdateForm.Meta):
+        model = Form
 
         

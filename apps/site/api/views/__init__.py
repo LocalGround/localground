@@ -54,10 +54,13 @@ class PhotoViewSet(viewsets.ModelViewSet, AuditUpdate):
 
 	Additionally we also provide an extra `highlight` action. 
 	"""
-	queryset = models.Photo.objects.select_related('project', 'owner').all()
 	serializer_class = serializers.PhotoSerializer
 	filter_backends = (SQLFilterBackend,)
-	
+	model = models.Photo
+
+	def get_queryset(self):
+		return models.Photo.objects.get_objects(self.request.user)
+
 	def pre_save(self, obj):
 		AuditUpdate.pre_save(self, obj)
 		
@@ -90,9 +93,13 @@ class AudioViewSet(viewsets.ModelViewSet, AuditUpdate):
 	"""
 	This viewset automatically provides `list` and `detail` actions.
 	"""
-	queryset = models.Audio.objects.select_related('project', 'owner').all()
 	serializer_class = serializers.AudioSerializer
 	filter_backends = (SQLFilterBackend,)
+	model = models.Audio
+
+	def get_queryset(self):
+		return models.Audio.objects.get_objects(self.request.user)
+	
 	
 	def pre_save(self, obj):
 		AuditUpdate.pre_save(self, obj)
