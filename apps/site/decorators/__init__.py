@@ -161,21 +161,3 @@ def process_project(function):
     return wrapper
 
 
-'''
-def parse_filter(function):
-    from localground.apps.lib.helpers import QueryParser
-    """
-    Needs to be deprecated.  We have a middleware function that does what this
-    intended to do.
-    """
-    def wrapper(request, *args, **kwargs):
-
-        r = request.GET or request.POST
-        if r.get('filter') is None: return function(request, *args, **kwargs)    
-        
-        if kwargs is None: kwargs = {}
-        kwargs.update({'filter': QueryParser(r.get('filter'))})
-        return function(request, *args, **kwargs)
-    return wrapper
-'''
-

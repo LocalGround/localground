@@ -58,10 +58,6 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
     user_profile_form.title = 'Contacts / Privacy'
     forms.append(user_profile_form)
     
-    #f = MapGroupForm()
-    #f.title = 'Map Groups'
-    #forms.append(f)
-    
     #locals()
     extras = {
         'forms': forms,
@@ -79,17 +75,13 @@ def object_list_form(request, object_type_plural, return_message=None):
     template_name = 'profile/%s.html' % ModelClass.model_name_plural.replace(' ', '-')
     r = request.POST or request.GET
     
-    query = None
-    if r.get('query') is not None and len(r.get('query').strip()) > 0:
-        query = QueryParser(ModelClass, r.get('query'))
-        #return HttpResponse(json.dumps(query.to_dict_list()))
-        if query.error:
-            context.update({'error_message': query.error_message})
-            query = None
+    objects = ModelClass.objects.get_objects(
+                            user=request.user,
+                            request=request,
+                            context=context
+                        )
     
-    objects = ModelClass.objects.apply_filter(
-        user=request.user, query=query)
-    
+    #return HttpResponse(objects.query)
     per_page = 10
     
     def getModelClassFormSet(**kwargs):
@@ -105,13 +97,9 @@ def object_list_form(request, object_type_plural, return_message=None):
             **kwargs
         )
     
-    '''
-    ServiceFormSet = formset_factory(ServiceForm, extra=3)
-    ServiceFormSet.form = staticmethod(curry(ServiceForm, affiliate=request.affiliate))
-    '''
     ModelClassFormSet = getModelClassFormSet(form=ModelClass.inline_form(request.user))
     if request.method == "POST":
-        modelformset = ModelClassFormSet(request.POST, queryset=objects)
+        modelformset = ModelClassFormSet(request.POST, queryset=ModelClass.objects.all()) #objects
         if modelformset.is_valid():
             num_updates = 0
             for form in modelformset.forms:
@@ -140,8 +128,6 @@ def object_list_form(request, object_type_plural, return_message=None):
             start = (int(r.get('page'))-1)*per_page
         modelformset = ModelClassFormSet(queryset=objects[start:start+per_page])
         
-    filter_fields = ModelClass.filter_fields()
-        
     context.update({
         'formset': modelformset,
         'page_title': 'My %s' % ModelClass.model_name_plural.capitalize(),
@@ -152,20 +138,23 @@ def object_list_form(request, object_type_plural, return_message=None):
         'page_title': 'My %s' % ModelClass.model_name_plural.capitalize(),
         'user': request.user,
         'object_name_plural': ModelClass.model_name_plural,
-        'object_type': ModelClass.model_name,
-        'filter_fields': filter_fields
+        'object_type': ModelClass.model_name
     })
-
-    if query is not None:
-        filter_fields = query.populate_filter_fields()
+    
+    
+    if context.get('filter_fields'):
         context.update({
-            'filter_fields': filter_fields,
-            'sql': query.query_text,
-            'has_filters': len(query.where_conditions) > 0,
-            'url': '%s?query=%s' % (ModelClass.listing_url(), query.query_text),
+            'url': '%s?query=%s' % (ModelClass.listing_url(), context.get('sql')),  
         })
+    else:
+        context.update({
+            'filter_fields': ModelClass.filter_fields(),
+            'sql': '',
+            'has_filters': False
+        })
+    
     context.update(prep_paginator(request, objects, per_page=per_page))
-    if request.user.is_superuser or context.get('is_impersonation'):
+    if request.user.is_superuser:
         context.update({'users': Project.get_users()})
     return render_to_response(template_name, context)
    

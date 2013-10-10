@@ -29,12 +29,12 @@ class ViewManager(models.GeoManager, ViewMixin):
     def get_query_set(self):
         return ViewQuerySet(self.model, using=self._db)
     
-class FormMixin(object):
+class FormMixin(GroupMixin):
     # For now, only the owner can view / edit a form.
     # Todo: restrict viewing data to the row-level, based on project
     # permissions.
-    related_fields = ['project', 'owner', 'last_updated_by']
-    
+    related_fields = ['owner', 'last_updated_by']
+    prefetch_fields = ['users__user', 'projects', 'field_set']
     def my_forms(self, user=None):
         # a form is associated with one or more projects
         return self.model.objects.distinct().filter(
@@ -44,7 +44,8 @@ class FormMixin(object):
     def all_forms(self):
         return self.model.objects.all().order_by('name',)
     
-    def get_objects(self, user, project=None, ordering_field=None):
+    def get_objects(self, user, project=None, request=None,
+                    context=None, ordering_field='-time_stamp'):
         if user is None:
             raise GenericLocalGroundError('The user cannot be empty')
             
@@ -54,24 +55,12 @@ class FormMixin(object):
                 Q(projects__owner=user) |
                 Q(projects__users__user=user)
             )
-        
+        if request:
+            q = self._apply_sql_filter(q, request, context)
+        q = q.prefetch_related(*self.prefetch_fields)
         if ordering_field is not None:
             q =  q.order_by(ordering_field)
         return q
-    
-    '''
-    def apply_filter(self, user, query=None, order_by='id'):
-        if user is None:
-            raise GenericLocalGroundError('The user cannot be empty')
-            
-        q = self.get_objects(user)
-        if query is not None:
-            q = query.extend_query(q)
-        if order_by is not None:
-            q = q.order_by(order_by)
-        return q
-    '''
-        
 
 class FormQuerySet(QuerySet, FormMixin):
     pass        

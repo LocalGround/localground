@@ -74,6 +74,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 			'name': name,
 			'description': description,
 			'tags': tags,
+			'access_authority': models.ObjectAuthority.PRIVATE,
 			'field-0-col_alias': 'my first column',
 			'field-0-data_type': 1,
 			'field-0-is_printable': 'on',
@@ -97,7 +98,6 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		description = 'new d'
 		tags = 'a, b, c'
 		project = self.project.id
-		
 		
 		data = self.make_post_dictionary(name, description, tags)
 		data.update({'projects': project})

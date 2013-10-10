@@ -51,7 +51,8 @@ def persistant_queries(request):
             is_printable=True
         context.update({
             'overlays' : json.dumps(
-                WMSOverlay.objects.get_my_overlays(user=request.user) #, is_printable=True)
+                WMSOverlay.objects.get_objects(user=request.user).to_dict_list()
+                #, is_printable=True)
             )
         })
         if request.GET.get('markerID') is not None:

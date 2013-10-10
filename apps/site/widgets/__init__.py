@@ -20,9 +20,6 @@ class TagAutocomplete(TagAutocomplete):
 		if kw.get('autocomplete_url'): kw.pop('autocomplete_url')
 		super(TagAutocomplete, self).__init__(*args, **kw) #init parent Textarea class
 	
-	def extras(self):
-		return mark_safe('HELLO!!!!')
-	
 	def render(self, name, value, attrs=None):
 		if value is None:
 			value = ''

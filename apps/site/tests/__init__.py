@@ -186,13 +186,16 @@ class ModelMixin(object):
 	
 	def create_form(self, name='A title',
 					 description='A description'):
+		import random
 		from django.contrib.gis.geos import Point
 		oa = models.ObjectAuthority.objects.get(
 				id=models.ObjectAuthority.PRIVATE
 			)
+		slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz',  16)
 		f = models.Form(
 			owner=self.user,
 			name=name,
+			slug=slug,
 			description=description,
 			last_updated_by=self.user,
 			access_authority=oa

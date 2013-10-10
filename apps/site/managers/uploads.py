@@ -2,11 +2,20 @@ from django.contrib.gis.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
 from localground.apps.site.managers.base import ObjectMixin
-      
-class ScanMixin(ObjectMixin):
     
-    def get_objects(self, user, project=None, ordering_field=None, processed_only=False):
-        q = super(ScanMixin, self).get_objects(user, project=project, ordering_field=ordering_field)
+class UploadMixin(ObjectMixin):
+    related_fields = ['project', 'owner', 'last_updated_by']
+    prefetch_fields = []# 'project__users__user']
+    
+class ScanMixin(UploadMixin):
+    related_fields = ['status', 'source_print', 'project', 'owner', 'last_updated_by']
+    
+    def get_objects(self, user, project=None, request=None, context=None,
+                        ordering_field='-time_stamp', processed_only=False):
+        q = super(ScanMixin, self).get_objects(
+                user, project=project, request=request, context=context,
+                ordering_field=ordering_field
+            )
         if processed_only:
             q = q.filter(status=2).filter(source_print__isnull=False)
         return q
@@ -30,14 +39,14 @@ class ScanManager(models.GeoManager, ScanMixin):
     def get_query_set(self):
         return ScanQuerySet(self.model, using=self._db)
         
-class AttachmentQuerySet(QuerySet, ObjectMixin):
+class AttachmentQuerySet(QuerySet, UploadMixin):
     pass
 
 class AttachmentManager(models.GeoManager, ScanMixin):
     def get_query_set(self):
         return AttachmentQuerySet(self.model, using=self._db)
         
-class PhotoMixin(ObjectMixin):
+class PhotoMixin(UploadMixin):
     pass
     
 class PrintPermissionsMixin(object):
@@ -54,7 +63,7 @@ class PhotoManager(models.GeoManager, PhotoMixin):
     def get_query_set(self):
         return PhotoQuerySet(self.model, using=self._db)
         
-class AudioMixin(ObjectMixin):
+class AudioMixin(UploadMixin):
     pass
 
 class AudioQuerySet(QuerySet, AudioMixin):
@@ -64,7 +73,7 @@ class AudioManager(models.GeoManager, AudioMixin):
     def get_query_set(self):
         return AudioQuerySet(self.model, using=self._db)
  
-class VideoMixin(ObjectMixin):
+class VideoMixin(UploadMixin):
     pass
 
 class VideoQuerySet(QuerySet, AudioMixin):

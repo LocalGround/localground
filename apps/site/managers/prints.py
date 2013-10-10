@@ -13,6 +13,7 @@ class PrintPermissionsManager(models.GeoManager, ObjectMixin):
         return PrintPermissionsQuerySet(self.model, using=self._db)
 
 class PrintMixin(ObjectMixin):
+    related_fields = ['project', 'owner', 'last_updated_by', 'map_provider']
     
     def to_dict_list(self, include_scan_counts=False):
         if include_scan_counts:

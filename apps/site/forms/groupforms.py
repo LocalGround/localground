@@ -48,8 +48,8 @@ class ProjectInlineUpdateForm(ModelForm):
         model = Project
         fields = ('name', 'description', 'slug', 'tags')
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 1, 'cols': 160}),
-            'tags': TagAutocomplete()
+            'description': forms.Textarea(attrs={'rows': 1, 'cols': 160}) #,
+            #'tags': TagAutocomplete()
         }
     
     def __init__(self, *args, **kwargs):
