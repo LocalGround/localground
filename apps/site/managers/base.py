@@ -99,8 +99,14 @@ class ObjectMixin(BaseMixin):
             raise GenericLocalGroundError('The user cannot be anonymous')
         q = (self.model.objects.distinct()
                 .select_related(*self.related_fields)
-                .filter(Q(project__owner=user) | Q(project__users__user=user))
             )
+        # this query is slow:
+        #q = q.filter(Q(project__owner=user) | Q(project__users__user=user))
+        # use this instead:
+        from localground.apps.site.models import Project
+        q = q.filter(project__id__in=[
+                p.id for p in Project.objects.filter(Q(owner=user) | Q(users__user=user)).distinct()	
+            ])
         if project:
             q = q.filter(project=project)
         
@@ -112,7 +118,7 @@ class ObjectMixin(BaseMixin):
         return q
     
     def get_objects_editable(self, user, project=None, request=None,
-                             context=None, ordering_field='name'):
+                             context=None, ordering_field='-time_stamp'):
         '''
         Returns:
         (1) all objects that the user owns, as well as
@@ -141,20 +147,22 @@ class ObjectMixin(BaseMixin):
             q =  q.order_by(ordering_field)
         return q
     
-    def get_objects_public(self, project=None, request=None, context=None,
-                           ordering_field='name'):
+    
+    def get_objects_public(self, access_key=None, request=None, context=None,
+                    ordering_field='-time_stamp', **kwargs):
         '''
         Returns all objects that belong to a project that has been
         marked as public
         '''
-        q = (self.model.objects.distinct()
-                .select_related(*self.related_fields)
-                .filter(Q(project__access_authority__id=3))
+        from localground.apps.site.models import ObjectAuthority
+        q = self.model.objects.distinct().select_related(*self.related_fields)
+        q = q.filter(
+                (Q(project__access_authority__id=ObjectAuthority.PUBLIC_WITH_LINK)
+                    & Q(project__access_key=access_key)) |
+                Q(project__access_authority__id=ObjectAuthority.PUBLIC)
             )
-        if project:
-            q = q.filter(project=project)
-        if request:
-            q = self._apply_sql_filter(q, request)
+        if request is not None:
+            q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
         if ordering_field:
             q =  q.order_by(ordering_field)
@@ -187,16 +195,25 @@ class GroupMixin(ObjectMixin):
         '''
         return q
     
-    '''
-    def apply_filter(self, user, query=None, order_by='id'):
-        if user is None:
-            raise GenericLocalGroundError('The user cannot be empty')
-            
-        q = self.get_objects(user)
-        if query is not None:
-            q = query.extend_query(q)
-        if order_by is not None:
-            q = q.order_by(order_by)
+    def get_objects_public(self, access_key=None, request=None, context=None,
+                    ordering_field='-time_stamp', **kwargs):
+        '''
+        Returns all objects that belong to a project that has been
+        marked as public
+        '''
+        from localground.apps.site.models import ObjectAuthority
+        q = self.model.objects.distinct().select_related(*self.related_fields)
+        q = q.filter(
+                (Q(access_authority__id=ObjectAuthority.PUBLIC_WITH_LINK)
+                    & Q(access_key=access_key)) |
+                Q(access_authority__id=ObjectAuthority.PUBLIC)
+            )
+        
+        if request is not None:
+            q = self._apply_sql_filter(q, request, context)
+        q = q.prefetch_related(*self.prefetch_fields)
+        if ordering_field:
+            q =  q.order_by(ordering_field)
         return q
-    '''
+
    

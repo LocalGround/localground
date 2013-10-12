@@ -5,10 +5,12 @@ from localground.apps.site.managers.base import GenericLocalGroundError
 from localground.apps.site.tests import ModelMixin
 from rest_framework import status
 import urllib
-		
-class BatchPhotoQuerySecurityTest(test.TestCase, ModelMixin):
-	
+
+class BatchQueryMixin(ModelMixin):
 	fixtures = ['initial_data.json', 'test_data.json']
+	model = models.BaseMedia
+	create_function_name = None
+	file_names = ['a', 'b', 'c']
 	
 	def setUp(self):
 		ModelMixin.setUp(self)
@@ -27,35 +29,39 @@ class BatchPhotoQuerySecurityTest(test.TestCase, ModelMixin):
 				)
 			)
 		
-		#create 3 photos per project:
-		self.photos = []
-		file_names = ['photo_1.jpg', 'photo_2.jpg', 'photo_3.jpg']
+		#create 3 objects per project:
+		self._create_objects()
+		
+	def _create_objects(self):
+		create_object_function = getattr(self, self.create_function_name)
+		self.objects = []
+		
 		for project in self.projects:
-			for i, fn in enumerate(file_names):
-				self.photos.append(
-					self.create_photo(
+			for i, fn in enumerate(self.file_names):
+				self.objects.append(
+					create_object_function(
 						project.owner, project,
-						name='Photo #%s' % (i+1),
+						name='%s #%s' % (self.model.pretty_name, i+1),
 						file_name=fn
 					)
 				)
-		
+				
 	def test_owner_can_view_objects(self):
 		self.assertEqual(
 			3,
-			len(models.Photo.objects.get_objects(self.users[0]))
+			len(self.model.objects.get_objects(self.users[0]))
 		)
 		
 	def test_owner_can_edit_objects(self):
 		self.assertEqual(
 			3,
-			len(models.Photo.objects.get_objects_editable(self.users[0]))
+			len(self.model.objects.get_objects_editable(self.users[0]))
 		)
 		
 	def test_anonymous_cannot_view_objects(self):
 		allows_query = True
 		try:
-			models.Photo.objects.get_objects(AnonymousUser())
+			self.model.objects.get_objects(AnonymousUser())
 		except GenericLocalGroundError:
 			allows_query = False
 		self.assertFalse(allows_query)
@@ -67,18 +73,18 @@ class BatchPhotoQuerySecurityTest(test.TestCase, ModelMixin):
 		#user(1) should be able to view 6 projects....
 		self.assertEqual(
 			6,
-			len(models.Photo.objects.get_objects(self.users[1]))
+			len(self.model.objects.get_objects(self.users[1]))
 		)
 		#user(1) should only be able to edit 3 projects...
 		self.assertEqual(
 			3,
-			len(models.Photo.objects.get_objects_editable(self.users[1]))
+			len(self.model.objects.get_objects_editable(self.users[1]))
 		)
 	
 	def test_anonymous_cannot_edit_objects(self):
 		allows_query = True
 		try:
-			models.Photo.objects.get_objects_editable(AnonymousUser())
+			self.model.objects.get_objects_editable(AnonymousUser())
 		except GenericLocalGroundError:
 			allows_query = False
 		self.assertFalse(allows_query)
@@ -87,28 +93,28 @@ class BatchPhotoQuerySecurityTest(test.TestCase, ModelMixin):
 		self.add_project_editor(self.projects[0], self.users[1])
 		self.assertEqual(
 			6,
-			len(models.Photo.objects.get_objects(self.users[1]))
+			len(self.model.objects.get_objects(self.users[1]))
 		)
 		self.assertEqual(
 			6,
-			len(models.Photo.objects.get_objects_editable(self.users[1]))
+			len(self.model.objects.get_objects_editable(self.users[1]))
 		)
 		
 	def test_manager_can_view_and_edit_objects(self, ):
 		self.add_project_manager(self.projects[0], self.users[1])
 		self.assertEqual(
 			6,
-			len(models.Photo.objects.get_objects(self.users[1]))
+			len(self.model.objects.get_objects(self.users[1]))
 		)
 		self.assertEqual(
 			6,
-			len(models.Photo.objects.get_objects_editable(self.users[1]))
+			len(self.model.objects.get_objects_editable(self.users[1]))
 		)
 		
 	def test_public_can_view_objects(self):
 		self.assertEqual(
 			0,
-			len(models.Photo.objects.get_objects_public())
+			len(self.model.objects.get_objects_public())
 		)
 		
 		#first, set all projects to public:
@@ -119,8 +125,74 @@ class BatchPhotoQuerySecurityTest(test.TestCase, ModelMixin):
 		
 		self.assertEqual(
 			9,
-			len(models.Photo.objects.get_objects_public())
+			len(self.model.objects.get_objects_public())
 		)
+		
+class BatchPhotoQuerySecurityTest(test.TestCase, BatchQueryMixin):
+	model = models.Photo
+	create_function_name = 'create_photo'
+	file_names = ['photo_1.jpg', 'photo_2.jpg', 'photo_3.jpg']
+	
+	def setUp(self):
+		BatchQueryMixin.setUp(self)
+	
+	
+class BatchAudioQuerySecurityTest(test.TestCase, BatchQueryMixin):
+	model = models.Audio
+	create_function_name = 'create_audio'
+	file_names = ['audio_1.mp3', 'audio_2.mp3', 'audio_3.mp3']
+	
+	def setUp(self):
+		BatchQueryMixin.setUp(self)
+	
+class BatchMarkerQuerySecurityTest(test.TestCase, BatchQueryMixin):
+	model = models.Marker
+	
+	def setUp(self):
+		BatchQueryMixin.setUp(self)
+	
+	def _create_objects(self):
+		self.objects = []
+		for project in self.projects:
+			for i, fn in enumerate(self.file_names):
+				self.objects.append(
+					self.create_marker(
+						project.owner, project)
+				)
+				
+				
+class BatchRecordQuerySecurityTest(test.TestCase, BatchQueryMixin):
+	model = None
+	
+	def setUp(self):
+		BatchQueryMixin.setUp(self)
+	
+	def _create_objects(self):
+		num_fields = 3
+		form = self.create_form_with_fields(num_fields=num_fields)
+		self.model = form.TableModel
+		self.objects = []
+		for project in self.projects:
+			for i, fn in enumerate(self.file_names):
+				self.objects.append(
+					self.insert_form_data_record(form, project)
+				)
+				
+	def test_viewer_can_view_objects_detailed(self, ):
+		# grant user(1) view privs to project(0):
+		self.add_project_viewer(self.projects[0], self.users[1])
+		
+		#user(1) should be able to view 6 projects....
+		self.assertEqual(
+			6,
+			len(self.model.objects.get_objects_detailed(self.users[1]))
+		)
+		#user(1) should only be able to edit 3 projects...
+		self.assertEqual(
+			3,
+			len(self.model.objects.get_objects_editable(self.users[1]))
+		)
+	
 	
 			
 		

@@ -160,11 +160,17 @@ def get_table_data(request, form_id):
     if form_id == '92':
         include_attachment = True
         
+    '''
     objects = form.get_data(is_blank=False, to_dict=True, include_markers=False,
                                 manually_reviewed=True,
                                 include_attachment=include_attachment,
                                 order_by=['snippet__source_attachment__name',
                                          'time_stamp'])
+    '''
+    objects = form.TableModel.objects.get_objects_detailed(
+        is_blank=False,  manually_reviewed=True,
+        order_by=['snippet__source_attachment__name',
+                                         'time_stamp']).to_dict_list()
     if form_id == '92':
         for i, obj in enumerate(objects):
             attribution =  objects[i]['attachment']['attribution']

@@ -1,4 +1,5 @@
 from localground.apps.site.models import BasePoint, BaseAudit, ProjectMixin
+from localground.apps.site.managers import RecordManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
 from datetime import datetime
@@ -20,6 +21,7 @@ class DynamicModelMixin(BasePoint, BaseAudit):
 	snippet = models.ForeignKey('Snippet', null=True, blank=True)
 	project = models.ForeignKey('Project')
 	manually_reviewed = models.BooleanField()
+	objects = RecordManager()
 	
 	class Meta:
 		abstract = True
@@ -42,6 +44,12 @@ class DynamicModelMixin(BasePoint, BaseAudit):
 		if not hasattr(self, '_fields'):
 			self._fields = self.form.get_fields()
 		return self._fields
+	
+	def can_view(self, user, access_key=None):
+		return self.project.can_view(user=user, access_key=access_key)
+	
+	def can_edit(self, user):
+		return self.project.can_edit(user)
 	
 	def get_dynamic_data(self):
 		data = []

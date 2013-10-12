@@ -31,7 +31,7 @@ def get_objects(request, object_id, format_type='table'):
             attachment = Attachment.objects.get(id=int(r.get('attachment_id')))
         except Attachment.DoesNotExist:
             pass
-    records = form.get_data(project=project,
+    records = form.TableModel.objects.get_objects_detailed(self.user, project=project,
                                 is_blank=is_blank, has_geometry=False,
                                 attachment=attachment)
 

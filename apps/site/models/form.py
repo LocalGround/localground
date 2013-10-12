@@ -288,6 +288,7 @@ class Form(BaseNamed, BasePermissions):
 			names.append(n.col_name)
 		return names
 	
+	'''
 	def get_data_query_lite(self, user=None, project=None, filter=None,
 					   has_geometry=None, manually_reviewed=None,
 					   order_by=['-time_stamp'], limit=1000):
@@ -317,12 +318,22 @@ class Form(BaseNamed, BasePermissions):
 	
 	def get_data_query(self, project=None, filter=None, user=None, is_blank=False,
 					to_dict=False, has_geometry=None,
-					attachment=None, manually_reviewed=None):
-		# We want to query everything in one go, so we're taking advantage of
-		# the "select_related" functionality (no lazy queries please!)
-		related_fields = ['snippet', 'num_snippet', 'project',
-						  'snippet__source_attachment', 'owner', 'form', 'form__project__id']
-					#'attachment', 'owner']
+					attachment=None, manually_reviewed=None,
+					access_key=None,
+					related_fields=[
+						'snippet',
+						'num_snippet',
+						'project',
+						'snippet__source_attachment',
+						'owner',
+						'form',
+						'form__project__id']
+		):
+		if user is None or not user.is_authenticated():
+			if not self.can_view(user=user, access_key=access_key):
+				from rest_framework import exceptions
+				raise exceptions.AuthenticationFailed(detail="You are not authorized")
+		
 		for f in self.get_fields():
 			related_fields.append(f.col_name + '_snippet')
 		objects =  (self.TableModel.objects
@@ -337,7 +348,7 @@ class Form(BaseNamed, BasePermissions):
 			objects = objects.filter(snippet__source_attachment=attachment)
 		if manually_reviewed is not None:
 			objects = objects.filter(manually_reviewed=manually_reviewed)   
-		if user is not None:
+		if user is not None and user.is_authenticated():
 			objects = objects.filter(
 					Q(project__owner=user) |
 					Q(project__users__user=user)
@@ -348,7 +359,12 @@ class Form(BaseNamed, BasePermissions):
 	
 	def get_objects(self, user, project=None, filter=None,
 					manually_reviewed=None, order_by=['time_stamp'], **kwargs):
-		objects = self.get_data_query(manually_reviewed=manually_reviewed, user=user, project=project, **kwargs)  
+		objects = self.get_data_query(
+							manually_reviewed=manually_reviewed,
+							user=user,
+							project=project,
+							**kwargs
+						)  
 		objects = objects.order_by(*order_by)
 		return objects
 	
@@ -366,6 +382,7 @@ class Form(BaseNamed, BasePermissions):
 				for o in list(objects[:2000])
 			]
 		return objects
+	'''
 	
 	def to_dict(self, print_only=True):
 		return dict(

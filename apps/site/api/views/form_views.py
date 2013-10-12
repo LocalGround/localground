@@ -50,7 +50,9 @@ class FormDataMixin(object):
 
 class FormDataList(generics.ListCreateAPIView, FormDataMixin):
 	filter_backends = (filters.SQLFilterBackend,)
-	paginate_by = 10000
+	paginate_by = 10 #0000
+	permission_classes = (IsViewableGivenPermissionSettings,)
+	model = models.Form
 	
 	def pre_save(self, obj):
 		obj.manually_reviewed = True
@@ -58,16 +60,15 @@ class FormDataList(generics.ListCreateAPIView, FormDataMixin):
 	def get_serializer_class(self):
 		return FormDataMixin.get_serializer_class(self)
 	
-	def get_queryset(self):
-		return FormDataMixin.get_queryset(self)
+	#def get_queryset(self):
+	#	return FormDataMixin.get_queryset(self)
 	
 	def get_queryset(self):
 		try:
 			form = models.Form.objects.get(id=self.kwargs.get('form_id'))
 		except models.Form.DoesNotExist:
 			raise Http404
-		return form.get_objects(self.request.user)
-	
+		return form.TableModel.objects.get_objects(self.request.user)
 		
 	def create(self, request, *args, **kwargs):
 		'''

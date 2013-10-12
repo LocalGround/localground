@@ -26,9 +26,6 @@ class ModelMixin(object):
 	user_password = 'top_secret'
 	fixtures = ['initial_data.json', 'test_data.json']
 	
-	class Meta:
-		anstract = True
-	
 	def setUp(self):
 		self._superuser = None
 		self._user = None
@@ -227,7 +224,7 @@ class ModelMixin(object):
 			fld.save(user=self.user)
 		return f
 	
-	def insert_form_data_record(self, form):
+	def insert_form_data_record(self, form, project=None):
 		
 		from django.contrib.gis.geos import Point
 		#create a marker:
@@ -236,6 +233,8 @@ class ModelMixin(object):
 		record = form.TableModel()
 		record.num = 1
 		record.point = Point(lng, lat, srid=4326)
+		if project:
+			record.project = project
 		
 		#generate different dummy types depending on the data_type
 		for field in form.get_fields():
@@ -299,6 +298,19 @@ class ModelMixin(object):
 			)
 		photo.save()
 		return photo
+	
+	def create_audio(self, user, project, name='Audio Name',
+					 file_name='my_audio.jpg'):
+		audio = models.Audio(
+			project=project,
+			owner=user,
+			last_updated_by=user,
+			name=name,
+			description='Audio Description',
+			file_name_orig=file_name
+			)
+		audio.save()
+		return audio
 
 class ViewMixin(ModelMixin):
 	fixtures = ['initial_data.json', 'test_data.json']

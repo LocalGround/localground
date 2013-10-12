@@ -58,7 +58,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		record.save(user=self.user)
 		
 		form = models.Form.objects.get(id=self.form.id)
-		rec = form.get_data().all()[0]
+		rec = form.TableModel.objects.get_objects(self.user)[0]
 		self.assertEqual('Column Value 1', getattr(rec, f1.col_name))
 		self.assertEqual('Column Value 2', getattr(rec, f2.col_name))
 		self.assertIsNotNone(rec.time_stamp)
