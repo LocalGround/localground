@@ -10,8 +10,13 @@ class MarkerList(generics.ListCreateAPIView, AuditCreate):
 	paginate_by = 100
 	
 	def get_queryset(self):
-		return models.Marker.objects.get_objects_with_counts(self.request.user)
-	
+		if self.request.user.is_authenticated():
+			return models.Marker.objects.get_objects_with_counts(self.request.user)
+		else:
+			return models.Marker.objects.get_objects_public_with_counts(
+				access_key=self.request.GET.get('access_key')
+			)
+
 	def pre_save(self, obj):
 		AuditCreate.pre_save(self, obj)
 		  

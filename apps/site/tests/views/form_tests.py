@@ -42,7 +42,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		self.assertEqual(2, len(self.form.get_fields()))
 		
 		# query the new form:
-		self.assertEqual(len(self.form.get_data()), 0)
+		self.assertEqual(len(self.form.TableModel.objects.get_objects(self.user)), 0)
 		
 		#requery:
 		form = models.Form.objects.get(id=self.form.id)

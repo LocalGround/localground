@@ -105,6 +105,9 @@ class RecordQuerySet(QuerySet, AudioMixin):
 class RecordManager(models.GeoManager, VideoMixin):
 	related_fields = ['project', 'owner', 'form']
 	
+	def get_query_set(self):
+		return RecordQuerySet(self.model, using=self._db)  
+	
 	def get_objects_detailed(self, user, project=None, request=None,
 							 context=None, ordering_field='-time_stamp',
 							 attachment=None, manually_reviewed=None,
@@ -112,11 +115,11 @@ class RecordManager(models.GeoManager, VideoMixin):
 		'''
 		Same as get_objects, but it queries for more related objects.
 		'''
-		from localground.apps.site.models import Form
+		from localground.apps.site import models
 		self.related_fields = ['snippet', 'num_snippet', 'project',
 					  'snippet__source_attachment', 'owner',
 					  'form', 'form__project__id']
-		form = Form.objects.get(table_name=self.model._meta.db_table)
+		form = models.Form.objects.get(table_name=self.model._meta.db_table)
 		queryset = self.get_objects(user, project=project, request=request,
 							 context=context, ordering_field=ordering_field)
 		if attachment is not None:
@@ -126,9 +129,43 @@ class RecordManager(models.GeoManager, VideoMixin):
 		if is_blank is not None:
 			queryset = queryset.filter(Q(snippet__is_blank=is_blank) | Q(snippet__isnull=True))
 		return queryset
-		
 	
-	def get_query_set(self):
-		return RecordQuerySet(self.model, using=self._db)  
+	def get_objects_public(self, access_key=None, request=None, context=None,
+					ordering_field='-time_stamp', **kwargs):
+		'''
+		Returns all objects that belong to a project that has been
+		marked as public
+		'''
+		from localground.apps.site import models
+		form = models.Form.objects.get(table_name=self.model._meta.db_table)
+		
+		# if the form is public access, return all records.  Making a
+		# data set publicly viewable means that EVERY record in the dataset
+		# is public, regardless of the project permissions setting:
+		if form.can_view(access_key=access_key):
+			q = self.model.objects.distinct().select_related(*self.related_fields)
+			if request is not None:
+				q = self._apply_sql_filter(q, request, context)
+			q = q.prefetch_related(*self.prefetch_fields)
+			if ordering_field:
+				q =  q.order_by(ordering_field)
+			return q
+		
+		# if the dataset is not public, return only those records that are
+		# associated with a public project:
+		else:
+			q = self.model.objects.distinct().select_related(*self.related_fields)
+			q = q.filter(
+					(Q(project__access_authority__id=models.ObjectAuthority.PUBLIC_WITH_LINK)
+						& Q(project__access_key=access_key)) |
+					Q(project__access_authority__id=models.ObjectAuthority.PUBLIC)
+				)
+			if request is not None:
+				q = self._apply_sql_filter(q, request, context)
+			q = q.prefetch_related(*self.prefetch_fields)
+			if ordering_field:
+				q =  q.order_by(ordering_field)
+			return q
+		
 	
 

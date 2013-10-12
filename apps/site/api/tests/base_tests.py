@@ -50,6 +50,9 @@ class ViewMixinAPI(ModelMixin):
 	def setUp(self):
 		ModelMixin.setUp(self)
 	
+	'''
+	This generic test no longer makes sense, because some pages will
+	be accessible, while others won't.  Commenting out for now.
 	def test_page_403_or_302_status_anonymous_user(self, urls=None):
 		if urls is None:
 			urls = self.urls
@@ -59,6 +62,7 @@ class ViewMixinAPI(ModelMixin):
 				status.HTTP_302_FOUND,
 				status.HTTP_403_FORBIDDEN
 			])
+	'''
 	
 	def test_page_200_status_basic_user(self, urls=None, **kwargs):
 		if urls is None:

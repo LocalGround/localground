@@ -1,4 +1,4 @@
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, permissions
 from localground.apps.site.api import serializers, filters
 from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
 from localground.apps.site import models
@@ -6,7 +6,15 @@ from localground.apps.site import models
 class PrintList(generics.ListCreateAPIView, AuditCreate):
 	serializer_class = serializers.PrintSerializer
 	filter_backends = (filters.SQLFilterBackend,)
-	queryset = models.Print.objects.select_related('project', 'owner')
+	model = models.Print
+	
+	def get_queryset(self):
+		if self.request.user.is_authenticated():
+			return models.Print.objects.get_objects(self.request.user)
+		else:
+			return models.Print.objects.get_objects_public(
+				access_key=self.request.GET.get('access_key')
+			)
 
 	paginate_by = 100
 	
@@ -43,6 +51,7 @@ class PrintInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
 class LayoutViewSet(viewsets.ModelViewSet, AuditUpdate):
 	queryset = models.Layout.objects.all()
 	serializer_class = serializers.LayoutSerializer
+	permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 	filter_backends = (filters.SQLFilterBackend,)
 	
 	def pre_save(self, obj):

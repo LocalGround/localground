@@ -1,11 +1,11 @@
 from rest_framework import viewsets, generics
-from localground.apps.site.api import serializers, filters
+from localground.apps.site.api import serializers, filters, permissions
 from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
 from localground.apps.site import models
 from django.http import Http404
 from rest_framework.response import Response
 from rest_framework import status
-from localground.apps.site.api.permissions import IsViewableGivenPermissionSettings
+from localground.apps.site.api.permissions import CheckFormPermissions
 
 class FormList(generics.ListCreateAPIView, AuditCreate):
 	serializer_class = serializers.FormSerializer
@@ -50,8 +50,7 @@ class FormDataMixin(object):
 
 class FormDataList(generics.ListCreateAPIView, FormDataMixin):
 	filter_backends = (filters.SQLFilterBackend,)
-	paginate_by = 10 #0000
-	permission_classes = (IsViewableGivenPermissionSettings,)
+	permission_classes = (CheckFormPermissions,)
 	model = models.Form
 	
 	def pre_save(self, obj):
@@ -68,7 +67,11 @@ class FormDataList(generics.ListCreateAPIView, FormDataMixin):
 			form = models.Form.objects.get(id=self.kwargs.get('form_id'))
 		except models.Form.DoesNotExist:
 			raise Http404
-		return form.TableModel.objects.get_objects(self.request.user)
+		if self.request.user.is_authenticated():
+			return form.TableModel.objects.get_objects(self.request.user)
+		else:
+			return form.TableModel.objects.get_objects_public(
+				self.request.user, access_key=self.request.GET.get('access_key'))	
 		
 	def create(self, request, *args, **kwargs):
 		'''

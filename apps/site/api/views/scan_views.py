@@ -11,9 +11,18 @@ class ScanViewSet(viewsets.ModelViewSet, AuditUpdate):
 
 	Additionally we also provide an extra `highlight` action. 
 	"""
-	queryset = models.Scan.objects.select_related('project', 'owner', 'processed_image').all()
+	#queryset = models.Scan.objects.select_related('project', 'owner', 'processed_image').all()
+	model = models.Scan
 	serializer_class = serializers.ScanSerializer
 	filter_backends = (SQLFilterBackend,)
+	
+	def get_queryset(self):
+		if self.request.user.is_authenticated():
+			return models.Scan.objects.get_objects(self.request.user)
+		else:
+			return models.Scan.objects.get_objects_public(
+				access_key=self.request.GET.get('access_key')
+			)
 	
 	def pre_save(self, obj):
 		AuditUpdate.pre_save(self, obj)

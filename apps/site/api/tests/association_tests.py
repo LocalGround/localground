@@ -100,6 +100,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixinAPI, APIRelatedMediaMi
 		]
 		self.view = views.RelatedMediaInstance.as_view()
 		
+	'''
 	def test_page_403_or_302_status_anonymous_user(self):
 		url = '/api/0/markers/%s/%s/%s/'
 		urls = [
@@ -107,6 +108,7 @@ class ApiRelatedMediaInstanceTest(test.TestCase, ViewMixinAPI, APIRelatedMediaMi
 			url % (self.marker.id, 'audio', 1)
 		]
 		ViewMixinAPI.test_page_403_or_302_status_anonymous_user(self, urls=urls)
+	'''
 	
 	def test_page_200_status_basic_user(self, **kwargs):
 		url = '/api/0/markers/%s/%s/%s/'

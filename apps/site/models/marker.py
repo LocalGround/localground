@@ -69,7 +69,13 @@ class Marker(BasePoint, BaseNamed, BaseGenericRelationMixin):
 				if len(recs) > 0:
 					self._records_dict[form] = recs
 			
-		return self._records_dict	
+		return self._records_dict
+	
+	def can_view(self, user, access_key=None):
+		return self.project.can_view(user=user, access_key=access_key)
+	
+	def can_edit(self, user):
+		return self.project.can_edit(user)
 
 
 	class Meta:

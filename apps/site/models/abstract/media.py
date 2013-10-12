@@ -93,6 +93,12 @@ class BaseMedia(BaseAudit):
 					os.mkdir(p)
 					os.chown(p, uid, gid)
 					os.chmod(p, permissions)
+	
+	def can_view(self, user, access_key=None):
+		return self.project.can_view(user=user, access_key=access_key)
+	
+	def can_edit(self, user):
+		return self.project.can_edit(user)
 
 
 class BaseNamedMedia(BaseMedia, ProjectMixin):
@@ -163,12 +169,6 @@ class BaseUploadedMedia(BaseNamedMedia):
 		
 	def get_object_type(self):
 		return self._meta.verbose_name
-	
-	def can_view(self, user, access_key=None):
-		return self.project.can_view(user=user, access_key=access_key)
-	
-	def can_edit(self, user):
-		return self.project.can_edit(user)
 	
 
 	

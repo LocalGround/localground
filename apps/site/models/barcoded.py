@@ -108,8 +108,11 @@ class Scan(Processor):
 		'''
 		Used for displaying a previously generated image
 		'''
-		return self._encrypt_media_path('%s%s' %
+		if self.processed_image:
+			return self._encrypt_media_path('%s%s' %
 									(self.virtual_path, self.processed_image.file_name_orig))
+		else:
+			return None
 	
 	def get_records_by_form(self, form_id):
 		from localground.apps.site.models import Form

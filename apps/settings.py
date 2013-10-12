@@ -164,6 +164,8 @@ INSTALLED_APPS = (
 
 REST_FRAMEWORK = {
     'PAGINATE_BY': 10,
+    'PAGINATE_BY_PARAM': 'page_size',
+    'MAX_PAGINATE_BY': 8000,          
     'DEFAULT_RENDERER_CLASSES': (
         'localground.apps.site.api.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
@@ -173,8 +175,8 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.XMLRenderer'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-        'localground.apps.site.api.permissions.IsAllowedGivenProjectPermissionSettings',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        'localground.apps.site.api.permissions.CheckProjectPermissions',
     ),
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
 }

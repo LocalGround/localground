@@ -8,20 +8,24 @@ from localground.apps.site.managers.base import BaseMixin, ObjectMixin, GenericL
 class MarkerMixin(ObjectMixin):
     
     def get_objects_with_counts(self, user, project=None, forms=None, ordering_field=None):
+        q = self.get_objects(user, project=project, ordering_field=ordering_field)
+        return self.append_extras(q, project=project, forms=forms, user=user) 
+        
+    def append_extras(self, q, forms=None, project=None, user=None):
         # Excellent resource on using extras:
         # http://timmyomahony.com/blog/2012/11/16/filtering-annotations-django/
         from localground.apps.site import models
 
-        q = self.get_objects(user, project=project, ordering_field=ordering_field)
-        
         # figure out the tables to which the markers' children belong:
         child_classes = [models.Photo, models.Audio, models.Scan]
+        
+        # TODO:  figure out a faster and more efficient way to do this:
         dynamic_forms = forms
         if forms is None:
-            dynamic_forms = models.Form.objects.prefetch_related('project', 'field_set', 'field_set__data_type')
+            dynamic_forms = models.Form.objects.prefetch_related('projects', 'field_set', 'field_set__data_type')
             if project:
                 dynamic_forms = dynamic_forms.filter(project=project)
-            else:
+            elif user:
                 dynamic_forms = dynamic_forms.get_objects(user)   
         for form in dynamic_forms:
             child_classes.append(form.TableModel)
@@ -36,6 +40,10 @@ class MarkerMixin(ObjectMixin):
                 ''' % (cls.get_content_type().id, models.Marker.get_content_type().id)     
         q = q.extra(select)
         return q
+    
+    def get_objects_public_with_counts(self, forms=None, project=None, access_key=None, ordering_field=None):
+        q = self.get_objects_public(access_key=access_key, ordering_field=ordering_field)
+        return self.append_extras(q, project=project, forms=forms)  
     
     def to_dict_list(self):
         # does this need to be implemented, or can we just rely on
