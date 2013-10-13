@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.conf import settings
-import os, base64, time
+import os
+import base64
 
 # sudo apt-get install libapache2-mod-xsendfile
 # http://localground/profile/<plural-object-type>/<the-hash>/
