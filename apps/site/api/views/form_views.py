@@ -71,7 +71,8 @@ class FormDataList(generics.ListCreateAPIView, FormDataMixin):
 			return form.TableModel.objects.get_objects(self.request.user)
 		else:
 			return form.TableModel.objects.get_objects_public(
-				self.request.user, access_key=self.request.GET.get('access_key'))	
+				access_key=self.request.GET.get('access_key')
+			)	
 		
 	def create(self, request, *args, **kwargs):
 		'''
