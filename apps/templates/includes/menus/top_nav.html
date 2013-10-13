@@ -47,10 +47,11 @@
                 {% else %}
                     <form action="{% url "django.contrib.auth.views.login" %}" class="pull-right" method="POST">
                         {% csrf_token %}
-                        <input class="input-small" type="text" placeholder="Username">
-                        <input class="input-small" type="password" placeholder="Password">
+                        <input class="input-small" name="username" type="text" placeholder="Username">
+                        <input class="input-small" name="password" type="password" placeholder="Password">
                         <button class="btn" type="submit">Sign in</button>
                         <input type="hidden" name="next" value="{{path}}" />
+                        {% csrf_token %}
                     </form>
                 {% endif %}
             {% endif %}

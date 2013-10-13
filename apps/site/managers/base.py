@@ -169,7 +169,7 @@ class ObjectMixin(BaseMixin):
         return q
     
 class GroupMixin(ObjectMixin):
-    related_fields = ['owner', 'last_updated_by', 'tags']
+    related_fields = ['owner', 'last_updated_by', 'access_authority', 'tags']
     prefetch_fields = ['users__user']
     
     def get_objects(self, user, request=None, context=None,

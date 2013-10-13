@@ -102,7 +102,6 @@ class BaseMedia(BaseAudit):
 
 
 class BaseNamedMedia(BaseMedia, ProjectMixin):
-	RESTRICT_BY_PROJECT = True
 	name = models.CharField(max_length=255, blank=True)
 	description = models.TextField(null=True, blank=True)
 	tags = TagAutocompleteField(blank=True, null=True)
