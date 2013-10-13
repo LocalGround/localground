@@ -31,7 +31,7 @@ def serve_media(request, object_type, hash):
         else:
             content_type = 'application/octet-stream'
         response['Content-Type'] = content_type
-        response['Content-Disposition'] = 'attachment; filename="%s/%s?%s"' % \
-            (object_type, relative_image_path.split('/')[-1], time.time())
+        response['Content-Disposition'] = 'attachment; filename="%s/%s"' % \
+            (object_type, relative_image_path.split('/')[-1])
         return response
 
