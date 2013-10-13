@@ -111,7 +111,7 @@ class RecordManager(models.GeoManager, VideoMixin):
 	def get_objects_detailed(self, user, project=None, request=None,
 							 context=None, ordering_field='-time_stamp',
 							 attachment=None, manually_reviewed=None,
-							 is_blank=None):
+							 is_blank=None, has_geometry=None):
 		'''
 		Same as get_objects, but it queries for more related objects.
 		'''
@@ -128,6 +128,8 @@ class RecordManager(models.GeoManager, VideoMixin):
 			queryset = queryset.filter(manually_reviewed=manually_reviewed)
 		if is_blank is not None:
 			queryset = queryset.filter(Q(snippet__is_blank=is_blank) | Q(snippet__isnull=True))
+		if has_geometry:
+			queryset = queryset.filter(point__isnull=False)
 		return queryset
 	
 	def get_objects_public(self, access_key=None, request=None, context=None,
