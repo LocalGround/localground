@@ -7,7 +7,7 @@
         <li class="clearfix">
         <label>{{ ff.title }}:</label>
         <div class="input">
-            {% if ff.id == 'project_id' %}
+            {% if ff.id == 'project_id' and projects %}
                 <select id="{{ ff.id }}" name="{{ff.col_name}}" data-operator="{{ ff.operator }}">
                     <option value="">-- All --</option>
                     {% for p in projects %}
