@@ -45,7 +45,12 @@ class FormDataMixin(object):
 			form = models.Form.objects.get(id=self.kwargs.get('form_id'))
 		except models.Form.DoesNotExist:
 			raise Http404
-		return form.get_objects(self.request.user)
+		if self.request.user.is_authenticated():
+			return form.TableModel.objects.get_objects(self.request.user)
+		else:
+			return form.TableModel.objects.get_objects_public(
+				access_key=self.request.GET.get('access_key')
+			)
 	
 
 class FormDataList(generics.ListCreateAPIView, FormDataMixin):
