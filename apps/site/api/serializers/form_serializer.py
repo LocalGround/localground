@@ -35,7 +35,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
 							  required=False)
 	overlay_type = serializers.SerializerMethodField('get_overlay_type')
 	url = serializers.SerializerMethodField('get_detail_url')
-	project_id = fields.ProjectField(label='project_id', source='project', required=True)
+	project_id = fields.ProjectField(label='project_id', source='project', required=False)
 		
 	class Meta:
 		fields = ('id', 'overlay_type', 'url', 'point', 'manually_reviewed', 'project_id')
