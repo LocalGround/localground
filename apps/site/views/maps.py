@@ -28,7 +28,7 @@ def show_map_viewer(request, username, slug, access_key=None):
         'lng': lng,
         'zoom': zoom,
         'source_object': source_object,
-        'basemap_id': 4, #source_object.basemap.id,
+        #'basemap_id': 4, #source_object.basemap.id,
         'num_projects': 1,
         'read_only': True
     })
