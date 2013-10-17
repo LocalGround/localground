@@ -85,7 +85,7 @@
 					<label>fields:</label>
 					<div class="input">
 					
-					{% for f in form.instance.get_fields %}
+					{% for f in form.instance.fields %}
 						{{f.col_alias}}{% if not forloop.last %}, {% endif %}
 					{% endfor %}
 					</div>

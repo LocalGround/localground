@@ -21,7 +21,7 @@ class DynamicFormBuilder(object):
         """
         form_fields = []
         form_fields.append(form.get_num_field())
-        form_fields.extend(list(form.get_fields()))
+        form_fields.extend(list(form.fields))
         
         field_names = [f.col_name for f in form_fields]
                 

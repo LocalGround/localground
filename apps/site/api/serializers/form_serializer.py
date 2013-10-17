@@ -54,7 +54,7 @@ def create_record_serializer(form):
 	"""
 	form_fields = []
 	form_fields.append(form.get_num_field())
-	form_fields.extend(list(form.get_fields()))
+	form_fields.extend(list(form.fields))
 	
 	field_names = [f.col_name for f in form_fields]
 			
@@ -72,7 +72,7 @@ def create_compact_record_serializer(form):
 	"""
 	generate a dynamic serializer from dynamic model
 	"""
-	col_names = [f.col_name for f in form.get_fields()]
+	col_names = [f.col_name for f in form.fields]
 	
 	class FormDataSerializer(BaseRecordSerializer):
 		recs = serializers.SerializerMethodField('get_recs')

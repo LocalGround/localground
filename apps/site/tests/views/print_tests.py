@@ -29,7 +29,6 @@ class PrintViewTest(test.TestCase, ViewMixin):
 		self.assertEqual(len(models.Print.objects.all()), 1)
 		num_fields = 2
 		form = self.create_form_with_fields(num_fields=num_fields)
-
 		d = {
 			'center_lat': lat,
 			'center_lng': lng,
@@ -46,7 +45,7 @@ class PrintViewTest(test.TestCase, ViewMixin):
 			'generate_pdf': 'on'
 		}
 		
-		for i, field in enumerate(form.get_fields()):
+		for i, field in enumerate(form.fields):
 			d.update({
 				'field_layout-%s-field' % i: field.id,
 				'field_layout-%s-width' % i: 95/(num_fields),

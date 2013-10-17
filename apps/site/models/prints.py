@@ -66,29 +66,6 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 	def get_form_field_layout(self):
 		return self.fieldlayout_set.all()
 	
-	
-	'''
-	def get_form_column_widths(self):
-		if self.form_column_widths is None or len(self.form_column_widths) == 0:
-			return []
-		else:
-			return [int(w) for w in self.form_column_widths.split(',')]
-			
-	def get_fields_sorted_by_print(self):
-		widths = self.get_form_column_widths()
-		if self.sorted_field_ids is None or len(self.sorted_field_ids) == 0:
-			return []
-		else:
-			ordered_ids = [int(id) for id in self.sorted_field_ids.split(',')]
-			fields_sorted = []
-			fields = list(self.form.get_fields())
-			for i, id in enumerate(ordered_ids):
-				for f in fields:
-					if f.id == id:
-						f.display_width = widths[i]
-						fields_sorted.append(f)
-			return fields_sorted
-	'''
 		
 	def get_abs_directory_path(self):
 		return '%s%s' % (settings.FILE_ROOT, self.virtual_path)

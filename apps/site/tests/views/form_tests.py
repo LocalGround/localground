@@ -39,26 +39,28 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		)
 		f2.save(user=self.user)
 		
-		self.assertEqual(2, len(self.form.get_fields()))
+		# clear cache
+		self.form.clear_table_model_cache()
+		self.assertEqual(2, len(self.form.fields))
 		
 		# query the new form:
 		self.assertEqual(len(self.form.TableModel.objects.get_objects(self.user)), 0)
 		
-		#requery:
-		form = models.Form.objects.get(id=self.form.id)
 		
 		#insert a record
 		timestamp = get_timestamp_no_milliseconds()
-		record = form.TableModel()
+		record = self.form.TableModel()
 		record.num = 1
 		record.owner = self.user
+		
 		setattr(record, f1.col_name, 'Column Value 1')
 		setattr(record, f2.col_name, 'Column Value 2')
 		record.project=self.project
 		record.save(user=self.user)
 		
-		form = models.Form.objects.get(id=self.form.id)
-		rec = form.TableModel.objects.get_objects(self.user)[0]
+		
+		rec = self.form.TableModel.objects.get_objects(self.user)[0]
+		#print dir(rec)
 		self.assertEqual('Column Value 1', getattr(rec, f1.col_name))
 		self.assertEqual('Column Value 2', getattr(rec, f2.col_name))
 		self.assertIsNotNone(rec.time_stamp)
@@ -103,7 +105,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		data.update({'projects': project})
 		
 		# form should not have any fields:
-		self.assertEqual(len(self.form.get_fields()), 0)
+		self.assertEqual(len(self.form.fields), 0)
 		
 		response = self.client_user.post(self.urls[0],
 			data=urllib.urlencode(data),
@@ -114,9 +116,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		#successfully redirected
 		self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 		
-		# re-query 
-		form = models.Form.objects.get(id=self.form.id)
-		
+		form = models.Form.objects.get(name=name)
 		
 		# form data should be changed
 		self.assertEqual(form.name, name)
@@ -124,7 +124,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		self.assertEqual(form.tags, tags)
 		
 		# form should have 2 fields:
-		fields = form.get_fields()
+		fields = form.fields
 		self.assertEqual(len(fields), 2)
 
 		
@@ -160,13 +160,12 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		# re-query 
 		form = models.Form.objects.get(name=name)
 		
-		
 		# form data should be changed
 		self.assertEqual(form.description, description)
 		self.assertEqual(form.tags, tags)
 		
 		# form should have 2 fields:
-		fields = form.get_fields()
+		fields = form.fields
 		self.assertEqual(len(fields), 2)
 
 		

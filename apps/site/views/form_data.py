@@ -244,7 +244,7 @@ def export_file(format, ext, username, form, project=None, driver=None,
             form.table_name + '.project_id',
         'number': form.table_name + '.user_num'
     }
-    for f in form.get_fields():
+    for f in form.fields:
         #remove all non-alpha-numeric chars from column alias:
         alias = ''.join(c for c in f.col_alias if c.isalnum())
         if alias.lower() == 'description': alias = 'Observation_Description'

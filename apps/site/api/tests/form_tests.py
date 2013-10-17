@@ -40,7 +40,7 @@ class FormDataTestMixin(object):
 			'project_id': self.project.id
 		}
 		#add dynamic form values:
-		fields = self.form.get_fields()
+		fields = self.form.fields
 		for i, field in enumerate(fields):
 			d[field.col_name] = vals[i]
 		return d
@@ -50,8 +50,10 @@ class FormDataTestMixin(object):
 		self.assertEqual(rec.point.y, d.get('lat'))
 		self.assertEqual(rec.point.x, d.get('lng'))
 		self.assertEqual(rec.num, d.get('num'))
-		fields = self.form.get_fields()
+		fields = self.form.fields
+		length = len(d.keys())-1
 		for i in range(0, 5):
+			#print fields[i].col_name, d.get(fields[i].col_name), getattr(rec, fields[i].col_name)
 			self.assertEqual(d.get(fields[i].col_name), getattr(rec, fields[i].col_name))
 
 class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):

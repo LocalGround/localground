@@ -5,12 +5,20 @@ from localground.apps.site import models
 from django.http import Http404
 from rest_framework.response import Response
 from rest_framework import status
-from localground.apps.site.api.permissions import CheckFormPermissions
+#from localground.apps.site.api.permissions import CheckFormPermissions
 
 class FormList(generics.ListCreateAPIView, AuditCreate):
 	serializer_class = serializers.FormSerializer
 	filter_backends = (filters.SQLFilterBackend,)
-	queryset = models.Form.objects.select_related('owner')
+	model = models.Form
+	
+	def get_queryset(self):
+		if self.request.user.is_authenticated():
+			return models.Form.objects.get_objects(self.request.user)
+		else:
+			return models.Form.objects.get_objects_public(
+				access_key=self.request.GET.get('access_key')
+			)
 
 	paginate_by = 100
 	
@@ -18,8 +26,16 @@ class FormList(generics.ListCreateAPIView, AuditCreate):
 		AuditCreate.pre_save(self, obj)
 		
 class FormInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
-	queryset = models.Form.objects.select_related('owner')
+	model = models.form
 	serializer_class = serializers.FormSerializer
+	
+	def get_queryset(self):
+		if self.request.user.is_authenticated():
+			return models.Form.objects.get_objects(self.request.user)
+		else:
+			return models.Form.objects.get_objects_public(
+				access_key=self.request.GET.get('access_key')
+			)
 	
 	def pre_save(self, obj):
 		AuditUpdate.pre_save(self, obj)
@@ -55,7 +71,7 @@ class FormDataMixin(object):
 
 class FormDataList(generics.ListCreateAPIView, FormDataMixin):
 	filter_backends = (filters.SQLFilterBackend,)
-	permission_classes = (CheckFormPermissions,)
+	#permission_classes = (CheckFormPermissions,)
 	model = models.Form
 	
 	def pre_save(self, obj):
@@ -98,7 +114,6 @@ class FormDataList(generics.ListCreateAPIView, FormDataMixin):
 	
 
 class FormDataInstance(generics.RetrieveUpdateDestroyAPIView, FormDataMixin):
-	
 	def get_serializer_class(self):
 		return FormDataMixin.get_serializer_class(self)
 	

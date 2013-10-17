@@ -116,7 +116,7 @@
 		<th scope="col">Edit</th>
 		<th scope="col">Uploaded By</th>
 		<th scope="col">Num</th>
-		{% for field in form.get_fields %}
+		{% for field in form.fields %}
 			<th scope="col">{{field.col_alias}}</th>
 		{% endfor %}
 		<th scope="col">Coords</th>

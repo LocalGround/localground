@@ -222,6 +222,7 @@ class ModelMixin(object):
 				form=f
 			)	
 			fld.save(user=self.user)
+		f.clear_table_model_cache()
 		return f
 	
 	def insert_form_data_record(self, form, project=None):
@@ -237,7 +238,7 @@ class ModelMixin(object):
 			record.project = project
 		
 		#generate different dummy types depending on the data_type
-		for field in form.get_fields():
+		for field in form.fields:
 			if field.data_type.id in [models.DataType.INTEGER, models.DataType.RATING]:
 				setattr(record, field.col_name, 5)
 			elif field.data_type.id == models.DataType.BOOL:

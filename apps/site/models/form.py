@@ -113,6 +113,11 @@ class Form(BaseNamed, BasePermissions):
 			m = form.TableModel
 			cache.app_models[m._meta.app_label][m._meta.object_name.lower()] = m
 
+	def clear_table_model_cache(self):
+		from django.db.models.loading import cache
+		del cache.app_models['site']['form_%s' % self.id]
+		self._fields = None
+	
 	
 	@property
 	def TableModel(self):
@@ -175,17 +180,19 @@ class Form(BaseNamed, BasePermissions):
 		if len(q) > 0:
 			return q[0]
 		
+	@property
+	def fields(self):
+		if not hasattr(self, '_fields') or self._fields is None:
+			self._fields = self.field_set.select_related('data_type').all()
+		return self._fields
+		
 	def get_fields(self, ordering='ordering', print_only=False):
-		'''
-		q = Field.objects.filter(form=self)
 		if print_only:
-			q = q.filter(is_printable=True)
-		return q.order_by(ordering,)
-		'''
-		if print_only:
-			return self.field_set.filter(is_printable=True)
-		else:
-			return self.field_set.all()
+			fields = []
+			for f in self.fields:
+				if f.is_printable: fields.append(f)
+			return fields
+		return self.fields
 		
 	def get_model_class(self):
 		mcb = ModelClassBuilder(self)
@@ -284,7 +291,7 @@ class Form(BaseNamed, BasePermissions):
 
 	def get_snipped_field_names(self):
 		names = ['num']
-		for n in self.get_fields():
+		for n in self.fields:
 			names.append(n.col_name)
 		return names
 	
@@ -334,7 +341,7 @@ class Form(BaseNamed, BasePermissions):
 				from rest_framework import exceptions
 				raise exceptions.AuthenticationFailed(detail="You are not authorized")
 		
-		for f in self.get_fields():
+		for f in self.fields:
 			related_fields.append(f.col_name + '_snippet')
 		objects =  (self.TableModel.objects
 						.select_related(*related_fields)
@@ -396,7 +403,7 @@ class Form(BaseNamed, BasePermissions):
 		total_num = 0
 		batch_num = 500
 		counter = 0
-		fields = self.get_fields()
+		fields = self.fields
 		for d in list_of_dictionaries:
 			self.add_record(d, user, fields=fields)
 			counter+=1
@@ -415,7 +422,7 @@ class Form(BaseNamed, BasePermissions):
 		e = self.TableModel()
 		if fields is None:
 			print('querying for fields...')
-			fields = self.get_fields()
+			fields = self.fields
 		
 		#populate content that exists for all dynamic tables:
 		e.snippet = d.get('snippet')

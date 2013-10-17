@@ -36,20 +36,27 @@ class DynamicModelMixin(BasePoint, BaseAudit):
 	def form(self):
 		if not hasattr(self, '_form'):
 			from localground.apps.site.models import Form
-			self._form = Form.objects.get(table_name=self._meta.db_table)
+			self._form =(Form.objects
+							#.prefetch_related('field_set', 'field_set__data_type')
+							.get(table_name=self._meta.db_table)
+						)
 		return self._form
 	
 	@property
 	def dynamic_fields(self):
 		if not hasattr(self, '_fields'):
-			self._fields = self.form.get_fields()
+			self._fields = self.form.fields
 		return self._fields
 	
 	def can_view(self, user, access_key=None):
-		return self.project.can_view(user=user, access_key=access_key)
+		return (
+			self.project.can_view(user=user, access_key=access_key)
+			or
+			self.form.can_view(user=user, access_key=access_key)
+		)
 	
 	def can_edit(self, user):
-		return self.project.can_edit(user)
+		return self.project.can_edit(user) or self.form.can_edit(user)
 	
 	def get_dynamic_data(self):
 		data = []
@@ -277,7 +284,7 @@ class ModelClassBuilder(object):
 				QueryField('date_created', id='date_created_before', title='Before',
 											data_type=FieldTypes.DATE, operator='<=')
 			]
-			for n in self.form.get_fields():
+			for n in self.form.fields:
 				if n.data_type.id == 1:
 					query_fields.append(
 						QueryField(n.col_name, title=n.col_alias, operator='like')	
@@ -318,7 +325,7 @@ class ModelClassBuilder(object):
 	def add_dynamic_fields_to_model(self):
 		# read field specifications and build dynamic fields:
 		field = None
-		for n in self.form.get_fields():
+		for n in self.form.fields:
 			if n.data_type.id == 1:
 				field = models.CharField(max_length=1000, blank=True, null=True,
 										 verbose_name=n.col_alias)

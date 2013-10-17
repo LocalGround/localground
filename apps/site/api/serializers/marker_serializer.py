@@ -52,7 +52,7 @@ class MarkerSerializer(PointSerializer):
 					model_name_plural='form_%s' % form.id
 				)
 			d.update({
-				'headers': [f.col_alias for f in form.get_fields()]	
+				'headers': [f.col_alias for f in form.fields]	
 			})
 			children['form_%s' % form.id] = d
 		

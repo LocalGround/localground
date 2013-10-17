@@ -35,6 +35,7 @@ class FormMixin(GroupMixin):
     # permissions.
     related_fields = ['owner', 'last_updated_by']
     prefetch_fields = ['users__user', 'projects', 'field_set']
+    
     def my_forms(self, user=None):
         # a form is associated with one or more projects
         return self.model.objects.distinct().filter(
@@ -59,6 +60,43 @@ class FormMixin(GroupMixin):
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
         if ordering_field is not None:
+            q =  q.order_by(ordering_field)
+        return q
+    
+    
+    def get_objects_public(self, access_key=None, request=None, context=None,
+                    ordering_field='-time_stamp', **kwargs):
+        
+        from localground.apps.site.models import ObjectAuthority
+        
+        # condition #1: check if forms have been shared directly:
+        c1 =(
+                (
+                    Q(access_authority__id=ObjectAuthority.PUBLIC_WITH_LINK)
+                    &
+                    Q(access_key=access_key)
+                ) |
+                Q(access_authority__id=ObjectAuthority.PUBLIC)
+            )
+        
+        # condition #2: check if any of the projects associated with
+        #               forms have been shared (which means that the form
+        #               has been indirectly shared)
+        c2 =(
+                (
+                    Q(projects__access_authority__id=ObjectAuthority.PUBLIC_WITH_LINK)
+                    &
+                    Q(projects__access_key=access_key)
+                ) |
+                Q(projects__access_authority__id=ObjectAuthority.PUBLIC)
+            )    
+                
+        q = self.model.objects.distinct().select_related(*self.related_fields)
+        q = q.filter(c1 | c2)
+        if request is not None:
+            q = self._apply_sql_filter(q, request, context)
+        q = q.prefetch_related(*self.prefetch_fields)
+        if ordering_field:
             q =  q.order_by(ordering_field)
         return q
 

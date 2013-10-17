@@ -32,7 +32,7 @@ def create_update_form(request, object_id=None,
 	form_object, fields = None, []
 	if object_id is not None:
 		form_object = Form.objects.get(id=object_id)
-		fields = form_object.get_fields()
+		fields = form_object.fields
 	extra = 0
 	if len(fields) == 0: extra = 1
 	if embed: base_template = 'base/iframe.html'
@@ -72,6 +72,8 @@ def create_update_form(request, object_id=None,
 			# remove unwanted fields here:
 			for form in formset.deleted_forms:
 				form.instance.delete()
+				
+			form_object.clear_table_model_cache()
 			
 			url = '/profile/forms/%s/' % form_object.id
 			if embed:
