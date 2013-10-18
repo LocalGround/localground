@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from django.db.models.query import QuerySet
 from localground.apps.site.managers.base import GroupMixin
+from localground.apps.site.managers.base import GenericLocalGroundError
 from django.db.models import Q
 
 class ProjectMixin(GroupMixin):
@@ -45,23 +46,47 @@ class FormMixin(GroupMixin):
     def all_forms(self):
         return self.model.objects.all().order_by('name',)
     
-    def get_objects(self, user, project=None, request=None,
-                    context=None, ordering_field='-time_stamp'):
-        if user is None:
+    def _get_objects(self, user, authority_id, project=None, request=None,
+                    context=None, ordering_field='-time_stamp'
+                    ):
+    
+        if user is None or not user.is_authenticated():
             raise GenericLocalGroundError('The user cannot be empty')
             
         q = self.model.objects.distinct().select_related(*self.related_fields)
         q = q.filter(
                 Q(owner=user) |
+                (
+                    Q(users__user=user) &
+                    Q(users__authority__id__gte=authority_id)
+                ) |
                 Q(projects__owner=user) |
-                Q(projects__users__user=user)
+                (
+                    Q(projects__users__user=user) &
+                    Q(projects__users__authority__id__gte=authority_id)
+                )
             )
+        
         if request:
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
         if ordering_field is not None:
             q =  q.order_by(ordering_field)
         return q
+    
+    def get_objects(self, user, project=None, request=None,
+                    context=None, ordering_field='-time_stamp'):
+        return self._get_objects(
+            user, 1, project=project, request=request,
+            context=context, ordering_field=ordering_field
+        )
+    
+    def get_objects_editable(self, user, project=None, request=None,
+                    context=None, ordering_field='-time_stamp'):
+        return self._get_objects(
+            user, 2, project=project, request=request,
+            context=context, ordering_field=ordering_field
+        )
     
     
     def get_objects_public(self, access_key=None, request=None, context=None,

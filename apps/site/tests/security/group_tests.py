@@ -24,19 +24,19 @@ class GroupManageSecurityTest(test.TestCase, ModelMixin):
 	def test_managers_can_manage(self):
 		u = self.create_user(username='mgr')
 		for group in self.groups:
-			self.add_project_manager(group, u)
+			self.add_group_manager(group, u)
 			self.assertTrue(group.can_manage(u))
 		
 	def test_editors_cannot_manage(self):
 		u = self.create_user(username='mgr')
 		for group in self.groups:
-			self.add_project_editor(group, u)
+			self.add_group_editor(group, u)
 			self.assertFalse(group.can_manage(u))
 		
 	def test_viewers_cannot_manage(self):
 		u = self.create_user(username='mgr')
 		for group in self.groups:
-			self.add_project_viewer(group, u)
+			self.add_group_viewer(group, u)
 			self.assertFalse(group.can_manage(u))
 			
 	def test_anonymous_users_cannot_manage(self):
@@ -67,19 +67,19 @@ class GroupEditSecurityTest(test.TestCase, ModelMixin):
 	def test_managers_can_edit(self):
 		u = self.create_user(username='mgr')
 		for group in self.groups:
-			self.add_project_manager(group, u)
+			self.add_group_manager(group, u)
 			self.assertTrue(group.can_edit(u))
 		
 	def test_editors_can_edit(self):
 		u = self.create_user(username='mgr')
 		for group in self.groups:
-			self.add_project_editor(group, u)
+			self.add_group_editor(group, u)
 			self.assertTrue(group.can_edit(u))
 		
 	def test_viewers_cannot_edit(self):
 		u = self.create_user(username='mgr')
 		for group in self.groups:
-			self.add_project_viewer(group, u)
+			self.add_group_viewer(group, u)
 			self.assertFalse(group.can_edit(u))
 			
 	def test_anonymous_users_cannot_edit(self):
@@ -111,19 +111,19 @@ class GroupViewSecurityTest(test.TestCase, ModelMixin):
 	def test_managers_can_view(self):
 		u = self.create_user(username='mgr')
 		for group in self.groups:
-			self.add_project_manager(group, u)
+			self.add_group_manager(group, u)
 			self.assertTrue(group.can_view(u))
 		
 	def test_editors_can_view(self):
 		u = self.create_user(username='mgr')
 		for group in self.groups:
-			self.add_project_editor(group, u)
+			self.add_group_editor(group, u)
 			self.assertTrue(group.can_view(u))
 		
 	def test_viewers_can_view(self):
 		u = self.create_user(username='mgr')
 		for group in self.groups:
-			self.add_project_viewer(group, u)
+			self.add_group_viewer(group, u)
 			self.assertTrue(group.can_view(u))
 			
 	def test_anonymous_users_cannot_view_private_objects(self):

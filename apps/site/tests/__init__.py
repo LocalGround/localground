@@ -99,44 +99,50 @@ class ModelMixin(object):
 		return User.objects.get(username=username)
 
 	def create_project(self, user, name='Test Project', authority_id=1):
+		import random
+		slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz',  16)
 		p = models.Project(
 			name=name,
 			owner=user,
 			last_updated_by=user,
-			access_authority=models.ObjectAuthority.objects.get(id=authority_id)
+			access_authority=models.ObjectAuthority.objects.get(id=authority_id),
+			slug=slug
 		)
 		p.save()
 		return p
 	
-	def create_view(self, user):
+	def create_view(self, user, name='Test View', authority_id=1):
+		import random
+		slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz',  16)
 		v = models.View(
-			name='Test View',
+			name=name,
 			owner=user,
 			last_updated_by=user,
-			access_authority=models.ObjectAuthority.objects.get(id=1)
+			access_authority=models.ObjectAuthority.objects.get(id=authority_id),
+			slug=slug
 		)
 		v.save()
 		return v
 	
-	def _add_project_user(self, project, user, authority_id):
+	def _add_group_user(self, group, user, authority_id):
 		uao = models.UserAuthorityObject(
-			object_id=project.id,
-			content_type=project.get_content_type(),
+			object_id=group.id,
+			content_type=group.get_content_type(),
 			user=user,
 			authority=models.UserAuthority.objects.get(id=authority_id),
 			time_stamp=get_timestamp_no_milliseconds(),
-			granted_by=project.owner
+			granted_by=group.owner
 		)
 		uao.save()
 
-	def add_project_viewer(self, project, user):
-		self._add_project_user(project, user, models.UserAuthority.CAN_VIEW)
+	def add_group_viewer(self, group, user):
+		self._add_group_user(group, user, models.UserAuthority.CAN_VIEW)
 
-	def add_project_editor(self, project, user):
-		self._add_project_user(project, user, models.UserAuthority.CAN_EDIT)
+	def add_group_editor(self, group, user):
+		self._add_group_user(group, user, models.UserAuthority.CAN_EDIT)
 	
-	def add_project_manager(self, project, user):
-		self._add_project_user(project, user, models.UserAuthority.CAN_MANAGE)
+	def add_group_manager(self, group, user):
+		self._add_group_user(group, user, models.UserAuthority.CAN_MANAGE)
 	
 	def get_project(self, project_id=1):
 		return models.Project.objects.get(id=project_id)
@@ -182,19 +188,22 @@ class ModelMixin(object):
 		return p
 	
 	def create_form(self, name='A title',
-					 description='A description'):
-		import random
-		from django.contrib.gis.geos import Point
+					 description='A description', user=None,
+					 authority_id=models.ObjectAuthority.PRIVATE):
+		
 		oa = models.ObjectAuthority.objects.get(
-				id=models.ObjectAuthority.PRIVATE
+				id=authority_id
 			)
+		import random
 		slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz',  16)
+		if user is None:
+			user = self.user
 		f = models.Form(
-			owner=self.user,
+			owner=user,
 			name=name,
 			slug=slug,
 			description=description,
-			last_updated_by=self.user,
+			last_updated_by=user,
 			access_authority=oa
 		)
 		f.save()
@@ -203,7 +212,9 @@ class ModelMixin(object):
 		return f
 	
 	def create_form_with_fields(self, name='A title',
-					 description='A description', num_fields=2):
+					 description='A description',
+					 user=None, authority_id=models.ObjectAuthority.PRIVATE,
+					 num_fields=2):
 		'''
 		TEXT = 1
 		INTEGER = 2
@@ -212,7 +223,10 @@ class ModelMixin(object):
 		DECIMAL = 5
 		RATING = 6
 		'''
-		f = self.create_form(name, description)
+		if user is None:
+			user = self.user
+		f = self.create_form(name, description, user=user,
+							 authority_id=authority_id)
 		for i in range(0, num_fields):
 			# add 2 fields to form:
 			fld = models.Field(col_alias='Field %s' % (i+1), 
@@ -221,7 +235,7 @@ class ModelMixin(object):
 				ordering=(i+1),
 				form=f
 			)	
-			fld.save(user=self.user)
+			fld.save(user=user)
 		f.clear_table_model_cache()
 		return f
 	

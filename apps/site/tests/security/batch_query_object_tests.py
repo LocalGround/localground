@@ -6,7 +6,7 @@ from localground.apps.site.tests import ModelMixin
 from rest_framework import status
 import urllib
 
-class BatchQueryMixin(ModelMixin):
+class BatchQueryObjectMixin(ModelMixin):
 	fixtures = ['initial_data.json', 'test_data.json']
 	model = models.BaseMedia
 	create_function_name = None
@@ -68,7 +68,7 @@ class BatchQueryMixin(ModelMixin):
 	
 	def test_viewer_can_view_objects(self, ):
 		# grant user(1) view privs to project(0):
-		self.add_project_viewer(self.projects[0], self.users[1])
+		self.add_group_viewer(self.projects[0], self.users[1])
 		
 		#user(1) should be able to view 6 projects....
 		self.assertEqual(
@@ -90,7 +90,7 @@ class BatchQueryMixin(ModelMixin):
 		self.assertFalse(allows_query)
 		
 	def test_editor_can_view_and_edit_objects(self, ):
-		self.add_project_editor(self.projects[0], self.users[1])
+		self.add_group_editor(self.projects[0], self.users[1])
 		self.assertEqual(
 			6,
 			len(self.model.objects.get_objects(self.users[1]))
@@ -101,7 +101,7 @@ class BatchQueryMixin(ModelMixin):
 		)
 		
 	def test_manager_can_view_and_edit_objects(self, ):
-		self.add_project_manager(self.projects[0], self.users[1])
+		self.add_group_manager(self.projects[0], self.users[1])
 		self.assertEqual(
 			6,
 			len(self.model.objects.get_objects(self.users[1]))
@@ -128,28 +128,28 @@ class BatchQueryMixin(ModelMixin):
 			len(self.model.objects.get_objects_public())
 		)
 		
-class BatchPhotoQuerySecurityTest(test.TestCase, BatchQueryMixin):
+class BatchPhotoQuerySecurityTest(test.TestCase, BatchQueryObjectMixin):
 	model = models.Photo
 	create_function_name = 'create_photo'
 	file_names = ['photo_1.jpg', 'photo_2.jpg', 'photo_3.jpg']
 	
 	def setUp(self):
-		BatchQueryMixin.setUp(self)
+		BatchQueryObjectMixin.setUp(self)
 	
 	
-class BatchAudioQuerySecurityTest(test.TestCase, BatchQueryMixin):
+class BatchAudioQuerySecurityTest(test.TestCase, BatchQueryObjectMixin):
 	model = models.Audio
 	create_function_name = 'create_audio'
 	file_names = ['audio_1.mp3', 'audio_2.mp3', 'audio_3.mp3']
 	
 	def setUp(self):
-		BatchQueryMixin.setUp(self)
+		BatchQueryObjectMixin.setUp(self)
 	
-class BatchMarkerQuerySecurityTest(test.TestCase, BatchQueryMixin):
+class BatchMarkerQuerySecurityTest(test.TestCase, BatchQueryObjectMixin):
 	model = models.Marker
 	
 	def setUp(self):
-		BatchQueryMixin.setUp(self)
+		BatchQueryObjectMixin.setUp(self)
 	
 	def _create_objects(self):
 		self.objects = []
@@ -160,12 +160,11 @@ class BatchMarkerQuerySecurityTest(test.TestCase, BatchQueryMixin):
 						project.owner, project)
 				)
 				
-				
-class BatchRecordQuerySecurityTest(test.TestCase, BatchQueryMixin):
+class BatchRecordQuerySecurityTest(test.TestCase, BatchQueryObjectMixin):
 	model = None
 	
 	def setUp(self):
-		BatchQueryMixin.setUp(self)
+		BatchQueryObjectMixin.setUp(self)
 	
 	def _create_objects(self):
 		num_fields = 3
@@ -180,7 +179,7 @@ class BatchRecordQuerySecurityTest(test.TestCase, BatchQueryMixin):
 				
 	def test_viewer_can_view_objects_detailed(self, ):
 		# grant user(1) view privs to project(0):
-		self.add_project_viewer(self.projects[0], self.users[1])
+		self.add_group_viewer(self.projects[0], self.users[1])
 		
 		#user(1) should be able to view 6 projects....
 		self.assertEqual(

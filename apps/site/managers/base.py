@@ -174,7 +174,8 @@ class GroupMixin(ObjectMixin):
     
     def get_objects(self, user, request=None, context=None,
                     ordering_field='-time_stamp', with_counts=True, **kwargs):
-        if user is None:
+        
+        if user is None or not user.is_authenticated():
             raise GenericLocalGroundError('The user cannot be empty')
         
         q = self.model.objects.distinct().select_related(*self.related_fields)
@@ -193,6 +194,37 @@ class GroupMixin(ObjectMixin):
             q = q.annotate(audio_count=Count('audio', distinct=True))
             q = q.annotate(marker_count=Count('marker', distinct=True))
         '''
+        return q
+    
+    
+    def get_objects_editable(self, user, project=None, request=None,
+                             context=None, ordering_field='-time_stamp'):
+        '''
+        Returns:
+        (1) all objects that the user owns, as well as
+        (2) objects that belong to a project to which the user has been
+            granted editor or manager permissions
+        '''
+        if user is None:
+            raise GenericLocalGroundError('The user cannot be empty')
+        if not user.is_authenticated():
+            raise GenericLocalGroundError('The user cannot be anonymous')
+        
+        q = (self.model.objects.distinct()
+                .select_related(*self.related_fields)
+                .filter(
+                    Q(owner=user) | (
+                        Q(users__user=user) &
+                        Q(users__authority__id__gte=2)
+                    )
+                )
+            )
+        if project:
+            q = q.filter(project=project)
+        if request:
+            q = self._apply_sql_filter(q, request, context)
+        if ordering_field:
+            q =  q.order_by(ordering_field)
         return q
     
     def get_objects_public(self, access_key=None, request=None, context=None,
