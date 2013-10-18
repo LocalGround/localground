@@ -15,21 +15,10 @@ class MarkerMixin(ObjectMixin):
         # Excellent resource on using extras:
         # http://timmyomahony.com/blog/2012/11/16/filtering-annotations-django/
         from localground.apps.site import models
-
-        # figure out the tables to which the markers' children belong:
+        from django.contrib.contenttypes.models import ContentType
+       
         child_classes = [models.Photo, models.Audio, models.Scan]
-        
-        # TODO:  figure out a faster and more efficient way to do this:
-        dynamic_forms = forms
-        if forms is None:
-            dynamic_forms = models.Form.objects.prefetch_related('projects', 'field_set', 'field_set__data_type')
-            if project:
-                dynamic_forms = dynamic_forms.filter(project=project)
-            elif user:
-                dynamic_forms = dynamic_forms.get_objects(user)   
-        for form in dynamic_forms:
-            child_classes.append(form.TableModel)
-        
+
         # build a custom query that includes child counts:
         select = {}
         for cls in child_classes:
@@ -38,8 +27,23 @@ class MarkerMixin(ObjectMixin):
                 WHERE e.entity_type_id = %s AND e.source_type_id = %s AND 
                 e.source_id = site_marker.id
                 ''' % (cls.get_content_type().id, models.Marker.get_content_type().id)     
+        
+        # record count is everything that's attached to a marker that's not
+        # a Photo, Audio, or Map Image
+        select['record_count'] = '''
+                SELECT COUNT(entity_id) FROM site_genericassociation e 
+                WHERE e.entity_type_id not in (%s) AND e.source_type_id = %s AND 
+                e.source_id = site_marker.id
+                ''' % (
+                        ','.join([
+                            str(ct.id) for ct in
+                            ContentType.objects.get_for_models(*child_classes)
+                            .values()
+                        ]),
+                    models.Marker.get_content_type().id
+                ) 
         q = q.extra(select)
-        return q
+        return self.populate_tags_for_queryset(q)
     
     def get_objects_public_with_counts(self, forms=None, project=None, access_key=None, ordering_field=None):
         q = self.get_objects_public(access_key=access_key, ordering_field=ordering_field)

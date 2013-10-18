@@ -135,7 +135,7 @@ class MarkerSerializerCounts(MarkerSerializer):
 	photo_count = serializers.SerializerMethodField('get_photo_count')
 	audio_count = serializers.SerializerMethodField('get_audio_count')
 	map_image_count = serializers.SerializerMethodField('get_map_image_count')
-	record_count = serializers.SerializerMethodField('get_dynamic_data_count')
+	record_count = serializers.SerializerMethodField('get_record_count')
 	point = fields.PointField(help_text='Assign lat/lng field',
 							  widget=widgets.PointWidgetTextbox,
 							  required=True) 
@@ -157,16 +157,9 @@ class MarkerSerializerCounts(MarkerSerializer):
 		try: return obj.map_image_count
 		except: return None
 		
-	def get_dynamic_data_count(self, obj):
-		'''
-		Gets the total count of all records, regardless of the form
-		to which the record is associated.  This technique should
-		probably be revisited
-		'''
-		count = 0
-		for attr in dir(obj):
-			if attr.startswith('form_'): count += getattr(obj, attr)
-		return count
+	def get_record_count(self, obj):
+		try: return obj.record_count
+		except: return None
 
 
 

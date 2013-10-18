@@ -85,7 +85,31 @@ class ObjectMixin(BaseMixin):
     related_fields = ['project', 'owner', 'last_updated_by']
     prefetch_fields = []
     
-    def get_objects(self, user, project=None, request=None,
+    def populate_tags_for_queryset(self, queryset):
+        '''
+        This method ensures that the "tagging_tag" table isn't
+        queried for each record.  For some reason, this doesn't
+        seem to slow down the Photo/Audio/Record tables in the
+        same way.  Mysterious.
+        '''
+        from django.contrib.contenttypes.models import ContentType
+        from collections import defaultdict
+        from tagging.models import TaggedItem
+        
+        ctype = ContentType.objects.get_for_model(queryset.model)
+        tagitems = TaggedItem.objects.filter(
+            content_type=ctype,
+            object_id__in=queryset.values_list('pk', flat=True),
+        )
+        tagitems = tagitems.select_related('tag')
+        tags_map = defaultdict(list)
+        for tagitem in tagitems:
+            tags_map[tagitem.object_id].append(tagitem.tag)
+        for obj in queryset:
+            obj.tags = ', '.join([t.name for t in tags_map[obj.pk]])
+        return queryset
+    
+    def _get_objects(self, user, authority_id, project=None, request=None,
                              context=None, ordering_field='-time_stamp'):
         '''
         Returns:
@@ -97,19 +121,24 @@ class ObjectMixin(BaseMixin):
             raise GenericLocalGroundError('The user cannot be empty')
         if not user.is_authenticated():
             raise GenericLocalGroundError('The user cannot be anonymous')
-        q = (self.model.objects.distinct()
-                .select_related(*self.related_fields)
-            )
+        #q = (self.model.objects.distinct()
+        #        .select_related(*self.related_fields)
+        #    )
+        q = self.model.objects.select_related(*self.related_fields)
+
         # this query is slow:
         #q = q.filter(Q(project__owner=user) | Q(project__users__user=user))
         # use this instead:
         from localground.apps.site.models import Project
         q = q.filter(project__id__in=[
-                p.id for p in Project.objects.filter(Q(owner=user) | Q(users__user=user)).distinct()	
+                p.id for p in Project.objects.filter(
+                    Q(owner=user) | (
+                        Q(users__user=user) & Q(users__authority__id__gte=authority_id)
+                    )
+                ).distinct()	
             ])
         if project:
             q = q.filter(project=project)
-        
         if request:
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
@@ -117,36 +146,19 @@ class ObjectMixin(BaseMixin):
             q =  q.order_by(ordering_field)
         return q
     
-    def get_objects_editable(self, user, project=None, request=None,
-                             context=None, ordering_field='-time_stamp'):
-        '''
-        Returns:
-        (1) all objects that the user owns, as well as
-        (2) objects that belong to a project to which the user has been
-            granted editor or manager permissions
-        '''
-        if user is None:
-            raise GenericLocalGroundError('The user cannot be empty')
-        if not user.is_authenticated():
-            raise GenericLocalGroundError('The user cannot be anonymous')
-        
-        q = (self.model.objects.distinct()
-                .select_related(*self.related_fields)
-                .filter(
-                    Q(project__owner=user) | (
-                        Q(project__users__user=user) &
-                        Q(project__users__authority__id__gte=2)
-                    )
-                )
-            )
-        if project:
-            q = q.filter(project=project)
-        if request:
-            q = self._apply_sql_filter(q, request, context)
-        if ordering_field:
-            q =  q.order_by(ordering_field)
-        return q
+    def get_objects(self, user, project=None, request=None,
+                    context=None, ordering_field='-time_stamp'):
+        return self._get_objects(
+            user, 1, project=project, request=request,
+            context=context, ordering_field=ordering_field
+        )
     
+    def get_objects_editable(self, user, project=None, request=None,
+                    context=None, ordering_field='-time_stamp'):
+        return self._get_objects(
+            user, 2, project=project, request=request,
+            context=context, ordering_field=ordering_field
+        )
     
     def get_objects_public(self, access_key=None, request=None, context=None,
                     ordering_field='-time_stamp', **kwargs):
@@ -155,10 +167,14 @@ class ObjectMixin(BaseMixin):
         marked as public
         '''
         from localground.apps.site.models import ObjectAuthority
-        q = self.model.objects.distinct().select_related(*self.related_fields)
+        #q = self.model.objects.distinct().select_related(*self.related_fields)
+        q = self.model.objects.select_related(*self.related_fields)
         q = q.filter(
-                (Q(project__access_authority__id=ObjectAuthority.PUBLIC_WITH_LINK)
-                    & Q(project__access_key=access_key)) |
+                (
+                    Q(project__access_authority__id=ObjectAuthority.PUBLIC_WITH_LINK)
+                    &
+                    Q(project__access_key=access_key)
+                ) |
                 Q(project__access_authority__id=ObjectAuthority.PUBLIC)
             )
         if request is not None:
@@ -169,17 +185,23 @@ class ObjectMixin(BaseMixin):
         return q
     
 class GroupMixin(ObjectMixin):
-    related_fields = ['owner', 'last_updated_by', 'access_authority', 'tags']
+    related_fields = ['owner', 'last_updated_by', 'access_authority', 'tag', 'tags']
     prefetch_fields = ['users__user']
-    
-    def get_objects(self, user, request=None, context=None,
+            
+    def _get_objects(self, user, authority_id, request=None, context=None,
                     ordering_field='-time_stamp', with_counts=True, **kwargs):
         
         if user is None or not user.is_authenticated():
             raise GenericLocalGroundError('The user cannot be empty')
         
-        q = self.model.objects.distinct().select_related(*self.related_fields)
-        q = q.filter(Q(owner=user) | Q(users__user=user))
+        #q = self.model.objects.distinct().select_related(*self.related_fields)
+        q = self.model.objects.select_related(*self.related_fields)
+        q = q.filter(
+                        Q(owner=user) | (
+                            Q(users__user=user) &
+                            Q(users__authority__id__gte=authority_id)
+                        )
+                    )
         if request:
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
@@ -194,38 +216,22 @@ class GroupMixin(ObjectMixin):
             q = q.annotate(audio_count=Count('audio', distinct=True))
             q = q.annotate(marker_count=Count('marker', distinct=True))
         '''
-        return q
+        return self.populate_tags_for_queryset(q)
     
+    
+    def get_objects(self, user, project=None, request=None,
+                    context=None, ordering_field='-time_stamp'):
+        return self._get_objects(
+            user, 1, project=project, request=request,
+            context=context, ordering_field=ordering_field
+        )
     
     def get_objects_editable(self, user, project=None, request=None,
-                             context=None, ordering_field='-time_stamp'):
-        '''
-        Returns:
-        (1) all objects that the user owns, as well as
-        (2) objects that belong to a project to which the user has been
-            granted editor or manager permissions
-        '''
-        if user is None:
-            raise GenericLocalGroundError('The user cannot be empty')
-        if not user.is_authenticated():
-            raise GenericLocalGroundError('The user cannot be anonymous')
-        
-        q = (self.model.objects.distinct()
-                .select_related(*self.related_fields)
-                .filter(
-                    Q(owner=user) | (
-                        Q(users__user=user) &
-                        Q(users__authority__id__gte=2)
-                    )
-                )
-            )
-        if project:
-            q = q.filter(project=project)
-        if request:
-            q = self._apply_sql_filter(q, request, context)
-        if ordering_field:
-            q =  q.order_by(ordering_field)
-        return q
+                    context=None, ordering_field='-time_stamp'):
+        return self._get_objects(
+            user, 2, project=project, request=request,
+            context=context, ordering_field=ordering_field
+        )
     
     def get_objects_public(self, access_key=None, request=None, context=None,
                     ordering_field='-time_stamp', **kwargs):
@@ -234,13 +240,15 @@ class GroupMixin(ObjectMixin):
         marked as public
         '''
         from localground.apps.site.models import ObjectAuthority
-        q = self.model.objects.distinct().select_related(*self.related_fields)
+        #q = self.model.objects.distinct().select_related(*self.related_fields)
+        q = self.model.objects.select_related(*self.related_fields)
         q = q.filter(
-                (Q(access_authority__id=ObjectAuthority.PUBLIC_WITH_LINK)
-                    & Q(access_key=access_key)) |
-                Q(access_authority__id=ObjectAuthority.PUBLIC)
+                Q(access_authority__id=ObjectAuthority.PUBLIC) | (
+                    Q(access_authority__id=ObjectAuthority.PUBLIC_WITH_LINK)
+                    &
+                    Q(access_key=access_key)
+                )
             )
-        
         if request is not None:
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)

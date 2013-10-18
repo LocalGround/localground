@@ -12,8 +12,8 @@ class UrlField(relations.HyperlinkedIdentityField):
 		return url
 
 class BaseSerializer(serializers.HyperlinkedModelSerializer):
-	#tags = fields.TagField(label='tags', required=False, widget=widgets.TagAutocomplete, help_text='Tag your object here')
-	tags = serializers.CharField(label='tags', required=False, widget=Input, help_text='Tag your object here')
+	tags = fields.TagField(label='tags', required=False, widget=widgets.TagAutocomplete, help_text='Tag your object here')
+	#tags = serializers.CharField(label='tags', required=False, widget=Input, help_text='Tag your object here')
 	name = serializers.CharField(required=False, label='name')
 	description = fields.DescriptionField(required=False, label='caption')
 	overlay_type = serializers.SerializerMethodField('get_overlay_type')
@@ -49,8 +49,8 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
 	def get_overlay_type(self, obj):
 		return obj._meta.verbose_name
 	
-	def get_tags(self, obj):
-		return obj.tags
+	#def get_tags(self, obj):
+	#	return obj.tags
 	
 class PointSerializer(BaseSerializer):
 	point = fields.PointField(help_text='Assign lat/lng field',

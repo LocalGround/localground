@@ -102,7 +102,7 @@ class RecordMixin(UploadMixin):
 class RecordQuerySet(QuerySet, AudioMixin):
 	pass
 
-class RecordManager(models.GeoManager, VideoMixin):
+class RecordManager(models.GeoManager, RecordMixin):
 	related_fields = ['project', 'owner', 'form']
 	
 	def get_query_set(self):
@@ -145,7 +145,8 @@ class RecordManager(models.GeoManager, VideoMixin):
 		# data set publicly viewable means that EVERY record in the dataset
 		# is public, regardless of the project permissions setting:
 		if form.can_view(access_key=access_key):
-			q = self.model.objects.distinct().select_related(*self.related_fields)
+			#q = self.model.objects.distinct().select_related(*self.related_fields)
+			q = self.model.objects.select_related(*self.related_fields)
 			if request is not None:
 				q = self._apply_sql_filter(q, request, context)
 			q = q.prefetch_related(*self.prefetch_fields)
@@ -156,7 +157,8 @@ class RecordManager(models.GeoManager, VideoMixin):
 		# if the dataset is not public, return only those records that are
 		# associated with a public project:
 		else:
-			q = self.model.objects.distinct().select_related(*self.related_fields)
+			#q = self.model.objects.distinct().select_related(*self.related_fields)
+			q = self.model.objects.select_related(*self.related_fields)
 			q = q.filter(
 					(Q(project__access_authority__id=models.ObjectAuthority.PUBLIC_WITH_LINK)
 						& Q(project__access_key=access_key)) |
