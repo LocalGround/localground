@@ -183,7 +183,10 @@ class Form(BaseNamed, BasePermissions):
 	@property
 	def fields(self):
 		if not hasattr(self, '_fields') or self._fields is None:
-			self._fields = self.field_set.select_related('data_type').all()
+			self._fields = (
+				self.field_set.select_related('data_type').all()
+				.order_by('ordering',)
+			)
 		return self._fields
 		
 	def get_fields(self, ordering='ordering', print_only=False):
