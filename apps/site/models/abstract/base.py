@@ -103,7 +103,20 @@ class Base(models.Model):
 	def grab(self, cls):
 		# same as _get_filtered_entities
 		return self._get_filtered_entities(cls)
-		
+	
+	def get_form_ids(self):
+		from localground.apps.site.models import Photo, Audio, Scan
+		content_ids = [
+				ct.id for ct in
+				ContentType.objects.get_for_models(Photo, Audio, Scan).values()
+			]
+		return (
+			self.entities
+				.values_list('entity_type__model', flat=True)
+				.distinct()
+				.exclude(entity_type__in=content_ids)
+			)
+
 	def _get_filtered_entities(self, cls):
 		"""
 		Private method that queries the GenericAssociation model for
@@ -165,11 +178,5 @@ class Base(models.Model):
 		)
 		assoc.save()
 	
-	'''
-	def can_view(self, user=None):	
-		raise NotImplementedError("Please Implement this method")
-	
-	def can_edit(self, user):
-		raise NotImplementedError("Please Implement this method")
-	'''
+
 

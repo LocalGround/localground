@@ -194,8 +194,8 @@ class GroupMixin(ObjectMixin):
         if user is None or not user.is_authenticated():
             raise GenericLocalGroundError('The user cannot be empty')
         
-        #q = self.model.objects.distinct().select_related(*self.related_fields)
-        q = self.model.objects.select_related(*self.related_fields)
+        q = self.model.objects.distinct().select_related(*self.related_fields)
+        #q = self.model.objects.select_related(*self.related_fields)
         q = q.filter(
                         Q(owner=user) | (
                             Q(users__user=user) &
