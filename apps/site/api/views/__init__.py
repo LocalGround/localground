@@ -18,6 +18,8 @@ from localground.apps.site.api.views.admin_views import (
 	TileViewSet, OverlayTypeViewSet, OverlaySourceViewSet,
 	UserViewSet, GroupViewSet, DataTypeViewSet
 )
+from localground.apps.site.api.views.tags_views import TagList
+
 
 from rest_framework.decorators import api_view
 from django.utils.datastructures import SortedDict

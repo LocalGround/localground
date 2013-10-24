@@ -97,6 +97,9 @@ localground.slideshow.prototype.render_title_page = function(marker) {
             
 localground.slideshow.prototype.render_photo_slides = function(marker) {
     var me = this;
+	if (marker.children.photos == null) {
+		return;
+	}
     $.each(marker.children.photos.data, function(idx) {
         var $item = $('<div />').addClass('item')
                 .append($('<div />').css({'height': me.height})

@@ -191,7 +191,7 @@ localground.marker.prototype.noChildrenMessage = function($container, msg){
 localground.marker.prototype.renderPhotoPanel = function($container){
     var me = this;
     //var $container = $('<div />');
-    if (this.children.photos.data.length == 0) {
+    if (this.children.photos == null || this.children.photos.data.length == 0) {
         return this.noChildrenMessage($container, 'No photos have been added');
     }
     $.each(this.children.photos.data, function(idx) {
@@ -318,7 +318,7 @@ localground.marker.prototype.renderFormPanel = function($container){
 localground.marker.prototype.renderAudioPanel = function($container){
     var me = this;
     //var $container = $('<div />');
-    if (this.children.audio.data.length == 0) {
+    if (this.children.audio == null || this.children.audio.data.length == 0) {
         return this.noChildrenMessage($container, 'No audio has been added');
     }
     $.each(this.children.audio.data, function(idx) {
