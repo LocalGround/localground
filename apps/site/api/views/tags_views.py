@@ -5,8 +5,15 @@ from localground.apps.lib.helpers.generic import FastPaginator
 from rest_framework.permissions import AllowAny
 	
 class TagSerializer(serializers.Serializer):
+	id = serializers.SerializerMethodField('get_id')
 	name = serializers.SerializerMethodField('get_name')
 	count = serializers.SerializerMethodField('get_count')
+	
+	def get_id(self, obj):
+		try:
+			return obj.id
+		except Exception:
+			return obj.get('tag__id')
 	
 	def get_name(self, obj):
 		try:

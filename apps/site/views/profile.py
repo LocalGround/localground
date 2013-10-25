@@ -126,7 +126,11 @@ def object_list_form(request, object_type_plural, return_message=None):
         start = 0
         if r.get('page') is not None:
             start = (int(r.get('page'))-1)*per_page
-        modelformset = ModelClassFormSet(queryset=objects[start:start+per_page])
+        
+        # Hack:  somehow, calling the ".all()" method slices the queryset (LIMIT BY),
+        # rather than converting the queryset to a list (which we don't want).
+        modelformset = ModelClassFormSet(queryset=objects.all()[start:start+per_page])
+        #modelformset = ModelClassFormSet(queryset=objects[start:start+per_page])
         
     context.update({
         'formset': modelformset,

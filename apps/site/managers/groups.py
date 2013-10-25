@@ -70,8 +70,7 @@ class FormMixin(GroupMixin):
         if request:
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
-        if ordering_field is not None:
-            q =  q.order_by(ordering_field)
+        q =  q.order_by(ordering_field)
         return q
     
     
