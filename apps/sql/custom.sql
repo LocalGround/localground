@@ -1,3 +1,7 @@
+-- This is where the custom views are installed. Right now, they're used
+-- to simplify the user permissions logic, but there may be more down 
+-- the line.
+
 ------------------------
 -- View: v_private_audio
 ------------------------
@@ -15,7 +19,6 @@ CREATE OR REPLACE VIEW v_private_audio AS
                    FROM site_audio m, site_project g
                   WHERE m.project_id = g.id) v
   GROUP BY v.id, v.name, v.user_id;
-
 
 --------------------------
 -- View: v_private_markers
@@ -35,7 +38,6 @@ CREATE OR REPLACE VIEW v_private_markers AS
                   WHERE m.project_id = g.id) v
   GROUP BY v.id, v.name, v.user_id;
 
-
 -------------------------
 -- View: v_private_photos
 -------------------------
@@ -53,10 +55,45 @@ CREATE OR REPLACE VIEW v_private_photos AS
                    FROM site_photo m, site_project g
                   WHERE m.project_id = g.id) v
   GROUP BY v.id, v.name, v.user_id;
+
+---------------------------
+-- View: v_private_projects
+---------------------------
+
+-- helper view to concatenate shared users:
+CREATE OR REPLACE VIEW v_projects_shared_with AS 
+ SELECT g.id, g.name, array_to_string(array_agg(u.username), ', '::text) AS shared_with
+   FROM site_project g, site_userauthorityobject a, auth_user u
+  WHERE g.id = a.object_id AND a.user_id = u.id AND a.content_type_id = 23
+  GROUP BY g.id, g.name;
   
-  
-  
-  
+-- actual v_private_projects view:
+CREATE OR REPLACE VIEW v_private_projects AS 
+ SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id, s.shared_with
+   FROM (         SELECT g.id, g.name, a.user_id, a.authority_id
+                   FROM site_project g, site_userauthorityobject a
+                  WHERE g.id = a.object_id AND a.content_type_id = 23
+        UNION 
+                 SELECT site_project.id, site_project.name, site_project.owner_id AS user_id, 3 AS authority_id
+                   FROM site_project) v
+   LEFT JOIN v_projects_shared_with s ON v.id = s.id
+  GROUP BY v.id, v.name, v.user_id, s.shared_with;
+
+------------------------
+-- View: v_private_views
+------------------------
+CREATE OR REPLACE VIEW v_private_views AS 
+SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+FROM 
+(
+    SELECT g.id, g.name, a.user_id, a.authority_id
+    FROM site_view g, site_userauthorityobject a
+    WHERE g.id = a.object_id AND a.content_type_id = 24
+  UNION 
+    SELECT id, name, owner_id as user_id, 3 AS authority_id
+    FROM site_view
+) v
+GROUP BY v.id, v.name, v.user_id;
   
 ------------------------
 -- View: v_public_photos
@@ -94,7 +131,6 @@ from site_audio a, site_project pr
 ) t
 where t.view_authority > 1
 group by t.id;
-
 
 -------------------------
 -- View: v_public_markers

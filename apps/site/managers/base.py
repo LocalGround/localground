@@ -185,40 +185,10 @@ class ObjectMixin(BaseMixin):
         return q
     
 class GroupMixin(ObjectMixin):
-    related_fields = ['owner', 'last_updated_by', 'access_authority', 'tag', 'tags']
-    prefetch_fields = ['users__user']
+    related_fields = ['owner', 'last_updated_by', 'access_authority'] #, 'tag', 'tags']
+    #prefetch_fields = ['users__user']
+    prefetch_fields = []
             
-    def _get_objects(self, user, authority_id, request=None, context=None,
-                    ordering_field='-time_stamp', with_counts=True, **kwargs):
-        
-        if user is None or not user.is_authenticated():
-            raise GenericLocalGroundError('The user cannot be empty')
-        
-        q = self.model.objects.distinct().select_related(*self.related_fields)
-        #q = self.model.objects.select_related(*self.related_fields)
-        q = q.filter(
-                        Q(owner=user) | (
-                            Q(users__user=user) &
-                            Q(users__authority__id__gte=authority_id)
-                        )
-                    )
-        if request:
-            q = self._apply_sql_filter(q, request, context)
-        q = q.prefetch_related(*self.prefetch_fields)
-        if ordering_field:
-            q =  q.order_by(ordering_field)
-        '''
-        #This query works, but it's so slow!
-        if with_counts:
-            from django.db.models import Count
-            q = q.annotate(processed_maps_count=Count('scan', distinct=True))
-            q = q.annotate(photo_count=Count('photo', distinct=True))
-            q = q.annotate(audio_count=Count('audio', distinct=True))
-            q = q.annotate(marker_count=Count('marker', distinct=True))
-        '''
-        return self.populate_tags_for_queryset(q)
-    
-    
     def get_objects(self, user, project=None, request=None,
                     context=None, ordering_field='-time_stamp'):
         return self._get_objects(

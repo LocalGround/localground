@@ -130,7 +130,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
-    'django.contrib.messages.context_processors.messages',
     'localground.apps.middleware.context_processors.persistant_queries', #for our application-level context objects
 )
 
@@ -151,7 +150,6 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.gis',
-    'django.contrib.messages',
     'localground',
     'localground.apps',
     'localground.apps.management',
@@ -159,7 +157,7 @@ INSTALLED_APPS = (
     'localground.apps.registration',        #taken from the django-registration module
     'tagging',                              #for tagging of blog posts in Django
     'localground.apps.contenttypes',
-    'django.contrib.admin',
+    #'django.contrib.admin',
     'rest_framework',
 )
 

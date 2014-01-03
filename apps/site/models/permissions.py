@@ -161,5 +161,22 @@ class MarkerUser(ObjectUserPermissions):
 		app_label = 'site'
 		managed = False
 		db_table = 'v_private_markers'
+		
+class ViewUser(ObjectUserPermissions):
+	view = models.ForeignKey('View', db_column='id', on_delete=models.DO_NOTHING)
+	
+	class Meta:
+		app_label = 'site'
+		managed = False
+		db_table = 'v_private_views'
+		
+class ProjectUser(ObjectUserPermissions):
+	project = models.ForeignKey('Project', db_column='id', on_delete=models.DO_NOTHING)
+	shared_with = models.CharField(max_length=1000)
+	class Meta:
+		app_label = 'site'
+		managed = False
+		db_table = 'v_private_projects'
+
 
 		

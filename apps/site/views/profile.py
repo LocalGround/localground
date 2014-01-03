@@ -99,7 +99,7 @@ def object_list_form(request, object_type_plural, return_message=None):
     
     ModelClassFormSet = getModelClassFormSet(form=ModelClass.inline_form(request.user))
     if request.method == "POST":
-        modelformset = ModelClassFormSet(request.POST, queryset=ModelClass.objects.all()) #objects
+        modelformset = ModelClassFormSet(request.POST, queryset=objects) #objects
         if modelformset.is_valid():
             num_updates = 0
             for form in modelformset.forms:
@@ -109,7 +109,6 @@ def object_list_form(request, object_type_plural, return_message=None):
                     instance.time_stamp = datetime.now()
                     instance.save()
                     num_updates += 1
-            modelformset.save()
             if num_updates > 0:
                 context.update({
                     'message': '%s %s have been updated' % (num_updates, ModelClass.model_name_plural)
@@ -129,7 +128,7 @@ def object_list_form(request, object_type_plural, return_message=None):
         
         # Hack:  somehow, calling the ".all()" method slices the queryset (LIMIT BY),
         # rather than converting the queryset to a list (which we don't want).
-        modelformset = ModelClassFormSet(queryset=objects.all()[start:start+per_page])
+        modelformset = ModelClassFormSet(queryset=objects[start:start+per_page])
         #modelformset = ModelClassFormSet(queryset=objects[start:start+per_page])
         
     context.update({

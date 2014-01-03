@@ -22,7 +22,8 @@ from localground.apps.site.models.groups import Group, Project, View, Scene
 from localground.apps.site.models.userprofile import UserProfile
 from localground.apps.site.models.permissions import \
 	BasePermissions, ObjectUserPermissions, UserAuthorityObject, \
-	UserAuthority, ObjectAuthority, AudioUser, PhotoUser, MarkerUser
+	UserAuthority, ObjectAuthority, AudioUser, PhotoUser, MarkerUser, \
+	ViewUser, ProjectUser
 from localground.apps.site.models.genericassociation import GenericAssociation
 
 #snippet

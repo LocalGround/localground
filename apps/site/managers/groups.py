@@ -5,6 +5,34 @@ from localground.apps.site.managers.base import GenericLocalGroundError
 from django.db.models import Q
 
 class ProjectMixin(GroupMixin):
+    
+    def _get_objects(self, user, authority_id, request=None, context=None,
+                    ordering_field='-time_stamp', with_counts=True, **kwargs):
+        
+        if user is None or not user.is_authenticated():
+            raise GenericLocalGroundError('The user cannot be empty')
+        
+        q = (
+            self.model.objects
+                .select_related(*self.related_fields)
+                .filter(projectuser__user=user)
+        )
+        if request:
+            q = self._apply_sql_filter(q, request, context)
+        q = q.prefetch_related(*self.prefetch_fields)
+        q = q.extra(
+            select={
+                'photo_count': 'SELECT count(id) from site_photo WHERE site_photo.project_id = site_project.id',
+                'audio_count': 'SELECT count(id) from site_audio WHERE site_audio.project_id = site_project.id',
+                'processed_maps_count': 'SELECT count(id) from site_scan WHERE site_scan.project_id = site_project.id',
+                'marker_count': 'SELECT count(id) from site_marker WHERE site_marker.project_id = site_project.id',
+                'shared_with': 'select shared_with from v_projects_shared_with WHERE v_projects_shared_with.id = site_project.id'
+            },
+        )
+        if ordering_field:
+            q =  q.order_by(ordering_field)
+        return q #self.populate_tags_for_queryset(q)
+    
     def to_dict_list(self):
         # does this need to be implemented, or can we just rely on
         # the ProjectSerializer in the API?
