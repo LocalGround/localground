@@ -154,6 +154,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'localground',
     'localground.apps',
+    'localground.apps.management',
     'localground.apps.site',
     'localground.apps.registration',        #taken from the django-registration module
     'tagging',                              #for tagging of blog posts in Django

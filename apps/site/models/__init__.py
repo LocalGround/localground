@@ -21,7 +21,8 @@ from localground.apps.site.models.wmsoverlay import WMSOverlay
 from localground.apps.site.models.groups import Group, Project, View, Scene
 from localground.apps.site.models.userprofile import UserProfile
 from localground.apps.site.models.permissions import \
-    BasePermissions, UserAuthorityObject, UserAuthority, ObjectAuthority
+	BasePermissions, ObjectUserPermissions, UserAuthorityObject, \
+	UserAuthority, ObjectAuthority, AudioUser, PhotoUser, MarkerUser
 from localground.apps.site.models.genericassociation import GenericAssociation
 
 #snippet

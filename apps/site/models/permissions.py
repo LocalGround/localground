@@ -123,4 +123,43 @@ class UserAuthorityObject(models.Model):
 	
 	class Meta:
 		app_label = 'site'
+
+
+class ObjectUserPermissions(models.Model):
+	user = models.ForeignKey('auth.User',
+					db_column='user_id', on_delete=models.DO_NOTHING)
+	user_authority = models.ForeignKey('UserAuthority',
+								db_column='authority_id', on_delete=models.DO_NOTHING)
+
+	class Meta:
+		abstract = True
+		app_label = 'site'
+		
+		
+class AudioUser(ObjectUserPermissions):
+	audio = models.ForeignKey('Audio', db_column='id', on_delete=models.DO_NOTHING)
+	
+	class Meta:
+		app_label = 'site'
+		managed = False
+		db_table = 'v_private_audio'
+
+		
+class PhotoUser(ObjectUserPermissions):
+	photo = models.ForeignKey('Photo', db_column='id', on_delete=models.DO_NOTHING)
+	
+	class Meta:
+		app_label = 'site'
+		managed = False
+		db_table = 'v_private_photos'
+		
+		
+class MarkerUser(ObjectUserPermissions):
+	marker = models.ForeignKey('Marker', db_column='id', on_delete=models.DO_NOTHING)
+	
+	class Meta:
+		app_label = 'site'
+		managed = False
+		db_table = 'v_private_markers'
+
 		
