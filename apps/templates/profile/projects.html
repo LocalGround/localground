@@ -72,7 +72,7 @@
 					<li>
 						Markers: {{form.instance.marker_count}}
 					</li>
-					<li><strong>Shared with:</strong> {{ form.instance.shared_with }}</li>
+					<li><strong>Shared with:</strong> {{ form.instance.shared_with|default_if_none:"Unshared" }}</li>
 					
 				</ul>
 			</td>

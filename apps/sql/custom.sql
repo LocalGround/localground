@@ -9,11 +9,17 @@ CREATE OR REPLACE VIEW v_private_audio AS
  SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
    FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
                            FROM site_genericassociation m, site_view g, site_userauthorityobject a
-                          WHERE m.source_id = g.id AND g.id = a.object_id AND a.content_type_id = 24 AND m.source_type_id = 24 AND m.entity_type_id = 21
+                          WHERE m.source_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'view')
+							AND m.source_type_id = (select id from django_content_type where model = 'view')
+							AND m.entity_type_id = (select id from django_content_type where model = 'audio')
                 UNION 
                          SELECT m.id, g.name, a.user_id, a.authority_id
                            FROM site_audio m, site_project g, site_userauthorityobject a
-                          WHERE m.project_id = g.id AND g.id = a.object_id AND a.content_type_id = 23)
+                          WHERE m.project_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'project'))
         UNION 
                  SELECT m.id, g.name, m.owner_id, 3 AS authority_id
                    FROM site_audio m, site_project g
@@ -27,11 +33,17 @@ CREATE OR REPLACE VIEW v_private_markers AS
  SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
    FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
                            FROM site_genericassociation m, site_view g, site_userauthorityobject a
-                          WHERE m.source_id = g.id AND g.id = a.object_id AND a.content_type_id = 24 AND m.source_type_id = 24 AND m.entity_type_id = 10
+                          WHERE m.source_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'view')
+							AND m.source_type_id = (select id from django_content_type where model = 'view')
+							AND m.entity_type_id = (select id from django_content_type where model = 'marker')
                 UNION 
                          SELECT m.id, g.name, a.user_id, a.authority_id
                            FROM site_marker m, site_project g, site_userauthorityobject a
-                          WHERE m.project_id = g.id AND g.id = a.object_id AND a.content_type_id = 23)
+                          WHERE m.project_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'project'))
         UNION 
                  SELECT m.id, g.name, m.owner_id, 3 AS authority_id
                    FROM site_marker m, site_project g
@@ -45,11 +57,17 @@ CREATE OR REPLACE VIEW v_private_photos AS
  SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
    FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
                            FROM site_genericassociation m, site_view g, site_userauthorityobject a
-                          WHERE m.source_id = g.id AND g.id = a.object_id AND a.content_type_id = 24 AND m.source_type_id = 24 AND m.entity_type_id = 20
+                          WHERE m.source_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'view')
+							AND m.source_type_id = (select id from django_content_type where model = 'view')
+							AND m.entity_type_id = (select id from django_content_type where model = 'photo')
                 UNION 
                          SELECT m.id, g.name, a.user_id, a.authority_id
                            FROM site_photo m, site_project g, site_userauthorityobject a
-                          WHERE m.project_id = g.id AND g.id = a.object_id AND a.content_type_id = 23)
+                          WHERE m.project_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'project'))
         UNION 
                  SELECT m.id, g.name, m.owner_id, 3 AS authority_id
                    FROM site_photo m, site_project g
@@ -64,31 +82,43 @@ CREATE OR REPLACE VIEW v_private_photos AS
 CREATE OR REPLACE VIEW v_projects_shared_with AS 
  SELECT g.id, g.name, array_to_string(array_agg(u.username), ', '::text) AS shared_with
    FROM site_project g, site_userauthorityobject a, auth_user u
-  WHERE g.id = a.object_id AND a.user_id = u.id AND a.content_type_id = 23
+  WHERE g.id = a.object_id AND a.user_id = u.id AND a.content_type_id = (select id from django_content_type where model = 'project')
   GROUP BY g.id, g.name;
   
--- actual v_private_projects view:
-CREATE OR REPLACE VIEW v_private_projects AS 
- SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id, s.shared_with
-   FROM (         SELECT g.id, g.name, a.user_id, a.authority_id
-                   FROM site_project g, site_userauthorityobject a
-                  WHERE g.id = a.object_id AND a.content_type_id = 23
-        UNION 
-                 SELECT site_project.id, site_project.name, site_project.owner_id AS user_id, 3 AS authority_id
-                   FROM site_project) v
-   LEFT JOIN v_projects_shared_with s ON v.id = s.id
-  GROUP BY v.id, v.name, v.user_id, s.shared_with;
+-- v_private_projects view:
+CREATE OR REPLACE VIEW v_private_projects AS
+SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+ FROM (         
+  (SELECT g.id, g.name, a.user_id, a.authority_id
+  FROM site_project g, site_userauthorityobject a
+  WHERE g.id = a.object_id AND a.content_type_id = (select id from django_content_type where model = 'project'))
+    UNION 
+  (SELECT site_project.id, site_project.name, site_project.owner_id AS user_id, 3 AS authority_id
+  FROM site_project) 
+) v
+GROUP BY v.id, v.name, v.user_id;
 
 ------------------------
 -- View: v_private_views
 ------------------------
+-- helper view to concatenate shared users:
+CREATE OR REPLACE VIEW v_views_shared_with AS
+ SELECT g.id, g.name, array_to_string(array_agg(u.username), ', ') AS shared_with
+   FROM site_view g, site_userauthorityobject a, auth_user u
+  WHERE g.id = a.object_id AND a.user_id = u.id AND a.content_type_id = ( SELECT django_content_type.id
+           FROM django_content_type
+          WHERE django_content_type.model = 'view')
+  GROUP BY g.id, g.name;
+  
+  
 CREATE OR REPLACE VIEW v_private_views AS 
 SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
 FROM 
 (
     SELECT g.id, g.name, a.user_id, a.authority_id
     FROM site_view g, site_userauthorityobject a
-    WHERE g.id = a.object_id AND a.content_type_id = 24
+    WHERE g.id = a.object_id
+		AND a.content_type_id = (select id from django_content_type where model = 'view')
   UNION 
     SELECT id, name, owner_id as user_id, 3 AS authority_id
     FROM site_view
@@ -102,7 +132,9 @@ CREATE OR REPLACE VIEW v_public_photos AS
  SELECT t.id, max(t.view_authority) AS view_authority, array_to_string(array_agg(t.access_key), ','::text) AS access_keys
    FROM (         SELECT a.entity_id AS id, v.view_authority, v.access_key
                    FROM site_genericassociation a, site_view v
-                  WHERE a.source_id = v.id AND a.source_type_id = 24 AND a.entity_type_id = 20
+                  WHERE a.source_id = v.id
+					AND a.source_type_id = (select id from django_content_type where model = 'view')
+					AND a.entity_type_id = (select id from django_content_type where model = 'photo')
         UNION 
                  SELECT p.id, pr.view_authority, pr.access_key
                    FROM site_photo p, site_project pr
@@ -122,8 +154,8 @@ select a.entity_id as id, v.view_authority, v.access_key
 from site_genericassociation a, site_view v
 where 
   a.source_id = v.id and
-  a.source_type_id = 24 and 
-  a.entity_type_id = 21 
+  a.source_type_id = (select id from django_content_type where model = 'view') and 
+  a.entity_type_id = (select id from django_content_type where model = 'audio') 
 union
 select a.id, pr.view_authority, pr.access_key
 from site_audio a, site_project pr
@@ -144,8 +176,8 @@ select a.entity_id as id, v.view_authority, v.access_key
 from site_genericassociation a, site_view v
 where 
   a.source_id = v.id and
-  a.source_type_id = 24 and 
-  a.entity_type_id = 10 
+  a.source_type_id = (select id from django_content_type where model = 'view') and 
+  a.entity_type_id = (select id from django_content_type where model = 'marker') 
 union
 select m.id, pr.view_authority, pr.access_key
 from site_marker m, site_project pr

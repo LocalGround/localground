@@ -5,8 +5,8 @@ from localground.apps.site.managers.base import GenericLocalGroundError
 from django.db.models import Q
 
 class ProjectMixin(GroupMixin):
-    
-    def _get_objects(self, user, authority_id, request=None, context=None,
+    prefetch_fields = []
+    def _get_objects(self, user, authority_id=1, request=None, context=None,
                     ordering_field='-time_stamp', with_counts=True, **kwargs):
         
         if user is None or not user.is_authenticated():
@@ -15,20 +15,25 @@ class ProjectMixin(GroupMixin):
         q = (
             self.model.objects
                 .select_related(*self.related_fields)
-                .filter(projectuser__user=user)
+                .filter(
+                    Q(projectuser__user=user) &
+                    Q(projectuser__user_authority__id__gte=authority_id)
+                )
         )
         if request:
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
-        q = q.extra(
-            select={
-                'photo_count': 'SELECT count(id) from site_photo WHERE site_photo.project_id = site_project.id',
-                'audio_count': 'SELECT count(id) from site_audio WHERE site_audio.project_id = site_project.id',
-                'processed_maps_count': 'SELECT count(id) from site_scan WHERE site_scan.project_id = site_project.id',
-                'marker_count': 'SELECT count(id) from site_marker WHERE site_marker.project_id = site_project.id',
-                'shared_with': 'select shared_with from v_projects_shared_with WHERE v_projects_shared_with.id = site_project.id'
-            },
-        )
+        if with_counts:
+            sql = 'SELECT count(id) from site_{0} WHERE site_{0}.project_id = site_project.id'
+            q = q.extra(
+                select={
+                    'photo_count': sql.format('photo'),
+                    'audio_count': sql.format('audio'),
+                    'processed_maps_count': sql.format('scan'),
+                    'marker_count': sql.format('marker'),
+                    'shared_with': 'select shared_with from v_projects_shared_with WHERE v_projects_shared_with.id = site_project.id'
+                },
+            )
         if ordering_field:
             q =  q.order_by(ordering_field)
         return q #self.populate_tags_for_queryset(q)
@@ -46,6 +51,42 @@ class ProjectManager(models.GeoManager, ProjectMixin):
         return ProjectQuerySet(self.model, using=self._db)
             
 class ViewMixin(GroupMixin):
+    
+    def _get_objects(self, user, authority_id=1, request=None, context=None,
+                    ordering_field='-time_stamp', with_counts=True, **kwargs):
+        
+        if user is None or not user.is_authenticated():
+            raise GenericLocalGroundError('The user cannot be empty')
+        
+        q = (
+            self.model.objects
+                .select_related(*self.related_fields)
+                .filter(
+                    Q(viewuser__user=user) &
+                    Q(viewuser__user_authority__id__gte=authority_id)
+                )
+        )
+        if request:
+            q = self._apply_sql_filter(q, request, context)
+        q = q.prefetch_related(*self.prefetch_fields)
+        if with_counts:
+            sql = '''select count(entity_id) from site_genericassociation a
+                where a.source_type_id = (select id from django_content_type where model = 'view')
+                and a.entity_type_id = (select id from django_content_type where model = '{0}')
+                and a.source_id = site_view.id'''
+            q = q.extra(
+                    select={
+                        'photo_count': sql.format('photo'),
+                        'audio_count': sql.format('audio'),
+                        'processed_maps_count': sql.format('scan'),
+                        'marker_count': sql.format('marker'),
+                        'shared_with': 'select shared_with from v_views_shared_with WHERE v_views_shared_with.id = site_view.id'
+                    }
+                )
+        if ordering_field:
+            q =  q.order_by(ordering_field)
+        return q #self.populate_tags_for_queryset(q)
+    
     def to_dict_list(self):
         # does this need to be implemented, or can we just rely on
         # the ViewSerializer in the API?

@@ -52,7 +52,7 @@ class BatchQueryGroupMixin(ModelMixin):
 	def test_viewer_can_view_objects(self):
 		# grant user2 direct access to group1
 		self.add_group_viewer(self.group1, self.user2)
-		
+
 		#user2 should be able to view 1 forms....
 		self.assertEqual(
 			1,
@@ -76,12 +76,12 @@ class BatchQueryGroupMixin(ModelMixin):
 		# grant user2 direct access to group1
 		self.add_group_editor(self.group1, self.user2)
 		
-		#user2 should be able to view 1 forms....
+		#user2 should be able to view 1 form....
 		self.assertEqual(
 			1,
 			len(self.model.objects.get_objects(self.user2))
 		)
-		#user2 should only be able to edit 1 forms...
+		#user2 should only be able to edit 1 form...
 		self.assertEqual(
 			1,
 			len(self.model.objects.get_objects_editable(self.user2))
@@ -119,6 +119,29 @@ class BatchQueryGroupMixin(ModelMixin):
 			2,
 			len(self.model.objects.get_objects_public())
 		)
+
+class BatchProjectQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
+	model = models.Project
+	
+	def setUp(self):
+		BatchQueryGroupMixin.setUp(self)
+	
+	def _create_groups(self):
+		#delete all projects in database:
+		models.Project.objects.all().delete()
+		
+		#and add two new ones:
+		self.group1 = self.create_project(
+							self.owner,
+							name='Project #1',
+							authority_id=1
+						)
+		self.group2 = self.create_project(
+							self.owner,
+							name='Project #2',
+							authority_id=1
+						)
+		
 
 class BatchFormQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
 	model = models.Form
@@ -208,29 +231,6 @@ class BatchFormQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
 			2,
 			len(self.model.objects.get_objects_public())
 		)
-	
-	
-class BatchProjectQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
-	model = models.Project
-	
-	def setUp(self):
-		BatchQueryGroupMixin.setUp(self)
-	
-	def _create_groups(self):
-		#delete all projects in database:
-		models.Project.objects.all().delete()
-		
-		#and add two new ones:
-		self.group1 = self.create_project(
-							self.owner,
-							name='Project #1',
-							authority_id=1
-						)
-		self.group2 = self.create_project(
-							self.owner,
-							name='Project #2',
-							authority_id=1
-						)
 		
 		
 class BatchViewQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):

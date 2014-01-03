@@ -185,10 +185,15 @@ class ObjectMixin(BaseMixin):
         return q
     
 class GroupMixin(ObjectMixin):
-    related_fields = ['owner', 'last_updated_by', 'access_authority'] #, 'tag', 'tags']
+    related_fields = ['owner', 'last_updated_by', 'access_authority', 'tag', 'tags']
     #prefetch_fields = ['users__user']
     prefetch_fields = []
             
+
+    def _get_objects(self, user, authority_id, request=None, context=None,
+                    ordering_field='-time_stamp', with_counts=True, **kwargs):
+        raise NotImplementedError("Subclasses must implement this method")
+    
     def get_objects(self, user, project=None, request=None,
                     context=None, ordering_field='-time_stamp'):
         return self._get_objects(

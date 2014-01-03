@@ -177,9 +177,11 @@ class View(Group):
 	A user-generated grouping of media.  Media associations are specified in the
 	GenericAssociation Model.  Only partially implemented.
 	"""
-	name = 'view'
-	name_plural = 'views'
 	objects = ViewManager()
+	
+	class Meta(Group.Meta):
+		verbose_name = 'view'
+		verbose_name_plural = 'views'
 	
 	@classmethod
 	def sharing_form(cls):
