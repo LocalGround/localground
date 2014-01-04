@@ -137,7 +137,8 @@ class ObjectUserPermissions(models.Model):
 		
 		
 class AudioUser(ObjectUserPermissions):
-	audio = models.ForeignKey('Audio', db_column='id', on_delete=models.DO_NOTHING)
+	audio = models.ForeignKey('Audio', db_column='id', on_delete=models.DO_NOTHING,
+								related_name='authuser')
 	
 	class Meta:
 		app_label = 'site'
@@ -146,24 +147,60 @@ class AudioUser(ObjectUserPermissions):
 
 		
 class PhotoUser(ObjectUserPermissions):
-	photo = models.ForeignKey('Photo', db_column='id', on_delete=models.DO_NOTHING)
+	photo = models.ForeignKey('Photo', db_column='id', on_delete=models.DO_NOTHING,
+								related_name='authuser')
 	
 	class Meta:
 		app_label = 'site'
 		managed = False
 		db_table = 'v_private_photos'
 		
+class VideoUser(ObjectUserPermissions):
+	video = models.ForeignKey('Video', db_column='id', on_delete=models.DO_NOTHING,
+							 related_name='authuser')
+	class Meta:
+		app_label = 'site'
+		managed = False
+		db_table = 'v_private_videos'
+		
 		
 class MarkerUser(ObjectUserPermissions):
-	marker = models.ForeignKey('Marker', db_column='id', on_delete=models.DO_NOTHING)
+	marker = models.ForeignKey('Marker', db_column='id', on_delete=models.DO_NOTHING,
+								related_name='authuser')
 	
 	class Meta:
 		app_label = 'site'
 		managed = False
 		db_table = 'v_private_markers'
 		
+class PrintUser(ObjectUserPermissions):
+	print_obj = models.ForeignKey('Print', db_column='id', on_delete=models.DO_NOTHING,
+								related_name='authuser')
+	
+	class Meta:
+		app_label = 'site'
+		managed = False
+		db_table = 'v_private_prints'
+		
+class AttachmentUser(ObjectUserPermissions):
+	attachment = models.ForeignKey('Attachment', db_column='id', on_delete=models.DO_NOTHING,
+							 related_name='authuser')
+	class Meta:
+		app_label = 'site'
+		managed = False
+		db_table = 'v_private_attachments'
+		
+class ScanUser(ObjectUserPermissions):
+	scan = models.ForeignKey('Scan', db_column='id', on_delete=models.DO_NOTHING,
+							 related_name='authuser')
+	class Meta:
+		app_label = 'site'
+		managed = False
+		db_table = 'v_private_scans'
+		
 class ViewUser(ObjectUserPermissions):
-	view = models.ForeignKey('View', db_column='id', on_delete=models.DO_NOTHING)
+	view = models.ForeignKey('View', db_column='id', on_delete=models.DO_NOTHING,
+								related_name='authuser')
 	
 	class Meta:
 		app_label = 'site'
@@ -171,11 +208,21 @@ class ViewUser(ObjectUserPermissions):
 		db_table = 'v_private_views'
 		
 class ProjectUser(ObjectUserPermissions):
-	project = models.ForeignKey('Project', db_column='id', on_delete=models.DO_NOTHING)
+	project = models.ForeignKey('Project', db_column='id',
+								on_delete=models.DO_NOTHING,
+								related_name='authuser')
 	class Meta:
 		app_label = 'site'
 		managed = False
 		db_table = 'v_private_projects'
+		
+class FormUser(ObjectUserPermissions):
+	form = models.ForeignKey('Form', db_column='id', on_delete=models.DO_NOTHING,
+								related_name='authuser')
+	class Meta:
+		app_label = 'site'
+		managed = False
+		db_table = 'v_private_forms'
 
 
 		

@@ -78,7 +78,7 @@ class VideoMixin(UploadMixin):
 
 class VideoQuerySet(QuerySet, AudioMixin):
 	pass
-   
+
 class VideoManager(models.GeoManager, VideoMixin):
 	def get_query_set(self):
 		return VideoQuerySet(self.model, using=self._db)  

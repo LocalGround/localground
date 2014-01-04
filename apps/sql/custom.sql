@@ -74,10 +74,106 @@ CREATE OR REPLACE VIEW v_private_photos AS
                   WHERE m.project_id = g.id) v
   GROUP BY v.id, v.name, v.user_id;
 
+------------------------
+-- View: v_private_scans
+------------------------
+CREATE OR REPLACE VIEW v_private_scans AS 
+ SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+   FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
+                           FROM site_genericassociation m, site_view g, site_userauthorityobject a
+                          WHERE m.source_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'view')
+							AND m.source_type_id = (select id from django_content_type where model = 'view')
+							AND m.entity_type_id = (select id from django_content_type where model = 'scan')
+                UNION 
+                         SELECT m.id, g.name, a.user_id, a.authority_id
+                           FROM site_scan m, site_project g, site_userauthorityobject a
+                          WHERE m.project_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'project'))
+        UNION 
+                 SELECT m.id, g.name, m.owner_id, 3 AS authority_id
+                   FROM site_scan m, site_project g
+                  WHERE m.project_id = g.id) v
+  GROUP BY v.id, v.name, v.user_id;
+
+------------------------------
+-- View: v_private_attachments
+------------------------------  
+CREATE OR REPLACE VIEW v_private_attachments AS 
+ SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+   FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
+                           FROM site_genericassociation m, site_view g, site_userauthorityobject a
+                          WHERE m.source_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'view')
+							AND m.source_type_id = (select id from django_content_type where model = 'view')
+							AND m.entity_type_id = (select id from django_content_type where model = 'attachment')
+                UNION 
+                         SELECT m.id, g.name, a.user_id, a.authority_id
+                           FROM site_attachment m, site_project g, site_userauthorityobject a
+                          WHERE m.project_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'project'))
+        UNION 
+                 SELECT m.id, g.name, m.owner_id, 3 AS authority_id
+                   FROM site_attachment m, site_project g
+                  WHERE m.project_id = g.id) v
+  GROUP BY v.id, v.name, v.user_id;
+  
+-------------------------
+-- View: v_private_videos
+-------------------------
+CREATE OR REPLACE VIEW v_private_videos AS 
+ SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+   FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
+                           FROM site_genericassociation m, site_view g, site_userauthorityobject a
+                          WHERE m.source_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'view')
+							AND m.source_type_id = (select id from django_content_type where model = 'view')
+							AND m.entity_type_id = (select id from django_content_type where model = 'video')
+                UNION 
+                         SELECT m.id, g.name, a.user_id, a.authority_id
+                           FROM site_video m, site_project g, site_userauthorityobject a
+                          WHERE m.project_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'project'))
+        UNION 
+                 SELECT m.id, g.name, m.owner_id, 3 AS authority_id
+                   FROM site_video m, site_project g
+                  WHERE m.project_id = g.id) v
+  GROUP BY v.id, v.name, v.user_id;
+  
+-------------------------
+-- View: v_private_prints
+-------------------------
+CREATE OR REPLACE VIEW v_private_prints AS 
+ SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+   FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
+                           FROM site_genericassociation m, site_view g, site_userauthorityobject a
+                          WHERE m.source_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'view')
+							AND m.source_type_id = (select id from django_content_type where model = 'view')
+							AND m.entity_type_id = (select id from django_content_type where model = 'print')
+                UNION 
+                         SELECT m.id, g.name, a.user_id, a.authority_id
+                           FROM site_print m, site_project g, site_userauthorityobject a
+                          WHERE m.project_id = g.id
+							AND g.id = a.object_id
+							AND a.content_type_id = (select id from django_content_type where model = 'project'))
+        UNION 
+                 SELECT m.id, g.name, m.owner_id, 3 AS authority_id
+                   FROM site_print m, site_project g
+                  WHERE m.project_id = g.id) v
+  GROUP BY v.id, v.name, v.user_id;
+
+
 ---------------------------
 -- View: v_private_projects
 ---------------------------
-
 -- helper view to concatenate shared users:
 CREATE OR REPLACE VIEW v_projects_shared_with AS 
  SELECT g.id, g.name, array_to_string(array_agg(u.username), ', '::text) AS shared_with
@@ -124,6 +220,32 @@ FROM
     FROM site_view
 ) v
 GROUP BY v.id, v.name, v.user_id;
+
+------------------------
+-- View: v_private_forms
+------------------------
+CREATE OR REPLACE VIEW v_private_forms as
+SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+FROM
+(
+  SELECT fp.form_id as id, f.name, a.user_id, a.authority_id
+  FROM v_private_projects a, site_form_projects fp, site_form f
+  WHERE a.id = fp.project_id
+    AND fp.form_id = f.id
+  UNION
+  SELECT id, name, owner_id AS user_id, 3 AS authority_id
+  FROM site_form
+) v
+GROUP BY v.id, v.name, v.user_id;
+
+------------------------
+-- View: v_form_fields
+------------------------
+CREATE OR REPLACE VIEW v_form_fields as
+ SELECT g.id, g.name, array_to_string(array_agg(f.col_alias), ', '::text) AS form_fields
+   FROM site_form g, site_field f
+  WHERE g.id = f.form_id 
+  GROUP BY g.id, g.name;
   
 ------------------------
 -- View: v_public_photos

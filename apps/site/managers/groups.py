@@ -16,8 +16,8 @@ class ProjectMixin(GroupMixin):
             self.model.objects
                 .select_related(*self.related_fields)
                 .filter(
-                    Q(projectuser__user=user) &
-                    Q(projectuser__user_authority__id__gte=authority_id)
+                    Q(authuser__user=user) &
+                    Q(authuser__user_authority__id__gte=authority_id)
                 )
         )
         if request:
@@ -62,8 +62,8 @@ class ViewMixin(GroupMixin):
             self.model.objects
                 .select_related(*self.related_fields)
                 .filter(
-                    Q(viewuser__user=user) &
-                    Q(viewuser__user_authority__id__gte=authority_id)
+                    Q(authuser__user=user) &
+                    Q(authuser__user_authority__id__gte=authority_id)
                 )
         )
         if request:
@@ -122,23 +122,22 @@ class FormMixin(GroupMixin):
         if user is None or not user.is_authenticated():
             raise GenericLocalGroundError('The user cannot be empty')
             
-        q = self.model.objects.distinct().select_related(*self.related_fields)
-        q = q.filter(
-                Q(owner=user) |
-                (
-                    Q(users__user=user) &
-                    Q(users__authority__id__gte=authority_id)
-                ) |
-                Q(projects__owner=user) |
-                (
-                    Q(projects__users__user=user) &
-                    Q(projects__users__authority__id__gte=authority_id)
+        q = (
+            self.model.objects.distinct()
+            .select_related(*self.related_fields)
+            .filter(
+                    Q(authuser__user=user) &
+                    Q(authuser__user_authority__id__gte=authority_id)
                 )
             )
-        
         if request:
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
+        q = q.extra(
+                select={
+                    'form_fields': 'select form_fields from v_form_fields WHERE v_form_fields.id = site_form.id'
+                }
+            )
         q =  q.order_by(ordering_field)
         return q
     

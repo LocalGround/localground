@@ -115,7 +115,8 @@ class Form(BaseNamed, BasePermissions):
 
 	def clear_table_model_cache(self):
 		from django.db.models.loading import cache
-		del cache.app_models['site']['form_%s' % self.id]
+		if cache.app_models['site'].get('form_%s' % self.id):
+			del cache.app_models['site']['form_%s' % self.id]
 		self._fields = None
 	
 	

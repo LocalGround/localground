@@ -121,22 +121,13 @@ class ObjectMixin(BaseMixin):
             raise GenericLocalGroundError('The user cannot be empty')
         if not user.is_authenticated():
             raise GenericLocalGroundError('The user cannot be anonymous')
-        #q = (self.model.objects.distinct()
-        #        .select_related(*self.related_fields)
-        #    )
-        q = self.model.objects.select_related(*self.related_fields)
-
-        # this query is slow:
-        #q = q.filter(Q(project__owner=user) | Q(project__users__user=user))
-        # use this instead:
-        from localground.apps.site.models import Project
-        q = q.filter(project__id__in=[
-                p.id for p in Project.objects.filter(
-                    Q(owner=user) | (
-                        Q(users__user=user) & Q(users__authority__id__gte=authority_id)
-                    )
-                ).distinct()	
-            ])
+        q = (
+            self.model.objects
+            .select_related(*self.related_fields)
+            .filter(
+                Q(authuser__user=user) &
+                Q(authuser__user_authority__id__gte=authority_id)
+            ))
         if project:
             q = q.filter(project=project)
         if request:

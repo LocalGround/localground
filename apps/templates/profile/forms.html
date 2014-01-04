@@ -46,26 +46,19 @@
 			<td>
 				<input class="checkone" id="cb_{{form.instance.id}}" name="id" type="checkbox" value="{{form.instance.id}}" />
 			</td>
-			<td>
+			<td style="min-width: 500px;">
 				{% include "includes/forms/generic_form_renderer.html" %}
 				<div class="clearfix">
 					<div class="input">
 						<a href="#" class="fields">Update Form Fields</a> |
-						<a href="/profile/forms/{{form.instance.id}}/data/">View Data</a>
+						<a href="/profile/forms/{{form.instance.id}}/data/">View Data</a> |
+						<a href="#" class="share">Share</a>
 					</div>
 				</div>
 			</td>
 			<td>
                 <div class="thin">
 					<label>ID:</label><div class="input">{{ form.instance.id }}</div>
-				</div>
-				<div class="thin">
-					<label>Projects:</label>
-					<div class="input">
-						{% for p in form.instance.projects.all %}
-							{{p.name}}{% if not forloop.last %}, {% endif %}
-						{% endfor %}
-					</div>
 				</div>
 				<div class="thin">
 					<label>Created:</label>
@@ -84,10 +77,15 @@
 				<div class="thin">
 					<label>fields:</label>
 					<div class="input">
-					
-					{% for f in form.instance.fields %}
-						{{f.col_alias}}{% if not forloop.last %}, {% endif %}
-					{% endfor %}
+						{{ form.instance.form_fields|default_if_none:"No Fields Defined"}}
+					</div>
+				</div>
+				<div class="thin">
+					<label>Shared With:</label>
+					<div class="input">
+						{% for p in form.instance.projects.all %}
+							{{p.name}}{% if not forloop.last %}, {% endif %}
+						{% endfor %}
 					</div>
 				</div>
 			</td>

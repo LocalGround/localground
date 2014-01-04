@@ -189,6 +189,11 @@ class View(Group):
 		return ViewPermissionsForm
 	
 	@classmethod
+	def inline_form(cls, user=None):
+		from localground.apps.site.forms import ViewInlineUpdateForm
+		return ViewInlineUpdateForm
+	
+	@classmethod
 	def get_form(cls):
 		from localground.apps.site.forms import ViewCreateForm
 		return ViewCreateForm

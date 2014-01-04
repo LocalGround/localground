@@ -89,6 +89,11 @@ class ViewPermissionsForm(ProjectPermissionsForm):
 class ViewCreateForm(ProjectCreateForm):
     class Meta(ProjectCreateForm.Meta):
         model = View
+        
+class ViewInlineUpdateForm(ProjectInlineUpdateForm):
+    class Meta(ProjectInlineUpdateForm.Meta):
+        model = View
+    
       
 class ViewUpdateForm(ProjectUpdateForm):
     class Meta(ProjectUpdateForm.Meta):

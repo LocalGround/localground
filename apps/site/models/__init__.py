@@ -23,7 +23,8 @@ from localground.apps.site.models.userprofile import UserProfile
 from localground.apps.site.models.permissions import \
 	BasePermissions, ObjectUserPermissions, UserAuthorityObject, \
 	UserAuthority, ObjectAuthority, AudioUser, PhotoUser, MarkerUser, \
-	ViewUser, ProjectUser
+	ViewUser, ProjectUser, FormUser, VideoUser, ScanUser, PrintUser, \
+	AttachmentUser
 from localground.apps.site.models.genericassociation import GenericAssociation
 
 #snippet
