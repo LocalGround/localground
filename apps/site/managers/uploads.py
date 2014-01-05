@@ -2,6 +2,8 @@ from django.contrib.gis.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
 from localground.apps.site.managers.base import ObjectMixin
+from localground.apps.lib.errors import GenericLocalGroundError
+
 	
 class UploadMixin(ObjectMixin):
 	related_fields = ['project', 'owner', 'last_updated_by']
@@ -97,7 +99,29 @@ class SnippetManager(models.Manager):
 		return snippets
 	
 class RecordMixin(UploadMixin):
-	pass
+	def _get_objects(self, user, authority_id, project=None, request=None,
+					 context=None, ordering_field='-time_stamp'):
+		if user is None:
+			raise GenericLocalGroundError('The user cannot be empty')
+		if not user.is_authenticated():
+			raise GenericLocalGroundError('The user cannot be anonymous')
+		q = (
+			self.model.objects
+			.select_related(*self.related_fields)
+			.filter(
+				(
+					Q(project__authuser__user=user) &
+					Q(project__authuser__user_authority__id__gte=authority_id)
+				) | Q(owner=user)
+			))
+		if project:
+			q = q.filter(project=project)
+		if request:
+			q = self._apply_sql_filter(q, request, context)
+		q = q.prefetch_related(*self.prefetch_fields)
+		if ordering_field:
+			q =  q.order_by(ordering_field)
+		return q
 
 class RecordQuerySet(QuerySet, AudioMixin):
 	pass

@@ -2,186 +2,43 @@
 -- to simplify the user permissions logic, but there may be more down 
 -- the line.
 
-------------------------
--- View: v_private_audio
-------------------------
-CREATE OR REPLACE VIEW v_private_audio AS 
- SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
-   FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
-                           FROM site_genericassociation m, site_view g, site_userauthorityobject a
-                          WHERE m.source_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'view')
-							AND m.source_type_id = (select id from django_content_type where model = 'view')
-							AND m.entity_type_id = (select id from django_content_type where model = 'audio')
-                UNION 
-                         SELECT m.id, g.name, a.user_id, a.authority_id
-                           FROM site_audio m, site_project g, site_userauthorityobject a
-                          WHERE m.project_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'project'))
-        UNION 
-                 SELECT m.id, g.name, m.owner_id, 3 AS authority_id
-                   FROM site_audio m, site_project g
-                  WHERE m.project_id = g.id) v
-  GROUP BY v.id, v.name, v.user_id;
+--------------------------------------------------------------------------------------
+-- Convenience Views
+--------------------------------------------------------------------------------------
 
---------------------------
--- View: v_private_markers
---------------------------
-CREATE OR REPLACE VIEW v_private_markers AS 
- SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
-   FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
-                           FROM site_genericassociation m, site_view g, site_userauthorityobject a
-                          WHERE m.source_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'view')
-							AND m.source_type_id = (select id from django_content_type where model = 'view')
-							AND m.entity_type_id = (select id from django_content_type where model = 'marker')
-                UNION 
-                         SELECT m.id, g.name, a.user_id, a.authority_id
-                           FROM site_marker m, site_project g, site_userauthorityobject a
-                          WHERE m.project_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'project'))
-        UNION 
-                 SELECT m.id, g.name, m.owner_id, 3 AS authority_id
-                   FROM site_marker m, site_project g
-                  WHERE m.project_id = g.id) v
-  GROUP BY v.id, v.name, v.user_id;
-
--------------------------
--- View: v_private_photos
--------------------------
-CREATE OR REPLACE VIEW v_private_photos AS 
- SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
-   FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
-                           FROM site_genericassociation m, site_view g, site_userauthorityobject a
-                          WHERE m.source_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'view')
-							AND m.source_type_id = (select id from django_content_type where model = 'view')
-							AND m.entity_type_id = (select id from django_content_type where model = 'photo')
-                UNION 
-                         SELECT m.id, g.name, a.user_id, a.authority_id
-                           FROM site_photo m, site_project g, site_userauthorityobject a
-                          WHERE m.project_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'project'))
-        UNION 
-                 SELECT m.id, g.name, m.owner_id, 3 AS authority_id
-                   FROM site_photo m, site_project g
-                  WHERE m.project_id = g.id) v
-  GROUP BY v.id, v.name, v.user_id;
-
-------------------------
--- View: v_private_scans
-------------------------
-CREATE OR REPLACE VIEW v_private_scans AS 
- SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
-   FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
-                           FROM site_genericassociation m, site_view g, site_userauthorityobject a
-                          WHERE m.source_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'view')
-							AND m.source_type_id = (select id from django_content_type where model = 'view')
-							AND m.entity_type_id = (select id from django_content_type where model = 'scan')
-                UNION 
-                         SELECT m.id, g.name, a.user_id, a.authority_id
-                           FROM site_scan m, site_project g, site_userauthorityobject a
-                          WHERE m.project_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'project'))
-        UNION 
-                 SELECT m.id, g.name, m.owner_id, 3 AS authority_id
-                   FROM site_scan m, site_project g
-                  WHERE m.project_id = g.id) v
-  GROUP BY v.id, v.name, v.user_id;
-
-------------------------------
--- View: v_private_attachments
-------------------------------  
-CREATE OR REPLACE VIEW v_private_attachments AS 
- SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
-   FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
-                           FROM site_genericassociation m, site_view g, site_userauthorityobject a
-                          WHERE m.source_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'view')
-							AND m.source_type_id = (select id from django_content_type where model = 'view')
-							AND m.entity_type_id = (select id from django_content_type where model = 'attachment')
-                UNION 
-                         SELECT m.id, g.name, a.user_id, a.authority_id
-                           FROM site_attachment m, site_project g, site_userauthorityobject a
-                          WHERE m.project_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'project'))
-        UNION 
-                 SELECT m.id, g.name, m.owner_id, 3 AS authority_id
-                   FROM site_attachment m, site_project g
-                  WHERE m.project_id = g.id) v
-  GROUP BY v.id, v.name, v.user_id;
-  
--------------------------
--- View: v_private_videos
--------------------------
-CREATE OR REPLACE VIEW v_private_videos AS 
- SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
-   FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
-                           FROM site_genericassociation m, site_view g, site_userauthorityobject a
-                          WHERE m.source_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'view')
-							AND m.source_type_id = (select id from django_content_type where model = 'view')
-							AND m.entity_type_id = (select id from django_content_type where model = 'video')
-                UNION 
-                         SELECT m.id, g.name, a.user_id, a.authority_id
-                           FROM site_video m, site_project g, site_userauthorityobject a
-                          WHERE m.project_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'project'))
-        UNION 
-                 SELECT m.id, g.name, m.owner_id, 3 AS authority_id
-                   FROM site_video m, site_project g
-                  WHERE m.project_id = g.id) v
-  GROUP BY v.id, v.name, v.user_id;
-  
--------------------------
--- View: v_private_prints
--------------------------
-CREATE OR REPLACE VIEW v_private_prints AS 
- SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
-   FROM (        (         SELECT m.entity_id AS id, g.name, a.user_id, a.authority_id
-                           FROM site_genericassociation m, site_view g, site_userauthorityobject a
-                          WHERE m.source_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'view')
-							AND m.source_type_id = (select id from django_content_type where model = 'view')
-							AND m.entity_type_id = (select id from django_content_type where model = 'print')
-                UNION 
-                         SELECT m.id, g.name, a.user_id, a.authority_id
-                           FROM site_print m, site_project g, site_userauthorityobject a
-                          WHERE m.project_id = g.id
-							AND g.id = a.object_id
-							AND a.content_type_id = (select id from django_content_type where model = 'project'))
-        UNION 
-                 SELECT m.id, g.name, m.owner_id, 3 AS authority_id
-                   FROM site_print m, site_project g
-                  WHERE m.project_id = g.id) v
-  GROUP BY v.id, v.name, v.user_id;
-
-
----------------------------
--- View: v_private_projects
----------------------------
 -- helper view to concatenate shared users:
 CREATE OR REPLACE VIEW v_projects_shared_with AS 
- SELECT g.id, g.name, array_to_string(array_agg(u.username), ', '::text) AS shared_with
+ SELECT g.id, g.name, array_to_string(array_agg(u.username), ', ') AS shared_with
    FROM site_project g, site_userauthorityobject a, auth_user u
   WHERE g.id = a.object_id AND a.user_id = u.id AND a.content_type_id = (select id from django_content_type where model = 'project')
   GROUP BY g.id, g.name;
   
--- v_private_projects view:
+-- helper view to concatenate shared users:
+CREATE OR REPLACE VIEW v_views_shared_with AS
+ SELECT g.id, g.name, array_to_string(array_agg(u.username), ', ') AS shared_with
+   FROM site_view g, site_userauthorityobject a, auth_user u
+  WHERE g.id = a.object_id AND a.user_id = u.id AND a.content_type_id = ( SELECT django_content_type.id
+           FROM django_content_type
+          WHERE django_content_type.model = 'view')
+  GROUP BY g.id, g.name;
+  
+-- helper view to concatenate form fields:
+CREATE OR REPLACE VIEW v_form_fields as
+ SELECT g.id, g.name, array_to_string(array_agg(f.col_alias), ', '::text) AS form_fields
+   FROM site_form g, site_field f
+  WHERE g.id = f.form_id 
+  GROUP BY g.id, g.name;
+
+
+--------------------------------------------------------------------------------------
+-- Security Views for Logged In Users
+--------------------------------------------------------------------------------------
+ 
+------------------------  
+-- v_private_projects --
+------------------------
+-- A view to show all of the projects, who can access 
+-- them, and at what security level (view, edit, or manage)
 CREATE OR REPLACE VIEW v_private_projects AS
 SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
  FROM (         
@@ -194,19 +51,12 @@ SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
 ) v
 GROUP BY v.id, v.name, v.user_id;
 
-------------------------
--- View: v_private_views
-------------------------
--- helper view to concatenate shared users:
-CREATE OR REPLACE VIEW v_views_shared_with AS
- SELECT g.id, g.name, array_to_string(array_agg(u.username), ', ') AS shared_with
-   FROM site_view g, site_userauthorityobject a, auth_user u
-  WHERE g.id = a.object_id AND a.user_id = u.id AND a.content_type_id = ( SELECT django_content_type.id
-           FROM django_content_type
-          WHERE django_content_type.model = 'view')
-  GROUP BY g.id, g.name;
-  
-  
+
+---------------------  
+-- v_private_views --
+---------------------
+-- A view to show all of the "views", who can access 
+-- them, and at what security level (view, edit, or manage)
 CREATE OR REPLACE VIEW v_private_views AS 
 SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
 FROM 
@@ -221,32 +71,207 @@ FROM
 ) v
 GROUP BY v.id, v.name, v.user_id;
 
-------------------------
--- View: v_private_forms
-------------------------
-CREATE OR REPLACE VIEW v_private_forms as
-SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
-FROM
-(
-  SELECT fp.form_id as id, f.name, a.user_id, a.authority_id
-  FROM v_private_projects a, site_form_projects fp, site_form f
-  WHERE a.id = fp.project_id
-    AND fp.form_id = f.id
-  UNION
-  SELECT id, name, owner_id AS user_id, 3 AS authority_id
-  FROM site_form
+-------------------------------------
+-- v_private_view_accessible_media --
+-------------------------------------
+-- A view to show all of the media (form records, markers,
+-- photos, audio, scans, and video) that has been made
+-- accessible to a particular set of users based on the parent
+-- view's permissions, and at what security level (view, edit, or manage)
+CREATE OR REPLACE VIEW v_private_view_accessible_media AS
+SELECT m.id as view_id, m.name, t1.model as parent, 
+  a.entity_id as id, t2.model as child,
+  m.user_id, m.authority_id
+FROM site_genericassociation a, django_content_type t1, 
+  django_content_type t2, v_private_views m
+WHERE a.source_type_id = t1.id and t1.model = 'view' and
+  a.entity_type_id = t2.id and a.source_id = m.id;
+  
+-----------------------
+-- v_private_markers --
+-----------------------
+-- A view to show all of the markers, who can access 
+-- them, and at what security level (view, edit, or manage)
+CREATE OR REPLACE VIEW v_private_markers AS 
+SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+FROM  (
+    -- accessible via view permissions
+    SELECT id, user_id, authority_id  
+    FROM v_private_view_accessible_media 
+    WHERE child = 'marker' 
+  UNION 
+    -- accessible via project permissions
+    SELECT m.id, p.user_id, p.authority_id
+    FROM site_marker m, v_private_projects p
+    WHERE m.project_id = p.id 
+  UNION 
+    -- accessible because is marker owner
+    SELECT m.id, m.owner_id, 3 AS authority_id
+    FROM site_marker m
 ) v
-GROUP BY v.id, v.name, v.user_id;
+GROUP BY v.id, v.user_id;
+  
+---------------------------------------
+-- v_private_marker_accessible_media --
+---------------------------------------
+-- A view to show all of the media (form records, markers,
+-- photos, audio, scans, and video) that has been made
+-- accessible to a particular set of users based on the
+-- accessibility of a parent marker (is read-only)
+CREATE OR REPLACE VIEW v_private_marker_accessible_media AS
+SELECT m.id as marker_id, t1.model as parent, 
+  a.entity_id as id, t2.model as child,
+  m.user_id, 1 as authority_id
+FROM site_genericassociation a, django_content_type t1, 
+  django_content_type t2, v_private_markers m
+WHERE a.source_type_id = t1.id and t1.model = 'marker' and
+  a.entity_type_id = t2.id and a.source_id = m.id;
 
 ------------------------
--- View: v_form_fields
+-- View: v_private_audio
 ------------------------
-CREATE OR REPLACE VIEW v_form_fields as
- SELECT g.id, g.name, array_to_string(array_agg(f.col_alias), ', '::text) AS form_fields
-   FROM site_form g, site_field f
-  WHERE g.id = f.form_id 
-  GROUP BY g.id, g.name;
+CREATE OR REPLACE VIEW v_private_audio AS 
+SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+FROM  (
+    -- accessible via view permissions
+    SELECT id, user_id, authority_id  
+    FROM v_private_view_accessible_media
+    WHERE child = 'audio' 
+  UNION
+    -- accessible via marker relation 
+    SELECT id, user_id, authority_id  
+    FROM v_private_marker_accessible_media
+    WHERE child = 'audio' 
+  UNION 
+    -- accessible via project permissions
+    SELECT m.id, p.user_id, p.authority_id
+    FROM site_audio m, v_private_projects p
+    WHERE m.project_id = p.id 
+  UNION 
+    -- accessible b/c user is audio owner
+    SELECT m.id, m.owner_id, 3 AS authority_id
+    FROM site_audio m, site_project g
+    WHERE m.project_id = g.id) v
+GROUP BY v.id, v.user_id;
+
+-------------------------
+-- View: v_private_photos
+-------------------------
+CREATE OR REPLACE VIEW v_private_photos AS 
+SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+FROM  (
+    -- accessible via view permissions
+    SELECT id, user_id, authority_id  
+    FROM v_private_view_accessible_media
+    WHERE child = 'photo' 
+  UNION
+    -- accessible via marker relation 
+    SELECT id, user_id, authority_id  
+    FROM v_private_marker_accessible_media
+    WHERE child = 'photo' 
+  UNION 
+    -- accessible via project permissions
+    SELECT m.id, p.user_id, p.authority_id
+    FROM site_photo m, v_private_projects p
+    WHERE m.project_id = p.id 
+  UNION 
+    -- accessible b/c user is photo owner
+    SELECT m.id, m.owner_id, 3 AS authority_id
+    FROM site_photo m, site_project g
+    WHERE m.project_id = g.id) v
+GROUP BY v.id, v.user_id;
+
+------------------------
+-- View: v_private_scans
+------------------------
+CREATE OR REPLACE VIEW v_private_scans AS 
+SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+FROM  (
+    -- accessible via view permissions
+    SELECT id, user_id, authority_id  
+    FROM v_private_view_accessible_media
+    WHERE child = 'scan' 
+  UNION
+    -- accessible via marker relation 
+    SELECT id, user_id, authority_id  
+    FROM v_private_marker_accessible_media
+    WHERE child = 'scan' 
+  UNION 
+    -- accessible via project permissions
+    SELECT m.id, p.user_id, p.authority_id
+    FROM site_scan m, v_private_projects p
+    WHERE m.project_id = p.id 
+  UNION 
+    -- accessible b/c user is scan owner
+    SELECT m.id, m.owner_id, 3 AS authority_id
+    FROM site_scan m, site_project g
+    WHERE m.project_id = g.id) v
+GROUP BY v.id, v.user_id;
+
+------------------------------
+-- View: v_private_attachments
+------------------------------  
+CREATE OR REPLACE VIEW v_private_attachments AS 
+SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+FROM  (
+    -- accessible via project permissions
+    SELECT m.id, p.user_id, p.authority_id
+    FROM site_attachment m, v_private_projects p
+    WHERE m.project_id = p.id 
+  UNION 
+    -- accessible b/c user is attachment owner
+    SELECT m.id, m.owner_id, 3 AS authority_id
+    FROM site_attachment m
+) v
+GROUP BY v.id, v.user_id;
   
+-------------------------
+-- View: v_private_videos
+-------------------------
+CREATE OR REPLACE VIEW v_private_videos AS 
+SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+FROM  (
+    -- accessible via view permissions
+    SELECT id, user_id, authority_id  
+    FROM v_private_view_accessible_media
+    WHERE child = 'video' 
+  UNION
+    -- accessible via marker relation 
+    SELECT id, user_id, authority_id  
+    FROM v_private_marker_accessible_media
+    WHERE child = 'video' 
+  UNION 
+    -- accessible via project permissions
+    SELECT m.id, p.user_id, p.authority_id
+    FROM site_video m, v_private_projects p
+    WHERE m.project_id = p.id 
+  UNION 
+    -- accessible b/c user is video owner
+    SELECT m.id, m.owner_id, 3 AS authority_id
+    FROM site_video m) v
+GROUP BY v.id, v.user_id;
+  
+-------------------------
+-- View: v_private_prints
+-------------------------
+CREATE OR REPLACE VIEW v_private_prints AS 
+SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+FROM  (
+    -- accessible via project permissions
+    SELECT m.id, p.user_id, p.authority_id
+    FROM site_print m, v_private_projects p
+    WHERE m.project_id = p.id 
+  UNION 
+    -- accessible b/c user is print owner
+    SELECT m.id, m.owner_id, 3 AS authority_id
+    FROM site_print m
+) v
+GROUP BY v.id, v.user_id;
+
+--------------------------------------------------------------------------------------
+-- Public Views for Anonymous Users (Still need to implement and verify)
+--------------------------------------------------------------------------------------
+   
 ------------------------
 -- View: v_public_photos
 ------------------------
