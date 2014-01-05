@@ -330,7 +330,7 @@ class ModelClassBuilder(object):
 				field = models.CharField(max_length=1000, blank=True, null=True,
 										 verbose_name=n.col_alias)
 			elif n.data_type.id in [2, 6]:
-			   field = models.IntegerField(null=True, blank=True,
+				field = models.IntegerField(null=True, blank=True,
 										   verbose_name=n.col_alias)
 			elif n.data_type.id == 3:
 				field = models.DateTimeField(null=True, blank=True,

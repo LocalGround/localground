@@ -1,6 +1,7 @@
 from django import test
 from django.contrib.auth.models import AnonymousUser
 from localground.apps.site import models
+from localground.apps.site.models import FormUser, UserAuthorityObject
 from localground.apps.site.managers.base import GenericLocalGroundError
 from localground.apps.site.tests import ModelMixin
 from rest_framework import status
@@ -26,6 +27,17 @@ class BatchQueryGroupMixin(ModelMixin):
 		
 		#create 2 groups:
 		self._create_groups()
+		
+	def _debug(self):
+		fus = FormUser.objects.filter(form=self.group1)
+		for fu in fus:
+			print fu.form.id, fu.user, fu.user_authority
+		print '*'*50
+		
+		uaos = UserAuthorityObject.objects.all()
+		for uao in uaos:
+			print uao.object_id, self.group1.id, uao.content_type, self.group1.get_content_type(), uao.user 
+		print '*'*50
 		
 				
 	def test_owner_can_view_objects(self):
@@ -173,11 +185,13 @@ class BatchFormQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
 					)
 		self.group2.projects.add(self.project2)
 		
-			
 	def test_project_viewer_can_view_objects(self):
 		# grant user2 view privs to project1 (which corresponds
 		# to group1):
+		
+		#self._debug()
 		self.add_group_viewer(self.project1, self.user2)
+		#self._debug()
 		
 		#user2 should be able to view 1 form....
 		self.assertEqual(

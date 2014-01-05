@@ -71,6 +71,30 @@ FROM
 ) v
 GROUP BY v.id, v.name, v.user_id;
 
+---------------------  
+-- v_private_forms --
+---------------------
+-- A view to show all of the forms, who can access 
+-- them, and at what security level (view, edit, or manage)
+CREATE OR REPLACE VIEW v_private_forms AS
+SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+ FROM ( 
+  --users who have been given direct access to a form:        
+  SELECT g.id, g.name, a.user_id, a.authority_id
+  FROM site_form g, site_userauthorityobject a
+  WHERE g.id = a.object_id AND a.content_type_id = (select id from django_content_type where model = 'form')
+    UNION 
+  --form owners:
+  SELECT site_form.id, site_form.name, site_form.owner_id AS user_id, 3 AS authority_id
+  FROM site_form 
+    UNION 
+  --users who have been given access to a form via their projects:
+  SELECT fp.form_id as id, p.name, p.user_id, p.authority_id
+  FROM site_form_projects fp, v_private_projects p
+  WHERE fp.project_id = p.id
+) v
+GROUP BY v.id, v.name, v.user_id;
+
 -------------------------------------
 -- v_private_view_accessible_media --
 -------------------------------------
@@ -126,6 +150,18 @@ FROM site_genericassociation a, django_content_type t1,
   django_content_type t2, v_private_markers m
 WHERE a.source_type_id = t1.id and t1.model = 'marker' and
   a.entity_type_id = t2.id and a.source_id = m.id;
+  
+--------------------------------
+-- v_private_associated_media --
+--------------------------------
+CREATE OR REPLACE VIEW v_private_associated_media AS 
+ SELECT v.id, v.child, v.user_id, max(v.authority_id) AS authority_id
+   FROM (         SELECT v_private_marker_accessible_media.id, v_private_marker_accessible_media.child, v_private_marker_accessible_media.user_id, v_private_marker_accessible_media.authority_id
+                   FROM v_private_marker_accessible_media
+        UNION 
+                 SELECT v_private_view_accessible_media.id, v_private_view_accessible_media.child, v_private_view_accessible_media.user_id, v_private_view_accessible_media.authority_id
+                   FROM v_private_view_accessible_media) v
+  GROUP BY v.id, v.child, v.user_id;
 
 ------------------------
 -- View: v_private_audio
@@ -133,14 +169,9 @@ WHERE a.source_type_id = t1.id and t1.model = 'marker' and
 CREATE OR REPLACE VIEW v_private_audio AS 
 SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
-    -- accessible via view permissions
+    -- accessible from view and marker permissions via associations 
     SELECT id, user_id, authority_id  
-    FROM v_private_view_accessible_media
-    WHERE child = 'audio' 
-  UNION
-    -- accessible via marker relation 
-    SELECT id, user_id, authority_id  
-    FROM v_private_marker_accessible_media
+    FROM v_private_associated_media
     WHERE child = 'audio' 
   UNION 
     -- accessible via project permissions
@@ -160,14 +191,9 @@ GROUP BY v.id, v.user_id;
 CREATE OR REPLACE VIEW v_private_photos AS 
 SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
-    -- accessible via view permissions
+    -- accessible from view and marker permissions via associations 
     SELECT id, user_id, authority_id  
-    FROM v_private_view_accessible_media
-    WHERE child = 'photo' 
-  UNION
-    -- accessible via marker relation 
-    SELECT id, user_id, authority_id  
-    FROM v_private_marker_accessible_media
+    FROM v_private_associated_media
     WHERE child = 'photo' 
   UNION 
     -- accessible via project permissions
@@ -187,16 +213,11 @@ GROUP BY v.id, v.user_id;
 CREATE OR REPLACE VIEW v_private_scans AS 
 SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
-    -- accessible via view permissions
+    -- accessible from view and marker permissions via associations 
     SELECT id, user_id, authority_id  
-    FROM v_private_view_accessible_media
-    WHERE child = 'scan' 
+    FROM v_private_associated_media
+    WHERE child = 'scan'
   UNION
-    -- accessible via marker relation 
-    SELECT id, user_id, authority_id  
-    FROM v_private_marker_accessible_media
-    WHERE child = 'scan' 
-  UNION 
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
     FROM site_scan m, v_private_projects p
@@ -205,6 +226,28 @@ FROM  (
     -- accessible b/c user is scan owner
     SELECT m.id, m.owner_id, 3 AS authority_id
     FROM site_scan m, site_project g
+    WHERE m.project_id = g.id) v
+GROUP BY v.id, v.user_id;
+  
+-------------------------
+-- View: v_private_videos
+-------------------------
+CREATE OR REPLACE VIEW v_private_videos AS 
+SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+FROM  (
+    -- accessible from view and marker permissions via associations 
+    SELECT id, user_id, authority_id  
+    FROM v_private_associated_media
+    WHERE child = 'video'
+  UNION
+    -- accessible via project permissions
+    SELECT m.id, p.user_id, p.authority_id
+    FROM site_video m, v_private_projects p
+    WHERE m.project_id = p.id 
+  UNION 
+    -- accessible b/c user is scan owner
+    SELECT m.id, m.owner_id, 3 AS authority_id
+    FROM site_video m, site_project g
     WHERE m.project_id = g.id) v
 GROUP BY v.id, v.user_id;
 
@@ -223,32 +266,6 @@ FROM  (
     SELECT m.id, m.owner_id, 3 AS authority_id
     FROM site_attachment m
 ) v
-GROUP BY v.id, v.user_id;
-  
--------------------------
--- View: v_private_videos
--------------------------
-CREATE OR REPLACE VIEW v_private_videos AS 
-SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
-FROM  (
-    -- accessible via view permissions
-    SELECT id, user_id, authority_id  
-    FROM v_private_view_accessible_media
-    WHERE child = 'video' 
-  UNION
-    -- accessible via marker relation 
-    SELECT id, user_id, authority_id  
-    FROM v_private_marker_accessible_media
-    WHERE child = 'video' 
-  UNION 
-    -- accessible via project permissions
-    SELECT m.id, p.user_id, p.authority_id
-    FROM site_video m, v_private_projects p
-    WHERE m.project_id = p.id 
-  UNION 
-    -- accessible b/c user is video owner
-    SELECT m.id, m.owner_id, 3 AS authority_id
-    FROM site_video m) v
 GROUP BY v.id, v.user_id;
   
 -------------------------

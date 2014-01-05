@@ -216,14 +216,13 @@ class ProjectUser(ObjectUserPermissions):
 		managed = False
 		db_table = 'v_private_projects'
 		
-'''
 class FormUser(ObjectUserPermissions):
-	form = models.ForeignKey('Form', db_column='id', on_delete=models.DO_NOTHING,
+	form = models.ForeignKey('Form', db_column='id',
+								on_delete=models.DO_NOTHING,
 								related_name='authuser')
 	class Meta:
 		app_label = 'site'
 		managed = False
 		db_table = 'v_private_forms'
-'''
 
 		

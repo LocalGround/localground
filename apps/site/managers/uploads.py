@@ -105,8 +105,7 @@ class RecordMixin(UploadMixin):
 			raise GenericLocalGroundError('The user cannot be empty')
 		if not user.is_authenticated():
 			raise GenericLocalGroundError('The user cannot be anonymous')
-		q = (
-			self.model.objects
+		q = (self.model.objects
 			.select_related(*self.related_fields)
 			.filter(
 				(
@@ -194,6 +193,7 @@ class RecordManager(models.GeoManager, RecordMixin):
 			if ordering_field:
 				q =  q.order_by(ordering_field)
 			return q
+		
 		
 	
 

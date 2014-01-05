@@ -126,11 +126,10 @@ class FormMixin(GroupMixin):
 			self.model.objects.distinct()
 			.select_related(*self.related_fields)
 			.filter(
-				(
-					Q(projects__authuser__user=user) &
-					Q(projects__authuser__user_authority__id__gte=authority_id)
-				) | Q(owner=user)
-			))
+				Q(authuser__user=user) &
+				Q(authuser__user_authority__id__gte=authority_id)
+			)
+		)
 		if request:
 			q = self._apply_sql_filter(q, request, context)
 		q = q.prefetch_related(*self.prefetch_fields)
