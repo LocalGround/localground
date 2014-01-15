@@ -11,7 +11,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
 	def setUp(self):
 		ViewMixinAPI.setUp(self)
 		self.urls =  ['/api/0/photos/']
-		self.view = views.PhotoViewSet.as_view({'get': 'list'})
+		self.view = views.PhotoList.as_view()
 		
 	
 	def test_create_photo_using_post(self, **kwargs):
@@ -26,7 +26,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 		self.photo = models.Photo.objects.get(id=1)
 		self.url = '/api/0/photos/%s/' % self.photo.id
 		self.urls = [self.url]
-		self.view = views.PhotoViewSet.as_view({'get': 'detail'})
+		self.view = views.PhotoInstance.as_view()
 		
 	def test_update_photo_using_put(self, **kwargs):
 		lat, lng, name, description, color = 54.16, 60.4, 'New Photo Name', \
