@@ -14,8 +14,9 @@ class ViewMixinAPISuperuser(ModelMixin):
 		for url in urls:
 			response = self.client_anonymous.get(url)
 			self.assertIn(response.status_code, [
-				status.HTTP_302_FOUND,
-				status.HTTP_403_FORBIDDEN
+				status.HTTP_401_UNAUTHORIZED,
+				status.HTTP_403_FORBIDDEN,
+				status.HTTP_302_FOUND
 			])
 	
 	def test_page_403_status_basic_user(self, urls=None, **kwargs):

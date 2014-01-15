@@ -1,6 +1,10 @@
 from django.conf.urls import *
 from django.conf import settings
 from django.shortcuts import render as direct_to_template
+
+from django.contrib import admin
+admin.autodiscover()
+
 #from django.shortcuts import render as direct_to_template
 
 # Uncomment the next two lines to enable the admin:
@@ -117,4 +121,7 @@ urlpatterns = patterns('',
 	(r'^maps/print/embed/$', 'localground.apps.site.views.prints.generate_print',
 		{'embed': True, 'base_template': 'base/iframe.html'}),
 	
+	# oauth
+	url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+	url(r'^admin/', include(admin.site.urls)),
 )

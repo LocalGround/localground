@@ -2,7 +2,7 @@ from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpd
 from localground.apps.site.api.views.audio_views import AudioViewSet
 from localground.apps.site.api.views.scan_views import ScanViewSet
 from localground.apps.site.api.views.photo_views import (
-	PhotoViewSet, rotate_left, rotate_right
+	PhotoList, PhotoInstance, rotate_left, rotate_right
 )
 from localground.apps.site.api.views.print_views import PrintList, PrintInstance, LayoutViewSet
 from localground.apps.site.api.views.project_views import ProjectList, ProjectInstance

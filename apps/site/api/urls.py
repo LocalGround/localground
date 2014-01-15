@@ -10,7 +10,7 @@ entities = ['audio', 'photos', 'map-images']
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
 router.register(r'audio', views.AudioViewSet)
-router.register(r'photos', views.PhotoViewSet)
+#router.register(r'photos', views.PhotoViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 router.register(r'map-images', views.ScanViewSet)
@@ -32,6 +32,8 @@ urlpatterns += format_suffix_patterns(patterns('',
 	url(r'^(?P<group_name_plural>markers|views|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$', views.RelatedMediaInstance.as_view(), name='related-media-detail'),
 	url(r'^projects/(?P<pk>[0-9]+)/$', views.ProjectInstance.as_view(), name='project-detail'),
 	url(r'^projects/$', views.ProjectList.as_view(), name='project-list'),
+	url(r'^photos/(?P<pk>[0-9]+)/$', views.PhotoInstance.as_view(), name='photo-detail'),
+	url(r'^photos/$', views.PhotoList.as_view(), name='photo-list'),
 	url(r'^markers/(?P<pk>[0-9]+)/$', views.MarkerInstance.as_view(), name='marker-detail'),
 	url(r'^markers/$', views.MarkerList.as_view(), name='marker-list'),
 	url(r'^prints/(?P<pk>[0-9]+)/$', views.PrintInstance.as_view(), name='print-detail'),

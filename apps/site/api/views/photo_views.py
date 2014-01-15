@@ -1,11 +1,13 @@
 from rest_framework import viewsets, status
-from localground.apps.site.api import serializers
-from localground.apps.site.api.views.abstract_views import AuditUpdate
+from rest_framework import generics
+from localground.apps.site.api import serializers, filters
+from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
 from localground.apps.site.api.filters import SQLFilterBackend
 from localground.apps.site import models
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
+'''
 class PhotoViewSet(viewsets.ModelViewSet, AuditUpdate):
 	"""
 	This viewset automatically provides `list`, `create`, `retrieve`,
@@ -25,6 +27,29 @@ class PhotoViewSet(viewsets.ModelViewSet, AuditUpdate):
 				access_key=self.request.GET.get('access_key')
 			)
 
+	def pre_save(self, obj):
+		AuditUpdate.pre_save(self, obj)
+'''
+		
+class PhotoList(generics.ListCreateAPIView, AuditCreate):
+	serializer_class = serializers.PhotoSerializer
+	filter_backends = (filters.SQLFilterBackend,)
+	
+	def get_queryset(self):
+		if self.request.user.is_authenticated():
+			return models.Photo.objects.get_objects(self.request.user)
+		else:
+			return models.Photo.objects.get_objects_public(
+				access_key=self.request.GET.get('access_key')
+			)
+	
+	def pre_save(self, obj):
+		AuditCreate.pre_save(self, obj)
+		
+class PhotoInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
+	queryset = models.Photo.objects.select_related('owner').all()
+	serializer_class = serializers.PhotoSerializer
+	
 	def pre_save(self, obj):
 		AuditUpdate.pre_save(self, obj)
 

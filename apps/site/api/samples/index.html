@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Local Ground</title>
+        <link rel="stylesheet" type="text/css" href="prettify.css" />
+        <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" />
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
+        <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+        <script src="helpers.js"></script>
+        <script src="form_generator.js"></script>
+        <script src="sample.js"></script>
+        <script src="prettify-min.js"></script>
+        <style>
+            body {
+                margin: 10px;
+            }
+            pre, form {
+                display: inline-block;
+                width: 600px;
+                height: 300px;
+                overflow: auto;
+            }
+            form {
+                margin-right: 8px;
+                padding: 5px;
+                background-color: #f7f7f9;
+                border: 1px solid #e1e1e8;
+                float: left;
+                overflow-x: hidden;
+            }
+            .input-group {
+                width: 600px;
+                margin-bottom: 10px;
+            }
+            .nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+                background-color: #f7f7f9;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>jQuery Samples</h1>
+        <hr>
+        <h2>Before Each Request</h2>
+        <p>
+            Before each request, be sure to include the Basic Authentication headers.
+            You can do this by including a "beforeSend" function with each request, or
+            by initializing the ajaxSetup script when your page loads as follows:</p>
+<pre style="height:auto;width:1200px;" class="prettyprint">$.ajaxSetup({
+    beforeSend: function(xhr){
+        xhr.setRequestHeader("Authorization",
+            "Basic " + btoa(username + ":" + password));
+    }
+});</pre>
+
+        <hr />
+        <!-- ////////////////////////////////////
+            // OPTIONS //////////////////////////
+            /////////////////////////////////////
+        -->
+        <h2>OPTIONS <small>POST, {'_method': 'OPTIONS}</small></h2>
+        <div class="input-group">
+            <input type="text" id="url-options" class="form-control" value="http://localground/api/0/photos/" />
+            <span class="input-group-btn">
+                <button class="btn btn-primary" type="button" onclick="getOptions();">GET OPTIONS</button>
+            </span>
+        </div>
+        <pre id="options-code" class="prettyprint"></pre>    
+        <pre id="options-code-results" class="prettyprint"></pre>
+
+        <hr />
+        
+        <!-- ////////////////////////////////////
+            // GET DATA /////////////////////////
+            /////////////////////////////////////
+        -->
+        <h2>GET</h2>
+        <div class="input-group">
+            <input type="text" id="url-get" class="form-control" value="http://localground/api/0/photos/" />
+            <span class="input-group-btn">
+                <button class="btn btn-primary" type="button" onclick="getList($('#url-get').val());">GET</button>
+            </span>
+        </div>
+        <pre id="list-code" class="prettyprint"></pre>    
+        <pre id="list-code-results" class="prettyprint"></pre>
+
+        <hr />
+        <!-- ////////////////////////////////////
+            // CREATE RESOURCES /////////////////
+            /////////////////////////////////////
+        -->
+        <h2>POST</h2>
+        <div class="input-group">
+            <input type="text" id="url-post" class="form-control" value="http://localground/api/0/photos/" />
+            <span class="input-group-btn">
+                <button class="btn btn-default" button" onclick="generateForm('POST', $('#url-post').val(), $('#post-code'));">Generate Form</button>
+                <button class="btn btn-primary" type="button" onclick="postData();">POST</button>
+            </span>
+        </div>
+        <form id="post-code" role="form" class="form-horizontal"></form>
+        <pre id="post-code-results" class="prettyprint"></pre>
+
+        <hr />
+        <!-- ////////////////////////////////////
+            // UPDATE RESOURCES /////////////////
+            /////////////////////////////////////
+        -->
+        <h2>PUT</h2>
+        <div class="input-group">
+            <input type="text" id="url-put" class="form-control" value="http://localground/api/0/photos/1/" />
+            <span class="input-group-btn">
+                <button class="btn btn-default" button" onclick="generateUpdateForm($('#url-put').val(), $('#put-code'));">Generate Form</button>
+                <button class="btn btn-primary" type="button" onclick="putData();">PUT</button>
+            </span>
+        </div>
+        <!-- tabs -->
+        <ul id="put-tabs" class="nav nav-tabs" style="width: 600px;">
+            <li><a href="#form-panel-put" data-toggle="tab">Form</a></li>
+            <li><a href="#json-panel-put" data-toggle="tab">JSON</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="form-panel-put">
+                <form id="put-code" role="form" class="form-horizontal" style="border-top:0px;"></form>
+            </div>
+            <div class="tab-pane" id="json-panel-put">
+                <pre id="put-code-json" class="prettyprint" style="float: left; margin-right: 10px;border-top:0px;"></pre>
+            </div>
+        </div>
+        <pre id="put-code-results" class="prettyprint"></pre>
+
+    
+        <br /><br /><br /><br /><br /><br />
+        
+        <script>
+            init();
+            initTabs();
+        </script>
+    </body>
+</html>

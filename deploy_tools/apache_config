@@ -34,6 +34,7 @@
     # To make Django work
     # -------------------
     WSGIScriptAlias / "{{FILE_ROOT}}/apache/app_config.wsgi"
+    WSGIPassAuthorization On
     <Directory "{{FILE_ROOT}}/apache">
         Allow from all
     </Directory>

@@ -1,4 +1,5 @@
 # Django settings for localground project.
+# https://django-oauth-toolkit.readthedocs.org/en/latest/tutorial/tutorial.html
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -121,6 +122,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'localground.apps.middleware.impersonate.ImpersonateMiddleware'
 )
 
@@ -159,6 +161,10 @@ INSTALLED_APPS = (
     'localground.apps.contenttypes',
     #'django.contrib.admin',
     'rest_framework',
+    'corsheaders',
+    'oauth2_provider',
+    'south',
+    'django.contrib.admin'
 )
 
 REST_FRAMEWORK = {
@@ -177,7 +183,13 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
         'localground.apps.site.api.permissions.CheckProjectPermissions',
     ),
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework.filters.DjangoFilterBackend',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
 }
 
 # Local settings override project settings
@@ -189,4 +201,5 @@ except NameError:
     except ImportError:
         pass
 
+CORS_ORIGIN_ALLOW_ALL = True
 

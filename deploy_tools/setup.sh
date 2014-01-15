@@ -30,7 +30,7 @@ DB_NAME="DATABASE_NAME"
 
 ADMIN_EMAIL_ADDRESS="your_email@gmail.com"
 USER_ACCOUNT="www-data"  
-GROUP_ACCOUNT="www-data"
+WEBSERVER_ACCOUNT="www-data"
 CLOUDMADE_KEY="YOUR_CLOUDMADE_API_KEY"
 
 sites_available="/etc/apache2/sites-available"
@@ -132,7 +132,7 @@ sed -i "s/{{DB_PASSWORD}}/$(escape $DB_PASSWORD)/g" settings_local.py.tmp
 sed -i "s/{{DB_NAME}}/$(escape $DB_NAME)/g" settings_local.py.tmp
 sed -i "s/{{ADMIN_EMAIL_ADDRESS}}/$(escape $ADMIN_EMAIL_ADDRESS)/g" settings_local.py.tmp
 sed -i "s/{{USER_ACCOUNT}}/$(escape $USER_ACCOUNT)/g" settings_local.py.tmp
-sed -i "s/{{GROUP_ACCOUNT}}/$(escape $WEBSERVER_ACCOUNT)/g" settings_local.py.tmp
+sed -i "s/{{WEBSERVER_ACCOUNT}}/$(escape $WEBSERVER_ACCOUNT)/g" settings_local.py.tmp
 sed -i "s/{{CLOUDMADE_KEY}}/$(escape $CLOUDMADE_KEY)/g" settings_local.py.tmp
 
 # Moving Apache Config File to /etc/apache2/sites-available directory
@@ -155,7 +155,9 @@ sudo_noprompt "mkdir ../userdata/deleted"
 # write files to userdata.  To verify: $ groups $USER_ACCOUNT
 # IMPORTANT:
 # Basically, make sure all user-generated data is owned by group www-data
-# and has 775 permissions
+# and has 775 permissions. And also make sure that any user running the tests
+# is added to the webserver account like so:
+# $ usermod -a -G www-data my_account
 sudo_noprompt "usermod -a -G $WEBSERVER_ACCOUNT $USER_ACCOUNT"
 sudo_noprompt "chown -R $USER_ACCOUNT:$WEBSERVER_ACCOUNT ../userdata"
 sudo_noprompt "chmod -R 775 ../userdata"
