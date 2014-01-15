@@ -66,6 +66,12 @@
                 <li><a href="#put">PUT</a></li>
                 <li><a href="#patch">PATCH</a></li>
                 <li><a href="#delete">DELETE</a></li>
+                <li class="pull-left">
+                    <input style="display:inline;width:180px;margin-top:8px;" type="text" class="form-control" id="username" placeholder="Enter your username" />
+                    <input style="display:inline;width:180px;margin-top:8px;" type="password" class="form-control" id="password" placeholder="Enter your password" />
+                    <button style="margin-top:8px;" class="btn btn-primary" type="button" onclick="setCredentials();">Set</button>
+
+                </li>
             </ul>
         </nav>
         
@@ -73,7 +79,12 @@
             <a href="/static/docs/api/samples.zip" class="btn btn-success btn-lg">
                 <span class="glyphicon glyphicon-cloud-download"></span> Download
             </a>
+            <div>
+                <input style="display:inline;width:180px;" type="text" class="form-control" id="username" placeholder="Enter your username" />
+                <input style="display:inline;width:180px;" type="password" class="form-control" id="username" placeholder="Enter your username" />
+            </div>
         </h1>
+            
         <hr>
         <a name="pre"></a>
         <h2>1. Before Each Request</h2>

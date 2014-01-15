@@ -1,23 +1,31 @@
-var username = "svw";
-var password = "123";
+var username = null;
+var password = null;
 
 function beforeSend(xhr){
     xhr.setRequestHeader("Authorization",
         "Basic " + btoa(username + ":" + password));
 }
 
-function init(){
+function setCredentials() {
+    username = $("#username").val();
+    password = $("#password").val();
     $.ajaxSetup({
         beforeSend: function(xhr){
             xhr.setRequestHeader("Authorization",
                 "Basic " + btoa(username + ":" + password));
         }
     });
+}
+
+function init(){
+    setCredentials();
     $('#options-code').html(getOptions.toString());
     $('#list-code').html(getList.toString());
-    generateForm('POST', $('#url-post').val(), $('#post-code'));
-    generateUpdateForm('PUT', $('#url-put').val(), $('#put-code'));
-    generateUpdateForm('PUT', $('#url-patch').val(), $('#patch-code'));
+    if (username && username.length > 0) {   
+        generateForm('POST', $('#url-post').val(), $('#post-code'));
+        generateUpdateForm('PUT', $('#url-put').val(), $('#put-code'));
+        generateUpdateForm('PUT', $('#url-patch').val(), $('#patch-code'));
+    }
     $('#delete-code').html(deleteData.toString());
     
     prettyPrint();
