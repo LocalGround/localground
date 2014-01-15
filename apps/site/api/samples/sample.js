@@ -13,22 +13,28 @@ function init(){
                 "Basic " + btoa(username + ":" + password));
         }
     });
-    $('#list-code').html(getList.toString());
     $('#options-code').html(getOptions.toString());
+    $('#list-code').html(getList.toString());
     generateForm('POST', $('#url-post').val(), $('#post-code'));
-    generateUpdateForm($('#url-put').val(), $('#put-code'));
+    generateUpdateForm('PUT', $('#url-put').val(), $('#put-code'));
+    generateUpdateForm('PUT', $('#url-patch').val(), $('#patch-code'));
+    $('#delete-code').html(deleteData.toString());
+    
     prettyPrint();
 }
 
 function initTabs() {
-    $('#put-tabs a').click(function (e) {
+    $('#put-tabs a, #patch-tabs a').click(function (e) {
         e.preventDefault()
         $(this).tab('show')
     });
     $('#put-tabs a').on('shown.bs.tab', function (e) {
-        renderFormJSON($("#put-code"));
+        renderFormJSON($("#put-code"), $("#put-code-json"));
     });
-    $('#put-tabs a:first').tab('show');
+    $('#patch-tabs a').on('shown.bs.tab', function (e) {
+        renderFormJSON($("#patch-code"), $("#patch-code-json"));
+    });
+    $('#put-tabs a:first, , #patch-tabs a:first').tab('show');
 }
 
 function getOptions() {
@@ -104,4 +110,30 @@ function postData() {
 function putData() {
     var url = $('#url-put').val();
     updateData('PUT', url, $('#put-code'), $("#put-code-results"));
+}
+
+function patchData() {
+    var url = $('#url-patch').val();
+    updateData('PATCH', url, $('#patch-code'), $("#patch-code-results"));
+}
+
+function deleteData(url){
+    url = url + "/.json";
+    var $results = $('#delete-code-results');
+    $.ajax({
+        url: url,
+        type: 'DELETE',
+        dataType: 'json',
+        crossDomain: true,
+        error: function(x, e) {
+            var msg = "HTTP " + x.status + " error: " + x.responseText;
+            $results.html(msg);
+            prettyPrint(); 
+        },
+        success: function(result) {
+            var txt = JSON.stringify(result, null, 2);
+            $results.html(txt);
+            prettyPrint(); 
+        }
+    });  
 }

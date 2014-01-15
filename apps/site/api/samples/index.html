@@ -13,11 +13,16 @@
         <style>
             body {
                 margin: 10px;
+                padding-top: 70px;
+            }
+            h2 {
+                padding-top: 70px;
+                margin-top: -70px;
             }
             pre, form {
                 display: inline-block;
                 width: 600px;
-                height: 300px;
+                height: 400px;
                 overflow: auto;
             }
             form {
@@ -35,13 +40,39 @@
             .nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
                 background-color: #f7f7f9;
             }
+            .navbar-default {
+                /*background-color: #666;*/
+                background-image: -webkit-linear-gradient(top, #696969 0%,#3f3f3f 100%);
+                background-image: -moz-linear-gradient(top, #696969 0%,#3f3f3f 100%);
+                background-image: -o-linear-gradient(top, #696969 0%,#3f3f3f 100%);
+            }
+            .navbar-default .navbar-nav>li>a, .navbar-default .navbar-nav>li>a:active
+            {
+                color: #fff;
+            }
+            .navbar-default .navbar-nav>li>a:hover {
+               color: #ddd; 
+            }
         </style>
     </head>
 
     <body>
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <ul class="nav navbar-nav">
+                <li><a href="#pre">Pre-Requests</a></li>
+                <li><a href="#opts">Options</a></li>
+                <li><a href="#get">GET</a></li>
+                <li><a href="#post">POST</a></li>
+                <li><a href="#put">PUT</a></li>
+                <li><a href="#patch">PATCH</a></li>
+                <li><a href="#delete">DELETE</a></li>
+            </ul>
+        </nav>
+        
         <h1>jQuery Samples</h1>
         <hr>
-        <h2>Before Each Request</h2>
+        <a name="pre"></a>
+        <h2>1. Before Each Request</h2>
         <p>
             Before each request, be sure to include the Basic Authentication headers.
             You can do this by including a "beforeSend" function with each request, or
@@ -58,7 +89,12 @@
             // OPTIONS //////////////////////////
             /////////////////////////////////////
         -->
-        <h2>OPTIONS <small>POST, {'_method': 'OPTIONS}</small></h2>
+        <a name="opts"></a>
+        <h2>2. OPTIONS <small>POST, {'_method': 'OPTIONS}</small></h2>
+        <p>
+            Use the POST, {'_method': 'OPTIONS} action when you want to find out which actions
+            and fields are available for a particular resource or resource list.
+        </p>
         <div class="input-group">
             <input type="text" id="url-options" class="form-control" value="http://localground/api/0/photos/" />
             <span class="input-group-btn">
@@ -74,7 +110,9 @@
             // GET DATA /////////////////////////
             /////////////////////////////////////
         -->
-        <h2>GET</h2>
+        <a name="get"></a>
+        <h2>3. GET</h2>
+        <p>Use the POST action when you want to query a resource or set of resources.</p>
         <div class="input-group">
             <input type="text" id="url-get" class="form-control" value="http://localground/api/0/photos/" />
             <span class="input-group-btn">
@@ -89,11 +127,13 @@
             // CREATE RESOURCES /////////////////
             /////////////////////////////////////
         -->
-        <h2>POST</h2>
+        <a name="post"></a>
+        <h2>4. POST</h2>
+        <p>Use the POST action when you want to create a new resource.</p>
         <div class="input-group">
             <input type="text" id="url-post" class="form-control" value="http://localground/api/0/photos/" />
             <span class="input-group-btn">
-                <button class="btn btn-default" button" onclick="generateForm('POST', $('#url-post').val(), $('#post-code'));">Generate Form</button>
+                <button class="btn btn-info" button" onclick="generateForm('POST', $('#url-post').val(), $('#post-code'));">Generate Form</button>
                 <button class="btn btn-primary" type="button" onclick="postData();">POST</button>
             </span>
         </div>
@@ -105,11 +145,13 @@
             // UPDATE RESOURCES /////////////////
             /////////////////////////////////////
         -->
-        <h2>PUT</h2>
+        <a name="put"></a>
+        <h2>5. PUT</h2>
+        <p>Use the PUT action when you want to update a resource.</p>
         <div class="input-group">
-            <input type="text" id="url-put" class="form-control" value="http://localground/api/0/photos/1/" />
+            <input type="text" id="url-put" class="form-control" value="http://localground/api/0/photos/2/" />
             <span class="input-group-btn">
-                <button class="btn btn-default" button" onclick="generateUpdateForm($('#url-put').val(), $('#put-code'));">Generate Form</button>
+                <button class="btn btn-info" button" onclick="generateUpdateForm('PUT', $('#url-put').val(), $('#put-code'));">Generate Form</button>
                 <button class="btn btn-primary" type="button" onclick="putData();">PUT</button>
             </span>
         </div>
@@ -127,6 +169,53 @@
             </div>
         </div>
         <pre id="put-code-results" class="prettyprint"></pre>
+        
+        <hr />
+        <!-- ////////////////////////////////////
+            // PARTIAL UPDATE OF RESOURCES //////
+            /////////////////////////////////////
+        -->
+        <a name="patch"></a>
+        <h2>6. PATCH</h2>
+        <p>Use the PATCH action when you only want to update only some of the resource's fields.</p>
+        <div class="input-group">
+            <input type="text" id="url-patch" class="form-control" value="http://localground/api/0/photos/2/" />
+            <span class="input-group-btn">
+                <button class="btn btn-info" button" onclick="generateUpdateForm('PUT', $('#url-patch').val(), $('#patch-code'));">Generate Form</button>
+                <button class="btn btn-primary" type="button" onclick="patchData();">PATCH</button>
+            </span>
+        </div>
+        <!-- tabs -->
+        <ul id="patch-tabs" class="nav nav-tabs" style="width: 600px;">
+            <li><a href="#form-panel-patch" data-toggle="tab">Form</a></li>
+            <li><a href="#json-panel-patch" data-toggle="tab">JSON</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="form-panel-patch">
+                <form id="patch-code" role="form" class="form-horizontal" style="border-top:0px;"></form>
+            </div>
+            <div class="tab-pane" id="json-panel-patch">
+                <pre id="patch-code-json" class="prettyprint" style="float: left; margin-right: 10px;border-top:0px;"></pre>
+            </div>
+        </div>
+        <pre id="patch-code-results" class="prettyprint"></pre>
+        
+        <hr />
+        <!-- ////////////////////////////////////
+            // DELETE RESOURCE //////////////////
+            /////////////////////////////////////
+        -->
+        <a name="delete"></a>
+        <h2>7. DELETE</h2>
+        <p>The delete request permanently deletes internet resources. This cannot be undone.</p>
+        <div class="input-group">
+            <input type="text" id="url-delete" class="form-control" value="http://localground/api/0/photos/2/" />
+            <span class="input-group-btn">
+                <button class="btn btn-primary" type="button" onclick="deleteData($('#url-delete').val());">DELETE</button>
+            </span>
+        </div>
+        <pre id="delete-code" class="prettyprint"></pre>    
+        <pre id="delete-code-results" class="prettyprint"></pre>
 
     
         <br /><br /><br /><br /><br /><br />

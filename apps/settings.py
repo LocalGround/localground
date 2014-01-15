@@ -162,9 +162,6 @@ INSTALLED_APPS = (
     #'django.contrib.admin',
     'rest_framework',
     'corsheaders',
-    'oauth2_provider',
-    'south',
-    'django.contrib.admin'
 )
 
 REST_FRAMEWORK = {

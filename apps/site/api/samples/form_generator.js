@@ -1,3 +1,5 @@
+var w = "400px";
+var h = "75px";
 function generateForm(action, url, $form) {
     //first, query the API to get the available options:
     $.ajax({
@@ -23,6 +25,7 @@ function generateForm(action, url, $form) {
 
 function buildForm(result, action, $form) {
     $form.empty();
+    //result.actions[action]["point"].read_only = true;
     for(k in result.actions[action]) {
         var val = result.actions[action][k];
         
@@ -46,8 +49,8 @@ function buildForm(result, action, $form) {
 }
 
 
-function generateUpdateForm(url, $form) {
-    generateForm('PUT', url, $form);
+function generateUpdateForm(action, url, $form) {
+    generateForm(action, url, $form);
     //now populate form fields with values:
     $.ajax({
         url: url,
@@ -56,14 +59,13 @@ function generateUpdateForm(url, $form) {
         crossDomain: true,
         error: function(x, e) {
             var msg = "HTTP " + x.status + " error: " + x.responseText;
-            $("#put-code-results").html(msg);
+            $form.html(msg);
             prettyPrint(); 
         },
         success: function(result) {
             for(k in result) {
                 $form.find('#' + k).val(result[k]);
             }
-            renderFormJSON($form);
             prettyPrint(); 
         }
     });
@@ -74,16 +76,17 @@ function renderControl(k, val){
         case "memo":
             return $('<textarea></textarea>')
                     .addClass("form-control")
-                    .css({width: "300px", height: "50px"})
+                    .css({width: w, height: h})
                     .attr("id", k)
                     .attr("name", k)
                     .attr("placeholder", "Enter " + (val.label || k));
         case "point":
-            var $span = $('<ispan></span');
+            w_half = "150px";
+            var $span = $('<span></span');
             $span.append(
                 $('<input type="text"/>')
                     .addClass("form-control")
-                    .css({width: "150px"})
+                    .css({width: w_half})
                     .attr("id", "lat")
                     .attr("name", "lat")
                     .attr("placeholder", "Enter latitude")
@@ -91,7 +94,7 @@ function renderControl(k, val){
             $span.append(
                 $('<input type="text"/>')
                     .addClass("form-control")
-                    .css({width: "150px"})
+                    .css({width: w_half})
                     .attr("id", "lng")
                     .attr("name", "lng")
                     .attr("placeholder", "Enter longitude")
@@ -100,16 +103,16 @@ function renderControl(k, val){
         default:
             return $('<input type="text"/>')
                     .addClass("form-control")
-                    .css({width: "300px"})
+                    .css({width: w})
                     .attr("id", k)
                     .attr("name", k)
                     .attr("placeholder", "Enter " + (val.label || k));
     }
 }
 
-function renderFormJSON($form) {
+function renderFormJSON($form, $container) {
     var txt = JSON.stringify($form.serializeObject(), null, 2);
-    $("#put-code-json").html(txt);
+    $container.html(txt);
     prettyPrint(); 
 }
 
