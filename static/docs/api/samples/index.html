@@ -79,10 +79,6 @@
             <a href="/static/docs/api/samples.zip" class="btn btn-success btn-lg">
                 <span class="glyphicon glyphicon-cloud-download"></span> Download
             </a>
-            <div>
-                <input style="display:inline;width:180px;" type="text" class="form-control" id="username" placeholder="Enter your username" />
-                <input style="display:inline;width:180px;" type="password" class="form-control" id="username" placeholder="Enter your username" />
-            </div>
         </h1>
             
         <hr>
@@ -111,7 +107,7 @@
             and fields are available for a particular resource or resource list.
         </p>
         <div class="input-group">
-            <input type="text" id="url-options" class="form-control" value="http://localground/api/0/photos/" />
+            <input type="text" id="url-options" class="form-control" value="http://localground.org/api/0/photos/" />
             <span class="input-group-btn">
                 <button class="btn btn-primary" type="button" onclick="getOptions();">GET OPTIONS</button>
             </span>
@@ -129,7 +125,7 @@
         <h2>3. GET</h2>
         <p>Use the POST action when you want to query a resource or set of resources.</p>
         <div class="input-group">
-            <input type="text" id="url-get" class="form-control" value="http://localground/api/0/photos/" />
+            <input type="text" id="url-get" class="form-control" value="http://localground.org/api/0/photos/" />
             <span class="input-group-btn">
                 <button class="btn btn-primary" type="button" onclick="getList($('#url-get').val());">GET</button>
             </span>
@@ -146,7 +142,7 @@
         <h2>4. POST</h2>
         <p>Use the POST action when you want to create a new resource.</p>
         <div class="input-group">
-            <input type="text" id="url-post" class="form-control" value="http://localground/api/0/photos/" />
+            <input type="text" id="url-post" class="form-control" value="http://localground.org/api/0/photos/" />
             <span class="input-group-btn">
                 <button class="btn btn-info" button" onclick="generateForm('POST', $('#url-post').val(), $('#post-code'));">Generate Form</button>
                 <button class="btn btn-primary" type="button" onclick="postData();">POST</button>
@@ -164,7 +160,7 @@
         <h2>5. PUT</h2>
         <p>Use the PUT action when you want to update a resource.</p>
         <div class="input-group">
-            <input type="text" id="url-put" class="form-control" value="http://localground/api/0/photos/2/" />
+            <input type="text" id="url-put" class="form-control" value="http://localground.org/api/0/photos/2/" />
             <span class="input-group-btn">
                 <button class="btn btn-info" button" onclick="generateUpdateForm('PUT', $('#url-put').val(), $('#put-code'));">Generate Form</button>
                 <button class="btn btn-primary" type="button" onclick="putData();">PUT</button>
@@ -194,7 +190,7 @@
         <h2>6. PATCH</h2>
         <p>Use the PATCH action when you only want to update only some of the resource's fields.</p>
         <div class="input-group">
-            <input type="text" id="url-patch" class="form-control" value="http://localground/api/0/photos/2/" />
+            <input type="text" id="url-patch" class="form-control" value="http://localground.org/api/0/photos/2/" />
             <span class="input-group-btn">
                 <button class="btn btn-info" button" onclick="generateUpdateForm('PUT', $('#url-patch').val(), $('#patch-code'));">Generate Form</button>
                 <button class="btn btn-primary" type="button" onclick="patchData();">PATCH</button>
@@ -224,7 +220,7 @@
         <h2>7. DELETE</h2>
         <p>The delete request permanently deletes internet resources. This cannot be undone.</p>
         <div class="input-group">
-            <input type="text" id="url-delete" class="form-control" value="http://localground/api/0/photos/2/" />
+            <input type="text" id="url-delete" class="form-control" value="http://localground.org/api/0/photos/2/" />
             <span class="input-group-btn">
                 <button class="btn btn-primary" type="button" onclick="deleteData($('#url-delete').val());">DELETE</button>
             </span>
