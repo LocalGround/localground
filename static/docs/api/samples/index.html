@@ -12,12 +12,12 @@
         <script src="prettify-min.js"></script>
         <style>
             body {
-                margin: 10px;
-                padding-top: 70px;
+                margin: 20px;
+                padding-top: 50px;
             }
             h2 {
-                padding-top: 70px;
-                margin-top: -70px;
+                padding-top: 60px;
+                margin-top: -60px;
             }
             pre, form {
                 display: inline-block;
@@ -53,12 +53,23 @@
             .navbar-default .navbar-nav>li>a:hover {
                color: #ddd; 
             }
+             #form-credentials {
+                width: 750px;
+                margin: 20px 0;
+                padding: 20px;
+                border-left: 3px solid #eee;
+                background-color: #f4f8fa;
+                border-color: #bce8f1 !important;
+                float: none !important;
+                height: auto;
+            }
         </style>
     </head>
 
     <body>
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
             <ul class="nav navbar-nav">
+                <li><a href="#credentials">Credentials</a></li>
                 <li><a href="#pre">Pre-Requests</a></li>
                 <li><a href="#opts">Options</a></li>
                 <li><a href="#get">GET</a></li>
@@ -66,24 +77,54 @@
                 <li><a href="#put">PUT</a></li>
                 <li><a href="#patch">PATCH</a></li>
                 <li><a href="#delete">DELETE</a></li>
-                <li class="pull-left">
-                    <input style="display:inline;width:180px;margin-top:8px;" type="text" class="form-control" id="username" placeholder="Enter your username" />
-                    <input style="display:inline;width:180px;margin-top:8px;" type="password" class="form-control" id="password" placeholder="Enter your password" />
-                    <button style="margin-top:8px;" class="btn btn-primary" type="button" onclick="setCredentials();">Set</button>
-
-                </li>
             </ul>
         </nav>
         
-        <h1>jQuery Samples
+        <h1>Worksheet: Using jQuery with the API
             <a href="/static/docs/api/samples.zip" class="btn btn-success btn-lg">
                 <span class="glyphicon glyphicon-cloud-download"></span> Download
             </a>
         </h1>
-            
+        
         <hr>
+        <!-- ////////////////////////////////////
+            // CREDENTIALS //////////////////////
+            /////////////////////////////////////
+        -->  
+        <a name="credentials"></a>
+        <h2>1. Fill out these values to get you started:</h2>
+        <form id="form-credentials" class="form-horizontal">
+            <p>
+                Fill out these form elements to get the API tester ready to
+                query the Local Ground API.
+            </p>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Username:</label>
+                <div class="col-sm-10">
+                    <input style="width:180px;" type="text" class="form-control" id="username" placeholder="Enter your username" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Password:</label>
+                <div class="col-sm-10">
+                    <input style="width:180px;" type="password" class="form-control" id="password" placeholder="Enter your password" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"></label>
+                <div class="col-sm-10">
+                    <button class="btn btn-primary" type="button" onclick="setCredentials();">Set</button>
+                </div>
+            </div>
+        </form>
+ 
+        <hr>
+        <!-- ////////////////////////////////////
+        // TIPS /////////////////////////////
+        /////////////////////////////////////
+        --> 
         <a name="pre"></a>
-        <h2>1. Before Each Request</h2>
+        <h2>2. Before Each Request</h2>
         <p>
             Before each request, be sure to include the Basic Authentication headers.
             You can do this by including a "beforeSend" function with each request, or
@@ -101,13 +142,13 @@
             /////////////////////////////////////
         -->
         <a name="opts"></a>
-        <h2>2. OPTIONS <small>POST, {'_method': 'OPTIONS}</small></h2>
+        <h2>3. OPTIONS <small>POST, {'_method': 'OPTIONS}</small></h2>
         <p>
             Use the POST, {'_method': 'OPTIONS} action when you want to find out which actions
             and fields are available for a particular resource or resource list.
         </p>
         <div class="input-group">
-            <input type="text" id="url-options" class="form-control" value="http://localground.org/api/0/photos/" />
+            <input type="text" id="url-options" class="form-control url" value="http://localground.org/api/0/photos/" />
             <span class="input-group-btn">
                 <button class="btn btn-primary" type="button" onclick="getOptions();">GET OPTIONS</button>
             </span>
@@ -122,10 +163,10 @@
             /////////////////////////////////////
         -->
         <a name="get"></a>
-        <h2>3. GET</h2>
+        <h2>4. GET</h2>
         <p>Use the POST action when you want to query a resource or set of resources.</p>
         <div class="input-group">
-            <input type="text" id="url-get" class="form-control" value="http://localground.org/api/0/photos/" />
+            <input type="text" id="url-get" class="form-control url" value="http://localground.org/api/0/photos/" />
             <span class="input-group-btn">
                 <button class="btn btn-primary" type="button" onclick="getList($('#url-get').val());">GET</button>
             </span>
@@ -139,10 +180,10 @@
             /////////////////////////////////////
         -->
         <a name="post"></a>
-        <h2>4. POST</h2>
+        <h2>5. POST</h2>
         <p>Use the POST action when you want to create a new resource.</p>
         <div class="input-group">
-            <input type="text" id="url-post" class="form-control" value="http://localground.org/api/0/photos/" />
+            <input type="text" id="url-post" class="form-control url" value="http://localground.org/api/0/photos/" />
             <span class="input-group-btn">
                 <button class="btn btn-info" button" onclick="generateForm('POST', $('#url-post').val(), $('#post-code'));">Generate Form</button>
                 <button class="btn btn-primary" type="button" onclick="postData();">POST</button>
@@ -157,10 +198,10 @@
             /////////////////////////////////////
         -->
         <a name="put"></a>
-        <h2>5. PUT</h2>
+        <h2>6. PUT</h2>
         <p>Use the PUT action when you want to update a resource.</p>
         <div class="input-group">
-            <input type="text" id="url-put" class="form-control" value="http://localground.org/api/0/photos/2/" />
+            <input type="text" id="url-put" class="form-control url detail" value="http://localground.org/api/0/photos/2/" />
             <span class="input-group-btn">
                 <button class="btn btn-info" button" onclick="generateUpdateForm('PUT', $('#url-put').val(), $('#put-code'));">Generate Form</button>
                 <button class="btn btn-primary" type="button" onclick="putData();">PUT</button>
@@ -187,10 +228,10 @@
             /////////////////////////////////////
         -->
         <a name="patch"></a>
-        <h2>6. PATCH</h2>
+        <h2>7. PATCH</h2>
         <p>Use the PATCH action when you only want to update only some of the resource's fields.</p>
         <div class="input-group">
-            <input type="text" id="url-patch" class="form-control" value="http://localground.org/api/0/photos/2/" />
+            <input type="text" id="url-patch" class="form-control url detail" value="http://localground.org/api/0/photos/2/" />
             <span class="input-group-btn">
                 <button class="btn btn-info" button" onclick="generateUpdateForm('PUT', $('#url-patch').val(), $('#patch-code'));">Generate Form</button>
                 <button class="btn btn-primary" type="button" onclick="patchData();">PATCH</button>
@@ -217,10 +258,10 @@
             /////////////////////////////////////
         -->
         <a name="delete"></a>
-        <h2>7. DELETE</h2>
+        <h2>8. DELETE</h2>
         <p>The delete request permanently deletes internet resources. This cannot be undone.</p>
         <div class="input-group">
-            <input type="text" id="url-delete" class="form-control" value="http://localground.org/api/0/photos/2/" />
+            <input type="text" id="url-delete" class="form-control url detail" value="http://localground.org/api/0/photos/2/" />
             <span class="input-group-btn">
                 <button class="btn btn-primary" type="button" onclick="deleteData($('#url-delete').val());">DELETE</button>
             </span>
@@ -233,7 +274,7 @@
         
         <script>
             init();
-            initTabs();
+            initWidgets();
         </script>
     </body>
 </html>
