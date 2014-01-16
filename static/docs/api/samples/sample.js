@@ -109,11 +109,22 @@ function getList(url) {
     
 function updateData(action, url, $form, $results) {
     url = url + "/.json";
+    
+    //serialize text and file objects:
+    var data = new FormData();
+    form_elements = $form.serializeObject();
+    for(k in form_elements) {
+        data.append(k, form_elements[k]);   
+    }
+    data.append('file_name_orig', $('#file_name_orig')[0].files[0] );
+    
     $.ajax({
         url: url,
         type: action,
-        data: $form.serializeObject(),
+        data: data,
         dataType: 'json',
+        processData: false,
+        contentType: false,
         crossDomain: true,
         error: function(x, e) {
             var msg = "HTTP " + x.status + " error: " + x.responseText;

@@ -6,30 +6,6 @@ from localground.apps.site.api.filters import SQLFilterBackend
 from localground.apps.site import models
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-
-'''
-class PhotoViewSet(viewsets.ModelViewSet, AuditUpdate):
-	"""
-	This viewset automatically provides `list`, `create`, `retrieve`,
-	`update` and `destroy` actions.
-
-	Additionally we also provide an extra `highlight` action. 
-	"""
-	serializer_class = serializers.PhotoSerializer
-	filter_backends = (SQLFilterBackend,)
-	model = models.Photo
-
-	def get_queryset(self):
-		if self.request.user.is_authenticated():
-			return models.Photo.objects.get_objects(self.request.user)
-		else:
-			return models.Photo.objects.get_objects_public(
-				access_key=self.request.GET.get('access_key')
-			)
-
-	def pre_save(self, obj):
-		AuditUpdate.pre_save(self, obj)
-'''
 		
 class PhotoList(generics.ListCreateAPIView, AuditCreate):
 	serializer_class = serializers.PhotoSerializer
@@ -45,6 +21,20 @@ class PhotoList(generics.ListCreateAPIView, AuditCreate):
 	
 	def pre_save(self, obj):
 		AuditCreate.pre_save(self, obj)
+		
+		#save uploaded image to file system
+		f = self.request.FILES['file_name_orig']
+		project = models.Project.objects.get(id=self.request.DATA.get('project_id'))
+		obj.save_upload(f, self.request.user, project, do_save=False)
+		
+	
+	'''
+	def post_save(self, obj, created=False):
+		f = self.request.FILES['file_name_orig']
+		project = models.Project.objects.get(id=1) #self.request.DATA.get('project_id'))
+		obj.save_upload(f, self.request.user, project)
+	'''
+	
 		
 class PhotoInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
 	queryset = models.Photo.objects.select_related('owner').all()

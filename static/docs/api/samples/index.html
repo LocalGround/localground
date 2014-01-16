@@ -57,7 +57,7 @@
                 width: 750px;
                 margin: 20px 0;
                 padding: 20px;
-                border-left: 3px solid #eee;
+                border-width: 0px 0px 0px 5px;
                 background-color: #f4f8fa;
                 border-color: #bce8f1 !important;
                 float: none !important;
@@ -189,7 +189,7 @@
                 <button class="btn btn-primary" type="button" onclick="postData();">POST</button>
             </span>
         </div>
-        <form id="post-code" role="form" class="form-horizontal"></form>
+        <form id="post-code" enctype="multipart/form-data" role="form" class="form-horizontal"></form>
         <pre id="post-code-results" class="prettyprint"></pre>
 
         <hr />

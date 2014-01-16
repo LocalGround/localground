@@ -73,6 +73,13 @@ function generateUpdateForm(action, url, $form) {
 
 function renderControl(k, val){
     switch(val.type) {
+        case "file":
+            return $('<input type="file" />')
+                    .addClass("form-control")
+                    .css({width: w})
+                    .attr("id", k)
+                    .attr("name", k)
+                    .attr("placeholder", "Enter " + (val.label || k));
         case "memo":
             return $('<textarea></textarea>')
                     .addClass("form-control")
