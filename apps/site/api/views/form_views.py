@@ -42,7 +42,7 @@ class FormInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
 		
 class FormDataMixin(object):
 	
-	def get_serializer_class(self):
+	def get_serializer_class(self, is_list=False):
 		'''
 		This serializer class gets build dynamically, according to the
 		user-generated table being queried
@@ -51,7 +51,9 @@ class FormDataMixin(object):
 			form = models.Form.objects.get(id=self.kwargs.get('form_id'))
 		except models.Form.DoesNotExist:
 			raise Http404
-		if self.request.method == 'GET' and self.kwargs.get('format') != 'csv':
+		kwargs = self.kwargs
+		d = self.request.GET or self.request.POST
+		if self.request.method == 'GET' and is_list and d.get('format') != 'csv':
 			return serializers.create_compact_record_serializer(form)
 		else:
 			return serializers.create_record_serializer(form)
@@ -79,7 +81,7 @@ class FormDataList(generics.ListCreateAPIView, FormDataMixin):
 		obj.manually_reviewed = True
 		
 	def get_serializer_class(self):
-		return FormDataMixin.get_serializer_class(self)
+		return FormDataMixin.get_serializer_class(self, is_list=True)
 	
 	#def get_queryset(self):
 	#	return FormDataMixin.get_queryset(self)
