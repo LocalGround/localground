@@ -107,6 +107,7 @@ class RecordMixin(UploadMixin):
 			raise GenericLocalGroundError('The user cannot be anonymous')
 		q = (self.model.objects
 			.select_related(*self.related_fields)
+			.distinct()
 			.filter(
 				(
 					Q(project__authuser__user=user) &
@@ -145,6 +146,7 @@ class RecordManager(models.GeoManager, RecordMixin):
 		form = models.Form.objects.get(table_name=self.model._meta.db_table)
 		queryset = self.get_objects(user, project=project, request=request,
 							 context=context, ordering_field=ordering_field)
+		queryset = queryset.distinct()
 		if attachment is not None:
 			queryset = queryset.filter(snippet__source_attachment=attachment)
 		if manually_reviewed is not None:

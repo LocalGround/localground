@@ -62,7 +62,8 @@ class FormDataMixin(object):
 		except models.Form.DoesNotExist:
 			raise Http404
 		if self.request.user.is_authenticated():
-			return form.TableModel.objects.get_objects(self.request.user)
+			#return form.TableModel.objects.get_objects(self.request.user)
+			return form.TableModel.objects.all()
 		else:
 			return form.TableModel.objects.get_objects_public(
 				access_key=self.request.GET.get('access_key')
