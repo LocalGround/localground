@@ -9,28 +9,29 @@ localground.profile = function(){
 	this.deleteModal = null;
 	this.noSelectionModal = null;
 	this.imageModal = null;
+	this.object_type = null;
+	this.object_type_plural = null;
 };
 
 localground.profile.prototype = new localground.base(); // inherits from base 
 
 localground.profile.prototype.initialize = function(opts) {
-    //alert('initialize profile');
+    self = this;
     localground.base.prototype.initialize.call(this, opts);
-    if(opts.skip)
-        return;
-    
-    this.pageURL = opts.pageURL || this.pageURL;
-    this.rawURL = opts.rawURL || this.rawURL;
-    this.addURL = opts.addURL || this.addURL;
-    this.updateURL = opts.updateURL || this.updateURL;
-    this.deleteURL = opts.deleteURL || this.deleteURL;
-    this.moveURL = opts.moveURL || this.moveURL;
-    this.objectName = opts.objectName || this.objectName;
-    
+	if(opts) {
+        $.extend(this, opts);
+		this.objectName = this.object_type
+    }
+    var filtermenu = new ui.filtermenu({
+	object_type: self.object_type,
+	rawURL: self.rawURL
+    });
+    filtermenu.initialize();
+	
     //make sure everything's un-checked!
     $('.checkone, .checkall').attr('checked', false);
     
-    $('#add-modal, #delete-modal, #no-selection-modal, #move-modal, #image-modal').modal({
+    /*$('#add-modal, #delete-modal, #no-selection-modal, #move-modal, #image-modal').modal({
         keyboard: true,
         backdrop: true,
         closeExtras: function() {
@@ -63,6 +64,7 @@ localground.profile.prototype.initialize = function(opts) {
             self.mode = 'default';
         }
     });
+	*/
     
     $('#saveChanges').click(function() {
 		$('#the_form').attr('action', self.updateURL);
@@ -71,8 +73,8 @@ localground.profile.prototype.initialize = function(opts) {
         return false;
     });
     
-    $('#add_object').click(function() {
-        self.mode = 'add_object';
+	$('#add_object').click(function() {
+		self.mode = 'add_object';
         self.addObject();
     });
     
@@ -149,7 +151,7 @@ localground.profile.prototype.initialize = function(opts) {
         self.initiateMove();
 	});
     
-    this.resizeControlsRow();
+    //this.resizeControlsRow();
 	
 	$('.datetime')
         .find('input:eq(0)')
@@ -164,12 +166,6 @@ localground.profile.prototype.initialize = function(opts) {
     
 };
 
-localground.profile.prototype.resizeControlsRow = function() {
-    $('#controls_row, .paginator').width($('#the_table').width());
-    $('.alert-message').width($('#the_table').width()-30); 
-    $('.tabs').width($('.tabs').width()-200);
-};
-
 localground.profile.prototype.deleteConfirm = function() {
 	$('#delete_message').empty()
             .append($('<img />')
@@ -178,31 +174,9 @@ localground.profile.prototype.deleteConfirm = function() {
     
 	$('#delete-modal').find('.primary').css({'display': 'none'});
     var params = $('#the_form').serialize();
-    $.post(self.deleteURL,
+	$.post(self.deleteURL,
         params,
         function(result) {
-            $('#delete_message').html(result.message);
-            $('#delete-modal').find('.hide').html('Done');
-        },
-        'json')
-        .error(function() {
-            $('#delete-modal').find('.primary').css({'display': 'inline-block'}); 
-            $('#delete-modal').find('.hide').html('Cancel');
-        });
-};
-
-localground.profile.prototype.deleteConfirm1 = function() {
-    self.mode = 'delete_objects';
-    $('#delete_message').empty()
-            .append($('<img />')
-            .css({'margin-left': '200px'})
-            .attr('src', '/static/images/ajax-loader.gif'));
-    $('#delete-modal').find('.primary').css({'display': 'none'});
-    var params = $('#the_form').serialize();
-    $.post(self.deleteURL,
-        params,
-        function(result) {
-            //alert(JSON.stringify(result));
             $('#delete_message').html(result.message);
             $('#delete-modal').find('.hide').html('Done');
         },
@@ -214,15 +188,13 @@ localground.profile.prototype.deleteConfirm1 = function() {
 };
 
 localground.profile.prototype.addObject = function() {
-	//alert(this.addURL);
-    this.addModal = new ui.dialog({
+	this.addModal = new ui.dialog({
         id: 'add-modal',
-        width: 560,
+        width: self.modalWidth || 560,
         height: 400,
         iframeURL: this.addURL,
-        showTitle: true,
-        title: 'Create New ' + this.objectName,
-        submitButtonText: 'Add ' + this.objectName.toLowerCase(),
+        showTitle: false,
+        submitButtonText: 'Save ' + this.objectName.toLowerCase(),
         closeExtras: function() {
             if($('#add-modal').find('.hide').html() == 'Done')
                 document.location.href = self.pageURL;

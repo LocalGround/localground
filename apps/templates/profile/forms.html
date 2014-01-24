@@ -1,0 +1,94 @@
+{% extends "profile/data_list.html" %}
+{% block page_title %}
+	<img class="header-icon" src="/static/images/data_large.png" />
+	Manage <span style="color:#ccc">{{ object_name_plural|title }}</span>
+{% endblock %}
+
+{% block script_links %}
+	{{ block.super }}
+    <script type="text/javascript" src="/static/scripts/site/account/forms.js"></script>
+{% endblock %}
+{% block extra_styles %}
+	{{block.super}}
+	#the_table input[type=text], #the_table textarea { width: 190px !important; }
+	#the_table select { width: 200px !important; }
+{% endblock %}
+
+{% block pageload_scripts %}
+	o = new localground.forms();
+	o.initialize(opts);
+{% endblock %}
+
+{% block other_menus %}
+	{{ block.super }}
+	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
+		<ul class="dropdown-menu">
+			<li><a id="delete_objects" href="#">Delete</a></li>
+			<li><a id="add_object" href="#">Create New</a></li>
+		</ul>
+	</li>
+{% endblock %}
+
+{% block row_header %}
+	<tr>
+		<th scope="col" class="column-cb" >
+			<input class="checkall" type="checkbox" name="checkall"/>
+		</th>
+		<th scope="col">Name</th>
+		<th scope="col">Form Info</th>
+	</tr>
+{% endblock %}
+
+{% block rows %}
+	{% for form in formset.forms %}
+		<tr>
+			<td>
+				<input class="checkone" id="cb_{{form.instance.id}}" name="id" type="checkbox" value="{{form.instance.id}}" />
+			</td>
+			<td style="min-width: 500px;">
+				{% include "includes/forms/generic_form_renderer.html" %}
+				<div class="clearfix">
+					<div class="input">
+						<a href="#" class="fields">Update Form Fields</a> |
+						<a href="/profile/forms/{{form.instance.id}}/data/">View Data</a> |
+						<a href="#" class="share">Share</a>
+					</div>
+				</div>
+			</td>
+			<td>
+                <div class="thin">
+					<label>ID:</label><div class="input">{{ form.instance.id }}</div>
+				</div>
+				<div class="thin">
+					<label>Created:</label>
+					<div class="input">
+						on {{form.instance.date_created|date:"n/j/Y P" }}<br />
+						by {{ form.instance.owner }}
+					</div>
+				</div>
+				<div class="thin">
+					<label>Last Updated:</label>
+					<div class="input">
+						on {{form.instance.time_stamp|date:"n/j/Y P" }}<br />
+						by {{ form.instance.last_updated_by }}
+					</div>
+				</div>
+				<div class="thin">
+					<label>fields:</label>
+					<div class="input">
+						{{ form.instance.form_fields|default_if_none:"No Fields Defined"}}
+					</div>
+				</div>
+				<div class="thin">
+					<label>Shared With:</label>
+					<div class="input">
+						{% for p in form.instance.projects.all %}
+							{{p.name}}{% if not forloop.last %}, {% endif %}
+						{% endfor %}
+					</div>
+				</div>
+			</td>
+		</tr>
+	{% endfor %}
+{% endblock %}

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Local Ground</title>
+        <link rel="stylesheet" type="text/css" href="prettify.css" />
+        <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" />
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
+        <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+        <script src="helpers.js"></script>
+        <script src="form_generator.js"></script>
+        <script src="sample.js"></script>
+        <script src="prettify-min.js"></script>
+        <style>
+            body {
+                margin: 20px;
+                padding-top: 50px;
+            }
+            h2 {
+                padding-top: 60px;
+                margin-top: -60px;
+            }
+            pre, form {
+                display: inline-block;
+                width: 600px;
+                height: 400px;
+                overflow: auto;
+            }
+            form {
+                margin-right: 8px;
+                padding: 5px;
+                background-color: #f7f7f9;
+                border: 1px solid #e1e1e8;
+                float: left;
+                overflow-x: hidden;
+            }
+            .input-group {
+                width: 600px;
+                margin-bottom: 10px;
+            }
+            .nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+                background-color: #f7f7f9;
+            }
+            .navbar-default {
+                /*background-color: #666;*/
+                background-image: -webkit-linear-gradient(top, #696969 0%,#3f3f3f 100%);
+                background-image: -moz-linear-gradient(top, #696969 0%,#3f3f3f 100%);
+                background-image: -o-linear-gradient(top, #696969 0%,#3f3f3f 100%);
+            }
+            .navbar-default .navbar-nav>li>a, .navbar-default .navbar-nav>li>a:active
+            {
+                color: #fff;
+            }
+            .navbar-default .navbar-nav>li>a:hover {
+               color: #ddd; 
+            }
+             #form-credentials {
+                width: 750px;
+                margin: 20px 0;
+                padding: 20px;
+                border-width: 0px 0px 0px 5px;
+                background-color: #f4f8fa;
+                border-color: #bce8f1 !important;
+                float: none !important;
+                height: auto;
+            }
+        </style>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <ul class="nav navbar-nav">
+                <li><a href="#credentials">Credentials</a></li>
+                <li><a href="#pre">Pre-Requests</a></li>
+                <li><a href="#opts">Options</a></li>
+                <li><a href="#get">GET</a></li>
+                <li><a href="#post">POST</a></li>
+                <li><a href="#put">PUT</a></li>
+                <li><a href="#patch">PATCH</a></li>
+                <li><a href="#delete">DELETE</a></li>
+            </ul>
+        </nav>
+        
+        <h1>Worksheet: Using jQuery with the API
+            <a href="/static/docs/api/samples.zip" class="btn btn-success btn-lg">
+                <span class="glyphicon glyphicon-cloud-download"></span> Download
+            </a>
+        </h1>
+        
+        <hr>
+        <!-- ////////////////////////////////////
+            // CREDENTIALS //////////////////////
+            /////////////////////////////////////
+        -->  
+        <a name="credentials"></a>
+        <h2>1. Fill out these values to get you started:</h2>
+        <form id="form-credentials" class="form-horizontal">
+            <p>
+                Fill out these form elements to get the API tester ready to
+                query the Local Ground API.
+            </p>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Username:</label>
+                <div class="col-sm-10">
+                    <input style="width:180px;" type="text" class="form-control" id="username" placeholder="Enter your username" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Password:</label>
+                <div class="col-sm-10">
+                    <input style="width:180px;" type="password" class="form-control" id="password" placeholder="Enter your password" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"></label>
+                <div class="col-sm-10">
+                    <button class="btn btn-primary" type="button" onclick="setCredentials();">Set</button>
+                </div>
+            </div>
+        </form>
+ 
+        <hr>
+        <!-- ////////////////////////////////////
+        // TIPS /////////////////////////////
+        /////////////////////////////////////
+        --> 
+        <a name="pre"></a>
+        <h2>2. Before Each Request</h2>
+        <p>
+            Before each request, be sure to include the Basic Authentication headers.
+            You can do this by including a "beforeSend" function with each request, or
+            by initializing the ajaxSetup script when your page loads as follows:</p>
+<pre style="height:auto;width:1200px;" class="prettyprint">$.ajaxSetup({
+    beforeSend: function(xhr){
+        xhr.setRequestHeader("Authorization",
+            "Basic " + btoa(username + ":" + password));
+    }
+});</pre>
+
+        <hr />
+        <!-- ////////////////////////////////////
+            // OPTIONS //////////////////////////
+            /////////////////////////////////////
+        -->
+        <a name="opts"></a>
+        <h2>3. OPTIONS <small>POST, {'_method': 'OPTIONS}</small></h2>
+        <p>
+            Use the POST, {'_method': 'OPTIONS} action when you want to find out which actions
+            and fields are available for a particular resource or resource list.
+        </p>
+        <div class="input-group">
+            <input type="text" id="url-options" class="form-control url" value="http://localground.org/api/0/photos/" />
+            <span class="input-group-btn">
+                <button class="btn btn-primary" type="button" onclick="getOptions();">GET OPTIONS</button>
+            </span>
+        </div>
+        <pre id="options-code" class="prettyprint"></pre>    
+        <pre id="options-code-results" class="prettyprint"></pre>
+
+        <hr />
+        
+        <!-- ////////////////////////////////////
+            // GET DATA /////////////////////////
+            /////////////////////////////////////
+        -->
+        <a name="get"></a>
+        <h2>4. GET</h2>
+        <p>Use the POST action when you want to query a resource or set of resources.</p>
+        <div class="input-group">
+            <input type="text" id="url-get" class="form-control url" value="http://localground.org/api/0/photos/" />
+            <span class="input-group-btn">
+                <button class="btn btn-primary" type="button" onclick="getList($('#url-get').val());">GET</button>
+            </span>
+        </div>
+        <pre id="list-code" class="prettyprint"></pre>    
+        <pre id="list-code-results" class="prettyprint"></pre>
+
+        <hr />
+        <!-- ////////////////////////////////////
+            // CREATE RESOURCES /////////////////
+            /////////////////////////////////////
+        -->
+        <a name="post"></a>
+        <h2>5. POST</h2>
+        <p>Use the POST action when you want to create a new resource.</p>
+        <div class="input-group">
+            <input type="text" id="url-post" class="form-control url" value="http://localground.org/api/0/photos/" />
+            <span class="input-group-btn">
+                <button class="btn btn-info" button" onclick="generateForm('POST', $('#url-post').val(), $('#post-code'));">Generate Form</button>
+                <button class="btn btn-primary" type="button" onclick="postData();">POST</button>
+            </span>
+        </div>
+        <form id="post-code" enctype="multipart/form-data" role="form" class="form-horizontal"></form>
+        <pre id="post-code-results" class="prettyprint"></pre>
+
+        <hr />
+        <!-- ////////////////////////////////////
+            // UPDATE RESOURCES /////////////////
+            /////////////////////////////////////
+        -->
+        <a name="put"></a>
+        <h2>6. PUT</h2>
+        <p>Use the PUT action when you want to update a resource.</p>
+        <div class="input-group">
+            <input type="text" id="url-put" class="form-control url detail" value="http://localground.org/api/0/photos/2/" />
+            <span class="input-group-btn">
+                <button class="btn btn-info" button" onclick="generateUpdateForm('PUT', $('#url-put').val(), $('#put-code'));">Generate Form</button>
+                <button class="btn btn-primary" type="button" onclick="putData();">PUT</button>
+            </span>
+        </div>
+        <!-- tabs -->
+        <ul id="put-tabs" class="nav nav-tabs" style="width: 600px;">
+            <li><a href="#form-panel-put" data-toggle="tab">Form</a></li>
+            <li><a href="#json-panel-put" data-toggle="tab">JSON</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="form-panel-put">
+                <form id="put-code" role="form" class="form-horizontal" style="border-top:0px;"></form>
+            </div>
+            <div class="tab-pane" id="json-panel-put">
+                <pre id="put-code-json" class="prettyprint" style="float: left; margin-right: 10px;border-top:0px;"></pre>
+            </div>
+        </div>
+        <pre id="put-code-results" class="prettyprint"></pre>
+        
+        <hr />
+        <!-- ////////////////////////////////////
+            // PARTIAL UPDATE OF RESOURCES //////
+            /////////////////////////////////////
+        -->
+        <a name="patch"></a>
+        <h2>7. PATCH</h2>
+        <p>Use the PATCH action when you only want to update only some of the resource's fields.</p>
+        <div class="input-group">
+            <input type="text" id="url-patch" class="form-control url detail" value="http://localground.org/api/0/photos/2/" />
+            <span class="input-group-btn">
+                <button class="btn btn-info" button" onclick="generateUpdateForm('PUT', $('#url-patch').val(), $('#patch-code'));">Generate Form</button>
+                <button class="btn btn-primary" type="button" onclick="patchData();">PATCH</button>
+            </span>
+        </div>
+        <!-- tabs -->
+        <ul id="patch-tabs" class="nav nav-tabs" style="width: 600px;">
+            <li><a href="#form-panel-patch" data-toggle="tab">Form</a></li>
+            <li><a href="#json-panel-patch" data-toggle="tab">JSON</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="form-panel-patch">
+                <form id="patch-code" role="form" class="form-horizontal" style="border-top:0px;"></form>
+            </div>
+            <div class="tab-pane" id="json-panel-patch">
+                <pre id="patch-code-json" class="prettyprint" style="float: left; margin-right: 10px;border-top:0px;"></pre>
+            </div>
+        </div>
+        <pre id="patch-code-results" class="prettyprint"></pre>
+        
+        <hr />
+        <!-- ////////////////////////////////////
+            // DELETE RESOURCE //////////////////
+            /////////////////////////////////////
+        -->
+        <a name="delete"></a>
+        <h2>8. DELETE</h2>
+        <p>The delete request permanently deletes internet resources. This cannot be undone.</p>
+        <div class="input-group">
+            <input type="text" id="url-delete" class="form-control url detail" value="http://localground.org/api/0/photos/2/" />
+            <span class="input-group-btn">
+                <button class="btn btn-primary" type="button" onclick="deleteData($('#url-delete').val());">DELETE</button>
+            </span>
+        </div>
+        <pre id="delete-code" class="prettyprint"></pre>    
+        <pre id="delete-code-results" class="prettyprint"></pre>
+
+    
+        <br /><br /><br /><br /><br /><br />
+        
+        <script>
+            init();
+            initWidgets();
+        </script>
+    </body>
+</html>

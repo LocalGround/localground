@@ -1,0 +1,33 @@
+{% if projects|length > 0 %}
+{% block projects_menus %}
+    <li class="dropdown" data-dropdown="dropdown" style="width:100px;">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Projects</a>
+    <ul class="dropdown-menu" style="width:300px;">
+        {% if projects|length > 1 %}
+        <li>
+            <a href="{{url}}?alias={{username}}?project_id=all">
+                Everything
+                {% if selected_project|default_if_none:"all" == "all" %}
+                    <div class="sprite ui-icon-check"></div>
+                {% endif %}
+            </a>
+        </li>
+        {% endif %}
+        {% for p in projects %}
+            <li>
+                <a href="{{url}}?project_id={{p.id}}">
+                
+                {% if p.id == selected_project.id %}
+                    <div class="sprite ui-icon-check"></div>
+                {% endif %}
+                {{p.name}}
+                {% if username == 'all' %}
+                    ({{p.user.username}})
+                {% endif %}
+                </a>
+            </li>
+        {% endfor%}
+    </ul>
+</li>
+{% endblock %}
+{% endif %}

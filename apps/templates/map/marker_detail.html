@@ -4,22 +4,22 @@
 {% endblock %}
 {% block script_links %}
     {{ form.media.js }}
-    <script type="text/javascript" src="/static/scripts/thirdparty/twitter/bootstrap-tabs.js"></script>
+    <script type="text/javascript" src="/static/bootstrap2.2.2/js/bootstrap-tabs.js"></script>
 {% endblock %}
 {% block content %}
     <h1>Marker Info</h1>
     <ul class="tabs" data-tabs="tabs">
         <li class="active">
-            <a href="#data">General</a>
+            <a data-toggle="tab" href="#data">General</a>
         </li>
         <li>
-            <a href="#photo">Photos</a>
+            <a data-toggle="tab" href="#photo">Photos</a>
         </li>
         <li>
-            <a href="#audio">Audio</a>
+            <a data-toggle="tab" href="#audio">Audio</a>
         </li>
         <li>
-            <a href="#video">Video</a>
+            <a data-toggle="tab" href="#video">Video</a>
         </li>
     </ul>
     <div id="tab_content" class="tab-content clearfix">

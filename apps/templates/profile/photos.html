@@ -1,37 +1,20 @@
 {% extends "profile/data_list.html" %}
-{% block page_title %}Photos <small>{{selected_project|default_if_none:"Everything"}}</small>{% endblock %}
+{% block page_title %}
+	<img class="header-icon" src="/static/images/camera_large.png" />
+	Manage <span style="color:#ccc">Photos</span>
+{% endblock %}
 
 {% block script_links %}
 	{{ block.super }}
-    <script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
     <script type="text/javascript" src="/static/scripts/site/account/photos.js"></script>
 {% endblock %}
 {% block extra_styles %}
 	{{block.super}}
-	input[type=text], textarea { width: 190px !important; }
-	select { width: 200px !important; }
-	
 {% endblock %}
 
-
-{% block extra_scripts %}
-    var o = new localground.photos();
-{% endblock %}
 {% block pageload_scripts %}
-	var opts = {
-        username: '{{user.username}}',
-		updateURL: '{{raw_url}}',
-		pageURL: '{% autoescape off %}{{url}}{% endautoescape %}&page={{page}}',
-		rawURL: '{{raw_url}}',
-		deleteURL: '{{raw_url}}delete-selected/',
-		moveURL: '{{raw_url}}move-project/',
-		project_id: '{{selected_project_id}}'
-	};
-	{% if username %}
-		opts.alias = '{{username}}';
-	{% endif %}
+	o = new localground.photos();
     o.initialize(opts);
-	
 {% endblock %}
 
 {% block hidden_form_fields %}
@@ -42,10 +25,10 @@
 
 {% block controls_menus %}
 	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
-		<a href="#" class="dropdown-toggle">Options</a>
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
 		<ul class="dropdown-menu" style="width:200px;">
 			<li><a id="delete_objects" href="#">Delete</a></li>
-			<li><a id="add_object" href="#">Upload</a></li>
+			<!-- li><a id="add_object" href="#">Upload</a></li -->
 			<li><a id="move_project" href="#">Move to another project</a></li>
 		</ul>
 	</li>
@@ -63,90 +46,53 @@
 {% endblock %}
 
 {% block rows %}
-	{% for o in objects.object_list %}
+	{% for form in formset.forms %}
 		<tr>
 			<td class="column-cb">
-				<input class="checkone" id="cb_{{o.id}}" name="id" type="checkbox" value="{{o.id}}" />
+				<input class="checkone" id="cb_{{form.instance.id}}" name="id" type="checkbox" value="{{form.instance.id}}" />
 			</td>
 			<td>
-				<img class="thumb" src="{{o.thumb}}" />
-				<input type="hidden" value="{{o.absolute_virtual_path_medium}}">
+				<img class="thumb" src="{{form.instance.thumb}}" />
+				<input type="hidden" value="{{form.instance.absolute_virtual_path_medium}}">
 			</td>
 			<td>
-				<div class="clearfix">
-					<label>Name:</label>
-					<div class="input">
-						<input type="text" name="name_{{o.id}}" id="name_{{o.id}}"
-						   value="{{ o.name|default_if_none:"" }}" style="width:140px" />
-					</div>
-				</div>
-				<div class="clearfix">
-					<label>Description:</label>
-					<div class="input">
-						<textarea name="description_{{o.id}}"
-							style="width:150px; margin-top: 2px;" rows="3">{{ o.description|default_if_none:"" }}</textarea>
-					</div>
-				</div>
-				<div class="clearfix">
-					<label>Tags:</label>
-					<div class="input">
-						<textarea class="tags" name="tags_{{o.id}}"
-							style="width:150px; margin-top: 2px;" rows="3">{{ o.tags|default_if_none:"" }}</textarea>
-					</div>
-				</div>
-				<div class="clearfix">
-					<label>Attribution:</label>
-					<div class="input">
-						<input type="text" name="attribution_{{o.id}}" id="attribution_{{o.id}}"
-						   value="{{o.attribution|default_if_none:""}}" style="width:140px" />
-					</div>
-				</div>
-				<div class="clearfix">
-					<label>Date Taken:</label>
-					<div class="input datetime">
-						<input type="text" name="date_{{o.id}}" id="date_{{o.id}}"
-							value="{{o.created_timestamp|date:"m/d/Y"}}" style="width:88px !important;" />
-						<input type="text" name="time_{{o.id}}" id="time_{{o.id}}"
-							value="{{o.created_timestamp|time:"h:i:s A"}}" style="width:88px !important;" />
-					</div>
-				</div>
+				{% include "includes/forms/generic_form_renderer.html" %}	
 			</td>
 			<td>
 				<div class="thin">
-					<label>ID:</label><div class="input blue">{{ o.id }}</div>
+					<label>ID:</label><div class="input">{{ form.instance.id }}</div>
 				</div>
 				<div class="thin">
 					<label>Last Updated:</label>
-					<div class="input blue">
-						on {{o.time_stamp|date:"n/j/Y P" }}<br />
-						by {{ o.last_updated_by}}
+					<div class="input">
+						on {{form.instance.time_stamp|date:"n/j/Y P" }}<br />
+						by {{ form.instance.last_updated_by}}
 					</div>
 				</div>
 				<div class="thin">
-					<label>Project:</label><div class="input blue">{{ o.project.name }}</div>
+					<label>Project:</label><div class="input">{{ form.instance.project.name }}</div>
 				</div>
 				<div class="thin">
-					<label>Owned by:</label><div class="input blue">{{  o.owner }}</div>
+					<label>Owned by:</label><div class="input">{{  form.instance.owner }}</div>
 				</div>
-				{% if o.source_scan %}
+				{% if form.instance.source_scan %}
 					<div class="thin">
-						<label>Map Image:</label><div class="input blue">{{ o.source_scan.name }}</div>
+						<label>Map Image:</label><div class="input">{{ form.instance.source_scan.name }}</div>
 					</div>
 				{% endif %}
-				{% if o.source_marker %}
+				{% if form.instance.source_marker %}
 					<div class="thin">
-						<label>Marker:</label><div class="input blue">{{ o.source_marker.get_name }}</div>
+						<label>Marker:</label><div class="input">{{ form.instance.source_marker.get_name }}</div>
 					</div>
 				{% endif %}
 				<div class="thin">
-					<label>Coordinates:</label><div class="input blue">{{ o.display_coords }}</div>
+					<label>Coordinates:</label><div class="input">{{ form.instance.display_coords }}</div>
 				</div>
-				
-				
 			</td>
 		</tr>
 	{% endfor %}
 {% endblock %}
+
 
 {% block no_objects %}
 	{{ block.super }}

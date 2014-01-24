@@ -1,240 +1,169 @@
-{% extends "base/page.html" %}
+{% extends "base/profile.html" %}
+{% load paginator %}
 {% block style_links %}
-    <link href="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
+	<link href="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
 	<link href="/static/css/themes/bootstrap/jquery-ui-1.8.16.custom.css" type="text/css" media="all" rel="stylesheet" />
 	<link href="/static/css/themes/bootstrap/timepicker.css" type="text/css" media="all" rel="stylesheet" />
 {% endblock %}
 {% block script_links %}
     <!-- jquery-ui needs to come before jquery-autocomplete -->
-	<!-- script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script -->
-	<script src="/static/scripts/offline/jquery-ui.min.js"></script>
+	<script src="{{ JQUERY_UI_PATH }}"></script>
 	<script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
-    <script type="text/javascript" src="/static/scripts/thirdparty/twitter/bootstrap-modal.js"></script>
-    <script type="text/javascript" src="/static/scripts/thirdparty/twitter/bootstrap-tabs.js"></script>
 	<script type="text/javascript" src="/static/scripts/thirdparty/jquery.ui.timepicker.js"></script>
 	<script type="text/javascript" src="/static/scripts/helpers/dialog.js"></script>
+	<script type="text/javascript" src="/static/scripts/helpers/filtermenu.js"></script>
+	<script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
 {% endblock %}
-{% block extra_styles %}
-	body {
-		padding-top: 60px;
-	}
-	.container-fluid { padding-right: 0px !important; }
-	/*input[type=text], textarea { width: 190px !important; }
-	select { width: 200px !important; }*/
-	label { width: 85px; }
-	.thin label { padding: 0px; }
-	form .input { margin-left: 95px; }
-    table.zebra-striped { width:auto; }
-	#the_table { width: 800px !important; }
-	.clearfix { margin: 2px 0px 2px 0px !important; }
-	.tags { height: 35px !important; }
-    .thumb { margin: 0px; }
-    .tabs{ display: inline; }
-    .sprite { margin-left: 0px; }
-	.dark-list ul { }
-	.dark-list li { color: #444; }
-	li span { color: #386CB0 !important; }
-	.input.blue {  color: #386CB0; padding-top: 0px; }
-	/*th, td {min-width: 70px;}*/
-	.hero-unit {
-		padding: 10px !important;
-		margin: 10px !important;
-	}
-	p {
-		line-height: 1.6em;
-	}
+{% block extra_scripts %}
+	var o;
+	var opts = {
+        username: '{{user.username}}',
+		updateURL: '{{ path }}',
+		pageURL: '{% autoescape off %}{{ path }}{% endautoescape %}?page={{ page }}{%if sql %}&query={{ sql }}{% endif %}',
+		rawURL: '{{ path }}',
+		deleteURL: '{{delete_url}}',
+		addURL: '{{ create_url }}',
+		moveURL: '{{raw_url}}move-project/',
+		project_id: '{{selected_project_id}}',
+		object_type: '{{ object_type }}',
+		object_type_plural: '{{ object_name_plural }}'
+	};
+	{% if username %}
+		opts.alias = '{{username}}';
+	{% endif %}
 {% endblock %}
 
-{% block left_pane %}
-	{% include "includes/menus/left_pane_account.html" %}
+{% block extra_styles %}
+	{{ block.super }}
+	
+	.paginator { border-top: solid 1px #ddd; height:38px; }
+	.paginator-bottom { margin-top: 0px; height:38px; }
+	.paginator > div, .paginator-bottom > div {
+		float:right;
+		margin: 5px 0px 0px 0px;
+	}
+	
+	.no-data-found {
+		position: relative;
+		border: 1px solid #eee;
+		border: 1px solid rgba(0, 0, 0, 0.05);
+		-webkit-border-radius: 4px;
+		-moz-border-radius: 4px;
+		border-radius: 4px;
+		padding: 15px;
+		height: 300px;
+	}
+	.no-data-found > div {
+		text-align:center;
+		vertical-align:middle;
+		height: 40px;
+		position: absolute;
+		top: 50%;
+		margin-top: -20px;
+		width: 100%;
+		font-size: 28px;
+		color: #999;
+		font-weight: bold;
+	}
 {% endblock %}
 
 {% block main_content %}
-
-<form id="the_form" method="post" action="">
-    {% csrf_token %}
-	{% block hidden_form_fields %}
-		<input type="hidden" name="page" value="{{page}}" />
-		{% if form %}
-			<input type="hidden" name="form_id" id="form_id" value="{{form.id}}" />
-		{% endif %}
-	{% endblock %}
-    
-    <div id="controls_row" class="row"
-		 style="margin-bottom:0px;width:auto;height:38px;">
-        <ul class="tabs" style="margin-bottom: 0px !important;border:none;">
-			{% if objects.object_list|length > 0 %}
-				{% block controls_menus %}{% endblock %}
-			{% endif %}
-			{% block other_menus %}{% endblock %}
-			{% if projects|length > 0 %}
-				{% block projects_menus %}
-					<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
-					<a href="#" class="dropdown-toggle">Projects</a>
-					<ul class="dropdown-menu" style="width:300px;">
-						{% if projects|length > 1 %}
-						<li>
-							<a href="{{url}}&alias={{username}}&project_id=all">
-								Everything
-								{% if selected_project|default_if_none:"all" == "all" %}
-									<div class="sprite ui-icon-check"></div>
-								{% endif %}
-							</a>
-						</li>
-						{% endif %}
-						{% for p in projects %}
-							<li>
-								<a href="{{url}}&project_id={{p.id}}">
-								
-								{% if p.id == selected_project.id %}
-									<div class="sprite ui-icon-check"></div>
-								{% endif %}
-								{{p.name}}
-								{% if username == 'all' %}
-									({{p.user.username}})
-								{% endif %}
-								</a>
-							</li>
-						{% endfor%}
-					</ul>
-				</li>
-				{% endblock %}
-			{% endif %}
-            {% if user.is_superuser or is_impersonation %}
-            <li class="dropdown" data-dropdown="dropdown" style="width:130px;">
-                <a href="#" class="dropdown-toggle">Impersonate</a>
-                <ul class="dropdown-menu" style="width:180px">
-                    <li><a href="{{url}}?alias=all">
-                        {% if username == 'all' %}
-                            <div class="sprite ui-icon-check"></div>
-                        {% endif %}
-                        Everyone</a></li>
-                    {% for u in users %}
-						<li>
-							<a href="{{url}}&__impersonate={{u.id}}">
-							{% if u.username == username %}
-								<div class="sprite ui-icon-check"></div>
-							{% endif %}
-							{{u.username}}</a>
-						</li>
-                    {% endfor%}
-                </ul>
-            </li>
-            {% endif %}
-        </ul>
-		{% block save_button %}
-			{% if objects and objects.object_list|length > 0 %}
-				<button id="saveChanges" class="btn primary" style="float:right;">Save Changes</button>
+	<div class="main-content">
+		
+	<form id="the_form" method="post" action="">
+		{% csrf_token %}
+		{{ formset.management_form }}
+		{% block hidden_form_fields %}
+			<input type="hidden" name="page" value="{{page}}" />
+			{% if form %}
+				<input type="hidden" name="form_id" id="form_id" value="{{form.id}}" />
 			{% endif %}
 		{% endblock %}
-	</div>
-	
-	{% if is_paginated %}
-		<div class="row paginator" style="border-top: solid 1px #ddd;height:40px;">
-			{% load paginator %}
-			<div style="float:right;margin: 5px 0px 0px 0px;clear:right;">
-				{% paginator 3 %}
-			</div>
-		</div>
-	{% endif %}
-    
-	<div class="row" id="success-message"
-		 style="height:40px;display:{% if return_message %}block;{%else%}none;{% endif %}">
-		<div class="alert-message success">
-			{% autoescape off %}{{return_message}}{% endautoescape %}
-		</div>
-	</div>
-	{% if message %}
-	<div class="row" style="height: 40px;">
-		<div class="alert-message">
-			{% autoescape off %}{{message}}{% endautoescape %}
-		</div>
-	</div>
-	{% endif %}
-	
-	<div class="row" style="margin-bottom:0px;width:auto;">
-	{% if objects.object_list|length == 0 %}
-		{% block no_objects %}
-		<div class="hero-unit">
-			<p>
-				{% if projects|length > 0 and selected_project != None %}
-					Your project, <em>{{selected_project}}</em>, does not have
-					any {{object_type}}s.
-				{% else %}
-					You do not have any {{object_type}}s.
-				{% endif %}
-			</p>
-		</div>
-		{% endblock %}
-	{% else %}
-		<div id="table-container" style="overflow:auto;">
-		<table id="the_table" class="zebra-striped" cellspacing="0">
-			<thead>
-				{% block row_header %}{% endblock %}
-			</thead>          
-			<tbody>
-				{% block rows %}{% endblock %}
-			</tbody>
-		</table>
-		</div>
-	{% endif %}
-	</div>
-</form>
-    
-{% if is_paginated %}
-	<div class="row paginator" style="margin-top: 0px !important;">
-		<div style="float:right;margin-right: 0px;">
-			{% paginator 3 %}
-		</div>
-	</div>
-{% endif %}
-
-<!-- modal dialog boxes -->
-{% block modals %}
-	
-	<div id="move-modal" class="modal hide">
-		<div class="modal-header">
-		  <a href="#" class="close">&times;</a>
-		  <h3>Moving Projects Confirmation</h3>
-		</div>
-		<div class="modal-body" style="max-height:250px;overflow:auto;">
-			Are you sure you want to move the following items(s) to a new project?
-			<div class="clearfix">
-				<label style="width:150px;">Select new project:</label>
-				<div class="input" style="margin-left:160px;">
-					<select name="new_project" id="new_project">
-						{% for p in projects %}
-						<option value="{{p.id}}">{{p.name}}</option>
-					{% endfor%}	
-					</select>
+		
+		<div class="row" style="height:38px;">
+			{% comment %}
+			<div class="btn-toolbar">
+				<div class="btn-group">
+					<button type="button" id="add_object" class="btn btn-default"><span class="icon-dark icon-plus-sign"></span> New</button>
+					<button type="button" id="delete_objects" class="btn btn-default"><span class="icon-dark icon-trash"></span> Delete</button>
+					<button class="btn btn-default" data-toggle="dropdown">
+						<span class="icon-dark icon-filter"></span> Filter
+						<span class="dark-caret"></span>
+					</button>
+					{% include "includes/filter_menu.html" %}
+					<button type="button" class="btn btn-default"><span class="icon-dark icon-th"></span> More</button>
 				</div>
 			</div>
+			{% endcomment %}
+			<ul class="tabs cell1" style="margin-bottom: 0px !important;border:none;">
+				{% block other_menus %}{% endblock %}
+				{% if objects.object_list|length > 0 %}
+					{% block controls_menus %}{% endblock %}
+				{% endif %}
+				<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+						<i class="icon-dark icon-filter"></i> Filter
+					</a>
+					{% include "includes/filter_menu.html" %}
+				</li>
+				{% include "includes/profile/impersonation.html" %}
+			</ul>
+			<div class="cell2">
+			{% block save_button %}
+				{% if objects and objects.object_list|length > 0 %}
+					<button id="saveChanges" class="btn primary" style="float:right;">Save Changes</button>
+				{% endif %}
+			{% endblock %}
+			</div>
+		</div>
+		
+		{% if is_paginated %}
+			<div class="row paginator">
+				<div>{% paginator 3 %}</div>
+			</div>
+		{% endif %}
+		
+		<div class="row">
+			{% include "includes/messages.html" %}
 			
-			<div id="move-server-message" class="hero-unit warning"
-				 style="padding:10px;margin: 10px 0px 10px 0px;" ></div>
-			
+			{% include "includes/selected_filters.html" %}
 		</div>
-		<div class="modal-footer">
-			<button class="btn primary" onclick="o.moveConfirm();">Confirm</button>
-			<button class="btn hide" onclick="o.hideDialog()">Cancel</button>
+		
+		<!-- render table or "no data found" message -->
+		<div class="row">
+		{% if objects.object_list|length == 0 %}
+			{% block no_objects %}
+			<div class="no-data-found">
+				<div>
+					{% if projects|length > 0 and selected_project != None %}
+						Your project, <span style="text-transform:uppercase">{{selected_project}}</span>, does not have
+						any {{object_name_plural}}.
+					{% else %}
+						You do not have any {{object_name_plural}}.
+					{% endif %}
+				</div>
+			</div>
+			{% endblock %}
+		{% else %}
+			<div id="table-container" style="overflow:auto;">
+			<table id="the_table" class="zebra-striped" cellspacing="0">
+				<thead> {% block row_header %}{% endblock %}</thead>          
+				<tbody>{% block rows %}{% endblock %}</tbody>
+			</table>
+			</div>
+		{% endif %}
 		</div>
-	</div>
+	</form>
+		
+	{% if is_paginated %}
+		<div class="row paginator-bottom">
+			<div>{% paginator 3 %}</div>
+		</div>
+	{% endif %}
 	
-	
-	<!-- div id="image-modal" class="modal hide">
-		<div class="modal-header">
-		  <a href="#" class="close">&times;</a>
-		  <h3>Image Preview</h3>
-		</div>
-		<div class="modal-body"
-			 style="text-align:center;max-height: 400px;overflow-y:auto;overflow-x:hidden;">
-			<img id="preview_image" style="" />
-		</div>
-		<div class="modal-footer">
-			<button class="btn" onclick="o.hideDialog()">Close</button>
-		</div>
-	</div -->
-{% endblock %}
+	{% block modals %}
+		{% include "includes/profile/modals.html" %}
+	{% endblock %}
 
-
+</div>
 {% endblock %}

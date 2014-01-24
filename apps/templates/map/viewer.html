@@ -1,20 +1,17 @@
 {% extends "base/base.html" %}
-{% block page_title %}My Prints{% endblock %}
+{% block page_title %}Map{% endblock %}
 {% block style_links %}
     <link href="/static/css/audio.css" type="text/css" media="all" rel="stylesheet" />
+    <link href="/static/css/map.css" type="text/css" media="all" rel="stylesheet" />
     <link href="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
 {% endblock %}
 {% block script_links %}
-    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3.9&libraries=drawing"></script>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing"></script>
     <!-- enable photo dragging -->
-    <script src="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js"></script>
-    <!-- script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script -->
-    
-    <!-- script type="text/javascript" src="/static/scripts/thirdparty/twitter/bootstrap-modal.js"></script -->
-    <script type="text/javascript" src="/static/scripts/thirdparty/twitter/bootstrap-tabs.js"></script>
-    <script type="text/javascript" src="/static/bootstrap2.2.2/js/bootstrap.js"></script>
+    <script src="{{ JQUERY_UI_PATH }}"></script>
     <script type="text/javascript" src="/static/scripts/thirdparty/infobubble.js"></script>
     <script type="text/javascript" src="/static/scripts/helpers/mapTypes.js"></script>
+    <script type="text/javascript" src="/static/scripts/helpers/form.js"></script>
 	<script type="text/javascript" src="/static/scripts/site/player.js"></script>
     
     <!-- overlay & manager libraries -->
@@ -35,172 +32,20 @@
     
     <script type="text/javascript" src="/static/scripts/map/basemap.js"></script>
     <script type="text/javascript" src="/static/scripts/map/viewer.js"></script>
-    <script type="text/javascript" src="/static/scripts/map/editor.js"></script>
 {% endblock %}
 {% block extra_styles %}
-    html, body {
-      margin: 0;
-      padding: 0;
-      height:100%;
-      overflow:hidden;
-    }
-    h4, h5 {
-        line-height: 30px !important;
-    }
-    input[type=checkbox] {
-        /*vertical-align: bottom !important;*/
-        margin: 0px 6px 0px 3px;
-    }
-    .zoom-magnifying-glass {
-        margin: 10px 10px 0px 5px;
-        width: 12px;
-        cursor:pointer;
-    }
-    .white-links > input {
-      margin: 5px 0px 0px 5px;
-    }
-    .white-links > li {
-      padding: 3px;
-    }
- 
-	#map_panel, #map_canvas {
+	/*
+	.streetview-btn {
+		margin-right: 10px;
+		width: 40px;
+		height: 40px;
+		font-size: 2em;
+		padding: 1.2em 1.4em;
+		font-family: sans-serif;
+		background-color: #f00;
 		position: absolute;
-		top: 40px;
-	}
-	#opener {
-		position: absolute;
-		top: 40px;
-		border-left: solid 1px #444;
-		border-bottom: solid 1px #444;
-		width: 30px;
-		height:45px;
-		cursor: pointer;
-		background-color: #fff;
-		box-shadow: -1px 1px 2px rgba(0,0,0,.3);
-		-moz-box-shadow: -1px 1px 2px rgba(0,0,0,.3);
-		-webkit-box-shadow: -1px 1px 2px rgba(0,0,0,.3);
-        display: none;
-	}
-	#opener > div {
-		padding: 14px 5px 0px 5px;
-	}
-	#map_panel {
-		box-shadow: -1px 0px 3px rgba(0,0,0,.3);
-		-moz-box-shadow: -1px 0px 3px rgba(0,0,0,.3);
-		-webkit-box-shadow: -1px 0px 3px rgba(0,0,0,.3);
-		border-left: solid 1px #444;
-		background-color: #fff;
-        display: none;
-	}
-    
-    .show-hide {
-        cursor: pointer;
-    }
-    .toggle-header { overflow: hidden; }
-    .overlayPanel {
-        margin-left: 12px;
-        display: none;
-        /*margin-bottom: 10px;*/
-    }
-    .overlayPanel > div {
-        border-bottom: solid #eee 1px;
-    }
-    /*.overlayPanel img, .overlayPanel input {
-        float: left;
-        display: block;
-    }
-    #panel_marker span { margin-left: 30px;}
-    */
-    .close {
-        margin-right: 10px !important;
-        margin-top: 2px;
-    }
-    #panel_marker .close {
-        margin-top: 10px;
-    }
-    /*#panel_photo .close, #panel_audio .close {
-        margin-top: -25px;
-    }*/
-    
-    .activated {
-        cursor: pointer;
-        border-color: #77BC3E;
-    }
-    
-    .activated:hover {
-        border-color: #0069d6;
-        -webkit-box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
-        -moz-box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
-        box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
-    }
-    #projectListContainer {
-        overflow-x: hidden;
-    }
-    #projectList li, #mediaList li {
-        display: block;
-        float: none;
-    }
-    .unhide { margin-right: 5px; display: none; }
-    /* important for Google Map controls; overrides boostrap.css */
-    .gmnoprint label {
-        width: auto !important;
-        float: none !important;
-    }
-    
-    /* special audio styles: */
-    .top-player.playercontroller {
-        border: solid 2px #000;
-        display:inline-block;
-        margin:8px 0px 0px 20px;
-    }
-    .top-player.playercontroller > .counter {
-        margin-left: 186px;
-        margin-top: -20px;
-        float: none !important;
-        color: #CCC !important;
-    }
-    .top-player.playercontroller > .counter span.elapsed {
-        color: #A7CBF9 !important;
-    }
-    
-    
-    /*for slide show */
-    .item > img {
-        margin-left: auto;
-        margin-right: auto;
-        max-height:450px;
-    }
-    .carousel {
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: 0px !important;
-        height:450px;
-        width:600px;
-    }
-    .carousel-inner {
-        background-color: #999;
-    }
-    .audio-controller {
-        position: absolute;
-        width: 60px;
-        height: 65px;
-        bottom: 5px;
-        left: auto;
-        right: 5px;
-        display: block;
-        color: #fff;
-    }
-    #slide-modal {
-        width: 600px;
-        margin: -250px 0 0 -300px;
-        border: none !important;
-        background-color: transparent !important;
-        padding: 0px !important;
-    }
-    #slide-modal > .modal-body {
-        padding: 0px !important;
-    }
-            
+		z-index: 2000000;
+	}*/	
 {% endblock %}
 {% block extra_scripts %}
     var isAdmin = false;
@@ -213,7 +58,8 @@
         serverURL: '{{serverURL}}', 
         overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
         showOutlines: false,
-        cloudmadeKey: '{{cloudmadeKey}}'
+        cloudmadeKey: '{{CLOUDMADE_KEY}}',
+		initialMapLayerID: {{ basemap_id|default:"12" }}
     };
     {% if markerID %}
         opts.markerID = {{markerID}};
@@ -221,9 +67,6 @@
     //opts.markerID = 294;
     {% if markers %}
        opts.markers = {% autoescape off %}{{ markers }}{% endautoescape %};
-    {% endif %}
-    {% if projects %}
-        opts.projects = {% autoescape off %}{{ projects }}{% endautoescape %};
     {% endif %}
     {% if groups %}
         opts.groups = {% autoescape off %}{{ groups }}{% endautoescape %};
@@ -235,8 +78,15 @@
     var driver = null;  
 {% endblock %}
 {% block pageload_scripts %}
-    driver = new localground.editor(); 
+    driver = new localground.viewer(); 
     driver.initialize(opts);
+	$('#edit_control_panel').hide();
+	var access_key = null;
+	{% if access_key %}
+		access_key = '{{ access_key }}';
+	{% endif %}
+	//alert(access_key);
+	driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
 {% endblock %}
 {% block top_menu %}
 	{% include "includes/menus/top_nav_map.html" %}
@@ -246,44 +96,55 @@
     
     <!-- main content -->
     <div class="map" id="map_canvas"></div>
-    <div id="map_panel">
+	<div id="map_panel">
         <div style="padding:10px;">
-            <!-- h4>Load Your Data Here!</h4 -->
-            <ul class="tabs" data-tabs="tabs">
+            
+			<!-- alert, error, and success messages -->
+			<div class="row">
+				{% include "includes/messages.html" %}
+			</div>
+			<div class="inset-block" id="edit_control_panel">
+				<button id="mode_toggle" style="display:none;float:right; margin: 0px 5px 0px 5px;"
+						class="btn">Edit</button>
+				<span id="editor_message">
+				{% if num_projects > 0 or ebays %}
+					Use the top menus to add your data on the map
+				{% else %}
+					You have not defined any projects.  In order to create
+					your first project, you can either (1) print a map by clicking the
+					print button (above), or (2) create a new one
+					<a href="/profile/projects/">here</a>.
+				{% endif %}
+				</span>
+				<span id="filter_section" style="display:none;">
+					<input type="text" id="txt_filter" style="width: 200px !important;" />
+					<span id="filter_counter" style="display:inline-block;padding-left: 5px;width:20px;font-weight:bold;font-size:20px;"></span>
+				</span>
+			</div>
+            <ul class="tabs" data-tabs="tabs" style="margin-bottom: 10px !important;">
 				<li class="active">
-					<a href="#data">Data & Media</a>
+					<a data-toggle="tab" href="#data">Data & Media</a>
 				</li>
                 <li>
-					<a href="#legend">Legend</a>
-				</li>
-                
-                <li>
-					<a href="#download">Download</a>
+					<a data-toggle="tab" href="#legend">Legend</a>
 				</li>
             </ul>
             <div id="tab_content" class="tab-content clearfix">
+				
 				<div id="data" class="tab_panel active">
-                    <div class="inset-block">
-                        <button id="mode_toggle" style="display:none;float:right; margin: 0px 5px 0px 5px;"
-                                class="btn">Edit</button>
-                        <span id="editor-message">
-                        {% if num_projects > 0 or ebays %}
-                            Use the top menus to add your data on the map
-                        {% else %}
-                            You have not defined any projects.  In order to create
-                            your first project, you can either (1) print a map by clicking the
-                            print button (above), or (2) create a new one
-                            <a href="/profile/projects/">here</a>.
-                        {% endif %}
-                        </span>
-                    </div>
+                    
+					
+					<!-- div class="row">
+						<input type="text" id="txt_filter" style="" />
+						<button id="apply_filter" class="btn success">Filter</button>
+					</div -->
+					
                     <div id="panel_data"></div>
                 </div>
                 <div id="legend" class="tab_panel">
-                    <div id="panel_legend"></div>
-                </div>
-                <div id="download" class="tab_panel">Download
-                    <div id="panel_download"></div>
+                    <div id="panel_legend">
+						{% block legend %}{% endblock %}
+					</div>
                 </div>
             </div>
         </div>
@@ -306,7 +167,7 @@
 			
 		</div>
 		<div class="modal-footer">
-			<button class="btn" onclick="driver.hideDialog()">Close</button>
+			<button id="close_print_modal" class="btn" onclick="driver.hideDialog()">Close</button>
 			<button id="do_print" class="btn primary" onclick="driver.generatePrint()">Generate Print</button>
 		</div>
 	</div>
@@ -314,6 +175,10 @@
     <!-- slideshow modal -->
     <div id="slide-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-body"></div>
-    </div>    
+    </div>
+	<button id="streetview_close_button"
+			style="padding:3px;margin-top:10px;display:none;">exit streetview</button>
+    
+	{% csrf_token %}
     
 {% endblock %}

@@ -1,120 +1,82 @@
 {% extends "profile/data_list.html" %}
-{% block page_title %}My Projects{% endblock %}
+
+{% block page_title %}
+	<img class="header-icon" src="/static/images/folder_large.png" />
+	Manage <span style="color:#ccc">{{ object_name_plural|title }}</span>
+{% endblock %}
 {% block script_links %}
 	{{ block.super }}
     <script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
-	<script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
-    <script type="text/javascript" src="/static/scripts/site/account/projects.js"></script>
+	<script type="text/javascript" src="/static/scripts/site/account/groups.js"></script>
 {% endblock %}
 {% block extra_styles %}
 	{{block.super}}
 	.key { font-weight: bold; }
 {% endblock %}
-{% block extra_scripts %}
-    var o = new localground.projects();
-{% endblock %}
+
 {% block pageload_scripts %}
-	var opts = {
-        username: '{{user.username}}',
-		updateURL: '{% autoescape off %}{{raw_url}}{% endautoescape %}',
-		pageURL: '{% autoescape off %}{{url}}{% endautoescape %}&page={{page}}',
-		rawURL: '{% autoescape off %}{{raw_url}}{% endautoescape %}',
-		deleteURL: '/profile/projects/delete-projects/',
-		addURL: '/profile/projects/create-project/embed/',
-		objectName: 'Project'
-	};
-	{% if username %}
-		opts.alias = '{{username}}';
-	{% endif %}
-    o.initialize(opts);
+	o = new localground.groups();
+	o.initialize(opts);
 {% endblock %}
 
 {% block controls_menus %}
 	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
-		<a href="#" class="dropdown-toggle">Options</a>
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
 		<ul class="dropdown-menu">
-			<li><a href="#">Share</a></li>
 			<li><a id="delete_objects" href="#">Delete</a></li>
 			<li><a id="add_object" href="#">Create New</a></li>
 		</ul>
 	</li>
 {% endblock %}
 {% block projects_menus %}<!-- no projects -->{% endblock %}
-
 {% block row_header %}
 	<tr>
 		<th scope="col" class="column-cb" >
 			<input class="checkall" type="checkbox" name="checkall"/>
 		</th>
-		<th scope="col" colspan="2">Project Info</th>
+		<th scope="col" colspan="2">{{ source_object.model_name|capfirst }} Info</th>
 	</tr>
 {% endblock %}
 
 {% block rows %}
-	{% for o in objects.object_list %}
+{% for form in formset.forms %}
 		<tr>
 			<td>
-				<input class="checkone" id="cb_{{o.id}}" name="id" type="checkbox" value="{{o.id}}" />
+				<input type="checkbox" value="{{form.instance.id}}"
+							   name="id" id="cb_{{form.instance.id}}"
+							   class="checkone">
 			</td>
 			<td>
-				<div class="clearfix">
-					<label>ID:</label>
-					<div class="input" style="padding-top: 6px;font-weight:bold;">{{o.id}}</div>
-				</div>
-				<div class="clearfix">
-					<label>Name:</label>
-					<div class="input">
-						<input type="text" name="name_{{o.id}}" id="name_{{o.id}}"
-						   value="{{ o.name|default_if_none:"" }}" style="width:250px" />
-					</div>
-				</div>
-				<div class="clearfix">
-					<label>Description:</label>
-					<div class="input">
-						<textarea name="description_{{o.id}}"
-							style="width:250px; margin-top: 2px;" rows="3">{{ o.description|default_if_none:"" }}</textarea>
-					</div>
-				</div>
+				{% include "includes/forms/generic_form_renderer.html" %}
 				<div class="clearfix">
 					<div class="input">
 						<a href="#" class="share">Share</a>
 					</div>
 				</div>
-				
-				
 			</td>
 			
 			<td>
-				Owner: <span>{% if o.owner %} {{ o.owner}} {% else %} anonymous {% endif %}</span><br>
-				Last Updated: <span>{{o.time_stamp|date:"n/j/Y P" }}</span>.		
+				ID: <span>{{ form.instance.id}}</span><br>
+				Owner: <span>{% if form.instance.owner %} {{ form.instance.owner}} {% else %} anonymous {% endif %}</span><br>
+				Last Updated: <span>{{form.instance.time_stamp|date:"n/j/Y P" }}</span>.		
 				<ul class="print_details" style="margin-bottom:0px">
 					<li>
-						Map Images:
-						<a href="/profile/map-image/?project_id={{o.id}}">{{o.processed_maps_count}}</a>
+						Map Images: {{form.instance.processed_maps_count}}
 					</li>
 					<li>
-						Photos:
-						<a href="/profile/photo/?project_id={{o.id}}">{{o.photo_count}}</a>
+						Photos: {{form.instance.photo_count}}
 					</li>
 					<li>
-						Audio:
-						<a href="/profile/audio/?project_id={{o.id}}">{{o.audio_count}}</a>
+						Audio: {{form.instance.audio_count}}
 					</li>
-					<li>Markers: {{o.marker_count}}</li>
+					<li>
+						Markers: {{form.instance.marker_count}}
+					</li>
+					<li><strong>Shared with:</strong> {{ form.instance.shared_with|default_if_none:"Unshared" }}</li>
 					
-					{% comment %}Remove after debugging: very inefficient! {% endcomment %}
-					<li>Shared with: {{ o.users.all|join:", " }}</li>
-					<li><a href="/maps/projects/{{o.slug}}/{% if o.access_key %}{{ o.access_key }}/{% endif %}"
-					   target="_blank">View Map</a></li>
 				</ul>
 			</td>
 		</tr>
 	{% endfor %}
 {% endblock %}
 
-{% block no_objects %}
-	<div class="hero-unit" style="margin-top:-38px !important;">
-		<p>You have not created any projects</p>
-		<button class="btn primary" onclick="o.addObject();return false;">Create Project</button>
-	</div>
-{% endblock %}

@@ -111,24 +111,45 @@ localground.permissions.prototype.initRow = function($elem, isNew) {
 };
 
 localground.permissions.prototype.replaceWithAutocomplete = function($elem) {
+    $elem.find('script').remove();
     // 1) delete and re-add text input (workaround to get autocomplete):
     var $input_old = $elem.find('input:eq(0)');
     var $username_input = $('<input type="text" />')
             .attr('id', $input_old.attr('id'))
-            .attr('name', $input_old.attr('name'));
+            .attr('name', $input_old.attr('name'))
+            .attr('data-provide', 'typeahead')
+            .attr('autocomplete', 'off')
+            .addClass('typeahead');
     $elem.append($username_input);
     $input_old.remove();
     
     // 2) attach auto-complete functionality (using jquery ui):
-    $username_input.autocomplete({
-        source: '/profile/get-contacts/json/',
-        delay: 200,
-        multiple: false,
-        select: function(event, ui) {
-            $(this).val(ui.item.label);
-            return false;
-        }
-    });   
+    $('.typeahead').each(function() {
+        var $this = $(this);
+        $this.typeahead({
+            source: function (query, process) {
+                $this.addClass('loading');
+                return $.getJSON(
+                    '/profile/get-contacts/json/',
+                    { query: query },
+                    function (data) {
+                        var newData = [];
+                        $.each(data, function(){
+                            newData.push(this.label);
+                        });
+                        process(newData);
+                        //scroll the scrollbar:
+                        var container = $('body');
+                        var scrollTo = $this;
+                        container.animate({
+                            scrollTop: scrollTo.offset().top - 120
+                        });
+                        $this.removeClass('loading');
+                        return 
+                    });
+            }
+        });
+    });
 };
 
 localground.permissions.prototype.initFormset = function() {	

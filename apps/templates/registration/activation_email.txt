@@ -3,7 +3,7 @@ Thank you for using {{ site.name }} to map, visualize and share your data.
 To complete your registration please confirm your account within {{ expiration_days }} days.
 
 Click this link to confirm your account:
-http://{{ site.domain }}{% url registration_activate activation_key %}
+http://{{ site.domain }}{% url "registration_activate" activation_key %}
 You can also paste the link into a browser.
 
 Your username is: {{username}}

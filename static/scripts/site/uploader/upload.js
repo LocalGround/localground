@@ -1,15 +1,21 @@
+/* Uses:
+    https://github.com/blueimp/jQuery-File-Upload
+*/
 localground.uploader = function(){
-    this.counter = 0;
+    this.errorCount = 0;
+    this.successCount = 0;
     this.options = {
-        acceptFileTypes: /(\.|\/)(gif|jpe?g|png|mp3|m4a|mpeg)$/i,
+        //acceptFileTypes: /(\.|\/)(gif|jpe?g|png|mp3|m4a|x-m4a|mpeg)$/i,
         maxFileSize: undefined,
         minFileSize: undefined,
+        maxNumberOfFiles: 20,
         previewSourceFileTypes: /^image\/(gif|jpeg|png)$/,
         imageFileTypes: /^image\/(gif|jpeg|png)$/,
         audioFileTypes: /^audio\/(x-m4a|mp3|m4a|mp4|mpeg)$/,
         previewSourceMaxFileSize: 5000000, // 5MB
         previewMaxWidth: 800,
-        previewMaxHeight: 800
+        previewMaxHeight: 800,
+        autoUpload: true
     };
 };
 
@@ -19,51 +25,52 @@ localground.uploader.prototype.initAjaxGlobalErrorHandling = function() {
     return;    
 };
 localground.uploader.prototype.initialize = function(opts) {
-    //alert('initialize profile');
+    self = this;
     localground.base.prototype.initialize.call(this, opts);
+    this.options.mediaType = opts.mediaType;
+    this.options.acceptFileTypes = opts.acceptFileTypes.split(', ');
     
-    $('#project').change(function(){
-        $('.project').html($('#project option:selected').text());  
-    });
-    $('.close').click(function(){
-       $(this).parent().hide();
-       $('#alert-message-text').empty();
+    $('.dropdown-menu > li > a').click(function(){
+        $('#project').val($(this).attr('id'));
+        $('#project-name').html($(this).html());
     });
     
-    $('#alert-message-text').empty();
+    $('#warning-message-text').empty();
     $('#fileupload').fileupload({
         dataType: 'json',
+        autoUpload: true,
+        //sequential: true,
         url: '/upload/media/post/',
         dropZone: $('body'), //$('#dropzone'),
         add: self.onAdd,
-        done: function (e, data) {
-            data.files[0].isDone = true;
-            data.files[0].context.find('.status')
-                .empty()
-                .append(
-                    $('<span />').addClass('label success').html('done'));
-            data.files[0].context.find('.cancel').hide();
-            data.files[0].context.find('.remove').hide();
-            $delete = $('<a />').attr('href', '#')
-                    .html('delete')
-                    .click(function() {
-                        $.getJSON(data.result.delete_url,
-                            function(result) {
-                                //alert(JSON.stringify(result));
-                                data.files[0].cancelled = true;
-                                data.files[0].context.remove();
-                                if($('#display tbody').find('tr').length == 0)
-                                    $('#display').hide();
-                                return false;
-                            },
-                        'json');    
-                        return false;
-                    });
-            data.files[0].context.find('.cell_action').append($delete);     
-            data.files[0].context.find('.project').html(
-                $('<a />').attr('href', data.result.update_url)
-                    .html($('#project option:selected').text())
-            );
+        done: self.done,
+        stop: function(e){
+            //fires after all uploads are finished:
+            if(self.successCount > 0) {
+                $('#success-message-text').html(
+                        'Your files have finished uploading. You may now add \
+                        titles & descriptions to your files <a id="edit-media-link" href="#">here</a> \
+                        or geo-reference you files in the \
+                        <a id="edit-map-link" href="#">map editor</a>.');
+                $('#edit-map-link').attr('href', '/maps/editor/' +
+                            $('#project').val() + '/');
+                $('#edit-media-link').attr('href', '/profile/' +
+                            self.options.mediaType + '/?project_id=' + $('#project').val());
+                $('#success').show();
+                
+            }
+            else {
+                $('#success').hide();
+            }
+            if(self.errorCount > 0){
+                $('#error').show();
+                $('#error-message-text').html('There were errors when uploading your files.');
+            }
+            else{ $('#error').hide(); }
+            
+            //reset counters:
+            self.errorCount = 0;
+            self.successCount = 0;
         },
         progress: function (e, data) {
             data.files[0].context.find('.progress .bar').css(
@@ -72,10 +79,12 @@ localground.uploader.prototype.initialize = function(opts) {
             );
         },
         submit: function (e, data) {
-            var $sel = data.files[0].context.find('.media_type');
+            var token = $('input[name="csrfmiddlewaretoken"]').val();
+            //alert(token);
             data.formData = {
-                media_type: $sel.val(),
-                project_id: $('#project').val()
+                media_type: self.options.mediaType,
+                project_id: $('#project').val(),
+                csrfmiddlewaretoken: token
             }
             //alert(JSON.stringify(data.formData));
         }
@@ -108,14 +117,6 @@ localground.uploader.prototype.initialize = function(opts) {
     });
 };
 
-localground.uploader.prototype.read = function(a, opts) {
-    alert(opts);
-    if(a != 'error decoding QR Code')
-        alert(a);
-    //else
-    //    alert(a);    
-}
-
 localground.uploader.prototype.formatFileSize = function(bytes) {
     if (typeof bytes !== 'number')
         return '';
@@ -127,13 +128,13 @@ localground.uploader.prototype.formatFileSize = function(bytes) {
 };
 
 localground.uploader.prototype.hasError = function(file) {
+    var pieces = file.name.split('.')
+    var ext = pieces[pieces.length-1];
     if (file.error) {
         return file.error;
     }
-    if (this.options.maxNumberOfFiles < 0) {
-        return 'maxNumberOfFiles';
-    }
-    if (!this.options.acceptFileTypes.test(file.type)) {
+    if (this.options.acceptFileTypes.indexOf(file.type) == -1 &&
+        this.options.acceptFileTypes.indexOf(ext) == -1) {
         return 'acceptFileTypes';
     }
     if (this.options.maxFileSize &&
@@ -147,9 +148,10 @@ localground.uploader.prototype.hasError = function(file) {
     return null;
 };
 
-localground.uploader.prototype.validate = function(files) {
-    valid = !!files.length;
-    $.each(files, function (index, file) {
+localground.uploader.prototype.validate = function(data) {
+    //alert(self.counter);
+    valid = !!data.files.length;
+    $.each(data.files, function (index, file) {
         file.error = self.hasError(file);
         if (file.error) {
             valid = false;
@@ -158,50 +160,11 @@ localground.uploader.prototype.validate = function(files) {
     return valid;
 };
 
-localground.uploader.prototype.doUpload = function(file) {
-    var notSubmitted = file.isDone == null || !file.isDone;
-    var notCancelled = file.cancelled == null || !file.cancelled;
-    var noError = file.error == null;
-    //alert(file.isDone + ' - ' + file.cancelled + ' - ' + file.error);
-    return (notSubmitted && notCancelled && noError);
-};
-
-localground.uploader.prototype.renderBlob = function(file, index) {
-    //alert('adding span');
-    file.context.find('.preview').html(
-        $('<span />').addClass('label info').html('Inspecting image...')
-    );
-                
+localground.uploader.prototype.renderBlob = function(file, index) {         
     return ((loadImage && loadImage( 
         file,
         function (img) {
-            qrcode.callback = function(decoded, opts) {
-                //resize the image to a 1/4 of original and output
-                //decoded string (if applicable)
-                opts.file.context.find('.preview').empty();
-                opts.file.context.find('.preview').append(
-                    $('<img />').css({
-                        width: opts.img.width/4,
-                        height: opts.img.height/4
-                    }).attr('src', opts.img.toDataURL("image/jpeg"))                                                 
-                );
-                if(decoded.toString() != 'error decoding QR Code') {
-                    opts.file.context.find('.media_type').val('2');
-                    //opts.file.context.find('.preview').append('<br>' + decoded);
-                    opts.file.context.find('.preview')
-                        .append($('<br>'))
-                        .append(
-                            $('<span />').addClass('label info')
-                                .css({'text-transform': 'none'})
-                                .html(decoded)
-                        );
-                }
-                else {
-                    opts.file.context.find('.media_type').val('3');
-                }
-                
-            };
-            qrcode.decode(img.toDataURL(), {file: file, img: img});
+            file.context.find('.preview').attr('src', img.toDataURL("image/jpeg"));
         },
         {
             maxWidth: self.options.previewMaxWidth,
@@ -211,101 +174,78 @@ localground.uploader.prototype.renderBlob = function(file, index) {
         )));  
 };
 
-localground.uploader.prototype.getTypeWidget = function(file) {
-    //if it's an image, return a select box:
-    if(self.options.imageFileTypes.test(file.type)) {
-        var $widget = $('#media_type').clone().removeAttr('id').show();
-        $widget.val('2');
-        return $widget;
-    }
-    //if it's an audio file, pre-select audio:
-    else if(self.options.audioFileTypes.test(file.type)) {
-        var $widget = $('<span />')
-                        .append($('<span />').html('Audio'))
-                        .append($('<input type="hidden" />')
-                                    .addClass('media_type')
-                                    .val('4'));
-        return $widget;
-    }
-    else {
-        return $('<span />')
-                        .append($('<span />').html(file.type))
-                        .append($('<input type="hidden" />')
-                                    .addClass('media_type')
-                                    .val(file.type)); 
-    }
-};
 
 localground.uploader.prototype.showOmittedFiles = function(data) {
     var omitted = 0;
-    //$('#alert-message-text').empty();
     $.each(data.files, function (index, file) {
-        if(file.error && file.error == 'acceptFileTypes') {
-            ++omitted;
-            if($('#alert-message-text').html().length > 0)
-                $('#alert-message-text').append(', ');
-            else
-                $('#alert-message-text').append(
-                    'The following files were ignored because they are not supported \
-                    by the file uploader:<br>');
-            $('#alert-message-text').append(file.name + ": " + file.type);
+        if(file.error) {
+            if(file.error == 'acceptFileTypes') {
+                ++omitted;
+                if($('#warning-message-text').html().length > 0)
+                    $('#warning-message-text').append(', ');
+                else
+                    $('#warning-message-text').append(
+                        'The following files were ignored because they are not supported \
+                        by the file uploader:<br>');
+                $('#warning-message-text').append(file.name + ": " + file.type);
+            }
         }
     });
     if(omitted > 0) {
-        $('.alert-message').show();
+        $('#warning').show();
     }
 };
 
+localground.uploader.prototype.formatFilename = function(filename) {
+    if(filename.length > 25) {
+        return filename.substring(0, 12) +
+                '...' +
+                filename.substring(filename.length-10, filename.length)
+    }
+    return filename;
+}
+
 localground.uploader.prototype.onAdd = function(e, data) {
+    $('#nothing-here').remove();
     //validate files:
-    self.validate(data.files);
+    self.validate(data);
     self.showOmittedFiles(data);
     $.each(data.files, function (index, file) {
         if(file.error) {
             //continue to next iteration: return true;
             return true;
         }
-        $widget = self.getTypeWidget(file);
-        $cancel = $('<a />').attr('href', '#').addClass('cancel')
-                    .css({'margin-right': 10})
-                    .html('cancel')
-                    .click(function() {
-                        file.cancelled = true;
-                        file.context.find('.status').empty().append('Cancelled');
-                        if(data.jqXHR)
-                            data.jqXHR.abort();
-                        file.context.find('.cancel').hide();
-                    });
-        $remove = $('<a />').attr('href', '#').addClass('remove')
-                    .html('remove')
-                    .click(function() {
-                        file.cancelled = true;
-                        file.context.remove();
-                        if($('#display tbody').find('tr').length == 0)
-                            $('#display').hide();    
-                    });
-        $tr = $('<tr></tr>')
-                .addClass('template-upload fade in')
-                .append($('<td></td>').html(++self.counter))
-                .append($('<td></td>').css({'text-align': 'center'})
-                            .append( $('<span />').addClass('preview'))
-                )
-                .append($('<td></td>').addClass('fileName').html(
-                        file.name + '<br>' + self.formatFileSize(file.size)))
-                .append($('<td></td>').addClass('project')
-                        .html($('#project option:selected').text()))
-                .append($('<td></td>').append($widget))
-                .append($('<td></td>').addClass('status')
+        var $thediv= $('<div />')
+            .addClass('file-container')
+            .append($('<div class="img-polaroid" />')
+                .append(
+                    $('<div class="img-container" />')
+                        .css({
+                            width: 145,
+                            'max-height': 140,
+                            'min-height': 100,
+                            overflow: 'hidden'
+                        })
                     .append(
-                        $('<div />')
-                            .addClass('progress progress-success progress-striped active')
-                            .css({'min-width': '90px'})
-                            .append($('<div />').addClass('bar').css({width: '0%'}))
-                    ))
-                .append($('<td class="cell_action"></td>').append($cancel).append($remove));
-                //.append($('<td></td>').append($remove));
-        $('#display tbody').append($tr);
-        file.context = $tr;
+                        $('<img />').css({
+                            width: 145
+                        }).addClass('preview')                                               
+                    )
+                )
+            ).append(
+                $('<div />')
+                    .addClass('progress progress-success progress-striped active')
+                    .css({'min-width': '90px'})
+                    .append($('<div />').addClass('bar').css({width: '0%'}))
+            );
+        $('#uploaded').prepend($thediv);
+        $thediv.find('.img-polaroid').append(
+            $('<p />').html(
+                self.formatFilename(file.name) + '<br>' + self.formatFileSize(file.size)
+            )
+        );
+        file.context = $thediv;
+        data.submit();
         return true;
     });
 
@@ -326,31 +266,83 @@ localground.uploader.prototype.onAdd = function(e, data) {
             }
             else {
                 file.context.find('.preview')
-                    .html($('<i />').addClass('icon-headphones icon-dark'));
+                    .attr('src', '/static/images/headphones_large.png')
+                    .css({
+                        width: '64px',
+                        height: '64px' ,
+                        'margin-top': '20px' ,
+                        'margin-left': '40px'       
+                    });
                 return false;
             }
         });
     });
-    
-    //show the table:
-    $('#display').show();
-    
-    $('.start').click(function() {
-        //file = data.files[0]; (only 1 file is submitted at a time...)
-        if(self.doUpload(data.files[0]))
-            data.submit();    
-    });
-    
-    $('#clear').click(function() {
-        $('#display tbody').empty();
-        $('#display').hide();
-        $('.alert-message').hide();
-        $.each(data.files, function (index, file) {
-            file.cancelled = true;    
-        });
-    });
-    
 };
+
+localground.uploader.prototype.done = function(e, data) {
+    data.files[0].isDone = true;
+    data.files[0].context.find('.progress').remove();
+    if(data.result.success) {
+        $success= $('<div class="badge badge-success" />')
+                    .css({
+                        padding: '0px 3px 3px 3px',
+                        'border-radius': '20px',
+                        '-webkit-border-radius': '20px',
+                        '-moz-border-radius': '20px',
+                        'margin-top': '-10px',
+                        'margin-left': '-10px',
+                        position: 'absolute',
+                        width: '16px'
+                    })
+                    .append($('<i >').addClass('icon-white icon-ok'));
+    
+        $delete = $('<a />').attr('href', '#').append('delete')
+            .click(function() {
+                $(this).parent().parent().parent().remove();
+                $.getJSON(data.result.delete_url,
+                    function(result) {
+                        //alert(JSON.stringify(result));
+                        data.files[0].cancelled = true;
+                        data.files[0].context.remove();
+                        return false;
+                    },
+                'json');    
+                return false;
+            });
+        data.files[0].context.find('.img-container').prepend($success);   
+        data.files[0].context.find('p')
+            .append(' | ').append($delete).append('<br>' + $('#project-name').html());
+        self.successCount += 1;
+    }
+    else {
+        $error= $('<div class="badge badge-important" />')
+                .css({
+                    padding: '0px 0px 3px 3px',
+                    'border-radius': '20px',
+                    '-webkit-border-radius': '20px',
+                    '-moz-border-radius': '20px',
+                    'margin-top': '-10px',
+                    'margin-left': '-10px',
+                    position: 'absolute',
+                    width: '16px'
+                })
+                .append($('<i >').addClass('icon-white icon-minus'));
+        $container = data.files[0].context.find('.preview').parent();
+        data.files[0].context.find('.preview').remove();
+        data.files[0].context.find('.img-container').prepend($error);
+        data.files[0].context.find('p')
+                    .css({
+                        color: '#b94a48',
+                        padding: 10,
+                        'font-size': '10px',
+                        'line-height': '12px'
+                    }).html('<strong>Error uploading ' + data.files[0].name +
+                            ':</strong><br>' + data.result.error_message);
+        $container.append(data.files[0].context.find('p'));
+        self.errorCount += 1;
+    }
+};
+
 
 
     

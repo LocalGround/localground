@@ -1,6 +1,8 @@
 localground.slideshow = function(){
     this.player = null;
     this.id = 'slideshow-carousel';
+    this.height = '360px';
+    this.width = '480px';
 };
 
 localground.slideshow.prototype.initialize=function(opts){
@@ -26,24 +28,14 @@ localground.slideshow.prototype.generateCarousel = function() {
         );
 };
 
-/*localground.slideshow.prototype.showModal = function() {
-    this.generateCarousel();            
-    //initialize player:
-    $('#slide-modal').find('.modal-body').empty();
-    
-    //initialize empty carousel:
-    //$('#slide-modal').find('.modal-body').append(this.carousel);
-    $('#slide-modal').modal();
-};*/
-
             
 localground.slideshow.prototype.render_slideshow = function(opts) {
     var marker = opts.marker, $container = opts.$container;
     $container.append(this.generateCarousel());
+    this.render_title_page(marker);
     this.render_photo_slides(marker);
     this.render_data_slides(marker);
     this.render_audio(marker);
-    
     var $c = $('#' + this.id).carousel();
     if(opts.applyHack) {
         $('.left, .right').click('[data-slide]', function(e){
@@ -55,100 +47,144 @@ localground.slideshow.prototype.render_slideshow = function(opts) {
     }
 }
 
+localground.slideshow.prototype.render_title_page = function(marker) {
+    var $page = $('<div />');
+    $page.append($('<h1 />')
+                    .css({margin: '5px 0px 10px 5px'})
+                    .append($('<img />')
+                            .addClass('header-icon')
+                            .attr('src', '/static/images/place_marker_large.png'))
+                    .append(marker.name));
+    var $body = $('<div />')
+                    .css({'margin': '0px 60px 0px 60px', color: '#444'})
+                    .append(marker.description);
+    if (marker.children.photos && marker.children.photos.data.length > 0) {
+        var $holder = $('<div />')
+                            .css({
+                                'display': 'block',
+                                'margin-left': 'auto',
+                                'margin-right': 'auto',
+                                'text-align': 'center'
+                            });
+        $.each(marker.children.photos.data, function(idx) {
+            if (idx < 2) { 
+                $holder.append($('<img />').addClass('thumb')
+                             .css({ height: '90px', 'margin-right': '3px' })
+                             .attr('src', this.path_small));
+            }
+        });
+        $body.append($holder);
+    }
+    $page.append($body);
+    var $item = $('<div />').addClass('item active')
+            .append($('<div />').css({
+                height: this.height,
+                width: this.width,
+                color: '#fff',
+                display: 'block'
+            }).append($page))
+            .append($('<div />').addClass('carousel-caption')
+                .append($('<h4 />').html(marker.getName()))
+                .append($('<p />').html(marker.description || 'Description!')
+            ));
+    /*alert(this.id);
+    alert($('#' + this.id).get(0));
+    alert($('#' + this.id).find('.carousel-inner').get(0));*/
+    //$('#' + this.id).find('.carousel-inner').append($item);
+    $('.carousel-inner').append($item);
+};
+
+            
+localground.slideshow.prototype.render_photo_slides = function(marker) {
+    var me = this;
+	if (marker.children.photos == null) {
+		return;
+	}
+    $.each(marker.children.photos.data, function(idx) {
+        var $item = $('<div />').addClass('item')
+                .append($('<div />').css({'height': me.height})
+                        .append(
+                            $('<img />')
+                                .attr('src', this.path_large)
+                                .css({
+                                    'max-height': me.height,
+                                    'display': 'block',
+                                    'margin-left': 'auto',
+                                    'margin-right': 'auto'
+                                })
+                        )
+                )
+                .append(
+                    $('<div />').addClass('carousel-caption')
+                        .append($('<h4 />').html(this.name || 'Untitled Photo'))
+                        .append($('<p />').html(this.caption || 'No caption available.'))
+                );
+        //if(idx == 0) { $item.addClass('active'); }
+        $('#' + me.id).find('.carousel-inner').append($item);
+    });
+    //alert('.carousel-inner' + $('#' + me.id).find('.carousel-inner').get(0));
+};
+
+localground.slideshow.prototype.render_data_slides = function(marker){
+    var me = this;
+    if (marker.record_count == 0) {
+        return;
+    }
+	for (k in marker.children) {
+		if (k.indexOf('form_') != -1 &&
+				marker.children[k].data &&
+				marker.children[k].data.length > 0) {
+			var group_name = k;
+			var table = marker.children[k];
+			
+			$.each(table.data, function(){
+                this.headers = table.headers;
+                var record = new localground.record(this, null);
+                var $tbl = record.renderRecord();
+                $tbl.removeClass('zebra-striped')
+                    .css({
+                        'margin': '0px auto 0px auto',
+                        'background-color': '#fff',
+                        'width': '340px'
+                    });
+                var $item = $('<div />').addClass('item')
+                                .append($('<div />').css({
+                                                'height': me.height
+                                        })
+                                        .append($('<br>'))
+                                        .append($('<br>'))
+                                        .append($tbl)
+                                )
+                                .append(
+                                    $('<div />').addClass('carousel-caption')
+                                        .append($('<h4 />').html(table.name))
+                                        .append($('<p />').html('No caption available.'))
+                                );
+
+                $('#' + me.id).find('.carousel-inner').append($item);
+			});
+		}
+	}
+};
+
+
 localground.slideshow.prototype.render_audio = function(marker) {
     var me = this;
-    if(marker.audio == null || marker.audio.length == 0){ return; }
+    if(marker.children.audio == null || marker.children.audio.data.length == 0){
+        return;
+    }
     var playerHtml = this.player.renderPlayerObject();
     $('#' + this.id).append(
         $('<div />').addClass('audio-controller')
             .append(playerHtml)
     );
-    $.each(marker.audio, function(idx) {
+    $.each(marker.children.audio.data, function(idx) {
         if(idx > 0)
-            playerHtml.append($('<input type="hidden" />').val(this.path));    
+            playerHtml.append($('<input type="hidden" />').val(this.file_path));    
         else
-            playerHtml.find('input').val(this.path);
+            playerHtml.find('input').val(this.file_path);
     });
     this.player.initialize();
 };
-            
-localground.slideshow.prototype.render_photo_slides = function(marker) {
-    var me = this;
-    $.each(marker.photos, function(idx) {
-        var $item = $('<div />').addClass('item')
-                .append($('<img />').attr('src', this.path_large))
-                .append($('<div />').addClass('carousel-caption')
-                    .append($('<h4 />').html(this.name))
-                    .append($('<p />').html(this.caption))
-                );
-        if(idx == 0) { $item.addClass('active'); }
-        $('#' + me.id).find('.carousel-inner').append($item);
-    });
-};
-localground.slideshow.prototype.render_data_slides = function(marker) {
-    var me = this;
-    $.each(marker.tables, function(idx) {
-        var tableName = this.name;
-        $.each(this.data, function(){
-            var $data = $('<div />').css({'padding': '20px 0px 0px 70px'});
-            this.noMap = true;
-            var record = new localground.record(this, null, this.id);
-            $data.append(record.renderSlideRecord());
-            var $item = $('<div />').addClass('item')
-                    .append($('<div />').css({
-                        height: '450px',
-                        width: '600px',
-                        color: '#fff',
-                        display: 'block'
-                    }).append($data))
-                    .append($('<div />').addClass('carousel-caption')
-                        .append($('<h4 />').html(tableName)
-                        .append($('<p />').html('&nbsp;'))
-                    ));
-            $('#' + me.id).find('.carousel-inner').append($item);
-        });
-    });
-};
 
 
-            
-localground.slideshow.prototype.get_photos_by_marker_id = function(id) {
-    var me = this;
-    var url = '/api/0/get/marker/' + id + '/';
-    $.getJSON(url, {},
-        function(result) {
-            if(!result.success) {
-                alert(result.message);
-                return;
-            }
-            me.render_slides(result.obj);
-            me.render_audio(result.obj);
-            $('#slide-modal').modal();    
-        },
-    'json');   
-};
-            
-localground.slideshow.prototype.get_photos_by_project_id = function(id) {
-    var me = this;
-    var params = {
-        include_processed_maps: true,
-        include_markers: true,
-        include_audio: true,
-        include_photos: true
-    };
-    var url = '/api/0/projects/' + 97 + '/';
-    $.getJSON(url, params,
-        function(result) {
-            if(!result.success) {
-                alert(result.message);
-                return;
-            }
-            $.each(result.data, function() {
-                if(this.id == 'photo') {
-                    me.render_photos(this.data);
-                    me.render_audio([]);
-                }
-            });
-        },
-    'json');   
-};

@@ -1,4 +1,4 @@
-gentable = function(){
+gentable = function(opts){
 	this.table = null;
 	this.addButton = null;
     this.height = 200;
@@ -17,6 +17,7 @@ gentable = function(){
 	this.int_data_type = 2;//in database
 	this.initDataTypes = false;
 	this.afterUpdateFunction = this.adjustHiddenFields();
+	$.extend(this, opts);
 };
 
 //table.prototype = new base(); // inherits from base 
@@ -38,107 +39,44 @@ gentable.prototype.initialize = function(opts) {
         $('.dropdown-menu').hide();
     });
 	
-	if(this.initDataTypes)
-		this.getDataTypes();
 	this.initTable();
 	this.afterUpdateFunction();
 };
 
 gentable.prototype.adjustHiddenFields = function() {
+	var me = this;
 	if(this.table == null)
 		return;
     var total_width = 0;
-    var cell_headers = this.table.find('thead tr:eq(0)').children();
+    var cell_controllers = this.getControllers();
     
     //get total width:
-    cell_headers.each(function(){
+    cell_controllers.each(function(){
         total_width+=parseFloat($(this).width());  
     });
     
     //populate .column_width values with percentages, based on total width:
     col_sums = 0;
     var pct_width;
-    cell_headers.each(function(idx){
-        if(idx == $('.column_width').length-1) {
-            $(this).find('.column_width').val(100-col_sums);
-        }
-        else {
-            if(idx == 0)
-                pct_width = 5 //id column always 5%
-            else
-                pct_width = parseInt(parseFloat($(this).width())/total_width*100);
-            $(this).find('.column_width').val(pct_width);
-            col_sums+=pct_width;
-        } 
+    cell_controllers.each(function(idx){
+		if (idx > 0) {
+			//var alias = $(me.getHeader(idx).find('span')).html();
+			var mid = '#id_' + self.prefix + '-' + (idx-1);
+			if ($(mid + '-width').get(0) == null)
+				$('.add-row').trigger('click');
+			$(mid + '-field').val(me.columns[(idx-1)].id);
+			$(mid + '-ordering').val(idx);
+	
+			if(idx == cell_controllers.length-1) {
+				$(mid + '-width').val(95-col_sums); //the ID column is always 5%
+			}
+			else {
+				pct_width = parseInt(parseFloat($(this).width())/total_width*100);
+				$(mid + '-width').val(pct_width);
+				col_sums+=pct_width;
+			}	
+		}
     });
-};
-
-gentable.prototype.getDataTypes = function() {
-	var me = this;
-    $.get('/print/forms/get-types/',
-        function(result){
-			//clear out old values:
-			$('#column_options').empty();
-			
-			$('#column_options').append(
-				$('<li></li>').append(
-					$('<a></a>')
-					//.addClass('data_options')
-					.attr('href', '#')
-					.attr('id', 'delete_column')
-					.click(function(event) {
-						me.deleteColumn(me.activeHeaderCell);
-						$('.dropdown-menu').hide();
-						me.afterUpdateFunction();
-						return false;
-					})
-					.append($('<span></span>').html('Delete Column'))
-				)
-			);
-			$('#column_options').append(
-				$('<li></li>').addClass('divider'))
-			
-			$.each(result.types, function() {
-                $('#column_options').append(
-                    $('<li></li>').append(
-                        $('<a></a>')
-                        .addClass('data_options')
-                        .attr('href', '#')
-                        .attr('id', this.id)
-                        .click(function(event) {
-							me.activeHeaderCell.find('.column_type').val($(this).attr('id'));
-                            me.activeHeaderCell.find('span').html('(' + $(this).find('span').html() + ')');
-							$('.dropdown-menu').hide();
-							me.afterUpdateFunction();
-							return false;
-                        })
-                        .append($('<div></div>').addClass('sprite ui-icon-check'))
-                        .append($('<span></span>').html(this.name))
-                    )
-                );	
-            });
-			
-            //Initialize everything to text
-            $('.column_type').val(1); //1 = Text data type
-        },
-    'json');
-	  
-};
-
-
-gentable.prototype.appendButtonAddColumn = function() {
-	var me = this;
-	this.addButton = $('<div id="addCol" />').append(
-					$('<a href="#">add column</a>')
-						.click(function() {
-							me.addColumn();
-							if(me.getHeaders().length > me.maxCols)
-								$(this).parent().css({'visibility': 'hidden'});
-							me.afterUpdateFunction();
-							return false;
-						}))
-					.append(' (up to 5)');
-	this.container.append(this.addButton);
 };
 
 gentable.prototype.renderColNamer = function($elem, idx) {
@@ -148,28 +86,11 @@ gentable.prototype.renderColNamer = function($elem, idx) {
 			'padding': 0
 		})
 		.width(me.colWidths[idx]);
-	if(idx > 0) {
-		var $renamer = $('<input />')
-						.attr('type', 'text')
-						.addClass('column_alias')
-						.val($elem.html())
-						.click(function(){
-							$(this).focus().select()	
-						})
-						.keypress(function(event){
-							if(event.keyCode == 13){
-								$(this).blur();
-								me.afterUpdateFunction();
-								return false;
-							}
-							return true;
-						});
-		$elem.empty().append($renamer);
-	} else {
-		//first column is read only
-		var txt = $elem.html();
-		$elem.empty().append($('<div class="id_col"></div>').html(txt));	
-	}	
+	var $col_alias = $('<span />')
+					.addClass('column_alias')
+					.html($elem.html());
+	$elem.empty().append($col_alias);
+	
 };
 
 gentable.prototype.renderHeaderCell = function($elem, idx) {
@@ -187,18 +108,20 @@ gentable.prototype.renderHeaderCell = function($elem, idx) {
 		me.afterUpdateFunction();
 	});
 	
-	// make column headers resizable
-	var handle = $('<div />')
-					.html(me.resizeHandleHtml == '' ? '-' : me.resizeHandleHtml)
-					.addClass(me.resizeHandleClass);
-	handle.bind('mousedown', function(e){
-		// start resize drag
-		var th 		= $(this).parent();
-		var left  = e.clientX;
-		me.resizer.resizeStart(th, left);
-	});
-	$elem.append(handle)
-	this.appendDataTypeControl(idx, $elem);
+	if (idx > 0 && me.columns.length > 1) {
+		// make column headers resizable
+		var handle = $('<div />')
+						.html(me.resizeHandleHtml == '' ? '-' : me.resizeHandleHtml)
+						.addClass(me.resizeHandleClass);
+		handle.bind('mousedown', function(e){
+			// start resize drag
+			var th 		= $(this).parent();
+			var left  = e.clientX;
+			me.resizer.resizeStart(th, left);
+		});
+		$elem.append(handle)
+
+	}
 	return $elem;	
 };
 
@@ -212,10 +135,10 @@ gentable.prototype.deleteColumn = function($th) {
 		$(this).find("th:eq("+n+")").remove();
 		$(this).find("td:eq("+n+")").remove();
 	});
-	me.adjustHeaderData();
+	//me.adjustHeaderData();
 };
 
-gentable.prototype.adjustHeaderData = function() {
+/*gentable.prototype.adjustHeaderData = function() {
 	var me = this;
 	var id_col_width = 60
 	var new_width = (this.maxWidth-id_col_width)/(this.colWidths.length-1);
@@ -244,71 +167,8 @@ gentable.prototype.adjustHeaderData = function() {
 		$('.close').show();
 	else
 		$('.close').hide();
-}
+}*/
 
-gentable.prototype.addColumn = function() {
-	var me = this;
-	this.table.find("tr").each(function(index){
-		if(index == 0) {
-			$th = $('<th></th>').html('');
-			me.renderHeaderCell($th, me.colWidths.length);
-			$(this).find('th:last').after($th);
-		}
-		else if(index == 1) {
-			$th = $('<th></th>').html('Click to name column...');
-			me.renderColNamer($th, me.colWidths.length);
-			$(this).find('th:last').after($th);
-			
-		} 
-		else {
-			$td = $('<td></td>').append('<div>&nbsp;</div>');
-			$(this).find('td:last').after($td);
-		}
-		
-	});
-	//just add an arbitrary width for new column (will be adjusted later)
-	this.colWidths.push(100)
-	this.adjustHeaderData();
-};
-
-
-gentable.prototype.appendDataTypeControl = function(idx, $th) {
-	var me = this;
-	var $control = $('<div />')
-		.attr('id', 'datacontrol_' + idx)
-		.attr('title', 'Column Options')
-		.addClass('sprite-small ui-icon-bottom-triangle-small border-rounded')
-		.css({
-			float: 'left',
-			cursor: 'pointer'
-		})
-		.attr('style', 'margin: 4px 0px 0px 4px !important')
-		.click(function(event){
-			me.toggleMenu($(this));
-			return false;
-		});
-	var data_type = this.text_data_type, type_name = '(Text)';
-	if(idx == 0)
-		data_type = this.int_data_type, type_name = '(Integer)';
-	$header = $('<div />')
-		.append($('<span />').html(type_name).css({float: 'left'})
-						.attr('style', 'margin-top: 0px !important;'))
-		.append($('<input />').attr('type', 'hidden').attr('name', 'type_'+idx)
-					.addClass('column_type')
-					.val(data_type))
-		.append($('<input />').attr('type', 'hidden').attr('name', 'width_'+idx)
-					.addClass('column_width')
-					//.css({width: 40})
-					.val(''));
-	if(idx != 0) {
-		$header.append($control);
-		$header.click(function(){
-			$(this).find('.sprite-small').trigger('click');
-			return false;
-		});
-	}
-	$th.append($header);
-};
 
 gentable.prototype.toggleMenu = function($elem) {
 	this.activeHeaderCell = $elem.parent('div').parent('th');
@@ -332,39 +192,33 @@ gentable.prototype.toggleMenu = function($elem) {
 
 gentable.prototype.resizeIt = function($th, col_num, w, adjust_next) {
 	var me = this;
-	$renamer = this.getHeader(col_num);
-	var padding = Math.abs($renamer.find('.column_alias').width() -
-						   $renamer.find('.column_alias').outerWidth());
-	//alert(padding);
-	if(adjust_next) {
-		//figure out width differential:
-		this.colWidths[col_num] = w;
-		var totalPotentialWidth = w;
-		this.getHeaders().each(function(i){
-			if(i != col_num)
-				totalPotentialWidth += $(this).width();
-		});
-		var differential = totalPotentialWidth-this.maxWidth;
-		
-		if(col_num+1 == me.getHeaders().length) {
-			w = w-differential;
-		} else {
-			var $next_col = me.getController(col_num+1);
-			var new_width = $next_col.width()-differential;
-			$next_col.width(new_width);
-			//$next_col.find('.column_width').val(new_width);
-			$renamer_next = this.getHeader(col_num+1);
-			$renamer_next.width(new_width)
-			$renamer_next.find('.column_alias').width(new_width-padding);
-		}
+	$col = this.getController(col_num);
+	$header = this.getHeader(col_num);
+	var old_width = $th.width();
+	var differential = old_width - w;
+	$col.width(w);
+	$header.width(w);
+	//alert('width / new width: ' + old_width + ',' + w);
+	if ($col.next()) {
+		var new_width = ($col.next().width()+differential);
+		//alert('next column width / new width: ' + $col.next().width() + ',' + new_width);
+		$col.next().width(new_width);
+		$header.next().width(new_width);
 	}
-	$th.width(w);
-	//$th.find('.column_width').val(w);
-	$renamer.width(w)
-	$renamer.find('.column_alias').width(w-padding);
+	else {
+		//alert('prev column width / new width: ' + $col.prev().width() + ',' + ($col.prev().width()+differential));
+		var new_width = ($col.prev().width()+differential);
+		//alert('prev column width / new width: ' + $col.prev().width() + ',' + new_width);
+		$col.prev().width(new_width);	
+		$header.prev().width(new_width);
+	}
+	/*$.each(this.getControllers(), function(){
+		alert($(this).width());	
+	})*/
 };
 
 gentable.prototype.initTable = function() {
+	//alert(this.maxWidth);
 	var me = this;
 	this.tableID = this.table.attr('id');
 	var $tbl = $('<table cellpadding="0" cellspacing="0"></table>')
@@ -376,8 +230,8 @@ gentable.prototype.initTable = function() {
 					.addClass(me.gridClass);
 	this.table.remove();
 	this.table = $tbl;
+	//this.table.width(self.maxWidth)
 	this.container.empty();
-	this.appendButtonAddColumn();
 	this.container.append($tbl);
 	this.colWidths = [];
 	
@@ -385,9 +239,15 @@ gentable.prototype.initTable = function() {
 	var $controls_row = $('<tr></tr>');
 	var $control_cell = null
 	$tbl.find('thead tr').each(function(n){
+		var num_cols = $(this).find('th').length;
 		$(this).find('th').each(function(i){
-			me.colWidths.push(10); // this width is arbitrary and will be adjusted later
-			
+			if(i == 0) {
+				me.colWidths.push(me.maxWidth*.05);
+			}
+			else {
+				w = me.maxWidth*.95/(num_cols-1);
+				me.colWidths.push(w);
+			}	  
 			//render new controls cell (and add to new row):
 			$control_cell = $('<th></th>');
 			me.renderHeaderCell($control_cell, i);	
@@ -403,13 +263,11 @@ gentable.prototype.initTable = function() {
 	this.getRows().each(function(r){
 		$(this).find('td').each(function(i){
 			$(this)
-				.width(me.colWidths[i])
 				.html( $('<div />').html($(this).html()).css('overflow', 'hidden') );
 		});
 	});
 	
 	this.renderVerticalResizer();
-	this.adjustHeaderData(); //applies names and widths, based on positioning
 };
 
 gentable.prototype.renderVerticalResizer = function() {

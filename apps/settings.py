@@ -1,4 +1,5 @@
 # Django settings for localground project.
+# https://django-oauth-toolkit.readthedocs.org/en/latest/tutorial/tutorial.html
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -26,6 +27,7 @@ SERVER_URL = 'http://%s' % SERVER_HOST
 
 FILE_ROOT = '/home/directory/for/localground'
 STATIC_MEDIA_DIR = 'static'
+STATIC_URL = '/static/'
 USER_MEDIA_DIR = 'userdata'
 
 # Absolute path to the directory root of the local ground instance:
@@ -34,7 +36,7 @@ APPS_ROOT = '%s/apps' % FILE_ROOT
 USER_MEDIA_ROOT = '%s/%s' % (FILE_ROOT, USER_MEDIA_DIR)
 FONT_ROOT = '%s/css/fonts/' % STATIC_ROOT
 TEMP_DIR = '%s/tmp/' % FILE_ROOT
-QR_READER_PATH = '%s/barcodereader/' % FILE_ROOT
+QR_READER_PATH = '%s/lib/barcodereader' % APPS_ROOT
 
 MAP_FILE = FILE_ROOT + '/mapserver/localground.map'
 TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_MEDIA_DIR
@@ -50,7 +52,7 @@ IS_GOOGLE_REGISTERED_NONPROFIT = False
 
 
 MANAGERS = ADMINS
-AUTH_PROFILE_MODULE = 'account.UserProfile'
+AUTH_PROFILE_MODULE = 'site.UserProfile'
 
 HOST = '127.0.0.1'          #Your Database Host
 PORT = '#####'              #Your Database Port
@@ -102,8 +104,9 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-
-JQUERY_UI_PATH = 'http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.8/jquery-ui.min.js'
+JQUERY_PATH = 'http://code.jquery.com/jquery-1.8.0.min.js'
+JQUERY_UI_PATH = 'http://code.jquery.com/ui/1.9.2/jquery-ui.min.js'
+BOOTSTRAP_JS_PATH = '/static/bootstrap2.2.2/js/complete/bootstrap.min.js'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '+z2(@u0ev(4k5p())l38j$ea6o$@irxtc_8qgp-^a60qn239**'
@@ -119,6 +122,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'localground.apps.middleware.impersonate.ImpersonateMiddleware'
 )
 
@@ -128,15 +132,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
-    'django.contrib.messages.context_processors.messages',
     'localground.apps.middleware.context_processors.persistant_queries', #for our application-level context objects
 )
 
-ROOT_URLCONF = 'localground.apps.urls'
+ROOT_URLCONF = 'localground.apps.site.urls'
 
 TEMPLATE_DIRS = (
     '%s/templates' % APPS_ROOT,
-    '%s/account/templates' % APPS_ROOT,
 )
 FIXTURE_DIRS = (
     '%s/fixtures' % APPS_ROOT,
@@ -149,23 +151,44 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
     'django.contrib.gis',
-    'django.contrib.messages',
     'localground',
     'localground.apps',
-    'localground.apps.account',
-    'localground.apps.api',
-    'localground.apps.helpers',
-    'localground.apps.prints',
-    'localground.apps.uploads',
-    'localground.apps.overlays',
-    'localground.apps.registration',     #taken from the django-registration module
-    'tagging',                      #for tagging of blog posts in Django
-    'django.contrib.admin',
-    'localground.apps.jobs'
-
+    'localground.apps.management',
+    'localground.apps.site',
+    'localground.apps.registration',        #taken from the django-registration module
+    'tagging',                              #for tagging of blog posts in Django
+    'localground.apps.contenttypes',
+    #'django.contrib.admin',
+    'rest_framework',
+    'corsheaders',
 )
+
+REST_FRAMEWORK = {
+    'PAGINATE_BY': 10,
+    'PAGINATE_BY_PARAM': 'page_size',
+    'MAX_PAGINATE_BY': 8000,          
+    'DEFAULT_RENDERER_CLASSES': (
+        'localground.apps.site.api.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.JSONPRenderer',
+        'localground.apps.site.api.renderers.CSVRenderer',
+        #'rest_framework_csv.renderers.CSVRenderer',
+        'rest_framework.renderers.XMLRenderer'
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        'localground.apps.site.api.permissions.CheckProjectPermissions',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework.filters.DjangoFilterBackend',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+}
+
 # Local settings override project settings
 try:
     LOCAL_SETTINGS
@@ -175,4 +198,5 @@ except NameError:
     except ImportError:
         pass
 
+CORS_ORIGIN_ALLOW_ALL = True
 

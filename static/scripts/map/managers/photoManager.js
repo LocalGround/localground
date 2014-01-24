@@ -1,5 +1,6 @@
-localground.photoManager = function(){
+localground.photoManager = function(id){
 	this.data = [];
+	this.id = id;
 };
 
 localground.photoManager.prototype = new localground.manager();
@@ -7,6 +8,7 @@ localground.photoManager.prototype = new localground.manager();
 localground.photoManager.prototype.addRecords = function(data) {
     var me = this;
     $.each(data, function(){
+		this.managerID = me.id;
         me.data.push(new localground.photo(this));        
     });
 };
@@ -16,8 +18,13 @@ localground.photoManager.prototype.makeViewable = function() {
 	localground.manager.prototype.makeViewable.call(this);
     
     //destroy draggable event handlers:
-    $('.thumbsmall').draggable("destroy");
-    $('.thumbsmall').removeClass('can_drag').removeClass('ui-draggable').removeClass('activated')
+	try {
+		$('.thumbsmall').draggable("destroy");
+		$('.thumbsmall').removeClass('can_drag').removeClass('ui-draggable').removeClass('activated')
+	} catch(e) {
+		//alert(e);
+	}
+    
 };
 
 localground.photoManager.prototype.doViewportUpdates = function() {

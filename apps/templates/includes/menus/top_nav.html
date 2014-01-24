@@ -6,17 +6,32 @@
                 {% if user.id == 102 or user.id == 94 %}
                     <li><a href="/ebays/">EBAYS Viewer</a></li>
                 {% else %}
-                    <li><a href="/maps/editor/">Edit Map</a></li>
+                    {% comment %}
+                    Need to come up with a more generalized solution.
+                    The "show_air_quality" variable is populated in the
+                    context_processor.py page
+                    {% endcomment %}
+                    {% if show_air_quality %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown">Maps</a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="/maps/edit/">Basic Map Editor</a></li>
+                                <li><a href="/maps/edit/air-quality/">Air Quality Map (EBAYS)</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li><a href="/maps/edit/">Edit Map</a></li>
+                    {% endif %}
                 {% endif %}
                 <li><a href="/upload/">Upload</a></li>
                 <li class="dropdown">
-                    <a href="/" class="dropdown-toggle">About</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/about/">About Us</a></li>
-                        <li><a href="/instructions/">Instructions</a></li>
-                        <li><a href="/research/">Research</a></li>
-                        <li><a href="/contact/">Contact</a></li>
-                        <li><a href="/credits/">Acknowledgements</a></li>
+                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown">About</a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="/pages/about/">About Us</a></li>
+                        <li><a href="/pages/instructions/">Instructions</a></li>
+                        <li><a href="/pages/research/">Research</a></li>
+                        <li><a href="/pages/contact/">Contact</a></li>
+                        <li><a href="/pages/credits/">Acknowledgements</a></li>
                         {% if user.is_superuser %}
                             <li class="divider"></li>
                             <li><a href="/api/0/tester/print/">For Developers</a></li>
@@ -30,12 +45,13 @@
                 {% if '/accounts/' in path %}
                     <!-- do nothing -->
                 {% else %}
-                    <form action="{% url django.contrib.auth.views.login %}" class="pull-right" method="POST">
+                    <form action="{% url "django.contrib.auth.views.login" %}" class="pull-right" method="POST">
                         {% csrf_token %}
-                        <input class="input-small" type="text" placeholder="Username">
-                        <input class="input-small" type="password" placeholder="Password">
+                        <input class="input-small" name="username" type="text" placeholder="Username">
+                        <input class="input-small" name="password" type="password" placeholder="Password">
                         <button class="btn" type="submit">Sign in</button>
                         <input type="hidden" name="next" value="{{path}}" />
+                        {% csrf_token %}
                     </form>
                 {% endif %}
             {% endif %}

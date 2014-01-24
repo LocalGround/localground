@@ -44,7 +44,12 @@ table.datagrid th div.grid-col-resize {
 	font-size: 14px;
 	height: 25px;
 }
-
+.column_alias {
+	font-weight: bold !important;
+	font-size: 14px !important;
+	padding: 5px 0px 5px 0px !important;
+	display: inline-block;
+}
 .holder input {
 	border: solid 1px rgba(255, 255, 255, 1);
 	-webkit-box-shadow: none !important;

@@ -1,0 +1,124 @@
+{% extends base_template %}
+{% block extra_styles %}
+	{{block.super}}
+	#tbl { {% if not embed %} width: 500px; {% endif %} }
+	#tbl td {
+        {% if not embed %}
+            padding: 6px !important;
+            margin: 6px !important;
+        {% else %}
+            padding: 3px !important;
+            margin: 3px !important;
+        {% endif %}
+    }
+	#user-share-div {
+		padding-top: 15px;
+		padding-bottom: 15px;
+		display: inline-block;
+		min-width: 360px;
+		max-width:600px;
+	}
+	{% if embed %}
+		body {
+			padding-top: 0px !important;
+			padding-right: 10px !important;
+			margin-top: 0px;
+		}
+	{% else %}
+		body {
+			padding-right: 40px !important;
+			padding-left: 40px !important;
+			margin-top: 20px;
+		}
+	{% endif %}
+{% endblock %}
+
+{% block style_links %}
+	{{ form.media.css }}
+{% endblock %}
+{% block script_links %}
+	{{ form.media.js }}
+{% endblock %}
+{% block extra_scripts %}
+	{{ block.super }}
+	var opts = {
+		noUsers: {{ no_users }},
+		prefix: '{{ prefix }}'
+	};
+	{% if message and not success %}
+		opts.formError = true;
+	{% endif %}
+	var o = new localground.permissions();
+{% endblock %}
+{% block pageload_scripts %}
+	o.init(opts);
+{% endblock %}
+{% block main_content %}
+	<div class="row">
+		{% include "includes/messages.html" %}
+	</div>
+    
+	<form id="the_form" method="post" action="." {% if embed %}class="embed"{% endif %}>
+		{% csrf_token %}
+		
+		<h3>{{ object_name|capfirst }} Access</h3>
+		{% if form.instance.pk %}
+			<input type="hidden" name="id" value="{{ form.instance.pk }}" />
+			<!-- id_name field to populate slugs -->
+			<input type="hidden" id="id_name" value="{{ form.instance.name }}" />
+		{% endif %}
+		{% include "includes/forms/generic_form_renderer.html" %}
+		
+		<h3>User Access</h3>
+		<table id="tbl">
+			<thead>
+				<tr>
+					<th>User</th>
+					<th>Role</th>
+					<th style="display:none;">Hidden Fields</th>
+					<th style="width: 10px;">&nbsp;</th>
+				</tr>	
+			</thead>
+			<tbody>
+			{% for form in formset.forms %}
+				<tr id="{{ form.prefix }}-row">
+					<td {% if form.user.errors %}class="error"{% endif %}>
+						<span>{{ form.instance.user.username }}</span>
+						{{ form.user }}
+					</td>
+					<td {% if form.authority.errors %}class="error"{% endif %}>
+						{{ form.authority }}
+						{{ form.authority.errors }}
+					</td>
+					<td style="display:none;">
+						{% if form.instance.pk %}
+							{{ form.id }}
+							{{ form.DELETE }}
+						{% endif %}
+					</td>
+					<td>&nbsp;</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+		<div id="user-share-div" class="well">
+			<button class="btn success add-row" style="float:right;">
+				Add Users
+			</button>
+			In addition to the project's privacy settings, you can also
+			share this project with specific Local Ground users.
+		</div>
+		{{ formset.management_form }}
+		{% if not embed %}
+			{% comment %} only show submit button if not in an iframe {% endcomment %}
+			<div class="clearfix">
+                <input type="submit" value="Save Changes" class="btn primary" />
+            </div>
+		{% else %}
+			<br><br><br><br><br><br><br><br>	
+		{% endif %}
+		</p>
+	</form>
+
+
+{% endblock %}

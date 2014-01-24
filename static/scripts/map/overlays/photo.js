@@ -3,9 +3,9 @@
  * is the main controller object that uses this class.
 **/
 localground.photo = function(opts){
+    this.managerID = null;
     $.extend(this, opts);
-	this.managerID = this.overlayType = self.overlayTypes.PHOTO;
-    this.iframeURL = '/scans/update-' + this.overlayType + '/embed/?id=' + this.id;
+	this.iframeURL = '/scans/update-' + this.overlay_type + '/embed/?id=' + this.id;
     //initialize icons in the constructor:
     this.image = this.path_marker_sm;
     this.iconSmall = new google.maps.MarkerImage(this.path_marker_sm,
@@ -21,7 +21,8 @@ localground.photo = function(opts){
 	this.imgSmall = this.path_small;
 	this.imgMediumSm = this.path_medium_sm;
 	this.imgMedium = this.path_medium;
-
+    this.bubbleWidth = 320;
+    this.bubbleHeight = 330;
 };
 
 localground.photo.prototype = new localground.point();
@@ -37,9 +38,9 @@ localground.photo.prototype.renderListingImage = function() {
         $('body').append($imgPreview );
     }
     var $img = $('<img />')
-					.addClass(this.getObjectType())
+					.addClass(this.managerID)
 					.attr('src', this.image)
-					.attr('id', 'img_' + this.getObjectType() + '_' + this.id)
+					.attr('id', 'img_' + this.managerID + '_' + this.id)
 					.css({'vertical-align': 'baseline'})
                     .hover(function() {
                         $imgPreview.attr('src', me.path_small).css({
@@ -79,42 +80,114 @@ localground.photo.prototype.setImageIcon = function(list) {
     }
 };
 
+localground.photo.prototype.showInfoBubbleEdit = function(opts){
+    var $contentContainer = this.renderInfoBubble({
+								height: '400px',
+								width: this.bubbleWidth + 30
+							});
+	var me = this;
+    var fields = this.getManager().getUpdateSchema();
+    var form = new ui.form({
+        schema: fields,
+        object: this,
+        exclude: ['point', 'project_id']
+    });
+	var $container = $('<div />');
+	$container.append(this.getPhotoPreview({
+						height: this.bubbleHeight - 160,
+						width: (this.bubbleWidth + 30)
+					}));
+	$container.append(
+			$('<div />')
+				.css({'text-align': 'center'})
+				.append($('<a href="#" />').html('rotate left').click(
+					function(){
+						$.ajax({
+							url: '/api/0/photos/' + me.id + '/rotate-left/.json',
+							type: 'PUT',
+							success: function(data) {
+								$.extend(me, data);
+								$('#preview_' + me.id).attr('src', data.path_medium);
+							},
+							notmodified: function(data) { alert('Not modified'); },
+							error: function(data) { alert('Error'); }
+						});
+						return false;
+					}
+				))
+				.append(' | ')
+				.append($('<a href="#" />').html('rotate right').click(
+					function(){
+						$.ajax({
+							url: '/api/0/photos/' + me.id + '/rotate-right/.json',
+							type: 'PUT',
+							success: function(data) {
+								$.extend(me, data);
+								$('#preview_' + me.id).attr('src', data.path_medium);
+							},
+							notmodified: function(data) { alert('Not modified'); },
+							error: function(data) { alert('Error'); }
+						});
+						return false;
+					}
+				))	
+		);
+	$container.append(form.render());
+	$contentContainer.append($container);
+};
+
+localground.photo.prototype.getPhotoPreview = function(opts) {
+	var me = this;
+	var height = this.bubbleHeight - 100;
+	var width = this.bubbleWidth;
+	if (opts) {
+		height = opts.height || height;
+		width = opts.width || width;
+	}
+	return  $('<div />')
+		.css({
+			'max-width': width,
+			'height': height,
+			'overflow': 'hidden',
+			'background-image': 'url("/static/images/fabric_bg.png")'
+		})
+		.append(
+			$('<img />').css({
+				'display': 'block',
+				'max-width': width,
+				'max-height': height + 40,
+				'min-height': height,
+				'margin-right': 'auto',
+				'margin-left': 'auto',
+				'margin-top': '0px'
+			})
+			.attr('src', this.path_medium)
+			.attr('id', 'preview_' + me.id)
+			.addClass('dragclass')
+		);
+};
+
 localground.photo.prototype.showInfoBubbleView = function(opts) {
-    if(self == null) {
-        alert('The variable self should be set to the map controller in the \
-                parent class');
-        return;
-    }
     //ensures that the marker renders on top:
     this.googleOverlay.setMap(null);
     this.googleOverlay.setMap(self.map);
 
     //build bubble content:
-    var htmlString = '<img class="thumb" style="max-width:400px;margin-right:30px;" src="' +
-        this.path_medium_sm + '" />';
-    if(this.caption && this.caption.length > 4)
-        htmlString += '<br /><p>' + this.caption + '</p>';
-    
-    var $contentContainer = $('<div></div>').css({
-            'width': '440px',
-            'height': '320px',
-            'margin': '5px 0px 5px 10px',
-            'overflow-y': 'auto',
-            'overflow-x': 'hidden'
-        }).append(htmlString);
-    var showHeader = true;
-    self.infoBubble.setHeaderText(showHeader ? this.name.truncate(5) : null);
-    self.infoBubble.setFooter(null);    
-    self.infoBubble.setContent($contentContainer.get(0)); 
-    self.infoBubble.open(self.map, this.googleOverlay);
+	var $container = $('<div />');
+	$container.append(this.getPhotoPreview());
+	$container.append(this.renderDetail());
+	
+	var $contentContainer = this.renderInfoBubble();
+	$contentContainer.append($container);
 };
 
 localground.photo.prototype.mouseoverF = function(){
+	if(self.hideTip){ return; }
 	var $innerObj = $('<div />')
 						.append($('<img />')
 							.attr('src', self.currentOverlay.path_marker_lg)
 							.css({float: 'left', 'margin-right': '5px'}))
-						.append($('<p />').html(self.currentOverlay.name)
+						.append($('<p />').html(self.currentOverlay.getName())
 									.css({'font-weight': 'bold', 'margin-bottom': '0px'})
 						).append($('<p />').html(self.currentOverlay.caption));
 	this.showTip({
@@ -125,3 +198,56 @@ localground.photo.prototype.mouseoverF = function(){
 	});
 };
 
+//localground.photo.prototype.makeDraggable = function(){
+//	alert('make draggable!')
+//	//Stop Opera selecting anything whilst dragging.
+//	if (window.opera){
+//		document.write("<input type='hidden' id='Q' value=' '>");
+//	}
+//	
+//	var n = 500;
+//	var dragok = false;
+//	var y,x,d,dy,dx;
+//	
+//	function move(e){
+//		
+//	if (!e) e = window.event;
+//	 if (dragok){
+//	  var lft=dx + e.clientX - x,top=dy + e.clientY - y;
+//	  d.style.marginLeft = lft + "px";
+//	  d.style.marginTop  = top + "px";
+//	  return false;
+//	 }
+//	}
+//	
+//	function down(e){
+//		if (!e) e = window.event;
+//		var temp = (typeof e.target != "undefined")?e.target:e.srcElement;
+//		if (temp.tagName != "HTML"|"BODY" && temp.className != "dragclass" && temp.className != "thumbsmall"){
+//		 temp = (typeof temp.parentNode != "undefined")?temp.parentNode:temp.parentElement;
+//		 }
+//		if (temp.className == "dragclass" || temp.className == "thumbsmall"){
+//			if (window.opera){
+//				document.getElementById("Q").focus();
+//			}
+//			dragok = true;
+//			temp.style.zIndex = n++;
+//			d = temp;
+//			dx = parseInt(temp.style.marginLeft+0);
+//			dy = parseInt(temp.style.marginTop+0);
+//			x = e.clientX;
+//			y = e.clientY;
+//			document.onmousemove = move;
+//			return false;
+//		}
+//	}
+//	
+//	function up(){
+//		dragok = false;
+//		document.onmousemove = null;
+//	}
+//	
+//	document.onmousedown = down;
+//	document.onmouseup = up;
+//
+//};

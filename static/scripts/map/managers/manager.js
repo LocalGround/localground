@@ -3,43 +3,19 @@
  * For convenience, this class depends on the global variable "self" which
  * is the main controller object that uses this class.
 **/
-localground.manager = function(){
-    this.id;
+localground.manager = function(id){
+    this.id = id;
 	this.name;
-	this.overlayType;
+	this.overlay_type;
 	this.data = [];
+	this.createSchema = null;
+	this.updateSchema = null;
 };
 
-localground.manager.generate = function(candidate) {
-	/* static function */
-	var manager = null;
-	switch(candidate.overlayType) {
-		case self.overlayTypes.PHOTO:
-			manager = new localground.photoManager();
-			break;
-		case self.overlayTypes.AUDIO:
-			manager = new localground.audioManager();
-			break;
-		case self.overlayTypes.MARKER:
-			manager = new localground.markerManager();
-			break;
-		case self.overlayTypes.SCAN:
-			manager = new localground.scanManager();
-			break;
-		case self.overlayTypes.RECORD:
-			candidate.color = self.colors[self.colorIndex++];
-			manager = new localground.tableManager();
-			break;
-	}
-	manager.initialize(candidate);
-	return manager;
-}
-
-
 localground.manager.prototype.initialize = function(opts) {
-	this.id = opts.id;
-	this.name = opts.name;
-	this.overlayType = opts.overlayType;
+    this.id = opts.id;
+	this.name = opts.name.replace('-', ' ');
+	this.overlay_type = opts.overlay_type;
 	this.addRecords(opts.data);
 	this.renderOverlays();
 };
@@ -59,14 +35,15 @@ localground.manager.prototype.addDataContainer = function() {
     //add a section within the id="panel_record" div for the data:
     if(this.getListingContainer().get(0) == null) {
         var me = this;
-		var $container = $('<div />').attr('id', 'panel_' + this.getObjectType())
+		//alert(this.getObjectType());
+		var $container = $('<div />').attr('id', 'panel_' + this.id)
 							.addClass('listing_container')
 							.css({
 								'border-left': 'solid 0px #ccc',
 								'margin-bottom': '5px',
 								'padding': '5px 0px 0px 0px'
 							});
-        var $heading = $('<div />').attr('id', 'header_' + this.getObjectType())
+        var $heading = $('<div />').attr('id', 'header_' + this.id)
 							.css({
 								'border-bottom': 'solid 1px #ccc',
 								'padding-bottom': '5px',
@@ -83,7 +60,10 @@ localground.manager.prototype.addDataContainer = function() {
 					.attr('type', 'checkbox')
 					.attr('id', 'toggle_' + this.id + '_all')
 					.change(function() {
-						me.toggleOverlays($(this).attr('checked'));  
+						me.toggleOverlays($(this).attr('checked'));
+						if ($(this).prev().hasClass('ui-icon-right-triangle-small')) {
+							me.showHide($(this).prev());
+						}
 					}));
         
         $heading.append($('<h4 />').html(this.name).css({'display': 'inline'}));
@@ -97,7 +77,7 @@ localground.manager.prototype.addDataContainer = function() {
                                     
         $('#panel_data').append($container)
 		$container.append($heading);
-        var $body = $('<div />').attr('id', this.getObjectType())
+        var $body = $('<div />').attr('id', this.id)
                         .addClass('overlayPanel');
         $body.append(
             $('<div />')
@@ -124,13 +104,31 @@ localground.manager.prototype.renderOverlays = function() {
     this.addDataContainer();
 	$.each(this.data, function() {
         //return if item has already been drawn:
-        if($('#' + this.getObjectType() + '_' + this.id).get(0) != null) {
+        if($('#' + this.id + '_' + this.id).get(0) != null) {
             return;
         }
         this.renderOverlay();
         this.renderListing();         
     });
     this.updateVisibility();
+};
+
+localground.manager.prototype.removeRecord = function(elem){
+	//unset marker overlay & splice:
+    if (elem.googleOverlay) {
+		elem.closeInfoBubble();
+		elem.googleOverlay.setMap(null);
+	}
+    elem.getListingElement().remove();
+    var index = -1;
+    $.each(this.data, function(idx){
+        if(this.id == elem.id) {
+            index = idx;
+            return
+        }
+    });
+    this.data.splice(index, 1);
+    this.updateVisibility();	
 };
 
 localground.manager.prototype.removeByProjectID = function(projectID) {
@@ -171,9 +169,6 @@ localground.manager.prototype.addNewOverlay = function(overlay) {
 };
 
 localground.manager.prototype.atLeastOneVisible = function() {
-	/*
-	  Not sure what the purpose of this function is...
-	*/
 	var oneVisible = false;
 	$.each(this.data, function() {
 		if(this.isVisible()) {
@@ -185,28 +180,27 @@ localground.manager.prototype.atLeastOneVisible = function() {
 };
 
 localground.manager.prototype.updateVisibility = function() {
-    //if(this.data.length > 0 && this.atLeastOneVisible())
 	var panel = this.getListingPanel();
-	if(this.data.length > 0)
+	if(this.data.length > 0 && this.atLeastOneVisible())
         panel.show();
     else if(panel)
         panel.hide();
 };
 
 localground.manager.prototype.getObjectType = function() {
-	return this.id;
+	return this.overlay_type;
 };
 
 localground.manager.prototype.getListingPanel = function() {
-	return $('#panel_' + this.getObjectType());
+	return $('#panel_' + this.id);
 };
 
 localground.manager.prototype.getListingHeader = function() {
-	return $('#header_' + this.getObjectType());
+	return $('#header_' + this.id);
 };
 
 localground.manager.prototype.getListingContainer = function() {
-	return $('#' + this.getObjectType());
+	return $('#' + this.id);
 };
 
 localground.manager.prototype.addRecords = function(data) {
@@ -283,4 +277,44 @@ localground.manager.prototype.getLoadingImageSmall = function() {
 localground.manager.prototype.doViewportUpdates = function() {
 	//implemented in child classes
 	return;
+};
+
+localground.manager.prototype.getCreateSchema = function() {
+	if (this.createSchema == null) {
+		var url = '/api/0/' + this.id + '/.json';
+		this.createSchema = this.getSchema(url, 'POST')
+	}
+	return this.createSchema;
+};
+
+localground.manager.prototype.getUpdateSchema = function() {
+	if (this.updateSchema == null) {
+		var url = '/api/0/' + this.id + '/' + this.data[0].id  + '/.json';
+		this.updateSchema = this.getSchema(url, 'PUT')
+	}
+	return this.updateSchema;
+};
+
+localground.manager.prototype.getSchema = function(url, method) {
+	var schema = [];
+	$.ajax({
+		url: url,
+		type: 'POST',
+		async: false,
+		data: {
+			_method: 'OPTIONS'
+		},
+		success: function(data) {
+			fields = data.actions[method];
+			$.each(fields, function(k, v){
+				if(!this.read_only){
+					v['field_name'] = k;
+					if (v['label'] == null)
+						v['label'] = k;
+					schema.push(v);
+				}
+			});
+		}
+	});
+	return schema;
 };

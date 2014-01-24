@@ -1,4 +1,6 @@
-localground.markerManager = function(){
+localground.markerManager = function(id){
+	this.id = id
+	this.title = "Markers";
 	this.data = [];
     this.palettes = [
         { name: 'Qualitative 1',
@@ -36,6 +38,7 @@ localground.markerManager.prototype = new localground.manager();
 localground.markerManager.prototype.addRecords = function(data) {
     var me = this;
     $.each(data, function(){
+		this.managerID = me.id;
         me.data.push(new localground.marker(this));        
     });
 };
@@ -44,7 +47,7 @@ localground.markerManager.prototype.removeRecord = function(marker) {
     //detach photos:
     if(marker.photoIDs) {
         $.each(marker.photoIDs, function() {
-            var photo = marker.getManagerById(self.overlayTypes.PHOTO).getDataElementByID(this);
+            var photo = marker.getManagerById('photos').getDataElementByID(this);
             photo.googleOverlay.setMap(self.map);
             photo.getListingElement().show();
         });
@@ -52,7 +55,7 @@ localground.markerManager.prototype.removeRecord = function(marker) {
     //detach audio files:
     if(marker.audioIDs) {
         $.each(marker.audioIDs, function() {
-            var audio = marker.getManagerById(self.overlayTypes.AUDIO).getDataElementByID(this);
+            var audio = marker.getManagerById('audio').getDataElementByID(this);
             audio.googleOverlay.setMap(self.map);
             audio.getListingElement().show();
         });
@@ -68,6 +71,8 @@ localground.markerManager.prototype.removeRecord = function(marker) {
             })
         });
     }
+	localground.manager.prototype.removeRecord.call(this, marker);
+	/*
     //unset marker overlay & splice:
     marker.closeInfoBubble();
     marker.googleOverlay.setMap(null);
@@ -81,6 +86,7 @@ localground.markerManager.prototype.removeRecord = function(marker) {
     });
     this.data.splice(index, 1);
     this.updateVisibility();
+    */
 };
 
 localground.markerManager.prototype.intersectMarkers = function(mEvent, point) {

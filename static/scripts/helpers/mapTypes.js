@@ -43,7 +43,7 @@ CloudMadeType.prototype.getTile = function(coord, zoom, ownerDocument) {
 CloudMadeType.prototype.name = this.name;
 
 
-//Stamen:
+//Cloudmade:
 function StamenType(opts) {
     this.styleID = 1
     this.maxZoom = opts.max;
@@ -88,6 +88,7 @@ MapBoxType.prototype.getTile = function(coord, zoom, ownerDocument) {
     }).get(0);
 };
 MapBoxType.prototype.name = this.name;
+
 
 
 

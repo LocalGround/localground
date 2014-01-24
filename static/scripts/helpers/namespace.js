@@ -17,6 +17,10 @@ String.prototype.namespace = function(separator) {
     }
 };
 
+String.prototype.capitalize = function() {
+    return this.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+};
+
 //define truncate:
 String.prototype.truncate = function(nwords) {
     var words = this.split(' '), suffix = '';
@@ -105,5 +109,73 @@ jQuery.fn.style = function(styleName, value, priority) {
         return style;
     }
 }
+
+function extend(destination, source) {
+	for (var k in source) {
+		if (source.hasOwnProperty(k)) {
+			destination[k] = source[k];
+		}
+	}
+	return destination; 
+}
+
+/*
+if  (document.getElementById){
+
+	(function(){
+	
+		//Stop Opera selecting anything whilst dragging.
+		if (window.opera){
+			document.write("<input type='hidden' id='Q' value=' '>");
+		}
+	
+		var n = 500;
+		var dragok = false;
+		var y,x,d,dy,dx;
+	
+		function move(e){
+			if (!e) e = window.event;
+			if (dragok){
+				var lft=dx + e.clientX - x,top=dy + e.clientY - y;
+				d.style.marginLeft = lft + "px";
+				d.style.marginTop  = top + "px";
+				return false;
+			}
+		}
+	
+		function down(e){
+			if (!e) e = window.event;
+			var temp = (typeof e.target != "undefined")?e.target:e.srcElement;
+			if (temp.tagName != "HTML"|"BODY" && temp.className != "dragclass"){
+				temp = (typeof temp.parentNode != "undefined")?temp.parentNode:temp.parentElement;
+			}
+			if (temp.className == "dragclass"){
+				if (window.opera){
+					document.getElementById("Q").focus();
+				}
+				dragok = true;
+				temp.style.zIndex = n++;
+				d = temp;
+				dx = parseInt(temp.style.marginLeft+0);
+				dy = parseInt(temp.style.marginTop+0);
+				x = e.clientX;
+				y = e.clientY;
+				document.onmousemove = move;
+				return false;
+			 }
+		}
+	
+		function up(){
+			dragok = false;
+			document.onmousemove = null;
+		}
+	
+		document.onmousedown = down;
+		document.onmouseup = up;
+	
+	})();
+}//End.
+*/
+
 
 

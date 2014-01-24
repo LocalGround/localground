@@ -52,6 +52,8 @@ Map.prototype.init = function(map, overlay){
     this.chart = new Chart();
 
 };
+
+/*
 Map.prototype.get_icon = function(index, show_outline) {
     var val = this.points[index].value;
     var suffix = '_no_outline';
@@ -69,18 +71,39 @@ Map.prototype.get_icon = function(index, show_outline) {
         return this.image_path + 'purple' + suffix + '.png';
     else //250-500
         return this.image_path + 'purple' + suffix + '.png';
+};*/
+
+Map.prototype.get_icon = function(index, show_outline) {
+    var val = this.points[index].value;
+    var suffix = '_no_outline';
+    if(show_outline != null)
+        suffix = '';
+    if(val <= 50)
+        return this.image_path + 'green' + suffix + '.png';
+    else if(val <= 100)
+        return this.image_path + 'yellow' + suffix + '.png';
+    else if(val <= 150)
+        return this.image_path + 'orange' + suffix + '.png';
+    else if(val <= 200)
+        return this.image_path + 'red' + suffix + '.png';
+    else if(val <= 300)
+        return this.image_path + 'purple' + suffix + '.png';
+    else 
+        return this.image_path + 'maroon' + suffix + '.png';
 };
+
 
 Map.prototype.render_data = function(val, idx) {
     var self = this;
     this.chart_id = 'chart_' + idx;
-    $.getJSON('/api/0/tables/table/84/',
+    $.getJSON('/api/0/forms/84/data/.json',
         {
-            col_4: val
+            'query': 'WHERE col_4 = \'' + val + '\'',
+	    'page_size': 8000
         },
         function(result){
             //points = result.records;
-           self.load_points(val, result.records);
+           self.load_points(val, result.results);
         },
     'json');
 };
@@ -95,12 +118,13 @@ Map.prototype.load_points = function(dataset_name, records) {
     var format = d3.time.format("%m/%d/%Y, %I:%M:%S %p"); //07/17/2012, 03:00:02 PM
     $.each(records, function(index) {
         point = {
-            date: format.parse(this.fields[0]),
-            value: parseInt(this.fields[1]*1000)
+            date: format.parse(this.recs[0]),
+            value: parseInt(this.recs[2]*1000)
         };
-        if(this.lat != null) {
-            point.lat = this.lat;
-            point.lng = this.lng;
+        //alert(JSON.stringify(this.point));
+        if(this.point != null) {
+            point.lat = this.point.lat;
+            point.lng = this.point.lng;
         }
         self.all_points.push(point);
         self.all_values.push(point.value);  
@@ -108,8 +132,8 @@ Map.prototype.load_points = function(dataset_name, records) {
         if(index % self.buckets == 0 || index == records.length-1 || point.value > 50){
             self.points[counter] = point;
             self.values[counter] = point.value;
-            if(this.lat != null) {
-                var latLng = new google.maps.LatLng(this.lat, this.lng);
+            if(this.point != null) {
+                var latLng = new google.maps.LatLng(this.point.lat, this.point.lng);
                 self.bounds.extend(latLng);
                 var marker = new google.maps.Marker({
                     position: latLng,
@@ -123,8 +147,10 @@ Map.prototype.load_points = function(dataset_name, records) {
             ++counter;
         }
     });
-    this.map.fitBounds(this.bounds);
     
+    if(this.bounds != null && !this.bounds.isEmpty()) {
+        this.map.fitBounds(this.bounds);
+    }
     this.stats = new Stats();
     this.stats.init(dataset_name, this.all_values, this.all_dates);
     

@@ -3,13 +3,13 @@ var show_markers = false;
 localground.viewer = function(){
 	self = this;
     this.projects = [];
-    this.overlayTypes = {
+    this.overlay_types = {
 		PHOTO: 'photo',
 		AUDIO: 'audio',
 		VIDEO: 'video',
 		MARKER: 'marker',
 		RECORD: 'record',
-		SCAN: 'scan'
+		SCAN: 'map-image'
 	};
     this.keycodes = {
         UP: 38,
@@ -38,19 +38,19 @@ localground.viewer = function(){
     this.accessKey = null;
     this.managers = {};
 	this.slideshow = null;
+	this.dataCount = 0;
 	
 };
 localground.viewer.prototype = new localground.basemap();           // Here's where the inheritance occurs 
 
 localground.viewer.prototype.initialize=function(opts){
-    self = this;
+	self = this;
 	$.extend(this, opts);
     
     localground.basemap.prototype.initialize.call(this, opts);
     
     this.map.mapTypeControlOptions.position = google.maps.ControlPosition.TOP_LEFT;
-	this.mapOptions.streetViewControl = true;
-	this.map.setOptions(this.mapOptions);
+	this.map.streetViewControl = true;
     
     $('input:checkbox')
         .attr('checked', false)
@@ -64,14 +64,9 @@ localground.viewer.prototype.initialize=function(opts){
 		renderFlashPlayer: true
 	});
    
-    /*$('#my-modal').modal({
-        keyboard: true,
-        backdrop: true
-    });*/
-	
     $('.unhide').click(function() {
         var object_type = $(this).parent().attr('id').split('_')[1];
-        if(object_type == self.overlayTypes.RECORD) {
+        if(object_type == self.overlay_types.RECORD) {
             $('#panel_' + object_type).children().each(function() {
                 $(this).children().each(function() {
                     $(this).show();    
@@ -117,7 +112,7 @@ localground.viewer.prototype.initialize=function(opts){
     });
 	
 	this.tooltip = new InfoBubble({
-		borderRadius: 0,
+		borderRadius: 5,
         maxHeight: 200,
         padding: 5,
 		disableAnimation: true,
@@ -125,9 +120,13 @@ localground.viewer.prototype.initialize=function(opts){
 		hideCloseButton: true,
 		arrowSize: 10
     });
+	
+	/*$('.close').click(function(){
+		$(this).parent().parent().hide();
+    });*/
     
     this.infoBubble = new InfoBubble({
-        borderRadius: 0,
+        borderRadius: 5,
         maxHeight: 385,
         padding: 0,
 		disableAnimation: true,
@@ -143,6 +142,10 @@ localground.viewer.prototype.initialize=function(opts){
 	
 	// turn on default project, if requested
 	this.initDefaultProject();
+	
+	this.initFiltering();
+	
+	this.setStreetViewCloseButton();
 };
 
 localground.viewer.prototype.setPosition = function(minimize) {
@@ -204,58 +207,128 @@ localground.viewer.prototype.initProjectsMenu = function() {
     }
 };
 
+localground.viewer.prototype.getManager = function(data_list) {
+	switch (data_list.id) {
+		case 'photos':
+			return new localground.photoManager(data_list.id);
+		case 'audio':
+			return new localground.audioManager(data_list.id);
+		case 'markers':
+			return new localground.markerManager(data_list.id);
+		case 'map-images':
+			return new localground.scanManager(data_list.id);
+		default:
+			return new localground.tableManager({
+				id: data_list.id,
+				color: self.colors[++self.colorIndex],
+				headers: data_list.headers
+			});		
+	}
+};
+
+
+localground.viewer.prototype.initFiltering = function() {
+	//input1.bind('keypress', function(event) {
+	$('#txt_filter').bind('keyup', function(event){
+		var term = $('#txt_filter').val().toLowerCase();
+		
+		self.dataCount = 0;
+		$.each(self.managers, function(k, v) {
+			$.each(v.data, function(){
+				var show = (
+					(this.name && this.name.toLowerCase().indexOf(term) != -1) ||
+					(this.tags && this.tags.toLowerCase().indexOf(term) != -1) ||
+					(this.attribution && this.attribution.toLowerCase().indexOf(term) != -1)
+				);
+				//for tabular data, search each field too:
+				if (this.overlay_type == 'record') {
+					$.each(this.recs, function(){
+						show = show || this.toString().toLowerCase().indexOf(term) != -1;	
+					});
+				}
+				if(show || term.length == 0) {
+					++self.dataCount;
+					this.showOverlay();
+				}
+				else {
+					this.hideOverlay();
+				}
+			});
+		});
+		$('#filter_counter').html(self.dataCount);
+	});
+};
+
 localground.viewer.prototype.toggleProjectData = function(groupID, groupType, 
 														  is_checked, turn_on_everything) {
 	if(is_checked) {
 		$('#' + groupID).attr('checked', true);
-		self.lastProjectSelection = groupID;
-		var params = {
-			include_processed_maps: true,
-			include_markers: true,
-			include_audio: true,
-			include_photos: true,
-			include_tables: true
-		};
-		var url = '/api/0/' + groupType + '/' + groupID + '/';
-		if(self.accessKey != null)
-			url += self.accessKey + '/';
-		$.getJSON(url, params,
-			function(result) {
-				if(!result.success) {
-					alert(result.message);
-					return;
-				}
-				$('#mode_toggle').show();
-				$.each(result.data, function(idx) {
-					if(self.managers[this.id] == null) {
-						self.managers[this.id] = localground.manager.generate(this);
-						//turn everything on, if requested:
-						if(turn_on_everything && (self.initProjectID != null || self.initViewID != null)) {
-							if(!$('#toggle_' + this.id + '_all').attr('checked')){
-								$('#toggle_' + this.id + '_all')
-									.attr('checked', true).trigger('change');	
-							}	
-						}
-					}
-					else {
-						self.managers[this.id].addRecords(this.data);
-						self.managers[this.id].renderOverlays();
-					}
-				});
-				self.resetBounds();
-			},
-		'json');
-	} //end if checked
+		this.getProjectData(groupID, groupType, is_checked, turn_on_everything);	
+	}
 	else {
+		//remove data from project:
 		for(var key in self.managers) {
-			self.managers[key].removeByProjectID(groupID); 
+			self.managers[key].removeByProjectID(groupID);
 		}
 		self.resetBounds();
 		if($('.cb_project:checked').length == 0) {
 			$('#mode_toggle').hide();
 		}
+		//re-apply filter to data as new data is added
+		$('#txt_filter').trigger('keyup');
 	}
 	return;
+};
+
+localground.viewer.prototype.getProjectData = function(groupID, groupType, 
+										is_checked, turn_on_everything, access_key) {
+	self.lastProjectSelection = groupID;
+	var params = {
+		format: 'json',
+		include_processed_maps: true,
+		include_markers: true,
+		include_audio: true,
+		include_photos: true,
+		include_tables: true,
+		access_key: access_key
+	};
+	var url = '/api/0/' + groupType + '/' + groupID + '/';
+	if(self.accessKey != null)
+		url += self.accessKey + '/';
+	$.getJSON(url, params,
+		function(result) {
+			if(result.detail) {
+				alert(result.detail);
+				return;
+			}
+			$.each(result.children, function(k, v) {
+				if(self.managers[v.id]) {
+					self.managers[v.id].addRecords(v.data);
+					self.managers[v.id].renderOverlays();
+				}
+				else {
+					//initialize new manager object:
+					self.managers[v.id] = self.getManager(v);
+					self.managers[v.id].initialize(v);
+					//turn everything on, if requested (from URL param):
+					if(turn_on_everything) {
+						if(!$('#toggle_' + v.id + '_all').attr('checked')){
+							$('#toggle_' + v.id + '_all')
+								.attr('checked', true).trigger('change');	
+						}	
+					}
+				}
+			});
+			if (self.mode == 'edit') {
+				self.makeEditable();
+			}
+			//re-apply filter to data as new data is added
+			$('#txt_filter').trigger('keyup');
+			$('#mode_toggle, #filter_section').show();
+			$('#editor_message').hide();
+			self.resetBounds();
+		},
+	'json');
 };
 
 localground.viewer.prototype.resetBounds = function() {
@@ -286,12 +359,17 @@ localground.viewer.prototype.loadPrintForm = function(opts) {
         return false;
     }
     $('#do_print').show();
+	$('#my-modal').find('.close').unbind('click');
+	$('#my-modal').find('.close').click(function(){
+		//alert('triggering');
+		$('#close_print_modal').trigger('click');
+	});
     var layer_overlays = [], scan_overlays = [];
     $.each($('#layerList').find('input'), function() {
         if($(this).attr('checked'))
             layer_overlays.push($(this).val());           
     });
-    $.each($('.cb_' + self.overlayTypes.SCAN), function() {
+    $.each($('.cb_' + self.overlay_types.SCAN), function() {
         if($(this).attr('checked'))
             scan_overlays.push($(this).val());           
     });
@@ -299,7 +377,7 @@ localground.viewer.prototype.loadPrintForm = function(opts) {
         center_lat: this.map.getCenter().lat(),
         center_lng: this.map.getCenter().lng(),
         zoom: this.map.getZoom(),
-        basemap_id: basemap_config.id
+        map_provider: basemap_config.id
     };
     if(layer_overlays.length > 0)
         params.layer_ids = layer_overlays.join(',');
@@ -308,7 +386,7 @@ localground.viewer.prototype.loadPrintForm = function(opts) {
     if(self.lastProjectSelection != null)
         params.project_id = self.lastProjectSelection;
 
-    var url = 'http://' + document.location.hostname + '/print/generate/'
+    var url = 'http://' + document.location.hostname + '/maps/print/'
     if(opts.iframe) {
         url += 'embed/?' + $.param(params);
     }
@@ -429,3 +507,46 @@ localground.viewer.prototype.initArrowNav = function() {
         return false;
     });
 };
+
+localground.viewer.prototype.makeEditable = function() {
+    return;
+};
+
+localground.viewer.prototype.makeViewable = function() {
+    return;
+};
+
+localground.viewer.prototype.setStreetViewCloseButton = function() {
+	/*
+	A hack to make a more visible "exit streetview" button.
+	*/
+	window.addEventListener('DOMContentLoaded', function( e ){
+	
+		// Get close button and insert it into streetView
+		// #button can be anyt dom element
+		var closeButton = document.querySelector('#streetview_close_button'),
+			controlPosition = google.maps.ControlPosition.TOP_LEFT;
+		// Assumes map has been initiated 
+		var streetView = self.map.getStreetView();
+	
+		// Hide useless and tiny default close button
+		streetView.setOptions({ enableCloseButton: false });
+	
+		// Add to street view
+		streetView.controls[ controlPosition ].push( closeButton );
+	
+		// Listen for click event on custom button
+		// Can also be $(document).on('click') if using jQuery
+		google.maps.event.addDomListener(closeButton, 'click', function(){
+			streetView.setVisible(false);
+		});
+	
+	});
+	
+	google.maps.event.addListener(this.map, 'idle', function() {
+		$('#streetview_close_button').css({ display: 'block' });
+	});
+};
+
+
+

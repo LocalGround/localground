@@ -1,7 +1,7 @@
 localground.scan = function(opts){
     //initialize object properties to null (for readability):
     this.counter = 0; //tracks which processed image the map is currently using
-	this.managerID = this.overlayType = self.overlayTypes.SCAN;
+	this.managerID = null;
     this.id = null;
     this.overlay_path = null;
     this.north = null;
@@ -62,22 +62,26 @@ localground.scan.prototype.renderListingImage = function() {
 localground.scan.prototype.zoomToOverlay = function() {
     if(this.googleOverlay != null) {
         self.map.setCenter(this.googleOverlay.getBounds().getCenter());
-        self.map.setZoom(this.zoomLevel);
+        self.map.setZoom(this.zoom);
     }
 };
 
 localground.scan.prototype.inView = function() {
-    if(this.googleOverlay &&
+    return true;
+	/*if(this.googleOverlay &&
        self.map.getBounds().contains(this.googleOverlay.getBounds().getCenter())) {
         return true;    
     }
-    return false;   
+    return false;*/  
 };
 
 
 localground.scan.prototype.toggleOverlay = function(isOn) {
 	//call default renderer:
 	localground.overlay.prototype.toggleOverlay.call(this, isOn);
+	
+	///disabling the image cycler for the upcoming workshop
+	return;
 	
 	//extra processing for edit mode:
 	var $elem = this.getListingCheckbox();

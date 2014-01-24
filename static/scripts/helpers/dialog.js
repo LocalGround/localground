@@ -7,6 +7,7 @@ ui.dialog = function(opts){
     this.iframeURL = null;
     this.innerContent = null;
     this.showTitle = false;
+    this.showFooter = true;
     this.title = null;
     this.submitButtonText = 'Save';
     this.closeExtras = function() {};
@@ -63,24 +64,36 @@ ui.dialog.prototype.getModal = function() {
         if(this.showTitle) {
             $modal.append(
                 $('<div class="modal-header"></div>').append(
-                    $('<a href="#" class="close">&times;</a>') 
+                    $('<a href="#" class="close">&times;</a>')
+                        .click(function() {
+                            me.hide();
+                            me.closeExtras();
+                        })
                 ).append(
                     $('<h3></h3>').html(this.title) 
                 ));    
         }
         else {
             $modal.append(
-                $('<a href="#" class="close">&times;</a>').css({'margin-right': 10}));    
+                $('<a href="#" class="close">&times;</a>')
+                    .css({'margin-right': 10})
+                    .click(function() {
+                        me.hide(); 
+                        me.closeExtras();
+                    }));    
         }
         $modal.append($('<div class="modal-body" style="min-height: ' + this.minHeight + '"></div>'));
-        $modal.append(
-            $('<div class="modal-footer"> \
-                <button class="btn hide">Close</button> \
-                <button class="btn primary">' + me.submitButtonText + '</button> \
-            </div>'));
+        if(this.showFooter) {
+            $modal.append(
+                $('<div class="modal-footer"> \
+                    <button class="btn hide">Close</button> \
+                    <button class="btn primary">' + me.submitButtonText + '</button> \
+                </div>'));
+        }
         $('body').append($modal);
         $modal.find('.hide').click(function(){
-            me.hide();     
+            me.hide();    
+            me.closeExtras(); 
         });
         
         //add an update / save button:
@@ -145,10 +158,11 @@ ui.dialog.prototype.getIframe = function() {
                 'visibility': 'visible'
             });
             var is_success = (
-                $('#the_frame').contents().find('.alert-message.success').get(0) != null
+                $('#the_frame').contents().find('#success-message-text').html().length > 20
             );
-            if(is_success)
+            if(is_success) {
                 me.$modal.find('.hide').html('Done');
+            }
             $('#loading-image').remove();
         });  
 };

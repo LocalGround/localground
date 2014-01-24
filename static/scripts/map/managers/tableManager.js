@@ -1,19 +1,24 @@
-localground.tableManager = function(){
+localground.tableManager = function(opts){
 	this.color = null;
+	this.id = null;
+	this.headers = [];
 	this.data = [];
+	//alert(opts.headers);
+	$.extend(this, opts);
+	//alert(this.header);
 };
 
 localground.tableManager.prototype = new localground.manager();
 
 localground.tableManager.prototype.initialize = function(opts) {
-    this.color = opts.color;
-	localground.manager.prototype.initialize.call(this, opts);
+    localground.manager.prototype.initialize.call(this, opts);
 };
 
 localground.tableManager.prototype.addRecords = function(data) {
     var me = this;
 	$.each(data, function(){
-        me.data.push(new localground.record(this, me.color, me.id));        
+		this.managerID = me.id;
+        me.data.push(new localground.record(this, me.color));        
     });
 };
 

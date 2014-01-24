@@ -1,0 +1,14 @@
+{% extends "profile/data_list.html" %}
+{% block page_title %}
+	<img class="header-icon" src="/static/images/video_large.png" />
+	Manage <span style="color:#ccc">Videos</span>
+{% endblock %}
+
+{% block script_links %}
+	{{ block.super }}
+    <script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
+{% endblock %}
+
+{% block extra_scripts %}
+    var o = new localground.profile();
+{% endblock %}

@@ -106,16 +106,17 @@
 /******************************************************************************/
 /*http://flash-mp3-player.net/players/normal/documentation/*/
 .playercontroller-small {
-	color: #000;
+	/*color: #000;
 	height: 60px;
-	width: 50px;
+	width: 50px;*/
+	display: inline-block;
 	margin: 0 0 1em 0;
 }
 .playercontroller-small .button {
 	width: 50px;
 	height: 50px;
 	background-repeat: no-repeat;
-	float: left;
+	/*float: left;*/
     cursor: pointer;
 }
 .playercontroller-small .button a {
