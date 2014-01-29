@@ -1,4 +1,5 @@
-import os, urllib, StringIO, Image, ImageDraw
+import os, urllib, StringIO
+from PIL import Image, ImageDraw
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch

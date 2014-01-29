@@ -19,10 +19,10 @@ def show_map_viewer(request, username, slug, access_key=None):
     
     #set defaults:
     lat, lng, zoom = 21.698265, 14.765625, 3
-    if u.is_authenticated() and u.get_profile().default_location is not None:
-            lat = u.get_profile().default_location.y
-            lng = u.get_profile().default_location.x
-            zoom = 14
+    #if u.is_authenticated() and u.get_profile().default_location is not None:
+    #        lat = u.get_profile().default_location.y
+    #        lng = u.get_profile().default_location.x
+    #        zoom = 14
     context.update({
         'lat': lat,
         'lng': lng,
@@ -50,10 +50,10 @@ def show_map_editor(request):
     if u.is_authenticated():
         projects = Project.objects.get_objects(u)
         projects = [p.to_dict() for p in projects]
-        if u.get_profile().default_location is not None:
-            lat = u.get_profile().default_location.y
-            lng = u.get_profile().default_location.x
-            zoom = 14
+#        if u.get_profile().default_location is not None:
+#            lat = u.get_profile().default_location.y
+#            lng = u.get_profile().default_location.x
+#            zoom = 14
     context.update({
         'lat': lat,
         'lng': lng,

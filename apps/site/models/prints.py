@@ -4,7 +4,7 @@ from django.conf import settings
 from localground.apps.site.models.abstract.media import BaseMedia
 from localground.apps.site.models.abstract.mixins import ProjectMixin, BaseGenericRelationMixin
 from localground.apps.site.models.abstract.geometry import BaseExtents
-import Image
+from PIL import Image
 from tagging_autocomplete.models import TagAutocompleteField
 from django.contrib.gis.geos import Polygon
 

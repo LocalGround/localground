@@ -1,8 +1,7 @@
 #!/usr/bin/python
 import os, sys
-from django.core.management import execute_manager
 
-cwd = os.getcwd()
+cwd = os.path.dirname(os.path.realpath(__file__))
 apps = os.path.dirname(cwd)
 workspace = os.path.dirname(apps)
 
@@ -13,6 +12,7 @@ print 'Apps directory: %s' % apps
 print 'Current workspace: %s' % workspace
 print '-'*70
 
+
 sys.path.append(workspace) 
 
 try:
@@ -22,4 +22,7 @@ except ImportError:
     sys.exit(1)
 
 if __name__ == "__main__":
-    execute_manager(localground.apps.settings)
+    #execute_manager(localground.apps.settings)
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "localground.apps.settings")
+    from django.core.management import execute_from_command_line
+    execute_from_command_line(sys.argv)

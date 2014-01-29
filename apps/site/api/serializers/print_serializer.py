@@ -11,8 +11,8 @@ class PrintSerializerMixin(serializers.ModelSerializer):
 	map_provider_url = serializers.HyperlinkedRelatedField(view_name='wmsoverlay-detail', source='map_provider', read_only=True)
 	pdf = serializers.SerializerMethodField('get_pdf')
 	thumb = serializers.SerializerMethodField('get_thumb')
-	instructions = serializers.WritableField(label='instructions', source='description', blank=True, widget=widgets.Textarea)
-	map_title = serializers.WritableField(label='map_title', source='name', blank=True)
+	instructions = serializers.WritableField(label='instructions', source='description', required=True, widget=widgets.Textarea)
+	map_title = serializers.WritableField(label='map_title', source='name', required=True)
 	tags = fields.TagField(label='tags', required=False, widget=TagAutocomplete, help_text='Tag your object here')
 	edit_url = serializers.SerializerMethodField('get_configuration_url')
 	
