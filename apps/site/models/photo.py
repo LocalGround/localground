@@ -67,7 +67,8 @@ class Photo(BasePoint, BaseUploadedMedia):
             '%s%s' % (path, self.file_name_marker_sm)
         ]
         for f in file_paths:
-            if os.path.exists(f): os.remove(f)
+            if os.path.exists(f) and f.find(settings.USER_MEDIA_DIR) > 0:
+                os.remove(f)
         
         #execute default behavior
         super(Photo, self).delete(*args, **kwargs)
@@ -114,12 +115,11 @@ class Photo(BasePoint, BaseUploadedMedia):
         self.save()
     
         
-    def save_upload(self, file, user, project):
+    def save_upload(self, file, user, project, do_save=True):
         from PIL import Image, ImageOps
         
         #1) first, set user and project (required for generating file path):
         self.owner = user
-        self.attribution = user.username
         self.last_updated_by = user
         self.project = project
         
@@ -147,7 +147,11 @@ class Photo(BasePoint, BaseUploadedMedia):
          
         #4) save object to database:  
         self.file_name_orig = file.name
-        self.name = file.name
+        if self.name is None:
+            self.name = file.name
+        if self.attribution is None:
+            self.attribution = user.username
+        
         self.file_name_new = file_name_new
         self.file_name_large = photo_paths[1]
         self.file_name_medium = photo_paths[2]
@@ -159,10 +163,12 @@ class Photo(BasePoint, BaseUploadedMedia):
         self.host = settings.SERVER_HOST
         self.virtual_path = self.generate_relative_path()
         #from EXIF data:
-        self.point = d.get('point', None)
+        if self.point is None:
+            self.point = d.get('point', None)
         self.datetime_taken = d.get('datetime_taken', None)
         self.device = d.get('model', None)
-        self.save()
+        if do_save:
+            self.save()
         
     def read_exif_data(self, im):
         from PIL.ExifTags import TAGS

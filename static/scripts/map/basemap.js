@@ -119,6 +119,10 @@ localground.basemap.prototype.initTiles = function() {
                     mapTypeIDs.push(this.name);
                     self.map.mapTypes.set(this.name, new StamenType({ styleID: this.providerID, name: this.name, max: this.max }));
                     break;
+                case 'mapbox':
+                    mapTypeIDs.push(this.name);
+                    self.map.mapTypes.set(this.name, new MapBoxType({ styleID: this.providerID, name: this.name, max: this.max }));
+                    break;
                 case 'google':
                     //don't make google options available to non-admins on the print page:
                     //if(self.isAdmin || !self.isPrint)

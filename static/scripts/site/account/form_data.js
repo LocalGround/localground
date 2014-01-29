@@ -185,11 +185,13 @@ localground.tables.prototype.doDownload = function(format) {
 /*
 localground.tables.prototype.initEditor = function() {
     $('.edit').click(function() {
-        self.edit($(this).attr('target'), true);
+        //self.edit($(this).attr('target'), true);
+        self.edit($(this).attr('target'), false, false);
         return false;
     });   
     $('.edit').bind("contextmenu", function(event) {
-        self.edit($(this).attr('target'), false);
+        //self.edit($(this).attr('target'), false);
+        self.edit($(this).attr('target'), false, true);
         return false;
     });
     
@@ -265,10 +267,14 @@ localground.tables.prototype.resizeTable = function() {
 };
 
 
-localground.tables.prototype.edit = function(markerID, embed) {
+localground.tables.prototype.edit = function(markerID, embed, newWindow) {
     if(!embed) {
         var url = '/scans/update-record/map/?id=' + markerID + '&form_id=' + this.formID;
-        window.open(url, '_blank');
+        //window.open(url, '_blank');
+        if(newWindow)
+            window.open(url, '_blank');
+        else
+            window.document.location = url;
     }
     else {
         var url = '/scans/update-record/map/embed/?id=' + markerID + '&form_id=' + this.formID;    

@@ -1,5 +1,6 @@
 var username = null;
 var password = null;
+var url = null;
 
 function beforeSend(xhr){
     xhr.setRequestHeader("Authorization",
@@ -15,23 +16,40 @@ function setCredentials() {
                 "Basic " + btoa(username + ":" + password));
         }
     });
+    setURLs();
+}
+function setURLs() {
+    url = "http://" + document.domain + "/api/0/photos/";
+    $('.url').val(url);
+    if (username && username.length > 0) {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            async: false,
+            crossDomain: true,
+            success: function(result) {
+                if(result.results.length > 0) {
+                    $('.detail').val(url + result.results[0].id + "/");
+                    generateForm('POST', $('#url-post').val(), $('#post-code'));
+                    generateUpdateForm('PUT', $('#url-put').val(), $('#put-code'));
+                    generateUpdateForm('PUT', $('#url-patch').val(), $('#patch-code'));
+                }
+            }
+        });    
+    }
 }
 
 function init(){
     setCredentials();
     $('#options-code').html(getOptions.toString());
     $('#list-code').html(getList.toString());
-    if (username && username.length > 0) {   
-        generateForm('POST', $('#url-post').val(), $('#post-code'));
-        generateUpdateForm('PUT', $('#url-put').val(), $('#put-code'));
-        generateUpdateForm('PUT', $('#url-patch').val(), $('#patch-code'));
-    }
     $('#delete-code').html(deleteData.toString());
-    
     prettyPrint();
 }
 
-function initTabs() {
+function initWidgets() {
+    //Bootstrap Tabs
     $('#put-tabs a, #patch-tabs a').click(function (e) {
         e.preventDefault()
         $(this).tab('show')
@@ -91,11 +109,22 @@ function getList(url) {
     
 function updateData(action, url, $form, $results) {
     url = url + "/.json";
+    
+    //serialize text and file objects:
+    var data = new FormData();
+    form_elements = $form.serializeObject();
+    for(k in form_elements) {
+        data.append(k, form_elements[k]);   
+    }
+    data.append('file_name_orig', $('#file_name_orig')[0].files[0] );
+    
     $.ajax({
         url: url,
         type: action,
-        data: $form.serializeObject(),
+        data: data,
         dataType: 'json',
+        processData: false,
+        contentType: false,
         crossDomain: true,
         error: function(x, e) {
             var msg = "HTTP " + x.status + " error: " + x.responseText;
@@ -141,7 +170,9 @@ function deleteData(url){
         success: function(result) {
             var txt = JSON.stringify(result, null, 2);
             $results.html(txt);
-            prettyPrint(); 
+            prettyPrint();
+            //go and get a new resource to mess with...
+            setURLs();
         }
     });  
 }

@@ -58,6 +58,23 @@ class ProjectsField(serializers.WritableField):
 			raise serializers.ValidationError("Project IDs \"%s\" do not exist" % data)
 		except:
 			raise serializers.ValidationError("project_ids=%s is invalid" % data)
+		
+class FileField(serializers.CharField):
+	type_label = 'file'
+	label = 'file_name_orig'
+	
+	def field_from_native(self, data, files, field_name, into):
+		try:
+			if files.get('file_name_orig'):
+				value = files.get('file_name_orig').name
+				into[self.label] = value
+		except:
+			value = None
+			into[self.label] = value	
+		
+		
+	def to_native(self, obj):
+		return obj
 	
 class PointField(serializers.WritableField):
 	type_label = 'point'
@@ -74,7 +91,9 @@ class PointField(serializers.WritableField):
 			value = self.to_point(native)
 			into[self.label] =  self.to_point(native)
 		except:
-			raise serializers.ValidationError('Invalid "lat" or "lng" parameter')
+			value = None
+			into[self.label] =  None
+			#raise serializers.ValidationError('Invalid "lat" or "lng" parameter')
 		
 	def to_point(self, data):
 		lng_lat = data.split(';')
