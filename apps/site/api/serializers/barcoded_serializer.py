@@ -2,6 +2,7 @@ from localground.apps.site.api.serializers.base_serializer import BaseSerializer
 from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.site.api import fields
+from localground.apps.site.api.fields import FileField
 
 class AttachmentSerializer(BaseSerializer):
 	overlay_type = serializers.SerializerMethodField('get_overlay_type')
@@ -14,6 +15,7 @@ class AttachmentSerializer(BaseSerializer):
 
 
 class ScanSerializer(BaseSerializer):
+	file_name_orig = FileField(required=False, source='file_name_orig')
 	overlay_type = serializers.SerializerMethodField('get_overlay_type')
 	project_id = fields.ProjectField(source='project', required=False)
 	north = serializers.SerializerMethodField('get_north')
@@ -28,7 +30,8 @@ class ScanSerializer(BaseSerializer):
 		model = models.Scan
 		fields = BaseSerializer.Meta.fields + (
 			'overlay_type', 'source_print', 'project_id',
-			'north', 'south', 'east', 'west', 'zoom', 'overlay_path'
+			'north', 'south', 'east', 'west', 'zoom', 'overlay_path',
+			'file_name_orig'
 		)
 	
 	def get_north(self, obj):

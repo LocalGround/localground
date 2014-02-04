@@ -4,7 +4,7 @@ from localground.apps.site import models
 from localground.apps.site.api.fields import FileField
 
 class PhotoSerializer(MediaPointSerializer):
-	file_name_orig = FileField(required=False, source='file_name_orig') #source='file_name_orig', 
+	file_name_orig = FileField(required=False, source='file_name_orig')
 	path_large = serializers.SerializerMethodField('get_path_large')
 	path_medium = serializers.SerializerMethodField('get_path_medium')
 	path_medium_sm = serializers.SerializerMethodField('get_path_medium_sm')
@@ -19,8 +19,7 @@ class PhotoSerializer(MediaPointSerializer):
 					'path_large', 'path_medium', 'path_medium_sm',
 					'path_small', 'path_marker_lg', 'path_marker_sm',
 					'file_name_orig'
-				)
-		#'file_name_orig', 
+				) 
 		depth = 1
 	
 	def get_path_large(self, obj):

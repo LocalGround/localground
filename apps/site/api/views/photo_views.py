@@ -26,14 +26,6 @@ class PhotoList(generics.ListCreateAPIView, AuditCreate):
 		f = self.request.FILES['file_name_orig']
 		project = models.Project.objects.get(id=self.request.DATA.get('project_id'))
 		obj.save_upload(f, self.request.user, project, do_save=False)
-		
-	
-	'''
-	def post_save(self, obj, created=False):
-		f = self.request.FILES['file_name_orig']
-		project = models.Project.objects.get(id=1) #self.request.DATA.get('project_id'))
-		obj.save_upload(f, self.request.user, project)
-	'''
 	
 		
 class PhotoInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):

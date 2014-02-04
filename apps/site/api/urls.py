@@ -9,11 +9,11 @@ entities = ['audio', 'photos', 'map-images']
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
-router.register(r'audio', views.AudioViewSet)
+#router.register(r'audio', views.AudioViewSet)
 #router.register(r'photos', views.PhotoViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
-router.register(r'map-images', views.ScanViewSet)
+#router.register(r'map-images', views.ScanViewSet)
 router.register(r'data-types', views.DataTypeViewSet)
 router.register(r'tiles', views.TileViewSet)
 router.register(r'layouts', views.LayoutViewSet)
@@ -34,6 +34,10 @@ urlpatterns += format_suffix_patterns(patterns('',
 	url(r'^projects/$', views.ProjectList.as_view(), name='project-list'),
 	url(r'^photos/(?P<pk>[0-9]+)/$', views.PhotoInstance.as_view(), name='photo-detail'),
 	url(r'^photos/$', views.PhotoList.as_view(), name='photo-list'),
+	url(r'^audio/(?P<pk>[0-9]+)/$', views.AudioInstance.as_view(), name='audio-detail'),
+	url(r'^audio/$', views.AudioList.as_view(), name='audio-list'),
+	url(r'^map-images/(?P<pk>[0-9]+)/$', views.ScanInstance.as_view(), name='scan-detail'),
+	url(r'^map-images/$', views.ScanList.as_view(), name='scan-list'),
 	url(r'^markers/(?P<pk>[0-9]+)/$', views.MarkerInstance.as_view(), name='marker-detail'),
 	url(r'^markers/$', views.MarkerList.as_view(), name='marker-list'),
 	url(r'^prints/(?P<pk>[0-9]+)/$', views.PrintInstance.as_view(), name='print-detail'),
