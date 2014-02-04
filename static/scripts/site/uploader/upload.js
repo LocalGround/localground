@@ -133,8 +133,8 @@ localground.uploader.prototype.hasError = function(file) {
     if (file.error) {
         return file.error;
     }
-    if (this.options.acceptFileTypes.indexOf(file.type) == -1 &&
-        this.options.acceptFileTypes.indexOf(ext) == -1) {
+    if (this.options.acceptFileTypes.indexOf(file.type.toLowerCase()) == -1 &&
+        this.options.acceptFileTypes.indexOf(ext.toLowerCase()) == -1) {
         return 'acceptFileTypes';
     }
     if (this.options.maxFileSize &&
