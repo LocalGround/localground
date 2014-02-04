@@ -1,39 +1,18 @@
-from rest_framework import viewsets, status
-from rest_framework import generics
-from localground.apps.site.api import serializers, filters
-from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
-from localground.apps.site.api.filters import SQLFilterBackend
+from rest_framework import status
+from localground.apps.site.api import serializers
+from localground.apps.site.api.views.abstract_views import MediaList, MediaInstance
 from localground.apps.site import models
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 		
-class PhotoList(generics.ListCreateAPIView, AuditCreate):
+class PhotoList(MediaList):
+	ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
 	serializer_class = serializers.PhotoSerializer
-	filter_backends = (filters.SQLFilterBackend,)
-	
-	def get_queryset(self):
-		if self.request.user.is_authenticated():
-			return models.Photo.objects.get_objects(self.request.user)
-		else:
-			return models.Photo.objects.get_objects_public(
-				access_key=self.request.GET.get('access_key')
-			)
-	
-	def pre_save(self, obj):
-		AuditCreate.pre_save(self, obj)
+	model = models.Photo
 		
-		#save uploaded image to file system
-		f = self.request.FILES['file_name_orig']
-		project = models.Project.objects.get(id=self.request.DATA.get('project_id'))
-		obj.save_upload(f, self.request.user, project, do_save=False)
-	
-		
-class PhotoInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
-	queryset = models.Photo.objects.select_related('owner').all()
+class PhotoInstance(MediaInstance):
 	serializer_class = serializers.PhotoSerializer
-	
-	def pre_save(self, obj):
-		AuditUpdate.pre_save(self, obj)
+	model = models.Photo
 
 @api_view(['PUT', 'PATCH', 'GET'])
 def rotate_left(request, pk, format='html'):
