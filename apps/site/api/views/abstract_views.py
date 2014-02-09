@@ -13,25 +13,6 @@ class AuditCreate(object):
 		obj.last_updated_by = self.request.user
 		obj.timestamp = get_timestamp_no_milliseconds()
 		
-	def metadata(self, request):
-		"""
-		Return a dictionary of metadata about the view.
-		Used to return responses for OPTIONS requests.
-		"""
-
-		# This is used by ViewSets to disambiguate instance vs list views
-		view_name_suffix = getattr(self, 'suffix', None)
-
-		# By default we can't provide any form-like information, however the
-		# generic views override this implementation and add additional
-		# information for POST and PUT methods, based on the serializer.
-		from django.utils.datastructures import SortedDict
-		ret = SortedDict()
-		ret['name'] = get_view_name(self.__class__, view_name_suffix)
-		ret['description'] = get_view_description(self.__class__)
-		ret['renders'] = [renderer.media_type for renderer in self.renderer_classes]
-		ret['parses'] = [parser.media_type for parser in self.parser_classes]
-		return ret
 		
 class AuditUpdate(AuditCreate):
 	def pre_save(self, obj):
@@ -41,8 +22,23 @@ class AuditUpdate(AuditCreate):
 		obj.last_updated_by = self.request.user
 		obj.timestamp = get_timestamp_no_milliseconds()
 		
+class QueryableListCreateAPIView(generics.ListCreateAPIView):
+	
+	def metadata(self, request):
+		# extend the existing metadata method in the parent class by adding a
+		# list of available filters
+		from localground.apps.lib.helpers import QueryParser
+		from django.utils.datastructures import SortedDict
+		ret = super(QueryableListCreateAPIView, self).metadata(request)
+		ret = SortedDict(ret)
+		try:
+			query = QueryParser(self.model, request.GET.get('query'))
+			ret['filters'] = [f.to_dict() for f in query.populate_filter_fields()]
+		except:
+			pass
+		return ret
 
-class MediaList(generics.ListCreateAPIView, AuditCreate):
+class MediaList(QueryableListCreateAPIView, AuditCreate):
 	filter_backends = (filters.SQLFilterBackend,)
 	ext_whitelist = []
 	
@@ -77,6 +73,7 @@ class MediaList(generics.ListCreateAPIView, AuditCreate):
 				raise exceptions.PermissionDenied(
 					detail='You do not have edit access to the project #{0}'.format(project_id))	
 			obj.save_upload(f, self.request.user, project, do_save=False)
+			
 
 class MediaInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
 	

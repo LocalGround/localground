@@ -1,14 +1,24 @@
+import django_filters
 from rest_framework import status
 from localground.apps.site.api import serializers
 from localground.apps.site.api.views.abstract_views import MediaList, MediaInstance
 from localground.apps.site import models
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-		
+
+class PhotoFilter(django_filters.FilterSet):
+    min_date = django_filters.DateTimeFilter(name="timestamp", lookup_type='gte')
+    max_date = django_filters.DateTimeFilter(name="timestamp", lookup_type='lte')
+    class Meta:
+        model = models.Photo
+        fields = ['name', 'description', 'min_date', 'max_date']
+
+
 class PhotoList(MediaList):
 	ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
 	serializer_class = serializers.PhotoSerializer
 	model = models.Photo
+	filter_class = PhotoFilter
 		
 class PhotoInstance(MediaInstance):
 	serializer_class = serializers.PhotoSerializer
