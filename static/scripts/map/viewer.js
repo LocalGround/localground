@@ -144,8 +144,7 @@ localground.viewer.prototype.initialize=function(opts){
 	// turn on default project, if requested
 	this.initDefaultProject();
 	
-	//this.initFiltering();
-	this.initFilteringNew();
+	this.initFiltering();
 	
 	this.setStreetViewCloseButton();
 };
@@ -228,7 +227,7 @@ localground.viewer.prototype.getManager = function(data_list) {
 	}
 };
 
-localground.viewer.prototype.initFilteringNew = function() {
+localground.viewer.prototype.initFiltering = function() {
 	var me = this;
 	$('#clear_filter').click(function(){
 		//clear out values:
@@ -291,14 +290,37 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 		}
 		self.resetBounds();
 		if($('.cb_project:checked').length == 0) {
-			//$('#mode_toggle').hide();
 			$('#map_toolbar').hide();
 		}
-		//re-apply filter to data as new data is added
-		$('#txt_filter').trigger('keyup');
+		self.initFilterData();
 	}
 	return;
 };
+
+localground.viewer.prototype.initFilterData = function() {
+	self.owners = [];
+	var selectedVal = $('#owner_filter').val();
+	$.each(this.managers, function(k, v) {
+		$.each(v.data, function(){
+			if(self.owners.indexOf(this.owner) == -1)
+				self.owners.push(this.owner);	
+		});
+	});
+	$('#owner_filter').empty();
+	$('#owner_filter').append(
+		$('<option></option>').attr('value', "").html('Everyone')
+	);
+	$.each(self.owners, function(){
+		var owner = this.toString();
+		$('#owner_filter').append(
+			$('<option></option>').attr('value', owner).html(owner)
+		);	
+	});
+	//re-filter, just in cases owner filter has expired:
+	$('#owner_filter').val(selectedVal);
+	$('#apply_filter').trigger('click');
+	$('#filter_menu_button').trigger('click'); //close the menu!
+}
 
 localground.viewer.prototype.getProjectData = function(groupID, groupType, 
 										is_checked, turn_on_everything, access_key) {
@@ -338,15 +360,14 @@ localground.viewer.prototype.getProjectData = function(groupID, groupType,
 						}	
 					}
 				}
+				
 			});
 			if (self.mode == 'edit') {
 				self.makeEditable();
 			}
-			//re-apply filter to data as new data is added
-			$('#txt_filter').trigger('keyup');
 			$('#map_toolbar').show();
-			//$('#editor_message').hide();
 			self.resetBounds();
+			self.initFilterData();
 		},
 	'json');
 };
