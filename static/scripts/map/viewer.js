@@ -302,7 +302,7 @@ localground.viewer.prototype.initFilterData = function() {
 	var selectedVal = $('#owner_filter').val();
 	$.each(this.managers, function(k, v) {
 		$.each(v.data, function(){
-			if(self.owners.indexOf(this.owner) == -1)
+			if(this.owner && self.owners.indexOf(this.owner) == -1)
 				self.owners.push(this.owner);	
 		});
 	});
