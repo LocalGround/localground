@@ -33,20 +33,7 @@
     <script type="text/javascript" src="/static/scripts/map/basemap.js"></script>
     <script type="text/javascript" src="/static/scripts/map/viewer.js"></script>
 {% endblock %}
-{% block extra_styles %}
-	/*
-	.streetview-btn {
-		margin-right: 10px;
-		width: 40px;
-		height: 40px;
-		font-size: 2em;
-		padding: 1.2em 1.4em;
-		font-family: sans-serif;
-		background-color: #f00;
-		position: absolute;
-		z-index: 2000000;
-	}*/	
-{% endblock %}
+
 {% block extra_scripts %}
     var isAdmin = false;
     {% if user.is_superuser %}
@@ -104,22 +91,27 @@
 				{% include "includes/messages.html" %}
 			</div>
 			<div class="inset-block" id="edit_control_panel">
-				<button id="mode_toggle" style="display:none;float:right; margin: 0px 5px 0px 5px;"
-						class="btn">Edit</button>
-				<span id="editor_message">
-				{% if num_projects > 0 or ebays %}
-					Use the top menus to add your data on the map
-				{% else %}
-					You have not defined any projects.  In order to create
-					your first project, you can either (1) print a map by clicking the
-					print button (above), or (2) create a new one
-					<a href="/profile/projects/">here</a>.
-				{% endif %}
-				</span>
-				<span id="filter_section" style="display:none;">
-					<input type="text" id="txt_filter" style="width: 200px !important;" />
-					<span id="filter_counter" style="display:inline-block;padding-left: 5px;width:20px;font-weight:bold;font-size:20px;"></span>
-				</span>
+			    
+			    <div id="map_toolbar" class="btn-group pull-right" style="display: none;">
+				<button id="mode_toggle" class="btn primary">Edit</button>
+				<a id="filter_menu_button" class="btn info dropdown-toggle" href='#' data-toggle="dropdown">
+				    <i class="icon-dark icon-filter"></i> Filter
+				    <span class="caret"></span>
+				</a>
+				{% include "includes/filter_menu_map.html" %}
+			    </div>
+			      
+			    
+			    <span id="editor_message">
+			    {% if num_projects > 0 or ebays %}
+				    Use the top menus to add your data on the map
+			    {% else %}
+				    You have not defined any projects.  In order to create
+				    your first project, you can either (1) print a map by clicking the
+				    print button (above), or (2) create a new one
+				    <a href="/profile/projects/">here</a>.
+			    {% endif %}
+			    </span>
 			</div>
             <ul class="tabs" data-tabs="tabs" style="margin-bottom: 10px !important;">
 				<li class="active">

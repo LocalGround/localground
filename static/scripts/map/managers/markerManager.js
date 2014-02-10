@@ -197,10 +197,12 @@ localground.markerManager.prototype.toggleIconChooser = function() {
 };
 
 localground.markerManager.prototype.doViewportUpdates = function() {
+	/*
 	$.each(this.data, function() {
 		if(!this.inView())
 			this.getListingElement().hide();
 		else
 			this.getListingElement().show();
 	});
+	*/
 };

@@ -12,7 +12,7 @@ class ProjectSerializer(BaseSerializer):
 	class Meta:
 		model = models.Project
 		fields = BaseSerializer.Meta.fields + ('owner', 'slug', 'access')
-		read_only_fields = ('owner',)
+		#read_only_fields = ('owner',)
 		depth = 0
 		
 	def get_access(self, obj):

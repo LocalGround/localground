@@ -33,7 +33,7 @@ class QueryableListCreateAPIView(generics.ListCreateAPIView):
 		ret = SortedDict(ret)
 		try:
 			query = QueryParser(self.model, request.GET.get('query'))
-			ret['filters'] = [f.to_dict() for f in query.populate_filter_fields()]
+			ret['filters'] = query.to_dict_list()
 		except:
 			pass
 		return ret

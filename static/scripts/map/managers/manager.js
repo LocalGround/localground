@@ -274,6 +274,11 @@ localground.manager.prototype.getLoadingImageSmall = function() {
 				}).attr('src', '/static/images/ajax-loader-small.gif');
 };
 
+localground.manager.prototype.isManagerChecked = function() {
+    return $('#toggle_' + this.id + '_all').attr('checked') == 'checked';
+};
+
+
 localground.manager.prototype.doViewportUpdates = function() {
 	//implemented in child classes
 	return;

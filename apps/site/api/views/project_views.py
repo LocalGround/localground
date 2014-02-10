@@ -10,7 +10,7 @@ from django.db.models import Q
 class ProjectList(QueryableListCreateAPIView, AuditCreate):
 	serializer_class = serializers.ProjectSerializer
 	filter_backends = (filters.SQLFilterBackend,)
-
+	model = models.Project
 	paginate_by = 100
 	
 	def get_queryset(self):

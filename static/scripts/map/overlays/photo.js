@@ -173,12 +173,12 @@ localground.photo.prototype.showInfoBubbleView = function(opts) {
     this.googleOverlay.setMap(self.map);
 
     //build bubble content:
-	var $container = $('<div />');
-	$container.append(this.getPhotoPreview());
-	$container.append(this.renderDetail());
-	
-	var $contentContainer = this.renderInfoBubble();
-	$contentContainer.append($container);
+    var $container = $('<div />');
+    $container.append(this.getPhotoPreview());
+    $container.append(this.renderDetail());
+    
+    var $contentContainer = this.renderInfoBubble();
+    $contentContainer.append($container);
 };
 
 localground.photo.prototype.mouseoverF = function(){

@@ -165,10 +165,12 @@ localground.overlay.prototype.renderListing = function() {
 	else {
 		$div_entry.show();
 	}
+	this.toggleOverlay(this.getManager().isManagerChecked());
 };
 localground.overlay.prototype.showOverlay = function() {
 	this.getListingElement().show();
 	try {
+		this.toggleOverlay(this.getManager().isManagerChecked());
 		this.getManager().updateVisibility();
 	} catch(e) {
 		//alert(e);

@@ -28,6 +28,7 @@ localground.photoManager.prototype.makeViewable = function() {
 };
 
 localground.photoManager.prototype.doViewportUpdates = function() {
+	/*
 	$.each(this.data, function() {
 		this.setImageIcon();
 		if(!this.inView())
@@ -35,4 +36,5 @@ localground.photoManager.prototype.doViewportUpdates = function() {
 		else
 			this.getListingElement().show();
 	});
+	*/
 };

@@ -39,6 +39,7 @@ localground.viewer = function(){
     this.managers = {};
 	this.slideshow = null;
 	this.dataCount = 0;
+	this.owners = [];
 	
 };
 localground.viewer.prototype = new localground.basemap();           // Here's where the inheritance occurs 
@@ -143,7 +144,8 @@ localground.viewer.prototype.initialize=function(opts){
 	// turn on default project, if requested
 	this.initDefaultProject();
 	
-	this.initFiltering();
+	//this.initFiltering();
+	this.initFilteringNew();
 	
 	this.setStreetViewCloseButton();
 };
@@ -226,27 +228,32 @@ localground.viewer.prototype.getManager = function(data_list) {
 	}
 };
 
-
-localground.viewer.prototype.initFiltering = function() {
-	//input1.bind('keypress', function(event) {
-	$('#txt_filter').bind('keyup', function(event){
-		var term = $('#txt_filter').val().toLowerCase();
+localground.viewer.prototype.initFilteringNew = function() {
+	var me = this;
+	$('#clear_filter').click(function(){
+		//clear out values:
+		$('#owner_filter').val('');
+		$('#name_filter').val('');
+		$('#tag_filter').val('');
+		$('#description_filter').val('');
+		$('#apply_filter').trigger('click');
+	});
+	$('#apply_filter').click(function(event){
+		var owner = $('#owner_filter').val();
+		var name = $('#name_filter').val();
+		var tags = $('#tag_filter').val();
+		var description = $('#description_filter').val();
 		
 		self.dataCount = 0;
 		$.each(self.managers, function(k, v) {
 			$.each(v.data, function(){
 				var show = (
-					(this.name && this.name.toLowerCase().indexOf(term) != -1) ||
-					(this.tags && this.tags.toLowerCase().indexOf(term) != -1) ||
-					(this.attribution && this.attribution.toLowerCase().indexOf(term) != -1)
+					me.isMatch(this.owner, owner) &&
+					me.isMatch(this.name, name) &&
+					me.isMatch(this.tags, tags) &&
+					me.isMatch(this.description, description)
 				);
-				//for tabular data, search each field too:
-				if (this.overlay_type == 'record') {
-					$.each(this.recs, function(){
-						show = show || this.toString().toLowerCase().indexOf(term) != -1;	
-					});
-				}
-				if(show || term.length == 0) {
+				if(show) {
 					++self.dataCount;
 					this.showOverlay();
 				}
@@ -256,7 +263,19 @@ localground.viewer.prototype.initFiltering = function() {
 			});
 		});
 		$('#filter_counter').html(self.dataCount);
+		$('#filter_menu_button').trigger('click');
 	});
+}
+
+localground.viewer.prototype.isMatch = function(item, searchTerm) {
+	searchTerm = searchTerm.toLowerCase();
+	if(searchTerm == null || searchTerm.length == 0) return true;
+	if (item == null || item == '') {
+		if(searchTerm == "untitled")
+			return true;
+		return false;
+	}
+	return item.toLowerCase().indexOf(searchTerm) != -1;
 };
 
 localground.viewer.prototype.toggleProjectData = function(groupID, groupType, 
@@ -272,7 +291,8 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 		}
 		self.resetBounds();
 		if($('.cb_project:checked').length == 0) {
-			$('#mode_toggle').hide();
+			//$('#mode_toggle').hide();
+			$('#map_toolbar').hide();
 		}
 		//re-apply filter to data as new data is added
 		$('#txt_filter').trigger('keyup');
@@ -324,8 +344,8 @@ localground.viewer.prototype.getProjectData = function(groupID, groupType,
 			}
 			//re-apply filter to data as new data is added
 			$('#txt_filter').trigger('keyup');
-			$('#mode_toggle, #filter_section').show();
-			$('#editor_message').hide();
+			$('#map_toolbar').show();
+			//$('#editor_message').hide();
 			self.resetBounds();
 		},
 	'json');

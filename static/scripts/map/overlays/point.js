@@ -152,18 +152,18 @@ localground.point.prototype.addMarkerEventHandlers = function() {
     var me = this;
     google.maps.event.addListener(this.googleOverlay, "click", function(mEvent) {
         self.tooltip.close();
-		self.currentOverlay = me;
+	self.currentOverlay = me;
         me.closeInfoBubble();
         me.showInfoBubble();
     });
-	google.maps.event.addListener(this.googleOverlay, "mouseover", function() {
-		self.currentOverlay = me;
-		me.mouseoverF();
-	});
-	google.maps.event.addListener(this.googleOverlay, "mouseout", function() {
-		self.currentOverlay = me;
-		me.mouseoutF();
-	});
+    google.maps.event.addListener(this.googleOverlay, "mouseover", function() {
+	self.currentOverlay = me;
+	me.mouseoverF();
+    });
+    google.maps.event.addListener(this.googleOverlay, "mouseout", function() {
+	self.currentOverlay = me;
+	me.mouseoutF();
+    });
 	
     //only adds them if in "edit mode"
     if(this.isEditMode())
@@ -299,6 +299,7 @@ localground.point.prototype.deleteOverlay = function() {
 };*/
 
 localground.point.prototype.closeInfoBubble = function() {
+    return;
     //since this function is called in the infobubble class, use the
     //global variable "self" instead of "this":
     if(self.infoBubble.isOpen()) {
@@ -409,9 +410,7 @@ localground.point.prototype.renderInfoBubble = function(opts) {
     self.infoBubble.setFooter(null);
     self.infoBubble.doNotPad = true;
     self.infoBubble.setContent($contentContainer.get(0)); 
-	//google.maps.event.addListenerOnce(self.infoBubble, 'domready', function(){
-    //    alert('triggered!');
-    //});
+    
     return $contentContainer; 
 };
 

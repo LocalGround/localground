@@ -39,3 +39,5 @@ class PhotoSerializer(MediaPointSerializer):
 	
 	def get_path_path_marker_sm(self, obj):
 		return obj.encrypt_url(obj.file_name_marker_sm)
+	
+	
