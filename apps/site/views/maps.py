@@ -10,6 +10,12 @@ from django.contrib.auth.models import User
 from localground.apps.site.models import Base, Scan, Print, Project, View
 from django.core.exceptions import ObjectDoesNotExist
 
+#Constants describing default latitudes, longitudes, and zoom
+DEFAULT_LAT = 21.698265
+DEFAULT_LONG = 14.765625
+DEFAULT_ZOOM = 8
+
+
 def show_map_viewer(request, username, slug, access_key=None):
     u = request.user
     source_object = Project.objects.get(
@@ -18,11 +24,11 @@ def show_map_viewer(request, username, slug, access_key=None):
     context = RequestContext(request)
     
     #set defaults:
-    lat, lng, zoom = 21.698265, 14.765625, 3
-    #if u.is_authenticated() and u.get_profile().default_location is not None:
-    #        lat = u.get_profile().default_location.y
-    #        lng = u.get_profile().default_location.x
-    #        zoom = 14
+    lat, lng, zoom = DEFAULT_LAT, DEFAULT_LONG, DEFAULT_ZOOM
+    if u.is_authenticated() and u.get_profile().default_location is not None:
+            lat = u.get_profile().default_location.y
+            lng = u.get_profile().default_location.x
+            zoom = 14
     context.update({
         'lat': lat,
         'lng': lng,
@@ -46,14 +52,14 @@ def show_map_editor(request):
     context = RequestContext(request)
     username = u.username
     #set defaults:
-    lat, lng, zoom = 21.698265, 14.765625, 3
+    lat, lng, zoom = DEFAULT_LAT, DEFAULT_LONG, DEFAULT_ZOOM
     if u.is_authenticated():
         projects = Project.objects.get_objects(u)
         projects = [p.to_dict() for p in projects]
-#        if u.get_profile().default_location is not None:
-#            lat = u.get_profile().default_location.y
-#            lng = u.get_profile().default_location.x
-#            zoom = 14
+        if u.profile.default_location is not None:
+            lat = u.profile.default_location.y
+            lng = u.profile.default_location.x
+            zoom = 14
     context.update({
         'lat': lat,
         'lng': lng,
@@ -67,7 +73,7 @@ def show_map_editor(request):
 def show_ebays_map_viewer(request):
     context = RequestContext(request)
     #set defaults:
-    lat, lng, zoom = 21.698265, 14.765625, 3
+    lat, lng, zoom = DEFAULT_LAT, DEFAULT_LONG, DEFAULT_ZOOM
     
     context.update({
         'lat': lat,
@@ -84,7 +90,7 @@ def show_ebays_map_editor(request):
     u = request.user
     context = RequestContext(request)
     #set defaults:
-    lat, lng, zoom = 21.698265, 14.765625, 3
+    lat, lng, zoom = DEFAULT_LAT, DEFAULT_LONG, DEFAULT_ZOOM
     
     projects = Project.objects.get_objects(u)
     projects = [p.to_dict() for p in projects]

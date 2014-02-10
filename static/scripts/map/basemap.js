@@ -1,3 +1,5 @@
+KNOWN_LOCATION_ZOOM = 14;
+
 localground.basemap = function() {
     this.isAdmin            = false;
     this.isPrint            = false;
@@ -53,10 +55,111 @@ localground.basemap.prototype.initialize=function(opts) {
     this.minimizeRightPanel = opts.minimizeRightPanel || this.minimizeRightPanel;
     
     this.map = new google.maps.Map(document.getElementById("map_canvas"), this.mapOptions);
-    this.map.setCenter(this.center);
-    this.map.setZoom(this.zoom);
     this.map.setOptions({styles: this.googleMapStyles});
-    
+
+
+
+
+
+    //Prompt user for default location, if possible
+    var that = this;
+    if(navigator.geolocation) {
+        var browserSupportFlag = true;
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+            that.map.setCenter(initialLocation);
+            that.map.setZoom(14);
+            $('#default_location').val("SRID=4326;POINT(" + position.coords.longitude.toFixed(6) + " " +
+                position.coords.latitude.toFixed(6) + ")");
+
+            $('#default_setter').submit(function(e) {
+                var postData = $(this).serializeArray();
+                var formURL = $(this).attr("action");
+                $.ajax(
+                    {
+                        url:formURL,
+                        type:"POST",
+                        data:postData,
+                        success:function(data, textStatus, jqXHR) {
+                            console.log("successfully submitted updated location")
+                        },
+                        error:function(data, textStatus, jqXHR) {
+                            console.log("error updating default location")
+                        }
+
+                    }
+                );
+                e.preventDefault();
+
+            });
+            $('#default_setter').submit();
+
+        }, function() {
+            that.handleNoGeolocation(browserSupportFlag);
+        });
+    }
+    // Browser doesn't support Geolocation
+        else {
+        browserSupportFlag = false;
+        this.map.setCenter(this.center);
+        this.map.setZoom(this.zoom);
+        handleNoGeolocation(browserSupportFlag);
+    }
+
+
+    localground.basemap.prototype.handleNoGeolocation = function(browserSupportFlag) {
+        var markers = [];
+        var that = this;
+        this.map.setCenter(new google.maps.LatLng(37.855365, -122.272614));
+        this.map.setZoom(this.zoom);
+        var input = /** @type {HTMLInputElement} */(
+            document.getElementById('pac-input'));
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+        var searchBox = new google.maps.places.SearchBox(
+            /** @type {HTMLInputElement} */(input));
+            google.maps.event.addListener(searchBox, 'places_changed', function() {
+            var places = searchBox.getPlaces();
+
+            for (var i = 0, marker; marker = markers[i]; i++) {
+              marker.setMap(null);
+            }
+            // For each place, get the icon, place name, and location.
+            markers = [];
+            var bounds = new google.maps.LatLngBounds();
+           //for (var i = 0, place; place = places[i]; i++) {
+              //var image = {
+              //  url: places[0].icon,
+              //  size: new google.maps.Size(71, 71),
+              //  origin: new google.maps.Point(0, 0),
+              //  anchor: new google.maps.Point(17, 34),
+              //  scaledSize: new google.maps.Size(25, 25)
+             // };
+
+              // Create a marker for each place.
+              //var marker = new google.maps.Marker({
+              //  map: that.map,
+              //  icon: image,
+              //  title: places[0].name,
+              //  position: places[0].geometry.location
+              //});
+              //console.log(place.name);
+
+              //markers.push(marker);
+
+              bounds.extend(places[0].geometry.location);
+            //}
+
+            that.map.fitBounds(bounds);
+            that.map.setZoom(16);
+         });
+
+    }
+
+
+
+
+
+
     
     //arrange panels on page:
     if(!this.isPrint)
@@ -81,6 +184,8 @@ localground.basemap.prototype.initialize=function(opts) {
     });
     */
 };
+
+
 
 localground.basemap.prototype.isGoogleMapsAPIRunning = function() {
     //check to see if google maps is up:
@@ -604,6 +709,8 @@ localground.basemap.prototype.setPosition = function(minimizeRightPanel) {
         });
     }
 }
+
+
 
 
 

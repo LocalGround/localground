@@ -2,6 +2,7 @@ from django.template import RequestContext, loader
 from rest_framework import renderers, exceptions, parsers, status, VERSION
 from rest_framework.settings import api_settings
 from localground.apps.lib.helpers import QueryParser
+import sys
 
 class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer): 
     
@@ -12,6 +13,7 @@ class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
         """
         accepted_media_type = accepted_media_type or ''
         renderer_context = renderer_context or {}
+        print >> sys.stderr, data
 
         view = renderer_context['view']
         request = renderer_context['request']
@@ -20,7 +22,6 @@ class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
 
         renderer = self.get_default_renderer(view)
         content = self.get_content(renderer, data, accepted_media_type, renderer_context)
-
         put_form = self._get_form(view, 'PUT', request)
         post_form = self._get_form(view, 'POST', request)
         patch_form = self._get_form(view, 'PATCH', request)

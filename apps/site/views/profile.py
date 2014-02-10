@@ -8,6 +8,31 @@ from django.db.models.loading import get_model
 from datetime import datetime
 from localground.apps.site.models import Base, Project, Form, Field
 import json
+from django.contrib.gis.geos import GEOSGeometry
+import sys
+
+@login_required()
+def update_user_location(request):
+    """
+    Meant to allow a user to update their default location
+    """
+    from localground.apps.site.models import UserProfile
+    try:
+        profile = UserProfile.objects.get(user=request.user)
+
+    except UserProfile.DoesNotExist:
+        return None
+    #Admittedly hacky way of getting at the point info in the request
+    point = GEOSGeometry(request.body.split('&')[1].split('%3B')[1].replace('+', ' '))
+    try:
+        UserProfile.update_location(profile, point)
+    except UserProfile.DoesNotExist:
+        print >> sys.stderr, "Failed to update user location"
+
+    return HttpResponse("<p>Location successfully updated</p>")
+
+
+
 
 @login_required()
 def change_user_profile(request, template_name='account/user_prefs.html'):
@@ -15,6 +40,7 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
     Works in conjunction with CustomUserChangeForm, UserProfileForm to allow
     user to modify his/her preferences.
     """
+
     from localground.apps.site.models import UserProfile
     from django.contrib.auth.models import User
     from localground.apps.site.forms import CustomUserChangeForm, UserProfileForm #, MapGroupForm
@@ -23,12 +49,15 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
     
     try:
         profile = UserProfile.objects.get(user=request.user)
+
     except UserProfile.DoesNotExist:
         profile = UserProfile.create(request.user)
-    
+
     successfully_updated = False
     r = request.POST or request.GET
     page_num = int(r.get('page', '1'))
+
+
     if request.POST:
         if page_num == 1:
             user_form = CustomUserChangeForm(request.POST, instance=request.user)
@@ -37,6 +66,7 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
                 user_form.save()
         elif page_num == 2:
             user_profile_form = UserProfileForm(request.POST, instance=profile)
+            print >> sys.stderr, vars(user_profile_form)
             if user_profile_form.is_valid():
                 successfully_updated = True
                 user_profile_form.save() 
@@ -44,7 +74,6 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
         user_form = CustomUserChangeForm(instance=request.user)
     if user_profile_form is None:
         user_profile_form = UserProfileForm(instance=profile)
-    
     #only allow deletions:
     user_profile_form.fields['contacts'].queryset = profile.contacts
     #help_text hack (help_text might be tied to the widget in future Django versions)
@@ -65,7 +94,7 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
         'successfully_updated': successfully_updated
     }
     return render_to_response(template_name, extras,
-                              context_instance = RequestContext( request))
+                              context_instance = RequestContext(request))
 
 
 @login_required()

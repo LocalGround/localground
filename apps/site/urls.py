@@ -40,6 +40,7 @@ urlpatterns = patterns('',
 	(r'^pages/(?P<page_name>\w+)/', 'localground.apps.site.views.pages.about_pages'),
 	
 	#user prefs:
+    (r'^profile/settings/update_location/', 'localground.apps.site.views.profile.update_user_location'),
 	(r'^profile/settings/', 'localground.apps.site.views.profile.change_user_profile'),
 	
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

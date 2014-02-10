@@ -187,7 +187,7 @@ class Photo(BasePoint, BaseUploadedMedia):
         keys = ['DateTimeOriginal', 'DateTimeDigitized', 'DateTime', 'Model',
                 'Orientation', 'GPSInfo']
         '''
-        return_dict = {}  
+        return_dict = {}
         if d.get('GPSInfo') is not None:
             from django.contrib.gis.geos import Point
             try:

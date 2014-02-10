@@ -4,11 +4,12 @@ from django.contrib.auth.models import User
 from localground.apps.site.models.permissions import ObjectAuthority
 from localground.apps.site.models.groups import Project
 from datetime import datetime
+import sys
 
 
 class UserProfile(models.Model):
     #https://docs.djangoproject.com/en/dev/topics/auth/#creating-users
-    user = models.OneToOneField('auth.User') # This field is required.
+    user = models.OneToOneField(User, related_name="profile") # This field is required.
     email_announcements = models.BooleanField(default=True)
     default_location = models.PointField(null=True, blank=True,
                         help_text='Search map by address, or drag the marker to your home location')
@@ -21,9 +22,15 @@ class UserProfile(models.Model):
     date_created = models.DateTimeField(default=datetime.now)
     time_stamp = models.DateTimeField(default=datetime.now, db_column='last_updated')
     objects = models.GeoManager()
-    
+
     class Meta:
         app_label = 'site'
+
+    @classmethod
+    def update_location(self, profile, point):
+        profile.default_location = point;
+        profile.save()
+        return True
      
     @classmethod   
     def create(cls, user):
@@ -63,7 +70,7 @@ def create_profile_on_insert(sender, instance, created, **kwargs):
                 raise Exception('UserProfile not created')
             pass
         
-        
+
 signals.post_save.connect(create_profile_on_insert, sender=User)
 
 

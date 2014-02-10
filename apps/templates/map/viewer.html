@@ -6,7 +6,8 @@
     <link href="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
 {% endblock %}
 {% block script_links %}
-    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing,places"></script>
+
     <!-- enable photo dragging -->
     <script src="{{ JQUERY_UI_PATH }}"></script>
     <script type="text/javascript" src="/static/scripts/thirdparty/infobubble.js"></script>
@@ -29,7 +30,7 @@
     <script type="text/javascript" src="/static/scripts/map/managers/scanManager.js"></script> 
     <script type="text/javascript" src="/static/scripts/map/managers/markerManager.js"></script>
     <script type="text/javascript" src="/static/scripts/map/slideshow.js" ></script>
-    
+
     <script type="text/javascript" src="/static/scripts/map/basemap.js"></script>
     <script type="text/javascript" src="/static/scripts/map/viewer.js"></script>
 {% endblock %}
@@ -178,7 +179,12 @@
     </div>
 	<button id="streetview_close_button"
 			style="padding:3px;margin-top:10px;display:none;">exit streetview</button>
-    
-	{% csrf_token %}
+    <input id="pac-input" class="controls" type="text" placeholder="Search Box" style="margin-top:5px">
+    <form method="post" action="../../profile/settings/update_location/" id="default_setter">
+        {% csrf_token %}
+        <input type="hidden" id="default_location" name="default_location" value="">
+    </form>
+
+	{%  csrf_token %}
     
 {% endblock %}
