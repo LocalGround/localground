@@ -242,62 +242,6 @@ localground.point.prototype.deleteOverlay = function() {
     alert('show delete confirmation / un-georeference options here');  
 };
 
-/*localground.point.prototype.showInfoBubbleEdit = function() {
-    //this section reloads the iframe completely
-    var me = this;
-    var $contentContainer = $('<div></div>')
-        .css({
-            'width': this.infoBubbleParams.edit.width,
-            'height': this.infoBubbleParams.edit.height
-        });
-    var $iframe = $('<iframe></iframe>')
-        .css({
-            'width': $contentContainer.width() - 5,
-            'height': $contentContainer.height() - 5,
-            'margin': '5px 5px 5px 10px',
-            'display': 'block',
-            'visibility': 'hidden' //display:none throws positioning error
-        })
-        .attr('id', 'the_frame')
-        .attr('frameborder', 0)
-        .attr('src', this.iframeURL)
-        .load(function() {
-            me.iframeOnload();    
-        });
-    var $loadingImg = $('<div id="load_msg"></div>');
-    $loadingImg.css({
-            'width': $iframe.width(),
-            'height': $iframe.height(),
-            'text-align': 'center'
-        })
-        .append($('<img />')
-            .attr('src', '/static/images/ajax-loader.gif')
-    );
-    $contentContainer.append($loadingImg).append($iframe);
-      
-    var $footer = $('<div></div>')
-        .css({ 'margin': '5px 0px 0px 165px' })
-        .append(
-            $('<input id="form_submit" type="button" class="btn primary" />')
-            .val('Save')
-            .css({ 'margin-right': '5px' })
-            .click(function() {
-                me.saveIframe();
-                return false;
-            }))
-        .append(
-            $('<input type="button" class="btn" />')
-            .val('Delete')
-            .click(function() {
-                me.deleteOverlay();
-                return false;
-            }));
-    self.infoBubble.setHeaderText(this.name.truncate(5));
-    self.infoBubble.setFooter($footer.get(0));
-    self.infoBubble.setContent($contentContainer.get(0)); 
-    self.infoBubble.open(self.map, this.googleOverlay);  
-};*/
-
 localground.point.prototype.closeInfoBubble = function() {
     //since this function is called in the infobubble class, use the
     //global variable "self" instead of "this":

@@ -63,9 +63,9 @@ localground.audio.prototype.showInfoBubbleView = function(opts) {
 
 localground.audio.prototype.showInfoBubbleEdit = function(opts){
     var $contentContainer = this.renderInfoBubble({
-								height: this.bubbleHeight + 100,
+				height: this.bubbleHeight + 100,
                                 width: this.bubbleWidth + 100
-							});
+			    });
 	var me = this;
     var fields = this.getManager().getUpdateSchema();
     var form = new ui.form({
@@ -73,10 +73,10 @@ localground.audio.prototype.showInfoBubbleEdit = function(opts){
         object: this,
         exclude: ['point', 'project_id']
     });
-	var $container = $('<div />');
-	$container.append(this.renderPlayerLinks())
-	$container.append(form.render());
-	$contentContainer.append($container);
+    var $container = $('<div />');
+    $container.append(this.renderPlayerLinks())
+    $container.append(form.render({'height': 215}));
+    $contentContainer.append($container);
 };
 
 localground.audio.prototype.mouseoverF = function(){
