@@ -299,7 +299,6 @@ localground.point.prototype.deleteOverlay = function() {
 };*/
 
 localground.point.prototype.closeInfoBubble = function() {
-    return;
     //since this function is called in the infobubble class, use the
     //global variable "self" instead of "this":
     if(self.infoBubble.isOpen()) {
