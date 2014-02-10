@@ -14,10 +14,10 @@ localground.audioManager.prototype.addRecords = function(data) {
 };
 
 localground.audioManager.prototype.doViewportUpdates = function() {
-	$.each(this.data, function() {
+	/*$.each(this.data, function() {
 		if(!this.inView())
 			this.getListingElement().hide();
 		else
 			this.getListingElement().show();
-	});
+	});*/
 };

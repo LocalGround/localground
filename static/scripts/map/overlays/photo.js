@@ -61,10 +61,10 @@ localground.photo.prototype.renderListingImage = function() {
 };
 
 localground.photo.prototype.getIcon = function() {
-	if(self.map.getZoom() > 18)
-        return this.imgSmall;
-	else if(self.map.getZoom() > 16)
-        return this.iconLarge;
+    if(self.map.getZoom() > 18)
+	return this.imgSmall;
+    else if(self.map.getZoom() > 16)
+	return this.iconLarge;
     else
         return this.iconSmall;
 };
@@ -74,7 +74,7 @@ localground.photo.prototype.setImageIcon = function(list) {
         var icon = this.getIcon();
         if(this.googleOverlay.map != null && icon != this.googleOverlay.icon) {
             this.googleOverlay.setIcon(icon);
-			this.googleOverlay.setMap(null);
+	    this.googleOverlay.setMap(null);
             this.googleOverlay.setMap(self.map);    
         }
     }
