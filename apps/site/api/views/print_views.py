@@ -1,9 +1,10 @@
 from rest_framework import viewsets, generics, permissions
 from localground.apps.site.api import serializers, filters
-from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
+from localground.apps.site.api.views.abstract_views import \
+	AuditCreate, AuditUpdate, QueryableListCreateAPIView
 from localground.apps.site import models
 
-class PrintList(generics.ListCreateAPIView, AuditCreate):
+class PrintList(QueryableListCreateAPIView, AuditCreate):
 	serializer_class = serializers.PrintSerializer
 	filter_backends = (filters.SQLFilterBackend,)
 	model = models.Print

@@ -127,7 +127,7 @@ class Scan(Processor):
 		from localground.apps.site.models import Marker
 		return Marker.objects.get_marker_dict_by_scan(scan_id=self.id)
 		
-	def save_upload(self, file, user, project):
+	def save_upload(self, file, user, project, do_save=True):
 		from localground.apps.lib.helpers import generic
 		from PIL import Image
 		
@@ -152,13 +152,17 @@ class Scan(Processor):
 		self.status = StatusCode.objects.get(id=1)
 		self.upload_source = UploadSource.objects.get(id=1)
 		self.file_name_orig = file.name
-		self.name = file.name
+		if self.name is None:
+			self.name = file.name
+		if self.attribution is None:
+			self.attribution = user.username
 		self.file_name_new = file_name_new
 		self.file_name_thumb = thumbnail_name
 		self.content_type = ext.replace('.', '') #file extension      
 		self.host = settings.SERVER_HOST
 		self.virtual_path = self.generate_relative_path()
-		self.save()
+		if do_save:
+			self.save()
 		
 		#5) call asynchronous processor routine through celery:
 		'''from localground.apps.tasks import process_map

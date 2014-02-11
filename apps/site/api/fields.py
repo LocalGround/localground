@@ -61,16 +61,16 @@ class ProjectsField(serializers.WritableField):
 		
 class FileField(serializers.CharField):
 	type_label = 'file'
-	label = 'file_name_orig'
+	label = 'file_name'
 	
 	def field_from_native(self, data, files, field_name, into):
 		try:
-			if files.get('file_name_orig'):
-				value = files.get('file_name_orig').name
-				into[self.label] = value
+			if files.get(self.source):
+				value = files.get(self.source).name
+				into[self.source] = value
 		except:
 			value = None
-			into[self.label] = value	
+			into[self.source] = value	
 		
 		
 	def to_native(self, obj):

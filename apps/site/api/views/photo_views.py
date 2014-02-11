@@ -1,54 +1,30 @@
-from rest_framework import viewsets, status
-from rest_framework import generics
-from localground.apps.site.api import serializers, filters
-from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
-from localground.apps.site.api.filters import SQLFilterBackend
+import django_filters
+from rest_framework import status
+from localground.apps.site.api import serializers
+from localground.apps.site.api.views.abstract_views import MediaList, MediaInstance
 from localground.apps.site import models
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-import sys
-import traceback
-
-class PhotoList(generics.ListCreateAPIView, AuditCreate):
-    serializer_class = serializers.PhotoSerializer
-    filter_backends = (filters.SQLFilterBackend,)
 
 
-
-    def get_queryset(self):
-        if self.request.user.is_authenticated():
-            return models.Photo.objects.get_objects(self.request.user)
-        else:
-            return models.Photo.objects.get_objects_public(
-                access_key=self.request.GET.get('access_key')
-            )
+class PhotoFilter(django_filters.FilterSet):
+    min_date = django_filters.DateTimeFilter(name="timestamp", lookup_type='gte')
+    max_date = django_filters.DateTimeFilter(name="timestamp", lookup_type='lte')
+    class Meta:
+        model = models.Photo
+        fields = ['name', 'description', 'min_date', 'max_date']
 
 
-    def pre_save(self, obj):
+class PhotoList(MediaList):
+	ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
+	serializer_class = serializers.PhotoSerializer
+	model = models.Photo
+	filter_class = PhotoFilter
+		
+class PhotoInstance(MediaInstance):
+	serializer_class = serializers.PhotoSerializer
+	model = models.Photo
 
-        AuditCreate.pre_save(self, obj)
-
-        #save uploaded image to file system
-        f = self.request.FILES['file_name_orig']
-        project = models.Project.objects.get(id=self.request.DATA.get('project_id'))
-        obj.save_upload(f, self.request.user, project, do_save=False)
-
-    '''
-    def post_save(self, obj, created=False):
-        f = self.request.FILES['file_name_orig']
-        project = models.Project.objects.get(id=1) #self.request.DATA.get('project_id'))
-        obj.save_upload(f, self.request.user, project)
-    '''
-
-
-class PhotoInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
-    queryset = models.Photo.objects.select_related('owner').all()
-    serializer_class = serializers.PhotoSerializer
-
-
-
-    def pre_save(self, obj):
-        AuditUpdate.pre_save(self, obj)
 
 @api_view(['PUT', 'PATCH', 'GET'])
 def rotate_left(request, pk, format='html'):

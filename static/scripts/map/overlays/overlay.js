@@ -165,10 +165,12 @@ localground.overlay.prototype.renderListing = function() {
 	else {
 		$div_entry.show();
 	}
+	this.toggleOverlay(this.getManager().isManagerChecked());
 };
 localground.overlay.prototype.showOverlay = function() {
 	this.getListingElement().show();
 	try {
+		this.toggleOverlay(this.getManager().isManagerChecked());
 		this.getManager().updateVisibility();
 	} catch(e) {
 		//alert(e);
@@ -276,7 +278,10 @@ localground.overlay.prototype.renderDetail = function() {
 			})
 		).append(
 			$('<p />').css({
-				'margin': '5px 15px 5px 15px'
+				'margin': '5px 0px 0px 15px',
+				'height': '40px',
+				'overflow-y': 'auto',
+				'line-height': '15px'
 			}).html(this.caption)
 		);
 	$tags = this.renderTags();

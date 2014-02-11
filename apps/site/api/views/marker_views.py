@@ -1,9 +1,10 @@
 from rest_framework import generics
 from localground.apps.site.api import serializers, filters
-from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
+from localground.apps.site.api.views.abstract_views import \
+	AuditCreate, AuditUpdate, QueryableListCreateAPIView
 from localground.apps.site import models
 
-class MarkerList(generics.ListCreateAPIView, AuditCreate):
+class MarkerList(QueryableListCreateAPIView, AuditCreate):
 	serializer_class = serializers.MarkerSerializerCounts
 	filter_backends = (filters.SQLFilterBackend,)
 

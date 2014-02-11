@@ -7,7 +7,7 @@ class ApiScanListTest(test.TestCase, ViewMixinAPI):
 	def setUp(self):
 		ViewMixinAPI.setUp(self)
 		self.urls =  ['/api/0/map-images/']
-		self.view = views.ScanViewSet.as_view({'get': 'list'})
+		self.view = views.ScanList.as_view()
 		
 class ApiScanDetailTest(test.TestCase, ViewMixinAPI):
 	
@@ -15,4 +15,4 @@ class ApiScanDetailTest(test.TestCase, ViewMixinAPI):
 		ViewMixinAPI.setUp(self)
 		self.scan = self.create_scan(self.user, self.project)
 		self.urls =  ['/api/0/map-images/%s/' % self.scan.id]
-		self.view = views.ScanViewSet.as_view({'get': 'detail'})
+		self.view = views.ScanInstance.as_view()

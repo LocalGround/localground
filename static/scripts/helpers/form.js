@@ -10,7 +10,7 @@ ui.form = function(opts){
 ui.form.prototype.render = function(opts) {
     var me = this;
 	var obj = this.object;
-	var height = 226;
+	var height = (206-40);
 	var overflow_y = 'auto';
 	var margin = '2px 2px 0px 0px';
 	if (opts) {
@@ -18,12 +18,13 @@ ui.form.prototype.render = function(opts) {
 		overflow_y = opts.overflow_y || overflow_y;
 		margin = opts.margin || margin;
 	}
+    $form = $('<form />').attr('id', this.id).css({'margin': '0px'});
 	$scrollable = $('<div />').css({
 		height: height,
 		'overflow-y': overflow_y,
 		'margin': margin
 	});
-    $form = $('<form />').attr('id', this.id).css({'margin': '0px'});
+	$form.append($scrollable);
 	this.addMessages($form);
 	$.each(this.schema, function(){
 		if($.inArray(this.field_name, me.exclude) == -1) {
@@ -33,7 +34,7 @@ ui.form.prototype.render = function(opts) {
 				$controlContainer.append(
 					$('<span class="help-block" />').html(this.help_text));
 			}
-			$form.append(
+			$scrollable.append(
 				$('<div />').addClass('clearfix')
 					.append(
 						$('<label />').attr('for', this.field_name).html(this.label + ':')
@@ -44,15 +45,16 @@ ui.form.prototype.render = function(opts) {
 	});
     $form.append(
         $('<div />').addClass('clearfix')
-            .append(
+			.css({
+				'border-top': 'solid 1px #CCC',
+				'padding-top': '5px'
+			}).append(
                 $('<div />').addClass('input')
                     .append(
                         $('<button />').addClass('btn primary')
                             .css({'margin-right': '5px'})
                             .html('Save')
                             .click(function(){
-								/*var f = 'obj.update' + obj.overlay_type.capitalize() + '()';
-								eval(f);*/
 								me.update();
                                 return false;
                             })
@@ -61,11 +63,7 @@ ui.form.prototype.render = function(opts) {
                         $('<button />').addClass('btn')
                             .html('Cancel')
                             .click(function(){
-                                /*var f = 'obj.delete' + obj.overlay_type.capitalize() + '()';
-								eval(f);*/
-								//me.delete();
-								//return false;
-								self.currentOverlay.closeInfoBubble();
+                                self.currentOverlay.closeInfoBubble();
 								return false;
                             })
                             
@@ -76,8 +74,9 @@ ui.form.prototype.render = function(opts) {
 	//add JavaScripts, if needed:
 	//$('.tags')
 	//	.autocomplete("/tagging_autocomplete/list/json", { multiple: true });            
-	$scrollable.append($form);
-	return $scrollable;  
+	//$scrollable.append($form);
+	//return $scrollable;
+	return $form;
 };
 
 ui.form.prototype.renderControl = function(elem) {

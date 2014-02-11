@@ -21,7 +21,7 @@ class Audio(BasePoint, BaseUploadedMedia):
         #execute default behavior
         super(Audio, self).delete(*args, **kwargs)
     
-    def save_upload(self, file, user, project):
+    def save_upload(self, file, user, project, do_save=True):
         #1) first, set user and project (required for generating file path):
         self.owner = user
         self.last_updated_by = user
@@ -45,14 +45,18 @@ class Audio(BasePoint, BaseUploadedMedia):
             for line in result.readlines():
                 responses.append(line)
         
-        #4) save object to database:  
+        #4) set model attributes:
+        if self.name is None:
+            self.name = file.name
+        if self.attribution is None:
+            self.attribution = user.username
         self.file_name_orig = file.name
-        self.name = file.name
         self.file_name_new = file_name_new
         self.content_type = ext.replace('.', '') #file extension      
         self.host = settings.SERVER_HOST
         self.virtual_path = self.generate_relative_path()
-        self.save()
+        if do_save:
+            self.save()
     
     class Meta:
         app_label = 'site'

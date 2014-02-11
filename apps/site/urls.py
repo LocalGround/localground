@@ -121,5 +121,4 @@ urlpatterns = patterns('',
 	(r'^maps/print/$', 'localground.apps.site.views.prints.generate_print'),
 	(r'^maps/print/embed/$', 'localground.apps.site.views.prints.generate_print',
 		{'embed': True, 'base_template': 'base/iframe.html'})
-)
 

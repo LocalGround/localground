@@ -8,17 +8,17 @@ from rest_framework import serializers
 from localground.apps.site import models
 
 class ProjectSerializer(BaseSerializer):
-    access = serializers.SerializerMethodField('get_access')
-    class Meta:
-        model = models.Project
-        fields = BaseSerializer.Meta.fields + ('owner', 'slug', 'access')
-        read_only_fields = ('owner',)
-        depth = 0
-
-    def get_access(self, obj):
-        return obj.access_authority.name
-
-
+	access = serializers.SerializerMethodField('get_access')
+	class Meta:
+		model = models.Project
+		fields = BaseSerializer.Meta.fields + ('owner', 'slug', 'access')
+		#read_only_fields = ('owner',)
+		depth = 0
+		
+	def get_access(self, obj):
+		return obj.access_authority.name
+	
+		
 class ProjectDetailSerializer(BaseSerializer):
     children = serializers.SerializerMethodField('get_children')
 

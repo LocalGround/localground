@@ -31,13 +31,16 @@ class QueryField(object):
     def __repr__(self):
         return str(self.to_dict())
         
-    def to_dict(self):
+    def to_dict(self, col_name=True):
         d = {
-            'col_name': self.col_name,
             'id': self.id,
             'title': self.title,
             'operator': self.operator
         }
+        if col_name:
+            d.update({
+                'col_name': self.col_name   
+            })
         #if self.value is not None:
         #d.update({ 'value': self.value })
         return d    
@@ -294,6 +297,14 @@ class QueryParser(object):
                 field.update(filter_fields[i])
                 filter_fields[i] = field
         return filter_fields
+    
+    def to_dict_list(self):
+        '''
+        Populates the UI filter fields with data, if applicable
+        '''
+        fields = self.model_class.filter_fields()
+        return [f.to_dict(col_name=True) for f in fields]
+            
         
     
         
