@@ -32,17 +32,17 @@ same view and parameters. Then, you can use this name in reverse URL matching.
 
 object_types_plural = [ 'photos', 'audio', 'videos', 'map-images', 'projects',
 						'views', 'prints', 'forms', 'attachments', 'tiles']
-#handler500 = 'localground.apps.account.views.server_error' 
+#handler500 = 'localground.apps.account.views.server_error'
 urlpatterns = patterns('',
-					   
+
 	#mostly static html:
 	(r'^$', direct_to_template, {'template_name': 'pages/splash.html'}),
 	(r'^pages/(?P<page_name>\w+)/', 'localground.apps.site.views.pages.about_pages'),
-	
+
 	#user prefs:
-    (r'^profile/settings/update_location/', 'localground.apps.site.views.profile.update_user_location'),
+    (r'^profile/settings/update_location/','localground.apps.site.views.profile.update_user_location'),
 	(r'^profile/settings/', 'localground.apps.site.views.profile.change_user_profile'),
-	
+
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	# 1) Create:
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -52,12 +52,13 @@ urlpatterns = patterns('',
 	#  b) Media
 	(r'^upload/media/post/$', 'localground.apps.site.views.uploader.upload_media'),
 	#(r'^profile/(?P<object_type_plural>photos|audio|map-images|attachments)/create/$', 'localground.apps.site.views.uploader.upload_media'),
-	
+
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	# 2) Read:
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	(r'^profile/(?P<object_type_plural>{0})/$'.format('|'.join(object_types_plural)), 'localground.apps.site.views.profile.object_list_form'),
-	
+    (r'^profile/(?P<object_type_plural>{0})/embed/$'.format('|'.join(object_types_plural)), 'localground.apps.site.views.profile.object_list_form', {'embed':True}),
+
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	# 3) Update:
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -79,7 +80,7 @@ urlpatterns = patterns('',
 	# 4) Delete
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	(r'^profile/(?P<object_type_plural>{0})/delete/batch/$'.format('|'.join(object_types_plural)), 'localground.apps.site.views.profile.delete_batch'),
-	
+
 
 	#tables
 	#(r'^profile/tables/data/', 'localground.apps.site.views.tables.get_objects'),
@@ -88,30 +89,32 @@ urlpatterns = patterns('',
 	#(r'^tables/move-project/$', 'tables.move_to_project'),
 	#(r'^tables/download/(?P<format>[a-z-]+)/', 'tables.download'),
 	#(r'^tables/vis/(?P<format_type>[a-z-]+)/', 'tables.get_objects'),
-	
+
 	#contacts
 	(r'^profile/get-contacts/$', 'localground.apps.site.views.generic.get_contacts_autocomplete'),
 	(r'^profile/get-contacts/(?P<format>\w+)/$', 'localground.apps.site.views.generic.get_contacts_autocomplete'),
 	(r'^profile/get-my-contacts/$', 'localground.apps.site.views.generic.get_my_contacts_autocomplete'),
-	
+
 	#django authentication:
 	(r'^accounts/', include('localground.apps.registration.urls')),
 	(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
-	
+
 	#django-tagging:
 	url(r'^tagging_autocomplete/list/json$', 'tagging_autocomplete.views.list_tags',
 											name='tagging_autocomplete-list'),
-	
+
 	#uploader:
 	(r'^upload/$', 'localground.apps.site.views.uploader.init_upload_form'),
+    (r'^upload/embed/$', 'localground.apps.site.views.uploader.init_upload_form', {'embed': True}),
 	(r'^upload/(?P<media_type>photos|audio|map-images|forms|air-quality|odk)/$', 'localground.apps.site.views.uploader.init_upload_form'),
-	
+    (r'^upload/(?P<media_type>photos|audio|map-images|forms|air-quality|odk)/embed/$', 'localground.apps.site.views.uploader.init_upload_form', {'embed': True}),
+
 	# media server
 	(r'^profile/(?P<object_type>photos|audio|videos|snippets|attachments|map-images|prints|tables)/(?P<hash>[=\w]+)/$', 'localground.apps.site.views.mediaserver.serve_media'),
-	
-	# data API    
+
+	# data API
 	url(r'^api/0/', include('localground.apps.site.api.urls')),
-	
+
 	# interactive maps
 	(r'^maps/edit/air-quality/', 'localground.apps.site.views.ebays.show_ebays_map_editor'),
 	(r'^maps/edit/', 'localground.apps.site.views.maps.show_map_editor'),
@@ -120,5 +123,4 @@ urlpatterns = patterns('',
 	(r'^maps/view/(?P<username>[\w|-|.|_]+)/(?P<slug>[\w-]+)/(?P<access_key>\w+)/$', 'localground.apps.site.views.maps.show_map_viewer'),
 	(r'^maps/print/$', 'localground.apps.site.views.prints.generate_print'),
 	(r'^maps/print/embed/$', 'localground.apps.site.views.prints.generate_print',
-		{'embed': True, 'base_template': 'base/iframe.html'})
-
+		{'embed': True, 'base_template': 'base/iframe.html'}))

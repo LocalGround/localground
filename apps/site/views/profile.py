@@ -98,7 +98,7 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
 
 
 @login_required()
-def object_list_form(request, object_type_plural, return_message=None):
+def object_list_form(request, object_type_plural, return_message=None, embed=False):
     context = RequestContext(request)
     ModelClass = Base.get_model(model_name_plural=object_type_plural)
     template_name = 'profile/%s.html' % ModelClass.model_name_plural.replace(' ', '-')
@@ -162,6 +162,7 @@ def object_list_form(request, object_type_plural, return_message=None):
         
     context.update({
         'formset': modelformset,
+        'embed': embed,
         'page_title': 'My %s' % ModelClass.model_name_plural.capitalize(),
         'username': request.user.username,
         'url': '%s?1=1' % ModelClass.listing_url(),

@@ -10,7 +10,6 @@ import simplejson as json
 from localground.apps.site.models import Project
 from datetime import datetime
 
-
 @process_project  
 @login_required
 def init_upload_form(request,
@@ -18,6 +17,9 @@ def init_upload_form(request,
                  template_name='forms/uploader.html',
                  base_template='base/base.html',
                  embed=False, project=None):
+    if embed:
+        base_template = 'base/iframe.html'
+
     projects = Project.objects.get_objects(request.user)
     media_types = [
         ('photos', 'Photos', 'png, jpg, jpeg, gif'),

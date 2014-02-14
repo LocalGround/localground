@@ -5,7 +5,9 @@
 	}
 {% endblock %}
 {% block top_menu %}
-	{% include "includes/menus/top_nav.html" %}
+    {% if embed == False %}
+	    {% include "includes/menus/top_nav.html" %}
+    {% endif %}
 {% endblock %}
 {% block content %}
 	<div class="container-fluid">

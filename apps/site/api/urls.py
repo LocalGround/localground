@@ -50,9 +50,7 @@ urlpatterns += format_suffix_patterns(patterns('',
 	url(r'^photos/(?P<pk>[0-9]+)/rotate-right/$', views.rotate_right, name='rotate-right'),
 	url(r'^tags/$', views.TagList.as_view(), name='tags'),
 	url(r'^tags/(?P<model_name_plural>\w+)/$', views.TagList.as_view(), name='tags'),
-	
+
 	#Todo: generalize this one:
 	url(r'^forms/84/data/tracks/$', views.TrackList.as_view(), name='air-quality-tracks')
 ))
-
-

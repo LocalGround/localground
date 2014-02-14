@@ -35,6 +35,10 @@ localground.basemap = function() {
 };
 localground.basemap.prototype = new localground.base(); // inherits from base 
 
+localground.basemap.prototype.handleNoGeolocation = function(browserSupportFlag) {
+    //do nothing
+}
+
 localground.basemap.prototype.initialize=function(opts) {
     if(!this.isGoogleMapsAPIRunning()) {
         return;
@@ -48,6 +52,7 @@ localground.basemap.prototype.initialize=function(opts) {
     this.cloudmadeKey       = opts.cloudmadeKey;
     this.mapServerURL       = opts.serverURL + '/ows/ms.fcgi';
     this.tileCacheURL       = opts.serverURL + '/ows/tilecache.fcgi/1.0.0/';
+    this.hasDefaultLocale   = (opts.center)? true: false;
     this.center             = opts.center || new google.maps.LatLng(37.855365, -122.272614);
     this.zoom               = opts.zoom || 13;
     this.isPrint            = opts.isPrint || this.isPrint;
@@ -56,104 +61,102 @@ localground.basemap.prototype.initialize=function(opts) {
     
     this.map = new google.maps.Map(document.getElementById("map_canvas"), this.mapOptions);
     this.map.setOptions({styles: this.googleMapStyles});
-
-
-
+    var that = this;
 
 
     //Prompt user for default location, if possible
-    var that = this;
-    if(navigator.geolocation) {
-        var browserSupportFlag = true;
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-            that.map.setCenter(initialLocation);
-            that.map.setZoom(14);
-            $('#default_location').val("SRID=4326;POINT(" + position.coords.longitude.toFixed(6) + " " +
-                position.coords.latitude.toFixed(6) + ")");
+    if(this.hasDefaultLocale) {
+        that.map.setCenter(that.center);
+        that.map.setZoom(that.zoom);
+    } else {
 
-            $('#default_setter').submit(function(e) {
-                var postData = $(this).serializeArray();
-                var formURL = $(this).attr("action");
-                $.ajax(
-                    {
-                        url:formURL,
-                        type:"POST",
-                        data:postData,
-                        success:function(data, textStatus, jqXHR) {
-                            console.log("successfully submitted updated location")
-                        },
-                        error:function(data, textStatus, jqXHR) {
-                            console.log("error updating default location")
+        if(navigator.geolocation) {
+            var browserSupportFlag = true;
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+                that.map.setCenter(initialLocation);
+                that.map.setZoom(14);
+                $('#default_location').val("SRID=4326;POINT(" + position.coords.longitude.toFixed(6) + " " +
+                    position.coords.latitude.toFixed(6) + ")");
+
+                $('#default_setter').submit(function(e) {
+                    var postData = $(this).serializeArray();
+                    var formURL = $(this).attr("action");
+                    $.ajax(
+                        {
+                            url:formURL,
+                            type:"POST",
+                            data:postData,
+                            success:function(data, textStatus, jqXHR) {
+                                console.log("successfully submitted updated location")
+                            },
+                            error:function(data, textStatus, jqXHR) {
+                                console.log("error updating default location")
+                            }
+
                         }
+                    );
+                    e.preventDefault();
 
-                    }
-                );
-                e.preventDefault();
+                });
+                $('#default_setter').submit();
 
+            }, function() {
+                that.handleNoGeolocation(browserSupportFlag);
             });
-            $('#default_setter').submit();
-
-        }, function() {
+        }
+        // Browser doesn't support Geolocation
+            else {
+            browserSupportFlag = false;
+            this.map.setCenter(this.center);
+            this.map.setZoom(this.zoom);
             that.handleNoGeolocation(browserSupportFlag);
-        });
-    }
-    // Browser doesn't support Geolocation
-        else {
-        browserSupportFlag = false;
-        this.map.setCenter(this.center);
-        this.map.setZoom(this.zoom);
-        handleNoGeolocation(browserSupportFlag);
+        }
     }
 
 
-    localground.basemap.prototype.handleNoGeolocation = function(browserSupportFlag) {
-        var markers = [];
-        var that = this;
-        this.map.setCenter(new google.maps.LatLng(37.855365, -122.272614));
-        this.map.setZoom(this.zoom);
-        var input = /** @type {HTMLInputElement} */(
-            document.getElementById('pac-input'));
-        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-        var searchBox = new google.maps.places.SearchBox(
-            /** @type {HTMLInputElement} */(input));
-            google.maps.event.addListener(searchBox, 'places_changed', function() {
-            var places = searchBox.getPlaces();
+    var markers = [];
+    var input = /** @type {HTMLInputElement} */(
+        document.getElementById('pac-input'));
+    that.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+    var searchBox = new google.maps.places.SearchBox(
+        /** @type {HTMLInputElement} */(input));
+        google.maps.event.addListener(searchBox, 'places_changed', function() {
+        var places = searchBox.getPlaces();
 
-            for (var i = 0, marker; marker = markers[i]; i++) {
-              marker.setMap(null);
-            }
-            // For each place, get the icon, place name, and location.
-            markers = [];
-            var bounds = new google.maps.LatLngBounds();
-           //for (var i = 0, place; place = places[i]; i++) {
-              //var image = {
-              //  url: places[0].icon,
-              //  size: new google.maps.Size(71, 71),
-              //  origin: new google.maps.Point(0, 0),
-              //  anchor: new google.maps.Point(17, 34),
-              //  scaledSize: new google.maps.Size(25, 25)
-             // };
+        for (var i = 0, marker; marker = markers[i]; i++) {
+          marker.setMap(null);
+        }
+        // For each place, get the icon, place name, and location.
+        markers = [];
+        var bounds = new google.maps.LatLngBounds();
+       //for (var i = 0, place; place = places[i]; i++) {
+          //var image = {
+          //  url: places[0].icon,
+          //  size: new google.maps.Size(71, 71),
+          //  origin: new google.maps.Point(0, 0),
+          //  anchor: new google.maps.Point(17, 34),
+          //  scaledSize: new google.maps.Size(25, 25)
+         // };
 
-              // Create a marker for each place.
-              //var marker = new google.maps.Marker({
-              //  map: that.map,
-              //  icon: image,
-              //  title: places[0].name,
-              //  position: places[0].geometry.location
-              //});
-              //console.log(place.name);
+          // Create a marker for each place.
+          //var marker = new google.maps.Marker({
+          //  map: that.map,
+          //  icon: image,
+          //  title: places[0].name,
+          //  position: places[0].geometry.location
+          //});
+          //console.log(place.name);
 
-              //markers.push(marker);
+          //markers.push(marker);
 
-              bounds.extend(places[0].geometry.location);
-            //}
+          bounds.extend(places[0].geometry.location);
+        //}
 
-            that.map.fitBounds(bounds);
-            that.map.setZoom(16);
-         });
+        that.map.fitBounds(bounds);
+        that.map.setZoom(16);
+     });
 
-    }
 
 
 
@@ -183,6 +186,23 @@ localground.basemap.prototype.initialize=function(opts) {
         self.map.panTo(evt.latLng);
     });
     */
+
+    $('.create-object').click(function() {
+        var object = this.getAttribute('data-main');
+        that.addObject(object, '/profile/' + object + '/create/embed/');
+    })
+
+    $('.upload').click(function() {
+        that.addObject(this.getAttribute('data-main'), '/upload/embed/', 1000);
+    });
+
+    $('.edit').click(function() {
+        var object = this.getAttribute('data-main');
+        that.addObject(object, '/profile/' + object + '/embed/', 1050);
+        //$('#add-modal').find('#the_frame').contents().find('.topbar').hide();
+
+    });
+
 };
 
 
@@ -255,7 +275,7 @@ localground.basemap.prototype.initTiles = function() {
     });
     if(!this.isPrint) {
         this.extendTwitterDropdowns();
-        
+
         //no additional layers configured
         if(!hasLayers) {
             //alert('no supplemental layers');
@@ -594,6 +614,7 @@ localground.basemap.prototype.drawOutlines = function() {
 };
 
 localground.basemap.prototype.extendTwitterDropdowns = function() {
+    $('.sub-menu').hide();
     $('input, .dropdown-menu > li').click(function(event) {
         event.stopPropagation();
     });
@@ -602,6 +623,25 @@ localground.basemap.prototype.extendTwitterDropdowns = function() {
         function() { $(this).addClass('menu-item-selected'); },
         function() { $(this).removeClass('menu-item-selected'); }
     );
+    $(function(){
+        $(".dropdown-menu > li > a.trigger").on("click",function(e){
+            var current=$(this).next();
+            var grandparent=$(this).parent().parent();
+            if($(this).hasClass('left-caret')||$(this).hasClass('right-caret'))
+                $(this).toggleClass('right-caret left-caret');
+            grandparent.find('.left-caret').not(this).toggleClass('right-caret left-caret');
+            grandparent.find(".sub-menu:visible").not(current).hide();
+            current.toggle();
+            e.stopPropagation();
+        });
+        $(".dropdown-menu > li > a:not(.trigger)").on("click",function(){
+            var root=$(this).closest('.dropdown');
+            root.find('.left-caret').toggleClass('right-caret left-caret');
+            root.find('.sub-menu:visible').hide();
+        });
+
+    });
+
 }
 
 localground.basemap.prototype.initLayout = function() {
@@ -709,6 +749,30 @@ localground.basemap.prototype.setPosition = function(minimizeRightPanel) {
         });
     }
 }
+
+localground.basemap.prototype.addObject = function(object) {
+	return localground.basemap.prototype.addObject(object, "");
+};
+
+localground.basemap.prototype.addObject = function(object, url, width) {
+    if(!url)
+        url = '/profile/' + object + '/create/embed/'
+    this.addModal = new ui.dialog({
+        id: 'add-modal',
+        width: width || 560,
+        height: 450,
+        iframeURL: url,
+        showTitle: false,
+        submitButtonText: 'Save ' + object.toLowerCase(),
+        closeExtras: function() {
+            if($('#add-modal').find('.hide').html() == 'Done')
+                document.location.href = self.pageURL;
+        }
+    });
+    this.addModal.show();
+    return false;
+}
+
 
 
 

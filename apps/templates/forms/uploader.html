@@ -141,7 +141,8 @@
 	var pageguide = tl.pg.init();
 {% endblock %}
 
-{% block content %}    
+{% block content %}
+{% block main_content %}
     <div class="container">
 		<h1 style="margin:20px 0px 20px 0px;">
 			{% if selected_media_type.0 == 'photos' %}
@@ -164,7 +165,7 @@
 			<ul class="nav nav-pills">
 				{% for media_type in media_types %}
 					<li {% if selected_media_type.0 == media_type.0 %}class="active"{% endif %}>
-						<a href="/upload/{{media_type.0}}/">{{media_type.1}}</a>
+						<a href="/upload/{{media_type.0}}/{% if embed %}embed{% endif %}">{{media_type.1}}</a>
 					</li>
 				{% endfor %}
 			</ul>
@@ -243,4 +244,5 @@
 		
 	  </ul>
     
+{% endblock %}
 {% endblock %}
