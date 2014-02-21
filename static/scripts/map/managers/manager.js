@@ -275,7 +275,7 @@ localground.manager.prototype.getLoadingImageSmall = function() {
 };
 
 localground.manager.prototype.isManagerChecked = function() {
-    return $('#toggle_' + this.id + '_all').attr('checked') == 'checked';
+    return $('#toggle_' + this.id + '_all').prop('checked') == true;
 };
 
 

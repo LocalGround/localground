@@ -99,6 +99,7 @@ input[type=checkbox] {
 #projectList li, #mediaList li {
 	display: block;
 	float: none;
+    cursor:pointer;
 }
 .unhide { margin-right: 5px; display: none; }
 /* important for Google Map controls; overrides boostrap.css */

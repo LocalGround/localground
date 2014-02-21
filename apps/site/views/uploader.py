@@ -44,6 +44,16 @@ def init_upload_form(request,
                               context_instance = RequestContext( request))
 
 
+def batch_upload_form(request, entity_type, project=None):
+
+    return HttpResponse('<body>' +
+                        '<form id="somecsv">' +
+                        '<label for="fileToUpload">Upload CSV</label><br/>' +
+                        '<input type="file" name="fileToUpload" id="fileToUpload" />'
+                        '<button type="submit" value="submit" formmethod="post" ' +
+                        'formaction="/upload/'+entity_type+'/batch/post">Submit </button>' +
+                        '</form></body>')
+
 @process_project 
 @login_required
 def upload_media(request, project=None):

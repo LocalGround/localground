@@ -14,8 +14,12 @@
                                 <ul id="projectList" class="dropdown-menu sub-menu">
                                  </ul>
                             </li>
-                            <li><a href="/profile/projects/" data-main="projects">Edit</a></li>
-                            <li><a href="#share-project">Share</a></li>
+                            <li><a href="#edit-project" class='edit' data-main="projects">Edit</a></li>
+                            <li><a class="trigger right-caret">Download</a>
+                                <ul id="project-download-list" class="dropdown-menu sub-menu">
+                                 </ul>
+                            </li>
+                            <li><a href="/api/0/projects/?format=csv">Download All</a></li>
                         </ul>
                 </li>
                 {% endblock %}
@@ -28,8 +32,7 @@
                                     <li><a href="#" >No Views Yet</a></li>
                                  </ul>
                             </li>
-                            <li><a href="/profile/views/">Edit</a></li>
-                            <li><a href="#share-view">Share</a></li>
+                            <li><a href="#edit-views" class="edit" data-main="views">Edit</a></li>
                         </ul>
                 </li>
 
@@ -38,17 +41,17 @@
                         <ul id="resourceList" class="dropdown-menu white-links">
                             <li><a href="#upload-files" class="upload" data-main="files">Upload</a></li>
                             <li><a href="#photos" class='edit' data-main="photos">Photos</a></li>
-                            <li><a href="/profile/audio/" class='edit' data-main="audio">Audio</a></li>
-                            <li><a href="/profile/map-images/" class='edit' data-main="map-images">Scanned Maps</a></li>
-                            <li><a href="/profile/tiles/" class='edit' data-main="tiles">Map Tiles</a></li>
-                            <li><a href="/profile/prints/" class='edit' data-main="prints">Prints</a></li>
+                            <li><a href="#audio" class='edit' data-main="audio">Audio</a></li>
+                            <li><a href="#map-images" class='edit' data-main="map-images">Scanned Maps</a></li>
+                            <li><a href="#tiles" class='edit' data-main="tiles">Map Tiles</a></li>
+                            <li><a href="#prints" class='edit' data-main="prints">Prints</a></li>
                         </ul>
                 </li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Data</a>
                         <ul id="dataList" class="dropdown-menu white-links">
                             <li><a href="#new-form" class='create-object' data-main="forms">New Form</a></li>
-                            <li><a href="/profile/forms/">Edit Forms</a></li>
+                            <li><a href="#edit-forms" class="edit" data-main="forms">Edit Forms</a></li>
                             <li><a href="#print-form">Print Form</a></li>
                             <li><a href="#upload-form">Upload Forms</a></li>
                             <li><a href="#review-data">Review Data</a></li>

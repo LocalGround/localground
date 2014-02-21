@@ -40,6 +40,7 @@ urlpatterns = patterns('',
 	(r'^pages/(?P<page_name>\w+)/', 'localground.apps.site.views.pages.about_pages'),
 
 	#user prefs:
+    #This should really be in the API, but is here for now
     (r'^profile/settings/update_location/','localground.apps.site.views.profile.update_user_location'),
 	(r'^profile/settings/', 'localground.apps.site.views.profile.change_user_profile'),
 
@@ -108,6 +109,8 @@ urlpatterns = patterns('',
     (r'^upload/embed/$', 'localground.apps.site.views.uploader.init_upload_form', {'embed': True}),
 	(r'^upload/(?P<media_type>photos|audio|map-images|forms|air-quality|odk)/$', 'localground.apps.site.views.uploader.init_upload_form'),
     (r'^upload/(?P<media_type>photos|audio|map-images|forms|air-quality|odk)/embed/$', 'localground.apps.site.views.uploader.init_upload_form', {'embed': True}),
+    (r'^upload/(?P<entity_type>projects|photos|audio|prints)/batch/$', 'localground.apps.site.views.uploader.batch_upload_form'),
+
 
 	# media server
 	(r'^profile/(?P<object_type>photos|audio|videos|snippets|attachments|map-images|prints|tables)/(?P<hash>[=\w]+)/$', 'localground.apps.site.views.mediaserver.serve_media'),

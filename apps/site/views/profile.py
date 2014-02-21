@@ -162,7 +162,7 @@ def object_list_form(request, object_type_plural, return_message=None, embed=Fal
         
     context.update({
         'formset': modelformset,
-        'embed': embed,
+        'embed' : embed,
         'page_title': 'My %s' % ModelClass.model_name_plural.capitalize(),
         'username': request.user.username,
         'url': '%s?1=1' % ModelClass.listing_url(),

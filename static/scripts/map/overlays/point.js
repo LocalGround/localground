@@ -52,7 +52,7 @@ localground.point.prototype.dragend = function(latLng) {
 		// of the media item and toggle it off in the menu
 		this.googleOverlay.setPosition(new google.maps.LatLng(this.point.lat, this.point.lng));
         this.googleOverlay.setMap(null);
-		$('#cb_' + this.managerID + "_" + this.id).attr('checked', false);
+		$('#cb_' + this.managerID + "_" + this.id).prop('checked', false);
         
 		// add a message:
 		var $contentContainer = $('<div></div>').css({

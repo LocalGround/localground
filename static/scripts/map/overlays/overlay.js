@@ -221,6 +221,7 @@ localground.overlay.prototype.toggleOverlay = function(isOn) {
         }
     }
     else {
+        console.log('oy there im hittin this');
         $cb.attr('checked', false);
         if(this.googleOverlay)
 			this.googleOverlay.setMap(null);

@@ -170,26 +170,28 @@ localground.viewer.prototype.initProjectsMenu = function() {
             var projectID = this.id;
             var $span = $('<span></span>').html(this.name);
             var $cb = $('<input type="checkbox" class="cb_project" />')
-                        .attr('id', this.id)
-                        .attr('title', this.id)
-                        .val(this.id);
+                        .attr('id', 'project-' + projectID)
+                        .val(projectID);
             $cb.change(function() {
 				return self.toggleProjectData(parseInt($(this).val()), 'projects', $(this).attr('checked'), false);	
 			});
             $cb.checked = false;
             var $li = $('<li></li>')
                 .append($cb).append($span)
-                .css({'cursor': 'pointer'})
                 .click(function(){
                     //kind of a weird hack, but it works:
                     var $cb = $(this).find('input');
-                    var isChecked = $cb.attr('checked') ? false : true;
-                    $cb.attr('checked', isChecked); //toggle checkbox
+                    $cb.prop('checked',!$cb.prop('checked'));
                     $cb.trigger('change');
-                    $cb.attr('checked', isChecked);
                     return false;
                 });
-            $('#projectList').append($li);   
+
+
+
+            $('#projectList').append($li);
+
+            $('#project-download-list').append("<li><a href='/api/0/projects/" + projectID +
+                                                "/?format=csv'>" + this.name + "</li>");
         });
         self.extendTwitterDropdowns();
         $('#projectListContainer').css({
