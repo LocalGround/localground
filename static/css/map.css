@@ -7,6 +7,26 @@ html, body {
 h4, h5 {
 	line-height: 30px !important;
 }
+
+#addressInput {
+  margin-top: 1px !important;
+  margin-right: 36px;
+  border: solid 5px #CCC; /*#222*/
+  -moz-box-shadow: 3px 3px 3px #999;
+  -webkit-box-shadow: 3px 3px 3px #999;
+  box-shadow: 3px 3px 3px #999;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+  height: 25px;
+  width: 300px;
+}
+
+.dropdown a h3 {
+  line-height: 19px !important;
+  display: inline-block;
+  color: #fff;
+}
 input[type=checkbox] {
 	/*vertical-align: bottom !important;*/
 	margin: 0px 6px 0px 3px;
@@ -261,4 +281,10 @@ form .input { margin-left: 85px; }
 }
 .left-caret:after
 {	border-right: 5px solid #ffaf46;
+}
+
+
+.fa {
+  vertical-align: middle !important;
+  cursor: pointer;
 }

@@ -1,6 +1,7 @@
 {% extends "base/base.html" %}
 {% block page_title %}Map{% endblock %}
 {% block style_links %}
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="/static/css/audio.css" type="text/css" media="all" rel="stylesheet" />
     <link href="/static/css/map.css" type="text/css" media="all" rel="stylesheet" />
     <link href="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
@@ -96,40 +97,31 @@
 	<div id="map_panel">
         <div style="padding:10px;">
             
-			<!-- alert, error, and success messages -->
-			<div class="row">
-				{% include "includes/messages.html" %}
-			</div>
-			<div class="inset-block" id="edit_control_panel">
-			    
-			    <div id="map_toolbar" class="btn-group pull-right" style="display: none;">
-				<button id="mode_toggle" class="btn primary">Edit</button>
-				<a id="filter_menu_button" class="btn info dropdown-toggle" href='#' data-toggle="dropdown">
-				    <i class="icon-dark icon-filter"></i> Filter
-				    <span class="caret"></span>
-				</a>
-				{% include "includes/filter_menu_map.html" %}
-			    </div>
-			      
-			    
-			    <span id="editor_message">
-			    {% if num_projects > 0 or ebays %}
-				    Use the top menus to add your data on the map
-			    {% else %}
-				    You have not defined any projects.  In order to create
-				    your first project, you can either (1) print a map by clicking the
-				    print button (above), or (2) create a new one
-				    <a href="/profile/projects/">here</a>.
-			    {% endif %}
-			    </span>
-			</div>
+	    <!-- alert, error, and success messages -->
+	    <div class="row">
+		{% include "includes/messages.html" %}
+	    </div>
+	    {% include "includes/menus/map_toolbar.html" %}
+	    <!-- div class="inset-block" id="edit_control_panel">
+		<span id="editor_message">
+		{% if num_projects > 0 or ebays %}
+		    Use the top menus to add your data on the map
+		{% else %}
+		    You have not defined any projects.  In order to create
+		    your first project, you can either (1) print a map by clicking the
+		    print button (above), or (2) create a new one
+		    <a href="/profile/projects/">here</a>.
+		{% endif %}
+		</span>
+	    </div -->
+	    
             <ul class="tabs" data-tabs="tabs" style="margin-bottom: 10px !important;">
-				<li class="active">
-					<a data-toggle="tab" href="#data">Data & Media</a>
-				</li>
+		<li class="active">
+		    <a data-toggle="tab" href="#data">Data & Media</a>
+		</li>
                 <li>
-					<a data-toggle="tab" href="#legend">Legend</a>
-				</li>
+		    <a data-toggle="tab" href="#legend">Legend</a>
+		</li>
             </ul>
             <div id="tab_content" class="tab-content clearfix">
 				
@@ -179,8 +171,9 @@
         <div class="modal-body"></div>
     </div>
 	<button id="streetview_close_button"
-			style="padding:3px;margin-top:10px;display:none;">exit streetview</button>
-    <input id="pac-input" class="controls" type="text" placeholder="Search Box" style="margin-top:5px">
+		style="padding:3px;margin-top:10px;display:none;">exit streetview</button>
+    <input id="addressInput" class="controls" type="text" placeholder="Search for Places"
+	   style="margin-top:5px;float: right;">
     <form method="post" action="../../profile/settings/update_location/" id="default_setter">
         {% csrf_token %}
         <input type="hidden" id="default_location" name="default_location" value="">

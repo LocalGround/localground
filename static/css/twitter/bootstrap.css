@@ -1488,6 +1488,9 @@ a.menu:after, .dropdown-toggle:after {
   -moz-opacity: 0.5;
   opacity: 0.5;
 }
+.light:after {
+  border-top: 4px solid #000 !important;
+}
 .menu-dropdown, .dropdown-menu {
   background-color: #ffffff;
   float: left;

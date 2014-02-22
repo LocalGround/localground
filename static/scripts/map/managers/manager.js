@@ -67,13 +67,25 @@ localground.manager.prototype.addDataContainer = function() {
 					}));
         
         $heading.append($('<h4 />').html(this.name).css({'display': 'inline'}));
-        $heading.append($('<img />')
-                            .attr('src', '/static/images/icon-searchbox.png')
+        $heading.append($('<i />')
+                            .addClass('fa fa-search fa-lg pull-right')
+			    .css({'margin': '10px 3px 0px 0px'})
                             .attr('title', 'zoom to visible')
-                            .addClass('zoom-magnifying-glass pull-right')
                             .click(function() {
                                 me.zoomToLayer();    
                             }));
+	/*$heading.append($('<i />')
+                            .addClass('fa fa-download fa-lg pull-right')
+			    .css({'color': '#666', 'margin': '10px 3px 0px 0px'})
+                            .click(function() {
+                                alert("download photos");  
+                            }));
+	$heading.append($('<i />')
+                            .addClass('fa fa-tag fa-lg pull-right')
+			    .css({'color': '#666', 'margin': '10px 3px 0px 0px'})
+                            .click(function() {
+                                alert("tag selected");  
+                            }));*/
                                     
         $('#panel_data').append($container)
 		$container.append($heading);

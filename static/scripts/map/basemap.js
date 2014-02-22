@@ -12,6 +12,7 @@ localground.basemap = function() {
     this.map                = null;
     this.zoom               = null;
     this.center             = null;
+    this.searchBox          = null;
     this.initialMapLayerID  = 12; //(2 = roadmap); // (12 = Grayscale);
     this.minimizeRightPanel = false;
     this.selectedLayers     = [];
@@ -28,9 +29,13 @@ localground.basemap = function() {
         scaleControl: true,
         panControl: false,
         mapTypeControlOptions: {
-            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+            position: google.maps.ControlPosition.LEFT
         },
-        position: google.maps.ControlPosition.TOP_LEFT
+        zoomControlOptions: {
+            style: google.maps.ZoomControlStyle.SMALL
+        }
+        
     };
 };
 localground.basemap.prototype = new localground.base(); // inherits from base 
@@ -64,12 +69,49 @@ localground.basemap.prototype.initialize=function(opts) {
     var that = this;
 
 
-    //Prompt user for default location, if possible
-    if(this.hasDefaultLocale) {
-        that.map.setCenter(that.center);
-        that.map.setZoom(that.zoom);
-    } else {
+    this.initGeolocation();
+    this.initSearchBox();
 
+    //arrange panels on page:
+    if(!this.isPrint)
+        this.initLayout();
+
+    // not sure if this is actually needed.  Need to check...
+    this.overlay = new google.maps.OverlayView();
+    this.overlay.draw = function() {};
+    this.overlay.setMap(this.map);
+    
+    this.initTiles();
+        
+    /*google.maps.event.addListener(this.map, 'click', function(evt){
+        self.map.panTo(evt.latLng);
+    });
+    */
+
+    $('.create-object').click(function() {
+        var object = this.getAttribute('data-main');
+        that.addObject(object, '/profile/' + object + '/create/embed/');
+    })
+
+    $('#upload').click(function() {
+        that.addObject(this.getAttribute('data-main'), '/upload/embed/', 1000);
+    });
+
+    $('.edit').click(function() {
+        var object = this.getAttribute('data-main');
+        that.addObject(object, '/profile/' + object + '/embed/', 1050);
+        //$('#add-modal').find('#the_frame').contents().find('.topbar').hide();
+
+    });
+};
+
+localground.basemap.prototype.initGeolocation = function() {
+    //Prompt user for default location, if possible
+    var that = this;
+    if(this.hasDefaultLocale) {
+        this.map.setCenter(that.center);
+        this.map.setZoom(that.zoom);
+    } else {
         if(navigator.geolocation) {
             var browserSupportFlag = true;
             navigator.geolocation.getCurrentPosition(function(position) {
@@ -106,106 +148,43 @@ localground.basemap.prototype.initialize=function(opts) {
             });
         }
         // Browser doesn't support Geolocation
-            else {
+        else {
             browserSupportFlag = false;
             this.map.setCenter(this.center);
             this.map.setZoom(this.zoom);
             that.handleNoGeolocation(browserSupportFlag);
         }
     }
-
-
-    var markers = [];
-    var input = /** @type {HTMLInputElement} */(
-        document.getElementById('pac-input'));
-    that.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-    var searchBox = new google.maps.places.SearchBox(
-        /** @type {HTMLInputElement} */(input));
-        google.maps.event.addListener(searchBox, 'places_changed', function() {
-        var places = searchBox.getPlaces();
-
-        for (var i = 0, marker; marker = markers[i]; i++) {
-          marker.setMap(null);
-        }
-        // For each place, get the icon, place name, and location.
-        markers = [];
-        var bounds = new google.maps.LatLngBounds();
-       //for (var i = 0, place; place = places[i]; i++) {
-          //var image = {
-          //  url: places[0].icon,
-          //  size: new google.maps.Size(71, 71),
-          //  origin: new google.maps.Point(0, 0),
-          //  anchor: new google.maps.Point(17, 34),
-          //  scaledSize: new google.maps.Size(25, 25)
-         // };
-
-          // Create a marker for each place.
-          //var marker = new google.maps.Marker({
-          //  map: that.map,
-          //  icon: image,
-          //  title: places[0].name,
-          //  position: places[0].geometry.location
-          //});
-          //console.log(place.name);
-
-          //markers.push(marker);
-
-          bounds.extend(places[0].geometry.location);
-        //}
-
-        that.map.fitBounds(bounds);
-        that.map.setZoom(16);
-     });
-
-
-
-
-
-
-
-    
-    //arrange panels on page:
-    if(!this.isPrint)
-        this.initLayout();
-
-    // not sure if this is actually needed.  Need to check...
-    this.overlay = new google.maps.OverlayView();
-    this.overlay.draw = function() {};
-    this.overlay.setMap(this.map);
-    
-    this.initTiles();
-    
-    $("#addressInput")
-        .keyup(function(event){
-            if(event.keyCode == 13){
-                self.search();
-            }
-        });
-        
-    /*google.maps.event.addListener(this.map, 'click', function(evt){
-        self.map.panTo(evt.latLng);
-    });
-    */
-
-    $('.create-object').click(function() {
-        var object = this.getAttribute('data-main');
-        that.addObject(object, '/profile/' + object + '/create/embed/');
-    })
-
-    $('.upload').click(function() {
-        that.addObject(this.getAttribute('data-main'), '/upload/embed/', 1000);
-    });
-
-    $('.edit').click(function() {
-        var object = this.getAttribute('data-main');
-        that.addObject(object, '/profile/' + object + '/embed/', 1050);
-        //$('#add-modal').find('#the_frame').contents().find('.topbar').hide();
-
-    });
-
 };
 
+localground.basemap.prototype.initSearchBox = function() {
+    var $input = $('#addressInput');
+    this.map.controls[google.maps.ControlPosition.RIGHT_TOP].push($input.get(0));
+    this.searchBox = new google.maps.places.SearchBox($input.get(0));
+    google.maps.event.addListener(this.searchBox, 'places_changed', function() {
+        self.search();
+    });
+    $input.keyup(function(event){
+        if(event.keyCode == 13){
+            self.search();
+        }
+    });
+};
 
+localground.basemap.prototype.search = function() {
+    var places = this.searchBox.getPlaces();
+    //alert(JSON.stringify(places));
+    if (places) {
+        if (places.length == 0) return;
+        if (places[0].geometry.viewport) {
+            this.map.fitBounds(places[0].geometry.viewport);
+        }
+        else {
+            this.map.setCenter(places[0].geometry.location);
+            this.map.setZoom(17);
+        }
+    }
+};
 
 localground.basemap.prototype.isGoogleMapsAPIRunning = function() {
     //check to see if google maps is up:
@@ -373,47 +352,6 @@ localground.basemap.prototype.addTileOverlay = function(id, turn_on) {
         }
     }
     
-};
-
-localground.basemap.prototype.search = function() {
-    var address = $('#addressInput').val();
-    var self = this;
-    var geocoder = new google.maps.Geocoder();
-    if (geocoder) {
-        geocoder.geocode( { 'address': address}, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-                if (status != google.maps.GeocoderStatus.ZERO_RESULTS)
-                {
-                    self.map.setCenter(results[0].geometry.location);
-                    self.map.fitBounds(results[0].geometry.viewport);
-                    //self.map.setZoom(17);
-                    /*var url= 'http://findicons.com/files/icons/2015/24x24_free_application/24/red_star.png';
-                    //var url = 'http://chart.googleapis.com/chart?chst=d_bubble_text_small&chld=bb|You Are Here|9ca272|000000'
-                    var image = new google.maps.MarkerImage(
-                        url,
-                        new google.maps.Size(155, 40),
-                        new google.maps.Point(0,0),
-                        new google.maps.Point(0, 40)
-                    );
-                    //var image = 'https://chart.googleapis.com/chart?chst=d_bubble_text_small&chld=bb|Here|9ca272|000000';
-                    if(self.marker != null)
-                        self.marker.setMap(null);
-                    
-                    self.marker = new google.maps.Marker({
-                        position: results[0].geometry.location,
-                        map: self.map,
-                        icon: image
-                    });*/
-                }
-                else
-                {
-                    alert("No results found for: " + address);
-                }
-            }
-            else
-                alert("Geocode was not successful for the following reason: " + status);
-        });
-    }
 };
 
 localground.basemap.prototype.showLoadingImage = function(divID) {

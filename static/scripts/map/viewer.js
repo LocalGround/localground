@@ -97,10 +97,6 @@ localground.viewer.prototype.initialize=function(opts){
             }).html('Add a form here'));
         $('#my-modal').modal('show');
     });
-    
-    $('#upload').click(function() {
-		window.open('/upload/', '_blank');
-    });
 
     this.initProjectsMenu();
         
