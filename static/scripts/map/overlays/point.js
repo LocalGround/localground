@@ -143,9 +143,9 @@ localground.point.prototype.makeEditable = function() {
 			}
         });
     }
-    else {
+    //else {
         this.makeGeoreferenceable();
-    }
+    //}
 };
 
 localground.point.prototype.addMarkerEventHandlers = function() {
@@ -262,8 +262,6 @@ localground.point.prototype.closeInfoBubble = function() {
 };
 
 localground.point.prototype.makeGeoreferenceable = function() {
-	if(this.googleOverlay != null)
-        return;
     var $img = this.getListingImage();
     var $cb = this.getListingCheckbox();
 	var me = this;
@@ -277,6 +275,9 @@ localground.point.prototype.makeGeoreferenceable = function() {
             if(self.map.getZoom() <= 16)
                 imageURL = me.iconSmall;  
             //initialize marker:
+            if(me.googleOverlay != null)
+                me.googleOverlay.setMap(null);
+
             me.googleOverlay = new google.maps.Marker({
                 position: location, 
                 map: self.map,

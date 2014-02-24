@@ -50,11 +50,11 @@ localground.overlay.prototype.renderListingCheckbox = function() {
         });
 	if(this.googleOverlay) {
 		if(this.googleOverlay.map != null) {
-			$cb.attr('checked', true);
+			$cb.prop('checked', true);
 		}
 		else if(this.turned_on) { //only relevant for views.
 			this.googleOverlay.setMap(self.map);
-			$cb.attr('checked', true);
+			$cb.prop('checked', true);
 		}
 	}
 	//if the element hasn't been geo-referenced, hide the check box:
@@ -169,7 +169,12 @@ localground.overlay.prototype.renderListing = function() {
 	else {
 		$div_entry.show();
 	}
+
 	this.toggleOverlay(this.isChecked());
+    if(this.isEditMode()) {
+        this.makeEditable();
+        $('.listing_container').find('.close').show();
+    }
 };
 localground.overlay.prototype.showOverlay = function() {
 	this.getListingElement().show();
@@ -225,7 +230,6 @@ localground.overlay.prototype.toggleOverlay = function(isOn) {
         }
     }
     else {
-        console.log('oy there im hittin this');
         $cb.prop('checked', false);
         if(this.googleOverlay)
 			this.googleOverlay.setMap(null);
