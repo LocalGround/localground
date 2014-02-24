@@ -1,61 +1,72 @@
-<div id="map_toolbar" class="btn-group" style="margin: 0px 0px 5px 0px;">
-    <button id="add" data-main="add" class="btn">
-        <i class="fa fa-folder-open"></i>
-    </button>
+<div class="btn-group btn-toolbar">
+    <div class="btn-group">
+        <button id="add" class="btn" data-toggle="dropdown">
+            <i class="fa fa-folder-open"></i>
+        </button>
+        <div id="add-menu" class="dropdown-menu pull-right" style="width:400px; max-width: 400px; max-height: 300px;">
+            Download Project text text text text text text text text
+            text text text text text text text text text text text text
+            text text text text text text text text text text text text
+            text text text text text text text text
+            text text text text text text text text text text text text
+            text text text text text text text text text text text text
+            text text text text text text text text
+            text text text text text text text text text text text text
+            text text text text text text text text text text text text
+            text text text text text text text text
+            text text text text text text text text text text text text
+            text text text text text text text text text text text text 
+        </div>
+    </div>
     <button id="upload" data-main="upload" class="btn">
         <i class="fa fa-upload"></i>
     </button>
-    <button id="download" class="btn">
-        <i class="fa fa-download"></i>	    
+    <button id="upload" data-main="upload" class="btn">
+        <i class="fa fa-download"></i>
     </button>
+    <div class="btn-group">
+        <button id="filter_menu_button" class="btn" data-toggle="dropdown">
+            <i class="fa fa-filter"></i>
+        </button>
+        <ul id="filter-menu" class="dropdown-menu pull-right" style="max-height: 300px;">
+            <li class="clearfix">
+                <label>Owned By:</label>
+                <div class="input">
+                    <select id="owner_filter"></select>
+                 </div>
+            </li>
+            <li class="clearfix">
+                <label>Name:</label>
+                <div class="input">
+                    <input id="name_filter" type="text" value="" />
+                </div>
+            </li>
+            <li class="clearfix">
+                <label>Tags:</label>
+                <div class="input">
+                    <input id="tag_filter" type="text" value="" />
+                </div>
+            </li>
+            <li class="clearfix">
+                <label>Caption:</label>
+                <div class="input">
+                    <input id="description_filter" type="text" value="" />
+                </div>
+            </li>
+            <li class="divider"></li>  
+            <li class="clearfix">
+                <div class="input" style="width:200px;">
+                    <button id="apply_filter" type="button" class="btn">Apply</button>
+                    <button id="clear_filter" type="button" class="btn primary">Clear</button>
+                </div>
+            </li>
+        </ul>
+    </div>
     <button id="print" class="btn">
         <i class="fa fa-print"></i>
     </button>
     <button id="mode_toggle" class="btn">
         <i class="fa fa-edit"></i>	    
     </button>
-    <a id="filter_menu_button" class="btn dropdown-toggle light" href='#' data-toggle="dropdown">
-        <i class="fa fa-filter"></i>
-    </a>
-    <!-- FILTER MENU -->
-    <ul id="filter-menu" class="dropdown-menu pull-right" style="max-height: 300px;">
-        <li class="clearfix">
-            <label>Owned By:</label>
-            <div class="input">
-                <select id="owner_filter"></select>
-             </div>
-        </li>
-        <li class="clearfix">
-            <label>Name:</label>
-            <div class="input">
-                <input id="name_filter" type="text" value="" />
-            </div>
-        </li>
-        <li class="clearfix">
-            <label>Tags:</label>
-            <div class="input">
-                <input id="tag_filter" type="text" value="" />
-            </div>
-        </li>
-        <li class="clearfix">
-            <label>Caption:</label>
-            <div class="input">
-                <input id="description_filter" type="text" value="" />
-            </div>
-        </li>
-        <li class="divider"></li>  
-        <li class="clearfix">
-            <div class="input" style="width:200px;">
-                <button id="apply_filter" type="button" class="btn">Apply</button>
-                <button id="clear_filter" type="button" class="btn primary">Clear</button>
-            </div>
-        </li>
-    </ul>
-    
-    <!-- script type="text/javascript">
-        $('#filter-menu input, #filter-menu label, #filter-menu select, #filter-menu button, #filter-menu textarea')
-            .click(function(e) { e.stopPropagation(); });
-        $(".tags").autocomplete("/tagging_autocomplete/list/json", { multiple: true });
-        $('.date-picker').datepicker({ dateFormat: 'mm/dd/yy' });
-    </script -->
 </div>
+

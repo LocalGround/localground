@@ -689,7 +689,7 @@ localground.basemap.prototype.setPosition = function(minimizeRightPanel) {
 }
 
 localground.basemap.prototype.addObject = function(object) {
-	return localground.basemap.prototype.addObject(object, "");
+    return localground.basemap.prototype.addObject(object, "");
 };
 
 localground.basemap.prototype.addObject = function(object, url, width) {
