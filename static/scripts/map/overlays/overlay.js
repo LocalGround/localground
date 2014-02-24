@@ -35,6 +35,10 @@ localground.overlay.prototype.getListingContainer = function() {
 	return $c;
 };
 
+localground.overlay.prototype.isChecked = function() {
+    return $('#cb_' + this.managerID + '_' + this.id).prop('checked');
+}
+
 localground.overlay.prototype.renderListingCheckbox = function() {
 	var me = this;
 	var $cb = $('<input class="cb_' + this.managerID + '" type="checkbox" />')
@@ -42,7 +46,7 @@ localground.overlay.prototype.renderListingCheckbox = function() {
         .val(this.id)
         .css({'vertical-align': 'baseline'})
         .change(function() {
-			me.toggleOverlay($(this).attr('checked'));
+			me.toggleOverlay($(this).prop('checked'));
         });
 	if(this.googleOverlay) {
 		if(this.googleOverlay.map != null) {
@@ -165,12 +169,12 @@ localground.overlay.prototype.renderListing = function() {
 	else {
 		$div_entry.show();
 	}
-	this.toggleOverlay(this.getManager().isManagerChecked());
+	this.toggleOverlay(this.isChecked());
 };
 localground.overlay.prototype.showOverlay = function() {
 	this.getListingElement().show();
 	try {
-		this.toggleOverlay(this.getManager().isManagerChecked());
+		this.toggleOverlay(this.isChecked());
 		this.getManager().updateVisibility();
 	} catch(e) {
 		//alert(e);
@@ -185,7 +189,7 @@ localground.overlay.prototype.hideOverlay = function() {
 			self.currentOverlay.closeInfoBubble();
 		}
 	}
-	this.getListingElement().find('input[type=checkbox]').attr('checked', false);
+	this.getListingElement().find('input[type=checkbox]').prop('checked', false);
 	this.getListingElement().hide();
 	try {
 		this.getManager().updateVisibility();
@@ -217,12 +221,12 @@ localground.overlay.prototype.toggleOverlay = function(isOn) {
 				if(this.getObjectType() == self.overlay_types.PHOTO)
 					this.googleOverlay.icon = this.getIcon();    
 			}
-            $cb.attr('checked', true);
+            $cb.prop('checked', true);
         }
     }
     else {
         console.log('oy there im hittin this');
-        $cb.attr('checked', false);
+        $cb.prop('checked', false);
         if(this.googleOverlay)
 			this.googleOverlay.setMap(null);
     }
