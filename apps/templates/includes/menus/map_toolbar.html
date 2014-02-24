@@ -4,26 +4,49 @@
             <i class="fa fa-folder-open"></i>
         </button>
         <div id="add-menu" class="dropdown-menu pull-right" style="width:400px; max-width: 400px; max-height: 300px;">
-            Download Project text text text text text text text text
-            text text text text text text text text text text text text
-            text text text text text text text text text text text text
-            text text text text text text text text
-            text text text text text text text text text text text text
-            text text text text text text text text text text text text
-            text text text text text text text text
-            text text text text text text text text text text text text
-            text text text text text text text text text text text text
-            text text text text text text text text
-            text text text text text text text text text text text text
-            text text text text text text text text text text text text 
+            <ul class="tabs" data-tabs="tabs" style="margin-bottom: 10px !important;">
+		<li class="active">
+		    <a data-toggle="tab" href="#projects">Projects</a>
+		</li>
+                <li>
+		    <a data-toggle="tab" href="#views">Views</a>
+		</li>
+            </ul>
+            <div id="tab_content" class="tab-content clearfix">		
+		<div id="projects" class="tab_panel active">		
+                    <div style="padding:0px 0px 5px 10px;">
+                        <button class="btn success create-object" href="#new-project" data-main="projects">
+                            <i class="fa fa-plus"></i> New
+                        </button>
+                        <hr>
+                        <ul id="projectList">
+                            
+                        </ul>
+                    </div>
+                </div>
+                <div id="views" class="tab_panel">
+                    <div id="viewList" style="padding:0px 0px 5px 10px;">
+			List of all views!<br>
+                        text text text text text text text text text text text text
+                        text text text text text text text text text text text text
+                        text text text text text text text text text text text text
+                        text text text text text text text text text text text text
+                        text text text text text text text text text text text text
+                        text text text text text text text text text text text text
+                        text text text text text text text text text text text text
+                        text text text text text text text text text text text text
+                        text text text text text text text text text text text text 
+		    </div>
+                </div>
+            </div>
         </div>
     </div>
     <button id="upload" data-main="upload" class="btn">
         <i class="fa fa-upload"></i>
     </button>
-    <button id="upload" data-main="upload" class="btn">
+    <a href="/api/0/projects/?format=csv" id="download" data-main="download" class="btn">
         <i class="fa fa-download"></i>
-    </button>
+    </a>
     <div class="btn-group">
         <button id="filter_menu_button" class="btn" data-toggle="dropdown">
             <i class="fa fa-filter"></i>

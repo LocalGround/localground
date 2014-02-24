@@ -111,22 +111,14 @@
 		    <a data-toggle="tab" href="#legend">Legend</a>
 		</li>
             </ul>
-            <div id="tab_content" class="tab-content clearfix">
-				
-				<div id="data" class="tab_panel active">
-                    
-					
-					<!-- div class="row">
-						<input type="text" id="txt_filter" style="" />
-						<button id="apply_filter" class="btn success">Filter</button>
-					</div -->
-					
+            <div id="tab_content" class="tab-content clearfix">		
+		<div id="data" class="tab_panel active">		
                     <div id="panel_data"></div>
                 </div>
                 <div id="legend" class="tab_panel">
                     <div id="panel_legend">
-						{% block legend %}{% endblock %}
-					</div>
+			{% block legend %}{% endblock %}
+		    </div>
                 </div>
             </div>
         </div>
@@ -140,19 +132,19 @@
     
     {% endblock %}
     <div id="my-modal" class="modal hide">
-		<div class="modal-header">
-		  <a href="#" class="close">&times;</a>
-		  <h3 id="dialogTitle">Image Preview</h3>
-		</div>
-		<div class="modal-body" id="dialogBody"
-			 style="padding:0px !important;text-align:center;overflow-y:auto;overflow-x:hidden;">
-			
-		</div>
-		<div class="modal-footer">
-			<button id="close_print_modal" class="btn" onclick="driver.hideDialog()">Close</button>
-			<button id="do_print" class="btn primary" onclick="driver.generatePrint()">Generate Print</button>
-		</div>
+	<div class="modal-header">
+	  <a href="#" class="close">&times;</a>
+	  <h3 id="dialogTitle">Image Preview</h3>
 	</div>
+	<div class="modal-body" id="dialogBody"
+		 style="padding:0px !important;text-align:center;overflow-y:auto;overflow-x:hidden;">
+		
+	</div>
+	<div class="modal-footer">
+		<button id="close_print_modal" class="btn" onclick="driver.hideDialog()">Close</button>
+		<button id="do_print" class="btn primary" onclick="driver.generatePrint()">Generate Print</button>
+	</div>
+    </div>
     
     <!-- slideshow modal -->
     <div id="slide-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
