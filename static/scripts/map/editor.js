@@ -140,17 +140,15 @@ localground.editor.prototype.makeViewable = function() {
 
 
 localground.editor.prototype.toggleMode = function($elem) {
-    switch($elem.html()) {
-        case 'Edit':
-            this.mode = 'edit';
-            $elem.html('Done'); 
-            this.makeEditable();
-            break;
-        default:
-            this.mode = 'view';            
-            $elem.html('Edit');
-            this.makeViewable();
-            break;
+    if($elem.hasClass('info')) {
+        this.mode = 'view';            
+        $elem.removeClass('info');
+        this.makeViewable();
+    }
+    else {
+        this.mode = 'edit';
+        this.makeEditable();
+        $elem.addClass('info');
     }
     
     //if the infobubble is open, re-render it!

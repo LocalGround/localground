@@ -89,17 +89,28 @@ localground.basemap.prototype.initialize=function(opts) {
     */
 
     $('.create-object').click(function() {
-        var object = this.getAttribute('data-main');
-        that.addObject(object, '/profile/' + object + '/create/embed/');
+        var object_name = this.getAttribute('data-main');
+        that.addObject({
+            object_name: object_name
+        });
     })
 
     $('#upload').click(function() {
-        that.addObject(this.getAttribute('data-main'), '/upload/embed/', 1000);
+        that.addObject({
+            object_name: this.getAttribute('data-main'),
+            url: '/upload/embed/',
+            width: 1000,
+            show_footer: false
+        });
     });
 
     $('.edit').click(function() {
         var object = this.getAttribute('data-main');
-        that.addObject(object, '/profile/' + object + '/embed/', 1050);
+        that.addObject({
+            object_name: object_name,
+            url: '/profile/' + object_name + '/embed/',
+            width: 1050
+        });
         //$('#add-modal').find('#the_frame').contents().find('.topbar').hide();
 
     });
@@ -688,20 +699,25 @@ localground.basemap.prototype.setPosition = function(minimizeRightPanel) {
     }
 }
 
-localground.basemap.prototype.addObject = function(object) {
-    return localground.basemap.prototype.addObject(object, "");
-};
-
-localground.basemap.prototype.addObject = function(object, url, width) {
-    if(!url)
-        url = '/profile/' + object + '/create/embed/'
+localground.basemap.prototype.addObject = function(opts) {
+    if(opts == null) {
+        alert("opts cannot be null");
+        return false;
+    }
+    if (opts.show_footer == null) {
+        opts.show_footer = true;
+    }
+    
+    if(!opts.url)
+        opts.url = '/profile/' + opts.object_name + '/create/embed/'
     this.addModal = new ui.dialog({
         id: 'add-modal',
-        width: width || 560,
+        width: opts.width || 560,
         height: 450,
-        iframeURL: url,
+        iframeURL: opts.url,
         showTitle: false,
-        submitButtonText: 'Save ' + object.toLowerCase(),
+        submitButtonText: 'Save',
+        showFooter: opts.show_footer,
         closeExtras: function() {
             if($('#add-modal').find('.hide').html() == 'Done')
                 document.location.href = self.pageURL;

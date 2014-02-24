@@ -139,7 +139,7 @@ localground.viewer.prototype.initialize=function(opts){
 	
 	// turn on default project, if requested
 	this.initDefaultProject();
-	
+	this.initGroupTabs();
 	this.initFiltering();
 	
 	this.setStreetViewCloseButton();
@@ -225,6 +225,19 @@ localground.viewer.prototype.getManager = function(data_list) {
 	}
 };
 
+localground.viewer.prototype.initGroupTabs = function() {
+	// a hack so that the dropdown menu doesn't disappear
+	// when tabs are clicked.
+	$('#group_tabs > li > a').each(function() {
+        var $this = $(this);
+        $this.click(function (e) {
+            e.preventDefault();
+            $this.tab('show');
+            e.stopPropagation();
+        });
+    });
+}
+
 localground.viewer.prototype.initFiltering = function() {
 	var me = this;
 	$('#clear_filter').click(function(){
@@ -279,7 +292,7 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 														  is_checked, turn_on_everything) {
 	if(is_checked) {
 		$('#' + groupID).attr('checked', true);
-		this.getProjectData(groupID, groupType, is_checked, turn_on_everything);	
+		this.getProjectData(groupID, groupType, is_checked, turn_on_everything);
 	}
 	else {
 		//remove data from project:
@@ -292,7 +305,7 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 		}
 		self.initFilterData();
 	}
-	return;
+	return true;
 };
 
 localground.viewer.prototype.initFilterData = function() {

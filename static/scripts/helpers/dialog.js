@@ -157,11 +157,16 @@ ui.dialog.prototype.getIframe = function() {
             $(this).css({
                 'visibility': 'visible'
             });
-            var is_success = (
-                $('#the_frame').contents().find('#success-message-text').html().length > 20
-            );
-            if(is_success) {
-                me.$modal.find('.hide').html('Done');
+            var is_success = false;
+            try {
+                is_success = (
+                    $('#the_frame').contents().find('#success-message-text').html().length > 20
+                );
+                if(is_success) {
+                    me.$modal.find('.hide').html('Done');
+                }
+            } catch(e) {
+                //do nothing
             }
             $('#loading-image').remove();
         });  
