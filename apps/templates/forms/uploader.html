@@ -16,100 +16,100 @@
     <script src="/static/scripts/site/uploader/load-image.min.js"></script>
     <script src="/static/scripts/site/uploader/canvas-to-blob.min.js"></script>
     <script src="/static/scripts/site/uploader/jquery.fileupload-ip.js"></script>
-	<script type="text/javascript" src="/static/scripts/site/uploader/upload.js"></script>
-	
-	<!-- page guide -->
-	<script type="text/javascript" src="/static/scripts/thirdparty/pageguide-master/js/pageguide.js"></script>
+    <script type="text/javascript" src="/static/scripts/site/uploader/upload.js"></script>
+    
+    <!-- page guide -->
+    <script type="text/javascript" src="/static/scripts/thirdparty/pageguide-master/js/pageguide.js"></script>
 {% endblock %}
 
 {% block extra_styles %}
-	{{block.super}}
+    {{block.super}}
 
-	.row { display: inline-block; }
-	.nav-pills {
-		margin-bottom: 5px;
-		width: 552px;
-	}
-	.sel-project {
-		display: inline-block;
-		width: 332px;
-		margin-top: 0px;
-		height: 34px;
-	}
-	.btn-group-plain { float: right; margin-top: 8px; }
-	#project-name { margin-right: 5px; display: inline-block; float: right; margin-top:6px;}
-	.alert {
-		width: 853px;
-		display: none;
-		margin-top: 0px;
-	}
-	.progress { height: 8px; }
-	.img-polaroid {
-		float: left;
-		margin-bottom: 5px;
-		margin-top: 5px;
-	}
-	.img-polaroid > p {
-		margin-top: 5px;
-		line-height: 12px;
-		font-size: 11px;
-		color: #999;
-		margin: 0px;
-		text-align: center;
-		overflow: hidden;
-	}
-	.file-container {
-		width: 155px;
-		height: 190px;
-		float: left;
-        margin-left: 8px;
-        margin-right: 8px;
-	}
-	#nothing-here {
-		text-align:center;
-		vertical-align:middle;
-		height: 40px;
-		position: absolute;
-		top: 50%;
-		margin-top: -20px;
-		width: 100%;
-		font-size:20px;
-		color:#666"
-	}
+    .row { display: inline-block; }
+    .nav-pills {
+        margin-bottom: 5px;
+        width: 552px;
+    }
+    .sel-project {
+        display: inline-block;
+        width: 332px;
+        margin-top: 0px;
+        height: 34px;
+    }
+    .btn-group-plain { float: right; margin-top: 8px; }
+    #project-name { margin-right: 5px; display: inline-block; float: right; margin-top:6px;}
+    .alert {
+        width: 853px;
+        display: none;
+        margin-top: 0px;
+    }
+    .progress { height: 8px; }
+    .img-polaroid {
+        float: left;
+        margin-bottom: 5px;
+        margin-top: 5px;
+    }
+    .img-polaroid > p {
+            margin-top: 5px;
+            line-height: 12px;
+            font-size: 11px;
+            color: #999;
+            margin: 0px;
+            text-align: center;
+            overflow: hidden;
+    }
+    .file-container {
+            width: 155px;
+            height: 190px;
+            float: left;
+    margin-left: 8px;
+    margin-right: 8px;
+    }
+    #nothing-here {
+            text-align:center;
+            vertical-align:middle;
+            height: 40px;
+            position: absolute;
+            top: 50%;
+            margin-top: -20px;
+            width: 100%;
+            font-size:20px;
+            color:#666"
+    }
+    
+    #dropzone > div {
+            text-align:center;
+            vertical-align:middle;
+            height: 100px;
+            position: absolute;
+            top: 40%;
+            margin-top: -50px;
+            width: 100%;
+    }
 	
-	#dropzone > div {
-		text-align:center;
-		vertical-align:middle;
-		height: 100px;
-		position: absolute;
-		top: 40%;
-		margin-top: -50px;
-		width: 100%;
-	}
-	
-	#uploaded, #dropzone {
-		position: relative;
-		border: 1px solid #eee;
-		border: 1px solid rgba(0, 0, 0, 0.05);
-		-webkit-border-radius: 4px;
-		-moz-border-radius: 4px;
-		border-radius: 4px;
-		padding: 15px;
-	}
-	#uploaded {
-		margin-right: 10px;
-	}
+    #uploaded, #dropzone {
+        position: relative;
+        border: 1px solid #eee;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        padding: 15px;
+    }
+    #uploaded {
+            margin-right: 10px;
+    }
     #dropzone {
 	width: 310px;
         background: #EEEEEE;
         text-align: center;
         font-weight: bold;
-		margin-bottom: 0px !important;
-		background-color: #f5f5f5;
-		-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-		-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-		box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-		font-weight: normal;
+        margin-bottom: 0px !important;
+        background-color: #f5f5f5;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+        -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+        font-weight: normal;
     }
     #dropzone.in {
         /*width: 860px;
@@ -127,122 +127,133 @@
         transition: all 0.3s ease-out;
         opacity: 1;
     }
+    
+    {% if not embed %}
+        h1 { margin:20px 0px 20px 0px; }
+    {% else %}
+        h1 { margin:0px 0px 20px 0px; }
+    {% endif %}
 
 {% endblock %}
+
 {% block extra_scripts %}
     {{block.super}}
     var o = new localground.uploader();
 {% endblock %}
+
 {% block pageload_scripts %}
-	o.initialize({
-		mediaType: '{{selected_media_type.0}}',
-		acceptFileTypes: '{{selected_media_type.2}}'
-	});
-	var pageguide = tl.pg.init();
+    o.initialize({
+        mediaType: '{{selected_media_type.0}}',
+        acceptFileTypes: '{{selected_media_type.2}}'
+    });
+    {% if not embed %}
+    var pageguide = tl.pg.init();
+    {% endif %}
 {% endblock %}
 
 {% block content %}
 {% block main_content %}
     <div class="container">
-		<h1 style="margin:20px 0px 20px 0px;">
-			{% if selected_media_type.0 == 'photos' %}
-				<img class="header-icon" src="/static/images/camera_large.png" />
-			{% endif %}
-			{% if selected_media_type.0 == 'maps' %}
-				<img class="header-icon" src="/static/images/clipboard_large.png" />
-			{% endif %}
-			{% if selected_media_type.0 == 'audio' %}
-				<img class="header-icon" src="/static/images/headphones_large.png" />
-			{% endif %}
-			{% if selected_media_type.0 == 'air-quality' %}
-				<img class="header-icon" src="/static/images/upload_large.png" />
-			{% endif %}
-			Upload <span style="color:#ccc">{{ selected_media_type.1}}</span>
-		</h1>
-		<!-- Row #1 -->
-		<div class="row">
-			<!-- Cell #1 -->
-			<ul class="nav nav-pills">
-				{% for media_type in media_types %}
-					<li {% if selected_media_type.0 == media_type.0 %}class="active"{% endif %}>
-						<a href="/upload/{{media_type.0}}/{% if embed %}embed{% endif %}">{{media_type.1}}</a>
-					</li>
-				{% endfor %}
-			</ul>
-			<!-- Cell #2 -->
-			<div class="sel-project span5">
-				<div class="btn-group-plain">
-					<a class="dropdown-project" data-toggle="dropdown" href="#">change<span class="dark-caret"></span>
-					</a>
-					<input type="hidden" name="project" id="project" value="{{selected_project.id}}" />
-					<ul class="dropdown-menu">
-						{% for p in projects %}
-							<li><a id="{{p.id}}" href="#">{{p.name}}</a></li>
-						{% endfor%}
-					</ul>
-				</div>
-				<span id="project-name" style="color: #333;font-weight:bold;font-size:24px;">{{selected_project}}</span>
-			</div>
-		</div>
-		
-		<!-- alert, error, and success messages -->
-		<div class="row">
-			{% include "includes/messages.html" %}
-		</div>
-		
-		<!-- Row #2 -->
-		<div class="row">
-			<!-- Cell #1 -->
-			<div id="uploaded" class="span9" style="min-height:250px;">
-				<div id="nothing-here" style="font-size:20px;color:#666">
-					No <strong>{{selected_media_type.1|upper}}</strong> uploaded yet
-				</div>
-			</div>
-			
-			<!-- Cell #2 -->
-			<div id="dropzone" class="span5 well" style="height: 250px;">
-				<div class="drop-region">
-					Drag your {{selected_media_type.1|lower}} here
-					<br>-or- <br>
-					<span class="btn success fileinput-button" style="margin-top:10px;margin-bottom:10px;">
-						<i class="icon-plus icon-white"></i>
-						<span>Navigate to your {{selected_media_type.1|lower}}...</span>
-						<input id="fileupload" type="file" name="files[]" multiple>
-					</span>
-					<br><small>Acceptable file types include: <br>
-					<span id="acceptable" style="color:#333;font-weight:bold;">{{selected_media_type.2}}</span></small>
-				</div>
-			</div>
-		</div>
+        <h1>
+            {% if selected_media_type.0 == 'photos' %}
+                <img class="header-icon" src="/static/images/camera_large.png" />
+            {% endif %}
+            {% if selected_media_type.0 == 'maps' %}
+                <img class="header-icon" src="/static/images/clipboard_large.png" />
+            {% endif %}
+            {% if selected_media_type.0 == 'audio' %}
+                <img class="header-icon" src="/static/images/headphones_large.png" />
+            {% endif %}
+            {% if selected_media_type.0 == 'air-quality' %}
+                <img class="header-icon" src="/static/images/upload_large.png" />
+            {% endif %}
+            Upload <span style="color:#ccc">{{ selected_media_type.1}}</span>
+        </h1>
+        <!-- Row #1 -->
+        <div class="row">
+            <!-- Cell #1 -->
+            <ul class="nav nav-pills">
+                {% for media_type in media_types %}
+                    <li {% if selected_media_type.0 == media_type.0 %}class="active"{% endif %}>
+                         <a href="/upload/{{media_type.0}}/{% if embed %}embed{% endif %}">{{media_type.1}}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <!-- Cell #2 -->
+            <div class="sel-project span5">
+                <div class="btn-group-plain">
+                    <a class="dropdown-project" data-toggle="dropdown" href="#">change<span class="dark-caret"></span>
+                    </a>
+                    <input type="hidden" name="project" id="project" value="{{selected_project.id}}" />
+                    <ul class="dropdown-menu pull-right">
+                        {% for p in projects %}
+                            <li><a id="{{p.id}}" href="#">{{p.name}}</a></li>
+                        {% endfor%}
+                    </ul>
+                </div>
+                <span id="project-name" style="color: #333;font-weight:bold;font-size:24px;">{{selected_project}}</span>
+            </div>
+        </div>
+        
+        <!-- alert, error, and success messages -->
+        <div class="row">
+            {% include "includes/messages.html" %}
+        </div>
+        
+        <!-- Row #2 -->
+        <div class="row">
+            <!-- Cell #1 -->
+            <div id="uploaded" class="span9" style="min-height:250px;">
+                <div id="nothing-here" style="font-size:20px;color:#666">
+                    No <strong>{{selected_media_type.1|upper}}</strong> uploaded yet
+                </div>
+            </div>
+            
+            <!-- Cell #2 -->
+            <div id="dropzone" class="span5 well" style="height: 250px;">
+                <div class="drop-region">
+                    Drag your {{selected_media_type.1|lower}} here
+                    <br>-or- <br>
+                    <span class="btn success fileinput-button" style="margin-top:10px;margin-bottom:10px;">
+                        <i class="icon-plus icon-white"></i>
+                        <span>Navigate to your {{selected_media_type.1|lower}}...</span>
+                        <input id="fileupload" type="file" name="files[]" multiple>
+                    </span>
+                    <br><small>Acceptable file types include: <br>
+                    <span id="acceptable" style="color:#333;font-weight:bold;">{{selected_media_type.2}}</span></small>
+                </div>
+            </div>
+        </div>
 	
     </div>
     {% csrf_token %}
-	
-	<!-- Instructions -->
-	<ul id="tlyPageGuide" data-tourtitle="Uploading data/media to your map">
-		<li class="tlypageguide_left" data-tourtarget=".nav-pills">
-			<div>
-				You are currently on the <strong><u>{{selected_media_type.1|lower}}</u></strong>
-				upload page.  If you would like to upload a different media type,
-				click the appropriate button.
-			</div>
-		</li>
-		<li class="tlypageguide_left" data-tourtarget=".sel-project">
-			<div>
-				All media will be added to the active project.  Use the "change" button to
-				select a different project.
-			</div>
-		</li>
-		<li class="tlypageguide_left" data-tourtarget="#dropzone">
-			<div>
-				To upload {{selected_media_type.1|lower}}, just drag your files onto the gray zone.
-				They should start uploading automatically.  Only {{selected_media_type.2}} file types
-				(also listed below the green button) can be uploaded to Local Ground for
-				this particular form.
-			</div>
-		</li>
-		
-	  </ul>
+    {% if not embed %}
+    <!-- Instructions -->
+    <ul id="tlyPageGuide" data-tourtitle="Uploading data/media to your map">
+        <li class="tlypageguide_left" data-tourtarget=".nav-pills">
+            <div>
+                You are currently on the <strong><u>{{selected_media_type.1|lower}}</u></strong>
+                upload page.  If you would like to upload a different media type,
+                click the appropriate button.
+            </div>
+        </li>
+        <li class="tlypageguide_left" data-tourtarget=".sel-project">
+            <div>
+                All media will be added to the active project.  Use the "change" button to
+                select a different project.
+            </div>
+        </li>
+        <li class="tlypageguide_left" data-tourtarget="#dropzone">
+            <div>
+                To upload {{selected_media_type.1|lower}}, just drag your files onto the gray zone.
+                They should start uploading automatically.  Only {{selected_media_type.2}} file types
+                (also listed below the green button) can be uploaded to Local Ground for
+                this particular form.
+            </div>
+        </li>
+        
+    </ul>
+    {% endif %}
     
 {% endblock %}
 {% endblock %}

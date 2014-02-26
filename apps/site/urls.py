@@ -40,8 +40,8 @@ urlpatterns = patterns('',
 	(r'^pages/(?P<page_name>\w+)/', 'localground.apps.site.views.pages.about_pages'),
 
 	#user prefs:
-    #This should really be in the API, but is here for now
-    (r'^profile/settings/update_location/','localground.apps.site.views.profile.update_user_location'),
+	#This should really be in the API, but is here for now
+	(r'^profile/settings/update_location/','localground.apps.site.views.profile.update_user_location'),
 	(r'^profile/settings/', 'localground.apps.site.views.profile.change_user_profile'),
 
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ urlpatterns = patterns('',
 	# 2) Read:
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	(r'^profile/(?P<object_type_plural>{0})/$'.format('|'.join(object_types_plural)), 'localground.apps.site.views.profile.object_list_form'),
-    (r'^profile/(?P<object_type_plural>{0})/embed/$'.format('|'.join(object_types_plural)), 'localground.apps.site.views.profile.object_list_form', {'embed':True}),
+	(r'^profile/(?P<object_type_plural>{0})/embed/$'.format('|'.join(object_types_plural)), 'localground.apps.site.views.profile.object_list_form', {'embed':True}),
 
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	# 3) Update:
@@ -106,10 +106,10 @@ urlpatterns = patterns('',
 
 	#uploader:
 	(r'^upload/$', 'localground.apps.site.views.uploader.init_upload_form'),
-    (r'^upload/embed/$', 'localground.apps.site.views.uploader.init_upload_form', {'embed': True}),
+	(r'^upload/embed/$', 'localground.apps.site.views.uploader.init_upload_form', {'embed': True}),
 	(r'^upload/(?P<media_type>photos|audio|map-images|forms|air-quality|odk)/$', 'localground.apps.site.views.uploader.init_upload_form'),
-    (r'^upload/(?P<media_type>photos|audio|map-images|forms|air-quality|odk)/embed/$', 'localground.apps.site.views.uploader.init_upload_form', {'embed': True}),
-    (r'^upload/(?P<entity_type>projects|photos|audio|prints)/batch/$', 'localground.apps.site.views.uploader.batch_upload_form'),
+	(r'^upload/(?P<media_type>photos|audio|map-images|forms|air-quality|odk)/embed/$', 'localground.apps.site.views.uploader.init_upload_form', {'embed': True}),
+	(r'^upload/(?P<entity_type>projects|photos|audio|prints)/batch/$', 'localground.apps.site.views.uploader.batch_upload_form'),
 
 
 	# media server

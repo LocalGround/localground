@@ -1,7 +1,7 @@
 <div class="topbar" data-dropdown="dropdown" >
     <div class="topbar-inner">
         <div class="container-fluid">
-            <ul class="nav" style="width:80%">
+            <ul class="nav" style="/*width:80%*/">
                 <li class="dropdown">
                     <a href="#" data-toggle="dropdown"><h3>Local Ground</h3></a>
                         <ul id="AboutList" class="dropdown-menu white-links">
@@ -12,32 +12,23 @@
                             <li><a href="/pages/contact/">Contact Us</a></li>
                         </ul>
                 </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Data</a>
-                        <ul id="dataList" class="dropdown-menu white-links">
-                            <li><a href="#new-form" class='create-object' data-main="forms">New Form</a></li>
-                            <li><a href="#edit-forms" class="edit" data-main="forms">Edit Forms</a></li>
-                            <li><a href="#review-data">Review Data</a></li>
-                            <li><a href="#export-form">Export</a></li>
-                        </ul>
-                </li>
-                <!-- li><a href="#" id="upload1"><i class="icon-white icon-upload"></i> Upload</a></li>
-                <li><a href="#" id="print1"><i class="icon-white icon-print"></i> Print</a></li -->
-
-
+  
                 <li class="dropdown" id="layers-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Layers</a>
                     <ul id="layerList" class="dropdown-menu white-links"></ul>
                 </li>
             </ul>
             
-            <!--<div class="pull-left" style="margin-top:5px;">
-                <input id="addressInput" type="text" placeholder="Search" />
-            </div>
-            -->
+            {% if user.is_authenticated %}
+                <div class="pull-right">
+                    {% include "includes/menus/profile_menu.html" %}
+                </div>
+            {% else %}
+                <h3 class="pull-right" style="color:#fff;">Public Map Viewer</h3>
+            {% endif %}
             
             <!-- audio player -->
-            <div id="player" class="pull-left top-player playercontroller" style="display:none">
+            <div id="player" class="pull-right top-player playercontroller" style="display:none">
                 <div class="button play"><a>PLAY</a></div>
                 <div class="button pause"><a>PAUSE</a></div>
                 <div class="button stop"><a>STOP</a></div>
@@ -50,13 +41,7 @@
                    value="http://dev.localground.org/static/media/vanwars/audio/leonardowalkingfromcbitstoyu.mp3" />
             <!-- end audio player -->
 
-            {% if user.is_authenticated %}
-                <div class="pull-right">
-                    {% include "includes/menus/profile_menu.html" %}
-                </div>
-            {% else %}
-                <h3 class="pull-right" style="color:#fff;">Public Map Viewer</h3>
-            {% endif %}
+            
 
             <div id="loading_message" class="pull-right label success"
                  style="display:none;margin:10px 10px; 0px 0px">

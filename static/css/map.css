@@ -134,6 +134,7 @@ input[type=checkbox] {
 	border: solid 2px #000;
 	display:inline-block;
 	margin:8px 0px 0px 20px;
+	margin-right: 80px;
 }
 .top-player.playercontroller > .counter {
 	margin-left: 186px;
