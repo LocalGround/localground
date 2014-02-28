@@ -89,12 +89,17 @@ localground.markerManager.prototype.removeRecord = function(marker) {
     */
 };
 
-localground.markerManager.prototype.intersectMarkers = function(mEvent, point) {
+localground.markerManager.prototype.intersectMarkers = function(mEvent, point, isGoogle) {
     var candidateMarker = null;
     //alert(point.gootleOverlay.icon.size.width);
-    var position = self.overlay.getProjection().fromLatLngToDivPixel(mEvent.latLng);  
+    var position;
+    if(isGoogle) {
+        position = self.overlay.getProjection().fromLatLngToDivPixel(mEvent.latLng);
+    } else {
+        position = self.overlay.getProjection().fromLatLngToDivPixel(point.currentPos);
+    }
     var rV = 20, rH = 10;
-    if(point.googleOverlay.icon.size) {
+    if(point.googleOverlay && point.googleOverlay.icon.size) {
         rV = point.googleOverlay.icon.size.height;  // vertical radius
         rH = point.googleOverlay.icon.size.width;   // horizontal radius
     }
