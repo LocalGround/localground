@@ -39,7 +39,16 @@ localground.markerManager.prototype.addRecords = function(data) {
     var me = this;
     $.each(data, function(){
 		this.managerID = me.id;
-        me.data.push(new localground.marker(this));        
+		switch (this.geometry.type) {
+			case 'Point':
+				me.data.push(new localground.marker(this)); 
+				break;
+			case 'LineString':
+				me.data.push(new localground.polyline(this)); 
+				break;
+			default:
+				alert('Unknown Geometry Type');
+		}
     });
 };
 

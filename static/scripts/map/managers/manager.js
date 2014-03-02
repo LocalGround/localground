@@ -167,17 +167,17 @@ localground.manager.prototype.removeByProjectID = function(projectID) {
 };
 
 localground.manager.prototype.addNewOverlay = function(overlay) {
-	this.data.push(overlay);
-     
-	//create new data container if one doesn't already exist:     
-	this.addDataContainer();  
-	
-	//render the overlay:
-	overlay.renderOverlay({turnedOn: true});
-	overlay.renderListing();
-	
-	//update visibility of container:
-	this.updateVisibility();
+    this.data.push(overlay);
+ 
+    //create new data container if one doesn't already exist:     
+    this.addDataContainer();  
+    
+    //render the overlay:
+    overlay.renderOverlay({turnedOn: true});
+    overlay.renderListing();
+    
+    //update visibility of container:
+    this.updateVisibility();
 };
 
 localground.manager.prototype.atLeastOneVisible = function() {
@@ -224,13 +224,17 @@ localground.manager.prototype.getLayerBounds = function() {
     var bounds = new google.maps.LatLngBounds();
     $.each(this.data, function() {
         if(this.googleOverlay && this.isVisible()) {
-            bounds.extend(this.googleOverlay.position);
-			hasVisibleData = true;
+	    try {
+		bounds.extend(this.googleOverlay.position);
+		hasVisibleData = true;
+	    } catch(e) {
+		alert('Todo: implement polyline bounds');
+	    }
         }
     });
-	if(hasVisibleData)
-		return bounds;
-	return null;
+    if(hasVisibleData)
+	return bounds;
+    return null;
 };
 
 localground.manager.prototype.zoomToLayer = function() {

@@ -54,9 +54,8 @@ localground.point.prototype.dragend = function(latLng) {
 	this.googleOverlay.setPosition(this.getGoogleLatLng());
         this.googleOverlay.setMap(null);
 	    $('#cb_' + this.managerID + "_" + this.id).prop('checked', false);
-    
-	    // add a message:
-	    var $contentContainer = $('<div></div>').css({
+	// add a message:
+	var $contentContainer = $('<div></div>').css({
 	    'width': '150px',
 	    'height': '30px',
 	    'margin': '5px 0px 5px 10px',
