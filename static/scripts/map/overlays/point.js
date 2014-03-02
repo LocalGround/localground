@@ -3,7 +3,7 @@ localground.point = function(opts){
     this.image = null;
     this.iconSmall = null;
     this.iconLarge = null;
-    this.point = null;
+    this.geometry = null;
     this.infoBubbleParams = {
         edit: { width: 445, height: 225 },
         view: { width: 445, height: 225 }
@@ -23,14 +23,15 @@ localground.point.prototype.renderOverlay = function(opts) {
     //to override default behavior:
     if(opts && opts.turnedOn)
         turnedOn = opts.turnedOn;
-    if(this.point != null) {
-		if(this.googleOverlay == null) {
-            this.googleOverlay = new google.maps.Marker({
-                position: new google.maps.LatLng(this.point.lat, this.point.lng),
+    if(this.geometry != null) {
+	if(this.googleOverlay == null) {
+	    this.googleOverlay = new google.maps.Marker({
+                position: this.getGoogleLatLng(),
                 map: turnedOn ? self.map : null,
                 icon: this.iconSmall,
                 id: this.id
             });
+	    
             this.addMarkerEventHandlers();
         }
         else if(turnedOn) {
@@ -48,48 +49,47 @@ localground.point.prototype.dragend = function(latLng) {
                 this.getManagerById('markers').getLoadingImageSmall()
             ).append(('Adding to marker...'));
 		
-		// after the media item has been added to the marker, reset the position
-		// of the media item and toggle it off in the menu
-		this.googleOverlay.setPosition(new google.maps.LatLng(this.point.lat, this.point.lng));
+	// after the media item has been added to the marker, reset the position
+	// of the media item and toggle it off in the menu
+	this.googleOverlay.setPosition(this.getGoogleLatLng());
         this.googleOverlay.setMap(null);
-		$('#cb_' + this.managerID + "_" + this.id).prop('checked', false);
-        
-		// add a message:
-		var $contentContainer = $('<div></div>').css({
-                'width': '150px',
-                'height': '30px',
-                'margin': '5px 0px 5px 10px',
-                'overflow-y': 'auto',
-                'overflow-x': 'hidden'
-            }).append($innerObj);
+	    $('#cb_' + this.managerID + "_" + this.id).prop('checked', false);
+    
+	    // add a message:
+	    var $contentContainer = $('<div></div>').css({
+	    'width': '150px',
+	    'height': '30px',
+	    'margin': '5px 0px 5px 10px',
+	    'overflow-y': 'auto',
+	    'overflow-x': 'hidden'
+	}).append($innerObj);
         self.infoBubble.setHeaderText(null);
         self.infoBubble.setFooter(null);    
         self.infoBubble.setContent($contentContainer.get(0)); 
         self.infoBubble.open(self.map, this.candidateMarker.googleOverlay);
         
-		// append the media to the marker:
-		this.candidateMarker.attachMedia(this); 
+	// append the media to the marker:
+	this.candidateMarker.attachMedia(this); 
     }
     else {
-		if(this.url.indexOf('.json') == -1)
-			this.url = this.url + '.json';
-		$.ajax({
-			url: this.url,
-			type: 'PUT',
-			data: {
-				lat: latLng.lat(),
-				lng: latLng.lng()
-			},
-			success: function(data) {
-				me.point = {};
-				me.point.lat = latLng.lat();
-                me.point.lng = latLng.lng();
-				//re-render listing:
-				me.renderListing();
-			},
-			notmodified: function(data) { alert('Not modified'); },
-			error: function(data) { alert('Error'); }
-		});
+	if(this.url.indexOf('.json') == -1)
+	    this.url = this.url + '.json';
+	$.ajax({
+	    url: this.url,
+	    type: 'PUT',
+	    data: {
+		geometry: JSON.stringify(me.getGeoJSON())
+	    },
+	    success: function(data) {
+		me.point = {};
+		me.point.lat = latLng.lat();
+		me.point.lng = latLng.lng();
+		//re-render listing:
+		me.renderListing();
+	    },
+	    notmodified: function(data) { alert('Not modified'); },
+	    error: function(data) { alert('Error'); }
+	});
     }
 };
 
@@ -133,14 +133,14 @@ localground.point.prototype.makeEditable = function() {
         google.maps.event.addListener(this.googleOverlay, "dragend", function(mEvent) {
             me.dragend(mEvent.latLng);
             me.googleOverlay.setIcon(me.getIcon());
-			self.map.panTo(mEvent.latLng);
-			self.hideTip = false;
+	    self.map.panTo(mEvent.latLng);
+	    self.hideTip = false;
         });
         google.maps.event.addListener(this.googleOverlay, "drag", function(mEvent) {
-			var m = me.getManagerById('markers');
-			if(m && me.overlay_type != self.overlay_types.MARKER){
-				me.candidateMarker = m.intersectMarkers(mEvent, me);
-			}
+	    var m = me.getManagerById('markers');
+	    if(m && me.overlay_type != self.overlay_types.MARKER){
+		    me.candidateMarker = m.intersectMarkers(mEvent, me);
+	    }
         });
     }
     else {
@@ -249,7 +249,7 @@ localground.point.prototype.closeInfoBubble = function() {
         self.infoBubble.close();
         $('#color-picker').hide(); 
     
-        if(this.isEditMode() && this.point == null) {
+        if(this.isEditMode() && this.geometry == null) {
             this.googleOverlay.setMap(null);
             this.googleOverlay = null;
             this.renderListing();
@@ -287,8 +287,8 @@ localground.point.prototype.makeGeoreferenceable = function() {
             me.addMarkerEventHandlers();
             self.currentOverlay = me;
             me.dragend(me.googleOverlay.getPosition());
-			//center the map at the new location:
-			self.map.panTo(location);
+	    //center the map at the new location:
+	    self.map.panTo(location);
             //after image has been dragged, deactivate it:
             $img.removeClass('can_drag').removeClass('activated').draggable('disable');
         }
@@ -356,4 +356,16 @@ localground.point.prototype.renderInfoBubble = function(opts) {
     
     return $contentContainer; 
 };
+
+localground.point.prototype.getGeoJSON = function(){
+    var latLng = this.googleOverlay.getPosition();
+    return {
+	type: 'Point',
+	coordinates: [latLng.lng(), latLng.lat()]
+    };
+};
+
+localground.point.prototype.getGoogleLatLng = function(){
+    return new google.maps.LatLng(this.geometry.coordinates[1], this.geometry.coordinates[0]);
+}
 

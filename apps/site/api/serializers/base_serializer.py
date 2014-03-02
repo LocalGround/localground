@@ -53,14 +53,14 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
 
 	
 class PointSerializer(BaseSerializer):
-	point = fields.PointField(help_text='Assign lat/lng field',
-							  widget=widgets.PointWidgetTextbox,
-							  required=False)
-							  
+	geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
+							  required=False,
+							  widget=widgets.GeoJSONWidget)
+	
 	project_id = fields.ProjectField(source='project', required=False)
 	
 	class Meta:
-		fields = BaseSerializer.Meta.fields + ('project_id', 'point', 'owner')
+		fields = BaseSerializer.Meta.fields + ('project_id', 'geometry', 'owner')
 		
 		
 class MediaPointSerializer(PointSerializer):

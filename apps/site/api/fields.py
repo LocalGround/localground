@@ -1,8 +1,12 @@
 from rest_framework import serializers
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, GEOSException
+from django.contrib.gis.gdal import OGRException
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 from localground.apps.site import models
+import json
+
 
 class OwnerField(serializers.WritableField):
 	def to_native(self, obj):
@@ -79,33 +83,69 @@ class FileField(serializers.CharField):
 class PointField(serializers.WritableField):
 	type_label = 'point'
 	label = 'point'
+		
 	def field_from_native(self, data, files, field_name, into):
 		try:
-			native = '%s;%s' % (data['lng'], data['lat'])
-			#native = '%s;%s' % (data['%s_lng' % self.type_label], data['%s_lat' % self.type_label])
+			lat, lng = data['lat'], data['lng']
 		except KeyError:
 			if self.required:
 				raise serializers.ValidationError('Both a "lat" variable and a "lng" variable are required')
 			return
 		try:
-			value = self.to_point(native)
-			into[self.label] =  self.to_point(native)
+			into[self.label] = self.to_point(lng, lat)
 		except:
 			value = None
 			into[self.label] =  None
 			#raise serializers.ValidationError('Invalid "lat" or "lng" parameter')
 		
-	def to_point(self, data):
-		lng_lat = data.split(';')
-		lng, lat = lng_lat[0], lng_lat[1]
+	def to_point(self, lng, lat):
 		return GEOSGeometry('SRID=%s;POINT(%s %s)' % (4326, lng, lat))
 
 	def to_native(self, obj):
 		if obj is not None:
 			return {
-				'lng': obj.x,
-				'lat': obj.y
+				'type': 'Point',
+				'coordinates': {
+					'lng': obj.x,
+					'lat': obj.y
+				}
 			}
+		
+class LineField(serializers.WritableField):
+	type_label = 'polyline'
+	label = 'polyline'
+	def field_from_native(self, data, files, field_name, into):
+		try:
+			polyline = data['polyline']
+		except KeyError:
+			if self.required:
+				raise serializers.ValidationError('The polyline string was not well formed.')
+			return
+		try:
+			into[self.label] = self.to_polyline(polyline)
+		except:
+			value = None
+			into[self.label] =  None
+		
+	def to_polyline(self, polyline):
+		# http://postgis.refractions.net/documentation/manual-1.4/ST_GeomFromText.html
+		points = []
+		try:
+			# 1) parse polyline string to make sure it's well formed.
+			for pair in polyline.split('|'):
+				point = pair.split(',')
+				lng = float(point[0].strip())
+				lat = float(point[1].strip())
+				points.append('%s %s' % (lng, lat))
+					
+			return GEOSGeometry(
+				'SRID=%s;LINESTRING(%s)' % (4326, ','.join(points)))
+		except:
+			raise serializers.ValidationError('% is a malformed line' % polyline)
+
+	def to_native(self, obj):
+		if obj is not None:
+			return obj.json
 
 class EntityTypeField(serializers.ChoiceField):
 	#name='entity'
@@ -140,4 +180,51 @@ class AttachedHyperlinkedField(serializers.HyperlinkedRelatedField):
 		return queryset.get(id=pk)
 	'''
 	pass
+
+
+
+
+class GeometryField(serializers.WritableField):
+	"""
+	A field to handle GeoDjango Geometry fields
+	"""
+	type_name = 'GeometryField'
+	geom_types = ['Point']
 	
+	def __init__(self, *args, **kwargs):
+		if kwargs.get('geom_types'):
+			self.geom_types = kwargs.pop('geom_types')
+		super(GeometryField, self).__init__(*args, **kwargs)
+	
+	def field_from_native(self, data, files, field_name, into):
+		geom = self.from_native(data.get('geometry'))
+		if geom.geom_type not in self.geom_types:
+			raise serializers.ValidationError('Unsupported geometry type')
+		
+		if geom.geom_type == 'Point':
+			into['point'] = geom
+		elif geom.geom_type == 'LineString':
+			into['polyline'] = geom
+		elif geom.geom_type == 'Polygon':
+			into['polygon'] = geom
+		else:
+			raise serializers.ValidationError('Unsupported geometry type')
+	
+	def to_native(self, value):
+		#return value.geojson
+		
+		if isinstance(value, dict) or value is None:
+			return value
+	
+		# Get GeoDjango geojson serialization and then convert it _back_ to
+		# a Python object
+		return json.loads(value.geojson)
+		
+
+	def from_native(self, value):
+		try:
+			return GEOSGeometry(value)
+		except (ValueError, GEOSException, OGRException, TypeError) as e:
+			raise serializers.ValidationError(_('Invalid format: string or unicode input unrecognized as WKT EWKT, and HEXEWKB.'))
+	
+		return value

@@ -6,9 +6,12 @@ from localground.apps.site.api import fields
 from django.conf import settings
 
 class MarkerSerializer(PointSerializer):
+	geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
+							required=False,
+							widget=widgets.GeoJSONWidget,
+							geom_types=['Point', 'LineString', 'Polygon'])
 	children = serializers.SerializerMethodField('get_children')
 	color = fields.ColorField(required=False)
-	point = fields.PointField(widget=widgets.PointWidgetTextbox, required=False)
 	form_ids = serializers.SerializerMethodField('get_form_ids')
 	
 	class Meta:

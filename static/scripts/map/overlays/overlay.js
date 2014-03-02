@@ -54,7 +54,7 @@ localground.overlay.prototype.renderListingCheckbox = function() {
 		}
 	}
 	//if the element hasn't been geo-referenced, hide the check box:
-	if(this.point == null && this.north == null)
+	if(this.geometry == null && this.north == null)
         $cb.css({ 'visibility': 'hidden' });
 	return $cb;
 };
@@ -84,7 +84,7 @@ localground.overlay.prototype.renderListingImage = function() {
 					.css({'vertical-align': 'baseline'});
 	if(this.file_name_orig != null)
 		$img.attr('title', this.file_name_orig);   
-	if(this.point == null) { $img.addClass('can_drag'); }
+	if(this.geometry == null) { $img.addClass('can_drag'); }
 	return $img;
 };
 
@@ -104,7 +104,7 @@ localground.overlay.prototype.renderListingText = function() {
 		'padding-bottom': '3px',
 		'line-height': '15px'
     });
-	if(this.point || this.north) {
+	if(this.geometry || this.north) {
         $div_text.append($('<a href="#"></a>')
                 .html(this.getName().truncate(4))
                 .attr('title', this.getName())

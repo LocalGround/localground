@@ -59,7 +59,7 @@ localground.marker.prototype.getVideoCount = function() {
     return this.video_count;
 };
 
-localground.overlay.prototype.getName = function(name) {
+localground.marker.prototype.getName = function(name) {
 	if(name == null)
         name = this.name;
 	if(name == null || name.length == 0)
@@ -402,39 +402,39 @@ localground.marker.prototype.attachMedia = function(media) {
 	var url = this.url.split('.json')[0] + media.managerID + '/.json';
 	//alert(url);
 	$.ajax({
-        url: url,
-        type: 'POST',
-        data: {
-            id: media.id,
-            ordering: 1
-        },
-        success: function(data) {
-            me.requery = true;
-            me[media.overlay_type + '_count'] += 1;
-            me.renderListing();
-            me.googleOverlay.setIcon(me.markerImage);
-            me.googleOverlay.setOptions({ 'draggable': true });
-            me.closeInfoBubble();
-        },
-        notmodified: function(data) { alert('Not modified'); },
-        error: function(data) {
-            $('#update-marker-form').find('.clearfix').removeClass('error');
-            var result = JSON.parse(data.responseText);
-            for (var key in result) {
-                var $form_element = $('#update-marker-form').find('#marker_' + key);
-                if ($form_element.get(0)) {
-                    $form_element.parent().parent().addClass('error');
-                    $form_element.parent().prepend(result[key]);
-                }
-                else {
-                    $('#error').show();
-                    $('#error-message-text').html(result[key]);
-                }
-            }
-            me.googleOverlay.setIcon(me.markerImage);
-            me.googleOverlay.setOptions({ 'draggable': true });
-            me.closeInfoBubble();
-        }
+	    url: url,
+	    type: 'POST',
+	    data: {
+		id: media.id,
+		ordering: 1
+	    },
+	    success: function(data) {
+		me.requery = true;
+		me[media.overlay_type + '_count'] += 1;
+		me.renderListing();
+		me.googleOverlay.setIcon(me.markerImage);
+		me.googleOverlay.setOptions({ 'draggable': true });
+		me.closeInfoBubble();
+	    },
+	    notmodified: function(data) { alert('Not modified'); },
+	    error: function(data) {
+		$('#update-marker-form').find('.clearfix').removeClass('error');
+		var result = JSON.parse(data.responseText);
+		for (var key in result) {
+		    var $form_element = $('#update-marker-form').find('#marker_' + key);
+		    if ($form_element.get(0)) {
+			$form_element.parent().parent().addClass('error');
+			$form_element.parent().prepend(result[key]);
+		    }
+		    else {
+			$('#error').show();
+			$('#error-message-text').html(result[key]);
+		    }
+		}
+		me.googleOverlay.setIcon(me.markerImage);
+		me.googleOverlay.setOptions({ 'draggable': true });
+		me.closeInfoBubble();
+	    }
     }); 
 };
 

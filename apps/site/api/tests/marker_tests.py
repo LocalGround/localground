@@ -12,30 +12,35 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI):
 		self.urls =  ['/api/0/markers/']
 		self.view = views.MarkerList.as_view()
 		
-	def test_create_marker_using_post(self, **kwargs):
+	def test_create_marker_point_line_poly_using_post(self, **kwargs):
+		import json
 		for i, url in enumerate(self.urls):
-			lat, lng, name, description, color = 54.16, 60.4, 'New Marker 1', \
-								'Test description1', 'FF0000'
-			response = self.client_user.post(url,
-				data=urllib.urlencode({
-					'lat': lat,
-					'lng': lng,
-					'name': name,
-					'description': description,
-					'color': color,
-					'project_id': self.project.id
-				}),
-				HTTP_X_CSRFTOKEN=self.csrf_token,
-				content_type = "application/x-www-form-urlencoded"
-			)
-			self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-			new_marker = models.Marker.objects.all().order_by('-id',)[0]
-			self.assertEqual(new_marker.name, name)
-			self.assertEqual(new_marker.description, description)
-			self.assertEqual(new_marker.color, color)
-			self.assertEqual(new_marker.point.y, lat)
-			self.assertEqual(new_marker.point.x, lng)
-			self.assertEqual(new_marker.project.id, self.project.id)
+			name, description, color = 'New Marker 1', 'Test description1', 'FF0000'
+			geom_types = {
+				'Point': '{"type": "Point", "coordinates": [12.492324113849, 41.890307434153]}',
+				'LineString': '{"type": "LineString", "coordinates": [[102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]]}',
+				'Polygon': '{"type": "Polygon", "coordinates": [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]}'
+			}
+			for k in geom_types.keys():
+				response = self.client_user.post(url,
+					data=urllib.urlencode({
+						'geometry': geom_types.get(k),
+						'name': name,
+						'description': description,
+						'color': color,
+						'project_id': self.project.id
+					}),
+					HTTP_X_CSRFTOKEN=self.csrf_token,
+					content_type = "application/x-www-form-urlencoded"
+				)
+				self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+				new_marker = models.Marker.objects.all().order_by('-id',)[0]
+				self.assertEqual(new_marker.name, name)
+				self.assertEqual(new_marker.description, description)
+				self.assertEqual(new_marker.color, color)
+				self.assertEqual(json.loads(new_marker.geometry.geojson), json.loads(geom_types.get(k)))
+				self.assertEqual(k, new_marker.geometry.geom_type)
+				self.assertEqual(new_marker.project.id, self.project.id)
 
 class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI):
 	

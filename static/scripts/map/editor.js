@@ -61,7 +61,7 @@ localground.editor.prototype.initDrawingManager = function() {
             position: google.maps.ControlPosition.TOP_LEFT,
             drawingModes: [
                 google.maps.drawing.OverlayType.MARKER,
-                //google.maps.drawing.OverlayType.POLYLINE,
+                google.maps.drawing.OverlayType.POLYLINE,
                 //google.maps.drawing.OverlayType.RECTANGLE,
                 //google.maps.drawing.OverlayType.POLYGON
             ]
@@ -74,6 +74,11 @@ localground.editor.prototype.initDrawingManager = function() {
             case google.maps.drawing.OverlayType.MARKER:
                 var marker = new localground.marker();
                 marker.createNew(e.overlay, self.lastProjectSelection, this.accessKey);
+                break;
+            case google.maps.drawing.OverlayType.POLYLINE:
+                var polyline = new localground.polyline();
+                polyline.createNew(e.overlay, self.lastProjectSelection, this.accessKey);
+                alert("done!");
                 break;
             
         }

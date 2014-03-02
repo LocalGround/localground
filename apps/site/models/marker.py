@@ -9,18 +9,25 @@ from localground.apps.site.models import BasePoint, BaseNamed, \
 	
 class Marker(BasePoint, BaseNamed, BaseGenericRelationMixin): 
 	"""
-	Markers are association objects with a lat/lng.  Markers can be associated
-	with one or more photos, audio files, data records, etc.  This object needs
+	Markers are association objects with a geometry (either point,
+	line, or polygon).  Markers can be associated with one or more photos,
+	audio files, data records, etc.  This object needs
 	to be re-factored to inherit from account/Group Model, since it's an
 	association of other media objects (and should behave like a project or a view).
 	"""
 	project = models.ForeignKey('Project')
+	polyline = models.LineStringField(blank=True, null=True)
+	polygon = models.PolygonField(blank=True, null=True)
 	
 	# todo:  replace project with generic association to either a project, view,
 	# or presentation :)
 	color = models.CharField(max_length=6)
 	_records_dict = None
 	objects = MarkerManager()
+	
+	@property  
+	def geometry(self):
+		return self.point or self.polyline or self.polygon
 	
 	@classmethod
 	def filter_fields(cls):

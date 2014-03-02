@@ -256,7 +256,7 @@ localground.record.prototype.renderListingImage = function() {
 					.css({'vertical-align': 'baseline'});
 	if(this.file_name_orig != null)
 		$img.attr('title', this.file_name_orig);   
-	if(this.point == null) { $img.addClass('can_drag'); }
+	if(this.geometry == null) { $img.addClass('can_drag'); }
 	return $img;
 };
 
@@ -275,28 +275,26 @@ localground.record.prototype.renderListingImage = function() {
 */
 localground.record.prototype.renderListingImage = function() {
 	var $img = $('<img />')
-					.addClass(this.managerID)
-					.attr('src', this.image)
-					.attr('id', 'img_' + this.managerID + '_' + this.id)
-					.css({'vertical-align': 'baseline'});
+			.addClass(this.managerID)
+			.attr('src', this.image)
+			.attr('id', 'img_' + this.managerID + '_' + this.id)
+			.css({'vertical-align': 'baseline'});
 	if(this.file_name_orig != null)
 		$img.attr('title', this.file_name_orig);   
-	if(this.point == null) { $img.addClass('can_drag'); }
+	if(this.geometry == null) { $img.addClass('can_drag'); }
     var me = this;
     if($('#record_preview').get(0) == null) {
         $('body').append(
             $('<div></div>').css({
                 width: 250,
                 height: 140,
-                'background-color': '#FFF',
                 position: 'absolute',
                 padding: 0,
                 'overflow-y': 'hidden',
-				'background-color': 'none',
-				'border': 'none'
+		'background-color': 'none',
+		'border': 'none'
             })
             .attr('id', 'record_preview')
-            //.addClass('thumb')
             .hide()
         );
     }

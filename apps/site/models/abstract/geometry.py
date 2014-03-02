@@ -7,6 +7,10 @@ class BasePoint(Base):
 	"""
 	point = models.PointField(blank=True, null=True)
 	
+	@property  
+	def geometry(self):
+		return self.point
+	
 	class Meta:
 		abstract = True
 	
