@@ -2,29 +2,70 @@ from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
-import urllib
+import urllib, json
 from rest_framework import status
+from django.contrib.gis.geos import GEOSGeometry
+		
+
+class GeomMixin(object):
+	Point = {
+		"type": "Point",
+		"coordinates": [12.492324113849, 41.890307434153]
+	}
+	LineString = {
+		"type": "LineString",
+		"coordinates": [[102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]]
+	}
+	Polygon = {
+		"type": "Polygon",
+		"coordinates": [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
+						[100.0, 1.0], [100.0, 0.0]]]
+	}
+	Crazy1 = {
+		"type": "Polygon1",
+		"coordinates": [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
+						[100.0, 1.0], [100.0, 0.0]]]	
+	}
+	Crazy2 = {
+		"type": "Polygon",
+		"coordinates": [[[100.0, 0.0, 6, 8], [101.0, 0.0], [101.0, 1.0],
+						[100.0, 1.0], [100.0, 0.0]]]	
+	}
+
 			
-class ApiMarkerListTest(test.TestCase, ViewMixinAPI):
+class ApiMarkerListTest(test.TestCase, ViewMixinAPI, GeomMixin):
 	
 	def setUp(self):
 		ViewMixinAPI.setUp(self)
 		self.urls =  ['/api/0/markers/']
 		self.view = views.MarkerList.as_view()
 		
-	def test_create_marker_point_line_poly_using_post(self, **kwargs):
-		import json
-		for i, url in enumerate(self.urls):
-			name, description, color = 'New Marker 1', 'Test description1', 'FF0000'
-			geom_types = {
-				'Point': '{"type": "Point", "coordinates": [12.492324113849, 41.890307434153]}',
-				'LineString': '{"type": "LineString", "coordinates": [[102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]]}',
-				'Polygon': '{"type": "Polygon", "coordinates": [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]}'
-			}
-			for k in geom_types.keys():
+	def test_bad_json_create_fails(self, **kwargs):
+		for k in ['Crazy1', 'Crazy2']:
+			geom = getattr(self, k)
+			for i, url in enumerate(self.urls):
+				name, description, color = 'New Marker Name', \
+									'Test description', 'FF0000'
 				response = self.client_user.post(url,
 					data=urllib.urlencode({
-						'geometry': geom_types.get(k),
+						'geometry': geom,
+						'name': name,
+						'description': description,
+						'color': color
+					}),
+					HTTP_X_CSRFTOKEN=self.csrf_token,
+					content_type = "application/x-www-form-urlencoded"
+				)
+				self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+		
+	def test_create_marker_point_line_poly_using_post(self, **kwargs):
+		for i, url in enumerate(self.urls):
+			name, description, color = 'New Marker 1', 'Test description1', 'FF0000'
+			for k in ['Point', 'LineString', 'Polygon']:
+				geom = getattr(self, k)
+				response = self.client_user.post(url,
+					data=urllib.urlencode({
+						'geometry': geom,
 						'name': name,
 						'description': description,
 						'color': color,
@@ -38,11 +79,11 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI):
 				self.assertEqual(new_marker.name, name)
 				self.assertEqual(new_marker.description, description)
 				self.assertEqual(new_marker.color, color)
-				self.assertEqual(json.loads(new_marker.geometry.geojson), json.loads(geom_types.get(k)))
+				self.assertEqual(new_marker.geometry, GEOSGeometry(json.dumps(geom)))
 				self.assertEqual(k, new_marker.geometry.geom_type)
 				self.assertEqual(new_marker.project.id, self.project.id)
 
-class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI):
+class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, GeomMixin):
 	
 	def setUp(self):
 		ViewMixinAPI.setUp(self)
@@ -50,44 +91,63 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI):
 		self.urls = ['/api/0/markers/%s/' % self.marker.id]
 		self.view = views.MarkerInstance.as_view()
 		
+	def test_bad_json_update_fails(self, **kwargs):
+		for k in ['Crazy1', 'Crazy2']:
+			geom = getattr(self, k)
+			for i, url in enumerate(self.urls):
+				name, description, color = 'New Marker Name', \
+									'Test description', 'FF0000'
+				response = self.client_user.put(url,
+					data=urllib.urlencode({
+						'geometry': geom,
+						'name': name,
+						'description': description,
+						'color': color
+					}),
+					HTTP_X_CSRFTOKEN=self.csrf_token,
+					content_type = "application/x-www-form-urlencoded"
+				)
+				self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+	
+		
 	def test_update_marker_using_put(self, **kwargs):
-		for i, url in enumerate(self.urls):
-			lat, lng, name, description, color = 54.16, 60.4, 'New Marker Name', \
-								'Test description', 'FF0000'
-			response = self.client_user.put(url,
-				data=urllib.urlencode({
-					'lat': lat,
-					'lng': lng,
-					'name': name,
-					'description': description,
-					'color': color
-				}),
-				HTTP_X_CSRFTOKEN=self.csrf_token,
-				content_type = "application/x-www-form-urlencoded"
-			)
-			self.assertEqual(response.status_code, status.HTTP_200_OK)
-			updated_marker = models.Marker.objects.get(id=self.marker.id)
-			self.assertEqual(updated_marker.name, name)
-			self.assertEqual(updated_marker.description, description)
-			self.assertEqual(updated_marker.color, color)
-			self.assertEqual(updated_marker.point.y, lat)
-			self.assertEqual(updated_marker.point.x, lng)
+		for k in ['Point', 'LineString', 'Polygon']:
+			geom = getattr(self, k)
+			for i, url in enumerate(self.urls):
+				name, description, color = 'New Marker Name', \
+									'Test description', 'FF0000'
+				response = self.client_user.put(url,
+					data=urllib.urlencode({
+						'geometry': geom,
+						'name': name,
+						'description': description,
+						'color': color
+					}),
+					HTTP_X_CSRFTOKEN=self.csrf_token,
+					content_type = "application/x-www-form-urlencoded"
+				)
+				self.assertEqual(response.status_code, status.HTTP_200_OK)
+				updated_marker = models.Marker.objects.get(id=self.marker.id)
+				self.assertEqual(updated_marker.name, name)
+				self.assertEqual(updated_marker.description, description)
+				self.assertEqual(updated_marker.color, color)
+				self.assertEqual(updated_marker.geometry, GEOSGeometry(json.dumps(geom)))
 			
 	def test_update_marker_using_patch(self, **kwargs):
-		for i, url in enumerate(self.urls):
-			lat, lng = 54.16, 60.4
-			response = self.client_user.patch(url,
-				data=urllib.urlencode({
-					'lat': lat,
-					'lng': lng
-				}),
-				HTTP_X_CSRFTOKEN=self.csrf_token,
-				content_type = "application/x-www-form-urlencoded"
-			)
-			self.assertEqual(response.status_code, status.HTTP_200_OK)
-			updated_marker = models.Marker.objects.get(id=self.marker.id)
-			self.assertEqual(updated_marker.point.y, lat)
-			self.assertEqual(updated_marker.point.x, lng)
+		for k in ['Point', 'LineString', 'Polygon']:
+			geom = getattr(self, k)
+			for i, url in enumerate(self.urls):
+				response = self.client_user.patch(url,
+					data=urllib.urlencode({
+						'geometry': geom
+					}),
+					HTTP_X_CSRFTOKEN=self.csrf_token,
+					content_type = "application/x-www-form-urlencoded"
+				)
+				self.assertEqual(response.status_code, status.HTTP_200_OK)
+				updated_marker = models.Marker.objects.get(id=self.marker.id)
+				self.assertEqual(updated_marker.geometry, GEOSGeometry(json.dumps(geom)))
 			
 	def test_delete_marker(self, **kwargs):
 		marker_id = self.marker.id

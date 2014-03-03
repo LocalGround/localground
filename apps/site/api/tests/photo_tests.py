@@ -29,12 +29,15 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 		self.view = views.PhotoInstance.as_view()
 		
 	def test_update_photo_using_put(self, **kwargs):
-		lat, lng, name, description, color = 54.16, 60.4, 'New Photo Name', \
+		name, description, color = 'New Photo Name', \
 							'Test description', 'FF0000'
+		point = {
+			"type": "Point",
+			"coordinates": [12.492324113849, 41.890307434153]
+		}
 		response = self.client_user.put(self.url,
 			data=urllib.urlencode({
-				'lat': lat,
-				'lng': lng,
+				'geometry': point,
 				'name': name,
 				'description': description
 			}),
@@ -45,23 +48,24 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 		updated_photo = models.Photo.objects.get(id=self.photo.id)
 		self.assertEqual(updated_photo.name, name)
 		self.assertEqual(updated_photo.description, description)
-		self.assertEqual(updated_photo.point.y, lat)
-		self.assertEqual(updated_photo.point.x, lng)
+		self.assertEqual(updated_photo.geometry.y, point['coordinates'][1])
+		self.assertEqual(updated_photo.geometry.x, point['coordinates'][0])
 			
 	def test_update_photo_using_patch(self, **kwargs):
-		lat, lng = 54.16, 60.4
+		import json
+		point = {
+			"type": "Point",
+			"coordinates": [12.492324113849, 41.890307434153]
+		}
 		response = self.client_user.patch(self.url,
-			data=urllib.urlencode({
-				'lat': lat,
-				'lng': lng
-			}),
+			data=urllib.urlencode({'geometry': point }),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"
 		)
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 		updated_photo = models.Photo.objects.get(id=self.photo.id)
-		self.assertEqual(updated_photo.point.y, lat)
-		self.assertEqual(updated_photo.point.x, lng)
+		self.assertEqual(updated_photo.geometry.y, point['coordinates'][1])
+		self.assertEqual(updated_photo.geometry.x, point['coordinates'][0])
 			
 	def test_delete_photo(self, **kwargs):
 		photo_id = self.photo.id

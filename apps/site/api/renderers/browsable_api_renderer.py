@@ -13,7 +13,7 @@ class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
         """
         accepted_media_type = accepted_media_type or ''
         renderer_context = renderer_context or {}
-        print >> sys.stderr, data
+        #print >> sys.stderr, data
 
         view = renderer_context['view']
         request = renderer_context['request']

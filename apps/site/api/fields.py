@@ -148,12 +148,20 @@ class GeometryField(serializers.WritableField):
 			if geom.geom_type not in self.geom_types:
 				raise serializers.ValidationError('Unsupported geometry type')
 			
+			#only one geom can exist at a time: Point, LineString, and Polygon
+			# are mutually exclusive. Can't have more than one at once.
 			if geom.geom_type == 'Point':
 				into['point'] = geom
+				into['polyline'] = None
+				into['polygon'] = None
 			elif geom.geom_type == 'LineString':
 				into['polyline'] = geom
+				into['point'] = None
+				into['polygon'] = None
 			elif geom.geom_type == 'Polygon':
 				into['polygon'] = geom
+				into['point'] = None
+				into['polyline'] = None
 			else:
 				raise serializers.ValidationError('Unsupported geometry type')
 	
