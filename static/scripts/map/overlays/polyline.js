@@ -22,6 +22,8 @@ localground.polyline = function(opts){
 	this.color + '&chd=t:0,60,0,60&chls=4&chxt=5';
     this.bubbleWidth = 480;
     this.bubbleHeight = 360;
+    
+    this.deleteMenu = new DeleteMenu();
 };
 
 localground.polyline.prototype = new localground.overlay();
@@ -41,8 +43,7 @@ localground.polyline.prototype.renderOverlay = function(opts) {
 	    strokeOpacity: 1.0,
 	    strokeWeight: 5
 	  });
-	
-	this.addMarkerEventHandlers();
+	this.addEventHandlers();
     }
     else if(turnedOn) {
 	this.googleOverlay.setMap(self.map);
@@ -51,13 +52,32 @@ localground.polyline.prototype.renderOverlay = function(opts) {
         this.makeEditable();   
 };
 
-localground.polyline.prototype.addMarkerEventHandlers = function() {
+localground.polyline.prototype.addEventHandlers = function() {
     var me = this;
     /*google.maps.event.addListener(this.googleOverlay, "click", function(mEvent) {
         self.currentOverlay = me;
         me.closeInfoBubble();
         me.showInfoBubble();
     });*/
+    
+    google.maps.event.clearListeners(this.googleOverlay.getPath());
+    google.maps.event.clearListeners(this.googleOverlay);
+    google.maps.event.addListener(this.googleOverlay.getPath(), 'set_at', function(){
+	me.updateGeometry(me);
+    });
+    google.maps.event.addListener(this.googleOverlay.getPath(), 'remove_at', function(){
+	me.updateGeometry(me);
+    });
+    google.maps.event.addListener(this.googleOverlay.getPath(), 'insert_at', function(){
+	me.updateGeometry(me);
+    });
+    
+    google.maps.event.addListener(this.googleOverlay, 'rightclick', function(e) {
+	// Check if click was on a vertex control point
+	if (e.vertex == undefined) { return; }
+	me.deleteMenu.open(self.map, me.googleOverlay.getPath(), e.vertex);
+
+    });
 };
 
 localground.polyline.prototype.createNew = function(googleOverlay, projectID) {
@@ -112,7 +132,7 @@ localground.polyline.prototype.getCenterPoint = function() {
 localground.polyline.prototype.makeViewable = function() {
     if(this.googleOverlay) {
         this.googleOverlay.setOptions({'draggable': false, 'editable': false});
-	google.maps.event.clearListeners(this.googleOverlay.getPath(), 'set_at');
+	google.maps.event.clearListeners(this.googleOverlay.getPath());
     }
 };
 
@@ -120,19 +140,34 @@ localground.polyline.prototype.makeEditable = function() {
     if(!this.isEditMode()) return;
     var me = this;
     if(this.googleOverlay) {
-        this.googleOverlay.setOptions({'draggable': true, 'editable': true});
-	google.maps.event.clearListeners(this.googleOverlay.getPath(), 'set_at');
-	google.maps.event.addListener(this.googleOverlay.getPath(), "set_at", function(mEvent) {
-	    $.ajax({
-		url: me.url + '.json',
-		type: 'PUT',
-		data: { geometry: JSON.stringify(me.getGeoJSON()) },
-		success: function(data) {
-		    //no action needed
-		}
-	    }); 
-        });
+        this.googleOverlay.setOptions({'draggable': false, 'editable': true});
+	this.addEventHandlers();
     }
+};
+localground.polyline.prototype.updateGeometry = function(polyline) {
+    $.ajax({
+	url: polyline.url + '.json',
+	type: 'PUT',
+	data: { geometry: JSON.stringify(polyline.getGeoJSON()) },
+	success: function(data) {
+	    polyline.renderListing();
+	}
+    }); 
+}
+
+localground.polyline.prototype.renderListingText = function() {
+    var $div_text = localground.overlay.prototype.renderListingText.call(this);
+    $div_text.append('<br><span>' + this.calculateDistance() + ' miles</span>');
+    return $div_text;
+};
+
+localground.polyline.prototype.calculateDistance = function() {
+    var coords = this.googleOverlay.getPath().getArray();
+    var distance = 0;
+    for (var i=1; i < coords.length; i++) {
+	distance += google.maps.geometry.spherical.computeDistanceBetween(coords[i-1], coords[i]);
+    }
+    return Math.round( distance/1609.34 * 10 ) / 10;
 };
 
 localground.polyline.prototype.getGeoJSON = function(googleOverlay){
@@ -156,4 +191,94 @@ localground.polyline.prototype.getGooglePath = function(){
 	path.push(ll);
     }
     return path;
+};
+
+
+
+
+
+
+/**
+ * A menu that lets a user delete a selected vertex of a path.
+ * @constructor
+ */
+function DeleteMenu() {
+  this.div_ = document.createElement('div');
+  this.div_.className = 'delete-menu';
+  this.div_.innerHTML = 'Delete';
+
+  var menu = this;
+  google.maps.event.addDomListener(this.div_, 'click', function() {
+    menu.removeVertex();
+  });
 }
+DeleteMenu.prototype = new google.maps.OverlayView();
+
+DeleteMenu.prototype.onAdd = function() {
+  var deleteMenu = this;
+  var map = this.getMap();
+  this.getPanes().floatPane.appendChild(this.div_);
+
+  // mousedown anywhere on the map except on the menu div will close the
+  // menu.
+  this.divListener_ = google.maps.event.addDomListener(map.getDiv(), 'mousedown', function(e) {
+    if (e.target != deleteMenu.div_) {
+      deleteMenu.close();
+    }
+  }, true);
+};
+
+DeleteMenu.prototype.onRemove = function() {
+  google.maps.event.removeListener(this.divListener_);
+  this.div_.parentNode.removeChild(this.div_);
+
+  // clean up
+  this.set('position');
+  this.set('path');
+  this.set('vertex');
+};
+
+DeleteMenu.prototype.close = function() {
+  this.setMap(null);
+};
+
+DeleteMenu.prototype.draw = function() {
+  var position = this.get('position');
+  var projection = this.getProjection();
+
+  if (!position || !projection) {
+    return;
+  }
+
+  var point = projection.fromLatLngToDivPixel(position);
+  this.div_.style.top = point.y + 'px';
+  this.div_.style.left = point.x + 'px';
+};
+
+/**
+ * Opens the menu at a vertex of a given path.
+ */
+DeleteMenu.prototype.open = function(map, path, vertex) {
+    this.set('position', path.getAt(vertex));
+    this.set('path', path);
+    this.set('vertex', vertex);
+    this.setMap(map);
+    this.draw();
+};
+
+/**
+ * Deletes the vertex from the path.
+ */
+DeleteMenu.prototype.removeVertex = function() {
+  var path = this.get('path');
+  var vertex = this.get('vertex');
+
+  if (!path || vertex == undefined) {
+    this.close();
+    return;
+  }
+
+  path.removeAt(vertex);
+  this.close();
+};
+
