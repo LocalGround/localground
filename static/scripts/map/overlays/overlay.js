@@ -233,6 +233,14 @@ localground.overlay.prototype.refresh = function() {
     //this.showInfoBubble();
 }
 
+localground.overlay.prototype.showInfoBubble = function(opts) {
+    self.currentOverlay = this; //self.currentOverlay is a global variable
+    if(self.mode == 'view')
+        this.showInfoBubbleView(opts);
+    else
+        this.showInfoBubbleEdit(opts);
+};
+
 localground.overlay.prototype.zoomToOverlay = function() {
 	alert('implement zoomToOverlay in child class');
 };
@@ -247,6 +255,14 @@ localground.overlay.prototype.makeEditable = function() {
 
 localground.overlay.prototype.makeViewable = function() {
 	return;
+};
+
+localground.overlay.prototype.getCenterPoint = function() {
+	alert('implement getCenterPoint in child class');
+};
+
+localground.overlay.prototype.getBounds = function() {
+    alert('implement getBounds in child class');
 };
 
 localground.overlay.prototype.getManager = function() {
@@ -324,5 +340,24 @@ localground.overlay.prototype.delete = function() {
             alert('error');
         }
     });   
+};
+
+localground.overlay.prototype.closeInfoBubble = function() {
+    //since this function is called in the infobubble class, use the
+    //global variable "self" instead of "this":
+    if(self.infoBubble.isOpen()) {
+        self.infoBubble.close();
+        $('#color-picker').hide(); 
+    
+        if(this.isEditMode() && this.geometry == null) {
+            this.googleOverlay.setMap(null);
+            this.googleOverlay = null;
+            this.renderListing();
+            //make draggable again:
+            var $img = this.getListingImage();
+            $img.addClass('can_drag');
+            this.makeGeoreferenceable();
+        }
+    }
 };
 

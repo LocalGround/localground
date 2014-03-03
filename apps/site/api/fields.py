@@ -104,48 +104,10 @@ class PointField(serializers.WritableField):
 	def to_native(self, obj):
 		if obj is not None:
 			return {
-				'type': 'Point',
-				'coordinates': {
-					'lng': obj.x,
-					'lat': obj.y
-				}
+				'lng': obj.x,
+				'lat': obj.y
 			}
 		
-class LineField(serializers.WritableField):
-	type_label = 'polyline'
-	label = 'polyline'
-	def field_from_native(self, data, files, field_name, into):
-		try:
-			polyline = data['polyline']
-		except KeyError:
-			if self.required:
-				raise serializers.ValidationError('The polyline string was not well formed.')
-			return
-		try:
-			into[self.label] = self.to_polyline(polyline)
-		except:
-			value = None
-			into[self.label] =  None
-		
-	def to_polyline(self, polyline):
-		# http://postgis.refractions.net/documentation/manual-1.4/ST_GeomFromText.html
-		points = []
-		try:
-			# 1) parse polyline string to make sure it's well formed.
-			for pair in polyline.split('|'):
-				point = pair.split(',')
-				lng = float(point[0].strip())
-				lat = float(point[1].strip())
-				points.append('%s %s' % (lng, lat))
-					
-			return GEOSGeometry(
-				'SRID=%s;LINESTRING(%s)' % (4326, ','.join(points)))
-		except:
-			raise serializers.ValidationError('% is a malformed line' % polyline)
-
-	def to_native(self, obj):
-		if obj is not None:
-			return obj.json
 
 class EntityTypeField(serializers.ChoiceField):
 	#name='entity'
@@ -167,22 +129,6 @@ class EntityTypeField(serializers.ChoiceField):
 		Override this b/c not working correctly in rest_framework lib
 		"""
 		return True
-	
-class AttachedHyperlinkedField(serializers.HyperlinkedRelatedField):
-	'''
-	def get_url(self, obj, view_name, request, format):
-		kwargs = {'object_type_plural': obj.class_name_plural, 'pk': obj.pk}
-		return reverse(view_name, kwargs=kwargs, request=request, format=format)
-	
-	def get_object(self, queryset, view_name, view_args, view_kwargs):
-		object_type_plural = view_kwargs['object_type_plural']
-		pk = view_kwargs['pk']
-		return queryset.get(id=pk)
-	'''
-	pass
-
-
-
 
 class GeometryField(serializers.WritableField):
 	"""
@@ -197,34 +143,35 @@ class GeometryField(serializers.WritableField):
 		super(GeometryField, self).__init__(*args, **kwargs)
 	
 	def field_from_native(self, data, files, field_name, into):
-		geom = self.from_native(data.get('geometry'))
-		if geom.geom_type not in self.geom_types:
-			raise serializers.ValidationError('Unsupported geometry type')
-		
-		if geom.geom_type == 'Point':
-			into['point'] = geom
-		elif geom.geom_type == 'LineString':
-			into['polyline'] = geom
-		elif geom.geom_type == 'Polygon':
-			into['polygon'] = geom
-		else:
-			raise serializers.ValidationError('Unsupported geometry type')
+		if data.get('geometry') is not None:
+			geom = self.from_native(data.get('geometry'))
+			if geom.geom_type not in self.geom_types:
+				raise serializers.ValidationError('Unsupported geometry type')
+			
+			if geom.geom_type == 'Point':
+				into['point'] = geom
+			elif geom.geom_type == 'LineString':
+				into['polyline'] = geom
+			elif geom.geom_type == 'Polygon':
+				into['polygon'] = geom
+			else:
+				raise serializers.ValidationError('Unsupported geometry type')
 	
 	def to_native(self, value):
-		#return value.geojson
-		
-		if isinstance(value, dict) or value is None:
-			return value
-	
-		# Get GeoDjango geojson serialization and then convert it _back_ to
-		# a Python object
-		return json.loads(value.geojson)
+		if value is not None:
+			if isinstance(value, dict) or value is None:
+				return value
+			# Get GeoDjango geojson serialization and then convert it _back_ to
+			# a Python object
+			return json.loads(value.geojson)
 		
 
 	def from_native(self, value):
-		try:
-			return GEOSGeometry(value)
-		except (ValueError, GEOSException, OGRException, TypeError) as e:
-			raise serializers.ValidationError(_('Invalid format: string or unicode input unrecognized as WKT EWKT, and HEXEWKB.'))
-	
-		return value
+		if value is not None:
+			try:
+				return GEOSGeometry(value)
+			except (ValueError, GEOSException, OGRException, TypeError) as e:
+				raise serializers.ValidationError(_('Invalid format: string or unicode input unrecognized as WKT EWKT, and HEXEWKB.'))
+		
+			return value
+		return None

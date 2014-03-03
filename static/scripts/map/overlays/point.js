@@ -80,9 +80,6 @@ localground.point.prototype.dragend = function(latLng) {
 		geometry: JSON.stringify(me.getGeoJSON())
 	    },
 	    success: function(data) {
-		me.point = {};
-		me.point.lat = latLng.lat();
-		me.point.lng = latLng.lng();
 		//re-render listing:
 		me.renderListing();
 	    },
@@ -170,12 +167,12 @@ localground.point.prototype.addMarkerEventHandlers = function() {
 }
 
 localground.point.prototype.makeViewable = function() {
-	if(this.googleOverlay) {
+    if(this.googleOverlay) {
         this.googleOverlay.setOptions({'draggable': false, 'title': ''});
         google.maps.event.clearListeners(this.googleOverlay, 'drag');
         google.maps.event.clearListeners(this.googleOverlay, 'dragstart');
         google.maps.event.clearListeners(this.googleOverlay, 'dragend');
-	}
+    }
 };
 
 localground.point.prototype.getIcon = function() {
@@ -185,10 +182,8 @@ localground.point.prototype.getIcon = function() {
 localground.point.prototype.zoomToOverlay = function() {
     this.closeInfoBubble();
     if(this.googleOverlay != null) {
-        //if(self.map.getZoom() < 18)
-        //    self.map.setZoom(18);
         if(!this.inView()) {
-            self.map.setCenter(this.googleOverlay.position);
+            self.map.setCenter(this.getCenterPoint());
         }
         
         //trigger info bubble only if it's not currently open:
@@ -204,6 +199,22 @@ localground.point.prototype.zoomToOverlay = function() {
     }
 };
 
+localground.point.prototype.getCenterPoint = function() {
+    if (this.googleOverlay) {
+	return this.googleOverlay.getPosition();
+    }
+    return null;
+};
+
+localground.point.prototype.getBounds = function() {
+    if (this.googleOverlay) {
+	var bounds = new google.maps.LatLngBounds();
+	bounds.extend(this.googleOverlay.getPosition());
+	return bounds;
+    }
+    return null;
+};
+
 localground.point.prototype.inView = function() {
 	return true;
     /*if(this.googleOverlay &&
@@ -213,13 +224,6 @@ localground.point.prototype.inView = function() {
     return false;*/  
 };
 
-localground.point.prototype.showInfoBubble = function(opts) {
-    self.currentOverlay = this; //self.currentOverlay is a global variable
-    if(self.mode == 'view')
-        this.showInfoBubbleView(opts);
-    else
-        this.showInfoBubbleEdit(opts);
-};
 
 localground.point.prototype.iframeOnload = function() {
     var $iframe = $('#the_frame');
@@ -239,25 +243,6 @@ localground.point.prototype.saveIframe = function() {
 
 localground.point.prototype.deleteOverlay = function() {
     alert('show delete confirmation / un-georeference options here');  
-};
-
-localground.point.prototype.closeInfoBubble = function() {
-    //since this function is called in the infobubble class, use the
-    //global variable "self" instead of "this":
-    if(self.infoBubble.isOpen()) {
-        self.infoBubble.close();
-        $('#color-picker').hide(); 
-    
-        if(this.isEditMode() && this.geometry == null) {
-            this.googleOverlay.setMap(null);
-            this.googleOverlay = null;
-            this.renderListing();
-            //make draggable again:
-            var $img = this.getListingImage();
-            $img.addClass('can_drag');
-            this.makeGeoreferenceable();
-        }
-    }
 };
 
 localground.point.prototype.makeGeoreferenceable = function() {
@@ -356,8 +341,11 @@ localground.point.prototype.renderInfoBubble = function(opts) {
     return $contentContainer; 
 };
 
-localground.point.prototype.getGeoJSON = function(){
-    var latLng = this.googleOverlay.getPosition();
+localground.point.prototype.getGeoJSON = function(googleOverlay){
+    if (googleOverlay == null) {
+	googleOverlay = this.googleOverlay;
+    }
+    var latLng = googleOverlay.getPosition();
     return {
 	type: 'Point',
 	coordinates: [latLng.lng(), latLng.lat()]

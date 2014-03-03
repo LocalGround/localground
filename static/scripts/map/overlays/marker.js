@@ -307,7 +307,7 @@ localground.marker.prototype.renderFormPanel = function($container){
     var form = new ui.form({
         schema: fields,
         object: this,
-        exclude: ['point', 'project_id']
+        exclude: ['geometry', 'project_id']
     });
     return $container.append(form.render({
         height: 270,
@@ -375,8 +375,7 @@ localground.marker.prototype.createNew = function(googleOverlay, projectID) {
         url: '/api/0/markers/?format=json',
         type: 'POST',
         data: {
-            lat: googleOverlay.getPosition().lat(),
-            lng: googleOverlay.getPosition().lng(),
+            geometry: JSON.stringify(this.getGeoJSON(googleOverlay)),
             project_id: projectID,
             color: me.color,
             format: 'json'
@@ -384,9 +383,6 @@ localground.marker.prototype.createNew = function(googleOverlay, projectID) {
         success: function(data) {
 			data.managerID = 'markers';
             $.extend(me, data);
-			/*$.each(me.children, function(){
-				
-			});*/
             //add to marker manager:
             me.getManager().addNewOverlay(me);
             //remove temporary marker:

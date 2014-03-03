@@ -78,7 +78,6 @@ localground.editor.prototype.initDrawingManager = function() {
             case google.maps.drawing.OverlayType.POLYLINE:
                 var polyline = new localground.polyline();
                 polyline.createNew(e.overlay, self.lastProjectSelection, this.accessKey);
-                alert("done!");
                 break;
             
         }

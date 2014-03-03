@@ -71,7 +71,7 @@ localground.audio.prototype.showInfoBubbleEdit = function(opts){
     var form = new ui.form({
         schema: fields,
         object: this,
-        exclude: ['point', 'project_id']
+        exclude: ['geometry', 'project_id']
     });
     var $container = $('<div />');
     $container.append(this.renderPlayerLinks())

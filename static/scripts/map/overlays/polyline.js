@@ -18,8 +18,8 @@ localground.polyline = function(opts){
     if(opts)
         $.extend(this, opts);
 	this.image = this.markerImage = this.iconSmall = this.iconLarge =
-        'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
-        this.color + '|13|b|';
+        'https://chart.googleapis.com/chart?chc=corp&chs=25x30&cht=lc:nda&chco=' +
+	this.color + '&chd=t:0,60,0,60&chls=4&chxt=5';
     this.bubbleWidth = 480;
     this.bubbleHeight = 360;
 };
@@ -39,17 +39,10 @@ localground.polyline.prototype.renderOverlay = function(opts) {
 	    path: this.getGooglePath(),
 	    strokeColor: this.color,
 	    strokeOpacity: 1.0,
-	    strokeWeight: 2
+	    strokeWeight: 5
 	  });
 	
-	/*new google.maps.Marker({
-	    position: this.getGoogleLatLng(),
-	    map: turnedOn ? self.map : null,
-	    icon: this.iconSmall,
-	    id: this.id
-	});*/
-	
-	//this.addMarkerEventHandlers();
+	this.addMarkerEventHandlers();
     }
     else if(turnedOn) {
 	this.googleOverlay.setMap(self.map);
@@ -58,10 +51,16 @@ localground.polyline.prototype.renderOverlay = function(opts) {
         this.makeEditable();   
 };
 
+localground.polyline.prototype.addMarkerEventHandlers = function() {
+    var me = this;
+    /*google.maps.event.addListener(this.googleOverlay, "click", function(mEvent) {
+        self.currentOverlay = me;
+        me.closeInfoBubble();
+        me.showInfoBubble();
+    });*/
+};
 
 localground.polyline.prototype.createNew = function(googleOverlay, projectID) {
-    //alert("create new polyline!");
-    //alert(JSON.stringify(this.getGeoJSON(googleOverlay)));
     var me = this;
     $.ajax({
         url: '/api/0/markers/?format=json',
@@ -85,7 +84,59 @@ localground.polyline.prototype.createNew = function(googleOverlay, projectID) {
     }); 
 };
 
+localground.polyline.prototype.zoomToOverlay = function() {
+    this.closeInfoBubble();
+    self.map.fitBounds(this.getBounds());
+    //google.maps.event.trigger(this.googleOverlay, 'click');
+};
+
+localground.polyline.prototype.getBounds = function() {
+    if (this.googleOverlay) {
+	var bounds = new google.maps.LatLngBounds();
+	var coordinates = this.googleOverlay.getPath().getArray();
+	for (var i = 0; i < coordinates.length; i++) {
+	    bounds.extend(coordinates[i]);
+	}
+	return bounds;
+    }
+    return null;
+};
+
+localground.polyline.prototype.getCenterPoint = function() {
+    if (this.googleOverlay) {
+	return this.getBounds().getCenter();
+    }
+    return null;
+};
+
+localground.polyline.prototype.makeViewable = function() {
+    if(this.googleOverlay) {
+        this.googleOverlay.setOptions({'draggable': false, 'editable': false});
+	google.maps.event.clearListeners(this.googleOverlay.getPath(), 'set_at');
+    }
+};
+
+localground.polyline.prototype.makeEditable = function() {
+    if(!this.isEditMode()) return;
+    var me = this;
+    if(this.googleOverlay) {
+        this.googleOverlay.setOptions({'draggable': true, 'editable': true});
+	google.maps.event.clearListeners(this.googleOverlay.getPath(), 'set_at');
+	google.maps.event.addListener(this.googleOverlay.getPath(), "set_at", function(mEvent) {
+	    $.ajax({
+		url: me.url + '.json',
+		type: 'PUT',
+		data: { geometry: JSON.stringify(me.getGeoJSON()) },
+		success: function(data) {
+		    //no action needed
+		}
+	    }); 
+        });
+    }
+};
+
 localground.polyline.prototype.getGeoJSON = function(googleOverlay){
+    if (googleOverlay == null)  googleOverlay = this.googleOverlay;
     var pathCoords = googleOverlay.getPath().getArray();
     var coords = [];
     for (var i = 0; i < pathCoords.length; i++){

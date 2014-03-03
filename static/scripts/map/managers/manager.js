@@ -224,12 +224,8 @@ localground.manager.prototype.getLayerBounds = function() {
     var bounds = new google.maps.LatLngBounds();
     $.each(this.data, function() {
         if(this.googleOverlay && this.isVisible()) {
-	    try {
-		bounds.extend(this.googleOverlay.position);
-		hasVisibleData = true;
-	    } catch(e) {
-		alert('Todo: implement polyline bounds');
-	    }
+	    bounds.union(this.getBounds());
+	    hasVisibleData = true;
         }
     });
     if(hasVisibleData)
@@ -262,15 +258,16 @@ localground.manager.prototype.showHide = function($elem) {
 };
 
 localground.manager.prototype.makeEditable = function() {
-	$.each(this.data, function() {
-		this.makeEditable();	
-	});
+    $.each(this.data, function() {
+	//alert('making editable');
+	this.makeEditable();	
+    });
 };
 
 localground.manager.prototype.makeViewable = function() {
-	$.each(this.data, function() {
-		this.makeViewable();	
-	});	
+    $.each(this.data, function() {
+	this.makeViewable();	
+    });	
 };
 
 localground.manager.prototype.getLoadingImage = function(w, h) {
