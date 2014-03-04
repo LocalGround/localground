@@ -46,6 +46,9 @@ localground.markerManager.prototype.addRecords = function(data) {
 			case 'LineString':
 				me.data.push(new localground.polyline(this)); 
 				break;
+			case 'Polygon':
+				me.data.push(new localground.polygon(this)); 
+				break;
 			default:
 				alert('Unknown Geometry Type');
 		}

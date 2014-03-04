@@ -63,7 +63,7 @@ localground.editor.prototype.initDrawingManager = function() {
                 google.maps.drawing.OverlayType.MARKER,
                 google.maps.drawing.OverlayType.POLYLINE,
                 //google.maps.drawing.OverlayType.RECTANGLE,
-                //google.maps.drawing.OverlayType.POLYGON
+                google.maps.drawing.OverlayType.POLYGON
             ]
         },
         map: null
@@ -79,20 +79,14 @@ localground.editor.prototype.initDrawingManager = function() {
                 var polyline = new localground.polyline();
                 polyline.createNew(e.overlay, self.lastProjectSelection, this.accessKey);
                 break;
+            case google.maps.drawing.OverlayType.POLYGON:
+                var polygon = new localground.polygon();
+                polygon.createNew(e.overlay, self.lastProjectSelection, this.accessKey);
+                break;
             
         }
         self.drawingManager.setDrawingMode(null);
     });
-    /*google.maps.event.addListener(this.drawingManager, 'overlaycomplete', function(e) {
-        self.drawingManager.setDrawingMode(null);
-        var newShape = e.overlay;
-        newShape.type = e.type;
-        google.maps.event.addListener(newShape, 'click', function() {
-            self.setSelection(newShape);
-            self.deleteSelectedShape();
-        });
-        self.setSelection(newShape);
-    });*/  
 };
 
 localground.editor.prototype.clearSelection = function() {
