@@ -1,5 +1,7 @@
+MARKER_RADIUS = 10;
+
 localground.markerManager = function(id){
-	this.id = id
+	this.id = id;
 	this.title = "Markers";
 	this.data = [];
     this.palettes = [
@@ -101,12 +103,18 @@ localground.markerManager.prototype.removeRecord = function(marker) {
     */
 };
 
-localground.markerManager.prototype.intersectMarkers = function(mEvent, point) {
+localground.markerManager.prototype.intersectMarkers = function(mEvent, point, isGoogle) {
     var candidateMarker = null;
+    var dude = 2;
     //alert(point.gootleOverlay.icon.size.width);
-    var position = self.overlay.getProjection().fromLatLngToDivPixel(mEvent.latLng);  
+    var position;
+    if(isGoogle) {
+        position = self.overlay.getProjection().fromLatLngToDivPixel(mEvent.latLng);
+    } else {
+        position = self.overlay.getProjection().fromLatLngToDivPixel(point.currentPos);
+    }
     var rV = 20, rH = 10;
-    if(point.googleOverlay.icon.size) {
+    if(point.googleOverlay && point.googleOverlay.icon.size) {
         rV = point.googleOverlay.icon.size.height;  // vertical radius
         rH = point.googleOverlay.icon.size.width;   // horizontal radius
     }
@@ -119,10 +127,11 @@ localground.markerManager.prototype.intersectMarkers = function(mEvent, point) {
                                 );
         
         if(this.id != point.id || this.getObjectType() != point.getObjectType()) {
+            var rad = MARKER_RADIUS;
             var orig = this.googleOverlay.icon;
-            if(this.googleOverlay.map != null && candidatePos.y <= bottom &&
-                candidatePos.y >= top && candidatePos.x <= right &&
-                candidatePos.x >= left) {
+            if(this.googleOverlay.map != null && candidatePos.y  <= bottom + rad &&
+                candidatePos.y >= top - rad && candidatePos.x <= right + rad &&
+                candidatePos.x >= left - rad) {
                 this.googleOverlay.icon = 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|FFFF00|13|b|';
                 this.googleOverlay.setOptions({ 'draggable': false });
                 candidateMarker = this;

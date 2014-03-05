@@ -68,7 +68,8 @@ localground.point.prototype.dragend = function(latLng) {
         self.infoBubble.open(self.map, this.candidateMarker.googleOverlay);
         
 	// append the media to the marker:
-	this.candidateMarker.attachMedia(this); 
+	this.candidateMarker.attachMedia(this);
+	this.renderListing();
     }
     else {
 	if(this.url.indexOf('.json') == -1)
@@ -132,18 +133,27 @@ localground.point.prototype.makeEditable = function() {
 	    self.map.panTo(mEvent.latLng);
 	    self.hideTip = false;
         });
+        //google.maps.event.addListener(this.googleOverlay, "drag", function(mEvent) {
+		//	me.checkIntersection();
+        //});
         google.maps.event.addListener(this.googleOverlay, "drag", function(mEvent) {
-	    var m = me.getManagerById('markers');
-	    if(m && me.overlay_type != self.overlay_types.MARKER){
-		    me.candidateMarker = m.intersectMarkers(mEvent, me);
-	    }
+	    me.checkIntersection(mEvent, true);
         });
     }
+
     //else {
         this.makeGeoreferenceable();
+
+
     //}
 };
-
+localground.point.prototype.checkIntersection = function(mEvent, isGoogle) {
+    var me = this;
+    var m = me.getManagerById('markers');
+	if(m && me.overlay_type != self.overlay_types.MARKER){
+		me.candidateMarker = m.intersectMarkers(mEvent, me, isGoogle);
+	}
+}
 localground.point.prototype.addMarkerEventHandlers = function() {
     var me = this;
     google.maps.event.addListener(this.googleOverlay, "click", function(mEvent) {
@@ -250,6 +260,16 @@ localground.point.prototype.makeGeoreferenceable = function() {
     var $cb = this.getListingCheckbox();
 	var me = this;
     $img.draggable({helper: 'clone',
+        start: function(e) {
+           console.log('time for some interactive exploration of circles~')
+        },
+        drag: function(e) {
+            var point = new google.maps.Point(e.pageX,e.pageY-32);
+            var location = self.overlay.getProjection().fromContainerPixelToLatLng(point);
+            me.currentPos = location;
+            me.checkIntersection(e, false);
+
+        },
         stop: function(e) {
             $cb.css({'visibility': 'visible'}).attr('checked', true);
             var point = new google.maps.Point(e.pageX,e.pageY-32);
@@ -272,10 +292,9 @@ localground.point.prototype.makeGeoreferenceable = function() {
             me.addMarkerEventHandlers();
             self.currentOverlay = me;
             me.dragend(me.googleOverlay.getPosition());
+
 	    //center the map at the new location:
 	    self.map.panTo(location);
-            //after image has been dragged, deactivate it:
-            $img.removeClass('can_drag').removeClass('activated').draggable('disable');
         }
     }).addClass('activated');
 };

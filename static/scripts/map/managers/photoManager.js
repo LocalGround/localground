@@ -19,8 +19,8 @@ localground.photoManager.prototype.makeViewable = function() {
     
     //destroy draggable event handlers:
 	try {
+        $('.thumbsmall').removeClass('can_drag').removeClass('ui-draggable').removeClass('activated')
 		$('.thumbsmall').draggable("destroy");
-		$('.thumbsmall').removeClass('can_drag').removeClass('ui-draggable').removeClass('activated')
 	} catch(e) {
 		//alert(e);
 	}
