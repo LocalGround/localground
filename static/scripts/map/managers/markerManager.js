@@ -1,5 +1,7 @@
+MARKER_RADIUS = 10;
+
 localground.markerManager = function(id){
-	this.id = id
+	this.id = id;
 	this.title = "Markers";
 	this.data = [];
     this.palettes = [
@@ -91,6 +93,7 @@ localground.markerManager.prototype.removeRecord = function(marker) {
 
 localground.markerManager.prototype.intersectMarkers = function(mEvent, point, isGoogle) {
     var candidateMarker = null;
+    var dude = 2;
     //alert(point.gootleOverlay.icon.size.width);
     var position;
     if(isGoogle) {
@@ -112,10 +115,11 @@ localground.markerManager.prototype.intersectMarkers = function(mEvent, point, i
                                 );
         
         if(this.id != point.id || this.getObjectType() != point.getObjectType()) {
+            var rad = MARKER_RADIUS;
             var orig = this.googleOverlay.icon;
-            if(this.googleOverlay.map != null && candidatePos.y <= bottom &&
-                candidatePos.y >= top && candidatePos.x <= right &&
-                candidatePos.x >= left) {
+            if(this.googleOverlay.map != null && candidatePos.y  <= bottom + rad &&
+                candidatePos.y >= top - rad && candidatePos.x <= right + rad &&
+                candidatePos.x >= left - rad) {
                 this.googleOverlay.icon = 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|FFFF00|13|b|';
                 this.googleOverlay.setOptions({ 'draggable': false });
                 candidateMarker = this;
