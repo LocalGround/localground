@@ -121,29 +121,32 @@ localground.markerManager.prototype.intersectMarkers = function(mEvent, point, i
     var top = position.y-rV, bottom = position.y+rV, left = position.x-rH,
                 right = position.x+rH;
     $.each(this.data, function() {
-        var candidatePos = self.overlay.getProjection()
-                                .fromLatLngToDivPixel(
-                                        this.googleOverlay.getPosition()
-                                );
-        
-        if(this.id != point.id || this.getObjectType() != point.getObjectType()) {
-            var rad = MARKER_RADIUS;
-            var orig = this.googleOverlay.icon;
-            if(this.googleOverlay.map != null && candidatePos.y  <= bottom + rad &&
-                candidatePos.y >= top - rad && candidatePos.x <= right + rad &&
-                candidatePos.x >= left - rad) {
-                this.googleOverlay.icon = 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|FFFF00|13|b|';
-                this.googleOverlay.setOptions({ 'draggable': false });
-                candidateMarker = this;
-                return;
-            }
-            else {
-                this.googleOverlay.icon = this.markerImage;
-                this.googleOverlay.setOptions({ 'draggable': true });
-            }
-            if(this.googleOverlay.map != null && this.googleOverlay.icon != orig)
-                this.googleOverlay.setMap(self.map);
-        }
+		//only do this check if the marker is a POINT marker:
+		if (this.geometry.type == 'Point') {
+			var candidatePos = self.overlay.getProjection()
+									.fromLatLngToDivPixel(
+											this.googleOverlay.getPosition()
+									);
+			
+			if(this.id != point.id || this.getObjectType() != point.getObjectType()) {
+				var rad = MARKER_RADIUS;
+				var orig = this.googleOverlay.icon;
+				if(this.googleOverlay.map != null && candidatePos.y  <= bottom + rad &&
+					candidatePos.y >= top - rad && candidatePos.x <= right + rad &&
+					candidatePos.x >= left - rad) {
+					this.googleOverlay.icon = 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|FFFF00|13|b|';
+					this.googleOverlay.setOptions({ 'draggable': false });
+					candidateMarker = this;
+					return;
+				}
+				else {
+					this.googleOverlay.icon = this.markerImage;
+					this.googleOverlay.setOptions({ 'draggable': true });
+				}
+				if(this.googleOverlay.map != null && this.googleOverlay.icon != orig)
+					this.googleOverlay.setMap(self.map);
+			}
+		}
     });
     return candidateMarker;
 };
