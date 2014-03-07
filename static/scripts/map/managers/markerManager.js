@@ -146,20 +146,27 @@ localground.markerManager.prototype.intersectMarkers = function(mEvent, point, i
 					this.googleOverlay.icon = 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|339bb9|13|b|';
 					this.googleOverlay.setOptions({ 'draggable': false });
 					candidateMarker = this;
-					me.bufferCircle.setCenter(candidateMarker.googleOverlay.getPosition());
-					me.bufferCircle.setMap(self.map);
+					me.bufferCircle.setOptions({
+						center: candidateMarker.googleOverlay.getPosition(),
+						map: self.map,
+						//scales radius no matter what the zoom level:
+						radius: Math.pow(2, (21 - self.map.getZoom())) * 1128.49 * 0.002
+					});
+					
 					return;
 				}
 				else {
 					this.googleOverlay.icon = this.markerImage;
 					this.googleOverlay.setOptions({ 'draggable': true });
-					me.bufferCircle.setMap(null);
 				}
 				if(this.googleOverlay.map != null && this.googleOverlay.icon != orig)
 					this.googleOverlay.setMap(self.map);
 			}
 		}
     });
+	if (candidateMarker == null) {
+		me.bufferCircle.setOptions({map: null});
+	}
     return candidateMarker;
 };
 
