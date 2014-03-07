@@ -6,15 +6,19 @@ localground.polyline = function(opts){
     this.color = 'FF0000'
     this.accessKey = null;
     this.managerID = null;
+    this.lineWidth = 3;
     if(opts)
         $.extend(this, opts);
 	this.image = this.markerImage = this.iconSmall = this.iconLarge =
         'https://chart.googleapis.com/chart?chc=corp&chs=25x30&cht=lc:nda&chco=' +
-	this.color + '&chd=t:0,50,30,80&chls=4&chxt=5';
+	this.color + '&chd=t:0,50,30,80&chls=' + this.lineWidth + '&chxt=5';
     this.bubbleWidth = 480;
     this.bubbleHeight = 360;
     
     this.deleteMenu = new DeleteMenu();
+    
+    //extend this class with the createmixin functions too:
+    extend(localground.polyline.prototype, localground.createmixin.prototype);
 };
 
 localground.polyline.prototype = new localground.overlay();
@@ -28,19 +32,23 @@ localground.polyline.prototype.renderOverlay = function(opts) {
     if(opts && opts.turnedOn)
         turnedOn = opts.turnedOn;
     if(this.googleOverlay == null) {
-	this.googleOverlay = new google.maps.Polyline({
-	    path: this.getGooglePath(),
-	    strokeColor: this.color,
-	    strokeOpacity: 1.0,
-	    strokeWeight: 5
-	  });
+	this.createOverlay();
 	this.addEventHandlers();
     }
-    else if(turnedOn) {
+    if(turnedOn) {
 	this.googleOverlay.setMap(self.map);
     }
     if(this.isEditMode())
         this.makeEditable();   
+};
+
+localground.polyline.prototype.createOverlay = function() {
+    this.googleOverlay = new google.maps.Polyline({
+	path: this.getGooglePath(),
+	strokeColor: this.color,
+	strokeOpacity: 1.0,
+	strokeWeight: 5
+    });
 };
 
 localground.polyline.prototype.addEventHandlers = function() {
@@ -69,30 +77,6 @@ localground.polyline.prototype.addEventHandlers = function() {
 	if (me.googleOverlay.getPath().getLength() <=2) { return; }
 	me.deleteMenu.open(self.map, me.googleOverlay.getPath(), e.vertex);
     });
-};
-
-localground.polyline.prototype.createNew = function(googleOverlay, projectID) {
-    var me = this;
-    $.ajax({
-        url: '/api/0/markers/?format=json',
-        type: 'POST',
-        data: {
-            geometry: JSON.stringify(me.getGeoJSON(googleOverlay)),
-            project_id: projectID,
-            color: me.color,
-            format: 'json'
-        },
-        success: function(data) {
-	    data.managerID = 'markers';
-            $.extend(me, data);
-            //add to marker manager:
-            me.getManager().addNewOverlay(me);
-            //remove temporary marker:
-            googleOverlay.setMap(null);
-        },
-        notmodified: function(data) { alert('Not modified'); },
-        error: function(data) { alert('Error'); }
-    }); 
 };
 
 localground.polyline.prototype.zoomToOverlay = function() {
@@ -135,13 +119,16 @@ localground.polyline.prototype.makeEditable = function() {
 	this.addEventHandlers();
     }
 };
-localground.polyline.prototype.updateGeometry = function(polyline) {
+localground.polyline.prototype.updateGeometry = function(shape) {
     $.ajax({
-	url: polyline.url + '.json',
+	url: shape.url + '.json',
 	type: 'PUT',
-	data: { geometry: JSON.stringify(polyline.getGeoJSON()) },
+	data: { geometry: JSON.stringify(shape.getGeoJSON()) },
 	success: function(data) {
-	    polyline.renderListing();
+	    shape.renderListing();
+	    //a hack to reset the shape:
+	    shape.googleOverlay.setOptions({'editable': false});
+	    shape.googleOverlay.setOptions({'editable': true});
 	}
     }); 
 }

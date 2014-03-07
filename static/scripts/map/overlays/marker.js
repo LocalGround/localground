@@ -22,6 +22,10 @@ localground.marker = function(opts){
         this.color + '|13|b|';
     this.bubbleWidth = 480;
     this.bubbleHeight = 360;
+    
+    //extend this class with the createmixin functions too:
+    extend(localground.marker.prototype, localground.createmixin.prototype);
+
 };
 
 localground.marker.prototype = new localground.point();
@@ -369,7 +373,7 @@ localground.marker.prototype.makeViewable = function() {
 	localground.point.prototype.makeViewable.call(this);
 };
 
-localground.marker.prototype.createNew = function(googleOverlay, projectID) {
+/*localground.marker.prototype.createNew = function(googleOverlay, projectID) {
     var me = this;
     $.ajax({
         url: '/api/0/markers/?format=json',
@@ -391,7 +395,7 @@ localground.marker.prototype.createNew = function(googleOverlay, projectID) {
         notmodified: function(data) { alert('Not modified'); },
         error: function(data) { alert('Error'); }
     }); 
-};
+};*/
 
 localground.marker.prototype.attachMedia = function(media) {
     var me = this;

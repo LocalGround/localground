@@ -306,33 +306,33 @@ localground.manager.prototype.getCreateSchema = function() {
 };
 
 localground.manager.prototype.getUpdateSchema = function() {
-	if (this.updateSchema == null) {
-		var url = '/api/0/' + this.id + '/' + this.data[0].id  + '/.json';
-		this.updateSchema = this.getSchema(url, 'PUT')
-	}
-	return this.updateSchema;
+    if (this.updateSchema == null) {
+	var url = '/api/0/' + this.id + '/' + this.data[0].id  + '/.json';
+	this.updateSchema = this.getSchema(url, 'PUT')
+    }
+    return this.updateSchema;
 };
 
 localground.manager.prototype.getSchema = function(url, method) {
-	var schema = [];
-	$.ajax({
-		url: url,
-		type: 'POST',
-		async: false,
-		data: {
-			_method: 'OPTIONS'
-		},
-		success: function(data) {
-			fields = data.actions[method];
-			$.each(fields, function(k, v){
-				if(!this.read_only){
-					v['field_name'] = k;
-					if (v['label'] == null)
-						v['label'] = k;
-					schema.push(v);
-				}
-			});
+    var schema = [];
+    $.ajax({
+	url: url,
+	type: 'POST',
+	async: false,
+	data: {
+		_method: 'OPTIONS'
+	},
+	success: function(data) {
+	    fields = data.actions[method];
+	    $.each(fields, function(k, v){
+		if(!this.read_only){
+		    v['field_name'] = k;
+		    if (v['label'] == null)
+			    v['label'] = k;
+		    schema.push(v);
 		}
-	});
-	return schema;
+	    });
+	}
+    });
+    return schema;
 };
