@@ -13,8 +13,7 @@ localground.polyline = function(opts){
         'https://chart.googleapis.com/chart?chc=corp&chs=25x30&cht=lc:nda&chco=' +
 	this.color + '&chd=t:0,50,30,80&chls=' + this.lineWidth + '&chxt=5';
     this.bubbleWidth = 480;
-    this.bubbleHeight = 360;
-    
+    this.bubbleHeight = 360
     this.deleteMenu = new DeleteMenu();
     
     //extend this class with the createmixin functions too:
@@ -51,16 +50,66 @@ localground.polyline.prototype.createOverlay = function() {
     });
 };
 
+localground.polyline.prototype.showInfoBubbleView = function(opts) {
+    this.showInfoBubbleEdit();
+};
+
+localground.polyline.prototype.showInfoBubbleEdit = function(opts){
+    var $container = this.renderInfoBubble();
+    $container.children().empty();
+    var me = this;
+    var fields = this.getManager().getUpdateSchema();
+    var form = new ui.form({
+        schema: fields,
+        object: this,
+        exclude: ['geometry', 'project_id']
+    });
+    return $container.append(form.render({
+        height: 270,
+        margin: '0px'
+    }));
+};
+
+localground.polyline.prototype.renderInfoBubble = function(opts) {
+    var me = this;
+	var width = this.bubbleWidth;
+	var height = this.bubbleHeight;
+	var margin = '0px';
+	var overflow_y = 'hidden';
+	if (opts) {
+		width = opts.width || width;
+		height = opts.height || height;
+		margin = opts.margin || margin;
+		overflow_y = opts.overflow_y || overflow_y;
+	}
+    var $contentContainer = $('<div></div>')
+		.attr('id', 'bubble_container')
+		.css({
+            'width': width,
+            'height': height,
+            'margin': margin,
+            'overflow-y': overflow_y,
+            'overflow-x': 'hidden'
+        });
+    self.infoBubble.setPosition(this.getCenterPoint());
+    self.infoBubble.open(self.map);
+    self.infoBubble.setHeaderText(null);
+    self.infoBubble.setFooter(null);
+    self.infoBubble.doNotPad = true;
+    self.infoBubble.setContent($contentContainer.get(0)); 
+    
+    return $contentContainer; 
+};
+
 localground.polyline.prototype.addEventHandlers = function() {
     var me = this;
-    /*google.maps.event.addListener(this.googleOverlay, "click", function(mEvent) {
+    google.maps.event.clearListeners(this.googleOverlay.getPath());
+    google.maps.event.clearListeners(this.googleOverlay);
+    google.maps.event.addListener(this.googleOverlay, "click", function(mEvent) {
         self.currentOverlay = me;
         me.closeInfoBubble();
         me.showInfoBubble();
-    });*/
-    
-    google.maps.event.clearListeners(this.googleOverlay.getPath());
-    google.maps.event.clearListeners(this.googleOverlay);
+    });
     google.maps.event.addListener(this.googleOverlay.getPath(), 'set_at', function(){
 	me.updateGeometry(me);
     });
@@ -72,11 +121,14 @@ localground.polyline.prototype.addEventHandlers = function() {
     });
     
     google.maps.event.addListener(this.googleOverlay, 'rightclick', function(e) {
-	// Check if click was on a vertex control point
 	if (e.vertex == undefined) { return; }
-	if (me.googleOverlay.getPath().getLength() <=2) { return; }
-	me.deleteMenu.open(self.map, me.googleOverlay.getPath(), e.vertex);
+	me.showDeleteMenu(me, e);
     });
+};
+
+localground.polyline.prototype.showDeleteMenu = function(shape, e) {
+    if (shape.googleOverlay.getPath().getLength() <=2) { return; }
+    shape.deleteMenu.open(self.map, shape.googleOverlay, e.vertex);  
 };
 
 localground.polyline.prototype.zoomToOverlay = function() {

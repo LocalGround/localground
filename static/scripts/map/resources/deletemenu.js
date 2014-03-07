@@ -9,7 +9,7 @@ function DeleteMenu() {
   
 	var menu = this;
 	google.maps.event.addDomListener(this.div_, 'click', function() {
-	  menu.removeVertex();
+		menu.removeVertex();
 	});
 }
 DeleteMenu.prototype = new google.maps.OverlayView();
@@ -58,9 +58,10 @@ DeleteMenu.prototype.draw = function() {
 /**
  * Opens the menu at a vertex of a given path.
  */
-DeleteMenu.prototype.open = function(map, path, vertex) {
-    this.set('position', path.getAt(vertex));
-    this.set('path', path);
+DeleteMenu.prototype.open = function(map, overlay, vertex) {
+    this.set('position', overlay.getPath().getAt(vertex));
+    this.set('overlay', overlay);
+	this.set('path', overlay.getPath());
     this.set('vertex', vertex);
     this.setMap(map);
     this.draw();
@@ -70,10 +71,14 @@ DeleteMenu.prototype.open = function(map, path, vertex) {
  * Deletes the vertex from the path.
  */
 DeleteMenu.prototype.removeVertex = function() {
+	var overlay = this.get('overlay');
 	var path = this.get('path');
 	var vertex = this.get('vertex');
-	
-	if (!path || vertex == undefined || path.getLength() <=2) {
+	var notenoughpoints = path.getLength() <=2;
+	if (overlay.getPaths) {
+		notenoughpoints = path.getLength() <=3;
+	}
+	if (!path || vertex == undefined || notenoughpoints) {
 	  this.close();
 	  return;
 	}

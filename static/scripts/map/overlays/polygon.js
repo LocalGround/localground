@@ -25,6 +25,12 @@ localground.polygon.prototype.createOverlay = function() {
 };
 
 
+localground.polygon.prototype.showDeleteMenu = function(shape, e) {
+    if (shape.googleOverlay.getPaths && shape.googleOverlay.getPath().getLength() <=3) { return; }
+    shape.deleteMenu.open(self.map, shape.googleOverlay, e.vertex);  
+};
+
+
 localground.polygon.prototype.renderListingText = function() {
     var $div_text = localground.overlay.prototype.renderListingText.call(this);
     $div_text.append('<br><span>' + this.calculateArea() + ' miles</span>');
