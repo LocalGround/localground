@@ -53,6 +53,10 @@ localground.point.prototype.dragend = function(latLng) {
 		
 	// after the media item has been added to the marker, reset the position
 	// of the media item and toggle it off in the menu
+	if (this.geometry == null) {
+	    this.geometry = this.candidateMarker.geometry;
+	    this.georeference();
+	}
 	this.googleOverlay.setPosition(this.getGoogleLatLng());
         this.googleOverlay.setMap(null);
 	    $('#cb_' + this.managerID + "_" + this.id).prop('checked', false);
@@ -74,37 +78,29 @@ localground.point.prototype.dragend = function(latLng) {
 	this.renderListing();
     }
     else {
-	if(this.url.indexOf('.json') == -1)
-	    this.url = this.url + '.json';
-	$.ajax({
-	    url: this.url,
-	    type: 'PUT',
-	    data: {
-		geometry: JSON.stringify(me.getGeoJSON())
-	    },
-	    success: function(data) {
-		//re-render listing:
-		me.renderListing();
-	    },
-	    notmodified: function(data) { alert('Not modified'); },
-	    error: function(data) { alert('Error'); }
-	});
+	this.georeference();
     }
 };
 
-/*localground.point.prototype.makeEditable = function() {
-    if(this.googleOverlay) {
-        this.googleOverlay.setOptions({
-            'draggable': true,
-            'title': 'Drag this icon to re-position it'
-        });
-    }
+localground.point.prototype.georeference = function() {
     var me = this;
-    if(this.lat) //only add event handers if lat/lng defined
-        this.addMarkerEventHandlers(); 
-    else
-        this.makeGeoreferenceable();
-};*/
+    if(this.url.indexOf('.json') == -1)
+	this.url = this.url + '.json';
+    $.ajax({
+	url: this.url,
+	type: 'PUT',
+	data: {
+	    geometry: JSON.stringify(me.getGeoJSON())
+	},
+	success: function(data) {
+	    //re-render listing:
+	    $.extend(me, data);
+	    me.renderListing();
+	},
+	notmodified: function(data) { alert('Not modified'); },
+	error: function(data) { alert('Error'); }
+    });
+}
 
 localground.point.prototype.makeEditable = function() {
     if(!this.isEditMode())
@@ -247,13 +243,12 @@ localground.point.prototype.makeGeoreferenceable = function() {
         drag: function(e) {
             var point = new google.maps.Point(e.pageX,e.pageY-32);
             var location = self.overlay.getProjection().fromContainerPixelToLatLng(point);
-            //me.currentPos = location;
+            me.currentPos = location;
             me.checkIntersection(e, false);
 
         },
         stop: function(e) {
-	    alert('stop')
-            $cb.css({'visibility': 'visible'}).attr('checked', true);
+	    $cb.css({'visibility': 'visible'}).attr('checked', true);
             var point = new google.maps.Point(e.pageX,e.pageY-32);
             //self.overlay is an "OverlayView" object that helps with projections:
             var location = self.overlay.getProjection().fromContainerPixelToLatLng(point);
