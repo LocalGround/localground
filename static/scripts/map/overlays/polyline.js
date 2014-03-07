@@ -1,7 +1,3 @@
-/**
- * For convenience, this class depends on the global variable "self" which
- * is the main controller object that uses this class.
-**/
 localground.polyline = function(opts){
     this.color = 'FF0000'
     this.accessKey = null;
@@ -12,8 +8,8 @@ localground.polyline = function(opts){
 	this.image = this.markerImage = this.iconSmall = this.iconLarge =
         'https://chart.googleapis.com/chart?chc=corp&chs=25x30&cht=lc:nda&chco=' +
 	this.color + '&chd=t:0,50,30,80&chls=' + this.lineWidth + '&chxt=5';
-    this.bubbleWidth = 480;
-    this.bubbleHeight = 360
+    this.bubbleWidth = 350;
+    this.bubbleHeight = 250
     this.deleteMenu = new DeleteMenu();
     
     //extend this class with the createmixin functions too:
@@ -51,11 +47,24 @@ localground.polyline.prototype.createOverlay = function() {
 };
 
 localground.polyline.prototype.showInfoBubbleView = function(opts) {
-    this.showInfoBubbleEdit();
+    //ensures that the marker renders on top:
+    this.googleOverlay.setMap(null);
+    this.googleOverlay.setMap(self.map);
+
+    //build bubble content:
+    var $container = $('<div />');
+    $container.append(this.renderDetail());
+    var $contentContainer = this.renderInfoBubble({
+	width: '250px',
+	height: '140px'
+    });
+    $contentContainer.append($container);
 };
 
 localground.polyline.prototype.showInfoBubbleEdit = function(opts){
-    var $container = this.renderInfoBubble();
+    var $container = this.renderInfoBubble({
+	margin: '25px 0px 0px 0px'
+    });
     $container.children().empty();
     var me = this;
     var fields = this.getManager().getUpdateSchema();
@@ -65,40 +74,17 @@ localground.polyline.prototype.showInfoBubbleEdit = function(opts){
         exclude: ['geometry', 'project_id']
     });
     return $container.append(form.render({
-        height: 270,
+        height: this.bubbleHeight - 50,
         margin: '0px'
     }));
 };
 
-localground.polyline.prototype.renderInfoBubble = function(opts) {
-    var me = this;
-	var width = this.bubbleWidth;
-	var height = this.bubbleHeight;
-	var margin = '0px';
-	var overflow_y = 'hidden';
-	if (opts) {
-		width = opts.width || width;
-		height = opts.height || height;
-		margin = opts.margin || margin;
-		overflow_y = opts.overflow_y || overflow_y;
-	}
-    var $contentContainer = $('<div></div>')
-		.attr('id', 'bubble_container')
-		.css({
-            'width': width,
-            'height': height,
-            'margin': margin,
-            'overflow-y': overflow_y,
-            'overflow-x': 'hidden'
-        });
-    self.infoBubble.setPosition(this.getCenterPoint());
-    self.infoBubble.open(self.map);
-    self.infoBubble.setHeaderText(null);
-    self.infoBubble.setFooter(null);
-    self.infoBubble.doNotPad = true;
-    self.infoBubble.setContent($contentContainer.get(0)); 
-    
-    return $contentContainer; 
+localground.polyline.prototype.refresh = function() {
+    this.image = this.markerImage = this.iconSmall = this.iconLarge =
+        'https://chart.googleapis.com/chart?chc=corp&chs=25x30&cht=lc:nda&chco=' +
+	this.color + '&chd=t:0,50,30,80&chls=' + this.lineWidth + '&chxt=5';
+    this.googleOverlay.setOptions({strokeColor: this.color});
+    localground.overlay.prototype.refresh.call(this);
 };
 
 localground.polyline.prototype.addEventHandlers = function() {
@@ -106,7 +92,8 @@ localground.polyline.prototype.addEventHandlers = function() {
     google.maps.event.clearListeners(this.googleOverlay.getPath());
     google.maps.event.clearListeners(this.googleOverlay);
     google.maps.event.addListener(this.googleOverlay, "click", function(mEvent) {
-        self.currentOverlay = me;
+        //alert('hi');
+	self.currentOverlay = me;
         me.closeInfoBubble();
         me.showInfoBubble();
     });
@@ -132,9 +119,8 @@ localground.polyline.prototype.showDeleteMenu = function(shape, e) {
 };
 
 localground.polyline.prototype.zoomToOverlay = function() {
-    this.closeInfoBubble();
+    localground.overlay.prototype.zoomToOverlay.call(this);
     self.map.fitBounds(this.getBounds());
-    //google.maps.event.trigger(this.googleOverlay, 'click');
 };
 
 localground.polyline.prototype.getBounds = function() {
@@ -173,9 +159,12 @@ localground.polyline.prototype.makeEditable = function() {
 };
 localground.polyline.prototype.updateGeometry = function(shape) {
     $.ajax({
-	url: shape.url + '.json',
+	url: shape.url,
 	type: 'PUT',
-	data: { geometry: JSON.stringify(shape.getGeoJSON()) },
+	data: {
+	    geometry: JSON.stringify(shape.getGeoJSON()),
+	    format: 'json'
+	},
 	success: function(data) {
 	    shape.renderListing();
 	    //a hack to reset the shape:
@@ -197,7 +186,7 @@ localground.polyline.prototype.calculateDistance = function() {
     for (var i=1; i < coords.length; i++) {
 	distance += google.maps.geometry.spherical.computeDistanceBetween(coords[i-1], coords[i]);
     }
-    return Math.round( distance/1609.34 * 10 ) / 10;
+    return Math.round( distance/1609.34 * 100 ) / 100;
 };
 
 localground.polyline.prototype.getGeoJSON = function(googleOverlay){

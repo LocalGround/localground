@@ -250,7 +250,24 @@ localground.overlay.prototype.showInfoBubble = function(opts) {
 };
 
 localground.overlay.prototype.zoomToOverlay = function() {
-	alert('implement zoomToOverlay in child class');
+    this.closeInfoBubble();
+    if(this.googleOverlay != null) {
+        self.map.setCenter(this.getCenterPoint());
+        
+        //trigger info bubble only if it's not currently open:
+        var newOverlay = (self.currentOverlay != this);
+        var overlayTurnedOn = (this.googleOverlay.map != null);
+        var bubblePos = self.infoBubble.getPosition();
+        var bubbleNotInView = (!bubblePos || !self.infoBubble.isOpen() ||
+                                !self.map.getBounds().contains(bubblePos));
+		if(overlayTurnedOn && (newOverlay || bubbleNotInView)) {
+			//bug workaround: make sure you pass an empty {} to the trigger
+			//or you get an error if the overlay is a polyline / polygon:
+			//http://code.google.com/p/gmaps-api-issues/issues/detail?id=5763
+            google.maps.event.trigger(this.googleOverlay, 'click', {});
+        }
+        self.currentOverlay = this;
+    }
 };
 
 localground.overlay.prototype.renderOverlay = function() {
@@ -285,6 +302,37 @@ localground.overlay.prototype.getMarkerManager = function() {
 	return self.markerManager;
 };
 
+localground.overlay.prototype.renderInfoBubble = function(opts) {
+    var me = this;
+    var width = this.bubbleWidth;
+    var height = this.bubbleHeight;
+    var margin = '0px';
+    var overflow_y = 'hidden';
+    if (opts) {
+		width = opts.width || width;
+		height = opts.height || height;
+		margin = opts.margin || margin;
+		overflow_y = opts.overflow_y || overflow_y;
+	}
+    var $contentContainer = $('<div></div>')
+		.attr('id', 'bubble_container')
+		.css({
+            'width': width,
+            'height': height,
+            'margin': margin,
+            'overflow-y': overflow_y,
+            'overflow-x': 'hidden'
+        });
+    //alert(this.getCenterPoint());
+    self.infoBubble.setPosition(this.getCenterPoint());
+    self.infoBubble.open(self.map);
+    self.infoBubble.setHeaderText(null);
+    self.infoBubble.setFooter(null);
+    self.infoBubble.doNotPad = true;
+    self.infoBubble.setContent($contentContainer.get(0)); 
+    return $contentContainer;
+};
+
 localground.overlay.prototype.renderDetail = function() {
 	$c = $('<div />');
 	$c.append(
@@ -307,7 +355,7 @@ localground.overlay.prototype.renderDetail = function() {
 				'height': '40px',
 				'overflow-y': 'auto',
 				'line-height': '15px'
-			}).html(this.caption)
+			}).html(this.caption || this.description)
 		);
 	$tags = this.renderTags();
 	if($tags) { $c.append($tags); }

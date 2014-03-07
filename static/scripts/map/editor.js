@@ -83,7 +83,6 @@ localground.editor.prototype.initDrawingManager = function() {
                 var polygon = new localground.polygon();
                 polygon.createNew(e.overlay, self.lastProjectSelection, this.accessKey);
                 break;
-            
         }
         self.drawingManager.setDrawingMode(null);
     });

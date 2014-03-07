@@ -76,7 +76,19 @@ localground.marker.prototype.renderMarkerSection = function() {
 };
 
 localground.marker.prototype.showInfoBubbleView = function(opts) {
-    this.renderMarkerDetail('buildSlideshow');
+    if (this.photo_count == 0) {
+	//build bubble content:
+	var $container = $('<div />');
+	$container.append(this.renderDetail());
+	var $contentContainer = this.renderInfoBubble({
+	    width: '250px',
+	    height: '140px'
+	});
+	$contentContainer.append($container);
+    }
+    else {
+	this.renderMarkerDetail('buildSlideshow');
+    }
 };
 
 localground.marker.prototype.showInfoBubbleEdit = function(opts) {
@@ -232,16 +244,17 @@ localground.marker.prototype.renderPhotoPanel = function($container){
 localground.marker.prototype.renderMapPanel = function($container){
 	if (this.map_image_count == 0) {
         $container = this.noChildrenMessage($container, 'No map images have been added');
-		$container.find('div').append(
-			$('<button />').addClass('btn primary')
-				.css({'margin-top': '10px'})
-				.html("Append Visible Maps")
-				.click(function(){
-					alert('append');	
-				})
-		);
-		return $container;
+	$container.find('div').append(
+	    $('<button />').addClass('btn primary')
+		.css({'margin-top': '10px'})
+		.html("Append Visible Maps")
+		.click(function(){
+			alert('append');	
+		})
+	);
+	return $container;
     }
+    return null;
 };
 
 localground.marker.prototype.renderRecordPanel = function($container){
@@ -314,7 +327,7 @@ localground.marker.prototype.renderFormPanel = function($container){
         exclude: ['geometry', 'project_id']
     });
     return $container.append(form.render({
-        height: 270,
+        height: this.bubbleHeight - 125,
         margin: '0px'
     }));
 };
@@ -373,29 +386,6 @@ localground.marker.prototype.makeViewable = function() {
 	localground.point.prototype.makeViewable.call(this);
 };
 
-/*localground.marker.prototype.createNew = function(googleOverlay, projectID) {
-    var me = this;
-    $.ajax({
-        url: '/api/0/markers/?format=json',
-        type: 'POST',
-        data: {
-            geometry: JSON.stringify(this.getGeoJSON(googleOverlay)),
-            project_id: projectID,
-            color: me.color,
-            format: 'json'
-        },
-        success: function(data) {
-			data.managerID = 'markers';
-            $.extend(me, data);
-            //add to marker manager:
-            me.getManager().addNewOverlay(me);
-            //remove temporary marker:
-            googleOverlay.setMap(null);
-        },
-        notmodified: function(data) { alert('Not modified'); },
-        error: function(data) { alert('Error'); }
-    }); 
-};*/
 
 localground.marker.prototype.attachMedia = function(media) {
     var me = this;

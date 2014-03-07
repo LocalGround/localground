@@ -44,7 +44,9 @@ localground.point.prototype.renderOverlay = function(opts) {
 
 localground.point.prototype.dragend = function(latLng) {
     var me = this;
+    
     if(this.candidateMarker) {
+	this.candidateMarker.getManager().bufferCircle.setMap(null);
         var $innerObj = $('<div />').append(
                 this.getManagerById('markers').getLoadingImageSmall()
             ).append(('Adding to marker...'));
@@ -150,9 +152,9 @@ localground.point.prototype.makeEditable = function() {
 localground.point.prototype.checkIntersection = function(mEvent, isGoogle) {
     var me = this;
     var m = me.getManagerById('markers');
-	if(m && me.overlay_type != self.overlay_types.MARKER){
-		me.candidateMarker = m.intersectMarkers(mEvent, me, isGoogle);
-	}
+    if(m && me.overlay_type != self.overlay_types.MARKER){
+	me.candidateMarker = m.intersectMarkers(mEvent, me, isGoogle);
+    }
 }
 localground.point.prototype.addMarkerEventHandlers = function() {
     var me = this;
@@ -189,26 +191,6 @@ localground.point.prototype.getIcon = function() {
     return this.iconSmall;  
 };
 
-localground.point.prototype.zoomToOverlay = function() {
-    this.closeInfoBubble();
-    if(this.googleOverlay != null) {
-        if(!this.inView()) {
-            self.map.setCenter(this.getCenterPoint());
-        }
-        
-        //trigger info bubble only if it's not currently open:
-        var newOverlay = (self.currentOverlay != this);
-        var overlayTurnedOn = (this.googleOverlay.map != null);
-        var bubblePos = self.infoBubble.getPosition();
-        var bubbleNotInView = (!bubblePos || !self.infoBubble.isOpen() ||
-                                !self.map.getBounds().contains(bubblePos));
-        if(overlayTurnedOn && (newOverlay || bubbleNotInView)) {
-            google.maps.event.trigger(this.googleOverlay, 'click');
-        }
-        self.currentOverlay = this;
-    }
-};
-
 localground.point.prototype.getCenterPoint = function() {
     if (this.googleOverlay) {
 	return this.googleOverlay.getPosition();
@@ -225,14 +207,13 @@ localground.point.prototype.getBounds = function() {
     return null;
 };
 
-localground.point.prototype.inView = function() {
-	return true;
-    /*if(this.googleOverlay &&
+/*localground.point.prototype.inView = function() {
+    if(this.googleOverlay &&
        self.map.getBounds().contains(this.googleOverlay.getPosition())) {
         return true;    
     }
-    return false;*/  
-};
+    return false;  
+};*/
 
 
 localground.point.prototype.iframeOnload = function() {
@@ -266,11 +247,12 @@ localground.point.prototype.makeGeoreferenceable = function() {
         drag: function(e) {
             var point = new google.maps.Point(e.pageX,e.pageY-32);
             var location = self.overlay.getProjection().fromContainerPixelToLatLng(point);
-            me.currentPos = location;
+            //me.currentPos = location;
             me.checkIntersection(e, false);
 
         },
         stop: function(e) {
+	    alert('stop')
             $cb.css({'visibility': 'visible'}).attr('checked', true);
             var point = new google.maps.Point(e.pageX,e.pageY-32);
             //self.overlay is an "OverlayView" object that helps with projections:
@@ -329,36 +311,6 @@ localground.point.prototype.mouseoverF = function(){
 
 localground.point.prototype.mouseoutF = function(){
 	self.tooltip.close();
-};
-
-localground.point.prototype.renderInfoBubble = function(opts) {
-    var me = this;
-	var width = this.bubbleWidth;
-	var height = this.bubbleHeight;
-	var margin = '0px';
-	var overflow_y = 'hidden';
-	if (opts) {
-		width = opts.width || width;
-		height = opts.height || height;
-		margin = opts.margin || margin;
-		overflow_y = opts.overflow_y || overflow_y;
-	}
-    var $contentContainer = $('<div></div>')
-		.attr('id', 'bubble_container')
-		.css({
-            'width': width,
-            'height': height,
-            'margin': margin,
-            'overflow-y': overflow_y,
-            'overflow-x': 'hidden'
-        });
-    self.infoBubble.open(self.map, this.googleOverlay);
-    self.infoBubble.setHeaderText(null);
-    self.infoBubble.setFooter(null);
-    self.infoBubble.doNotPad = true;
-    self.infoBubble.setContent($contentContainer.get(0)); 
-    
-    return $contentContainer; 
 };
 
 localground.point.prototype.getGeoJSON = function(googleOverlay){

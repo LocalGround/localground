@@ -234,18 +234,11 @@ InfoBubble.prototype.buildDom_ = function() {
   close.style['cursor'] = 'pointer';
   close.src = 'http://maps.gstatic.com/intl/en_us/mapfiles/iw_close.gif';*/
   
-  var close = this.close_ = document.createElement('a');
-  close.className = 'close';
+  var close = this.close_ = document.createElement('i');
+  close.className = 'close fa fa-times';
   close.style['position'] = 'absolute';
-  close.style['width'] = this.px(12);
-  close.style['height'] = this.px(12);
-  close.style['border'] = 0;
   close.style['zIndex'] = this.baseZIndex_ + 1;
   close.style['cursor'] = 'pointer';
-  close.innerHTML = '&times;';
-  close.href = '#';
-  
-  //<a class="close" href="#">×</a>
 
   var that = this;
   google.maps.event.addDomListener(close, 'click', function() {

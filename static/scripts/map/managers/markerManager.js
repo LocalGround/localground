@@ -4,6 +4,14 @@ localground.markerManager = function(id){
 	this.id = id;
 	this.title = "Markers";
 	this.data = [];
+	this.bufferCircle = new google.maps.Circle({
+		strokeColor: '#339bb9',
+		strokeOpacity: 0.8,
+		strokeWeight: 2,
+		fillColor: '#339bb9',
+		fillOpacity: 0.15,
+		radius: 400
+	});
     this.palettes = [
         { name: 'Qualitative 1',
           colors: ['A6CEE3', 'E31A1C', '1F78B4', 'B2DF8A', '33A02C', 'FB9A99',
@@ -104,7 +112,8 @@ localground.markerManager.prototype.removeRecord = function(marker) {
 };
 
 localground.markerManager.prototype.intersectMarkers = function(mEvent, point, isGoogle) {
-    var candidateMarker = null;
+    var me = this;
+	var candidateMarker = null;
     var dude = 2;
     //alert(point.gootleOverlay.icon.size.width);
     var position;
@@ -134,14 +143,17 @@ localground.markerManager.prototype.intersectMarkers = function(mEvent, point, i
 				if(this.googleOverlay.map != null && candidatePos.y  <= bottom + rad &&
 					candidatePos.y >= top - rad && candidatePos.x <= right + rad &&
 					candidatePos.x >= left - rad) {
-					this.googleOverlay.icon = 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|FFFF00|13|b|';
+					this.googleOverlay.icon = 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|339bb9|13|b|';
 					this.googleOverlay.setOptions({ 'draggable': false });
 					candidateMarker = this;
+					me.bufferCircle.setCenter(candidateMarker.googleOverlay.getPosition());
+					me.bufferCircle.setMap(self.map);
 					return;
 				}
 				else {
 					this.googleOverlay.icon = this.markerImage;
 					this.googleOverlay.setOptions({ 'draggable': true });
+					me.bufferCircle.setMap(null);
 				}
 				if(this.googleOverlay.map != null && this.googleOverlay.icon != orig)
 					this.googleOverlay.setMap(self.map);

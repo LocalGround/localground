@@ -66,14 +66,13 @@ localground.scan.prototype.zoomToOverlay = function() {
     }
 };
 
-localground.scan.prototype.inView = function() {
-    return true;
-	/*if(this.googleOverlay &&
+/*localground.scan.prototype.inView = function() {
+    if(this.googleOverlay &&
        self.map.getBounds().contains(this.googleOverlay.getBounds().getCenter())) {
         return true;    
     }
-    return false;*/  
-};
+    return false;  
+};*/
 
 
 localground.scan.prototype.toggleOverlay = function(isOn) {
