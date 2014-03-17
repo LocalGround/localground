@@ -127,6 +127,7 @@ localground.viewer.prototype.initialize=function(opts){
         maxHeight: 385,
         padding: 0,
 		disableAnimation: true,
+		pixelOffset: new google.maps.Size(130, 120),
         closeBubbleExtras: function() {
             if(self.currentOverlay) {
                 self.currentOverlay.closeInfoBubble();

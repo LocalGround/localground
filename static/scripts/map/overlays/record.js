@@ -66,7 +66,7 @@ localground.record.prototype.showInfoBubbleView = function(opts) {
 	var $container = $('<div />');
 	$container.append(this.renderRecord());
 	
-	var $contentContainer = this.renderInfoBubble();
+	var $contentContainer = this.renderInfoBubble(opts);
 	$contentContainer.append($container);
 	$('#bubble_container').css({'overflow-y': 'auto'});
 };

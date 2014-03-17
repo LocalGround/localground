@@ -57,15 +57,18 @@ localground.audio.prototype.showInfoBubbleView = function(opts) {
     $container.append(this.renderPlayerLinks());
     $container.append(this.renderDetail());
 
-    var $contentContainer = this.renderInfoBubble();
+    var $contentContainer = this.renderInfoBubble(opts);
 	$contentContainer.append($container);
 };
 
 localground.audio.prototype.showInfoBubbleEdit = function(opts){
-    var $contentContainer = this.renderInfoBubble({
-				height: this.bubbleHeight + 100,
-                                width: this.bubbleWidth + 100
-			    });
+    if (opts == null)
+	opts = {};
+    $.extend(opts, {
+	height: this.bubbleHeight + 100,
+	width: this.bubbleWidth + 100
+    });
+    var $contentContainer = this.renderInfoBubble(opts);
 	var me = this;
     var fields = this.getManager().getUpdateSchema();
     var form = new ui.form({

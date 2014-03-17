@@ -1,5 +1,6 @@
 localground.polygon = function(opts){
     localground.polyline.call(this, opts);
+    this.overlayType = "polygon";
     this.image = this.markerImage = this.iconSmall = this.iconLarge =
 	'https://chart.googleapis.com/chart?chc=corp&chs=25x30&cht=lc&chco=' +
 	this.color + ',' + this.color + '&chd=t:90,75,60,70,80%7C90,20,30,80&' +
@@ -74,5 +75,13 @@ localground.polygon.prototype.getGooglePath = function(){
     }
     path.pop();
     return path;
+};
+
+localground.polygon.prototype.getCenterPoint = function() {
+    //return a point near the center of the line:
+    if (this.googleOverlay) {
+	return this.getBounds().getCenter();
+    }
+    return null;
 };
 

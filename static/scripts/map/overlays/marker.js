@@ -22,6 +22,7 @@ localground.marker = function(opts){
         this.color + '|13|b|';
     this.bubbleWidth = 480;
     this.bubbleHeight = 360;
+    this.overlayType = "marker";
     
     //extend this class with the createmixin functions too:
     extend(localground.marker.prototype, localground.createmixin.prototype);
@@ -76,14 +77,17 @@ localground.marker.prototype.renderMarkerSection = function() {
 };
 
 localground.marker.prototype.showInfoBubbleView = function(opts) {
+    if (opts == null)
+	opts = {};
+    $.extend(opts, {
+	width: '250px',
+	height: '140px'
+    });
     if (this.photo_count == 0) {
 	//build bubble content:
 	var $container = $('<div />');
 	$container.append(this.renderDetail());
-	var $contentContainer = this.renderInfoBubble({
-	    width: '250px',
-	    height: '140px'
-	});
+	var $contentContainer = this.renderInfoBubble(opts);
 	$contentContainer.append($container);
     }
     else {
@@ -98,7 +102,7 @@ localground.marker.prototype.showInfoBubbleEdit = function(opts) {
 localground.marker.prototype.renderMarkerDetail = function(callback){
     var me = this;
     var callbackF = eval('localground.marker.prototype.' + callback);
-    var $contentContainer = this.renderInfoBubble();
+    var $contentContainer = this.renderInfoBubble({});
     $contentContainer.children().empty();
     if (this.requery || this.photos == null) {
         //requery for the latest marker data:

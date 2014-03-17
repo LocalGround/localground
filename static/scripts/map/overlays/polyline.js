@@ -9,7 +9,8 @@ localground.polyline = function(opts){
         'https://chart.googleapis.com/chart?chc=corp&chs=25x30&cht=lc:nda&chco=' +
 	this.color + '&chd=t:0,50,30,80&chls=' + this.lineWidth + '&chxt=5';
     this.bubbleWidth = 350;
-    this.bubbleHeight = 250
+    this.bubbleHeight = 250;
+    this.overlayType = "polyline";
     this.deleteMenu = new DeleteMenu();
     
     //extend this class with the createmixin functions too:
@@ -47,6 +48,12 @@ localground.polyline.prototype.createOverlay = function() {
 };
 
 localground.polyline.prototype.showInfoBubbleView = function(opts) {
+    if (opts == null)
+	opts = {};
+    $.extend(opts, {
+	width: '250px',
+	height: '140px'
+    });
     //ensures that the marker renders on top:
     this.googleOverlay.setMap(null);
     this.googleOverlay.setMap(self.map);
@@ -54,17 +61,17 @@ localground.polyline.prototype.showInfoBubbleView = function(opts) {
     //build bubble content:
     var $container = $('<div />');
     $container.append(this.renderDetail());
-    var $contentContainer = this.renderInfoBubble({
-	width: '250px',
-	height: '140px'
-    });
+    var $contentContainer = this.renderInfoBubble(opts);
     $contentContainer.append($container);
 };
 
 localground.polyline.prototype.showInfoBubbleEdit = function(opts){
-    var $container = this.renderInfoBubble({
+    if (opts == null)
+	opts = {};
+    $.extend(opts, {
 	margin: '25px 0px 0px 0px'
     });
+    var $container = this.renderInfoBubble(opts);
     $container.children().empty();
     var me = this;
     var fields = this.getManager().getUpdateSchema();
@@ -92,10 +99,11 @@ localground.polyline.prototype.addEventHandlers = function() {
     google.maps.event.clearListeners(this.googleOverlay.getPath());
     google.maps.event.clearListeners(this.googleOverlay);
     google.maps.event.addListener(this.googleOverlay, "click", function(mEvent) {
-        //alert('hi');
 	self.currentOverlay = me;
         me.closeInfoBubble();
-        me.showInfoBubble();
+        me.showInfoBubble({
+	    latLng: mEvent.latLng
+	});
     });
     google.maps.event.addListener(this.googleOverlay.getPath(), 'set_at', function(){
 	me.updateGeometry(me);
@@ -136,8 +144,10 @@ localground.polyline.prototype.getBounds = function() {
 };
 
 localground.polyline.prototype.getCenterPoint = function() {
+    //return a point near the center of the line:
     if (this.googleOverlay) {
-	return this.getBounds().getCenter();
+	var coordinates = this.googleOverlay.getPath().getArray();
+	return coordinates[Math.floor(coordinates.length/2)];
     }
     return null;
 };

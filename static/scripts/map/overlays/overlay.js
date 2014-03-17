@@ -323,9 +323,14 @@ localground.overlay.prototype.renderInfoBubble = function(opts) {
             'overflow-y': overflow_y,
             'overflow-x': 'hidden'
         });
-    //alert(this.getCenterPoint());
-    self.infoBubble.setPosition(this.getCenterPoint());
-    self.infoBubble.open(self.map);
+    
+	if (opts && opts.latLng)
+		self.infoBubble.setPosition(opts.latLng);
+	else
+		self.infoBubble.setPosition(this.getCenterPoint());
+	if (this.overlayType == "marker")
+		self.infoBubble.setAnchor(this.googleOverlay);
+	self.infoBubble.open(self.map);
     self.infoBubble.setHeaderText(null);
     self.infoBubble.setFooter(null);
     self.infoBubble.doNotPad = true;

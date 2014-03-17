@@ -148,9 +148,12 @@ localground.editor.prototype.toggleMode = function($elem) {
         $elem.addClass('info');
     }
     
-    //if the infobubble is open, re-render it!
+    // if the infobubble is open, re-render it;
+    // make sure it re-renders in its current position.
     if(self.infoBubble.isOpen()) {
-        self.currentOverlay.showInfoBubble();
+        self.currentOverlay.showInfoBubble({
+            latLng: self.infoBubble.getPosition()    
+        });
     }
 };
 

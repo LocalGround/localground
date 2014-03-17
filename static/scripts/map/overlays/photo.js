@@ -81,10 +81,13 @@ localground.photo.prototype.setImageIcon = function(list) {
 };
 
 localground.photo.prototype.showInfoBubbleEdit = function(opts){
-    var $contentContainer = this.renderInfoBubble({
-						    height: '400px',
-						    width: this.bubbleWidth + 30
-					    });
+    if (opts == null)
+	opts = {};
+    $.extend(opts, {
+	height: '400px',
+	width: this.bubbleWidth + 30
+    });
+    var $contentContainer = this.renderInfoBubble(opts);
     var me = this;
     var fields = this.getManager().getUpdateSchema();
     var form = new ui.form({
@@ -177,7 +180,7 @@ localground.photo.prototype.showInfoBubbleView = function(opts) {
     $container.append(this.getPhotoPreview());
     $container.append(this.renderDetail());
     
-    var $contentContainer = this.renderInfoBubble();
+    var $contentContainer = this.renderInfoBubble(opts);
     $contentContainer.append($container);
 };
 

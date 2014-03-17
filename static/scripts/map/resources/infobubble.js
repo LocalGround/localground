@@ -1112,10 +1112,26 @@ InfoBubble.prototype['open'] = InfoBubble.prototype.open;
  */
 InfoBubble.prototype.setPosition = function(position) {
   if (position) {
-    this.set('position', position);
+	this.setAnchor(null);
+	this.set('position', position);
   }
 };
 InfoBubble.prototype['setPosition'] = InfoBubble.prototype.setPosition;
+
+/* SV added */
+InfoBubble.prototype.setAnchor = function(anchor) {
+  if (anchor) {
+    this.set('anchor', anchor);
+    this.bindTo('anchorPoint', anchor);
+    this.bindTo('position', anchor);
+  } else if (this.get('anchor')) {
+    this.set('anchor', null);
+    this.unbind('anchorPoint');
+    this.unbind('position');
+  }
+};
+InfoBubble.prototype['setAnchor'] = InfoBubble.prototype.setAnchor;
+/* end SV added */
 
 
 /**
