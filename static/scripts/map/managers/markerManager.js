@@ -152,7 +152,7 @@ localground.markerManager.prototype.intersectMarkers = function(mEvent, point, i
 						//scales radius no matter what the zoom level:
 						radius: Math.pow(2, (21 - self.map.getZoom())) * 1128.49 * 0.002
 					});
-					
+
 					return;
 				}
 				else {
