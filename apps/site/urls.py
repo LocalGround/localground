@@ -41,7 +41,6 @@ urlpatterns = patterns('',
 
 	#user prefs:
 	#This should really be in the API, but is here for now
-	(r'^profile/settings/update_location/','localground.apps.site.views.profile.update_user_location'),
 	(r'^profile/settings/', 'localground.apps.site.views.profile.change_user_profile'),
 
 	#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
