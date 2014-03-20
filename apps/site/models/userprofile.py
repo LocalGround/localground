@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from localground.apps.site.models.permissions import ObjectAuthority
 from localground.apps.site.models.groups import Project
 from datetime import datetime
-import sys
 
 
 class UserProfile(models.Model):
