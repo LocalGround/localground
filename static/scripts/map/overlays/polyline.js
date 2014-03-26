@@ -11,6 +11,8 @@ localground.polyline = function(opts){
     this.bubbleWidth = 350;
     this.bubbleHeight = 250;
     this.overlayType = "polyline";
+    this.directionsService = new google.maps.DirectionsService();
+    this.waypoints = [];
     this.deleteMenu = new DeleteMenu();
     
     //extend this class with the createmixin functions too:
@@ -105,13 +107,26 @@ localground.polyline.prototype.addEventHandlers = function() {
 	    latLng: mEvent.latLng
 	});
     });
-    google.maps.event.addListener(this.googleOverlay.getPath(), 'set_at', function(){
+    google.maps.event.addListener(this.googleOverlay.getPath(), 'set_at', function(e){
+	/*me.waypoints.push({
+	    location: me.googleOverlay.getPath().getAt(e)
+	});*/
 	me.updateGeometry(me);
     });
-    google.maps.event.addListener(this.googleOverlay.getPath(), 'remove_at', function(){
+    google.maps.event.addListener(this.googleOverlay.getPath(), 'remove_at', function(e){
+	/*var latLng = me.googleOverlay.getPath().getAt(e);
+	for (i=0; i < me.waypoints.length; i++) {
+	    if (me.waypoints[i].location == latLng) {
+		me.waypoints.removeAt(i);
+		return;
+	    }
+	}*/
 	me.updateGeometry(me);
     });
-    google.maps.event.addListener(this.googleOverlay.getPath(), 'insert_at', function(){
+    google.maps.event.addListener(this.googleOverlay.getPath(), 'insert_at', function(e){
+	/*me.waypoints.push({
+	    location: me.googleOverlay.getPath().getAt(e)
+	});*/
 	me.updateGeometry(me);
     });
     
@@ -168,6 +183,7 @@ localground.polyline.prototype.makeEditable = function() {
     }
 };
 localground.polyline.prototype.updateGeometry = function(shape) {
+    //shape.snap(shape);
     $.ajax({
 	url: shape.url,
 	type: 'PUT',
@@ -180,8 +196,9 @@ localground.polyline.prototype.updateGeometry = function(shape) {
 	    //a hack to reset the shape:
 	    shape.googleOverlay.setOptions({'editable': false});
 	    shape.googleOverlay.setOptions({'editable': true});
+	    
 	}
-    }); 
+    });
 }
 
 localground.polyline.prototype.renderListingText = function() {
@@ -221,3 +238,38 @@ localground.polyline.prototype.getGooglePath = function(){
     }
     return path;
 };
+
+localground.polyline.prototype.snap = function(shape){
+    var me = shape;
+    var pathCoords = shape.googleOverlay.getPath().getArray();
+    var start = pathCoords[0];
+    var end = pathCoords[pathCoords.length-1];
+    var request = {
+	origin:start,
+	destination:end,
+	waypoints: shape.waypoints,
+	optimizeWaypoints: true,
+	travelMode: google.maps.TravelMode.DRIVING
+    };
+    me.directionsService.route(request, function(result, status) {
+	if (status == google.maps.DirectionsStatus.OK) {
+	    me.googleOverlay.setPath(result.routes[0].overview_path);
+	    //save after update:
+	    $.ajax({
+		url: me.url,
+		type: 'PUT',
+		data: {
+		    geometry: JSON.stringify(me.getGeoJSON()),
+		    format: 'json'
+		},
+		success: function(data) {
+		    me.renderListing();
+		    //a hack to reset the shape:
+		    me.googleOverlay.setOptions({'editable': false});
+		    me.googleOverlay.setOptions({'editable': true});
+		    
+		}
+	    });
+	}
+    });
+}

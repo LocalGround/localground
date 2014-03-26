@@ -3,7 +3,7 @@ localground.point = function(opts){
     this.image = null;
     this.iconSmall = null;
     this.iconLarge = null;
-    this.geometry = null;
+    this.geometry = null; //geoJSON
     this.infoBubbleParams = {
         edit: { width: 445, height: 225 },
         view: { width: 445, height: 225 }
