@@ -9,7 +9,8 @@ from django.db import transaction
 	
 class Form(BaseNamed, BasePermissions):
 	slug = models.SlugField(verbose_name="Friendly URL", max_length=100, db_index=True,
-								help_text='A few words, separated by dashes "-", to be used as part of the url')
+								help_text='A few words, separated by dashes "-", to be used as part of the url',
+								blank=False)
 	table_name = models.CharField(max_length=255, unique=True)
 	projects = models.ManyToManyField('Project')
 	objects = FormManager()
@@ -89,13 +90,15 @@ class Form(BaseNamed, BasePermissions):
 			class Meta:
 				from django import forms
 				model = cls
-				fields = ('name', 'description', 'tags', 'access_authority', 'access_key', 'projects')
+				fields = ('name', 'description', 'tags', 'access_authority',
+					  'slug', 'access_key', 'projects')
 				widgets = {
 					'id': forms.HiddenInput,
 					'description': forms.Textarea(attrs={'rows': 3}),
 					'tags': TagAutocomplete(),
 					'projects': forms.widgets.CheckboxSelectMultiple
 				}
+				
 		return InlineForm
 	
 	@classmethod

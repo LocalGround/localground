@@ -70,12 +70,13 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		self.assertEqual(record.project, self.project)
 		self.assertEqual(1, rec.num)
 		
-	def make_post_dictionary(self, name, description, tags):
+	def make_post_dictionary(self, name, description, tags, slug):
 		# add 2 fields:
 		data = {
 			'name': name,
 			'description': description,
 			'tags': tags,
+			'slug': slug,
 			'access_authority': models.ObjectAuthority.PRIVATE,
 			'field-0-col_alias': 'my first column',
 			'field-0-data_type': 1,
@@ -100,8 +101,9 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		description = 'new d'
 		tags = 'a, b, c'
 		project = self.project.id
+		slug = 'new-name'
 		
-		data = self.make_post_dictionary(name, description, tags)
+		data = self.make_post_dictionary(name, description, tags, slug)
 		data.update({'projects': project})
 		
 		# form should not have any fields:
@@ -143,9 +145,10 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		description = 'new d'
 		tags = 'a, b, c'
 		project = self.project.id
+		slug = 'brand-new-form'
 		
 		
-		data = self.make_post_dictionary(name, description, tags)
+		data = self.make_post_dictionary(name, description, tags, slug)
 		data.update({'projects': project})
 		
 		response = self.client_user.post('/profile/forms/create/',

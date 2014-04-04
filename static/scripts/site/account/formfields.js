@@ -14,6 +14,12 @@ localground.formfields.prototype.init = function(opts){
     }
     // initialize the form and the dynamic form generator:
     this.initFormset();
+    
+    this.setSlug();
+    //5) pre-populate slug if empty:
+    $('#id_name').blur(function(){
+        self.setSlug();
+    });
 };
 
 localground.formfields.prototype.initNewRow = function($elem) {
@@ -82,5 +88,13 @@ localground.formfields.prototype.initFormset = function() {
 	$('#tbl').find('tr').each(function(){
 		self.initRow($(this), false);
 	});
+};
+
+localground.formfields.prototype.setSlug = function() {
+    if($('#id_slug').val() == '') {
+        var slug = $('#id_name').val().replace(/[^\w\s]/gi, '');
+        slug = slug.replace(/\ /g, '-').toLowerCase();
+        $('#id_slug').val(slug);    
+    }
 };
 
