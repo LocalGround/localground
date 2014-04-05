@@ -17,7 +17,7 @@ oauth==1.0.1
 psycopg2==2.4.5
 python-dateutil==1.5
 reportlab==2.5
-scipy
+#scipy
 #simplejson==2.3.2
 #GDAL==1.9.1
 #MapScript==6.2.1
