@@ -12,12 +12,12 @@ django-tagging-autocomplete==0.3.1
 djangorestframework==2.3.5
 djangorestframework-csv==1.2.0
 flup==1.0.3.dev-20110405
-numpy==1.6.2
+numpy
 oauth==1.0.1
 psycopg2==2.4.5
 python-dateutil==1.5
 reportlab==2.5
 scipy
-simplejson==2.3.2
+#simplejson==2.3.2
 #GDAL==1.9.1
 #MapScript==6.2.1
