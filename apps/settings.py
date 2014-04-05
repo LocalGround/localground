@@ -1,17 +1,18 @@
 # Django settings for localground project.
 # https://django-oauth-toolkit.readthedocs.org/en/latest/tutorial/tutorial.html
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-GDAL_LIBRARY_PATH='/usr/lib/libgdal.so'     #replace with your GDAL path
+GDAL_LIBRARY_PATH = os.environ.get('GDAL_PATH', '/usr/lib/libgdal.so')     #replace with your GDAL path
 
 ADMINS = (
-    ('Jane Admin', 'email@yoursite.com'),
+    ('Jane Admin', os.environ.get('ADMIN_EMAIL_ADDRESS', 'email@yoursite.com')),
 )
-DEFAULT_FROM_EMAIL = '"Site Support" <support@yoursite.com>'
-ADMIN_EMAILS = ['admin1@yoursite.com', 'admin2@yoursite.com']
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 25
+DEFAULT_FROM_EMAIL = '"Site Support" <%s>' % os.environ.get('ADMIN_EMAIL_ADDRESS', 'email@yoursite.com')
+ADMIN_EMAILS = [os.environ.get('ADMIN_EMAIL_ADDRESS', 'email@yoursite.com'), ]
+EMAIL_HOST = os.environ.get('HOST', '127.0.0.1') 
+EMAIL_PORT = os.environ.get('EMAIL_PORT', '25') 
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
@@ -22,10 +23,10 @@ ACCOUNT_ACTIVATION_DAYS = 5
 SESSION_COOKIE_NAME = 'sessionid'
 
 # Custom Local Variables
-SERVER_HOST = 'yoursite.com'
+SERVER_HOST = os.environ.get('SERVER_HOST', 'yoursite.com')
 SERVER_URL = 'http://%s' % SERVER_HOST
 
-FILE_ROOT = '/home/directory/for/localground'
+FILE_ROOT = os.environ.get('FILE_ROOT', '/home/directory/for/localground') 
 STATIC_MEDIA_DIR = 'static'
 STATIC_URL = '/static/'
 USER_MEDIA_DIR = 'userdata'
@@ -46,19 +47,19 @@ DEFAULT_BASEMAP_ID = 12
 USER_ACCOUNT = 'linux-user-account'     #account to use for creating new OS files / directories
 GROUP_ACCOUNT = 'linux-user-group'      #group to use for creating new OS files / directories
 
-FILE_UPLOAD_MAX_MEMORY_SIZE = 4621440   #default is 2621440
-CLOUDMADE_KEY = 'CLOUDMADE_KEY'         #http://support.cloudmade.com/answers/api-keys-and-authentication
+FILE_UPLOAD_MAX_MEMORY_SIZE = 4621440                       #default is 2621440
+CLOUDMADE_KEY = os.environ.get('CLOUDMADE_KEY', '#####')    #http://support.cloudmade.com/answers/api-keys-and-authentication
 IS_GOOGLE_REGISTERED_NONPROFIT = False
 
 
 MANAGERS = ADMINS
 AUTH_PROFILE_MODULE = 'site.UserProfile'
 
-HOST = '127.0.0.1'          #Your Database Host
-PORT = '#####'              #Your Database Port
-USERNAME = 'DB_USER'        #Your Database Username
-PASSWORD = 'DB_PASSWORD'    #Your Database Password
-DATABASE = 'DB_NAME'        #Your Database Name
+HOST = os.environ.get('HOST', '127.0.0.1')              #Your Database Host
+PORT = os.environ.get('PORT', '#####')                  #Your Database Port
+USERNAME = os.environ.get('USERNAME', 'DB_USER')        #Your Database Username
+PASSWORD = os.environ.get('PASSWORD', 'DB_PASSWORD')    #Your Database Password
+DATABASE = os.environ.get('DATABASE', 'DB_NAME')        #Your Database Name
 
 DATABASES = {
     'default': {
