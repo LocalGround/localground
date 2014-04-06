@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from localground.apps.site.models.permissions import ObjectAuthority
 from localground.apps.site.models.groups import Project
 from datetime import datetime
-import sys
 
 
 class UserProfile(models.Model):
@@ -51,6 +50,19 @@ class UserProfile(models.Model):
         default_project.owner = user
         default_project.save()
         return profile
+
+    def can_view(self, user=None, access_key=None):
+        if user.is_authenticated():
+            return True
+
+    def can_edit(self, user):
+        if user.is_authenticated():
+            return True
+
+    def can_manage(self, user):
+        if user.is_authenticated():
+            return True
+
     
 
 def create_profile_on_insert(sender, instance, created, **kwargs):

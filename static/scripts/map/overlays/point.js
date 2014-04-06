@@ -238,7 +238,7 @@ localground.point.prototype.makeGeoreferenceable = function() {
 	var me = this;
     $img.draggable({helper: 'clone',
         start: function(e) {
-           console.log('time for some interactive exploration of circles~')
+
         },
         drag: function(e) {
             var point = new google.maps.Point(e.pageX,e.pageY-32);

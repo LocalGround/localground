@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, url
 from django.conf.urls import include
 from localground.apps.site.api import views
+from localground.apps.site.api.views.user_profile_views import update_user_location
 from localground.apps.site import models
 from rest_framework.routers import DefaultRouter
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -50,7 +51,9 @@ urlpatterns += format_suffix_patterns(patterns('',
 	url(r'^photos/(?P<pk>[0-9]+)/rotate-right/$', views.rotate_right, name='rotate-right'),
 	url(r'^tags/$', views.TagList.as_view(), name='tags'),
 	url(r'^tags/(?P<model_name_plural>\w+)/$', views.TagList.as_view(), name='tags'),
-
+    url(r'^user-profile/$', views.UserProfileList.as_view(), name='userprofile-list'),
+    url(r'^user-profile/(?P<pk>[0-9]+)/$', views.UserProfileInstance.as_view(), name='userprofile-detail'),
+    url(r'^user-profile/update-location/$', update_user_location, name='userprofile-update-location'),
 	#Todo: generalize this one:
-	url(r'^forms/84/data/tracks/$', views.TrackList.as_view(), name='air-quality-tracks')
+	url(r'^forms/84/data/tracks/$', views.TrackList.as_view(), name='air-quality-tracks'),
 ))

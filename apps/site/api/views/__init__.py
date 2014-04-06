@@ -19,7 +19,7 @@ from localground.apps.site.api.views.admin_views import (
     UserViewSet, GroupViewSet, DataTypeViewSet
 )
 from localground.apps.site.api.views.tags_views import TagList
-
+from localground.apps.site.api.views.user_profile_views import UserProfileList, UserProfileInstance
 
 from rest_framework.decorators import api_view
 from django.utils.datastructures import SortedDict
@@ -43,4 +43,5 @@ def api_root(request, format=None, **kwargs):
     d['projects'] = reverse('project-list', request=request, format=format)
     d['tiles'] = reverse('wmsoverlay-list', request=request, format=format)
     d['users'] = reverse('user-list', request=request, format=format)
+    d['userprofile-list'] = reverse('userprofile-list', request=request, format=format)
     return Response(d)
