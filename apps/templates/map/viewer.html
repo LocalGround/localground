@@ -158,7 +158,7 @@
 		style="padding:3px;margin-top:10px;display:none;">exit streetview</button>
     <input id="addressInput" class="controls" type="text" placeholder="Search for Places"
 	   style="margin-top:5px;float: right;">
-    <form method="post" action="../../api/0/user-preferences/update-location" id="default_setter">
+    <form method="post" action="../../api/0/user-profile/update-location/" id="default_setter">
         {% csrf_token %}
         <input type="hidden" id="default_location" name="default_location" value="">
     </form>

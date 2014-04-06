@@ -119,7 +119,8 @@ localground.basemap.prototype.initialize=function(opts) {
 localground.basemap.prototype.initGeolocation = function() {
     //Prompt user for default location, if possible
     var that = this;
-    if(this.hasDefaultLocale) {
+    //this.hasDefaultLocale
+    if(false) {
         this.map.setCenter(that.center);
         this.map.setZoom(that.zoom);
     } else {
@@ -138,7 +139,7 @@ localground.basemap.prototype.initGeolocation = function() {
                     $.ajax(
                         {
                             url:formURL,
-                            type:"POST",
+                            type:"PATCH",
                             data:postData,
                             success:function(data, textStatus, jqXHR) {
                                 console.log("successfully submitted updated location")

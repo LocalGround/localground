@@ -1,25 +1,18 @@
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-from django.contrib.gis.geos import GEOSGeometry
+from localground.apps.site.models import UserProfile
+from localground.apps.site.api.serializers.user_profile_serializer import UserProfileSerializer
+
+from rest_framework import views
 import sys
 
-@login_required()
-def update_user_location(request):
-    """
-    Meant to allow a user to update their default location
-    """
-    from localground.apps.site.models import UserProfile
-    try:
-        profile = UserProfile.objects.get(user=request.user)
+class UserPreferencesView(views.APIView):
 
-    except UserProfile.DoesNotExist:
-        return None
-    #Admittedly hacky way of getting at the point info in the request
-    point = GEOSGeometry(request.body.split('&')[1].split('%3B')[1].replace('+', ' '))
-    try:
-        UserProfile.update_location(profile, point)
-    except UserProfile.DoesNotExist:
-        print >> sys.stderr, "Failed to update user location"
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
 
-    return HttpResponse("<p>Location successfully updated</p>")
+
+
+
+
+
 

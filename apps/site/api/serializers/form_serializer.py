@@ -1,6 +1,10 @@
 from localground.apps.site.api.serializers.base_serializer import BaseSerializer
 import datetime
 from django.conf import settings
+from rest_framework import serializers
+from localground.apps.site import widgets, models
+from localground.apps.site.api import fields
+
 
 
 class FormSerializer(BaseSerializer):
@@ -21,9 +25,6 @@ class FormSerializer(BaseSerializer):
         return '%s/api/0/forms/%s/data/' % (settings.SERVER_URL, obj.pk)
 
 
-from rest_framework import serializers
-from localground.apps.site import widgets, models
-from localground.apps.site.api import fields
 
 
 class BaseRecordSerializer(serializers.ModelSerializer):

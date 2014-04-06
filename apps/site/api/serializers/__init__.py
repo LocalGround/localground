@@ -13,6 +13,7 @@ from localground.apps.site.api.serializers.audio_serializer import AudioSerializ
 from localground.apps.site.api.serializers.form_serializer import FormSerializer, create_record_serializer, create_compact_record_serializer
 from localground.apps.site.api.serializers.print_serializer import PrintSerializer, PrintSerializerDetail
 from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializer, AttachmentSerializer
+from localground.apps.site.api.serializers.user_profile_serializer import UserProfileSerializer
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -32,15 +33,6 @@ class WMSOverlaySerializer(serializers.HyperlinkedModelSerializer):
         model = models.WMSOverlay
         fields = ('id', 'name', 'tags', 'overlay_type', 'overlay_source')
         depth = 0
-
-
-class UserProfileSerializer(serializers.HyperLinkedModelSerializer):
-    class Meta:
-        model = models.UserProfile
-        fields = ('user', 'email_announcements', 'default_location', 'contacts',
-                  'date_created', 'timestamp')
-        depth = 1
-
 
 class LayoutSerializer(serializers.ModelSerializer):
     class Meta:
