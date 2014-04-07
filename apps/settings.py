@@ -55,20 +55,20 @@ IS_GOOGLE_REGISTERED_NONPROFIT = False
 MANAGERS = ADMINS
 AUTH_PROFILE_MODULE = 'site.UserProfile'
 
-HOST = os.environ.get('DB_HOST', '127.0.0.1')               #Your Database Host
-PORT = os.environ.get('DB_PORT', '5432')                    #Your Database Port
-USERNAME = os.environ.get('DB_USERNAME', 'DB_USER')         #Your Database Username
-PASSWORD = os.environ.get('DB_PASSWORD', 'DB_PASSWORD')     #Your Database Password
-DATABASE = os.environ.get('DB_NAME', 'DB_NAME')             #Your Database Name
+DB_HOST = os.environ.get('DB_HOST', '127.0.0.1')               #Your Database Host
+DB_PORT = os.environ.get('DB_PORT', '5432')                    #Your Database Port
+DB_USER = os.environ.get('DB_USER', 'DB_USER')         #Your Database Username
+DB_PASSWORD = os.environ.get('DB_PASSWORD', 'DB_PASSWORD')     #Your Database Password
+DB_NAME = os.environ.get('DB_NAME', 'DB_NAME')             #Your Database Name
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis', #Code works w/PostGIS
-        'NAME': DATABASE, 
-        'USER': USERNAME,
-        'PASSWORD': PASSWORD,
-        'HOST': HOST,
-        'PORT': PORT, 
+        'NAME': DB_NAME, 
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT, 
     }
 }
 
