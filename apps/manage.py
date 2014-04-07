@@ -12,6 +12,14 @@ print 'Apps directory: %s' % apps
 print 'Current workspace: %s' % workspace
 print '-'*70
 
+HOST = os.environ.get('DB_HOST', '127.0.0.1')               #Your Database Host
+PORT = os.environ.get('DB_PORT', '5432')                    #Your Database Port
+USERNAME = os.environ.get('DB_USERNAME', 'DB_USER')         #Your Database Username
+PASSWORD = os.environ.get('DB_PASSWORD', 'DB_PASSWORD')     #Your Database Password
+DATABASE = os.environ.get('DB_NAME', 'DB_NAME')             #Your Database Name
+
+print HOST, PORT, USERNAME, PASSWORD, DATABASE
+
 
 sys.path.append(workspace) 
 

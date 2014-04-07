@@ -55,11 +55,11 @@ IS_GOOGLE_REGISTERED_NONPROFIT = False
 MANAGERS = ADMINS
 AUTH_PROFILE_MODULE = 'site.UserProfile'
 
-HOST = os.environ.get('HOST', '127.0.0.1')              #Your Database Host
-PORT = os.environ.get('PORT', '#####')                  #Your Database Port
-USERNAME = os.environ.get('USERNAME', 'DB_USER')        #Your Database Username
-PASSWORD = os.environ.get('PASSWORD', 'DB_PASSWORD')    #Your Database Password
-DATABASE = os.environ.get('DATABASE', 'DB_NAME')        #Your Database Name
+HOST = os.environ.get('DB_HOST', '127.0.0.1')               #Your Database Host
+PORT = os.environ.get('DB_PORT', '5432')                    #Your Database Port
+USERNAME = os.environ.get('DB_USERNAME', 'DB_USER')         #Your Database Username
+PASSWORD = os.environ.get('DB_PASSWORD', 'DB_PASSWORD')     #Your Database Password
+DATABASE = os.environ.get('DB_NAME', 'DB_NAME')             #Your Database Name
 
 DATABASES = {
     'default': {
