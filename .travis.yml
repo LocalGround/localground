@@ -4,17 +4,23 @@ python:
 addons:
   - postgresql: "9.1"
 install:
-  - sudo apt-get install apache2 libapache2-mod-fcgid libapache2-mod-xsendfile libapache2-mod-wsgi
-  - sudo apt-get install sendmail libmail-sendmail-perl
-  - sudo apt-get install python-software-properties
-  - sudo add-apt-repository ppa:ubuntugis/ppa
-  - sudo apt-get update
-  - sudo apt-get install mapserver-bin gdal-bin cgi-mapserver
-  - sudo apt-get install python-gdal python-mapscript
+  - sudo apt-get install apache2
+  #- sudo apt-get install libapache2-mod-fcgid
+  #- sudo apt-get install libapache2-mod-xsendfile
+  #- sudo apt-get install libapache2-mod-wsgi
+  #- sudo apt-get install sendmail
+  #- sudo apt-get install libmail-sendmail-perl
+  #- sudo apt-get install python-software-properties
+  #- sudo add-apt-repository ppa:ubuntugis/ppa
+  #- sudo apt-get update
+  #- sudo apt-get install mapserver-bin
+  #- sudo apt-get install gdal-bin cgi-mapserver
+  #- sudo apt-get install python-gdal
+  #- sudo apt-get install python-mapscript
 #install: "pip install -r deploy_tools/requirements.txt --allow-external PIL --allow-unverified PIL"
 # command to run tests, e.g. python setup.py test
 #script:  PLEASE CHANGE ME
-before_script:
-  - psql -c 'create database lg_prod;' -U postgres
-  - psql -c 'CREATE EXTENSION postgis;' -U postgres -d travis_postgis
-  - psql -c 'CREATE EXTENSION postgis_topology;' -U postgres -d travis_postgis
+#before_script:
+#  - psql -c 'create database lg_prod;' -U postgres
+#  - psql -c 'CREATE EXTENSION postgis;' -U postgres -d travis_postgis
+#  - psql -c 'CREATE EXTENSION postgis_topology;' -U postgres -d travis_postgis
