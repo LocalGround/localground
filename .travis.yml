@@ -25,10 +25,17 @@ before_install:
   - sudo apt-get install mapserver-bin
   - sudo apt-get install gdal-bin cgi-mapserver
   - sudo apt-get install python-gdal
-  - sudo apt-get install python-mapscript
   - sudo apt-get install libcv2.3 libopencv-dev python-opencv
+  - sudo apt-get install python-psycopg2
+  - sudo apt-get install python-pip python-dev
+  - sudo apt-get install python-mapscript
+  - sudo apt-get install python-scipy
+  - sudo apt-get install ffmpeg
+  - sudo apt-get install libavcodec-extra-53
 
-install: "pip install -r deploy_tools/requirements.txt"
+install:
+  - pip install -r deploy_tools/requirements.txt
+  - pip install PIL==1.1.7 --allow-external PIL --allow-unverified PIL
 
 before_script:
   - psql -c 'create database lg_prod;' -U postgres
