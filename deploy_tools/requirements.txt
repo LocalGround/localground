@@ -18,6 +18,6 @@ psycopg2==2.4.5
 python-dateutil==1.5
 reportlab==2.5
 simplejson==2.3.2
-GDAL==1.9.1
 MapScript==6.2.1
 #PIL==1.1.7
+#GDAL==1.9.1
