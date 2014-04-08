@@ -9,5 +9,15 @@ before_install:
   - sudo apt-get install libapache2-mod-fcgid
   - sudo apt-get install libapache2-mod-xsendfile
   - sudo apt-get install libapache2-mod-wsgi
+  - sudo apt-get install sendmail
+  - sudo apt-get install libmail-sendmail-perl
+  - sudo apt-get install python-software-properties
+  - sudo add-apt-repository ppa:ubuntugis/ppa
+  - sudo apt-get update -qq
+  - sudo apt-get install mapserver-bin
+  - sudo apt-get install gdal-bin cgi-mapserver
+  - sudo apt-get install python-gdal
+  - sudo apt-get install python-mapscript
+  - sudo apt-get install libcv2.3 libopencv-dev python-opencv
 
 install: "pip install -r deploy_tools/requirements.txt"
