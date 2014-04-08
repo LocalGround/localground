@@ -1,4 +1,12 @@
 language: python
+
 python:
   - "2.7"
+
+before_install:
+  - sudo apt-get install apache2
+  - sudo apt-get install libapache2-mod-fcgid
+  - sudo apt-get install libapache2-mod-xsendfile
+  - sudo apt-get install libapache2-mod-wsgi
+
 install: "pip install -r deploy_tools/requirements.txt"
