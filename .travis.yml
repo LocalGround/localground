@@ -2,6 +2,13 @@ language: python
 
 python:
   - "2.7"
+  
+env:
+  - DB_HOST=127.0.0.1
+  - DB_PORT=5432
+  - DB_USER=postgres
+  - DB_PASSWORD=none
+  - DB_NAME=lg_prod
 
 before_install:
   - sudo apt-get update -qq
@@ -21,3 +28,10 @@ before_install:
   - sudo apt-get install libcv2.3 libopencv-dev python-opencv
 
 install: "pip install -r deploy_tools/requirements.txt"
+
+before_script:
+  - psql -c 'create database <%= ENV['DB_NAME'] %>;' -U postgres
+  - psql -c 'CREATE EXTENSION postgis;' -U postgres -d <%= ENV['DB_NAME'] %>
+  - psql -c 'CREATE EXTENSION postgis_topology;' -U postgres -d <%= ENV['DB_NAME'] %>
+  
+script: ./deploy_tools/setup.sh
