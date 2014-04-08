@@ -27,7 +27,7 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install mapserver-bin
   - sudo apt-get install gdal-bin
-  - sudo apt-get cgi-mapserver
+  - sudo apt-get install cgi-mapserver
   - sudo apt-get install python-gdal
   - sudo apt-get install libcv2.3 libopencv-dev python-opencv
   - sudo apt-get install python-psycopg2
