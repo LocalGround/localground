@@ -35,4 +35,4 @@ before_script:
   - psql -c 'CREATE EXTENSION postgis;' -U postgres -d lg_prod
   - psql -c 'CREATE EXTENSION postgis_topology;' -U postgres -d lg_prod
   
-script: ./deploy_tools/setup.sh
+script: cd apps && python manage.py syncdb
