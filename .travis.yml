@@ -3,7 +3,7 @@ python:
   - "2.7"
 addons:
   - postgresql: "9.1"
-install: "pip install -r deploy_tools/requirements.txt --allow-external PIL --allow-unverified PIL"
+#install: "pip install -r deploy_tools/requirements.txt --allow-external PIL --allow-unverified PIL"
 #install:
 #  - sudo apt-get install apache2
 #  #- sudo apt-get install libapache2-mod-fcgid
