@@ -12,7 +12,7 @@ before_install:
   - sudo apt-get install sendmail
   - sudo apt-get install libmail-sendmail-perl
   - sudo apt-get install python-software-properties
-  - sudo add-apt-repository ppa:ubuntugis/ppa
+  - echo "yes" | sudo add-apt-repository ppa:ubuntugis/ppa
   - sudo apt-get update -qq
   - sudo apt-get install mapserver-bin
   - sudo apt-get install gdal-bin cgi-mapserver
