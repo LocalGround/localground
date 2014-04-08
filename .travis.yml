@@ -1,7 +1,13 @@
 language: python
 python:
   - "2.7"
+addons:
+  - postgresql: "9.1"
+before_script:
+  - createdb -E UTF8 -U postgres template_postgis
+  - psql -d template_postgis -U postgres -c "CREATE EXTENSION postgis;"
+  - createdb -O postgres -T template_postgis -E UTF8 -e lg_prod
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: "pip install -r deploy_tools/requirements.txt"
+install: "pip install -r deploy_tools/requirements.txt --allow-external PIL --allow-unverified PIL"
 # command to run tests, e.g. python setup.py test
 #script:  PLEASE CHANGE ME
