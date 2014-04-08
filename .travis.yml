@@ -3,7 +3,8 @@ language: python
 python:
   - "2.7"
 
-before_script:
+before_install:
+  - sudo apt-get update -qq
   - sudo apt-get install apache2
   - sudo apt-get install libapache2-mod-fcgid
   - sudo apt-get install libapache2-mod-xsendfile
