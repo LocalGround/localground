@@ -22,18 +22,18 @@ before_install:
   - sudo apt-get install libapache2-mod-wsgi
   - sudo apt-get install sendmail
   - sudo apt-get install libmail-sendmail-perl
-  #- sudo apt-get install python-software-properties
+  - sudo apt-get install python-software-properties
   - echo "yes" | sudo add-apt-repository ppa:ubuntugis/ppa
   - sudo apt-get update -qq
   - sudo apt-get install mapserver-bin
   - sudo apt-get install gdal-bin
   - sudo apt-get install cgi-mapserver
   - sudo apt-get install libmapserver libmapserver-dev
-  #- sudo apt-get install python-gdal
+  - sudo apt-get install python-gdal
   - sudo apt-get install libcv2.3 libopencv-dev python-opencv
-  #- sudo apt-get install python-psycopg2
-  #- sudo apt-get install python-pip python-dev
-  #- sudo apt-get install python-mapscript
+  - sudo apt-get install python-psycopg2
+  - sudo apt-get install python-pip python-dev
+  - sudo apt-get install python-mapscript
   - sudo apt-get install python-scipy
   - sudo apt-get install ffmpeg
   - sudo apt-get install libavcodec-extra-53
