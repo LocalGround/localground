@@ -10,6 +10,7 @@ env:
     - DB_USER=postgres
     - DB_PASSWORD=none
     - DB_NAME=lg_prod
+    - FILE_ROOT=$TRAVIS_BUILD_DIR
 
 virtualenv:
   system_site_packages: true
