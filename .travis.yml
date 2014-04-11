@@ -47,5 +47,9 @@ before_script:
   - psql -c 'create database lg_prod;' -U postgres
   - psql -c 'CREATE EXTENSION postgis;' -U postgres -d lg_prod
   - psql -c 'CREATE EXTENSION postgis_topology;' -U postgres -d lg_prod
+  - mkdir userdata
+  - mkdir userdata/media
+  - mkdir userdata/prints
+  - mkdir userdata/deleted
   
 script: cd apps && python manage.py test site

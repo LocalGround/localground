@@ -19,5 +19,11 @@ python-dateutil==1.5
 reportlab==2.5
 simplejson==2.3.2
 MapScript
-#PIL==1.1.7
-#GDAL==1.9.1
+GDAL==1.9.1
+
+###############################################################################
+# NOTES
+# PIL==1.1.7 (commented out because I need to install it separately with flags)
+# e.g. $pip install PIL==1.1.7 --allow-external PIL --allow-unverified PIL
+# GDAL==1.9.1
+###############################################################################
