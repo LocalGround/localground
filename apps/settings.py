@@ -4,7 +4,7 @@ import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-GDAL_LIBRARY_PATH = os.environ.get('GDAL_PATH', '/usr/lib/libgdal.so')     #replace with your GDAL path
+#GDAL_LIBRARY_PATH = os.environ.get('GDAL_PATH', '/usr/lib/libgdal.so')     #replace with your GDAL path
 
 ADMINS = (
     ('Jane Admin', os.environ.get('ADMIN_EMAIL_ADDRESS', 'email@yoursite.com')),
