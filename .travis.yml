@@ -48,4 +48,4 @@ before_script:
   - psql -c 'CREATE EXTENSION postgis;' -U postgres -d lg_prod
   - psql -c 'CREATE EXTENSION postgis_topology;' -U postgres -d lg_prod
   
-script: cd apps && python manage.py syncdb
+script: cd apps && python manage.py test site
