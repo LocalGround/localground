@@ -18,7 +18,6 @@ def persistant_queries(request):
         'is_authenticated': request.user.is_authenticated(),
         'is_impersonation': request.session.get('active_impersonation') is not None,
         'serverURL': settings.SERVER_URL,
-        'CLOUDMADE_KEY': settings.CLOUDMADE_KEY,
         'JQUERY_PATH': settings.JQUERY_PATH,
         'JQUERY_UI_PATH': settings.JQUERY_UI_PATH,
         'BOOTSTRAP_JS_PATH': settings.BOOTSTRAP_JS_PATH,

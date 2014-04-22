@@ -69,8 +69,7 @@
         form_id: {{form_id}},
         serverURL: '{{serverURL}}', 
         overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
-        embed: {{embed|lower}},
-        cloudmadeKey: '{{CLOUDMADE_KEY}}'
+        embed: {{embed|lower}}
     };
     {% if source_print %}
         opts.print = {% autoescape off %}{{ source_print }}{% endautoescape %};

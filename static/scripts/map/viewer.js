@@ -49,6 +49,7 @@ localground.viewer.prototype.initialize=function(opts){
 	$.extend(this, opts);
     
     localground.basemap.prototype.initialize.call(this, opts);
+    this.initSearchBox();
     
     this.map.mapTypeControlOptions.position = google.maps.ControlPosition.TOP_LEFT;
 	this.map.streetViewControl = true;
@@ -145,6 +146,21 @@ localground.viewer.prototype.initialize=function(opts){
 	
 	this.setStreetViewCloseButton();
 };
+
+localground.viewer.prototype.initSearchBox = function() {
+    var $input = $('#addressInput');
+    this.map.controls[google.maps.ControlPosition.RIGHT_TOP].push($input.get(0));
+    this.searchBox = new google.maps.places.SearchBox($input.get(0));
+    google.maps.event.addListener(this.searchBox, 'places_changed', function() {
+        self.search();
+    });
+    $input.keyup(function(event){
+        if(event.keyCode == 13){
+            self.search();
+        }
+    });
+};
+
 
 localground.viewer.prototype.setPosition = function(minimize) {
     localground.basemap.prototype.setPosition.call(this, minimize);

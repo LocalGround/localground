@@ -9,13 +9,15 @@
     {% if user.is_superuser %}
         isAdmin = true;
     {% endif %}
+    
+    alert({{ basemap_id|default:"12" }});
     var opts = {
         isAdmin: isAdmin,
         username: '{{user.username}}',
         serverURL: '{{serverURL}}', 
         overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
         showOutlines: false,
-        cloudmadeKey: '{{CLOUDMADE_KEY}}'
+	initialMapLayerID: {{ basemap_id|default:"12" }}
     };
     {% if markerID %}
         opts.markerID = {{markerID}};

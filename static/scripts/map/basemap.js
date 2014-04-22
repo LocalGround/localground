@@ -54,7 +54,6 @@ localground.basemap.prototype.initialize=function(opts) {
     this.isAdmin            = opts.isAdmin || false;
     this.overlayConfigArray = opts.overlays;
     this.serverURL          = opts.serverURL || 'http://localground';
-    this.cloudmadeKey       = opts.cloudmadeKey;
     this.mapServerURL       = opts.serverURL + '/ows/ms.fcgi';
     this.tileCacheURL       = opts.serverURL + '/ows/tilecache.fcgi/1.0.0/';
     this.hasDefaultLocale   = (opts.center)? true: false;
@@ -68,10 +67,6 @@ localground.basemap.prototype.initialize=function(opts) {
     this.map.setOptions({styles: this.googleMapStyles});
     var that = this;
 
-
-    this.initGeolocation();
-    this.initSearchBox();
-
     //arrange panels on page:
     if(!this.isPrint)
         this.initLayout();
@@ -82,6 +77,7 @@ localground.basemap.prototype.initialize=function(opts) {
     this.overlay.setMap(this.map);
     
     this.initTiles();
+    this.initGeolocation();
         
     /*google.maps.event.addListener(this.map, 'click', function(evt){
         self.map.panTo(evt.latLng);
@@ -115,6 +111,7 @@ localground.basemap.prototype.initialize=function(opts) {
 
     });
 };
+
 
 localground.basemap.prototype.initGeolocation = function() {
     //Prompt user for default location, if possible
@@ -168,20 +165,6 @@ localground.basemap.prototype.initGeolocation = function() {
     }
 };
 
-localground.basemap.prototype.initSearchBox = function() {
-    var $input = $('#addressInput');
-    this.map.controls[google.maps.ControlPosition.RIGHT_TOP].push($input.get(0));
-    this.searchBox = new google.maps.places.SearchBox($input.get(0));
-    google.maps.event.addListener(this.searchBox, 'places_changed', function() {
-        self.search();
-    });
-    $input.keyup(function(event){
-        if(event.keyCode == 13){
-            self.search();
-        }
-    });
-};
-
 localground.basemap.prototype.search = function() {
     var places = this.searchBox.getPlaces();
     //alert(JSON.stringify(places));
@@ -218,18 +201,6 @@ localground.basemap.prototype.initTiles = function() {
     $.each(this.overlayConfigArray, function() {
         if(this.typeID == 1) { //typeID==1 for base tiles:
             switch(this.sourceName.toLowerCase()) {
-                case 'cloudmade':
-                case 'mapnik':
-                    mapTypeIDs.push(this.name);
-                    self.map.mapTypes.set(this.name,
-                            new CloudMadeType({
-                                styleID: this.providerID,
-                                name: this.name,
-                                maxZoom: this.max,
-                                cloudmadeKey: self.cloudmadeKey
-                            })
-                    );
-                    break;
                 case 'stamen':
                     mapTypeIDs.push(this.name);
                     self.map.mapTypes.set(this.name, new StamenType({ styleID: this.providerID, name: this.name, max: this.max }));
@@ -281,13 +252,13 @@ localground.basemap.prototype.initTiles = function() {
     //figure out base layer keyword from initial provider id
     var initialMapLayer = self.getOverlaySourceInfo('id', this.initialMapLayerID);
     switch(initialMapLayer.sourceName.toLowerCase()) {
-        case 'cloudmade':
-        case 'mapnik':
-        case 'stamen':
-            this.map.setMapTypeId(initialMapLayer.name);
-            break;
         case 'google':
             this.map.setMapTypeId(initialMapLayer.providerID);
+            break;
+        default:
+            //case 'mapbox':
+            //case 'stamen':
+            this.map.setMapTypeId(initialMapLayer.name);
             break;
     }
 };

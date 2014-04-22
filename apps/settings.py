@@ -48,7 +48,6 @@ USER_ACCOUNT = 'linux-user-account'     #account to use for creating new OS file
 GROUP_ACCOUNT = 'linux-user-group'      #group to use for creating new OS files / directories
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 4621440                       #default is 2621440
-CLOUDMADE_KEY = os.environ.get('CLOUDMADE_KEY', '#####')    #http://support.cloudmade.com/answers/api-keys-and-authentication
 IS_GOOGLE_REGISTERED_NONPROFIT = False
 
 

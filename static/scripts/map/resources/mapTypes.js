@@ -15,35 +15,7 @@ GenericType.prototype.getTile = function(coord, zoom, ownerDocument) {
 };
 GenericType.prototype.name = "Mapnik";
 
-
-//Cloudmade:
-function CloudMadeType(opts) {
-    this.cloudmadeKey = opts.cloudmadeKey;
-    this.styleID = 1;
-    this.maxZoom = opts.maxZoom;
-    this.styleID = opts.styleID;
-    this.name = opts.name;
-};
-CloudMadeType.prototype.tileSize = new google.maps.Size(256,256);
-//CloudMadeType.prototype.maxZoom = 18;
-CloudMadeType.prototype.getTile = function(coord, zoom, ownerDocument) {
-    //cycle between a, b, and c sub-domains:
-    var url = 'http://' + ['a', 'b', 'c'][parseInt(Math.random()*3)] + '.tile.cloudmade.com/';
-    return $('<div></div>').css({
-        'width': '256px',
-        'height': '256px',
-        'backgroundImage': 'url(' + url + this.cloudmadeKey + '/' + this.styleID + '/256/' + zoom + '/' + coord.x + '/' + coord.y + '.png)',
-        'filter': 'alpha(opacity=80)'
-        /*filter:alpha(opacity=90);
-        -moz-opacity:0.9;
-        -khtml-opacity: 0.9;
-        opacity: 0.9;*/
-    }).get(0);
-};
-CloudMadeType.prototype.name = this.name;
-
-
-//Cloudmade:
+//Stamen:
 function StamenType(opts) {
     this.styleID = 1
     this.maxZoom = opts.max;
