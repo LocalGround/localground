@@ -10,7 +10,6 @@
         isAdmin = true;
     {% endif %}
     
-    alert({{ basemap_id|default:"12" }});
     var opts = {
         isAdmin: isAdmin,
         username: '{{user.username}}',

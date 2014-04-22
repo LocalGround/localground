@@ -50,7 +50,6 @@
 {% endblock %}
 
 {% block extra_scripts %}
-    alert({{basemap_id}});
     var isAdmin = false;
     {% if user.is_superuser %}
         isAdmin = true;
