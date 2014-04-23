@@ -7,23 +7,22 @@ from localground.apps.site.api.serializers.marker_serializer import MarkerSerial
 from rest_framework import serializers
 from localground.apps.site import models
 
-class ProjectSerializer(BaseSerializer):
+class ViewSerializer(BaseSerializer):
 	access = serializers.SerializerMethodField('get_access')
 	class Meta:
-		model = models.Project
+		model = models.View
 		fields = BaseSerializer.Meta.fields + ('owner', 'slug', 'access')
-		#read_only_fields = ('owner',)
 		depth = 0
 		
 	def get_access(self, obj):
 		return obj.access_authority.name
 	
 		
-class ProjectDetailSerializer(BaseSerializer):
+class ViewDetailSerializer(BaseSerializer):
 	children = serializers.SerializerMethodField('get_children')
 
 	class Meta:
-		model = models.Project
+		model = models.View
 		fields = BaseSerializer.Meta.fields + (
 			'slug', 'children'
 		)
@@ -102,7 +101,6 @@ class ProjectDetailSerializer(BaseSerializer):
 				many=True, context={'request': {}}
 			).data
 		return self.serialize_list(models.Marker, data)
-
 
 
 	def serialize_list(self, cls, data, name=None, overlay_type=None,
