@@ -11,8 +11,8 @@ class GenericAssociation(BaseAudit):
 	between media elements (photos, audio files, scans, etc.) and groups.  See
 	the reference above for more information about the contenttypes framework.
 	"""
-	ordering = models.IntegerField()
-	turned_on = models.BooleanField()
+	ordering = models.IntegerField(default=1)
+	turned_on = models.BooleanField(default=True)
 	
 	# analogous to the "subject" in a triplet,
 	# (e.g. "The 'source' has an 'entity.'")

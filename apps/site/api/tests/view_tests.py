@@ -15,16 +15,23 @@ class ApiViewListTest(test.TestCase, ViewMixinAPI):
 		self.view = views.ViewList.as_view()
 		
 	def test_create_view_using_post(self, **kwargs):
+		import json
 		name = 'New View!'
 		description = 'New view description'
 		tags= "d, e, f"
 		slug = 'new-view-123'
+		children = [
+			{ 'overlay_type': 'photo', 'id': 1 },
+			{ 'overlay_type': 'audio', 'id': 1 },
+			{ 'overlay_type': 'marker', 'id': 1 }
+		]
 		response = self.client_user.post(self.url,
 			data=urllib.urlencode({
 				'name': name,
 				'description': description,
 				'tags': tags,
-				'slug': slug
+				'slug': slug,
+				'children': json.dumps(children)
 			}),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"
@@ -35,6 +42,7 @@ class ApiViewListTest(test.TestCase, ViewMixinAPI):
 		self.assertEqual(new_obj.description, description)
 		self.assertEqual(new_obj.tags, tags)
 		self.assertEqual(new_obj.slug, slug)
+		self.assertEqual(len(new_obj.entities.all()), 3)
 		
 class ApiViewInstanceTest(test.TestCase, ViewMixinAPI):
 	
@@ -51,13 +59,18 @@ class ApiViewInstanceTest(test.TestCase, ViewMixinAPI):
 		description = 'Test description'
 		tags= "a, b, c"
 		slug = 'new-friendly-url'
+		children = [
+			{ 'overlay_type': 'photo', 'id': 1 },
+			{ 'overlay_type': 'audio', 'id': 1 }
+		]
 		
 		response = self.client_user.put(self.url,
 			data=urllib.urlencode({
 				'name': name,
 				'description': description,
 				'tags': tags,
-				'slug': slug
+				'slug': slug,
+				'children': json.dumps(children)
 			}),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"
@@ -68,6 +81,7 @@ class ApiViewInstanceTest(test.TestCase, ViewMixinAPI):
 		self.assertEqual(updated_obj.description, description)
 		self.assertEqual(updated_obj.tags, tags)
 		self.assertEqual(updated_obj.slug, slug)
+		self.assertEqual(len(updated_obj.entities.all()), 2)
 			
 	def test_delete_view(self, **kwargs):
 		view_id = self.viewObj.id

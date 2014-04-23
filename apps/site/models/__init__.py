@@ -18,7 +18,7 @@ from localground.apps.site.models.wmsoverlay import WMSOverlay
 
 #accounts
 #from localground.apps.site.models.base import Base
-from localground.apps.site.models.groups import Group, Project, View, Scene
+from localground.apps.site.models.groups import Group, Project, View
 from localground.apps.site.models.userprofile import UserProfile
 from localground.apps.site.models.permissions import \
 	BasePermissions, ObjectUserPermissions, UserAuthorityObject, \

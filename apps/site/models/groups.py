@@ -232,12 +232,5 @@ class View(Group):
 			d.update(dict(markers=self.get_markers_with_counts()))
 		return d
 	
-class Scene(BaseNamed):
-	"""
-	Not used anywhere yet, but a stub for the new storytelling interface (where
-	each view could be a collection of ordered scenes, configured by the user).
-	"""
-	extents = models.PolygonField(null=True, blank=True)
-	view = models.ForeignKey('View')
 	
 	
