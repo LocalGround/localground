@@ -183,3 +183,50 @@ class GeometryField(serializers.WritableField):
 		
 			return value
 		return None
+	
+'''
+class EntitiesField(serializers.WritableField):
+
+	type_name = 'EntitiesField'
+	
+	def field_from_native(self, data, files, field_name, into):
+		if data.get('entities') is not None:
+			entities = self.from_native(data.get('entities'))
+
+			
+			#only one geom can exist at a time: Point, LineString, and Polygon
+			# are mutually exclusive. Can't have more than one at once.
+			if geom.geom_type == 'Point':
+				into['point'] = geom
+				into['polyline'] = None
+				into['polygon'] = None
+			elif geom.geom_type == 'LineString':
+				into['polyline'] = geom
+				into['point'] = None
+				into['polygon'] = None
+			elif geom.geom_type == 'Polygon':
+				into['polygon'] = geom
+				into['point'] = None
+				into['polyline'] = None
+			else:
+				raise serializers.ValidationError('Unsupported geometry type')
+	
+	def to_native(self, value):
+		if value is not None:
+			if isinstance(value, dict) or value is None:
+				return value
+			# Get GeoDjango geojson serialization and then convert it _back_ to
+			# a Python object
+			return json.loads(value.geojson)
+		
+
+	def from_native(self, value):
+		if value is not None:
+			try:
+				return json.loads(entities)
+			except (ValueError, GEOSException, OGRException, TypeError) as e:
+				raise serializers.ValidationError(_('Invalid format: string or unicode input unrecognized JSON format.'))
+			return value
+		return None
+'''
+

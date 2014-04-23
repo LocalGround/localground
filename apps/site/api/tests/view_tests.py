@@ -2,7 +2,7 @@ from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
-import urllib
+import urllib, json
 from rest_framework import status
 
 class ApiViewListTest(test.TestCase, ViewMixinAPI):
@@ -15,12 +15,11 @@ class ApiViewListTest(test.TestCase, ViewMixinAPI):
 		self.view = views.ViewList.as_view()
 		
 	def test_create_view_using_post(self, **kwargs):
-		import json
 		name = 'New View!'
 		description = 'New view description'
 		tags= "d, e, f"
 		slug = 'new-view-123'
-		children = [
+		entities = [
 			{ 'overlay_type': 'photo', 'id': 1 },
 			{ 'overlay_type': 'audio', 'id': 1 },
 			{ 'overlay_type': 'marker', 'id': 1 }
@@ -31,7 +30,7 @@ class ApiViewListTest(test.TestCase, ViewMixinAPI):
 				'description': description,
 				'tags': tags,
 				'slug': slug,
-				'children': json.dumps(children)
+				'entities': json.dumps(entities)
 			}),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"
@@ -59,7 +58,7 @@ class ApiViewInstanceTest(test.TestCase, ViewMixinAPI):
 		description = 'Test description'
 		tags= "a, b, c"
 		slug = 'new-friendly-url'
-		children = [
+		entities = [
 			{ 'overlay_type': 'photo', 'id': 1 },
 			{ 'overlay_type': 'audio', 'id': 1 }
 		]
@@ -70,7 +69,7 @@ class ApiViewInstanceTest(test.TestCase, ViewMixinAPI):
 				'description': description,
 				'tags': tags,
 				'slug': slug,
-				'children': json.dumps(children)
+				'entities': json.dumps(entities)
 			}),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"

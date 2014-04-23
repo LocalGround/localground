@@ -12,7 +12,7 @@ class GenericAssociation(BaseAudit):
 	the reference above for more information about the contenttypes framework.
 	"""
 	ordering = models.IntegerField(default=1)
-	turned_on = models.BooleanField(default=True)
+	turned_on = models.BooleanField()
 	
 	# analogous to the "subject" in a triplet,
 	# (e.g. "The 'source' has an 'entity.'")
