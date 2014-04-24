@@ -6,12 +6,16 @@ from localground.apps.site.api.serializers.form_serializer import create_record_
 from localground.apps.site.api.serializers.marker_serializer import MarkerSerializerCounts
 from rest_framework import serializers
 from localground.apps.site import models
+from django.forms.widgets import Textarea
+from localground.apps.site.api import fields
 
 class ViewSerializer(BaseSerializer):
 	access = serializers.SerializerMethodField('get_access')
+	entities = fields.EntitiesField(widget=Textarea, required=False)
 	class Meta:
 		model = models.View
-		fields = BaseSerializer.Meta.fields + ('owner', 'slug', 'access')
+		fields = BaseSerializer.Meta.fields + ('owner', 'slug', 'access', 'entities')
+		write_only_fields = ('entities',)
 		depth = 0
 		
 	def get_access(self, obj):
@@ -20,12 +24,13 @@ class ViewSerializer(BaseSerializer):
 		
 class ViewDetailSerializer(BaseSerializer):
 	children = serializers.SerializerMethodField('get_children')
-
+	entities = fields.EntitiesField(widget=Textarea, required=False)
 	class Meta:
 		model = models.View
 		fields = BaseSerializer.Meta.fields + (
-			'slug', 'children'
+			'slug', 'children', 'entities'
 		)
+		write_only_fields = ('entities',)
 		depth = 0
 
 	def get_children(self, obj):
@@ -77,28 +82,25 @@ class ViewDetailSerializer(BaseSerializer):
 
 	def get_photos(self, obj):
 		data = PhotoSerializer(
-				models.Photo.objects.get_objects(obj.owner, project=obj), many=True,
-				context={'request': {}}).data
+				obj.photos, many=True, context={'request': {}}
+			).data
 		return self.serialize_list(models.Photo, data)
-
+	
 	def get_audio(self, obj):
 		data = AudioSerializer(
-				models.Audio.objects.get_objects(obj.owner, project=obj), many=True,
-				context={'request': {}}
+				obj.audio, many=True, context={'request': {}}
 			).data
 		return self.serialize_list(models.Audio, data)
 
 	def get_scans(self, obj):
 		data = ScanSerializer(
-				models.Scan.objects.get_objects(obj.owner, project=obj, processed_only=True),
-				many=True, context={'request': {}}
+				obj.map_images, many=True, context={'request': {}}
 			).data
 		return self.serialize_list(models.Scan, data)
 
 	def get_markers(self, obj, forms):
 		data = MarkerSerializerCounts(
-				models.Marker.objects.get_objects_with_counts(obj.owner, project=obj, forms=forms),
-				many=True, context={'request': {}}
+				obj.markers, many=True, context={'request': {}}
 			).data
 		return self.serialize_list(models.Marker, data)
 
