@@ -12,7 +12,6 @@
     <link href="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
     <link href="/static/css/themes/bootstrap/jquery-ui-1.8.16.custom.css" type="text/css" media="all" rel="stylesheet" />
     <link href="/static/css/themes/bootstrap/timepicker.css" type="text/css" media="all" rel="stylesheet" />
-
 {% endblock %}
 {% block extra_styles %}
     body{
@@ -190,7 +189,7 @@
                             {% with form=post_form %}
                             <form action="{{ request.get_full_path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
                                 <fieldset>
-                                    {% include "includes/forms/generic_form_renderer.html" %}
+                                    {{ post_form }}
                                     
                                     <div class="form-actions">
                                         <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
@@ -204,7 +203,7 @@
                             {% with form=raw_data_post_form %}
                             <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
                                 <fieldset>
-                                    {% include "includes/forms/generic_form_renderer.html" %}
+                                    {% include "rest_framework/raw_data_form.html" %}
                                     
                                     <div class="form-actions">
                                         <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
@@ -231,7 +230,7 @@
                             {% with form=put_form %}
                             <form action="{{ request.get_full_path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
                                 <fieldset>
-                                    {% include "includes/forms/generic_form_renderer.html" %}
+                                    {{ put_form }}
                                     
                                     <div class="form-actions">
                                         <button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" title="Make a PUT request on the {{ name }} resource">PUT</button>
@@ -245,7 +244,7 @@
                             {% with form=raw_data_put_or_patch_form %}
                             <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
                                 <fieldset>
-                                    {% include "includes/forms/generic_form_renderer.html" %}
+                                    {% include "rest_framework/raw_data_form.html" %}
                                     <div class="form-actions">
                                         {% if raw_data_put_form %}
                                         <button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" title="Make a PUT request on the {{ name }} resource">PUT</button>

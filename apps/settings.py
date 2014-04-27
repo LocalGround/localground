@@ -173,7 +173,6 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.JSONPRenderer',
         'localground.apps.site.api.renderers.CSVRenderer',
-        #'rest_framework_csv.renderers.CSVRenderer',
         'rest_framework.renderers.XMLRenderer'
     ),
     'DEFAULT_PERMISSION_CLASSES': (

@@ -15,7 +15,6 @@ class ViewSerializer(BaseSerializer):
 	class Meta:
 		model = models.View
 		fields = BaseSerializer.Meta.fields + ('owner', 'slug', 'access', 'entities')
-		write_only_fields = ('entities',)
 		depth = 0
 		
 	def get_access(self, obj):
@@ -30,7 +29,6 @@ class ViewDetailSerializer(BaseSerializer):
 		fields = BaseSerializer.Meta.fields + (
 			'slug', 'children', 'entities'
 		)
-		write_only_fields = ('entities',)
 		depth = 0
 
 	def get_children(self, obj):

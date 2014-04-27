@@ -1,0 +1,12 @@
+{% load rest_framework %}
+{% csrf_token %}
+{{ form.non_field_errors }}
+{% for field in form %}
+    <div class="clearfix">
+        {{ field.label_tag|add_class:"control-label" }}
+        <div class="input">
+            {{ field }}
+            <span class="help-block">{{ field.help_text }}</span>
+        </div>
+    </div>
+{% endfor %}
