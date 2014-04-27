@@ -2,8 +2,9 @@ from django import test
 from localground.apps.site import models
 from localground.apps.site.api import views
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
-import urllib
+import urllib, json
 from rest_framework import status
+from django.contrib.gis.geos import GEOSGeometry
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 
 class ApiFormListTest(test.TestCase, ViewMixinAPI):
@@ -22,6 +23,11 @@ class ApiFormInstanceTest(test.TestCase, ViewMixinAPI):
 
 class FormDataTestMixin(object):
 	
+	POINT = {
+		"type": "Point",
+		"coordinates": [12.492324113849, 41.890307434153]
+	}
+	
 	def create_form_post_data(self):
 		lat, lng, num, description, color = 54.16, 60.4, 5, \
 								'Test description1', 'FF0000'	
@@ -34,8 +40,7 @@ class FormDataTestMixin(object):
 			10 									#RATING
 		]
 		d = {
-			'lat': lat,
-			'lng': lng,
+			'geometry': self.POINT,
 			'num': num,
 			'project_id': self.project.id
 		}
@@ -47,8 +52,7 @@ class FormDataTestMixin(object):
 
 	def verify_success(self, d):
 		rec = self.form.TableModel.objects.all().order_by('-id',)[0]
-		self.assertEqual(rec.point.y, d.get('lat'))
-		self.assertEqual(rec.point.x, d.get('lng'))
+		self.assertEqual(rec.geometry, GEOSGeometry(json.dumps(self.POINT)))
 		self.assertEqual(rec.num, d.get('num'))
 		fields = self.form.fields
 		length = len(d.keys())-1

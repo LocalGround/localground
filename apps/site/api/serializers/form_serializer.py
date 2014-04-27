@@ -30,15 +30,15 @@ from localground.apps.site import widgets, models
 from localground.apps.site.api import fields
 
 class BaseRecordSerializer(serializers.ModelSerializer):
-	point = fields.PointField(help_text='Assign lat/lng field',
-							  widget=widgets.PointWidgetTextbox,
-							  required=False)
+	geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
+							  required=False,
+							  widget=widgets.GeoJSONWidget)
 	overlay_type = serializers.SerializerMethodField('get_overlay_type')
 	url = serializers.SerializerMethodField('get_detail_url')
 	project_id = fields.ProjectField(label='project_id', source='project', required=False)
 		
 	class Meta:
-		fields = ('id', 'overlay_type', 'url', 'point', 'manually_reviewed', 'project_id')
+		fields = ('id', 'overlay_type', 'url', 'geometry', 'manually_reviewed', 'project_id')
 		read_only_fields = ('manually_reviewed',)
 		
 	def get_overlay_type(self, obj):
@@ -81,7 +81,7 @@ def create_compact_record_serializer(form):
 			
 		class Meta:
 			model = form.TableModel
-			fields = ('id', 'num', 'recs', 'url', 'point', 'project_id', 'overlay_type')
+			fields = ('id', 'num', 'recs', 'url', 'geometry', 'project_id', 'overlay_type')
 			
 		def get_recs(self, obj):
 			#return [getattr(obj, col_name) for col_name in col_names]
