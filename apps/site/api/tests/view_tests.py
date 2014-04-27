@@ -21,6 +21,8 @@ class ApiViewListTest(test.TestCase, ViewMixinAPI):
 		slug = 'new-view-123'
 		entities = [
 			{ 'overlay_type': 'photo', 'id': 1 },
+			{ 'overlay_type': 'photo', 'id': 2 },
+			{ 'overlay_type': 'photo', 'id': 3 },
 			{ 'overlay_type': 'audio', 'id': 1 },
 			{ 'overlay_type': 'marker', 'id': 1 }
 		]
@@ -41,7 +43,9 @@ class ApiViewListTest(test.TestCase, ViewMixinAPI):
 		self.assertEqual(new_obj.description, description)
 		self.assertEqual(new_obj.tags, tags)
 		self.assertEqual(new_obj.slug, slug)
-		self.assertEqual(len(new_obj.entities.all()), 3)
+		self.assertEqual(3, len(new_obj.photos))
+		self.assertEqual(1, len(new_obj.audio))
+		self.assertEqual(1, len(new_obj.markers))
 		
 class ApiViewInstanceTest(test.TestCase, ViewMixinAPI):
 	

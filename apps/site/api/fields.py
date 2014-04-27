@@ -74,7 +74,7 @@ class FileField(serializers.CharField):
 				into[self.source] = value
 		except:
 			value = None
-			into[self.source] = value	
+			into[self.source] = value   
 		
 		
 	def to_native(self, obj):
