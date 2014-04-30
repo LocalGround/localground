@@ -5,7 +5,56 @@ from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib, json
 from rest_framework import status
 
-class ApiViewListTest(test.TestCase, ViewMixinAPI):
+class ApiViewTest(test.TestCase, ViewMixinAPI):
+	name = 'New View Name'
+	description = 'Test description'
+	tags= "a, b, c"
+	slug = 'new-friendly-url'
+	entities = [
+			{ 'overlay_type': 'photo', 'id': 1 },
+			{ 'overlay_type': 'photo', 'id': 2 },
+			{ 'overlay_type': 'photo', 'id': 3 },
+			{ 'overlay_type': 'audio', 'id': 1 },
+			{ 'overlay_type': 'marker', 'id': 1 }
+		]
+	
+	invalid_entities = [
+			{ 'overlay_type': 'photo', 'id': 1000 },
+			{ 'overlay_type': 'photo', 'id': 2000000 },
+			{ 'overlay_type': 'photo', 'id': 300 },
+			{ 'overlay_type': 'audio', 'id': 1 },
+			{ 'overlay_type': 'marker', 'id': 1 }
+		]
+	
+	def _test_save_view(self, method, status_id, entities):
+		response = method(self.url,
+			data=urllib.urlencode({
+				'name': self.name,
+				'description': self.description,
+				'tags': self.tags,
+				'slug': self.slug,
+				'entities': entities
+			}),
+			HTTP_X_CSRFTOKEN=self.csrf_token,
+			content_type = "application/x-www-form-urlencoded"
+		)
+		self.assertEqual(response.status_code, status_id)
+		
+		#if it was successful, verify data: 
+		if status_id in [status.HTTP_201_CREATED, status.HTTP_200_OK]:
+			if hasattr(self, 'obj'):
+				rec = models.View.objects.get(id=self.obj.id)
+			else:
+				rec = self.model.objects.all().order_by('-id',)[0]
+			self.assertEqual(rec.name, self.name)
+			self.assertEqual(rec.description, self.description)
+			self.assertEqual(rec.tags, self.tags)
+			self.assertEqual(rec.slug, self.slug)
+			self.assertEqual(3, len(rec.photos))
+			self.assertEqual(1, len(rec.audio))
+			self.assertEqual(1, len(rec.markers))
+
+class ApiViewListTest(ApiViewTest):
 	
 	def setUp(self):
 		ViewMixinAPI.setUp(self)
@@ -15,79 +64,94 @@ class ApiViewListTest(test.TestCase, ViewMixinAPI):
 		self.view = views.ViewList.as_view()
 		
 	def test_create_view_using_post(self, **kwargs):
-		name = 'New View!'
-		description = 'New view description'
-		tags= "d, e, f"
-		slug = 'new-view-123'
-		entities = [
-			{ 'overlay_type': 'photo', 'id': 1 },
-			{ 'overlay_type': 'photo', 'id': 2 },
-			{ 'overlay_type': 'photo', 'id': 3 },
-			{ 'overlay_type': 'audio', 'id': 1 },
-			{ 'overlay_type': 'marker', 'id': 1 }
-		]
-		response = self.client_user.post(self.url,
-			data=urllib.urlencode({
-				'name': name,
-				'description': description,
-				'tags': tags,
-				'slug': slug,
-				'entities': json.dumps(entities)
-			}),
-			HTTP_X_CSRFTOKEN=self.csrf_token,
-			content_type = "application/x-www-form-urlencoded"
-		)
-		self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-		new_obj = self.model.objects.all().order_by('-id',)[0]
-		self.assertEqual(new_obj.name, name)
-		self.assertEqual(new_obj.description, description)
-		self.assertEqual(new_obj.tags, tags)
-		self.assertEqual(new_obj.slug, slug)
-		self.assertEqual(3, len(new_obj.photos))
-		self.assertEqual(1, len(new_obj.audio))
-		self.assertEqual(1, len(new_obj.markers))
+		self._test_save_view(
+					self.client_user.post,
+					status.HTTP_201_CREATED,
+					json.dumps(self.entities)
+				)
 		
-class ApiViewInstanceTest(test.TestCase, ViewMixinAPI):
+	def test_create_view_invalid_children(self, **kwargs):
+		self._test_save_view(
+					self.client_user.post,
+					status.HTTP_400_BAD_REQUEST,
+					json.dumps(self.invalid_entities)
+				)
+	def test_create_view_invalid_json(self, **kwargs):
+		self._test_save_view(
+					self.client_user.post,
+					status.HTTP_400_BAD_REQUEST,
+					'dsadaadasdasdjkjdkasda/ewqeqw/'
+				)
+		
+class ApiViewInstanceTest(ApiViewTest):
 	
 	def setUp(self):
 		ViewMixinAPI.setUp(self)
-		self.viewObj = self.create_view(self.user, name='Test View 1', authority_id=1)
-		self.url = '/api/0/views/%s/' % self.viewObj.id
+		self.obj = self.create_view(self.user, name='Test View 1', authority_id=1)
+		self.url = '/api/0/views/%s/' % self.obj.id
 		self.urls = [self.url]
 		self.model = models.View
-		self.view = views.ViewInstance.as_view()
+		self.view  = views.ViewInstance.as_view()
 		
 	def test_update_view_using_put(self, **kwargs):
-		name = 'New View Name'
-		description = 'Test description'
-		tags= "a, b, c"
-		slug = 'new-friendly-url'
-		entities = [
-			{ 'overlay_type': 'photo', 'id': 1 },
-			{ 'overlay_type': 'audio', 'id': 1 }
-		]
+		self._test_save_view(
+					self.client_user.put,
+					status.HTTP_200_OK,
+					json.dumps(self.entities)
+				)
 		
-		response = self.client_user.put(self.url,
+	def test_update_view_using_patch(self, **kwargs):
+		response = self.client_user.patch(self.url,
 			data=urllib.urlencode({
-				'name': name,
-				'description': description,
-				'tags': tags,
-				'slug': slug,
-				'entities': json.dumps(entities)
+				'name': self.name,
 			}),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"
 		)
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
-		updated_obj = models.View.objects.get(id=self.viewObj.id)
-		self.assertEqual(updated_obj.name, name)
-		self.assertEqual(updated_obj.description, description)
-		self.assertEqual(updated_obj.tags, tags)
-		self.assertEqual(updated_obj.slug, slug)
-		self.assertEqual(len(updated_obj.entities.all()), 2)
+		rec = models.View.objects.get(id=self.obj.id)
+		self.assertEqual(rec.name, self.name)
+		self.assertNotEqual(self.obj.name, self.name)
+	
+	def test_update_view_invalid_children_put(self, **kwargs):
+		self._test_save_view(self.client_user.put, status.HTTP_400_BAD_REQUEST,
+							 json.dumps(self.invalid_entities))
+	
+	def test_update_view_invalid_children_patch(self, **kwargs):
+		self._test_save_view(self.client_user.patch, status.HTTP_400_BAD_REQUEST,
+							 json.dumps(self.invalid_entities))
+	
+	def test_update_view_invalid_json(self, **kwargs):
+		self._test_save_view(
+					self.client_user.put,
+					status.HTTP_400_BAD_REQUEST,
+					'dsadaadasdasdjkjdkasda/ewqeqw/'
+				)
+		
+	def test_clear_children(self, **kwargs):
+		#first add children:
+		self._test_save_view(
+					self.client_user.put,
+					status.HTTP_200_OK,
+					json.dumps(self.entities)
+				)
+		
+		#and then get rid of them:
+		response = self.client_user.patch(self.url,
+			data=urllib.urlencode({
+				'entities': json.dumps([])
+			}),
+			HTTP_X_CSRFTOKEN=self.csrf_token,
+			content_type = "application/x-www-form-urlencoded"
+		)
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+		rec = models.View.objects.get(id=self.obj.id)
+		self.assertEqual(0, len(rec.photos))
+		self.assertEqual(0, len(rec.audio))
+		self.assertEqual(0, len(rec.markers))
 			
 	def test_delete_view(self, **kwargs):
-		view_id = self.viewObj.id
+		view_id = self.obj.id
 		
 		# ensure view exists:
 		self.model.objects.get(id=view_id)
