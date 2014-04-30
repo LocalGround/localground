@@ -17,43 +17,36 @@ class ViewMixin(object):
 		from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 		import json
 		from django.db import connection, IntegrityError, DatabaseError
-		entities = self.request.DATA.get('entities')
-		if entities:
-			try:
-				entities = json.loads(entities)
-			except ValueError:
-				raise ValidationError('Error parsing JSON')
+		entities_str = self.request.DATA.get('entities')
+		if entities_str:
+			entities = json.loads(entities_str)
 			source_type = self.model.get_content_type()
 			source_id = obj.id
-			#1) delete all generic associations that are associated with 
-			#	this particular view:
+			#1) clear out existing child media:
 			obj.entities.all().delete()
 			
-			#2) attach child media:
+			#2) attach new child media:
 			for child in entities:
-				#raise Exception(child)
 				overlay_type = child.get('overlay_type')
-				entity_id = child.get('id')
 				entity_type = models.Base.get_model(
 								model_name=overlay_type
 							).get_content_type()
-				a = models.GenericAssociation(
-					source_id=source_id,
-					source_type=source_type,
-					entity_id=entity_id,
-					entity_type=entity_type
-				)
-				a.owner = self.request.user
-				a.last_updated_by = self.request.user
-				a.time_stamp = get_timestamp_no_milliseconds()
-				
-				try:
-					a.save()
-				except IntegrityError, e:
-					self.warnings.append('duplicates removed')
-					connection._rollback()
-			
-	
+				entity_ids = child.get('ids')
+				for entity_id in entity_ids:
+					a = models.GenericAssociation(
+						source_id=source_id,
+						source_type=source_type,
+						entity_id=entity_id,
+						entity_type=entity_type,
+						owner=self.request.user,
+						last_updated_by=self.request.user,
+						time_stamp=get_timestamp_no_milliseconds()
+					)
+					try:
+						a.save()
+					except IntegrityError, e:
+						self.warnings.append('duplicates removed')
+						connection._rollback()
 				
 class ViewList(QueryableListCreateAPIView, ViewMixin, AuditCreate):
 	error_messages = {}

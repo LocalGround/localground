@@ -54,7 +54,7 @@ class ProjectsField(serializers.WritableField):
 		ids = None
 		try:
 			ids = data.split(',')
-			ids = [int(id.strip()) for id in ids]
+			ids = [int(child_id.strip()) for child_id in ids]
 		except:
 			raise serializers.ValidationError("Project IDs must be a list of comma-separated integers")
 		try:
@@ -190,22 +190,27 @@ class EntitiesField(serializers.WritableField):
 				# validate each dictionary entry:
 				try:
 					overlay_type = child['overlay_type']
-					entity_id = child['id']
+					ids = child['ids']
 				except:
 					raise serializers.ValidationError(
-						'%s must have an overlay_type and an id attribute' % child
+						'%s must have an overlay_type and an ids attribute' % child
+					)
+				if not isinstance(ids, list):
+					raise serializers.ValidationError(
+						'%s must be a list' % ids
 					)
 				
-				# ensure that the requested child item exists:
-				from localground.apps.site.models import Base
-				try:
-					obj = Base.get_model(
-								model_name=overlay_type
-							).objects.get(id=entity_id)
-				except:
-					raise serializers.ValidationError(
-						'No %s object exists with id=%s' % (overlay_type, entity_id)
-					)
+				for entity_id in ids:
+					# ensure that the requested child item exists:
+					from localground.apps.site.models import Base
+					try:
+						obj = Base.get_model(
+									model_name=overlay_type
+								).objects.get(id=entity_id)
+					except:
+						raise serializers.ValidationError(
+							'No %s object exists with id=%s' % (overlay_type, entity_id)
+						)
 	
 	def to_native(self, value):
 		if value is not None:

@@ -11,19 +11,15 @@ class ApiViewTest(test.TestCase, ViewMixinAPI):
 	tags= "a, b, c"
 	slug = 'new-friendly-url'
 	entities = [
-			{ 'overlay_type': 'photo', 'id': 1 },
-			{ 'overlay_type': 'photo', 'id': 2 },
-			{ 'overlay_type': 'photo', 'id': 3 },
-			{ 'overlay_type': 'audio', 'id': 1 },
-			{ 'overlay_type': 'marker', 'id': 1 }
+			{ 'overlay_type': 'photo', 'ids': [1, 2, 3] },
+			{ 'overlay_type': 'audio', 'ids': [1] },
+			{ 'overlay_type': 'marker', 'ids': [1] }
 		]
 	
 	invalid_entities = [
-			{ 'overlay_type': 'photo', 'id': 1000 },
-			{ 'overlay_type': 'photo', 'id': 2000000 },
-			{ 'overlay_type': 'photo', 'id': 300 },
-			{ 'overlay_type': 'audio', 'id': 1 },
-			{ 'overlay_type': 'marker', 'id': 1 }
+			{ 'overlay_type': 'photo', 'ids': [1000, 2000000, 300] },
+			{ 'overlay_type': 'audio', 'ids': [1] },
+			{ 'overlay_type': 'marker', 'ids': [1] }
 		]
 	
 	def _test_save_view(self, method, status_id, entities):

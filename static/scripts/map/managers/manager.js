@@ -191,6 +191,16 @@ localground.manager.prototype.atLeastOneVisible = function() {
 	return oneVisible;
 };
 
+localground.manager.prototype.getTurnedOnOverlayIDs = function() {
+	var turnedOnOverlayIDs = [];
+	$.each(this.data, function() {
+		if(this.isTurnedOn()) {
+			turnedOnOverlayIDs.push(this.id);
+		}
+	});
+	return turnedOnOverlayIDs;
+};
+
 localground.manager.prototype.updateVisibility = function() {
 	var panel = this.getListingPanel();
 	if(this.data.length > 0 && this.atLeastOneVisible())

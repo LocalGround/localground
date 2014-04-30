@@ -249,6 +249,10 @@ localground.overlay.prototype.showInfoBubble = function(opts) {
         this.showInfoBubbleEdit(opts);
 };
 
+localground.overlay.prototype.isTurnedOn = function() {
+	return this.googleOverlay && this.googleOverlay.map != null;
+};
+
 localground.overlay.prototype.zoomToOverlay = function() {
     this.closeInfoBubble();
     if(this.googleOverlay != null) {
