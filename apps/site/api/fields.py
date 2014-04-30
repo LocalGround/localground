@@ -214,11 +214,21 @@ class EntitiesField(serializers.WritableField):
 	
 	def to_native(self, value):
 		if value is not None:
-			if isinstance(value, dict) or value is None:
-				return value
+			entity_dict = {}
+			for e in value.all():
+				overlay_type = e.entity_type.name
+				if entity_dict.get(overlay_type) is None:
+					entity_dict[overlay_type] = []
+				entity_dict[overlay_type].append(e.entity_id)
+			
+			entry_list = []	
+			for key in entity_dict:
+				entry_list.append({
+					'overlay_type': key,
+					'ids': entity_dict[key]
+				})
 			# convert to a JSON representation:
-			return json.dumps([{"overlay_type": str(e.entity_type.name), "id": e.entity_id}
-						for e in value.all()])
+			return json.dumps(entry_list)
 				
 		
 	'''
