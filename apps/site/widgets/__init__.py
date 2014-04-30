@@ -289,7 +289,7 @@ class GeoJSONWidget(Textarea):
 		import json
 		val = ''
 		if value: val = json.dumps(value)
-		html = self.inner_widget.render('geometry', val, dict(id='id_geometry', style='width:200px;height:100px'))
+		html = self.inner_widget.render(name, val, dict(id='id_' % name, style='width:200px;height:100px'))
 		return mark_safe(html)
 
 class CustomCheckboxSelectMultiple(forms.CheckboxSelectMultiple):

@@ -2,8 +2,10 @@ from django import test
 from localground.apps.site import models
 from localground.apps.site.api import views
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
-import urllib
+import urllib, json
 from rest_framework import status
+from django.contrib.gis.geos import GEOSGeometry
+
 
 class ApiLayoutListTest(test.TestCase, ViewMixinAPI):
 	def setUp(self):
@@ -23,9 +25,12 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI):
 		self.url = '/api/0/prints/'
 		self.urls =  [self.url]
 		self.view = views.PrintList.as_view()
+		self.point = {
+			"type": "Point",
+			"coordinates": [12.492324113849, 41.890307434153]
+		}
 			
 	def test_create_print_using_post(self, **kwargs):
-		lat, lng = 54.16, 60.4
 		map_title = 'A Map Title'
 		instructions = 'Some instructions.'
 		layout = 1
@@ -34,8 +39,7 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI):
 		
 		response = self.client_user.post(self.url,
 			data=urllib.urlencode({
-				'lat': lat,
-				'lng': lng,
+				'center': self.point,
 				'map_title': map_title,
 				'instructions': instructions,
 				'layout': layout,
@@ -53,8 +57,7 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI):
 						.order_by('-id',))[0]
 		self.assertEqual(new_object.name, map_title)
 		self.assertEqual(new_object.description, instructions)
-		self.assertEqual(new_object.center.y, lat)
-		self.assertEqual(new_object.center.x, lng)
+		self.assertEqual(new_object.center, GEOSGeometry(json.dumps(self.point)))
 		self.assertEqual(new_object.project.id, self.project.id)
 		self.assertEqual(new_object.layout.id, layout)
 		self.assertEqual(new_object.map_provider.id, layout)

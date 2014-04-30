@@ -73,9 +73,10 @@ class MediaGeometrySerializer(GeometrySerializer):
 		
 class ExtentsSerializer(BaseSerializer):
 	project_id = fields.ProjectField(label='project_id', source='project', required=False)
-	center = fields.PointField(label='center', help_text='Assign lat/lng field',
-							  widget=widgets.PointWidgetTextbox,
-							  required=False)
+	center = fields.GeometryField(help_text='Assign a GeoJSON string',
+							  required=False,
+							  widget=widgets.GeoJSONWidget,
+							  point_field_name='center')
 
 	class Meta:
 		fields = BaseSerializer.Meta.fields + ('project_id', 'center')

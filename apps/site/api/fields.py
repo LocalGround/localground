@@ -80,35 +80,6 @@ class FileField(serializers.CharField):
 		
 	def to_native(self, obj):
 		return obj
-	
-class PointField(serializers.WritableField):
-	type_label = 'point'
-	label = 'point'
-		
-	def field_from_native(self, data, files, field_name, into):
-		try:
-			lat, lng = data['lat'], data['lng']
-		except KeyError:
-			if self.required:
-				raise serializers.ValidationError('Both a "lat" variable and a "lng" variable are required')
-			return
-		try:
-			into[self.label] = self.to_point(lng, lat)
-		except:
-			value = None
-			into[self.label] =  None
-			#raise serializers.ValidationError('Invalid "lat" or "lng" parameter')
-		
-	def to_point(self, lng, lat):
-		return GEOSGeometry('SRID=%s;POINT(%s %s)' % (4326, lng, lat))
-
-	def to_native(self, obj):
-		if obj is not None:
-			return {
-				'lng': obj.x,
-				'lat': obj.y
-			}
-	
 
 class EntityTypeField(serializers.ChoiceField):
 	#name='entity'
@@ -135,12 +106,22 @@ class GeometryField(serializers.WritableField):
 	"""
 	A field to handle GeoDjango Geometry fields
 	"""
+	type_label = 'geojson'
 	type_name = 'GeometryField'
 	geom_types = ['Point']
+	point_field_name = 'point'
+	polyline_field_name = 'polyline'
+	polygon_field_name = 'polygon'
 	
 	def __init__(self, *args, **kwargs):
 		if kwargs.get('geom_types'):
 			self.geom_types = kwargs.pop('geom_types')
+		if kwargs.get('point_field_name'):
+			self.point_field_name = kwargs.pop('point_field_name')
+		if kwargs.get('polyline_field_name'):
+			self.polyline_field_name = kwargs.pop('polyline_field_name')
+		if kwargs.get('polygon_field_name'):
+			self.polygon_field_name = kwargs.pop('polygon_field_name')
 		super(GeometryField, self).__init__(*args, **kwargs)
 	
 	def field_from_native(self, data, files, field_name, into):
@@ -161,11 +142,11 @@ class GeometryField(serializers.WritableField):
 				raise serializers.ValidationError('Unsupported geometry type')
 			
 			if 'Point' in self.geom_types:
-				into['point'] = point
+				into[self.point_field_name] = point
 			if 'LineString' in self.geom_types:
-				into['polyline'] = polyline
+				into[self.polyline_field_name] = polyline
 			if 'Polygon' in self.geom_types:
-				into['polygon'] = polygon
+				into[self.polygon_field_name] = polygon
 	
 	def to_native(self, value):
 		if value is not None:
@@ -188,7 +169,7 @@ class GeometryField(serializers.WritableField):
 	
 
 class EntitiesField(serializers.WritableField):
-
+	type_label = 'json'
 	type_name = 'EntitiesField'
 	
 	def field_from_native(self, data, files, field_name, into):
