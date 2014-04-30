@@ -213,6 +213,7 @@ class View(Group):
 					break
 		return [m.to_dict(aggregate=True) for m in markers_with_counts]
 		
+	'''
 	def to_dict(self, include_auth_users=False, include_processed_maps=False,
 				include_markers=False, include_audio=False, include_photos=False,
 				include_tables=False):
@@ -231,6 +232,12 @@ class View(Group):
 		if include_markers:
 			d.update(dict(markers=self.get_markers_with_counts()))
 		return d
+	'''
 	
-	
+	def to_dict(self, detailed=False):
+		from localground.apps.site.api.serializers import ViewSerializer, ViewDetailSerializer
+		if detailed:
+			return ViewDetailSerializer(self, context={'request': {}}).data
+		return ViewSerializer(self, context={'request': {}}).data 
+
 	

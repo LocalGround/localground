@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from localground.apps.site import models
 import json
+from django.core.exceptions import ValidationError
 
 
 class OwnerField(serializers.WritableField):
@@ -107,7 +108,7 @@ class PointField(serializers.WritableField):
 				'lng': obj.x,
 				'lat': obj.y
 			}
-		
+	
 
 class EntityTypeField(serializers.ChoiceField):
 	#name='entity'
@@ -143,8 +144,8 @@ class GeometryField(serializers.WritableField):
 		super(GeometryField, self).__init__(*args, **kwargs)
 	
 	def field_from_native(self, data, files, field_name, into):
-		if data.get('geometry') is not None:
-			geom = self.from_native(data.get('geometry'))
+		if data.get(field_name) is not None:
+			geom = self.from_native(data.get(field_name))
 			if geom.geom_type not in self.geom_types:
 				raise serializers.ValidationError('Unsupported geometry type')
 			
@@ -191,8 +192,39 @@ class EntitiesField(serializers.WritableField):
 	type_name = 'EntitiesField'
 	
 	def field_from_native(self, data, files, field_name, into):
-		if data.get('entities') is not None:
-			entities = self.from_native(data.get('entities'))
+		'''
+		Alas, this doesn't cover it...only does most of the validation.
+		To execute the actual database commit, you need to implement code
+		in the view. Please see "views_view" for details. A total hack.
+		'''
+		import json
+		entities_str = data.get('entities')
+		if entities_str:
+			try:
+				entities = json.loads(entities_str)
+			except:
+				raise serializers.ValidationError('Error parsing JSON')
+			
+			for child in entities:
+				# validate each dictionary entry:
+				try:
+					overlay_type = child['overlay_type']
+					entity_id = child['id']
+				except:
+					raise serializers.ValidationError(
+						'%s must have an overlay_type and an id attribute' % child
+					)
+				
+				# ensure that the requested child item exists:
+				from localground.apps.site.models import Base
+				try:
+					obj = Base.get_model(
+								model_name=overlay_type
+							).objects.get(id=entity_id)
+				except:
+					raise serializers.ValidationError(
+						'No %s object exists with id=%s' % (overlay_type, entity_id)
+					)
 	
 	def to_native(self, value):
 		if value is not None:

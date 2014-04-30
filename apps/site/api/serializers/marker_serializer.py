@@ -111,9 +111,10 @@ class MarkerSerializerCounts(MarkerSerializer):
 	audio_count = serializers.SerializerMethodField('get_audio_count')
 	map_image_count = serializers.SerializerMethodField('get_map_image_count')
 	record_count = serializers.SerializerMethodField('get_record_count')
-	point = fields.PointField(help_text='Assign lat/lng field',
-							  widget=widgets.PointWidgetTextbox,
-							  required=True) 
+	'''geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
+							  required=False,
+							  widget=widgets.GeoJSONWidget)
+	'''
 	class Meta:
 		model = models.Marker
 		fields = PointSerializer.Meta.fields + ('photo_count', 'audio_count',
