@@ -1,6 +1,6 @@
 <!-- Filters -->
-{% if has_filters %}
-<div class="alert alert-muted" style="padding-right: 18px;">
+{% if filters_on %}
+<div class="prettyprint alert alert-muted" style="padding-right: 18px;">
     <strong>Filters:</strong>
     {% for ff in filter_fields %}
         {% if ff.value %}

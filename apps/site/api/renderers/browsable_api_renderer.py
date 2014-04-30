@@ -16,11 +16,18 @@ class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
         try:
             model = context.get('view').model or context.get('view').get_queryset().model
             query = QueryParser(model, r.get('query'))
+            filter_fields = query.populate_filter_fields()
+            filters_on = False
+            for ff in filter_fields:
+                if hasattr(ff, 'value'):
+                    filters_on = True
+                    break
             context.update({
-                'filter_fields': query.populate_filter_fields(),
+                'filter_fields': filter_fields,
                 'object_type': model.model_name,
                 'object_name_plural': model.model_name_plural,
-                'has_filters': True
+                'has_filters': True,
+                'filters_on': filters_on
             })  
         
         except Exception:
