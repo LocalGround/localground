@@ -52,7 +52,7 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
 		return obj.owner.username
 
 	
-class PointSerializer(BaseSerializer):
+class GeometrySerializer(BaseSerializer):
 	geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
 							  required=False,
 							  widget=widgets.GeoJSONWidget)
@@ -63,12 +63,12 @@ class PointSerializer(BaseSerializer):
 		fields = BaseSerializer.Meta.fields + ('project_id', 'geometry', 'owner')
 		
 		
-class MediaPointSerializer(PointSerializer):
+class MediaGeometrySerializer(GeometrySerializer):
 	file_name = serializers.Field(source='file_name_new')
 	caption = serializers.Field(source='description')
 	
 	class Meta:
-		fields = PointSerializer.Meta.fields + ('attribution',
+		fields = GeometrySerializer.Meta.fields + ('attribution',
 							'file_name', 'caption')
 		
 class ExtentsSerializer(BaseSerializer):
