@@ -172,7 +172,7 @@ class Scan(Processor):
 		
 	def to_dict(self):
 		from localground.apps.site.api.serializers import ScanSerializer
-		return ScanSerializer(self).data
+		return ScanSerializer(self, context={'request': {}}).data
 		
 	
 	def delete(self, *args, **kwargs):

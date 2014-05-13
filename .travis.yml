@@ -1,0 +1,56 @@
+language: python
+
+python:
+  - "2.7"
+  
+env:
+  global:
+    - DB_HOST=127.0.0.1
+    - DB_PORT=5432
+    - DB_USER=postgres
+    - DB_PASSWORD=none
+    - DB_NAME=lg_prod
+    - FILE_ROOT=$TRAVIS_BUILD_DIR
+
+virtualenv:
+  system_site_packages: true
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install apache2
+  - sudo apt-get install libapache2-mod-fcgid
+  - sudo apt-get install libapache2-mod-xsendfile
+  - sudo apt-get install libapache2-mod-wsgi
+  - sudo apt-get install sendmail
+  - sudo apt-get install libmail-sendmail-perl
+  - sudo apt-get install python-software-properties
+  - echo "yes" | sudo add-apt-repository ppa:ubuntugis/ppa
+  - sudo apt-get update -qq
+  - sudo apt-get install mapserver-bin
+  - sudo apt-get install gdal-bin
+  - sudo apt-get install cgi-mapserver
+  - sudo apt-get install libmapserver libmapserver-dev
+  - sudo apt-get install python-gdal
+  - sudo apt-get install libcv2.3 libopencv-dev python-opencv
+  - sudo apt-get install python-psycopg2
+  - sudo apt-get install python-pip python-dev
+  - sudo apt-get install python-mapscript
+  - sudo apt-get install python-scipy
+  - sudo apt-get install ffmpeg
+  - sudo apt-get install libavcodec-extra-53
+
+install:
+  - pip install -r deploy_tools/requirements.txt
+  - pip install PIL==1.1.7 --allow-external PIL --allow-unverified PIL
+
+before_script:
+  - psql -c 'create database lg_prod;' -U postgres
+  - psql -c 'CREATE EXTENSION postgis;' -U postgres -d lg_prod
+  - psql -c 'CREATE EXTENSION postgis_topology;' -U postgres -d lg_prod
+  - mkdir userdata
+  - mkdir userdata/media
+  - mkdir userdata/prints
+  - mkdir userdata/deleted
+  - ./deploy_tools/gis.sh
+  
+script: cd apps && python manage.py test site

@@ -52,13 +52,18 @@ class StaticMap():
 		import os, urllib, StringIO, Image
 		#units.Units.add_pixels_to_latlng(center_lat, center_lng, zoom, 300, 300)
 		map_url = None
-		if map_type.overlay_source.name == 'cloudmade':
+		# http://api.tiles.mapbox.com/v3/{mapid}/{lon},{lat},{z}/{width}x{height}.{format}
+		# http://api.tiles.mapbox.com/v3/examples.map-zr0njcqy/-73.99,40.70,13/500x300.png
+		if map_type.overlay_source.name == 'mapbox':
 			styleid = map_type.provider_id
-			api_key = settings.CLOUDMADE_KEY
+			'''
 			map_url = 'http://staticmaps.cloudmade.com/' + api_key + \
 				'/staticmap?styleid=' + styleid + '&zoom=' + str(zoom) + \
 				'&center=' + str(center.y) + ',' + str(center.x) + \
 				'&size=' + str(width) + 'x' + str(height)
+			'''
+			map_url = 'http://api.tiles.mapbox.com/v3/{0}/{1},{2},{3}/{4}x{5}.png'
+			map_url = map_url.format(map_type.provider_id, center.x, center.y, zoom, width, height)
 		#if google is the map provider:
 		else:
 			scale_factor = 1
@@ -74,7 +79,6 @@ class StaticMap():
 		#(0,0) in pacific northwest; x = lat, y = lng
 		northeast = Units.add_pixels_to_latlng(center.clone(), zoom, int(width/2), -1*int(height/2))
 		southwest = Units.add_pixels_to_latlng(center.clone(), zoom, -1*int(width/2), int(height/2))
-		
 		try:
 			file = urllib.urlopen(map_url)
 			map_image = StringIO.StringIO(file.read()) # constructs a StringIO holding the image

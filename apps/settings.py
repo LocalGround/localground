@@ -4,7 +4,7 @@ import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-GDAL_LIBRARY_PATH = os.environ.get('GDAL_PATH', '/usr/lib/libgdal.so')     #replace with your GDAL path
+#GDAL_LIBRARY_PATH = os.environ.get('GDAL_PATH', '/usr/lib/libgdal.so')     #replace with your GDAL path
 
 ADMINS = (
     ('Jane Admin', os.environ.get('ADMIN_EMAIL_ADDRESS', 'email@yoursite.com')),
@@ -48,27 +48,26 @@ USER_ACCOUNT = 'linux-user-account'     #account to use for creating new OS file
 GROUP_ACCOUNT = 'linux-user-group'      #group to use for creating new OS files / directories
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 4621440                       #default is 2621440
-CLOUDMADE_KEY = os.environ.get('CLOUDMADE_KEY', '#####')    #http://support.cloudmade.com/answers/api-keys-and-authentication
 IS_GOOGLE_REGISTERED_NONPROFIT = False
 
 
 MANAGERS = ADMINS
 AUTH_PROFILE_MODULE = 'site.UserProfile'
 
-HOST = os.environ.get('HOST', '127.0.0.1')              #Your Database Host
-PORT = os.environ.get('PORT', '#####')                  #Your Database Port
-USERNAME = os.environ.get('USERNAME', 'DB_USER')        #Your Database Username
-PASSWORD = os.environ.get('PASSWORD', 'DB_PASSWORD')    #Your Database Password
-DATABASE = os.environ.get('DATABASE', 'DB_NAME')        #Your Database Name
+DB_HOST = os.environ.get('DB_HOST', '127.0.0.1')               #Your Database Host
+DB_PORT = os.environ.get('DB_PORT', '5432')                    #Your Database Port
+DB_USER = os.environ.get('DB_USER', 'DB_USER')         #Your Database Username
+DB_PASSWORD = os.environ.get('DB_PASSWORD', 'DB_PASSWORD')     #Your Database Password
+DB_NAME = os.environ.get('DB_NAME', 'DB_NAME')             #Your Database Name
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis', #Code works w/PostGIS
-        'NAME': DATABASE, 
-        'USER': USERNAME,
-        'PASSWORD': PASSWORD,
-        'HOST': HOST,
-        'PORT': PORT, 
+        'NAME': DB_NAME, 
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT, 
     }
 }
 
@@ -174,7 +173,6 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.JSONPRenderer',
         'localground.apps.site.api.renderers.CSVRenderer',
-        #'rest_framework_csv.renderers.CSVRenderer',
         'rest_framework.renderers.XMLRenderer'
     ),
     'DEFAULT_PERMISSION_CLASSES': (

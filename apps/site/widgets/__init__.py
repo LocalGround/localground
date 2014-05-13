@@ -21,12 +21,13 @@ class TagAutocomplete(TagAutocomplete):
 		super(TagAutocomplete, self).__init__(*args, **kw) #init parent Textarea class
 
 	def render(self, name, value, attrs=None):
+		attrs = attrs or {}
+		attrs['id'] = attrs.get('id', 'id_%s' % name)
 		if value is None:
 			value = ''
 		from django.core.urlresolvers import reverse
 		if self.autocomplete_url is None:
 			self.autocomplete_url = reverse('tagging_autocomplete-list')
-		#html = super(TagAutocomplete, self).render(name, value, attrs)
 		html = '<input type="text" id="%s" name="%s" value="%s" />' % (attrs['id'], name, value)
 
 		js = u'''<script type="text/javascript">
@@ -288,7 +289,7 @@ class GeoJSONWidget(Textarea):
 		import json
 		val = ''
 		if value: val = json.dumps(value)
-		html = self.inner_widget.render('geometry', val, dict(id='id_geometry', style='width:200px;height:100px'))
+		html = self.inner_widget.render(name, val, dict(id='id_' % name, style='width:200px;height:100px'))
 		return mark_safe(html)
 
 class CustomCheckboxSelectMultiple(forms.CheckboxSelectMultiple):

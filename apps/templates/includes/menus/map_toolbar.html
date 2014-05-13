@@ -79,8 +79,38 @@
     <button id="print" class="btn">
         <i class="fa fa-print"></i>
     </button>
+    <button id="save_view" class="btn">
+        <i class="fa fa-save"></i>
+    </button>
     <button id="mode_toggle" class="btn">
         <i class="fa fa-edit"></i>	    
     </button>
 </div>
 
+<div id="save_dialog" class="modal hide">
+    <div class="modal-header">
+      <a href="#" class="close">&times;</a>
+      <h3>Save View</h3>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="clearfix">
+                <label class="col-sm-2 control-label">View:</label>
+                <div class="input">
+                    <select id="dd_views"></select>
+                </div>
+            </div>
+            <div class="clearfix">
+                <label class="col-sm-2 control-label">Entities:</label>
+                <div class="input">
+                    <textarea id="entities" style="height:200px;width:400px;"></textarea>
+                </div>
+            </div>
+        </form>
+            
+    </div>
+    <div class="modal-footer">
+        <button class="btn" onclick="$('#save_dialog').modal('hide');">Close</button>
+        <button id="save_view_button" class="btn primary" onclick="self.saveView();">Save</button>
+    </div>
+</div>

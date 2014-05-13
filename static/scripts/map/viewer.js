@@ -49,6 +49,7 @@ localground.viewer.prototype.initialize=function(opts){
 	$.extend(this, opts);
     
     localground.basemap.prototype.initialize.call(this, opts);
+    this.initSearchBox();
     
     this.map.mapTypeControlOptions.position = google.maps.ControlPosition.TOP_LEFT;
 	this.map.streetViewControl = true;
@@ -88,15 +89,11 @@ localground.viewer.prototype.initialize=function(opts){
     $('#print').bind("contextmenu", function(event) {
         self.loadPrintForm({iframe: false});
     });
-    
-    $('#btnUploadMap').click(function() {
-        $('#dialogTitle').html('Upload Map Form');
-        $('#dialogBody').html(
-            $('<div></div>').css({
-                height: 100
-            }).html('Add a form here'));
-        $('#my-modal').modal('show');
-    });
+	
+	$('#save_view').click(function() {
+		self.loadSaveView();
+	});
+        
 
     this.initProjectsMenu();
         
@@ -145,6 +142,21 @@ localground.viewer.prototype.initialize=function(opts){
 	
 	this.setStreetViewCloseButton();
 };
+
+localground.viewer.prototype.initSearchBox = function() {
+    var $input = $('#addressInput');
+    this.map.controls[google.maps.ControlPosition.RIGHT_TOP].push($input.get(0));
+    this.searchBox = new google.maps.places.SearchBox($input.get(0));
+    google.maps.event.addListener(this.searchBox, 'places_changed', function() {
+        self.search();
+    });
+    $input.keyup(function(event){
+        if(event.keyCode == 13){
+            self.search();
+        }
+    });
+};
+
 
 localground.viewer.prototype.setPosition = function(minimize) {
     localground.basemap.prototype.setPosition.call(this, minimize);
@@ -514,6 +526,59 @@ localground.viewer.prototype.generatePrint = function(opts) {
     //instead of directly submitting the form, call the button that
     // triggers the form's submit to get the form validation too!
     $('#the_frame').contents().find('#submit').trigger('click');
+};
+
+localground.viewer.prototype.loadSaveView = function() {
+	//1. get list of views:
+	var url = '/api/0/views/';
+	if(self.accessKey != null)
+		url += self.accessKey + '/';
+	$.getJSON(url + '.json',
+		function(result) {
+			var $sel = $('#dd_views');
+			$sel.empty();
+			$.each(result.results, function(){
+				$sel.append(
+					$('<option></option>').attr('value', this.id).html(this.name)	
+				);
+			})
+		});
+	
+	//2. populate textbox:
+	var entities = [];
+	$.each(self.managers, function(k, v) {
+		var overlayIDs = v.getTurnedOnOverlayIDs();
+		if (overlayIDs.length > 0) {
+			entities.push({
+				overlay_type: v.overlay_type,
+				ids: overlayIDs
+			});
+		}
+	});
+	$('#entities').val(JSON.stringify(entities));
+	
+	//3. show dialog:
+	$('#save_dialog').modal('show');
+	$('#save_dialog').find('.close').unbind('click');
+	$('#save_dialog').find('.close').click(function(){
+		$('#save_dialog').find('.btn').trigger('click');
+		return false;
+	}); 
+};
+
+localground.viewer.prototype.saveView = function(){
+	$.ajax({
+		url: '/api/0/views/' + $('#dd_views').val() + '/.json',
+		type: 'PATCH',
+		data: {
+			entities: $('#entities').val()
+		},
+		success: function(data) {
+			alert(JSON.stringify(data));
+		},
+		notmodified: function(data) { alert('Not modified'); },
+		error: function(data) { alert('Error: ' + JSON.stringify(data)); }
+	});
 };
 
 localground.viewer.prototype.initDefaultProject = function() {

@@ -6,7 +6,7 @@
 
 {% block script_links %}
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&v=3.9"></script>
-    <script type="text/javascript" src="/static/scripts/helpers/mapTypes.js"></script>
+    <script type="text/javascript" src="/static/scripts/map/resources/mapTypes.js"></script>
 	<script type="text/javascript" src="/static/scripts/thirdparty/jquery.formset.js"></script>
     <script type="text/javascript" src="/static/scripts/map/basemap.js"></script>
     <script type="text/javascript" src="/static/scripts/map/print.js"></script>
@@ -30,8 +30,7 @@
         layouts: {% autoescape off %}{{ layouts }}{% endautoescape %},
         selectedLayoutID: {{ selectedLayout_id }},
         numProjects: {{projects|length}},
-        cloudmadeKey: '{{CLOUDMADE_KEY}}',
-		prefix: '{{ prefix }}'
+	prefix: '{{ prefix }}'
     };
     {% if form.id %}
         opts.form = {{form.id }};

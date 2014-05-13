@@ -28,7 +28,6 @@ TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_ME
 #OS variables:
 USER_ACCOUNT = '{{USER_ACCOUNT}}'	#account to use for creating new OS files / directories
 GROUP_ACCOUNT = '{{WEBSERVER_ACCOUNT}}'	#group to use for creating new OS files / directories
-CLOUDMADE_KEY = '{{CLOUDMADE_KEY}}'	#http://support.cloudmade.com/answers/api-keys-and-authentication
 
 HOST = '{{DB_HOST}}'				#Your Database Host
 PORT = '{{DB_PORT}}'				#Your Database Port

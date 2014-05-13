@@ -31,7 +31,6 @@ DB_NAME="DATABASE_NAME"
 ADMIN_EMAIL_ADDRESS="your_email@gmail.com"
 USER_ACCOUNT="www-data"  
 WEBSERVER_ACCOUNT="www-data"
-CLOUDMADE_KEY="YOUR_CLOUDMADE_API_KEY"
 
 sites_available="/etc/apache2/sites-available"
 sites_enabled="/etc/apache2/sites-enabled"
@@ -93,7 +92,6 @@ GDAL_PATH=$(set_val "Please enter your GDAL path (defaults to \"$GDAL_PATH\"): "
 ADMIN_EMAIL_ADDRESS=$(set_val "Please enter your admin email address (defaults to \"$ADMIN_EMAIL_ADDRESS\"): " $ADMIN_EMAIL_ADDRESS)
 USER_ACCOUNT=$(set_val "Please enter the Linux user account that you would like the system to use when writing files (defaults to \"$USER_ACCOUNT\"): " $USER_ACCOUNT)
 WEBSERVER_ACCOUNT=$(set_val "Please enter the Linux group account that you would like the system to use when writing files (defaults to \"$WEBSERVER_ACCOUNT\"): " $WEBSERVER_ACCOUNT)
-CLOUDMADE_KEY=$(set_val "Please enter your CloudMade API key (defaults to \"$CLOUDMADE_KEY\"): " $CLOUDMADE_KEY)
 
 echo
 echo "Your code path is: \"$FILE_ROOT\""
@@ -108,7 +106,6 @@ echo "Your GDAL path is: \"$GDAL_PATH\""
 echo "Your admin email address is: \"$ADMIN_EMAIL_ADDRESS\""
 echo "Your Linux user account is: \"$USER_ACCOUNT\""
 echo "Your Linux web server account is: \"$WEBSERVER_ACCOUNT\""
-echo "Your Cloudmade Key is: \"$CLOUDMADE_KEY\""
 echo
 
 ############################################
@@ -133,7 +130,6 @@ sed -i "s/{{DB_NAME}}/$(escape $DB_NAME)/g" settings_local.py.tmp
 sed -i "s/{{ADMIN_EMAIL_ADDRESS}}/$(escape $ADMIN_EMAIL_ADDRESS)/g" settings_local.py.tmp
 sed -i "s/{{USER_ACCOUNT}}/$(escape $USER_ACCOUNT)/g" settings_local.py.tmp
 sed -i "s/{{WEBSERVER_ACCOUNT}}/$(escape $WEBSERVER_ACCOUNT)/g" settings_local.py.tmp
-sed -i "s/{{CLOUDMADE_KEY}}/$(escape $CLOUDMADE_KEY)/g" settings_local.py.tmp
 
 # Moving Apache Config File to /etc/apache2/sites-available directory
 echo "Moving apache config file \"$SERVER_HOST\" to \"$sites_available\" directory......"
