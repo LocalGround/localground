@@ -116,8 +116,8 @@ localground.basemap.prototype.initialize=function(opts) {
 localground.basemap.prototype.initGeolocation = function() {
     //Prompt user for default location, if possible
     var that = this;
-    //this.hasDefaultLocale
-    if(false) {
+    //
+    if(this.hasDefaultLocale) {
         this.map.setCenter(that.center);
         this.map.setZoom(that.zoom);
     } else {

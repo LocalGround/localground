@@ -178,79 +178,6 @@ class Project(Group):
 
 
 class View(Group):
-<<<<<<< HEAD
-    """
-    A user-generated grouping of media.  Media associations are specified in the
-    GenericAssociation Model.  Only partially implemented.
-    """
-    objects = ViewManager()
-
-    class Meta(Group.Meta):
-        verbose_name = 'view'
-        verbose_name_plural = 'views'
-
-    @classmethod
-    def sharing_form(cls):
-        from localground.apps.site.forms import ViewPermissionsForm
-
-        return ViewPermissionsForm
-
-    @classmethod
-    def inline_form(cls, user=None):
-        from localground.apps.site.forms import ViewInlineUpdateForm
-
-        return ViewInlineUpdateForm
-
-    @classmethod
-    def get_form(cls):
-        from localground.apps.site.forms import ViewCreateForm
-
-        return ViewCreateForm
-
-    def get_markers_with_counts(self):
-        """
-        Queries for Markers and also uses raw sql to retrieve how many Audio,
-        Photo, Table Records are associated with the marker.
-        """
-        marker_ids = [m.id for m in self.markers]
-        markers_with_counts = Marker.objects.by_marker_ids_with_counts(marker_ids)
-        #append turned_on flag:
-        for m in self.markers:
-            for m1 in markers_with_counts:
-                if m.id == m1.id:
-                    m1.turned_on = m.turned_on
-                    break
-        return [m.to_dict(aggregate=True) for m in markers_with_counts]
-
-    def to_dict(self, include_auth_users=False, include_processed_maps=False,
-                include_markers=False, include_audio=False, include_photos=False,
-                include_tables=False):
-        d = {
-        'id': self.id,
-        'name': self.name,
-        'description': self.description,
-        'owner': self.owner.username
-        }
-        if include_processed_maps:
-            d.update(dict(processed_maps=[rec.to_dict() for rec in self.map_images]))
-        if include_audio:
-            d.update(dict(audio=[rec.to_dict() for rec in self.audio_files]))
-        if include_photos:
-            d.update(dict(photos=[rec.to_dict() for rec in self.photos]))
-        if include_markers:
-            d.update(dict(markers=self.get_markers_with_counts()))
-        return d
-
-
-class Scene(BaseNamed):
-    """
-    Not used anywhere yet, but a stub for the new storytelling interface (where
-    each view could be a collection of ordered scenes, configured by the user).
-    """
-    extents = models.PolygonField(null=True, blank=True)
-    view = models.ForeignKey('View')
-	
-=======
 	"""
 	A user-generated grouping of media.  Media associations are specified in the
 	GenericAssociation Model.  Only partially implemented.
@@ -316,7 +243,4 @@ class Scene(BaseNamed):
 		from localground.apps.site.api.serializers import ViewSerializer, ViewDetailSerializer
 		if detailed:
 			return ViewDetailSerializer(self, context={'request': {}}).data
-		return ViewSerializer(self, context={'request': {}}).data 
-
->>>>>>> 67f80a5fe57272503c98c711fa445eda0616cd5c
-	
+		return ViewSerializer(self, context={'request': {}}).data

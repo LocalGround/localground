@@ -3,6 +3,7 @@ var show_markers = false;
 localground.viewer = function(){
 	self = this;
     this.projects = [];
+    this.views = [];
     this.overlay_types = {
 		PHOTO: 'photo',
 		AUDIO: 'audio',
@@ -35,10 +36,12 @@ localground.viewer = function(){
     this.scanID = null;
     this.markers = [];
     this.projects = [];
+    this.views = [];
     this.accessKey = null;
     this.managers = {};
 	this.slideshow = null;
 	this.dataCount = 0;
+    this.currentViewID = null;
 	this.owners = [];
 	
 };
@@ -96,6 +99,7 @@ localground.viewer.prototype.initialize=function(opts){
         
 
     this.initProjectsMenu();
+    this.initViewsMenu();
         
     google.maps.event.addListener(this.map, 'zoom_changed', function() {
         self.doViewportUpdates();
@@ -219,6 +223,55 @@ localground.viewer.prototype.initProjectsMenu = function() {
     }
 };
 
+localground.viewer.prototype.initViewsMenu = function() {
+    if(this.views && this.views.length > 0) {
+        $.each(this.views, function() {
+            var viewID = this.id;
+            var $span = $('<span></span>').html(this.name);
+            var $rb = $('<input type="radio" name="radio_view" />')
+                        .attr('id', 'view-' + viewID)
+                        .val(viewID);
+            $rb.change(function() {
+				return self.toggleViewData(parseInt($(this).val()), 'views', $(this).prop('checked'), true);
+			});
+            $rb.checked = false;
+            var $li = $('<li class="view-option"></li>')
+                .append($rb).append($span)
+                .click(function(){
+                    //kind of a weird hack, but it works:
+                    $('.view-option').css('border','none');
+                    $(this).css('border','dotted');
+                    var $cb = $(this).find('input');
+                    $cb.prop('checked',!$cb.prop('checked'));
+                    $cb.trigger('change');
+                    return false;
+                });
+
+
+
+            $('#viewList').append($li);
+
+            $('#view-download-list').append("<li><a href='/api/0/projects/" + viewID +
+                                                "/?format=csv'>" + this.name + "</li>");
+        });
+        self.extendTwitterDropdowns();
+        $('#projectListContainer').css({
+            'max-height': '250px',
+            'overflow-y': 'auto',
+            'overflow-x': 'hidden',
+            'width': '300px',
+            'max-width': '400px'
+        });
+        $('#projectList').css({
+            'width': $('#projectListContainer').width()
+        });
+    }
+    else {
+        $('#projects-menu').hide(); 
+    }
+};
+
+
 localground.viewer.prototype.getManager = function(data_list) {
 	switch (data_list.id) {
 		case 'photos':
@@ -303,8 +356,10 @@ localground.viewer.prototype.isMatch = function(item, searchTerm) {
 
 localground.viewer.prototype.toggleProjectData = function(groupID, groupType, 
 														  is_checked, turn_on_everything) {
+
+
 	if(is_checked) {
-		$('#' + groupID).attr('checked', true);
+		$('#' + groupID).prop('checked', true);
 		this.getProjectData(groupID, groupType, is_checked, turn_on_everything);
 	}
 	else {
@@ -320,6 +375,33 @@ localground.viewer.prototype.toggleProjectData = function(groupID, groupType,
 	}
 	return true;
 };
+
+localground.viewer.prototype.toggleViewData = function(groupID, groupType,
+														  is_checked, turn_on_everything) {
+
+    //remove data from project:
+    for(var key in self.managers) {
+        //
+        self.managers[key].removeAll(self.currentViewID);
+    }
+    //don't want to show a view in addition to projects and get things mixed up
+    $('.cb_project').prop('checked',false);
+
+
+    self.resetBounds();
+    if($('.rb_views:checked').length == 0) {
+        $('#map_toolbar').hide();
+    }
+    self.initFilterData();
+
+	this.getProjectData(groupID, groupType, is_checked, turn_on_everything);
+
+    self.currentViewID = groupID;
+
+	return true;
+};
+
+
 
 localground.viewer.prototype.initFilterData = function() {
 	self.owners = [];
@@ -371,6 +453,10 @@ localground.viewer.prototype.getProjectData = function(groupID, groupType,
 				if(self.managers[v.id]) {
 					self.managers[v.id].addRecords(v.data);
 					self.managers[v.id].renderOverlays();
+                    if(turn_on_everything) {
+                        $('#toggle_' + v.id + '_all')
+								.prop('checked', true).trigger('change');
+                    }
 				}
 				else {
 					//initialize new manager object:
@@ -378,10 +464,10 @@ localground.viewer.prototype.getProjectData = function(groupID, groupType,
 					self.managers[v.id].initialize(v);
 					//turn everything on, if requested (from URL param):
 					if(turn_on_everything) {
-						if(!$('#toggle_' + v.id + '_all').attr('checked')){
+
 							$('#toggle_' + v.id + '_all')
-								.attr('checked', true).trigger('change');	
-						}	
+								.prop('checked', true).trigger('change');
+
 					}
 				}
 				
@@ -568,6 +654,7 @@ localground.viewer.prototype.loadSaveView = function() {
 
 localground.viewer.prototype.saveView = function(){
 	$.ajax({
+        //
 		url: '/api/0/views/' + $('#dd_views').val() + '/.json',
 		type: 'PATCH',
 		data: {

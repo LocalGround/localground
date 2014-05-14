@@ -306,4 +306,22 @@ form .input { margin-left: 85px; }
 }
 .delete-menu:hover {
 	background: #eee;
+
+}
+#viewList {
+    list-style-type: none;
+}
+
+.view-option {
+    margin-top: 1.5em;
+    margin-bottom:1.5em
+
+}
+
+.view-option:hover {
+    background: #99FF99;
+    cursor: pointer;
+}
+.view-option input {
+    display: none;
 }

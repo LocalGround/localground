@@ -1,166 +1,190 @@
 {% extends "base/base.html" %}
 {% block page_title %}Map{% endblock %}
 {% block style_links %}
-    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-    <link href="/static/css/audio.css" type="text/css" media="all" rel="stylesheet" />
-    <link href="/static/css/map.css" type="text/css" media="all" rel="stylesheet" />
-    <link href="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
+<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+<link href="/static/css/audio.css" type="text/css" media="all" rel="stylesheet"/>
+<link href="/static/css/map.css" type="text/css" media="all" rel="stylesheet"/>
+<link href="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all"
+      rel="stylesheet"/>
 {% endblock %}
 {% block script_links %}
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing,places,geometry"></script>
+<script type="text/javascript"
+        src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing,places,geometry"></script>
 
-    <!-- enable photo dragging -->
-    <script src="{{ JQUERY_UI_PATH }}"></script>
-    <script type="text/javascript" src="/static/scripts/map/resources/infobubble.js"></script>
-    <script type="text/javascript" src="/static/scripts/map/resources/deletemenu.js"></script>
-    <script type="text/javascript" src="/static/scripts/map/resources/mapTypes.js"></script>
-    <script type="text/javascript" src="/static/scripts/helpers/form.js"></script>
-    <script type="text/javascript" src="/static/scripts/site/player.js"></script>
+<!-- enable photo dragging -->
+<script src="{{ JQUERY_UI_PATH }}"></script>
+<script type="text/javascript" src="/static/scripts/map/resources/infobubble.js"></script>
+<script type="text/javascript" src="/static/scripts/map/resources/deletemenu.js"></script>
+<script type="text/javascript" src="/static/scripts/map/resources/mapTypes.js"></script>
+<script type="text/javascript" src="/static/scripts/helpers/form.js"></script>
+<script type="text/javascript" src="/static/scripts/site/player.js"></script>
 
-    <!-- enable iframe dialogs -->
-    <script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
-    <script type="text/javascript" src="/static/scripts/thirdparty/jquery.ui.timepicker.js"></script>
-    <script type="text/javascript" src="/static/scripts/helpers/dialog.js"></script>
-    <script type="text/javascript" src="/static/scripts/helpers/filtermenu.js"></script>
-    <script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
-    
-    <!-- overlay & manager libraries -->
-    <script type="text/javascript" src="/static/scripts/map/overlays/createmixin.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/overlays/overlay.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/overlays/point.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/overlays/photo.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/overlays/audio.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/overlays/record.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/overlays/scan.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/overlays/marker.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/overlays/polyline.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/overlays/polygon.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/managers/manager.js"></script>
-    <script type="text/javascript" src="/static/scripts/map/managers/photoManager.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/managers/audioManager.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/managers/tableManager.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/managers/scanManager.js"></script> 
-    <script type="text/javascript" src="/static/scripts/map/managers/markerManager.js"></script>
-    <script type="text/javascript" src="/static/scripts/map/slideshow.js" ></script>
+<!-- enable iframe dialogs -->
+<script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
+<script type="text/javascript" src="/static/scripts/thirdparty/jquery.ui.timepicker.js"></script>
+<script type="text/javascript" src="/static/scripts/helpers/dialog.js"></script>
+<script type="text/javascript" src="/static/scripts/helpers/filtermenu.js"></script>
+<script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
 
-    <script type="text/javascript" src="/static/scripts/map/basemap.js"></script>
-    <script type="text/javascript" src="/static/scripts/map/viewer.js"></script>
+<!-- overlay & manager libraries -->
+<script type="text/javascript" src="/static/scripts/map/overlays/createmixin.js"></script>
+<script type="text/javascript" src="/static/scripts/map/overlays/overlay.js"></script>
+<script type="text/javascript" src="/static/scripts/map/overlays/point.js"></script>
+<script type="text/javascript" src="/static/scripts/map/overlays/photo.js"></script>
+<script type="text/javascript" src="/static/scripts/map/overlays/audio.js"></script>
+<script type="text/javascript" src="/static/scripts/map/overlays/record.js"></script>
+<script type="text/javascript" src="/static/scripts/map/overlays/scan.js"></script>
+<script type="text/javascript" src="/static/scripts/map/overlays/marker.js"></script>
+<script type="text/javascript" src="/static/scripts/map/overlays/polyline.js"></script>
+<script type="text/javascript" src="/static/scripts/map/overlays/polygon.js"></script>
+<script type="text/javascript" src="/static/scripts/map/managers/manager.js"></script>
+<script type="text/javascript" src="/static/scripts/map/managers/photoManager.js"></script>
+<script type="text/javascript" src="/static/scripts/map/managers/audioManager.js"></script>
+<script type="text/javascript" src="/static/scripts/map/managers/tableManager.js"></script>
+<script type="text/javascript" src="/static/scripts/map/managers/scanManager.js"></script>
+<script type="text/javascript" src="/static/scripts/map/managers/markerManager.js"></script>
+<script type="text/javascript" src="/static/scripts/map/slideshow.js"></script>
+
+<script type="text/javascript" src="/static/scripts/map/basemap.js"></script>
+<script type="text/javascript" src="/static/scripts/map/viewer.js"></script>
 
 {% endblock %}
 
 {% block extra_scripts %}
-    var isAdmin = false;
-    {% if user.is_superuser %}
-        isAdmin = true;
-    {% endif %}
-    var opts = {
-        isAdmin: isAdmin,
-        username: '{{user.username}}',
-        serverURL: '{{serverURL}}', 
-        overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
-        showOutlines: false,
-	initialMapLayerID: {{ basemap_id|default:"12" }}
-    };
-    {% if markerID %}
-        opts.markerID = {{markerID}};
-    {% endif %}
-    //opts.markerID = 294;
-    {% if markers %}
-       opts.markers = {% autoescape off %}{{ markers }}{% endautoescape %};
-    {% endif %}
-    {% if groups %}
-        opts.groups = {% autoescape off %}{{ groups }}{% endautoescape %};
-    {% endif %}
-    {% if lat %}
-        opts.center = new google.maps.LatLng({{lat}}, {{lng}});
-        opts.zoom = {{ zoom }};
-    {% endif %}   
-    var driver = null;  
+var isAdmin = false;
+{% if user.is_superuser %}
+isAdmin = true;
+{% endif %}
+var opts = {
+isAdmin: isAdmin,
+username: '{{user.username}}',
+serverURL: '{{serverURL}}',
+overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
+showOutlines: false,
+initialMapLayerID: {{ basemap_id|default:"12" }}
+};
+{% if markerID %}
+opts.markerID = {{markerID}};
+{% endif %}
+//opts.markerID = 294;
+{% if markers %}
+opts.markers = {% autoescape off %}{{ markers }}{% endautoescape %};
+{% endif %}
+{% if groups %}
+opts.groups = {% autoescape off %}{{ groups }}{% endautoescape %};
+{% endif %}
+{% if lat %}
+opts.center = new google.maps.LatLng({{lat}}, {{lng}});
+opts.zoom = {{ zoom }};
+{% endif %}
+var driver = null;
 {% endblock %}
 {% block pageload_scripts %}
-    driver = new localground.viewer(); 
-    driver.initialize(opts);
-	$('#edit_control_panel').hide();
-	var access_key = null;
-	{% if access_key %}
-		access_key = '{{ access_key }}';
-	{% endif %}
-	//alert(access_key);
-	driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
+driver = new localground.viewer();
+driver.initialize(opts);
+$('#edit_control_panel').hide();
+var access_key = null;
+{% if access_key %}
+access_key = '{{ access_key }}';
+{% endif %}
+//alert(access_key);
+driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
 {% endblock %}
 {% block top_menu %}
-	{% include "includes/menus/top_nav_map.html" %}
+{% include "includes/menus/top_nav_map.html" %}
 {% endblock %}
 {% block content %}
-    
-    
-    <!-- main content -->
-    <div class="map" id="map_canvas"></div>
-	<div id="map_panel">
-        <div style="padding:10px;">
-            
-	    <!-- alert, error, and success messages -->
-	    <div class="row">
-		{% include "includes/messages.html" %}
-	    </div>
-	    {% include "includes/menus/map_toolbar.html" %}
-	    
-            <ul class="tabs" data-tabs="tabs" style="margin-bottom: 10px !important;">
-		<li class="active">
-		    <a data-toggle="tab" href="#data">Data & Media</a>
-		</li>
-                <li>
-		    <a data-toggle="tab" href="#legend">Legend</a>
-		</li>
-            </ul>
-            <div id="tab_content" class="tab-content clearfix">		
-		<div id="data" class="tab_panel active">		
-                    <div id="panel_data"></div>
+
+
+<!-- main content -->
+<div class="map" id="map_canvas"></div>
+<div id="map_panel">
+    <div style="padding:10px;">
+
+        <!-- alert, error, and success messages -->
+        <div class="row">
+            {% include "includes/messages.html" %}
+        </div>
+        {% include "includes/menus/map_toolbar.html" %}
+
+        <ul class="tabs" data-tabs="tabs" style="margin-bottom: 10px !important;">
+            <li class="active">
+                <a data-toggle="tab" href="#data">Data & Media</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#legend">Legend</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#view">Views</a>
+            </li>
+
+        </ul>
+        <div id="tab_content" class="tab-content clearfix">
+            <div id="data" class="tab_panel active">
+                <div id="panel_data"></div>
+            </div>
+            <div id="legend" class="tab_panel">
+                <div id="panel_legend">
+                    {% block legend %}{% endblock %}
                 </div>
-                <div id="legend" class="tab_panel">
-                    <div id="panel_legend">
-			{% block legend %}{% endblock %}
-		    </div>
+            </div>
+            <div id="view" class="tab_panel">
+                <div id="panel_views">
+                    <div id="views">
+
+                        <ul id="viewList">
+
+                        </ul>
+                        <hr>
+
+                        <button class="btn success create-object" href="#new-view" data-main="views">
+                            <i class="fa fa-plus"></i> New
+                        </button>
+                </div>
                 </div>
             </div>
         </div>
     </div>
-    <div id="opener">
-        <div>
-            <div class="sprite ui-icon-right-triangle"></div>        
-        </div>
+</div>
+<div id="opener">
+    <div>
+        <div class="sprite ui-icon-right-triangle"></div>
     </div>
-    {% block other_layout_elements %}
-    
-    {% endblock %}
-    <div id="my-modal" class="modal hide">
-	<div class="modal-header">
-	  <a href="#" class="close">&times;</a>
-	  <h3 id="dialogTitle">Image Preview</h3>
-	</div>
-	<div class="modal-body" id="dialogBody"
-		 style="padding:0px !important;text-align:center;overflow-y:auto;overflow-x:hidden;">
-		
-	</div>
-	<div class="modal-footer">
-		<button id="close_print_modal" class="btn" onclick="driver.hideDialog()">Close</button>
-		<button id="do_print" class="btn primary" onclick="driver.generatePrint()">Generate Print</button>
-	</div>
-    </div>
-    
-    <!-- slideshow modal -->
-    <div id="slide-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-body"></div>
-    </div>
-	<button id="streetview_close_button"
-		style="padding:3px;margin-top:10px;display:none;">exit streetview</button>
-    <input id="addressInput" class="controls" type="text" placeholder="Search for Places"
-	   style="margin-top:5px;float: right;">
-    <form method="post" action="../../api/0/user-profile/update-location/" id="default_setter">
-        {% csrf_token %}
-        <input type="hidden" id="default_location" name="default_location" value="">
-    </form>
+</div>
+{% block other_layout_elements %}
 
-	{%  csrf_token %}
-    
+{% endblock %}
+<div id="my-modal" class="modal hide">
+    <div class="modal-header">
+        <a href="#" class="close">&times;</a>
+
+        <h3 id="dialogTitle">Image Preview</h3>
+    </div>
+    <div class="modal-body" id="dialogBody"
+         style="padding:0px !important;text-align:center;overflow-y:auto;overflow-x:hidden;">
+
+    </div>
+    <div class="modal-footer">
+        <button id="close_print_modal" class="btn" onclick="driver.hideDialog()">Close</button>
+        <button id="do_print" class="btn primary" onclick="driver.generatePrint()">Generate Print</button>
+    </div>
+</div>
+
+<!-- slideshow modal -->
+<div id="slide-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-body"></div>
+</div>
+<button id="streetview_close_button"
+        style="padding:3px;margin-top:10px;display:none;">exit streetview
+</button>
+<input id="addressInput" class="controls" type="text" placeholder="Search for Places"
+       style="margin-top:5px;float: right;">
+<form method="post" action="../../api/0/user-profile/update-location/" id="default_setter">
+    {% csrf_token %}
+    <input type="hidden" id="default_location" name="default_location" value="">
+</form>
+
+{%  csrf_token %}
+
 {% endblock %}

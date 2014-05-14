@@ -28,27 +28,7 @@ class FormSerializer(BaseSerializer):
 
 
 class BaseRecordSerializer(serializers.ModelSerializer):
-<<<<<<< HEAD
-    point = fields.PointField(help_text='Assign lat/lng field',
-                              widget=widgets.PointWidgetTextbox,
-                              required=False)
-    overlay_type = serializers.SerializerMethodField('get_overlay_type')
-    url = serializers.SerializerMethodField('get_detail_url')
-    project_id = fields.ProjectField(label='project_id', source='project', required=False)
 
-    class Meta:
-        fields = ('id', 'overlay_type', 'url', 'point', 'manually_reviewed', 'project_id')
-        read_only_fields = ('manually_reviewed',)
-
-    def get_overlay_type(self, obj):
-        return obj._meta.verbose_name
-
-    def get_detail_url(self, obj):
-        return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
-                                               obj.form.id, obj.id)
-
-
-=======
 	geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
 							  required=False,
 							  widget=widgets.GeoJSONWidget)
@@ -67,7 +47,6 @@ class BaseRecordSerializer(serializers.ModelSerializer):
 		return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
 					obj.form.id, obj.id)
 	
->>>>>>> 67f80a5fe57272503c98c711fa445eda0616cd5c
 def create_record_serializer(form):
     """
     generate a dynamic serializer from dynamic model
@@ -90,44 +69,6 @@ def create_record_serializer(form):
 
 
 def create_compact_record_serializer(form):
-<<<<<<< HEAD
-    """
-    generate a dynamic serializer from dynamic model
-    """
-    col_names = [f.col_name for f in form.fields]
-
-    class FormDataSerializer(BaseRecordSerializer):
-        recs = serializers.SerializerMethodField('get_recs')
-        url = serializers.SerializerMethodField('get_detail_url')
-        project_id = serializers.SerializerMethodField('get_project_id')
-
-        class Meta:
-            model = form.TableModel
-            fields = ('id', 'num', 'recs', 'url', 'point', 'project_id', 'overlay_type')
-
-        def get_recs(self, obj):
-            #return [getattr(obj, col_name) for col_name in col_names]
-            recs = []
-            for col_name in col_names:
-                val = getattr(obj, col_name)
-                if type(val) is datetime.datetime:
-                    val = val.strftime('%m/%d/%Y, %I:%M:%S %p')
-                recs.append(val)
-            return recs
-
-
-        def get_detail_url(self, obj):
-            return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
-                                                   form.id, obj.id)
-
-        def get_project_id(self, obj):
-            return obj.project.id
-
-        def get_overlay_type(self, obj):
-            return 'record'
-
-    return FormDataSerializer
-=======
 	"""
 	generate a dynamic serializer from dynamic model
 	"""
@@ -164,5 +105,4 @@ def create_compact_record_serializer(form):
 			return 'record'
 
 	return FormDataSerializer
->>>>>>> 67f80a5fe57272503c98c711fa445eda0616cd5c
-	
+

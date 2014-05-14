@@ -166,6 +166,59 @@ localground.manager.prototype.removeByProjectID = function(projectID) {
 	this.updateVisibility();
 };
 
+localground.manager.prototype.removeByViewID = function(viewID) {
+    var view = opts.views.filter(function(view) {if(view.id == viewID) return view;})[0];
+    if(view == null || view == undefined) return;
+    var overlays = $.parseJSON(view.entities);
+    var that = this;
+    var overlay = overlays.filter(function(overlay) {if(overlay.overlay_type == that.overlay_type) return overlay})[0];
+    if(overlay) {
+        var ids = overlay.ids;
+        for(var i = that.data.length -1; i >= 0; i--) {
+           var datum = that.data[i];
+           if($.inArray(datum.id, ids) != -1 ) {
+              if(datum == self.currentOverlay)
+                    self.currentOverlay.closeInfoBubble();
+                //remove marker:
+                if(datum.googleOverlay) {
+                    datum.googleOverlay.setMap(null);
+                    google.maps.event.clearListeners(datum.googleOverlay, 'drag');
+                    google.maps.event.clearListeners(datum.googleOverlay, 'dragstart');
+                    google.maps.event.clearListeners(datum.googleOverlay, 'dragend');
+                }
+                //remove listing:
+                if(datum.getListingElement())
+                    datum.getListingElement().remove();
+
+              that.data.splice(i,1);
+           }
+        }
+    }
+}
+
+localground.manager.prototype.removeAll = function() {
+    var that = this;
+    for(var i = that.data.length -1; i >= 0; i--) {
+        var datum = that.data[i];
+
+        if(datum == self.currentOverlay)
+            self.currentOverlay.closeInfoBubble();
+        //remove marker:
+        if(datum.googleOverlay) {
+            datum.googleOverlay.setMap(null);
+            google.maps.event.clearListeners(datum.googleOverlay, 'drag');
+            google.maps.event.clearListeners(datum.googleOverlay, 'dragstart');
+            google.maps.event.clearListeners(datum.googleOverlay, 'dragend');
+        }
+        //remove listing:
+        if(datum.getListingElement())
+            datum.getListingElement().remove();
+
+        that.data.splice(i,1);
+
+    }
+}
+
 localground.manager.prototype.addNewOverlay = function(overlay) {
     this.data.push(overlay);
  

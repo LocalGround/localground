@@ -56,6 +56,8 @@ def show_map_editor(request):
     if u.is_authenticated():
         projects = Project.objects.get_objects(u)
         projects = [p.to_dict() for p in projects]
+        views = View.objects.get_objects(u)
+        views = [v.to_dict() for v in views]
         if u.profile.default_location is not None:
             lat = u.profile.default_location.y
             lng = u.profile.default_location.x
@@ -65,6 +67,7 @@ def show_map_editor(request):
         'lng': lng,
         'zoom': zoom,
         'projects': json.dumps(projects),
+        'views': json.dumps(views),
         'num_projects': len(projects)
     })
     return render_to_response('map/editor.html', context)

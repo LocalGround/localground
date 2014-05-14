@@ -28,6 +28,9 @@
     {% if projects %}
         opts.projects = {% autoescape off %}{{ projects }}{% endautoescape %};
     {% endif %}
+    {% if views %}
+        opts.views = {% autoescape off %}{{ views }}{% endautoescape %};
+    {% endif %}
     
 	{% if lat %}
         opts.center = new google.maps.LatLng({{lat}}, {{lng}});
