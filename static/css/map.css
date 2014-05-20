@@ -308,18 +308,43 @@ form .input { margin-left: 85px; }
 	background: #eee;
 
 }
+#entities {
+    height:5em;
+    width:30em;
+}
+
+.new-view-field {
+    height:1em;
+    width:20em;
+}
+
+#new-view-error {
+    display:none;
+    color:red;
+}
+
+#view-modal-body {
+    max-height: 25em;
+    overflow-style: auto;
+}
+
 #viewList {
     list-style-type: none;
+    margin:0px;
+
 }
 
 .view-option {
-    margin-top: 1.5em;
-    margin-bottom:1.5em
+    padding-top: .5em;
+    padding-bottom: .5em;
+    border: groove;
+    border-width: 1px;
+    border-radius: 1px;
+    padding-left: 1em;
 
 }
 
 .view-option:hover {
-    background: #99FF99;
     cursor: pointer;
 }
 .view-option input {
