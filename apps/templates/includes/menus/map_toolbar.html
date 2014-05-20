@@ -91,7 +91,7 @@
 
         <h3>Save View</h3>
     </div>
-    <div class="modal-body">
+    <div class="modal-body" id="view-modal-body">
         <form>
             <div class="clearfix">
                 <label class="col-sm-2 control-label">View:</label>
@@ -100,18 +100,50 @@
                     <select id="dd_views"></select>
                 </div>
             </div>
+            <br/>
+
             <div class="clearfix">
+                <div id="new-view-fields">
+                    <label class="col-sm-2 control-label" id="new-view-name-label">Name:</label>
+
+                    <div class="input">
+                        <textarea id="new-view-name" class="new-view-field"></textarea>
+                    </div>
+                    <br/>
+                    <label class="col-sm-2 control-label" id="new-view-description-label">Description:</label>
+
+                    <div class="input">
+                        <textarea id="new-view-description" class ="new-view-field"></textarea>
+                    </div>
+                    <br/>
+                    <label class="col-sm-2 control-label" id="new-view-tags-label">Tags:</label>
+
+                    <div class="input">
+                        <textarea id="new-view-tags" class="new-view-field"></textarea>
+                    </div>
+                    <br/>
+                    <label class="col-sm-2 control-label" id="new-view-slug-label">Friendly Url:</label>
+
+                    <div class="input">
+                        <textarea id="new-view-slug" class="new-view-field"></textarea>
+                    </div>
+
+                </div>
+                <br/>
+
                 <label class="col-sm-2 control-label">Entities:</label>
 
                 <div class="input">
-                    <textarea id="entities" style="height:200px;width:400px;"></textarea>
+                    <textarea readonly id="entities"></textarea>
                 </div>
+
             </div>
         </form>
 
     </div>
-    <div class="modal-footer">
-        <button class="btn" onclick="$('#save_dialog').modal('hide');">Close</button>
-        <button id="save_view_button" class="btn primary" onclick="self.saveView();">Save</button>
+    <div class="modal-footer" id="view-footer">
+        <div id="new-view-error">Please complete the required fields</div>
+        <button class="btn" id="close-view-button">Close</button>
+        <button id="save-view-button" class="btn primary">Save</button>
     </div>
 </div>

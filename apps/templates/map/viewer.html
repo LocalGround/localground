@@ -111,12 +111,14 @@ driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
             <li class="active">
                 <a data-toggle="tab" href="#data">Data & Media</a>
             </li>
-            <li>
-                <a data-toggle="tab" href="#legend">Legend</a>
-            </li>
+
             <li>
                 <a data-toggle="tab" href="#view">Views</a>
             </li>
+            <li>
+                <a data-toggle="tab" href="#legend">Legend</a>
+            </li>
+
 
         </ul>
         <div id="tab_content" class="tab-content clearfix">
@@ -129,18 +131,24 @@ driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
                 </div>
             </div>
             <div id="view" class="tab_panel">
-                <div id="panel_views">
-                    <div id="views">
+                <ul class="tabs" data-tabs="tabs" style="margin-bottom: 10px !important;">
+                    <li><a data-toggle="tab" href="#list-of-views" id="view-list-tab">View List</a></li>
+                    <li><a data-toggle="tab" href="#presentations" id="presentations-tab">Presentations</a></li>
 
+                </ul>
+                <div id="view-tab-content" class="tab-content">
+                    <div id="list-of-views" class="tab_panel">
                         <ul id="viewList">
 
                         </ul>
-                        <hr>
 
-                        <button class="btn success create-object" href="#new-view" data-main="views">
-                            <i class="fa fa-plus"></i> New
-                        </button>
-                </div>
+
+                    </div>
+                    <div id="presentations" class="tab_panel">
+                        <!--<button class="btn create-presentation" href="#new-presentation" data-main="presentations">
+                            <i class="fa fa-plus"> Create Presentation</i>
+                        </button>-->
+                    </div>
                 </div>
             </div>
         </div>
