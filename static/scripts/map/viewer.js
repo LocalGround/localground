@@ -145,6 +145,7 @@ localground.viewer.prototype.initialize = function (opts) {
     this.initFiltering();
 
     this.setStreetViewCloseButton();
+    localground.presentation.initialize();
 };
 
 localground.viewer.prototype.initSearchBox = function () {
@@ -226,6 +227,7 @@ localground.viewer.prototype.initProjectsMenu = function () {
 };
 
 localground.viewer.prototype.initViewsMenu = function () {
+    $('#viewList').empty();
     if (this.views && this.views.length > 0) {
         $.each(this.views, function () {
             var viewID = this.id;
@@ -258,19 +260,10 @@ localground.viewer.prototype.initViewsMenu = function () {
                 "/?format=csv'>" + this.name + "</li>");
         });
         self.extendTwitterDropdowns();
-        $('#projectListContainer').css({
-            'max-height': '250px',
-            'overflow-y': 'auto',
-            'overflow-x': 'hidden',
-            'width': '300px',
-            'max-width': '400px'
-        });
-        $('#projectList').css({
-            'width': $('#projectListContainer').width()
-        });
+
     }
-    else {
-        $('#projects-menu').hide();
+    if(self.currentViewID != null) {
+        $('#view-' + self.currentViewID).parent().click();
     }
     //triggers the inner tab to actually load.  Setting class=active doesn't seem to do this
     $('#view-list-tab').click();
@@ -624,7 +617,7 @@ localground.viewer.prototype.loadSaveView = function () {
     $sel.append($('<option></option>').attr('value', 'create_new').html('---Create New---'));
     $.each(self.views, function () {
         $sel.append(
-            $('<option></option>').attr('value', this.id).html(this.name)
+            $('<option></option>').val(this.id).html(this.name)
         );
     });
     $sel.change(function () {
@@ -645,6 +638,8 @@ localground.viewer.prototype.loadSaveView = function () {
     $('#entities').val(self.populateEntities);
     //3. show dialog:
     $('#save_dialog').find('.close').unbind('click');
+    $('#close-view-button').unbind('click');
+    $('#save-view-button').unbind('click');
 
     $('#close-view-button').click(function () {
         $('#save_dialog').modal('hide');
@@ -683,7 +678,9 @@ localground.viewer.prototype.saveView = function () {
         self.createView();
     } else {
         self.updateView();
+
     }
+
 };
 
 localground.viewer.prototype.updateView = function () {
@@ -695,26 +692,29 @@ localground.viewer.prototype.updateView = function () {
             entities: $('#entities').val()
         },
         success: function (data) {
-            alert(JSON.stringify(data));
+            $('#close-view-button').click();
+            self.resetViews();
+
         },
         notmodified: function (data) {
-            alert('Not modified');
+            console.error('Not modified');
         },
         error: function (data) {
-            alert('Error: ' + JSON.stringify(data));
+            console.error('Error: ' + JSON.stringify(data));
         }
     });
 }
 
 localground.viewer.prototype.createView = function () {
     $('#new-view-error').hide();
+    var newViewName = $("#new-view-name").val();
     if (self.makeViewFieldsValid()) {
         $.ajax({
             //
             url: '/api/0/views/',
             type: 'POST',
             data: {
-                name: $("#new-view-name").val(),
+                name: newViewName,
                 description: $("#new-view-description").val(),
                 tags: $("#new-view-tags").val(),
                 slug: $("#new-view-slug").val(),
@@ -724,13 +724,15 @@ localground.viewer.prototype.createView = function () {
                 //reset the modal window
                 $('#new-view-fields label').css('color', '');
                 $('.new-view-field').val('');
+                $('#close-view-button').click();
+                self.resetViews(newViewName);
 
             },
             notmodified: function (data) {
-                alert('Not modified');
+                console.error('Not modified');
             },
             error: function (data) {
-                alert('Error: ' + JSON.stringify(data));
+                console.error('Error: ' + JSON.stringify(data));
             }
         });
     } else {
@@ -756,6 +758,32 @@ localground.viewer.prototype.makeViewFieldsValid = function () {
     $slug.val($slug.val().replace(/ /g, '-'));
 
     return isValid;
+}
+
+//TODO: slightly worried this might be a race condition on the server.  Maybe just update manually?
+localground.viewer.prototype.resetViews = function(newViewName) {
+    $.ajax({
+
+        url: '/api/0/views/.json',
+        type: 'GET',
+        success: function (data) {
+            self.views = data.results;
+            if(newViewName) {
+                //TODO: fix assumption that view names are unique, probably
+                var currentView = self.views.filter(function(view) {if(view.name===newViewName)return view})[0];
+                if(currentView != null) {
+                    self.currentViewID = currentView.id;
+                }
+            }
+            self.initViewsMenu();
+
+
+        },
+
+        error: function (data) {
+            console.error("Failed to retrieve updated views");
+        }
+    });
 }
 
 localground.viewer.prototype.initDefaultProject = function () {

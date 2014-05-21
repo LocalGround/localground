@@ -350,3 +350,20 @@ form .input { margin-left: 85px; }
 .view-option input {
     display: none;
 }
+
+#presentation-steps thead tr th{
+    list-style-type: none;
+    width:10em;
+}
+
+
+.presentation-step td select {
+    width:10em;
+}
+.presentation-step td {
+    width:10em;
+}
+
+#presentation-controls {
+    display:none;
+}

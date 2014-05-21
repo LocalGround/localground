@@ -47,6 +47,8 @@
 
 <script type="text/javascript" src="/static/scripts/map/basemap.js"></script>
 <script type="text/javascript" src="/static/scripts/map/viewer.js"></script>
+<script type="text/javascript" src="/static/scripts/map/presentation.js"></script>
+
 
 {% endblock %}
 
@@ -148,6 +150,37 @@ driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
                         <!--<button class="btn create-presentation" href="#new-presentation" data-main="presentations">
                             <i class="fa fa-plus"> Create Presentation</i>
                         </button>-->
+                        <table id="presentation-steps">
+                            <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>Argument</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                        <button class="btn" href="#new-step" id="add-step">
+                            <i class="fa fa-plus"> Add Step</i>
+                        </button>
+                        <button class="btn" href="#new-step" id="start-presentation">
+                            <i class="fa fa-play"> Start Presentation</i>
+                        </button>
+
+                        <div id="presentation-controls">
+                            <hr>
+                            <button class="btn" href="#new-step" id="step-back">
+                                <i class="fa fa-step-backward"> Back</i>
+                            </button>
+                            <button class="btn" href="#new-step" id="step-forward">
+                                <i class="fa fa-step-forward"> Next</i>
+                            </button>
+                            <button class="btn" href="#new-step" id="stop-presentation">
+                                <i class="fa fa-stop"> End</i>
+                            </button>
+
+                        </div>
                     </div>
                 </div>
             </div>
