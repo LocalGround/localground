@@ -641,7 +641,16 @@ localground.viewer.prototype.loadSaveView = function() {
 			});
 		}
 	});
+	var geoJSON = {
+		type: 'Point',
+		coordinates: [
+				this.map.getCenter().lng(),
+				this.map.getCenter().lat()
+		]
+	};
 	$('#entities').val(JSON.stringify(entities));
+	$('#view_center').val(JSON.stringify(geoJSON));
+	$('#basemap_id').val(this.getMapTypeId());
 	
 	//3. show dialog:
 	$('#save_dialog').modal('show');
@@ -658,7 +667,9 @@ localground.viewer.prototype.saveView = function(){
 		url: '/api/0/views/' + $('#dd_views').val() + '/.json',
 		type: 'PATCH',
 		data: {
-			entities: $('#entities').val()
+			entities: $('#entities').val(),
+			center: $('#view_center').val(),
+			basemap: $('#basemap_id').val()
 		},
 		success: function(data) {
 			alert(JSON.stringify(data));

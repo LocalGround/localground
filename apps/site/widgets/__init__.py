@@ -287,9 +287,13 @@ class GeoJSONWidget(Textarea):
 
 	def render(self, name, value, *args, **kwargs):
 		import json
+		
 		val = ''
-		if value: val = json.dumps(value)
-		html = self.inner_widget.render(name, val, dict(id='id_' % name, style='width:200px;height:100px'))
+		try:
+			if value: val = '%s' % json.dumps(value)
+		except:
+			pass
+		html = self.inner_widget.render(name, val, dict(id='id_%s' % name, style='width:210px;height:100px'))
 		return mark_safe(html)
 
 class CustomCheckboxSelectMultiple(forms.CheckboxSelectMultiple):

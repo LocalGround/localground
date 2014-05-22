@@ -182,6 +182,8 @@ class View(Group):
 	A user-generated grouping of media.  Media associations are specified in the
 	GenericAssociation Model.  Only partially implemented.
 	"""
+	center = models.PointField()
+	zoom = models.IntegerField()	
 	objects = ViewManager()
 	
 	class Meta(Group.Meta):

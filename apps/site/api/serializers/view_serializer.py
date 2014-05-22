@@ -5,16 +5,24 @@ from localground.apps.site.api.serializers.audio_serializer import AudioSerializ
 from localground.apps.site.api.serializers.form_serializer import create_record_serializer, create_compact_record_serializer
 from localground.apps.site.api.serializers.marker_serializer import MarkerSerializerCounts
 from rest_framework import serializers
-from localground.apps.site import models
+from localground.apps.site import models, widgets
 from django.forms.widgets import Textarea
 from localground.apps.site.api import fields
 
 class ViewSerializer(BaseSerializer):
 	access = serializers.SerializerMethodField('get_access')
 	entities = fields.EntitiesField(widget=Textarea, required=False)
+	center = fields.GeometryField(help_text='Assign a GeoJSON string',
+							  required=False,
+							  widget=Textarea,
+							  point_field_name='center')
+	basemap = serializers.PrimaryKeyRelatedField()
 	class Meta:
 		model = models.View
-		fields = BaseSerializer.Meta.fields + ('owner', 'slug', 'access', 'entities')
+		fields = BaseSerializer.Meta.fields + (
+			'owner', 'slug', 'access', 'zoom', 'center', 'basemap', 'entities'
+		)
+		#'center',
 		depth = 0
 		
 	def get_access(self, obj):
@@ -24,10 +32,16 @@ class ViewSerializer(BaseSerializer):
 class ViewDetailSerializer(BaseSerializer):
 	children = serializers.SerializerMethodField('get_children')
 	entities = fields.EntitiesField(widget=Textarea, required=False)
+	center = fields.GeometryField(help_text='Assign a GeoJSON string',
+							  required=False,
+							  widget=widgets.GeoJSONWidget,
+							  point_field_name='center')
+	basemap = serializers.PrimaryKeyRelatedField()
+	
 	class Meta:
 		model = models.View
 		fields = BaseSerializer.Meta.fields + (
-			'slug', 'children', 'entities'
+			'slug', 'zoom', 'center', 'children', 'basemap', 'entities'
 		)
 		depth = 0
 

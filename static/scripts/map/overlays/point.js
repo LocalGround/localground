@@ -310,12 +310,12 @@ localground.point.prototype.mouseoutF = function(){
 
 localground.point.prototype.getGeoJSON = function(googleOverlay){
     if (googleOverlay == null) {
-	googleOverlay = this.googleOverlay;
+		googleOverlay = this.googleOverlay;
     }
     var latLng = googleOverlay.getPosition();
-    return {
-	type: 'Point',
-	coordinates: [latLng.lng(), latLng.lat()]
+		return {
+		type: 'Point',
+		coordinates: [latLng.lng(), latLng.lat()]
     };
 };
 

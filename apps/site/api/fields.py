@@ -125,7 +125,8 @@ class GeometryField(serializers.WritableField):
 		super(GeometryField, self).__init__(*args, **kwargs)
 	
 	def field_from_native(self, data, files, field_name, into):
-		if data.get(field_name) is not None:
+		if data.get(field_name) is not None and \
+		data.get(field_name) != '':
 			geom = self.from_native(data.get(field_name))
 			if geom.geom_type not in self.geom_types:
 				raise serializers.ValidationError('Unsupported geometry type')
