@@ -71,6 +71,25 @@ FROM
 ) v
 GROUP BY v.id, v.name, v.user_id;
 
+-----------------------------  
+-- v_private_presentations --
+-----------------------------
+-- A view to show all of the presentations, who can access 
+-- them, and at what security level (view, edit, or manage)
+CREATE OR REPLACE VIEW v_private_presentations AS 
+SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+FROM 
+(
+    SELECT g.id, g.name, a.user_id, a.authority_id
+    FROM site_presentation g, site_userauthorityobject a
+    WHERE g.id = a.object_id
+		AND a.content_type_id = (select id from django_content_type where model = 'presentation')
+  UNION 
+    SELECT id, name, owner_id as user_id, 3 AS authority_id
+    FROM site_presentation
+) v
+GROUP BY v.id, v.name, v.user_id;
+
 ---------------------  
 -- v_private_forms --
 ---------------------

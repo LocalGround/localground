@@ -8,7 +8,7 @@ from django.conf import settings
 class MarkerSerializer(GeometrySerializer):
 	geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
 							required=False,
-							widget=widgets.GeoJSONWidget,
+							widget=widgets.JSONWidget,
 							geom_types=['Point', 'LineString', 'Polygon'])
 	children = serializers.SerializerMethodField('get_children')
 	color = fields.ColorField(required=False)

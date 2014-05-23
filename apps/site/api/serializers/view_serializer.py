@@ -10,39 +10,32 @@ from django.forms.widgets import Textarea
 from localground.apps.site.api import fields
 
 class ViewSerializer(BaseSerializer):
+	name = serializers.CharField(required=True)
 	access = serializers.SerializerMethodField('get_access')
-	entities = fields.EntitiesField(widget=Textarea, required=False)
+	entities = fields.EntitiesField(widget=widgets.JSONWidget, required=False)
 	center = fields.GeometryField(help_text='Assign a GeoJSON string',
-							  required=False,
-							  widget=Textarea,
+							  required=True,
+							  widget=widgets.JSONWidget,
 							  point_field_name='center')
 	basemap = serializers.PrimaryKeyRelatedField()
+	zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
 	class Meta:
 		model = models.View
 		fields = BaseSerializer.Meta.fields + (
 			'owner', 'slug', 'access', 'zoom', 'center', 'basemap', 'entities'
 		)
-		#'center',
 		depth = 0
 		
 	def get_access(self, obj):
 		return obj.access_authority.name
 	
 		
-class ViewDetailSerializer(BaseSerializer):
+class ViewDetailSerializer(ViewSerializer):
 	children = serializers.SerializerMethodField('get_children')
-	entities = fields.EntitiesField(widget=Textarea, required=False)
-	center = fields.GeometryField(help_text='Assign a GeoJSON string',
-							  required=False,
-							  widget=widgets.GeoJSONWidget,
-							  point_field_name='center')
-	basemap = serializers.PrimaryKeyRelatedField()
 	
 	class Meta:
 		model = models.View
-		fields = BaseSerializer.Meta.fields + (
-			'slug', 'zoom', 'center', 'children', 'basemap', 'entities'
-		)
+		fields = ViewSerializer.Meta.fields + ('children',)
 		depth = 0
 
 	def get_children(self, obj):

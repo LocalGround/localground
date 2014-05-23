@@ -113,16 +113,35 @@ class ModelMixin(object):
 	
 	def create_view(self, user, name='Test View', authority_id=1):
 		import random
+		from django.contrib.gis.geos import Point
+		lat = 37.8705
+		lng = -122.2819
 		slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz',  16)
 		v = models.View(
 			name=name,
 			owner=user,
 			last_updated_by=user,
 			access_authority=models.ObjectAuthority.objects.get(id=authority_id),
-			slug=slug
+			slug=slug,
+			center=Point(lng, lat, srid=4326),
+			zoom=19,
+			basemap=models.WMSOverlay.objects.get(id=4),
 		)
 		v.save()
 		return v
+	
+	def create_presentation(self, user, name='Test Presentation', authority_id=1):
+		import random
+		slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz',  16)
+		p = models.Presentation(
+			name=name,
+			owner=user,
+			last_updated_by=user,
+			access_authority=models.ObjectAuthority.objects.get(id=authority_id),
+			slug=slug
+		)
+		p.save()
+		return p
 	
 	def _add_group_user(self, group, user, authority_id):
 		uao = models.UserAuthorityObject(

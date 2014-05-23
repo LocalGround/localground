@@ -56,7 +56,7 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
 class GeometrySerializer(BaseSerializer):
 	geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
 							  required=False,
-							  widget=widgets.GeoJSONWidget)
+							  widget=widgets.JSONWidget)
 	
 	project_id = fields.ProjectField(source='project', required=False)
 	
@@ -76,7 +76,7 @@ class ExtentsSerializer(BaseSerializer):
 	project_id = fields.ProjectField(label='project_id', source='project', required=False)
 	center = fields.GeometryField(help_text='Assign a GeoJSON string',
 							  required=False,
-							  widget=widgets.GeoJSONWidget,
+							  widget=widgets.JSONWidget,
 							  point_field_name='center')
 
 class Meta:

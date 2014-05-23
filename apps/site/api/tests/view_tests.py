@@ -21,6 +21,9 @@ class ApiViewTest(test.TestCase, ViewMixinAPI):
 			{ 'overlay_type': 'audio', 'ids': [1] },
 			{ 'overlay_type': 'marker', 'ids': [1] }
 		]
+	center = {"type": "Point", "coordinates": [-123.31158757209778, 40.346797604717196]}
+	zoom = 10
+	basemap = 4
 	
 	def _test_save_view(self, method, status_id, entities):
 		response = method(self.url,
@@ -29,7 +32,10 @@ class ApiViewTest(test.TestCase, ViewMixinAPI):
 				'description': self.description,
 				'tags': self.tags,
 				'slug': self.slug,
-				'entities': entities
+				'entities': entities,
+				'center': self.center,
+				'zoom': self.zoom,
+				'basemap': self.basemap,
 			}),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"

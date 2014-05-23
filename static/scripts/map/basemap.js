@@ -273,6 +273,17 @@ localground.basemap.prototype.getMapTypeId = function() {
 		}
 	});
     return id;
+};
+
+localground.basemap.prototype.getMapTypeNamebyId = function(id) {
+    name = null;
+    $.each(this.overlayConfigArray, function() {
+		if (this.id == id) {
+			id = this.id;
+            return;
+		}
+	});
+    return id;
 }
 
 localground.basemap.prototype.getOverlaySourceInfo = function(property, key) {

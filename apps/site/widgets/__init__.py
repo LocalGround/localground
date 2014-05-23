@@ -273,24 +273,21 @@ class PointWidgetTextbox(Textarea):
 		#renders text form elements (for debugging):
 		html = self.inner_widget.render('lat', lat, dict(id='id_lat', style='width:100px;'))
 		html += self.inner_widget.render('lng', lng, dict(id='id_lng', style='width:100px;'))
-		#html = self.inner_widget.render('%s_lat' % name, lat, dict(id='id_%s_lat' % name, style='width:100px;'))
-		#html += self.inner_widget.render('%s_lng' % name, lng, dict(id='id_%s_lng' % name, style='width:100px;'))
-
 		return mark_safe(html)
 
-class GeoJSONWidget(Textarea):
+class JSONWidget(Textarea):
 
 	def __init__(self, *args, **kw):
-		super(GeoJSONWidget, self).__init__(*args, **kw)
+		super(JSONWidget, self).__init__(*args, **kw)
 		self.inner_widget = forms.widgets.Textarea()
 
 
 	def render(self, name, value, *args, **kwargs):
 		import json
-		
-		val = ''
+		val = value
 		try:
-			if value: val = '%s' % json.dumps(value)
+			if value and (isinstance(value, dict) or isinstance(value, list)):
+				val = '%s' % json.dumps(value)
 		except:
 			pass
 		html = self.inner_widget.render(name, val, dict(id='id_%s' % name, style='width:210px;height:100px'))

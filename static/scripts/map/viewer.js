@@ -388,7 +388,7 @@ localground.viewer.prototype.toggleViewData = function(groupID, groupType,
     $('.cb_project').prop('checked',false);
 
 
-    self.resetBounds();
+    //self.resetBounds();
     if($('.rb_views:checked').length == 0) {
         $('#map_toolbar').hide();
     }
@@ -476,7 +476,21 @@ localground.viewer.prototype.getProjectData = function(groupID, groupType,
 				self.makeEditable();
 			}
 			$('#map_toolbar').show();
-			self.resetBounds();
+			//self.resetBounds();
+			
+			if (groupType == 'views') {
+				//new code to remember specific preferences: These are
+				// required in the database:
+				self.map.setZoom(result.zoom);
+				self.map.setCenter(
+					new google.maps.LatLng(
+						result.center.coordinates[1], 
+						result.center.coordinates[0]
+					)
+				);
+				var basemap = self.getOverlaySourceInfo("id", result.basemap).name.toLowerCase();
+				self.map.setMapTypeId(basemap);
+			}
 			self.initFilterData();
 		},
 	'json');
@@ -648,9 +662,10 @@ localground.viewer.prototype.loadSaveView = function() {
 				this.map.getCenter().lat()
 		]
 	};
-	$('#entities').val(JSON.stringify(entities));
+	$('#view_entities').val(JSON.stringify(entities));
 	$('#view_center').val(JSON.stringify(geoJSON));
-	$('#basemap_id').val(this.getMapTypeId());
+	$('#view_basemap').val(this.getMapTypeId());
+	$('#view_zoom').val(this.map.getZoom());
 	
 	//3. show dialog:
 	$('#save_dialog').modal('show');
@@ -667,9 +682,10 @@ localground.viewer.prototype.saveView = function(){
 		url: '/api/0/views/' + $('#dd_views').val() + '/.json',
 		type: 'PATCH',
 		data: {
-			entities: $('#entities').val(),
+			entities: $('#view_entities').val(),
 			center: $('#view_center').val(),
-			basemap: $('#basemap_id').val()
+			basemap: $('#view_basemap').val(),
+			zoom: $('#view_zoom').val()
 		},
 		success: function(data) {
 			alert(JSON.stringify(data));

@@ -167,8 +167,8 @@ class GeometryField(serializers.WritableField):
 		
 			return value
 		return None
-	
-
+		
+		
 class EntitiesField(serializers.WritableField):
 	type_label = 'json'
 	type_name = 'EntitiesField'
@@ -228,18 +228,22 @@ class EntitiesField(serializers.WritableField):
 					'overlay_type': key,
 					'ids': entity_dict[key]
 				})
-			# convert to a JSON representation:
-			return json.dumps(entry_list)
-				
+			return entry_list
 		
-	'''
-	def from_native(self, value):
-		
+class JSONField(serializers.WritableField):
+	type_label = 'json'
+	type_name = 'JSONField'
+	
+	def from_native(self, data):
+		try:
+			json.loads(data)
+		except:
+			raise serializers.ValidationError('Error parsing JSON')
+		return data
+	
+	def to_native(self, value):
 		if value is not None:
-			if isinstance(value, dict) or value is None:
+			if value is None or isinstance(value, dict) or isinstance(value, list):
 				return value
-		return None
-		
-		return value
-	'''
+			return json.loads(value)
 

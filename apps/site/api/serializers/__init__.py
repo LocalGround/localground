@@ -12,6 +12,7 @@ from localground.apps.site.api.serializers.association_serializer import Associa
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 from localground.apps.site.api.serializers.form_serializer import FormSerializer, create_record_serializer, create_compact_record_serializer
+from localground.apps.site.api.serializers.presentation_serializer import PresentationSerializer
 from localground.apps.site.api.serializers.print_serializer import PrintSerializer, PrintSerializerDetail
 from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializer, AttachmentSerializer
 from localground.apps.site.api.serializers.user_profile_serializer import UserProfileSerializer
