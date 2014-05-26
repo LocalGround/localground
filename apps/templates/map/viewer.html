@@ -168,6 +168,7 @@ driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
                             <i class="fa fa-play"> Start Presentation</i>
                         </button>
 
+
                         <div id="presentation-controls">
                             <hr>
                             <button class="btn" href="#new-step" id="step-back">
@@ -179,11 +180,15 @@ driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
                             <button class="btn" href="#new-step" id="stop-presentation">
                                 <i class="fa fa-stop"> End</i>
                             </button>
-
                         </div>
+                        <hr/>
+                        <button class="btn" href="#save-presentation" id="save-presentation">
+                            <i class="fa fa-save"> Save Presentation</i>
+                        </button>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -226,6 +231,73 @@ driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
     <input type="hidden" id="default_location" name="default_location" value="">
 </form>
 
+
 {%  csrf_token %}
+
+
+<div id="save-presentation-dialog" class="modal hide">
+    <div class="modal-header">
+        <a href="#" class="close">&times;</a>
+
+        <h3>Save Presentation</h3>
+    </div>
+
+    <div class="modal-body" id="presentation-modal-body">
+        <form>
+            <div class="clearfix">
+                <label class="col-sm-2 control-label">Presentation:</label>
+
+                <div class="input">
+                    <select id="dd_presentation"></select>
+                </div>
+            </div>
+            <br/>
+
+            <div class="clearfix">
+                <div id="new-presentation-fields">
+                    <label class="col-sm-2 control-label" id="new-presentation-name-label">Name:</label>
+
+                    <div class="input">
+                        <textarea id="new-presentation-name" class="new-presentation-field"></textarea>
+                    </div>
+                    <br/>
+                    <label class="col-sm-2 control-label" id="new-presentation-description-label">Description:</label>
+
+                    <div class="input">
+                        <textarea id="new-presentation-description" class="new-presentation-field"></textarea>
+                    </div>
+                    <br/>
+                    <label class="col-sm-2 control-label" id="new-presentation-tags-label">Tags:</label>
+
+                    <div class="input">
+                        <textarea id="new-presentation-tags" class="new-presentation-field"></textarea>
+                    </div>
+                    <br/>
+                    <label class="col-sm-2 control-label" id="new-presentation-slug-label">Friendly Url:</label>
+
+                    <div class="input">
+                        <textarea id="new-presentation-slug" class="new-presentation-field"></textarea>
+                    </div>
+
+                </div>
+                <br/>
+
+                <label class="col-sm-2 control-label">Steps:</label>
+
+                <div class="input">
+                    <textarea readonly id="presentation-code"></textarea>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+    <div class="modal-footer" id=presentation-footer">
+        <div id="new-presentation-error">Please complete the required fields</div>
+        <button class="btn" id="close-presentation-button">Close</button>
+        <button id="save-presentation-button" class="btn primary">Save</button>
+    </div>
+</div>
+
 
 {% endblock %}

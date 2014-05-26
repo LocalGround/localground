@@ -449,6 +449,7 @@ localground.viewer.prototype.getProjectData = function (groupID, groupType, is_c
                     self.managers[v.id].addRecords(v.data);
                     self.managers[v.id].renderOverlays();
                     if (turn_on_everything) {
+
                         $('#toggle_' + v.id + '_all')
                             .prop('checked', true).trigger('change');
                     }
