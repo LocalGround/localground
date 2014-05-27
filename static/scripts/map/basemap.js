@@ -279,11 +279,11 @@ localground.basemap.prototype.getMapTypeNamebyId = function(id) {
     name = null;
     $.each(this.overlayConfigArray, function() {
 		if (this.id == id) {
-			id = this.id;
+			name = this.name;
             return;
 		}
 	});
-    return id;
+    return name;
 }
 
 localground.basemap.prototype.getOverlaySourceInfo = function(property, key) {

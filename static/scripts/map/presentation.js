@@ -11,10 +11,11 @@ localground.presentation.initialize = function (opts) {
     /**
      * presentation-level variable declarations
      */
-    this.stepTypes = {"unselected": "Choose Action", "showView": "Show View", "showObject": "Show Object",
-        "doNothing": "Do Nothing"};
+    this.stepTypes = {"unselected": "Choose Action", "showView": "Show View", "focus": "Focus",
+        "changeBasemap": "Change map", "doNothing": "Do Nothing"};
     this.$stepTable = $('#presentation-steps tbody');
     this.$stepTable.sortable();
+    this.rewind = false;
     this.currentPresentationID = null;
     this.populatePresentationList.call(this);
     this.argValueClassName = 'step-arg-value';
@@ -76,7 +77,6 @@ localground.presentation.loadStepArguments = function ($stepType, $stepData, ste
     $stepData.empty();
     var func = $stepType.val() + "Arguments";
     this[func].call(this, $stepData, stepIndex);
-
 }
 
 localground.presentation.startPresentation = function () {
@@ -89,6 +89,7 @@ localground.presentation.startPresentation = function () {
         $(steps[currentStep]).css('background-color', '');
         if (currentStep < steps.length - 1) {
             currentStep++;
+            that.rewind = false;
             that.showStep.call(that, steps[currentStep]);
         }
 
@@ -97,6 +98,7 @@ localground.presentation.startPresentation = function () {
         $(steps[currentStep]).css('background-color', '');
         if (currentStep > 0) {
             currentStep--;
+            that.rewind = true;
             that.showStep.call(that, steps[currentStep]);
         }
     });
@@ -359,7 +361,7 @@ localground.presentation.showViewArguments = function ($stepData, stepIndex, ste
     $stepData.append($dd);
 }
 
-localground.presentation.showObjectArguments = function ($stepData, stepIndex, stepArgVal) {
+localground.presentation.focusArguments = function ($stepData, stepIndex, stepArgVal) {
     /**
     var currentViewId = parseInt(this.getStepContext.call(this, stepIndex));
     if (currentViewId != null) {
@@ -386,6 +388,19 @@ localground.presentation.showObjectArguments = function ($stepData, stepIndex, s
 
 }
 
+localground.presentation.changeBasemapArguments = function ($stepData, stepIndex, stepArgVal) {
+    var $dd = $('<select class="dd-basemap-list ' + this.argValueClassName + '" style="float:right"></select>');
+    $.each(self.overlayConfigArray, function () {
+        $dd.append(
+            $('<option></option>').val(this.id).html(this.name)
+        );
+    });
+    if(stepArgVal) {
+        $dd.val(stepArgVal);
+    }
+    $stepData.append($dd);
+}
+
 localground.presentation.doNothing = function ($args) {
     console.log('doNothing');
 }
@@ -395,7 +410,13 @@ localground.presentation.showView = function ($args) {
     $('#view-' + $args.find('select').val()).parent().click()
 }
 
-localground.presentation.showObject = function ($args) {
+localground.presentation.focus = function ($args) {
 
+}
+
+localground.presentation.changeBasemap = function($args) {
+    var overlayInfo = self.getOverlaySourceInfo('name', $args.find('select option:selected').text())
+    var overlayId = (overlayInfo.sourceName == 'google') ? overlayInfo.providerID : overlayInfo.name;
+    self.map.setMapTypeId(overlayId);
 }
 
