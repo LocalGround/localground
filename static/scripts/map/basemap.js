@@ -264,6 +264,28 @@ localground.basemap.prototype.initTiles = function() {
     }
 };
 
+localground.basemap.prototype.getMapTypeId = function() {
+    var id = null;
+    $.each(this.overlayConfigArray, function() {
+		if (this.name.toLowerCase() == self.map.getMapTypeId().toLowerCase()) {
+			id = this.id;
+            return;
+		}
+	});
+    return id;
+};
+
+localground.basemap.prototype.getMapTypeNamebyId = function(id) {
+    name = null;
+    $.each(this.overlayConfigArray, function() {
+		if (this.id == id) {
+			id = this.id;
+            return;
+		}
+	});
+    return id;
+}
+
 localground.basemap.prototype.getOverlaySourceInfo = function(property, key) {
     //find the config entry pertaining to the selected layer/overlay: 
     var self = this;

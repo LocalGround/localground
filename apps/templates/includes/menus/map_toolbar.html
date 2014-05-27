@@ -131,10 +131,30 @@
                 </div>
                 <br/>
 
-                <label class="col-sm-2 control-label">Entities:</label>
 
+            </div>
+            <div class="clearfix hidden-view-fields">
+                <label class="col-sm-2 control-label">Entities:</label>
                 <div class="input">
-                    <textarea readonly id="entities"></textarea>
+                    <textarea readonly id="entities" class="hidden-view-fields"></textarea>
+                </div>
+            </div>
+            <div class="clearfix hidden-view-fields">
+                <label class="col-sm-2 control-label">Center:</label>
+                <div class="input">
+                    <textarea id="view-center" class="hidden-view-fields"></textarea>
+                </div>
+            </div>
+            <div class="clearfix hidden-view-fields">
+                <label class="col-sm-2 control-label">Basemap:</label>
+                <div class="input">
+                    <input id="view-basemap" class="hidden-view-fields" type="text" style="width:400px;" />
+                </div>
+            </div>
+            <div class="clearfix hidden-view-fields">
+                <label class="col-sm-2 control-label">Zoom:</label>
+                <div class="input">
+                    <input id="view-zoom" type="text" style="width:400px;" />
                 </div>
 
             </div>

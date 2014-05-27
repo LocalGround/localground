@@ -1,5 +1,7 @@
 /**
  * Created by zmmachar on 5/20/14.
+ * NOTE TO SELF - finish loading - hook into the code in the presentation table and just construct the table row by row
+ * NOTE TO SELF - in fact, factor out add-step?  Perhaps just feed the other add-step "Unselected" and ""
  */
 
 localground.presentation = function () {
@@ -15,8 +17,8 @@ localground.presentation.initialize = function (opts) {
         "doNothing": "Do Nothing"};
     this.$stepTable = $('#presentation-steps tbody');
     this.$stepTable.sortable();
-    this.presentations = [{id:3, name:"bob"},{id:4, name:"bub"},{id:5, name:"bib"}];
     this.currentPresentationID = null;
+    this.populatePresentationList.call(this);
     this.argValueClassName = 'step-arg-value';
     var that = this;
 
@@ -35,7 +37,7 @@ localground.presentation.initialize = function (opts) {
 
 }
 
-localground.presentation.addStep = function () {
+localground.presentation.addStep = function (stepFunc, stepArgVal) {
     var $stepList = this.$stepTable;
 
     var $row = $('<tr class="presentation-step"></tr>');
@@ -46,6 +48,9 @@ localground.presentation.addStep = function () {
             $('<option></option>').val(key).html(value)
         );
     });
+    if(stepFunc) {
+        $stepType.val(stepFunc);
+    }
     var $stepData = $('<td class="step-function"></td>');
     $stepData.append($stepType);
 
@@ -55,7 +60,9 @@ localground.presentation.addStep = function () {
 
 
     var $stepData = $('<td class="step-argument"></td>');
-    this.unselectedArguments($stepData, $stepList.children().length);
+
+    this[$stepType.val() + 'Arguments'].call(this, $stepData, $stepList.children().length, stepArgVal);
+
     //$viewData.append($dd);
     $row.append($stepData);
     //$li.append($st).append($dd);
@@ -131,11 +138,11 @@ localground.presentation.getStepContext = function (stepIndex) {
 }
 
 localground.presentation.loadSaveDialog = function() {
-    //1. get list of views:
+    //1. get list of presentations:
     var $sel = $('#dd_presentation');
     $sel.empty();
     $sel.append($('<option></option>').attr('value', 'create_new').html('---Create New---'));
-    $.each(this.presentations, function () {
+    $.each(self.presentations, function () {
         $sel.append(
             $('<option></option>').val(this.id).html(this.name)
         );
@@ -148,7 +155,7 @@ localground.presentation.loadSaveDialog = function() {
         }
     });
     if (this.currentPresentationID != null) {
-        $sel.val(self.currentPresentationID);
+        $sel.val(this.currentPresentationID);
         $('#new-presentation-fields').hide();
     } else {
         $('#new-presentation-fields').show();
@@ -178,7 +185,7 @@ localground.presentation.loadSaveDialog = function() {
 }
 
 localground.presentation.savePresentation = function() {
-    var val = $('#dd_presentations').val();
+    var val = $('#dd_presentation').val();
     if (val === "create_new") {
         this.createPresentation.call(this);
     } else {
@@ -279,36 +286,82 @@ localground.presentation.makePresentationFieldsValid = function() {
 
 }
 
-localground.presentation.resetPresentations = function() {
-    //TODO: implement this
+localground.presentation.resetPresentations = function(newPresentationName) {
+    $.ajax({
+        url: "/api/0/presentations/.json",
+        type: "GET",
+        success: function(data) {
+            localground.presentation.presentations = data.results;
+            if(newPresentationName) {
+                var currentPresentation = "";
+                localground.presentation.populatePresentationList.call(localground.presentation);
+            }
+        }
+
+    })
 }
+
+localground.presentation.populatePresentationList = function() {
+    var $presentationList = $('#presentation-list');
+    $presentationList.empty();
+    var that = this;
+    $.each(self.presentations, function(index, presentation) {
+        var $option = $('<li><a href="#">' + presentation.name + '</a></li>').val(presentation.id);
+        $option.click(function() {
+            that.loadPresentation.call(that,$(this).val());
+        });
+        $presentationList.append($option);
+    });
+}
+
+localground.presentation.loadPresentation = function(presentationID) {
+    this.currentPresentationID = presentationID;
+    this.$stepTable.empty();
+    var that = this;
+    var presentation = self.presentations.filter(function(presentation) {
+        if(presentation.id == presentationID) return presentation;
+    });
+    if(presentation && presentation.length > 0) {
+        presentation = presentation[0];
+        var code = presentation.code;
+        $.each(code, function(index, step) {
+            var key = Object.keys(step)[0];
+            that.addStep.call(that, key, step[key]);
+        });
+    }
+}
+
+
 
 
 /**
  * Function definitions for presentation actions
  */
 
-localground.presentation.unselectedArguments = function ($stepData, stepIndex) {
+localground.presentation.unselectedArguments = function ($stepData, stepIndex, stepArgVal) {
      $stepData.append('<span class="'+this.argValueClassName+'" val=""></span>');
 }
 
 
-localground.presentation.doNothingArguments = function ($stepData, stepIndex) {
+localground.presentation.doNothingArguments = function ($stepData, stepIndex, stepArgVal) {
     $stepData.append('<span class="'+this.argValueClassName+'" val="">N/A</span>');
 }
 
 
-localground.presentation.showViewArguments = function ($stepData, stepIndex) {
+localground.presentation.showViewArguments = function ($stepData, stepIndex, stepArgVal) {
     var $dd = $('<select class="dd-view-list ' + this.argValueClassName + '" style="float:right"></select>');
     $.each(self.views, function () {
         $dd.append(
             $('<option></option>').val(this.id).html(this.name)
         );
     });
+    if(stepArgVal) {
+        $dd.val(stepArgVal);
+    }
     $stepData.append($dd);
 }
 
-localground.presentation.showObjectArguments = function ($stepData, stepIndex) {
+localground.presentation.showObjectArguments = function ($stepData, stepIndex, stepArgVal) {
     /**
     var currentViewId = parseInt(this.getStepContext.call(this, stepIndex));
     if (currentViewId != null) {
@@ -330,7 +383,7 @@ localground.presentation.showObjectArguments = function ($stepData, stepIndex) {
 
     }
      **/
-    $stepData.append($('<textarea class="step-arg-value"></textarea>'))
+    $stepData.append($('<textarea class="' + this.argValueClassName +'"></textarea>'))
 
 
 }

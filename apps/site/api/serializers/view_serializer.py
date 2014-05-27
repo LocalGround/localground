@@ -6,33 +6,38 @@ from localground.apps.site.api.serializers.form_serializer import create_record_
     create_compact_record_serializer
 from localground.apps.site.api.serializers.marker_serializer import MarkerSerializerCounts
 from rest_framework import serializers
-from localground.apps.site import models
-from django.forms.widgets import Textarea
+from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 
 
 class ViewSerializer(BaseSerializer):
+    name = serializers.CharField(required=True)
     access = serializers.SerializerMethodField('get_access')
-    entities = fields.EntitiesField(widget=Textarea, required=False)
+    entities = fields.EntitiesField(widget=widgets.JSONWidget, required=False)
+    center = fields.GeometryField(help_text='Assign a GeoJSON string',
+                                  required=True,
+                                  widget=widgets.JSONWidget,
+                                  point_field_name='center')
+    basemap = serializers.PrimaryKeyRelatedField()
+    zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
 
     class Meta:
         model = models.View
-        fields = BaseSerializer.Meta.fields + ('owner', 'slug', 'access', 'entities')
+        fields = BaseSerializer.Meta.fields + (
+        'owner', 'slug', 'access', 'zoom', 'center', 'basemap', 'entities'
+        )
         depth = 0
 
     def get_access(self, obj):
         return obj.access_authority.name
 
 
-class ViewDetailSerializer(BaseSerializer):
+class ViewDetailSerializer(ViewSerializer):
     children = serializers.SerializerMethodField('get_children')
-    entities = fields.EntitiesField(widget=Textarea, required=False)
 
     class Meta:
         model = models.View
-        fields = BaseSerializer.Meta.fields + (
-        'slug', 'children', 'entities'
-        )
+        fields = ViewSerializer.Meta.fields + ('children',)
         depth = 0
 
     def get_children(self, obj):

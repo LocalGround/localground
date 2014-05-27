@@ -31,7 +31,10 @@
     {% if views %}
         opts.views = {% autoescape off %}{{ views }}{% endautoescape %};
     {% endif %}
-    
+    {% if presentations %}
+        opts.presentations = {% autoescape off %}{{ presentations }}{% endautoescape %};
+    {% endif %}
+
 	{% if lat %}
         opts.center = new google.maps.LatLng({{lat}}, {{lng}});
         opts.zoom = {{ zoom }};

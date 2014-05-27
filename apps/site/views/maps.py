@@ -7,7 +7,7 @@ from django.template import RequestContext
 import simplejson as json
 from django.core.context_processors import csrf
 from django.contrib.auth.models import User
-from localground.apps.site.models import Base, Scan, Print, Project, View
+from localground.apps.site.models import Base, Scan, Print, Project, View, Presentation
 from django.core.exceptions import ObjectDoesNotExist
 
 #Constants describing default latitudes, longitudes, and zoom
@@ -58,6 +58,8 @@ def show_map_editor(request):
         projects = [p.to_dict() for p in projects]
         views = View.objects.get_objects(u)
         views = [v.to_dict() for v in views]
+        presentations = Presentation.objects.get_objects(u)
+        presentations = [pr.to_dict() for pr in presentations]
         if u.profile.default_location is not None:
             lat = u.profile.default_location.y
             lng = u.profile.default_location.x
@@ -68,6 +70,7 @@ def show_map_editor(request):
         'zoom': zoom,
         'projects': json.dumps(projects),
         'views': json.dumps(views),
+        'presentations': json.dumps(presentations),
         'num_projects': len(projects)
     })
     return render_to_response('map/editor.html', context)

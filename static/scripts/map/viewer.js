@@ -232,7 +232,7 @@ localground.viewer.prototype.initViewsMenu = function () {
         $.each(this.views, function () {
             var viewID = this.id;
             var $span = $('<span></span>').html(this.name);
-            var $rb = $('<input type="radio" name="radio_view" />')
+            var $rb = $('<input type="radio" class="radio_view" />')
                 .attr('id', 'view-' + viewID)
                 .val(viewID);
             $rb.change(function () {
@@ -247,9 +247,9 @@ localground.viewer.prototype.initViewsMenu = function () {
                     $('.view-option').css('background-color', '');
                     $(this).css('border-width', '2px');
                     $(this).css('background-color', '#ADFFAD');
-                    var $cb = $(this).find('input');
-                    $cb.prop('checked', !$cb.prop('checked'));
-                    $cb.trigger('change');
+                    var $rb = $(this).find('input');
+                    $rb.prop('checked', !$rb.prop('checked'));
+                    $rb.trigger('change');
                     return false;
                 });
 
@@ -385,8 +385,8 @@ localground.viewer.prototype.toggleViewData = function (groupID, groupType, is_c
     $('.cb_project').prop('checked', false);
 
 
-    self.resetBounds();
-    if ($('.rb_views:checked').length == 0) {
+    //self.resetBounds();
+    if($('.radio_view:checked').length == 0) {
         $('#map_toolbar').hide();
     }
     self.initFilterData();
@@ -472,10 +472,24 @@ localground.viewer.prototype.getProjectData = function (groupID, groupType, is_c
                 self.makeEditable();
             }
             $('#map_toolbar').show();
-            self.resetBounds();
-            self.initFilterData();
-        },
-        'json');
+            //self.resetBounds();
+
+			if (groupType == 'views') {
+				//new code to remember specific preferences: These are
+				// required in the database:
+				self.map.setZoom(result.zoom);
+				self.map.setCenter(
+					new google.maps.LatLng(
+						result.center.coordinates[1],
+						result.center.coordinates[0]
+					)
+				);
+				var basemap = self.getOverlaySourceInfo("id", result.basemap).name.toLowerCase();
+				self.map.setMapTypeId(basemap);
+			}
+			self.initFilterData();
+		},
+	'json');
 };
 
 localground.viewer.prototype.resetBounds = function () {
@@ -635,8 +649,20 @@ localground.viewer.prototype.loadSaveView = function () {
         $('#new-view-fields').show();
     }
 
-    //2. populate textbox:
+    //2. populate fields:
+    var geoJSON = {
+		type: 'Point',
+		coordinates: [
+				this.map.getCenter().lng(),
+				this.map.getCenter().lat()
+		]
+	};
     $('#entities').val(self.populateEntities);
+    $('#view-center').val(JSON.stringify(geoJSON));
+	$('#view-basemap').val(this.getMapTypeId());
+	$('#view-zoom').val(this.map.getZoom());
+
+
     //3. show dialog:
     $('#save_dialog').find('.close').unbind('click');
     $('#close-view-button').unbind('click');
@@ -690,7 +716,10 @@ localground.viewer.prototype.updateView = function () {
         url: '/api/0/views/' + $('#dd_views').val() + '/.json',
         type: 'PATCH',
         data: {
-            entities: $('#entities').val()
+            entities: $('#entities').val(),
+            center: $('#view-center').val(),
+			basemap: $('#view-basemap').val(),
+			zoom: $('#view-zoom').val()
         },
         success: function (data) {
             $('#close-view-button').click();
@@ -719,7 +748,10 @@ localground.viewer.prototype.createView = function () {
                 description: $("#new-view-description").val(),
                 tags: $("#new-view-tags").val(),
                 slug: $("#new-view-slug").val(),
-                entities: $('#entities').val()
+                entities: $('#entities').val(),
+                center: $('#view-center').val(),
+                basemap: $('#view-basemap').val(),
+                zoom: $('#view-zoom').val()
             },
             success: function (data) {
                 //reset the modal window

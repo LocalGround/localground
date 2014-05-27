@@ -147,6 +147,21 @@ driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
 
                     </div>
                     <div id="presentations" class="tab_panel">
+                        <div class="btn-group">
+                            <button class="btn presentation-button" href="#save-presentation" id="save-presentation">
+                                <i class="fa fa-save"> Save Presentation</i>
+                            </button>
+                            <div class="btn-group">
+                                <button id="load-presentation" class="btn dropdown-toggle presentation-button" data-toggle="dropdown">
+                                    <i class="fa fa-folder-open"> Load Presentation</i>
+                                </button>
+                                <ul id="presentation-list" class="dropdown-menu">
+                                </ul>
+                            </div>
+
+                        </div>
+                        <br/>
+                        <br/>
                         <!--<button class="btn create-presentation" href="#new-presentation" data-main="presentations">
                             <i class="fa fa-plus"> Create Presentation</i>
                         </button>-->
@@ -169,8 +184,7 @@ driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
                         </button>
 
 
-                        <div id="presentation-controls">
-                            <hr>
+                        <div id="presentation-controls" class="btn-group">
                             <button class="btn" href="#new-step" id="step-back">
                                 <i class="fa fa-step-backward"> Back</i>
                             </button>
@@ -182,9 +196,6 @@ driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
                             </button>
                         </div>
                         <hr/>
-                        <button class="btn" href="#save-presentation" id="save-presentation">
-                            <i class="fa fa-save"> Save Presentation</i>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -282,12 +293,13 @@ driver.getProjectData({{source_object.id}}, 'projects', true, true, access_key);
                 </div>
                 <br/>
 
-                <label class="col-sm-2 control-label">Steps:</label>
+                <div class="hidden-presentation-fields">
+                    <label class="col-sm-2 control-label">Steps:</label>
 
-                <div class="input">
-                    <textarea readonly id="presentation-code"></textarea>
+                    <div class="input">
+                        <textarea readonly id="presentation-code"></textarea>
+                    </div>
                 </div>
-
             </div>
         </form>
 

@@ -26,7 +26,7 @@ class Group(BaseNamed, BaseGenericRelationMixin, BasePermissions):
     extents = models.PolygonField(null=True, blank=True)
     slug = models.SlugField(verbose_name="Friendly URL", max_length=100, db_index=True,
                             help_text='A few words, separated by dashes "-", to be used as part of the url')
-    basemap = models.ForeignKey('WMSOverlay', default=12) #default to grayscale
+    basemap = models.ForeignKey('WMSOverlay', default=12)  #default to grayscale
 
     class Meta:
         abstract = True
@@ -98,32 +98,32 @@ class Project(Group):
                 include_markers=False, include_audio=False, include_photos=False,
                 include_tables=False):
         d = {
-        'id': self.id,
-        'name': self.name,
-        'description': self.description,
-        'owner': self.owner.username
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'owner': self.owner.username
         }
         data = []
         if include_processed_maps:
             data.append({
-            'id': ObjectTypes.SCAN,
-            'overlayType': ObjectTypes.SCAN,
-            'name': 'Drawings',
-            'data': Scan.objects.by_project(self, processed_only=True).to_dict_list()
+                'id': ObjectTypes.SCAN,
+                'overlayType': ObjectTypes.SCAN,
+                'name': 'Drawings',
+                'data': Scan.objects.by_project(self, processed_only=True).to_dict_list()
             })
         if include_audio:
             data.append({
-            'id': ObjectTypes.AUDIO,
-            'overlayType': ObjectTypes.AUDIO,
-            'name': 'Audio Files',
-            'data': Audio.objects.by_project(self, ordering_field='name').to_dict_list()
+                'id': ObjectTypes.AUDIO,
+                'overlayType': ObjectTypes.AUDIO,
+                'name': 'Audio Files',
+                'data': Audio.objects.by_project(self, ordering_field='name').to_dict_list()
             })
         if include_photos:
             data.append({
-            'id': ObjectTypes.PHOTO,
-            'overlayType': ObjectTypes.PHOTO,
-            'name': 'Photos',
-            'data': Photo.objects.by_project(self, ordering_field='name').to_dict_list()
+                'id': ObjectTypes.PHOTO,
+                'overlayType': ObjectTypes.PHOTO,
+                'name': 'Photos',
+                'data': Photo.objects.by_project(self, ordering_field='name').to_dict_list()
             })
         '''
         if include_markers:
@@ -156,12 +156,12 @@ class Project(Group):
             recs = form.get_objects(user=self.owner, project=self, manually_reviewed=True)
             if len(recs) > 0:
                 data.append({
-                'id': form.id,
-                'overlay_type': ObjectTypes.RECORD,
-                'name': form.name,
-                'data': [r.to_dict() for r in recs]
+                    'id': form.id,
+                    'overlay_type': ObjectTypes.RECORD,
+                    'name': form.name,
+                    'data': [r.to_dict() for r in recs]
                 })
-            #tables.append(dict(form=form.to_dict(), data=recs))
+                #tables.append(dict(form=form.to_dict(), data=recs))
 
         return data
 
@@ -178,69 +178,75 @@ class Project(Group):
 
 
 class View(Group):
-	"""
-	A user-generated grouping of media.  Media associations are specified in the
-	GenericAssociation Model.  Only partially implemented.
-	"""
-	objects = ViewManager()
-	
-	class Meta(Group.Meta):
-		verbose_name = 'view'
-		verbose_name_plural = 'views'
-	
-	@classmethod
-	def sharing_form(cls):
-		from localground.apps.site.forms import ViewPermissionsForm
-		return ViewPermissionsForm
-	
-	@classmethod
-	def inline_form(cls, user=None):
-		from localground.apps.site.forms import ViewInlineUpdateForm
-		return ViewInlineUpdateForm
-	
-	@classmethod
-	def get_form(cls):
-		from localground.apps.site.forms import ViewCreateForm
-		return ViewCreateForm
-		
-	def get_markers_with_counts(self):
-		"""
-		Queries for Markers and also uses raw sql to retrieve how many Audio,
-		Photo, Table Records are associated with the marker.
-		"""
-		marker_ids = [m.id for m in self.markers]
-		markers_with_counts = Marker.objects.by_marker_ids_with_counts(marker_ids)
-		#append turned_on flag:
-		for m in self.markers:
-			for m1 in markers_with_counts:
-				if m.id == m1.id:
-					m1.turned_on = m.turned_on
-					break
-		return [m.to_dict(aggregate=True) for m in markers_with_counts]
-		
-	'''
-	def to_dict(self, include_auth_users=False, include_processed_maps=False,
-				include_markers=False, include_audio=False, include_photos=False,
-				include_tables=False):
-		d = {
-			'id': self.id,
-			'name': self.name,  
-			'description': self.description,
-			'owner': self.owner.username
-		}
-		if include_processed_maps:
-			d.update(dict(processed_maps=[rec.to_dict() for rec in self.map_images]))
-		if include_audio:
-			d.update(dict(audio=[rec.to_dict() for rec in self.audio_files]))
-		if include_photos:
-			d.update(dict(photos=[rec.to_dict() for rec in self.photos]))
-		if include_markers:
-			d.update(dict(markers=self.get_markers_with_counts()))
-		return d
-	'''
-	
-	def to_dict(self, detailed=False):
-		from localground.apps.site.api.serializers import ViewSerializer, ViewDetailSerializer
-		if detailed:
-			return ViewDetailSerializer(self, context={'request': {}}).data
-		return ViewSerializer(self, context={'request': {}}).data
+    """
+    A user-generated grouping of media.  Media associations are specified in the
+    GenericAssociation Model.  Only partially implemented.
+    """
+    center = models.PointField()
+    zoom = models.IntegerField()
+    objects = ViewManager()
+
+    class Meta(Group.Meta):
+        verbose_name = 'view'
+        verbose_name_plural = 'views'
+
+    @classmethod
+    def sharing_form(cls):
+        from localground.apps.site.forms import ViewPermissionsForm
+
+        return ViewPermissionsForm
+
+    @classmethod
+    def inline_form(cls, user=None):
+        from localground.apps.site.forms import ViewInlineUpdateForm
+
+        return ViewInlineUpdateForm
+
+    @classmethod
+    def get_form(cls):
+        from localground.apps.site.forms import ViewCreateForm
+
+        return ViewCreateForm
+
+    def get_markers_with_counts(self):
+        """
+        Queries for Markers and also uses raw sql to retrieve how many Audio,
+        Photo, Table Records are associated with the marker.
+        """
+        marker_ids = [m.id for m in self.markers]
+        markers_with_counts = Marker.objects.by_marker_ids_with_counts(marker_ids)
+        #append turned_on flag:
+        for m in self.markers:
+            for m1 in markers_with_counts:
+                if m.id == m1.id:
+                    m1.turned_on = m.turned_on
+                    break
+        return [m.to_dict(aggregate=True) for m in markers_with_counts]
+
+    '''
+    def to_dict(self, include_auth_users=False, include_processed_maps=False,
+                include_markers=False, include_audio=False, include_photos=False,
+                include_tables=False):
+        d = {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'owner': self.owner.username
+        }
+        if include_processed_maps:
+            d.update(dict(processed_maps=[rec.to_dict() for rec in self.map_images]))
+        if include_audio:
+            d.update(dict(audio=[rec.to_dict() for rec in self.audio_files]))
+        if include_photos:
+            d.update(dict(photos=[rec.to_dict() for rec in self.photos]))
+        if include_markers:
+            d.update(dict(markers=self.get_markers_with_counts()))
+        return d
+    '''
+
+    def to_dict(self, detailed=False):
+        from localground.apps.site.api.serializers import ViewSerializer, ViewDetailSerializer
+
+        if detailed:
+            return ViewDetailSerializer(self, context={'request': {}}).data
+        return ViewSerializer(self, context={'request': {}}).data

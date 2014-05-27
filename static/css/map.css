@@ -313,6 +313,25 @@ form .input { margin-left: 85px; }
     width:30em;
 }
 
+#view-center {
+    height:1em;
+    width:20em;
+}
+
+#view-basemap {
+    height:1em;
+    width:20em;
+}
+
+#view-zoom {
+    height:1em;
+    width:20em;
+}
+
+.hidden-view-fields {
+    display:none;
+}
+
 .new-view-field {
     height:1em;
     width:20em;
@@ -320,7 +339,7 @@ form .input { margin-left: 85px; }
 
 #new-view-error {
     display:none;
-    color:red;
+    color: #ff0005;
 }
 
 #view-modal-body {
@@ -351,11 +370,24 @@ form .input { margin-left: 85px; }
     display: none;
 }
 
+.hidden-presentation-fields {
+    display:none;
+}
+
 #presentation-steps thead tr th{
     list-style-type: none;
     width:10em;
 }
 
+
+#start-presentation {
+    float:right;
+    margin-left:3em;
+}
+
+#presentation-list {
+    list-style-type:none;
+}
 
 .presentation-step td select {
     width:10em;
@@ -364,6 +396,17 @@ form .input { margin-left: 85px; }
     width:10em;
 }
 
+.step-arg-value {
+    width:10em;
+    height:2.25em;
+}
+
+.presentation-button {
+    width:12.25em;
+    height:2.25em;
+}
+
 #presentation-controls {
     display:none;
+    margin: 2em auto 2em auto;
 }
