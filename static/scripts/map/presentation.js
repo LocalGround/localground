@@ -1,7 +1,5 @@
 /**
  * Created by zmmachar on 5/20/14.
- * NOTE TO SELF - finish loading - hook into the code in the presentation table and just construct the table row by row
- * NOTE TO SELF - in fact, factor out add-step?  Perhaps just feed the other add-step "Unselected" and ""
  */
 
 localground.presentation = function () {
