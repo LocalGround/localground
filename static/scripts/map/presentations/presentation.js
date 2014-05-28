@@ -93,7 +93,6 @@ localground.presentation.startPresentation = function () {
     $('#step-forward').click(function () {
         $(steps[currentStep]).css('background-color', '');
         if (currentStep < steps.length - 1) {
-            that.rewindStep.call(that, steps[currentStep]);
             currentStep++;
             that.showStep.call(that, steps[currentStep]);
         }
@@ -102,7 +101,7 @@ localground.presentation.startPresentation = function () {
     $('#step-back').click(function () {
         $(steps[currentStep]).css('background-color', '');
         if (currentStep > 0) {
-
+        that.rewindStep.call(that, steps[currentStep]);
             currentStep--;
             that.showStep.call(that, steps[currentStep]);
         }

@@ -85,13 +85,15 @@ localground.presentation.focusArguments = function ($stepData, stepIndex, stepAr
         if(!currentView || !currentView.length > 0) {
             $stepData.append($('<p class="' + this.argValueClassName +'">No elements for focus</p>'))
         } else {
-            var test = [];
+            currentView = currentView[0];
             $.each(currentView.entities, function (index, entity) {
                 var overlay_type = entity.overlay_type;
                 //get overlay elements of the correct overlay_type
                 $.each(currentView.children, function(index, child) {
                     $.each(child.data, function(index, datum) {
-
+                        $dd.append(
+                            $('<option></option>').val(datum.overlay_type + ':' +  datum.id).html(datum.name)
+                        );
                     });
                 });
 
@@ -103,7 +105,6 @@ localground.presentation.focusArguments = function ($stepData, stepIndex, stepAr
                 $dd.val(stepArgVal);
             }
             $stepData.append($dd);
-            $stepData.append($('<textarea class="' + this.argValueClassName +'"></textarea>'))
         }
     }
 
@@ -114,7 +115,19 @@ localground.presentation.focusArguments = function ($stepData, stepIndex, stepAr
 
 
 localground.presentation.focus = function ($args) {
-
+    var argValue = $args.find('select').val();
+    argValue = argValue.split(':');
+    var overlayType = argValue[0];
+    var overlayId = argValue[1];
+    switch(overlayType) {
+        case 'photo':
+            overlayType = 'photos';
+            break;
+        case 'marker':
+            overlayType = 'markers';
+            break;
+    }
+    $('#' + overlayType + '_' + overlayId + ' div a').click();
 }
 
 localground.presentation.focusRewind = function($args) {
