@@ -73,29 +73,41 @@ localground.presentation.changeBasemapRewind = function($args) {
 
 
 
+//horrifying
 localground.presentation.focusArguments = function ($stepData, stepIndex, stepArgVal) {
-    /**
-    var currentViewId = parseInt(this.getStepContext.call(this, stepIndex));
-    if (currentViewId != null) {
-        var currentView = self.views.filter(function (view) {
-            if (view.id === currentViewId) return view;
-        })[0];
+    var $dd = $('<select class="dd-focus-list ' + this.argValueClassName + '" style="float:right"></select>');
+    var currentViewId = this.getStepContext(stepIndex);
+    var that = this;
+    if(!currentViewId) {
+        $stepData.append($('<p class="' + this.argValueClassName +'">No view loaded</p>'))
+    } else {
+        var currentView = self.views.filter(function(view) {if(view.id == currentViewId) return view});
+        if(!currentView || !currentView.length > 0) {
+            $stepData.append($('<p class="' + this.argValueClassName +'">No elements for focus</p>'))
+        } else {
+            var test = [];
+            $.each(currentView.entities, function (index, entity) {
+                var overlay_type = entity.overlay_type;
+                //get overlay elements of the correct overlay_type
+                $.each(currentView.children, function(index, child) {
+                    $.each(child.data, function(index, datum) {
 
-        var entities = $.parseJSON(currentView.entities);
+                    });
+                });
 
-        $.each(entities, function (index, entity) {
-            $.each(entity.ids, function (idx, id) {
-                console.log($('#' + entity.overlay_type + '_' + id));
-
+                //$dd.append(
+                //    $('<option></option>').val(this.id).html(this.name)
+                //);
             });
-
-        });
-
-        console.log('hey');
-
+            if(stepArgVal) {
+                $dd.val(stepArgVal);
+            }
+            $stepData.append($dd);
+            $stepData.append($('<textarea class="' + this.argValueClassName +'"></textarea>'))
+        }
     }
-     **/
-    $stepData.append($('<textarea class="' + this.argValueClassName +'"></textarea>'))
+
+
 
 
 }
@@ -106,7 +118,7 @@ localground.presentation.focus = function ($args) {
 }
 
 localground.presentation.focusRewind = function($args) {
-    
+
 }
 
 

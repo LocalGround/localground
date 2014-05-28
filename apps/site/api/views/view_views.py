@@ -32,12 +32,12 @@ class ViewMixin(object):
                 entity_type = models.Base.get_model(
                     model_name=overlay_type
                 ).get_content_type()
-                entity_ids = child.get('ids')
-                for entity_id in entity_ids:
+                inner_entities = child.get('entities')
+                for entity in inner_entities:
                     a = models.GenericAssociation(
                         source_id=source_id,
                         source_type=source_type,
-                        entity_id=entity_id,
+                        entity_id=entity['id'],
                         entity_type=entity_type,
                         owner=self.request.user,
                         last_updated_by=self.request.user,

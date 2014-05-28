@@ -20,25 +20,17 @@ class ViewSerializer(BaseSerializer):
                                   point_field_name='center')
     basemap = serializers.PrimaryKeyRelatedField()
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
+    children = serializers.SerializerMethodField('get_children')
 
     class Meta:
         model = models.View
         fields = BaseSerializer.Meta.fields + (
-        'owner', 'slug', 'access', 'zoom', 'center', 'basemap', 'entities'
+        'owner', 'slug', 'access', 'zoom', 'center', 'basemap', 'entities', 'children'
         )
         depth = 0
 
     def get_access(self, obj):
         return obj.access_authority.name
-
-
-class ViewDetailSerializer(ViewSerializer):
-    children = serializers.SerializerMethodField('get_children')
-
-    class Meta:
-        model = models.View
-        fields = ViewSerializer.Meta.fields + ('children',)
-        depth = 0
 
     def get_children(self, obj):
         from django.contrib.contenttypes.models import ContentType
@@ -70,24 +62,6 @@ class ViewDetailSerializer(ViewSerializer):
                 children['form_%s' % form.id] = form_data
         return children
 
-    def get_table_records(self, obj, form):
-        SerializerClass = create_compact_record_serializer(form)
-        data = SerializerClass(
-            form.TableModel.objects.get_objects(obj.owner, project=obj)
-            #form.get_data_query_lite(obj.owner, project=obj, limit=1000)
-        ).data
-        d = self.serialize_list(
-            form.TableModel,
-            data,
-            name=form.name,
-            overlay_type='record',
-            model_name_plural='form_%s' % form.id
-        )
-        d.update({
-        'headers': [f.col_alias for f in form.fields]
-        })
-        return d
-
     def get_photos(self, obj):
         data = PhotoSerializer(
             obj.photos, many=True, context={'request': {}}
@@ -112,7 +86,6 @@ class ViewDetailSerializer(ViewSerializer):
         ).data
         return self.serialize_list(models.Marker, data)
 
-
     def serialize_list(self, cls, data, name=None, overlay_type=None,
                        model_name_plural=None):
         if name is None:
@@ -127,3 +100,38 @@ class ViewDetailSerializer(ViewSerializer):
         'overlay_type': overlay_type,
         'data': data
         }
+
+    def get_table_records(self, obj, form):
+        SerializerClass = create_compact_record_serializer(form)
+        data = SerializerClass(
+            form.TableModel.objects.get_objects(obj.owner, project=obj)
+            #form.get_data_query_lite(obj.owner, project=obj, limit=1000)
+        ).data
+        d = self.serialize_list(
+            form.TableModel,
+            data,
+            name=form.name,
+            overlay_type='record',
+            model_name_plural='form_%s' % form.id
+        )
+        d.update({
+        'headers': [f.col_alias for f in form.fields]
+        })
+        return d
+
+
+
+
+
+class ViewDetailSerializer(ViewSerializer):
+    #children = serializers.SerializerMethodField('get_children')
+
+    class Meta:
+        model = models.View
+        fields = ViewSerializer.Meta.fields  # + ('children',)
+        depth = 0
+
+
+
+
+

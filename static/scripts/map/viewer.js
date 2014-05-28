@@ -687,11 +687,11 @@ localground.viewer.prototype.populateEntities = function () {
 
     var entities = [];
     $.each(self.managers, function (k, v) {
-        var overlayIDs = v.getTurnedOnOverlayIDs();
-        if (overlayIDs.length > 0) {
+        var overlays = v.getTurnedOnOverlayIDsWithNames();
+        if (overlays.length > 0) {
             entities.push({
                 overlay_type: v.overlay_type,
-                ids: overlayIDs
+                entities: overlays
             });
         }
     })

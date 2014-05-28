@@ -254,6 +254,19 @@ localground.manager.prototype.getTurnedOnOverlayIDs = function() {
 	return turnedOnOverlayIDs;
 };
 
+localground.manager.prototype.getTurnedOnOverlayIDsWithNames = function() {
+    var turnedOnOverlays = [];
+	$.each(this.data, function() {
+		if(this.isTurnedOn()) {
+            var overlay = {};
+            overlay.id = this.id;
+            overlay.name = this.name;
+			turnedOnOverlays.push(overlay);
+		}
+	});
+	return turnedOnOverlays;
+}
+
 localground.manager.prototype.updateVisibility = function() {
 	var panel = this.getListingPanel();
 	if(this.data.length > 0 && this.atLeastOneVisible())
