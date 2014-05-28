@@ -1,6 +1,12 @@
 /**
  * Created by zmmachar on 5/20/14.
+ * Deals with the messier user-interface portions of the presentation, along with saving and loading
+ * Leaves function implementation to the presentation-functions file
+ * TODO: implement rewind methods for current steps
+ * TODO: move constants into consts variable
  */
+
+var consts = {};
 
 localground.presentation = function () {
 
@@ -12,10 +18,9 @@ localground.presentation.initialize = function (opts) {
      * presentation-level variable declarations
      */
     this.stepTypes = {"unselected": "Choose Action", "showView": "Show View", "focus": "Focus",
-        "changeBasemap": "Change map", "doNothing": "Do Nothing"};
+        "changeBasemap": "Change map"};
     this.$stepTable = $('#presentation-steps tbody');
     this.$stepTable.sortable();
-    this.rewind = false;
     this.currentPresentationID = null;
     this.populatePresentationList.call(this);
     this.argValueClassName = 'step-arg-value';
@@ -88,8 +93,8 @@ localground.presentation.startPresentation = function () {
     $('#step-forward').click(function () {
         $(steps[currentStep]).css('background-color', '');
         if (currentStep < steps.length - 1) {
+            that.rewindStep.call(that, steps[currentStep]);
             currentStep++;
-            that.rewind = false;
             that.showStep.call(that, steps[currentStep]);
         }
 
@@ -97,8 +102,8 @@ localground.presentation.startPresentation = function () {
     $('#step-back').click(function () {
         $(steps[currentStep]).css('background-color', '');
         if (currentStep > 0) {
+
             currentStep--;
-            that.rewind = true;
             that.showStep.call(that, steps[currentStep]);
         }
     });
@@ -121,10 +126,15 @@ localground.presentation.stopPresentation = function (currentStep) {
 localground.presentation.showStep = function (step) {
     $(step).css('background-color', '#ADFFAD');
     var func = $(step).find('.step-function select').val();
-    if (func != "unselected") {
-        var $args = $(step).find('.step-argument');
-        this[func].call(this, $args);
-    }
+    var $args = $(step).find('.step-argument');
+    this[func].call(this, $args);
+}
+
+localground.presentation.rewindStep = function(step) {
+    var func = $(step).find('.step-function select').val() + 'Rewind';
+    var $args = $(step).find('.step-argument');
+    this[func].call(this, $args);
+
 }
 
 localground.presentation.getStepContext = function (stepIndex) {
@@ -196,14 +206,14 @@ localground.presentation.savePresentation = function() {
 
 localground.presentation.createPresentation = function() {
     $('#new-presentation-error').hide();
-    var newPresentationName = $("#new-presentation-name").val();
+    var that = this;
     if (this.makePresentationFieldsValid()) {
         $.ajax({
             //
-            url: '/api/0/presentations/',
+            url: '/api/0/presentations/.json',
             type: 'POST',
             data: {
-                name: newPresentationName,
+                name: $("#new-presentation-name").val(),
                 description: $("#new-presentation-description").val(),
                 tags: $("#new-presentation-tags").val(),
                 slug: $("#new-presentation-slug").val(),
@@ -214,7 +224,8 @@ localground.presentation.createPresentation = function() {
                 $('#new-presentation-fields label').css('color', '');
                 $('.new-presentation-field').val('');
                 $('#close-presentation-button').click();
-                self.resetViews(newPresentationName);
+                var newPresentationId = data.id;
+                that.resetPresentations.call(that, newPresentationId);
 
             },
             notmodified: function (data) {
@@ -286,15 +297,16 @@ localground.presentation.makePresentationFieldsValid = function() {
 
 }
 
-localground.presentation.resetPresentations = function(newPresentationName) {
+localground.presentation.resetPresentations = function(newPresentationId) {
+    var that = this;
     $.ajax({
         url: "/api/0/presentations/.json",
         type: "GET",
         success: function(data) {
-            localground.presentation.presentations = data.results;
-            if(newPresentationName) {
-                var currentPresentation = "";
-                localground.presentation.populatePresentationList.call(localground.presentation);
+            self.presentations = data.results;
+            if(newPresentationId) {
+                that.currentPresentationID = newPresentationId;
+                that.populatePresentationList.call(that);
             }
         }
 
@@ -332,91 +344,4 @@ localground.presentation.loadPresentation = function(presentationID) {
 }
 
 
-
-
-/**
- * Function definitions for presentation actions
- */
-
-localground.presentation.unselectedArguments = function ($stepData, stepIndex, stepArgVal) {
-     $stepData.append('<span class="'+this.argValueClassName+'" val=""></span>');
-}
-
-
-localground.presentation.doNothingArguments = function ($stepData, stepIndex, stepArgVal) {
-    $stepData.append('<span class="'+this.argValueClassName+'" val="">N/A</span>');
-}
-
-
-localground.presentation.showViewArguments = function ($stepData, stepIndex, stepArgVal) {
-    var $dd = $('<select class="dd-view-list ' + this.argValueClassName + '" style="float:right"></select>');
-    $.each(self.views, function () {
-        $dd.append(
-            $('<option></option>').val(this.id).html(this.name)
-        );
-    });
-    if(stepArgVal) {
-        $dd.val(stepArgVal);
-    }
-    $stepData.append($dd);
-}
-
-localground.presentation.focusArguments = function ($stepData, stepIndex, stepArgVal) {
-    /**
-    var currentViewId = parseInt(this.getStepContext.call(this, stepIndex));
-    if (currentViewId != null) {
-        var currentView = self.views.filter(function (view) {
-            if (view.id === currentViewId) return view;
-        })[0];
-
-        var entities = $.parseJSON(currentView.entities);
-
-        $.each(entities, function (index, entity) {
-            $.each(entity.ids, function (idx, id) {
-                console.log($('#' + entity.overlay_type + '_' + id));
-
-            });
-
-        });
-
-        console.log('hey');
-
-    }
-     **/
-    $stepData.append($('<textarea class="' + this.argValueClassName +'"></textarea>'))
-
-
-}
-
-localground.presentation.changeBasemapArguments = function ($stepData, stepIndex, stepArgVal) {
-    var $dd = $('<select class="dd-basemap-list ' + this.argValueClassName + '" style="float:right"></select>');
-    $.each(self.overlayConfigArray, function () {
-        $dd.append(
-            $('<option></option>').val(this.id).html(this.name)
-        );
-    });
-    if(stepArgVal) {
-        $dd.val(stepArgVal);
-    }
-    $stepData.append($dd);
-}
-
-localground.presentation.doNothing = function ($args) {
-    console.log('doNothing');
-}
-
-localground.presentation.showView = function ($args) {
-    //hook into the view logic, just 'click' the corresponding view
-    $('#view-' + $args.find('select').val()).parent().click()
-}
-
-localground.presentation.focus = function ($args) {
-
-}
-
-localground.presentation.changeBasemap = function($args) {
-    var overlayInfo = self.getOverlaySourceInfo('name', $args.find('select option:selected').text())
-    var overlayId = (overlayInfo.sourceName == 'google') ? overlayInfo.providerID : overlayInfo.name;
-    self.map.setMapTypeId(overlayId);
-}
 
