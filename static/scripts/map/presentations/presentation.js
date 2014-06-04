@@ -91,18 +91,20 @@ localground.presentation.startPresentation = function () {
     $('#presentation-controls').slideDown();
     var that = this;
     $('#step-forward').click(function () {
-        $(steps[currentStep]).css('background-color', '');
+
         if (currentStep < steps.length - 1) {
+            $(steps[currentStep]).css('background-color', '');
             currentStep++;
             that.showStep.call(that, steps[currentStep]);
         }
 
     });
     $('#step-back').click(function () {
-        $(steps[currentStep]).css('background-color', '');
+
         if (currentStep > 0) {
-        that.rewindStep.call(that, steps[currentStep]);
-            currentStep--;
+            $(steps[currentStep]).css('background-color', '');
+            //that.rewindStep.call(that, steps[currentStep]);
+            currentStep = that.getLastViewTransitionIndex(currentStep - 1);
             that.showStep.call(that, steps[currentStep]);
         }
     });
@@ -137,13 +139,18 @@ localground.presentation.rewindStep = function(step) {
 }
 
 localground.presentation.getStepContext = function (stepIndex) {
+    var index = this.getLastViewTransitionIndex.call(this, stepIndex);
+    return $(this.$stepTable.children()[index]).find('.step-argument select').val();
+}
+
+localground.presentation.getLastViewTransitionIndex = function (stepIndex) {
     for (var i = stepIndex; i >= 0; i--) {
         step = this.$stepTable.children()[i];
         if ($(step).find('.step-function select') && $(step).find('.step-function select').val() == "showView") {
-            return $(step).find('.step-argument select').val();
+            return i;
         }
     }
-    return null;
+    return 0;
 }
 
 localground.presentation.loadSaveDialog = function() {
