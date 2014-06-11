@@ -1,24 +1,32 @@
 
 /**
  * Function definitions for presentation actions
+ *
+ * Each presentation has two (currently used) related functions - a function which loads the list of arguments
+ * possibly associated with a presentation step, and a function which executes a step
+ *
+ * Additionally, there is a deprecated 'rewind method', which is not currently used;
+ *
+ * TODO: Really this should be a standalone object, probably a child of the presentation class
+ * TODO: Needs to have functionality better separated from 
  */
 
-localground.presentation.unselectedArguments = function ($stepData, stepIndex, stepArgVal) {
+localground.presentation.prototype.unselectedArguments = function ($stepData, stepIndex, stepArgVal) {
      $stepData.append('<span class="'+this.argValueClassName+'" val=""></span>');
 }
 
-localground.presentation.unselected = function ($args) {
+localground.presentation.prototype.unselected = function ($args) {
     //do nothing
 }
 
-localground.presentation.unselectedRewind = function($args) {
+localground.presentation.prototype.unselectedRewind = function($args) {
     //do nothing
 }
 
 
 
 
-localground.presentation.showViewArguments = function ($stepData, stepIndex, stepArgVal) {
+localground.presentation.prototype.showViewArguments = function ($stepData, stepIndex, stepArgVal) {
     var $dd = $('<select class="dd-view-list ' + this.argValueClassName + '" style="float:right"></select>');
     $.each(self.views, function () {
         $dd.append(
@@ -31,12 +39,12 @@ localground.presentation.showViewArguments = function ($stepData, stepIndex, ste
     $stepData.append($dd);
 }
 
-localground.presentation.showView = function ($args) {
+localground.presentation.prototype.showView = function ($args) {
     //hook into the view logic, just 'click' the corresponding view
     $('#view-' + $args.find('select').val()).parent().click()
 }
 
-localground.presentation.showViewRewind = function ($args) {
+localground.presentation.prototype.showViewRewind = function ($args) {
     //
 }
 
@@ -44,7 +52,7 @@ localground.presentation.showViewRewind = function ($args) {
 
 
 
-localground.presentation.changeBasemapArguments = function ($stepData, stepIndex, stepArgVal) {
+localground.presentation.prototype.changeBasemapArguments = function ($stepData, stepIndex, stepArgVal) {
     var $dd = $('<select class="dd-basemap-list ' + this.argValueClassName + '" style="float:right"></select>');
     $.each(self.overlayConfigArray, function () {
         $dd.append(
@@ -57,7 +65,7 @@ localground.presentation.changeBasemapArguments = function ($stepData, stepIndex
     $stepData.append($dd);
 }
 
-localground.presentation.changeBasemap = function($args) {
+localground.presentation.prototype.changeBasemap = function($args) {
     var overlayInfo = self.getOverlaySourceInfo('name', $args.find('select option:selected').text());
     var currentId = self.map.getMapTypeId();
     $args.prop('old-map-id',currentId);
@@ -66,7 +74,7 @@ localground.presentation.changeBasemap = function($args) {
 }
 
 
-localground.presentation.changeBasemapRewind = function($args) {
+localground.presentation.prototype.changeBasemapRewind = function($args) {
     var oldId = $args.prop('old-map-id');
     self.map.setMapTypeId(oldId);
 }
@@ -74,7 +82,7 @@ localground.presentation.changeBasemapRewind = function($args) {
 
 
 //horrifying
-localground.presentation.focusArguments = function ($stepData, stepIndex, stepArgVal) {
+localground.presentation.prototype.focusArguments = function ($stepData, stepIndex, stepArgVal) {
     var $dd = $('<select class="dd-focus-list ' + this.argValueClassName + '" style="float:right"></select>');
     var currentViewId = this.getStepContext(stepIndex);
     var that = this;
@@ -114,7 +122,7 @@ localground.presentation.focusArguments = function ($stepData, stepIndex, stepAr
 }
 
 
-localground.presentation.focus = function ($args) {
+localground.presentation.prototype.focus = function ($args) {
     var argValue = $args.find('select').val();
     argValue = argValue.split(':');
     var overlayType = argValue[0];
@@ -130,7 +138,7 @@ localground.presentation.focus = function ($args) {
     $('#' + overlayType + '_' + overlayId + ' div a').click();
 }
 
-localground.presentation.focusRewind = function($args) {
+localground.presentation.prototype.focusRewind = function($args) {
 
 }
 
