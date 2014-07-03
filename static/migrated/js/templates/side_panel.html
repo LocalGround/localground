@@ -1,0 +1,78 @@
+<ul class="nav nav-tabs">
+	<% _.each(panels, function(panel) { %>
+		<li>
+			<a href="#/<%= panel.id %>" class="fa <%= panel.icon %>" data-toggle="tab"></a>
+		</li>
+	<% }); %>
+</ul>
+<div class="tab-content">
+	<% _.each(panels, function(panel) { %>
+		<div class="tab-pane active" id="<%= panel.id %>_panel">
+			<div class="pane-header">
+				<h3><%= panel.name %></h3>
+			</div>
+			<div class="pane-body"></div>
+		</div>
+	<% }); %>
+	
+</div>
+<!-- div class="tab-content">
+	<div class="tab-pane active" id="a">
+		<div class="pane-header">
+			<h3>Data & Media</h3>
+			<div class="btn-group btn-toolbar pull-right">
+				<button id="upload" data-main="upload" class="btn">
+					<i class="fa fa-folder-open"></i>
+				</button>
+				<button id="upload" data-main="upload" class="btn">
+					<i class="fa fa-download"></i>
+				</button>
+				<button id="filter" class="btn">
+					<i class="fa fa-filter"></i>
+				</button>
+				<button id="mode_toggle" class="btn">
+					<i class="fa fa-edit"></i>
+				</button>
+			</div>
+		</div>
+		<div class="pane-body">
+			<div class="alert alert-info alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				<strong>Castlemont</strong>
+			</div>
+			<div class="alert alert-info alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				<strong>Oakland Tech</strong>
+			</div>
+			<br>
+			<img src="/static/migrated/images/media.png" style="width: 340px;" />
+		</div>
+	</div>
+	
+	
+	<div>SYMBOL PANEL GOES HERE</div>
+	
+	<div class="tab-pane" id="c">
+		<div class="pane-header">
+			<h3>Presentations</h3>
+		</div>
+		<div class="pane-body">
+			Zack's stuff goes here... 
+		</div>
+	</div>
+	<div class="tab-pane" id="d">
+		<div class="pane-header">
+			<h3>Downloads</h3>
+		</div>
+		<div class="pane-body">
+			KML &bull;
+			KMZ &bull;
+			Shapefile &bull;
+			CSV &bull;
+			Zip &bull;
+			PNG &bull;
+			PDF
+		</div>
+	</div>
+   </div>
+</div>

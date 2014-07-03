@@ -119,7 +119,8 @@ urlpatterns = patterns('',
 
 	# interactive maps
 	(r'^maps/edit/air-quality/', 'localground.apps.site.views.ebays.show_ebays_map_editor'),
-	(r'^maps/edit/', 'localground.apps.site.views.maps.show_map_editor'),
+	(r'^maps/edit/$', 'localground.apps.site.views.maps.show_map_editor'),
+	(r'^maps/edit/new/$', 'localground.apps.site.views.maps.show_map_editor', {'template': 'map/editor1.html'}),
 	(r'^maps/view/public/air-quality/$', 'localground.apps.site.views.ebays.show_ebays_map_viewer'),
 	(r'^maps/view/(?P<username>[\w|-|.|_]+)/(?P<slug>[\w-]+)/$', 'localground.apps.site.views.maps.show_map_viewer'),
 	(r'^maps/view/(?P<username>[\w|-|.|_]+)/(?P<slug>[\w-]+)/(?P<access_key>\w+)/$', 'localground.apps.site.views.maps.show_map_viewer'),
