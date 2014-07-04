@@ -11,12 +11,12 @@ localground.map.GeoLocation = (function (opts) {
 	
 	var initGeolocation = function() {
 		if(userProfile) {
-			alert("Go to preferred location");
+			//alert("Go to preferred location");
 			map.setCenter(userProfile.center);
 			map.setZoom(userProfile.zoom);
 		}
 		else if(navigator.geolocation) {
-			alert("Find current location");
+			//alert("Find current location");
 			var browserSupportFlag = true;
 			navigator.geolocation.getCurrentPosition(setPosition, handleNoGeolocation);
 		}

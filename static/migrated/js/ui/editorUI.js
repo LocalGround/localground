@@ -7,12 +7,13 @@ localground.Editor = (function () {
 	var defaultLocation = {
 		center: new google.maps.LatLng(40.91351257612757, -123.4423828125),
 		zoom: 14
-	}
+	};
 	var map = null;
 	var router = null;
 	var views = {};
 	var templates = new localground.Templates();
 	var layerManager = new localground.LayerManager();
+	var activeMapTypeID = 12;
 	
 	/***************************************************
 	 * Public methods
@@ -54,11 +55,11 @@ localground.Editor = (function () {
 				domElement: document.getElementById("map_canvas"),
 				defaultLocation: defaultLocation,
 				searchControl: true,
-				geolocationControl: true
+				geolocationControl: true,
+				activeMapTypeID: activeMapTypeID
 			});
 		});
 		router.on("route:loadSymbols", function(){
-			alert("loadSymbols");
 			views.layerList.render({
 				template: templates.get("symbols_panel"),
 				$element: $("#symbols_panel")

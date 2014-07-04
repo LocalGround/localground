@@ -8,3 +8,4 @@ String.prototype.namespace = function(separator) {
 //define legal namespaces here:
 'localground'.namespace();
 'localground.map'.namespace();
+'localground.map.tiles'.namespace();
