@@ -7,7 +7,10 @@ localground.map.TileManager = (function (opts) {
 		mapbox: localground.map.tiles.MapBox,
 	};
 	
-	this.setActiveMapType = function(id) {
+	var setActiveMapType = function(id) {
+		if (id == null) {
+			return;
+		}
 		var mapType = getTileInfo("id", id);
 		var sourceName = mapType.sourceName.toLowerCase();
 		if (sourceName == "google") {
@@ -16,7 +19,6 @@ localground.map.TileManager = (function (opts) {
 		else {
 			map.setMapTypeId(mapType.name);
 		}
-		
 	};
 	
 	var setTiles = function(opts) {
@@ -67,7 +69,12 @@ localground.map.TileManager = (function (opts) {
 		return tileInfo.id;
 	};
 
+	var initialize = function(opts) {
+		setTiles(opts);
+		setActiveMapType(opts.activeMapTypeID);
+	};
+
 	// initialize:
-	setTiles(opts);
+	initialize(opts);
 	
 });

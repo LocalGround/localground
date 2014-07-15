@@ -10,6 +10,7 @@ localground.Editor = (function () {
 	};
 	var map = null;
 	var router = null;
+	var overlays = null;
 	var views = {};
 	var templates = new localground.Templates();
 	var layerManager = new localground.LayerManager();
@@ -18,57 +19,63 @@ localground.Editor = (function () {
 	/***************************************************
 	 * Public methods
 	 ***************************************************/
-	this.initialize = function() {
+	this.initialize = function(opts) {
+		activeMapTypeID = opts.activeMapTypeID;
+		overlays = opts.overlays;
+		
 		templates.loadTemplates([
 				"top_nav",
 				"side_panel",
-				"symbols_panel"], function() {
-			initBackbone();
+				"symbols_panel"
+			], function() {
+			initBackbone(opts);
 		});
 	};
 	
 	/***************************************************
 	 * Private methods
 	 ***************************************************/
-	var initBackbone = function(){
+	var initBackbone = function(opts){
 		views = {
-			topNav: new TopNavigation(),
-			rightPanel: new RightPanel(),
+			topNav: new TopNavigation({
+				template: templates.get("top_nav"),
+				el: "nav"
+			}),
+			rightPanel: new RightPanel({
+				template: templates.get("side_panel"),
+				el: "#panel"
+			}),
 			basemap: new Basemap(),
 			layerList: new LayerList()
 		}
 		router = new Router();
 		router.on("route:home", function(){
 			//alert("home");
-			initButtons();
+			//initButtons();
 			initData();
 			//populate the panels:
-			views.topNav.render({
-				template: templates.get("top_nav"),
-				$element: $("nav")
-			});
-			views.rightPanel.render({
-				template: templates.get("side_panel"),
-				$element: $("#panel")
-			});
+			views.topNav.render();
+			views.rightPanel.render();
 			views.basemap.render({
-				domElement: document.getElementById("map_canvas"),
+				mapContainerID: "map_canvas",
 				defaultLocation: defaultLocation,
 				searchControl: true,
 				geolocationControl: true,
-				activeMapTypeID: activeMapTypeID
+				activeMapTypeID: activeMapTypeID,
+				overlays: overlays
 			});
 		});
 		router.on("route:loadSymbols", function(){
 			views.layerList.render({
 				template: templates.get("symbols_panel"),
-				$element: $("#symbols_panel")
+				el: "#symbols_panel"
 			});
 		});
 		Backbone.history.start();
 	};
 	
 	var initButtons = function() {
+		alert("initButtons!")
 		var that = this;
 		$("#add_symbol").click(function(){
 			layerManager.createLayer(map, managers);

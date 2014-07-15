@@ -21,10 +21,14 @@ var RightPanel = Backbone.View.extend({
 			name: "Downloads"
 		}
 	],
-	render: function(opts){
-		var template = _.template(opts.template, { panels: this.panels });
-		this.$el.html(template);
-		opts.$element.html(template);
+	initialize: function(opts){
+		this.el = opts.el;
+		this.template = _.template(opts.template, { panels: this.panels });
+		this.render();
+	},
+	render: function(){
+		this.$el.html(this.template);
+		//opts.$element.html(this.template);
 		//$(".fa-folder-open").trigger("click");
 	}
 });

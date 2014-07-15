@@ -37,9 +37,19 @@
 		<script type="text/javascript" src="/static/migrated/js/ui/templateLoader.js"></script>
 		<script type="text/javascript" src="/static/migrated/js/ui/editorUI.js"></script>
 		<script>
+			var isAdmin = false;
+			{% if user.is_superuser %}isAdmin = true;{% endif %}
 			var editor = new localground.Editor();
+			var opts = {
+				isAdmin: isAdmin,
+				username: '{{user.username}}',
+				serverURL: '{{serverURL}}', 
+				overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
+				activeMapTypeID: {{ basemap_id|default:"12" }},
+				mapContainerID: "map_canvas"
+			};
 			$( document ).ready(function() {
-				editor.initialize();
+				editor.initialize(opts);
 			});
 		</script>
 	</head>
