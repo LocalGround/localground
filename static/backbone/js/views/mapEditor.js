@@ -27,8 +27,10 @@ define(
 				defaultLocation: this.defaultLocation,
 				searchControl: true,
 				geolocationControl: true,
-				activeMapTypeID: 1 //,
-				//overlays: overlays
+				activeMapTypeID: 12,
+				//overlays comes from Django template...not sure how to
+				//do this the right way
+				overlays: overlays 
 			});
 			
 			var v = new DataPanelView();
