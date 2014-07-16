@@ -17,7 +17,7 @@ require.config({
 
 
 require(
-	["jquery", "views/mapEditorUI"],
+	["jquery", "views/mapEditor"],
 	function($, MapEditor) {
 		$(function() {
 			new MapEditor();

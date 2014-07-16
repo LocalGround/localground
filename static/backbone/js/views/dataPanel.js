@@ -2,7 +2,7 @@ define(["lib/external/backbone-min",
 		"config",
 		"models/project",
 		"collections/projects",
-		"views/itemsview",
+		"views/items",
 		"text!templates/dataPanelHeader.html"],
 	   function(Backbone, Config, Project, Projects, ItemsView, dataPanelHeader) {
 	var DataPanelView = Backbone.View.extend({

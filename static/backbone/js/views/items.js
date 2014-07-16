@@ -1,4 +1,4 @@
-define(["lib/external/backbone-min", "views/itemview", "text!templates/collectionHeader.html"],
+define(["lib/external/backbone-min", "views/item", "text!templates/collectionHeader.html"],
 	   function(Backbone, ItemView, collectionHeader) {
 	var ItemsView = Backbone.View.extend({
 		template: _.template( collectionHeader ),

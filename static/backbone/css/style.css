@@ -11,10 +11,6 @@ body {
 	min-height: 800px;
 }
 
-form {
-	margin-bottom: 20px;
-}
-
 .collection-header {
 	border-bottom-style: solid;
 	border-bottom-width: 1px;

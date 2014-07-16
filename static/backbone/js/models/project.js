@@ -3,7 +3,7 @@ define(["lib/external/backbone-min"], function(Backbone) {
 		defaults: {
 			name: "Untitled"
 		},
-		urlRoot: "http://localground.org/api/0/projects/",
+		urlRoot: "/api/0/projects/",
 	});
 	return Project;
 });
