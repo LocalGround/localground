@@ -11,13 +11,14 @@ define(["lib/external/backbone-min", "lib/map/searchBox",
 		tileManager: null,
 		userProfile: null,
 		defaultLocation: null,
+		mapContainerID: null,
 		
 		//functions:
 		initialize: function(opts){
 			$.extend(this, opts);
 			
 			//render map:
-			this.renderMap(opts.mapContainerID);
+			this.renderMap();
 			
 			//add a search control, if requested:
 			if (opts.searchControl)
@@ -42,7 +43,7 @@ define(["lib/external/backbone-min", "lib/map/searchBox",
 			}
 		},
 		
-		renderMap: function(mapContainerID){
+		renderMap: function(){
 			var mapOptions = {
 				scrollwheel: false,
 				minZoom: this.minZoom,
@@ -65,8 +66,9 @@ define(["lib/external/backbone-min", "lib/map/searchBox",
 				center: this.defaultLocation.center
 				
 			};
-			map = new google.maps.Map(document.getElementById(mapContainerID),
+			map = new google.maps.Map(document.getElementById(this.mapContainerID),
 										mapOptions);
+			
 		}
 	});
 	return BasemapView;

@@ -5,11 +5,11 @@ define(
 	], function(DataPanelView, BasemapView) {
 	var MapEditor = Backbone.View.extend({
 		el: "#panels",
-		defaultLocation: {
-			center: new google.maps.LatLng(40.91351257612757, -123.4423828125),
-			zoom: 14
-		},
-		initialize: function(items) {
+		overlays: null,
+		activeMapTypeID: null,
+		defaultLocation: null,
+		initialize: function(opts) {
+			$.extend(this, opts);
 			//this.projects = new Projects();
 			//this.projects.fetch({ reset: true });
 			//this.loadProjectData();
@@ -26,11 +26,9 @@ define(
 				mapContainerID: "map_canvas",
 				defaultLocation: this.defaultLocation,
 				searchControl: true,
-				geolocationControl: true,
-				activeMapTypeID: 12,
-				//overlays comes from Django template...not sure how to
-				//do this the right way
-				overlays: overlays 
+				geolocationControl: false,
+				activeMapTypeID: this.activeMapTypeID,
+				overlays: this.overlays 
 			});
 			
 			var v = new DataPanelView();
