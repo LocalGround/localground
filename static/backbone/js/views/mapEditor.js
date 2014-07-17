@@ -33,7 +33,7 @@ define(
 			
 			var v = new DataPanelView();
 			this.$el.append(v.render().el);
-			v.loadProjectData(9);
+			//v.loadProjectData(1);
 		}
 	});
 	return MapEditor;

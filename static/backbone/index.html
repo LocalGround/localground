@@ -27,7 +27,8 @@
 				baseUrl: "js",
 				paths: {
 					'jquery': 'lib/external/jquery-1.11.1.min',
-					'text': 'lib/external/text'
+					'text': 'lib/external/text',
+					"jquery.bootstrap": "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min"
 				},
 				shim: {
 					'lib/external/underscore-min': {
@@ -36,13 +37,16 @@
 					'lib/external/backbone-min': {
 						deps: ["lib/external/underscore-min", "jquery"],
 						exports: 'Backbone'
+					},
+					"jquery.bootstrap": {
+						deps: ["jquery"]
 					}
 				},
 				urlArgs: "bust=" + (new Date()).getTime()
 			});
 			require(
-				["jquery", "views/mapEditor"],
-				function($, MapEditor) {
+				["jquery", "jquery.bootstrap", "views/mapEditor"],
+				function($, bootstrap, MapEditor) {
 					$(function() {
 						new MapEditor({
 							overlays: [
@@ -64,5 +68,7 @@
 				}
 			);
 		</script>
+		<script src=""></script>
+		
 	</body>
 </html>

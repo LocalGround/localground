@@ -2,13 +2,25 @@ define(["lib/external/backbone-min", "views/item", "text!templates/collectionHea
 	   function(Backbone, ItemView, collectionHeader) {
 	var ItemsView = Backbone.View.extend({
 		template: _.template( collectionHeader ),
+		rawData: null,
+		itemTemplateHtml: null,
+		collection: null,
+		Model: null,
+		Collection: null,
 		events: {
 			'click .check-all': 'checkAll'
 		},
 		initialize: function(opts) {
-			this.collection = opts.collection;
-			this.itemTemplateHtml = opts.itemTemplateHtml;
-			this.render();
+			$.extend(this, opts);
+			var models = [];
+			$.each(this.rawData, function(){
+				models.push(new opts.Model(this));
+			});
+			
+			this.collection = new this.Collection(models);
+			//this.collection = opts.collection;
+			//this.itemTemplateHtml = opts.itemTemplateHtml;
+			//this.render();
 			this.collection.on("reset", this.render, this);
 		},
 		render: function() {
@@ -27,8 +39,8 @@ define(["lib/external/backbone-min", "views/item", "text!templates/collectionHea
 			this.$el.find(".collection-data").append(itemView.render().el);
 		},
 		checkAll: function(){
-			var isChecked = this.$el.find('.check-all').prop("checked");
-			this.$el.find('input').prop("checked", isChecked);
+			//var isChecked = this.$el.find('.check-all').prop("checked");
+			this.$el.find('.item > input').trigger("click");
 		}
 	});
 	return ItemsView;
