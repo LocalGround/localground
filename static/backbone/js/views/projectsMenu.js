@@ -9,21 +9,23 @@ define([
 	   function(Backbone, Config, Projects, Project, ItemsView, ItemView, projectItem) {
     
 	var ProjectsMenu = Backbone.View.extend({
+		dataManager: null,
         initialize: function(opts) {
-            var that = this;
-			this.projects = new Projects();
-			this.projects.fetch({ reset: true , async: false});
+			$.extend(this, opts);
+            this.dataManager.fetchProjects();
         },
 		template: _.template(projectItem),
 		events: {
 			'click .cb-project': 'toggleProjectData',
-			'click #projectsMenu': 'stopPropagation' //todo: hardcoded HTML element
+			'click div': 'stopPropagation'
 		},
 		render: function() {
+			//alert("rendering project menu");
 			this.$el.empty();
-			this.projects.each(function(item) {
+			this.dataManager.projects.each(function(item) {
 				this.renderProject(item);
 			}, this);
+			this.delegateEvents();
 			return this;
 		},
 		renderProject: function(item) {
@@ -39,29 +41,12 @@ define([
 		toggleProjectData: function(e) {
 			var $cb = $(e.currentTarget);
 			if ($cb.prop("checked")) {
-				this.loadProjectData($cb.val());
+				this.dataManager.fetchDataByProjectID($cb.val());
 				e.stopPropagation();
 			}
 			else {
 				alert("hide project");
-			}
-		},
-		loadProjectData: function(id) {
-			var that = this;
-			this.project = new Project({id: id});
-			this.project.fetch({data: {format: 'json'}, success: function(r){
-				that.renderData();
-			}});
-		},
-		renderData: function(){
-			$('body').find('.pane-body').empty();
-			var children = this.project.get("children");
-			//initialize sub-managers:
-			for (key in children) {
-				var opts = Config[key.split("_")[0]];
-				opts.rawData = children[key].data;
-				var view = new ItemsView(opts);
-				$('body').find('.pane-body').append(view.render().el);
+				//http://backbonejs.org/#Collection-remove
 			}
 		}
     });

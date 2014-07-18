@@ -1,26 +1,48 @@
 define(["lib/external/backbone-min",
+		"config",
 		"views/projectsMenu",
+		"views/items",
 		"text!templates/dataPanelHeader.html"],
-	   function(Backbone, ProjectsMenu, dataPanelHeader) {
-	var DataPanelView = Backbone.View.extend({
+	   function(Backbone, Config, ProjectsMenu, ItemsView, dataPanelHeader) {
+	var DataPanel = Backbone.View.extend({
 		template: _.template( dataPanelHeader ),
-		collections: {},
-		initialize: function(){
-			v = new ProjectsMenu({
-				dataManager: this
+		dataManager: null,
+		projectsMenu: null,
+		dataViews: {},
+		initialize: function(opts){
+			$.extend(this, opts);
+			
+			this.projectsMenu = new ProjectsMenu({
+				dataManager: this.dataManager
 			});
+			this.render();
 		},
 		render: function() {
-			this.$el.empty().append(this.template());
-			this.$el.find('#projectsMenu').append(v.render().el);
+			//render projects menu if it doesn't currently exist:
+			if (this.$el.find('.projects-menu').get(0) == null) {
+				this.$el.empty().append(this.template());
+				this.$el.find('.projects-menu').append(
+					this.projectsMenu.render().el
+				);
+			}
+			
+			//render sub-views:
+			this.$el.find('.pane-body').empty();
+			for (key in this.dataManager.collections) {
+				if (this.dataViews[key] == null) {
+					alert("adding new!");
+					this.dataViews[key] = new ItemsView({
+						collection: this.dataManager.collections[key],
+						itemTemplateHtml: Config[key.split("_")[0]].itemTemplateHtml
+					});
+				}
+				this.$el.find('.pane-body').append(this.dataViews[key].render().el);
+			}
+			
+			//re-attach event handlers:
+			this.projectsMenu.delegateEvents();
 			return this;
-		},
-		updateCollection: function(key, models) {
-			//this.collections[key]
-		},
-		getCollection: function(key) {
-			return this.collections[key];
 		}
 	});
-	return DataPanelView;
+	return DataPanel;
 });

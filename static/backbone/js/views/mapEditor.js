@@ -1,18 +1,19 @@
 define(
 	[
 		"views/dataPanel",
-		"views/basemap"
-	], function(DataPanelView, BasemapView) {
+		"views/basemap",
+		"lib/utils/dataManager"
+		
+	], function(DataPanel, BasemapView, DataManager) {
 	var MapEditor = Backbone.View.extend({
 		el: "#panels",
 		overlays: null,
 		activeMapTypeID: null,
 		defaultLocation: null,
+		dataManager: null,
+		dataPanel: null,
 		initialize: function(opts) {
 			$.extend(this, opts);
-			//this.projects = new Projects();
-			//this.projects.fetch({ reset: true });
-			//this.loadProjectData();
 			
 			/*this.panelManager = new PanelManagerView([
 				'data',
@@ -31,9 +32,17 @@ define(
 				overlays: this.overlays 
 			});
 			
-			var v = new DataPanelView();
-			this.$el.append(v.render().el);
-			//v.loadProjectData(1);
+			this.dataManager = new DataManager();
+			
+			this.dataPanel = new DataPanel({
+				dataManager: this.dataManager
+			});
+			this.$el.append(this.dataPanel.render().el);
+			this.dataManager.projects.on('change', this.updatePanel, this);
+		},
+		updatePanel: function(){
+			//alert("update panel triggered");
+			this.dataPanel.render();
 		}
 	});
 	return MapEditor;
