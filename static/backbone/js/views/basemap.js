@@ -22,12 +22,12 @@ define(["lib/external/backbone-min", "lib/map/searchBox",
 			
 			//add a search control, if requested:
 			if (opts.searchControl)
-				searchControl = new SearchBox();
+				searchControl = new SearchBox({ map: this.map });
 			
 			//add a browser-based location detector, if requested:
 			if (this.geolocationControl) {
 				geolocationControl = new GeoLocation({
-					map: map,
+					map: this.map,
 					userProfile: this.userProfile,
 					defaultLocation: this.defaultLocation
 				});
@@ -36,7 +36,7 @@ define(["lib/external/backbone-min", "lib/map/searchBox",
 			if(this.overlays) {
 				//set up the various map tiles in Google maps:
 				tileController = new TileController({
-					map: map,
+					map: this.map,
 					overlays: this.overlays,
 					activeMapTypeID: this.activeMapTypeID
 				})
@@ -66,7 +66,7 @@ define(["lib/external/backbone-min", "lib/map/searchBox",
 				center: this.defaultLocation.center
 				
 			};
-			map = new google.maps.Map(document.getElementById(this.mapContainerID),
+			this.map = new google.maps.Map(document.getElementById(this.mapContainerID),
 										mapOptions);
 			
 		}

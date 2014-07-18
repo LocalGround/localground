@@ -9,6 +9,7 @@ define(
 	var DataManager = function() {
 		this.collections = {};
 		this.projects = new Projects();
+		this.selectedProjects = new Projects();
 		this.fetchProjects = function(){
 			this.projects.fetch({ reset: true, async: false})
 		};
@@ -21,6 +22,25 @@ define(
 			}});
 		};
 		
+		this.removeDataByProjectID = function(id){
+			//http://backbonejs.org/#Collection-remove
+			for (key in this.collections) {
+				var collection = this.collections[key];
+				var items = [];
+				collection.each(function(item) {
+					if (item.get("project_id") == id) {
+						items.push(item);
+					}
+				}, this);
+				
+				//remove items from the collection:
+				this.collections[key].remove(items);
+			}
+			
+			//remove selected project:
+			this.selectedProjects.remove({id: id});
+		};
+		
 		this.getCollection = function(key) {
 			return this.collections[key];
 		};
@@ -30,6 +50,7 @@ define(
 			var children = project.get("children");
 			for (key in children) {
 				var opts = Config[key.split("_")[0]];
+				opts.name = children[key].name;
 				var models = [];
 				$.each(children[key].data, function(){
 					models.push(new opts.Model(this));
@@ -38,12 +59,15 @@ define(
 			}
 			
 			//add new project to the collection:
-			this.projects.add(project, {merge: true});
+			this.selectedProjects.add(project, {merge: true});
 		};
 		
 		this.updateCollection = function(key, models, opts) {
 			if (this.collections[key] == null) {
 				this.collections[key] = new opts.Collection(models);
+				if (key.indexOf("form") != -1) {
+					this.collections[key].name = opts.name;
+				}
 			}
 			this.collections[key].add(models, {merge: true});
 		};

@@ -1,12 +1,13 @@
 define(["lib/external/backbone-min",
 		"config",
-		"views/projectsMenu",
-		"views/items",
-		"text!templates/dataPanelHeader.html"],
+		"views/sidepanel/projectsMenu",
+		"views/sidepanel/items",
+		"text!templates/sidepanel/dataPanelHeader.html"],
 	   function(Backbone, Config, ProjectsMenu, ItemsView, dataPanelHeader) {
 	var DataPanel = Backbone.View.extend({
 		template: _.template( dataPanelHeader ),
 		dataManager: null,
+		map: null,
 		projectsMenu: null,
 		dataViews: {},
 		initialize: function(opts){
@@ -30,10 +31,11 @@ define(["lib/external/backbone-min",
 			this.$el.find('.pane-body').empty();
 			for (key in this.dataManager.collections) {
 				if (this.dataViews[key] == null) {
-					alert("adding new!");
+					//alert("adding new!");
 					this.dataViews[key] = new ItemsView({
 						collection: this.dataManager.collections[key],
-						itemTemplateHtml: Config[key.split("_")[0]].itemTemplateHtml
+						itemTemplateHtml: Config[key.split("_")[0]].itemTemplateHtml,
+						map: this.map
 					});
 				}
 				this.$el.find('.pane-body').append(this.dataViews[key].render().el);

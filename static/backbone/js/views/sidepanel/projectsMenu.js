@@ -3,9 +3,9 @@ define([
 		"config",
 		"collections/projects",
 		"models/project",
-		"views/items",
-		"views/item",
-		"text!templates/projectItem.html"],
+		"views/sidepanel/items",
+		"views/sidepanel/item",
+		"text!templates/sidepanel/projectItem.html"],
 	   function(Backbone, Config, Projects, Project, ItemsView, ItemView, projectItem) {
     
 	var ProjectsMenu = Backbone.View.extend({
@@ -17,7 +17,8 @@ define([
 		template: _.template(projectItem),
 		events: {
 			'click .cb-project': 'toggleProjectData',
-			'click div': 'stopPropagation'
+			'click div': 'stopPropagation',
+			'click .project-item': 'triggerToggleProjectData'
 		},
 		render: function() {
 			//alert("rendering project menu");
@@ -38,16 +39,17 @@ define([
 		stopPropagation: function(e) {
 			e.stopPropagation();	
 		},
+		triggerToggleProjectData: function(e){
+			var $cb = $(e.currentTarget).find('input');
+			$cb.trigger("click");
+		},
 		toggleProjectData: function(e) {
 			var $cb = $(e.currentTarget);
-			if ($cb.prop("checked")) {
+			if ($cb.prop("checked"))
 				this.dataManager.fetchDataByProjectID($cb.val());
-				e.stopPropagation();
-			}
-			else {
-				alert("hide project");
-				//http://backbonejs.org/#Collection-remove
-			}
+			else
+				this.dataManager.removeDataByProjectID($cb.val());
+			e.stopPropagation();
 		}
     });
     return ProjectsMenu;

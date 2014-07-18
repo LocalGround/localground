@@ -1,6 +1,6 @@
 define(
 	[
-		"views/dataPanel",
+		"views/sidepanel/dataPanel",
 		"views/basemap",
 		"lib/utils/dataManager"
 		
@@ -10,6 +10,7 @@ define(
 		overlays: null,
 		activeMapTypeID: null,
 		defaultLocation: null,
+		basemap: null,
 		dataManager: null,
 		dataPanel: null,
 		initialize: function(opts) {
@@ -23,7 +24,7 @@ define(
 			]);
 			*/
 			
-			var basemap = new BasemapView({
+			this.basemap = new BasemapView({
 				mapContainerID: "map_canvas",
 				defaultLocation: this.defaultLocation,
 				searchControl: true,
@@ -35,13 +36,17 @@ define(
 			this.dataManager = new DataManager();
 			
 			this.dataPanel = new DataPanel({
-				dataManager: this.dataManager
+				dataManager: this.dataManager,
+				map: this.basemap.map
 			});
 			this.$el.append(this.dataPanel.render().el);
-			this.dataManager.projects.on('change', this.updatePanel, this);
+			
+			//listen for projects being added or removed:
+			this.dataManager.selectedProjects.on('add', this.updatePanel, this);
+			this.dataManager.selectedProjects.on('remove', this.updatePanel, this);
 		},
 		updatePanel: function(){
-			//alert("update panel triggered");
+			console.log("update panel triggered");
 			this.dataPanel.render();
 		}
 	});

@@ -3,7 +3,9 @@ define([], function() {
 		var searchBox = null;
 		var $input = $('<input class="controls address-input" \
 						   type="text" placeholder="Search for Places">');
-		this.render = function() {
+		var map = null;
+		this.render = function(opts) {
+			map = opts.map
 			map.controls[google.maps.ControlPosition.RIGHT_TOP].push($input.get(0));
 			searchBox = new google.maps.places.SearchBox($input.get(0));
 			google.maps.event.addListener(searchBox, 'places_changed', function () {
@@ -31,7 +33,7 @@ define([], function() {
 		};
 		
 		//call render upon initialization
-		this.render();
+		this.render(opts);
 	});
 	return SearchBox;
 });
