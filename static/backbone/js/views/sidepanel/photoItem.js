@@ -4,14 +4,16 @@ define(["views/sidepanel/item"], function(ItemView) {
 		getGoogleOverlay: function(){
 			if (this.googleOverlay == null) {
 				this.googleOverlay = new google.maps.Marker({
-					position: this.getGoogleLatLng(),
-					icon: new google.maps.MarkerImage(
+					position: this.getGoogleLatLng()
+				});
+				if (this.model.get("path_marker_sm")) {
+					this.googleOverlay.setIcon(new google.maps.MarkerImage(
 						this.model.get("path_marker_sm"),
 						new google.maps.Size(20, 20),	// size (width, height)
 						new google.maps.Point(0,0),		// origin (x, y)
 						new google.maps.Point(10, 10)	// anchor (x, y)
-					)
-				})
+					));
+				}
 			}
 			return this.googleOverlay;
 			

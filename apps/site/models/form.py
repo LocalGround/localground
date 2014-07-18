@@ -292,7 +292,8 @@ class Form(BaseNamed, BasePermissions):
 	def get_num_field(self):
 		dummy_num_field = Field()
 		dummy_num_field.has_snippet_field = True
-		dummy_num_field.col_name = 'num'
+		dummy_num_field.col_name_db = 'num'
+		dummy_num_field.col_alias = 'num'
 		dummy_num_field.ordering = 0
 		return dummy_num_field
 

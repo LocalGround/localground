@@ -136,7 +136,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		# there should be a new table created with both fields present:
 		for field in fields:
 			#if an exception isn't thrown, it works
-			a = cursor.execute('select %s from %s' % (field.col_name, field.form.table_name))		
+			a = cursor.execute('select %s from %s' % (field.col_name_db, field.form.table_name))		
 		
 	def test_add_new_form_using_view(self, **kwargs):
 		from localground.apps.site.models import Field, Form
@@ -178,7 +178,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 		# there should be a new table created with both fields present:
 		for field in fields:
 			#if an exception isn't thrown, it works
-			a = cursor.execute('select %s from %s' % (field.col_name, field.form.table_name))		
+			a = cursor.execute('select %s from %s' % (field.col_name_db, field.form.table_name))		
 		
 		# there shoud be a new ContentType that has a pointer to the form's
 		# TableModel class:

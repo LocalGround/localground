@@ -318,29 +318,27 @@ class ModelClassBuilder(object):
 		#sys.stderr.write('\n%s' % self._model_class._meta.get_all_field_names())
 		#sys.stderr.write('\n%s' % self.additional_fields)
 		return self._model_class   
-	
-
-	
 		
 	def add_dynamic_fields_to_model(self):
 		# read field specifications and build dynamic fields:
 		field = None
 		for n in self.form.fields:
+			kwargs = {
+				'blank': True,
+				'null': True,
+				'verbose_name': n.col_alias,
+				'db_column': n.col_name_db
+			}
 			if n.data_type.id == 1:
-				field = models.CharField(max_length=1000, blank=True, null=True,
-										 verbose_name=n.col_alias)
+				field = models.CharField(max_length=1000, **kwargs)
 			elif n.data_type.id in [2, 6]:
-				field = models.IntegerField(null=True, blank=True,
-										   verbose_name=n.col_alias)
+				field = models.IntegerField(**kwargs)
 			elif n.data_type.id == 3:
-				field = models.DateTimeField(null=True, blank=True,
-											 verbose_name=n.col_alias )
+				field = models.DateTimeField(**kwargs)
 			elif n.data_type.id == 4:
-				field = models.BooleanField(null=True, blank=True,
-											verbose_name=n.col_alias)
+				field = models.BooleanField(**kwargs)
 			elif n.data_type.id == 5:
-				field = models.FloatField(null=True, blank=True,
-										  verbose_name=n.col_alias)
+				field = models.FloatField(**kwargs)
 			
 			#add dynamic field:
 			self.dynamic_fields.update({
@@ -350,8 +348,12 @@ class ModelClassBuilder(object):
 				#also add snippet placeholder:
 				snippet_field_name = '%s_snippet' % n.col_name
 				self.snippet_fields.update({
-					snippet_field_name: models.ForeignKey('Snippet',
-															null=True, blank=True)
+					snippet_field_name: models.ForeignKey(
+						'Snippet',
+						null=True,
+						blank=True,
+						db_column='%s_snippet_id' % n.col_name_db
+					)
 				})
 		self.additional_fields.update(self.dynamic_fields)
 		self.additional_fields.update(self.snippet_fields)

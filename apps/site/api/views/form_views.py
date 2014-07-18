@@ -56,10 +56,10 @@ class FormDataMixin(object):
             raise Http404
         kwargs = self.kwargs
         d = self.request.GET or self.request.POST
-        if self.request.method == 'GET' and is_list and d.get('format') != 'csv':
-            return serializers.create_compact_record_serializer(form)
-        else:
-            return serializers.create_record_serializer(form)
+        #if self.request.method == 'GET' and is_list and d.get('format') != 'csv':
+        #    return serializers.create_compact_record_serializer(form)
+        #else:
+        return serializers.create_record_serializer(form)
 
     def get_queryset(self):
         try:

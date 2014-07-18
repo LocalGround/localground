@@ -73,8 +73,6 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
 		
 		#create post data:
 		d = FormDataTestMixin.create_form_post_data(self)
-		#print d
-		
 		#post:
 		response = self.client_user.post(self.url,
 			data=urllib.urlencode(d),

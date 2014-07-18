@@ -5,7 +5,7 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 	
 class Field(BaseAudit):
 	form = models.ForeignKey('Form')
-	col_name = models.CharField(max_length=255)
+	col_name_db = models.CharField(max_length=255, db_column="col_name")
 	col_alias = models.CharField(max_length=255, verbose_name="column name")
 	data_type = models.ForeignKey('DataType')
 	display_width = models.IntegerField() #percentage
@@ -24,13 +24,21 @@ class Field(BaseAudit):
 	def __str__(self):
 		return self.col_alias
 	
-	
+	@property
+	def col_name(self):
+		import re
+		# strip non-alpha-numeric characters (except spaces and dashes):
+		tmp = re.sub(r'([^-^\s\w]|_)+', '', self.col_alias)
+		
+		#replace spaces and dashes with underscores:
+		return str(re.sub(r'([-\s])+', '_', tmp).lower())
+		
 	class Meta:
 		app_label = 'site'
 		verbose_name = 'field'
 		verbose_name_plural = 'fields'
 		ordering = ['form__id', 'ordering']
-		unique_together = (('col_alias', 'form'), ('col_name', 'form'))
+		unique_together = (('col_alias', 'form'), ('col_name_db', 'form'))
 		
 	def save(self, user, *args, **kwargs):
 		is_new = self.pk is None
@@ -39,7 +47,7 @@ class Field(BaseAudit):
 		if is_new:
 			self.owner = user
 			self.date_created = get_timestamp_no_milliseconds()
-			self.col_name = 'col_placeholder'
+			self.col_name_db = 'col_placeholder'
 		else:
 			o = Field.objects.get(id=self.pk)
 			if o.data_type != self.data_type:
@@ -51,7 +59,7 @@ class Field(BaseAudit):
 		
 		# 2. ensure that the column name is unique, and add column to table:
 		if is_new:
-			self.col_name = 'col_%s' % self.pk
+			self.col_name_db = 'col_%s' % self.pk
 			super(Field, self).save(*args, **kwargs)
 			self.add_column_to_table()
 			
@@ -67,12 +75,12 @@ class Field(BaseAudit):
 			sql = []
 			sql.append(
 				'ALTER TABLE %s ADD COLUMN %s %s' %
-				(self.form.table_name, self.col_name, self.data_type.sql)
+				(self.form.table_name, self.col_name_db, self.data_type.sql)
 			)
 			#if self.has_snippet_field:
 			sql.append(
 				'ALTER TABLE %s ADD COLUMN %s_snippet_id integer' %
-				(self.form.table_name, self.col_name)
+				(self.form.table_name, self.col_name_db)
 			)
 			sql.append('''
 				ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
@@ -80,7 +88,7 @@ class Field(BaseAudit):
 				REFERENCES %(snippet_table)s(id) MATCH SIMPLE
 				''' % dict(
 						table_name=self.form.table_name,
-						column_name='%s_snippet_id' % self.col_name,
+						column_name='%s_snippet_id' % self.col_name_db,
 						snippet_table=Snippet._meta.db_table
 					)
 			)
