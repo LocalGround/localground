@@ -53,7 +53,7 @@
 				});
 				
 				var DeleteCell = Backgrid.Cell.extend({
-					template: _.template('<button class="delete">Delete</button>'),
+					template: _.template('<i class="fa fa-trash-o" style="cursor:pointer;"></i>'),
 					events: {
 					  "click": "deleteRow"
 					},
@@ -66,6 +66,32 @@
 						this.delegateEvents();
 						return this;
 					}
+				});
+				
+				var LatFormatter = {
+					fromRaw: function (rawValue, model) {
+						try {
+							return rawValue.coordinates[1].toFixed(4);
+						} catch(e) {
+							return "?";
+						}
+						
+					}
+				};
+				var LatCell = Backgrid.Cell.extend({
+					formatter: LatFormatter
+				});
+				var LngFormatter = {
+					fromRaw: function (rawValue, model) {
+						try {
+							return rawValue.coordinates[0].toFixed(4);
+						} catch(e) {
+							return "?";
+						}
+					}
+				};
+				var LngCell = Backgrid.Cell.extend({
+					formatter: LngFormatter
 				});
 				
 				var universities = new Universities();
@@ -91,6 +117,18 @@
 						name: "project_id",
 						label: "Project ID",
 						cell: "integer" 
+					},
+					{
+						name: "geometry",
+						label: "Longitude",
+						cell: LngCell,
+						editable: false,
+					},
+					{
+						name: "geometry",
+						label: "Latitude",
+						cell: LatCell,
+						editable: false,
 					},
 					{
 						name: "name",
@@ -123,6 +161,8 @@
 				
 				// Render the grid and attach the root to your HTML document
 				$("#example-2-result").append(grid.render().el);
+				
+				$("#example-2-result").height($('body').height() - 50);
 			
 				// Fetch some countries from the url
 				universities.fetch({
@@ -137,14 +177,9 @@
 				$("#example-2-result").find('table').colResizable({ disable: true }); //a hack to run garbage collection for resizable table
 				$("#example-2-result").find('table').colResizable({ disable: false });
 				
-				//http://backgridjs.com/ref/grid.html
-				//https://github.com/wyuenho/backgrid/issues/241
-				//grid.insertRow([new University(), new University()]);
 				$('#add_row').click(function(e) {
 					grid.insertRow({
-						project_id: 9,
-						name: 'A',
-						average_gpa: 3.6
+						project_id: 9
 					});
 					e.preventDefault();
 				});			  
