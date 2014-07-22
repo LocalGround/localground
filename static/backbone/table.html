@@ -7,6 +7,9 @@
 		<link rel="stylesheet" type="text/css" href="css/lg.css">
 		<link rel="stylesheet" href="css/backgrid.css" >
 		<style>
+			body {
+				overflow: hidden;
+			}
 			.backgrid thead th { text-align: left; }
 			.backgrid th, .backgrid td { padding: 5px !important; }
 		</style>
@@ -19,39 +22,22 @@
             </ul>
         </nav>
 		
-		<div id="example-2-result" class="backgrid-container"></div>
+		<div id="grid" class="backgrid-container"></div>
 	
 		<script id="deleteTemplate" type="text/template">
 			<button class="delete">Delete</button>
 		</script>
-		<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
+		<!-- script type="text/javascript" src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
 		<script type="text/javascript" src="js/lib/external/underscore-min.js"></script>
         <script type="text/javascript" src="js/lib/external/backbone-min.js"></script>
 		<script type="text/javascript" src="js/lib/external/backgrid.min.js"></script>
-		<script type="text/javascript" src="js/lib/external/colResizable-1.3.source.js"></script>
+		<script type="text/javascript" src="js/lib/external/colResizable-1.3.source.js"></script -->
+		<script src="js/lib/external/require.js"></script>
 		<script type="text/javascript" src="js/views/table.js"></script>	
-		<script>
+		<!-- script>
 			$(document).ready(function () {
 			
 				//http://backgridjs.com/misc/faq.html
-				var University = Backbone.Model.extend({
-					initialize: function () {
-						Backbone.Model.prototype.initialize.apply(this, arguments);
-						this.on("change", function (model, options) {
-							if (options && options.save === false){ return; }
-							model.save();
-						});
-					}
-				});
-	
-				var Universities = Backbone.Collection.extend({
-					model: University,
-					url: "http://localground/api/0/forms/9/data/",
-					parse : function(response) {
-						return response.results;
-					}
-				});
-				
 				var DeleteCell = Backgrid.Cell.extend({
 					template: _.template('<i class="fa fa-trash-o" style="cursor:pointer;"></i>'),
 					events: {
@@ -162,7 +148,7 @@
 				// Render the grid and attach the root to your HTML document
 				$("#example-2-result").append(grid.render().el);
 				
-				$("#example-2-result").height($('body').height() - 50);
+				
 			
 				// Fetch some countries from the url
 				universities.fetch({
@@ -173,6 +159,7 @@
 					}
 				});
 				
+				$("#example-2-result").height($('body').height() - 50);
 				$("#example-2-result").find('table').addClass('table-bordered');
 				$("#example-2-result").find('table').colResizable({ disable: true }); //a hack to run garbage collection for resizable table
 				$("#example-2-result").find('table').colResizable({ disable: false });
@@ -185,7 +172,7 @@
 				});			  
 			});
 			
-		</script>
+		</script -->
 		
 	</body>
 </html>

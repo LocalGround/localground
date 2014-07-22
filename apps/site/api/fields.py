@@ -175,7 +175,8 @@ class GeometryField(serializers.WritableField):
                 return GEOSGeometry(value)
             except (ValueError, GEOSException, OGRException, TypeError) as e:
                 raise serializers.ValidationError(
-                    _('Invalid format: string or unicode input unrecognized as WKT EWKT, and HEXEWKB.'))
+                    _('''Invalid format: "{0}"
+                      unrecognized as WKT EWKT, and HEXEWKB.'''.format(value)))
 
             return value
         return None
