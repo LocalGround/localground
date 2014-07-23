@@ -136,29 +136,38 @@ class GeometryField(serializers.WritableField):
         super(GeometryField, self).__init__(*args, **kwargs)
 
     def field_from_native(self, data, files, field_name, into):
-        if data.get(field_name) is not None and \
-                        data.get(field_name) != '':
-            geom = self.from_native(data.get(field_name))
-            if geom.geom_type not in self.geom_types:
-                raise serializers.ValidationError('Unsupported geometry type')
-
-            #only one geom can exist at a time: Point, LineString, and Polygon
-            # are mutually exclusive. Can't have more than one at once.
-            if geom.geom_type == 'Point':
-                point, polyline, polygon = geom, None, None
-            elif geom.geom_type == 'LineString':
-                point, polyline, polygon = None, geom, None
-            elif geom.geom_type == 'Polygon':
-                point, polyline, polygon = None, None, geom
-            else:
-                raise serializers.ValidationError('Unsupported geometry type')
-
+        #if data.get(field_name) is not None and \
+        #                data.get(field_name) != '':
+        geom = self.from_native(data.get(field_name))
+        if geom is None:
             if 'Point' in self.geom_types:
-                into[self.point_field_name] = point
+                into[self.point_field_name] = None
             if 'LineString' in self.geom_types:
-                into[self.polyline_field_name] = polyline
+                into[self.polyline_field_name] = None
             if 'Polygon' in self.geom_types:
-                into[self.polygon_field_name] = polygon
+                into[self.polygon_field_name] = None
+            return
+            
+        if geom.geom_type not in self.geom_types:
+            raise serializers.ValidationError('Unsupported geometry type')
+
+        #only one geom can exist at a time: Point, LineString, and Polygon
+        # are mutually exclusive. Can't have more than one at once.
+        if geom.geom_type == 'Point':
+            point, polyline, polygon = geom, None, None
+        elif geom.geom_type == 'LineString':
+            point, polyline, polygon = None, geom, None
+        elif geom.geom_type == 'Polygon':
+            point, polyline, polygon = None, None, geom
+        else:
+            raise serializers.ValidationError('Unsupported geometry type')
+
+        if 'Point' in self.geom_types:
+            into[self.point_field_name] = point
+        if 'LineString' in self.geom_types:
+            into[self.polyline_field_name] = polyline
+        if 'Polygon' in self.geom_types:
+            into[self.polygon_field_name] = polygon
 
     def to_native(self, value):
         if value is not None:
@@ -170,7 +179,7 @@ class GeometryField(serializers.WritableField):
 
 
     def from_native(self, value):
-        if value is not None:
+        if value is not None and value != '':
             try:
                 return GEOSGeometry(value)
             except (ValueError, GEOSException, OGRException, TypeError) as e:

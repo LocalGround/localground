@@ -2,8 +2,9 @@ define([
 		"lib/external/backbone-min",
 		"backgrid",
 		"collections/records",
+		"collections/columns",
 		"lib/external/colResizable-1.3.source"
-	], function(Backbone, Backgrid, Records) {
+	], function(Backbone, Backgrid, Records, Columns) {
 	var TableEditor = Backbone.View.extend({
 		el: "#grid",
 		events: {
@@ -12,17 +13,22 @@ define([
 		initialize: function(opts) {
 			opts = opts || {};
 			$.extend(this, opts);
-			var records = new Records();
-			
+			this.initLayout();
+			this.columns = new Columns();
+			this.columns.fetch();
+			this.columns.on('reset', this.loadGrid, this);
+		},
+		loadGrid: function(){
+			//alert("loadGrid");
 			var CaptionFooter = Backgrid.Footer.extend({
 				render: function () {
 					this.el.innerHTML = '<button id="add">Add</button>'
 					return this;
 				}
 			});
-			
+			var records = new Records();
 			this.grid = new Backgrid.Grid({
-				columns: records.columns,
+				columns: this.columns,
 				collection: records,
 				footer: CaptionFooter
 			});
@@ -36,9 +42,7 @@ define([
 			});
 			
 			this.render();
-			this.initLayout();
 		},
-		
 		render: function(){
 			// Render the grid and attach the root to your HTML document
 			this.$el.append(this.grid.render().el);
