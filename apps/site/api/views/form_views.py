@@ -8,6 +8,13 @@ from rest_framework.response import Response
 from rest_framework import status
 #from localground.apps.site.api.permissions import CheckFormPermissions
 
+class FieldViewSet(viewsets.ModelViewSet, AuditUpdate):
+	queryset = models.Field.objects.all()
+	serializer_class = serializers.FieldSerializer
+	filter_backends = (filters.SQLFilterBackend,)
+	
+	def pre_save(self, obj):
+		AuditUpdate.pre_save(self, obj)
 
 class FormList(QueryableListCreateAPIView, AuditCreate):
     serializer_class = serializers.FormSerializer

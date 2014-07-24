@@ -5,7 +5,7 @@ define([
         model: Record,
 		columns: null,
 		name: 'Records',
-        url: "http://localground/api/0/forms/9/data/",
+        url: "/api/0/forms/9/data/",
 		initialize: function (opts) {
 			Backbone.Model.prototype.initialize.apply(this, arguments);
 		},

@@ -10,12 +10,16 @@ define([
 		"lib/table/cells/delete"
 	], function($, Backgrid, LatFormatter, LngFormatter, DeleteCell) {
 	var Columns = Backgrid.Columns.extend({
-		url: 'http://localground/api/0/forms/9/data/.json', //depends on the table selected
+		url: '/api/0/forms/9/data/.json', //depends on the table selected
 		cellTypeLookup: {
 			"integer": "integer",
 			"field": "string",
+			"boolean": "boolean"
 		},
-		
+		excludeList: [
+				"overlay_type",
+				"url"
+			],
 		fetch: function(opts) {
 			/* Queries the Django REST Framework OPTIONS
 			 * page, which returns the API's schema as well
@@ -23,6 +27,16 @@ define([
 		     */
 			//alert('fetch: ' + this.url);
 			var that = this;
+			
+			/*
+			$.ajaxSetup({
+				beforeSend: function(xhr){
+					xhr.setRequestHeader("Authorization",
+						"Basic " + btoa("vanwars:123"));
+				}
+			});
+			*/
+			
 			$.ajax({
 				url: this.url,
 				type: 'OPTIONS',
@@ -46,7 +60,7 @@ define([
 					cols.push(that.getLatCell());
 					cols.push(that.getLngCell());
 				}
-				else {
+				else if(that.excludeList.indexOf(k) == -1) {
 					cols.push(that.getDefaultCell(k, opts));
 				}
 			});

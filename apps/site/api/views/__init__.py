@@ -14,7 +14,7 @@ from localground.apps.site.api.views.association_views import (
 )
 from localground.apps.site.api.views.ebays_views import TrackList
 from localground.apps.site.api.views.form_views import (
-	FormList, FormInstance, FormDataList, FormDataInstance
+	FieldViewSet, FormList, FormInstance, FormDataList, FormDataInstance
 )
 from localground.apps.site.api.views.admin_views import (
 	TileViewSet, OverlayTypeViewSet, OverlaySourceViewSet,
@@ -33,6 +33,7 @@ def api_root(request, format=None, **kwargs):
 	d = SortedDict()
 	d['audio'] = reverse('audio-list', request=request, format=format)
 	d['forms'] = reverse('form-list', request=request, format=format)
+	d['fields'] = reverse('field-list', request=request, format=format)
 	d['groups'] = reverse('group-list', request=request, format=format)
 	d['layouts'] = reverse('layout-list', request=request, format=format)
 	d['data-types'] = reverse('datatype-list', request=request, format=format)
