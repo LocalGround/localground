@@ -17,7 +17,7 @@ class FieldViewSet(viewsets.ModelViewSet, AuditUpdate):
 		AuditUpdate.pre_save(self, obj)
 
 class FormList(QueryableListCreateAPIView, AuditCreate):
-    serializer_class = serializers.FormSerializer
+    serializer_class = serializers.FormSerializerList
     filter_backends = (filters.SQLFilterBackend,)
     model = models.Form
 
@@ -37,7 +37,7 @@ class FormList(QueryableListCreateAPIView, AuditCreate):
 
 class FormInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
     model = models.form
-    serializer_class = serializers.FormSerializer
+    serializer_class = serializers.FormSerializerDetail
 
     def get_queryset(self):
         if self.request.user.is_authenticated():

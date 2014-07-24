@@ -1,4 +1,5 @@
 from localground.apps.site.api.serializers.base_serializer import BaseSerializer
+from localground.apps.site.api.serializers.field_serializer import FieldSerializer
 import datetime
 from django.conf import settings
 from rest_framework import serializers
@@ -7,22 +8,38 @@ from localground.apps.site.api import fields
 
 
 
-class FormSerializer(BaseSerializer):
-    project_ids = fields.ProjectsField(
-        label='project_ids',
-        source='projects',
-        required=True,
-        help_text='A comma-separated list of all of the projects to which this form should belong'
-    )
-    data_url = serializers.SerializerMethodField('get_data_url')
+class FormSerializerList(BaseSerializer):
+	project_ids = fields.ProjectsField(
+		label='project_ids',
+		source='projects',
+		required=True,
+		help_text='A comma-separated list of all of the projects to which this form should belong'
+	)
+	data_url = serializers.SerializerMethodField('get_data_url')
 
-    class Meta:
-        model = models.Form
-        fields = BaseSerializer.Meta.fields + ('data_url', 'project_ids')
-        depth = 0
+	class Meta:
+		model = models.Form
+		fields = BaseSerializer.Meta.fields + ('data_url', 'project_ids')
+		depth = 0
 
-    def get_data_url(self, obj):
-        return '%s/api/0/forms/%s/data/' % (settings.SERVER_URL, obj.pk)
+	def get_data_url(self, obj):
+		return '%s/api/0/forms/%s/data/' % (settings.SERVER_URL, obj.pk)
+	
+class FormSerializerDetail(FormSerializerList):
+	fields = serializers.SerializerMethodField('get_form_fields')
+
+	class Meta:
+		model = models.Form
+		fields = FormSerializerList.Meta.fields + ('fields',)
+		depth = 0
+
+	def get_form_fields(self, obj):
+		return FieldSerializer(
+			obj.fields, many=True,
+			context={'request': {}}).data
+			
+		
+	
 
 
 
@@ -48,24 +65,24 @@ class BaseRecordSerializer(serializers.ModelSerializer):
 					obj.form.id, obj.id)
 	
 def create_record_serializer(form):
-    """
-    generate a dynamic serializer from dynamic model
-    """
-    form_fields = []
-    form_fields.append(form.get_num_field())
-    form_fields.extend(list(form.fields))
+	"""
+	generate a dynamic serializer from dynamic model
+	"""
+	form_fields = []
+	form_fields.append(form.get_num_field())
+	form_fields.extend(list(form.fields))
 
-    field_names = [f.col_name for f in form_fields]
+	field_names = [f.col_name for f in form_fields]
 
-    class FormDataSerializer(BaseRecordSerializer):
-        class Meta:
-            from django.forms import widgets
+	class FormDataSerializer(BaseRecordSerializer):
+		class Meta:
+			from django.forms import widgets
 
-            model = form.TableModel
-            fields = BaseRecordSerializer.Meta.fields + tuple(field_names)
-            read_only_fields = BaseRecordSerializer.Meta.read_only_fields
+			model = form.TableModel
+			fields = BaseRecordSerializer.Meta.fields + tuple(field_names)
+			read_only_fields = BaseRecordSerializer.Meta.read_only_fields
 
-    return FormDataSerializer
+	return FormDataSerializer
 
 
 def create_compact_record_serializer(form):
