@@ -59,17 +59,18 @@ class Field(BaseAudit):
             self.date_created = get_timestamp_no_milliseconds()
             self.col_name_db = 'col_placeholder'
         else:
-            o = Field.objects.get(id=self.pk)
+            o = Field.objects.get(id=self.id)
             if o.data_type != self.data_type:
                 raise Exception(
                     'You are not allowed to change the column type of an existing column')
 
+        self.time_stamp = get_timestamp_no_milliseconds()
         super(Field, self).save(*args, **kwargs)
 
         # 2. ensure that the column name is unique, and add column to table:
         if is_new:
-            self.col_name_db = 'col_%s' % self.pk
-            super(Field, self).save(*args, **kwargs)
+            self.col_name_db = 'col_%s' % self.id
+            super(Field, self).save(update_fields=['col_name_db'])
             self.add_column_to_table()
 
         # 3. reset the application cache with the new table structure:

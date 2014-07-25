@@ -12,6 +12,8 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
             # method of the DRF's serializers.HyperlinkedModelSerializer class:
             self.opts.view_name = self._get_default_view_name(self.opts.model)
 
+        #raise Exception('%s - %s' % (self.opts.view_name, self.opts.lookup_field))
+
         url_field = fields.UrlField(
             view_name=self.opts.view_name,
             lookup_field=self.opts.lookup_field

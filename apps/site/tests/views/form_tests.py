@@ -28,18 +28,22 @@ class UpdateFormTest(test.TestCase, ViewMixin):
                           data_type=models.DataType.objects.get(id=1),
                           display_width=10,
                           ordering=1,
-                          form=self.form
+                          form=self.form,
+                          owner=self.user,
+                          last_updated_by=self.user
                           )
-        f1.save(user=self.user)
+        f1.save()
 
         # add second field to form:
         f2 = models.Field(col_alias='Field 2',
                           data_type=models.DataType.objects.get(id=1),
                           display_width=10,
                           ordering=2,
-                          form=self.form
+                          form=self.form,
+                          owner=self.user,
+                          last_updated_by=self.user
                           )
-        f2.save(user=self.user)
+        f2.save()
 
         # clear cache
         self.form.clear_table_model_cache()

@@ -3,7 +3,6 @@ from django.http import HttpResponse
 import simplejson as json
 from django.contrib.auth.decorators import login_required
 
-
 @login_required()
 def create_update_form(request, object_id=None,
                        embed=False, template='profile/create_update_form.html',
@@ -86,7 +85,10 @@ def create_update_form(request, object_id=None,
                         instance.ordering = i
                         if instance.pk is None:
                             instance.form = form_object
-                        instance.save(user=request.user)
+                        instance.last_updated_by = request.user
+                        if instance.pk is None:
+                            instance.owner = request.user
+                        instance.save()
 
             # remove unwanted fields here:
             for form in formset.deleted_forms:

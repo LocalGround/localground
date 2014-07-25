@@ -35,7 +35,6 @@ def api_root(request, format=None, **kwargs):
     d = SortedDict()
     d['audio'] = reverse('audio-list', request=request, format=format)
     d['forms'] = reverse('form-list', request=request, format=format)
-    d['fields'] = reverse('field-list', request=request, format=format)
     d['groups'] = reverse('group-list', request=request, format=format)
     d['layouts'] = reverse('layout-list', request=request, format=format)
     d['data-types'] = reverse('datatype-list', request=request, format=format)
