@@ -1,4 +1,4 @@
-from localground.apps.site.api.serializers.base_serializer import BaseSerializer
+from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
 from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializer
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
@@ -9,12 +9,12 @@ from rest_framework import serializers
 from localground.apps.site import models
 
 
-class ProjectSerializer(BaseSerializer):
+class ProjectSerializer(BaseNamedSerializer):
     access = serializers.SerializerMethodField('get_access')
 
     class Meta:
         model = models.Project
-        fields = BaseSerializer.Meta.fields + ('owner', 'slug', 'access')
+        fields = BaseNamedSerializer.Meta.fields + ('owner', 'slug', 'access')
         #read_only_fields = ('owner',)
         depth = 0
 
@@ -22,12 +22,12 @@ class ProjectSerializer(BaseSerializer):
         return obj.access_authority.name
 
 
-class ProjectDetailSerializer(BaseSerializer):
+class ProjectDetailSerializer(BaseNamedSerializer):
     children = serializers.SerializerMethodField('get_children')
 
     class Meta:
         model = models.Project
-        fields = BaseSerializer.Meta.fields + (
+        fields = BaseNamedSerializer.Meta.fields + (
         'slug', 'children'
         )
         depth = 0

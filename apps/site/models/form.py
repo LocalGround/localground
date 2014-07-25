@@ -172,7 +172,8 @@ class Form(BaseNamed, BasePermissions):
 		mcb.sync_db()
 	
 	def __unicode__(self):
-		return '%s - %s (%s)' % (self.id, self.name, self.table_name)
+		#return '%s - %s (%s)' % (self.id, self.name, self.table_name)
+		return self.name
 	
 	def get_next_record(self, unverified_only=False, last_id=None):
 		q = self.TableModel.objects.filter(snippet__is_blank=False)
@@ -224,71 +225,6 @@ class Form(BaseNamed, BasePermissions):
 		if is_new:
 			self.sync_db()
 	
-	'''
-	@staticmethod     
-	def create_new_form(dictionary, user):
-		from django.db import connection, transaction
-		from localground.apps.lib.helpers import generic
-		r = dictionary
-		ids, alias_dict, type_dict, width_dict = [],{},{},{}
-		total_width = 0
-		table_name = 'table_%s_%s' % (user.username, generic.generateID(num_digits=10))
-			
-		for k, v in r.items():
-			#build alias dictionary
-			if k.find('alias_') != -1:
-				#only add ids once:
-				id = int(k.split('_')[1])
-				ids.append(id)
-				alias_dict.update({ id: v })
-			
-			#build types dictionary
-			if k.find('type_') != -1:
-				id = int(k.split('_')[1])
-				type_dict.update({ id: DataType.objects.get(id=int(v)) })
-				
-			#build widths dictionary
-			if k.find('width_') != -1:
-				id = int(k.split('_')[1])
-				w = int(float(v))
-				total_width = total_width + w
-				width_dict.update({ id: w })
-				
-		if len(ids) == 0:
-			return None
-		differential = 100 - total_width
-		#ensure that total width is 100%:
-		width_dict[max(ids)] = width_dict.get(max(ids)) + differential
-		ids = sorted(ids)
-		
-		form_name = r.get('form_name', 'Untitled Form')
-		
-		#create new form entry
-		form = Form()
-		form.name = form_name
-		form.table_name = table_name
-		form.owner = user
-		form.save()
-		
-		#create form field entries:
-		for id in ids:
-			#alias_dict, type_dict, width_dict
-			if id != 0:
-				field = Field()
-				field.form = form
-				field.col_name = 'col_' + str(id)
-				field.col_alias = alias_dict.get(id)
-				field.data_type = type_dict.get(id)
-				field.display_width = width_dict.get(id) #percentage
-				field.ordering = id
-				field.is_printable = True
-				field.has_snippet_field = True
-				field.save()
-				
-		form.sync_db()
-		return form
-	'''
-	
 	def get_num_field(self):
 		dummy_num_field = Field()
 		dummy_num_field.has_snippet_field = True
@@ -303,101 +239,6 @@ class Form(BaseNamed, BasePermissions):
 			names.append(n.col_name)
 		return names
 	
-	'''
-	def get_data_query_lite(self, user=None, project=None, filter=None,
-					   has_geometry=None, manually_reviewed=None,
-					   order_by=['-time_stamp'], limit=1000):
-		# We want to query everything in one go, so we're taking advantage of
-		# the "select_related" functionality (no lazy queries please!)
-		related_fields = ['project', 'owner', 'form']
-		objects =  (self.TableModel.objects
-						.select_related(*related_fields))		
-		if project is not None:
-			objects = objects.filter(project=project)
-		if manually_reviewed is not None:
-			objects = objects.filter(manually_reviewed=manually_reviewed)   
-		if user is not None:
-			# this user query is slow:
-			#objects = objects.filter(
-			#		Q(project__owner=user) |
-			#		Q(project__users__user=user)
-			#	)
-			# use this instead:
-			objects = objects.filter(project__id__in=[
-				p.id for p in Project.objects.filter(Q(owner=user) | Q(users__user=user)).distinct()	
-			])
-		if has_geometry:
-			objects = objects.filter(point__isnull=False)
-		objects = objects.order_by(*order_by)
-		return objects[0:limit]
-	
-	def get_data_query(self, project=None, filter=None, user=None, is_blank=False,
-					to_dict=False, has_geometry=None,
-					attachment=None, manually_reviewed=None,
-					access_key=None,
-					related_fields=[
-						'snippet',
-						'num_snippet',
-						'project',
-						'snippet__source_attachment',
-						'owner',
-						'form',
-						'form__project__id']
-		):
-		if user is None or not user.is_authenticated():
-			if not self.can_view(user=user, access_key=access_key):
-				from rest_framework import exceptions
-				raise exceptions.AuthenticationFailed(detail="You are not authorized")
-		
-		for f in self.fields:
-			related_fields.append(f.col_name + '_snippet')
-		objects =  (self.TableModel.objects
-						.select_related(*related_fields)
-						.distinct()
-						.filter(Q(snippet__is_blank=is_blank) | Q(snippet__isnull=True)))
-						#.filter(snippet__is_blank=is_blank))
-		
-		if project is not None:
-			objects = objects.filter(project=project)
-		if attachment is not None:
-			objects = objects.filter(snippet__source_attachment=attachment)
-		if manually_reviewed is not None:
-			objects = objects.filter(manually_reviewed=manually_reviewed)   
-		if user is not None and user.is_authenticated():
-			objects = objects.filter(
-					Q(project__owner=user) |
-					Q(project__users__user=user)
-				)
-		if has_geometry:
-			objects = objects.filter(point__isnull=False)
-		return objects
-	
-	def get_objects(self, user, project=None, filter=None,
-					manually_reviewed=None, order_by=['time_stamp'], **kwargs):
-		objects = self.get_data_query(
-							manually_reviewed=manually_reviewed,
-							user=user,
-							project=project,
-							**kwargs
-						)  
-		objects = objects.order_by(*order_by)
-		return objects
-	
-	def get_data(self, to_dict=False, include_attachment=False,
-				 order_by=['time_stamp'], include_scan=False, **kwargs):
-		objects = self.get_data_query(**kwargs)  
-		objects = objects.order_by(*order_by)
-		
-		if to_dict:
-			return [
-				o.to_dict(include_data=True,
-						  include_attachment=include_attachment,
-						  include_scan=include_scan, **kwargs
-						  )
-				for o in list(objects[:2000])
-			]
-		return objects
-	'''
 	
 	def to_dict(self, print_only=True):
 		return dict(

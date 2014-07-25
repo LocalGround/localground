@@ -4,7 +4,7 @@ from django.contrib.auth.models import User, Group
 from django.db.models.fields import Field
 from localground.apps.site import models
 
-from localground.apps.site.api.serializers.base_serializer import BaseSerializer, MediaGeometrySerializer
+from localground.apps.site.api.serializers.base_serializer import BaseSerializer, BaseNamedSerializer, MediaGeometrySerializer
 from localground.apps.site.api.serializers.project_serializer import ProjectSerializer, ProjectDetailSerializer
 from localground.apps.site.api.serializers.view_serializer import ViewSerializer, ViewDetailSerializer
 from localground.apps.site.api.serializers.marker_serializer import MarkerSerializer, MarkerSerializerCounts

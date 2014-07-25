@@ -8,14 +8,23 @@ from rest_framework import status
 class ApiViewTest(test.TestCase, ViewMixinAPI):
 	name = 'New View Name'
 	description = 'Test description'
-	tags= "a, b, c"
+	tags= 'a, b, c'
 	slug = 'new-friendly-url'
 	entities = [
 			{ 'overlay_type': 'photo', 'ids': [1, 2, 3] },
 			{ 'overlay_type': 'audio', 'ids': [1] },
 			{ 'overlay_type': 'marker', 'ids': [1] }
 		]
-	
+	entities_zack = [
+			{
+				"overlay_type":"marker",
+				"entities":[{"id":55},{"id":56}]
+			},
+			{
+				"overlay_type":"photo",
+				"entities":[{"id":102}]
+			}
+		]
 	invalid_entities = [
 			{ 'overlay_type': 'photo', 'ids': [1000, 2000000, 300] },
 			{ 'overlay_type': 'audio', 'ids': [1] },
@@ -26,20 +35,24 @@ class ApiViewTest(test.TestCase, ViewMixinAPI):
 	basemap = 4
 	
 	def _test_save_view(self, method, status_id, entities):
-		response = method(self.url,
-			data=urllib.urlencode({
+		d = {
 				'name': self.name,
 				'description': self.description,
 				'tags': self.tags,
 				'slug': self.slug,
-				'entities': entities,
-				'center': self.center,
+				'entities': json.dumps(entities),
+				'center': json.dumps(self.center),
 				'zoom': self.zoom,
 				'basemap': self.basemap,
-			}),
+			}
+		#print d
+		response = method(self.url,
+			data=urllib.urlencode(d),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"
 		)
+		#if response.status_code != status_id:
+		#	print response.content
 		self.assertEqual(response.status_code, status_id)
 		
 		#if it was successful, verify data: 
@@ -69,7 +82,7 @@ class ApiViewListTest(ApiViewTest):
 		self._test_save_view(
 					self.client_user.post,
 					status.HTTP_201_CREATED,
-					json.dumps(self.entities)
+					self.entities
 				)
 		
 	def test_create_view_invalid_children(self, **kwargs):
@@ -99,7 +112,7 @@ class ApiViewInstanceTest(ApiViewTest):
 		self._test_save_view(
 					self.client_user.put,
 					status.HTTP_200_OK,
-					json.dumps(self.entities)
+					self.entities
 				)
 		
 	def test_update_view_using_patch(self, **kwargs):
@@ -135,13 +148,14 @@ class ApiViewInstanceTest(ApiViewTest):
 		self._test_save_view(
 					self.client_user.put,
 					status.HTTP_200_OK,
-					json.dumps(self.entities)
+					self.entities
 				)
 		
 		#and then get rid of them:
 		response = self.client_user.patch(self.url,
 			data=urllib.urlencode({
-				'entities': json.dumps([])
+				'entities': [],
+				'point': json.dumps(self.center)
 			}),
 			HTTP_X_CSRFTOKEN=self.csrf_token,
 			content_type = "application/x-www-form-urlencoded"

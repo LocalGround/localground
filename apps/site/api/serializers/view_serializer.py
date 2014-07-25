@@ -1,4 +1,4 @@
-from localground.apps.site.api.serializers.base_serializer import BaseSerializer
+from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
 from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializer
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
@@ -10,21 +10,22 @@ from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 
 
-class ViewSerializer(BaseSerializer):
+class ViewSerializer(BaseNamedSerializer):
     name = serializers.CharField(required=True)
     access = serializers.SerializerMethodField('get_access')
     entities = fields.EntitiesField(widget=widgets.JSONWidget, required=False)
     center = fields.GeometryField(help_text='Assign a GeoJSON string',
                                   required=True,
                                   widget=widgets.JSONWidget,
-                                  point_field_name='center')
+                                  point_field_name='center',
+                                  definitely_required=True)
     basemap = serializers.PrimaryKeyRelatedField()
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
     children = serializers.SerializerMethodField('get_children')
 
     class Meta:
         model = models.View
-        fields = BaseSerializer.Meta.fields + (
+        fields = BaseNamedSerializer.Meta.fields + (
         'owner', 'slug', 'access', 'zoom', 'center', 'basemap', 'entities', 'children'
         )
         depth = 0

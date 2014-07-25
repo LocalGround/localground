@@ -69,7 +69,8 @@ class Project(Group):
     objects = ProjectManager()
 
     def __str__(self):
-        return '%s - %s' % self.id, self.name
+        #return '%s - %s' % self.id, self.name
+        return self.name
 
 
     class Meta(Group.Meta):

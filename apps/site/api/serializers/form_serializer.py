@@ -1,4 +1,4 @@
-from localground.apps.site.api.serializers.base_serializer import BaseSerializer
+from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
 from localground.apps.site.api.serializers.field_serializer import FieldSerializer
 import datetime
 from django.conf import settings
@@ -6,9 +6,7 @@ from rest_framework import serializers
 from localground.apps.site import widgets, models
 from localground.apps.site.api import fields
 
-
-
-class FormSerializerList(BaseSerializer):
+class FormSerializerList(BaseNamedSerializer):
 	project_ids = fields.ProjectsField(
 		label='project_ids',
 		source='projects',
@@ -19,7 +17,7 @@ class FormSerializerList(BaseSerializer):
 
 	class Meta:
 		model = models.Form
-		fields = BaseSerializer.Meta.fields + ('data_url', 'project_ids')
+		fields = BaseNamedSerializer.Meta.fields + ('data_url', 'project_ids')
 		depth = 0
 
 	def get_data_url(self, obj):
@@ -38,12 +36,7 @@ class FormSerializerDetail(FormSerializerList):
 			obj.fields, many=True,
 			context={'request': {}}).data
 			
-		
-	
-
-
-
-
+#BaseNamedSerializer?
 class BaseRecordSerializer(serializers.ModelSerializer):
 
 	geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
