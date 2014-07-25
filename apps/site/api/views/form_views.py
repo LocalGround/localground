@@ -8,13 +8,15 @@ from rest_framework.response import Response
 from rest_framework import status
 #from localground.apps.site.api.permissions import CheckFormPermissions
 
+
 class FieldViewSet(viewsets.ModelViewSet, AuditUpdate):
-	queryset = models.Field.objects.all()
-	serializer_class = serializers.FieldSerializer
-	filter_backends = (filters.SQLFilterBackend,)
-	
-	def pre_save(self, obj):
-		AuditUpdate.pre_save(self, obj)
+    queryset = models.Field.objects.all()
+    serializer_class = serializers.FieldSerializer
+    filter_backends = (filters.SQLFilterBackend,)
+
+    def pre_save(self, obj):
+        AuditUpdate.pre_save(self, obj)
+
 
 class FormList(QueryableListCreateAPIView, AuditCreate):
     serializer_class = serializers.FormSerializerList
@@ -52,6 +54,7 @@ class FormInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
 
 
 class FormDataMixin(object):
+
     def get_serializer_class(self, is_list=False):
         '''
         This serializer class gets build dynamically, according to the
@@ -63,9 +66,9 @@ class FormDataMixin(object):
             raise Http404
         kwargs = self.kwargs
         d = self.request.GET or self.request.POST
-        #if self.request.method == 'GET' and is_list and d.get('format') != 'csv':
+        # if self.request.method == 'GET' and is_list and d.get('format') != 'csv':
         #    return serializers.create_compact_record_serializer(form)
-        #else:
+        # else:
         return serializers.create_record_serializer(form)
 
     def get_queryset(self):
@@ -74,7 +77,7 @@ class FormDataMixin(object):
         except models.Form.DoesNotExist:
             raise Http404
         if self.request.user.is_authenticated():
-            #return form.TableModel.objects.get_objects(self.request.user)
+            # return form.TableModel.objects.get_objects(self.request.user)
             return form.TableModel.objects.all()
         else:
             return form.TableModel.objects.get_objects_public(
@@ -92,7 +95,7 @@ class FormDataList(QueryableListCreateAPIView, FormDataMixin):
     def get_serializer_class(self):
         return FormDataMixin.get_serializer_class(self, is_list=True)
 
-    #def get_queryset(self):
+    # def get_queryset(self):
     #	return FormDataMixin.get_queryset(self)
 
     def get_queryset(self):
@@ -113,7 +116,9 @@ class FormDataList(QueryableListCreateAPIView, FormDataMixin):
         in an argument (e.g.: obj.save(user=user)).  Todo:  move this into a
         base class
         '''
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        serializer = self.get_serializer(
+            data=request.DATA,
+            files=request.FILES)
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
@@ -126,6 +131,7 @@ class FormDataList(QueryableListCreateAPIView, FormDataMixin):
 
 
 class FormDataInstance(generics.RetrieveUpdateDestroyAPIView, FormDataMixin):
+
     def get_serializer_class(self):
         return FormDataMixin.get_serializer_class(self)
 
@@ -160,4 +166,3 @@ class FormDataInstance(generics.RetrieveUpdateDestroyAPIView, FormDataMixin):
         kwargs['partial'] = True
         kwargs['user'] = request.user
         return self.update(request, *args, **kwargs)
-		

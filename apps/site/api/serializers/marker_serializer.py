@@ -7,10 +7,14 @@ from django.conf import settings
 
 
 class MarkerSerializer(GeometrySerializer):
-    geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
-                                    required=False,
-                                    widget=widgets.JSONWidget,
-                                    geom_types=['Point', 'LineString', 'Polygon'])
+    geometry = fields.GeometryField(
+        help_text='Assign a GeoJSON string',
+        required=False,
+        widget=widgets.JSONWidget,
+        geom_types=[
+            'Point',
+            'LineString',
+            'Polygon'])
     children = serializers.SerializerMethodField('get_children')
     color = fields.ColorField(required=False)
     form_ids = serializers.SerializerMethodField('get_form_ids')
@@ -18,12 +22,11 @@ class MarkerSerializer(GeometrySerializer):
     class Meta:
         model = models.Marker
         fields = GeometrySerializer.Meta.fields + \
-                 ('children', 'color', 'form_ids')
+            ('children', 'color', 'form_ids')
         depth = 0
 
     def get_form_ids(self, obj):
         return obj.get_form_ids()
-
 
     def get_children(self, obj):
         # ~21 queries per marker is the best I can do if data from 2 separate
@@ -33,16 +36,22 @@ class MarkerSerializer(GeometrySerializer):
         from localground.apps.site import models
 
         candidates = [
-            models.Photo, models.Audio, models.Scan, models.Project, models.Marker
-        ]
-        forms = (models.Form.objects
-                     .prefetch_related('field_set', 'field_set__data_type', 'projects')
-                     .filter(projects=obj.project)
-        )
+            models.Photo,
+            models.Audio,
+            models.Scan,
+            models.Project,
+            models.Marker]
+        forms = (
+            models.Form.objects .prefetch_related(
+                'field_set',
+                'field_set__data_type',
+                'projects') .filter(
+                projects=obj.project))
         for form in forms:
             candidates.append(form.TableModel)
 
-        #this caches the ContentTypes so that we don't keep executing one-off queries
+        # this caches the ContentTypes so that we don't keep executing one-off
+        # queries
         ContentType.objects.get_for_models(*candidates, concrete_model=False)
         children = {}
         audio = self.get_audio(obj)
@@ -55,7 +64,7 @@ class MarkerSerializer(GeometrySerializer):
         if map_images is not None:
             children['map_images'] = map_images
 
-        #add table data:
+        # add table data:
         form_dict = obj.get_records(forms=forms).items()
         for form, records in form_dict:
             SerializerClass = create_compact_record_serializer(form)
@@ -68,29 +77,40 @@ class MarkerSerializer(GeometrySerializer):
                 model_name_plural='form_%s' % form.id
             )
             d.update({
-            'headers': [f.col_alias for f in form.fields]
+                'headers': [f.col_alias for f in form.fields]
             })
             children['form_%s' % form.id] = d
 
         return children
 
-
     def get_photos(self, obj):
         from localground.apps.site.api.serializers import PhotoSerializer
 
-        data = PhotoSerializer(obj.photos, many=True, context={'request': self.request}).data
+        data = PhotoSerializer(
+            obj.photos,
+            many=True,
+            context={
+                'request': self.request}).data
         return self.serialize_list(obj, models.Photo, data)
 
     def get_audio(self, obj):
         from localground.apps.site.api.serializers import AudioSerializer
 
-        data = AudioSerializer(obj.audio, many=True, context={'request': self.request}).data
+        data = AudioSerializer(
+            obj.audio,
+            many=True,
+            context={
+                'request': self.request}).data
         return self.serialize_list(obj, models.Audio, data)
 
     def get_map_images(self, obj):
         from localground.apps.site.api.serializers import ScanSerializer
 
-        data = ScanSerializer(obj.map_images, many=True, context={'request': self.request}).data
+        data = ScanSerializer(
+            obj.map_images,
+            many=True,
+            context={
+                'request': self.request}).data
         return self.serialize_list(obj, models.Scan, data)
 
     def serialize_list(self, obj, cls, data, name=None, overlay_type=None,
@@ -104,12 +124,14 @@ class MarkerSerializer(GeometrySerializer):
         if model_name_plural is None:
             model_name_plural = cls.model_name_plural
         return {
-        'id': model_name_plural,
-        'name': name,
-        'overlay_type': overlay_type,
-        'data': data,
-        'attach_url': '%s/api/0/markers/%s/%s/' % (settings.SERVER_URL, obj.id, model_name_plural)
-        }
+            'id': model_name_plural,
+            'name': name,
+            'overlay_type': overlay_type,
+            'data': data,
+            'attach_url': '%s/api/0/markers/%s/%s/' %
+            (settings.SERVER_URL,
+             obj.id,
+             model_name_plural)}
 
 
 class MarkerSerializerCounts(MarkerSerializer):
@@ -120,8 +142,8 @@ class MarkerSerializerCounts(MarkerSerializer):
 
     class Meta:
         model = models.Marker
-        fields = GeometrySerializer.Meta.fields + ('photo_count', 'audio_count',
-                                                   'record_count', 'map_image_count', 'color')
+        fields = GeometrySerializer.Meta.fields + \
+            ('photo_count', 'audio_count', 'record_count', 'map_image_count', 'color')
         depth = 0
 
     def get_photo_count(self, obj):
@@ -147,7 +169,3 @@ class MarkerSerializerCounts(MarkerSerializer):
             return obj.record_count
         except:
             return None
-
-
-
-		

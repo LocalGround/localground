@@ -28,7 +28,7 @@ class ProjectDetailSerializer(BaseNamedSerializer):
     class Meta:
         model = models.Project
         fields = BaseNamedSerializer.Meta.fields + (
-        'slug', 'children'
+            'slug', 'children'
         )
         depth = 0
 
@@ -37,25 +37,29 @@ class ProjectDetailSerializer(BaseNamedSerializer):
         from localground.apps.site import models
 
         candidates = [
-            models.Photo, models.Audio, models.Scan, models.Project, models.Marker
-        ]
+            models.Photo,
+            models.Audio,
+            models.Scan,
+            models.Project,
+            models.Marker]
         forms = (models.Form.objects
-                     .select_related('projects')
-                     .prefetch_related('field_set', 'field_set__data_type')
-                     .filter(projects=obj)
-        )
+                 .select_related('projects')
+                 .prefetch_related('field_set', 'field_set__data_type')
+                 .filter(projects=obj)
+                 )
         for form in forms:
             candidates.append(form.TableModel)
-        #this caches the ContentTypes so that we don't keep executing one-off queries
+        # this caches the ContentTypes so that we don't keep executing one-off
+        # queries
         ContentType.objects.get_for_models(*candidates, concrete_model=False)
         children = {
-        'photos': self.get_photos(obj),
-        'audio': self.get_audio(obj),
-        'scans': self.get_scans(obj),
-        'markers': self.get_markers(obj, forms)
+            'photos': self.get_photos(obj),
+            'audio': self.get_audio(obj),
+            'scans': self.get_scans(obj),
+            'markers': self.get_markers(obj, forms)
         }
 
-        #add table data:
+        # add table data:
         for form in forms:
             form_data = self.get_table_records(obj, form)
             if len(form_data.get('data')) > 0:
@@ -76,35 +80,50 @@ class ProjectDetailSerializer(BaseNamedSerializer):
             model_name_plural='form_%s' % form.id
         )
         d.update({
-        'headers': [f.col_alias for f in form.fields]
+            'headers': [f.col_alias for f in form.fields]
         })
         return d
 
     def get_photos(self, obj):
         data = PhotoSerializer(
-            models.Photo.objects.get_objects(obj.owner, project=obj), many=True,
-            context={'request': {}}).data
+            models.Photo.objects.get_objects(
+                obj.owner,
+                project=obj),
+            many=True,
+            context={
+                'request': {}}).data
         return self.serialize_list(models.Photo, data)
 
     def get_audio(self, obj):
         data = AudioSerializer(
-            models.Audio.objects.get_objects(obj.owner, project=obj), many=True,
-            context={'request': {}}
-        ).data
+            models.Audio.objects.get_objects(
+                obj.owner,
+                project=obj),
+            many=True,
+            context={
+                'request': {}}).data
         return self.serialize_list(models.Audio, data)
 
     def get_scans(self, obj):
         data = ScanSerializer(
-            models.Scan.objects.get_objects(obj.owner, project=obj, processed_only=True),
-            many=True, context={'request': {}}
-        ).data
+            models.Scan.objects.get_objects(
+                obj.owner,
+                project=obj,
+                processed_only=True),
+            many=True,
+            context={
+                'request': {}}).data
         return self.serialize_list(models.Scan, data)
 
     def get_markers(self, obj, forms):
         data = MarkerSerializerCounts(
-            models.Marker.objects.get_objects_with_counts(obj.owner, project=obj, forms=forms),
-            many=True, context={'request': {}}
-        ).data
+            models.Marker.objects.get_objects_with_counts(
+                obj.owner,
+                project=obj,
+                forms=forms),
+            many=True,
+            context={
+                'request': {}}).data
         return self.serialize_list(models.Marker, data)
 
     def serialize_list(self, cls, data, name=None, overlay_type=None,
@@ -116,8 +135,8 @@ class ProjectDetailSerializer(BaseNamedSerializer):
         if model_name_plural is None:
             model_name_plural = cls.model_name_plural
         return {
-        'id': model_name_plural,
-        'name': name,
-        'overlay_type': overlay_type,
-        'data': data
+            'id': model_name_plural,
+            'name': name,
+            'overlay_type': overlay_type,
+            'data': data
         }

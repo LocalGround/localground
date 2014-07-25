@@ -3,14 +3,14 @@ from django.http import HttpResponse
 from localground.apps.site.decorators import get_group_if_authorized
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from django.template import RequestContext    
+from django.template import RequestContext
 import simplejson as json
 from django.core.context_processors import csrf
 from django.contrib.auth.models import User
 from localground.apps.site.models import Base, Scan, Print, Project, View, Presentation
 from django.core.exceptions import ObjectDoesNotExist
 
-#Constants describing default latitudes, longitudes, and zoom
+# Constants describing default latitudes, longitudes, and zoom
 DEFAULT_LAT = 21.698265
 DEFAULT_LONG = 14.765625
 DEFAULT_ZOOM = 8
@@ -22,27 +22,27 @@ def show_map_viewer(request, username, slug, access_key=None):
         slug=slug, owner=User.objects.get(username=username)
     )
     context = RequestContext(request)
-    
-    #set defaults:
+
+    # set defaults:
     lat, lng, zoom = DEFAULT_LAT, DEFAULT_LONG, DEFAULT_ZOOM
     if u.is_authenticated() and u.get_profile().default_location is not None:
-            lat = u.get_profile().default_location.y
-            lng = u.get_profile().default_location.x
-            zoom = 14
+        lat = u.get_profile().default_location.y
+        lng = u.get_profile().default_location.x
+        zoom = 14
     context.update({
         'lat': lat,
         'lng': lng,
         'zoom': zoom,
         'source_object': source_object,
-        #'basemap_id': 4, #source_object.basemap.id,
+        # 'basemap_id': 4, #source_object.basemap.id,
         'num_projects': 1,
         'read_only': True
     })
     if access_key is not None:
         context.update({
             'access_key': access_key
-         })
-    context['%s_id' % source_object.model_name] = source_object.id    
+        })
+    context['%s_id' % source_object.model_name] = source_object.id
     return render_to_response('map/viewer.html', context)
 
 
@@ -51,7 +51,7 @@ def show_map_editor(request, template='map/editor.html'):
     u = request.user
     context = RequestContext(request)
     username = u.username
-    #set defaults:
+    # set defaults:
     lat, lng, zoom = DEFAULT_LAT, DEFAULT_LONG, DEFAULT_ZOOM
     if u.is_authenticated():
         projects = Project.objects.get_objects(u)
@@ -78,9 +78,9 @@ def show_map_editor(request, template='map/editor.html'):
 
 def show_ebays_map_viewer(request):
     context = RequestContext(request)
-    #set defaults:
+    # set defaults:
     lat, lng, zoom = DEFAULT_LAT, DEFAULT_LONG, DEFAULT_ZOOM
-    
+
     context.update({
         'lat': lat,
         'lng': lng,
@@ -91,13 +91,14 @@ def show_ebays_map_viewer(request):
     })
     return render_to_response('ebays/viewer.html', context)
 
+
 @login_required()
 def show_ebays_map_editor(request):
     u = request.user
     context = RequestContext(request)
-    #set defaults:
+    # set defaults:
     lat, lng, zoom = DEFAULT_LAT, DEFAULT_LONG, DEFAULT_ZOOM
-    
+
     projects = Project.objects.get_objects(u)
     projects = [p.to_dict() for p in projects]
 
@@ -114,6 +115,3 @@ def show_ebays_map_editor(request):
         'basemap_id': 4
     })
     return render_to_response('ebays/editor.html', context)
-
-
-

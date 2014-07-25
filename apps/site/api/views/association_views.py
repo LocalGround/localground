@@ -8,17 +8,19 @@ from rest_framework.response import Response
 
 class RelatedMediaList(generics.ListCreateAPIView,
                        AuditCreate):
-    #return HttpResponse(self.kwargs.get('entity_name_plural'))
+    # return HttpResponse(self.kwargs.get('entity_name_plural'))
     model = models.GenericAssociation
     serializer_class = serializers.AssociationSerializer
-    #http://stackoverflow.com/questions/3210491/association-of-entities-in-a-rest-service
+    # http://stackoverflow.com/questions/3210491/association-of-entities-in-a-rest-service
 
     def get_queryset(self):
         group_model = models.Base.get_model(
             model_name_plural=self.kwargs.get('group_name_plural')
         )
         try:
-            marker = group_model.objects.get(id=int(self.kwargs.get('source_id')))
+            marker = group_model.objects.get(
+                id=int(
+                    self.kwargs.get('source_id')))
         except group_model.DoesNotExist:
             raise Http404
 
@@ -30,7 +32,6 @@ class RelatedMediaList(generics.ListCreateAPIView,
             source_type=group_model.get_content_type(),
             source_id=self.kwargs.get('source_id'))
 
-
     def create(request, *args, **kwargs):
         '''
         This is a hack:  not sure how to handle generic database errors.
@@ -40,14 +41,15 @@ class RelatedMediaList(generics.ListCreateAPIView,
 
         try:
             return generics.ListCreateAPIView.create(request, *args, **kwargs)
-        except IntegrityError, e:
+        except IntegrityError as e:
             connection._rollback()
             # For a verbose error:
             messages = str(e).strip().split('\n')
             d = {'non_field_errors': messages}
 
-            #For a vanilla error:
-            d = {'non_field_errors': ['This relationship already exists in the system']}
+            # For a vanilla error:
+            d = {
+                'non_field_errors': ['This relationship already exists in the system']}
             return Response(d, status=status.HTTP_400_BAD_REQUEST)
 
     def pre_save(self, obj):
@@ -60,10 +62,13 @@ class RelatedMediaList(generics.ListCreateAPIView,
             model_name_plural=self.kwargs.get('entity_name_plural')
         )
         entity_type = entity_model.get_content_type()
-        if self.kwargs.get('entity_name_plural') in ['markers', 'views', 'prints']:
+        if self.kwargs.get('entity_name_plural') in [
+                'markers',
+                'views',
+                'prints']:
             raise exceptions.ParseError(
                 'You cannot attach a %s to a %s' % (
-                entity_model.model_name, group_model.model_name
+                    entity_model.model_name, group_model.model_name
                 ))
         setattr(obj, 'source_type', source_type)
         setattr(obj, 'source_id', self.kwargs.get('source_id'))
@@ -83,9 +88,9 @@ class RelatedMediaInstance(generics.RetrieveUpdateDestroyAPIView):
         ).get_content_type()
 
         filter_kwargs = {
-        'source_id': int(self.kwargs.get('source_id')),
-        'entity_id': int(self.kwargs.get('id')),
-        'source_type': source_type,
-        'entity_type': entity_type
+            'source_id': int(self.kwargs.get('source_id')),
+            'entity_id': int(self.kwargs.get('id')),
+            'source_type': source_type,
+            'entity_type': entity_type
         }
         return generics.get_object_or_404(self.queryset, **filter_kwargs)

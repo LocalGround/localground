@@ -1,14 +1,15 @@
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
-from django.template import RequestContext    
+from django.template import RequestContext
 import simplejson as json
 from localground.apps.site.models import Project
 
+
 def show_ebays_map_viewer(request):
     context = RequestContext(request)
-    #set defaults:
+    # set defaults:
     lat, lng, zoom = 37.80937, -122.297465, 11
-    
+
     context.update({
         'lat': lat,
         'lng': lng,
@@ -18,13 +19,14 @@ def show_ebays_map_viewer(request):
     })
     return render_to_response('ebays/viewer.html', context)
 
+
 @login_required()
 def show_ebays_map_editor(request):
     u = request.user
     context = RequestContext(request)
-    #set defaults:
+    # set defaults:
     lat, lng, zoom = 37.80937, -122.297465, 11
-    
+
     projects = Project.objects.get_objects(u)
     projects = [p.to_dict() for p in projects]
 
@@ -40,5 +42,3 @@ def show_ebays_map_editor(request):
         'ebays': True
     })
     return render_to_response('ebays/editor.html', context)
-
-

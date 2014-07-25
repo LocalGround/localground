@@ -5,14 +5,8 @@ from localground.apps.site.api.serializers.user_profile_serializer import UserPr
 from rest_framework import views
 import sys
 
+
 class UserPreferencesView(views.APIView):
 
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-
-
-
-
-
-
-

@@ -17,17 +17,15 @@ class ViewSerializer(BaseNamedSerializer):
     center = fields.GeometryField(help_text='Assign a GeoJSON string',
                                   required=True,
                                   widget=widgets.JSONWidget,
-                                  point_field_name='center',
-                                  definitely_required=True)
+                                  point_field_name='center')
     basemap = serializers.PrimaryKeyRelatedField()
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
     children = serializers.SerializerMethodField('get_children')
 
     class Meta:
         model = models.View
-        fields = BaseNamedSerializer.Meta.fields + (
-        'owner', 'slug', 'access', 'zoom', 'center', 'basemap', 'entities', 'children'
-        )
+        fields = BaseNamedSerializer.Meta.fields + \
+            ('owner', 'slug', 'access', 'zoom', 'center', 'basemap', 'entities', 'children')
         depth = 0
 
     def get_access(self, obj):
@@ -38,25 +36,29 @@ class ViewSerializer(BaseNamedSerializer):
         from localground.apps.site import models
 
         candidates = [
-            models.Photo, models.Audio, models.Scan, models.Project, models.Marker
-        ]
+            models.Photo,
+            models.Audio,
+            models.Scan,
+            models.Project,
+            models.Marker]
         forms = (models.Form.objects
-                     .select_related('projects')
-                     .prefetch_related('field_set', 'field_set__data_type')
-                     .filter(projects=obj)
-        )
+                 .select_related('projects')
+                 .prefetch_related('field_set', 'field_set__data_type')
+                 .filter(projects=obj)
+                 )
         for form in forms:
             candidates.append(form.TableModel)
-        #this caches the ContentTypes so that we don't keep executing one-off queries
+        # this caches the ContentTypes so that we don't keep executing one-off
+        # queries
         ContentType.objects.get_for_models(*candidates, concrete_model=False)
         children = {
-        'photos': self.get_photos(obj),
-        'audio': self.get_audio(obj),
-        'scans': self.get_scans(obj),
-        'markers': self.get_markers(obj, forms)
+            'photos': self.get_photos(obj),
+            'audio': self.get_audio(obj),
+            'scans': self.get_scans(obj),
+            'markers': self.get_markers(obj, forms)
         }
 
-        #add table data:
+        # add table data:
         for form in forms:
             form_data = self.get_table_records(obj, form)
             if len(form_data.get('data')) > 0:
@@ -96,10 +98,10 @@ class ViewSerializer(BaseNamedSerializer):
         if model_name_plural is None:
             model_name_plural = cls.model_name_plural
         return {
-        'id': model_name_plural,
-        'name': name,
-        'overlay_type': overlay_type,
-        'data': data
+            'id': model_name_plural,
+            'name': name,
+            'overlay_type': overlay_type,
+            'data': data
         }
 
     def get_table_records(self, obj, form):
@@ -116,12 +118,9 @@ class ViewSerializer(BaseNamedSerializer):
             model_name_plural='form_%s' % form.id
         )
         d.update({
-        'headers': [f.col_alias for f in form.fields]
+            'headers': [f.col_alias for f in form.fields]
         })
         return d
-
-
-
 
 
 class ViewDetailSerializer(ViewSerializer):
@@ -131,8 +130,3 @@ class ViewDetailSerializer(ViewSerializer):
         model = models.View
         fields = ViewSerializer.Meta.fields  # + ('children',)
         depth = 0
-
-
-
-
-

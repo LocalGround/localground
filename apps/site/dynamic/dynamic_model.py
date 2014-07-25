@@ -13,418 +13,458 @@ Since Tables now inherit form BaseAudit, we'll need to write a batch script that
 adds the auditing columns to the user-generated tables.
 '''
 
+
 class DynamicModelMixin(BasePoint, BaseAudit):
-	num = models.IntegerField(null=True, blank=True, db_column='user_num',
-										   verbose_name='Row Number')
-	num_snippet = models.ForeignKey('Snippet', null=True, blank=True,
-									 db_column='user_num_snippet_id')
-	snippet = models.ForeignKey('Snippet', null=True, blank=True)
-	project = models.ForeignKey('Project')
-	manually_reviewed = models.BooleanField()
-	objects = RecordManager()
-	
-	class Meta:
-		abstract = True
-		
-	def __str__(self):
-		return '%s, Rec #%s' % (self._meta.object_name.lower(), self.id)
-	
-	def __repr__(self):
-		return '<%s>' % self.__str__()
-		
-	@property
-	def form(self):
-		if not hasattr(self, '_form'):
-			from localground.apps.site.models import Form
-			self._form =(Form.objects
-							#.prefetch_related('field_set', 'field_set__data_type')
-							.get(table_name=self._meta.db_table)
-						)
-		return self._form
-	
-	@property
-	def dynamic_fields(self):
-		if not hasattr(self, '_fields'):
-			self._fields = self.form.fields
-		return self._fields
-	
-	def can_view(self, user, access_key=None):
-		return (
-			self.project.can_view(user=user, access_key=access_key)
-			or
-			self.form.can_view(user=user, access_key=access_key)
-		)
-	
-	def can_edit(self, user):
-		return self.project.can_edit(user) or self.form.can_edit(user)
-	
-	def get_dynamic_data(self):
-		data = []
-		for descriptor in self.dynamic_fields:
-			data.append(self.__getattribute__(descriptor.col_name))
-		return data
-	
-	def get_snippet(self, field_name):
-			return self.__getattribute__(field_name + '_snippet')
-			
-	def get_widget(self, field_name):
-		return self.__getattribute__(field_name).widget
-		
-	def get_dynamic_data_default(self):
-		data = []
-		for descriptor in self.dynamic_fields:
-			field_transcribed = self.__getattribute__(descriptor.col_name)
-			if descriptor.has_snippet_field:
-				field_image = self.__getattribute__(descriptor.col_name + '_snippet')
-			else:
-				field_image = None
-			if field_transcribed is not None:
-				data.append(field_transcribed)
-			elif field_image is not None and not self.manually_reviewed:
-				data.append('<img src="%s" />' % (field_image.absolute_virtual_path()))
-			else:
-				data.append('--')
-		return data
-	
-	def get_dynamic_data_snippet(self):
-		data = []
-		for descriptor in self.dynamic_fields:
-			field_transcribed = self.__getattribute__(descriptor.col_name)
-			if descriptor.has_snippet_field:
-				field_image = self.__getattribute__(descriptor.col_name + '_snippet')
-			else:
-				field_image = None
-			if field_image is not None:
-				data.append('<img src="%s" />' % (field_image.absolute_virtual_path()))
-			else:
-				field_transcribed = self.__getattribute__(descriptor.col_name)
-				if field_transcribed is not None:
-					data.append(field_transcribed)
-				else:
-					data.append('--')
-		return data
-	
-	def get_row_num_default(self):
-		if self.num is not None:
-			return self.num
-		elif self.num_snippet is not None and not self.manually_reviewed:
-			s = self.num_snippet
-			return '<img src="%s" />' % (s.absolute_virtual_path())
-		else:
-			return '--'
-	
-	def get_row_num_snippet(self):
-		if self.num_snippet is not None:
-			s = self.num_snippet
-			return '<img src="%s" />' % (s.absolute_virtual_path())
-		else:
-			return '--'
-		
-	def get_row_num(self):
-		if self.num is not None:
-			return self.num
-		else:
-			return '--'
-	
-	def has_field_level_snippets(self):
-		return self.num_snippet is not None
-	
-	
-	def to_dict(self, include_project=False, include_marker=True,
-					include_data=False, include_scan=False,
-					include_attachment=False, **kwargs):
-		d = dict(
-			form_id=self.form.id,
-			id=self.id,
-			num=self.num,
-			reviewed=self.manually_reviewed  
-		)
-		if self.snippet is not None:
-			d.update(dict(snippet_url= self.snippet.absolute_virtual_path()))
-		if self.point is not None:
-			d.update(dict(lat=self.point.y, lng=self.point.x))
-		if include_project:
-			d.update(dict(project=self.project.to_dict()))
-		else:
-			d.update(dict(project_id=self.project.id))
-		if include_attachment and self.snippet is not None \
-			and self.snippet.source_attachment is not None:
-			d.update(dict(attachment={
-				'name': self.snippet.source_attachment.name,
-				'attribution': self.snippet.source_attachment.attribution
-			}))  
-		if include_data:
-			data = []
-			#add number field
-			field = dict(
-					col_name='num',
-					col_alias='Number',
-					value=self.num
-				)
-			snippet = self.__getattribute__('num_snippet')
-			if snippet is not None:
-					field.update(dict(
-						snippet_url= snippet.absolute_virtual_path()
-					))
-			data.append(field)
-			
-			#add the rest of the dynamic content:
-			for descriptor in self.dynamic_fields:
-				field = dict(
-					col_name=descriptor.col_name,
-					col_alias=descriptor.col_alias,
-					value=self.__getattribute__(descriptor.col_name)
-				)
-				if isinstance(field['value'], datetime):
-					field['value'] = field['value'].strftime('%m/%d/%Y, %I:%M:%S %p')
-				snippet = None
-				if descriptor.has_snippet_field:
-					snippet = self.__getattribute__(descriptor.col_name + '_snippet')
-				if snippet is not None:
-					field.update(dict(
-						snippet_url= snippet.absolute_virtual_path()
-					))
-				data.append(field)
-				if descriptor.is_display_field:
-					d.update(dict(name=field['value']))
-				if d.get('name') is None:
-					d.update(dict(name='Record #%s' % self.num)) 
-			d.update(dict(fields=data))
-				
-		return d
-	
-	def to_dict_lite(self, **kwargs):
-		d = dict(
-			form_id=self.form_id,
-			id=self.id
-		)
-		if self.point is not None:
-			d.update(dict(lat=self.point.y, lng=self.point.x))
-		if self.source_marker is not None:
-			d.update(dict(markerID=self.source_marker.id)) 
-		# add dynamic data:
-		data = []
-		for descriptor in self.dynamic_fields:
-			val = self.__getattribute__(descriptor.col_name)
-			if isinstance(val, datetime):
-				val = val.strftime('%m/%d/%Y, %I:%M:%S %p')
-			data.append(val) 
-		d.update(dict(fields=data))
-		return d
+    num = models.IntegerField(null=True, blank=True, db_column='user_num',
+                              verbose_name='Row Number')
+    num_snippet = models.ForeignKey('Snippet', null=True, blank=True,
+                                    db_column='user_num_snippet_id')
+    snippet = models.ForeignKey('Snippet', null=True, blank=True)
+    project = models.ForeignKey('Project')
+    manually_reviewed = models.BooleanField()
+    objects = RecordManager()
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return '%s, Rec #%s' % (self._meta.object_name.lower(), self.id)
+
+    def __repr__(self):
+        return '<%s>' % self.__str__()
+
+    @property
+    def form(self):
+        if not hasattr(self, '_form'):
+            from localground.apps.site.models import Form
+            self._form = (Form.objects
+                          #.prefetch_related('field_set', 'field_set__data_type')
+                          .get(table_name=self._meta.db_table)
+                          )
+        return self._form
+
+    @property
+    def dynamic_fields(self):
+        if not hasattr(self, '_fields'):
+            self._fields = self.form.fields
+        return self._fields
+
+    def can_view(self, user, access_key=None):
+        return (
+            self.project.can_view(user=user, access_key=access_key)
+            or
+            self.form.can_view(user=user, access_key=access_key)
+        )
+
+    def can_edit(self, user):
+        return self.project.can_edit(user) or self.form.can_edit(user)
+
+    def get_dynamic_data(self):
+        data = []
+        for descriptor in self.dynamic_fields:
+            data.append(self.__getattribute__(descriptor.col_name))
+        return data
+
+    def get_snippet(self, field_name):
+        return self.__getattribute__(field_name + '_snippet')
+
+    def get_widget(self, field_name):
+        return self.__getattribute__(field_name).widget
+
+    def get_dynamic_data_default(self):
+        data = []
+        for descriptor in self.dynamic_fields:
+            field_transcribed = self.__getattribute__(descriptor.col_name)
+            if descriptor.has_snippet_field:
+                field_image = self.__getattribute__(
+                    descriptor.col_name +
+                    '_snippet')
+            else:
+                field_image = None
+            if field_transcribed is not None:
+                data.append(field_transcribed)
+            elif field_image is not None and not self.manually_reviewed:
+                data.append(
+                    '<img src="%s" />' %
+                    (field_image.absolute_virtual_path()))
+            else:
+                data.append('--')
+        return data
+
+    def get_dynamic_data_snippet(self):
+        data = []
+        for descriptor in self.dynamic_fields:
+            field_transcribed = self.__getattribute__(descriptor.col_name)
+            if descriptor.has_snippet_field:
+                field_image = self.__getattribute__(
+                    descriptor.col_name +
+                    '_snippet')
+            else:
+                field_image = None
+            if field_image is not None:
+                data.append(
+                    '<img src="%s" />' %
+                    (field_image.absolute_virtual_path()))
+            else:
+                field_transcribed = self.__getattribute__(descriptor.col_name)
+                if field_transcribed is not None:
+                    data.append(field_transcribed)
+                else:
+                    data.append('--')
+        return data
+
+    def get_row_num_default(self):
+        if self.num is not None:
+            return self.num
+        elif self.num_snippet is not None and not self.manually_reviewed:
+            s = self.num_snippet
+            return '<img src="%s" />' % (s.absolute_virtual_path())
+        else:
+            return '--'
+
+    def get_row_num_snippet(self):
+        if self.num_snippet is not None:
+            s = self.num_snippet
+            return '<img src="%s" />' % (s.absolute_virtual_path())
+        else:
+            return '--'
+
+    def get_row_num(self):
+        if self.num is not None:
+            return self.num
+        else:
+            return '--'
+
+    def has_field_level_snippets(self):
+        return self.num_snippet is not None
+
+    def to_dict(self, include_project=False, include_marker=True,
+                include_data=False, include_scan=False,
+                include_attachment=False, **kwargs):
+        d = dict(
+            form_id=self.form.id,
+            id=self.id,
+            num=self.num,
+            reviewed=self.manually_reviewed
+        )
+        if self.snippet is not None:
+            d.update(dict(snippet_url=self.snippet.absolute_virtual_path()))
+        if self.point is not None:
+            d.update(dict(lat=self.point.y, lng=self.point.x))
+        if include_project:
+            d.update(dict(project=self.project.to_dict()))
+        else:
+            d.update(dict(project_id=self.project.id))
+        if include_attachment and self.snippet is not None \
+                and self.snippet.source_attachment is not None:
+            d.update(dict(attachment={
+                'name': self.snippet.source_attachment.name,
+                'attribution': self.snippet.source_attachment.attribution
+            }))
+        if include_data:
+            data = []
+            # add number field
+            field = dict(
+                col_name='num',
+                col_alias='Number',
+                value=self.num
+            )
+            snippet = self.__getattribute__('num_snippet')
+            if snippet is not None:
+                field.update(dict(
+                    snippet_url=snippet.absolute_virtual_path()
+                ))
+            data.append(field)
+
+            # add the rest of the dynamic content:
+            for descriptor in self.dynamic_fields:
+                field = dict(
+                    col_name=descriptor.col_name,
+                    col_alias=descriptor.col_alias,
+                    value=self.__getattribute__(descriptor.col_name)
+                )
+                if isinstance(field['value'], datetime):
+                    field['value'] = field['value'].strftime(
+                        '%m/%d/%Y, %I:%M:%S %p')
+                snippet = None
+                if descriptor.has_snippet_field:
+                    snippet = self.__getattribute__(
+                        descriptor.col_name +
+                        '_snippet')
+                if snippet is not None:
+                    field.update(dict(
+                        snippet_url=snippet.absolute_virtual_path()
+                    ))
+                data.append(field)
+                if descriptor.is_display_field:
+                    d.update(dict(name=field['value']))
+                if d.get('name') is None:
+                    d.update(dict(name='Record #%s' % self.num))
+            d.update(dict(fields=data))
+
+        return d
+
+    def to_dict_lite(self, **kwargs):
+        d = dict(
+            form_id=self.form_id,
+            id=self.id
+        )
+        if self.point is not None:
+            d.update(dict(lat=self.point.y, lng=self.point.x))
+        if self.source_marker is not None:
+            d.update(dict(markerID=self.source_marker.id))
+        # add dynamic data:
+        data = []
+        for descriptor in self.dynamic_fields:
+            val = self.__getattribute__(descriptor.col_name)
+            if isinstance(val, datetime):
+                val = val.strftime('%m/%d/%Y, %I:%M:%S %p')
+            data.append(val)
+        d.update(dict(fields=data))
+        return d
+
 
 class ModelClassBuilder(object):
-	def __init__(self, form):
-		self.name = 'form_%s' % form.id
-		self.form = form
-		self.app_label = 'site'
-		self.module = 'localground.apps.site.models.%s' % form.table_name      #needs to be unique
-		self.options = options = {
-			'ordering': ['num'],
-			'verbose_name': 'form_%s' % form.id, #form.table_name,
-			'verbose_name': 'form_%s' % form.id,
-			'db_table': form.table_name
-		}
-		self.additional_fields = {}
-		self.dynamic_fields = {}
-		self.snippet_fields = {}
-		self._model_class = None
-	
-	@property
-	def model_class(self):
-		#if self._model_class is None:
-		self.add_dynamic_fields_to_model()
-		
-		class ModelClassBuilder:
-			pass
 
-		if self.app_label:
-			# app_label must be set using the Meta inner class
-			setattr(ModelClassBuilder, 'app_label', self.app_label)
-		
-		# Update Meta with any options that were provided
-		if self.options is not None:
-			for key, value in self.options.iteritems():
-				setattr(ModelClassBuilder, key, value)
-	
-		# Set up a dictionary to simulate declarations within a class
-		try:
-			del cache.app_models[self.app_label][self.name.lower()]
-		except KeyError:
-			pass
-		attrs = {'__module__': self.module, 'Meta': ModelClassBuilder}
-	
-		# Add in any fields that were provided
-		attrs.update(self.additional_fields)
-		
-		'''
+    def __init__(self, form):
+        self.name = 'form_%s' % form.id
+        self.form = form
+        self.app_label = 'site'
+        # needs to be unique
+        self.module = 'localground.apps.site.models.%s' % form.table_name
+        self.options = options = {
+            'ordering': ['num'],
+            'verbose_name': 'form_%s' % form.id,  # form.table_name,
+            'verbose_name': 'form_%s' % form.id,
+            'db_table': form.table_name
+        }
+        self.additional_fields = {}
+        self.dynamic_fields = {}
+        self.snippet_fields = {}
+        self._model_class = None
+
+    @property
+    def model_class(self):
+        # if self._model_class is None:
+        self.add_dynamic_fields_to_model()
+
+        class ModelClassBuilder:
+            pass
+
+        if self.app_label:
+            # app_label must be set using the Meta inner class
+            setattr(ModelClassBuilder, 'app_label', self.app_label)
+
+        # Update Meta with any options that were provided
+        if self.options is not None:
+            for key, value in self.options.iteritems():
+                setattr(ModelClassBuilder, key, value)
+
+        # Set up a dictionary to simulate declarations within a class
+        try:
+            del cache.app_models[self.app_label][self.name.lower()]
+        except KeyError:
+            pass
+        attrs = {'__module__': self.module, 'Meta': ModelClassBuilder}
+
+        # Add in any fields that were provided
+        attrs.update(self.additional_fields)
+
+        '''
 		-------------------
 		Begin Model Methods
 		-------------------
 		'''
-		def save(self, user, *args, **kwargs):
-			is_new = self.pk is None
-			
-			# 1. ensure that user doesn't inadvertently change the data type of the column    
-			if is_new:
-				self.owner = user
-				self.date_created = get_timestamp_no_milliseconds()
-			self.last_updated_by = user 
-			self.time_stamp = get_timestamp_no_milliseconds()
-			#self.project = self.form.project
-			super(self.__class__, self).save(*args, **kwargs)
-			
-		@classmethod
-		def filter_fields(cls):
-			from localground.apps.lib.helpers import QueryField, FieldTypes
-			query_fields = [
-				QueryField('project__id', id='project_id', title='Project ID', data_type=FieldTypes.INTEGER),
-				#QueryField('col_4', title='col_4', operator='like'),
-				QueryField('date_created', id='date_created_after', title='After',
-											data_type=FieldTypes.DATE, operator='>='),
-				QueryField('date_created', id='date_created_before', title='Before',
-											data_type=FieldTypes.DATE, operator='<=')
-			]
-			for n in self.form.fields:
-				if n.data_type.id == 1:
-					query_fields.append(
-						QueryField(n.col_name, title=n.col_alias, operator='like')	
-					)
-				elif n.data_type.id in [2, 6]:
-					query_fields.append(
-						QueryField(n.col_name, title=n.col_alias, data_type=FieldTypes.INTEGER)	
-					)
-				elif n.data_type.id == 3:
-					query_fields.append(
-						QueryField(n.col_name, title=n.col_alias, data_type=FieldTypes.DATE)	
-					)
-				elif n.data_type.id == 4:
-					query_fields.append(
-						QueryField(n.col_name, title=n.col_alias, data_type=FieldTypes.BOOLEAN)	
-					)
-				elif n.data_type.id == 5:
-					query_fields.append(
-						QueryField(n.col_name, title=n.col_alias, data_type=FieldTypes.FLOAT)	
-					)	
-			return query_fields
-			
-		attrs.update(dict(
-			save=save,
-			filter_fields=filter_fields
-		))
-		
-		# Create the class, which automatically triggers ModelBase processing
-		self._model_class = type(self.name, (DynamicModelMixin, ), attrs)
-		#import sys
-		#sys.stderr.write('\n%s' % self._model_class._meta.get_all_field_names())
-		#sys.stderr.write('\n%s' % self.additional_fields)
-		return self._model_class   
-		
-	def add_dynamic_fields_to_model(self):
-		# read field specifications and build dynamic fields:
-		field = None
-		for n in self.form.fields:
-			kwargs = {
-				'blank': True,
-				'null': True,
-				'verbose_name': n.col_alias,
-				'db_column': n.col_name_db
-			}
-			if n.data_type.id == 1:
-				field = models.CharField(max_length=1000, **kwargs)
-			elif n.data_type.id in [2, 6]:
-				field = models.IntegerField(**kwargs)
-			elif n.data_type.id == 3:
-				field = models.DateTimeField(**kwargs)
-			elif n.data_type.id == 4:
-				field = models.BooleanField(**kwargs)
-			elif n.data_type.id == 5:
-				field = models.FloatField(**kwargs)
-			
-			#add dynamic field:
-			self.dynamic_fields.update({
-				n.col_name: field
-			})
-			if n.has_snippet_field:
-				#also add snippet placeholder:
-				snippet_field_name = '%s_snippet' % n.col_name
-				self.snippet_fields.update({
-					snippet_field_name: models.ForeignKey(
-						'Snippet',
-						null=True,
-						blank=True,
-						db_column='%s_snippet_id' % n.col_name_db
-					)
-				})
-		self.additional_fields.update(self.dynamic_fields)
-		self.additional_fields.update(self.snippet_fields)
-		#import sys
-		#sys.stderr.write('%s' % self.additional_fields)
 
-	
-	def sync_db(self):
-		'''
-		This function uses the same code that's used in syncdb to dynamically
-		execute DDL sql on-the-fly.  Copied from:
-		/usr/local/lib/python2.6/dist-packages/django/core/management/commands/syncdb.py        
-		'''
-		from django.core.management.color import no_style
-		from django.db import connection, transaction
-		
-		tables = connection.introspection.table_names()
-		
-		if self.model_class._meta.db_table in tables:
-			#don't create table if it already exists
-			return
+        def save(self, user, *args, **kwargs):
+            is_new = self.pk is None
 
-		seen_models = connection.introspection.installed_models(tables)
-		created_models = set()
-		pending_references = {}
-		cursor = connection.cursor()
-		sql, references = connection.creation.sql_create_model(self.model_class, no_style(), seen_models)
-		seen_models.add(self.model_class)
-		created_models.add(self.model_class)
-		for refto, refs in references.items():
-			pending_references.setdefault(refto, []).extend(refs)
-			if refto in seen_models:
-				sql.extend(connection.creation.sql_for_pending_references(refto, no_style(), pending_references))
-		sql.extend(connection.creation.sql_for_pending_references(self.model_class, no_style(), pending_references))
-		
-		errors_encountered = False
-		try:
-			for statement in sql:
-				cursor.execute(statement)
-		except Exception:
-			self.stderr.write("Failed to install index for %s.%s model: %s\n" % \
-											(app_name, model._meta.object_name, e))
-			errors_encountered = True
-			
-		# Install SQL indices for newly created model
-		if not errors_encountered:
-			for model in seen_models:
-				if model in created_models:
-					index_sql = connection.creation.sql_indexes_for_model(model, no_style())
-					if index_sql:
-						try:
-							for sql in index_sql:
-								cursor.execute(sql)
-						except Exception as e:
-							self.stderr.write("Failed to install index for %s.%s model: %s\n" % \
-												(app_name, model._meta.object_name, e))
-							errors_encountered = True
-								
-		if errors_encountered:
-			transaction.rollback_unless_managed()
-		else:
-			transaction.commit_unless_managed()
-			
-		'''
+            # 1. ensure that user doesn't inadvertently change the data type of
+            # the column
+            if is_new:
+                self.owner = user
+                self.date_created = get_timestamp_no_milliseconds()
+            self.last_updated_by = user
+            self.time_stamp = get_timestamp_no_milliseconds()
+            #self.project = self.form.project
+            super(self.__class__, self).save(*args, **kwargs)
+
+        @classmethod
+        def filter_fields(cls):
+            from localground.apps.lib.helpers import QueryField, FieldTypes
+            query_fields = [
+                QueryField(
+                    'project__id',
+                    id='project_id',
+                    title='Project ID',
+                    data_type=FieldTypes.INTEGER),
+                #QueryField('col_4', title='col_4', operator='like'),
+                QueryField('date_created', id='date_created_after', title='After',
+                           data_type=FieldTypes.DATE, operator='>='),
+                QueryField('date_created', id='date_created_before', title='Before',
+                           data_type=FieldTypes.DATE, operator='<=')
+            ]
+            for n in self.form.fields:
+                if n.data_type.id == 1:
+                    query_fields.append(
+                        QueryField(
+                            n.col_name,
+                            title=n.col_alias,
+                            operator='like'))
+                elif n.data_type.id in [2, 6]:
+                    query_fields.append(
+                        QueryField(
+                            n.col_name,
+                            title=n.col_alias,
+                            data_type=FieldTypes.INTEGER))
+                elif n.data_type.id == 3:
+                    query_fields.append(
+                        QueryField(
+                            n.col_name,
+                            title=n.col_alias,
+                            data_type=FieldTypes.DATE))
+                elif n.data_type.id == 4:
+                    query_fields.append(
+                        QueryField(
+                            n.col_name,
+                            title=n.col_alias,
+                            data_type=FieldTypes.BOOLEAN))
+                elif n.data_type.id == 5:
+                    query_fields.append(
+                        QueryField(
+                            n.col_name,
+                            title=n.col_alias,
+                            data_type=FieldTypes.FLOAT))
+            return query_fields
+
+        attrs.update(dict(
+            save=save,
+            filter_fields=filter_fields
+        ))
+
+        # Create the class, which automatically triggers ModelBase processing
+        self._model_class = type(self.name, (DynamicModelMixin, ), attrs)
+        #import sys
+        #sys.stderr.write('\n%s' % self._model_class._meta.get_all_field_names())
+        #sys.stderr.write('\n%s' % self.additional_fields)
+        return self._model_class
+
+    def add_dynamic_fields_to_model(self):
+        # read field specifications and build dynamic fields:
+        field = None
+        for n in self.form.fields:
+            kwargs = {
+                'blank': True,
+                'null': True,
+                'verbose_name': n.col_alias,
+                'db_column': n.col_name_db
+            }
+            if n.data_type.id == 1:
+                field = models.CharField(max_length=1000, **kwargs)
+            elif n.data_type.id in [2, 6]:
+                field = models.IntegerField(**kwargs)
+            elif n.data_type.id == 3:
+                field = models.DateTimeField(**kwargs)
+            elif n.data_type.id == 4:
+                field = models.BooleanField(**kwargs)
+            elif n.data_type.id == 5:
+                field = models.FloatField(**kwargs)
+
+            # add dynamic field:
+            self.dynamic_fields.update({
+                n.col_name: field
+            })
+            if n.has_snippet_field:
+                # also add snippet placeholder:
+                snippet_field_name = '%s_snippet' % n.col_name
+                self.snippet_fields.update({
+                    snippet_field_name: models.ForeignKey(
+                        'Snippet',
+                        null=True,
+                        blank=True,
+                        db_column='%s_snippet_id' % n.col_name_db
+                    )
+                })
+        self.additional_fields.update(self.dynamic_fields)
+        self.additional_fields.update(self.snippet_fields)
+        #import sys
+        #sys.stderr.write('%s' % self.additional_fields)
+
+    def sync_db(self):
+        '''
+        This function uses the same code that's used in syncdb to dynamically
+        execute DDL sql on-the-fly.  Copied from:
+        /usr/local/lib/python2.6/dist-packages/django/core/management/commands/syncdb.py
+        '''
+        from django.core.management.color import no_style
+        from django.db import connection, transaction
+
+        tables = connection.introspection.table_names()
+
+        if self.model_class._meta.db_table in tables:
+            # don't create table if it already exists
+            return
+
+        seen_models = connection.introspection.installed_models(tables)
+        created_models = set()
+        pending_references = {}
+        cursor = connection.cursor()
+        sql, references = connection.creation.sql_create_model(
+            self.model_class, no_style(), seen_models)
+        seen_models.add(self.model_class)
+        created_models.add(self.model_class)
+        for refto, refs in references.items():
+            pending_references.setdefault(refto, []).extend(refs)
+            if refto in seen_models:
+                sql.extend(
+                    connection.creation.sql_for_pending_references(
+                        refto,
+                        no_style(),
+                        pending_references))
+        sql.extend(
+            connection.creation.sql_for_pending_references(
+                self.model_class,
+                no_style(),
+                pending_references))
+
+        errors_encountered = False
+        try:
+            for statement in sql:
+                cursor.execute(statement)
+        except Exception:
+            self.stderr.write("Failed to install index for %s.%s model: %s\n" %
+                              (app_name, model._meta.object_name, e))
+            errors_encountered = True
+
+        # Install SQL indices for newly created model
+        if not errors_encountered:
+            for model in seen_models:
+                if model in created_models:
+                    index_sql = connection.creation.sql_indexes_for_model(
+                        model,
+                        no_style())
+                    if index_sql:
+                        try:
+                            for sql in index_sql:
+                                cursor.execute(sql)
+                        except Exception as e:
+                            self.stderr.write(
+                                "Failed to install index for %s.%s model: %s\n" %
+                                (app_name, model._meta.object_name, e))
+                            errors_encountered = True
+
+        if errors_encountered:
+            transaction.rollback_unless_managed()
+        else:
+            transaction.commit_unless_managed()
+
+        '''
 		Add to ContentTypes also:
 		'''
-		from django.utils.encoding import smart_text
-		ct = ContentType(
-			name=smart_text(self.model_class._meta.verbose_name_raw),
-			app_label=self.model_class._meta.app_label,
-			model=self.model_class._meta.object_name.lower(),
-		)
-		ct.save()
-	
+        from django.utils.encoding import smart_text
+        ct = ContentType(
+            name=smart_text(self.model_class._meta.verbose_name_raw),
+            app_label=self.model_class._meta.app_label,
+            model=self.model_class._meta.object_name.lower(),
+        )
+        ct.save()

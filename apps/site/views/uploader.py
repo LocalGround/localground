@@ -10,27 +10,39 @@ import simplejson as json
 from localground.apps.site.models import Project
 from datetime import datetime
 
-@process_project  
+
+@process_project
 @login_required
 def init_upload_form(request,
                      media_type='photos',
-                 template_name='forms/uploader.html',
-                 base_template='base/base.html',
-                 embed=False, project=None):
+                     template_name='forms/uploader.html',
+                     base_template='base/base.html',
+                     embed=False, project=None):
     if embed:
         base_template = 'base/iframe.html'
 
     projects = Project.objects.get_objects(request.user)
     media_types = [
-        ('photos', 'Photos', 'png, jpg, jpeg, gif'),
-        ('audio', 'Audio Files', 'audio\/x-m4a, m4a, mp3, m4a, mp4, mpeg, video\/3gpp, 3gp, aif, aiff, ogg'),
-        ('map-images', 'Paper Maps / Forms', 'png, jpg, jpeg, gif'),
-        ('air-quality', 'DustTrak Data', 'log (GPS) + csv (DustTrak)'),
-        ('odk', 'ODK Data', 'zipped ODK form instance'),
+        ('photos',
+         'Photos',
+         'png, jpg, jpeg, gif'),
+        ('audio',
+         'Audio Files',
+         'audio\/x-m4a, m4a, mp3, m4a, mp4, mpeg, video\/3gpp, 3gp, aif, aiff, ogg'),
+        ('map-images',
+         'Paper Maps / Forms',
+         'png, jpg, jpeg, gif'),
+        ('air-quality',
+         'DustTrak Data',
+         'log (GPS) + csv (DustTrak)'),
+        ('odk',
+         'ODK Data',
+         'zipped ODK form instance'),
     ]
     selected_media_type = (None, 'Error')
     for mt in media_types:
-        if mt[0] == media_type: selected_media_type = mt
+        if mt[0] == media_type:
+            selected_media_type = mt
     extras = {
         'media_types': media_types,
         'selected_media_type': selected_media_type,
@@ -41,20 +53,24 @@ def init_upload_form(request,
         'selected_project_id': project.id
     }
     return render_to_response(template_name, extras,
-                              context_instance = RequestContext( request))
+                              context_instance=RequestContext(request))
 
 
 def batch_upload_form(request, entity_type, project=None):
 
-    return HttpResponse('<body>' +
-                        '<form id="somecsv">' +
-                        '<label for="fileToUpload">Upload CSV</label><br/>' +
-                        '<input type="file" name="fileToUpload" id="fileToUpload" />'
-                        '<button type="submit" value="submit" formmethod="post" ' +
-                        'formaction="/upload/'+entity_type+'/batch/post">Submit </button>' +
-                        '</form></body>')
+    return HttpResponse(
+        '<body>' +
+        '<form id="somecsv">' +
+        '<label for="fileToUpload">Upload CSV</label><br/>' +
+        '<input type="file" name="fileToUpload" id="fileToUpload" />'
+        '<button type="submit" value="submit" formmethod="post" ' +
+        'formaction="/upload/' +
+        entity_type +
+        '/batch/post">Submit </button>' +
+        '</form></body>')
 
-@process_project 
+
+@process_project
 @login_required
 def upload_media(request, project=None):
     if request.method == 'POST':
@@ -62,8 +78,8 @@ def upload_media(request, project=None):
         file = request.FILES.get('files[]')
         media_type = request.POST.get('media_type')
         success, error_message = True, None
-        #try: 
-        #branch processing based on upload type:
+        # try:
+        # branch processing based on upload type:
         if media_type == 'photos':
             new_object = Photo()
             new_object.save_upload(file, request.user, project)
@@ -76,21 +92,21 @@ def upload_media(request, project=None):
         else:
             success = False
             error_message = 'Unknown file type'
-        #except:
+        # except:
         #    import sys
         #    success = False
         #    error_message = str(sys.exc_info()[1])
-            
+
         if success:
             responseObj = {
                 'fileName': new_object.file_name_orig,
                 'user': request.user.username,
                 'content_type': new_object.content_type,
                 'time_created': datetime.now().strftime('%m/%d/%Y, %I:%M %p'),
-                'update_url': '/profile/%s/?project_id=%s' % \
-                                    (new_object.get_object_type(), project.id),
-                'delete_url': '/profile/%s/delete/%s/' % \
-                            (new_object.get_object_type(), new_object.id),
+                'update_url': '/profile/%s/?project_id=%s' %
+                (new_object.get_object_type(), project.id),
+                'delete_url': '/profile/%s/delete/%s/' %
+                (new_object.get_object_type(), new_object.id),
                 'success': True
             }
         else:

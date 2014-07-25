@@ -2,61 +2,68 @@ from django.conf import settings
 from rest_framework import serializers
 from localground.apps.site import models
 
+
 class AssociationSerializer(serializers.ModelSerializer):
-	relation = serializers.SerializerMethodField('get_relation')
-	id = serializers.IntegerField(source="entity_id", required=True)
-		
-	class Meta:
-		model = models.GenericAssociation
-		fields = ('id', 'ordering', 'turned_on', 'relation')
+    relation = serializers.SerializerMethodField('get_relation')
+    id = serializers.IntegerField(source="entity_id", required=True)
 
-	def validate(self, attrs):
-		"""
-		Ensure that the media being attached is legit
-		"""
-		from localground.apps.site.models import Base
-		view = self.context.get('view')
-		id = attrs.get('entity_id') or view.kwargs.get('id')
-		try:
-			id = int(id)
-		except Exception:
-			raise serializers.ValidationError('%s must be a whole number' % id)
-		try:
-			#get access to URL params throught the view
-			cls = Base.get_model(
-				model_name_plural=view.kwargs.get('entity_name_plural')
-			)
-		except:
-			raise serializers.ValidationError(
-				'\"%s\" is not a valid media type' % view.kwargs.get('entity_type')
-			)
-		try:
-			cls.objects.get(id=id)
-		except cls.DoesNotExist:
-			raise serializers.ValidationError('%s #%s does not exist in the system' %
-						(cls.model_name, id))
-		return attrs
+    class Meta:
+        model = models.GenericAssociation
+        fields = ('id', 'ordering', 'turned_on', 'relation')
 
-	def get_relation(self, obj):
-		view = self.context.get('view')
-		return '%s/api/0/%s/%s/%s/%s/' % (settings.SERVER_URL,
-					view.kwargs.get('group_name_plural'), obj.source_id,
-					view.kwargs.get('entity_name_plural'), obj.entity_id)
-	
-	
+    def validate(self, attrs):
+        """
+        Ensure that the media being attached is legit
+        """
+        from localground.apps.site.models import Base
+        view = self.context.get('view')
+        id = attrs.get('entity_id') or view.kwargs.get('id')
+        try:
+            id = int(id)
+        except Exception:
+            raise serializers.ValidationError('%s must be a whole number' % id)
+        try:
+            # get access to URL params throught the view
+            cls = Base.get_model(
+                model_name_plural=view.kwargs.get('entity_name_plural')
+            )
+        except:
+            raise serializers.ValidationError(
+                '\"%s\" is not a valid media type' %
+                view.kwargs.get('entity_type'))
+        try:
+            cls.objects.get(id=id)
+        except cls.DoesNotExist:
+            raise serializers.ValidationError(
+                '%s #%s does not exist in the system' %
+                (cls.model_name, id))
+        return attrs
+
+    def get_relation(self, obj):
+        view = self.context.get('view')
+        return '%s/api/0/%s/%s/%s/%s/' % (settings.SERVER_URL,
+                                          view.kwargs.get('group_name_plural'),
+                                          obj.source_id,
+                                          view.kwargs.get('entity_name_plural'),
+                                          obj.entity_id)
+
+
 class AssociationSerializerDetail(AssociationSerializer):
-	parent = serializers.SerializerMethodField('get_parent')
-	child = serializers.SerializerMethodField('get_child')
-	class Meta:
-		model = models.GenericAssociation
-		fields = ('ordering', 'turned_on', 'parent', 'child')
-		
-	def get_parent(self, obj):
-		view = self.context.get('view')
-		return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
-					view.kwargs.get('group_name_plural'), obj.source_id)
-	
-	def get_child(self, obj):
-		view = self.context.get('view')
-		return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
-					view.kwargs.get('entity_name_plural'), obj.entity_id)
+    parent = serializers.SerializerMethodField('get_parent')
+    child = serializers.SerializerMethodField('get_child')
+
+    class Meta:
+        model = models.GenericAssociation
+        fields = ('ordering', 'turned_on', 'parent', 'child')
+
+    def get_parent(self, obj):
+        view = self.context.get('view')
+        return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
+                                    view.kwargs.get('group_name_plural'),
+                                    obj.source_id)
+
+    def get_child(self, obj):
+        view = self.context.get('view')
+        return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
+                                    view.kwargs.get('entity_name_plural'),
+                                    obj.entity_id)

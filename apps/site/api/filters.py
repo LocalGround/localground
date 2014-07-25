@@ -4,10 +4,13 @@ from localground.apps.site import models
 from django.db.models import Q
 from django.template import RequestContext
 
+
 class SQLFilterBackend(filters.BaseFilterBackend):
+
     """
     Filter that only allows users to see their own objects.
     """
+
     def filter_queryset(self, request, queryset, view):
         r = request.GET or request.POST
         if r.get('query'):
@@ -15,5 +18,3 @@ class SQLFilterBackend(filters.BaseFilterBackend):
             return query.extend_query(queryset)
         else:
             return queryset
-        
-    

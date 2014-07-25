@@ -12,13 +12,13 @@ from urllib import unquote
 from rest_framework.decorators import api_view
 
 
-
 class UserProfileList(QueryableListCreateAPIView):
     serializer_class = UserProfileSerializer
     model = UserProfile
 
     def get_queryset(self):
         return UserProfile.objects.all()
+
     def pre_save(self, obj):
         obj.owner = self.request.user
 
@@ -34,6 +34,7 @@ class UserProfileInstance(generics.RetrieveUpdateDestroyAPIView):
     def pre_save(self, obj):
         obj.owner = self.request.user
 
+
 @login_required()
 @api_view(['PUT', 'PATCH', 'GET'])
 def update_user_location(request):
@@ -44,8 +45,11 @@ def update_user_location(request):
         profile = UserProfile.objects.get(user=request.user)
     except UserProfile.DoesNotExist:
         return None
-    #Nothing can forgive this awful code oh jesus why did I do this
-    default_location = unquote(request.body).split('default_location=')[1].replace('+', ' ')
+    # Nothing can forgive this awful code oh jesus why did I do this
+    default_location = unquote(
+        request.body).split('default_location=')[1].replace(
+        '+',
+        ' ')
     point = GEOSGeometry(default_location)
     try:
         UserProfile.update_location(profile, point)

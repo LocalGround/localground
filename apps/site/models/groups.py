@@ -19,14 +19,20 @@ from datetime import datetime
 
 
 class Group(BaseNamed, BaseGenericRelationMixin, BasePermissions):
+
     """
     Abstract class that extends BasePermissions; provides helper methods to
     determine whether a user has read/write/manage permissions on an object.
     """
     extents = models.PolygonField(null=True, blank=True)
-    slug = models.SlugField(verbose_name="Friendly URL", max_length=100, db_index=True,
-                            help_text='A few words, separated by dashes "-", to be used as part of the url')
-    basemap = models.ForeignKey('WMSOverlay', default=12)  #default to grayscale
+    slug = models.SlugField(
+        verbose_name="Friendly URL",
+        max_length=100,
+        db_index=True,
+        help_text='A few words, separated by dashes "-", to be used as part of the url')
+    basemap = models.ForeignKey(
+        'WMSOverlay',
+        default=12)  # default to grayscale
 
     class Meta:
         abstract = True
@@ -38,19 +44,43 @@ class Group(BaseNamed, BaseGenericRelationMixin, BasePermissions):
         from localground.apps.lib.helpers import QueryField, FieldTypes
 
         return [
-            QueryField('name', id='name', title='Name', operator='like'),
-            QueryField('description', id='description', title='Description', operator='like'),
-            QueryField('tags', id='tags', title='Tags', data_type=FieldTypes.TAG, operator='in'),
-            QueryField('owner__username', id='owned_by', title='Owned By'),
-            QueryField('date_created', id='date_created_after', title='After',
-                       data_type=FieldTypes.DATE, operator='>='),
-            QueryField('date_created', id='date_created_before', title='Before',
-                       data_type=FieldTypes.DATE, operator='<=')
-        ]
+            QueryField(
+                'name',
+                id='name',
+                title='Name',
+                operator='like'),
+            QueryField(
+                'description',
+                id='description',
+                title='Description',
+                operator='like'),
+            QueryField(
+                'tags',
+                id='tags',
+                title='Tags',
+                data_type=FieldTypes.TAG,
+                operator='in'),
+            QueryField(
+                'owner__username',
+                id='owned_by',
+                title='Owned By'),
+            QueryField(
+                'date_created',
+                id='date_created_after',
+                title='After',
+                data_type=FieldTypes.DATE,
+                operator='>='),
+            QueryField(
+                'date_created',
+                id='date_created_before',
+                title='Before',
+                data_type=FieldTypes.DATE,
+                operator='<=')]
 
     @staticmethod
     def get_users():
-        # Returns a list of user that own or have access to at least one project.
+        # Returns a list of user that own or have access to at least one
+        # project.
         from django.db.models import Q
         from django.contrib.auth.models import User
 
@@ -60,6 +90,7 @@ class Group(BaseNamed, BaseGenericRelationMixin, BasePermissions):
 
 
 class Project(Group):
+
     """
     Default grouping for user-generated content.  Every media type must be
     associated with one and only one project.  Think of a project as a folder
@@ -69,9 +100,8 @@ class Project(Group):
     objects = ProjectManager()
 
     def __str__(self):
-        #return '%s - %s' % self.id, self.name
+        # return '%s - %s' % self.id, self.name
         return self.name
-
 
     class Meta(Group.Meta):
         verbose_name = 'project'
@@ -95,9 +125,14 @@ class Project(Group):
 
         return ProjectCreateForm
 
-    def to_dict(self, include_auth_users=False, include_processed_maps=False,
-                include_markers=False, include_audio=False, include_photos=False,
-                include_tables=False):
+    def to_dict(
+            self,
+            include_auth_users=False,
+            include_processed_maps=False,
+            include_markers=False,
+            include_audio=False,
+            include_photos=False,
+            include_tables=False):
         d = {
             'id': self.id,
             'name': self.name,
@@ -151,10 +186,17 @@ class Project(Group):
         #       updated, a record is inserted into at_projects_forms (if it
         #       doesn't already exist).
         data = []
-        forms = Form.objects.prefetch_related('project', 'field_set', 'field_set__data_type').filter(project=self)
+        forms = Form.objects.prefetch_related(
+            'project',
+            'field_set',
+            'field_set__data_type').filter(
+            project=self)
         #forms = Form.objects.filter(project=self)
         for form in forms:
-            recs = form.get_objects(user=self.owner, project=self, manually_reviewed=True)
+            recs = form.get_objects(
+                user=self.owner,
+                project=self,
+                manually_reviewed=True)
             if len(recs) > 0:
                 data.append({
                     'id': form.id,
@@ -179,6 +221,7 @@ class Project(Group):
 
 
 class View(Group):
+
     """
     A user-generated grouping of media.  Media associations are specified in the
     GenericAssociation Model.  Only partially implemented.
@@ -215,8 +258,9 @@ class View(Group):
         Photo, Table Records are associated with the marker.
         """
         marker_ids = [m.id for m in self.markers]
-        markers_with_counts = Marker.objects.by_marker_ids_with_counts(marker_ids)
-        #append turned_on flag:
+        markers_with_counts = Marker.objects.by_marker_ids_with_counts(
+            marker_ids)
+        # append turned_on flag:
         for m in self.markers:
             for m1 in markers_with_counts:
                 if m.id == m1.id:

@@ -7,19 +7,29 @@ from datetime import datetime
 
 
 class UserProfile(models.Model):
-    #https://docs.djangoproject.com/en/dev/topics/auth/#creating-users
-    user = models.OneToOneField(User, related_name="profile") # This field is required.
+    # https://docs.djangoproject.com/en/dev/topics/auth/#creating-users
+    # This field is required.
+    user = models.OneToOneField(User, related_name="profile")
     email_announcements = models.BooleanField(default=True)
-    default_location = models.PointField(null=True, blank=True,
-                        help_text='Search map by address, or drag the marker to your home location')
-    default_view_authority = models.ForeignKey('ObjectAuthority',
-                                default=1, verbose_name='Share Preference',
-                                help_text='Your default sharing settings for your maps and media') #default to private
-    contacts = models.ManyToManyField('auth.User', related_name='%(app_label)s_%(class)s_related',
-                                      null=True, blank=True,
-                                      verbose_name="Users You're Following")
+    default_location = models.PointField(
+        null=True,
+        blank=True,
+        help_text='Search map by address, or drag the marker to your home location')
+    default_view_authority = models.ForeignKey(
+        'ObjectAuthority',
+        default=1,
+        verbose_name='Share Preference',
+        help_text='Your default sharing settings for your maps and media')  # default to private
+    contacts = models.ManyToManyField(
+        'auth.User',
+        related_name='%(app_label)s_%(class)s_related',
+        null=True,
+        blank=True,
+        verbose_name="Users You're Following")
     date_created = models.DateTimeField(default=datetime.now)
-    time_stamp = models.DateTimeField(default=datetime.now, db_column='last_updated')
+    time_stamp = models.DateTimeField(
+        default=datetime.now,
+        db_column='last_updated')
     objects = models.GeoManager()
 
     class Meta:
@@ -27,23 +37,23 @@ class UserProfile(models.Model):
 
     @classmethod
     def update_location(self, profile, point):
-        profile.default_location = point;
+        profile.default_location = point
         profile.save()
         return True
-     
-    @classmethod   
+
+    @classmethod
     def create(cls, user):
-        #create a new profile:
+        # create a new profile:
         profile = UserProfile()
         profile.email_announcements = True
         profile.default_view_authority = ObjectAuthority.objects.get(id=1)
         profile.user = user
         profile.save()
-    
-        #create a default project:
+
+        # create a default project:
         default_project = Project()
         default_project.slug = 'default-' + user.username
-        default_project.name = 'My First Project' 
+        default_project.name = 'My First Project'
         default_project.description = 'Default Local Ground project'
         default_project.last_updated_by = user
         default_project.access_authority = ObjectAuthority.objects.get(id=1)
@@ -63,12 +73,11 @@ class UserProfile(models.Model):
         if user.is_authenticated():
             return True
 
-    
 
 def create_profile_on_insert(sender, instance, created, **kwargs):
     # When a new user is created, also create a profile_object and a default
     # project.  Works just like a database trigger.
-    
+
     if created:
         try:
             UserProfile.create(instance)
@@ -81,9 +90,6 @@ def create_profile_on_insert(sender, instance, created, **kwargs):
             if instance.id != 1:
                 raise Exception('UserProfile not created')
             pass
-        
+
 
 signals.post_save.connect(create_profile_on_insert, sender=User)
-
-
-

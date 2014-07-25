@@ -1,14 +1,17 @@
 from rest_framework import permissions
 from localground.apps.site import models
 
+
 class CheckProjectPermissions(permissions.BasePermission):
-	
-	def has_object_permission(self, request, view, obj):
-		if request.method in permissions.SAFE_METHODS:
-			return obj.can_view(request.user, access_key=request.GET.get('access_key'))
-		else:    
-			return obj.can_edit(request.user)
-	
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return obj.can_view(
+                request.user,
+                access_key=request.GET.get('access_key'))
+        else:
+            return obj.can_edit(request.user)
+
 '''
 class CheckFormPermissions(permissions.BasePermission):
 	
@@ -23,7 +26,6 @@ class CheckFormPermissions(permissions.BasePermission):
 	def has_object_permission(self, request, view, obj):
 		if request.method in permissions.SAFE_METHODS:
 			return obj.can_view(request.user, access_key=request.GET.get('access_key'))
-		else:    
+		else:
 			return obj.can_edit(request.user)
 '''
-	

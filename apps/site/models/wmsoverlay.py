@@ -1,8 +1,10 @@
 from django.contrib.gis.db import models
-from localground.apps.site.models.abstract.named import BaseNamed  
+from localground.apps.site.models.abstract.named import BaseNamed
 from localground.apps.site.managers import WMSOverlayManager
-    
+
+
 class WMSOverlay(BaseNamed):
+
     """
     Stores the specific overlays available in Local Ground.
     """
@@ -23,7 +25,7 @@ class WMSOverlay(BaseNamed):
         verbose_name = 'tile'
         verbose_name_plural = 'tiles'
         ordering = ('id',)
-        
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -34,11 +36,10 @@ class WMSOverlay(BaseNamed):
             'type': self.overlay_type.name,
             'url': self.wms_url,
             'providerID': self.provider_id,
-            'min': self.min_zoom, 
+            'min': self.min_zoom,
             'max': self.max_zoom,
             'is_printable': self.is_printable
         }
-    
+
     def __unicode__(self):
         return '%s. %s' % (self.id, self.name)
-    

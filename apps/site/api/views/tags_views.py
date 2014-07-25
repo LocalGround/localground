@@ -29,8 +29,9 @@ class TagSerializer(serializers.Serializer):
         except Exception:
             return obj.get('tag__count')
 
+
 class TagList(generics.ListAPIView):
-    #http://django-tagging.googlecode.com/svn/trunk/docs/overview.txt
+    # http://django-tagging.googlecode.com/svn/trunk/docs/overview.txt
     serializer_class = TagSerializer
     paginate_by = 100
     paginator_class = FastPaginator
@@ -56,8 +57,4 @@ class TagList(generics.ListAPIView):
                     access_key=self.request.GET.get('access_key')
                 )
             return Tag.objects.usage_for_queryset(queryset, counts=True)
-            #return Tag.objects.cloud_for_model(model_class)
-
-
-
-
+            # return Tag.objects.cloud_for_model(model_class)

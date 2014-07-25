@@ -4,12 +4,21 @@ from localground.apps.site.decorators import process_identity, process_project
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from localground.apps.site.models import (Scan, Attachment, Audio, Photo, Video,
-        StatusCode, Print, Form, Project)
+from localground.apps.site.models import (
+    Scan,
+    Attachment,
+    Audio,
+    Photo,
+    Video,
+    StatusCode,
+    Print,
+    Form,
+    Project)
 import simplejson as json
 from django.conf import settings
 import os
-    
+
+
 @login_required()
 def get_objects(request, object_id, format_type='table'):
     context = RequestContext(request)
@@ -21,7 +30,7 @@ def get_objects(request, object_id, format_type='table'):
     if r.get('project_id'):
         project_id = r.get('project_id')
         project = Project.objects.get(id=project_id)
-    
+
     forms = Form.objects.my_forms(user=request.user)
     form = Form.objects.get(id=object_id)
     records = []
@@ -31,61 +40,83 @@ def get_objects(request, object_id, format_type='table'):
             attachment = Attachment.objects.get(id=int(r.get('attachment_id')))
         except Attachment.DoesNotExist:
             pass
-    records = form.TableModel.objects.get_objects_detailed(request.user, project=project,
-                                is_blank=is_blank, has_geometry=False,
-                                attachment=attachment)
+    records = form.TableModel.objects.get_objects_detailed(
+        request.user,
+        project=project,
+        is_blank=is_blank,
+        has_geometry=False,
+        attachment=attachment)
 
     raw_url = '/profile/forms/%s/data/' % object_id
     suffix = '?is_blank=%s&format_type=%s' % (is_blank, format_type)
-    context.update({
-        'username': request.user.username,
-        'suffix': suffix,
-        'raw_url': raw_url,
-        'url': '%s%s' % (raw_url, suffix),
-        'create_url': '%screate/embed/' % raw_url, 
-        'delete_url': '%sdelete/batch/embed/' % raw_url, 
-        'form': form,
-        'forms': list(forms),
-        'selected_project': project,
-        'selected_project_id': project_id,
-        'object_type': 'record',
-        'object_name_plural': '%s records' % form.name,
-        'format_type': format_type,
-        'is_blank': is_blank,
-        'style': r.get('style',
-                    request.COOKIES.get('style_' + request.user.username, 'default'))
-    })
+    context.update(
+        {
+            'username': request.user.username,
+            'suffix': suffix,
+            'raw_url': raw_url,
+            'url': '%s%s' %
+            (raw_url,
+             suffix),
+            'create_url': '%screate/embed/' %
+            raw_url,
+            'delete_url': '%sdelete/batch/embed/' %
+            raw_url,
+            'form': form,
+            'forms': list(forms),
+            'selected_project': project,
+            'selected_project_id': project_id,
+            'object_type': 'record',
+            'object_name_plural': '%s records' %
+            form.name,
+            'format_type': format_type,
+            'is_blank': is_blank,
+            'style': r.get(
+                'style',
+                request.COOKIES.get(
+                    'style_' +
+                    request.user.username,
+                    'default'))})
     if request.user.is_superuser:
         context.update({'users': Project.get_users()})
     context.update(prep_paginator(request, records))
     return render_to_response(template_name, context)
-    
-    
+
+
 @login_required()
-def get_record(request, object_id, rec_id=None, template_name='profile/digitize_snippet_lite.html',
-         base_template='base/profile.html', embed=False, include_map=False):
+def get_record(
+        request,
+        object_id,
+        rec_id=None,
+        template_name='profile/digitize_snippet_lite.html',
+        base_template='base/profile.html',
+        embed=False,
+        include_map=False):
     r = request.POST or request.GET
     record = None
     form_object = Form.objects.get(id=object_id)
     no_more = False
     record_new = form_object.get_next_record(last_id=rec_id)
-    if record_new is None: no_more = True
+    if record_new is None:
+        no_more = True
     if rec_id:
         record = form_object.TableModel.objects.get(id=rec_id)
-    
+
     context = RequestContext(request)
 
     if request.POST:
-        record_form = form_object.DataEntryFormClass(request.POST, instance=record)
+        record_form = form_object.DataEntryFormClass(
+            request.POST,
+            instance=record)
         if record_form.is_valid():
             instance = record_form.instance
             instance.manually_reviewed = True
             instance.save(user=request.user)
-            #query for next record
+            # query for next record
             if r.get('next_record') in ['1', 'true', True]:
                 if record_new is not None:
                     record = record_new
-                    record_form = form_object.DataEntryFormClass(instance=record)
+                    record_form = form_object.DataEntryFormClass(
+                        instance=record)
                     context.update({
                         'success': True,
                         'message': 'The previous data record was successfully \
@@ -97,14 +128,14 @@ def get_record(request, object_id, rec_id=None, template_name='profile/digitize_
                         'success': True,
                         'message': 'The data record was successfully updated.  \
                                     There are no more records to edit.'
-                    })    
-                    
+                    })
+
             else:
                 context.update({
                     'success': True,
                     'message': 'The data record was successfully updated.'
                 })
-                
+
         else:
             context.update({
                 'success': False,
@@ -113,8 +144,9 @@ def get_record(request, object_id, rec_id=None, template_name='profile/digitize_
             })
     else:
         record_form = form_object.DataEntryFormClass(instance=record)
-    
-    if embed: base_template = 'base/iframe.html'
+
+    if embed:
+        base_template = 'base/iframe.html'
     context.update({
         'base_template': base_template,
         'embed': embed,
@@ -129,10 +161,10 @@ def get_record(request, object_id, rec_id=None, template_name='profile/digitize_
 
     if not include_map:
         return render_to_response(template_name, context)
-        
-    #add information about source attachment:
+
+    # add information about source attachment:
     if record.snippet is not None and record.snippet.source_attachment is not None:
-        #include source print and source attachment:
+        # include source print and source attachment:
         source_attachment = record.snippet.source_attachment
         context.update({
             'source_attachment': json.dumps(source_attachment.to_dict()),
@@ -140,11 +172,10 @@ def get_record(request, object_id, rec_id=None, template_name='profile/digitize_
         })
 
         if source_attachment.source_scan is not None:
-             context.update({
-                'source_scan': json.dumps(source_attachment.source_scan.to_dict())
-             })
-             
-        #include source print:
+            context.update(
+                {'source_scan': json.dumps(source_attachment.source_scan.to_dict())})
+
+        # include source print:
         if source_attachment.source_print:
             context.update({
                 'candidate_scans':
@@ -152,28 +183,36 @@ def get_record(request, object_id, rec_id=None, template_name='profile/digitize_
             })
     return render_to_response(template_name, context)
 
+
 @login_required()
-def delete_batch(request, object_id, base_template='base/profile.html', embed=False, ):
+def delete_batch(
+    request,
+    object_id,
+    base_template='base/profile.html',
+    embed=False,
+):
     from django.http import HttpResponse
     import json
     r = request.POST
     ModelClass = Form.objects.get(id=object_id).TableModel
     rec_ids = r.getlist('id')
     num_deletes = 0
-    if embed: base_template = 'base/iframe.html'
+    if embed:
+        base_template = 'base/iframe.html'
     message = ''
     if len(rec_ids) > 0:
         groups = list(ModelClass.objects.filter(id__in=rec_ids))
         for g in groups:
             g.delete()
-            num_deletes = num_deletes+1
-            
-    message = message + '%s %s(s) were deleted.' % (num_deletes, ModelClass.model_name)
-    return HttpResponse(json.dumps({'message': message }))
+            num_deletes = num_deletes + 1
+
+    message = message + \
+        '%s %s(s) were deleted.' % (num_deletes, ModelClass.model_name)
+    return HttpResponse(json.dumps({'message': message}))
 
 '''
 
-@process_identity  
+@process_identity
 def delete_objects(request, identity=None):
     r = request.GET or request.POST
     ids = r.getlist('id')
@@ -182,7 +221,7 @@ def delete_objects(request, identity=None):
     message = form.delete_records_by_ids(ids, identity)
     return HttpResponse(json.dumps({'message': message }))
     
-@process_identity  
+@process_identity
 def update_blank_status(request, identity=None):
     r = request.GET or request.POST
     ids = r.getlist('id')
@@ -248,7 +287,7 @@ def export_file(format, ext, username, form, project=None, driver=None,
         #remove all non-alpha-numeric chars from column alias:
         alias = ''.join(c for c in f.col_alias if c.isalnum())
         if alias.lower() == 'description': alias = 'Observation_Description'
-        extras[alias] = form.table_name + '.' + f.col_name        
+        extras[alias] = form.table_name + '.' + f.col_name
     values.extend(extras.keys())
     
     objects = (form.TableModel.objects
@@ -260,7 +299,7 @@ def export_file(format, ext, username, form, project=None, driver=None,
         
     if extra_filters is not None:
         for filter in extra_filters:
-            objects = objects.filter(**filter)    
+            objects = objects.filter(**filter)
         
     #delete after OUSD export:
     #objects = objects.exclude(project__id__in=[54,88])
@@ -270,7 +309,7 @@ def export_file(format, ext, username, form, project=None, driver=None,
     # SV: a HACK that ensure that if a record doesn't have
     #     a corresponding paper artifact, it still gets exported!
     # -------------------------------------------------------------
-    sql = sql.replace('INNER JOIN', 'LEFT OUTER JOIN')    
+    sql = sql.replace('INNER JOIN', 'LEFT OUTER JOIN')
     #remove file from file system:
     if os.path.exists(file_path): os.remove(file_path)
     
@@ -309,7 +348,7 @@ def export_file(format, ext, username, form, project=None, driver=None,
         #zip it:
         import zipfile, fnmatch
         #note: the '_format' is important, to avoid recursion when adding to zip.
-        file_name = '%s_%s.zip' % (prefix, format) 
+        file_name = '%s_%s.zip' % (prefix, format)
         file_path = '%s/%s' % (path, file_name)
         zip_archive= zipfile.ZipFile(file_path, mode='w')
         for nm in os.listdir(path):
@@ -320,7 +359,7 @@ def export_file(format, ext, username, form, project=None, driver=None,
     #return HttpResponse(command)
     
     def _encrypt_media_path(path):
-        import base64 
+        import base64
         return '%s/profile/%s/%s/' % (settings.SERVER_URL, 'tables', base64.b64encode(path))
     
     relative_path = '/static/media/%s/downloads/%s/' % (username, format)

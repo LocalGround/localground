@@ -6,6 +6,7 @@ from localground.apps.site.api.serializers.user_profile_serializer import UserPr
 
 
 class AuditCreate(object):
+
     def pre_save(self, obj):
         '''
         For database inserts
@@ -16,6 +17,7 @@ class AuditCreate(object):
 
 
 class AuditUpdate(AuditCreate):
+
     def pre_save(self, obj):
         '''
         For database updates
@@ -25,6 +27,7 @@ class AuditUpdate(AuditCreate):
 
 
 class QueryableListCreateAPIView(generics.ListCreateAPIView):
+
     def metadata(self, request):
         # extend the existing metadata method in the parent class by adding a
         # list of available filters
@@ -56,7 +59,7 @@ class MediaList(QueryableListCreateAPIView, AuditCreate):
     def pre_save(self, obj):
         AuditCreate.pre_save(self, obj)
 
-        #save uploaded image to file system
+        # save uploaded image to file system
         f = self.request.FILES['file_name_orig']
         if f:
             # ensure filetype is valid:
@@ -65,12 +68,12 @@ class MediaList(QueryableListCreateAPIView, AuditCreate):
             ext = os.path.splitext(f.name)[1]
             ext = ext.lower().replace('.', '')
             if ext not in self.ext_whitelist:
-                raise exceptions.UnsupportedMediaType(f,
-                                                      '{0} is not a valid {1} file type. Valid options are: {2}'
-                                                      .format(
-                                                          ext, self.model.model_name, self.ext_whitelist
-                                                      )
-                )
+                raise exceptions.UnsupportedMediaType(
+                    f,
+                    '{0} is not a valid {1} file type. Valid options are: {2}' .format(
+                        ext,
+                        self.model.model_name,
+                        self.ext_whitelist))
             project_id = self.request.DATA.get('project_id')
             project = Project.objects.get(id=project_id)
             if not project.can_edit(self.request.user):
@@ -80,6 +83,7 @@ class MediaList(QueryableListCreateAPIView, AuditCreate):
 
 
 class MediaInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
+
     def get_queryset(self):
         return self.model.objects.select_related('owner').all()
 
