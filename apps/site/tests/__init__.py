@@ -270,14 +270,28 @@ class ModelMixin(object):
                              authority_id=authority_id)
         for i in range(0, num_fields):
             # add 2 fields to form:
-            fld = models.Field(col_alias='Field %s' % (i + 1),
-                               data_type=models.DataType.objects.get(id=(i + 1)),
-                               display_width=10,
-                               ordering=(i + 1),
-                               form=f)
-            fld.save(user=user)
+            fld = self.create_field(name='Field %s' % (i + 1),
+                                data_type=models.DataType.objects.get(id=(i + 1)),
+                                ordering=(i + 1),
+                                form=f)
+            fld.save()
         f.clear_table_model_cache()
         return f
+    
+    def create_field(self, form, name='Field 1', data_type=None, ordering=1):
+        data_type = data_type or models.DataType.objects.get(id=1)
+        f = models.Field(
+            col_alias=name,
+            data_type=data_type,
+            display_width=10,
+            ordering=ordering,
+            form=form,
+            owner=self.user,
+            last_updated_by=self.user
+        )
+        f.save()
+        return f
+    
 
     def insert_form_data_record(self, form, project=None):
 

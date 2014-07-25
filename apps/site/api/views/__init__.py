@@ -13,8 +13,9 @@ from localground.apps.site.api.views.association_views import (
     RelatedMediaList, RelatedMediaInstance
 )
 from localground.apps.site.api.views.ebays_views import TrackList
+from localground.apps.site.api.views.field_views import FieldList, FieldInstance
 from localground.apps.site.api.views.form_views import (
-    FieldViewSet, FormList, FormInstance, FormDataList, FormDataInstance
+    FormList, FormInstance, FormDataList, FormDataInstance
 )
 from localground.apps.site.api.views.admin_views import (
     TileViewSet, OverlayTypeViewSet, OverlaySourceViewSet,

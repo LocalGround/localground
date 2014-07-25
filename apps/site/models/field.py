@@ -50,13 +50,12 @@ class Field(BaseAudit):
         ordering = ['form__id', 'ordering']
         unique_together = (('col_alias', 'form'), ('col_name_db', 'form'))
 
-    def save(self, user, *args, **kwargs):
+    def save(self, *args, **kwargs):
         is_new = self.pk is None
 
         # 1. ensure that user doesn't inadvertently change the data type of the
         # column
         if is_new:
-            self.owner = user
             self.date_created = get_timestamp_no_milliseconds()
             self.col_name_db = 'col_placeholder'
         else:
@@ -65,8 +64,6 @@ class Field(BaseAudit):
                 raise Exception(
                     'You are not allowed to change the column type of an existing column')
 
-        self.last_updated_by = user
-        self.time_stamp = get_timestamp_no_milliseconds()
         super(Field, self).save(*args, **kwargs)
 
         # 2. ensure that the column name is unique, and add column to table:
