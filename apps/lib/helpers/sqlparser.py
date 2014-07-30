@@ -203,6 +203,7 @@ class QueryParser(object):
         self.model_class = model_class
         self.query_text = query_text
         self.where_conditions = []
+        #raise Exception(query_text)
         if debug:
             self.parse()
         else:
@@ -244,15 +245,24 @@ class QueryParser(object):
             if isinstance(t, Where):
                 where_clause =  t
         if where_clause is None: return
-            
+        
         tokens = self.remove_whitespaces(where_clause.tokens)
         tokens.pop(0)
+                
         for i in range(0, len(tokens)):
             t = tokens[i]
             #parse equalities and inequalities:
             if isinstance(t, Comparison):
                 children = [str(c) for c in self.remove_whitespaces(t.tokens)]
                 wc = WhereCondition(children[0], operator=children[1], val=children[2])
+                if len(self.where_conditions) > 0: wc.conjunction = str(tokens[i-1])
+                self.where_conditions.append(wc)
+            elif str(t) in ['=', '>', '<', '>=', '<=']:
+                '''
+                This elif block is a total hack. Really, I need to rework this section
+                and write tests!
+                '''
+                wc = WhereCondition(str(tokens[0]), operator=str(tokens[1]), val=str(tokens[2]))                
                 if len(self.where_conditions) > 0: wc.conjunction = str(tokens[i-1])
                 self.where_conditions.append(wc)
                 
@@ -271,6 +281,7 @@ class QueryParser(object):
                     self.where_conditions.append(wc)
              
     def extend_query(self, q):
+        #raise Exception(self.where_conditions)
         from django.db.models import Q
         if len(self.where_conditions) == 0:
             return q

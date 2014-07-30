@@ -32,17 +32,7 @@ define([
 			 * page, which returns the API's schema as well
 			 * as the filterable columns.
 		     */
-			//alert('fetch: ' + this.url);
 			var that = this;
-			
-			/*
-			$.ajaxSetup({
-				beforeSend: function(xhr){
-					xhr.setRequestHeader("Authorization",
-						"Basic " + btoa("vanwars:123"));
-				}
-			});
-			*/
 			
 			$.ajax({
 				url: this.url,

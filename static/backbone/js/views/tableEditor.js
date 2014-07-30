@@ -5,13 +5,17 @@ define([
 		"collections/columns",
 		"collections/forms",
 		"views/tableHeader",
+		"views/tableQuery",
 		"lib/external/colResizable-1.3.source",
 		
-	], function(Backbone, Backgrid, Records, Columns, Forms, TableHeader) {
+	], function(Backbone, Backgrid, Records, Columns, Forms, TableHeader, TableQuery) {
 	var TableEditor = Backbone.View.extend({
 		el: "#grid",
 		tableHeader: null,
 		url: null,
+		columnWidth: '120',
+		columns: null,
+		records: null,
 		events: {
 			'click #add': 'insertRow',
 			'click .change-table': 'loadNewTable'
@@ -20,10 +24,12 @@ define([
 			opts = opts || {};
 			$.extend(this, opts);
 			var that = this;
-			this.initLayout();
 			this.forms = new Forms();
 			this.tableHeader = new TableHeader({
 				collection: this.forms,
+				vent: this.vent
+			});
+			this.tableQuery = new TableQuery({
 				vent: this.vent
 			});
 			this.vent.on("loadNewTable", function(url){
@@ -34,6 +40,10 @@ define([
 			this.vent.on("insertRow", function(e){
 				that.insertRow(e);
 			});
+			
+			this.vent.on("requery", function(sql){
+				that.getRecords({query: sql});
+			});
 		},
 		fetchColumns: function(){
 			this.columns = new Columns({
@@ -43,23 +53,26 @@ define([
 			this.columns.on('reset', this.loadGrid, this);
 		},
 		loadGrid: function(){
-			var records = new Records({
+			this.records = new Records({
 				url: this.url
 			});
 			this.grid = new Backgrid.Grid({
 				columns: this.columns,
-				collection: records
+				collection: this.records
 			});
-			
-			records.fetch({
-				reset: true,
-				data: {
-					page_size: 100,
-					format: 'json'
-				}
-			});
-			
+			this.getRecords();
 			this.render();
+		},
+		getRecords: function(opts){
+			opts = opts || {};
+			$.extend(opts, {
+				page_size: 100,
+				format: 'json'
+			});
+			this.records.fetch({
+				reset: true,
+				data: opts
+			});
 		},
 		render: function(){
 			// Render the grid and attach the root to your HTML document
@@ -69,6 +82,9 @@ define([
 		initLayout: function(){
 			this.$el.height($('body').height() - 50);
 			this.$el.find('table').addClass('table-bordered');
+			$('#grid').find('table').css({
+				width: (this.columns.length*this.columnWidth) + "px"    
+			});
 			this.$el.find('table').colResizable({ disable: true }); //a hack to run garbage collection for resizable table
 			this.$el.find('table').colResizable({ disable: false });	
 		},

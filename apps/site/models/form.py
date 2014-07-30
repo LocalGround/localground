@@ -141,12 +141,14 @@ class Form(BaseNamed, BasePermissions):
     def TableModel(self):
         # This may be dangerous -- pretty sure the cache spans multiple
         # sessions.  If weird bugs appear, this is a suspect method
-        from django.db.models.loading import cache
+        '''from django.db.models.loading import cache
         if cache.app_models['site'].get('form_%s' % self.id) is None:
             cache.app_models['site'][
                 'form_%s' %
                 self.id] = ModelClassBuilder(self).model_class
         return cache.app_models['site']['form_%s' % self.id]
+        '''
+        return ModelClassBuilder(self).model_class
 
     def has_access(self, user, access_key=None):
         if self.access_authority.id == 3:
