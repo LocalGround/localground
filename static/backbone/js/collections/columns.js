@@ -10,7 +10,7 @@ define([
 		"lib/table/cells/delete"
 	], function($, Backgrid, LatFormatter, LngFormatter, DeleteCell) {
 	var Columns = Backgrid.Columns.extend({
-		url: '/api/0/forms/9/data/.json', //depends on the table selected
+		url: null,
 		cellTypeLookup: {
 			"integer": "integer",
 			"field": "string",
@@ -20,6 +20,13 @@ define([
 				"overlay_type",
 				"url"
 			],
+		initialize: function(opts){
+			opts = opts || {};
+			$.extend(this, opts)
+			if (this.url == null) {
+				alert("opts.url cannot be null");
+			}
+		},
 		fetch: function(opts) {
 			/* Queries the Django REST Framework OPTIONS
 			 * page, which returns the API's schema as well

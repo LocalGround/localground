@@ -29,12 +29,37 @@ require.config({
 	urlArgs: "bust=" + (new Date()).getTime()
 });
 require(
-	["jquery", "lib/external/backbone-min", "backgrid", "views/tableEditor"],
+	["jquery", "lib/external/backbone-min", "backgrid", "views/tableEditor", "jquery.bootstrap"],
 	function($, Backbone, Backgrid, TableEditor) {
+		var vent = _.extend({}, Backbone.Events);
 		$(function() {
-			new TableEditor({
-				a: 123
+			$.ajaxSetup({
+				beforeSend: function(xhr, settings){
+					$('#loading_message').show();
+					xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+				}
+			});
+			
+			var tableEditor = new TableEditor({
+				vent: vent
 			});
 		});
 	}
 );
+
+//todo: move this to some helper functions file:
+function getCookie(name) {
+	var cookieValue = null;
+	if (document.cookie && document.cookie != '') {
+		var cookies = document.cookie.split(';');
+		for (var i = 0; i < cookies.length; i++) {
+			var cookie = jQuery.trim(cookies[i]);
+			// Does this cookie string begin with the name we want?
+			if (cookie.substring(0, name.length + 1) == (name + '=')) {
+				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				break;
+			}
+		}
+	}
+	return cookieValue;
+}

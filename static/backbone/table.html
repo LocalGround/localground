@@ -15,11 +15,15 @@
 		</style>
 	</head>
 	<body>
-		<nav class="navbar navbar-default" role="navigation">
+		<nav id="navbar" class="navbar navbar-default" role="navigation">
             <ul class="nav navbar-nav">
                 <li><a href="#">Local Ground</a></li>
-				<li><a  href="#" id="add_row" style="cursor:pointer;">Add Row</a></li>
-            </ul>
+				<li><a href="#" id="add_row" style="cursor:pointer;">Add Row</a></li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Tables <span class="caret"></span></a>
+					<ul id="tableSelect" class="dropdown-menu" role="menu"></ul>
+				</li>
+			</ul>
         </nav>
 		
 		<div id="grid" class="backgrid-container"></div>
@@ -27,152 +31,8 @@
 		<script id="deleteTemplate" type="text/template">
 			<button class="delete">Delete</button>
 		</script>
-		<!-- script type="text/javascript" src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
-		<script type="text/javascript" src="js/lib/external/underscore-min.js"></script>
-        <script type="text/javascript" src="js/lib/external/backbone-min.js"></script>
-		<script type="text/javascript" src="js/lib/external/backgrid.min.js"></script>
-		<script type="text/javascript" src="js/lib/external/colResizable-1.3.source.js"></script -->
 		<script src="js/lib/external/require.js"></script>
 		<script type="text/javascript" src="js/views/table.js"></script>	
-		<!-- script>
-			$(document).ready(function () {
-			
-				//http://backgridjs.com/misc/faq.html
-				var DeleteCell = Backgrid.Cell.extend({
-					template: _.template('<i class="fa fa-trash-o" style="cursor:pointer;"></i>'),
-					events: {
-					  "click": "deleteRow"
-					},
-					deleteRow: function (e) {
-						e.preventDefault();
-						this.model.destroy();
-					},
-					render: function () {
-						this.$el.html(this.template());
-						this.delegateEvents();
-						return this;
-					}
-				});
-				
-				var LatFormatter = {
-					fromRaw: function (rawValue, model) {
-						try {
-							return rawValue.coordinates[1].toFixed(4);
-						} catch(e) {
-							return "?";
-						}
-						
-					}
-				};
-				var LatCell = Backgrid.Cell.extend({
-					formatter: LatFormatter
-				});
-				var LngFormatter = {
-					fromRaw: function (rawValue, model) {
-						try {
-							return rawValue.coordinates[0].toFixed(4);
-						} catch(e) {
-							return "?";
-						}
-					}
-				};
-				var LngCell = Backgrid.Cell.extend({
-					formatter: LngFormatter
-				});
-				
-				var universities = new Universities();
-				
-				var columns = [
-					{
-						name: "id", 
-						label: "ID",
-						editable: false,
-						// Defines a cell type, and ID is displayed
-						// as an integer without the ',' separating 1000s.
-						cell: Backgrid.IntegerCell.extend({
-							orderSeparator: ''
-						})
-					},
-					{
-						name: "delete", 
-						label: "delete",
-						editable: false,
-						cell: DeleteCell
-					},
-					{
-						name: "project_id",
-						label: "Project ID",
-						cell: "integer" 
-					},
-					{
-						name: "geometry",
-						label: "Longitude",
-						cell: LngCell,
-						editable: false,
-					},
-					{
-						name: "geometry",
-						label: "Latitude",
-						cell: LatCell,
-						editable: false,
-					},
-					{
-						name: "name",
-						label: "Name",
-						// The cell type can be a reference of a Backgrid.Cell subclass, any Backgrid.Cell subclass instances like *id* above, or a string
-						cell: "string" // This is converted to "StringCell" and a corresponding class in the Backgrid package namespace is looked up
-					},
-					{
-						name: "average_gpa",
-						label: "Average GPA",
-						cell: "number" // An integer cell is a number cell that displays humanized integers
-					},
-					{
-						name: "address",
-						label: "Address",
-						cell: "string" // A cell type for floating point value, defaults to have a precision 2 decimal numbers
-					},
-					{
-						name: "university_type",
-						label: "University Type",
-						cell: "string" // A cell type for floating point value, defaults to have a precision 2 decimal numbers
-					}
-				];
-				
-				// Initialize a new Grid instance
-				var grid = new Backgrid.Grid({
-					columns: columns,
-					collection: universities
-				});
-				
-				// Render the grid and attach the root to your HTML document
-				$("#example-2-result").append(grid.render().el);
-				
-				
-			
-				// Fetch some countries from the url
-				universities.fetch({
-					reset: true,
-					data: {
-						page_size: 100,
-						format: 'json'
-					}
-				});
-				
-				$("#example-2-result").height($('body').height() - 50);
-				$("#example-2-result").find('table').addClass('table-bordered');
-				$("#example-2-result").find('table').colResizable({ disable: true }); //a hack to run garbage collection for resizable table
-				$("#example-2-result").find('table').colResizable({ disable: false });
-				
-				$('#add_row').click(function(e) {
-					grid.insertRow({
-						project_id: 9
-					});
-					e.preventDefault();
-				});			  
-			});
-			
-		</script -->
 		
 	</body>
 </html>

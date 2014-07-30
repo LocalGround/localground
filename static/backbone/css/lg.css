@@ -311,6 +311,11 @@ body { height: 100%; margin: 0; padding: 0; }
 	margin-right: 5px;
 }
 
+.navbar-nav>.open>a, .navbar-nav>.open>a:hover, .navbar-nav>.open>a:focus {
+	color: #ddd;
+	background-color: #555;
+}
+
 
 
 

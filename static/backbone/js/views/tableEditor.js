@@ -3,34 +3,52 @@ define([
 		"backgrid",
 		"collections/records",
 		"collections/columns",
-		"lib/external/colResizable-1.3.source"
-	], function(Backbone, Backgrid, Records, Columns) {
+		"collections/forms",
+		"views/tableHeader",
+		"lib/external/colResizable-1.3.source",
+		
+	], function(Backbone, Backgrid, Records, Columns, Forms, TableHeader) {
 	var TableEditor = Backbone.View.extend({
 		el: "#grid",
+		tableHeader: null,
+		url: null,
 		events: {
-			'click #add': 'insertRow'
+			'click #add': 'insertRow',
+			'click .change-table': 'loadNewTable'
 		},
 		initialize: function(opts) {
 			opts = opts || {};
 			$.extend(this, opts);
+			var that = this;
 			this.initLayout();
-			this.columns = new Columns();
+			this.forms = new Forms();
+			this.tableHeader = new TableHeader({
+				collection: this.forms,
+				vent: this.vent
+			});
+			this.vent.on("loadNewTable", function(url){
+				that.url = url + 'data/';
+				that.fetchColumns();
+			});
+			
+			this.vent.on("insertRow", function(e){
+				that.insertRow(e);
+			});
+		},
+		fetchColumns: function(){
+			this.columns = new Columns({
+				url: this.url + '.json'
+			});
 			this.columns.fetch();
 			this.columns.on('reset', this.loadGrid, this);
 		},
 		loadGrid: function(){
-			//alert("loadGrid");
-			var CaptionFooter = Backgrid.Footer.extend({
-				render: function () {
-					this.el.innerHTML = '<button id="add">Add</button>'
-					return this;
-				}
+			var records = new Records({
+				url: this.url
 			});
-			var records = new Records();
 			this.grid = new Backgrid.Grid({
 				columns: this.columns,
-				collection: records,
-				footer: CaptionFooter
+				collection: records
 			});
 			
 			records.fetch({
@@ -45,7 +63,8 @@ define([
 		},
 		render: function(){
 			// Render the grid and attach the root to your HTML document
-			this.$el.append(this.grid.render().el);
+			this.$el.html(this.grid.render().el);
+			this.initLayout();
 		},
 		initLayout: function(){
 			this.$el.height($('body').height() - 50);
