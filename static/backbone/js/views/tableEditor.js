@@ -86,7 +86,7 @@ define([
 		},
 		insertRow: function(e) {
 			this.grid.insertRow({
-				project_id: 9
+				project_id: 2
 			});
 			e.preventDefault();
 		}	
