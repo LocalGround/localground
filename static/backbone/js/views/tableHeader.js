@@ -6,7 +6,9 @@ define([
 		vent: null,
 		events: {
 			'click .change-table': 'triggerLoadTable',
-			'click #add_row': 'triggerInsertRow'
+			'click #add_row': 'triggerInsertRow',
+			'click .query': 'triggerQuery',
+			'click .clear': 'triggerClearQuery'
 		},
 		initialize: function(opts) {
 			opts = opts || {};
@@ -39,6 +41,15 @@ define([
 		triggerInsertRow: function(e){
 			this.vent.trigger("insertRow", e);
 			e.preventDefault();	
+		},
+		triggerQuery: function(e){
+			var sql = this.$el.find('#query_text').val();
+			this.vent.trigger("requery", sql);
+			e.preventDefault();	
+		},
+		triggerClearQuery: function(e){
+			this.$el.find('#query_text').val("")
+			this.triggerQuery(e);
 		}
 	});
 	return TableHeader;

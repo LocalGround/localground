@@ -5,10 +5,9 @@ define([
 		"collections/columns",
 		"collections/forms",
 		"views/tableHeader",
-		"views/tableQuery",
 		"lib/external/colResizable-1.3.source",
 		
-	], function(Backbone, Backgrid, Records, Columns, Forms, TableHeader, TableQuery) {
+	], function(Backbone, Backgrid, Records, Columns, Forms, TableHeader) {
 	var TableEditor = Backbone.View.extend({
 		el: "#grid",
 		tableHeader: null,
@@ -27,9 +26,6 @@ define([
 			this.forms = new Forms();
 			this.tableHeader = new TableHeader({
 				collection: this.forms,
-				vent: this.vent
-			});
-			this.tableQuery = new TableQuery({
 				vent: this.vent
 			});
 			this.vent.on("loadNewTable", function(url){
