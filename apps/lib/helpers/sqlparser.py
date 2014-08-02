@@ -257,13 +257,14 @@ class QueryParser(object):
                 wc = WhereCondition(children[0], operator=children[1], val=children[2])
                 if len(self.where_conditions) > 0: wc.conjunction = str(tokens[i-1])
                 self.where_conditions.append(wc)
-            elif str(t) in ['=', '>', '<', '>=', '<=']:
+            #elif str(t) in ['=', '>', '<', '>=', '<=']:
+            elif t.ttype == T.Comparison:
                 '''
                 This elif block is a total hack. Really, I need to rework this section
                 and write tests!
                 '''
-                wc = WhereCondition(str(tokens[0]), operator=str(tokens[1]), val=str(tokens[2]))                
-                if len(self.where_conditions) > 0: wc.conjunction = str(tokens[i-1])
+                wc = WhereCondition(str(tokens[i-1]), operator=str(tokens[i]), val=str(tokens[i+1]))                
+                if len(self.where_conditions) > 0: wc.conjunction = str(tokens[i-2])
                 self.where_conditions.append(wc)
                 
             elif t.ttype == T.Keyword:
