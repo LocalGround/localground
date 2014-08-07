@@ -6,7 +6,7 @@ define([
 		"collections/forms",
 		"views/tableHeader",
 		"lib/external/colResizable-1.3.source",
-		"lib/external/backgrid-paginator"
+		"lib/external/backgrid-paginator-svw-debugged"
 		
 	], function(Backbone, Backgrid, Records, Columns, Forms, TableHeader) {
 	var TableEditor = Backbone.View.extend({
@@ -52,6 +52,7 @@ define([
 			this.columns.on('reset', this.loadGrid, this);
 		},
 		loadGrid: function(){
+			var that = this;
 			this.records = new Records({
 				url: this.url
 			});
@@ -60,7 +61,8 @@ define([
 				collection: this.records
 			});
 			this.paginator = new Backgrid.Extension.Paginator({
-				collection: this.records
+				collection: this.records,
+				goBackFirstOnSort: true
 			});
 			this.getRecords();
 			this.render();

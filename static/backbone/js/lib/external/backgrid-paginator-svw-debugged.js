@@ -279,7 +279,20 @@ define([
       self.listenTo(col, "add", self.render);
       self.listenTo(col, "remove", self.render);
       self.listenTo(col, "reset", self.render);
-      self.listenTo(col, "backgrid:sorted", function () {
+      self.listenTo(col, "backgrid:sorted", function (column, direction) {
+        /*SVW: hacking here:*/
+        var sortKey = column.attributes.name;
+        var order = -1; //-1=ascending, 1=descending
+        if (direction  == 'descending') {
+            sortKey = "-" + sortKey;
+            order = 1;
+        }
+        $.extend(col.state, {
+            sortKey: sortKey,
+            order: order
+        })
+        //console.log(direction);
+        //console.log(JSON.stringify(col.state));
         if (self.goBackFirstOnSort) col.getFirstPage({reset: true});
       });
     },

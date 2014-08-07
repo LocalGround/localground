@@ -17,7 +17,9 @@ define([
 			Backbone.Model.prototype.initialize.apply(this, arguments);
 		},
 		state: {
-			pageSize: 15
+			pageSize: 15,
+			sortKey: 'id',
+			order: 1
 		},
 	  
 		//  See documentation:
@@ -25,12 +27,14 @@ define([
 		queryParams: {
 			totalPages: null,
 			totalRecords: null,
-			//order: "ordering",
+			sortKey: "ordering",
 			pageSize: "page_size"
 		},
 		
 		parseState: function (resp, queryParams, state, options) {
-			return {totalRecords: resp.count};
+			return {
+				totalRecords: resp.count
+			};
 		},
 
 		parseRecords: function (response, options) {
