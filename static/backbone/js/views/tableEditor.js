@@ -6,11 +6,13 @@ define([
 		"collections/forms",
 		"views/tableHeader",
 		"lib/external/colResizable-1.3.source",
+		"lib/external/backgrid-paginator"
 		
 	], function(Backbone, Backgrid, Records, Columns, Forms, TableHeader) {
 	var TableEditor = Backbone.View.extend({
 		el: "#grid",
 		tableHeader: null,
+		paginator: null,
 		url: null,
 		columnWidth: '120',
 		columns: null,
@@ -40,6 +42,7 @@ define([
 			this.vent.on("requery", function(sql){
 				that.getRecords({query: sql});
 			});
+			
 		},
 		fetchColumns: function(){
 			this.columns = new Columns({
@@ -56,13 +59,16 @@ define([
 				columns: this.columns,
 				collection: this.records
 			});
+			this.paginator = new Backgrid.Extension.Paginator({
+				collection: this.records
+			});
 			this.getRecords();
 			this.render();
 		},
 		getRecords: function(opts){
 			opts = opts || {};
 			$.extend(opts, {
-				page_size: 100,
+				//page_size: 100,
 				format: 'json'
 			});
 			this.records.fetch({
@@ -73,6 +79,7 @@ define([
 		render: function(){
 			// Render the grid and attach the root to your HTML document
 			this.$el.html(this.grid.render().el);
+			this.$el.append(this.paginator.render().el);
 			this.initLayout();
 		},
 		initLayout: function(){

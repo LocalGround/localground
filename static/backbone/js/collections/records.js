@@ -1,7 +1,8 @@
 define([
+		"lib/external/backbone-pageable",
 		"models/record"
-	], function(Record) {
-    var Records = Backbone.Collection.extend({
+	], function(PageableCollection, Record) {
+    var Records = PageableCollection.extend({
         model: Record,
 		columns: null,
 		name: 'Records',
@@ -15,9 +16,26 @@ define([
 			}
 			Backbone.Model.prototype.initialize.apply(this, arguments);
 		},
-		parse : function(response) {
-            return response.results;
-        }
+		state: {
+			pageSize: 15
+		},
+	  
+		//  See documentation:
+		//	https://github.com/backbone-paginator/backbone-pageable
+		queryParams: {
+			totalPages: null,
+			totalRecords: null,
+			//order: "ordering",
+			pageSize: "page_size"
+		},
+		
+		parseState: function (resp, queryParams, state, options) {
+			return {totalRecords: resp.count};
+		},
+
+		parseRecords: function (response, options) {
+			return response.results;
+		}
     });
     return Records;
 });
