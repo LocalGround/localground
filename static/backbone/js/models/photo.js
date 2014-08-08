@@ -1,5 +1,5 @@
-define(["lib/external/backbone-min"], function(Backbone) {
-	var Photo = Backbone.Model.extend({
+define(["models/base"], function(Base) {
+	var Photo = Base.extend({
 		defaults: {
 			name: "Untitled"
 		}

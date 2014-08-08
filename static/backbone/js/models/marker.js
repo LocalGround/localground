@@ -1,5 +1,5 @@
-define(["lib/external/backbone-min"], function(Backbone) {
-	var Marker = Backbone.Model.extend({
+define(["models/base"], function(Base) {
+	var Marker = Base.extend({
 		defaults: {
 			name: "Untitled"
 		}

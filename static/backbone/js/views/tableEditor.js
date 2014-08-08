@@ -8,7 +8,9 @@ define([
 		"models/field",
 		"lib/external/colResizable-1.3.source",
 		"lib/external/backgrid-paginator-svw-debugged",
-		"form"
+		"form",
+		"bootstrap-form-templates",
+		"backbone-bootstrap-modal"
 		
 	], function(Backbone, Backgrid, Records, Columns, Forms, TableHeader, Field) {
 	var TableEditor = Backbone.View.extend({
@@ -43,13 +45,39 @@ define([
 				that.insertRow(e);
 			});
 			
-			this.globalEvents.on("insertColumn", function(columnDef){
+			this.globalEvents.on("insertColumn", function(e){
+				//1. define a new field:
 				var field = new Field({
 					urlRoot: that.url.replace('data/', 'fields/')
 				});
-				field.fetchSchema();
-				//that.columns.getNewColumnSchema();
-				//that.insertColumn(columnDef);
+				
+				//2. generate the form that will be used to create the new field:
+				field.on('schemaLoaded', function(){
+					var form = new Backbone.Form({
+						model: field
+					}).render();
+					var modal = new Backbone.BootstrapModal({ content: form }).open();
+					modal.on('ok', function() {
+						form.commit(); 	//does validation
+						field.save();  	//does database commit
+					});
+				});
+				
+				//3. once the new field has been added to the database,
+				//	 add it to the table:
+				field.on('sync', function(){
+					alert('saved!');
+					return;
+					/*var columnDef = {
+						name: field.get("name"),
+						label: field.get("name"),
+						cell: field.get("data_type"),
+						editable: true
+					}
+					that.insertColumn(columnDef);
+					*/
+				});
+				
 			});
 			
 			this.globalEvents.on("requery", function(sql){

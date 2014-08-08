@@ -7,7 +7,9 @@ require.config({
         'backbone': 'lib/external/backbone-min',
 		'backgrid': 'lib/external/backgrid.min',
 		'form': 'lib/external/backbone-forms',
-		'underscore': 'lib/external/underscore-min'
+		'underscore': 'lib/external/underscore-min',
+		'bootstrap-form-templates': 'lib/external/backbone-forms-bootstrap3-templates',
+		'backbone-bootstrap-modal': 'lib/external/backbone.bootstrap-modal'
 	},
 	shim: {
 		'lib/external/underscore-min': {
@@ -23,6 +25,12 @@ require.config({
 		'backgrid': {
 			deps: ['lib/external/backbone-min'],
 			exports: 'Backgrid'
+		},
+		'bootstrap-form-templates': {
+			deps: ['lib/external/backbone-min'],
+		},
+		'backbone-bootstrap-modal': {
+			deps: ['lib/external/backbone-min', 'jquery.bootstrap'],
 		},
 		'lib/external/colResizable-1.3.source': {
 			deps: ['jquery'],

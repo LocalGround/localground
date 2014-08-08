@@ -1,5 +1,5 @@
-define(["lib/external/backbone-min"], function(Backbone) {
-	var Record = Backbone.Model.extend({
+define(["models/base"], function(Base) {
+	var Record = Base.extend({
 		defaults: {
 			name: ""
 		},
@@ -28,7 +28,7 @@ define(["lib/external/backbone-min"], function(Backbone) {
 			OPTIONS request to ensure that the request is legal. For some reason,
 			the Local Ground produces an error for this OPTIONS request if a
 			'/.json' footer isn't attached to the end. Hence this function overrides
-			the based url() funciton in backbone
+			the based url() function in backbone
 			*/
 			var base =
 				_.result(this, 'urlRoot') ||

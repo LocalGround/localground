@@ -27,7 +27,7 @@ class ApiFieldListTest(test.TestCase, ViewMixinAPI):
                             'is_printable': True,
                             'has_snippet_field': True,
                             'ordering': 2,
-                            'data_type': 'text',
+                            'data_type': 1,
                             'display_width': 10
                         }),
                         HTTP_X_CSRFTOKEN=self.csrf_token,

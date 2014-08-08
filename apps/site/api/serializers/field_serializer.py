@@ -21,7 +21,7 @@ class FieldSerializerBase(serializers.ModelSerializer):
                 (settings.SERVER_URL, obj.form.id, obj.id)
 
 class FieldSerializer(FieldSerializerBase):
-    data_type = serializers.SlugRelatedField(slug_field='name')
+    #data_type = serializers.SlugRelatedField(slug_field='name')
     
     class Meta:
         model = models.Field

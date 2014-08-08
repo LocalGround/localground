@@ -176,13 +176,6 @@ body { height: 100%; margin: 0; padding: 0; }
 	padding: 10px 10px 0px 20px;	
 }
 
-.control-label {
-	line-height: 2.5em;
-	font-weight: normal;
-	color: #999;
-	display: inline-block;
-	float: none;
-}
 .form-group {
 	border-bottom: solid 1px #EEE;
 	padding: 5px 0px 0px 0px;

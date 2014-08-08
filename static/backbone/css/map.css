@@ -1,0 +1,7 @@
+.control-label {
+	line-height: 2.5em;
+	font-weight: normal;
+	color: #999;
+	display: inline-block;
+	float: none;
+}

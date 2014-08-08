@@ -1,5 +1,5 @@
-define(["lib/external/backbone-min"], function(Backbone) {
-	var MapImage = Backbone.Model.extend({
+define(["models/base"], function(Base) {
+	var MapImage = Base.extend({
 		defaults: {
 			name: "Untitled"
 		}

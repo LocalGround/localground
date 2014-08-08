@@ -1,5 +1,5 @@
-define(["lib/external/backbone-min"], function(Backbone) {
-	var DataType = Backbone.Model.extend({
+define(["models/base"], function(Base) {
+	var DataType = Base.extend({
 		defaults: {
 			name: "Untitled"
 		},

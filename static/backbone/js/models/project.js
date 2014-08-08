@@ -1,5 +1,5 @@
-define(["lib/external/backbone-min"], function(Backbone) {
-	var Project = Backbone.Model.extend({
+define(["models/base"], function(Base) {
+	var Project = Base.extend({
 		defaults: {
 			name: "Untitled"
 		},

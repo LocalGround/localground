@@ -53,12 +53,7 @@ define([
 			this.triggerQuery(e);
 		},
 		triggerInsertColumn: function(e) {
-			this.globalEvents.trigger("insertColumn", {
-				name: "lastUpdated",
-				label: "Last Updated",
-				cell: "datetime",
-				editable: true
-			});
+			this.globalEvents.trigger("insertColumn", e);
 		}
 	});
 	return TableHeader;
