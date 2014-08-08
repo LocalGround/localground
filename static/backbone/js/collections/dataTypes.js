@@ -1,0 +1,12 @@
+define(["lib/external/backbone-min", "models/dataType"],
+	   function(Backbone, DataType) {
+    var DataTypes = Backbone.Collection.extend({
+        model: DataType,
+		name: 'Data Types',
+        url: '/api/0/data-types/',
+		parse : function(response) {
+            return response.results;
+        },
+    });
+    return DataTypes;
+});

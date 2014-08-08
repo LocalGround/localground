@@ -4,7 +4,10 @@ require.config({
 		'jquery': '//code.jquery.com/jquery-1.8.0.min',
 		'text': 'lib/external/text',
 		'jquery.bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min',
-        'backgrid': 'lib/external/backgrid.min'
+        'backbone': 'lib/external/backbone-min',
+		'backgrid': 'lib/external/backgrid.min',
+		'form': 'lib/external/backbone-forms',
+		'underscore': 'lib/external/underscore-min'
 	},
 	shim: {
 		'lib/external/underscore-min': {
@@ -18,7 +21,7 @@ require.config({
 			deps: ['jquery']
 		},
 		'backgrid': {
-			deps: ['jquery', 'lib/external/backbone-min', 'lib/external/underscore-min'],
+			deps: ['lib/external/backbone-min'],
 			exports: 'Backgrid'
 		},
 		'lib/external/colResizable-1.3.source': {
@@ -31,7 +34,6 @@ require.config({
 require(
 	["jquery", "lib/external/backbone-min", "backgrid", "views/tableEditor", "jquery.bootstrap"],
 	function($, Backbone, Backgrid, TableEditor) {
-		var vent = _.extend({}, Backbone.Events);
 		$(function() {
 			$.ajaxSetup({
 				beforeSend: function(xhr, settings){
@@ -39,10 +41,8 @@ require(
 					xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
 				}
 			});
-			
-			var tableEditor = new TableEditor({
-				vent: vent
-			});
+			//initialize new table editor!
+			new TableEditor();
 		});
 	}
 );

@@ -35,12 +35,11 @@ define([
 			var that = this;
 			
 			$.ajax({
-				url: this.url,
+				 // Note: the json must be appended in order for the OPTIONS 
+				 // query to return JSON (it ignores the 'format' parameter)
+				url: this.url + '.json',
 				type: 'OPTIONS',
-				data: {
-					_method: 'OPTIONS',
-					format: 'json'
-				},
+				data: { _method: 'OPTIONS' },
 				success: function(data) {
 					var cols = that.getColumnsFromData(data.actions['POST']);
 					that.reset(cols);

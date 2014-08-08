@@ -3,12 +3,13 @@ define([
 	], function(Backbone) {
 	var TableHeader = Backbone.View.extend({
 		el: "#navbar",
-		vent: null,
+		globalEvents: null,
 		events: {
 			'click .change-table': 'triggerLoadTable',
 			'click #add_row': 'triggerInsertRow',
 			'click .query': 'triggerQuery',
-			'click .clear': 'triggerClearQuery'
+			'click .clear': 'triggerClearQuery',
+			'click #add_column': 'triggerInsertColumn'
 		},
 		initialize: function(opts) {
 			opts = opts || {};
@@ -19,7 +20,7 @@ define([
 		loadFormSelector: function(){
 			var that = this;
 			this.collection.fetch({success: function(response) {
-				that.vent.trigger("loadNewTable", that.collection.at(0).get("url"));
+				that.globalEvents.trigger("loadNewTable", that.collection.at(0).get("url"));
 				var $tbl = that.$el.find('#tableSelect')
 				$tbl.empty();
 				$.each(that.collection.models, function(){
@@ -35,21 +36,29 @@ define([
 			}});
 		},
 		triggerLoadTable: function(e){
-			this.vent.trigger("loadNewTable", $(e.currentTarget).attr("href"));
+			this.globalEvents.trigger("loadNewTable", $(e.currentTarget).attr("href"));
 			e.preventDefault();
 		},
 		triggerInsertRow: function(e){
-			this.vent.trigger("insertRow", e);
+			this.globalEvents.trigger("insertRow", e);
 			e.preventDefault();	
 		},
 		triggerQuery: function(e){
 			var sql = this.$el.find('#query_text').val();
-			this.vent.trigger("requery", sql);
+			this.globalEvents.trigger("requery", sql);
 			e.preventDefault();	
 		},
 		triggerClearQuery: function(e){
 			this.$el.find('#query_text').val("")
 			this.triggerQuery(e);
+		},
+		triggerInsertColumn: function(e) {
+			this.globalEvents.trigger("insertColumn", {
+				name: "lastUpdated",
+				label: "Last Updated",
+				cell: "datetime",
+				editable: true
+			});
 		}
 	});
 	return TableHeader;

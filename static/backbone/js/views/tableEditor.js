@@ -5,18 +5,22 @@ define([
 		"collections/columns",
 		"collections/forms",
 		"views/tableHeader",
+		"models/field",
 		"lib/external/colResizable-1.3.source",
-		"lib/external/backgrid-paginator-svw-debugged"
+		"lib/external/backgrid-paginator-svw-debugged",
+		"form"
 		
-	], function(Backbone, Backgrid, Records, Columns, Forms, TableHeader) {
+	], function(Backbone, Backgrid, Records, Columns, Forms, TableHeader, Field) {
 	var TableEditor = Backbone.View.extend({
 		el: "#grid",
 		tableHeader: null,
 		paginator: null,
 		url: null,
-		columnWidth: '120',
+		columnWidth: '160',
 		columns: null,
 		records: null,
+		grid: null,
+		globalEvents: _.extend({}, Backbone.Events),
 		events: {
 			'click #add': 'insertRow',
 			'click .change-table': 'loadNewTable'
@@ -28,25 +32,34 @@ define([
 			this.forms = new Forms();
 			this.tableHeader = new TableHeader({
 				collection: this.forms,
-				vent: this.vent
+				globalEvents: this.globalEvents
 			});
-			this.vent.on("loadNewTable", function(url){
+			this.globalEvents.on("loadNewTable", function(url){
 				that.url = url + 'data/';
 				that.fetchColumns();
 			});
 			
-			this.vent.on("insertRow", function(e){
+			this.globalEvents.on("insertRow", function(e){
 				that.insertRow(e);
 			});
 			
-			this.vent.on("requery", function(sql){
+			this.globalEvents.on("insertColumn", function(columnDef){
+				var field = new Field({
+					urlRoot: that.url.replace('data/', 'fields/')
+				});
+				field.fetchSchema();
+				//that.columns.getNewColumnSchema();
+				//that.insertColumn(columnDef);
+			});
+			
+			this.globalEvents.on("requery", function(sql){
 				that.getRecords({query: sql});
 			});
 			
 		},
 		fetchColumns: function(){
 			this.columns = new Columns({
-				url: this.url + '.json'
+				url: this.url
 			});
 			this.columns.fetch();
 			this.columns.on('reset', this.loadGrid, this);
@@ -87,8 +100,12 @@ define([
 		initLayout: function(){
 			this.$el.height($('body').height() - 50);
 			this.$el.find('table').addClass('table-bordered');
+			this.makeGridResizable();
+			
+		},
+		makeGridResizable: function(){
 			$('#grid').find('table').css({
-				width: (this.columns.length*this.columnWidth) + "px"    
+				'min-width': (this.columns.length*this.columnWidth) + "px"    
 			});
 			this.$el.find('table').colResizable({ disable: true }); //a hack to run garbage collection for resizable table
 			this.$el.find('table').colResizable({ disable: false });	
@@ -98,7 +115,13 @@ define([
 				project_id: 2
 			});
 			e.preventDefault();
-		}	
+		},
+		insertColumn: function(columnDef) {
+			$('#grid').find('table').css({'width': 'auto'});
+			$('#grid').find('th').css({'width': 'auto'});
+			this.grid.insertColumn([columnDef]);
+			this.makeGridResizable();
+		}
 	});
 	return TableEditor;
 });
