@@ -40,7 +40,7 @@ require.config({
 	urlArgs: "bust=" + (new Date()).getTime()
 });
 require(
-	["jquery", "lib/external/backbone-min", "backgrid", "views/tableEditor", "jquery.bootstrap"],
+	["jquery", "lib/external/backbone-min", "backgrid", "views/tables/tableEditor", "jquery.bootstrap"],
 	function($, Backbone, Backgrid, TableEditor) {
 		$(function() {
 			$.ajaxSetup({

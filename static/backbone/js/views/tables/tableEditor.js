@@ -4,7 +4,8 @@ define([
 		"collections/records",
 		"collections/columns",
 		"collections/forms",
-		"views/tableHeader",
+		"views/tables/tableHeader",
+		"views/tables/datagrid",
 		"models/field",
 		"lib/external/colResizable-1.3.source",
 		"lib/external/backgrid-paginator-svw-debugged",
@@ -12,25 +13,26 @@ define([
 		"bootstrap-form-templates",
 		"backbone-bootstrap-modal"
 		
-	], function(Backbone, Backgrid, Records, Columns, Forms, TableHeader, Field) {
+	], function(Backbone, Backgrid, Records, Columns, Forms, TableHeader, DataGrid, Field) {
 	var TableEditor = Backbone.View.extend({
-		el: "#grid",
+		el: "body",
 		tableHeader: null,
 		paginator: null,
 		url: null,
-		columnWidth: '160',
 		columns: null,
 		records: null,
-		grid: null,
+		datagrid: null,
 		globalEvents: _.extend({}, Backbone.Events),
 		events: {
 			'click #add': 'insertRow',
-			'click .change-table': 'loadNewTable'
+			'click .change-table': 'loadNewTable',
+			//'resize': 'resize'
 		},
 		initialize: function(opts) {
 			opts = opts || {};
 			$.extend(this, opts);
 			var that = this;
+			
 			this.forms = new Forms();
 			this.tableHeader = new TableHeader({
 				collection: this.forms,
@@ -42,25 +44,24 @@ define([
 			});
 			
 			this.globalEvents.on("insertRow", function(e){
-				that.insertRow(e);
+				that.grid.insertRow(e);
 			});
 			
 			this.globalEvents.on("insertColumn", function(e){
 				//1. define a new field:
 				var field = new Field({
-					urlRoot: that.url.replace('data/', 'fields/')
+					urlRoot: that.url.replace('data/', 'fields/'),
+					ordering: that.columns.length
 				});
 				
 				//2. generate the form that will be used to create the new field:
-				field.on('schemaLoaded', function(){
-					var form = new Backbone.Form({
-						model: field
-					}).render();
-					var modal = new Backbone.BootstrapModal({ content: form }).open();
-					modal.on('ok', function() {
-						form.commit(); 	//does validation
-						field.save();  	//does database commit
-					});
+				var form = new Backbone.Form({
+					model: field
+				}).render();
+				var modal = new Backbone.BootstrapModal({ content: form }).open();
+				modal.on('ok', function() {
+					form.commit(); 	//does validation
+					field.save();  	//does database commit
 				});
 				
 				//3. once the new field has been added to the database,
@@ -74,7 +75,7 @@ define([
 						cell: field.get("data_type"),
 						editable: true
 					}
-					that.insertColumn(columnDef);
+					that.grid.insertColumn(columnDef);
 					*/
 				});
 				
@@ -90,23 +91,28 @@ define([
 				url: this.url
 			});
 			this.columns.fetch();
-			this.columns.on('reset', this.loadGrid, this);
+			this.columns.on('reset', this.render, this);
 		},
-		loadGrid: function(){
+		render: function(){
 			var that = this;
 			this.records = new Records({
 				url: this.url
 			});
-			this.grid = new Backgrid.Grid({
+			this.grid = new DataGrid({
 				columns: this.columns,
-				collection: this.records
+				records: this.records
 			});
+			$(window).off('resize');
+			$(window).on('resize', function(){
+				that.grid.resize();	
+			});
+			
 			this.paginator = new Backgrid.Extension.Paginator({
 				collection: this.records,
 				goBackFirstOnSort: true
 			});
 			this.getRecords();
-			this.render();
+			this.$el.find('.container-footer').html(this.paginator.render().el);
 		},
 		getRecords: function(opts){
 			opts = opts || {};
@@ -118,38 +124,8 @@ define([
 				reset: true,
 				data: opts
 			});
-		},
-		render: function(){
-			// Render the grid and attach the root to your HTML document
-			this.$el.html(this.grid.render().el);
-			this.$el.append(this.paginator.render().el);
-			this.initLayout();
-		},
-		initLayout: function(){
-			this.$el.height($('body').height() - 50);
-			this.$el.find('table').addClass('table-bordered');
-			this.makeGridResizable();
-			
-		},
-		makeGridResizable: function(){
-			$('#grid').find('table').css({
-				'min-width': (this.columns.length*this.columnWidth) + "px"    
-			});
-			this.$el.find('table').colResizable({ disable: true }); //a hack to run garbage collection for resizable table
-			this.$el.find('table').colResizable({ disable: false });	
-		},
-		insertRow: function(e) {
-			this.grid.insertRow({
-				project_id: 2
-			});
-			e.preventDefault();
-		},
-		insertColumn: function(columnDef) {
-			$('#grid').find('table').css({'width': 'auto'});
-			$('#grid').find('th').css({'width': 'auto'});
-			this.grid.insertColumn([columnDef]);
-			this.makeGridResizable();
 		}
+
 	});
 	return TableEditor;
 });

@@ -14,7 +14,7 @@
 			.backgrid thead th { text-align: left; }
 			.backgrid th, .backgrid td { padding: 5px !important; }
 			.form-horizontal {
-				height: 200px;
+				max-height: 200px;
 				overflow-x: hidden;
 				overflow-y: auto;
 				padding: 10px;
@@ -28,16 +28,18 @@
 		<nav id="navbar" class="navbar navbar-default" role="navigation">
             <ul class="nav navbar-nav">
                 <li><a href="#">Local Ground</a></li>
-				<li>
-					<a href="#" id="add_row" style="cursor:pointer;">
-					<span class="fa fa-plus"></span>&nbsp;Add Row
-					</a>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Insert <span class="caret"></span></a>
+					<ul class="dropdown-menu" role="menu">
+						<li>
+							<a href="#" id="add_row">Row</a>
+						</li>
+						<li>
+							<a href="#" id="add_column">Column</a>
+						</li>
+					</ul>
 				</li>
-				<li>
-					<a href="#" id="add_column" style="cursor:pointer;">
-					<span class="fa fa-plus"></span>&nbsp;Add Column
-					</a>
-				</li>
+				
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Tables <span class="caret"></span></a>
 					<ul id="tableSelect" class="dropdown-menu" role="menu"></ul>
@@ -55,12 +57,19 @@
 			</ul>
         </nav>
 		<div id="grid" class="backgrid-container"></div>
+		
+		
+		<div class="footer">
+			<div class="container container-footer">
+				<p class="text-muted">Copyright Ready4College 2014</p>
+			</div>
+		</div>
 
 		<script id="deleteTemplate" type="text/template">
 			<button class="delete">Delete</button>
 		</script>
 		<script src="js/lib/external/require.js"></script>
-		<script type="text/javascript" src="js/views/table.js"></script>	
+		<script type="text/javascript" src="js/views/tables/table.js"></script>	
 		
 	</body>
 </html>
