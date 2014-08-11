@@ -66,7 +66,7 @@ class ProjectField(serializers.WritableField):
         metadata = super(ProjectField, self).metadata()
         try:
             user = self.context['request'].user
-            projects = models.Project.objects.get_objects(user)
+            projects = models.Project.objects.get_objects(user).order_by('id')
             opts = []
             for project in projects:
                 opts.append([
