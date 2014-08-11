@@ -40,7 +40,7 @@ class TagField(serializers.WritableField):
 
 
 class ProjectField(serializers.WritableField):
-    type_label = 'project'
+    type_label = 'select'
 
     def to_native(self, obj):
         return obj.id
@@ -61,6 +61,23 @@ class ProjectField(serializers.WritableField):
             raise serializers.ValidationError(
                 "project_id=%s is invalid" %
                 data)
+    
+    def metadata(self):
+        metadata = super(ProjectField, self).metadata()
+        try:
+            user = self.context['request'].user
+            projects = models.Project.objects.get_objects(user)
+            opts = []
+            for project in projects:
+                opts.append([
+                    '{0} - {1}'.format(project.id, project.name),
+                    project.id 
+                ])
+            metadata["optionValues"] = opts
+        except:
+            pass
+        return metadata
+
 
 
 class ProjectsField(serializers.WritableField):

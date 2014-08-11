@@ -5,11 +5,11 @@
 define([
 		"jquery",
 		"backgrid",
-		"lib/table/cells/modelSelect",
+		//"lib/table/cells/modelSelect",
 		"lib/table/formatters/lat",
 		"lib/table/formatters/lng",
 		"lib/table/cells/delete"
-	], function($, Backgrid, SelectCell, LatFormatter, LngFormatter, DeleteCell) {
+	], function($, Backgrid, LatFormatter, LngFormatter, DeleteCell) {
 	var Columns = Backgrid.Columns.extend({
 		url: null,
 		excludeList: [
@@ -48,9 +48,21 @@ define([
 				this.getDeleteCell()
 			];
 			$.each(fields, function(k, opts){
+				//console.log(JSON.stringify( opts.optionValues ));
+					
 				if (k == 'geometry') {
 					cols.push(that.getLatCell());
 					cols.push(that.getLngCell());
+				}
+				else if (opts.type == 'select') {
+					cols.push({
+						name: k,
+						label: k,
+						cell: Backgrid.SelectCell.extend({
+							optionValues: opts.optionValues
+						}),
+						editable: true,
+					})
 				}
 				else if(that.excludeList.indexOf(k) == -1) {
 					cols.push(that.getDefaultCell(k, opts));
@@ -99,11 +111,10 @@ define([
 			"date-time": Backgrid.DatetimeCell,
 			"rating": "integer",
 			"string": "string",
-			"float": Backgrid.NumberCell,
-			"project": SelectCell
+			"float": Backgrid.NumberCell
 		},
 		cellTypeByIdLookup: {
-			"1": SelectCell, //"string",
+			"1": Backgrid.SelectCell, //"string",
 			"2": "integer",
 			"3": Backgrid.DatetimeCell,
 			"4": "boolean",
