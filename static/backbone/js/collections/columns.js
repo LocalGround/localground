@@ -5,10 +5,11 @@
 define([
 		"jquery",
 		"backgrid",
+		"lib/table/cells/modelSelect",
 		"lib/table/formatters/lat",
 		"lib/table/formatters/lng",
 		"lib/table/cells/delete"
-	], function($, Backgrid, LatFormatter, LngFormatter, DeleteCell) {
+	], function($, Backgrid, SelectCell, LatFormatter, LngFormatter, DeleteCell) {
 	var Columns = Backgrid.Columns.extend({
 		url: null,
 		excludeList: [
@@ -98,10 +99,11 @@ define([
 			"date-time": Backgrid.DatetimeCell,
 			"rating": "integer",
 			"string": "string",
-			"float": Backgrid.NumberCell
+			"float": Backgrid.NumberCell,
+			"project": SelectCell
 		},
 		cellTypeByIdLookup: {
-			"1": "string",
+			"1": SelectCell, //"string",
 			"2": "integer",
 			"3": Backgrid.DatetimeCell,
 			"4": "boolean",

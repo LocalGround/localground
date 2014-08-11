@@ -40,7 +40,7 @@ class TagField(serializers.WritableField):
 
 
 class ProjectField(serializers.WritableField):
-    type_label = 'integer'
+    type_label = 'project'
 
     def to_native(self, obj):
         return obj.id

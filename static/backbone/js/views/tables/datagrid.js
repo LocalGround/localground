@@ -43,12 +43,15 @@ define([
 			this.$el.height($('body').height() - 96);
 		},
 		insertRowTop: function(e) {
-			//this.records.add({ project_id: 2 }, { at: 0 });
-			this.grid.insertRow({ project_id: 2 }, { at: 0 });
+			//	this.records.add({ project_id: 2 }, { at: 0 });
+			//	todo: ensure that record auto-populates w/default project selected.
+			// 	ACTUALLY: we should require that users can only edit when an
+			//	active project is selected.
+			this.grid.insertRow({}, { at: 0 });
 			e.preventDefault();
 		},
 		insertRowBottom: function(e) {
-			this.grid.insertRow({ project_id: 2 });
+			this.grid.insertRow();
 			e.preventDefault();
 		},
 		insertColumn: function(columnDef) {
