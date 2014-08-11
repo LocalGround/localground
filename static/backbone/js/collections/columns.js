@@ -3,13 +3,11 @@
  http://stackoverflow.com/questions/13358477/override-backbones-collection-fetch
 */
 define([
-		"jquery",
 		"backgrid",
-		//"lib/table/cells/modelSelect",
 		"lib/table/formatters/lat",
 		"lib/table/formatters/lng",
 		"lib/table/cells/delete"
-	], function($, Backgrid, LatFormatter, LngFormatter, DeleteCell) {
+	], function(Backgrid, LatFormatter, LngFormatter, DeleteCell) {
 	var Columns = Backgrid.Columns.extend({
 		url: null,
 		excludeList: [

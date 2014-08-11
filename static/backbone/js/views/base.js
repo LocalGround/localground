@@ -11,6 +11,7 @@ require.config({
 		'bootstrap-form-templates': 'lib/external/backbone-forms-bootstrap3-templates',
 		'backbone-bootstrap-modal': 'lib/external/backbone.bootstrap-modal'
 	},
+	waitSeconds: 0,
 	shim: {
 		'lib/external/underscore-min': {
 			exports: '_'
