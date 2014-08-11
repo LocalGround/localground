@@ -1,6 +1,6 @@
 define([
-        "lib/external/underscore-min",
-		"lib/external/backbone-min"
+        "underscore",
+		"backbone"
 	], function (_, Backbone) {
 
   "use strict";

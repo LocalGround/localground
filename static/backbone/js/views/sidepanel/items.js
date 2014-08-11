@@ -1,4 +1,4 @@
-define(["lib/external/backbone-min",
+define(["backbone",
 		"views/sidepanel/item",
 		"views/sidepanel/photoItem",
 		"text!templates/sidepanel/collectionHeader.html"],

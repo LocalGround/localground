@@ -1,4 +1,4 @@
-define(["jquery", "lib/external/backbone-min", "models/audio"], function($, Backbone, Audio) {
+define(["jquery", "backbone", "models/audio"], function($, Backbone, Audio) {
     var AudioFiles = Backbone.Collection.extend({
         model: Audio,
 		name: 'Audio Files',

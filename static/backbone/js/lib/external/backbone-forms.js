@@ -10,7 +10,7 @@
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
  */
-define(['underscore', 'lib/external/backbone-min'], function(_, Backbone) {
+define(['underscore', 'backbone'], function(_, Backbone) {
 
   //==================================================================================================
 //FORM

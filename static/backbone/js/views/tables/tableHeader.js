@@ -1,5 +1,5 @@
 define([
-		"lib/external/backbone-min"
+		"backbone"
 	], function(Backbone) {
 	var TableHeader = Backbone.View.extend({
 		el: "#navbar",

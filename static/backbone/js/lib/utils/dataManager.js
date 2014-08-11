@@ -1,6 +1,6 @@
 define(
 	[
-		"lib/external/backbone-min",
+		"backbone",
 		"config",
 		"models/project",
 		"collections/projects",

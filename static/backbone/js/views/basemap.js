@@ -1,4 +1,4 @@
-define(["lib/external/backbone-min", "lib/map/searchBox",
+define(["backbone", "lib/map/searchBox",
 		"lib/map/geolocation", "lib/map/tileController"],
 	   function(Backbone, SearchBox, GeoLocation, TileController) {
 	

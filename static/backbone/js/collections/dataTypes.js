@@ -1,4 +1,4 @@
-define(["lib/external/backbone-min", "models/dataType"],
+define(["backbone", "models/dataType"],
 	   function(Backbone, DataType) {
     var DataTypes = Backbone.Collection.extend({
         model: DataType,

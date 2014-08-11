@@ -1,4 +1,4 @@
-define(["jquery", "lib/external/backbone-min", "models/mapimage"], function($, Backbone, MapImage) {
+define(["jquery", "backbone", "models/mapimage"], function($, Backbone, MapImage) {
     var MapImages = Backbone.Collection.extend({
         model: MapImage,
         name: 'Map Images',

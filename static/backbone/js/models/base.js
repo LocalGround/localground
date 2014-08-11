@@ -1,4 +1,4 @@
-define(["lib/external/backbone-min"],
+define(["backbone"],
 	   function(Backbone) {
 	var Base = Backbone.Model.extend({
 		urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */

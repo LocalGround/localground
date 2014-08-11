@@ -1,4 +1,4 @@
-define(["jquery", "lib/external/backbone-min", "models/marker"], function($, Backbone, Marker) {
+define(["jquery", "backbone", "models/marker"], function($, Backbone, Marker) {
     var Markers = Backbone.Collection.extend({
         model: Marker,
 		name: 'Markers',

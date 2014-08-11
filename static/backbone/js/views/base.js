@@ -2,38 +2,40 @@ require.config({
 	baseUrl: "js",
 	paths: {
 		'jquery': '//code.jquery.com/jquery-1.8.0.min',
+		'backbone': 'lib/external/backbone-min',
+		'underscore': 'lib/external/underscore-min',
 		'text': 'lib/external/text',
 		'jquery.bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min',
-        'backbone': 'lib/external/backbone-min',
-		'backgrid': 'lib/external/backgrid.min',
+        'backgrid': 'lib/external/backgrid.min',
+		'backgrid-paginator': 'lib/external/backgrid-paginator-svw-debugged',
 		'form': 'lib/external/backbone-forms',
-		'underscore': 'lib/external/underscore-min',
 		'bootstrap-form-templates': 'lib/external/backbone-forms-bootstrap3-templates',
-		'backbone-bootstrap-modal': 'lib/external/backbone.bootstrap-modal'
+		'backbone-bootstrap-modal': 'lib/external/backbone.bootstrap-modal',
+		'colResizable': 'lib/external/colResizable-1.3.source'
 	},
 	waitSeconds: 0,
 	shim: {
-		'lib/external/underscore-min': {
-			exports: '_'
-		},
-		'lib/external/backbone-min': {
-			deps: ["lib/external/underscore-min", "jquery"],
-			exports: 'Backbone'
-		},
+		'underscore' : {
+            exports : "_"
+        },
+		'backbone' : {
+            deps    : [ "jquery", "underscore" ],
+            exports : "Backbone"
+        },
 		'jquery.bootstrap': {
 			deps: ['jquery']
 		},
 		'backgrid': {
-			deps: ['lib/external/backbone-min'],
+			deps: ['backbone'],
 			exports: 'Backgrid'
 		},
 		'bootstrap-form-templates': {
-			deps: ['lib/external/backbone-min'],
+			deps: ['backbone'],
 		},
 		'backbone-bootstrap-modal': {
-			deps: ['lib/external/backbone-min', 'jquery.bootstrap'],
+			deps: ['backbone', 'jquery.bootstrap'],
 		},
-		'lib/external/colResizable-1.3.source': {
+		'colResizable': {
 			deps: ['jquery'],
 			exports: 'colResizable'
 		}

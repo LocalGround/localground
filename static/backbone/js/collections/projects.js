@@ -1,4 +1,4 @@
-define(["jquery", "lib/external/backbone-min", "models/project"], function($, Backbone, Project) {
+define(["jquery", "backbone", "models/project"], function($, Backbone, Project) {
     var Projects = Backbone.Collection.extend({
         model: Project,
 		name: 'Photos',

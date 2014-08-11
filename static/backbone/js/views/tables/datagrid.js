@@ -1,5 +1,5 @@
 define([
-		"lib/external/backbone-min",
+		"backbone",
 		"backgrid"
 	], function(Backbone, Backgrid) {
 	var DataGrid = Backbone.View.extend({

@@ -1,4 +1,4 @@
-define(["lib/external/backbone-min",
+define(["backbone",
 		"config",
 		"views/sidepanel/projectsMenu",
 		"views/sidepanel/items",

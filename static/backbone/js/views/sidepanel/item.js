@@ -1,4 +1,4 @@
-define(["lib/external/backbone-min"], function(Backbone) {
+define(["backbone"], function(Backbone) {
     var ItemView = Backbone.View.extend({
         template: null,
         map: null,

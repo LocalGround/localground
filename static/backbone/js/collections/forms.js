@@ -1,4 +1,4 @@
-define(["jquery", "lib/external/backbone-min", "models/form"], function($, Backbone, Form) {
+define(["jquery", "backbone", "models/form"], function($, Backbone, Form) {
     var Forms = Backbone.Collection.extend({
         model: Form,
 		name: 'Forms',

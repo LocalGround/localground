@@ -1,5 +1,5 @@
 define([
-		"lib/external/backbone-min",
+		"backbone",
 		"backgrid",
 		"views/tables/tableHeader",
 		"views/tables/datagrid",
@@ -7,8 +7,8 @@ define([
 		"collections/columns",
 		"collections/forms",
 		"models/field",
-		"lib/external/colResizable-1.3.source",
-		"lib/external/backgrid-paginator-svw-debugged",
+		"colResizable",
+		"backgrid-paginator",
 		"form",
 		"bootstrap-form-templates",
 		"backbone-bootstrap-modal"
