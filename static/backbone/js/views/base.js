@@ -39,21 +39,7 @@ require.config({
 	},
 	urlArgs: "bust=" + (new Date()).getTime()
 });
-require(
-	["jquery", "lib/external/backbone-min", "backgrid", "views/tables/tableEditor", "jquery.bootstrap"],
-	function($, Backbone, Backgrid, TableEditor) {
-		$(function() {
-			$.ajaxSetup({
-				beforeSend: function(xhr, settings){
-					$('#loading_message').show();
-					xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-				}
-			});
-			//initialize new table editor!
-			new TableEditor();
-		});
-	}
-);
+
 
 //todo: move this to some helper functions file:
 function getCookie(name) {

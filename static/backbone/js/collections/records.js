@@ -6,6 +6,7 @@ define([
         model: Record,
 		columns: null,
 		name: 'Records',
+		query: '',
         url: null,
 		initialize: function (opts) {
 			opts = opts || {};
@@ -39,6 +40,15 @@ define([
 
 		parseRecords: function (response, options) {
 			return response.results;
+		},
+		
+		fetch: function (options) {
+			//query
+			if (this.query) {
+				options.data = options.data || {};
+				$.extend(options.data, { query: this.query });
+			};
+			Records.__super__.fetch.apply(this, arguments);
 		}
     });
     return Records;

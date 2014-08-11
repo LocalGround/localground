@@ -11,11 +11,6 @@ define([
 	], function($, Backgrid, LatFormatter, LngFormatter, DeleteCell) {
 	var Columns = Backgrid.Columns.extend({
 		url: null,
-		cellTypeLookup: {
-			"integer": "integer",
-			"field": "string",
-			"boolean": "boolean"
-		},
 		excludeList: [
 				"overlay_type",
 				"url"
@@ -84,13 +79,35 @@ define([
 			}
 		},
 		getDefaultCell: function(name, opts){
+			//alert(opts.type + " - " + Columns.cellTypeByNameLookup[opts.type]);
 			return {
 				name: name,
 				label: name,
 				editable: !opts.read_only,
-				cell: this.cellTypeLookup[opts.type] || "string"
+				cell: Columns.cellTypeByNameLookup[opts.type] || "string"
 			}
 		}
+	},
+	//static methods are the second arguments:
+	{
+		cellTypeByNameLookup: {
+			"integer": "integer",
+			"field": "string",
+			"boolean": "boolean",
+			"decimal": Backgrid.NumberCell,
+			"date-time": Backgrid.DatetimeCell,
+			"rating": "integer",
+			"string": "string",
+			"float": Backgrid.NumberCell
+		},
+		cellTypeByIdLookup: {
+			"1": "string",
+			"2": "integer",
+			"3": Backgrid.DatetimeCell,
+			"4": "boolean",
+			"5": Backgrid.NumberCell,
+			"6": "integer"
+		}	
 	});
 	return Columns;
 });

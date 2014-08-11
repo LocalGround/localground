@@ -25,6 +25,7 @@
 		</style>
 	</head>
 	<body>
+		<!-- Header -->
 		<nav id="navbar" class="navbar navbar-default" role="navigation">
             <ul class="nav navbar-nav">
                 <li><a href="#">Local Ground</a></li>
@@ -32,7 +33,10 @@
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Insert <span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
 						<li>
-							<a href="#" id="add_row">Row</a>
+							<a href="#" id="add_row_top">Row <strong>Top</strong></a>
+						</li>
+						<li>
+							<a href="#" id="add_row_bottom">Row <strong>Bottom</strong></a>
 						</li>
 						<li>
 							<a href="#" id="add_column">Column</a>
@@ -56,20 +60,37 @@
 				</form>
 			</ul>
         </nav>
+		
+		<!-- Grid -->
 		<div id="grid" class="backgrid-container"></div>
 		
-		
+		<!-- Footer -->
 		<div class="footer">
-			<div class="container container-footer">
-				<p class="text-muted">Copyright Ready4College 2014</p>
-			</div>
+			<div class="container container-footer"></div>
 		</div>
 
 		<script id="deleteTemplate" type="text/template">
 			<button class="delete">Delete</button>
 		</script>
 		<script src="js/lib/external/require.js"></script>
-		<script type="text/javascript" src="js/views/tables/table.js"></script>	
+		<script type="text/javascript" src="js/views/base.js"></script>
+		<script>
+			require(
+				["jquery", "views/tables/tableEditor"],
+				function($, TableEditor) {
+					$(function() {
+						$.ajaxSetup({
+							beforeSend: function(xhr, settings){
+								$('#loading_message').show();
+								xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+							}
+						});
+						//initialize new table editor!
+						new TableEditor();
+					});
+				}
+			);
+		</script>
 		
 	</body>
 </html>

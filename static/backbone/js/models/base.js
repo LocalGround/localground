@@ -26,11 +26,11 @@ define(["lib/external/backbone-min"],
 				type: 'OPTIONS',
 				data: { _method: 'OPTIONS' },
 				success: function(data) {
-					that.generateSchema(data.actions['POST']);
+					that.generateFormSchema(data.actions['POST']);
 				}
 			});
 		},
-		generateSchema: function(opts) {
+		generateFormSchema: function(opts) {
 			for (key in opts) {
 				var val = opts[key];
 				if (!val.read_only  && this.dataTypes[val.type]) {

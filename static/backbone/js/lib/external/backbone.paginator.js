@@ -1070,6 +1070,7 @@ define([
        @return {XMLHttpRequest}
     */
     fetch: function (options) {
+        
 
       options = options || {};
 

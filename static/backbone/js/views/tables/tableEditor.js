@@ -1,11 +1,11 @@
 define([
 		"lib/external/backbone-min",
 		"backgrid",
+		"views/tables/tableHeader",
+		"views/tables/datagrid",
 		"collections/records",
 		"collections/columns",
 		"collections/forms",
-		"views/tables/tableHeader",
-		"views/tables/datagrid",
 		"models/field",
 		"lib/external/colResizable-1.3.source",
 		"lib/external/backgrid-paginator-svw-debugged",
@@ -13,21 +13,17 @@ define([
 		"bootstrap-form-templates",
 		"backbone-bootstrap-modal"
 		
-	], function(Backbone, Backgrid, Records, Columns, Forms, TableHeader, DataGrid, Field) {
+	], function(Backbone, Backgrid, TableHeader, DataGrid, Records, Columns, Forms, Field) {
 	var TableEditor = Backbone.View.extend({
 		el: "body",
 		tableHeader: null,
 		paginator: null,
 		url: null,
+		query: null,
 		columns: null,
 		records: null,
 		datagrid: null,
 		globalEvents: _.extend({}, Backbone.Events),
-		events: {
-			'click #add': 'insertRow',
-			'click .change-table': 'loadNewTable',
-			//'resize': 'resize'
-		},
 		initialize: function(opts) {
 			opts = opts || {};
 			$.extend(this, opts);
@@ -43,8 +39,12 @@ define([
 				that.fetchColumns();
 			});
 			
-			this.globalEvents.on("insertRow", function(e){
-				that.grid.insertRow(e);
+			this.globalEvents.on("insertRowTop", function(e){
+				that.grid.insertRowTop(e);
+			});
+			
+			this.globalEvents.on("insertRowBottom", function(e){
+				that.grid.insertRowBottom(e);
 			});
 			
 			this.globalEvents.on("insertColumn", function(e){
@@ -55,34 +55,31 @@ define([
 				});
 				
 				//2. generate the form that will be used to create the new field:
-				var form = new Backbone.Form({
+				var addColumnForm = new Backbone.Form({
 					model: field
 				}).render();
-				var modal = new Backbone.BootstrapModal({ content: form }).open();
+				var modal = new Backbone.BootstrapModal({ content: addColumnForm }).open();
 				modal.on('ok', function() {
-					form.commit(); 	//does validation
-					field.save();  	//does database commit
+					addColumnForm.commit();	//does validation
+					field.save();  			//does database commit
 				});
 				
 				//3. once the new field has been added to the database,
 				//	 add it to the table:
 				field.on('sync', function(){
-					alert('saved!');
-					return;
-					/*var columnDef = {
-						name: field.get("name"),
-						label: field.get("name"),
-						cell: field.get("data_type"),
+					that.grid.insertColumn({
+						name: field.get("col_name"),
+						label: field.get("col_alias"),
+						cell: Columns.cellTypeByIdLookup[field.get("data_type").toString()],
 						editable: true
-					}
-					that.grid.insertColumn(columnDef);
-					*/
+					});
 				});
-				
 			});
 			
 			this.globalEvents.on("requery", function(sql){
-				that.getRecords({query: sql});
+				that.query = sql;
+				//that.getRecords({query: sql});
+				that.getRecords();
 			});
 			
 		},
@@ -114,15 +111,14 @@ define([
 			this.getRecords();
 			this.$el.find('.container-footer').html(this.paginator.render().el);
 		},
-		getRecords: function(opts){
-			opts = opts || {};
-			$.extend(opts, {
-				//page_size: 100,
-				format: 'json'
-			});
+		getRecords: function(){
+			this.records.query = this.query;
+			//	Make sure when a query is issued,
+			//	the current page is reset to the first page:
+			this.records.state.currentPage = 1;
 			this.records.fetch({
 				reset: true,
-				data: opts
+				data: { format: 'json' }
 			});
 		}
 

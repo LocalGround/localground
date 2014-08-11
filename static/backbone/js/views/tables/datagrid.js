@@ -6,7 +6,7 @@ define([
 		el: "#grid",
 		records: null,
 		columns: null,
-		columnWidth: 160,
+		columnWidth: 140,
 		grid: null,
 		initialize: function(opts) {
 			// opts should initialize the Grid with a collection of
@@ -40,13 +40,15 @@ define([
 			this.$el.find('table').colResizable({ disable: false });	
 		},
 		resize: function(){
-			console.log('resize me!');
 			this.$el.height($('body').height() - 96);
 		},
-		insertRow: function(e) {
-			this.grid.insertRow({
-				project_id: 2
-			});
+		insertRowTop: function(e) {
+			//this.records.add({ project_id: 2 }, { at: 0 });
+			this.grid.insertRow({ project_id: 2 }, { at: 0 });
+			e.preventDefault();
+		},
+		insertRowBottom: function(e) {
+			this.grid.insertRow({ project_id: 2 });
 			e.preventDefault();
 		},
 		insertColumn: function(columnDef) {

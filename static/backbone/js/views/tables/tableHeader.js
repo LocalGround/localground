@@ -6,7 +6,8 @@ define([
 		globalEvents: null,
 		events: {
 			'click .change-table': 'triggerLoadTable',
-			'click #add_row': 'triggerInsertRow',
+			'click #add_row_top': 'triggerInsertRowTop',
+			'click #add_row_bottom': 'triggerInsertRowBottom',
 			'click .query': 'triggerQuery',
 			'click .clear': 'triggerClearQuery',
 			'click #add_column': 'triggerInsertColumn'
@@ -39,8 +40,12 @@ define([
 			this.globalEvents.trigger("loadNewTable", $(e.currentTarget).attr("href"));
 			e.preventDefault();
 		},
-		triggerInsertRow: function(e){
-			this.globalEvents.trigger("insertRow", e);
+		triggerInsertRowTop: function(e){
+			this.globalEvents.trigger("insertRowTop", e);
+			e.preventDefault();	
+		},
+		triggerInsertRowBottom: function(e){
+			this.globalEvents.trigger("insertRowBottom", e);
 			e.preventDefault();	
 		},
 		triggerQuery: function(e){
