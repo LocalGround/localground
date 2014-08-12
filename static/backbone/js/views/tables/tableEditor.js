@@ -34,17 +34,10 @@ define([
 				collection: this.forms,
 				globalEvents: this.globalEvents
 			});
+			
 			this.globalEvents.on("loadNewTable", function(url){
 				that.url = url + 'data/';
 				that.fetchColumns();
-			});
-			
-			this.globalEvents.on("insertRowTop", function(e){
-				that.grid.insertRowTop(e);
-			});
-			
-			this.globalEvents.on("insertRowBottom", function(e){
-				that.grid.insertRowBottom(e);
 			});
 			
 			this.globalEvents.on("insertColumn", function(e){
@@ -58,6 +51,7 @@ define([
 				var addColumnForm = new Backbone.Form({
 					model: field
 				}).render();
+				
 				var modal = new Backbone.BootstrapModal({ content: addColumnForm }).open();
 				modal.on('ok', function() {
 					addColumnForm.commit();	//does validation
@@ -97,7 +91,8 @@ define([
 			});
 			this.grid = new DataGrid({
 				columns: this.columns,
-				records: this.records
+				records: this.records,
+				globalEvents: this.globalEvents
 			});
 			$(window).off('resize');
 			$(window).on('resize', function(){

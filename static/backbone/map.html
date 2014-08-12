@@ -18,32 +18,12 @@
 		
 		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing,places,geometry"></script>
 		<script src="js/lib/external/require.js"></script>
+		<script src="js/base.js"></script>
 		<script>
 			/*http://blog.novanet.no/4-ways-to-pass-parameters-to-requirejs-modules/
 			 *Because we want the Django template to initialize a fair amount of the
 			 *data, we're initializing the require.js configuration in the template itself.
 			*/
-			require.config({
-				baseUrl: "js",
-				paths: {
-					'jquery': 'lib/external/jquery-1.11.1.min',
-					'text': 'lib/external/text',
-					"jquery.bootstrap": "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min"
-				},
-				shim: {
-					'lib/external/underscore-min': {
-						exports: '_'
-					},
-					'lib/external/backbone-min': {
-						deps: ["lib/external/underscore-min", "jquery"],
-						exports: 'Backbone'
-					},
-					"jquery.bootstrap": {
-						deps: ["jquery"]
-					}
-				},
-				urlArgs: "bust=" + (new Date()).getTime()
-			});
 			require(
 				["jquery", "jquery.bootstrap", "views/mapEditor"],
 				function($, bootstrap, MapEditor) {

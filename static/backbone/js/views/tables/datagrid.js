@@ -6,6 +6,7 @@ define([
 		el: "#grid",
 		records: null,
 		columns: null,
+		globalEvents: null,
 		columnWidth: 140,
 		grid: null,
 		initialize: function(opts) {
@@ -13,7 +14,19 @@ define([
 			// columns and a collection of records.
 			opts = opts || {};
 			$.extend(this, opts);
+			
+			this.initEventListeners();
+			
 			this.loadGrid();
+		},
+		initEventListeners: function(){
+			var that = this;
+			this.globalEvents.on("insertRowTop", function(e){
+				that.insertRowTop(e);
+			});
+			this.globalEvents.on("insertRowBottom", function(e){
+				that.insertRowBottom(e);
+			});
 		},
 		loadGrid: function(){
 			this.grid = new Backgrid.Grid({

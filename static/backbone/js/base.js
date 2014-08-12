@@ -13,7 +13,7 @@ require.config({
 		'backbone-bootstrap-modal': 'lib/external/backbone.bootstrap-modal',
 		'colResizable': 'lib/external/colResizable-1.3.source'
 	},
-	waitSeconds: 0,
+	//waitSeconds: 0,
 	shim: {
 		'underscore' : {
             exports : "_"
