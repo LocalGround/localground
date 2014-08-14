@@ -4,12 +4,29 @@ define(
 		"views/maps/basemap",
 		"lib/map/data/dataManager"
 		
-	], function(DataPanel, BasemapView, DataManager) {
-	var MapEditor = Backbone.View.extend({
+	], function(DataPanel, BasemapView) {
+	/**
+	 * The top-level view class that harnesses all of the map editor
+	 * functionality. Also coordinates event triggers across all of
+	 * the constituent views.
+	 * @class MapEditor
+	 */
+	localground.map.views.MapEditor = Backbone.View.extend({
+		/**
+		 * @lends localground.map.views.MapEditor#
+		 */
+		
 		el: "#panels",
+		/** A localground.map.views.BasemapView object */
 		basemap: null,
+		/** A localground.map.data.DataManager object */
 		dataManager: null,
+		
+		/** A localground.map.views.DataPanel object */
 		dataPanel: null,
+		/**
+		 * Initializes the BasemapView and all of the panels. 
+		 */
 		initialize: function(opts) {
 			$.extend(this, opts);
 			
@@ -42,10 +59,13 @@ define(
 			this.dataManager.selectedProjects.on('add', this.updatePanel, this);
 			this.dataManager.selectedProjects.on('remove', this.updatePanel, this);
 		},
+		/**
+		 * Triggered when a new project is loaded or removed
+		 */
 		updatePanel: function(){
 			//console.log("update panel triggered");
 			this.dataPanel.render();
 		}
 	});
-	return MapEditor;
+	return localground.map.views.MapEditor;
 });

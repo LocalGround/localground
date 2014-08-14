@@ -1,7 +1,7 @@
 define(["backbone",
 		"views/maps/sidepanel/item",
 		"views/maps/sidepanel/photoItem",
-		"text!templates/sidepanel/collectionHeader.html"],
+		"text!" + templateDir + "/sidepanel/collectionHeader.html"],
 	   function(Backbone, ItemView, PhotoItemView, collectionHeader) {
 	var ItemsView = Backbone.View.extend({
 		template: _.template( collectionHeader ),

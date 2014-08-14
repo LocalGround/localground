@@ -1,9 +1,9 @@
 define(["backbone",
-		"config",
 		"views/maps/sidepanel/projectsMenu",
 		"views/maps/sidepanel/items",
-		"text!templates/sidepanel/dataPanelHeader.html"],
-	   function(Backbone, Config, ProjectsMenu, ItemsView, dataPanelHeader) {
+		"text!" + templateDir + "/sidepanel/dataPanelHeader.html",
+		"config"],
+	   function(Backbone, ProjectsMenu, ItemsView, dataPanelHeader) {
 	var DataPanel = Backbone.View.extend({
 		template: _.template( dataPanelHeader ),
 		dataManager: null,
@@ -34,7 +34,7 @@ define(["backbone",
 					//alert("adding new!");
 					this.dataViews[key] = new ItemsView({
 						collection: this.dataManager.collections[key],
-						itemTemplateHtml: Config[key.split("_")[0]].itemTemplateHtml,
+						itemTemplateHtml: localground.config.Config[key.split("_")[0]].itemTemplateHtml,
 						map: this.map
 					});
 				}

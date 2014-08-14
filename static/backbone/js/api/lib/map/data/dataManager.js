@@ -1,11 +1,11 @@
 define(
 	[
 		"backbone",
-		"config",
 		"models/project",
-		"collections/projects",
+		"collections/projects",,
+		"config"
 		
-	], function(Backbone, Config, Project, Projects) {
+	], function(Backbone, Project, Projects) {
 	/**
 	 * The map DataManager class separates the temporary data
 	 * storage (data retrieved from various Local Ground Data
@@ -104,7 +104,7 @@ define(
 			//add child data to the collection:
 			var children = project.get("children");
 			for (key in children) {
-				var opts = Config[key.split("_")[0]];
+				var opts = localground.config.Config[key.split("_")[0]];
 				opts.name = children[key].name;
 				var models = [];
 				$.each(children[key].data, function(){

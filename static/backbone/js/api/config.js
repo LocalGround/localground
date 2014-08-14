@@ -10,17 +10,22 @@ define(
 		"collections/audio",
 		"collections/mapimages",
 		"collections/markers",
-		"text!templates/sidepanel/photoItem.html",
-		"text!templates/sidepanel/audioItem.html",
-		"text!templates/sidepanel/mapimageItem.html",
-		"text!templates/sidepanel/markerItem.html",
-		"text!templates/sidepanel/recordItem.html"
+		"text!../templates/sidepanel/photoItem.html",
+		"text!../templates/sidepanel/audioItem.html",
+		"text!../templates/sidepanel/mapimageItem.html",
+		"text!../templates/sidepanel/markerItem.html",
+		"text!../templates/sidepanel/recordItem.html"
 	], function(
 			Project, Photo, Audio, MapImage, Marker, //models
 			Projects, Photos, AudioFiles, MapImages, Markers, //collections
 			photoItem, audioItem, mapimageItem, markerItem, recordItem //templates
 		) {
-	var Config = {
+	/**
+	 * Convenience object for connecting data models with
+	 * their corresponding JavaScript classes
+	 * @class
+	*/
+	localground.config.Config = {
 		photos: {
 			Model: Photo,
 			Collection: Photos,
@@ -47,7 +52,7 @@ define(
 			itemTemplateHtml: recordItem
 		}
 	};
-	return Config;
+	return localground.config.Config;
 });
 	
 	

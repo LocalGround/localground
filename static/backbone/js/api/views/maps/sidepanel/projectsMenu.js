@@ -1,12 +1,12 @@
 define([
 		"backbone",
-		"config",
 		"collections/projects",
 		"models/project",
 		"views/maps/sidepanel/items",
 		"views/maps/sidepanel/item",
-		"text!templates/sidepanel/projectItem.html"],
-	   function(Backbone, Config, Projects, Project, ItemsView, ItemView, projectItem) {
+		"text!" + templateDir + "/sidepanel/projectItem.html",
+		"config"],
+	   function(Backbone, Projects, Project, ItemsView, ItemView, projectItem) {
     
 	var ProjectsMenu = Backbone.View.extend({
 		dataManager: null,

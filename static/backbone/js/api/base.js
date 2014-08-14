@@ -1,17 +1,17 @@
 require.config({
-	baseUrl: "js",
+	baseUrl: "js/api",
 	paths: {
 		'jquery': '//code.jquery.com/jquery-1.8.0.min',
-		'backbone': 'external/backbone-min',
-		'underscore': 'external/underscore-min',
-		'text': 'external/text',
+		'backbone': '../external/backbone-min',
+		'underscore': '../external/underscore-min',
+		'text': '../external/text',
 		'jquery.bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min',
-        'backgrid': 'external/backgrid.min',
-		'backgrid-paginator': 'external/backgrid-paginator-svw-debugged',
-		'form': 'external/backbone-forms',
-		'bootstrap-form-templates': 'external/backbone-forms-bootstrap3-templates',
-		'backbone-bootstrap-modal': 'external/backbone.bootstrap-modal',
-		'colResizable': 'external/colResizable-1.3.source'
+        'backgrid': '../external/backgrid.min',
+		'backgrid-paginator': '../external/backgrid-paginator-svw-debugged',
+		'form': '../external/backbone-forms',
+		'bootstrap-form-templates': '../external/backbone-forms-bootstrap3-templates',
+		'backbone-bootstrap-modal': '../external/backbone.bootstrap-modal',
+		'colResizable': '../external/colResizable-1.3.source'
 	},
 	//waitSeconds: 0,
 	shim: {
@@ -43,8 +43,10 @@ require.config({
 	urlArgs: "bust=" + (new Date()).getTime()
 });
 
+/** Javascript template directory */
+var templateDir = '/static/backbone/js/templates';
 
-/** @namespace for app */
+/** Namespace definition */
 var localground = {
 	map: {
 		tiles: {},
@@ -52,11 +54,16 @@ var localground = {
 		data: {},
 		views: {}
 	},
-	table: {}
+	table: {},
+	config: {}
 };
 
 
-//todo: move this to some helper functions file:
+/**
+ * Global: cookie getter
+ * @param {String} name of the cookie
+ * @returns {String} cookie value
+ */
 function getCookie(name) {
 	var cookieValue = null;
 	if (document.cookie && document.cookie != '') {
