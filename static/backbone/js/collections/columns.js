@@ -4,10 +4,10 @@
 */
 define([
 		"backgrid",
+		"lib/table/cells/delete",
 		"lib/table/formatters/lat",
-		"lib/table/formatters/lng",
-		"lib/table/cells/delete"
-	], function(Backgrid, LatFormatter, LngFormatter, DeleteCell) {
+		"lib/table/formatters/lng"
+	], function(Backgrid) {
 	var Columns = Backgrid.Columns.extend({
 		url: null,
 		excludeList: [
@@ -69,14 +69,14 @@ define([
 			return cols;
 		},
 		getDeleteCell: function(){
-			return { name: "delete", label: "delete", editable: false, cell: DeleteCell };
+			return { name: "delete", label: "delete", editable: false, cell: localground.table.DeleteCell };
 		},
 		getLatCell: function(){
 			return {
 				name: "geometry",
 				label: "Latitude",
 				cell: "number",
-				formatter: LatFormatter,
+				formatter: localground.table.LatFormatter,
 				editable: true,
 			}
 		},
@@ -85,7 +85,7 @@ define([
 				name: "geometry",
 				label: "Longitude",
 				cell: "number",
-				formatter: LngFormatter,
+				formatter: localground.table.LngFormatter,
 				editable: true,
 			}
 		},

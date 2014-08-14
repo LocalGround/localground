@@ -17,7 +17,7 @@
 		
 		
 		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing,places,geometry"></script>
-		<script src="js/lib/external/require.js"></script>
+		<script src="js/external/require.js"></script>
 		<script src="js/base.js"></script>
 		<script>
 			/*http://blog.novanet.no/4-ways-to-pass-parameters-to-requirejs-modules/
@@ -25,7 +25,7 @@
 			 *data, we're initializing the require.js configuration in the template itself.
 			*/
 			require(
-				["jquery", "jquery.bootstrap", "views/mapEditor"],
+				["jquery", "jquery.bootstrap", "views/maps/mapEditor"],
 				function($, bootstrap, MapEditor) {
 					$(function() {
 						new MapEditor({

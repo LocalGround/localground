@@ -1,4 +1,4 @@
-define(["views/sidepanel/item"], function(ItemView) {
+define(["views/maps/sidepanel/item"], function(ItemView) {
     var PhotoItemView = ItemView.extend({
 		googleOverlay: null,
 		getGoogleOverlay: function(){
@@ -16,11 +16,11 @@ define(["views/sidepanel/item"], function(ItemView) {
 				}
 			}
 			return this.googleOverlay;
-			
 		},
-		addMarker: function(e){
-			var isChecked = $(e.currentTarget).prop('checked');
-            var geom = this.model.get("geometry");
+		addMarker: function(isChecked){
+			console.log("addMarker photoItem!");
+			var geom = this.model.get("geometry");
+			console.log(geom);
             if(isChecked && geom) {
                 this.getGoogleOverlay().setMap(this.map);
 				this.map.panTo(this.getGoogleLatLng());
@@ -30,7 +30,6 @@ define(["views/sidepanel/item"], function(ItemView) {
 					this.getGoogleOverlay().setMap(null);
 				}
 			}
-            e.stopPropagation();
         }	
 	})
 	return PhotoItemView;

@@ -1,15 +1,12 @@
 define(
 	[
-		"views/sidepanel/dataPanel",
-		"views/basemap",
+		"views/maps/sidepanel/dataPanel",
+		"views/maps/basemap",
 		"lib/utils/dataManager"
 		
 	], function(DataPanel, BasemapView, DataManager) {
 	var MapEditor = Backbone.View.extend({
 		el: "#panels",
-		overlays: null,
-		activeMapTypeID: null,
-		defaultLocation: null,
 		basemap: null,
 		dataManager: null,
 		dataPanel: null,
@@ -26,11 +23,11 @@ define(
 			
 			this.basemap = new BasemapView({
 				mapContainerID: "map_canvas",
-				defaultLocation: this.defaultLocation,
+				defaultLocation: opts.defaultLocation,
 				searchControl: true,
 				geolocationControl: false,
-				activeMapTypeID: this.activeMapTypeID,
-				overlays: this.overlays 
+				activeMapTypeID: opts.activeMapTypeID,
+				overlays: opts.overlays 
 			});
 			
 			this.dataManager = new DataManager();
@@ -46,7 +43,7 @@ define(
 			this.dataManager.selectedProjects.on('remove', this.updatePanel, this);
 		},
 		updatePanel: function(){
-			console.log("update panel triggered");
+			//console.log("update panel triggered");
 			this.dataPanel.render();
 		}
 	});

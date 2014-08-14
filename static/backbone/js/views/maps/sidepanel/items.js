@@ -1,6 +1,6 @@
 define(["backbone",
-		"views/sidepanel/item",
-		"views/sidepanel/photoItem",
+		"views/maps/sidepanel/item",
+		"views/maps/sidepanel/photoItem",
 		"text!templates/sidepanel/collectionHeader.html"],
 	   function(Backbone, ItemView, PhotoItemView, collectionHeader) {
 	var ItemsView = Backbone.View.extend({
@@ -13,11 +13,8 @@ define(["backbone",
 		},
 		initialize: function(opts) {
 			$.extend(this, opts);
-			//this.collection.on('add', this.render, this);
-			//this.collection.on('remove', this.render, this);
 		},
 		render: function() {
-			//console.log("Updating Collection \"" + this.collection.name + "\"");
 			this.$el.empty();
 			if (this.collection.length == 0) {
 				return this;
@@ -40,7 +37,10 @@ define(["backbone",
 		checkAll: function(){
 			var isChecked = this.$el.find('.check-all').prop("checked");
 			this.$el.find('.data-item > input').prop("checked", !isChecked);
-			this.$el.find('.data-item > input').trigger("click");
+			this.collection.each(function(item) {
+				this.addMarker(isChecked);
+			}, this);
+			//this.$el.find('.data-item > input').trigger("click");
 		}
 	});
 	return ItemsView;

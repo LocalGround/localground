@@ -1,31 +1,33 @@
-define(["lib/map/tiles/mapbox", "lib/map/tiles/stamen"], function(MapBox, Stamen) {
-	TileController = (function (opts) {
+define(["lib/map/tiles/mapbox", "lib/map/tiles/stamen"],
+	function() {
+	/** 
+     * Class that controls the map's tile options.
+     * @class TileController
+     * @param {google.maps.Map} opts.map
+     * A google.maps.Map object, to which the TileController
+     * should be attached.
+     * 
+     * @param {Array} opts.overlays
+     * A list of available overlays, retrieved from the Local Ground API.
+     * 
+     * @param {Integer} opts.activeMapTypeID
+     * The tileset that should be initialized on startup.
+     */
+	localground.controls.TileController = (function (opts) {
+		var that = this;
 		var overlays = null;
 		var map = null;
 		var mapTypeIDs = [];
 		var typeLookup = {
-			stamen: Stamen,
-			mapbox: MapBox,
+			stamen: localground.tiles.Stamen,
+			mapbox: localground.tiles.MapBox,
 		};
 		
-		var setActiveMapType = function(id) {
-			if (id == null) {
-				return;
-			}
-			var mapType = getTileInfo("id", id);
-			var sourceName = mapType.sourceName.toLowerCase();
-			if (sourceName == "google") {
-				map.setMapTypeId(mapType.providerID);
-			}
-			else {
-				map.setMapTypeId(mapType.name);
-			}
-		};
-		
-		var setTiles = function(opts) {
-			map = opts.map;
-			overlays = opts.overlays;
-	
+		/**
+		 * @method
+		 * Initializes the tilesets for the map.
+		 */
+		var initTiles = function() {
 			//iterate through each of the user's basemap tilesets and add it to the map:
 			$.each(overlays, function() {
 				var sourceName = this.sourceName.toLowerCase()
@@ -51,6 +53,10 @@ define(["lib/map/tiles/mapbox", "lib/map/tiles/stamen"], function(MapBox, Stamen
 			map.mapTypeControlOptions.mapTypeIds = mapTypeIDs;
 		}
 	
+		/**
+		 * @method
+		 * Gets the tile information according to the key/value identifier.
+		 */
 		var getTileInfo = function(key, value){
 			for(var i=0; i < overlays.length; i++) {
 				if(value.toString().toLowerCase() == overlays[i][key].toString().toLowerCase()) {
@@ -60,24 +66,73 @@ define(["lib/map/tiles/mapbox", "lib/map/tiles/stamen"], function(MapBox, Stamen
 			return null;
 		}
 		
-		var getMapTypeNamebyId = function(id) {
+		/**
+		 * @method
+		 * Gets the tile information by the id.
+		 */
+		localground.controls.TileController.prototype.getMapTypeNamebyId = function(id) {
 			var tileInfo = getTileInfo("id", id);
 			return tileInfo.name;
 		};
 		
-		var getMapTypeId = function() {
+		/**
+		 * @method
+		 * Gets the tile information by the id.
+		 */
+		localground.controls.TileController.prototype.getMapTypeId = function() {
 			var tileInfo = getTileInfo("name", map.getMapTypeId().toLowerCase());
 			return tileInfo.id;
 		};
 	
+		/**
+		 * @method
+		 * Initializes the TileController
+		 * 
+		 * @param {google.maps.Map} opts.map
+		 * A google.maps.Map object, to which the TileController
+     	 * should be attached.
+     	 * 
+     	 * @param {Array} opts.overlays
+     	 * A list of available overlays, retrieved from the Local Ground API.
+     	 * 
+     	 * @param {Integer} opts.activeMapTypeID
+     	 * The tileset that should be initialized on startup.
+     	 */
 		var initialize = function(opts) {
-			setTiles(opts);
-			setActiveMapType(opts.activeMapTypeID);
+			//initialize properties:
+			overlays = opts.overlays;
+			map = opts.map;
+			
+			//initialize tiles and set the active map type
+			initTiles();
+			that.setActiveMapType(opts.activeMapTypeID);
 		};
-	
-		// initialize:
-		initialize(opts);
 		
+		/**
+		* @method
+		* Sets the active basemap tileset on the map. Called
+		* from the HTML control.
+		* @param {Integer} id
+		* The id of the corresponding tileset.
+		*/
+		localground.controls.TileController.prototype.setActiveMapType = function(id) {
+			if (id == null) {
+				return;
+			}
+			var mapType = getTileInfo("id", id);
+			var sourceName = mapType.sourceName.toLowerCase();
+			if (sourceName == "google") {
+				map.setMapTypeId(mapType.providerID);
+			}
+			else {
+				map.setMapTypeId(mapType.name);
+			}
+	   };
+	
+		// call on initialization:
+		initialize(opts);
 	});
-	return TileController;
+	
+	
+	return localground.controls.TileController;
 });

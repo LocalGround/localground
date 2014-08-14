@@ -1,5 +1,16 @@
 define([], function() {
-	Stamen = (function (opts) {
+	/** 
+     * Class that initializes a Stamen tileset.
+     * @class Stamen
+     * @param opts Initialization options for the Stamen class.
+     * @param {Integer} opts.max
+     * The maximum valid zoom level for the tileset.
+     * @param {Integer} opts.styleID
+     * The corresponding style ID associated with the tileset.
+     * @param {String} name
+     * The name of the tileset.
+     */
+	localground.tiles.Stamen = (function (opts) {
 		this.styleID = 1
 		this.maxZoom = opts.max;
 		this.styleID = opts.styleID;
@@ -16,5 +27,5 @@ define([], function() {
 			}).get(0);
 		};
 	});
-	return Stamen;
+	return localground.tiles.Stamen;
 });

@@ -1,11 +1,19 @@
 define([], function() {
-	SearchBox = (function (opts) {	
+	/** 
+     * Class that adds a Search Box to the map.
+     * @class SearchBox
+     * @param {google.maps.Map} map A google.maps.Map object, to which the
+     * SearchBox should be attached.
+     */
+	localground.controls.SearchBox = (function (map) {	
 		var searchBox = null;
 		var $input = $('<input class="controls address-input" \
 						   type="text" placeholder="Search for Places">');
-		var map = null;
-		this.render = function(opts) {
-			map = opts.map
+		
+		/** Creates an HTML search control, and attaches
+		 * it to the upper right-hand side of the map.
+		 */
+		var render = function() {
 			map.controls[google.maps.ControlPosition.RIGHT_TOP].push($input.get(0));
 			searchBox = new google.maps.places.SearchBox($input.get(0));
 			google.maps.event.addListener(searchBox, 'places_changed', function () {
@@ -18,6 +26,11 @@ define([], function() {
 			});
 		};
 		
+		/**
+		 * Performs the search based on the location that the user
+		 * entered into the search box. If a valid location is found,
+		 * this function also zooms the map to the resulting location.
+		 */
 		var search = function(){
 			var places = searchBox.getPlaces();
 			if (places) {
@@ -33,7 +46,7 @@ define([], function() {
 		};
 		
 		//call render upon initialization
-		this.render(opts);
+		render();
 	});
-	return SearchBox;
+	return localground.controls.SearchBox;
 });

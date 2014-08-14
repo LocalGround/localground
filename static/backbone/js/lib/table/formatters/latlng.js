@@ -1,5 +1,5 @@
 define([], function() {
-	var LatLngFormatter = {
+	localground.table.LatLngFormatter = {
 		update: function (formattedData, model, key, index) {
 			//delete geometry:
 			if (formattedData == "") {
@@ -42,5 +42,5 @@ define([], function() {
 			return null;
 		}
 	};
-	return LatLngFormatter;
+	return localground.table.LatLngFormatter;
 });

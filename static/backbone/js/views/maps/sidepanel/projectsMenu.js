@@ -3,8 +3,8 @@ define([
 		"config",
 		"collections/projects",
 		"models/project",
-		"views/sidepanel/items",
-		"views/sidepanel/item",
+		"views/maps/sidepanel/items",
+		"views/maps/sidepanel/item",
 		"text!templates/sidepanel/projectItem.html"],
 	   function(Backbone, Config, Projects, Project, ItemsView, ItemView, projectItem) {
     
@@ -41,7 +41,10 @@ define([
 		},
 		triggerToggleProjectData: function(e){
 			var $cb = $(e.currentTarget).find('input');
+			//I don't know why this has to be such a hack, but it is:
+			$cb.attr('checked', !$cb.attr('checked'));
 			$cb.trigger("click");
+			$cb.attr('checked', !$cb.attr('checked'));
 		},
 		toggleProjectData: function(e) {
 			var $cb = $(e.currentTarget);

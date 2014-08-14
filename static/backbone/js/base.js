@@ -2,16 +2,16 @@ require.config({
 	baseUrl: "js",
 	paths: {
 		'jquery': '//code.jquery.com/jquery-1.8.0.min',
-		'backbone': 'lib/external/backbone-min',
-		'underscore': 'lib/external/underscore-min',
-		'text': 'lib/external/text',
+		'backbone': 'external/backbone-min',
+		'underscore': 'external/underscore-min',
+		'text': 'external/text',
 		'jquery.bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min',
-        'backgrid': 'lib/external/backgrid.min',
-		'backgrid-paginator': 'lib/external/backgrid-paginator-svw-debugged',
-		'form': 'lib/external/backbone-forms',
-		'bootstrap-form-templates': 'lib/external/backbone-forms-bootstrap3-templates',
-		'backbone-bootstrap-modal': 'lib/external/backbone.bootstrap-modal',
-		'colResizable': 'lib/external/colResizable-1.3.source'
+        'backgrid': 'external/backgrid.min',
+		'backgrid-paginator': 'external/backgrid-paginator-svw-debugged',
+		'form': 'external/backbone-forms',
+		'bootstrap-form-templates': 'external/backbone-forms-bootstrap3-templates',
+		'backbone-bootstrap-modal': 'external/backbone.bootstrap-modal',
+		'colResizable': 'external/colResizable-1.3.source'
 	},
 	//waitSeconds: 0,
 	shim: {
@@ -60,3 +60,16 @@ function getCookie(name) {
 	}
 	return cookieValue;
 }
+
+/** @namespace Top-level namespace */
+var localground = localground || {};
+
+/** @namespace for tiles */
+localground.tiles = localground.tiles || {};
+
+/** @namespace for map controls */
+localground.controls = localground.controls || {};
+
+/** @namespace for table controls */
+localground.table = localground.table || {};
+

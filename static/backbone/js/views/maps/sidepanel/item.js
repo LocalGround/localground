@@ -5,12 +5,18 @@ define(["backbone"], function(Backbone) {
         overlay: null,
         events: {
             "click .close": "deleteItem",
-            'click .cb-data': 'addMarker',
+            'click .cb-data': 'toggleElement',
 			'click .data-item': 'triggerToggleElement',
         },
+		toggleElement: function(e){
+			this.addMarker($(e.currentTarget).attr('checked'));
+            e.stopPropagation();
+		},
 		triggerToggleElement: function(e){
-            var $cb = $(e.currentTarget).find('input');
-			$cb.trigger("click");
+			var $cb = $(e.currentTarget).find('input');
+			$cb.attr('checked', !$cb.attr('checked'));
+			this.addMarker($cb.attr('checked'));
+            e.stopPropagation();
 		},
         initialize: function(opts) {
             $.extend(this, opts);
@@ -36,9 +42,8 @@ define(["backbone"], function(Backbone) {
 				geom.coordinates[0]
 			);
 		},
-        addMarker: function(e){
-            var isChecked = $(e.currentTarget).prop('checked');
-            var geom = this.model.get("geometry");
+        addMarker: function(isChecked){
+			var geom = this.model.get("geometry");
             if(isChecked && geom) {
                 alert(this.model.get("geometry").coordinates);
             }

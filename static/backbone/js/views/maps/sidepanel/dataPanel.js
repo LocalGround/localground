@@ -1,7 +1,7 @@
 define(["backbone",
 		"config",
-		"views/sidepanel/projectsMenu",
-		"views/sidepanel/items",
+		"views/maps/sidepanel/projectsMenu",
+		"views/maps/sidepanel/items",
 		"text!templates/sidepanel/dataPanelHeader.html"],
 	   function(Backbone, Config, ProjectsMenu, ItemsView, dataPanelHeader) {
 	var DataPanel = Backbone.View.extend({

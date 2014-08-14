@@ -1,6 +1,6 @@
 define(["backbone", "lib/map/searchBox",
 		"lib/map/geolocation", "lib/map/tileController"],
-	   function(Backbone, SearchBox, GeoLocation, TileController) {
+	   function(Backbone) {
 	
 	var BasemapView = Backbone.View.extend({
 		// available objects:
@@ -22,11 +22,11 @@ define(["backbone", "lib/map/searchBox",
 			
 			//add a search control, if requested:
 			if (opts.searchControl)
-				searchControl = new SearchBox({ map: this.map });
+				searchControl = new localground.controls.SearchBox(this.map);
 			
 			//add a browser-based location detector, if requested:
 			if (this.geolocationControl) {
-				geolocationControl = new GeoLocation({
+				geolocationControl = new localground.controls.GeoLocation({
 					map: this.map,
 					userProfile: this.userProfile,
 					defaultLocation: this.defaultLocation
@@ -35,7 +35,7 @@ define(["backbone", "lib/map/searchBox",
 			
 			if(this.overlays) {
 				//set up the various map tiles in Google maps:
-				tileController = new TileController({
+				tileController = new localground.controls.TileController({
 					map: this.map,
 					overlays: this.overlays,
 					activeMapTypeID: this.activeMapTypeID

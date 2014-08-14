@@ -2,7 +2,7 @@ define([
 		"underscore",
         "backbone",
 		"backgrid",
-        "lib/external/backbone.paginator"
+        "external/backbone.paginator"
 	], function (_, Backbone, Backgrid) {
 
   "use strict";

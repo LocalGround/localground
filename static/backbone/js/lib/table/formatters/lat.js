@@ -1,5 +1,5 @@
 define(["lib/table/formatters/latlng"], function(LatLngFormatter) {
-	var LatFormatter = {
+	localground.table.LatFormatter = {
 		fromRaw: function (rawValue, model) {
 			try {
 				return rawValue.coordinates[1].toFixed(4);
@@ -11,5 +11,5 @@ define(["lib/table/formatters/latlng"], function(LatLngFormatter) {
 			return LatLngFormatter.update(formattedData, model, "lat", 1);
 		}
 	};
-	return LatFormatter;
+	return localground.table.LatFormatter;
 });
