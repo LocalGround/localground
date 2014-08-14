@@ -2,7 +2,7 @@ define(
 	[
 		"views/maps/sidepanel/dataPanel",
 		"views/maps/basemap",
-		"lib/utils/dataManager"
+		"lib/map/data/dataManager"
 		
 	], function(DataPanel, BasemapView, DataManager) {
 	var MapEditor = Backbone.View.extend({

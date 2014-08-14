@@ -30,6 +30,7 @@ define(["lib/map/tiles/mapbox", "lib/map/tiles/stamen"],
 		 * 
 		 * @param {Integer} id
 		 * The id of the tileset.
+		 * @returns {String}
 		 */
 		this.getMapTypeNamebyId = function(id) {
 			var tileInfo = getTileInfo("id", id);
@@ -39,7 +40,7 @@ define(["lib/map/tiles/mapbox", "lib/map/tiles/stamen"],
 		/**
 		 * Gets the tile information by the id.
 		 * @method getMapTypeId
-		 * 
+		 * @returns {Integer}
 		 */
 		this.getMapTypeId = function() {
 			var tileInfo = getTileInfo("name", map.getMapTypeId().toLowerCase());

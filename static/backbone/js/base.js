@@ -44,6 +44,18 @@ require.config({
 });
 
 
+/** @namespace for app */
+var localground = {
+	map: {
+		tiles: {},
+		controls: {},
+		data: {},
+		views: {}
+	},
+	table: {}
+};
+
+
 //todo: move this to some helper functions file:
 function getCookie(name) {
 	var cookieValue = null;
@@ -61,21 +73,4 @@ function getCookie(name) {
 	return cookieValue;
 }
 
-/** @namespace Top-level namespace */
-var localground = localground || {};
-
-/** @namespace for map-related functionality */
-localground.map = localground.map || {};
-
-/** @namespace for tiles */
-localground.map.tiles = localground.map.tiles || {};
-
-/** @namespace for map controls */
-localground.map.controls = localground.map.controls || {};
-
-/** @namespace for map data controls */
-localground.map.data = localground.map.data || {};
-
-/** @namespace for table controls */
-localground.table = localground.table || {};
 

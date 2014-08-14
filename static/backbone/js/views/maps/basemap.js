@@ -1,19 +1,50 @@
 define(["backbone", "lib/map/searchBox",
 		"lib/map/geolocation", "lib/map/tileController"],
-	   function(Backbone) {
-	
-	var BasemapView = Backbone.View.extend({
-		// available objects:
+	function(Backbone) {
+	/**
+	 * A class that handles the basic Google Maps functionality,
+	 * including tiles, search, and setting the default location.
+	 * @class BasemapView
+	 */
+	localground.map.views.BasemapView = Backbone.View.extend({
+		/**
+		 * @lends localground.map.views.BasemapView#
+		 */
+		
+		
+		/** The google.maps.Map object */
 		map: null,
+		/** The default map type, if one is not specified */
 		activeMapTypeID: 1,
-		searchControl: null,
-		geolocationControl: null,
+		/** A boolean flag, indicating whether or not to
+		 *  include a search control */
+		searchControl: true,
+		/** A boolean flag, indicating whether or not to
+		 *  include a geolocation control */
+		geolocationControl: false,
+		/** localground.map.controls.TileController control */
 		tileManager: null,
+		/** A data structure containing user location preferences */
 		userProfile: null,
+		/** A data structure containing a default location */
 		defaultLocation: null,
+		/** An HTML Tag id where the map gets initialized */
 		mapContainerID: null,
 		
-		//functions:
+		/**
+		 * Initializes the google map and it's corresponding controls,
+		 * based on an "opts" configuration object. Valid options described
+		 * below:
+		 * @method
+		 * @param {String} opts.mapContainerID
+		 * @param {Object} opts.defaultLocation
+		 * @param {Boolean} opts.searchControl
+		 * @param {Boolean} opts.geolocationControl
+		 * @param {Integer} opts.activeMapTypeID
+		 * The user's preferred tileset for the given map.
+		 * @param {Array} opts.overlays
+		 * A list of available tilesets, based on user's profile.
+		 */
 		initialize: function(opts){
 			$.extend(this, opts);
 			
@@ -43,6 +74,10 @@ define(["backbone", "lib/map/searchBox",
 			}
 		},
 		
+		/**
+		 * Helper method that initializes the Google map (before
+		 * the corresponding controls are added).
+		 */
 		renderMap: function(){
 			var mapOptions = {
 				scrollwheel: false,
@@ -71,5 +106,5 @@ define(["backbone", "lib/map/searchBox",
 			
 		}
 	});
-	return BasemapView;
+	return localground.map.views.BasemapView;
 });

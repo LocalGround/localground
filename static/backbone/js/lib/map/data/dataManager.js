@@ -110,7 +110,9 @@ define(
 				$.each(children[key].data, function(){
 					models.push(new opts.Model(this));
 				});
-				updateCollection(key, models, opts);
+				
+				//"call" method needed to set this's scope:
+				updateCollection.call(this, key, models, opts);
 			}
 			
 			//add new project to the collection:
