@@ -11,7 +11,7 @@ define([], function() {
      * which includes a zoom level (1 to 20) and a center point, which is a
      * google.maps.LatLng object.
      */
-	localground.controls.GeoLocation = (function (opts) {
+	localground.map.controls.GeoLocation = (function (opts) {
 		var map;
 		try { map = opts.map; }
 		catch(ex) {}
@@ -67,5 +67,5 @@ define([], function() {
 		//initialize the geolocation helper:
 		initGeolocation();
 	});
-	return localground.controls.GeoLocation;
+	return localground.map.controls.GeoLocation;
 });

@@ -64,11 +64,17 @@ function getCookie(name) {
 /** @namespace Top-level namespace */
 var localground = localground || {};
 
+/** @namespace for map-related functionality */
+localground.map = localground.map || {};
+
 /** @namespace for tiles */
-localground.tiles = localground.tiles || {};
+localground.map.tiles = localground.map.tiles || {};
 
 /** @namespace for map controls */
-localground.controls = localground.controls || {};
+localground.map.controls = localground.map.controls || {};
+
+/** @namespace for map data controls */
+localground.map.data = localground.map.data || {};
 
 /** @namespace for table controls */
 localground.table = localground.table || {};

@@ -30,7 +30,7 @@ define(
 				overlays: opts.overlays 
 			});
 			
-			this.dataManager = new DataManager();
+			this.dataManager = new localground.map.data.DataManager();
 			
 			this.dataPanel = new DataPanel({
 				dataManager: this.dataManager,

@@ -22,11 +22,11 @@ define(["backbone", "lib/map/searchBox",
 			
 			//add a search control, if requested:
 			if (opts.searchControl)
-				searchControl = new localground.controls.SearchBox(this.map);
+				searchControl = new localground.map.controls.SearchBox(this.map);
 			
 			//add a browser-based location detector, if requested:
 			if (this.geolocationControl) {
-				geolocationControl = new localground.controls.GeoLocation({
+				geolocationControl = new localground.map.controls.GeoLocation({
 					map: this.map,
 					userProfile: this.userProfile,
 					defaultLocation: this.defaultLocation
@@ -35,7 +35,7 @@ define(["backbone", "lib/map/searchBox",
 			
 			if(this.overlays) {
 				//set up the various map tiles in Google maps:
-				tileController = new localground.controls.TileController({
+				tileController = new localground.map.controls.TileController({
 					map: this.map,
 					overlays: this.overlays,
 					activeMapTypeID: this.activeMapTypeID

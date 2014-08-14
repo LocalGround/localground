@@ -10,7 +10,7 @@ define([], function() {
      * @param {String} name
      * The name of the tileset.
      */
-	localground.tiles.Stamen = (function (opts) {
+	localground.map.tiles.Stamen = (function (opts) {
 		this.styleID = 1
 		this.maxZoom = opts.max;
 		this.styleID = opts.styleID;
@@ -27,5 +27,5 @@ define([], function() {
 			}).get(0);
 		};
 	});
-	return localground.tiles.Stamen;
+	return localground.map.tiles.Stamen;
 });

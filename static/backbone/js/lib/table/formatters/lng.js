@@ -1,4 +1,9 @@
 define(["lib/table/formatters/latlng"], function(LatLngFormatter) {
+	/** 
+     * Custom formatter for handling latitudes (in light of a corresponding
+     * latitude value)
+     * @class LngFormatter
+     */
 	localground.table.LngFormatter = {
 		fromRaw: function (rawValue, model) {
 			try {

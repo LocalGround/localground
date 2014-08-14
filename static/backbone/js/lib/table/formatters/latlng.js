@@ -1,4 +1,11 @@
 define([], function() {
+	/** 
+     * Handles the updating of the geoJSON Point attribute of the
+     * model, based on the lat/lng values. Basically, it coordinates
+     * the updates across the two cells. A little hacky, but works
+     * for now.
+     * @class LatLngFormatter
+     */
 	localground.table.LatLngFormatter = {
 		update: function (formattedData, model, key, index) {
 			//delete geometry:
