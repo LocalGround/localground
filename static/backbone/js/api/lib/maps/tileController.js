@@ -1,4 +1,4 @@
-define(["lib/map/tiles/mapbox", "lib/map/tiles/stamen"],
+define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"],
 	function() {
 	/** 
      * Class that controls the map's tile options.
@@ -8,20 +8,32 @@ define(["lib/map/tiles/mapbox", "lib/map/tiles/stamen"],
      * should be attached.
      * 
      * @param {Array} opts.overlays
-     * A list of available overlays, retrieved from the Local Ground API.
+     * A list of available overlays, retrieved from the Local Ground Data API.
      * 
      * @param {Integer} opts.activeMapTypeID
      * The tileset that should be initialized on startup.
      */
-	localground.map.controls.TileController = function(opts) {
+	localground.maps.controls.TileController = function(opts) {
 		var that = this;
-		/** Raw data array of map overlays, pulled from the Data API */
+		/**
+		 * Raw data array of map overlays, pulled from the Local Ground Data API.
+		 * @see <a href="http://localground.org/api/0/tiles">Local Ground Data API</a>.
+		 */
 		this.overlays = null;
+		
+		/**
+		 * A google.maps.Map object
+		 * @see <a href="https://developers.google.com/maps/documentation/javascript/reference#Map">Google Maps API</a>.
+		 */
 		var map = null;
+		
+		/** @field {Array} A list of map Ids */
 		var mapTypeIDs = [];
+		
+		/** Lookup table of non-Google tile managers */
 		var typeLookup = {
-			stamen: localground.map.tiles.Stamen,
-			mapbox: localground.map.tiles.MapBox,
+			stamen: localground.maps.tiles.Stamen,
+			mapbox: localground.maps.tiles.MapBox,
 		};
 		
 		/**
@@ -96,7 +108,7 @@ define(["lib/map/tiles/mapbox", "lib/map/tiles/stamen"],
 					mapTypeIDs.unshift(this.providerID);
 				}
 				else {
-					alert("Error in localground.map.TileManager: unknown map type");
+					alert("Error in localground.maps.TileManager: unknown map type");
 				}
 			});
 			map.mapTypeControlOptions.mapTypeIds = mapTypeIDs;
@@ -144,5 +156,5 @@ define(["lib/map/tiles/mapbox", "lib/map/tiles/stamen"],
 	};
 	
 	
-	return localground.map.controls.TileController;
+	return localground.maps.controls.TileController;
 });

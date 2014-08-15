@@ -69,14 +69,14 @@ define([
 			return cols;
 		},
 		getDeleteCell: function(){
-			return { name: "delete", label: "delete", editable: false, cell: localground.table.DeleteCell };
+			return { name: "delete", label: "delete", editable: false, cell: localground.tables.DeleteCell };
 		},
 		getLatCell: function(){
 			return {
 				name: "geometry",
 				label: "Latitude",
 				cell: "number",
-				formatter: localground.table.LatFormatter,
+				formatter: localground.tables.LatFormatter,
 				editable: true,
 			}
 		},
@@ -85,7 +85,7 @@ define([
 				name: "geometry",
 				label: "Longitude",
 				cell: "number",
-				formatter: localground.table.LngFormatter,
+				formatter: localground.tables.LngFormatter,
 				editable: true,
 			}
 		},

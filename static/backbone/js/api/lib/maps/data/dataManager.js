@@ -13,7 +13,7 @@ define(
 	 * this data.
 	 * @class DataManager
 	 */
-	localground.map.data.DataManager = function() {
+	localground.maps.data.DataManager = function() {
 		/**
 		 * A dictionary of the various data types available (given
 		 * the projects that have been selected), and the corresponding
@@ -140,5 +140,5 @@ define(
 			this.collections[key].add(models, {merge: true});
 		};
 	};
-	return localground.map.data.DataManager;
+	return localground.maps.data.DataManager;
 });

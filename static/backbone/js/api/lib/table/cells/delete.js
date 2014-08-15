@@ -3,7 +3,7 @@ define(["backgrid"], function(Backgrid) {
      * Extends Backgrid.Cell. When cell clicked, the underlying model is deleted.
      * @class DeleteCell
      */
-	localground.table.DeleteCell = Backgrid.Cell.extend({
+	localground.tables.DeleteCell = Backgrid.Cell.extend({
 		template: _.template('<i class="fa fa-trash-o" style="cursor:pointer;"></i>'),
 		events: {
 		  "click": "deleteRow"
@@ -18,5 +18,5 @@ define(["backgrid"], function(Backgrid) {
 			return this;
 		}
 	});
-	return localground.table.DeleteCell;
+	return localground.tables.DeleteCell;
 });

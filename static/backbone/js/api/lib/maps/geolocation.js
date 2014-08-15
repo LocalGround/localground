@@ -11,12 +11,12 @@ define([], function() {
      * which includes a zoom level (1 to 20) and a center point, which is a
      * google.maps.LatLng object.
      */
-	localground.map.controls.GeoLocation = (function (opts) {
+	localground.maps.controls.GeoLocation = (function (opts) {
 		var map;
 		try { map = opts.map; }
 		catch(ex) {}
 		if (map == null) {
-			alert("\"map\" option required for localground.map.GeoLocation object");
+			alert("\"map\" option required for localground.maps.GeoLocation object");
 			return;
 		}
 		var userProfile = opts.userProfile;
@@ -67,5 +67,5 @@ define([], function() {
 		//initialize the geolocation helper:
 		initGeolocation();
 	});
-	return localground.map.controls.GeoLocation;
+	return localground.maps.controls.GeoLocation;
 });

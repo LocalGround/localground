@@ -5,7 +5,7 @@ define([], function() {
      * @param {google.maps.Map} map A google.maps.Map object, to which the
      * SearchBox should be attached.
      */
-	localground.map.controls.SearchBox = (function (map) {	
+	localground.maps.controls.SearchBox = (function (map) {	
 		var searchBox = null;
 		var $input = $('<input class="controls address-input" \
 						   type="text" placeholder="Search for Places">');
@@ -48,5 +48,5 @@ define([], function() {
 		//call render upon initialization
 		render();
 	});
-	return localground.map.controls.SearchBox;
+	return localground.maps.controls.SearchBox;
 });

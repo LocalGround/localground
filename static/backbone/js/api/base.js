@@ -11,7 +11,9 @@ require.config({
 		'form': '../external/backbone-forms',
 		'bootstrap-form-templates': '../external/backbone-forms-bootstrap3-templates',
 		'backbone-bootstrap-modal': '../external/backbone.bootstrap-modal',
-		'colResizable': '../external/colResizable-1.3.source'
+		'colResizable': '../external/colResizable-1.3.source',
+		'backbone-pageable': '../external/backbone-pageable',
+		'backbone-paginator': '../external/backbone.paginator'
 	},
 	//waitSeconds: 0,
 	shim: {
@@ -48,13 +50,13 @@ var templateDir = '/static/backbone/js/templates';
 
 /** Namespace definition */
 var localground = {
-	map: {
+	maps: {
 		tiles: {},
 		controls: {},
 		data: {},
 		views: {}
 	},
-	table: {},
+	tables: {},
 	config: {}
 };
 

@@ -1,7 +1,7 @@
 define([], function() {
 	/** 
-     * Class that initializes a Stamen tileset.
-     * @class Stamen
+     * Class that initializes a MapBox tileset.
+     * @class MapBox
      * @param opts Initialization options for the Stamen class.
      * @param {Integer} opts.max
      * The maximum valid zoom level for the tileset.
@@ -10,22 +10,22 @@ define([], function() {
      * @param {String} name
      * The name of the tileset.
      */
-	localground.map.tiles.Stamen = (function (opts) {
+	localground.maps.tiles.MapBox = (function (opts) {
 		this.styleID = 1
 		this.maxZoom = opts.max;
 		this.styleID = opts.styleID;
 		this.name = opts.name;
 		this.tileSize = new google.maps.Size(256,256);
 		this.getTile = function(coord, zoom, ownerDocument) {
-			var url = 'http://' + ['', 'a.', 'b.', 'c.', 'd.'][parseInt(Math.random()*5)] + 'tile.stamen.com/';
+			var url = 'http://' + ['a.', 'b.', 'c.', 'd.'][parseInt(Math.random()*4)] + 'tiles.mapbox.com/v3/';
 			return $('<div></div>').css({
 				'width': '256px',
 				'height': '256px',
 				'backgroundImage': 'url(' + url + this.styleID + '/' + zoom + '/' +
-										coord.x + '/' + coord.y + '.jpg)'
+										coord.x + '/' + coord.y + '.png)'
 		
 			}).get(0);
 		};
 	});
-	return localground.map.tiles.Stamen;
+	return localground.maps.tiles.MapBox;
 });

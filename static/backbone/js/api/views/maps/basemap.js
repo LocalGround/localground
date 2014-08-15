@@ -1,16 +1,15 @@
-define(["backbone", "lib/map/searchBox",
-		"lib/map/geolocation", "lib/map/tileController"],
+define(["backbone", "lib/maps/searchBox",
+		"lib/maps/geolocation", "lib/maps/tileController"],
 	function(Backbone) {
 	/**
 	 * A class that handles the basic Google Maps functionality,
 	 * including tiles, search, and setting the default location.
-	 * @class BasemapView
+	 * @class Basemap
 	 */
-	localground.map.views.BasemapView = Backbone.View.extend({
+	localground.maps.views.Basemap = Backbone.View.extend({
 		/**
-		 * @lends localground.map.views.BasemapView#
+		 * @lends localground.maps.views.Basemap#
 		 */
-		
 		
 		/** The google.maps.Map object */
 		map: null,
@@ -22,7 +21,7 @@ define(["backbone", "lib/map/searchBox",
 		/** A boolean flag, indicating whether or not to
 		 *  include a geolocation control */
 		geolocationControl: false,
-		/** localground.map.controls.TileController control */
+		/** A {@link localground.maps.controls.TileController} object control */
 		tileManager: null,
 		/** A data structure containing user location preferences */
 		userProfile: null,
@@ -53,11 +52,11 @@ define(["backbone", "lib/map/searchBox",
 			
 			//add a search control, if requested:
 			if (opts.searchControl)
-				searchControl = new localground.map.controls.SearchBox(this.map);
+				searchControl = new localground.maps.controls.SearchBox(this.map);
 			
 			//add a browser-based location detector, if requested:
 			if (this.geolocationControl) {
-				geolocationControl = new localground.map.controls.GeoLocation({
+				geolocationControl = new localground.maps.controls.GeoLocation({
 					map: this.map,
 					userProfile: this.userProfile,
 					defaultLocation: this.defaultLocation
@@ -66,7 +65,7 @@ define(["backbone", "lib/map/searchBox",
 			
 			if(this.overlays) {
 				//set up the various map tiles in Google maps:
-				tileController = new localground.map.controls.TileController({
+				tileController = new localground.maps.controls.TileController({
 					map: this.map,
 					overlays: this.overlays,
 					activeMapTypeID: this.activeMapTypeID
@@ -106,5 +105,5 @@ define(["backbone", "lib/map/searchBox",
 			
 		}
 	});
-	return localground.map.views.BasemapView;
+	return localground.maps.views.Basemap;
 });

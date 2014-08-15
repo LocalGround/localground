@@ -1,5 +1,5 @@
 define([
-		"external/backbone-pageable",
+		"backbone-pageable",
 		"models/record"
 	], function(PageableCollection, Record) {
     var Records = PageableCollection.extend({

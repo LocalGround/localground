@@ -6,7 +6,7 @@ define([
      * Class that initializes a DataGrid tileset.
      * @class DataGrid
      */
-	localground.table.DataGrid = Backbone.View.extend({
+	localground.tables.DataGrid = Backbone.View.extend({
 		el: "#grid",
 		records: null,
 		columns: null,
@@ -78,5 +78,5 @@ define([
 			this.makeColumnsResizable();
 		}
 	});
-	return localground.table.DataGrid;
+	return localground.tables.DataGrid;
 });

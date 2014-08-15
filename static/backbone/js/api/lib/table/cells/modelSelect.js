@@ -4,7 +4,7 @@ define(["backgrid", "collections/projects"], function(Backgrid, Projects) {
      * @class SelectCell
 	 * @property {Array of Arrays}  optionValues - A list of available options from which to choose.
 	 */
-	localground.table.SelectCell = Backgrid.SelectCell.extend({
+	localground.tables.SelectCell = Backgrid.SelectCell.extend({
 		optionValues: [['1','1']],
 		collection: null,
 		initialize: function(opts) {
@@ -25,5 +25,5 @@ define(["backgrid", "collections/projects"], function(Backgrid, Projects) {
 			this.render();
 		}
     });
-	return localground.table.SelectCell;
+	return localground.tables.SelectCell;
 });

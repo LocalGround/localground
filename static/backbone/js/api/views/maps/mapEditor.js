@@ -1,31 +1,34 @@
 define(
 	[
-		"views/maps/sidepanel/dataPanel",
 		"views/maps/basemap",
-		"lib/map/data/dataManager"
+		"views/maps/sidepanel/dataPanel",
+		"lib/maps/data/dataManager"
 		
-	], function(DataPanel, BasemapView) {
+	], function() {
 	/**
 	 * The top-level view class that harnesses all of the map editor
 	 * functionality. Also coordinates event triggers across all of
 	 * the constituent views.
 	 * @class MapEditor
 	 */
-	localground.map.views.MapEditor = Backbone.View.extend({
+	localground.maps.views.MapEditor = Backbone.View.extend({
 		/**
-		 * @lends localground.map.views.MapEditor#
+		 * @lends localground.maps.views.MapEditor#
 		 */
 		
 		el: "#panels",
-		/** A localground.map.views.BasemapView object */
+		/** A {@link localground.maps.views.Basemap} object */
 		basemap: null,
-		/** A localground.map.data.DataManager object */
+		/** A {@link localground.maps.data.DataManager} object */
 		dataManager: null,
 		
-		/** A localground.map.views.DataPanel object */
+		/** A {@link localground.maps.views.DataPanel} object */
 		dataPanel: null,
 		/**
-		 * Initializes the BasemapView and all of the panels. 
+		 * Initializes the BasemapView and all of the panels.
+		 * @method initialize
+		 * @param {Object} opts
+		 * Dictionary of initialization options
 		 */
 		initialize: function(opts) {
 			$.extend(this, opts);
@@ -38,7 +41,7 @@ define(
 			]);
 			*/
 			
-			this.basemap = new BasemapView({
+			this.basemap = new localground.maps.views.Basemap({
 				mapContainerID: "map_canvas",
 				defaultLocation: opts.defaultLocation,
 				searchControl: true,
@@ -47,9 +50,9 @@ define(
 				overlays: opts.overlays 
 			});
 			
-			this.dataManager = new localground.map.data.DataManager();
+			this.dataManager = new localground.maps.data.DataManager();
 			
-			this.dataPanel = new DataPanel({
+			this.dataPanel = new localground.maps.views.DataPanel({
 				dataManager: this.dataManager,
 				map: this.basemap.map
 			});
@@ -67,5 +70,5 @@ define(
 			this.dataPanel.render();
 		}
 	});
-	return localground.map.views.MapEditor;
+	return localground.maps.views.MapEditor;
 });
