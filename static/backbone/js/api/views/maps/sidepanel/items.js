@@ -25,6 +25,12 @@ define(["backbone",
 		/** A data collection (extends Backbone.Collection) */
 		collection: null,
 		
+		/**
+		 * A list of {@link localground.maps.views.Item} views
+		 * associated w/each model in the collection
+		 */
+		itemViews: [],
+		
 		/** A Google Map */
 		map: null,
 		
@@ -74,6 +80,7 @@ define(["backbone",
 				template: _.template( this.itemTemplateHtml ),
 				map: this.map
 			});
+			this.itemViews.push(itemView);
 			this.$el.find(".collection-data").append(itemView.render().el);
 		},
 		/**
@@ -82,10 +89,10 @@ define(["backbone",
 		 */
 		checkAll: function(){
 			var isChecked = this.$el.find('.check-all').prop("checked");
-			this.$el.find('.data-item > input').prop("checked", !isChecked);
-			this.collection.each(function(item) {
-				this.addMarker(isChecked);
-			}, this);
+			this.$el.find('.data-item > input').prop("checked", isChecked);
+			$.each(this.itemViews, function() {
+				this.showMarker(isChecked);
+			});
 		}
 	});
 	return localground.maps.views.Items;

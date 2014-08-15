@@ -1,15 +1,19 @@
 define(["views/maps/sidepanel/item"], function() {
     /** 
-     * Class that controls the right-hand listing of a single
-     * Backbone Model.
+     * Class that controls photo Models. Extend the
+     * {@link localground.maps.views.Item} class.
      * @class PhotoItem
      */
 	localground.maps.views.PhotoItem = localground.maps.views.Item.extend({
 		/**
 		 * @lends localground.maps.views.PhotoItem#
 		 */
-		
-		googleOverlay: null,
+
+		/**
+		 * Creates a google.maps.Marker overlay with a photo icon
+		 * if one doesn't already exist, and returns it.
+		 * @returns {google.maps.Marker}
+		 */
 		getGoogleOverlay: function(){
 			if (this.googleOverlay == null) {
 				this.googleOverlay = new google.maps.Marker({
@@ -26,8 +30,17 @@ define(["views/maps/sidepanel/item"], function() {
 			}
 			return this.googleOverlay;
 		},
-		addMarker: function(isChecked){
-			console.log("addMarker photoItem!");
+		
+		/**
+		 * Adds a marker to the map if isChecked == true,
+		 * removes the marker otherwise. This function should
+		 * probably be renamed.
+		 * @param {Boolean} isChecked
+		 * Flag that indicates whether or not the marker shoud
+		 *
+		 */
+		showMarker: function(isChecked){
+			//console.log("showMarker photoItem!");
 			var geom = this.model.get("geometry");
 			console.log(geom);
             if(isChecked && geom) {

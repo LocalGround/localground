@@ -9,32 +9,82 @@ define(["backbone"], function(Backbone) {
 		 * @lends localground.maps.views.Item#
 		 */
 		
+		/** A rendered item template */
         template: null,
+		
+		/** A google.maps.Map object */
         map: null,
-        overlay: null,
+		
+		/** A Backbone model */
+		model: null,
+		
+		/**
+		 * A google.maps.Overlay object (Point, Polyline, Polygon,
+		 * or GroundOverlay)
+		 */
+        googleOverlay: null,
+		
+		/**
+		 * Event listeners: Listens for delete checkbox toggle,
+		 * or div click (which triggers a checkbox toggle).
+		 */
         events: {
             "click .close": "deleteItem",
             'click .cb-data': 'toggleElement',
 			'click .data-item': 'triggerToggleElement',
         },
-		toggleElement: function(e){
-			this.addMarker($(e.currentTarget).attr('checked'));
-            e.stopPropagation();
-		},
-		triggerToggleElement: function(e){
-			var $cb = $(e.currentTarget).find('input');
-			$cb.attr('checked', !$cb.attr('checked'));
-			this.addMarker($cb.attr('checked'));
-            e.stopPropagation();
-		},
+		
+		
+		/**
+		 * Initializes the object and populates the map and
+		 * template properties
+		 * @param {Object} opts
+		 * Dictionary of initialization options
+		 * @param {Backbone.Model} opts.model: item,
+		 * Backbone Model
+		 * @param {Object} opts.template
+		 * Rendered templates
+		 * @param {Object} opts.map
+		 * google.maps.Map object
+		 */
         initialize: function(opts) {
             $.extend(this, opts);
             this.listenTo(this.model, 'destroy', this.remove); 
         },
+		
+		/**
+		 * Turns overlay on and off.
+		 * @param {Event} e
+		 */
+		toggleElement: function(e){
+			this.showMarker($(e.currentTarget).attr('checked'));
+            e.stopPropagation();
+		},
+		
+		/**
+		 * For a div click to trigger the toggle indirectly
+		 * @param {Event} e
+		 */
+		triggerToggleElement: function(e){
+			var $cb = $(e.currentTarget).find('input');
+			$cb.attr('checked', !$cb.attr('checked'));
+			this.showMarker($cb.attr('checked'));
+            e.stopPropagation();
+		},
+		
+		/**
+		 * Renders the HTML from the model
+		 */
         render: function() {
             $(this.el).html(this.template(this.model.toJSON()));
             return this;
         },
+		
+		/**
+		 * Handles the "delete click." Upon confirmation, the underlying
+		 * model is destroyed.
+		 * @param {Event} e
+		 */
         deleteItem: function (e) {
             var answer = confirm("Are you sure you want to delete the \"" +
                                   (this.model.get("name") || "Untitled") + "\" " +
@@ -44,6 +94,11 @@ define(["backbone"], function(Backbone) {
             }
             e.stopPropagation();
         },
+		
+		/**
+		 * Converts the models's GeoJSON into a
+		 * google.maps.LatLng object
+		 */
 		getGoogleLatLng: function(){
 			var geom = this.model.get("geometry");
 			return new google.maps.LatLng(
@@ -51,7 +106,11 @@ define(["backbone"], function(Backbone) {
 				geom.coordinates[0]
 			);
 		},
-        addMarker: function(isChecked){
+		
+		/**
+		 * Does nothing right now
+		 */
+        showMarker: function(isChecked){
 			var geom = this.model.get("geometry");
             if(isChecked && geom) {
                 alert(this.model.get("geometry").coordinates);
