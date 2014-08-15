@@ -4,9 +4,9 @@
 */
 define([
 		"backgrid",
-		"lib/table/cells/delete",
-		"lib/table/formatters/lat",
-		"lib/table/formatters/lng"
+		"lib/tables/cells/delete",
+		"lib/tables/formatters/lat",
+		"lib/tables/formatters/lng"
 	], function(Backgrid) {
 	var Columns = Backgrid.Columns.extend({
 		url: null,

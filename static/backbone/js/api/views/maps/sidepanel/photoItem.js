@@ -1,5 +1,14 @@
-define(["views/maps/sidepanel/item"], function(ItemView) {
-    var PhotoItemView = ItemView.extend({
+define(["views/maps/sidepanel/item"], function() {
+    /** 
+     * Class that controls the right-hand listing of a single
+     * Backbone Model.
+     * @class PhotoItem
+     */
+	localground.maps.views.PhotoItem = localground.maps.views.Item.extend({
+		/**
+		 * @lends localground.maps.views.PhotoItem#
+		 */
+		
 		googleOverlay: null,
 		getGoogleOverlay: function(){
 			if (this.googleOverlay == null) {
@@ -32,5 +41,5 @@ define(["views/maps/sidepanel/item"], function(ItemView) {
 			}
         }	
 	})
-	return PhotoItemView;
+	return localground.maps.views.PhotoItem;
 });

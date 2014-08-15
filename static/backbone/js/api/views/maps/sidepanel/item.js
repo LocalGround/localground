@@ -1,5 +1,14 @@
 define(["backbone"], function(Backbone) {
-    var ItemView = Backbone.View.extend({
+    /** 
+     * Class that controls the right-hand listing of a single
+     * Backbone Model.
+     * @class Item
+     */
+	localground.maps.views.Item = Backbone.View.extend({
+		/**
+		 * @lends localground.maps.views.Item#
+		 */
+		
         template: null,
         map: null,
         overlay: null,
@@ -50,5 +59,5 @@ define(["backbone"], function(Backbone) {
             e.stopPropagation();
         }
     });
-    return ItemView;
+    return localground.maps.views.Item;
 });

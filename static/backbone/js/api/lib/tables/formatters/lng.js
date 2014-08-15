@@ -1,4 +1,4 @@
-define(["lib/table/formatters/latlng"], function(LatLngFormatter) {
+define(["lib/tables/formatters/latlng"], function(LatLngFormatter) {
 	/** 
      * Custom formatter for handling latitudes (in light of a corresponding
      * latitude value)

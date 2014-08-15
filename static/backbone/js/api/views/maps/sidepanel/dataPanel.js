@@ -1,9 +1,9 @@
 define(["backbone",
-		"views/maps/sidepanel/items",
 		"text!" + templateDir + "/sidepanel/dataPanelHeader.html",
 		"views/maps/sidepanel/projectsMenu",
+		"views/maps/sidepanel/items",
 		"config"],
-	   function(Backbone, ItemsView, dataPanelHeader) {
+	   function(Backbone, dataPanelHeader) {
 	/**
 	 * A class that handles display and rendering of the
 	 * data panel and projects menu
@@ -25,6 +25,7 @@ define(["backbone",
 			this.projectsMenu = new localground.maps.views.ProjectsMenu({
 				dataManager: this.dataManager
 			});
+			
 			this.render();
 		},
 		/**
@@ -52,7 +53,7 @@ define(["backbone",
 			this.$el.find('.pane-body').empty();
 			for (key in this.dataManager.collections) {
 				if (this.dataViews[key] == null) {
-					this.dataViews[key] = new ItemsView({
+					this.dataViews[key] = new localground.maps.views.Items({
 						collection: this.dataManager.collections[key],
 						itemTemplateHtml: localground.config.Config[key.split("_")[0]].itemTemplateHtml,
 						map: this.map
