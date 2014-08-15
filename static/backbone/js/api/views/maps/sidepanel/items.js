@@ -22,6 +22,11 @@ define(["backbone",
 		*/
 		itemTemplateHtml: null,
 		
+		/**
+		 * View class that controls the individual item listing.
+		 */
+		ItemView: null,
+		
 		/** A data collection (extends Backbone.Collection) */
 		collection: null,
 		
@@ -75,7 +80,7 @@ define(["backbone",
 		 * A Backbone Model of the corresponding datatype
 		 */
 		renderItem: function(item) {
-			var itemView = new localground.maps.views.PhotoItem({
+			var itemView = new this.ItemView({
 				model: item,
 				template: _.template( this.itemTemplateHtml ),
 				map: this.map

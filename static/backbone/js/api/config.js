@@ -3,8 +3,6 @@ define(
 		"models/project",
 		"models/photo",
 		"models/audio",
-		"models/mapimage",
-		"models/marker",
 		"collections/projects",
 		"collections/photos",
 		"collections/audio",
@@ -14,9 +12,11 @@ define(
 		"text!../templates/sidepanel/audioItem.html",
 		"text!../templates/sidepanel/mapimageItem.html",
 		"text!../templates/sidepanel/markerItem.html",
-		"text!../templates/sidepanel/recordItem.html"
+		"text!../templates/sidepanel/recordItem.html",
+		"views/maps/sidepanel/photoItem",
+		"models/mapimage"
 	], function(
-			Project, Photo, Audio, MapImage, Marker, //models
+			Project, Photo, Audio, //models
 			Projects, Photos, AudioFiles, MapImages, Markers, //collections
 			photoItem, audioItem, mapimageItem, markerItem, recordItem //templates
 		) {
@@ -29,27 +29,32 @@ define(
 		photos: {
 			Model: Photo,
 			Collection: Photos,
-			itemTemplateHtml: photoItem
+			itemTemplateHtml: photoItem,
+			ItemView: localground.maps.views.PhotoItem
 		},
 		audio: {
 			Model: Audio,
 			Collection: AudioFiles,
-			itemTemplateHtml: audioItem
+			itemTemplateHtml: audioItem,
+			ItemView: localground.maps.views.PhotoItem
 		},
 		scans: {
-			Model: MapImage,
+			Model: localground.models.MapImage,
 			Collection: MapImages,
-			itemTemplateHtml: mapimageItem
+			itemTemplateHtml: mapimageItem,
+			ItemView: localground.maps.views.PhotoItem
 		},
 		markers: {
-			Model: Marker,
+			Model: localground.models.Marker,
 			Collection: Markers,
-			itemTemplateHtml: markerItem
+			itemTemplateHtml: markerItem,
+			ItemView: localground.maps.views.PhotoItem
 		},
 		form: {
-			Model: Marker,
+			Model: localground.models.Marker,
 			Collection: Markers,
-			itemTemplateHtml: recordItem
+			itemTemplateHtml: recordItem,
+			ItemView: localground.maps.views.PhotoItem
 		}
 	};
 	return localground.config.Config;

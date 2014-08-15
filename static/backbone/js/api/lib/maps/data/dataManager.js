@@ -104,8 +104,10 @@ define(
 			//add child data to the collection:
 			var children = project.get("children");
 			for (key in children) {
-				var opts = localground.config.Config[key.split("_")[0]];
+				var configKey = key.split("_")[0];
+				var opts = localground.config.Config[configKey];
 				opts.name = children[key].name;
+				
 				var models = [];
 				$.each(children[key].data, function(){
 					models.push(new opts.Model(this));

@@ -57,7 +57,9 @@ var localground = {
 		views: {}
 	},
 	tables: {},
-	config: {}
+	config: {},
+	models: {},
+	collections: {}
 };
 
 

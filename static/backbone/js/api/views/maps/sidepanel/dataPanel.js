@@ -53,9 +53,11 @@ define(["backbone",
 			this.$el.find('.pane-body').empty();
 			for (key in this.dataManager.collections) {
 				if (this.dataViews[key] == null) {
+					var configKey = key.split("_")[0];
 					this.dataViews[key] = new localground.maps.views.Items({
 						collection: this.dataManager.collections[key],
-						itemTemplateHtml: localground.config.Config[key.split("_")[0]].itemTemplateHtml,
+						itemTemplateHtml: localground.config.Config[configKey].itemTemplateHtml,
+						ItemView: localground.config.Config[configKey].ItemView,
 						map: this.map
 					});
 				}
@@ -64,7 +66,12 @@ define(["backbone",
 			
 			//re-attach event handlers:
 			this.projectsMenu.delegateEvents();
+			this.resize();
 			return this;
+		},
+		
+		resize: function(){
+			this.$el.find('.pane-body').height($('body').height() - 140);
 		}
 	});
 	return localground.maps.views.DataPanel;

@@ -1,6 +1,6 @@
-define(["jquery", "backbone", "models/mapimage"], function($, Backbone, MapImage) {
+define(["jquery", "backbone", "models/mapimage"], function($, Backbone) {
     var MapImages = Backbone.Collection.extend({
-        model: MapImage,
+        model: localground.models.MapImage,
         name: 'Map Images',
         url: '/api/0/map-images/',
 		parse : function(response) {

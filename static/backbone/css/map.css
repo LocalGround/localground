@@ -1,3 +1,234 @@
+#map_canvas {
+	height: 100%;
+	width: 70%;
+	border-right: solid 1px #999;
+}
+#panels {
+	/*
+	 *padding: 10px;
+	min-height: 800px;
+	*/
+	background-color: #fff;
+	width: 30%;
+	float: right;
+	position: absolute;
+	right: 0;
+	top: 0;
+	margin-top: 50px;
+}
+
+
+
+.collection-header {
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-color: rgb(204, 204, 204);
+	padding-bottom: 5px;
+	margin-bottom: 0px;
+}
+.collection-header > h4 {
+	display: inline-block;
+}
+.collection-header > .fa-search {
+	margin: 10px 3px 0px 0px;
+}
+
+
+.item {
+	border-bottom: solid 1px #eee;
+	padding: 2px 6px 2px 10px;
+}
+.item > input, .input > img {
+	vertical-align: baseline;
+}
+.item > div {
+	display: inline-block;
+	margin-left: 5px;
+	vertical-align: bottom;
+	padding-bottom: 3px;
+	line-height: 15px;
+	background-image: none;
+}
+
+.item:hover .close {
+	display: block !important;
+}
+.item:hover {
+	background-image: url(../images/bg.png);
+}
+
+.fa-map-marker {
+	font-size: 28px;
+}
+
+.close {
+	font-size: 16px !important;
+	margin-top: 4px;
+	display: none !important;
+}
+
+#closer-item {
+	background-color: #FFF !important;	
+	border-right: solid 1px #FFF !important;
+	display: none;
+}
+#closer-item > a,
+#closer-item > a:hover,
+#closer-item > a:focus {
+	border-color: #fff transparent #fff #fff;
+	background-color: #fff !important;
+}
+
+.tab-pane {
+	padding: 0px !important;
+}
+.pane-header > h3 {
+	margin: 0px !important;
+}
+.pane-header {
+	/*background-color: #eee;*/
+	background-image: url(../images/bg.png);
+	padding: 25px 0px 24px 10px;
+	border-bottom: solid 1px #eee;
+}
+.pane-body {
+	padding: 10px 10px 0px 20px;
+	overflow-y: auto;
+}
+
+.form-group {
+	border-bottom: solid 1px #EEE;
+	padding: 5px 0px 0px 0px;
+	margin-bottom: 0px;
+}
+.col { display: inline-block; }
+.form-control {
+	padding: 3px 6px;
+	height: auto;
+	display: inline-block;
+}
+
+#active_symbols {
+	color: #999;
+	padding: 10px;
+}
+.symbol, .symbol-label {
+	display: inline-block;
+	vertical-align: middle;
+}
+.symbol {
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	margin-bottom: 10px;
+}
+.symbol-label {
+	margin-left: 10px;
+	font-weight: bold;
+	font-size: 18px;
+}
+
+.alert {
+	display: inline-block;
+	padding: 3px;
+}
+.alert-dismissable {
+	padding-right: 15px;
+	margin-bottom: 0px;
+}
+.alert-dismissable .close {
+	right: -8px;
+}
+
+/* Map Marker Stuff */
+.marker-label,
+.marker-icon {
+	z-index: 99;
+	position: absolute;
+	display: block;
+	margin-top: -50px;
+	margin-left: -25px;
+	width: 50px;
+	height: 50px;
+	font-size: 30px !important;
+	text-align: center;
+	color: #fff;
+	white-space: nowrap;
+}
+
+.address-input {
+	margin-top: 5px !important;
+	margin-right: 5px;
+	border: solid 3px #CCC;
+	-moz-box-shadow: 3px 3px 3px #999;
+	-webkit-box-shadow: 3px 3px 3px #999;
+	box-shadow: 3px 3px 3px #999;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+	width: 300px;
+	color: #444;
+	padding: 10px;
+	font-size: 13px;
+	font-weight: normal;
+	height: 35px !important;
+}
+
+
+.dropdown-menu:before {
+  position: absolute;
+  top: -7px;
+  left: 9px;
+  display: inline-block;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid #ccc;
+  border-left: 7px solid transparent;
+  border-bottom-color: rgba(0, 0, 0, 0.2);
+  content: '';
+}
+
+.dropdown-menu:after {
+  position: absolute;
+  top: -6px;
+  left: 10px;
+  display: inline-block;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #ffffff;
+  border-left: 6px solid transparent;
+  content: '';
+}
+
+.dropdown-menu.right {
+	left: auto;
+	right: 0px;
+}
+.dropdown-menu.right::before {
+	left: auto !important;
+	right: 9px;
+}
+.dropdown-menu.right::after {
+	left: auto !important;
+	right: 10px;
+}
+
+.projects-menu {
+	margin-right:120px;
+	width:250px;
+	padding: 5px;
+	max-height: 300px;
+	min-height: 100px;
+}
+
+.projects-menu > input {
+	vertical-align: top;
+	margin-right: 5px;
+}
+
+
+.fat {
+	padding: 6px 12px !important;
+}
+
 .control-label {
 	line-height: 2.5em;
 	font-weight: normal;

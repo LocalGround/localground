@@ -21,7 +21,7 @@ define(["backbone", "lib/maps/searchBox",
 		/** A boolean flag, indicating whether or not to
 		 *  include a geolocation control */
 		geolocationControl: false,
-		/** A {@link localground.maps.controls.TileController} object control */
+		/** A {@link localground.maps.controls.TileController} object */
 		tileManager: null,
 		/** A data structure containing user location preferences */
 		userProfile: null,

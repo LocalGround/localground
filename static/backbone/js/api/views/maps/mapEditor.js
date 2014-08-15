@@ -16,7 +16,7 @@ define(
 		 * @lends localground.maps.views.MapEditor#
 		 */
 		
-		el: "#panels",
+		el: "body",
 		/** A {@link localground.maps.views.Basemap} object */
 		basemap: null,
 		/** A {@link localground.maps.data.DataManager} object */
@@ -56,11 +56,10 @@ define(
 				dataManager: this.dataManager,
 				map: this.basemap.map
 			});
-			this.$el.append(this.dataPanel.render().el);
+			this.$el.find('#panels').append(this.dataPanel.render().el);
 			
 			//listen for projects being added or removed:
-			this.dataManager.selectedProjects.on('add', this.updatePanel, this);
-			this.dataManager.selectedProjects.on('remove', this.updatePanel, this);
+			this.attachEvents();
 		},
 		/**
 		 * Triggered when a new project is loaded or removed
@@ -68,6 +67,19 @@ define(
 		updatePanel: function(){
 			//console.log("update panel triggered");
 			this.dataPanel.render();
+		},
+		/**
+		 * Adds event listeners to listen for changes in the dataManager
+		 * and for window resize
+		 */
+		attachEvents: function(){
+			var that = this;
+			this.dataManager.selectedProjects.on('add', this.updatePanel, this);
+			this.dataManager.selectedProjects.on('remove', this.updatePanel, this);
+			$(window).off('resize');
+			$(window).on('resize', function(){
+				that.dataPanel.resize();	
+			});
 		}
 	});
 	return localground.maps.views.MapEditor;
