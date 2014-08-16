@@ -30,8 +30,9 @@ define(["backbone"], function(Backbone) {
 		 */
         events: {
             "click .close": "deleteItem",
-            'click .cb-data': 'toggleElement',
-			'click .data-item': 'triggerToggleElement',
+            'click .cb-data': 'toggleCheckbox',
+			'click .data-item': 'triggerToggleCheckbox',
+			'click a': 'zoomTo',
         },
 		
 		/**
@@ -52,22 +53,50 @@ define(["backbone"], function(Backbone) {
         },
 		
 		/**
-		 * Turns overlay on and off.
+		 * Triggers the eventManager's global event handler, so that
+		 * other objects (like the overlayManager) who are listening
+		 * for this event can take measures.
+		 * @param {Boolean} isChecked
+		 * A flag that tells the method whether to turn the overlay
+		 * on or off.
+		 */
+		toggleElement: function(isChecked){
+			if (isChecked)
+				this.eventManager.trigger("show_overlay", this.model);
+			else
+				this.eventManager.trigger("hide_overlay", this.model);	
+		},
+		
+		/**
+		 * Helps the checkbox communicate with the toggleElement function.
 		 * @param {Event} e
 		 */
-		toggleElement: function(e){
-			this.showMarker($(e.currentTarget).attr('checked'));
+		toggleCheckbox: function(e){
+			this.toggleElement($(e.currentTarget).attr('checked'));
             e.stopPropagation();
 		},
 		
 		/**
-		 * For a div click to trigger the toggle indirectly
+		 * Helps the div containing the checkbox to communicate
+		 * with the toggleElement function.
 		 * @param {Event} e
 		 */
-		triggerToggleElement: function(e){
+		triggerToggleCheckbox: function(e){
 			var $cb = $(e.currentTarget).find('input');
-			$cb.attr('checked', !$cb.attr('checked'));
-			this.showMarker($cb.attr('checked'));
+			if ($cb.css('visibility') != 'hidden') {
+				$cb.attr('checked', !$cb.attr('checked'));
+				this.toggleElement($cb.attr('checked'));
+			}
+            e.stopPropagation();
+		},
+		
+		/**
+		 * Helps the checkbox communicate with the toggleElement function.
+		 * @param {Event} e
+		 */
+		zoomTo: function(e){
+			if (this.model.get("geometry"))
+				this.eventManager.trigger("zoom_to_overlay", this.model);	
             e.stopPropagation();
 		},
 		

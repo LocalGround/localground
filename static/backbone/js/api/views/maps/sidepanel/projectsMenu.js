@@ -1,12 +1,9 @@
 define([
 		"backbone",
-		"collections/projects",
-		"models/project",
-		"views/maps/sidepanel/items",
-		"views/maps/sidepanel/item",
 		"text!" + templateDir + "/sidepanel/projectItem.html",
-		"config"],
-	   function(Backbone, Projects, Project, ItemsView, ItemView, projectItem) {
+		"views/maps/sidepanel/item"
+		],
+	   function(Backbone, projectItem) {
     /** 
      * Class that controls the available projects menu,
      * Extends Backbone.View.
@@ -63,7 +60,7 @@ define([
 		 * Returns a reference to the list item HTML element
 		*/
 		renderProject: function(item) {
-			var itemView = new ItemView({
+			var itemView = new localground.maps.views.Item({
 				model: item,
 				template: _.template( projectItem ),
 			});

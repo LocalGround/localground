@@ -2,7 +2,8 @@ define(
 	[
 		"views/maps/basemap",
 		"views/maps/sidepanel/dataPanel",
-		"lib/maps/data/dataManager"
+		"lib/maps/data/dataManager",
+		"lib/maps/controls/overlayManager"
 		
 	], function() {
 	/**
@@ -21,6 +22,11 @@ define(
 		basemap: null,
 		/** A {@link localground.maps.data.DataManager} object */
 		dataManager: null,
+		/** A {@link localground.maps.controls.OverlayManager} object */
+		overlayManager: null,
+		
+		/** A object that coordinates events across objects */
+		eventManager: _.extend({}, Backbone.Events),
 		
 		/** A {@link localground.maps.views.DataPanel} object */
 		dataPanel: null,
@@ -52,8 +58,14 @@ define(
 			
 			this.dataManager = new localground.maps.data.DataManager();
 			
+			this.overlayManager = new localground.maps.controls.OverlayManager({
+				map: this.basemap.map,
+				eventManager: this.eventManager
+			});
+			
 			this.dataPanel = new localground.maps.views.DataPanel({
 				dataManager: this.dataManager,
+				eventManager: this.eventManager,
 				map: this.basemap.map
 			});
 			this.$el.find('#panels').append(this.dataPanel.render().el);

@@ -1,6 +1,6 @@
 define(
 	[
-		"collections/projects",
+		//"collections/projects",
 		"collections/photos",
 		"collections/audio",
 		"collections/mapimages",
@@ -13,10 +13,11 @@ define(
 		//"models/project",
 		"models/photo",
 		"models/audio",
+		"views/maps/sidepanel/item",
 		"views/maps/sidepanel/photoItem",
 		"models/mapimage"
 	], function(
-			Projects, Photos, AudioFiles, MapImages, Markers, //collections
+			Photos, AudioFiles, MapImages, Markers, //collections
 			photoItem, audioItem, mapimageItem, markerItem, recordItem //templates
 		) {
 	/**

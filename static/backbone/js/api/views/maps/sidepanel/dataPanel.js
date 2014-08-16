@@ -16,6 +16,7 @@ define(["backbone",
 		
 		template: _.template( dataPanelHeader ),
 		dataManager: null,
+		eventManager: null,
 		map: null,
 		projectsMenu: null,
 		dataViews: {},
@@ -23,7 +24,8 @@ define(["backbone",
 			$.extend(this, opts);
 			
 			this.projectsMenu = new localground.maps.views.ProjectsMenu({
-				dataManager: this.dataManager
+				dataManager: this.dataManager,
+				eventManager: this.eventManager
 			});
 			
 			this.render();
@@ -58,7 +60,8 @@ define(["backbone",
 						collection: this.dataManager.collections[key],
 						itemTemplateHtml: localground.config.Config[configKey].itemTemplateHtml,
 						ItemView: localground.config.Config[configKey].ItemView,
-						map: this.map
+						map: this.map,
+						eventManager: this.eventManager
 					});
 				}
 				this.$el.find('.pane-body').append(this.dataViews[key].render().el);

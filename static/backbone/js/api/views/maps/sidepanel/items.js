@@ -17,6 +17,7 @@ define(["backbone",
 		/** A rendered dataCollectionView template */
 		template: _.template( collectionHeader ),
 		
+		eventManager: null,
 		/**
 		 * A rendered template corresponding to each model
 		 * within the collection.
@@ -85,7 +86,8 @@ define(["backbone",
 			var itemView = new this.ItemView({
 				model: item,
 				template: _.template( this.itemTemplateHtml ),
-				map: this.map
+				map: this.map,
+				eventManager: this.eventManager
 			});
 			this.itemViews.push(itemView);
 			this.$el.find(".collection-data").append(itemView.render().el);
@@ -97,9 +99,9 @@ define(["backbone",
 		checkAll: function(){
 			var isChecked = this.$el.find('.check-all').prop("checked");
 			this.$el.find('.data-item > input').prop("checked", isChecked);
-			$.each(this.itemViews, function() {
+			/*$.each(this.itemViews, function() {
 				this.showMarker(isChecked);
-			});
+			});*/
 		}
 	});
 	return localground.maps.views.Items;
