@@ -1,5 +1,8 @@
-define(["backbone", "lib/maps/searchBox",
-		"lib/maps/geolocation", "lib/maps/tileController"],
+define(["backbone",
+		"lib/maps/controls/searchBox",
+		"lib/maps/controls/geolocation",
+		"lib/maps/controls/tileController"
+		],
 	function(Backbone) {
 	/**
 	 * A class that handles the basic Google Maps functionality,

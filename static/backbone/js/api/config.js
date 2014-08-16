@@ -47,7 +47,7 @@ define(
 			Model: localground.models.Marker,
 			Collection: Markers,
 			itemTemplateHtml: markerItem,
-			ItemView: localground.maps.views.PhotoItem
+			ItemView: localground.maps.views.MarkerItem
 		},
 		form: {
 			Model: localground.models.Marker,

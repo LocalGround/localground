@@ -3,7 +3,31 @@
 		<% if(!geometry) { %>
 			style="visibility:hidden;"
 		<% } %>>
-	<i class="fa fa-map-marker" style="color: #<%= color %>"></i>
+	
+	<% if(geometry && geometry.type =="Point") { %>
+		<!-- Marker Symbol -->
+		<i class="fa fa-map-marker" style="color: #<%= color %>"></i>
+	<% } %>
+	
+	<% if(geometry && geometry.type =="LineString") { %>
+	<!-- Polyline Symbol -->
+	<svg height="25" width="25">
+		<polyline points="0, 25 8, 10 16, 15 24, 0"
+			style="fill:none;stroke:<%= color %>;stroke-width:3" />
+	</svg
+	<% } %>
+	
+	<% if(geometry && geometry.type =="Polygon") { %>
+	<!-- Polygon Symbol -->
+	<svg height="25" width="25">
+		<polygon points="3,3 10,22 20,17 22,5 15,10, 3,3"
+				 style="fill:none;stroke:<%= color %>;stroke-width:3" />
+	</svg>
+	</svg
+	<% } %>
+	
+	
+	
 	<div><a href="#" title="<%= name %>"><%= name || 'Untitled' %></a></div>
 	<i class="fa fa-trash-o close"></i>
 </div>

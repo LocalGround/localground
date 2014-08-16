@@ -54,7 +54,8 @@ var localground = {
 		tiles: {},
 		controls: {},
 		data: {},
-		views: {}
+		views: {},
+		geometry: {}
 	},
 	tables: {},
 	config: {},

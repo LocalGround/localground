@@ -134,7 +134,7 @@ define(["backbone"], function(Backbone) {
 			console.log(geom);
             if(isChecked && geom) {
                 this.getGoogleOverlay().setMap(this.map);
-				this.map.panTo(this.getGoogleLatLng());
+				//this.map.panTo(this.getGoogleLatLng());
             }
 			else {
 				if (this.googleOverlay) {
