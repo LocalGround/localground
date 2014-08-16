@@ -1,6 +1,6 @@
-define(["models/base", "collections/dataTypes"],
-	   function(Base, DataTypes) {
-	var Field = Base.extend({
+define(["collections/dataTypes", "models/base"],
+	   function(DataTypes) {
+	var Field = localground.models.Base.extend({
 		urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
 		defaults: {
 			data_type: 1,

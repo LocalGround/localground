@@ -1,5 +1,8 @@
 <div class="item data-item" id="records_<%= id %>">
-	<input class="cb-data" type="checkbox" value="<%= id %>">
+	<input class="cb-data" type="checkbox" value="<%= id %>"
+		<% if(!geometry) { %>
+			style="visibility:hidden;"
+		<% } %>>
 	<i class="fa fa-map-marker"></i>
 	<div><a href="#" title="<%= name %>"><%= recs[0] || 'Untitled' %></a></div>
 	<i class="fa fa-trash-o close"></i>

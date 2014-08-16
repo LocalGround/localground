@@ -1,5 +1,8 @@
 <div class="item data-item" id="markers_<%= id %>">
-	<input class="cb-data" type="checkbox" value="<%= id %>">
+	<input class="cb-data" type="checkbox" value="<%= id %>"
+		<% if(!geometry) { %>
+			style="visibility:hidden;"
+		<% } %>>
 	<i class="fa fa-map-marker" style="color: #<%= color %>"></i>
 	<div><a href="#" title="<%= name %>"><%= name || 'Untitled' %></a></div>
 	<i class="fa fa-trash-o close"></i>

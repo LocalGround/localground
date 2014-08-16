@@ -1,9 +1,9 @@
 define([
 		"backbone-pageable",
 		"models/record"
-	], function(PageableCollection, Record) {
+	], function(PageableCollection) {
     var Records = PageableCollection.extend({
-        model: Record,
+        model: localground.models.Record,
 		columns: null,
 		name: 'Records',
 		query: '',

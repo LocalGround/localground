@@ -1,5 +1,5 @@
-define(["models/base"], function(Base) {
-	var Form = Base.extend({
+define(["models/base"], function() {
+	var Form = localground.models.Base.extend({
 		defaults: {
 			name: "Untitled"
 		}

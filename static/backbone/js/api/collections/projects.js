@@ -1,6 +1,6 @@
-define(["jquery", "backbone", "models/project"], function($, Backbone, Project) {
+define(["backbone", "models/project"], function(Backbone) {
     var Projects = Backbone.Collection.extend({
-        model: Project,
+        model: localground.models.Project,
 		name: 'Photos',
         url: '/api/0/projects/',
 		parse : function(response) {

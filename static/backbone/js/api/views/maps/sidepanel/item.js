@@ -34,7 +34,6 @@ define(["backbone"], function(Backbone) {
 			'click .data-item': 'triggerToggleElement',
         },
 		
-		
 		/**
 		 * Initializes the object and populates the map and
 		 * template properties
@@ -108,15 +107,41 @@ define(["backbone"], function(Backbone) {
 		},
 		
 		/**
-		 * Does nothing right now
+		 * Creates a google.maps.Marker overlay with a photo icon
+		 * if one doesn't already exist, and returns it.
+		 * @returns {google.maps.Marker}
 		 */
-        showMarker: function(isChecked){
+		getGoogleOverlay: function(){
+			if (this.googleOverlay == null) {
+				this.googleOverlay = new google.maps.Marker({
+					position: this.getGoogleLatLng()
+				});
+			}
+			return this.googleOverlay;
+		},
+		
+		/**
+		 * Adds a marker to the map if isChecked == true,
+		 * removes the marker otherwise. This function should
+		 * probably be renamed.
+		 * @param {Boolean} isChecked
+		 * Flag that indicates whether or not the marker shoud
+		 *
+		 */
+		showMarker: function(isChecked){
+			//console.log("showMarker photoItem!");
 			var geom = this.model.get("geometry");
+			console.log(geom);
             if(isChecked && geom) {
-                alert(this.model.get("geometry").coordinates);
+                this.getGoogleOverlay().setMap(this.map);
+				this.map.panTo(this.getGoogleLatLng());
             }
-            e.stopPropagation();
-        }
+			else {
+				if (this.googleOverlay) {
+					this.getGoogleOverlay().setMap(null);
+				}
+			}
+        }	
     });
     return localground.maps.views.Item;
 });

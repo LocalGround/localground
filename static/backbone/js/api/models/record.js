@@ -1,5 +1,10 @@
-define(["models/base"], function(Base) {
-	var Record = Base.extend({
+define(["models/base"], function() {
+	/**
+	 * A Backbone Model class for the Project datatype.
+	 * @class Project
+	 * @see <a href="http://localground.org/api/0/projects/">http://localground.org/api/0/projects/</a>
+	 */
+	localground.models.Record = localground.models.Base.extend({
 		defaults: {
 			name: ""
 		},
@@ -38,5 +43,5 @@ define(["models/base"], function(Base) {
 			return base.replace(/([^\/])$/, '$1/') + encodeURIComponent(this.id) + '/.json';
 		}
 	});
-	return Record;
+	return localground.models.Record;
 });

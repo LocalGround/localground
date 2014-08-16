@@ -1,8 +1,5 @@
 define(
 	[
-		"models/project",
-		"models/photo",
-		"models/audio",
 		"collections/projects",
 		"collections/photos",
 		"collections/audio",
@@ -13,10 +10,12 @@ define(
 		"text!../templates/sidepanel/mapimageItem.html",
 		"text!../templates/sidepanel/markerItem.html",
 		"text!../templates/sidepanel/recordItem.html",
+		//"models/project",
+		"models/photo",
+		"models/audio",
 		"views/maps/sidepanel/photoItem",
 		"models/mapimage"
 	], function(
-			Project, Photo, Audio, //models
 			Projects, Photos, AudioFiles, MapImages, Markers, //collections
 			photoItem, audioItem, mapimageItem, markerItem, recordItem //templates
 		) {
@@ -27,16 +26,16 @@ define(
 	*/
 	localground.config.Config = {
 		photos: {
-			Model: Photo,
+			Model: localground.models.Photo,
 			Collection: Photos,
 			itemTemplateHtml: photoItem,
 			ItemView: localground.maps.views.PhotoItem
 		},
 		audio: {
-			Model: Audio,
+			Model: localground.models.Audio,
 			Collection: AudioFiles,
 			itemTemplateHtml: audioItem,
-			ItemView: localground.maps.views.PhotoItem
+			ItemView: localground.maps.views.Item
 		},
 		scans: {
 			Model: localground.models.MapImage,
@@ -54,7 +53,7 @@ define(
 			Model: localground.models.Marker,
 			Collection: Markers,
 			itemTemplateHtml: recordItem,
-			ItemView: localground.maps.views.PhotoItem
+			ItemView: localground.maps.views.Item
 		}
 	};
 	return localground.config.Config;

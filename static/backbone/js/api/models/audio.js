@@ -1,8 +1,13 @@
-define(["models/base"], function(Base) {
-	var Audio = Base.extend({
+define(["models/base"], function() {
+	/**
+	 * A Backbone Model class for the Audio datatype.
+	 * @class Audio
+	 * @see <a href="http://localground.org/api/0/audio/">http://localground.org/api/0/audio/</a>
+	 */
+	localground.models.Audio = localground.models.Base.extend({
 		defaults: {
 			name: "Untitled"
 		}
 	});
-	return Audio;
+	return localground.models.Audio;
 });

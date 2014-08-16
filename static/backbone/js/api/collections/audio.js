@@ -1,6 +1,6 @@
-define(["jquery", "backbone", "models/audio"], function($, Backbone, Audio) {
+define(["backbone", "models/audio"], function(Backbone) {
     var AudioFiles = Backbone.Collection.extend({
-        model: Audio,
+        model: localground.models.Audio,
 		name: 'Audio Files',
         url: '/api/0/audio/',
 		parse : function(response) {

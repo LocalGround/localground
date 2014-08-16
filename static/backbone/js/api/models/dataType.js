@@ -1,5 +1,5 @@
-define(["models/base"], function(Base) {
-	var DataType = Base.extend({
+define(["models/base"], function() {
+	var DataType = localground.models.Base.extend({
 		defaults: {
 			name: "Untitled"
 		},

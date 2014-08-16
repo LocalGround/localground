@@ -1,8 +1,13 @@
-define(["models/base"], function(Base) {
-	var Photo = Base.extend({
+define(["models/base"], function() {
+	/**
+	 * A Backbone Model class for the Photo datatype.
+	 * @class Photo
+	 * @see <a href="http://localground.org/api/0/photos/">http://localground.org/api/0/photos/</a>
+	 */
+	localground.models.Photo = localground.models.Base.extend({
 		defaults: {
 			name: "Untitled"
 		}
 	});
-	return Photo;
+	return localground.models.Photo;
 });

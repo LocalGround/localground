@@ -1,6 +1,12 @@
 define(["backbone"],
 	   function(Backbone) {
-	var Base = Backbone.Model.extend({
+	/**
+	 * An "abstract" Backbone Model; the root of all of the other
+	 * localground.model.* classes. Has some helper methods that help
+	 * the various models create forms to update models.
+	 * @class Base
+	 */
+	localground.models.Base = Backbone.Model.extend({
 		urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
 		schema: {},
 		dataTypes: {
@@ -44,5 +50,5 @@ define(["backbone"],
 			this.trigger('schemaLoaded');	
 		}
 	});
-	return Base;
+	return localground.models.Base;
 });
