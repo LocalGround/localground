@@ -7,6 +7,9 @@ define(["backbone"],
 	 * @class Base
 	 */
 	localground.models.Base = Backbone.Model.extend({
+		getNamePlural: function(){
+			return this.get("overlay_type");	
+		},
 		urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
 		schema: {},
 		dataTypes: {

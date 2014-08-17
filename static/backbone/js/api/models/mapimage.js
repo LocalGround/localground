@@ -5,6 +5,9 @@ define(["models/base"], function() {
 	 * @see <a href="http://localground.org/api/0/map-images/">http://localground.org/api/0/map-images/</a>
 	 */
 	localground.models.MapImage = localground.models.Base.extend({
+		getNamePlural: function(){
+			return "scans";	
+		},
 		defaults: {
 			name: "Untitled"
 		}

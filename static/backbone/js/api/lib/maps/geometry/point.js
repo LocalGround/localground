@@ -4,7 +4,7 @@ define([], function() {
      * formats and vice versa
      * @class Point
      */
-	localground.maps.geometry.Point = (function (opts) {
+	localground.maps.geometry.Point = {
 		
 		/**
 		 * Static method that converts a google.maps.Point
@@ -15,12 +15,12 @@ define([], function() {
 		 * documentation for more details.
 		 * @returns a GeoJSON Point object
 		 */
-		this.getGeoJSON = function(latLng){
+		getGeoJSON: function(latLng){
 			return {
 				type: 'Point',
 				coordinates: [latLng.lng(), latLng.lat()]
 			};
-		};
+		},
 		
 		/**
 		 * Static method that converts a GeoJSON Point into
@@ -30,15 +30,13 @@ define([], function() {
 		 * @returns {google.maps.LatLng}
 		 * A google.maps.LatLng object 
 		 */
-		this.getGoogleLatLng = function(geoJSON){
+		getGoogleLatLng: function(geoJSON){
 			return new google.maps.LatLng(
 				geoJSON.coordinates[1],
 				geoJSON.coordinates[0]
 			);
-		};
+		}
 		
-		//initialize the geolocation helper:
-		initialize(opts);
-	});
+	};
 	return localground.maps.geometry.Point;
 });

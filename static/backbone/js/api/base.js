@@ -55,7 +55,8 @@ var localground = {
 		controls: {},
 		data: {},
 		views: {},
-		geometry: {}
+		geometry: {},
+		overlays: {}
 	},
 	tables: {},
 	config: {},

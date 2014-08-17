@@ -82,7 +82,7 @@ define(["backbone",
 		 * A Backbone Model of the corresponding datatype
 		 */
 		renderItem: function(item) {
-			//console.log(this.ItemView);
+			console.log(this.ItemView);
 			var itemView = new this.ItemView({
 				model: item,
 				template: _.template( this.itemTemplateHtml ),

@@ -14,7 +14,6 @@ define(
 		"models/photo",
 		"models/audio",
 		"views/maps/sidepanel/item",
-		"views/maps/sidepanel/photoItem",
 		"models/mapimage"
 	], function(
 			Photos, AudioFiles, MapImages, Markers, //collections
@@ -30,7 +29,7 @@ define(
 			Model: localground.models.Photo,
 			Collection: Photos,
 			itemTemplateHtml: photoItem,
-			ItemView: localground.maps.views.PhotoItem
+			ItemView: localground.maps.views.Item
 		},
 		audio: {
 			Model: localground.models.Audio,
@@ -42,13 +41,13 @@ define(
 			Model: localground.models.MapImage,
 			Collection: MapImages,
 			itemTemplateHtml: mapimageItem,
-			ItemView: localground.maps.views.PhotoItem
+			ItemView: localground.maps.views.Item
 		},
 		markers: {
 			Model: localground.models.Marker,
 			Collection: Markers,
 			itemTemplateHtml: markerItem,
-			ItemView: localground.maps.views.MarkerItem
+			ItemView: localground.maps.views.Item
 		},
 		form: {
 			Model: localground.models.Marker,
