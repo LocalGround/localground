@@ -236,3 +236,9 @@
 	display: inline-block;
 	float: none;
 }
+
+
+.fa-volume-up {
+	font-size: 20px;
+	color: #333;
+}
