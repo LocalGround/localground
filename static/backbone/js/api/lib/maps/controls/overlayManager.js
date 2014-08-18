@@ -1,5 +1,6 @@
 define([
-		'lib/maps/overlays/photo'
+		'lib/maps/overlays/photo',
+		'lib/maps/overlays/marker'
 		], function() {
 	/** 
      * Class that adds a Search Box to the map.
@@ -35,31 +36,35 @@ define([
 				overlay.zoomTo();
 			});
 			eventManager.on("hide_overlay", function(model){
-				//alert("hide: " + overlay);
-				var overlay = that.getOverlay(model);
-				overlay.hide();
+				that.getOverlay(model).hide();
 			});
 			eventManager.on("zoom_to_overlay", function(model){
-				alert("zoom to: " + model);
+				that.getOverlay(model).zoomTo();
 			});
 		};
 		
 		this.getOverlay = function(model){
-			var key = model.getNamePlural();	
+			var key = model.getNamePlural();
+			var id = model.id;	
 			this.overlays[key] = this.overlays[key] || {};
-			if (this.overlays[key][model.id] == null) {
+			var opts = {
+				model: model,
+				map: map
+			};
+			if (this.overlays[key][id] == null) {
 				switch (model.getNamePlural()) {
 					case "photos":
-						this.overlays[key][model.id] = new localground.maps.overlays.Photo({
-							model: model,
-							map: map
-						});
+						this.overlays[key][id] = new localground.maps.overlays.Photo(opts);
+						break;
+					case "markers":
+						this.overlays[key][id] = new localground.maps.overlays.Marker(opts);
 						break;
 					default:
+						this.overlays[key][id] = new localground.maps.overlays.Marker(opts);
 						break;
 				}
 			}
-			return this.overlays[key][model.id];
+			return this.overlays[key][id];
 		}
 		
 		this.initialize();

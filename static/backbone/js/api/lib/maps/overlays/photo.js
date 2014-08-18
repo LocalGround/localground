@@ -1,20 +1,13 @@
-define([], function() {
+define(["lib/maps/overlays/point"], function() {
     /** 
      * Class that controls photo model overlays.
+     * Todo: make a google marker class that the Photo,
+     * Audio, PointMarker, and Record class can consume 
      * @class Photo
      */
 	localground.maps.overlays.Photo = function (opts) {
-		/**
-		 * @lends localground.maps.overlays.Photo#
-		 */
 		
-		opts = opts || {};
-		this.map = opts.map;
-		this.model = opts.model;
-		this.getGoogleOverlay = null;
-		
-		/** Shortcut to @link {localground.maps.geometry.Point} object */
-		var Point = localground.maps.geometry.Point;
+		localground.maps.overlays.Point.call(this, opts);
 		
 		/**
 		 * Retrieve a photo map marker, depending on the map's zoom level
@@ -41,38 +34,6 @@ define([], function() {
 				);
 			}
 		};
-		
-		/**
-		 * Creates a google.maps.Marker overlay with a photo icon
-		 * if one doesn't already exist, and returns it.
-		 * @returns {google.maps.Marker}
-		 */
-		this.getGoogleOverlay = function(){
-			if (this.googleOverlay == null) {
-				this.googleOverlay = new google.maps.Marker({
-					position: Point.getGoogleLatLng(this.model.get("geometry")),
-					icon: this.getIcon()
-				});
-			}
-			return this.googleOverlay;
-		};
-		
-		this.show = function(){
-			var overlay = this.getGoogleOverlay();
-			overlay.setIcon(this.getIcon());
-			overlay.setMap(this.map);
-		};
-		
-		this.hide = function(){
-			var overlay = this.getGoogleOverlay();
-			overlay.setMap(null);
-		};
-		
-		this.zoomTo = function(){
-			var overlay = this.getGoogleOverlay();
-			this.map.panTo(overlay.getPosition());
-		};
-				
 	};
 	return localground.maps.overlays.Photo;
 });
