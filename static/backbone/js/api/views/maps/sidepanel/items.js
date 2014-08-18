@@ -82,7 +82,8 @@ define(["backbone",
 		 * A Backbone Model of the corresponding datatype
 		 */
 		renderItem: function(item) {
-			console.log(this.ItemView);
+			//(this.ItemView);
+			console.log(item);
 			var itemView = new this.ItemView({
 				model: item,
 				template: _.template( this.itemTemplateHtml ),
@@ -96,12 +97,11 @@ define(["backbone",
 		 * Selects all child data elements in the Items View, based
 		 * on the status of the corresponding .check-all checkbox.
 		 */
-		checkAll: function(){
-			var isChecked = this.$el.find('.check-all').prop("checked");
+		checkAll: function(e){
+			var $cb = $(e.currentTarget);
+			var isChecked = $cb.attr("checked");
 			this.$el.find('.data-item > input').prop("checked", isChecked);
-			/*$.each(this.itemViews, function() {
-				this.showMarker(isChecked);
-			});*/
+			this.eventManager.trigger(localground.events.EventTypes.SHOW_ALL, $cb.val());
 		}
 	});
 	return localground.maps.views.Items;

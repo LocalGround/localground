@@ -35,11 +35,11 @@ define([], function() {
 		getGooglePath: function(geoJSON){
 			var path = [];
 			var coords = geoJSON.coordinates;
-			console.log(coords);
+			//console.log(coords);
 			for (var i = 0; i < coords.length; i++){
 				path.push(new google.maps.LatLng(coords[i][1], coords[i][0]));
 			}
-			console.log(path);
+			//console.log(path);
 			return path;
 		},
 		

@@ -13,7 +13,7 @@ define(
 	 * this data.
 	 * @class DataManager
 	 */
-	localground.maps.data.DataManager = function() {
+	localground.maps.managers.DataManager = function() {
 		/**
 		 * A dictionary of the various data types available (given
 		 * the projects that have been selected), and the corresponding
@@ -116,7 +116,7 @@ define(
 				//"call" method needed to set this's scope:
 				updateCollection.call(this, key, models, opts);
 			}
-			
+			console.log(this.collections);
 			//add new project to the collection:
 			this.selectedProjects.add(project, {merge: true});
 		};
@@ -134,7 +134,9 @@ define(
 		 */
 		var updateCollection = function(key, models, opts) {
 			if (this.collections[key] == null) {
-				this.collections[key] = new opts.Collection(models);
+				this.collections[key] = new opts.Collection(models, {key: key});
+				
+				//A few special hacks for form data:
 				if (key.indexOf("form") != -1) {
 					this.collections[key].name = opts.name;
 				}
@@ -142,5 +144,5 @@ define(
 			this.collections[key].add(models, {merge: true});
 		};
 	};
-	return localground.maps.data.DataManager;
+	return localground.maps.managers.DataManager;
 });

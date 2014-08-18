@@ -5,6 +5,8 @@ define([
     var Records = PageableCollection.extend({
         model: localground.models.Record,
 		columns: null,
+		key: null,
+		overlay_type: null,
 		name: 'Records',
 		query: '',
         url: null,

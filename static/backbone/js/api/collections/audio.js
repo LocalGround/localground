@@ -1,5 +1,8 @@
-define(["backbone", "models/audio"], function(Backbone) {
-    var AudioFiles = Backbone.Collection.extend({
+define(["backbone", "models/audio", "collections/base"], function(Backbone) {
+    /**
+	 * @class localground.collections.AudioFiles
+	 */
+	localground.collections.AudioFiles = localground.collections.Base.extend({
         model: localground.models.Audio,
 		name: 'Audio Files',
         url: '/api/0/audio/',
@@ -7,5 +10,5 @@ define(["backbone", "models/audio"], function(Backbone) {
             return response.results;
         },
     });
-    return AudioFiles;
+    return localground.collections.AudioFiles;
 });

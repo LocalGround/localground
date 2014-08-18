@@ -53,15 +53,25 @@ var localground = {
 	maps: {
 		tiles: {},
 		controls: {},
-		data: {},
+		managers: {},
 		views: {},
 		geometry: {},
 		overlays: {}
 	},
 	tables: {},
 	config: {},
+	collections: {},
 	models: {},
-	collections: {}
+	events: {
+		/** A list of the events that this particular manager listens for */
+		EventTypes: {
+			SHOW_OVERLAY: "show_overlay",
+			HIDE_OVERLAY: "hide_overlay",
+			ZOOM_TO_OVERLAY: "zoom_to_overlay",
+			SHOW_ALL: "show_all",
+			HIDE_ALL: "hide_all"
+		}
+	}
 };
 
 

@@ -1,5 +1,8 @@
-define(["jquery", "backbone", "models/marker"], function($, Backbone) {
-    var Markers = Backbone.Collection.extend({
+define(["backbone", "models/marker", "collections/base"], function(Backbone) {
+    /**
+	 * @class localground.collections.Markers
+	 */
+	localground.collections.Markers = localground.collections.Base.extend({
         model: localground.models.Marker,
 		name: 'Markers',
         url: '/api/0/markers/',
@@ -7,5 +10,5 @@ define(["jquery", "backbone", "models/marker"], function($, Backbone) {
             return response.results;
         },
     });
-    return Markers;
+    return localground.collections.Markers;
 });

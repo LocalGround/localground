@@ -2,8 +2,8 @@ define(
 	[
 		"views/maps/basemap",
 		"views/maps/sidepanel/dataPanel",
-		"lib/maps/data/dataManager",
-		"lib/maps/controls/overlayManager"
+		"lib/maps/managers/dataManager",
+		"lib/maps/managers/overlayManager"
 		
 	], function() {
 	/**
@@ -20,7 +20,7 @@ define(
 		el: "body",
 		/** A {@link localground.maps.views.Basemap} object */
 		basemap: null,
-		/** A {@link localground.maps.data.DataManager} object */
+		/** A {@link localground.maps.managers.DataManager} object */
 		dataManager: null,
 		/** A {@link localground.maps.controls.OverlayManager} object */
 		overlayManager: null,
@@ -56,13 +56,16 @@ define(
 				overlays: opts.overlays 
 			});
 			
-			this.dataManager = new localground.maps.data.DataManager();
+			this.dataManager = new localground.maps.managers.DataManager();
 			
-			this.overlayManager = new localground.maps.controls.OverlayManager({
-				map: this.basemap.map,
-				eventManager: this.eventManager
+			/** Controls the map overlays */
+			this.overlayManager = new localground.maps.managers.OverlayManager({
+				dataManager: this.dataManager,
+				eventManager: this.eventManager,
+				map: this.basemap.map
 			});
 			
+			/** Controls the side panel overlay listings */
 			this.dataPanel = new localground.maps.views.DataPanel({
 				dataManager: this.dataManager,
 				eventManager: this.eventManager,
@@ -73,21 +76,12 @@ define(
 			//listen for projects being added or removed:
 			this.attachEvents();
 		},
+
 		/**
-		 * Triggered when a new project is loaded or removed
-		 */
-		updatePanel: function(){
-			//console.log("update panel triggered");
-			this.dataPanel.render();
-		},
-		/**
-		 * Adds event listeners to listen for changes in the dataManager
-		 * and for window resize
+		 * Adds event listeners to listen for window resize
 		 */
 		attachEvents: function(){
 			var that = this;
-			this.dataManager.selectedProjects.on('add', this.updatePanel, this);
-			this.dataManager.selectedProjects.on('remove', this.updatePanel, this);
 			$(window).off('resize');
 			$(window).on('resize', function(){
 				that.dataPanel.resize();	

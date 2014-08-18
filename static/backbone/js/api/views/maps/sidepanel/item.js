@@ -160,7 +160,7 @@ define(["backbone"], function(Backbone) {
 		showMarker: function(isChecked){
 			//console.log("showMarker photoItem!");
 			var geom = this.model.get("geometry");
-			console.log(geom);
+			//console.log(geom);
             if(isChecked && geom) {
                 this.getGoogleOverlay().setMap(this.map);
 				//this.map.panTo(this.getGoogleLatLng());

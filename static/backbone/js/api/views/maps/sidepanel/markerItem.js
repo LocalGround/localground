@@ -29,14 +29,14 @@ define([
 						});
 						break;
 					case 'LineString':
-						console.log(geoJSON);
+						//console.log(geoJSON);
 						this.googleOverlay = new google.maps.Polyline({
 							path: localground.maps.geometry.Polyline.getGooglePath(geoJSON),
 							strokeColor: this.model.get("color"),
 							strokeOpacity: 1.0,
 							strokeWeight: 5
 						});
-						console.log(this.googleOverlay);
+						//console.log(this.googleOverlay);
 						break;
 					/*case 'Polygon':
 						me.data.push(new localground.polygon(this)); 

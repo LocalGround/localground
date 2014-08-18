@@ -20,6 +20,19 @@ define(["backbone",
 		map: null,
 		projectsMenu: null,
 		dataViews: {},
+		
+		/**
+		 * Initializes the dataPanel
+		 * @param {Object} opts
+		 * A dictionary of available options
+		 * @param {google.maps.Map} opts.map
+		 * A reference to the UI's Google Map object
+		 * @param {localground.maps.managers.DataManager} opts.dataManager
+		 * @param {Backbone.Events} opts.eventManager
+		 * Coordinates the triggering and listening to events across shared
+		 * objects.
+		 *
+		 */
 		initialize: function(opts){
 			$.extend(this, opts);
 			
@@ -27,6 +40,11 @@ define(["backbone",
 				dataManager: this.dataManager,
 				eventManager: this.eventManager
 			});
+			
+			// listen for changes in the selectedProjects, and re-render
+			// accordingly
+			this.dataManager.selectedProjects.on('add', this.render, this);
+			this.dataManager.selectedProjects.on('remove', this.render, this);
 			
 			this.render();
 		},
