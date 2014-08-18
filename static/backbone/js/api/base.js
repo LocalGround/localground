@@ -69,7 +69,8 @@ var localground = {
 			HIDE_OVERLAY: "hide_overlay",
 			ZOOM_TO_OVERLAY: "zoom_to_overlay",
 			SHOW_ALL: "show_all",
-			HIDE_ALL: "hide_all"
+			HIDE_ALL: "hide_all",
+			NEW_COLLECTION: "new_collection"
 		}
 	}
 };

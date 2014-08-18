@@ -13,7 +13,7 @@ define(
 	 * this data.
 	 * @class DataManager
 	 */
-	localground.maps.managers.DataManager = function() {
+	localground.maps.managers.DataManager = function(opts) {
 		/**
 		 * A dictionary of the various data types available (given
 		 * the projects that have been selected), and the corresponding
@@ -29,6 +29,13 @@ define(
 		 * corresponding map views.
 		 */
 		this.selectedProjects = new Projects();
+		
+		this.eventManager = null;
+		
+		this.initialize = function(opts) {
+			opts = opts || {};
+			$.extend(this, opts);
+		};
 		
 		/**
 		 * Fetches the user's available projects from the data API.
@@ -116,7 +123,6 @@ define(
 				//"call" method needed to set this's scope:
 				updateCollection.call(this, key, models, opts);
 			}
-			console.log(this.collections);
 			//add new project to the collection:
 			this.selectedProjects.add(project, {merge: true});
 		};
@@ -134,7 +140,15 @@ define(
 		 */
 		var updateCollection = function(key, models, opts) {
 			if (this.collections[key] == null) {
-				this.collections[key] = new opts.Collection(models, {key: key});
+				this.collections[key] = new opts.Collection([], {key: key});
+				
+				// important: this trigger enables the overlayManager
+				// to create a new overlay for each model where the
+				// GeoJSON geometry is defined.
+				this.eventManager.trigger(
+					localground.events.EventTypes.NEW_COLLECTION,
+					this.collections[key]
+				);
 				
 				//A few special hacks for form data:
 				if (key.indexOf("form") != -1) {
@@ -143,6 +157,8 @@ define(
 			}
 			this.collections[key].add(models, {merge: true});
 		};
+		
+		this.initialize(opts);
 	};
 	return localground.maps.managers.DataManager;
 });

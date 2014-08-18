@@ -56,7 +56,9 @@ define(
 				overlays: opts.overlays 
 			});
 			
-			this.dataManager = new localground.maps.managers.DataManager();
+			this.dataManager = new localground.maps.managers.DataManager({
+				eventManager: this.eventManager
+			});
 			
 			/** Controls the map overlays */
 			this.overlayManager = new localground.maps.managers.OverlayManager({

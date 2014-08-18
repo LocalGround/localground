@@ -82,8 +82,6 @@ define(["backbone",
 		 * A Backbone Model of the corresponding datatype
 		 */
 		renderItem: function(item) {
-			//(this.ItemView);
-			console.log(item);
 			var itemView = new this.ItemView({
 				model: item,
 				template: _.template( this.itemTemplateHtml ),
@@ -99,9 +97,13 @@ define(["backbone",
 		 */
 		checkAll: function(e){
 			var $cb = $(e.currentTarget);
-			var isChecked = $cb.attr("checked");
+			var isChecked = $cb.prop("checked");
 			this.$el.find('.data-item > input').prop("checked", isChecked);
-			this.eventManager.trigger(localground.events.EventTypes.SHOW_ALL, $cb.val());
+			if (isChecked)
+				this.eventManager.trigger(localground.events.EventTypes.SHOW_ALL, $cb.val());
+			else
+				this.eventManager.trigger(localground.events.EventTypes.HIDE_ALL, $cb.val());
+				
 		}
 	});
 	return localground.maps.views.Items;
