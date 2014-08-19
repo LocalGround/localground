@@ -68,8 +68,11 @@ var localground = {
 			SHOW_OVERLAY: "show_overlay",
 			HIDE_OVERLAY: "hide_overlay",
 			ZOOM_TO_OVERLAY: "zoom_to_overlay",
+			ZOOM_TO_EXTENT: "zoom_to_extent",
 			SHOW_ALL: "show_all",
 			HIDE_ALL: "hide_all",
+			EXPAND: "expand",
+			CONTRACT: "contract",
 			NEW_COLLECTION: "new_collection"
 		}
 	}

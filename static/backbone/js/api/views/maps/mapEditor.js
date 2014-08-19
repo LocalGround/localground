@@ -22,6 +22,7 @@ define(
 		basemap: null,
 		/** A {@link localground.maps.managers.DataManager} object */
 		dataManager: null,
+		
 		/** A {@link localground.maps.controls.OverlayManager} object */
 		overlayManager: null,
 		

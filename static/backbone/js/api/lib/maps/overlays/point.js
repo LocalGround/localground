@@ -8,6 +8,7 @@ define([], function() {
 		opts = opts || {};
 		this.map = opts.map;
 		this.model = opts.model;
+		this.isVisible = opts.isVisible;
 		this.getGoogleOverlay = null;
 		
 		/**
@@ -37,8 +38,11 @@ define([], function() {
 		this.getGoogleOverlay = function(){
 			if (this.googleOverlay == null) {
 				this.googleOverlay = new google.maps.Marker({
-					position: Point.getGoogleLatLng(this.model.get("geometry"))
+					position: Point.getGoogleLatLng(this.model.get("geometry")),
+					icon: this.getIcon()
 				});
+				if (this.isVisible)
+					this.googleOverlay.setMap(this.map);
 			}
 			return this.googleOverlay;
 		};
@@ -61,6 +65,16 @@ define([], function() {
 		this.zoomTo = function(){
 			var overlay = this.getGoogleOverlay();
 			this.map.panTo(overlay.getPosition());
+			this.map.setZoom(17);
+		};
+		
+		this.centerOn = function(){
+			var overlay = this.getGoogleOverlay();
+			this.map.panTo(overlay.getPosition());
+		};
+		
+		this.getCenter = function(){
+			return this.getGoogleOverlay().getPosition();
 		};
 				
 	};

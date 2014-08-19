@@ -104,7 +104,9 @@ define(["backbone"], function(Backbone) {
 		 * Renders the HTML from the model
 		 */
         render: function() {
-            $(this.el).html(this.template(this.model.toJSON()));
+			var opts = this.model.toJSON();
+			opts.isVisible = this.isVisible;
+            $(this.el).html(this.template(opts));
             return this;
         },
 		

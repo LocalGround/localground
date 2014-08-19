@@ -81,7 +81,10 @@ define([
 				// for each child data collection in the dataManager,
 				// add an add and a remove listener, so that a corresponding
 				// map overlay can be generated / destroyed.
-				that.overlays[collection.key] = {};
+				that.overlays[collection.key] = {
+					overlays: {},
+					visible: false
+				};
 				collection.on('add', that.createOverlay, that);
 				collection.on('remove', that.test, that);
 			});
@@ -89,7 +92,7 @@ define([
 			this.eventManager.on(localground.events.EventTypes.SHOW_OVERLAY, function(model){
 				var overlay = that.getOverlay(model);
 				overlay.show();
-				overlay.zoomTo();
+				overlay.centerOn();
 			});
 			this.eventManager.on(localground.events.EventTypes.HIDE_OVERLAY, function(model){
 				that.getOverlay(model).hide();
@@ -97,11 +100,12 @@ define([
 			this.eventManager.on(localground.events.EventTypes.ZOOM_TO_OVERLAY, function(model){
 				that.getOverlay(model).zoomTo();
 			});
-			
+			this.eventManager.on(localground.events.EventTypes.ZOOM_TO_EXTENT, function(key){
+				that.zoomToExtent(key);
+			});
 			this.eventManager.on(localground.events.EventTypes.SHOW_ALL, function(key){
 				that.showAll(key);
 			});
-			
 			this.eventManager.on(localground.events.EventTypes.HIDE_ALL, function(key){
 				that.hideAll(key);
 			});	
@@ -121,16 +125,17 @@ define([
 			var id = model.id;
 			var opts = {
 				model: model,
-				map: this.map
+				map: this.map,
+				isVisible: this.overlays[key]["visible"]
 			};
 			if(key == "photos")
-				this.overlays[key][id] = new localground.maps.overlays.Photo(opts);
+				this.overlays[key]["overlays"][id] = new localground.maps.overlays.Photo(opts);
 			else if (key == "markers")
-				this.overlays[key][id] = new localground.maps.overlays.Marker(opts);
+				this.overlays[key]["overlays"][id] = new localground.maps.overlays.Marker(opts);
 			else if (key == "audio")
-				this.overlays[key][id] = new localground.maps.overlays.Audio(opts);
+				this.overlays[key]["overlays"][id] = new localground.maps.overlays.Audio(opts);
 			else
-				this.overlays[key][id] = new localground.maps.overlays.Marker(opts);
+				this.overlays[key]["overlays"][id] = new localground.maps.overlays.Marker(opts);
 		};
 		
 		/**
@@ -140,7 +145,7 @@ define([
 		 */
 		this.getOverlay = function(model){
 			var key = model.collection.key;
-			return this.overlays[key][model.id];
+			return this.overlays[key]["overlays"][model.id];
 		};
 		
 		/**
@@ -150,9 +155,9 @@ define([
 		 * key in the dataManager.
 		 */
 		this.showAll = function(key) {
-			this.overlays[key] = this.overlays[key] || {};
-			for (id in this.overlays[key]) {
-				this.overlays[key][id].show();
+			this.overlays[key]["visible"] = true;
+			for (id in this.overlays[key]["overlays"]) {
+				this.overlays[key]["overlays"][id].show();
 			}
 		};
 		
@@ -163,12 +168,28 @@ define([
 		 * key in the dataManager.
 		 */
 		this.hideAll = function(key) {
-			this.overlays[key] = this.overlays[key] || {};
-			for (id in this.overlays[key]) {
-				this.overlays[key][id].hide();
+			this.overlays[key]["false"] = true;
+			for (id in this.overlays[key]["overlays"]) {
+				this.overlays[key]["overlays"][id].hide();
 			}
 		};
 		
+		/**
+		 * Hides all of the overlays that correspond to the key
+		 * @param {String} key
+		 * The key that corresponds with the corresponding collection
+		 * key in the dataManager.
+		 */
+		this.zoomToExtent = function(key) {
+			this.overlays[key] = this.overlays[key] || {};
+			var bounds = new google.maps.LatLngBounds();
+			for (id in this.overlays[key]["overlays"]) {
+				bounds.extend(this.overlays[key]["overlays"][id].getCenter());
+			}
+			this.map.fitBounds(bounds);
+		};
+
+		//call initialize method when class is instantiated.
 		this.initialize(opts);
 	};
 

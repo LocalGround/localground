@@ -2,7 +2,9 @@
 	<input class="cb-data" type="checkbox" value="<%= id %>"
 		<% if(!geometry) { %>
 			style="visibility:hidden;"
-		<% } %>>
+		<% } %>
+		<% if(isVisible) { %>checked<% } %>
+	>
 	
 	<% if(geometry && geometry.type =="Point") { %>
 		<!-- Marker Symbol -->
