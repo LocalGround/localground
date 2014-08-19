@@ -24,6 +24,12 @@ define(["backbone",
 		*/
 		itemTemplateHtml: null,
 		
+		/** */
+		isVisible: false,
+		
+		/** */
+		isExpanded: false,
+		
 		/**
 		 * View class that controls the individual item listing.
 		 */
@@ -58,6 +64,7 @@ define(["backbone",
 		 * @param {google.maps.Map} opts.map
 		 */
 		initialize: function(opts) {
+			var that = this;
 			$.extend(this, opts);
 		},
 		
@@ -66,19 +73,18 @@ define(["backbone",
 		 * Backbone collection that the view has been initialized
 		 * with.
 		 */
-		render: function(opts) {
-			opts = opts || {};
+		render: function() {
 			this.$el.empty();
 			if (this.collection.length == 0) {
 				return this;
 			}
 			this.$el.append(this.template({
 				name: this.collection.name,
-				isVisible: opts.isVisible,
-				isExpanded: opts.isExpanded
+				isVisible: this.isVisible,
+				isExpanded: this.isExpanded
 			}));
 			this.collection.each(function(item) {
-				this.renderItem(item, opts.isVisible);
+				this.renderItem(item, this.isVisible);
 			}, this);
 			this.delegateEvents();
 			return this;
@@ -108,6 +114,7 @@ define(["backbone",
 			var isChecked = $cb.prop("checked");
 			this.$el.find('.data-item > input').prop("checked", isChecked);
 			if (isChecked) {
+				this.isVisible = true;
 				this.eventManager.trigger(localground.events.EventTypes.SHOW_ALL, $cb.val());
 				
 				// Expand panel if user turns on the checkbox.
@@ -142,12 +149,12 @@ define(["backbone",
 			var key =  $symbol.parent().find('input').val();
 			var show = $symbol.hasClass('fa-caret-right');
 			if (show) {
-				this.eventManager.trigger(localground.events.EventTypes.EXPAND, key);
+				this.isExpanded = true;
 				$symbol.removeClass('fa-caret-right').addClass('fa-caret-down');
 				$panel.show("slow");
 			}
 			else {
-				this.eventManager.trigger(localground.events.EventTypes.CONTRACT, key);
+				this.isExpanded = false;
 				$symbol.removeClass('fa-caret-down').addClass('fa-caret-right');
 				$panel.hide("slow");
 			}

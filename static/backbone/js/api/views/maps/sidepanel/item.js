@@ -18,6 +18,9 @@ define(["backbone"], function(Backbone) {
 		/** A Backbone model */
 		model: null,
 		
+		/** Whether or not the item should be visible when it's rendered */
+		isVisible: false,
+		
 		/**
 		 * A google.maps.Overlay object (Point, Polyline, Polygon,
 		 * or GroundOverlay)

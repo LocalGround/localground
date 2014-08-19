@@ -46,21 +46,6 @@ define(["backbone",
 			// accordingly
 			this.dataManager.selectedProjects.on('add', this.render, this);
 			this.dataManager.selectedProjects.on('remove', this.render, this);
-						
-			this.eventManager.on(localground.events.EventTypes.SHOW_ALL, function(key){
-				that.dataViews[key]["isVisible"] = true;
-			});
-			this.eventManager.on(localground.events.EventTypes.HIDE_ALL, function(key){
-				that.dataViews[key]["isVisible"] = false;
-			});
-			
-			this.eventManager.on(localground.events.EventTypes.EXPAND, function(key){
-				that.dataViews[key]["isExpanded"] = true;
-			});
-			this.eventManager.on(localground.events.EventTypes.CONTRACT, function(key){
-				that.dataViews[key]["isExpanded"] = false;
-			});
-			
 			this.render();
 		},
 		/**
@@ -89,24 +74,17 @@ define(["backbone",
 			for (key in this.dataManager.collections) {
 				if (this.dataViews[key] == null) {
 					var configKey = key.split("_")[0];
-					this.dataViews[key] = {
-						items: new localground.maps.views.Items({
-							collection: this.dataManager.collections[key],
-							itemTemplateHtml: localground.config.Config[configKey].itemTemplateHtml,
-							ItemView: localground.config.Config[configKey].ItemView,
-							map: this.map,
-							eventManager: this.eventManager
-						}),
-						isVisible: false,
-						isExpanded: false
-					};
+					this.dataViews[key] = new localground.maps.views.Items({
+						collection: this.dataManager.collections[key],
+						itemTemplateHtml: localground.config.Config[configKey].itemTemplateHtml,
+						ItemView: localground.config.Config[configKey].ItemView,
+						map: this.map,
+						eventManager: this.eventManager
+					});
 				}
 				this.$el.find('.pane-body')
 					.append(
-						this.dataViews[key]["items"].render({
-							isVisible: this.dataViews[key]["isVisible"],
-							isExpanded: this.dataViews[key]["isExpanded"]
-						}).el);
+						this.dataViews[key].render().el);
 			}
 			
 			//re-attach event handlers:
