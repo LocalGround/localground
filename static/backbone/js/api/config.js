@@ -9,6 +9,9 @@ define(
 		"collections/audio",
 		"collections/mapimages",
 		"collections/markers",
+		"lib/maps/overlays/photo",
+		"lib/maps/overlays/marker",
+		"lib/maps/overlays/audio"
 	], function(
 			photoItem, audioItem, mapimageItem, markerItem, recordItem //templates
 		) {
@@ -21,27 +24,32 @@ define(
 		photos: {
 			Model: localground.models.Photo,
 			Collection: localground.collections.Photos,
-			itemTemplateHtml: photoItem
+			itemTemplateHtml: photoItem,
+			Overlay: localground.maps.overlays.Photo
 		},
 		audio: {
 			Model: localground.models.Audio,
 			Collection: localground.collections.AudioFiles,
-			itemTemplateHtml: audioItem
+			itemTemplateHtml: audioItem,
+			Overlay: localground.maps.overlays.Audio
 		},
 		scans: {
 			Model: localground.models.MapImage,
 			Collection: localground.collections.MapImages,
-			itemTemplateHtml: mapimageItem
+			itemTemplateHtml: mapimageItem,
+			Overlay: localground.maps.overlays.Marker
 		},
 		markers: {
 			Model: localground.models.Marker,
 			Collection: localground.collections.Markers,
-			itemTemplateHtml: markerItem
+			itemTemplateHtml: markerItem,
+			Overlay: localground.maps.overlays.Marker
 		},
 		form: {
 			Model: localground.models.Marker,
 			Collection: localground.collections.Markers,
-			itemTemplateHtml: recordItem
+			itemTemplateHtml: recordItem,
+			Overlay: localground.maps.overlays.Marker
 		}
 	};
 	return localground.config.Config;

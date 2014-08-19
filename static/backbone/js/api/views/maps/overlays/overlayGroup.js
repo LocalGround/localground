@@ -1,9 +1,7 @@
 define(
 	[
 		'backbone',
-		'lib/maps/overlays/photo',
-		'lib/maps/overlays/marker',
-		'lib/maps/overlays/audio'
+		'config'
 	], function() {
 	/**
 	 * The top-level view class that harnesses all of the map editor
@@ -55,36 +53,17 @@ define(
 		 * @param {Backbone.Model} model
 		 */
 		render: function(model) {
-			console.log('firing ' + model.collection.key + ": " + model.get("id"));
+			if (model.get("geometry") == null) { return; }
 			var key = model.collection.key;
 			var id = model.id;
-			//check belonging, then proceed:
-			//console.log(key + ": " + Object.keys(this.overlays));
-			if(key != this.key) {
-				
-				return;
-			}
-			if (model.get("geometry") == null) { return; }
-			
-			var opts = {
+			//retrieve the corresponding overlay type from the config.js.
+			var configKey = key.split("_")[0];
+			Overlay = localground.config.Config[configKey].Overlay
+			this.overlays[id] = new Overlay({
 				model: model,
 				map: this.map,
 				isVisible: this.isVisible
-			};
-			if(key == "photos") {
-				this.overlays[id] = new localground.maps.overlays.Photo(opts);
-			}
-			else if (key == "markers") {
-				this.overlays[id] = new localground.maps.overlays.Marker(opts);
-			}
-			else if (key == "audio") {
-				this.overlays[id] = new localground.maps.overlays.Audio(opts);
-				//console.log(this.overlays);
-			}
-			else {
-				this.overlays[id] = new localground.maps.overlays.Marker(opts);
-			}
-			//console.log(this.overlays);
+			});
 		},
 		
 		/** Shows all of the map overlays */
