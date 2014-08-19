@@ -18,6 +18,7 @@ define(
 			this.attachEventHandlers();
 		},
 		
+		/** listens for collection-level events on the map */
 		attachEventHandlers: function() {
 			var that = this;
 			

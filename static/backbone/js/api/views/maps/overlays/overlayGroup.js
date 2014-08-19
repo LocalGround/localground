@@ -9,11 +9,11 @@ define(
 	 * The top-level view class that harnesses all of the map editor
 	 * functionality. Also coordinates event triggers across all of
 	 * the constituent views.
-	 * @class MapEditor
+	 * @class OverlayGroup
 	 */
 	localground.maps.views.OverlayGroup = Backbone.View.extend({
 		/**
-		 * @lends localground.maps.views.OverlayGroupr#
+		 * @lends localground.maps.views.OverlayGroup#
 		 */
 		
 		overlays: null,
