@@ -3,7 +3,7 @@ define(
 		"views/maps/basemap",
 		"views/maps/sidepanel/dataPanel",
 		"lib/maps/managers/dataManager",
-		"lib/maps/managers/overlayManager"
+		"views/maps/overlays/overlayManager"
 		
 	], function() {
 	/**
@@ -62,7 +62,7 @@ define(
 			});
 			
 			/** Controls the map overlays */
-			this.overlayManager = new localground.maps.managers.OverlayManager({
+			this.overlayManager = new localground.maps.views.OverlayManager({
 				dataManager: this.dataManager,
 				eventManager: this.eventManager,
 				map: this.basemap.map
