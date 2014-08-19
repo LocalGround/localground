@@ -1,4 +1,4 @@
-define([], function() {
+define(["lib/maps/geometry/point"], function() {
     /** 
      * Class that controls marker point model overlays.
      * @class Point

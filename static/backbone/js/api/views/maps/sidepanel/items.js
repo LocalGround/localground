@@ -1,7 +1,6 @@
 define(["backbone",
 		"text!" + templateDir + "/sidepanel/collectionHeader.html",
-		"views/maps/sidepanel/photoItem",
-		"views/maps/sidepanel/markerItem"
+		"views/maps/sidepanel/item"
 		],
 	   function(Backbone, collectionHeader) {
 	/** 
@@ -95,7 +94,7 @@ define(["backbone",
 		 * A Backbone Model of the corresponding datatype
 		 */
 		renderItem: function(item, isVisible) {
-			var itemView = new this.ItemView({
+			var itemView = new localground.maps.views.Item({
 				model: item,
 				template: _.template( this.itemTemplateHtml ),
 				map: this.map,
