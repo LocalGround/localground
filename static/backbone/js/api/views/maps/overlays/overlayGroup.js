@@ -27,22 +27,28 @@ define(
 			var that = this;
 			this.collection.on('add', this.render, this);
 			this.eventManager.on(localground.events.EventTypes.SHOW_OVERLAY, function(model){
-				//check belonging, then proceed:
-				if(model.collection.key != that.key) { return; }
+				if(!that.belongs(model)) { return; }
 				var overlay = that.getOverlay(model);
 				overlay.show();
 				overlay.centerOn();
 			});
 			this.eventManager.on(localground.events.EventTypes.HIDE_OVERLAY, function(model){
-				//check belonging, then proceed:
-				if(model.collection.key != that.key) { return; }
+				if(!that.belongs(model)) { return; }
 				that.getOverlay(model).hide();
 			});
 			this.eventManager.on(localground.events.EventTypes.ZOOM_TO_OVERLAY, function(model){
-				//check belonging, then proceed:
-				if(model.collection.key != that.key) { return; }
+				if(!that.belongs(model)) { return; }
 				that.getOverlay(model).zoomTo();
 			});
+		},
+		
+		/**
+		 * Ensures that the model belongs to this particular overlayGroup.
+		 * For example, if the key == "markers", ensure that the model
+		 * belongs to the markers collection.
+		 */
+		belongs: function(model){
+			return model.collection.key == this.key;
 		},
 		
 		/**

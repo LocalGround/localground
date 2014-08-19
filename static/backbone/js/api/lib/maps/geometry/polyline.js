@@ -85,7 +85,7 @@ define([], function() {
 		 * polyline.
 		 */
 		getCenterPoint: function(googlePolyline) {
-			var coordinates = this.googleOverlay.getPath().getArray();
+			var coordinates = googlePolyline.getPath().getArray();
 			return coordinates[Math.floor(coordinates.length/2)];
 		}
 	};

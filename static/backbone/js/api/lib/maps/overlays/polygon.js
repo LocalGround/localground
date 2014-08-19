@@ -1,14 +1,16 @@
-define([
-		"lib/maps/geometry/point",
-		"lib/maps/overlays/overlay"
-		], function() {
+define(["lib/maps/geometry/point"], function() {
     /** 
      * Class that controls marker point model overlays.
      * @class Point
      */
-	localground.maps.overlays.Point = function (opts) {
+	localground.maps.overlays.Overlay = function (opts) {
+
+		opts = opts || {};
+		this.map = opts.map;
+		this.model = opts.model;
+		this.isVisible = opts.isVisible;
+		this.getGoogleOverlay = null;
 		
-		localground.maps.overlays.Overlay.call(this, opts);
 		/**
 			Available SVG shapes.
 			@see See <a href="http://raphaeljs.com/icons/#location">Shape Wizard</a>
@@ -45,14 +47,30 @@ define([
 			return this.googleOverlay;
 		};
 		
+		this.getIcon = function(){
+			return null;
+		};
+		
 		this.show = function(){
 			var overlay = this.getGoogleOverlay();
 			overlay.setMap(this.map);
 			overlay.setIcon(this.getIcon());
 		};
 		
-		this.getIcon = function(){
-			return null;
+		this.hide = function(){
+			var overlay = this.getGoogleOverlay();
+			overlay.setMap(null);
+		};
+		
+		this.zoomTo = function(){
+			var overlay = this.getGoogleOverlay();
+			this.map.panTo(overlay.getCenter());
+			this.map.setZoom(17);
+		};
+		
+		this.centerOn = function(){
+			var overlay = this.getGoogleOverlay();
+			this.map.panTo(overlay.getCenter());
 		};
 		
 		this.getCenter = function(){
@@ -60,5 +78,5 @@ define([
 		};
 				
 	};
-	return localground.maps.overlays.Point;
+	return localground.maps.overlays.Overlay;
 });
