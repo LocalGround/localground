@@ -9,7 +9,6 @@ define(
 		 * @lends localground.maps.views.OverlayManager#
 		 */
 		
-		el: "body",
 		map: null,
 		dataManager: null,
 		eventManager: null,
@@ -29,6 +28,7 @@ define(
 				// for each child data collection in the dataManager,
 				// add an add and a remove listener, so that a corresponding
 				// map overlay can be generated / destroyed.
+				console.log('creating a new localground.maps.views.OverlayGroup for the ' + collection.key + ' collection.')
 				that.overlayGroups[collection.key] = new localground.maps.views.OverlayGroup({
 					map: that.map,
 					collection: collection,
@@ -44,6 +44,7 @@ define(
 			
 			this.eventManager.on(localground.events.EventTypes.SHOW_ALL, function(key){
 				that.overlayGroups[key].showAll();
+				console.log(that.overlayGroups);
 			});
 			
 			this.eventManager.on(localground.events.EventTypes.HIDE_ALL, function(key){

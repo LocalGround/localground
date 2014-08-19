@@ -1,5 +1,6 @@
 define(
 	[
+		'backbone',
 		'lib/maps/overlays/photo',
 		'lib/maps/overlays/marker',
 		'lib/maps/overlays/audio'
@@ -15,8 +16,7 @@ define(
 		 * @lends localground.maps.views.OverlayGroupr#
 		 */
 		
-		el: "body",
-		overlays: {},
+		overlays: null,
 		map: null,
 		collection: null,
 		isVisible: false,
@@ -24,9 +24,10 @@ define(
 		eventManager: null,
 		initialize: function(opts) {
 			$.extend(this, opts);
-			this.key = this.collections.key;
+			this.overlays = {};
+			this.key = this.collection.key;
 			var that = this;
-			this.collection.on('add', this.createOverlay, this);
+			this.collection.on('add', this.render, this);
 			this.eventManager.on(localground.events.EventTypes.SHOW_OVERLAY, function(model){
 				//check belonging, then proceed:
 				if(model.collection.key != that.key) { return; }
@@ -53,24 +54,37 @@ define(
 		 * where the GeoJSON geometry is defined.
 		 * @param {Backbone.Model} model
 		 */
-		createOverlay: function(model) {
-			if (model.get("geometry") == null) { return; }
-			
+		render: function(model) {
+			console.log('firing ' + model.collection.key + ": " + model.get("id"));
 			var key = model.collection.key;
 			var id = model.id;
+			//check belonging, then proceed:
+			//console.log(key + ": " + Object.keys(this.overlays));
+			if(key != this.key) {
+				
+				return;
+			}
+			if (model.get("geometry") == null) { return; }
+			
 			var opts = {
 				model: model,
 				map: this.map,
 				isVisible: this.isVisible
 			};
-			if(key == "photos")
+			if(key == "photos") {
 				this.overlays[id] = new localground.maps.overlays.Photo(opts);
-			else if (key == "markers")
+			}
+			else if (key == "markers") {
 				this.overlays[id] = new localground.maps.overlays.Marker(opts);
-			else if (key == "audio")
+			}
+			else if (key == "audio") {
 				this.overlays[id] = new localground.maps.overlays.Audio(opts);
-			else
+				//console.log(this.overlays);
+			}
+			else {
 				this.overlays[id] = new localground.maps.overlays.Marker(opts);
+			}
+			//console.log(this.overlays);
 		},
 		
 		/** Shows all of the map overlays */
