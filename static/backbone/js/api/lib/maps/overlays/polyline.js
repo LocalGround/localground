@@ -13,21 +13,16 @@ define([
 		var polyline = new localground.maps.geometry.Polyline();
 
 		/**
-		 * Returns a google.maps.Polyline object and creates one if
-		 * the model's geometry is defined.
-		 * @return {google.maps.Polyline}
+		 * Creates a new.maps.Polyline object.
 		 */
-		this.getGoogleOverlay = function(){
-			if (this.googleOverlay == null) {
-				this.googleOverlay = new google.maps.Polyline({
-					path: polyline.getGooglePath(this.model.get("geometry")),
-					strokeColor: '#' + this.model.get("color"),
-					strokeOpacity: 1.0,
-					strokeWeight: 5,
-					map: this.isVisible ? this.map : null
-				});
-			}
-			return this.googleOverlay;
+		this.createOverlay = function(){
+			this.googleOverlay = new google.maps.Polyline({
+				path: polyline.getGooglePath(this.model.get("geometry")),
+				strokeColor: '#' + this.model.get("color"),
+				strokeOpacity: 1.0,
+				strokeWeight: 5,
+				map: this.isVisible ? this.map : null
+			});
 		};
 		
 		this.zoomTo = function(){

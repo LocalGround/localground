@@ -20,6 +20,7 @@ define(["lib/maps/overlays/point"], function() {
 				strokeWeight: 1.5,
 				fillOpacity: 1,
 				path: this.Shapes.SOUND,
+				anchor: new google.maps.Point(16,5), 
 				scale: 1.6
 			};
 		};

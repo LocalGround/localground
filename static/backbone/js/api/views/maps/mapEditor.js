@@ -3,7 +3,8 @@ define(
 		"views/maps/basemap",
 		"views/maps/sidepanel/dataPanel",
 		"lib/maps/managers/dataManager",
-		"views/maps/overlays/overlayManager"
+		"views/maps/overlays/overlayManager",
+		"infobubble"
 		
 	], function() {
 	/**
@@ -31,6 +32,8 @@ define(
 		
 		/** A {@link localground.maps.views.DataPanel} object */
 		dataPanel: null,
+		/** A Map InfoBubble */
+		infoBubble: null,
 		/**
 		 * Initializes the BasemapView and all of the panels.
 		 * @method initialize
@@ -55,6 +58,14 @@ define(
 				geolocationControl: false,
 				activeMapTypeID: opts.activeMapTypeID,
 				overlays: opts.overlays 
+			});
+			
+			this.infoBubble = new InfoBubble({
+				borderRadius: 5,
+				maxHeight: 385,
+				padding: 0,
+				disableAnimation: true,
+				map: this.basemap.map
 			});
 			
 			this.dataManager = new localground.maps.managers.DataManager({
@@ -88,6 +99,15 @@ define(
 			$(window).off('resize');
 			$(window).on('resize', function(){
 				that.dataPanel.resize();	
+			});
+			
+			this.eventManager.on("show_bubble", function(model, latLng){
+				console.log(model.get("id"));
+				var name = model.get("name") || "untitled";
+				//console.log(latLng);
+				that.infoBubble.setContent(name);
+				that.infoBubble.setPosition(latLng);
+				that.infoBubble.open();
 			});
 		}
 	});

@@ -13,7 +13,8 @@ require.config({
 		'backbone-bootstrap-modal': '../external/backbone.bootstrap-modal',
 		'colResizable': '../external/colResizable-1.3.source',
 		'backbone-pageable': '../external/backbone-pageable',
-		'backbone-paginator': '../external/backbone.paginator'
+		'backbone-paginator': '../external/backbone.paginator',
+		'infobubble': '../external/infobubble'
 	},
 	//waitSeconds: 0,
 	shim: {

@@ -14,12 +14,30 @@ define(
 		 * @lends localground.maps.views.OverlayGroup#
 		 */
 		
-		overlays: null,
+		/** A google.maps.Map object */
 		map: null,
-		collection: null,
-		isVisible: false,
-		key: null,
+		/** A Backbone.Events object */
 		eventManager: null,
+		/** A dictionary indexing the various
+		 * {@link localground.maps.overlays.Overlay} objects.
+		 */
+		overlays: {},
+		/** A Backbone.Collection object */
+		collection: null,
+		/**
+		 * Flag indicating whether or not the child elements should
+		 * be visible
+		 */
+		isVisible: false,
+		/** String that matches the collection's key */
+		key: null,
+		
+		/**
+		 * Initializes the OverlayGroup with a dictionary of options,
+		 * and adds event listeners that pertain to OverlayGroup
+		 * operations (batch operations like turn on everything, or
+		 * zoom to extents).
+		 */
 		initialize: function(opts) {
 			$.extend(this, opts);
 			this.overlays = {};
@@ -44,13 +62,17 @@ define(
 				overlay.show();
 				overlay.centerOn();
 			});
+			
 			this.eventManager.on(localground.events.EventTypes.HIDE_OVERLAY, function(model){
 				if(!that.belongs(model)) { return; }
 				that.getOverlay(model).hide();
 			});
+			
 			this.eventManager.on(localground.events.EventTypes.ZOOM_TO_OVERLAY, function(model){
 				if(!that.belongs(model)) { return; }
-				that.getOverlay(model).zoomTo();
+				var overlay = that.getOverlay(model);
+				overlay.zoomTo();
+				that.eventManager.trigger("show_bubble", model, overlay.getCenter());
 			});
 		},
 		
@@ -80,6 +102,7 @@ define(
 			this.overlays[id] = new Overlay({
 				model: model,
 				map: this.map,
+				eventManager: this.eventManager,
 				isVisible: this.isVisible
 			});
 		},
@@ -102,7 +125,14 @@ define(
 		zoomToExtent: function() {
 			var bounds = new google.maps.LatLngBounds();
 			for (key in this.overlays)
-				bounds.extend(this.overlays[key].getCenter());
+				try {
+					//for polylines, polygons, and groundoverlays:
+					bounds.union(this.overlays[key].getBounds());
+				}
+				catch(e){
+					//for points:
+					bounds.extend(this.overlays[key].getCenter());	
+				}
 			this.map.fitBounds(bounds);
 		},
 		

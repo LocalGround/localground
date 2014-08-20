@@ -26,14 +26,18 @@ define([
 		 * @returns {Object} icon definition
 		 */
 		this.getIcon = function() {
+			//return null;
 			return {
 				fillColor: '#' + this.model.get("color"),
-				markerSize: 30,
+				//markerSize: 30,
 				strokeColor: "#FFF",
 				strokeWeight: 1.5,
 				fillOpacity: 1,
 				path: this.Shapes.MAP_PIN_HOLLOW,
-				scale: 1.6
+				scale: 1.6,
+				anchor: new google.maps.Point(16,5), 		// anchor (x, y)
+				//size: new google.maps.Size(?, ?),			// size (width, height)
+				//origin: new google.maps.Point(?, ?)		// origin (x, y)
 			};
 		};
 	};

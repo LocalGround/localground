@@ -30,7 +30,7 @@ define(["lib/maps/overlays/point"], function() {
 					this.model.get("path_marker_sm"),	// icon
 					new google.maps.Size(20, 20),		// size (width, height)
 					new google.maps.Point(0,0),			// origin (x, y)
-					new google.maps.Point(10, 10)		// anchor (x, y)
+					new google.maps.Point(10, 0)		// anchor (x, y)
 				);
 			}
 		};

@@ -29,19 +29,14 @@ define([
 		var point = new localground.maps.geometry.Point();
 		
 		/**
-		 * Creates a google.maps.Marker overlay with a photo icon
-		 * if one doesn't already exist, and returns it.
-		 * @returns {google.maps.Marker}
+		 * Creates a google.maps.Marker overlay
 		 */
-		this.getGoogleOverlay = function(){
-			if (this.googleOverlay == null) {
-				this.googleOverlay = new google.maps.Marker({
-					position: point.getGoogleLatLng(this.model.get("geometry")),
-					icon: this.getIcon(),
-					map: this.isVisible ? this.map : null
-				});
-			}
-			return this.googleOverlay;
+		this.createOverlay = function(){
+			this.googleOverlay = new google.maps.Marker({
+				position: point.getGoogleLatLng(this.model.get("geometry")),
+				icon: this.getIcon(),
+				map: this.isVisible ? this.map : null
+			});		
 		};
 		
 		this.show = function(){
