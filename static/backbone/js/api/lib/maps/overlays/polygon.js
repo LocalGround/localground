@@ -21,10 +21,10 @@ define([
 			if (this.googleOverlay == null) {
 				this.googleOverlay = new google.maps.Polygon({
 					path: polygon.getGooglePath(this.model.get("geometry")),
-					strokeColor: this.model.get("color"),
+					strokeColor: '#' + this.model.get("color"),
 					strokeOpacity: 1.0,
 					strokeWeight: 5,
-					fillColor: this.model.get("color"),
+					fillColor: '#' + this.model.get("color"),
 					fillOpacity: 0.35,
 					map: this.isVisible ? this.map : null
 				});

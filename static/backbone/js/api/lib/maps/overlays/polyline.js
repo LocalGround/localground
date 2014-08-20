@@ -21,7 +21,7 @@ define([
 			if (this.googleOverlay == null) {
 				this.googleOverlay = new google.maps.Polyline({
 					path: polyline.getGooglePath(this.model.get("geometry")),
-					strokeColor: this.model.get("color"),
+					strokeColor: '#' + this.model.get("color"),
 					strokeOpacity: 1.0,
 					strokeWeight: 5,
 					map: this.isVisible ? this.map : null

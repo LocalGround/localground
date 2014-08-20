@@ -27,7 +27,7 @@ define([
 		 */
 		this.getIcon = function() {
 			return {
-				fillColor: this.model.get("color"),
+				fillColor: '#' + this.model.get("color"),
 				markerSize: 30,
 				strokeColor: "#FFF",
 				strokeWeight: 1.5,
