@@ -26,7 +26,7 @@ define([
 		};
 		
 		/** Shortcut to @link {localground.maps.geometry.Point} object */
-		var Point = localground.maps.geometry.Point;
+		var point = new localground.maps.geometry.Point();
 		
 		/**
 		 * Creates a google.maps.Marker overlay with a photo icon
@@ -36,11 +36,10 @@ define([
 		this.getGoogleOverlay = function(){
 			if (this.googleOverlay == null) {
 				this.googleOverlay = new google.maps.Marker({
-					position: Point.getGoogleLatLng(this.model.get("geometry")),
-					icon: this.getIcon()
+					position: point.getGoogleLatLng(this.model.get("geometry")),
+					icon: this.getIcon(),
+					map: this.isVisible ? this.map : null
 				});
-				if (this.isVisible)
-					this.googleOverlay.setMap(this.map);
 			}
 			return this.googleOverlay;
 		};

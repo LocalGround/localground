@@ -4,10 +4,10 @@ define([], function() {
      * formats and vice versa
      * @class Point
      */
-	localground.maps.geometry.Point = {
+	localground.maps.geometry.Point = function(){
 		
 		/**
-		 * Static method that converts a google.maps.Point
+		 * Method that converts a google.maps.Point
 		 * into a GeoJSON Point object.
 		 * @param {google.maps.LatLng} googlePoint
 		 * A Google point object.
@@ -15,27 +15,27 @@ define([], function() {
 		 * documentation for more details.
 		 * @returns a GeoJSON Point object
 		 */
-		getGeoJSON: function(latLng){
+		this.getGeoJSON = function(latLng){
 			return {
 				type: 'Point',
 				coordinates: [latLng.lng(), latLng.lat()]
 			};
-		},
+		};
 		
 		/**
-		 * Static method that converts a GeoJSON Point into
+		 * Method that converts a GeoJSON Point into
 		 * a google.maps.LatLng object.
 		 * @param {GeoJSON Point} geoJSON
 		 * A GeoJSON Point object
 		 * @returns {google.maps.LatLng}
 		 * A google.maps.LatLng object 
 		 */
-		getGoogleLatLng: function(geoJSON){
+		this.getGoogleLatLng = function(geoJSON){
 			return new google.maps.LatLng(
 				geoJSON.coordinates[1],
 				geoJSON.coordinates[0]
 			);
-		}
+		};
 		
 	};
 	return localground.maps.geometry.Point;

@@ -1,4 +1,7 @@
-define(["lib/maps/geometry/polyline"], function() {
+define([
+		"lib/maps/geometry/polyline",
+		"lib/maps/overlays/overlay"
+		], function() {
     /** 
      * Class that controls marker point model overlays.
      * @class Point
@@ -7,7 +10,7 @@ define(["lib/maps/geometry/polyline"], function() {
 		localground.maps.overlays.Overlay.call(this, opts);
 		
 		/** Shortcut to @link {localground.maps.geometry.Polyline} object */
-		var Polyline = localground.maps.geometry.Polyline;
+		var polyline = new localground.maps.geometry.Polyline();
 
 		/**
 		 * Returns a google.maps.Polyline object and creates one if
@@ -17,13 +20,12 @@ define(["lib/maps/geometry/polyline"], function() {
 		this.getGoogleOverlay = function(){
 			if (this.googleOverlay == null) {
 				this.googleOverlay = new google.maps.Polyline({
-					path: Polyline.getGooglePath(this.model.get("geometry")),
+					path: polyline.getGooglePath(this.model.get("geometry")),
 					strokeColor: this.model.get("color"),
 					strokeOpacity: 1.0,
-					strokeWeight: 5
+					strokeWeight: 5,
+					map: this.isVisible ? this.map : null
 				});
-				if (this.isVisible)
-					this.googleOverlay.setMap(this.map);
 			}
 			return this.googleOverlay;
 		};
@@ -34,20 +36,20 @@ define(["lib/maps/geometry/polyline"], function() {
 		
 		this.getCenter = function(){
 			//delegates to Polyline geometry object:
-			return Polyline.getCenterPoint(this.getGoogleOverlay());
+			return polyline.getCenterPoint(this.getGoogleOverlay());
 		};
 		
 		this.getBounds = function(){
 			//delegates to Polyline geometry object:
-			return Polyline.getBounds(this.getGoogleOverlay());		
+			return polyline.getBounds(this.getGoogleOverlay());		
 		};
 		
 		this.getGeoJSON = function(){
-			return Polyline.getGeoJSON(this.getGoogleOverlay());		
+			return polyline.getGeoJSON(this.getGoogleOverlay());		
 		};
 		
 		this.calculateDistance = function(){
-			return Polyline.calculateDistance(this.getGoogleOverlay());	
+			return polyline.calculateDistance(this.getGoogleOverlay());	
 		};
 	};
 	return localground.maps.overlays.Overlay;

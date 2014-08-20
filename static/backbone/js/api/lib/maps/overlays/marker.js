@@ -1,6 +1,7 @@
 define([
 		"lib/maps/overlays/point",
-		"lib/maps/overlays/polyline"
+		"lib/maps/overlays/polyline",
+		"lib/maps/overlays/polygon"
 		], function() {
     /** 
      * Class that controls marker point model overlays.
@@ -11,19 +12,14 @@ define([
 		
 		/** Determine which overlay object Marker should extend */
 		var geoJSON = opts.model.get("geometry");
-		switch (geoJSON.type) {
-			case 'Point':
-				localground.maps.overlays.Point.call(this, opts);
-				break;
-			case 'LineString':
-				localground.maps.overlays.Polyline.call(this, opts);
-				break;
-			case 'Polygon':
-				//localground.maps.overlays.Polyline.call(this, opts);
-				break;
-			default:
-				alert('Unknown Geometry Type');
-		}
+		if (geoJSON.type == 'Point')
+			localground.maps.overlays.Point.call(this, opts);
+		else if (geoJSON.type == 'LineString')
+			localground.maps.overlays.Polyline.call(this, opts);
+		else if (geoJSON.type == 'Polygon')
+			localground.maps.overlays.Polygon.call(this, opts);
+		else
+			alert('Unknown Geometry Type');
 				
 		/**
 		 * Get the corresponding SVG marker icon
