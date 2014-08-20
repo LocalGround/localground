@@ -64,10 +64,14 @@ define(["backbone"], function(Backbone) {
 		 * on or off.
 		 */
 		toggleElement: function(isChecked){
-			if (isChecked)
+			if (isChecked) {
+				this.isVisible = true;
 				this.eventManager.trigger("show_overlay", this.model);
-			else
+			}
+			else {
+				this.isVisible = false;
 				this.eventManager.trigger("hide_overlay", this.model);	
+			}
 		},
 		
 		/**

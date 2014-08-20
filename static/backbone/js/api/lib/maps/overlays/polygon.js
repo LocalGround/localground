@@ -31,6 +31,15 @@ define([
 			}
 			return this.googleOverlay;
 		};
+		
+		this.zoomTo = function(){
+			this.map.fitBounds(this.getBounds());
+		};
+		
+		this.getBounds = function(){
+			//delegates to Polyline geometry object:
+			return polygon.getBounds(this.getGoogleOverlay());		
+		};
 
 		this.getCenter = function(){
 			//delegates to Polyline geometry object:

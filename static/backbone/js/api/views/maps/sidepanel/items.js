@@ -30,18 +30,18 @@ define(["backbone",
 		isExpanded: false,
 		
 		/**
+		 * A dictionary of {@link localground.maps.views.Item} views
+		 * associated w/each model in the collection
+		 */
+		itemViews: null,
+		
+		/**
 		 * View class that controls the individual item listing.
 		 */
 		ItemView: null,
 		
 		/** A data collection (extends Backbone.Collection) */
 		collection: null,
-		
-		/**
-		 * A list of {@link localground.maps.views.Item} views
-		 * associated w/each model in the collection
-		 */
-		itemViews: [],
 		
 		/** A Google Map */
 		map: null,
@@ -63,8 +63,8 @@ define(["backbone",
 		 * @param {google.maps.Map} opts.map
 		 */
 		initialize: function(opts) {
-			var that = this;
 			$.extend(this, opts);
+			this.itemViews = {};
 		},
 		
 		/**
@@ -94,15 +94,21 @@ define(["backbone",
 		 * A Backbone Model of the corresponding datatype
 		 */
 		renderItem: function(item, isVisible) {
-			var itemView = new localground.maps.views.Item({
-				model: item,
-				template: _.template( this.itemTemplateHtml ),
-				map: this.map,
-				eventManager: this.eventManager,
-				isVisible: isVisible
-			});
-			this.itemViews.push(itemView);
-			this.$el.find(".collection-data").append(itemView.render().el);
+			if (this.itemViews[item.id] == null) {
+				this.itemViews[item.id] = new localground.maps.views.Item({
+					model: item,
+					template: _.template( this.itemTemplateHtml ),
+					map: this.map,
+					eventManager: this.eventManager,
+					isVisible: isVisible
+				});
+			}
+			else {
+				this.itemViews[item.id].delegateEvents();
+			}
+			this.$el
+				.find(".collection-data")
+				.append(this.itemViews[item.id].render().el);
 		},
 		/**
 		 * Selects all child data elements in the Items View, based
@@ -111,7 +117,14 @@ define(["backbone",
 		checkAll: function(e){
 			var $cb = $(e.currentTarget);
 			var isChecked = $cb.prop("checked");
+			
+			//handle child element state:
 			this.$el.find('.data-item > input').prop("checked", isChecked);
+			for (key in this.itemViews) {
+				this.itemViews[key].isVisible = isChecked;
+			}
+			
+			//expand panel if checked and hidden:
 			if (isChecked) {
 				this.isVisible = true;
 				this.eventManager.trigger(localground.events.EventTypes.SHOW_ALL, $cb.val());

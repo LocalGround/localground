@@ -25,7 +25,19 @@ define(
 			this.overlays = {};
 			this.key = this.collection.key;
 			var that = this;
+			
+			//listen for new data:
 			this.collection.on('add', this.render, this);
+			
+			//listen for map zoom change, re-render photo icons:
+			google.maps.event.addListener(this.map, 'zoom_changed', function() {
+				if(key != 'photos') { return; }
+				for(key in that.overlays){
+					var overlay = that.overlays[key];
+					overlay.getGoogleOverlay().setIcon(overlay.getIcon());
+				}	
+			});
+			
 			this.eventManager.on(localground.events.EventTypes.SHOW_OVERLAY, function(model){
 				if(!that.belongs(model)) { return; }
 				var overlay = that.getOverlay(model);
