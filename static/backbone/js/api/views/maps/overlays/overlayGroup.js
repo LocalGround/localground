@@ -31,7 +31,7 @@ define(
 			
 			//listen for map zoom change, re-render photo icons:
 			google.maps.event.addListener(this.map, 'zoom_changed', function() {
-				if(key != 'photos') { return; }
+				if(that.key != 'photos') { return; }
 				for(key in that.overlays){
 					var overlay = that.overlays[key];
 					overlay.getGoogleOverlay().setIcon(overlay.getIcon());
