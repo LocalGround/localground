@@ -72,7 +72,7 @@ define(
 			// Shows all overlays on the map that correspond to the key.
 			this.eventManager.on(localground.events.EventTypes.SHOW_ALL, function(key){
 				that.overlayGroups[key].showAll();
-				console.log(that.overlayGroups);
+				that.overlayGroups[key].zoomToExtent();
 			});
 			
 			// Shows all overlays on the map that correspond to the key.

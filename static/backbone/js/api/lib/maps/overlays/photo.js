@@ -15,23 +15,27 @@ define(["lib/maps/overlays/point"], function() {
 		 */
 		this.getIcon = function() {
 			if (this.map.getZoom() > 18) {
-				return this.model.get("path_small");
+				return {
+					url: this.model.get("path_small"),
+					origin: new google.maps.Point(0, 0),
+					anchor: new google.maps.Point(50, 0)
+				};
 			}
 			else if (this.map.getZoom() > 16) {
-				return new google.maps.MarkerImage(
-					this.model.get("path_marker_lg"),	// icon
-					new google.maps.Size(52, 52),		// size (width, height)
-					new google.maps.Point(0,0),			// origin (x, y)
-					new google.maps.Point(26, 26)		// anchor (x, y)
-				);
+				return {
+					url: this.model.get("path_marker_lg"),	
+					size: new google.maps.Size(52, 52),	
+					origin: new google.maps.Point(0,0),	
+					anchor: new google.maps.Point(26, 0)
+				};
 			}
 			else {
-				return new google.maps.MarkerImage(
-					this.model.get("path_marker_sm"),	// icon
-					new google.maps.Size(20, 20),		// size (width, height)
-					new google.maps.Point(0,0),			// origin (x, y)
-					new google.maps.Point(10, 0)		// anchor (x, y)
-				);
+				return {
+					url: this.model.get("path_marker_sm"),	
+					size: new google.maps.Size(20, 20),	
+					origin: new google.maps.Point(0,0),	
+					anchor: new google.maps.Point(10, 0)
+				};
 			}
 		};
 	};
