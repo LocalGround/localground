@@ -44,10 +44,18 @@
 .item > div {
 	display: inline-block;
 	margin-left: 5px;
-	vertical-align: bottom;
-	padding-bottom: 3px;
+	/*vertical-align: bottom;
+	padding-bottom: 3px;*/
 	line-height: 15px;
 	background-image: none;
+}
+.item > img {
+	vertical-align: text-bottom;
+}
+.item span {
+	font-size: 12px;
+	color: #444;
+	display: block;
 }
 
 .item:hover .close {
@@ -246,8 +254,9 @@
 
 
 
-
-/* INFOBUBBLE */
+/********************************************************/
+/* INFOBUBBLES 											*/
+/********************************************************/
 .bubble-container {
 	margin: 0px;
 	overflow: hidden;
@@ -297,9 +306,14 @@
 	float: left !important;
 	vertical-align: top;
 }
-.tip-container > span {
+.tip-container > div {
 	font-weight: bold;
-	line-height: 22px;
+	margin-bottom: 4px;
+}
+.tip-container > span {
+	font-size: 12px;
+	color: #444;
+	display: block;
 }
 
 .fa-times-circle, .fa-times {
@@ -310,6 +324,7 @@
 	font-size: 25px;
 	color: #333;
 }
+/********************************************************/
 
 
 

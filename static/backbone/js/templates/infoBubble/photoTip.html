@@ -1,9 +1,9 @@
-<div class="bubble-container" style="width: 200px;height:80px;">
+<div class="bubble-container" style="width: 250px;height:80px;">
 	<div class="tip-container">
 		<img src="<%= path_small %>" style="height: 70px;" />
-		<span><%= name || "Untitled" %></span>
+		<div><%= name || "Untitled" %></div>
 		<% if(description != null) { %>
-			<br /><%= description %>
+			<span><%= description %></span>
 		<% } %>
 	</div>
 </div>

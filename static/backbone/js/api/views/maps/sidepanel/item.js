@@ -115,6 +115,10 @@ define(["backbone"], function(Backbone) {
         render: function() {
 			var opts = this.model.toJSON();
 			opts.isVisible = this.isVisible;
+			//for the marker model:
+			if (this.model.getDescriptiveText) {
+				opts.descriptiveText = this.model.getDescriptiveText();
+			}
             $(this.el).html(this.template(opts));
             return this;
         },

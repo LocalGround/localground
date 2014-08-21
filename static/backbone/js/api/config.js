@@ -9,6 +9,7 @@ define(
 		"text!../templates/infoBubble/photoTip.html",
 		"text!../templates/infoBubble/audio.html",
 		"text!../templates/infoBubble/audioTip.html",
+		"text!../templates/infoBubble/markerTip.html",
 		"text!../templates/infoBubble/genericTip.html",
 		"collections/photos",
 		"collections/audio",
@@ -21,7 +22,7 @@ define(
 			photoItemTemplate, audioItemTemplate, mapimageItemTemplate,
 			markerItemTemplate, recordItemTemplate, photoBubbleTemplate,
 			photoTipTemplate, audioBubbleTemplate, audioTipTemplate,
-			genericTipTemplate
+			markerTipTemplate, genericTipTemplate
 		) {
 	/**
 	 * Convenience object for connecting data models with
@@ -59,7 +60,7 @@ define(
 			Overlay: localground.maps.overlays.Marker,
 			ItemTemplate: markerItemTemplate,
 			InfoBubbleTemplate: audioBubbleTemplate,
-			TipTemplate: genericTipTemplate
+			TipTemplate: markerTipTemplate
 		},
 		form: {
 			Model: localground.models.Marker,

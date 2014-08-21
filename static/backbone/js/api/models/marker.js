@@ -25,6 +25,16 @@ define(["models/base",
 			}
 			return null;
 		},
+		getDescriptiveText: function(){
+			 var messages = [];
+			if(this.get("photo_count") > 0)
+				messages.push(this.get("photo_count") + ' photo(s)');
+			if(this.get("audio_count") > 0)
+				messages.push(this.get("audio_count") + ' audio clip(s)');
+			if(this.get("record_count") > 0)
+				messages.push(this.get("record_count") + ' data record(s)');
+			return messages.join(', ');		
+		},
 		defaults: {
 			name: "Untitled"
 		}

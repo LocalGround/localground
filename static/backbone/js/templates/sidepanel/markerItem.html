@@ -27,9 +27,12 @@
 	</svg>
 	</svg
 	<% } %>
-	
-	
-	
-	<div><a href="#" title="<%= name %>"><%= name || 'Untitled' %></a></div>
+
+	<div>
+		<a href="#" title="<%= name %>"><%= name || 'Untitled' %></a>
+		<% if(descriptiveText.length > 0) { %>
+			<span><%= descriptiveText %></span>
+		<% } %>
+	</div>
 	<i class="fa fa-trash-o close"></i>
 </div>

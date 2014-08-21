@@ -56,21 +56,28 @@ define(
 		},
 		
 		showBubble: function(model, latLng){
-			var configKey = model.getKey().split("_")[0];
-			var BubbleTemplate = localground.config.Config[configKey].InfoBubbleTemplate;
-			var template = _.template(BubbleTemplate);
+			var template = this.getTemplate(model, "InfoBubbleTemplate");
 			this.bubble.setContent(template(model.toJSON()));
 			this.bubble.setPosition(latLng);
 			this.bubble.open();
 		},
 		showTip: function(model, latLng) {
-			var configKey = model.getKey().split("_")[0];
-			var TipTemplate = localground.config.Config[configKey].TipTemplate;
-			var template = _.template(TipTemplate);
+			var template = this.getTemplate(model, "TipTemplate");
 			if (latLng == null) { latLng = model.getCenter(); }
-			this.tip.setContent(template(model.toJSON()));
+			this.tip.setContent(template(this.getContext(model)));
 			this.tip.setPosition(latLng);
 			this.tip.open();	
+		},
+		getTemplate: function(model, templateKey) {
+			var configKey = model.getKey().split("_")[0];
+			var Template = localground.config.Config[configKey][templateKey]
+			return _.template(Template);
+		},
+		getContext: function(model){
+			var opts = model.toJSON();
+			if (model.getDescriptiveText)
+				opts.descriptiveText = model.getDescriptiveText();
+			return opts;
 		},
 		addEventHandlers: function(){
 			var that = this;			
