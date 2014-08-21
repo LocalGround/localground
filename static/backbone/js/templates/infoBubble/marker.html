@@ -1,12 +1,28 @@
-<div class="bubble-container" style="width: 320px;height:330px;">
-	<div class="photo-container">
-		<img src="<%= path_medium %>" />
+<div class="bubble-container" style="width: 420px;height:380px;">
+	<div class="slider marker-container">
+		<% _.each(children, function(child) { %>
+			<% if (child.overlay_type == 'photo') { %>
+				<% _.each(child.data, function(item) { %>
+					<div>
+						<img src="<%= item.path_medium %>" />
+					</div>
+				<% }); %>
+			<% } %>
+		<% }); %>
 	</div>
 	<div>
 		<p class="bubble-title"><%= name || "Untitled" %></p>
+		<% if(descriptiveText.length > 0) { %>
+			<span><%= descriptiveText %></span>
+		<% } %>
 		<p class="bubble-detail">
 			<%= description %><br>
 			<%= tags %>	
 		</p>
 	</div>
+	<script>
+		$('.single-item').slick({
+			dots: true	
+		});
+	</script>
 </div>

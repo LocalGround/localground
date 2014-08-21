@@ -266,13 +266,34 @@
 	max-width: 320px;
 	height: 230px;
 	overflow: hidden;
-	background-image: url('/static/images/fabric_bg.png');
+	background-image: url('/static/backbone/images/bg.png');
+	/*background-image: url('/static/images/fabric_bg.png');*/
 }
 .photo-container > img {
 	display: block;
 	max-width: 320px;
 	max-height: 270px;
 	min-height: 230px;
+	margin-right: auto;
+	margin-left: auto;
+	margin-top: 0px;
+}
+
+.marker-container {
+	max-width: 470px;
+	height: 280px;
+	overflow: hidden;
+	background-image: url('/static/backbone/images/bg.png');
+}
+.slick-slider { margin-bottom: 0px !important;}
+.slick-prev { left: 5px; color: #CCC !important; }
+.slick-next { right: 5px; color: #CCC !important; }
+
+.marker-container img {
+	display: block;
+	max-width: 500px;
+	max-height: 300px;
+	min-height: 280px;
 	margin-right: auto;
 	margin-left: auto;
 	margin-top: 0px;

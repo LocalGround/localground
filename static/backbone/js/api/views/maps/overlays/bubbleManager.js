@@ -2,7 +2,8 @@ define(
 	[
 		'backbone',
 		'infobubble',
-		'config'
+		'config',
+		'slick'
 		
 	], function(Backbone, InfoBubble, Config) {
 	/**
@@ -51,15 +52,35 @@ define(
 		/**
 		 * Jams template inside infoBubble
 		 */
-		render: function(model) {
-			console.log("render InfoBubble!!!");
+		render: function(opts) {
+			//$(this.el).html(this.template(opts));
 		},
 		
 		showBubble: function(model, latLng){
-			var template = this.getTemplate(model, "InfoBubbleTemplate");
-			this.bubble.setContent(template(model.toJSON()));
-			this.bubble.setPosition(latLng);
-			this.bubble.open();
+			var that = this;
+			
+			model.fetch({
+				/*
+					Todo: refactor so there are 2 bubble views:
+						- a default one, and
+						- one for markers
+				*/
+				success: function(){
+					var template = that.getTemplate(model, "InfoBubbleTemplate");
+					if (latLng == null) { latLng = model.getCenter(); }
+					that.$el.html(template(that.getContext(model)));
+					that.bubble.setContent(that.$el.html());
+					console.log(that.$el.find('.single-item'));
+					that.bubble.setPosition(latLng);
+					that.bubble.open();
+					
+					window.setTimeout(function() {
+						$('.marker-container').slick({
+							dots: false	
+						});	
+					}, 200);
+				}	
+			});
 		},
 		showTip: function(model, latLng) {
 			var template = this.getTemplate(model, "TipTemplate");

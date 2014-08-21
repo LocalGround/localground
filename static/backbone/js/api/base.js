@@ -14,7 +14,8 @@ require.config({
 		'colResizable': '../external/colResizable-1.3.source',
 		'backbone-pageable': '../external/backbone-pageable',
 		'backbone-paginator': '../external/backbone.paginator',
-		'infobubble': '../external/infobubble'
+		'infobubble': '../external/infobubble',
+		'slick': '//cdn.jsdelivr.net/jquery.slick/1.3.7/slick.min'
 	},
 	//waitSeconds: 0,
 	shim: {
@@ -41,6 +42,9 @@ require.config({
 		'colResizable': {
 			deps: ['jquery'],
 			exports: 'colResizable'
+		},
+		'slick': {
+			deps: ['jquery']
 		}
 	},
 	urlArgs: "bust=" + (new Date()).getTime()
