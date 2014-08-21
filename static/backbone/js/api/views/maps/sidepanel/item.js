@@ -36,6 +36,8 @@ define(["backbone"], function(Backbone) {
             'click .cb-data': 'toggleCheckbox',
 			'click .data-item': 'triggerToggleCheckbox',
 			'click a': 'zoomTo',
+			'mouseover .data-item': 'showTip',
+			'mouseout .data-item': 'hideTip'
         },
 		
 		/**
@@ -179,7 +181,18 @@ define(["backbone"], function(Backbone) {
 					this.getGoogleOverlay().setMap(null);
 				}
 			}
-        }	
+        },
+		
+		/** Show a tooltip on the map if the geometry exists */
+		showTip: function() {
+			if (this.model.get("geometry"))
+				this.eventManager.trigger("show_tip", this.model);	
+		},
+		
+		/** Hide the map tooltip */
+		hideTip: function() {
+			this.eventManager.trigger("hide_tip");	
+		},
     });
     return localground.maps.views.Item;
 });

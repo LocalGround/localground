@@ -242,3 +242,59 @@
 	font-size: 20px;
 	color: #333;
 }
+
+
+
+
+
+/* INFOBUBBLE */
+.bubble-container {
+	margin: 0px;
+	overflow: hidden;
+}
+
+.photo-container {
+	max-width: 320px;
+	height: 230px;
+	overflow: hidden;
+	background-image: url('/static/images/fabric_bg.png');
+}
+.photo-container > img {
+	display: block;
+	max-width: 320px;
+	max-height: 270px;
+	min-height: 230px;
+	margin-right: auto;
+	margin-left: auto;
+	margin-top: 0px;
+}
+.bubble-title {
+	font-weight: bold;
+	color: rgb(68, 68, 68);
+	margin: 5px 0px 5px 0px;
+	padding-bottom: 3px;
+	font-size: 14px;
+	border-bottom: solid 1px #CCC;
+}
+.bubble-detail {
+	margin: 5px 0px 0px 15px;
+	height: 40px;
+	overflow-y: auto;
+	font-size: 13px;
+	line-height: 15px;
+}
+
+.fa-times-circle, .fa-times {
+	font-size: 20px;
+	color: #CCC;
+}
+.fa-times-circle:hover {
+	font-size: 25px;
+	color: #333;
+}
+
+
+
+
+
+

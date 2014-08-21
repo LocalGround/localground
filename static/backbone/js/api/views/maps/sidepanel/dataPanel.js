@@ -76,7 +76,7 @@ define(["backbone",
 					var configKey = key.split("_")[0];
 					this.dataViews[key] = new localground.maps.views.Items({
 						collection: this.dataManager.collections[key],
-						itemTemplateHtml: localground.config.Config[configKey].itemTemplateHtml,
+						ItemTemplate: localground.config.Config[configKey].ItemTemplate,
 						ItemView: localground.config.Config[configKey].ItemView,
 						map: this.map,
 						eventManager: this.eventManager

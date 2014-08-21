@@ -79,6 +79,10 @@ define(
 			this.eventManager.on(localground.events.EventTypes.HIDE_ALL, function(key){
 				that.overlayGroups[key].hideAll();
 			});
+		},
+		
+		getOverlay: function(model){
+			return this.overlayGroups[model.collection.key].getOverlay(model);
 		}
 	});
 	return localground.maps.views.OverlayManager;

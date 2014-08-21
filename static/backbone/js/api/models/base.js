@@ -1,4 +1,4 @@
-define(["backbone"],
+define(["backbone", "lib/maps/geometry/point"],
 	   function(Backbone) {
 	/**
 	 * An "abstract" Backbone Model; the root of all of the other
@@ -22,6 +22,15 @@ define(["backbone"],
 		initialize: function(opts){
 			opts = opts || {};
 			$.extend(this, opts);
+		},
+		getKey: function(){
+			return this.collection.key;
+		},
+		getCenter: function(){
+			var geoJSON = this.get("geometry");
+			if (geoJSON == null) { return null; }
+			var point = new localground.maps.geometry.Point();
+			return point.getGoogleLatLng(geoJSON);
 		},
 		fetchSchemaOpts: function(){
 			//https://github.com/powmedia/backbone-forms#schema-definition

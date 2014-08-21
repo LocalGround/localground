@@ -28,6 +28,15 @@ define(["lib/maps/geometry/polyline"], function() {
 		this.getCenterPoint = function(googleOverlay) {
 			return this.getBounds(googleOverlay).getCenter();
 		};
+		
+		this.getCenterPointFromGeoJSON = function(geoJSON) {
+			var coords = this.getGooglePath(geoJSON);
+			var bounds = new google.maps.LatLngBounds();
+			for (var i = 0; i < coords.length; i++) {
+				bounds.extend(coords[i]);
+			}
+			return bounds.getCenter();
+		};
 	};
 	
 });

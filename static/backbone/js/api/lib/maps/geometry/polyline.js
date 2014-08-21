@@ -86,6 +86,11 @@ define([], function() {
 			var coordinates = googlePolyline.getPath().getArray();
 			return coordinates[Math.floor(coordinates.length/2)];
 		};
+		
+		this.getCenterPointFromGeoJSON = function(geoJSON) {
+			var path = this.getGooglePath(geoJSON);
+			return path[Math.floor(path.length/2)];
+		};
 	};
 	return localground.maps.geometry.Polyline;
 });

@@ -41,6 +41,7 @@ define(["jquery"], function ($) {
 		this.baseZIndex_ = 100;
 		this.isOpen_ = false;
 		this.doNotPad = false;
+		this.includeCloseButton = true;
 		this.closeBubbleExtras = function() {
 			if(opt_options.closeBubbleExtras) {
 				opt_options.closeBubbleExtras();  
@@ -99,6 +100,9 @@ define(["jquery"], function ($) {
 	  
 		if (options['arrowStyle'] == undefined) {
 		  options['arrowStyle'] = this.ARROW_STYLE_;
+		}
+		if (options['hideCloseButton'] == true) {
+			this.includeCloseButton = false; 
 		}
 	  
 		this.buildDom_();
@@ -236,7 +240,7 @@ define(["jquery"], function ($) {
 	  close.src = 'http://maps.gstatic.com/intl/en_us/mapfiles/iw_close.gif';*/
 	  
 	  var close = this.close_ = document.createElement('i');
-	  close.className = 'close fa fa-times';
+	  close.className = 'fa fa-times-circle';
 	  close.style['position'] = 'absolute';
 	  close.style['zIndex'] = this.baseZIndex_ + 1;
 	  close.style['cursor'] = 'pointer';
@@ -284,7 +288,8 @@ define(["jquery"], function ($) {
 	  bubble.style['display'] = bubbleShadow.style['display'] = 'none';
 	
 	  bubble.appendChild(this.tabsContainer_);
-	  bubble.appendChild(close);
+	  if(this.includeCloseButton)
+		bubble.appendChild(close);
 	  bubble.appendChild(contentContainer);
 	  arrow.appendChild(arrowOuter);
 	  arrow.appendChild(arrowInner);
@@ -1097,10 +1102,11 @@ define(["jquery"], function ($) {
 	  var pan = !this.get('disableAutoPan');
 	  if (pan) {
 		var that = this;
-		window.setTimeout(function() {
+		that.panToView();
+		/*window.setTimeout(function() {
 		  // Pan into view, done in a time out to make it feel nicer :)
 		  that.panToView();
-		}, 200);
+		}, 200);*/
 	  }
 	};
 	InfoBubble.prototype['open'] = InfoBubble.prototype.open;
@@ -1185,7 +1191,7 @@ define(["jquery"], function ($) {
 	  // Find out how much space at the top is free
 	  var spaceTop = centerPos.y - height;
 	
-	  // Fine out how much space at the bottom is free
+	  // Find out how much space at the bottom is free
 	  var spaceBottom = mapHeight - centerPos.y;
 	
 	  var needsTop = spaceTop < 0;
@@ -1200,7 +1206,7 @@ define(["jquery"], function ($) {
 	  latLng = projection.fromContainerPixelToLatLng(pos);
 	
 	  if (map.getCenter() != latLng) {
-		map.panTo(latLng);
+		map.setCenter(latLng);
 	  }
 	};
 	InfoBubble.prototype['panToView'] = InfoBubble.prototype.panToView;
@@ -1667,8 +1673,9 @@ define(["jquery"], function ($) {
 	  } else {
 		//hack:  work around so iframe doesn't un-necessarily reload!
 		//alert($(element).height() + ' - ' + $(element).width());
-		var w = $(element).width() + 15, h = $(element).height();
-		if(this.doNotPad){ w-=15; }
+		//var w = $(element).width() + 15, h = $(element).height();
+		//if(this.doNotPad){ w-=15; }
+		var w = $(element).width(), h = $(element).height();
 		var footer = this.get('footer');
 		//alert(h);
 		// to incorporate header / footer height:

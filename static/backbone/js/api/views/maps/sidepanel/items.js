@@ -21,7 +21,7 @@ define(["backbone",
 		 * A rendered template corresponding to each model
 		 * within the collection.
 		*/
-		itemTemplateHtml: null,
+		ItemTemplate: null,
 		
 		/** */
 		isVisible: false,
@@ -59,7 +59,7 @@ define(["backbone",
 		 * @param {Object} opts
 		 * A dictionary of options.
 		 * @param {Backbone.Collection} opts.collection
-		 * @param {HTML} opts.itemTemplateHtml
+		 * @param {HTML} opts.itemTemplate
 		 * @param {google.maps.Map} opts.map
 		 */
 		initialize: function(opts) {
@@ -97,7 +97,7 @@ define(["backbone",
 			if (this.itemViews[item.id] == null) {
 				this.itemViews[item.id] = new localground.maps.views.Item({
 					model: item,
-					template: _.template( this.itemTemplateHtml ),
+					template: _.template( this.ItemTemplate ),
 					map: this.map,
 					eventManager: this.eventManager,
 					isVisible: isVisible

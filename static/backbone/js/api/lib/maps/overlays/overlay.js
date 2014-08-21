@@ -21,12 +21,20 @@ define(["lib/maps/geometry/point"], function() {
 		 */
 		this.getGoogleOverlay = function(){
 			if (this.googleOverlay == null) {
+				var that = this;
 				this.createOverlay();
 				
 				//attach click event:
-				var that = this;
 				google.maps.event.addListener(this.googleOverlay, 'click', function() {
 					that.eventManager.trigger("show_bubble", that.model, that.getCenter());
+				});
+				//attach mouseover event:
+				google.maps.event.addListener(this.googleOverlay, 'mouseover', function() {
+					that.eventManager.trigger("show_tip", that.model, that.getCenter());
+				});
+				//attach mouseout event:
+				google.maps.event.addListener(this.googleOverlay, 'mouseout', function() {
+					that.eventManager.trigger("hide_tip");
 				});
 			}
 			return this.googleOverlay;
