@@ -158,6 +158,14 @@ define(
 			this.collections[key].add(models, {merge: true});
 		};
 		
+		this.getSelectedProjectIDs = function(){
+			var ids = [];
+			this.selectedProjects.each(function(model){
+				ids.push(model.id);	
+			});
+			return ids;
+		}
+		
 		this.initialize(opts);
 	};
 	return localground.maps.managers.DataManager;

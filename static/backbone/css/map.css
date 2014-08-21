@@ -220,7 +220,7 @@
 }
 
 .projects-menu {
-	margin-right:120px;
+	margin-right:155px;
 	width:250px;
 	padding: 5px;
 	max-height: 300px;
@@ -283,11 +283,17 @@
 	max-width: 470px;
 	height: 280px;
 	overflow: hidden;
-	background-image: url('/static/backbone/images/bg.png');
+	background-image: url('/static/images/fabric_bg.png');
 }
 .slick-slider { margin-bottom: 0px !important;}
-.slick-prev { left: 5px; color: #CCC !important; }
-.slick-next { right: 5px; color: #CCC !important; }
+.slick-prev { left: 5px; }
+.slick-next { right: 5px; }
+.slick-prev, .slick-next { width: 30px; height: 30px; }
+.slick-prev:before, .slick-next:before {
+	color: #999 !important;
+	font-size: 30px;
+}
+
 
 .marker-container img {
 	display: block;

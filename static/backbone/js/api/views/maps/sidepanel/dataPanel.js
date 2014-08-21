@@ -2,6 +2,7 @@ define(["backbone",
 		"text!" + templateDir + "/sidepanel/dataPanelHeader.html",
 		"views/maps/sidepanel/projectsMenu",
 		"views/maps/sidepanel/items",
+		"lib/maps/managers/workspaceManager",
 		"config"],
 	   function(Backbone, dataPanelHeader) {
 	/**
@@ -20,6 +21,9 @@ define(["backbone",
 		map: null,
 		projectsMenu: null,
 		dataViews: {},
+		events: {
+			'click #save_workspace': 'saveWorkspace'
+		},
 		
 		/**
 		 * Initializes the dataPanel
@@ -46,7 +50,9 @@ define(["backbone",
 			// accordingly
 			this.dataManager.selectedProjects.on('add', this.render, this);
 			this.dataManager.selectedProjects.on('remove', this.render, this);
+			
 			this.render();
+			this.eventManager.trigger("loaded");
 		},
 		/**
 		 * render projects menu if it doesn't currently exist
@@ -95,6 +101,15 @@ define(["backbone",
 		
 		resize: function(){
 			this.$el.find('.pane-body').height($('body').height() - 140);
+		},
+		
+		saveWorkspace: function(){
+			var workspaceManager = new localground.maps.managers.WorkspaceManager({
+				dataViews: this.dataViews,
+				map: this.map,
+				dataManager: this.dataManager
+			});
+			workspaceManager.serializeWorkspace();
 		}
 	});
 	return localground.maps.views.DataPanel;

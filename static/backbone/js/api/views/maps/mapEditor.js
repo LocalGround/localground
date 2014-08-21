@@ -53,6 +53,9 @@ define(
 			]);
 			*/
 			
+			//listen for projects being added or removed:
+			this.attachEvents();
+			
 			this.basemap = new localground.maps.views.Basemap({
 				mapContainerID: "map_canvas",
 				defaultLocation: opts.defaultLocation,
@@ -66,7 +69,6 @@ define(
 				map: this.basemap.map,
 				eventManager: this.eventManager
 			});
-			
 			
 			this.dataManager = new localground.maps.managers.DataManager({
 				eventManager: this.eventManager
@@ -86,9 +88,6 @@ define(
 				map: this.basemap.map
 			});
 			this.$el.find('#panels').append(this.dataPanel.render().el);
-			
-			//listen for projects being added or removed:
-			this.attachEvents();
 		},
 
 		/**
@@ -100,6 +99,19 @@ define(
 			$(window).on('resize', function(){
 				that.dataPanel.resize();	
 			});
+			
+			this.eventManager.on("loaded", function(){
+				that.restoreData();
+			});
+		},
+		
+		/** */
+		restoreData: function(){
+			//return;
+			var workspace = JSON.parse(localStorage["workspace"]);
+			for (var i=0; i < workspace.project_ids.length; i++) {
+				this.dataManager.fetchDataByProjectID(workspace.project_ids[i]);
+			}
 		}
 	});
 	return localground.maps.views.MapEditor;

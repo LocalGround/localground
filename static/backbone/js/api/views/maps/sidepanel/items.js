@@ -170,6 +170,16 @@ define(["backbone",
 				$symbol.removeClass('fa-caret-down').addClass('fa-caret-right');
 				$panel.hide("slow");
 			}
+		},
+		
+		/** Helper function for the workspace serializer */
+		getVisibleItemList: function(){
+			var visList = [];
+			for(key in this.itemViews) {
+				if (this.itemViews[key].isVisible)
+					visList.push(key);
+			}
+			return visList;
 		}
 	});
 	return localground.maps.views.Items;
