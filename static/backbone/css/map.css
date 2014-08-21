@@ -284,6 +284,24 @@
 	line-height: 15px;
 }
 
+.tip-container {
+	padding:5px;
+	font-size: 13px;
+	line-height: 14px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.tip-container > img, .tip-container > i {
+	margin-right: 10px;
+	float: left !important;
+	vertical-align: top;
+}
+.tip-container > span {
+	font-weight: bold;
+	line-height: 22px;
+}
+
 .fa-times-circle, .fa-times {
 	font-size: 20px;
 	color: #CCC;

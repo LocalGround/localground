@@ -56,13 +56,21 @@ define(
 		},
 		
 		showBubble: function(model, latLng){
-			var name = model.get("name") || "untitled";
 			var configKey = model.getKey().split("_")[0];
 			var BubbleTemplate = localground.config.Config[configKey].InfoBubbleTemplate;
 			var template = _.template(BubbleTemplate);
 			this.bubble.setContent(template(model.toJSON()));
 			this.bubble.setPosition(latLng);
 			this.bubble.open();
+		},
+		showTip: function(model, latLng) {
+			var configKey = model.getKey().split("_")[0];
+			var TipTemplate = localground.config.Config[configKey].TipTemplate;
+			var template = _.template(TipTemplate);
+			if (latLng == null) { latLng = model.getCenter(); }
+			this.tip.setContent(template(model.toJSON()));
+			this.tip.setPosition(latLng);
+			this.tip.open();	
 		},
 		addEventHandlers: function(){
 			var that = this;			
@@ -76,12 +84,7 @@ define(
 				//don't show tip if the bubble's already open:
 				if(that.bubble.modelID == model.id &&
 						that.bubble.isOpen()) { return; }
-				
-				var name = model.get("name") || "untitled";
-				if (latLng == null) { latLng = model.getCenter(); }
-				that.tip.setContent(name);
-				that.tip.setPosition(latLng);
-				that.tip.open();
+				that.showTip(model, latLng);
 			});
 			
 			this.eventManager.on("hide_tip", function(){

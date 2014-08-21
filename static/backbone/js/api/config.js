@@ -6,7 +6,10 @@ define(
 		"text!../templates/sidepanel/markerItem.html",
 		"text!../templates/sidepanel/recordItem.html",
 		"text!../templates/infoBubble/photo.html",
+		"text!../templates/infoBubble/photoTip.html",
 		"text!../templates/infoBubble/audio.html",
+		"text!../templates/infoBubble/audioTip.html",
+		"text!../templates/infoBubble/genericTip.html",
 		"collections/photos",
 		"collections/audio",
 		"collections/mapimages",
@@ -17,7 +20,8 @@ define(
 	], function(
 			photoItemTemplate, audioItemTemplate, mapimageItemTemplate,
 			markerItemTemplate, recordItemTemplate, photoBubbleTemplate,
-			audioBubbleTemplate
+			photoTipTemplate, audioBubbleTemplate, audioTipTemplate,
+			genericTipTemplate
 		) {
 	/**
 	 * Convenience object for connecting data models with
@@ -30,35 +34,40 @@ define(
 			Collection: localground.collections.Photos,
 			Overlay: localground.maps.overlays.Photo,
 			ItemTemplate: photoItemTemplate,
-			InfoBubbleTemplate: photoBubbleTemplate
+			InfoBubbleTemplate: photoBubbleTemplate,
+			TipTemplate: photoTipTemplate
 		},
 		audio: {
 			Model: localground.models.Audio,
 			Collection: localground.collections.AudioFiles,
 			Overlay: localground.maps.overlays.Audio,
 			ItemTemplate: audioItemTemplate,
-			InfoBubbleTemplate: audioBubbleTemplate
+			InfoBubbleTemplate: audioBubbleTemplate,
+			TipTemplate: audioTipTemplate
 		},
 		scans: {
 			Model: localground.models.MapImage,
 			Collection: localground.collections.MapImages,
 			Overlay: localground.maps.overlays.Marker,
 			ItemTemplate: mapimageItemTemplate,
-			InfoBubbleTemplate: audioBubbleTemplate
+			InfoBubbleTemplate: audioBubbleTemplate,
+			TipTemplate: genericTipTemplate
 		},
 		markers: {
 			Model: localground.models.Marker,
 			Collection: localground.collections.Markers,
 			Overlay: localground.maps.overlays.Marker,
 			ItemTemplate: markerItemTemplate,
-			InfoBubbleTemplate: audioBubbleTemplate
+			InfoBubbleTemplate: audioBubbleTemplate,
+			TipTemplate: genericTipTemplate
 		},
 		form: {
 			Model: localground.models.Marker,
 			Collection: localground.collections.Markers,
 			Overlay: localground.maps.overlays.Marker,
 			ItemTemplate: recordItemTemplate,
-			InfoBubbleTemplate: audioBubbleTemplate
+			InfoBubbleTemplate: audioBubbleTemplate,
+			TipTemplate: genericTipTemplate
 		}
 	};
 	return localground.config.Config;
