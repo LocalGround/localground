@@ -46,6 +46,13 @@ define(["backbone",
 				eventManager: this.eventManager
 			});
 			
+			this.workspaceManager = new localground.maps.managers.WorkspaceManager({
+				dataViews: this.dataViews,
+				basemap: this.basemap,
+				dataManager: this.dataManager,
+				eventManager: this.eventManager
+			});
+			
 			// listen for changes in the selectedProjects, and re-render
 			// accordingly
 			this.dataManager.selectedProjects.on('add', this.render, this);
@@ -104,12 +111,7 @@ define(["backbone",
 		},
 		
 		saveWorkspace: function(){
-			var workspaceManager = new localground.maps.managers.WorkspaceManager({
-				dataViews: this.dataViews,
-				basemap: this.basemap,
-				dataManager: this.dataManager
-			});
-			workspaceManager.serializeWorkspace();
+			this.workspaceManager.saveWorkspace();
 		}
 	});
 	return localground.maps.views.DataPanel;

@@ -15,7 +15,8 @@ require.config({
 		'backbone-pageable': '../external/backbone-pageable',
 		'backbone-paginator': '../external/backbone.paginator',
 		'infobubble': '../external/infobubble',
-		'slick': '//cdn.jsdelivr.net/jquery.slick/1.3.7/slick.min'
+		'slick': '//cdn.jsdelivr.net/jquery.slick/1.3.7/slick.min',
+		'urlon': '../external/urlon'
 	},
 	//waitSeconds: 0,
 	shim: {
@@ -103,6 +104,18 @@ function getCookie(name) {
 		}
 	}
 	return cookieValue;
+}
+
+function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam) {
+            return sParameterName[1];
+        }
+    }
+	return null;
 }
 
 
