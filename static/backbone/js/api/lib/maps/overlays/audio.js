@@ -24,6 +24,8 @@ define(["lib/maps/overlays/point"], function() {
 				scale: 1.6
 			};
 		};
+
+		this.initialize();
 	};
 	return localground.maps.overlays.Audio;
 });

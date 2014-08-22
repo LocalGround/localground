@@ -25,6 +25,7 @@ define([
 				fillOpacity: 0.35,
 				map: this.isVisible ? this.map : null
 			});
+			this.attachEventHandlers();
 		};
 		
 		this.zoomTo = function(){

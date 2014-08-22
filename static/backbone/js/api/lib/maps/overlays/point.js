@@ -36,7 +36,8 @@ define([
 				position: point.getGoogleLatLng(this.model.get("geometry")),
 				icon: this.getIcon(),
 				map: this.isVisible ? this.map : null
-			});		
+			});
+			this.attachEventHandlers();
 		};
 		
 		this.show = function(){

@@ -29,6 +29,8 @@ define(["backbone",
 		/** */
 		isExpanded: false,
 		
+		visibleItems: null,
+		
 		/**
 		 * A dictionary of {@link localground.maps.views.Item} views
 		 * associated w/each model in the collection
@@ -65,6 +67,8 @@ define(["backbone",
 		initialize: function(opts) {
 			$.extend(this, opts);
 			this.itemViews = {};
+			this.visibleItems = {};
+			this.restoreState();
 		},
 		
 		/**
@@ -100,7 +104,7 @@ define(["backbone",
 					template: _.template( this.ItemTemplate ),
 					map: this.map,
 					eventManager: this.eventManager,
-					isVisible: isVisible
+					isVisible: this.visibleItems[item.id] || false
 				});
 			}
 			else {
@@ -180,6 +184,19 @@ define(["backbone",
 					visList.push(key);
 			}
 			return visList;
+		},
+		
+		restoreState: function(){
+			var workspace = JSON.parse(localStorage["workspace"]);
+			if (workspace == null) { return; }
+			var state = workspace.elements[this.collection.key];
+			if (state == null) { return; }
+			this.isVisible = state.isVisible;
+			this.isExpanded = state.isExpanded;
+			var that = this;
+			$.each(state.visibleItems, function(){
+				that.visibleItems[this] = true;	
+			});
 		}
 	});
 	return localground.maps.views.Items;

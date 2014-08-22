@@ -23,6 +23,7 @@ define([
 				strokeWeight: 5,
 				map: this.isVisible ? this.map : null
 			});
+			this.attachEventHandlers();
 		};
 		
 		this.zoomTo = function(){

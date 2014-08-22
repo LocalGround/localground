@@ -85,7 +85,7 @@ define(
 			this.dataPanel = new localground.maps.views.DataPanel({
 				dataManager: this.dataManager,
 				eventManager: this.eventManager,
-				map: this.basemap.map
+				basemap: this.basemap
 			});
 			this.$el.find('#panels').append(this.dataPanel.render().el);
 		},
@@ -112,6 +112,14 @@ define(
 			for (var i=0; i < workspace.project_ids.length; i++) {
 				this.dataManager.fetchDataByProjectID(workspace.project_ids[i]);
 			}
+			//restore map focus:
+			var center = new google.maps.LatLng(
+							workspace.center[1],
+							workspace.center[0]
+						);											  
+			this.basemap.setCenter(center);
+			this.basemap.setZoom(workspace.zoom);
+			this.basemap.setBasemap(workspace.basemapID);
 		}
 	});
 	return localground.maps.views.MapEditor;

@@ -38,6 +38,8 @@ define(["lib/maps/overlays/point"], function() {
 				};
 			}
 		};
+		
+		this.initialize();
 	};
 	return localground.maps.overlays.Photo;
 });

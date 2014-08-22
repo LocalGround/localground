@@ -105,7 +105,24 @@ define(["backbone",
 			};
 			this.map = new google.maps.Map(document.getElementById(this.mapContainerID),
 										mapOptions);
-			
+		},
+		getZoom: function() {
+			return this.map.getZoom();
+		},
+		setZoom: function(zoomLevel) {
+			this.map.setZoom(zoomLevel);
+		},
+		getCenter: function() {
+			return this.map.getCenter();
+		},
+		setCenter: function(latLng) {
+			this.map.setCenter(latLng);
+		},
+		setBasemap: function(basemapID) {
+			tileController.setActiveMapType(basemapID);
+		},
+		getBasemapID: function(basemapID) {
+			return tileController.getMapTypeId();
 		}
 	});
 	return localground.maps.views.Basemap;

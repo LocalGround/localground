@@ -10,7 +10,11 @@ define(["lib/maps/geometry/point"], function() {
 		this.model = opts.model;
 		this.isVisible = opts.isVisible;
 		this.eventManager = opts.eventManager;
-		this.getGoogleOverlay = null;
+		
+		/** called when object created */
+		this.initialize = function(){
+			if(this.isVisible) {this.createOverlay(); }	
+		};
 		
 		/**
 		 * Creates a google.maps.Marker overlay with a photo icon
@@ -21,28 +25,30 @@ define(["lib/maps/geometry/point"], function() {
 		 */
 		this.getGoogleOverlay = function(){
 			if (this.googleOverlay == null) {
-				var that = this;
 				this.createOverlay();
-				
-				//attach click event:
-				google.maps.event.addListener(this.googleOverlay, 'click', function() {
-					that.eventManager.trigger("show_bubble", that.model, that.getCenter());
-				});
-				//attach mouseover event:
-				google.maps.event.addListener(this.googleOverlay, 'mouseover', function() {
-					that.eventManager.trigger("show_tip", that.model, that.getCenter());
-				});
-				//attach mouseout event:
-				google.maps.event.addListener(this.googleOverlay, 'mouseout', function() {
-					that.eventManager.trigger("hide_tip");
-				});
 			}
 			return this.googleOverlay;
 		};
 		
 		this.createOverlay = function(){
 			alert("implement in child class");	
-		};	
+		};
+		
+		this.attachEventHandlers = function(){
+			var that = this;
+			//attach click event:
+			google.maps.event.addListener(this.googleOverlay, 'click', function() {
+				that.eventManager.trigger("show_bubble", that.model, that.getCenter());
+			});
+			//attach mouseover event:
+			google.maps.event.addListener(this.googleOverlay, 'mouseover', function() {
+				that.eventManager.trigger("show_tip", that.model, that.getCenter());
+			});
+			//attach mouseout event:
+			google.maps.event.addListener(this.googleOverlay, 'mouseout', function() {
+				that.eventManager.trigger("hide_tip");
+			});
+		};
 		
 		/** shows the google.maps overlay on the map. */
 		this.show = function(){
@@ -68,8 +74,7 @@ define(["lib/maps/geometry/point"], function() {
 		};
 		
 		/**
-		 * Calculates the approximate center point of the
-		 * google.maps overlay (if necessary) and returns it.
+		 * Calculates the approximate center point
 		 * @returns {google.maps.LatLng} object
 		 */
 		this.getCenter = function(){

@@ -22,6 +22,9 @@ define(
 		 * {@link localground.maps.overlays.Overlay} objects.
 		 */
 		overlays: {},
+		
+		visibleItems: null, 
+		
 		/** A Backbone.Collection object */
 		collection: null,
 		/**
@@ -41,9 +44,16 @@ define(
 		initialize: function(opts) {
 			$.extend(this, opts);
 			this.overlays = {};
+			this.visibleItems = {}
 			this.key = this.collection.key;
 			var that = this;
 			
+			this.restoreState();
+			/*
+			 *this.collection.each(function(model){
+				that.render(model);
+			});
+			*/
 			//listen for new data:
 			this.collection.on('add', this.render, this);
 			
@@ -98,12 +108,13 @@ define(
 			var id = model.id;
 			//retrieve the corresponding overlay type from the config.js.
 			var configKey = key.split("_")[0];
-			Overlay = localground.config.Config[configKey].Overlay
+			Overlay = localground.config.Config[configKey].Overlay;
+			var isVisible = this.isVisible || (this.visibleItems[id] || false);
 			this.overlays[id] = new Overlay({
 				model: model,
 				map: this.map,
 				eventManager: this.eventManager,
-				isVisible: this.isVisible
+				isVisible: isVisible
 			});
 		},
 		
@@ -139,6 +150,16 @@ define(
 		/** Gets the overlay from the overlay dictionary */
 		getOverlay: function(model) {
 			return this.overlays[model.id];
+		},
+		restoreState: function(){
+			var workspace = JSON.parse(localStorage["workspace"]);
+			if (workspace == null) { return; }
+			var state = workspace.elements[this.collection.key];
+			if (state == null) { return; }
+			var that = this;
+			$.each(state.visibleItems, function(){
+				that.visibleItems[this] = true;	
+			});
 		}
 	});
 	return localground.maps.views.OverlayGroup;

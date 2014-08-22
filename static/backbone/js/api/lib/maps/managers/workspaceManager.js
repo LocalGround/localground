@@ -6,21 +6,22 @@ define([], function() {
 		
 		this.dataViews = opts.dataViews;
 		this.dataManager = opts.dataManager;
-		this.map = opts.map;
+		this.basemap = opts.basemap;
 		
 		this.serializeWorkspace = function(){
 			alert(localStorage["workspace"]);
 			var workspace = {
 				project_ids: this.dataManager.getSelectedProjectIDs(),
-				zoom: this.map.getZoom(),
-				center: [this.map.getCenter().lng(), this.map.getCenter().lat()],
+				zoom: this.basemap.getZoom(),
+				basemapID: this.basemap.getBasemapID(),
+				center: [this.basemap.getCenter().lng(), this.basemap.getCenter().lat()],
 				elements: {}
 			};
 			for(key in this.dataViews) {
 				var view = this.dataViews[key];
 				workspace.elements[key] = {
-					isExpanded: view.isVisible,
-					isVisible: view.isExpanded,
+					isExpanded: view.isExpanded,
+					isVisible: view.isVisible,
 					visibleItems: view.getVisibleItemList()
 				}
 			}

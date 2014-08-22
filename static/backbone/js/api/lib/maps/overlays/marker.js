@@ -40,6 +40,8 @@ define([
 				//origin: new google.maps.Point(?, ?)		// origin (x, y)
 			};
 		};
+
+		this.initialize();
 	};
 	return localground.maps.overlays.Marker;
 });

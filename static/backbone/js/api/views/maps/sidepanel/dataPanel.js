@@ -18,7 +18,7 @@ define(["backbone",
 		template: _.template( dataPanelHeader ),
 		dataManager: null,
 		eventManager: null,
-		map: null,
+		basemap: null,
 		projectsMenu: null,
 		dataViews: {},
 		events: {
@@ -84,7 +84,7 @@ define(["backbone",
 						collection: this.dataManager.collections[key],
 						ItemTemplate: localground.config.Config[configKey].ItemTemplate,
 						ItemView: localground.config.Config[configKey].ItemView,
-						map: this.map,
+						map: this.basemap.map,
 						eventManager: this.eventManager
 					});
 				}
@@ -106,7 +106,7 @@ define(["backbone",
 		saveWorkspace: function(){
 			var workspaceManager = new localground.maps.managers.WorkspaceManager({
 				dataViews: this.dataViews,
-				map: this.map,
+				basemap: this.basemap,
 				dataManager: this.dataManager
 			});
 			workspaceManager.serializeWorkspace();
