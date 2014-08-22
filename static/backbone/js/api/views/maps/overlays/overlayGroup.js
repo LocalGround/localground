@@ -152,8 +152,8 @@ define(
 			return this.overlays[model.id];
 		},
 		restoreState: function(){
-			var workspace = JSON.parse(localStorage["workspace"]);
-			if (workspace == null) { return; }
+			try { var workspace = JSON.parse(localStorage["workspace"]); }
+			catch(e) { return; }
 			var state = workspace.elements[this.collection.key];
 			if (state == null) { return; }
 			var that = this;

@@ -187,8 +187,8 @@ define(["backbone",
 		},
 		
 		restoreState: function(){
-			var workspace = JSON.parse(localStorage["workspace"]);
-			if (workspace == null) { return; }
+			try { var workspace = JSON.parse(localStorage["workspace"]); }
+			catch(e) { return; }
 			var state = workspace.elements[this.collection.key];
 			if (state == null) { return; }
 			this.isVisible = state.isVisible;

@@ -108,7 +108,9 @@ define(
 		/** */
 		restoreData: function(){
 			//return;
-			var workspace = JSON.parse(localStorage["workspace"]);
+			try { var workspace = JSON.parse(localStorage["workspace"]); }
+			catch(e) { return; }
+			
 			for (var i=0; i < workspace.project_ids.length; i++) {
 				this.dataManager.fetchDataByProjectID(workspace.project_ids[i]);
 			}
