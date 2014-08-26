@@ -57,6 +57,10 @@ define(["backbone"], function(Backbone) {
             this.listenTo(this.model, 'destroy', this.remove); 
         },
 		
+		detectIfVisible: function(){
+			return this.$el.find('input').attr('checked');
+		},
+		
 		/**
 		 * Triggers the eventManager's global event handler, so that
 		 * other objects (like the overlayManager) who are listening
@@ -67,11 +71,9 @@ define(["backbone"], function(Backbone) {
 		 */
 		toggleElement: function(isChecked){
 			if (isChecked) {
-				this.isVisible = true;
 				this.eventManager.trigger("show_overlay", this.model);
 			}
 			else {
-				this.isVisible = false;
 				this.eventManager.trigger("hide_overlay", this.model);	
 			}
 		},
@@ -91,7 +93,7 @@ define(["backbone"], function(Backbone) {
 		 * @param {Event} e
 		 */
 		triggerToggleCheckbox: function(e){
-			var $cb = $(e.currentTarget).find('input');
+			var $cb = this.$el.find('input');
 			if ($cb.css('visibility') != 'hidden') {
 				$cb.attr('checked', !$cb.attr('checked'));
 				this.toggleElement($cb.attr('checked'));
@@ -112,9 +114,9 @@ define(["backbone"], function(Backbone) {
 		/**
 		 * Renders the HTML from the model
 		 */
-        render: function() {
-			var opts = this.model.toJSON();
-			opts.isVisible = this.isVisible;
+        render: function(opts) {
+			opts = opts || {};
+			$.extend(opts, this.model.toJSON());
 			//for the marker model:
 			if (this.model.getDescriptiveText) {
 				opts.descriptiveText = this.model.getDescriptiveText();
@@ -137,59 +139,10 @@ define(["backbone"], function(Backbone) {
             }
             e.stopPropagation();
         },
-		
-		/**
-		 * Converts the models's GeoJSON into a
-		 * google.maps.LatLng object
-		 */
-		getGoogleLatLng: function(){
-			var geom = this.model.get("geometry");
-			return new google.maps.LatLng(
-				geom.coordinates[1],
-				geom.coordinates[0]
-			);
-		},
-		
-		/**
-		 * Creates a google.maps.Marker overlay with a photo icon
-		 * if one doesn't already exist, and returns it.
-		 * @returns {google.maps.Marker}
-		 */
-		getGoogleOverlay: function(){
-			if (this.googleOverlay == null) {
-				this.googleOverlay = new google.maps.Marker({
-					position: this.getGoogleLatLng()
-				});
-			}
-			return this.googleOverlay;
-		},
-		
-		/**
-		 * Adds a marker to the map if isChecked == true,
-		 * removes the marker otherwise. This function should
-		 * probably be renamed.
-		 * @param {Boolean} isChecked
-		 * Flag that indicates whether or not the marker shoud
-		 *
-		 */
-		showMarker: function(isChecked){
-			//console.log("showMarker photoItem!");
-			var geom = this.model.get("geometry");
-			//console.log(geom);
-            if(isChecked && geom) {
-                this.getGoogleOverlay().setMap(this.map);
-				//this.map.panTo(this.getGoogleLatLng());
-            }
-			else {
-				if (this.googleOverlay) {
-					this.getGoogleOverlay().setMap(null);
-				}
-			}
-        },
-		
+
 		/** Show a tooltip on the map if the geometry exists */
 		showTip: function() {
-			if (this.model.get("geometry"))
+			if (this.model.get("geometry") && this.detectIfVisible())
 				this.eventManager.trigger("show_tip", this.model);	
 		},
 		

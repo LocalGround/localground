@@ -16,7 +16,10 @@ require.config({
 		'backbone-paginator': '../external/backbone.paginator',
 		'infobubble': '../external/infobubble',
 		'slick': '//cdn.jsdelivr.net/jquery.slick/1.3.7/slick.min',
-		'urlon': '../external/urlon'
+		'urlon': '../external/urlon',
+		'kernel': '../external/kernel.min',
+		'core': '../external/mediator/core-jquery',
+		'sandbox': '../external/mediator/sandbox'
 	},
 	//waitSeconds: 0,
 	shim: {

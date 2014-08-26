@@ -166,6 +166,10 @@ define(
 			return ids;
 		}
 		
+		this.destroy = function() {
+			alert("todo: implement");
+		};
+		
 		this.initialize(opts);
 	};
 	return localground.maps.managers.DataManager;

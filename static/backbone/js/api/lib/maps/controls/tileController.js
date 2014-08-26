@@ -13,7 +13,7 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"],
      * @param {Integer} opts.activeMapTypeID
      * The tileset that should be initialized on startup.
      */
-	localground.maps.controls.TileController = function(opts) {
+	localground.maps.controls.TileController = function(sb, opts) {
 		var that = this;
 		/**
 		 * Raw data array of map overlays, pulled from the Local Ground Data API.
@@ -73,12 +73,10 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"],
 			}
 			var mapType = getTileInfo("id", id);
 			var sourceName = mapType.sourceName.toLowerCase();
-			if (sourceName == "google") {
-				map.setMapTypeId(mapType.providerID);
-			}
-			else {
-				map.setMapTypeId(mapType.name);
-			}
+			var mapTypeID = mapType.name;
+			if (sourceName == "google") { mapTypeID = mapType.providerID; }
+			map.setMapTypeId(mapTypeID);
+			sb.notify({ type : "change-tiles" });
 		};
 		
 		

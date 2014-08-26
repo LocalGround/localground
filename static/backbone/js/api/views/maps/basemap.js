@@ -20,11 +20,6 @@ define(["backbone",
 		activeMapTypeID: 1,
 		/** A boolean flag, indicating whether or not to
 		 *  include a search control */
-		searchControl: true,
-		/** A boolean flag, indicating whether or not to
-		 *  include a geolocation control */
-		geolocationControl: false,
-		/** A {@link localground.maps.controls.TileController} object */
 		tileManager: null,
 		/** A data structure containing user location preferences */
 		userProfile: null,
@@ -40,40 +35,47 @@ define(["backbone",
 		 * @method
 		 * @param {String} opts.mapContainerID
 		 * @param {Object} opts.defaultLocation
-		 * @param {Boolean} opts.searchControl
-		 * @param {Boolean} opts.geolocationControl
+		 * @param {Boolean} opts.includeSearchControl
+		 * @param {Boolean} opts.includeGeolocationControl
 		 * @param {Integer} opts.activeMapTypeID
 		 * The user's preferred tileset for the given map.
 		 * @param {Array} opts.overlays
 		 * A list of available tilesets, based on user's profile.
 		 */
-		initialize: function(opts){
+		destroy: function(){
+			alert("bye");	
+		},
+		initialize: function(sb, opts){
+			this.sb = sb;
 			$.extend(this, opts);
 			
 			//render map:
 			this.renderMap();
 			
 			//add a search control, if requested:
-			if (opts.searchControl)
-				searchControl = new localground.maps.controls.SearchBox(this.map);
+			if (opts.includeSearchControl)
+				this.searchControl = new localground.maps.controls.SearchBox(this.map);
 			
 			//add a browser-based location detector, if requested:
-			if (this.geolocationControl) {
-				geolocationControl = new localground.maps.controls.GeoLocation({
+			if (opts.includeGeolocationControl) {
+				this.geolocationControl = new localground.maps.controls.GeoLocation({
 					map: this.map,
 					userProfile: this.userProfile,
 					defaultLocation: this.defaultLocation
 				});
 			}
 			
+			//set up the various map tiles in Google maps:
 			if(this.overlays) {
-				//set up the various map tiles in Google maps:
-				tileController = new localground.maps.controls.TileController({
+				this.tileManager = new localground.maps.controls.TileController(sb, {
 					map: this.map,
 					overlays: this.overlays,
 					activeMapTypeID: this.activeMapTypeID
 				})
 			}
+			
+			//add event handlers:
+			this.addEventHandlers(sb);
 		},
 		
 		/**
@@ -105,6 +107,29 @@ define(["backbone",
 			};
 			this.map = new google.maps.Map(document.getElementById(this.mapContainerID),
 										mapOptions);
+		},
+		addEventHandlers: function(sb){
+			//add notifications:
+			google.maps.event.addListener(this.map, "maptypeid_changed", function( evnt ) {
+				sb.notify({ type : "change-tiles" });
+			});
+			google.maps.event.addListener(this.map, "zoom_changed", function( evnt ) {
+				sb.notify({ type : "zoom-changed" });
+			});
+			
+			//add listeners:
+			sb.listen({ 
+                "change-tiles": this.saveState,
+				"zoom-changed": this.saveState
+			});
+		},
+		saveState: function(data){
+			var latLng = this.map.getCenter();
+			this.sb.save({
+				center: [latLng.lng(), latLng.lat()],
+				zoom: this.map.getZoom(),
+				basemapID: this.tileManager.getMapTypeId()
+			});
 		},
 		getZoom: function() {
 			return this.map.getZoom();

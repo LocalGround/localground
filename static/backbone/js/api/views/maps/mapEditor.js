@@ -53,21 +53,33 @@ define(
 			]);
 			*/
 			
+			var sb = {
+				eventManager:this.eventManager,
+				getWorkspace: function(){
+					return JSON.parse(localStorage["workspace"]);
+				},
+				subscribe: function () { 
+					//not sure if error handling should go here...
+					if (core.is_obj(evts)) { 
+						core.registerEvents(evts, module_selector); 
+					}             
+				},  
+			};
+			
 			//listen for projects being added or removed:
 			this.attachEvents();
 			
-			this.basemap = new localground.maps.views.Basemap({
+			this.basemap = new localground.maps.views.Basemap(sb, {
 				mapContainerID: "map_canvas",
 				defaultLocation: opts.defaultLocation,
-				searchControl: true,
-				geolocationControl: false,
+				includeSearchControl: true,
+				includeGeolocationControl: false,
 				activeMapTypeID: opts.activeMapTypeID,
-				overlays: opts.overlays 
+				overlays: opts.overlays
 			});
 			
-			this.bubbleManager = new localground.maps.views.InfoBubble({
-				map: this.basemap.map,
-				eventManager: this.eventManager
+			this.bubbleManager = new localground.maps.views.InfoBubble(sb, {
+				map: this.basemap.map
 			});
 			
 			this.dataManager = new localground.maps.managers.DataManager({

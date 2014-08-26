@@ -1,6 +1,7 @@
 define(["backbone",
 		"text!" + templateDir + "/sidepanel/collectionHeader.html",
-		"views/maps/sidepanel/item"
+		"views/maps/sidepanel/item",
+		"config"
 		],
 	   function(Backbone, collectionHeader) {
 	/** 
@@ -17,30 +18,8 @@ define(["backbone",
 		template: _.template( collectionHeader ),
 		
 		eventManager: null,
-		/**
-		 * A rendered template corresponding to each model
-		 * within the collection.
-		*/
-		ItemTemplate: null,
-		
-		/** */
-		isVisible: false,
-		
-		/** */
-		isExpanded: false,
 		
 		visibleItems: null,
-		
-		/**
-		 * A dictionary of {@link localground.maps.views.Item} views
-		 * associated w/each model in the collection
-		 */
-		itemViews: null,
-		
-		/**
-		 * View class that controls the individual item listing.
-		 */
-		ItemView: null,
 		
 		/** A data collection (extends Backbone.Collection) */
 		collection: null,
@@ -61,14 +40,14 @@ define(["backbone",
 		 * @param {Object} opts
 		 * A dictionary of options.
 		 * @param {Backbone.Collection} opts.collection
-		 * @param {HTML} opts.itemTemplate
 		 * @param {google.maps.Map} opts.map
 		 */
 		initialize: function(opts) {
 			$.extend(this, opts);
-			this.itemViews = {};
+			
 			this.visibleItems = {};
 			this.restoreState();
+			this.collection.on('add', this.renderItem, this);
 		},
 		
 		/**
@@ -76,20 +55,14 @@ define(["backbone",
 		 * Backbone collection that the view has been initialized
 		 * with.
 		 */
-		render: function() {
-			this.$el.empty();
-			if (this.collection.length == 0) {
-				return this;
-			}
+		render: function(opts) {
+			opts = opts || {};
 			this.$el.append(this.template({
 				name: this.collection.name,
-				isVisible: this.isVisible,
-				isExpanded: this.isExpanded
+				isVisible: opts.isVisible,
+				isExpanded: opts.isExpanded
 			}));
-			this.collection.each(function(item) {
-				this.renderItem(item, this.isVisible);
-			}, this);
-			this.delegateEvents();
+			if (this.collection.length == 0) { this.$el.hide(); }
 			return this;
 		},
 		/**
@@ -98,21 +71,16 @@ define(["backbone",
 		 * A Backbone Model of the corresponding datatype
 		 */
 		renderItem: function(item, isVisible) {
-			if (this.itemViews[item.id] == null) {
-				this.itemViews[item.id] = new localground.maps.views.Item({
-					model: item,
-					template: _.template( this.ItemTemplate ),
-					map: this.map,
-					eventManager: this.eventManager,
-					isVisible: this.visibleItems[item.id] || false
-				});
-			}
-			else {
-				this.itemViews[item.id].delegateEvents();
-			}
+			this.$el.show();
+			var view = new localground.maps.views.Item({
+				model: item,
+				template: _.template( this.getItemTemplate() ),
+				map: this.map,
+				eventManager: this.eventManager
+			});
 			this.$el
 				.find(".collection-data")
-				.append(this.itemViews[item.id].render().el);
+				.append(view.render({isVisible: true}).el);
 		},
 		/**
 		 * Selects all child data elements in the Items View, based
@@ -124,10 +92,7 @@ define(["backbone",
 			
 			//handle child element state:
 			this.$el.find('.data-item > input').prop("checked", isChecked);
-			for (key in this.itemViews) {
-				this.itemViews[key].isVisible = isChecked;
-			}
-			
+
 			//expand panel if checked and hidden:
 			if (isChecked) {
 				this.isVisible = true;
@@ -166,11 +131,13 @@ define(["backbone",
 			var show = $symbol.hasClass('fa-caret-right');
 			if (show) {
 				this.isExpanded = true;
+				this.eventManager.trigger(localground.events.EventTypes.EXPAND);
 				$symbol.removeClass('fa-caret-right').addClass('fa-caret-down');
 				$panel.show("slow");
 			}
 			else {
 				this.isExpanded = false;
+				this.eventManager.trigger(localground.events.EventTypes.CONTRACT);
 				$symbol.removeClass('fa-caret-down').addClass('fa-caret-right');
 				$panel.hide("slow");
 			}
@@ -184,6 +151,11 @@ define(["backbone",
 					visList.push(key);
 			}
 			return visList;
+		},
+		
+		getItemTemplate: function(){
+			var configKey = this.collection.key.split("_")[0];
+			return localground.config.Config[configKey].ItemTemplate;	
 		},
 		
 		restoreState: function(){

@@ -26,8 +26,9 @@ define(
 		/**
 		 * Initializes
 		 */
-		initialize: function(opts) {
+		initialize: function(sb, opts) {
 			$.extend(this, opts);
+			this.eventManager = sb.eventManager;
 			this.bubble = new InfoBubble({
 				borderRadius: 5,
 				maxHeight: 385,
@@ -35,6 +36,12 @@ define(
 				disableAnimation: true,
 				map: this.map
 			});
+			
+			/*sb.listen({ 
+                "show-bubble"  : this.change_filter, 
+                "show-tip" : this.reset, 
+                "hide-tip" : this.search
+            });*/ 
 			
 			this.tip = new InfoBubble({
 				borderRadius: 5,
@@ -46,7 +53,7 @@ define(
 				map: this.map
 			});
 			
-			this.addEventHandlers();
+			this.addEventHandlers(sb);
 		},
 		
 		/**
@@ -100,7 +107,7 @@ define(
 				opts.descriptiveText = model.getDescriptiveText();
 			return opts;
 		},
-		addEventHandlers: function(){
+		addEventHandlers: function(sb){
 			var that = this;			
 			this.eventManager.on("show_bubble", function(model, latLng){
 				that.tip.close();
@@ -110,8 +117,9 @@ define(
 			
 			this.eventManager.on("show_tip", function(model, latLng){
 				//don't show tip if the bubble's already open:
+				console.log('show tip');
 				if(that.bubble.modelID == model.id &&
-						that.bubble.isOpen()) { return; }
+					that.bubble.isOpen()) { return; }
 				that.showTip(model, latLng);
 			});
 			

@@ -2,8 +2,7 @@ define(["backbone",
 		"text!" + templateDir + "/sidepanel/dataPanelHeader.html",
 		"views/maps/sidepanel/projectsMenu",
 		"views/maps/sidepanel/items",
-		"lib/maps/managers/workspaceManager",
-		"config"],
+		"lib/maps/managers/workspaceManager"],
 	   function(Backbone, dataPanelHeader) {
 	/**
 	 * A class that handles display and rendering of the
@@ -52,15 +51,22 @@ define(["backbone",
 				dataManager: this.dataManager,
 				eventManager: this.eventManager
 			});
-			
-			// listen for changes in the selectedProjects, and re-render
-			// accordingly
-			this.dataManager.selectedProjects.on('add', this.render, this);
-			this.dataManager.selectedProjects.on('remove', this.render, this);
-			
 			this.render();
+			
+			// Listen for the "new_collection" event. On each new
+			// collection event add a new ItemsView to the DataPanel.
+			this.eventManager.on(localground.events.EventTypes.NEW_COLLECTION, function(collection){
+				var items = new localground.maps.views.Items({
+					collection: collection,
+					map: that.basemap.map,
+					eventManager: that.eventManager
+				});
+				that.$el.find('.pane-body').append(items.render().$el);
+			});
+			
 			this.eventManager.trigger("loaded");
 		},
+		
 		/**
 		 * render projects menu if it doesn't currently exist
 		 */
@@ -81,27 +87,6 @@ define(["backbone",
 		render: function() {
 			//render projects menu:
 			this.renderProjectsMenu();
-			
-			//render sub-views:
-			this.$el.find('.pane-body').empty();
-			for (key in this.dataManager.collections) {
-				if (this.dataViews[key] == null) {
-					var configKey = key.split("_")[0];
-					this.dataViews[key] = new localground.maps.views.Items({
-						collection: this.dataManager.collections[key],
-						ItemTemplate: localground.config.Config[configKey].ItemTemplate,
-						ItemView: localground.config.Config[configKey].ItemView,
-						map: this.basemap.map,
-						eventManager: this.eventManager
-					});
-				}
-				this.$el.find('.pane-body')
-					.append(
-						this.dataViews[key].render().el);
-			}
-			
-			//re-attach event handlers:
-			this.projectsMenu.delegateEvents();
 			this.resize();
 			return this;
 		},
