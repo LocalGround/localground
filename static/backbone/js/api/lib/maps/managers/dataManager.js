@@ -13,7 +13,7 @@ define(
 	 * this data.
 	 * @class DataManager
 	 */
-	localground.maps.managers.DataManager = function(opts) {
+	localground.maps.managers.DataManager = function(sb) {
 		/**
 		 * A dictionary of the various data types available (given
 		 * the projects that have been selected), and the corresponding
@@ -32,16 +32,30 @@ define(
 		
 		this.eventManager = null;
 		
-		this.initialize = function(opts) {
-			opts = opts || {};
-			$.extend(this, opts);
+		this.initialize = function(sb) {
+			this.sb = sb;
+			sb.listen({ 
+                "load-projects": this.fetchProjects
+			});
 		};
 		
 		/**
 		 * Fetches the user's available projects from the data API.
 		 */
 		this.fetchProjects = function(){
-			this.projects.fetch({ reset: true, async: false})
+			var that = this;
+			this.projects.fetch({
+				reset: true,
+				success: function(){
+					console.log('notifying');
+					console.log(that.projects);
+					that.sb.notify({
+						type : "projects-loaded",
+						data: {projects: that.projects}
+					});
+					console.log('notified');
+				}
+			});
 		};
 		
 		/**
@@ -145,10 +159,10 @@ define(
 				// important: this trigger enables the overlayManager
 				// to create a new overlay for each model where the
 				// GeoJSON geometry is defined.
-				this.eventManager.trigger(
-					localground.events.EventTypes.NEW_COLLECTION,
-					this.collections[key]
-				);
+				this.sb.notify({
+					type : "new-collection-created",
+					data : {collection: this.collections[key] } 
+				});
 				
 				//A few special hacks for form data:
 				if (key.indexOf("form") != -1) {
@@ -170,7 +184,7 @@ define(
 			alert("todo: implement");
 		};
 		
-		this.initialize(opts);
+		this.initialize(sb);
 	};
 	return localground.maps.managers.DataManager;
 });

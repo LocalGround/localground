@@ -48,6 +48,7 @@ define(["backbone",
 		initialize: function(sb, opts){
 			this.sb = sb;
 			$.extend(this, opts);
+			this.restoreState();
 			
 			//render map:
 			this.renderMap();
@@ -111,43 +112,40 @@ define(["backbone",
 		addEventHandlers: function(sb){
 			//add notifications:
 			google.maps.event.addListener(this.map, "maptypeid_changed", function( evnt ) {
-				sb.notify({ type : "change-tiles" });
+				sb.notify({ type : "map-tiles-changed" });
 			});
-			google.maps.event.addListener(this.map, "zoom_changed", function( evnt ) {
-				sb.notify({ type : "zoom-changed" });
+			google.maps.event.addListener(this.map, "idle", function( evnt ) {
+				sb.notify({ type : "map-extents-changed" });
 			});
-			
+
 			//add listeners:
 			sb.listen({ 
-                "change-tiles": this.saveState,
-				"zoom-changed": this.saveState
+                "map-tiles-changed": this.saveState,
+				"map-extents-changed": this.saveState
 			});
 		},
 		saveState: function(data){
 			var latLng = this.map.getCenter();
-			this.sb.save({
+			this.sb.saveState({
 				center: [latLng.lng(), latLng.lat()],
 				zoom: this.map.getZoom(),
 				basemapID: this.tileManager.getMapTypeId()
 			});
 		},
-		getZoom: function() {
-			return this.map.getZoom();
-		},
-		setZoom: function(zoomLevel) {
-			this.map.setZoom(zoomLevel);
-		},
-		getCenter: function() {
-			return this.map.getCenter();
-		},
-		setCenter: function(latLng) {
-			this.map.setCenter(latLng);
-		},
-		setBasemap: function(basemapID) {
-			tileController.setActiveMapType(basemapID);
-		},
-		getBasemapID: function(basemapID) {
-			return tileController.getMapTypeId();
+		restoreState: function(){
+			var state = this.sb.restoreState();
+			if (state) {
+				if (state.center) {
+					this.defaultLocation.center = new google.maps.LatLng(
+						state.center[1],
+						state.center[0]
+					);	
+				}
+				if (state.zoom)
+					this.defaultLocation.zoom = state.zoom;
+				if (state.basemapID)
+					this.activeMapTypeID = state.basemapID;
+			}
 		}
 	});
 	return localground.maps.views.Basemap;

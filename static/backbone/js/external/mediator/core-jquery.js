@@ -72,22 +72,27 @@ define(['jquery', 'sandbox'], function(jQuery, Sandbox) {
             },
             registerEvents : function (evts, mod) { 
                 if (this.is_obj(evts) && mod) { 
-                    if (moduleData[mod]) { 
-                            moduleData[mod].events = evts; 
+                    if (moduleData[mod]) {
+                        if (moduleData[mod].events == null) {
+                            moduleData[mod].events = evts;
+                        }
+                        else {
+                            $.extend(moduleData[mod].events, evts);
+                        }
+                        
+                        this.log(1, moduleData);
                     } else { 
-                            this.log(1, ""); 
+                        this.log(1, "mod \"" + mod + "\" not found"); 
                     } 
                 } else { 
-                    this.log(1, ""); 
+                    this.log(1, "module is null"); 
                 } 
             }, 
             triggerEvent : function (evt) { 
                 var mod; 
                 for (key in moduleData) { 
                     if (moduleData.hasOwnProperty(key)){
-                        
                         mod = moduleData[key];
-                        console.log(mod);
                         if (mod.events && mod.events[evt.type] && mod.instance) {
                             //bind the function to the calling instance:
                             mod.events[evt.type].call(mod.instance, evt.data);
@@ -171,7 +176,14 @@ define(['jquery', 'sandbox'], function(jQuery, Sandbox) {
                 else
                     $.extend( cache[mod], object);
                 localStorage['map-editor'] = JSON.stringify(cache);
-                alert(JSON.stringify(cache));
+                this.log(1, JSON.stringify(cache));
+            },
+            getFromLocalStorage: function(mod, key) {
+                var cache = localStorage['map-editor'];
+                if (cache == null) { return null; }
+                cache = JSON.parse(cache);
+                if(key && cache[mod]) { return cache[mod][key]; }
+                return cache[mod];
             }
         };
     }());

@@ -15,8 +15,8 @@ define([
 		 */
 		
 		/** A {@link localground.maps.data.DataManager} object */
-		dataManager: null,
-		
+		projects: null,
+		el: '.projects-menu',
 		/**
 		 * Initializes the object's dataManager based on 
 		 * the "opts" parameter. Also fetches the available
@@ -26,9 +26,15 @@ define([
 		 * Dictionary of initialization options
 		 * @param {localground.maps.data.DataManager} opts.dataManager
 		*/
-        initialize: function(opts) {
-			$.extend(this, opts);
-            this.dataManager.fetchProjects();
+        initialize: function(sb) {
+			this.sb = sb;
+			this.projects = [],
+			sb.notify({
+				type : "load-projects"
+			});
+			sb.listen({ 
+                "projects-loaded": this.renderProjects
+			});
         },
 		/** A rendered projectItem template */
 		template: _.template(projectItem),
@@ -36,6 +42,12 @@ define([
 			'click .cb-project': 'toggleProjectData',
 			'click div': 'stopPropagation',
 			'click .project-item': 'triggerToggleProjectData'
+		},
+		renderProjects: function(data){
+			console.log(this);
+			this.projects = data.projects;
+			console.log(this.projects);
+			this.render();
 		},
 		/**
 		 * Renders the project Menu
@@ -45,11 +57,11 @@ define([
 		*/
 		render: function() {
 			this.$el.empty();
-			this.dataManager.projects.each(function(item) {
+			if (this.projects.length == 0) { return; }
+			this.projects.each(function(item) {
 				this.renderProject(item);
 			}, this);
 			this.delegateEvents();
-			return this;
 		},
 		/**
 		 * Renders each individual project listing
@@ -60,6 +72,8 @@ define([
 		 * Returns a reference to the list item HTML element
 		*/
 		renderProject: function(item) {
+			this.$el.append(item.get("name") + "<br>");
+			return;
 			var itemView = new localground.maps.views.Item({
 				model: item,
 				template: _.template( projectItem ),
@@ -97,6 +111,9 @@ define([
 			else
 				this.dataManager.removeDataByProjectID($cb.val());
 			e.stopPropagation();
+		},
+		destroy: function(){
+			alert("todo: implement");
 		}
     });
     return localground.maps.views.ProjectsMenu;

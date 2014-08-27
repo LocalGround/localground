@@ -1,9 +1,10 @@
 define(["backbone",
+		"core",
 		"text!" + templateDir + "/sidepanel/dataPanelHeader.html",
 		"views/maps/sidepanel/projectsMenu",
 		"views/maps/sidepanel/items",
 		"lib/maps/managers/workspaceManager"],
-	   function(Backbone, dataPanelHeader) {
+	   function(Backbone, CORE, dataPanelHeader) {
 	/**
 	 * A class that handles display and rendering of the
 	 * data panel and projects menu
@@ -13,12 +14,12 @@ define(["backbone",
 		/**
 		 * @lends localground.maps.views.DataPanel#
 		 */
-		
+		el: '#panels',
 		template: _.template( dataPanelHeader ),
 		dataManager: null,
 		eventManager: null,
 		basemap: null,
-		projectsMenu: null,
+		//projectsMenu: null,
 		dataViews: {},
 		events: {
 			'click #save_workspace': 'saveWorkspace'
@@ -36,35 +37,38 @@ define(["backbone",
 		 * objects.
 		 *
 		 */
-		initialize: function(opts){
+		initialize: function(sb){
+			this.sb = sb;
 			var that = this;
-			$.extend(this, opts);
 			
-			this.projectsMenu = new localground.maps.views.ProjectsMenu({
-				dataManager: this.dataManager,
-				eventManager: this.eventManager
+			CORE.create_module("projects-menu", function(sb){
+				return new localground.maps.views.ProjectsMenu(sb);	
 			});
+			CORE.start("projects-menu");
+			//this.projectsMenu = new localground.maps.views.ProjectsMenu(sb);
 			
-			this.workspaceManager = new localground.maps.managers.WorkspaceManager({
+			/*this.workspaceManager = new localground.maps.managers.WorkspaceManager({
 				dataViews: this.dataViews,
 				basemap: this.basemap,
 				dataManager: this.dataManager,
 				eventManager: this.eventManager
-			});
+			});*/
 			this.render();
 			
 			// Listen for the "new_collection" event. On each new
 			// collection event add a new ItemsView to the DataPanel.
-			this.eventManager.on(localground.events.EventTypes.NEW_COLLECTION, function(collection){
-				var items = new localground.maps.views.Items({
-					collection: collection,
-					map: that.basemap.map,
-					eventManager: that.eventManager
-				});
-				that.$el.find('.pane-body').append(items.render().$el);
+			sb.listen({ 
+                "new-collection-created": this.createItemsView
 			});
 			
-			this.eventManager.trigger("loaded");
+		},
+		
+		createItemsView: function(collection){
+			//todo: register this module too:
+			var items = new localground.maps.views.Items(sb, {
+				collection: collection,
+			});
+			this.$el.find('.pane-body').append(items.render().$el);
 		},
 		
 		/**
@@ -73,9 +77,7 @@ define(["backbone",
 		renderProjectsMenu: function(){
 			if (this.$el.find('.projects-menu').get(0) == null) {
 				this.$el.empty().append(this.template());
-				this.$el.find('.projects-menu').append(
-					this.projectsMenu.render().el
-				);
+				//this.projectsMenu.render();
 			}	
 		},
 		
@@ -89,6 +91,10 @@ define(["backbone",
 			this.renderProjectsMenu();
 			this.resize();
 			return this;
+		},
+		
+		destroy: function(){
+			alert("todo: implement");
 		},
 		
 		resize: function(){

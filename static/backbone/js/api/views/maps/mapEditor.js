@@ -112,28 +112,6 @@ define(
 				that.dataPanel.resize();	
 			});
 			
-			this.eventManager.on("loaded", function(){
-				that.restoreData();
-			});
-		},
-		
-		/** */
-		restoreData: function(){
-			//return;
-			try { var workspace = JSON.parse(localStorage["workspace"]); }
-			catch(e) { return; }
-			
-			for (var i=0; i < workspace.project_ids.length; i++) {
-				this.dataManager.fetchDataByProjectID(workspace.project_ids[i]);
-			}
-			//restore map focus:
-			var center = new google.maps.LatLng(
-							workspace.center[1],
-							workspace.center[0]
-						);											  
-			this.basemap.setCenter(center);
-			this.basemap.setZoom(workspace.zoom);
-			this.basemap.setBasemap(workspace.basemapID);
 		}
 	});
 	return localground.maps.views.MapEditor;

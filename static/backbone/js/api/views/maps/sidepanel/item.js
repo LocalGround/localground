@@ -12,9 +12,6 @@ define(["backbone"], function(Backbone) {
 		/** A rendered item template */
         template: null,
 		
-		/** A google.maps.Map object */
-        map: null,
-		
 		/** A Backbone model */
 		model: null,
 		
@@ -49,11 +46,10 @@ define(["backbone"], function(Backbone) {
 		 * Backbone Model
 		 * @param {Object} opts.template
 		 * Rendered templates
-		 * @param {Object} opts.map
-		 * google.maps.Map object
 		 */
-        initialize: function(opts) {
+        initialize: function(sb, opts) {
             $.extend(this, opts);
+			this.sb = sb;
             this.listenTo(this.model, 'destroy', this.remove); 
         },
 		

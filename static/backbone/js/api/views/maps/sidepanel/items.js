@@ -24,9 +24,6 @@ define(["backbone",
 		/** A data collection (extends Backbone.Collection) */
 		collection: null,
 		
-		/** A Google Map */
-		map: null,
-		
 		events: {
 			'click .check-all': 'checkAll',
 			'click .zoom-to-extent': 'zoomToExtent',
@@ -40,9 +37,9 @@ define(["backbone",
 		 * @param {Object} opts
 		 * A dictionary of options.
 		 * @param {Backbone.Collection} opts.collection
-		 * @param {google.maps.Map} opts.map
 		 */
-		initialize: function(opts) {
+		initialize: function(sb, opts) {
+			this.sb = sb;
 			$.extend(this, opts);
 			
 			this.visibleItems = {};
@@ -72,11 +69,9 @@ define(["backbone",
 		 */
 		renderItem: function(item, isVisible) {
 			this.$el.show();
-			var view = new localground.maps.views.Item({
+			var view = new localground.maps.views.Item(sb, {
 				model: item,
 				template: _.template( this.getItemTemplate() ),
-				map: this.map,
-				eventManager: this.eventManager
 			});
 			this.$el
 				.find(".collection-data")

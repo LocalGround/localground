@@ -3,9 +3,12 @@ define([], function() {
         create : function (core, module_selector) { 
             //var CONTAINER = core.dom.query('#' + module_selector); 
             return {
-                save: function(obj, replace) {
+                saveState: function(obj, replace) {
                     replace = replace || false;
                     core.saveToLocalStorage(module_selector, obj, replace);
+                },
+                restoreState: function(key){
+                    return core.getFromLocalStorage(module_selector, key);
                 },
                 notify : function (evt) {
                     if(core.is_obj(evt) && evt.type) { 

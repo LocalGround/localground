@@ -63,16 +63,12 @@
 					});
 					
 					CORE.create_module("data-manager", function(sb){
-						return new localground.maps.managers.DataManager({
-							eventManager: sb.eventManager
-						});	
+						return new localground.maps.managers.DataManager(sb);	
 					});
 					
-					/*CORE.create_module("data-panel", function(sb){
-						return new localground.maps.views.DataPanel({
-							eventManager: sb.eventManager
-						});	
-					});*/
+					CORE.create_module("data-panel", function(sb){
+						return new localground.maps.views.DataPanel(sb);	
+					});
 					
 					CORE.start_all();
 				}
