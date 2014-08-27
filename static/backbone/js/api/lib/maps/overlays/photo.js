@@ -5,9 +5,9 @@ define(["lib/maps/overlays/point"], function() {
      * Audio, PointMarker, and Record class can consume 
      * @class Photo
      */
-	localground.maps.overlays.Photo = function (opts) {
+	localground.maps.overlays.Photo = function (sb, opts) {
 		
-		localground.maps.overlays.Point.call(this, opts);
+		localground.maps.overlays.Point.call(this, sb, opts);
 		
 		/**
 		 * Retrieve a photo map marker, depending on the map's zoom level

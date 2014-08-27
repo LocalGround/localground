@@ -3,13 +3,13 @@ define(["lib/maps/geometry/point"], function() {
      * Class that controls marker point model overlays.
      * @class Overlay
      */
-	localground.maps.overlays.Overlay = function (opts) {
+	localground.maps.overlays.Overlay = function (sb, opts) {
 
 		opts = opts || {};
-		this.map = opts.map;
+		this.sb = sb;
+		this.map = sb.getMap();
 		this.model = opts.model;
 		this.isVisible = opts.isVisible;
-		this.eventManager = opts.eventManager;
 		
 		/** called when object created */
 		this.initialize = function(){
@@ -38,15 +38,23 @@ define(["lib/maps/geometry/point"], function() {
 			var that = this;
 			//attach click event:
 			google.maps.event.addListener(this.googleOverlay, 'click', function() {
-				that.eventManager.trigger("show_bubble", that.model, that.getCenter());
+				that.sb.notify({
+					type : "show-bubble",
+					data : { model: that.model, center: that.getCenter() } 
+				});
 			});
 			//attach mouseover event:
 			google.maps.event.addListener(this.googleOverlay, 'mouseover', function() {
-				that.eventManager.trigger("show_tip", that.model, that.getCenter());
+				that.sb.notify({
+					type : "show-tip",
+					data : { model: that.model, center: that.getCenter() } 
+				});
 			});
 			//attach mouseout event:
 			google.maps.event.addListener(this.googleOverlay, 'mouseout', function() {
-				that.eventManager.trigger("hide_tip");
+				that.sb.notify({
+					type : "hide-tip",
+				});
 			});
 		};
 		
@@ -80,7 +88,10 @@ define(["lib/maps/geometry/point"], function() {
 		this.getCenter = function(){
 			return this.getGoogleOverlay().getPosition();
 		};
-				
+		
+		this.destroy = function(){
+			alert("bye");	
+		};
 	};
 	return localground.maps.overlays.Overlay;
 });

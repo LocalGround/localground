@@ -17,9 +17,9 @@ define(["backbone",
 		/** A rendered dataCollectionView template */
 		template: _.template( collectionHeader ),
 		
-		eventManager: null,
-		
 		visibleItems: null,
+		
+		sb: null,
 		
 		/** A data collection (extends Backbone.Collection) */
 		collection: null,
@@ -41,8 +41,7 @@ define(["backbone",
 		initialize: function(sb, opts) {
 			this.sb = sb;
 			$.extend(this, opts);
-			this.setElement(opts.el)
-			
+			this.setElement(opts.el);
 			this.visibleItems = {};
 			this.render();
 			this.collection.on('add', this.renderItem, this);
@@ -58,7 +57,8 @@ define(["backbone",
 			this.$el.append(this.template({
 				name: this.collection.name,
 				isVisible: opts.isVisible,
-				isExpanded: opts.isExpanded
+				isExpanded: opts.isExpanded,
+				key: this.collection.key
 			}));
 			if (this.collection.length == 0) { this.$el.hide(); }
 			return this;
@@ -71,7 +71,7 @@ define(["backbone",
 		renderItem: function(item, isVisible) {
 			this.$el.show();
 			var $container = $("<div></div>");
-			this.$el.append($container);
+			this.$el.find(".collection-data").append($container);
 			this.sb.loadSubmodule(
 				"item-" + item.getKey() + "-" + item.id, localground.maps.views.Item,
 				{
@@ -80,15 +80,6 @@ define(["backbone",
 					el: $container
 				}
 			);
-			/*
-			var view = new localground.maps.views.Item(sb, {
-				model: item,
-				template: _.template( this.getItemTemplate() ),
-			});
-			this.$el
-				.find(".collection-data")
-				.append(view.render({isVisible: true}).el);
-			*/
 		},
 		/**
 		 * Selects all child data elements in the Items View, based
@@ -104,7 +95,10 @@ define(["backbone",
 			//expand panel if checked and hidden:
 			if (isChecked) {
 				this.isVisible = true;
-				this.eventManager.trigger(localground.events.EventTypes.SHOW_ALL, $cb.val());
+				this.sb.notify({ 
+					type : "show-all", 
+					data : { key: $cb.val() } 
+				});
 				
 				// Expand panel if user turns on the checkbox.
 				// Not sure if this is a good UI decision.
@@ -113,7 +107,10 @@ define(["backbone",
 					this.showHide($symbol);
 			}
 			else {
-				this.eventManager.trigger(localground.events.EventTypes.HIDE_ALL, $cb.val());
+				this.sb.notify({ 
+					type : "hide-all", 
+					data : { key: $cb.val() } 
+				});
 			}
 		},
 		/**
@@ -122,7 +119,10 @@ define(["backbone",
 		 */
 		zoomToExtent: function(e){
 			var $cb = $(e.currentTarget).parent().find('input');
-			this.eventManager.trigger(localground.events.EventTypes.ZOOM_TO_EXTENT, $cb.val());
+			this.sb.notify({ 
+				type : "zoom-to-extent", 
+				data : { key: $cb.val() } 
+			});
 		},
 		
 		triggerShowHide: function(e){
@@ -139,26 +139,16 @@ define(["backbone",
 			var show = $symbol.hasClass('fa-caret-right');
 			if (show) {
 				this.isExpanded = true;
-				this.eventManager.trigger(localground.events.EventTypes.EXPAND);
+				this.sb.notify({ type : "expand" });
 				$symbol.removeClass('fa-caret-right').addClass('fa-caret-down');
 				$panel.show("slow");
 			}
 			else {
 				this.isExpanded = false;
-				this.eventManager.trigger(localground.events.EventTypes.CONTRACT);
+				this.sb.notify({ type : "contract" });
 				$symbol.removeClass('fa-caret-down').addClass('fa-caret-right');
 				$panel.hide("slow");
 			}
-		},
-		
-		/** Helper function for the workspace serializer */
-		getVisibleItemList: function(){
-			var visList = [];
-			for(key in this.itemViews) {
-				if (this.itemViews[key].isVisible)
-					visList.push(key);
-			}
-			return visList;
 		},
 		
 		getItemTemplate: function(){
@@ -168,19 +158,6 @@ define(["backbone",
 		
 		destroy: function(){
 			alert("todo: implement");
-		},
-		
-		restoreState: function(){
-			try { var workspace = JSON.parse(localStorage["workspace"]); }
-			catch(e) { return; }
-			var state = workspace.elements[this.collection.key];
-			if (state == null) { return; }
-			this.isVisible = state.isVisible;
-			this.isExpanded = state.isExpanded;
-			var that = this;
-			$.each(state.visibleItems, function(){
-				that.visibleItems[this] = true;	
-			});
 		}
 	});
 	return localground.maps.views.Items;

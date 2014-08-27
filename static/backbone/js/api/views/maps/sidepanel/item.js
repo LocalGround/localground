@@ -60,19 +60,24 @@ define(["backbone"], function(Backbone) {
 		},
 		
 		/**
-		 * Triggers the eventManager's global event handler, so that
-		 * other objects (like the overlayManager) who are listening
-		 * for this event can take measures.
+		 * Notifies other objects (like the overlayManager)
+		 * who are listening for this event can take measures.
 		 * @param {Boolean} isChecked
 		 * A flag that tells the method whether to turn the overlay
 		 * on or off.
 		 */
 		toggleElement: function(isChecked){
 			if (isChecked) {
-				this.eventManager.trigger("show_overlay", this.model);
+				this.sb.notify({ 
+					type : "show-overlay", 
+					data : { model: this.model } 
+				}); 
 			}
 			else {
-				this.eventManager.trigger("hide_overlay", this.model);	
+				this.sb.notify({ 
+					type : "hide-overlay", 
+					data : { model: this.model } 
+				}); 
 			}
 		},
 		
@@ -105,8 +110,12 @@ define(["backbone"], function(Backbone) {
 		 * @param {Event} e
 		 */
 		zoomTo: function(e){
-			if (this.model.get("geometry"))
-				this.eventManager.trigger("zoom_to_overlay", this.model);	
+			if (this.model.get("geometry")) {
+				this.sb.notify({ 
+					type : "zoom-to-overlay", 
+					data : { model: this.model } 
+				}); 
+			}
             e.stopPropagation();
 		},
 		
@@ -141,13 +150,20 @@ define(["backbone"], function(Backbone) {
 
 		/** Show a tooltip on the map if the geometry exists */
 		showTip: function() {
-			if (this.model.get("geometry") && this.detectIfVisible())
-				this.eventManager.trigger("show_tip", this.model);	
+			if (this.model.get("geometry") && this.detectIfVisible()) {
+				this.sb.notify({ 
+					type : "show-tip", 
+					data : { model: this.model } 
+				}); 	
+			}
 		},
 		
 		/** Hide the map tooltip */
 		hideTip: function() {
-			this.eventManager.trigger("hide_tip");	
+			this.sb.notify({ 
+				type : "hide-tip", 
+				data : { model: this.model } 
+			});
 		},
 		
 		destroy: function(){

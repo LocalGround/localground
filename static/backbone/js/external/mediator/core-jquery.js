@@ -41,7 +41,9 @@ define(['jquery', 'sandbox'], function(jQuery, Sandbox) {
                 var mod = moduleData[moduleID];
                 if (mod) { 
                     mod.instance = new mod.create(Sandbox.create(this, moduleID), mod.initOpts); 
-                } 
+                    return mod.instance;
+                }
+                return null;
             }, 
             start_all : function () { 
                 var moduleID; 

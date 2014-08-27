@@ -16,8 +16,7 @@ define(
 		
 		/** A google.maps.Map object */
 		map: null,
-		/** A Backbone.Events object */
-		eventManager: null,
+		
 		/** A dictionary indexing the various
 		 * {@link localground.maps.overlays.Overlay} objects.
 		 */
@@ -41,19 +40,15 @@ define(
 		 * operations (batch operations like turn on everything, or
 		 * zoom to extents).
 		 */
-		initialize: function(opts) {
+		initialize: function(sb, opts) {
+			this.sb = sb;
+			this.map = sb.getMap();
 			$.extend(this, opts);
 			this.overlays = {};
 			this.visibleItems = {}
 			this.key = this.collection.key;
 			var that = this;
-			
-			this.restoreState();
-			/*
-			 *this.collection.each(function(model){
-				that.render(model);
-			});
-			*/
+
 			//listen for new data:
 			this.collection.on('add', this.render, this);
 			
@@ -66,23 +61,33 @@ define(
 				}	
 			});
 			
-			this.eventManager.on(localground.events.EventTypes.SHOW_OVERLAY, function(model){
-				if(!that.belongs(model)) { return; }
-				var overlay = that.getOverlay(model);
-				overlay.show();
-				overlay.centerOn();
+			this.sb.listen({
+				"show-overlay": this.showOverlay,
+				"hide-overlay": this.hideOverlay,
+				"zoom-to-overlay": this.zoomToOverlay,
 			});
-			
-			this.eventManager.on(localground.events.EventTypes.HIDE_OVERLAY, function(model){
-				if(!that.belongs(model)) { return; }
-				that.getOverlay(model).hide();
-			});
-			
-			this.eventManager.on(localground.events.EventTypes.ZOOM_TO_OVERLAY, function(model){
-				if(!that.belongs(model)) { return; }
-				var overlay = that.getOverlay(model);
-				overlay.zoomTo();
-				that.eventManager.trigger("show_bubble", model, overlay.getCenter());
+		},
+		
+		showOverlay: function(data) {
+			if(!this.belongs(data.model)) { return; }
+			var overlay = this.getOverlay(data.model);
+			overlay.show();
+			overlay.centerOn();
+		},
+		hideOverlay: function(data) {
+			if(!this.belongs(data.model)) { return; }
+			this.getOverlay(data.model).hide();
+		},
+		zoomToOverlay: function(data) {
+			if(!this.belongs(data.model)) { return; }
+			var overlay = this.getOverlay(data.model);
+			overlay.zoomTo();
+			this.sb.notify({
+				type: "show-bubble",
+				data: {
+					model: data.model,
+					center: overlay.getCenter()
+				}
 			});
 		},
 		
@@ -92,7 +97,7 @@ define(
 		 * belongs to the markers collection.
 		 */
 		belongs: function(model){
-			return model.collection.key == this.key;
+			return model.getKey() == this.key;
 		},
 		
 		/**
@@ -110,10 +115,8 @@ define(
 			var configKey = key.split("_")[0];
 			Overlay = localground.config.Config[configKey].Overlay;
 			var isVisible = this.isVisible || (this.visibleItems[id] || false);
-			this.overlays[id] = new Overlay({
+			this.overlays[id] = new Overlay(this.sb, {
 				model: model,
-				map: this.map,
-				eventManager: this.eventManager,
 				isVisible: isVisible
 			});
 		},
@@ -151,15 +154,8 @@ define(
 		getOverlay: function(model) {
 			return this.overlays[model.id];
 		},
-		restoreState: function(){
-			try { var workspace = JSON.parse(localStorage["workspace"]); }
-			catch(e) { return; }
-			var state = workspace.elements[this.collection.key];
-			if (state == null) { return; }
-			var that = this;
-			$.each(state.visibleItems, function(){
-				that.visibleItems[this] = true;	
-			});
+		destroy: function(){
+			alert("bye");	
 		}
 	});
 	return localground.maps.views.OverlayGroup;

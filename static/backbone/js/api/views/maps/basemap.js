@@ -108,6 +108,7 @@ define(["backbone",
 			};
 			this.map = new google.maps.Map(document.getElementById(this.mapContainerID),
 										mapOptions);
+			this.sb.setMap(this.map);
 		},
 		addEventHandlers: function(sb){
 			//add notifications:

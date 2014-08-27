@@ -6,9 +6,9 @@ define([
      * Class that controls marker point model overlays.
      * @class Point
      */
-	localground.maps.overlays.Point = function (opts) {
+	localground.maps.overlays.Point = function (sb, opts) {
 		
-		localground.maps.overlays.Overlay.call(this, opts);
+		localground.maps.overlays.Overlay.call(this, sb, opts);
 		/**
 			Available SVG shapes.
 			@see See <a href="http://raphaeljs.com/icons/#location">Shape Wizard</a>

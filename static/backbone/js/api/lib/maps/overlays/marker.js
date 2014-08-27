@@ -8,16 +8,16 @@ define([
      * Extends @link {localground.maps.overlays.Overlay}.
      * @class Marker
      */
-	localground.maps.overlays.Marker = function (opts) {
+	localground.maps.overlays.Marker = function (sb, opts) {
 		
 		/** Determine which overlay object Marker should extend */
 		var geoJSON = opts.model.get("geometry");
 		if (geoJSON.type == 'Point')
-			localground.maps.overlays.Point.call(this, opts);
+			localground.maps.overlays.Point.call(this, sb, opts);
 		else if (geoJSON.type == 'LineString')
-			localground.maps.overlays.Polyline.call(this, opts);
+			localground.maps.overlays.Polyline.call(this, sb, opts);
 		else if (geoJSON.type == 'Polygon')
-			localground.maps.overlays.Polygon.call(this, opts);
+			localground.maps.overlays.Polygon.call(this, sb, opts);
 		else
 			alert('Unknown Geometry Type');
 				

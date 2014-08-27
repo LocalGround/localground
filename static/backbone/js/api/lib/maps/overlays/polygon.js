@@ -6,8 +6,8 @@ define([
      * Class that controls marker point model overlays.
      * @class Polygon
      */
-	localground.maps.overlays.Polygon = function (opts) {
-		localground.maps.overlays.Overlay.call(this, opts);
+	localground.maps.overlays.Polygon = function (sb, opts) {
+		localground.maps.overlays.Overlay.call(this, sb, opts);
 		
 		/** Shortcut to @link {localground.maps.geometry.Point} object */
 		var polygon = new localground.maps.geometry.Polygon();

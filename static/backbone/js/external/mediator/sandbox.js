@@ -30,7 +30,15 @@ define([], function() {
                 },
                 loadSubmodule: function(module_id, creator, opts){
                     core.create_module(module_id, creator, opts);
-                    core.start(module_id);
+                    return core.start(module_id);
+                },
+                setMap: function(map) {
+                    //not sure if this makes sense to do here
+                    core.map = map;
+                },
+                getMap: function() {
+                    //not sure if this makes sense to do here
+                    return core.map;
                 }
                 
                 /*

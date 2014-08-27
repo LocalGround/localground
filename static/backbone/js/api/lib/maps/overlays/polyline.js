@@ -6,8 +6,8 @@ define([
      * Class that controls marker point model overlays.
      * @class Point
      */
-	localground.maps.overlays.Polyline = function (opts) {
-		localground.maps.overlays.Overlay.call(this, opts);
+	localground.maps.overlays.Polyline = function (sb, opts) {
+		localground.maps.overlays.Overlay.call(this, sb, opts);
 		
 		/** Shortcut to @link {localground.maps.geometry.Polyline} object */
 		var polyline = new localground.maps.geometry.Polyline();
