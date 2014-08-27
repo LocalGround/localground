@@ -16,32 +16,31 @@ define(['jquery', 'sandbox'], function(jQuery, Sandbox) {
             debug: function(on){
                 debug = on ? true : false;    
             },
-            create_module: function (moduleID, creator) { 
-                var temp; 
+            create_module: function (moduleID, creator, opts) { 
+                var temp;
+                opts = opts || {};
                 if (typeof moduleID === 'string' && typeof creator === 'function') {
-                    //question: where is this creator function?
-                    temp = creator(Sandbox.create(this, moduleID));
-                    //cheching to see if the 
-                    if (temp.destroy && typeof temp.destroy === 'function') { 
+                    if( creator.prototype.destroy && typeof creator.prototype.destroy === 'function') {
                         moduleData[moduleID] = { 
                             create : creator, 
-                            instance : null 
-                        }; 
-                        temp = null; 
-                    } else { 
+                            instance : null,
+                            initOpts: opts
+                        };
+                    }
+                    else {
                         this.log(1, "Module \"" + moduleID + "\" Registration: FAILED: \
                                     instance has no destroy functions"); 
-                    } 
-                } else { 
+                    }
+                }
+                else {
                     this.log(1, "Module \"" + moduleID +  "\" Registration: FAILED: \
-                                    one or more arguments are of incorrect type" ); 
-             
-                } 
+                                    one or more arguments are of incorrect type" );     
+                }
             },
             start : function (moduleID) { 
-                var mod = moduleData[moduleID]; 
+                var mod = moduleData[moduleID];
                 if (mod) { 
-                    mod.instance = mod.create(Sandbox.create(this, moduleID)); 
+                    mod.instance = new mod.create(Sandbox.create(this, moduleID), mod.initOpts); 
                 } 
             }, 
             start_all : function () { 

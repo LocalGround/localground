@@ -16,70 +16,64 @@ define(["backbone",
 		 */
 		el: '#panels',
 		template: _.template( dataPanelHeader ),
-		dataManager: null,
-		eventManager: null,
-		basemap: null,
-		//projectsMenu: null,
-		dataViews: {},
 		events: {
 			'click #save_workspace': 'saveWorkspace'
 		},
 		
 		/**
 		 * Initializes the dataPanel
-		 * @param {Object} opts
-		 * A dictionary of available options
-		 * @param {google.maps.Map} opts.map
-		 * A reference to the UI's Google Map object
-		 * @param {localground.maps.managers.DataManager} opts.dataManager
-		 * @param {Backbone.Events} opts.eventManager
-		 * Coordinates the triggering and listening to events across shared
-		 * objects.
-		 *
+		 * @param {Object} sb
+		 * The sandbox.
 		 */
-		initialize: function(sb){
+		initialize: function(sb, haltInitialization) {
+			//alert(haltInitialization);
+			console.log("dataPanel is initializing");
 			this.sb = sb;
-			var that = this;
-			
-			CORE.create_module("projects-menu", function(sb){
-				return new localground.maps.views.ProjectsMenu(sb);	
-			});
-			CORE.start("projects-menu");
-			//this.projectsMenu = new localground.maps.views.ProjectsMenu(sb);
-			
-			/*this.workspaceManager = new localground.maps.managers.WorkspaceManager({
-				dataViews: this.dataViews,
-				basemap: this.basemap,
-				dataManager: this.dataManager,
-				eventManager: this.eventManager
-			});*/
 			this.render();
+			
+			// asynchronously register new modules:
+			sb.loadSubmodule(
+				"projects-menu",
+				localground.maps.views.ProjectsMenu,
+				{ el: this.$el.find('.projects-menu') }
+			);
 			
 			// Listen for the "new_collection" event. On each new
 			// collection event add a new ItemsView to the DataPanel.
 			sb.listen({ 
-                "new-collection-created": this.createItemsView
+                "new-collection-created": this.createItemsView,
+				"window-resized": this.resize
 			});
 			
 		},
 		
-		createItemsView: function(collection){
+		createItemsView: function(data){
+			var $container = $("<div></div>");
+			this.$el.find('.pane-body').append($container);
+			this.sb.loadSubmodule(
+						"items-" + data.collection.key, 
+						localground.maps.views.Items,
+						{
+							collection: data.collection,
+							el: $container
+						}
+					);
 			//todo: register this module too:
-			var items = new localground.maps.views.Items(sb, {
-				collection: collection,
-			});
-			this.$el.find('.pane-body').append(items.render().$el);
+			//var items = new localground.maps.views.Items(sb, {
+			//	collection: collection,
+			//});
+			//this.$el.find('.pane-body').append(items.render().$el);
 		},
 		
 		/**
 		 * render projects menu if it doesn't currently exist
-		 */
+		 
 		renderProjectsMenu: function(){
 			if (this.$el.find('.projects-menu').get(0) == null) {
 				this.$el.empty().append(this.template());
 				//this.projectsMenu.render();
 			}	
-		},
+		},*/
 		
 		/**
 		 * Renders the HTML for the data panel. Called everytime
@@ -87,8 +81,7 @@ define(["backbone",
 		 * only rendered once.
 		 */
 		render: function() {
-			//render projects menu:
-			this.renderProjectsMenu();
+			this.$el.empty().append(this.template());
 			this.resize();
 			return this;
 		},

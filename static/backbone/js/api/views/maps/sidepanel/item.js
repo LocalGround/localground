@@ -49,7 +49,9 @@ define(["backbone"], function(Backbone) {
 		 */
         initialize: function(sb, opts) {
             $.extend(this, opts);
+			this.setElement(opts.el)
 			this.sb = sb;
+			this.render();
             this.listenTo(this.model, 'destroy', this.remove); 
         },
 		
@@ -79,6 +81,7 @@ define(["backbone"], function(Backbone) {
 		 * @param {Event} e
 		 */
 		toggleCheckbox: function(e){
+			alert("toggle");
 			this.toggleElement($(e.currentTarget).attr('checked'));
             e.stopPropagation();
 		},
@@ -111,14 +114,14 @@ define(["backbone"], function(Backbone) {
 		 * Renders the HTML from the model
 		 */
         render: function(opts) {
-			opts = opts || {};
+			//todo: restore state here:
+			opts = opts || { isVisible: true};
 			$.extend(opts, this.model.toJSON());
 			//for the marker model:
 			if (this.model.getDescriptiveText) {
 				opts.descriptiveText = this.model.getDescriptiveText();
 			}
-            $(this.el).html(this.template(opts));
-            return this;
+            this.$el.html(this.template(opts));
         },
 		
 		/**
@@ -146,6 +149,10 @@ define(["backbone"], function(Backbone) {
 		hideTip: function() {
 			this.eventManager.trigger("hide_tip");	
 		},
+		
+		destroy: function(){
+			alert("todo: implement");
+		}
     });
     return localground.maps.views.Item;
 });

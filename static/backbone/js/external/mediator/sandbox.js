@@ -28,6 +28,10 @@ define([], function() {
                 find : function (selector) { 
                     return CONTAINER.query(selector); 
                 },
+                loadSubmodule: function(module_id, creator, opts){
+                    core.create_module(module_id, creator, opts);
+                    core.start(module_id);
+                }
                 
                 /*
                 addEvent : function (element, evt, fn) { 

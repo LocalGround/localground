@@ -41,9 +41,10 @@ define(["backbone",
 		initialize: function(sb, opts) {
 			this.sb = sb;
 			$.extend(this, opts);
+			this.setElement(opts.el)
 			
 			this.visibleItems = {};
-			this.restoreState();
+			this.render();
 			this.collection.on('add', this.renderItem, this);
 		},
 		
@@ -69,6 +70,17 @@ define(["backbone",
 		 */
 		renderItem: function(item, isVisible) {
 			this.$el.show();
+			var $container = $("<div></div>");
+			this.$el.append($container);
+			this.sb.loadSubmodule(
+				"item-" + item.getKey() + "-" + item.id, localground.maps.views.Item,
+				{
+					model: item,
+					template: _.template( this.getItemTemplate() ),
+					el: $container
+				}
+			);
+			/*
 			var view = new localground.maps.views.Item(sb, {
 				model: item,
 				template: _.template( this.getItemTemplate() ),
@@ -76,6 +88,7 @@ define(["backbone",
 			this.$el
 				.find(".collection-data")
 				.append(view.render({isVisible: true}).el);
+			*/
 		},
 		/**
 		 * Selects all child data elements in the Items View, based
@@ -151,6 +164,10 @@ define(["backbone",
 		getItemTemplate: function(){
 			var configKey = this.collection.key.split("_")[0];
 			return localground.config.Config[configKey].ItemTemplate;	
+		},
+		
+		destroy: function(){
+			alert("todo: implement");
 		},
 		
 		restoreState: function(){

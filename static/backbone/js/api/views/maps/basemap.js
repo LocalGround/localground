@@ -123,6 +123,12 @@ define(["backbone",
                 "map-tiles-changed": this.saveState,
 				"map-extents-changed": this.saveState
 			});
+			
+			//todo: possibly move to a layout module?
+			$(window).off('resize');
+			$(window).on('resize', function(){
+				sb.notify({ type : "window-resized" });
+			});
 		},
 		saveState: function(data){
 			var latLng = this.map.getCenter();

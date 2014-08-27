@@ -16,19 +16,18 @@ define([
 		
 		/** A {@link localground.maps.data.DataManager} object */
 		projects: null,
-		el: '.projects-menu',
 		/**
-		 * Initializes the object's dataManager based on 
-		 * the "opts" parameter. Also fetches the available
+		 * Initializes the project menu and fetches the available
 		 * projects from the Local Ground Data API.
 		 * @see <a href="http://localground.org/api/0/projects">http://localground.org/api/0/projects</a>.
 		 * @param {Object} opts
 		 * Dictionary of initialization options
-		 * @param {localground.maps.data.DataManager} opts.dataManager
+		 * @param {Object} opts.el
+		 * The jQuery element to which the projects should be attached.
 		*/
-        initialize: function(sb) {
+        initialize: function(sb, opts) {
+			this.setElement(opts.el)
 			this.sb = sb;
-			this.projects = [],
 			sb.notify({
 				type : "load-projects"
 			});
@@ -44,9 +43,7 @@ define([
 			'click .project-item': 'triggerToggleProjectData'
 		},
 		renderProjects: function(data){
-			console.log(this);
 			this.projects = data.projects;
-			console.log(this.projects);
 			this.render();
 		},
 		/**
@@ -57,7 +54,7 @@ define([
 		*/
 		render: function() {
 			this.$el.empty();
-			if (this.projects.length == 0) { return; }
+			if (!this.projects) { return; }
 			this.projects.each(function(item) {
 				this.renderProject(item);
 			}, this);
@@ -72,13 +69,18 @@ define([
 		 * Returns a reference to the list item HTML element
 		*/
 		renderProject: function(item) {
-			this.$el.append(item.get("name") + "<br>");
-			return;
-			var itemView = new localground.maps.views.Item({
-				model: item,
-				template: _.template( projectItem ),
-			});
-			this.$el.append(itemView.render().el);
+			//this.$el.append("a");
+			//return;
+			var $container = $("<div></div>");
+			this.$el.append($container);
+			this.sb.loadSubmodule(
+				"item-project-" + item.id, localground.maps.views.Item,
+				{
+					model: item,
+					template: _.template( projectItem ),
+					el: $container
+				}
+			);
 		},
 		/**
 		 * Catches the div click event and ignores it
@@ -106,10 +108,18 @@ define([
 		 */
 		toggleProjectData: function(e) {
 			var $cb = $(e.currentTarget);
-			if ($cb.prop("checked"))
-				this.dataManager.fetchDataByProjectID($cb.val());
-			else
-				this.dataManager.removeDataByProjectID($cb.val());
+			if ($cb.prop("checked")) {
+				this.sb.notify({
+					type : "project-requested",
+					data: { id: $cb.val() }
+				});
+			}
+			else {
+				this.sb.notify({
+					type : "project-removal-requested",
+					data: { id: $cb.val() }
+				});
+			}
 			e.stopPropagation();
 		},
 		destroy: function(){

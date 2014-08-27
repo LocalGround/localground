@@ -35,7 +35,9 @@ define(
 		this.initialize = function(sb) {
 			this.sb = sb;
 			sb.listen({ 
-                "load-projects": this.fetchProjects
+                "load-projects": this.fetchProjects,
+				"project-requested": this.fetchDataByProjectID,
+				"project-removal-requested": this.removeDataByProjectID
 			});
 		};
 		
@@ -43,17 +45,15 @@ define(
 		 * Fetches the user's available projects from the data API.
 		 */
 		this.fetchProjects = function(){
+			console.log('fetchProjects');
 			var that = this;
 			this.projects.fetch({
 				reset: true,
 				success: function(){
-					console.log('notifying');
-					console.log(that.projects);
 					that.sb.notify({
 						type : "projects-loaded",
 						data: {projects: that.projects}
 					});
-					console.log('notified');
 				}
 			});
 		};
@@ -63,9 +63,9 @@ define(
 		 * @param {Integer} id
 		 * The id of the project of interest.
 		 */
-		this.fetchDataByProjectID = function(id) {
+		this.fetchDataByProjectID = function(data) {
 			var that = this;
-			var project = new Project({id: id});
+			var project = new Project({id: data.id});
 			project.fetch({data: {format: 'json'}, success: function(r){
 				that.updateCollections(project);
 			}});
@@ -78,13 +78,13 @@ define(
 		 * @param {Integer} id
 		 * The id of the project of interest.
 		 */
-		this.removeDataByProjectID = function(id){
+		this.removeDataByProjectID = function(data){
 			//http://backbonejs.org/#Collection-remove
 			for (key in this.collections) {
 				var collection = this.collections[key];
 				var items = [];
 				collection.each(function(item) {
-					if (item.get("project_id") == id) {
+					if (item.get("project_id") == data.id) {
 						items.push(item);
 					}
 				}, this);
@@ -94,7 +94,7 @@ define(
 			}
 			
 			//remove selected project:
-			this.selectedProjects.remove({id: id});
+			this.selectedProjects.remove({id: data.id});
 		};
 		
 		/**
@@ -161,7 +161,7 @@ define(
 				// GeoJSON geometry is defined.
 				this.sb.notify({
 					type : "new-collection-created",
-					data : {collection: this.collections[key] } 
+					data : { collection: this.collections[key] } 
 				});
 				
 				//A few special hacks for form data:
@@ -180,11 +180,10 @@ define(
 			return ids;
 		}
 		
-		this.destroy = function() {
-			alert("todo: implement");
-		};
-		
 		this.initialize(sb);
+	};
+	localground.maps.managers.DataManager.prototype.destroy = function() {
+		alert("todo: implement");
 	};
 	return localground.maps.managers.DataManager;
 });
