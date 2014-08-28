@@ -15,9 +15,6 @@ define(["backbone"], function(Backbone) {
 		/** A Backbone model */
 		model: null,
 		
-		/** Whether or not the item should be visible when it's rendered */
-		isVisible: false,
-		
 		/**
 		 * A google.maps.Overlay object (Point, Polyline, Polygon,
 		 * or GroundOverlay)
@@ -46,6 +43,8 @@ define(["backbone"], function(Backbone) {
 		 * Backbone Model
 		 * @param {Object} opts.template
 		 * Rendered templates
+		 * @param {Object} opts.element
+		 * jQuery selector element
 		 */
         initialize: function(sb, opts) {
             $.extend(this, opts);
@@ -54,11 +53,7 @@ define(["backbone"], function(Backbone) {
 			this.render();
             this.listenTo(this.model, 'destroy', this.remove); 
         },
-		
-		detectIfVisible: function(){
-			return this.$el.find('input').attr('checked');
-		},
-		
+
 		/**
 		 * Notifies other objects (like the overlayManager)
 		 * who are listening for this event can take measures.
@@ -79,6 +74,7 @@ define(["backbone"], function(Backbone) {
 					data : { model: this.model } 
 				}); 
 			}
+			this.saveState();
 		},
 		
 		/**
@@ -86,7 +82,6 @@ define(["backbone"], function(Backbone) {
 		 * @param {Event} e
 		 */
 		toggleCheckbox: function(e){
-			alert("toggle");
 			this.toggleElement($(e.currentTarget).attr('checked'));
             e.stopPropagation();
 		},
@@ -105,6 +100,9 @@ define(["backbone"], function(Backbone) {
             e.stopPropagation();
 		},
 		
+		isVisible: function(){
+			return this.$el.find('input').attr('checked') == "checked";
+		},
 		/**
 		 * Helps the checkbox communicate with the toggleElement function.
 		 * @param {Event} e
@@ -150,7 +148,7 @@ define(["backbone"], function(Backbone) {
 
 		/** Show a tooltip on the map if the geometry exists */
 		showTip: function() {
-			if (this.model.get("geometry") && this.detectIfVisible()) {
+			if (this.model.get("geometry") && this.isVisible()) {
 				this.sb.notify({ 
 					type : "show-tip", 
 					data : { model: this.model } 
@@ -167,14 +165,14 @@ define(["backbone"], function(Backbone) {
 		},
 		saveState: function(){
 			this.sb.saveState({
-				isVisible: true
+				isVisible: this.isVisible()
 			});
 		},
 		
 		restoreState: function(){
 			var state = this.sb.restoreState();
 			if (state == null)
-				return { isVisible: true };
+				return { isVisible: false };
 			else
 				return state;
 		},

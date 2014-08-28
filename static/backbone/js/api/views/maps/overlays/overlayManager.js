@@ -38,7 +38,6 @@ define(
 				localground.maps.views.OverlayGroup,
 				{ collection: data.collection, isVisible: false }
 			);
-			console.log(this.overlayGroups[data.collection.key]);
 		},
 		zoomToExtent: function(data) {
 			this.overlayGroups[data.key].zoomToExtent();

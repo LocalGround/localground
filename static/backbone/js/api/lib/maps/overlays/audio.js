@@ -4,15 +4,13 @@ define(["lib/maps/overlays/point"], function() {
      * Extends @link {localground.maps.overlays.Point}.
      * @class Audio
      */
-	localground.maps.overlays.Audio = function (sb, opts) {
+	localground.maps.overlays.Audio = localground.maps.overlays.Point.extend({
 
-		localground.maps.overlays.Point.call(this, sb, opts);
-		
 		/**
 		 * Get the corresponding SVG marker icon
 		 * @returns {Object} icon definition
 		 */
-		this.getIcon = function() {
+		getIcon: function() {
 			return {
 				fillColor: "#333",
 				markerSize: 30,
@@ -23,9 +21,7 @@ define(["lib/maps/overlays/point"], function() {
 				anchor: new google.maps.Point(16,5), 
 				scale: 1.6
 			};
-		};
-
-		this.initialize();
-	};
+		}
+	});
 	return localground.maps.overlays.Audio;
 });

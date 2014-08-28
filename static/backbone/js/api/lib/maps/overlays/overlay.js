@@ -3,18 +3,20 @@ define(["lib/maps/geometry/point"], function() {
      * Class that controls marker point model overlays.
      * @class Overlay
      */
-	localground.maps.overlays.Overlay = function (sb, opts) {
-
-		opts = opts || {};
-		this.sb = sb;
-		this.map = sb.getMap();
-		this.model = opts.model;
-		this.isVisible = opts.isVisible;
+	localground.maps.overlays.Overlay = Backbone.View.extend({
 		
+		sb: null,
+		map: null,
+		model: null,
+
 		/** called when object created */
-		this.initialize = function(){
-			if(this.isVisible) {this.createOverlay(); }	
-		};
+		initialize: function(sb, opts) {
+			this.sb = sb;
+			$.extend(opts, this.restoreState());
+			this.map = sb.getMap();
+			this.model = opts.model;
+			if(opts.isVisible) {this.createOverlay(); }	
+		},
 		
 		/**
 		 * Creates a google.maps.Marker overlay with a photo icon
@@ -23,18 +25,17 @@ define(["lib/maps/geometry/point"], function() {
 		 * Either a google.maps.Marker, google.maps.Polyline,
 		 * google.maps.Polygon, or google.maps.GroundOverlay
 		 */
-		this.getGoogleOverlay = function(){
+		getGoogleOverlay: function(){
 			if (this.googleOverlay == null) {
 				this.createOverlay();
 			}
 			return this.googleOverlay;
-		};
+		},
 		
-		this.createOverlay = function(){
+		createOverlay: function(){
 			alert("implement in child class");	
-		};
-		
-		this.attachEventHandlers = function(){
+		},
+		attachEventHandlers: function(){
 			var that = this;
 			//attach click event:
 			google.maps.event.addListener(this.googleOverlay, 'click', function() {
@@ -56,42 +57,63 @@ define(["lib/maps/geometry/point"], function() {
 					type : "hide-tip",
 				});
 			});
-		};
+		},
+		isVisible: function(){
+			return this.getGoogleOverlay().getMap() != null;
+		},
 		
 		/** shows the google.maps overlay on the map. */
-		this.show = function(){
+		show : function(){
 			var overlay = this.getGoogleOverlay();
 			overlay.setMap(this.map);
-		};
+			this.saveState();
+		},
 		
 		/** hides the google.maps overlay from the map. */
-		this.hide = function(){
+		hide: function(){
 			var overlay = this.getGoogleOverlay();
 			overlay.setMap(null);
-		};
+			this.saveState();
+		},
 		
 		/** zooms to the google.maps overlay. */
-		this.zoomTo = function(){
+		zoomTo: function(){
 			this.map.panTo(this.getCenter());
 			if(this.map.getZoom() <17){ this.map.setZoom(17); }
-		};
+		},
 		
 		/** centers the map at the google.maps overlay */
-		this.centerOn = function(){
+		centerOn: function(){
 			this.map.panTo(this.getCenter());
-		};
+		},
 		
 		/**
 		 * Calculates the approximate center point
 		 * @returns {google.maps.LatLng} object
 		 */
-		this.getCenter = function(){
+		getCenter: function(){
 			return this.getGoogleOverlay().getPosition();
-		};
+		},
+		saveState: function(){
+			this.sb.saveState({
+				isVisible: this.isVisible()
+			});
+		},
+		restoreState: function(){
+			var state = this.sb.restoreState();
+			if (state == null)
+				return { isVisible: false };
+			else
+				return state;
+		},
 		
-		this.destroy = function(){
+		/**
+		 * Needs to be implemented
+		 */
+		destroy: function(){
 			alert("bye");	
-		};
-	};
+		}
+
+	});
 	return localground.maps.overlays.Overlay;
 });

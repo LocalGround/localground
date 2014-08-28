@@ -5,15 +5,12 @@ define(["lib/maps/overlays/point"], function() {
      * Audio, PointMarker, and Record class can consume 
      * @class Photo
      */
-	localground.maps.overlays.Photo = function (sb, opts) {
-		
-		localground.maps.overlays.Point.call(this, sb, opts);
-		
+	localground.maps.overlays.Photo = localground.maps.overlays.Point.extend({
 		/**
 		 * Retrieve a photo map marker, depending on the map's zoom level
 		 * @returns google.maps.MarkerImage
 		 */
-		this.getIcon = function() {
+		getIcon: function() {
 			if (this.map.getZoom() > 18) {
 				return {
 					url: this.model.get("path_small"),
@@ -37,9 +34,7 @@ define(["lib/maps/overlays/point"], function() {
 					anchor: new google.maps.Point(10, 0)
 				};
 			}
-		};
-		
-		this.initialize();
-	};
+		}
+	});
 	return localground.maps.overlays.Photo;
 });

@@ -26,8 +26,6 @@ define(["backbone",
 		 * The sandbox.
 		 */
 		initialize: function(sb, haltInitialization) {
-			//alert(haltInitialization);
-			console.log("dataPanel is initializing");
 			this.sb = sb;
 			this.render();
 			

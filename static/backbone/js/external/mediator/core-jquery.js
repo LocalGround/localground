@@ -81,7 +81,7 @@ define(['jquery', 'sandbox'], function(jQuery, Sandbox) {
                             $.extend(moduleData[mod].events, evts);
                         }
                         
-                        this.log(1, moduleData);
+                        //this.log(1, moduleData);
                     } else { 
                         this.log(1, "mod \"" + mod + "\" not found"); 
                     } 
@@ -177,7 +177,7 @@ define(['jquery', 'sandbox'], function(jQuery, Sandbox) {
                 else
                     $.extend( cache[mod], object);
                 localStorage['map-editor'] = JSON.stringify(cache);
-                this.log(1, JSON.stringify(cache));
+                //this.log(1, JSON.stringify(cache));
             },
             getFromLocalStorage: function(mod, key) {
                 var cache = localStorage['map-editor'];

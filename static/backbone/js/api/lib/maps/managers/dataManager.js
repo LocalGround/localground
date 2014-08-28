@@ -47,7 +47,6 @@ define(
 		 * Fetches the user's available projects from the data API.
 		 */
 		this.fetchProjects = function(){
-			console.log('fetchProjects');
 			var that = this;
 			this.projects.fetch({
 				reset: true,

@@ -113,12 +113,11 @@ define(
 			var id = model.id;
 			//retrieve the corresponding overlay type from the config.js.
 			var configKey = key.split("_")[0];
-			Overlay = localground.config.Config[configKey].Overlay;
-			var isVisible = this.isVisible || (this.visibleItems[id] || false);
-			this.overlays[id] = new Overlay(this.sb, {
-				model: model,
-				isVisible: isVisible
-			});
+			this.overlays[id] = this.sb.loadSubmodule(
+				"overlay-" + model.getKey() + "-" + model.id,
+				localground.config.Config[configKey].Overlay,
+				{ model: model }
+			);
 		},
 		
 		/** Shows all of the map overlays */

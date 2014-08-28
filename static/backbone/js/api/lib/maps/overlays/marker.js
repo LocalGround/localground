@@ -8,10 +8,10 @@ define([
      * Extends @link {localground.maps.overlays.Overlay}.
      * @class Marker
      */
-	localground.maps.overlays.Marker = function (sb, opts) {
+	localground.maps.overlays.Marker = localground.maps.overlays.Point.extend({
 		
 		/** Determine which overlay object Marker should extend */
-		var geoJSON = opts.model.get("geometry");
+		/*var geoJSON = opts.model.get("geometry");
 		if (geoJSON.type == 'Point')
 			localground.maps.overlays.Point.call(this, sb, opts);
 		else if (geoJSON.type == 'LineString')
@@ -20,12 +20,13 @@ define([
 			localground.maps.overlays.Polygon.call(this, sb, opts);
 		else
 			alert('Unknown Geometry Type');
+		*/
 				
 		/**
 		 * Get the corresponding SVG marker icon
 		 * @returns {Object} icon definition
 		 */
-		this.getIcon = function() {
+		getIcon: function() {
 			//return null;
 			return {
 				fillColor: '#' + this.model.get("color"),
@@ -39,9 +40,7 @@ define([
 				//size: new google.maps.Size(?, ?),			// size (width, height)
 				//origin: new google.maps.Point(?, ?)		// origin (x, y)
 			};
-		};
-
-		this.initialize();
-	};
+		}
+	});
 	return localground.maps.overlays.Marker;
 });
