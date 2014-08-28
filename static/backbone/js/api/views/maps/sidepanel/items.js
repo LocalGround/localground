@@ -17,8 +17,6 @@ define(["backbone",
 		/** A rendered dataCollectionView template */
 		template: _.template( collectionHeader ),
 		
-		visibleItems: null,
-		
 		sb: null,
 		
 		/** A data collection (extends Backbone.Collection) */
@@ -42,7 +40,6 @@ define(["backbone",
 			this.sb = sb;
 			$.extend(this, opts);
 			this.setElement(opts.el);
-			this.visibleItems = {};
 			this.render();
 			this.collection.on('add', this.renderItem, this);
 		},
@@ -52,14 +49,13 @@ define(["backbone",
 		 * Backbone collection that the view has been initialized
 		 * with.
 		 */
-		render: function(opts) {
-			opts = opts || {};
-			this.$el.append(this.template({
+		render: function() {
+			var opts = this.restoreState();
+			$.extend(opts, {
 				name: this.collection.name,
-				isVisible: opts.isVisible,
-				isExpanded: opts.isExpanded,
 				key: this.collection.key
-			}));
+			});
+			this.$el.append(this.template(opts));
 			if (this.collection.length == 0) { this.$el.hide(); }
 			return this;
 		},
@@ -68,7 +64,7 @@ define(["backbone",
 		 * @param {Backbone.Model} item
 		 * A Backbone Model of the corresponding datatype
 		 */
-		renderItem: function(item, isVisible) {
+		renderItem: function(item) {
 			this.$el.show();
 			var $container = $("<div></div>");
 			this.$el.find(".collection-data").append($container);
@@ -94,7 +90,6 @@ define(["backbone",
 
 			//expand panel if checked and hidden:
 			if (isChecked) {
-				this.isVisible = true;
 				this.sb.notify({ 
 					type : "show-all", 
 					data : { key: $cb.val() } 
@@ -112,6 +107,7 @@ define(["backbone",
 					data : { key: $cb.val() } 
 				});
 			}
+			this.saveState();
 		},
 		/**
 		 * Zooms to the extent of the child data elements of the corresponding
@@ -125,6 +121,9 @@ define(["backbone",
 			});
 		},
 		
+		isExpanded: function(){
+			return !this.$el.find('.show-hide').hasClass('fa-caret-right');
+		},
 		triggerShowHide: function(e){
 			this.showHide($(e.currentTarget));
 			e.preventDefault();
@@ -137,23 +136,37 @@ define(["backbone",
 			var $panel = $symbol.parent().next();
 			var key =  $symbol.parent().find('input').val();
 			var show = $symbol.hasClass('fa-caret-right');
-			if (show) {
-				this.isExpanded = true;
-				this.sb.notify({ type : "expand" });
-				$symbol.removeClass('fa-caret-right').addClass('fa-caret-down');
-				$panel.show("slow");
-			}
-			else {
-				this.isExpanded = false;
+			if (this.isExpanded()) {
 				this.sb.notify({ type : "contract" });
 				$symbol.removeClass('fa-caret-down').addClass('fa-caret-right');
 				$panel.hide("slow");
 			}
+			else {
+				this.sb.notify({ type : "expand" });
+				$symbol.removeClass('fa-caret-right').addClass('fa-caret-down');
+				$panel.show("slow");
+			}
+			this.saveState();
 		},
 		
 		getItemTemplate: function(){
 			var configKey = this.collection.key.split("_")[0];
 			return localground.config.Config[configKey].ItemTemplate;	
+		},
+		
+		saveState: function(){
+			this.sb.saveState({
+				isExpanded: this.isExpanded(),
+				isVisible: true
+			});
+		},
+		
+		restoreState: function(){
+			var state = this.sb.restoreState();
+			if (state == null)
+				return { isExpanded: false, isVisible: false };
+			else
+				return state;
 		},
 		
 		destroy: function(){

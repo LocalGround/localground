@@ -10,7 +10,7 @@ define(
 	 * Manages InfoBubble Rendering
 	 * @class InfoBubble
 	 */
-	localground.maps.views.InfoBubble = Backbone.View.extend({
+	localground.maps.views.BubbleManager = Backbone.View.extend({
 		/**
 		 * @lends localground.maps.views.InfoBubble#
 		 */
@@ -19,16 +19,15 @@ define(
 		map: null,
 		
 		/** A hook to global application events */
-		eventManager: null,
 		bubble: null,
 		tip: null,
 		
 		/**
 		 * Initializes
 		 */
-		initialize: function(sb, opts) {
-			$.extend(this, opts);
-			this.eventManager = sb.eventManager;
+		initialize: function(sb) {
+			this.sb = sb;
+			this.map = sb.getMap();
 			this.bubble = new InfoBubble({
 				borderRadius: 5,
 				maxHeight: 385,
@@ -36,12 +35,6 @@ define(
 				disableAnimation: true,
 				map: this.map
 			});
-			
-			/*sb.listen({ 
-                "show-bubble"  : this.change_filter, 
-                "show-tip" : this.reset, 
-                "hide-tip" : this.search
-            });*/ 
 			
 			this.tip = new InfoBubble({
 				borderRadius: 5,
@@ -53,7 +46,12 @@ define(
 				map: this.map
 			});
 			
-			this.addEventHandlers(sb);
+			
+			sb.listen({ 
+                "show-bubble"  : this.showBubble, 
+                "show-tip" : this.showTip, 
+                "hide-tip" : this.hideTip
+            }); 
 		},
 		
 		/**
@@ -63,9 +61,11 @@ define(
 			//$(this.el).html(this.template(opts));
 		},
 		
-		showBubble: function(model, latLng){
+		showBubble: function(data){
+			var model = data.model, latLng = data.center;
 			var that = this;
-			
+			this.tip.close();
+			this.bubble.modelID = model.id;
 			model.fetch({
 				/*
 					Todo: refactor so there are 2 bubble views:
@@ -89,12 +89,18 @@ define(
 				}	
 			});
 		},
-		showTip: function(model, latLng) {
+		showTip: function(data){
+			var model = data.model, latLng = data.center;
+			if(this.bubble.modelID == model.id &&
+				this.bubble.isOpen()) { return; }
 			var template = this.getTemplate(model, "TipTemplate");
 			if (latLng == null) { latLng = model.getCenter(); }
 			this.tip.setContent(template(this.getContext(model)));
 			this.tip.setPosition(latLng);
 			this.tip.open();	
+		},
+		hideTip: function(){
+			this.tip.close();	
 		},
 		getTemplate: function(model, templateKey) {
 			var configKey = model.getKey().split("_")[0];
@@ -107,26 +113,9 @@ define(
 				opts.descriptiveText = model.getDescriptiveText();
 			return opts;
 		},
-		addEventHandlers: function(sb){
-			var that = this;			
-			this.eventManager.on("show_bubble", function(model, latLng){
-				that.tip.close();
-				that.bubble.modelID = model.id;
-				that.showBubble(model, latLng);
-			});
-			
-			this.eventManager.on("show_tip", function(model, latLng){
-				//don't show tip if the bubble's already open:
-				console.log('show tip');
-				if(that.bubble.modelID == model.id &&
-					that.bubble.isOpen()) { return; }
-				that.showTip(model, latLng);
-			});
-			
-			this.eventManager.on("hide_tip", function(){
-				that.tip.close();
-			});
+		destroy: function(){
+			alert("bye");	
 		}
 	});
-	return localground.maps.views.InfoBubble;
+	return localground.maps.views.BubbleManager;
 });

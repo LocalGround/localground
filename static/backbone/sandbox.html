@@ -24,10 +24,6 @@
 		<script src="js/external/require.js"></script>
 		<script src="js/api/base.js"></script>
 		<script>
-			/*http://blog.novanet.no/4-ways-to-pass-parameters-to-requirejs-modules/
-			 *Because we want the Django template to initialize a fair amount of the
-			 *data, we're initializing the require.js configuration in the template itself.
-			*/
 			require([
 					"jquery",
 					"jquery.bootstrap",
@@ -36,7 +32,8 @@
 					"views/maps/basemap",
 				    "lib/maps/managers/dataManager",
 					"views/maps/sidepanel/dataPanel",
-					"views/maps/overlays/overlayManager"
+					"views/maps/overlays/overlayManager",
+					"views/maps/overlays/bubbleManager"
 				   ],
 				function($, bootstrap, CORE, Sandbox) {
 					var basemapOpts = {
@@ -62,9 +59,9 @@
 					CORE.create_module("data-manager", localground.maps.managers.DataManager);
 					CORE.create_module("data-panel", localground.maps.views.DataPanel);
 					CORE.create_module("overlay-manager", localground.maps.views.OverlayManager);
+					CORE.create_module("bubble-manager", localground.maps.views.BubbleManager);
 					
 					CORE.start_all();
-					
 				}
 			);
 		</script>

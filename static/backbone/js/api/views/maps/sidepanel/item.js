@@ -122,9 +122,9 @@ define(["backbone"], function(Backbone) {
 		/**
 		 * Renders the HTML from the model
 		 */
-        render: function(opts) {
+        render: function() {
 			//todo: restore state here:
-			opts = opts || { isVisible: true};
+			opts = this.restoreState();
 			$.extend(opts, this.model.toJSON());
 			//for the marker model:
 			if (this.model.getDescriptiveText) {
@@ -164,6 +164,19 @@ define(["backbone"], function(Backbone) {
 				type : "hide-tip", 
 				data : { model: this.model } 
 			});
+		},
+		saveState: function(){
+			this.sb.saveState({
+				isVisible: true
+			});
+		},
+		
+		restoreState: function(){
+			var state = this.sb.restoreState();
+			if (state == null)
+				return { isVisible: true };
+			else
+				return state;
 		},
 		
 		destroy: function(){

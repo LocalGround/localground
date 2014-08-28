@@ -39,6 +39,8 @@ define(
 				"project-requested": this.fetchDataByProjectID,
 				"project-removal-requested": this.removeDataByProjectID
 			});
+			
+			this.restoreState();
 		};
 		
 		/**
@@ -139,6 +141,7 @@ define(
 			}
 			//add new project to the collection:
 			this.selectedProjects.add(project, {merge: true});
+			this.saveState();
 		};
 		
 		/**
@@ -154,7 +157,7 @@ define(
 		 */
 		var updateCollection = function(key, models, opts) {
 			if (this.collections[key] == null) {
-				this.collections[key] = new opts.Collection([], {key: key});
+				this.collections[key] = new opts.Collection([], {key: key, name: opts.name});
 				
 				// important: this trigger enables the overlayManager
 				// to create a new overlay for each model where the
@@ -172,13 +175,23 @@ define(
 			this.collections[key].add(models, {merge: true});
 		};
 		
-		this.getSelectedProjectIDs = function(){
+		this.saveState = function(data){
 			var ids = [];
 			this.selectedProjects.each(function(model){
 				ids.push(model.id);	
 			});
-			return ids;
-		}
+			this.sb.saveState({
+				projectIDs: ids
+			});
+		};
+		
+		this.restoreState = function(){
+			var state = this.sb.restoreState();
+			if (state == null) { return; }
+			for(var i=0; i < state.projectIDs.length; i++){
+				this.fetchDataByProjectID({ id: state.projectIDs[i] });
+			};
+		};
 		
 		this.initialize(sb);
 	};
