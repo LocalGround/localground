@@ -137,15 +137,16 @@ define(
 		/** Zooms to the extent of the collection */
 		zoomToExtent: function() {
 			var bounds = new google.maps.LatLngBounds();
-			for (key in this.overlays)
+			for (key in this.overlays) {
 				try {
 					//for polylines, polygons, and groundoverlays:
-					bounds.union(this.overlays[key].getBounds());
+					bounds.union(this.overlays[key].getGoogleOverlay().getBounds());
 				}
 				catch(e){
 					//for points:
 					bounds.extend(this.overlays[key].getCenter());	
 				}
+			}
 			this.map.fitBounds(bounds);
 		},
 		

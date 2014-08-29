@@ -1,47 +1,51 @@
-define([
-		"lib/maps/geometry/polygon",
-		"lib/maps/overlays/overlay"
-		], function() {
-    /** 
-     * Class that controls marker point model overlays.
+define(["lib/maps/overlays/polyline"], function() {
+	/** 
+     * Functions to help move from lat/lngs to GeoJSON
+     * formats and vice versa
      * @class Polygon
      */
-	localground.maps.overlays.Polygon = function (sb, opts) {
-		localground.maps.overlays.Overlay.call(this, sb, opts);
+	localground.maps.overlays.Polygon = function(opts){
+		localground.maps.overlays.Polyline.call(this, opts);
 		
-		/** Shortcut to @link {localground.maps.geometry.Point} object */
-		var polygon = new localground.maps.geometry.Polygon();
+		this.getType = function(){
+			return "Polygon";
+		};
 		
-		/**
-		 * Creates a new.maps.Polygon object.
-		 */
-		this.createOverlay = function(){
+		this.createOverlay = function(isVisible){
 			this.googleOverlay = new google.maps.Polygon({
-				path: polygon.getGooglePath(this.model.get("geometry")),
+				path: this.getGooglePath(),
 				strokeColor: '#' + this.model.get("color"),
 				strokeOpacity: 1.0,
 				strokeWeight: 5,
 				fillColor: '#' + this.model.get("color"),
 				fillOpacity: 0.35,
-				map: this.isVisible ? this.map : null
+				map: isVisible ? this.map : null
 			});
-			this.attachEventHandlers();
+		};
+		/**
+		 * Method that converts a GeoJSON Linestring into
+		 * an array of google.maps.LatLng objects.
+		 * @param {GeoJSON Linestring} geoJSON
+		 * A GeoJSON Linestring object
+		 * @returns {Array}
+		 * An array of google.maps.LatLng objects.
+		 */
+		this.getGooglePath = function(){
+			var geoJSON = this.model.get("geometry");
+			var path = [];
+			var coords = geoJSON.coordinates[0];
+			for (var i = 0; i < coords.length; i++){
+				path.push(new google.maps.LatLng(coords[i][1], coords[i][0]));
+			}
+			path.pop();
+			return path;
 		};
 		
-		this.zoomTo = function(){
-			this.map.fitBounds(this.getBounds());
+		this.getCenterPoint = function() {
+			return this.getBounds().getCenter();
 		};
 		
-		this.getBounds = function(){
-			//delegates to Polyline geometry object:
-			return polygon.getBounds(this.getGoogleOverlay());		
-		};
-
-		this.getCenter = function(){
-			//delegates to Polyline geometry object:
-			return polygon.getCenterPoint(this.getGoogleOverlay());
-		};
-				
+		this.initialize(opts);
 	};
 	return localground.maps.overlays.Polygon;
 });

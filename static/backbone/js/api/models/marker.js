@@ -1,6 +1,7 @@
 define(["models/base",
-		"lib/maps/overlays/polyline",
-		"lib/maps/overlays/polygon"
+		"lib/maps/geometry/point",
+		"lib/maps/geometry/polyline",
+		"lib/maps/geometry/polygon"
 	   ], function() {
 	/**
 	 * A Backbone Model class for the Marker datatype.
@@ -8,6 +9,7 @@ define(["models/base",
 	 * @see <a href="http://localground.org/api/0/markers/">http://localground.org/api/0/markers/</a>
 	 */
 	localground.models.Marker = localground.models.Base.extend({
+		
 		getCenter: function(){
 			var geoJSON = this.get("geometry");
 			if (geoJSON == null) { return null; }
@@ -25,6 +27,7 @@ define(["models/base",
 			}
 			return null;
 		},
+		
 		getDescriptiveText: function(){
 			 var messages = [];
 			if(this.get("photo_count") > 0)
