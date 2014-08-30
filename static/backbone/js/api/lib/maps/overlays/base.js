@@ -29,6 +29,10 @@ define(["backbone",
 			this.listenTo(this.model, 'show-overlay', this.show);
 			this.listenTo(this.model, 'hide-overlay', this.hide);
 			this.listenTo(this.model, 'zoom-to-overlay', this.zoomTo);
+			this.sb.listen({
+				"make-editable" : this.makeEditable,
+				"make-viewable" : this.makeViewable
+			});
 			
 		},
 		
@@ -40,11 +44,11 @@ define(["backbone",
 				isVisible: isVisible
 			};
 			if (geoJSON.type == 'Point')
-				this.overlay = new localground.maps.overlays.Point(opts);
+				this.overlay = new localground.maps.overlays.Point(this.sb, opts);
 			else if (geoJSON.type == 'LineString')
-				this.overlay = new localground.maps.overlays.Polyline(opts);
+				this.overlay = new localground.maps.overlays.Polyline(this.sb, opts);
 			else if (geoJSON.type == 'Polygon')
-				this.overlay = new localground.maps.overlays.Polygon(opts);
+				this.overlay = new localground.maps.overlays.Polygon(this.sb, opts);
 			else
 				alert('Unknown Geometry Type');
 			this.attachEventHandlers();
@@ -162,6 +166,14 @@ define(["backbone",
 		 */
 		getCenter: function(){
 			return this.overlay.getCenter();
+		},
+		
+		makeViewable: function(){
+			this.overlay.makeViewable();	
+		},
+		
+		makeEditable: function(){
+			this.overlay.makeEditable(this.model);
 		}
 
 	});

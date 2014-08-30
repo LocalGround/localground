@@ -17,7 +17,7 @@ define(["backbone",
 		el: '#panels',
 		template: _.template( dataPanelHeader ),
 		events: {
-			'click #save_workspace': 'saveWorkspace'
+			'click #mode_toggle': 'toggleEditMode'
 		},
 		
 		/**
@@ -67,6 +67,19 @@ define(["backbone",
 			this.$el.empty().append(this.template());
 			this.resize();
 			return this;
+		},
+		
+		toggleEditMode: function(){
+			if(this.sb.getMode() == "view") {
+				this.sb.setMode("edit");
+				this.sb.notify({ type: "make-editable" });
+				this.$el.find('#mode_toggle').addClass('btn-info');
+			}
+			else {
+				this.sb.setMode("view");
+				this.sb.notify({ type: "make-viewable" });
+				this.$el.find('#mode_toggle').removeClass('btn-info');	
+			}
 		},
 		
 		destroy: function(){

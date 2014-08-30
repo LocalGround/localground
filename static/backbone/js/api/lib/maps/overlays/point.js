@@ -3,7 +3,7 @@ define([], function() {
      * Class that controls marker point model overlays.
      * @class Point
      */
-	localground.maps.overlays.Point = function(opts) {
+	localground.maps.overlays.Point = function(sb, opts) {
 		
 		this.googleOverlay = null;
 		this.model = null;
@@ -28,7 +28,8 @@ define([], function() {
 			return "Point";
 		};
 		
-		this.initialize = function(opts){
+		this.initialize = function(sb, opts){
+			this.sb = sb;
 			$.extend(this, opts);
 			this.createOverlay(opts.isVisible || false);
 		};
@@ -88,9 +89,48 @@ define([], function() {
 				coordinates: [latLng.lng(), latLng.lat()]
 			};
 		};
+				
+		this.makeViewable = function() {
+			this.googleOverlay.setOptions({'draggable': false, 'title': ''});
+			google.maps.event.clearListeners(this.googleOverlay, 'drag');
+			google.maps.event.clearListeners(this.googleOverlay, 'dragstart');
+			google.maps.event.clearListeners(this.googleOverlay, 'dragend');
+		};
 		
+		this.makeEditable = function(model) {
+			var that = this;
+			this.googleOverlay.setOptions({
+				'draggable': true,
+				'title': 'Drag this icon to re-position it'
+			});
+			google.maps.event.addListener(this.googleOverlay, "dragstart", function(mEvent) {
+				that.sb.notify({ type : "hide-tip" });
+				that.sb.notify({
+					type : "hide-bubble",
+					data : { model: model }
+				});
+			});
+			google.maps.event.addListener(this.googleOverlay, "dragend", function(mEvent) {
+				var latLng = mEvent.latLng;
+				that.map.panTo(mEvent.latLng);
+				var geoJSON = that.toGeoJSON(latLng);
+				model.set("geometry", JSON.stringify(geoJSON));
+				model.save();
+			});
+
+			google.maps.event.addListener(this.googleOverlay, "drag", function(mEvent) {
+				//me.checkIntersection(mEvent, true);
+			});
+		};
 		
-		this.initialize(opts);
+		this.toGeoJSON = function(latLng){
+			return {
+				type: 'Point',
+				coordinates: [latLng.lng(), latLng.lat()]
+			};
+		};
+		
+		this.initialize(sb, opts);
 				
 	};
 	return localground.maps.overlays.Point;

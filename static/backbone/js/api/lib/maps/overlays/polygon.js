@@ -4,8 +4,8 @@ define(["lib/maps/overlays/polyline"], function() {
      * formats and vice versa
      * @class Polygon
      */
-	localground.maps.overlays.Polygon = function(opts){
-		localground.maps.overlays.Polyline.call(this, opts);
+	localground.maps.overlays.Polygon = function(sb, opts){
+		localground.maps.overlays.Polyline.call(this, sb, opts);
 		
 		this.getType = function(){
 			return "Polygon";
@@ -45,7 +45,7 @@ define(["lib/maps/overlays/polyline"], function() {
 			return this.getBounds().getCenter();
 		};
 		
-		this.initialize(opts);
+		this.initialize(sb, opts);
 	};
 	return localground.maps.overlays.Polygon;
 });

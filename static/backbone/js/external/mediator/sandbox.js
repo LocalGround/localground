@@ -39,37 +39,14 @@ define([], function() {
                 getMap: function() {
                     //not sure if this makes sense to do here
                     return core.map;
+                },
+                setMode: function(mode) {
+                    core.mode = mode;
+                },
+                getMode: function() {
+                    return core.mode;
                 }
                 
-                /*
-                addEvent : function (element, evt, fn) { 
-                    core.dom.bind(element, evt, fn); 
-                }, 
-                removeEvent : function (element, evt, fn) { 
-                    core.dom.unbind(element, evt, fn); 
-                },
-                create_element : function (el, config) {
-                    var i, text; 
-                    el = core.dom.create(el);
-                    //config: additional properties / children to create on the DOM.
-                    if (config) { 
-                        if (config.children && core.is_arr(config.children)) { 
-                            i = 0; 
-                            while (config.children[i]) { 
-                                el.appendChild(config.children[i]); 
-                                i++; 
-                            }
-                            //deletes the branch from the config object:
-                            delete config.children; 
-                        } else if (config.text) { 
-                           text = document.createTextNode(config.text); 
-                           delete config.text; 
-                           el.appendChild(text); 
-                        } 
-                        core.dom.apply_attrs(el, config); 
-                    } 
-                    return el; 
-                }*/
             } 
         }
     };

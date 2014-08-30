@@ -13,6 +13,8 @@ define(['jquery', 'sandbox'], function(jQuery, Sandbox) {
         };
         
         return {
+            map: null,
+            mode: "view",
             debug: function(on){
                 debug = on ? true : false;    
             },
@@ -80,8 +82,6 @@ define(['jquery', 'sandbox'], function(jQuery, Sandbox) {
                         else {
                             $.extend(moduleData[mod].events, evts);
                         }
-                        
-                        //this.log(1, moduleData);
                     } else { 
                         this.log(1, "mod \"" + mod + "\" not found"); 
                     } 

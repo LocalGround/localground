@@ -3,7 +3,7 @@ define([], function() {
      * Class that controls marker point model overlays.
      * @class Point
      */
-	localground.maps.overlays.Polyline = function(opts) {
+	localground.maps.overlays.Polyline = function(sb, opts) {
 		
 		this.googleOverlay = null;
 		this.model = null;
@@ -13,7 +13,8 @@ define([], function() {
 			return "Polyline";
 		};
 		
-		this.initialize = function(opts){
+		this.initialize = function(sb, opts){
+			this.sb = sb;
 			$.extend(this, opts);
 			this.createOverlay(opts.isVisible || false);
 		};
@@ -118,7 +119,7 @@ define([], function() {
 			return Math.round( distance / 1609.34 * 100 ) / 100;
 		};
 
-		this.initialize(opts);
+		this.initialize(sb, opts);
 				
 	};
 	return localground.maps.overlays.Polyline;
