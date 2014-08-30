@@ -85,14 +85,19 @@ define(["backbone",
 		checkAll: function(e){
 			var $cb = $(e.currentTarget);
 			var isChecked = $cb.prop("checked");
-			this.collection.each(function(model){
-				model.trigger("show-item");
-			});
 			if (isChecked) {
+				this.collection.each(function(model){
+					model.trigger("show-item");
+				});
 				// Expand panel if user turns on the checkbox.
 				// Not sure if this is a good UI decision.
 				if (!this.isExpanded()) 
 					this.showHide();
+			}
+			else {
+				this.collection.each(function(model){
+					model.trigger("hide-item");
+				});	
 			}
 			this.saveState();
 		},

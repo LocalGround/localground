@@ -55,8 +55,8 @@ define(["backbone"], function(Backbone) {
 			this.render();
             this.listenTo(this.model, 'destroy', this.remove);
 			this.listenTo(this.model, 'remove-view', this.remove);
-            this.listenTo(this.model, 'show-item', this.triggerToggleCheckbox);
-			this.listenTo(this.model, 'hide-item', this.triggerToggleCheckbox);
+            this.listenTo(this.model, 'show-item', this.showItem);
+			this.listenTo(this.model, 'hide-item', this.hideItem);
         },
 
 		/**
@@ -98,7 +98,16 @@ define(["backbone"], function(Backbone) {
 			if (e) { e.stopPropagation(); } 
 		},
 		
+		showItem: function(){
+			var $cb = this.$el.find('input').attr('checked', true);
+			this.toggleElement(true);
+		},
 		
+		hideItem: function(){
+			var $cb = this.$el.find('input').attr('checked', false);
+			this.toggleElement(false);
+		},
+
 		/**
 		 * Triggers the checkbox event from a DIV click event
 		 * @param {Event} e
