@@ -42,6 +42,7 @@ define(["backbone",
 			this.setElement(opts.el);
 			this.render();
 			this.collection.on('add', this.renderItem, this);
+			this.collection.on('remove', this.hideIfEmpty, this);
 		},
 		
 		/**
@@ -169,8 +170,13 @@ define(["backbone",
 				return state;
 		},
 		
+		hideIfEmpty: function(){
+			if (this.collection.length == 0)
+				this.$el.hide();
+		},
+		
 		destroy: function(){
-			alert("todo: implement");
+			this.remove();
 		}
 	});
 	return localground.maps.views.Items;

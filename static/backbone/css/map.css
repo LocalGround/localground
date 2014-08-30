@@ -37,6 +37,7 @@
 .item {
 	border-bottom: solid 1px #eee;
 	padding: 2px 6px 2px 10px;
+	cursor: pointer;
 }
 .item > input, .input > img {
 	vertical-align: baseline;

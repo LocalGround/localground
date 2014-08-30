@@ -87,6 +87,7 @@ define(
 				collection.each(function(item) {
 					if (item.get("project_id") == data.id) {
 						items.push(item);
+						item.trigger('removeView');
 					}
 				}, this);
 				
@@ -96,6 +97,7 @@ define(
 			
 			//remove selected project:
 			this.selectedProjects.remove({id: data.id});
+			this.saveState();
 		};
 		
 		/**

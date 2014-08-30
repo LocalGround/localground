@@ -49,29 +49,14 @@ define(["backbone",
 			var $container = $("<div></div>");
 			this.$el.find('.pane-body').append($container);
 			this.sb.loadSubmodule(
-						"items-" + data.collection.key, 
-						localground.maps.views.Items,
-						{
-							collection: data.collection,
-							el: $container
-						}
-					);
-			//todo: register this module too:
-			//var items = new localground.maps.views.Items(sb, {
-			//	collection: collection,
-			//});
-			//this.$el.find('.pane-body').append(items.render().$el);
+				"items-" + data.collection.key, 
+				localground.maps.views.Items,
+				{
+					collection: data.collection,
+					el: $container
+				}
+			);
 		},
-		
-		/**
-		 * render projects menu if it doesn't currently exist
-		 
-		renderProjectsMenu: function(){
-			if (this.$el.find('.projects-menu').get(0) == null) {
-				this.$el.empty().append(this.template());
-				//this.projectsMenu.render();
-			}	
-		},*/
 		
 		/**
 		 * Renders the HTML for the data panel. Called everytime

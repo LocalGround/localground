@@ -23,6 +23,8 @@ define(["lib/maps/overlays/point",
 			this.map = sb.getMap();
 			this.model = opts.model;
 			this.initOverlayType(opts.isVisible || false);
+			
+			this.listenTo(this.model, 'removeView', this.remove);
 		},
 		
 		initOverlayType: function(isVisible){
@@ -100,11 +102,16 @@ define(["lib/maps/overlays/point",
 				return state;
 		},
 		
+		remove: function(){
+			this.hide();
+			localground.maps.overlays.Base.__super__.remove.apply(this); 
+		},
+		
 		/**
 		 * Needs to be implemented
 		 */
 		destroy: function(){
-			alert("bye");	
+			this.remove();
 		},
 		
 		/********************************************************/

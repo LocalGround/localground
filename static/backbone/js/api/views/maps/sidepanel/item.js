@@ -31,7 +31,9 @@ define(["backbone"], function(Backbone) {
 			'click .data-item': 'triggerToggleCheckbox',
 			'click a': 'zoomTo',
 			'mouseover .data-item': 'showTip',
-			'mouseout .data-item': 'hideTip'
+			'mouseout .data-item': 'hideTip',
+			'click .project-item': 'triggerToggleProjectData',
+			'click .cb-project': 'toggleProjectData'
         },
 		
 		/**
@@ -51,7 +53,8 @@ define(["backbone"], function(Backbone) {
 			this.setElement(opts.el)
 			this.sb = sb;
 			this.render();
-            this.listenTo(this.model, 'destroy', this.remove); 
+            this.listenTo(this.model, 'destroy', this.remove);
+			this.listenTo(this.model, 'removeView', this.remove);
         },
 
 		/**
@@ -82,7 +85,8 @@ define(["backbone"], function(Backbone) {
 		 * @param {Event} e
 		 */
 		toggleCheckbox: function(e){
-			this.toggleElement($(e.currentTarget).attr('checked'));
+			var $cb = this.$el.find('input');
+			this.toggleElement($cb.attr('checked'));
             e.stopPropagation();
 		},
 		
@@ -98,6 +102,41 @@ define(["backbone"], function(Backbone) {
 				this.toggleElement($cb.attr('checked'));
 			}
             e.stopPropagation();
+		},
+		
+		
+		/**
+		 * Triggers the checkbox event from a DIV click event
+		 * @param {Event} e
+		 */
+		triggerToggleProjectData: function(e){
+			var $cb = this.$el.find('input');
+			$cb.attr('checked', !$cb.attr('checked'));
+			this.toggleProjectData(e);
+            e.stopPropagation();
+			
+		},
+		/**
+		 * Control that adds / removes project data within the
+		 * data manager
+		 * @param {Event} e
+		 */
+		toggleProjectData: function(e) {
+			var $cb = this.$el.find('input');
+			if ($cb.prop("checked")) {
+				this.sb.notify({
+					type : "project-requested",
+					data: { id: $cb.val() }
+				});
+			}
+			else {
+				this.sb.notify({
+					type : "project-removal-requested",
+					data: { id: $cb.val() }
+				});
+			}
+			this.saveState();
+			e.stopPropagation();
 		},
 		
 		isVisible: function(){
@@ -178,7 +217,7 @@ define(["backbone"], function(Backbone) {
 		},
 		
 		destroy: function(){
-			alert("todo: implement");
+			this.remove();
 		}
     });
     return localground.maps.views.Item;

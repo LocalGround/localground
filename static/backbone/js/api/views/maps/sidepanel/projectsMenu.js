@@ -38,9 +38,7 @@ define([
 		/** A rendered projectItem template */
 		template: _.template(projectItem),
 		events: {
-			'click .cb-project': 'toggleProjectData',
-			'click div': 'stopPropagation',
-			'click .project-item': 'triggerToggleProjectData'
+			'click div': 'stopPropagation'
 		},
 		renderProjects: function(data){
 			this.projects = data.projects;
@@ -90,41 +88,10 @@ define([
 			e.stopPropagation();	
 		},
 		
-		/**
-		 * Triggers the checkbox event from a DIV click event
-		 * @param {Event} e
-		 */
-		triggerToggleProjectData: function(e){
-			var $cb = $(e.currentTarget).find('input');
-			//I don't know why this has to be such a hack, but it is:
-			$cb.attr('checked', !$cb.attr('checked'));
-			$cb.trigger("click");
-			$cb.attr('checked', !$cb.attr('checked'));
-		},
-		/**
-		 * Control that adds / removes project data within the
-		 * data manager
-		 * @param {Event} e
-		 */
-		toggleProjectData: function(e) {
-			var $cb = $(e.currentTarget);
-			if ($cb.prop("checked")) {
-				this.sb.notify({
-					type : "project-requested",
-					data: { id: $cb.val() }
-				});
-			}
-			else {
-				this.sb.notify({
-					type : "project-removal-requested",
-					data: { id: $cb.val() }
-				});
-			}
-			e.stopPropagation();
-		},
 		destroy: function(){
-			alert("todo: implement");
-		}
+			this.remove();
+		},
+
     });
     return localground.maps.views.ProjectsMenu;
 });
