@@ -50,7 +50,12 @@ define(
 			var that = this;
 
 			//listen for new data:
-			this.collection.on('add', this.render, this);
+			//this.collection.on('add', this.render, this);
+			this.listenTo(this.collection, 'add', this.render);
+			this.listenTo(this.collection, 'zoom-to-extent', this.zoomToExtent);
+			this.listenTo(this.collection, 'show-all', this.showAll);
+			this.listenTo(this.collection, 'hide-all', this.hideAll);
+			
 			
 			//listen for map zoom change, re-render photo icons:
 			google.maps.event.addListener(this.map, 'zoom_changed', function() {
@@ -60,44 +65,6 @@ define(
 					overlay.getGoogleOverlay().setIcon(overlay.getIcon());
 				}	
 			});
-			
-			this.sb.listen({
-				"show-overlay": this.showOverlay,
-				"hide-overlay": this.hideOverlay,
-				"zoom-to-overlay": this.zoomToOverlay,
-			});
-		},
-		
-		showOverlay: function(data) {
-			if(!this.belongs(data.model)) { return; }
-			var overlay = this.getOverlay(data.model);
-			overlay.show();
-			overlay.centerOn();
-		},
-		hideOverlay: function(data) {
-			if(!this.belongs(data.model)) { return; }
-			this.getOverlay(data.model).hide();
-		},
-		zoomToOverlay: function(data) {
-			if(!this.belongs(data.model)) { return; }
-			var overlay = this.getOverlay(data.model);
-			overlay.zoomTo();
-			this.sb.notify({
-				type: "show-bubble",
-				data: {
-					model: data.model,
-					center: overlay.getCenter()
-				}
-			});
-		},
-		
-		/**
-		 * Ensures that the model belongs to this particular overlayGroup.
-		 * For example, if the key == "markers", ensure that the model
-		 * belongs to the markers collection.
-		 */
-		belongs: function(model){
-			return model.getKey() == this.key;
 		},
 		
 		/**

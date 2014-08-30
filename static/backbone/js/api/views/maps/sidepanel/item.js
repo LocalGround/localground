@@ -54,7 +54,9 @@ define(["backbone"], function(Backbone) {
 			this.sb = sb;
 			this.render();
             this.listenTo(this.model, 'destroy', this.remove);
-			this.listenTo(this.model, 'removeView', this.remove);
+			this.listenTo(this.model, 'remove-view', this.remove);
+            this.listenTo(this.model, 'show-item', this.triggerToggleCheckbox);
+			this.listenTo(this.model, 'hide-item', this.triggerToggleCheckbox);
         },
 
 		/**
@@ -65,18 +67,10 @@ define(["backbone"], function(Backbone) {
 		 * on or off.
 		 */
 		toggleElement: function(isChecked){
-			if (isChecked) {
-				this.sb.notify({ 
-					type : "show-overlay", 
-					data : { model: this.model } 
-				}); 
-			}
-			else {
-				this.sb.notify({ 
-					type : "hide-overlay", 
-					data : { model: this.model } 
-				}); 
-			}
+			if (isChecked)
+				this.model.trigger("show-overlay");
+			else
+				this.model.trigger("hide-overlay");
 			this.saveState();
 		},
 		
@@ -101,7 +95,7 @@ define(["backbone"], function(Backbone) {
 				$cb.attr('checked', !$cb.attr('checked'));
 				this.toggleElement($cb.attr('checked'));
 			}
-            e.stopPropagation();
+			if (e) { e.stopPropagation(); } 
 		},
 		
 		
@@ -147,12 +141,8 @@ define(["backbone"], function(Backbone) {
 		 * @param {Event} e
 		 */
 		zoomTo: function(e){
-			if (this.model.get("geometry")) {
-				this.sb.notify({ 
-					type : "zoom-to-overlay", 
-					data : { model: this.model } 
-				}); 
-			}
+			if (this.model.get("geometry") && this.isVisible())
+				this.model.trigger("zoom-to-overlay");
             e.stopPropagation();
 		},
 		

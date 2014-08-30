@@ -70,15 +70,11 @@ define(["backbone",
 		},
 		
 		destroy: function(){
-			alert("todo: implement");
+			this.remove();
 		},
 		
 		resize: function(){
 			this.$el.find('.pane-body').height($('body').height() - 140);
-		},
-		
-		saveWorkspace: function(){
-			this.workspaceManager.saveWorkspace();
 		}
 	});
 	return localground.maps.views.DataPanel;

@@ -1,7 +1,8 @@
-define(["lib/maps/overlays/point",
+define(["backbone",
+		"lib/maps/overlays/point",
 		"lib/maps/overlays/polyline",
 		"lib/maps/overlays/polygon"
-		], function() {
+		], function(Backbone) {
     /** 
      * This class controls the rendering and underlying
      * visibility of Google overlay objects, including points,
@@ -24,7 +25,11 @@ define(["lib/maps/overlays/point",
 			this.model = opts.model;
 			this.initOverlayType(opts.isVisible || false);
 			
-			this.listenTo(this.model, 'removeView', this.remove);
+			this.listenTo(this.model, 'remove-view', this.remove);
+			this.listenTo(this.model, 'show-overlay', this.show);
+			this.listenTo(this.model, 'hide-overlay', this.hide);
+			this.listenTo(this.model, 'zoom-to-overlay', this.zoomTo);
+			
 		},
 		
 		initOverlayType: function(isVisible){
@@ -85,6 +90,10 @@ define(["lib/maps/overlays/point",
 		hide: function(){
 			var overlay = this.getGoogleOverlay();
 			overlay.setMap(null);
+			this.sb.notify({ 
+				type : "hide-bubble", 
+				data : { model: this.model } 
+			}); 
 			this.saveState();
 		},
 		
@@ -133,6 +142,13 @@ define(["lib/maps/overlays/point",
 		/** zooms to the google.maps overlay. */
 		zoomTo: function(){
 			this.overlay.zoomTo();
+			this.sb.notify({
+				type: "show-bubble",
+				data: {
+					model: this.model,
+					center: this.getCenter()
+				}
+			});
 		},
 		
 		/** centers the map at the google.maps overlay */

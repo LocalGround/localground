@@ -27,9 +27,9 @@ define(
 			this.map = sb.getMap();
 			sb.listen({ 
                 "new-collection-created" : this.createOverlayGroup,
-                "zoom-to-extent" : this.zoomToExtent,
-                "show-all" : this.showAll,
-                "hide-all" : this.hideAll
+                //"zoom-to-extent" : this.zoomToExtent,
+                //"show-all" : this.showAll,
+                //"hide-all" : this.hideAll
             });
 		},
 		createOverlayGroup: function(data) {
@@ -39,7 +39,7 @@ define(
 				{ collection: data.collection, isVisible: false }
 			);
 		},
-		zoomToExtent: function(data) {
+		/*zoomToExtent: function(data) {
 			this.overlayGroups[data.key].zoomToExtent();
 		},
 		showAll: function(data) {
@@ -49,7 +49,7 @@ define(
 		},
 		hideAll: function(data) {
 			this.overlayGroups[data.key].hideAll();
-		},
+		},*/
 		getOverlay: function(model){
 			return this.overlayGroups[model.collection.key].getOverlay(model);
 		},

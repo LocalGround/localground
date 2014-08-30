@@ -85,28 +85,14 @@ define(["backbone",
 		checkAll: function(e){
 			var $cb = $(e.currentTarget);
 			var isChecked = $cb.prop("checked");
-			
-			//handle child element state:
-			this.$el.find('.data-item > input').prop("checked", isChecked);
-
-			//expand panel if checked and hidden:
+			this.collection.each(function(model){
+				model.trigger("show-item");
+			});
 			if (isChecked) {
-				this.sb.notify({ 
-					type : "show-all", 
-					data : { key: $cb.val() } 
-				});
-				
 				// Expand panel if user turns on the checkbox.
 				// Not sure if this is a good UI decision.
-				var $symbol = $cb.parent().find('.show-hide');
-				if ($symbol.hasClass('fa-caret-right')) 
-					this.showHide($symbol);
-			}
-			else {
-				this.sb.notify({ 
-					type : "hide-all", 
-					data : { key: $cb.val() } 
-				});
+				if (!this.isExpanded()) 
+					this.showHide();
 			}
 			this.saveState();
 		},
@@ -115,28 +101,26 @@ define(["backbone",
 		 * data type.
 		 */
 		zoomToExtent: function(e){
-			var $cb = $(e.currentTarget).parent().find('input');
-			this.sb.notify({ 
-				type : "zoom-to-extent", 
-				data : { key: $cb.val() } 
-			});
+			this.collection.trigger("zoom-to-extent");
 		},
 		
 		isExpanded: function(){
 			return !this.$el.find('.show-hide').hasClass('fa-caret-right');
 		},
+		isVisible: function(){
+			return this.$el.find('input').attr('checked') == "checked";
+		},
 		triggerShowHide: function(e){
-			this.showHide($(e.currentTarget));
+			this.showHide();
 			e.preventDefault();
 		},
 		/**
 		 * Zooms to the extent of the child data elements of the corresponding
 		 * data type.
 		 */
-		showHide: function($symbol){
-			var $panel = $symbol.parent().next();
-			var key =  $symbol.parent().find('input').val();
-			var show = $symbol.hasClass('fa-caret-right');
+		showHide: function(){
+			$symbol = this.$el.find(".show-hide");
+			var $panel = this.$el.find(".collection-data");
 			if (this.isExpanded()) {
 				this.sb.notify({ type : "contract" });
 				$symbol.removeClass('fa-caret-down').addClass('fa-caret-right');
@@ -158,7 +142,7 @@ define(["backbone",
 		saveState: function(){
 			this.sb.saveState({
 				isExpanded: this.isExpanded(),
-				isVisible: true
+				isVisible: this.isVisible()
 			});
 		},
 		

@@ -21,6 +21,8 @@ define(
 		/** A hook to global application events */
 		bubble: null,
 		tip: null,
+		bubbleModel: null,
+		tipModel: null,
 		
 		/**
 		 * Initializes
@@ -49,6 +51,7 @@ define(
 			
 			sb.listen({ 
                 "show-bubble"  : this.showBubble, 
+                "hide-bubble"  : this.hideBubble, 
                 "show-tip" : this.showTip, 
                 "hide-tip" : this.hideTip
             }); 
@@ -62,7 +65,8 @@ define(
 		},
 		
 		showBubble: function(data){
-			var model = data.model, latLng = data.center;
+			var model = this.bubbleModel = data.model;
+			var latLng = data.center;
 			var that = this;
 			this.tip.close();
 			this.bubble.modelID = model.id;
@@ -88,6 +92,10 @@ define(
 					}, 200);
 				}	
 			});
+		},
+		hideBubble: function(data){
+			if (this.bubbleModel == data.model)
+				this.bubble.close();	
 		},
 		showTip: function(data){
 			var model = data.model, latLng = data.center;
