@@ -103,7 +103,8 @@ define(["lib/maps/overlays/point",
 		},
 		
 		remove: function(){
-			this.hide();
+			var overlay = this.getGoogleOverlay();
+			overlay.setMap(null);
 			localground.maps.overlays.Base.__super__.remove.apply(this); 
 		},
 		
