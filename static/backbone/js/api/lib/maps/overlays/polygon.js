@@ -13,7 +13,7 @@ define(["lib/maps/overlays/polyline"], function() {
 		
 		this.createOverlay = function(isVisible){
 			this.googleOverlay = new google.maps.Polygon({
-				path: this.getGooglePath(),
+				path: this.getGooglePathFromGeoJSON(),
 				strokeColor: '#' + this.model.get("color"),
 				strokeOpacity: 1.0,
 				strokeWeight: 5,
@@ -30,7 +30,7 @@ define(["lib/maps/overlays/polyline"], function() {
 		 * @returns {Array}
 		 * An array of google.maps.LatLng objects.
 		 */
-		this.getGooglePath = function(){
+		this.getGooglePathFromGeoJSON = function(){
 			var geoJSON = this.model.get("geometry");
 			var path = [];
 			var coords = geoJSON.coordinates[0];
@@ -43,6 +43,24 @@ define(["lib/maps/overlays/polyline"], function() {
 		
 		this.getCenterPoint = function() {
 			return this.getBounds().getCenter();
+		};
+		
+		/**
+		 * Method that converts a google.maps.Polygon
+		 * into a GeoJSON Linestring object.
+		 * @see See the Google <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">google.maps.Polygon</a>
+		 * documentation for more details.
+		 * @returns a GeoJSON Polygon object
+		 */
+		this.getGeoJSON = function(){
+			var pathCoords = this.googleOverlay.getPath().getArray();
+			var coords = [];
+			for (var i = 0; i < pathCoords.length; i++){
+				coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
+			}
+			//add last coordinate again:
+			coords.push([pathCoords[0].lng(), pathCoords[0].lat()])
+			return { type: 'Polygon', coordinates: [coords] };
 		};
 		
 		this.initialize(sb, opts);

@@ -111,10 +111,8 @@ define([], function() {
 				});
 			});
 			google.maps.event.addListener(this.googleOverlay, "dragend", function(mEvent) {
-				var latLng = mEvent.latLng;
-				that.map.panTo(mEvent.latLng);
-				var geoJSON = that.toGeoJSON(latLng);
-				model.set("geometry", JSON.stringify(geoJSON));
+				that.map.panTo(that.googleOverlay.position);
+				model.set("geometry", JSON.stringify(that.getGeoJSON()));
 				model.save();
 			});
 
@@ -123,7 +121,8 @@ define([], function() {
 			});
 		};
 		
-		this.toGeoJSON = function(latLng){
+		this.getGeoJSON = function(){
+			var latLng = this.googleOverlay.position;
 			return {
 				type: 'Point',
 				coordinates: [latLng.lng(), latLng.lat()]

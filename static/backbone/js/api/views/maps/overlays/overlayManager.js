@@ -9,14 +9,6 @@ define(
 		 * @lends localground.maps.views.OverlayManager#
 		 */
 		
-		/** A google.maps.Map object */
-		map: null,
-		
-		/** A dictionary indexing the various
-		 * {@link localground.maps.views.OverlayGroup} objects.
-		 */
-		overlayGroups: {},
-		
 		/**
 		 * Initializes the object.
 		 * @param {Object} sb
@@ -24,37 +16,19 @@ define(
 		 */
 		initialize: function(sb) {
 			this.sb = sb;
-			this.map = sb.getMap();
 			sb.listen({ 
-                "new-collection-created" : this.createOverlayGroup,
-                //"zoom-to-extent" : this.zoomToExtent,
-                //"show-all" : this.showAll,
-                //"hide-all" : this.hideAll
+                "new-collection-created" : this.createOverlayGroup
             });
 		},
 		createOverlayGroup: function(data) {
-			this.overlayGroups[data.collection.key] = this.sb.loadSubmodule(
+			this.sb.loadSubmodule(
 				"overlayGroup-" + data.collection.key,
 				localground.maps.views.OverlayGroup,
 				{ collection: data.collection, isVisible: false }
 			);
 		},
-		/*zoomToExtent: function(data) {
-			this.overlayGroups[data.key].zoomToExtent();
-		},
-		showAll: function(data) {
-			console.log(data);
-			this.overlayGroups[data.key].showAll();
-			this.overlayGroups[data.key].zoomToExtent();
-		},
-		hideAll: function(data) {
-			this.overlayGroups[data.key].hideAll();
-		},*/
-		getOverlay: function(model){
-			return this.overlayGroups[model.collection.key].getOverlay(model);
-		},
 		destroy: function(){
-			alert("bye");	
+			this.remove();
 		}
 	});
 	return localground.maps.views.OverlayManager;

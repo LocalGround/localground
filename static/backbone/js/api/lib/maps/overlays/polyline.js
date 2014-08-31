@@ -21,7 +21,7 @@ define([], function() {
 		
 		this.createOverlay = function(isVisible){
 			this.googleOverlay = new google.maps.Polyline({
-				path: this.getGooglePath(),
+				path: this.getGooglePathFromGeoJSON(),
 				strokeColor: '#' + this.model.get("color"),
 				strokeOpacity: 1.0,
 				strokeWeight: 5,
@@ -92,7 +92,7 @@ define([], function() {
 		 * @returns {Array}
 		 * An array of google.maps.LatLng objects.
 		 */
-		this.getGooglePath = function(){
+		this.getGooglePathFromGeoJSON = function(){
 			var geoJSON = this.model.get("geometry");
 			var path = [];
 			var coords = geoJSON.coordinates;
@@ -117,6 +117,35 @@ define([], function() {
 				distance += google.maps.geometry.spherical.computeDistanceBetween(coords[i-1], coords[i]);
 			}
 			return Math.round( distance / 1609.34 * 100 ) / 100;
+		};
+		
+		this.makeViewable = function() {
+			this.googleOverlay.setOptions({'draggable': false, 'editable': false});
+			google.maps.event.clearListeners(this.googleOverlay.getPath());
+		};
+		
+		this.makeEditable = function(model) {
+			this.googleOverlay.setOptions({'draggable': false, 'editable': true});
+			var that = this;
+			google.maps.event.addListener(this.googleOverlay.getPath(), 'set_at', function(e){
+				that.saveShape(model);
+			});
+			google.maps.event.addListener(this.googleOverlay.getPath(), 'remove_at', function(e){
+				that.saveShape(model);
+			});
+			google.maps.event.addListener(this.googleOverlay.getPath(), 'insert_at', function(e){
+				that.saveShape(model);
+			});
+			
+			/*google.maps.event.addListener(this.googleOverlay, 'rightclick', function(e) {
+			if (e.vertex == undefined) { return; }
+			me.showDeleteMenu(me, e);
+			});*/
+		};
+		
+		this.saveShape = function(model){
+			model.set("geometry", JSON.stringify(this.getGeoJSON()));
+			model.save();	
 		};
 
 		this.initialize(sb, opts);
