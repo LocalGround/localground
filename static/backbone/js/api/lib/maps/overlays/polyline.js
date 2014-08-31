@@ -137,10 +137,17 @@ define([], function() {
 				that.saveShape(model);
 			});
 			
-			/*google.maps.event.addListener(this.googleOverlay, 'rightclick', function(e) {
-			if (e.vertex == undefined) { return; }
-			me.showDeleteMenu(me, e);
-			});*/
+			google.maps.event.addListener(this.googleOverlay, 'rightclick', function(e) {
+				if (e.vertex == undefined) { return; }
+				if (that.googleOverlay.getPath().getLength() <=2) { return; }
+				that.sb.notify({
+					type: 'show-delete-menu',
+					data: {
+						googleOverlay: that.googleOverlay,
+						point: e.vertex
+					}
+				});
+			});
 		};
 		
 		this.saveShape = function(model){

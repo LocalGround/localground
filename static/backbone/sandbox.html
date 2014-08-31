@@ -33,7 +33,8 @@
 				    "lib/maps/managers/dataManager",
 					"views/maps/sidepanel/dataPanel",
 					"views/maps/overlays/overlayManager",
-					"views/maps/overlays/bubbleManager"
+					"views/maps/overlays/bubbleManager",
+					"lib/maps/controls/deleteMenu"
 				   ],
 				function($, bootstrap, CORE, Sandbox) {
 					var basemapOpts = {
@@ -60,6 +61,7 @@
 					CORE.create_module("data-panel", localground.maps.views.DataPanel);
 					CORE.create_module("overlay-manager", localground.maps.views.OverlayManager);
 					CORE.create_module("bubble-manager", localground.maps.views.BubbleManager);
+					CORE.create_module("delete-menu", localground.maps.controls.DeleteMenu);
 					
 					CORE.start_all();
 				}

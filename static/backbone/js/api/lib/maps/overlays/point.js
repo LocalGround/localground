@@ -112,13 +112,17 @@ define([], function() {
 			});
 			google.maps.event.addListener(this.googleOverlay, "dragend", function(mEvent) {
 				that.map.panTo(that.googleOverlay.position);
-				model.set("geometry", JSON.stringify(that.getGeoJSON()));
-				model.save();
+				that.saveShape(model);
 			});
 
 			google.maps.event.addListener(this.googleOverlay, "drag", function(mEvent) {
 				//me.checkIntersection(mEvent, true);
 			});
+		};
+		
+		this.saveShape = function(model){
+			model.set("geometry", JSON.stringify(this.getGeoJSON()));
+			model.save();	
 		};
 		
 		this.getGeoJSON = function(){
