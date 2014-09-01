@@ -57,6 +57,8 @@ define(["backbone"], function(Backbone) {
 			this.listenTo(this.model, 'remove-view', this.remove);
             this.listenTo(this.model, 'show-item', this.showItem);
 			this.listenTo(this.model, 'hide-item', this.hideItem);
+			this.listenTo(this.model, 'change', this.render);
+			this.listenTo(this.model, 'reset', this.render);
         },
 
 		/**

@@ -26,6 +26,10 @@ define(
 		bubbleModel: null,
 		tipModel: null,
 		
+		events: {
+            "click .btn-primary": "saveForm"
+		},
+		
 		/**
 		 * Initializes
 		 */
@@ -49,7 +53,6 @@ define(
 				hideCloseButton: true,
 				map: this.map
 			});
-			
 			
 			sb.listen({ 
                 "show-bubble"  : this.showBubble, 
@@ -112,22 +115,24 @@ define(
 			var that = this;
 			model.fetchSchemas();
 			model.on("schemaLoaded", function(){
+				var template = that.getTemplate(model, "InfoBubbleTemplate");
+				that.setElement($(template({mode: "edit"})));
 				var ModelForm = Backbone.Form.extend({
 					schema: model.updateSchema
 				});
-				var form = new ModelForm({
+
+				that.form = new ModelForm({
 					model: model
 				}).render();
-				form.$el.css({
-					'margin-top': '25px',
-					'width': '350px',
-					'height': '250px',
-					'overflow-y': 'auto',
-					'overflow-x': 'hidden'
-				});
-				that.$el = form.$el;
+				that.$el.find('.form').append(that.form.$el);
 				that.showUpdatedContent(latLng);
 			});
+		},
+		saveForm: function(e){
+			console.log("save form");
+			this.form.commit();	//does validation
+			this.bubble.model.save(); //does database commit
+			e.preventDefault();
 		},
 		showUpdatedContent: function(latLng){
 			this.bubble.setContent(this.$el.get(0));
@@ -159,6 +164,7 @@ define(
 		},
 		getContext: function(model){
 			var opts = model.toJSON();
+			opts.mode = this.sb.getMode();
 			if (model.getDescriptiveText)
 				opts.descriptiveText = model.getDescriptiveText();
 			return opts;

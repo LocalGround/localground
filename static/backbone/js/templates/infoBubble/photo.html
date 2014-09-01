@@ -1,4 +1,5 @@
-<div class="bubble-container" style="width: 320px;height:330px;">
+<% if (mode == 'view') { %>
+<div class="bubble-container" style="width: 320px;height:350px;">
 	<div class="photo-container">
 		<img src="<%= path_medium %>" />
 	</div>
@@ -10,3 +11,12 @@
 		</p>
 	</div>
 </div>
+<% } %>
+
+
+<% if (mode == 'edit') { %>
+	<div class="bubble-container" style="width: 350px;height:350px;">
+		<div class="form" style="height: 275px;"></div>
+		<button class="btn btn-primary">Submit</button>
+	</div>
+<% } %>

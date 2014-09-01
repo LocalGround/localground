@@ -20,6 +20,16 @@ define(["backbone", "lib/maps/geometry/point"],
 			'boolean': 'Checkbox',
 			'geojson': 'TextArea'
 		},
+		toJSON: function(){
+			var json = Backbone.Model.prototype.toJSON.call(this);
+			// ensure that the geometry object is serialized before it
+			// gets sent to the server:
+			//alert(JSON.stringify(json.geometry));
+			if(json.geometry != null) {
+				json.geometry = JSON.stringify(json.geometry);
+			}
+			return json;
+		},
 		initialize: function(opts){
 			opts = opts || {};
 			$.extend(this, opts);

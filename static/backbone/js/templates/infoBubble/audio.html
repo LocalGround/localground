@@ -1,3 +1,4 @@
+<% if (mode == 'view') { %>
 <div class="bubble-container" style="width: 300px;height:100px;">
 	<div>
 		<p class="bubble-title"><%= name || "Untitled" %></p>
@@ -7,3 +8,13 @@
 		</p>
 	</div>
 </div>
+<% } %>
+
+
+<% if (mode == 'edit') { %>
+	<div class="bubble-container" style="width: 350px;height:250px;">
+		<div class="form" style="height: 175px;"></div>
+		<button class="btn btn-primary">Submit</button>
+	</div>
+<% } %>
+

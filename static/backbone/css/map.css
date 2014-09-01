@@ -287,6 +287,13 @@ label {
 }
 
 
+.bubble-container .form {
+	margin-top: 25px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+
 /********************************************************/
 /* INFOBUBBLES 											*/
 /********************************************************/
