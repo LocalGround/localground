@@ -271,7 +271,20 @@
 
 }
 
-
+/**********************/
+/* FORMS **************/
+/**********************/
+.control-label {
+	float: left;
+	line-height: 1.2em;
+	font-weight: bold;
+}
+.form-group p {
+	margin: 0 0 8px;
+}
+label {
+	font-size: 14px;
+}
 
 
 /********************************************************/

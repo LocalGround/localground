@@ -3,6 +3,8 @@ define(
 		'backbone',
 		'infobubble',
 		'config',
+		'form',
+		"bootstrap-form-templates",
 		'slick'
 		
 	], function(Backbone, InfoBubble, Config) {
@@ -53,7 +55,9 @@ define(
                 "show-bubble"  : this.showBubble, 
                 "hide-bubble"  : this.hideBubble, 
                 "show-tip" : this.showTip, 
-                "hide-tip" : this.hideTip
+                "hide-tip" : this.hideTip,
+				"make-viewable": this.refresh,
+				"make-editable": this.refresh
             }); 
 		},
 		
@@ -65,33 +69,73 @@ define(
 		},
 		
 		showBubble: function(data){
+			this.bubble.close();
+			var that = this;
 			var model = this.bubbleModel = data.model;
 			var latLng = data.center;
-			var that = this;
 			this.tip.close();
-			this.bubble.modelID = model.id;
-			model.fetch({
-				/*
-					Todo: refactor so there are 2 bubble views:
-						- a default one, and
-						- one for markers
-				*/
-				success: function(){
-					var template = that.getTemplate(model, "InfoBubbleTemplate");
-					if (latLng == null) { latLng = model.getCenter(); }
-					that.$el.html(template(that.getContext(model)));
-					that.bubble.setContent(that.$el.html());
-					console.log(that.$el.find('.single-item'));
-					that.bubble.setPosition(latLng);
-					that.bubble.open();
-					
-					window.setTimeout(function() {
-						$('.marker-container').slick({
-							dots: false	
-						});	
-					}, 200);
-				}	
+			this.bubble.model = model;
+			model.fetch({ success: function(){
+				that.renderBubble(model, latLng);	
+			}});
+		},
+		refresh: function(){
+			if(this.bubble.isOpen()) { 
+				this.showBubble({
+					model: this.bubble.model,
+					latLng: this.bubble.position
+				});
+			}
+		},
+		renderBubble: function(model, latLng){
+			if (this.sb.getMode() == "view") {
+				this.renderViewContent(model, latLng);
+			}
+			else {
+				this.renderEditContent(model, latLng);
+			}
+		},
+		renderViewContent: function(model, latLng) {
+			var template = this.getTemplate(model, "InfoBubbleTemplate");
+			this.$el = $(template(this.getContext(model)));
+			
+			this.showUpdatedContent(latLng);
+
+			//only relevant for marker in view mode:
+			window.setTimeout(function() {
+				$('.marker-container').slick({
+					dots: false	
+				});	
+			}, 200);
+		},
+		
+		renderEditContent: function(model, latLng){
+			var that = this;
+			model.fetchSchemaOpts();
+			model.on("schemaLoaded", function(){
+				console.log(model.schema);
+				var ModelForm = Backbone.Form.extend({
+					schema: model.schema
+				});
+				
+				var form = new ModelForm({
+					model: model
+				}).render();
+				form.$el.css({
+					'margin-top': '25px',
+					'width': '350px',
+					'height': '250px',
+					'overflow-y': 'auto',
+					'overflow-x': 'hidden'
+				});
+				that.$el = form.$el;
+				that.showUpdatedContent(latLng);
 			});
+		},
+		showUpdatedContent: function(latLng){
+			this.bubble.setContent(this.$el.get(0));
+			this.bubble.setPosition(latLng);
+			this.bubble.open();	
 		},
 		hideBubble: function(data){
 			if (this.bubbleModel == data.model)
@@ -100,7 +144,7 @@ define(
 		showTip: function(data){
 			if (this.sb.getMode() == "edit") { return; }
 			var model = data.model, latLng = data.center;
-			if(this.bubble.modelID == model.id &&
+			if(this.bubble.model && this.bubble.model.id == model.id &&
 				this.bubble.isOpen()) { return; }
 			var template = this.getTemplate(model, "TipTemplate");
 			if (latLng == null) { latLng = model.getCenter(); }

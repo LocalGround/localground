@@ -35,8 +35,7 @@ define(["backbone", "lib/maps/geometry/point"],
 		fetchSchemaOpts: function(){
 			//https://github.com/powmedia/backbone-forms#schema-definition
 			if (this.urlRoot == null) {
-				alert("opts.urlRoot cannot be null");
-				return;
+				this.urlRoot = this.collection.url + this.id + "/";
 			}
 			var that = this;
 			$.ajax({
@@ -44,17 +43,18 @@ define(["backbone", "lib/maps/geometry/point"],
 				type: 'OPTIONS',
 				data: { _method: 'OPTIONS' },
 				success: function(data) {
-					that.generateFormSchema(data.actions['POST']);
+					console.log(data);
+					that.generateFormSchema(data.actions['PUT']);
 				}
 			});
 		},
 		generateFormSchema: function(opts) {
 			for (key in opts) {
 				var val = opts[key];
-				if (!val.read_only  && this.dataTypes[val.type]) {
+				if (!val.read_only && key != 'geometry') {
 					this.schema[key] = {
-						type: this.dataTypes[val.type],
-						title: val.label,
+						type: this.dataTypes[val.type] || 'Text',
+						title: val.label || key,
 						help: val.help_text
 					};
 				}
