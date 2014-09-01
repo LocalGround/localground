@@ -98,6 +98,7 @@ define(
 				this.bubble.close();	
 		},
 		showTip: function(data){
+			if (this.sb.getMode() == "edit") { return; }
 			var model = data.model, latLng = data.center;
 			if(this.bubble.modelID == model.id &&
 				this.bubble.isOpen()) { return; }

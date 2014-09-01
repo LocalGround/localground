@@ -131,6 +131,7 @@ define(["backbone",
 				sb.notify({ type : "window-resized" });
 			});
 		},
+
 		saveState: function(data){
 			var latLng = this.map.getCenter();
 			this.sb.saveState({
