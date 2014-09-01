@@ -30,8 +30,7 @@ define(["backbone",
 			this.listenTo(this.model, 'hide-overlay', this.hide);
 			this.listenTo(this.model, 'zoom-to-overlay', this.zoomTo);
 			this.sb.listen({
-				"make-editable" : this.makeEditable,
-				"make-viewable" : this.makeViewable
+				"mode-change" : this.changeMode
 			});
 			
 		},
@@ -166,6 +165,13 @@ define(["backbone",
 		 */
 		getCenter: function(){
 			return this.overlay.getCenter();
+		},
+		
+		changeMode: function(){
+			if (this.sb.getMode() == "view")
+				this.makeViewable();
+			else
+				this.makeEditable();
 		},
 		
 		makeViewable: function(){

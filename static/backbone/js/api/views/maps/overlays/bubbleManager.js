@@ -56,8 +56,7 @@ define(
                 "hide-bubble"  : this.hideBubble, 
                 "show-tip" : this.showTip, 
                 "hide-tip" : this.hideTip,
-				"make-viewable": this.refresh,
-				"make-editable": this.refresh
+				"mode-change": this.refresh
             }); 
 		},
 		
@@ -111,13 +110,11 @@ define(
 		
 		renderEditContent: function(model, latLng){
 			var that = this;
-			model.fetchSchemaOpts();
+			model.fetchSchemas();
 			model.on("schemaLoaded", function(){
-				console.log(model.schema);
 				var ModelForm = Backbone.Form.extend({
-					schema: model.schema
+					schema: model.updateSchema
 				});
-				
 				var form = new ModelForm({
 					model: model
 				}).render();

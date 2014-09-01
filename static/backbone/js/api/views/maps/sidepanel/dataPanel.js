@@ -72,14 +72,14 @@ define(["backbone",
 		toggleEditMode: function(){
 			if(this.sb.getMode() == "view") {
 				this.sb.setMode("edit");
-				this.sb.notify({ type: "make-editable" });
 				this.$el.find('#mode_toggle').addClass('btn-info');
 			}
 			else {
 				this.sb.setMode("view");
-				this.sb.notify({ type: "make-viewable" });
 				this.$el.find('#mode_toggle').removeClass('btn-info');	
 			}
+			this.sb.notify({ type: "mode-change" });
+				
 		},
 		
 		destroy: function(){

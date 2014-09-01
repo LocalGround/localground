@@ -45,9 +45,8 @@ define(["underscore"], function(_) {
 			var that = this;
 			
 			//add listeners:
-			this.sb.listen({ 
-				"make-editable": this.show,
-				"make-viewable": this.hide
+			this.sb.listen({
+				"mode-change" : this.changeMode
 			});
 			
 			google.maps.event.addListener(this.dm, 'overlaycomplete', function(e) {
@@ -68,6 +67,13 @@ define(["underscore"], function(_) {
 				alert("done!");
 				that.dm.setDrawingMode(null);
 			});
+		};
+		
+		this.changeMode = function(){
+			if (this.sb.getMode() == "view")
+				this.hide();
+			else
+				this.show();
 		};
 		
 		this.show = function(){
