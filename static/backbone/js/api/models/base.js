@@ -21,14 +21,15 @@ define(["backbone", "lib/maps/geometry/point"],
 			'geojson': 'TextArea'
 		},
 		toJSON: function(){
-			var json = Backbone.Model.prototype.toJSON.call(this);
 			// ensure that the geometry object is serialized before it
 			// gets sent to the server:
-			//alert(JSON.stringify(json.geometry));
-			if(json.geometry != null) {
+			var json = Backbone.Model.prototype.toJSON.call(this);
+			if(json.geometry != null)
 				json.geometry = JSON.stringify(json.geometry);
-			}
 			return json;
+		},
+		toTemplateJSON: function(){
+			return Backbone.Model.prototype.toJSON.call(this);
 		},
 		initialize: function(opts){
 			opts = opts || {};

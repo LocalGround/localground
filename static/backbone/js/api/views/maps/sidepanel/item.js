@@ -163,7 +163,7 @@ define(["backbone"], function(Backbone) {
         render: function() {
 			//todo: restore state here:
 			opts = this.restoreState();
-			$.extend(opts, this.model.toJSON());
+			$.extend(opts, this.model.toTemplateJSON());
 			//for the marker model:
 			if (this.model.getDescriptiveText) {
 				opts.descriptiveText = this.model.getDescriptiveText();

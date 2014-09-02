@@ -22,6 +22,13 @@ define(["lib/maps/overlays/polyline"], function() {
 				map: isVisible ? this.map : null
 			});
 		};
+		
+		this.redraw = function(){
+			this.googleOverlay.setOptions({
+				strokeColor: '#' + this.model.get("color"),
+				fillColor: '#' + this.model.get("color"),
+			});	
+		};
 		/**
 		 * Method that converts a GeoJSON Linestring into
 		 * an array of google.maps.LatLng objects.

@@ -1,3 +1,4 @@
+<% if (mode == 'view') { %>
 <div class="bubble-container" style="width: 400px;height:380px;">
 	<div class="slider marker-container">
 		<% _.each(children, function(child) { %>
@@ -26,3 +27,12 @@
 		});
 	</script>
 </div>
+<% } %>
+
+
+<% if (mode == 'edit') { %>
+	<div class="bubble-container" style="width: 350px;height:350px;">
+		<div class="form" style="height: 275px;"></div>
+		<button class="btn btn-primary">Submit</button>
+	</div>
+<% } %>

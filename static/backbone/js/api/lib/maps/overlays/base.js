@@ -29,6 +29,7 @@ define(["backbone",
 			this.listenTo(this.model, 'show-overlay', this.show);
 			this.listenTo(this.model, 'hide-overlay', this.hide);
 			this.listenTo(this.model, 'zoom-to-overlay', this.zoomTo);
+			this.listenTo(this.model, 'change', this.redraw);
 			this.sb.listen({
 				"mode-change" : this.changeMode
 			});
@@ -180,6 +181,10 @@ define(["backbone",
 		
 		makeEditable: function(){
 			this.overlay.makeEditable(this.model);
+		},
+		
+		redraw: function(){
+			alert("implement in child class");
 		}
 
 	});

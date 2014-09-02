@@ -121,7 +121,7 @@ define([], function() {
 		};
 		
 		this.saveShape = function(model){
-			model.set("geometry", JSON.stringify(this.getGeoJSON()));
+			model.set("geometry", this.getGeoJSON());
 			model.save();	
 		};
 		

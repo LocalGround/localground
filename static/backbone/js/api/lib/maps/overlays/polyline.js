@@ -28,6 +28,12 @@ define([], function() {
 				map: isVisible ? this.map : null
 			});
 		};
+		
+		this.redraw = function(){
+			this.googleOverlay.setOptions({
+				strokeColor: '#' + this.model.get("color")
+			});	
+		};
 
 		/**
 		 * An approximation for the center point of a polyline.
@@ -151,7 +157,7 @@ define([], function() {
 		};
 		
 		this.saveShape = function(model){
-			model.set("geometry", JSON.stringify(this.getGeoJSON()));
+			model.set("geometry", this.getGeoJSON());
 			model.save();	
 		};
 

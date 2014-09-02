@@ -38,8 +38,14 @@ define([
 		/** shows the google.maps overlay on the map. */
 		show : function(){
 			localground.maps.overlays.Marker.__super__.show.apply(this); 
+			this.redraw();
+		},
+		
+		redraw : function(){
 			if(this.overlay.getType() == "Point")
 				this.getGoogleOverlay().setIcon(this.getIcon());
+			else
+				this.overlay.redraw();
 		}
 		
 		

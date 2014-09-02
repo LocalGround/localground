@@ -45,8 +45,11 @@ define(["lib/maps/overlays/base"], function() {
 		/** shows the google.maps overlay on the map. */
 		show : function(){
 			localground.maps.overlays.Photo.__super__.show.apply(this); 
-			this.getGoogleOverlay().setIcon(this.getIcon());
+			this.redraw();
 		},
+		redraw : function(){
+			this.getGoogleOverlay().setIcon(this.getIcon());	
+		}
 	});
 	return localground.maps.overlays.Photo;
 });
