@@ -42,6 +42,23 @@ class QueryableListCreateAPIView(generics.ListCreateAPIView):
         except:
             pass
         return ret
+    
+class QueryableRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    def metadata(self, request):
+        # extend the existing metadata method in the parent class by adding a
+        # list of available filters
+        from localground.apps.lib.helpers import QueryParser
+        from django.utils.datastructures import SortedDict
+
+        ret = super(QueryableListCreateAPIView, self).metadata(request)
+        ret = SortedDict(ret)
+        try:
+            query = QueryParser(self.model, request.GET.get('query'))
+            ret['filters'] = query.to_dict_list()
+        except:
+            pass
+        return ret
+
 
 
 class MediaList(QueryableListCreateAPIView, AuditCreate):

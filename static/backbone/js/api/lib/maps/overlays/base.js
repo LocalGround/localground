@@ -51,6 +51,8 @@ define(["backbone",
 				this.overlay = new localground.maps.overlays.Polygon(this.sb, opts);
 			else
 				alert('Unknown Geometry Type');
+				
+			console.log(this.overlay);
 			this.attachEventHandlers();
 		},
 		

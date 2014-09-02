@@ -11,19 +11,23 @@ define(
 		"text!../templates/infoBubble/audioTip.html",
 		"text!../templates/infoBubble/marker.html",
 		"text!../templates/infoBubble/markerTip.html",
+		"text!../templates/infoBubble/record.html",
 		"text!../templates/infoBubble/genericTip.html",
 		"collections/photos",
 		"collections/audio",
 		"collections/mapimages",
 		"collections/markers",
+		"collections/records",
 		"lib/maps/overlays/photo",
 		"lib/maps/overlays/marker",
-		"lib/maps/overlays/audio"
+		"lib/maps/overlays/audio",
+		"lib/maps/overlays/record"
 	], function(
 			photoItemTemplate, audioItemTemplate, mapimageItemTemplate,
 			markerItemTemplate, recordItemTemplate, photoBubbleTemplate,
 			photoTipTemplate, audioBubbleTemplate, audioTipTemplate,
-			markerBubbleTemplate, markerTipTemplate, genericTipTemplate
+			markerBubbleTemplate, markerTipTemplate,
+			recordBubbleTemplate, genericTipTemplate
 		) {
 	/**
 	 * Convenience object for connecting data models with
@@ -64,11 +68,11 @@ define(
 			TipTemplate: markerTipTemplate
 		},
 		form: {
-			Model: localground.models.Marker,
-			Collection: localground.collections.Markers,
-			Overlay: localground.maps.overlays.Marker,
+			Model: localground.models.Record,
+			Collection: localground.collections.Records,
+			Overlay: localground.maps.overlays.Record,
 			ItemTemplate: recordItemTemplate,
-			InfoBubbleTemplate: audioBubbleTemplate,
+			InfoBubbleTemplate: recordBubbleTemplate,
 			TipTemplate: genericTipTemplate
 		}
 	};

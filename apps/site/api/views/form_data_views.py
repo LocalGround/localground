@@ -2,7 +2,7 @@ from rest_framework import viewsets, generics
 from localground.apps.site.api import serializers, filters, permissions
 from rest_framework.filters import OrderingFilter
 from localground.apps.site.api.views.abstract_views import \
-    AuditCreate, AuditUpdate, QueryableListCreateAPIView
+    AuditCreate, AuditUpdate, QueryableListCreateAPIView, QueryableRetrieveUpdateDestroyView
 from localground.apps.site import models
 from django.http import Http404
 from rest_framework.response import Response
@@ -93,7 +93,7 @@ class FormDataList(QueryableListCreateAPIView, FormDataMixin):
                             headers=headers)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class FormDataInstance(generics.RetrieveUpdateDestroyAPIView, FormDataMixin):
+class FormDataInstance(QueryableRetrieveUpdateDestroyView, FormDataMixin):
 
     def get_serializer_class(self):
         return FormDataMixin.get_serializer_class(self)
@@ -102,7 +102,7 @@ class FormDataInstance(generics.RetrieveUpdateDestroyAPIView, FormDataMixin):
         return FormDataMixin.get_queryset(self)
     
     def metadata(self, request):
-        ret = super(QueryableListCreateAPIView, self).metadata(request)
+        ret = super(QueryableRetrieveUpdateDestroyView, self).metadata(request)
         return metadata(ret, self, request)
 
     def update(self, request, *args, **kwargs):

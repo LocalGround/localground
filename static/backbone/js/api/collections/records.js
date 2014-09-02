@@ -2,7 +2,7 @@ define([
 		"backbone-pageable",
 		"models/record"
 	], function(PageableCollection) {
-    var Records = PageableCollection.extend({
+    localground.collections.Records = PageableCollection.extend({
         model: localground.models.Record,
 		columns: null,
 		key: null,
@@ -10,14 +10,14 @@ define([
 		name: 'Records',
 		query: '',
         url: null,
-		initialize: function (opts) {
+		initialize: function (recs, opts) {
 			opts = opts || {};
 			$.extend(this, opts);
 			if (this.url == null) {
 				alert("The Records collection requires a url parameter upon initialization");
 				return;
 			}
-			Backbone.Model.prototype.initialize.apply(this, arguments);
+			PageableCollection.prototype.initialize.apply(this, arguments);
 		},
 		state: {
 			pageSize: 15,
@@ -50,8 +50,8 @@ define([
 				options.data = options.data || {};
 				$.extend(options.data, { query: this.query });
 			};
-			Records.__super__.fetch.apply(this, arguments);
+			PageableCollection.__super__.fetch.apply(this, arguments);
 		}
     });
-    return Records;
+    return localground.collections.Records;
 });

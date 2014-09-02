@@ -35,7 +35,7 @@ define([], function() {
 		};
 		
 		this.createOverlay = function(isVisible){
-			if (this.model.geometry != null) {
+			if (this.model.get("geometry") != null) {
 				this.googleOverlay = new google.maps.Marker({
 					position: this.getGoogleLatLng(),
 					map: isVisible ? this.map : null

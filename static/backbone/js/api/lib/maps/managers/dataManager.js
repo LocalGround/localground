@@ -158,7 +158,13 @@ define(
 		 */
 		var updateCollection = function(key, models, opts) {
 			if (this.collections[key] == null) {
-				this.collections[key] = new opts.Collection([], {key: key, name: opts.name});
+				var collectionOpts = { key: key, name: opts.name };
+				//A few special hacks for form data:
+				if (key.indexOf("form") != -1) {
+					collectionOpts.url = '/api/0/forms/' + key.split("_")[1] + '/data/';
+				}
+				
+				this.collections[key] = new opts.Collection([], collectionOpts);
 				
 				// important: this trigger enables the overlayManager
 				// to create a new overlay for each model where the
@@ -168,10 +174,7 @@ define(
 					data : { collection: this.collections[key] } 
 				});
 				
-				//A few special hacks for form data:
-				if (key.indexOf("form") != -1) {
-					this.collections[key].name = opts.name;
-				}
+				
 			}
 			this.collections[key].add(models, {merge: true});
 		};

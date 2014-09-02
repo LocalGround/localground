@@ -51,7 +51,7 @@ define(["backbone", "lib/maps/geometry/point"],
 			}
 			//https://github.com/powmedia/backbone-forms#schema-definition
 			if (this.urlRoot == null) {
-				this.urlRoot = this.collection.url + this.id + "/";
+				this.urlRoot = this.collection.url; // + this.id + "/";
 			}
 			var that = this;
 			$.ajax({
@@ -59,15 +59,27 @@ define(["backbone", "lib/maps/geometry/point"],
 				type: 'OPTIONS',
 				data: { _method: 'OPTIONS' },
 				success: function(data) {
-					that.updateSchema = {};
 					that.createSchema = {};
-					that.populateSchema(
-							data.actions['PUT'],
-							that.updateSchema);
 					that.populateSchema(
 							data.actions['POST'],
 							that.createSchema);
-					that.trigger('schemaLoaded');	
+					if (that.updateSchema != null) {
+						that.trigger('schemaLoaded');
+					}	
+				}
+			});
+			$.ajax({
+				url: this.urlRoot + this.id + '/.json',
+				type: 'OPTIONS',
+				data: { _method: 'OPTIONS' },
+				success: function(data) {
+					that.updateSchema = {};
+					that.populateSchema(
+							data.actions['PUT'],
+							that.updateSchema);
+					if (that.createSchema != null) {
+						that.trigger('schemaLoaded');
+					}	
 				}
 			});
 		},

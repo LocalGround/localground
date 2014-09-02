@@ -1,0 +1,29 @@
+<% if (mode == 'view') { %>
+<div class="bubble-container" style="width: 320px;height:350px;">
+	<div class="photo-container">
+		<% _(list).each(function(field) { %>
+			<strong><%= field.key %></strong> : <%= field.value %><br>
+		<% }); %>
+	</div>
+	<div>
+		<p class="bubble-title"><%= name || "Untitled" %></p>
+		<p class="bubble-detail">
+			123<br>
+			456	
+		</p>
+	</div>
+	<script>
+		$('.single-item').slick({
+			dots: true	
+		});
+	</script>
+</div>
+<% } %>
+
+
+<% if (mode == 'edit') { %>
+	<div class="bubble-container" style="width: 350px;height:350px;">
+		<div class="form" style="height: 275px;"></div>
+		<button class="btn btn-primary">Submit</button>
+	</div>
+<% } %>

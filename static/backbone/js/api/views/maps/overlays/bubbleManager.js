@@ -167,6 +167,19 @@ define(
 			opts.mode = this.sb.getMode();
 			if (model.getDescriptiveText)
 				opts.descriptiveText = model.getDescriptiveText();
+			var data = model.toJSON();
+			delete data.geometry;
+			delete data.url;
+			delete data.overlay_type;
+			opts.list = _.map(
+				_.pairs(data),
+				function(pair) {
+					return {
+						key: pair[0],
+						value: pair[1]
+					};
+				}
+			);
 			return opts;
 		},
 		destroy: function(){
