@@ -302,6 +302,16 @@ label {
 	overflow: hidden;
 }
 
+.record-container {
+	overflow-x: hidden;
+	overflow-y: auto;
+	margin-top: 25px;
+	font-size: 14px;
+	padding: 0px 20px 20px 20px;
+	background-image: url('/static/backbone/images/bg.png');
+	height:220px;
+}
+
 .photo-container {
 	max-width: 320px;
 	height: 230px;

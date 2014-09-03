@@ -167,19 +167,32 @@ define(
 			opts.mode = this.sb.getMode();
 			if (model.getDescriptiveText)
 				opts.descriptiveText = model.getDescriptiveText();
-			var data = model.toJSON();
-			delete data.geometry;
-			delete data.url;
-			delete data.overlay_type;
-			opts.list = _.map(
-				_.pairs(data),
-				function(pair) {
-					return {
-						key: pair[0],
-						value: pair[1]
-					};
+			
+			// Todo: this section needs to be broken out into it's own
+			// class. Also, the user-defined form schemas should be defined
+			// on initialization.
+			if (model.getKey().indexOf("form") != -1) {
+				opts.list = [];
+				var data = model.toJSON();
+				if(model.updateSchema != null) {
+					var schema = model.updateSchema;
+					for (key in schema) {
+						opts.list.push({
+							key: schema[key].title || key,
+							value:  data[key]
+						});
+					}
 				}
-			);
+				else {
+					model.fetchSchemas();
+					for (key in data) {
+						opts.list.push({
+							key: key,
+							value:  data[key]
+						});
+					}
+				}
+			}
 			return opts;
 		},
 		destroy: function(){

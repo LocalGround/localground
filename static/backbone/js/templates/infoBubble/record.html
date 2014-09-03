@@ -1,16 +1,9 @@
 <% if (mode == 'view') { %>
-<div class="bubble-container" style="width: 320px;height:350px;">
-	<div class="photo-container">
-		<% _(list).each(function(field) { %>
+<div class="bubble-container" style="width: 320px;height:250px;background-image: url('/static/backbone/images/bg.png')">
+	<div class="record-container">
+		<% _.each(list, function(field) { %>
 			<strong><%= field.key %></strong> : <%= field.value %><br>
 		<% }); %>
-	</div>
-	<div>
-		<p class="bubble-title"><%= name || "Untitled" %></p>
-		<p class="bubble-detail">
-			123<br>
-			456	
-		</p>
 	</div>
 	<script>
 		$('.single-item').slick({
