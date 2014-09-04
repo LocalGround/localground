@@ -302,6 +302,21 @@ label {
 	overflow: hidden;
 }
 
+.loading-container {
+	width:300px;
+	height:200px;
+}
+
+.loading-container > i {
+	font-size: 60px;
+	position: absolute;
+	color: #999;
+	top: 50%;
+	left: 50%;
+	margin-top: -50px;
+	margin-left: -30px;
+}
+
 .record-container {
 	overflow-x: hidden;
 	overflow-y: auto;

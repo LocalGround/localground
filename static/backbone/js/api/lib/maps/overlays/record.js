@@ -25,9 +25,6 @@ define(["lib/maps/overlays/base"], function() {
 		
 		/** adds icon to overlay. */
 		initialize: function(sb, opts){
-			console.log(sb);
-			console.log(opts);
-			console.log(arguments);
 			localground.maps.overlays.Record.__super__.initialize.apply(this, arguments); 
 			this.getGoogleOverlay().setIcon(this.getIcon());
 		},

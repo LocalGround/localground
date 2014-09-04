@@ -11,8 +11,10 @@ define(["backbone", "lib/maps/geometry/point"],
 			return this.get("overlay_type");	
 		},
 		urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
-		updateSchema: null,
 		createSchema: null,
+		createMetadata: null,
+		updateMetadata: null,
+		updateSchema: null,
 		dataTypes: {
 			'string': 'Text',
 			'float': 'Number',
@@ -44,52 +46,56 @@ define(["backbone", "lib/maps/geometry/point"],
 			var point = new localground.maps.geometry.Point();
 			return point.getGoogleLatLng(geoJSON);
 		},
-		fetchSchemas: function(){
-			if (this.updateSchema != null || this.createSchema != null) {
-				this.trigger('schemaLoaded');
-				return;
-			}
-			//https://github.com/powmedia/backbone-forms#schema-definition
-			if (this.urlRoot == null) {
-				this.urlRoot = this.collection.url; // + this.id + "/";
-			}
+		fetchCreateMetadata: function(){
 			var that = this;
+			if (this.urlRoot == null) {
+				this.urlRoot = this.collection.url;
+			}
 			$.ajax({
 				url: this.urlRoot + '.json',
 				type: 'OPTIONS',
 				data: { _method: 'OPTIONS' },
 				success: function(data) {
-					that.createSchema = {};
-					that.populateSchema(
-							data.actions['POST'],
-							that.createSchema);
-					if (that.updateSchema != null) {
-						that.trigger('schemaLoaded');
-					}	
+					that.createMetadata = data.actions['POST'];
 				}
-			});
+			});	
+		},
+		fetchUpdateMetadata: function(){
+			var that = this;
+			if (this.urlRoot == null) {
+				this.urlRoot = this.collection.url;
+			}
 			$.ajax({
 				url: this.urlRoot + this.id + '/.json',
 				type: 'OPTIONS',
 				data: { _method: 'OPTIONS' },
 				success: function(data) {
-					that.updateSchema = {};
-					that.populateSchema(
-							data.actions['PUT'],
-							that.updateSchema);
-					if (that.createSchema != null) {
-						that.trigger('schemaLoaded');
-					}	
+					that.updateMetadata = data.actions['POST'];
 				}
 			});
 		},
-		populateSchema: function(opts, schema) {
-			if(opts == null) {
-				schema = {};
-				return;
+		
+		getCreateSchema: function() {
+			if (this.createSchema == null)
+				this.createSchema = this._generateSchema(this.createMetadata);
+			return this.createSchema;
+		},
+		
+		getUpdateSchema: function() {
+			if (this.updateSchema == null)
+				this.updateSchema = this._generateSchema(this.updateMetadata);
+			return this.updateSchema;
+		},
+		
+		_generateSchema: function(metadata) {
+			if(metadata == null) {
+				alert("No metadata defined");
+				return null;
 			}
-			for (key in opts) {
-				var val = opts[key];
+			var schema = {};
+			//https://github.com/powmedia/backbone-forms#schema-definition
+			for (key in metadata) {
+				var val = metadata[key];
 				if (!val.read_only && key != 'geometry') {
 					schema[key] = {
 						type: this.dataTypes[val.type] || 'Text',
@@ -98,6 +104,7 @@ define(["backbone", "lib/maps/geometry/point"],
 					};
 				}
 			}
+			return schema;
 		}
 	});
 	return localground.models.Base;

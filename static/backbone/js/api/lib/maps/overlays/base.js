@@ -52,7 +52,6 @@ define(["backbone",
 			else
 				alert('Unknown Geometry Type');
 				
-			console.log(this.overlay);
 			this.attachEventHandlers();
 		},
 		

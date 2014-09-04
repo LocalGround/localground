@@ -8,13 +8,34 @@ define(["models/base"], function() {
 		defaults: {
 			name: ""
 		},
-		initialize: function () {
+		hiddenFields: [
+			"geometry",
+			"overlay_type",
+			"id",
+			"project_id",
+			"url",
+			"num",
+			"manually_reviewed"
+		],
+		initialize: function (data, opts) {
 			Backbone.Model.prototype.initialize.apply(this, arguments);
 			
 			this.on("change", function (model, options) {
 				if (options && options.save === false){ return; }
 				model.save();
 			});
+			
+			// The record model is slightly different than the other models in that
+			// the schema isn't known by the App a priori. Hence, the create and
+			// update metadata needs to be known on initialization (i.e. what the
+			// user-defined field names, labels, and datatypes are).
+			try {
+				this.createMetadata = opts.createMetadata;
+				this.updateMetadata = opts.updateMetadata;
+			} catch(e) {
+				alert("Error in models/record.js: Create and update metadata must be defined.");
+			}
+
 		},
 		url: function() {
 			/*

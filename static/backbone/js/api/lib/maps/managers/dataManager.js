@@ -30,8 +30,6 @@ define(
 		 */
 		this.selectedProjects = new Projects();
 		
-		this.eventManager = null;
-		
 		this.initialize = function(sb) {
 			this.sb = sb;
 			sb.listen({ 
@@ -127,16 +125,17 @@ define(
 		this.updateCollections = function(project) {
 			//add child data to the collection:
 			var children = project.get("children");
-			for (key in children) {
+			for (var key in children) {
 				var configKey = key.split("_")[0];
 				var opts = localground.config.Config[configKey];
 				opts.name = children[key].name;
-				
 				var models = [];
 				$.each(children[key].data, function(){
-					models.push(new opts.Model(this));
+					models.push(new opts.Model(this, {
+						updateMetadata: children[key].update_metadata,
+						createMetadata: children[key].create_metadata
+					}));
 				});
-				
 				//"call" method needed to set this's scope:
 				updateCollection.call(this, key, models, opts);
 			}
@@ -163,7 +162,6 @@ define(
 				if (key.indexOf("form") != -1) {
 					collectionOpts.url = '/api/0/forms/' + key.split("_")[1] + '/data/';
 				}
-				
 				this.collections[key] = new opts.Collection([], collectionOpts);
 				
 				// important: this trigger enables the overlayManager

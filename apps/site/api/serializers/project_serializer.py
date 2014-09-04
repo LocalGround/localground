@@ -67,11 +67,13 @@ class ProjectDetailSerializer(BaseNamedSerializer):
         return children
 
     def get_table_records(self, obj, form):
-        SerializerClass = create_compact_record_serializer(form)
-        data = SerializerClass(
-            form.TableModel.objects.get_objects(obj.owner, project=obj)
-            #form.get_data_query_lite(obj.owner, project=obj, limit=1000)
-        ).data
+        #SerializerClass = create_compact_record_serializer(form)
+        RecordSerializer = create_record_serializer(form)
+        serializer = RecordSerializer(
+            form.TableModel.objects.get_objects(obj.owner, project=obj),
+            many=True
+        )
+        data = serializer.data
         d = self.serialize_list(
             form.TableModel,
             data,
@@ -80,7 +82,8 @@ class ProjectDetailSerializer(BaseNamedSerializer):
             model_name_plural='form_%s' % form.id
         )
         d.update({
-            'headers': [f.col_alias for f in form.fields]
+            'update_metadata': serializer.metadata(),
+            'create_metadata': RecordSerializer().metadata()
         })
         return d
 

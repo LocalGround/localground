@@ -71,11 +71,11 @@ define(
 		},
 		
 		showBubble: function(data){
-			this.bubble.close();
 			var that = this;
 			var model = this.bubbleModel = data.model;
 			var latLng = data.center;
 			this.tip.close();
+			this.showLoadingImage(latLng);
 			this.bubble.model = model;
 			model.fetch({ success: function(){
 				that.renderBubble(model, latLng);	
@@ -113,26 +113,29 @@ define(
 		
 		renderEditContent: function(model, latLng){
 			var that = this;
-			model.fetchSchemas();
-			model.on("schemaLoaded", function(){
-				var template = that.getTemplate(model, "InfoBubbleTemplate");
-				that.setElement($(template({mode: "edit"})));
-				var ModelForm = Backbone.Form.extend({
-					schema: model.updateSchema
-				});
-
-				that.form = new ModelForm({
-					model: model
-				}).render();
-				that.$el.find('.form').append(that.form.$el);
-				that.showUpdatedContent(latLng);
+			var template = that.getTemplate(model, "InfoBubbleTemplate");
+			that.setElement($(template({mode: "edit"})));
+			var ModelForm = Backbone.Form.extend({
+				schema: model.getUpdateSchema()
 			});
+
+			that.form = new ModelForm({
+				model: model
+			}).render();
+			that.$el.find('.form').append(that.form.$el);
+			that.showUpdatedContent(latLng);
 		},
 		saveForm: function(e){
 			console.log("save form");
 			this.form.commit();	//does validation
 			this.bubble.model.save(); //does database commit
 			e.preventDefault();
+		},
+		showLoadingImage: function(latLng){
+			var $loading = $('<div class="loading-container" style="width:300px;height:200px;"><i class="fa fa-spin fa-cog"></i></div>');
+			this.bubble.setContent($loading.get(0));
+			this.bubble.setPosition(latLng);
+			this.bubble.open();	
 		},
 		showUpdatedContent: function(latLng){
 			this.bubble.setContent(this.$el.get(0));
@@ -174,20 +177,11 @@ define(
 			if (model.getKey().indexOf("form") != -1) {
 				opts.list = [];
 				var data = model.toJSON();
-				if(model.updateSchema != null) {
-					var schema = model.updateSchema;
-					for (key in schema) {
+				var metadata = model.updateMetadata;
+				for (key in metadata) {
+					if (model.hiddenFields.indexOf(key) == -1) {
 						opts.list.push({
-							key: schema[key].title || key,
-							value:  data[key]
-						});
-					}
-				}
-				else {
-					model.fetchSchemas();
-					for (key in data) {
-						opts.list.push({
-							key: key,
+							key: metadata[key].label || key,
 							value:  data[key]
 						});
 					}
