@@ -73,12 +73,11 @@ define(
 		showBubble: function(data){
 			var that = this;
 			var model = this.bubbleModel = data.model;
-			var latLng = data.center;
 			this.tip.close();
-			this.showLoadingImage(latLng);
+			this.showLoadingImage(data.center);
 			this.bubble.model = model;
 			model.fetch({ success: function(){
-				that.renderBubble(model, latLng);	
+				that.renderBubble(model, data.center);	
 			}});
 		},
 		refresh: function(){
@@ -90,12 +89,10 @@ define(
 			}
 		},
 		renderBubble: function(model, latLng){
-			if (this.sb.getMode() == "view") {
+			if (this.sb.getMode() == "view")
 				this.renderViewContent(model, latLng);
-			}
-			else {
+			else
 				this.renderEditContent(model, latLng);
-			}
 		},
 		renderViewContent: function(model, latLng) {
 			var template = this.getTemplate(model, "InfoBubbleTemplate");
@@ -116,7 +113,7 @@ define(
 			var template = that.getTemplate(model, "InfoBubbleTemplate");
 			that.setElement($(template({mode: "edit"})));
 			var ModelForm = Backbone.Form.extend({
-				schema: model.getUpdateSchema()
+				schema: model.updateSchema
 			});
 
 			that.form = new ModelForm({
@@ -166,28 +163,9 @@ define(
 			return _.template(Template);
 		},
 		getContext: function(model){
-			var opts = model.toJSON();
-			opts.mode = this.sb.getMode();
-			if (model.getDescriptiveText)
-				opts.descriptiveText = model.getDescriptiveText();
-			
-			// Todo: this section needs to be broken out into it's own
-			// class. Also, the user-defined form schemas should be defined
-			// on initialization.
-			if (model.getKey().indexOf("form") != -1) {
-				opts.list = [];
-				var data = model.toJSON();
-				var metadata = model.updateMetadata;
-				for (key in metadata) {
-					if (model.hiddenFields.indexOf(key) == -1) {
-						opts.list.push({
-							key: metadata[key].label || key,
-							value:  data[key]
-						});
-					}
-				}
-			}
-			return opts;
+			var json = model.toTemplateJSON();
+			json.mode = this.sb.getMode();
+			return json;
 		},
 		destroy: function(){
 			alert("bye");	

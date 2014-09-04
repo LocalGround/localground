@@ -65,7 +65,7 @@ define(
 		this.fetchDataByProjectID = function(data) {
 			var that = this;
 			var project = new Project({id: data.id});
-			project.fetch({data: {format: 'json'}, success: function(r){
+			project.fetch({data: {format: 'json', include_schema: true}, success: function(r){
 				that.updateCollections(project);
 			}});
 		};

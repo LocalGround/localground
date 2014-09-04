@@ -8,33 +8,14 @@ define(["models/base"], function() {
 		defaults: {
 			name: ""
 		},
-		hiddenFields: [
-			"geometry",
-			"overlay_type",
-			"id",
-			"project_id",
-			"url",
-			"num",
-			"manually_reviewed"
-		],
+		viewSchema: null,
 		initialize: function (data, opts) {
-			Backbone.Model.prototype.initialize.apply(this, arguments);
-			
+			localground.models.Base.prototype.initialize.apply(this, arguments);
+			this.viewSchema = this._generateSchema(opts.updateMetadata, false);
 			this.on("change", function (model, options) {
 				if (options && options.save === false){ return; }
 				model.save();
 			});
-			
-			// The record model is slightly different than the other models in that
-			// the schema isn't known by the App a priori. Hence, the create and
-			// update metadata needs to be known on initialization (i.e. what the
-			// user-defined field names, labels, and datatypes are).
-			try {
-				this.createMetadata = opts.createMetadata;
-				this.updateMetadata = opts.updateMetadata;
-			} catch(e) {
-				alert("Error in models/record.js: Create and update metadata must be defined.");
-			}
 
 		},
 		url: function() {
@@ -52,6 +33,20 @@ define(["models/base"], function() {
 				urlError();
 			if (this.isNew()) return base + '.json';
 			return base.replace(/([^\/])$/, '$1/') + encodeURIComponent(this.id) + '/.json';
+		},
+		
+		toTemplateJSON: function(){
+			var json = localground.models.Base.prototype.toTemplateJSON.apply(this, arguments);
+			json.list = [];
+			for (key in this.viewSchema) {
+				if (this.hiddenFields.indexOf(key) == -1) {
+					json.list.push({
+						key: this.viewSchema[key].title || key,
+						value:  this.get(key)
+					});
+				}
+			}
+			return json;
 		}
 	});
 	return localground.models.Record;

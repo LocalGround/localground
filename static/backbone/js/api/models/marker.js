@@ -38,6 +38,12 @@ define(["models/base",
 				messages.push(this.get("record_count") + ' data record(s)');
 			return messages.join(', ');		
 		},
+		
+		toTemplateJSON: function(){
+			var json = localground.models.Base.prototype.toTemplateJSON.apply(this, arguments);
+			json.descriptiveText = this.getDescriptiveText();
+			return json;
+		},
 		defaults: {
 			name: "Untitled"
 		}

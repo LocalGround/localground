@@ -12,15 +12,26 @@ define(["backbone", "lib/maps/geometry/point"],
 		},
 		urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
 		createSchema: null,
-		createMetadata: null,
-		updateMetadata: null,
 		updateSchema: null,
+		hiddenFields: [
+			"geometry",
+			"overlay_type",
+			"project_id",
+			"url",
+			"num",
+			"manually_reviewed"
+		],
 		dataTypes: {
 			'string': 'Text',
 			'float': 'Number',
 			'integer': 'Number',
 			'boolean': 'Checkbox',
 			'geojson': 'TextArea'
+		},
+		initialize: function(data, opts){
+			opts = opts || {};
+			this.createSchema = this._generateSchema(opts.createMetadata, true);
+			this.updateSchema = this._generateSchema(opts.updateMetadata, true);
 		},
 		toJSON: function(){
 			// ensure that the geometry object is serialized before it
@@ -31,11 +42,8 @@ define(["backbone", "lib/maps/geometry/point"],
 			return json;
 		},
 		toTemplateJSON: function(){
-			return Backbone.Model.prototype.toJSON.call(this);
-		},
-		initialize: function(opts){
-			opts = opts || {};
-			$.extend(this, opts);
+			var json = Backbone.Model.prototype.toJSON.call(this);
+			return json
 		},
 		getKey: function(){
 			return this.collection.key;
@@ -75,33 +83,22 @@ define(["backbone", "lib/maps/geometry/point"],
 			});
 		},
 		
-		getCreateSchema: function() {
-			if (this.createSchema == null)
-				this.createSchema = this._generateSchema(this.createMetadata);
-			return this.createSchema;
-		},
-		
-		getUpdateSchema: function() {
-			if (this.updateSchema == null)
-				this.updateSchema = this._generateSchema(this.updateMetadata);
-			return this.updateSchema;
-		},
-		
-		_generateSchema: function(metadata) {
+		_generateSchema: function(metadata, edit_only) {
 			if(metadata == null) {
-				alert("No metadata defined");
 				return null;
 			}
 			var schema = {};
 			//https://github.com/powmedia/backbone-forms#schema-definition
 			for (key in metadata) {
 				var val = metadata[key];
-				if (!val.read_only && key != 'geometry') {
-					schema[key] = {
-						type: this.dataTypes[val.type] || 'Text',
-						title: val.label || key,
-						help: val.help_text
-					};
+				if (this.hiddenFields.indexOf(key) == -1 ) {
+					if (!edit_only || !val.read_only) {
+						schema[key] = {
+							type: this.dataTypes[val.type] || 'Text',
+							title: val.label || key,
+							help: val.help_text
+						};
+					}
 				}
 			}
 			return schema;

@@ -67,79 +67,80 @@ class ProjectDetailSerializer(BaseNamedSerializer):
         return children
 
     def get_table_records(self, obj, form):
-        #SerializerClass = create_compact_record_serializer(form)
-        RecordSerializer = create_record_serializer(form)
-        serializer = RecordSerializer(
-            form.TableModel.objects.get_objects(obj.owner, project=obj),
-            many=True
-        )
-        data = serializer.data
-        d = self.serialize_list(
+        return self.serialize_list(
             form.TableModel,
-            data,
+            create_record_serializer(form),
+            form.TableModel.objects.get_objects(obj.owner, project=obj),
             name=form.name,
             overlay_type='record',
             model_name_plural='form_%s' % form.id
         )
-        d.update({
-            'update_metadata': serializer.metadata(),
-            'create_metadata': RecordSerializer().metadata()
-        })
-        return d
 
     def get_photos(self, obj):
-        data = PhotoSerializer(
+        return self.serialize_list(
+            models.Photo,
+            PhotoSerializer,
             models.Photo.objects.get_objects(
                 obj.owner,
-                project=obj),
-            many=True,
-            context={
-                'request': {}}).data
-        return self.serialize_list(models.Photo, data)
+                project=obj
+            )
+        )
 
     def get_audio(self, obj):
-        data = AudioSerializer(
+        return self.serialize_list(
+            models.Audio,
+            AudioSerializer,
             models.Audio.objects.get_objects(
                 obj.owner,
-                project=obj),
-            many=True,
-            context={
-                'request': {}}).data
-        return self.serialize_list(models.Audio, data)
+                project=obj
+            )
+        )
 
     def get_scans(self, obj):
-        data = ScanSerializer(
+        return self.serialize_list(
+            models.Scan,
+            ScanSerializer,
             models.Scan.objects.get_objects(
                 obj.owner,
                 project=obj,
-                processed_only=True),
-            many=True,
-            context={
-                'request': {}}).data
-        return self.serialize_list(models.Scan, data)
+                processed_only=True
+            )
+        )
 
     def get_markers(self, obj, forms):
-        data = MarkerSerializerCounts(
+        return self.serialize_list(
+            models.Marker,
+            MarkerSerializerCounts,
             models.Marker.objects.get_objects_with_counts(
                 obj.owner,
                 project=obj,
-                forms=forms),
-            many=True,
-            context={
-                'request': {}}).data
-        return self.serialize_list(models.Marker, data)
-
-    def serialize_list(self, cls, data, name=None, overlay_type=None,
-                       model_name_plural=None):
+                forms=forms
+            )
+        )
+    
+    def serialize_list(self, model_class, serializer_class, records,
+                        name=None, overlay_type=None, model_name_plural=None):
         if name is None:
-            name = cls.model_name_plural.title()
+            name = model_class.model_name_plural.title()
         if overlay_type is None:
-            overlay_type = cls.model_name
+            overlay_type = model_class.model_name
         if model_name_plural is None:
-            model_name_plural = cls.model_name_plural
-        return {
+            model_name_plural = model_class.model_name_plural
+             
+        serializer = serializer_class( records, many=True,
+                        context={ 'request': {} })
+        d = {
             'id': model_name_plural,
             'name': name,
             'overlay_type': overlay_type,
-            'data': data
+            'data': serializer.data
         }
+        try:
+            if self.request.GET.get("include_schema") in ['True', 'true', '1']:
+                d.update({
+                    'update_metadata': serializer.metadata(),
+                    'create_metadata': serializer_class().metadata() 
+                })
+        except:
+            pass
+        return d
