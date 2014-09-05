@@ -2,7 +2,7 @@ define(
 	[
 		"views/maps/basemap",
 		"views/maps/sidepanel/dataPanel",
-		"lib/maps/managers/dataManager",
+		"lib/maps/data/dataManager",
 		"views/maps/overlays/overlayManager",
 		"views/maps/overlays/bubbleManager"
 		
@@ -21,7 +21,7 @@ define(
 		el: "body",
 		/** A {@link localground.maps.views.Basemap} object */
 		basemap: null,
-		/** A {@link localground.maps.managers.DataManager} object */
+		/** A {@link localground.maps.data.DataManager} object */
 		dataManager: null,
 		
 		/** A {@link localground.maps.controls.OverlayManager} object */
@@ -82,7 +82,7 @@ define(
 				map: this.basemap.map
 			});
 			
-			this.dataManager = new localground.maps.managers.DataManager({
+			this.dataManager = new localground.maps.data.DataManager({
 				eventManager: this.eventManager
 			});
 			

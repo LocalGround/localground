@@ -30,7 +30,7 @@
 					"core",
 					"sandbox",
 					"views/maps/basemap",
-				    "lib/maps/managers/dataManager",
+				    "lib/maps/data/dataManager",
 					"views/maps/sidepanel/dataPanel",
 					"views/maps/overlays/overlayManager",
 					"views/maps/overlays/bubbleManager",
@@ -58,7 +58,7 @@
 						]
 					};
 					CORE.create_module("basemap", localground.maps.views.Basemap, basemapOpts);
-					CORE.create_module("data-manager", localground.maps.managers.DataManager);
+					CORE.create_module("data-manager", localground.maps.data.DataManager);
 					CORE.create_module("data-panel", localground.maps.views.DataPanel);
 					CORE.create_module("overlay-manager", localground.maps.views.OverlayManager);
 					CORE.create_module("bubble-manager", localground.maps.views.BubbleManager);

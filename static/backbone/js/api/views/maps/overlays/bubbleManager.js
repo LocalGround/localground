@@ -3,11 +3,12 @@ define(
 		'backbone',
 		'infobubble',
 		'config',
+		"text!../../../../templates/infoBubble/marker.html",
 		'form',
 		"bootstrap-form-templates",
-		'slick'
+		'slick',
 		
-	], function(Backbone, InfoBubble, Config) {
+	], function(Backbone, InfoBubble, Config, markerBubbleTemplate) {
 	/**
 	 * Manages InfoBubble Rendering
 	 * @class InfoBubble
@@ -59,7 +60,8 @@ define(
                 "hide-bubble"  : this.hideBubble, 
                 "show-tip" : this.showTip, 
                 "hide-tip" : this.hideTip,
-				"mode-change": this.refresh
+				"mode-change": this.refresh,
+				//"create-bubble": this.showCreateForm
             }); 
 		},
 		
@@ -79,6 +81,24 @@ define(
 			model.fetch({ success: function(){
 				that.renderBubble(model, data.center);	
 			}});
+		},
+		
+		showCreateForm: function(data){
+			var that = this;
+			this.tip.close();
+			var model = new localground.models.Marker({}, {});
+			var template =  _.template(markerBubbleTemplate);
+			this.setElement($(template({mode: "edit"})));
+			console.log(data.schema);
+			var ModelForm = Backbone.Form.extend({
+				schema: data.schema
+			});
+
+			this.form = new ModelForm({
+				model: model
+			}).render();
+			this.$el.find('.form').append(this.form.$el);
+			this.showUpdatedContent(data.latLng);
 		},
 		refresh: function(){
 			if(this.bubble.isOpen()) { 
@@ -122,6 +142,7 @@ define(
 			that.$el.find('.form').append(that.form.$el);
 			that.showUpdatedContent(latLng);
 		},
+		
 		saveForm: function(e){
 			console.log("save form");
 			this.form.commit();	//does validation
@@ -168,7 +189,7 @@ define(
 			return json;
 		},
 		destroy: function(){
-			alert("bye");	
+			this.remove();
 		}
 	});
 	return localground.maps.views.BubbleManager;

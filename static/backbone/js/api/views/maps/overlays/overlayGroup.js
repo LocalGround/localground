@@ -55,6 +55,7 @@ define(
 			this.listenTo(this.collection, 'zoom-to-extent', this.zoomToExtent);
 			this.listenTo(this.collection, 'show-all', this.showAll);
 			this.listenTo(this.collection, 'hide-all', this.hideAll);
+			this.listenTo(this.collection, 'remove', this.removeItem);
 			
 			
 			//listen for map zoom change, re-render photo icons:
@@ -107,7 +108,7 @@ define(
 			for (key in this.overlays) {
 				try {
 					//for polylines, polygons, and groundoverlays:
-					bounds.union(this.overlays[key].getGoogleOverlay().getBounds());
+					bounds.union(this.overlays[key].overlay.getBounds());
 				}
 				catch(e){
 					//for points:
@@ -122,7 +123,10 @@ define(
 			return this.overlays[model.id];
 		},
 		destroy: function(){
-			alert("bye");	
+			this.remove();
+		},
+		removeItem: function(model){
+			delete this.overlays[model.id]
 		}
 	});
 	return localground.maps.views.OverlayGroup;

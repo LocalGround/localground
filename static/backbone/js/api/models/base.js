@@ -11,7 +11,6 @@ define(["backbone", "lib/maps/geometry/point"],
 			return this.get("overlay_type");	
 		},
 		urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
-		createSchema: null,
 		updateSchema: null,
 		hiddenFields: [
 			"geometry",
@@ -30,7 +29,6 @@ define(["backbone", "lib/maps/geometry/point"],
 		},
 		initialize: function(data, opts){
 			opts = opts || {};
-			this.createSchema = this._generateSchema(opts.createMetadata, true);
 			this.updateSchema = this._generateSchema(opts.updateMetadata, true);
 		},
 		toJSON: function(){

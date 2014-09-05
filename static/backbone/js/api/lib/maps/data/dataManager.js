@@ -13,7 +13,7 @@ define(
 	 * this data.
 	 * @class DataManager
 	 */
-	localground.maps.managers.DataManager = function(sb) {
+	localground.maps.data.DataManager = function(sb) {
 		/**
 		 * A dictionary of the various data types available (given
 		 * the projects that have been selected), and the corresponding
@@ -85,7 +85,6 @@ define(
 				collection.each(function(item) {
 					if (item.get("project_id") == data.id) {
 						items.push(item);
-						item.trigger('remove-view');
 					}
 				}, this);
 				
@@ -129,11 +128,11 @@ define(
 				var configKey = key.split("_")[0];
 				var opts = localground.config.Config[configKey];
 				opts.name = children[key].name;
+				opts.createMetadata = children[key].create_metadata;
 				var models = [];
 				$.each(children[key].data, function(){
 					models.push(new opts.Model(this, {
-						updateMetadata: children[key].update_metadata,
-						createMetadata: children[key].create_metadata
+						updateMetadata: children[key].update_metadata
 					}));
 				});
 				//"call" method needed to set this's scope:
@@ -197,8 +196,8 @@ define(
 		
 		this.initialize(sb);
 	};
-	localground.maps.managers.DataManager.prototype.destroy = function() {
+	localground.maps.data.DataManager.prototype.destroy = function() {
 		alert("todo: implement");
 	};
-	return localground.maps.managers.DataManager;
+	return localground.maps.data.DataManager;
 });

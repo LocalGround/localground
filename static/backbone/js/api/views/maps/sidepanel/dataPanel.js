@@ -2,8 +2,7 @@ define(["backbone",
 		"core",
 		"text!" + templateDir + "/sidepanel/dataPanelHeader.html",
 		"views/maps/sidepanel/projectsMenu",
-		"views/maps/sidepanel/items",
-		"lib/maps/managers/workspaceManager"],
+		"views/maps/sidepanel/items"],
 	   function(Backbone, CORE, dataPanelHeader) {
 	/**
 	 * A class that handles display and rendering of the

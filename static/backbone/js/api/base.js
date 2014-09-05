@@ -62,7 +62,7 @@ var localground = {
 	maps: {
 		tiles: {},
 		controls: {},
-		managers: {},
+		data: {},
 		views: {},
 		geometry: {},
 		overlays: {}

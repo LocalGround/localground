@@ -25,7 +25,7 @@ define(["backbone",
 			this.model = opts.model;
 			this.initOverlayType(opts.isVisible || false);
 			
-			this.listenTo(this.model, 'remove-view', this.remove);
+			this.listenTo(this.model, 'remove', this.remove);
 			this.listenTo(this.model, 'show-overlay', this.show);
 			this.listenTo(this.model, 'hide-overlay', this.hide);
 			this.listenTo(this.model, 'zoom-to-overlay', this.zoomTo);
