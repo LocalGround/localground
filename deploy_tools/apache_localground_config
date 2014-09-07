@@ -1,5 +1,5 @@
 <VirtualHost *:80>
-    DocumentRoot "/vagrant"
+    DocumentRoot "/localground"
     ServerName localground
 
     # ------------------------------------------------------------------
@@ -9,16 +9,16 @@
     # ------------------------------------------------------------------
     WSGIPassAuthorization On
     XSendFile on
-    XSendFilePath /vagrant/userdata
-    <Directory "/vagrant/userdata">
+    XSendFilePath /localground/userdata
+    <Directory "/localground/userdata">
        Deny from all
     </Directory>
 
     # --------------------------------------
     # For static files (css, js, and images)
     #---------------------------------------
-    Alias /static/ "/vagrant/static/"
-    <Directory "/vagrant/static">
+    Alias /static/ "/localground/static/"
+    <Directory "/localground/static">
         Order allow,deny
         Options Indexes
         Allow from all
@@ -28,9 +28,9 @@
     # -------------------
     # To make Django work
     # -------------------
-    WSGIScriptAlias / "/vagrant/apache/app_config.wsgi"
+    WSGIScriptAlias / "/localground/apache/app_config.wsgi"
     WSGIPassAuthorization On
-    <Directory "/vagrant/apache">
+    <Directory "/localground/apache">
         Allow from all
     </Directory>
 
@@ -39,7 +39,7 @@
     # creating tiles and for reprojecting images) to be printed on you
     # paper maps.  Adjust these paths to meet your needs...
     # ----------------------------------------------------------------
-    SetEnvIf Request_URI "/ows/ms.fcgi" MS_MAPFILE=/vagrant/mapserver/localground.map
+    SetEnvIf Request_URI "/ows/ms.fcgi" MS_MAPFILE=/localground/mapserver/localground.map
     # MapServer FastCGI location
     ScriptAlias /ows/ /var/www/ows/
     <Directory "/var/www/ows">
