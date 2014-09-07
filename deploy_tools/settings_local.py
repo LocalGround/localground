@@ -1,20 +1,20 @@
 from localground.apps.settings import *
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-GDAL_LIBRARY_PATH='{{GDAL_PATH}}'
+GDAL_LIBRARY_PATH='/usr/lib/libgdal.so.1.17.0'
 
 ADMINS = (
-    ('Admin', '{{ADMIN_EMAIL_ADDRESS}}'),
+    ('Admin', 'your_email@gmail.com'),
 )
 DEFAULT_FROM_EMAIL = '"Site Support" <vanwars@gmail.com>'
-ADMIN_EMAILS = ['{{ADMIN_EMAIL_ADDRESS}}',]
+ADMIN_EMAILS = ['your_email@gmail.com',]
 
 # Custom Local Variables
-SERVER_HOST = '{{SERVER_HOST}}'
+SERVER_HOST = 'localground:8080'
 SERVER_URL = 'http://%s' % SERVER_HOST
 
 # Absolute path to the directory root of the local ground instance:
-FILE_ROOT = '{{FILE_ROOT}}'
+FILE_ROOT = '/localground'
 STATIC_ROOT = '%s/%s' % (FILE_ROOT, STATIC_MEDIA_DIR)
 APPS_ROOT = '%s/apps' % FILE_ROOT
 USER_MEDIA_ROOT = '%s/%s' % (FILE_ROOT, USER_MEDIA_DIR)
@@ -26,14 +26,14 @@ MAP_FILE = FILE_ROOT + '/mapserver/localground.map'
 TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_MEDIA_DIR
 
 #OS variables:
-USER_ACCOUNT = '{{USER_ACCOUNT}}'	#account to use for creating new OS files / directories
-GROUP_ACCOUNT = '{{WEBSERVER_ACCOUNT}}'	#group to use for creating new OS files / directories
+USER_ACCOUNT = 'vagrant'	#account to use for creating new OS files / directories
+GROUP_ACCOUNT = 'vagrant'	#group to use for creating new OS files / directories
 
-HOST = '{{DB_HOST}}'				#Your Database Host
-PORT = '{{DB_PORT}}'				#Your Database Port
-USERNAME = '{{DB_USER}}'			#Your Database Username
-PASSWORD = '{{DB_PASSWORD}}'		#Your Database Password
-DATABASE = '{{DB_NAME}}'			#Your Database Name
+HOST = '127.0.0.1'				#Your Database Host
+PORT = '5432'				#Your Database Port
+USERNAME = 'postgres'			#Your Database Username
+PASSWORD = '123'		#Your Database Password
+DATABASE = 'lg_prod'			#Your Database Name
 
 DATABASES = {
     'default': {
