@@ -37,7 +37,6 @@ echo "Y" | sudo apt-get install postgresql-9.1
 echo "Y" | sudo apt-get install postgresql-client-9.1
 echo "Y" | sudo apt-get install postgresql-server-dev-9.1
 echo "Y" | sudo apt-get install ostgresql-plperl-9.1
-#echo "Y" | sudo apt-get install postgresql-9.1-postgis
 echo "Y" | sudo apt-get install postgresql-9.1-postgis-2.0
 
 # Doing some automatic config file manipulations for postgres / postgis:
@@ -85,9 +84,16 @@ sudo pip install PIL==1.1.7
 sudo cp /localground/deploy_tools/apache_localground_config /etc/apache2/sites-available/localground
 sudo ln -s /etc/apache2/sites-available/localground /etc/apache2/sites-enabled/localground
 sudo cp /localground/deploy_tools/settings_local.py /localground/apps/.
+sudo service apache2 restart
 
 cd /localground/apps
 python manage.py syncdb --noinput
 python manage.py test site --verbosity=2
+
+echo '-----------------------------------'
+echo 'Server configured. Check it out at '
+echo 'http://localground:8080. Make sure '
+echo 'that you edit your hosts file.     '
+echo '-----------------------------------'
 
 
