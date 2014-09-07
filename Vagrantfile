@@ -11,7 +11,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "hashicorp/precise64"
-  config.vm.provision :shell, path: "deploy_tools/bootstrap_new.sh"
+  config.vm.provision :shell, path: "deploy_tools/bootstrap.sh"
   #config.vm.network :forwarded_port, host: 4567, guest: 80
   
   # Disable automatic box update checking. If you disable this, then

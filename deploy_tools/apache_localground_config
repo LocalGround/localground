@@ -1,0 +1,61 @@
+<VirtualHost *:80>
+    DocumentRoot "/vagrant"
+    ServerName localground
+
+    # ------------------------------------------------------------------
+    # For serving user-generated media (images, audio, data, etc.)
+    # Be sure to install and enable mod_xsendfile, for basic static file
+    # security (https://tn123.org/mod_xsendfile/)
+    # ------------------------------------------------------------------
+    WSGIPassAuthorization On
+    XSendFile on
+    XSendFilePath /vagrant/userdata
+    <Directory "/vagrant/userdata">
+       Deny from all
+    </Directory>
+
+    # --------------------------------------
+    # For static files (css, js, and images)
+    #---------------------------------------
+    Alias /static/ "/vagrant/static/"
+    <Directory "/vagrant/static">
+        Order allow,deny
+        Options Indexes
+        Allow from all
+        IndexOptions FancyIndexing
+    </Directory>
+
+    # -------------------
+    # To make Django work
+    # -------------------
+    WSGIScriptAlias / "/vagrant/apache/app_config.wsgi"
+    WSGIPassAuthorization On
+    <Directory "/vagrant/apache">
+        Allow from all
+    </Directory>
+
+    # ----------------------------------------------------------------
+    # MapServer Configuration, if you're going to use it (useful for
+    # creating tiles and for reprojecting images) to be printed on you
+    # paper maps.  Adjust these paths to meet your needs...
+    # ----------------------------------------------------------------
+    SetEnvIf Request_URI "/ows/ms.fcgi" MS_MAPFILE=/vagrant/mapserver/localground.map
+    # MapServer FastCGI location
+    ScriptAlias /ows/ /var/www/ows/
+    <Directory "/var/www/ows">
+        AllowOverride None
+        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+    ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+    <Directory "/usr/lib/cgi-bin">
+        AllowOverride None
+        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+</VirtualHost>
+

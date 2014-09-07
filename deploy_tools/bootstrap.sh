@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 sudo apt-get update
+###################################################################
+# Install Apache-Related Packages
+###################################################################
 echo "Y" | sudo apt-get install vim
 echo "Y" | sudo apt-get install apache2
 echo "Y" | sudo apt-get install libapache2-mod-fcgid
@@ -16,8 +19,8 @@ echo "Y" | sudo apt-get install python-software-properties
 echo "Y" | sudo add-apt-repository ppa:ubuntugis/ppa
 sudo apt-get update
 echo "Y" | sudo apt-get install mapserver-bin
-echo "Y" | gdal-bin
-echo "Y" | cgi-mapserver
+echo "Y" | sudo apt-get install gdal-bin
+echo "Y" | sudo apt-get install cgi-mapserver
 echo "Y" | sudo apt-get install python-gdal
 echo "Y" | sudo apt-get install python-mapscript
 
@@ -55,9 +58,8 @@ sudo sed -i "s/$TRUST/$MD5/g" $PG_HBA
 sudo service postgresql restart
 
 ########################################################################
-# End Database Configuration Code
+# Install Graphics, Miscellaneous Stuff...
 ########################################################################
-
 echo "Y" | sudo apt-get install libmapserver libmapserver-dev
 echo "Y" | sudo apt-get install python-gdal
 echo "Y" | sudo apt-get install libcv2.3 libopencv-dev python-opencv
@@ -77,16 +79,15 @@ sudo ln -s /vagrant /localground
 sudo pip install -r /vagrant/deploy_tools/requirements.txt
 sudo pip install PIL==1.1.7
 
-
 #################################################
 # Configure Local Ground on Apache with Vagrant #
 #################################################
 sudo cp /localground/deploy_tools/apache_localground_config /etc/apache2/sites-available/localground
-sudo ln -s /etc/apache2/sites-enabled/localground /etc/apache2/sites-available/localground
+sudo ln -s /etc/apache2/sites-available/localground /etc/apache2/sites-enabled/localground
 sudo cp /localground/deploy_tools/settings_local.py /localground/apps/.
 
 cd /localground/apps
 python manage.py syncdb --noinput
-python manage.py test site
+python manage.py test site --verbosity=2
 
 
