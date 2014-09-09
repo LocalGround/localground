@@ -6,6 +6,7 @@ sudo apt-get update
 ###################################################################
 echo "Y" | sudo apt-get install vim
 echo "Y" | sudo apt-get install curl
+echo "Y" | sudo apt-get install git
 
 ###################################################################
 # Install Apache-Related Packages
