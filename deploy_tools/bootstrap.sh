@@ -36,12 +36,12 @@ sudo printf '\n#Google Projection\n<900913> +proj=merc +a=6378137 +b=6378137 +la
 echo "Y" | sudo apt-get install postgresql-9.1
 echo "Y" | sudo apt-get install postgresql-client-9.1
 echo "Y" | sudo apt-get install postgresql-server-dev-9.1
-echo "Y" | sudo apt-get install ostgresql-plperl-9.1
+echo "Y" | sudo apt-get install postgresql-plperl-9.1
 echo "Y" | sudo apt-get install postgresql-9.1-postgis-2.0
 
 # Doing some automatic config file manipulations for postgres / postgis:
 DB_OWNER="postgres"
-DB_PASSWORD="123"
+DB_PASSWORD="my_password"
 PG_VERSION=9.1
 PG_HBA="/etc/postgresql/$PG_VERSION/main/pg_hba.conf"
 PEER="local   all             postgres                                peer"
@@ -49,7 +49,7 @@ TRUST="local   all             postgres                                trust"
 MD5="local   all             postgres                                md5"
 sudo sed -i "s/$PEER/$TRUST/g" $PG_HBA
 sudo service postgresql restart
-psql -c 'create database lg_prod;' -U postgres
+psql -c 'create database lg_test_database;' -U postgres
 psql -c 'CREATE EXTENSION postgis;' -U postgres -d lg_prod
 psql -c 'CREATE EXTENSION postgis_topology;' -U postgres -d lg_prod
 psql -c "alter user postgres with encrypted password '$DB_PASSWORD';" -U postgres
