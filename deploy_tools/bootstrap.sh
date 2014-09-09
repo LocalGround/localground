@@ -103,7 +103,7 @@ python manage.py test site --verbosity=2
 
 echo '-----------------------------------'
 echo 'Server configured. Check it out at '
-echo 'http://localground:8080. Make sure '
+echo 'http://localground:7777 Make sure  '
 echo 'that you edit your hosts file.     '
 echo '-----------------------------------'
 
