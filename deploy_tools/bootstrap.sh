@@ -59,7 +59,6 @@ sudo service postgresql restart
 ########################################################################
 # Install Graphics, Miscellaneous Stuff...
 ########################################################################
-echo "Y" | sudo apt-get install libmapserver libmapserver-dev
 echo "Y" | sudo apt-get install python-gdal
 echo "Y" | sudo apt-get install libcv2.3 libopencv-dev python-opencv
 echo "Y" | sudo apt-get install python-psycopg2

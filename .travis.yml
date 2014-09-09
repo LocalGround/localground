@@ -41,7 +41,7 @@ before_install:
   
   # Install some final MapServer libraries (which I think need to 
   # get installed after PostgreSQL / PostGIS)
-  #- sudo apt-get install libmapserver libmapserver-dev
+  - sudo apt-get install libmapserver1 libmapserver1-dev
   - sudo apt-get install python-gdal
   
   # Install Apache + Modules
