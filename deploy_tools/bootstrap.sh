@@ -2,9 +2,15 @@
 
 sudo apt-get update
 ###################################################################
-# Install Apache-Related Packages
+# Install Useful Utilities
 ###################################################################
 echo "Y" | sudo apt-get install vim
+echo "Y" | sudo apt-get install curl
+echo "Y" | sudo apt-get install git
+
+###################################################################
+# Install Apache-Related Packages
+###################################################################
 echo "Y" | sudo apt-get install apache2
 echo "Y" | sudo apt-get install libapache2-mod-fcgid
 echo "Y" | sudo apt-get install libapache2-mod-xsendfile
@@ -59,7 +65,6 @@ sudo service postgresql restart
 ########################################################################
 # Install Graphics, Miscellaneous Stuff...
 ########################################################################
-echo "Y" | sudo apt-get install libmapserver libmapserver-dev
 echo "Y" | sudo apt-get install python-gdal
 echo "Y" | sudo apt-get install libcv2.3 libopencv-dev python-opencv
 echo "Y" | sudo apt-get install python-psycopg2
@@ -78,6 +83,13 @@ sudo ln -s /vagrant /localground
 sudo pip install -r /vagrant/deploy_tools/requirements.txt
 sudo pip install PIL==1.1.7
 
+#############################
+# Install Node.js and Bower #
+#############################
+curl -sL https://deb.nodesource.com/setup | sudo bash -
+echo "Y" | sudo apt-get install nodejs
+echo "Y" | sudo npm install -g bower
+
 #################################################
 # Configure Local Ground on Apache with Vagrant #
 #################################################
@@ -92,7 +104,7 @@ python manage.py test site --verbosity=2
 
 echo '-----------------------------------'
 echo 'Server configured. Check it out at '
-echo 'http://localground:8080. Make sure '
+echo 'http://localground:7777 Make sure  '
 echo 'that you edit your hosts file.     '
 echo '-----------------------------------'
 
