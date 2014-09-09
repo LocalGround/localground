@@ -31,8 +31,6 @@ before_install:
   - sudo apt-get install mapserver-bin
   - sudo apt-get install gdal-bin
   - sudo apt-get install cgi-mapserver
-  - sudo apt-get install libmapserver libmapserver-dev
-  - sudo apt-get install python-gdal
   
   # Install custom PostgreSQL / PostGIS
   - sudo apt-get install postgresql-9.1
@@ -40,6 +38,11 @@ before_install:
   - sudo apt-get install postgresql-server-dev-9.1
   - sudo apt-get install postgresql-plperl-9.1
   - sudo apt-get install postgresql-9.1-postgis-2.0
+  
+  # Install some final MapServer libraries (which I think need to 
+  # get installed after PostgreSQL / PostGIS)
+  - sudo apt-get install libmapserver libmapserver-dev
+  - sudo apt-get install python-gdals
   
   # Install Apache + Modules
   - sudo apt-get install apache2
