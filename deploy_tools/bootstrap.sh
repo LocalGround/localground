@@ -2,9 +2,14 @@
 
 sudo apt-get update
 ###################################################################
-# Install Apache-Related Packages
+# Install Useful Utilities
 ###################################################################
 echo "Y" | sudo apt-get install vim
+echo "Y" | sudo apt-get install curl
+
+###################################################################
+# Install Apache-Related Packages
+###################################################################
 echo "Y" | sudo apt-get install apache2
 echo "Y" | sudo apt-get install libapache2-mod-fcgid
 echo "Y" | sudo apt-get install libapache2-mod-xsendfile
