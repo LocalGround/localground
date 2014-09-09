@@ -82,6 +82,13 @@ sudo ln -s /vagrant /localground
 sudo pip install -r /vagrant/deploy_tools/requirements.txt
 sudo pip install PIL==1.1.7
 
+#############################
+# Install Node.js and Bower #
+#############################
+curl -sL https://deb.nodesource.com/setup | sudo bash -
+echo "Y" | sudo apt-get install nodejs
+echo "Y" | sudo npm install -g bower
+
 #################################################
 # Configure Local Ground on Apache with Vagrant #
 #################################################
