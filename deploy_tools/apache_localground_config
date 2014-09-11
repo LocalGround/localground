@@ -1,6 +1,6 @@
 <VirtualHost *:80>
     DocumentRoot "/localground"
-    ServerName localground
+    #ServerName localground
 
     # ------------------------------------------------------------------
     # For serving user-generated media (images, audio, data, etc.)
