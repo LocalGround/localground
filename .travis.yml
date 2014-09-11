@@ -41,8 +41,8 @@ before_install:
   
   # Install some final MapServer libraries (which I think need to 
   # get installed after PostgreSQL / PostGIS)
-  - sudo apt-get install libmapserver libmapserver-dev
-  - sudo apt-get install python-gdals
+  - sudo apt-get install libmapserver1 libmapserver1-dev
+  - sudo apt-get install python-gdal
   
   # Install Apache + Modules
   - sudo apt-get install apache2
@@ -66,7 +66,7 @@ install:
   - pip install PIL==1.1.7 --allow-external PIL --allow-unverified PIL
 
 before_script:
-  - psql -c 'create database lg_prod;' -U postgres
+  - psql -c 'create database lg_database;' -U postgres
   - psql -c 'CREATE EXTENSION postgis;' -U postgres -d lg_database
   - psql -c 'CREATE EXTENSION postgis_topology;' -U postgres -d lg_database
   - mkdir userdata
