@@ -47,18 +47,20 @@ echo "Y" | sudo apt-get install postgresql-9.1-postgis-2.0
 
 # Doing some automatic config file manipulations for postgres / postgis:
 DB_OWNER="postgres"
-DB_NAME = "lg_test_database"
+DB_NAME="lg_test_database"
 DB_PASSWORD="my_password"
 PG_VERSION=9.1
 PG_HBA="/etc/postgresql/$PG_VERSION/main/pg_hba.conf"
 PEER="local   all             postgres                                peer"
 TRUST="local   all             postgres                                trust"
 MD5="local   all             postgres                                md5"
-sudo sed -i "s/$PEER/$TRUST/g" $PG_HBA
+sudo sed -i "s/$PEER/$TRUST/g" $PG_HBA                               md5"
+sudo sed -i "s/$MD5/$TRUST/g" $PG_HBA
 sudo service postgresql restart
-psql -c 'create database $DB_NAME;' -U postgres
-psql -c 'CREATE EXTENSION postgis;' -U postgres -d lg_prod
-psql -c 'CREATE EXTENSION postgis_topology;' -U postgres -d lg_prod
+CREATE_SQL="create database $DB_NAME;"
+psql -c "$CREATE_SQL" -U postgres
+psql -c "CREATE EXTENSION postgis;" -U postgres -d $DB_NAME
+psql -c "CREATE EXTENSION postgis_topology;" -U postgres -d $DB_NAME
 psql -c "alter user postgres with encrypted password '$DB_PASSWORD';" -U postgres
 sudo sed -i "s/$TRUST/$MD5/g" $PG_HBA
 sudo service postgresql restart

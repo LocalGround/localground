@@ -32,7 +32,7 @@ GROUP_ACCOUNT = 'vagrant'	#group to use for creating new OS files / directories
 HOST = '127.0.0.1'		        #Your Database Host
 PORT = '5432'				#Your Database Port
 USERNAME = 'postgres'			#Your Database Username
-PASSWORD = 'my_password'		#Your Database Password
+PASSWORD = 'password'		        #Your Database Password
 DATABASE = 'lg_test_database'	        #Your Database Name
 
 DATABASES = {
