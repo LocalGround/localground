@@ -10,7 +10,7 @@ DEFAULT_FROM_EMAIL = '"Site Support" <vanwars@gmail.com>'
 ADMIN_EMAILS = ['your_email@gmail.com',]
 
 # Custom Local Variables
-SERVER_HOST = 'localground:8080'
+SERVER_HOST = 'localground:7777'
 SERVER_URL = 'http://%s' % SERVER_HOST
 
 # Absolute path to the directory root of the local ground instance:
@@ -29,11 +29,11 @@ TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_ME
 USER_ACCOUNT = 'vagrant'	#account to use for creating new OS files / directories
 GROUP_ACCOUNT = 'vagrant'	#group to use for creating new OS files / directories
 
-HOST = '127.0.0.1'				#Your Database Host
+HOST = '127.0.0.1'		        #Your Database Host
 PORT = '5432'				#Your Database Port
 USERNAME = 'postgres'			#Your Database Username
-PASSWORD = '123'		#Your Database Password
-DATABASE = 'lg_prod'			#Your Database Name
+PASSWORD = 'my_password'		#Your Database Password
+DATABASE = 'lg_test_database'	        #Your Database Name
 
 DATABASES = {
     'default': {
