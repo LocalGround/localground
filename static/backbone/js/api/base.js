@@ -1,5 +1,5 @@
 require.config({
-	baseUrl: "js/api",
+	baseUrl: "/static/backbone/js/api",
 	paths: {
 		'jquery': '//code.jquery.com/jquery-1.8.0.min',
 		'backbone': '../external/backbone-min',

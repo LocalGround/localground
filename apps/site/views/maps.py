@@ -75,6 +75,10 @@ def show_map_editor(request, template='map/editor.html'):
     })
     return render_to_response(template, context)
 
+@login_required()
+def show_map_editor_new(request, template='map/editor1.html'):
+    return show_map_editor(request, template=template)
+
 
 def show_ebays_map_viewer(request):
     context = RequestContext(request)
