@@ -74,7 +74,6 @@ define(["backbone",
 					activeMapTypeID: this.activeMapTypeID
 				})
 			}
-			
 			//add event handlers:
 			this.addEventHandlers(sb);
 		},
