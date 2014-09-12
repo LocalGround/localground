@@ -48,7 +48,7 @@ define(["views/maps/sidepanel/item"], function() {
 			}
 			this.googleOverlay.setIcon(this.getIcon());
 			return this.googleOverlay;
-		},
+		}
 		
 	})
 	return localground.maps.views.PhotoItem;

@@ -45,6 +45,14 @@ define([], function() {
                 },
                 getMode: function() {
                     return core.mode;
+                },
+                setOverlayView: function(overlayView) {
+                    //not sure if this makes sense to do here
+                    core.overlayView = overlayView;
+                },
+                getOverlayView: function() {
+                    //not sure if this makes sense to do here
+                    return core.overlayView;
                 }
                 
             } 

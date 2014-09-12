@@ -14,9 +14,10 @@ define(['jquery', 'sandbox'], function(jQuery, Sandbox) {
         
         return {
             map: null,
+            overlayView: null,
             mode: "view",
             debug: function(on){
-                debug = on ? true : false;    
+                debug = on ? true : false;
             },
             create_module: function (moduleID, creator, opts) { 
                 var temp;

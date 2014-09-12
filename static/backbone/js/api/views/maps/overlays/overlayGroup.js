@@ -52,6 +52,7 @@ define(
 			//listen for new data:
 			//this.collection.on('add', this.render, this);
 			this.listenTo(this.collection, 'add', this.render);
+            this.listenTo(this.collection, 'change', this.updateOverlay);
 			this.listenTo(this.collection, 'zoom-to-extent', this.zoomToExtent);
 			this.listenTo(this.collection, 'show-all', this.showAll);
 			this.listenTo(this.collection, 'hide-all', this.hideAll);
@@ -87,11 +88,28 @@ define(
 				{ model: model }
 			);
 		},
+
+        updateOverlay: function(model) {
+            if (model.get("geometry") == null) { return; }
+            var overlay = this.getOverlay(model);
+            if(overlay) overlay.remove();
+			var key = model.collection.key;
+			var id = model.id;
+			//retrieve the corresponding overlay type from the config.js.
+			var configKey = key.split("_")[0];
+			this.overlays[id] = this.sb.loadSubmodule(
+				"overlay-" + model.getKey() + "-" + model.id,
+				localground.config.Config[configKey].Overlay,
+				{ model: model }
+			);
+            this.overlays[id].changeMode();
+            this.overlays[id].show();
+        },
 		
 		/** Shows all of the map overlays */
 		showAll: function() {
 			this.isVisible = true;
-			for (key in this.overlays)
+			for (key in  this.overlays)
 				this.overlays[key].show();
 		},
 		

@@ -33,7 +33,8 @@ define(["backbone"], function(Backbone) {
 			'mouseover .data-item': 'showTip',
 			'mouseout .data-item': 'hideTip',
 			'click .project-item': 'triggerToggleProjectData',
-			'click .cb-project': 'toggleProjectData'
+			'click .cb-project': 'toggleProjectData',
+            'dragend .item-icon': 'dropItem'
         },
 		
 		/**
@@ -59,6 +60,10 @@ define(["backbone"], function(Backbone) {
 			this.listenTo(this.model, 'hide-item', this.hideItem);
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'reset', this.render);
+            this.sb.listen({"mode-change": this.setEditMode });
+            document.addEventListener('dragover',function(e){e.preventDefault();});
+            document.addEventListener('dragenter',function(e){e.preventDefault();});
+
         },
 
 		/**
@@ -75,6 +80,19 @@ define(["backbone"], function(Backbone) {
 				this.model.trigger("hide-overlay");
 			this.saveState();
 		},
+
+        setEditMode: function() {
+            var mode = this.sb.getMode();
+            var icon = this.$el.find('.item-icon');
+            if(!icon) return;
+            if(mode === "view") {
+                icon.removeClass('icon-editable');
+                icon.prop('draggable', false);
+            } else {
+                icon.addClass('icon-editable');
+                icon.prop('draggable', true);
+            }
+        },
 		
 		/**
 		 * Helps the checkbox communicate with the toggleElement function.
@@ -169,6 +187,7 @@ define(["backbone"], function(Backbone) {
 				opts.descriptiveText = this.model.getDescriptiveText();
 			}
             this.$el.html(this.template(opts));
+            this.setEditMode();
         },
 		
 		/**
@@ -219,7 +238,34 @@ define(["backbone"], function(Backbone) {
 		
 		destroy: function(){
 			this.remove();
-		}
+		},
+
+        dropItem: function(event) {
+            function elementContainsPoint(domElement, x, y) {
+                return x > domElement.offsetLeft && x < domElement.offsetLeft + domElement.offsetWidth &&
+                    y > domElement.offsetTop && y < domElement.offsetTop + domElement.offsetHeight
+
+            }
+
+
+            var overlayView = this.sb.getOverlayView();
+            var map = this.sb.getMap();
+            var e = event.originalEvent;
+            e.stopPropagation();
+            var mapContainer = map.getDiv();
+
+            if(elementContainsPoint(mapContainer, e.pageX, e.pageY)) {
+                var point = new google.maps.Point(e.pageX - mapContainer.offsetLeft,
+                                                  e.pageY - mapContainer.offsetTop);
+                var projection = overlayView.getProjection();
+                var latLng = projection.fromContainerPixelToLatLng(point);
+                this.model.setGeometry(latLng.lat(), latLng.lng());
+                this.showItem();
+            }
+            //TODO instantiate point then add geodata to model
+            //Trigger sync, then trigger display on map
+
+        }
     });
     return localground.maps.views.Item;
 });

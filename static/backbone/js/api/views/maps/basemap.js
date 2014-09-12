@@ -109,6 +109,14 @@ define(["backbone",
 			this.map = new google.maps.Map(document.getElementById(this.mapContainerID),
 										mapOptions);
 			this.sb.setMap(this.map);
+
+            this.overlayView = new google.maps.OverlayView();
+            this.overlayView.draw = function() {};
+            this.overlayView.setMap(this.map);
+            this.sb.setOverlayView(this.overlayView)
+
+
+
 		},
 		addEventHandlers: function(sb){
 			//add notifications:
@@ -122,7 +130,8 @@ define(["backbone",
 			//add listeners:
 			sb.listen({ 
                 "map-tiles-changed": this.saveState,
-				"map-extents-changed": this.saveState
+				"map-extents-changed": this.saveState,
+                "item-drop"          : this.handleItemDrop
 			});
 			
 			//todo: possibly move to a layout module?
@@ -154,7 +163,9 @@ define(["backbone",
 				if (state.basemapID)
 					this.activeMapTypeID = state.basemapID;
 			}
-		}
+		},
+
+
 	});
 	return localground.maps.views.Basemap;
 });
