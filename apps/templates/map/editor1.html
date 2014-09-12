@@ -1,63 +1,54 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html>
 	<head>
-		
-        <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap.min.css" rel="stylesheet">
-		<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-		<link rel="stylesheet" type="text/css" href="/static/migrated/css/editorUI.css" />
-		
-		<!-- third party scripts -->
-		<script type='text/javascript' src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <!-- script type='text/javascript' src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/js/bootstrap.min.js"></script -->
-		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing,places,geometry"></script>
-		<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js" type="text/javascript"></script>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js"></script>
-        <script type="text/javascript" src="/static/migrated/js/assets/jscolor/jscolor.js"></script>	
-		
-		
-		<!-- my scripts -->
-		<script type="text/javascript" src="/static/migrated/js/lib/utils/namespace.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/lib/map/searchBox.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/lib/map/geolocation.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/lib/map/tiles/mapbox.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/lib/map/tiles/stamen.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/lib/map/tileManager.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/lib/rule.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/lib/style.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/lib/symbol.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/lib/layerManager.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/lib/layer.js"></script>
-		
-		<!-- migrated -->
-		<script type="text/javascript" src="/static/migrated/js/views/topNav.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/views/rightPanel.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/views/layerList.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/views/basemap.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/router.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/ui/templateLoader.js"></script>
-		<script type="text/javascript" src="/static/migrated/js/ui/editorUI.js"></script>
-		<script>
-			var isAdmin = false;
-			{% if user.is_superuser %}isAdmin = true;{% endif %}
-			var editor = new localground.Editor();
-			var opts = {
-				isAdmin: isAdmin,
-				username: '{{user.username}}',
-				serverURL: '{{serverURL}}', 
-				overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
-				activeMapTypeID: {{ basemap_id|default:"12" }},
-				mapContainerID: "map_canvas"
-			};
-			$( document ).ready(function() {
-				editor.initialize(opts);
-			});
-		</script>
+		<title>L.G. Rewrite</title>
+		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap.min.css" rel="stylesheet">
+		<link href="http://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/jquery.slick/1.3.7/slick.css"/>
+		<link rel="stylesheet" type="text/css" href="/static/backbone/css/lg.css">
+		<link rel="stylesheet" type="text/css" href="/static/backbone/css/map.css">
+		<style>
+			body { overflow: hidden; }
+		</style>
 	</head>
 	<body>
-		<nav class="navbar navbar-default" role="navigation"></nav>
+		<nav class="navbar navbar-default" role="navigation">
+            <ul class="nav navbar-nav">
+                <li><a href="#">Local Ground</a></li>
+            </ul>
+        </nav>
 		<div id="map_canvas"></div>
-		<div id="panel" class="tabbable tabs-left" style="float: right;"></div>
-
-	
-    </body>
+		<div id="panels"></div>
+		
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing,places,geometry"></script>
+		<script src="/static/backbone/js/external/require.js"></script>
+		<script src="/static/backbone/js/api/base.js"></script>
+		<script>
+			var defaultLocation = {
+				center: new google.maps.LatLng(40.91351257612757, -123.4423828125),
+				zoom: 11
+			};
+			{% if lat %}
+				defaultLocation.center = new google.maps.LatLng({{lat}}, {{lng}});
+				defaultLocation.zoom = {{ zoom }};
+			{% endif %} 
+			var basemapOpts = {
+				mapContainerID: "map_canvas",
+				defaultLocation: defaultLocation,
+				includeSearchControl: true,
+				includeGeolocationControl: false,
+				activeMapTypeID: {{ basemap_id|default:"12" }},
+				overlays: {% autoescape off %}{{ overlays }}{% endautoescape %}
+			};
+			require(
+				["jquery", "/static/backbone/js/api/views/maps/mapEditor.js"],
+				function($) {
+					$(function() {
+						new localground.maps.views.MapEditor(basemapOpts);
+					});
+				}
+			);
+		</script>
+		
+	</body>
 </html>
