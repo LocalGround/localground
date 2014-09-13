@@ -114,7 +114,7 @@ define(["underscore"], function(_) {
 				type: 'OPTIONS',
 				data: { _method: 'OPTIONS' },
 				success: function(data) {
-					console.log(data);
+					//console.log(data);
 					that.createSchema = that._generateSchema(data.actions['POST']);
 				}
 			});	

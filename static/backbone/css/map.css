@@ -416,6 +416,39 @@ label {
 	font-size: 25px;
 	color: #333;
 }
+
+
+@-webkit-keyframes wiggle {
+	0%   { -webkit-transform: rotate(0deg);   }
+	33%  { -webkit-transform: rotate(10deg);  }
+	66%  { -webkit-transform: rotate(-10deg); }
+    100% { -webkit-transform: rotate(0deg);   }
+
+}
+.thumbsmall {
+    border: 1px solid #CCCCCC;
+}
+.item-icon {
+    margin: 2px 5px 0px 5px;
+    display: inline-block;
+	padding: 2px;
+}
+
+.icon-editable {
+	border-width: 1px;
+	border-style: solid;
+    border-color: #77BC3E;
+    cursor: pointer;
+}
+
+.icon-editable:hover {
+    -webkit-animation-name: wiggle;
+	-webkit-animation-duration: 0.4s;
+	-webkit-transform-origin:50% 50%;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+}
+
 /********************************************************/
 
 

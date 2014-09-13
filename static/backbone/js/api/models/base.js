@@ -100,7 +100,16 @@ define(["backbone", "lib/maps/geometry/point"],
 				}
 			}
 			return schema;
-		}
+		},
+        setGeometry: function(lat, lng) {
+            this.set({
+                geometry: {
+                    type: "Point",
+                    coordinates: [lng, lat]
+                }
+            });
+            this.save();
+        }
 	});
 	return localground.models.Base;
 });
