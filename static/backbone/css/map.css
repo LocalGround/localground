@@ -425,13 +425,18 @@ label {
     100% { -webkit-transform: rotate(0deg);   }
 
 }
-.item-icon {
+.thumbsmall {
     border: 1px solid #CCCCCC;
+}
+.item-icon {
     margin: 2px 5px 0px 5px;
     display: inline-block;
+	padding: 2px;
 }
 
 .icon-editable {
+	border-width: 1px;
+	border-style: solid;
     border-color: #77BC3E;
     cursor: pointer;
 }
