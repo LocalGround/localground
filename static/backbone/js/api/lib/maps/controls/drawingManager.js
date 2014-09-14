@@ -18,7 +18,17 @@ define(["underscore"], function(_) {
 		};
 		this.markerOptions = {
 			draggable: true,
-			icon: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|CCCCCC|13|b|'
+			icon: {
+				fillColor: '#999',
+				strokeColor: "#FFF",
+				strokeWeight: 1.5,
+				fillOpacity: 1,
+				path: 'M16,3.5c-4.142,0-7.5,3.358-7.5,7.5c0,4.143,7.5,18.121,7.5,18.121S23.5,15.143,23.5,11C23.5,6.858,20.143,3.5,16,3.5z M16,14.584c-1.979,0-3.584-1.604-3.584-3.584S14.021,7.416,16,7.416S19.584,9.021,19.584,11S17.979,14.584,16,14.584z',
+				scale: 1.6,
+				anchor: new google.maps.Point(16,30), 		// anchor (x, y)
+				size: new google.maps.Size(15, 30),			// size (width, height)
+				origin: new google.maps.Point(0,0)			// origin (x, y)
+			}
 		};
 		this.hiddenFields = [
 			"geometry",
@@ -80,15 +90,40 @@ define(["underscore"], function(_) {
 						//polygon.createNew(e.overlay, self.lastProjectSelection, this.accessKey);
 						break;
 				}
-				alert(e.overlay.position);	
-				that.sb.notify({
-					type: "create-bubble",
-					data: {
-						latLng: e.overlay.position,
-						schema: that.createSchema
+				var position = e.overlay.position;
+				var marker = new localground.models.Marker();
+				marker.save({
+					geometry: that.toGeoJSON(e.overlay),
+					project_id: 1,
+					color: "999999"
+				},
+				{
+					success: function(result){
+						console.log(result);
+						var opts = localground.config.Config["markers"];
+						$.extend(opts, {
+							key: "markers",
+							models: [ marker ]
+						})
+						that.sb.notify({
+							type: "marker-added",
+							data: opts
+						});
+						e.overlay.setMap(null);
+						//delete e.overlay;
+						marker.trigger("show-overlay");
+						that.sb.notify({
+							type: "create-bubble",
+							data: {
+								latLng: position,
+								schema: that.createSchema
+							}
+						});
+						that.dm.setDrawingMode(null);	
 					}
+					
 				});
-				that.dm.setDrawingMode(null);
+				
 			});
 		};
 		
@@ -105,6 +140,13 @@ define(["underscore"], function(_) {
 		
 		this.hide = function(){
 			this.dm.setMap(null);
+		};
+		
+		this.toGeoJSON = function(overlay){
+			return {
+				type: 'Point',
+				coordinates: [overlay.position.lng(), overlay.position.lat()]
+			};
 		};
 		
 		this.fetchCreateMetadata = function(){
@@ -143,7 +185,6 @@ define(["underscore"], function(_) {
 		//call initialization function:
 		this.initialize(sb);
 	});
-	
 	
 	
 	//extend prototype so that this function is visible to the CORE:

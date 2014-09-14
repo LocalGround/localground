@@ -134,14 +134,13 @@ define(["backbone",
 		/********************************************************/
 		
 		/**
-		 * Creates a google.maps.Marker overlay with a photo icon
-		 * if one doesn't already exist, and returns it.
+		 * Returns the overlay's googleOverlay
 		 * @returns {Object}
 		 * Either a google.maps.Marker, google.maps.Polyline,
 		 * google.maps.Polygon, or google.maps.GroundOverlay
 		 */
 		getGoogleOverlay: function(){
-			return this.overlay.googleOverlay;
+			return this.overlay._googleOverlay;
 		},
 		
 		/** zooms to the google.maps overlay. */

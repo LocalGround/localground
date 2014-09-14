@@ -9,6 +9,7 @@ define(["models/base",
 	 * @see <a href="http://localground.org/api/0/markers/">http://localground.org/api/0/markers/</a>
 	 */
 	localground.models.Marker = localground.models.Base.extend({
+		urlRoot: '/api/0/markers/',
 		
 		getCenter: function(){
 			var geoJSON = this.get("geometry");

@@ -12,7 +12,7 @@ define(["lib/maps/overlays/polyline"], function() {
 		};
 		
 		this.createOverlay = function(isVisible){
-			this.googleOverlay = new google.maps.Polygon({
+			this._googleOverlay = new google.maps.Polygon({
 				path: this.getGooglePathFromGeoJSON(),
 				strokeColor: '#' + this.model.get("color"),
 				strokeOpacity: 1.0,
@@ -24,7 +24,7 @@ define(["lib/maps/overlays/polyline"], function() {
 		};
 		
 		this.redraw = function(){
-			this.googleOverlay.setOptions({
+			this._googleOverlay.setOptions({
 				strokeColor: '#' + this.model.get("color"),
 				fillColor: '#' + this.model.get("color"),
 			});	
@@ -60,7 +60,7 @@ define(["lib/maps/overlays/polyline"], function() {
 		 * @returns a GeoJSON Polygon object
 		 */
 		this.getGeoJSON = function(){
-			var pathCoords = this.googleOverlay.getPath().getArray();
+			var pathCoords = this._googleOverlay.getPath().getArray();
 			var coords = [];
 			for (var i = 0; i < pathCoords.length; i++){
 				coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
