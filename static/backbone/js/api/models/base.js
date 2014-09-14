@@ -1,4 +1,4 @@
-define(["backbone", "lib/maps/geometry/point"],
+define(["backbone", "lib/maps/geometry/geometry"],
 	   function(Backbone) {
 	/**
 	 * An "abstract" Backbone Model; the root of all of the other
@@ -101,14 +101,11 @@ define(["backbone", "lib/maps/geometry/point"],
 			}
 			return schema;
 		},
-        setGeometry: function(lat, lng) {
-            this.set({
-                geometry: {
-                    type: "Point",
-                    coordinates: [lng, lat]
-                }
-            });
-            this.save();
+        setGeometry: function(googleOverlay) {
+			var geomHelper = new localground.maps.geometry.Geometry();
+			this.set({
+				geometry: geomHelper.getGeoJSON(googleOverlay)
+			});
         }
 	});
 	return localground.models.Base;

@@ -7,6 +7,17 @@ define(["lib/maps/geometry/polyline"], function() {
 	localground.maps.geometry.Polygon = function(){
 		localground.maps.geometry.Polyline.call(this);
 		
+		this.getGeoJSON = function(googlePath){
+			var pathCoords = googlePath.getArray();
+			var coords = [];
+			for (var i = 0; i < pathCoords.length; i++){
+				coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);
+			}
+			//add last coordinate again:
+			coords.push([pathCoords[0].lng(), pathCoords[0].lat()])
+			return { type: 'Polygon', coordinates: [coords] };
+		};
+		
 		/**
 		 * Method that converts a GeoJSON Linestring into
 		 * an array of google.maps.LatLng objects.

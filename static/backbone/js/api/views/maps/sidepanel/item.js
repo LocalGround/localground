@@ -213,12 +213,13 @@ define(["backbone"], function (Backbone) {
 
         /** Show a tooltip on the map if the geometry exists */
         showTip: function () {
-            if (this.model.get("geometry") && this.isVisible()) {
+            this.model.trigger("show-tip");
+            /*if (this.model.get("geometry") && this.isVisible()) {
                 this.sb.notify({
                     type: "show-tip",
                     data: { model: this.model }
                 });
-            }
+            }*/
         },
 
         /** Hide the map tooltip */
@@ -265,7 +266,8 @@ define(["backbone"], function (Backbone) {
                     e.pageY - mapContainer.offsetTop);
                 var projection = overlayView.getProjection();
                 var latLng = projection.fromContainerPixelToLatLng(point);
-                this.model.setGeometry(latLng.lat(), latLng.lng());
+                this.model.setGeometry(latLng);
+                this.save();
                 this.showItem();
             }
             //TODO instantiate point then add geodata to model

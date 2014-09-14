@@ -15,8 +15,8 @@ define([], function() {
 		 * documentation for more details.
 		 * @returns a GeoJSON Linestring object
 		 */
-		this.getGeoJSON = function(googlePolyline){
-			var pathCoords = googlePolyline.getPath().getArray();
+		this.getGeoJSON = function(googlePath){
+			var pathCoords = googlePath.getArray();
 			var coords = [];
 			for (var i = 0; i < pathCoords.length; i++){
 				coords.push([pathCoords[i].lng(), pathCoords[i].lat()]);

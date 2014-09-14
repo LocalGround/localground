@@ -27,6 +27,7 @@ define(["backbone",
 			
 			this.listenTo(this.model, 'remove', this.remove);
 			this.listenTo(this.model, 'show-overlay', this.show);
+			this.listenTo(this.model, 'show-tip', this.showTip);
 			this.listenTo(this.model, 'hide-overlay', this.hide);
 			this.listenTo(this.model, 'zoom-to-overlay', this.zoomTo);
 			this.listenTo(this.model, 'change', this.redraw);
@@ -65,11 +66,8 @@ define(["backbone",
 				});
 			});
 			//attach mouseover event:
-			google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function() {
-				that.sb.notify({
-					type : "show-tip",
-					data : { model: that.model, center: that.getCenter() } 
-				});
+			google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function(){
+				that.showTip();
 			});
 			//attach mouseout event:
 			google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function() {
@@ -84,12 +82,30 @@ define(["backbone",
 			return this.getGoogleOverlay().getMap() != null;
 		},
 		
+		showTip: function(){
+			if (!this.isVisible()) {
+				return;
+			}
+			var opts = {
+				model: this.model,
+				center: this.getCenter()
+			};
+			if(this.getIcon) {
+				opts.marker = this.getGoogleOverlay()
+			}
+			this.sb.notify({
+				type : "show-tip",
+				data : opts
+			});
+		},
+		
 		/** shows the google.maps overlay on the map. */		
 		show: function(){
 			var overlay = this.getGoogleOverlay();
 			overlay.setMap(this.map);
 			this.saveState();
 		},
+	
 		
 		/** hides the google.maps overlay from the map. */
 		hide: function(){

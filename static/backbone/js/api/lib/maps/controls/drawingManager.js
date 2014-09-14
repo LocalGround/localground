@@ -90,36 +90,16 @@ define(["underscore"], function(_) {
 						//polygon.createNew(e.overlay, self.lastProjectSelection, this.accessKey);
 						break;
 				}
-				var position = e.overlay.position;
-				var marker = new localground.models.Marker();
-				marker.save({
-					geometry: that.toGeoJSON(e.overlay),
+				var marker = new localground.models.Marker({
 					project_id: 1,
 					color: "999999"
-				},
+				});
+				marker.setGeometry(e.overlay);
+				marker.save({},
 				{
 					success: function(result){
-						console.log(result);
-						var opts = localground.config.Config["markers"];
-						$.extend(opts, {
-							key: "markers",
-							models: [ marker ]
-						})
-						that.sb.notify({
-							type: "marker-added",
-							data: opts
-						});
 						e.overlay.setMap(null);
-						//delete e.overlay;
-						marker.trigger("show-overlay");
-						that.sb.notify({
-							type: "create-bubble",
-							data: {
-								latLng: position,
-								schema: that.createSchema
-							}
-						});
-						that.dm.setDrawingMode(null);	
+						that.showEditForm(marker, result);	
 					}
 					
 				});
@@ -147,6 +127,25 @@ define(["underscore"], function(_) {
 				type: 'Point',
 				coordinates: [overlay.position.lng(), overlay.position.lat()]
 			};
+		};
+		
+		this.showEditForm = function(marker, result){
+			var opts = localground.config.Config["markers"];
+			$.extend(opts, {
+				key: "markers",
+				models: [ marker ]
+			})
+			
+			//notify the dataManager that a new data element has been added:
+			this.sb.notify({
+				type: "marker-added",
+				data: opts
+			});
+			//hide the temporary overlay and show the permenanant one:
+			this.dm.setDrawingMode(null);	
+			marker.trigger("show-overlay");
+			
+			//get the edit schema and show the infoBubble
 		};
 		
 		this.fetchCreateMetadata = function(){

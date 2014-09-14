@@ -166,14 +166,11 @@ define(
 		},
 		showTip: function(data){
 			if (this.sb.getMode() == "edit") { return; }
-			var model = data.model, latLng = data.center;
-			if(this.bubble.model && this.bubble.model.id == model.id &&
+			if(this.bubble.model && this.bubble.model.id == data.model.id &&
 				this.bubble.isOpen()) { return; }
-			var template = this.getTemplate(model, "TipTemplate");
-			if (latLng == null) { latLng = model.getCenter(); }
-			this.tip.setContent(template(this.getContext(model)));
-			this.tip.setPosition(latLng);
-			this.tip.open();	
+			var template = this.getTemplate(data.model, "TipTemplate");
+			this.tip.setContent(template(this.getContext(data.model)));
+			this.tip.open(this.map, data.marker);	
 		},
 		hideTip: function(){
 			this.tip.close();	
