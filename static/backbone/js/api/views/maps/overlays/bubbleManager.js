@@ -60,8 +60,7 @@ define(
                 "hide-bubble"  : this.hideBubble, 
                 "show-tip" : this.showTip, 
                 "hide-tip" : this.hideTip,
-				"mode-change": this.refresh,
-				//"create-bubble": this.showCreateForm
+				"mode-change": this.refresh
             }); 
 		},
 		
@@ -72,34 +71,6 @@ define(
 			//$(this.el).html(this.template(opts));
 		},
 		
-		showBubble: function(data){
-			var that = this;
-			var model = this.bubbleModel = data.model;
-			this.tip.close();
-			this.showLoadingImage(data.center);
-			this.bubble.model = model;
-			model.fetch({ success: function(){
-				that.renderBubble(model, data.center);	
-			}});
-		},
-		
-		showCreateForm: function(data){
-			var that = this;
-			this.tip.close();
-			var model = new localground.models.Marker({}, {});
-			var template =  _.template(markerBubbleTemplate);
-			this.setElement($(template({mode: "edit"})));
-			console.log(data.schema);
-			var ModelForm = Backbone.Form.extend({
-				schema: data.schema
-			});
-
-			this.form = new ModelForm({
-				model: model
-			}).render();
-			this.$el.find('.form').append(this.form.$el);
-			this.showUpdatedContent(data.latLng);
-		},
 		refresh: function(){
 			if(this.bubble.isOpen()) { 
 				this.showBubble({
@@ -108,17 +79,28 @@ define(
 				});
 			}
 		},
-		renderBubble: function(model, latLng){
-			if (this.sb.getMode() == "view")
-				this.renderViewContent(model, latLng);
-			else
-				this.renderEditContent(model, latLng);
+		
+		showBubble: function(data){
+			var that = this;
+			var model = this.bubbleModel = data.model;
+			this.tip.close();
+			this.showLoadingImage(data);
+			this.bubble.model = model;
+			model.fetch({ success: function(){
+				that.renderBubble(data);	
+			}});
 		},
-		renderViewContent: function(model, latLng) {
-			var template = this.getTemplate(model, "InfoBubbleTemplate");
-			this.$el = $(template(this.getContext(model)));
+		renderBubble: function(data){
+			if (this.sb.getMode() == "view")
+				this.renderViewContent(data);
+			else
+				this.renderEditContent(data);
+		},
+		renderViewContent: function(data) {
+			var template = this.getTemplate(data.model, "InfoBubbleTemplate");
+			this.$el = $(template(this.getContext(data.model)));
 			
-			this.showUpdatedContent(latLng);
+			this.showUpdatedContent(data);
 
 			//only relevant for marker in view mode:
 			window.setTimeout(function() {
@@ -128,19 +110,19 @@ define(
 			}, 200);
 		},
 		
-		renderEditContent: function(model, latLng){
+		renderEditContent: function(data){
 			var that = this;
-			var template = that.getTemplate(model, "InfoBubbleTemplate");
+			var template = that.getTemplate(data.model, "InfoBubbleTemplate");
 			that.setElement($(template({mode: "edit"})));
 			var ModelForm = Backbone.Form.extend({
-				schema: model.updateSchema
+				schema: data.model.updateSchema
 			});
 
 			that.form = new ModelForm({
-				model: model
+				model: data.model
 			}).render();
 			that.$el.find('.form').append(that.form.$el);
-			that.showUpdatedContent(latLng);
+			that.showUpdatedContent(data);
 		},
 		
 		saveForm: function(e){
@@ -149,16 +131,27 @@ define(
 			this.bubble.model.save(); //does database commit
 			e.preventDefault();
 		},
-		showLoadingImage: function(latLng){
+		showLoadingImage: function(data){
 			var $loading = $('<div class="loading-container" style="width:300px;height:200px;"><i class="fa fa-spin fa-cog"></i></div>');
 			this.bubble.setContent($loading.get(0));
-			this.bubble.setPosition(latLng);
-			this.bubble.open();	
+			if(data.marker) {
+				console.log(data.marker);
+				this.bubble.open(this.map, data.marker);	
+			}
+			else {
+				this.bubble.setPosition(data.center);
+				this.bubble.open();
+			}	
 		},
-		showUpdatedContent: function(latLng){
+		showUpdatedContent: function(data){
 			this.bubble.setContent(this.$el.get(0));
-			this.bubble.setPosition(latLng);
-			this.bubble.open();	
+			if(data.marker) {
+				this.bubble.open(this.map, data.marker);	
+			}
+			else {
+				this.bubble.setPosition(data.center);
+				this.bubble.open();
+			}
 		},
 		hideBubble: function(data){
 			if (this.bubbleModel == data.model)
@@ -170,7 +163,13 @@ define(
 				this.bubble.isOpen()) { return; }
 			var template = this.getTemplate(data.model, "TipTemplate");
 			this.tip.setContent(template(this.getContext(data.model)));
-			this.tip.open(this.map, data.marker);	
+			if(data.marker) {
+				this.tip.open(this.map, data.marker);	
+			}
+			else {
+				this.tip.setPosition(data.center);
+				this.tip.open();
+			}
 		},
 		hideTip: function(){
 			this.tip.close();	

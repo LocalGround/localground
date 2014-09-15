@@ -63,7 +63,6 @@ define(["underscore"], function(_) {
 				},
 				map: null
 			});
-			this.fetchCreateMetadata();
 			this.attachEventHandlers();
 		};
 		
@@ -95,13 +94,13 @@ define(["underscore"], function(_) {
 					color: "999999"
 				});
 				marker.setGeometry(e.overlay);
-				marker.save({},
-				{
-					success: function(result){
+				marker.save({}, {
+					success: function(model, response){
+						//hide the temporary overlay and show the permenanant one:
 						e.overlay.setMap(null);
-						that.showEditForm(marker, result);	
+						this.dm.setDrawingMode(null);	
+						that.showEditForm(model, response);	
 					}
-					
 				});
 				
 			});
@@ -122,14 +121,8 @@ define(["underscore"], function(_) {
 			this.dm.setMap(null);
 		};
 		
-		this.toGeoJSON = function(overlay){
-			return {
-				type: 'Point',
-				coordinates: [overlay.position.lng(), overlay.position.lat()]
-			};
-		};
-		
 		this.showEditForm = function(marker, result){
+			marker.generateUpdateSchema(result.update_metadata);
 			var opts = localground.config.Config["markers"];
 			$.extend(opts, {
 				key: "markers",
@@ -141,46 +134,16 @@ define(["underscore"], function(_) {
 				type: "marker-added",
 				data: opts
 			});
-			//hide the temporary overlay and show the permenanant one:
-			this.dm.setDrawingMode(null);	
+			
 			marker.trigger("show-overlay");
 			
-			//get the edit schema and show the infoBubble
+			this.sb.notify({
+				type : "show-bubble",
+				data : { model: marker, center: marker.getCenter() } 
+			});
+			
 		};
 		
-		this.fetchCreateMetadata = function(){
-			var that = this;
-			$.ajax({
-				url: '/api/0/markers/.json',
-				type: 'OPTIONS',
-				data: { _method: 'OPTIONS' },
-				success: function(data) {
-					//console.log(data);
-					that.createSchema = that._generateSchema(data.actions['POST']);
-				}
-			});	
-		};
-		this._generateSchema = function(metadata) {
-			if(metadata == null) {
-				return null;
-			}
-			var schema = {};
-			//https://github.com/powmedia/backbone-forms#schema-definition
-			for (key in metadata) {
-				var val = metadata[key];
-				if (this.hiddenFields.indexOf(key) == -1 ) {
-					if (!val.read_only) {
-						schema[key] = {
-							type: this.dataTypes[val.type] || 'Text',
-							title: val.label || key,
-							help: val.help_text
-						};
-					}
-				}
-			}
-			return schema;
-		}
-	
 		//call initialization function:
 		this.initialize(sb);
 	});

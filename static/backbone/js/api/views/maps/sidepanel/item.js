@@ -213,13 +213,9 @@ define(["backbone"], function (Backbone) {
 
         /** Show a tooltip on the map if the geometry exists */
         showTip: function () {
-            this.model.trigger("show-tip");
-            /*if (this.model.get("geometry") && this.isVisible()) {
-                this.sb.notify({
-                    type: "show-tip",
-                    data: { model: this.model }
-                });
-            }*/
+            if (this.model.get("geometry") && this.isVisible()) {
+                this.model.trigger("show-tip");
+            }
         },
 
         /** Hide the map tooltip */

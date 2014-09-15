@@ -29,7 +29,7 @@ define(["backbone", "lib/maps/geometry/geometry"],
 		},
 		initialize: function(data, opts){
 			opts = opts || {};
-			this.updateSchema = this._generateSchema(opts.updateMetadata, true);
+			this.generateUpdateSchema(opts.updateMetadata);
 		},
 		toJSON: function(){
 			// ensure that the geometry object is serialized before it
@@ -81,6 +81,9 @@ define(["backbone", "lib/maps/geometry/geometry"],
 			});
 		},
 		
+		generateUpdateSchema: function(metadata){
+			this.updateSchema = this._generateSchema(metadata, true);	
+		},
 		_generateSchema: function(metadata, edit_only) {
 			if(metadata == null) {
 				return null;

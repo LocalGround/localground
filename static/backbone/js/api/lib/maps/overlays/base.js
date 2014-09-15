@@ -60,10 +60,7 @@ define(["backbone",
 			var that = this;
 			//attach click event:
 			google.maps.event.addListener(this.getGoogleOverlay(), 'click', function() {
-				that.sb.notify({
-					type : "show-bubble",
-					data : { model: that.model, center: that.getCenter() } 
-				});
+				that.showBubble();
 			});
 			//attach mouseover event:
 			google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function(){
@@ -82,6 +79,23 @@ define(["backbone",
 			return this.getGoogleOverlay().getMap() != null;
 		},
 		
+		showBubble: function(){
+			if (!this.isVisible()) {
+				return;
+			}
+			var opts = {
+				model: this.model,
+				center: this.getCenter()
+			};
+			if(this.getGoogleOverlay() instanceof google.maps.Marker) {
+				opts.marker = this.getGoogleOverlay()
+			}
+			this.sb.notify({
+				type : "show-bubble",
+				data : opts
+			});
+		},
+		
 		showTip: function(){
 			if (!this.isVisible()) {
 				return;
@@ -90,7 +104,7 @@ define(["backbone",
 				model: this.model,
 				center: this.getCenter()
 			};
-			if(this.getIcon) {
+			if(this.getGoogleOverlay() instanceof google.maps.Marker) {
 				opts.marker = this.getGoogleOverlay()
 			}
 			this.sb.notify({
@@ -162,13 +176,7 @@ define(["backbone",
 		/** zooms to the google.maps overlay. */
 		zoomTo: function(){
 			this.overlay.zoomTo();
-			this.sb.notify({
-				type: "show-bubble",
-				data: {
-					model: this.model,
-					center: this.getCenter()
-				}
-			});
+			this.showBubble();
 		},
 		
 		/** centers the map at the google.maps overlay */
