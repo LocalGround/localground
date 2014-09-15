@@ -145,11 +145,11 @@ define([], function() {
 			
 			google.maps.event.addListener(this._googleOverlay, 'rightclick', function(e) {
 				if (e.vertex == undefined) { return; }
-				if (that.googleOverlay.getPath().getLength() <=2) { return; }
+				if (that._googleOverlay.getPath().getLength() <=2) { return; }
 				that.sb.notify({
 					type: 'show-delete-menu',
 					data: {
-						googleOverlay: that.googleOverlay,
+						googleOverlay: that._googleOverlay,
 						point: e.vertex
 					}
 				});

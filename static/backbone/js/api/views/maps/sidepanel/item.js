@@ -263,7 +263,7 @@ define(["backbone"], function (Backbone) {
                 var projection = overlayView.getProjection();
                 var latLng = projection.fromContainerPixelToLatLng(point);
                 this.model.setGeometry(latLng);
-                this.save();
+                this.model.save();
                 this.showItem();
             }
             //TODO instantiate point then add geodata to model
