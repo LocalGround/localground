@@ -32,7 +32,7 @@ define(
 		
 		this.initialize = function(sb) {
 			this.sb = sb;
-			sb.listen({ 
+			this.sb.listen({ 
                 "load-projects": this.fetchProjects,
 				"project-requested": this.fetchDataByProjectID,
 				"project-removal-requested": this.removeDataByProjectID,
@@ -65,6 +65,7 @@ define(
 		 */
 		this.fetchDataByProjectID = function(data) {
 			var that = this;
+			this.sb.setActiveProjectID(data.id);
 			var project = new Project({id: data.id});
 			project.fetch({data: {format: 'json', include_schema: true}, success: function(r){
 				that.updateCollections(project);
@@ -95,8 +96,20 @@ define(
 			
 			//remove selected project:
 			this.selectedProjects.remove({id: data.id});
+			
+			//reset default project:
+			this.resetActiveProject();
+			
 			this.saveState();
 		};
+		
+		this.resetActiveProject = function(){
+			this.sb.setActiveProjectID(-1);
+			var that = this;
+			this.selectedProjects.each(function(model) {
+				that.sb.setActiveProjectID(model.id);
+			});
+		}
 		
 		/**
 		 * Because projects have many different types of data
@@ -181,7 +194,6 @@ define(
 					data : { collection: this.collections[key] } 
 				});
 				
-				
 			}
 			this.collections[key].add(models, {merge: true});
 		};
@@ -192,7 +204,8 @@ define(
 				ids.push(model.id);	
 			});
 			this.sb.saveState({
-				projectIDs: ids
+				projectIDs: ids,
+				defaultProjectID: this.sb.getActiveProjectID()
 			});
 		};
 		
@@ -202,6 +215,12 @@ define(
 			for(var i=0; i < state.projectIDs.length; i++){
 				this.fetchDataByProjectID({ id: state.projectIDs[i] });
 			};
+			// check to make sure the default project exists in the active list:
+			var projIndex = state.projectIDs.indexOf(state.defaultProjectID);
+			// if it doesn't, set the projIndex to the last active project in the list:
+			if (projIndex == -1)
+				projIndex = state.projectIDs.length - 1;
+			this.sb.setActiveProjectID(state.projectIDs[projIndex]);
 		};
 		
 		this.initialize(sb);

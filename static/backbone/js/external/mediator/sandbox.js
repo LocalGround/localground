@@ -46,6 +46,12 @@ define([], function() {
                 getMode: function() {
                     return core.mode;
                 },
+                setActiveProjectID: function(projectID) {
+                    core.activeProjectID = projectID;
+                },
+                getActiveProjectID: function() {
+                    return core.activeProjectID;
+                },
                 setOverlayView: function(overlayView) {
                     //not sure if this makes sense to do here
                     core.overlayView = overlayView;

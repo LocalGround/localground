@@ -126,32 +126,27 @@ define(
 		},
 		
 		saveForm: function(e){
-			console.log("save form");
 			this.form.commit();	//does validation
 			this.bubble.model.save(); //does database commit
 			e.preventDefault();
 		},
+		_show: function(whichBubble, data){
+			if(data.marker) {
+				whichBubble.open(this.map, data.marker);	
+			}
+			else {
+				whichBubble.setPosition(data.center);
+				whichBubble.open();
+			}	
+		},
 		showLoadingImage: function(data){
 			var $loading = $('<div class="loading-container" style="width:300px;height:200px;"><i class="fa fa-spin fa-cog"></i></div>');
 			this.bubble.setContent($loading.get(0));
-			if(data.marker) {
-				console.log(data.marker);
-				this.bubble.open(this.map, data.marker);	
-			}
-			else {
-				this.bubble.setPosition(data.center);
-				this.bubble.open();
-			}	
+			this._show(this.bubble, data);
 		},
 		showUpdatedContent: function(data){
 			this.bubble.setContent(this.$el.get(0));
-			if(data.marker) {
-				this.bubble.open(this.map, data.marker);	
-			}
-			else {
-				this.bubble.setPosition(data.center);
-				this.bubble.open();
-			}
+			this._show(this.bubble, data);
 		},
 		hideBubble: function(data){
 			if (this.bubbleModel == data.model)
@@ -163,13 +158,7 @@ define(
 				this.bubble.isOpen()) { return; }
 			var template = this.getTemplate(data.model, "TipTemplate");
 			this.tip.setContent(template(this.getContext(data.model)));
-			if(data.marker) {
-				this.tip.open(this.map, data.marker);	
-			}
-			else {
-				this.tip.setPosition(data.center);
-				this.tip.open();
-			}
+			this._show(this.tip, data);
 		},
 		hideTip: function(){
 			this.tip.close();	

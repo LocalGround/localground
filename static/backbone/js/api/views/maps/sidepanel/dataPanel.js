@@ -44,7 +44,24 @@ define(["backbone",
 			
 		},
 		
+		addProjectTag: function(){
+			var html = '<div class="alert alert-info alert-dismissable">' + 
+							'<button type="button" class="fa fa-close" data-dismiss="alert" aria-hidden="true"></button>' + 
+							'<strong>Castlemont</strong>' + 
+						'</div>';
+			if (this.$el.find('.project-tags').get(0) == null) {
+				this.$el.find('.pane-body').append($('<div></div>').addClass('project-tags'));
+			}
+			var $container = this.$el.find('.project-tags');
+			$container.append($(html));
+		},
+		
+		/**
+		 * Creates a new data-type listing (photos, audio, etc) in the
+		 * right-hand panel
+		 */
 		createItemsView: function(data){
+			//this.addProjectTag();
 			var $container = $("<div></div>");
 			this.$el.find('.pane-body').append($container);
 			this.sb.loadSubmodule(

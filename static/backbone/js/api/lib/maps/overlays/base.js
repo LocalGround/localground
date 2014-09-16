@@ -80,10 +80,7 @@ define(["backbone",
 			return this.getGoogleOverlay().getMap() != null;
 		},
 		
-		showBubble: function(){
-			if (!this.isVisible()) {
-				return;
-			}
+		getBubbleOpts: function(){
 			var opts = {
 				model: this.model,
 				center: this.getCenter()
@@ -91,9 +88,16 @@ define(["backbone",
 			if(this.getGoogleOverlay() instanceof google.maps.Marker) {
 				opts.marker = this.getGoogleOverlay()
 			}
+			return opts;
+		},
+		
+		showBubble: function(){
+			if (!this.isVisible()) {
+				return;
+			}
 			this.sb.notify({
 				type : "show-bubble",
-				data : opts
+				data : this.getBubbleOpts()
 			});
 		},
 		
@@ -101,16 +105,9 @@ define(["backbone",
 			if (!this.isVisible()) {
 				return;
 			}
-			var opts = {
-				model: this.model,
-				center: this.getCenter()
-			};
-			if(this.getGoogleOverlay() instanceof google.maps.Marker) {
-				opts.marker = this.getGoogleOverlay()
-			}
 			this.sb.notify({
 				type : "show-tip",
-				data : opts
+				data : this.getBubbleOpts()
 			});
 		},
 		

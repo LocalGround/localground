@@ -82,7 +82,7 @@ define(["underscore"], function(_) {
 		this.addMarker = function(googleOverlay){
 			var that = this;
 			var model = new localground.models.Marker({
-				project_id: 1,
+				project_id: this.sb.getActiveProjectID(),
 				color: "999999"
 			});
 			model.setGeometry(googleOverlay);
