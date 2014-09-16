@@ -140,6 +140,7 @@
 .alert {
 	display: inline-block;
 	padding: 3px;
+	cursor: pointer;
 }
 .alert-dismissable {
 	padding-right: 5px;
@@ -149,6 +150,9 @@
 .alert-dismissable > .fa-close {
 	margin-top: 3px;
 	cursor: pointer;
+}
+.alert-dismissable.active {
+	border: solid 3px #3a87ad;
 }
 
 /* Map Marker Stuff */

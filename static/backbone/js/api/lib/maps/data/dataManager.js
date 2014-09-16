@@ -36,7 +36,8 @@ define(
                 "load-projects": this.fetchProjects,
 				"project-requested": this.fetchDataByProjectID,
 				"project-removal-requested": this.removeDataByProjectID,
-				"marker-added": updateCollection 
+				"set-active-project": this.setActiveProject,
+				"marker-added": updateCollection
 			});
 			
 			this.restoreState();
@@ -96,13 +97,15 @@ define(
 			
 			//remove selected project:
 			this.selectedProjects.remove({id: data.id});
+			
+			//reset default project:
+			this.resetActiveProject();
+			
+			//notify the rest of the application
 			this.sb.notify({
 				type : "selected-projects-updated",
 				data: {projects: this.selectedProjects}
 			});
-			
-			//reset default project:
-			this.resetActiveProject();
 			
 			this.saveState();
 		};
@@ -204,6 +207,11 @@ define(
 				
 			}
 			this.collections[key].add(models, {merge: true});
+		};
+		
+		this.setActiveProject = function(data){
+			this.sb.setActiveProjectID(data.id);
+			this.saveState();
 		};
 		
 		this.saveState = function(data){

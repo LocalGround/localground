@@ -32,7 +32,7 @@ define([
 			});
 			sb.listen({ 
                 "projects-loaded": this.renderProjects,
-                "selected-projects-updated": this.updateCheckboxes
+                "selected-projects-updated": this.syncCheckboxes
 			});
         },
 		/** A rendered projectItem template */
@@ -81,7 +81,7 @@ define([
 			);
 		},
 		
-		updateCheckboxes: function(data){
+		syncCheckboxes: function(data){
 			this.projects.each(function(project){
 				if(data.projects.get(project.id) != null)
 					project.trigger("check-item");	
