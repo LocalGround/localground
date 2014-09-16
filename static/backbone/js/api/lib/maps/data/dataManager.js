@@ -96,6 +96,10 @@ define(
 			
 			//remove selected project:
 			this.selectedProjects.remove({id: data.id});
+			this.sb.notify({
+				type : "selected-projects-updated",
+				data: {projects: this.selectedProjects}
+			});
 			
 			//reset default project:
 			this.resetActiveProject();
@@ -159,6 +163,10 @@ define(
 			}
 			//add new project to the collection:
 			this.selectedProjects.add(project, {merge: true});
+			this.sb.notify({
+				type : "selected-projects-updated",
+				data: {projects: this.selectedProjects}
+			});
 			this.saveState();
 		};
 		

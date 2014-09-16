@@ -2,6 +2,7 @@ define(["backbone",
 		"core",
 		"text!" + templateDir + "/sidepanel/dataPanelHeader.html",
 		"views/maps/sidepanel/projectsMenu",
+		"views/maps/sidepanel/projectTags",
 		"views/maps/sidepanel/items"],
 	   function(Backbone, CORE, dataPanelHeader) {
 	/**
@@ -35,6 +36,12 @@ define(["backbone",
 				{ el: this.$el.find('.projects-menu') }
 			);
 			
+			sb.loadSubmodule(
+				"project-tags",
+				localground.maps.views.ProjectTags,
+				{ el: this.$el.find('.project-tags') }
+			);
+			
 			// Listen for the "new_collection" event. On each new
 			// collection event add a new ItemsView to the DataPanel.
 			sb.listen({ 
@@ -42,18 +49,6 @@ define(["backbone",
 				"window-resized": this.resize
 			});
 			
-		},
-		
-		addProjectTag: function(){
-			var html = '<div class="alert alert-info alert-dismissable">' + 
-							'<button type="button" class="fa fa-close" data-dismiss="alert" aria-hidden="true"></button>' + 
-							'<strong>Castlemont</strong>' + 
-						'</div>';
-			if (this.$el.find('.project-tags').get(0) == null) {
-				this.$el.find('.pane-body').append($('<div></div>').addClass('project-tags'));
-			}
-			var $container = this.$el.find('.project-tags');
-			$container.append($(html));
 		},
 		
 		/**

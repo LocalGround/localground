@@ -13,8 +13,7 @@ define([
 		/**
 		 * @lends localground.maps.views.ProjectsMenu#
 		 */
-		
-		/** A {@link localground.maps.data.DataManager} object */
+
 		projects: null,
 		/**
 		 * Initializes the project menu and fetches the available
