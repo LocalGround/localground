@@ -28,6 +28,7 @@ define(["backbone",
 			this.listenTo(this.model, 'remove', this.remove);
 			this.listenTo(this.model, 'show-overlay', this.show);
 			this.listenTo(this.model, 'show-tip', this.showTip);
+			this.listenTo(this.model, 'show-bubble', this.showBubble);
 			this.listenTo(this.model, 'hide-overlay', this.hide);
 			this.listenTo(this.model, 'zoom-to-overlay', this.zoomTo);
 			this.listenTo(this.model, 'change', this.redraw);

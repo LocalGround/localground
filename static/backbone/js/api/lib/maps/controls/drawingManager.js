@@ -7,7 +7,6 @@ define(["underscore"], function(_) {
      */
 	localground.maps.controls.DrawingManager = (function (sb) {
 		this.dm = null;
-		this.createSchema = null;
 		this.polygonOptions = {
 			strokeWeight: 0,
 			fillOpacity: 0.45,
@@ -29,20 +28,6 @@ define(["underscore"], function(_) {
 				size: new google.maps.Size(15, 30),			// size (width, height)
 				origin: new google.maps.Point(0,0)			// origin (x, y)
 			}
-		};
-		this.hiddenFields = [
-			"geometry",
-			"overlay_type",
-			"url",
-			"num",
-			"manually_reviewed"
-		];
-		this.dataTypes = {
-			'string': 'Text',
-			'float': 'Number',
-			'integer': 'Number',
-			'boolean': 'Checkbox',
-			'geojson': 'TextArea'
 		};
 
 		this.initialize = function(sb){
@@ -75,34 +60,7 @@ define(["underscore"], function(_) {
 			});
 			
 			google.maps.event.addListener(this.dm, 'overlaycomplete', function(e) {
-				switch(e.type) {
-					case google.maps.drawing.OverlayType.MARKER:
-						//var marker = new localground.marker();
-						//marker.createNew(e.overlay, self.lastProjectSelection, this.accessKey);
-						break;
-					case google.maps.drawing.OverlayType.POLYLINE:
-						//var polyline = new localground.polyline();
-						//polyline.createNew(e.overlay, self.lastProjectSelection, this.accessKey);
-						break;
-					case google.maps.drawing.OverlayType.POLYGON:
-						//var polygon = new localground.polygon();
-						//polygon.createNew(e.overlay, self.lastProjectSelection, this.accessKey);
-						break;
-				}
-				var marker = new localground.models.Marker({
-					project_id: 1,
-					color: "999999"
-				});
-				marker.setGeometry(e.overlay);
-				marker.save({}, {
-					success: function(model, response){
-						//hide the temporary overlay and show the permenanant one:
-						e.overlay.setMap(null);
-						this.dm.setDrawingMode(null);	
-						that.showEditForm(model, response);	
-					}
-				});
-				
+				that.addMarker(e.overlay);
 			});
 		};
 		
@@ -121,12 +79,32 @@ define(["underscore"], function(_) {
 			this.dm.setMap(null);
 		};
 		
-		this.showEditForm = function(marker, result){
-			marker.generateUpdateSchema(result.update_metadata);
+		this.addMarker = function(googleOverlay){
+			var that = this;
+			var model = new localground.models.Marker({
+				project_id: 1,
+				color: "999999"
+			});
+			model.setGeometry(googleOverlay);
+			model.save({}, {
+				success: function(model, response){
+					
+					//hide the temporary overlay and show the permenanant one:
+					googleOverlay.setMap(null);
+					that.dm.setDrawingMode(null);
+					
+					//show the edit form:
+					that.showEditForm(model, response);
+				}
+			});	
+		};
+		
+		this.showEditForm = function(model, response){
+			model.generateUpdateSchema(response.update_metadata);
 			var opts = localground.config.Config["markers"];
 			$.extend(opts, {
 				key: "markers",
-				models: [ marker ]
+				models: [ model ]
 			})
 			
 			//notify the dataManager that a new data element has been added:
@@ -135,13 +113,11 @@ define(["underscore"], function(_) {
 				data: opts
 			});
 			
-			marker.trigger("show-overlay");
-			
-			this.sb.notify({
-				type : "show-bubble",
-				data : { model: marker, center: marker.getCenter() } 
-			});
-			
+			//shows the overlay and the bubble on the map
+			model.trigger("show-overlay");
+			model.trigger("show-item");
+			model.trigger("show-bubble");
+
 		};
 		
 		//call initialization function:
