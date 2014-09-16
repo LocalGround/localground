@@ -142,11 +142,13 @@
 	padding: 3px;
 }
 .alert-dismissable {
-	padding-right: 15px;
+	padding-right: 5px;
 	margin-bottom: 0px;
+	margin-right: 5px;
 }
-.alert-dismissable .close {
-	right: -8px;
+.alert-dismissable > .fa-close {
+	margin-top: 3px;
+	cursor: pointer;
 }
 
 /* Map Marker Stuff */

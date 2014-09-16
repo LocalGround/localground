@@ -31,7 +31,8 @@ define([
 				type : "load-projects"
 			});
 			sb.listen({ 
-                "projects-loaded": this.renderProjects
+                "projects-loaded": this.renderProjects,
+                "selected-projects-updated": this.updateCheckboxes
 			});
         },
 		/** A rendered projectItem template */
@@ -78,6 +79,15 @@ define([
 					el: $container
 				}
 			);
+		},
+		
+		updateCheckboxes: function(data){
+			this.projects.each(function(project){
+				if(data.projects.get(project.id) != null)
+					project.trigger("check-item");	
+				else
+					project.trigger("uncheck-item");
+			});
 		},
 		/**
 		 * Catches the div click event and ignores it

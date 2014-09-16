@@ -58,6 +58,8 @@ define(["backbone"], function (Backbone) {
             this.listenTo(this.model, 'remove', this.remove);
             this.listenTo(this.model, 'show-item', this.showItem);
             this.listenTo(this.model, 'hide-item', this.hideItem);
+            this.listenTo(this.model, 'check-item', this.checkItem);
+            this.listenTo(this.model, 'uncheck-item', this.uncheckItem);
             this.listenTo(this.model, 'change', this.render);
             this.listenTo(this.model, 'reset', this.render);
             this.sb.listen({"mode-change": this.setEditMode });
@@ -125,13 +127,23 @@ define(["backbone"], function (Backbone) {
         },
 
         showItem: function () {
-            var $cb = this.$el.find('input').attr('checked', true);
+            this.checkItem();
             this.toggleElement(true);
         },
 
         hideItem: function () {
-            var $cb = this.$el.find('input').attr('checked', false);
+            this.uncheckItem();
             this.toggleElement(false);
+        },
+        
+        checkItem: function(){
+            this.$el.find('input').attr('checked', true);
+            this.saveState();  
+        },
+        
+        uncheckItem: function(){
+            this.$el.find('input').attr('checked', false);
+            this.saveState();
         },
 
         /**

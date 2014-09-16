@@ -29,7 +29,8 @@ define([
         },
 		/** A rendered projectItem template */
 		template: _.template('<div class="alert alert-info alert-dismissable">' + 
-                    '<button type="button" value="<%= id %>" class="fa fa-close" data-dismiss="alert" aria-hidden="true"></button>' + 
+                    '<input type="hidden" value="<%= id %>" />' + 
+                    '<i class="fa fa-close pull-right"></i>' + 
                     '<strong><%= name %></strong>' + 
                     '</div>'),
 
@@ -48,9 +49,7 @@ define([
         },
         
         removeProject: function(e){
-            var $button = $(e.currentTarget);
-            var projectID = $button.val();
-            alert("Need to uncheck the project list box also");
+            var projectID = $(e.currentTarget).parent().find("input").val();
             this.sb.notify({
                 type: "project-removal-requested",
                 data: { id: projectID }
