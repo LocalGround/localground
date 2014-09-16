@@ -26,7 +26,7 @@ define(["backbone"], function (Backbone) {
          * or div click (which triggers a checkbox toggle).
          */
         events: {
-            "click .close": "deleteItem",
+            "click .fa-trash-o": "deleteItem",
             'click .cb-data': 'toggleCheckbox',
             'click .data-item': 'triggerToggleCheckbox',
             'click a': 'zoomTo',
@@ -89,14 +89,14 @@ define(["backbone"], function (Backbone) {
 
         setEditMode: function () {
             var mode = this.sb.getMode();
-            var icon = this.$el.find('.item-icon');
-            if (!icon) return;
+            var item = this.$el.find('.item');
             if (mode === "view") {
-                icon.removeClass('icon-editable');
-                icon.prop('draggable', false);
-            } else {
-                icon.addClass('icon-editable');
-                icon.prop('draggable', true);
+                item.removeClass('editable');
+                item.find('.item-icon').prop('draggable', false);
+            }
+            else {
+                item.addClass('editable');
+                item.find('.item-icon').prop('draggable', true);
             }
         },
 
