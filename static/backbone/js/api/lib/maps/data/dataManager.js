@@ -185,10 +185,15 @@ define(
 		 * type to instantiate, and the name of the collection
 		 */
 		var updateCollection = function(opts) {
+			if (opts == null) {
+				//todo: create standardized way to report errors (prob. via CORE).
+				alert("Error in \"DataManager's updatedCollection\" function: opts argument cannot be null.");
+				return;
+			}
 			var key = opts.key;
 			var models = opts.models;
 			var configKey = opts.key.split("_")[0];
-			opts = opts || localground.config.Config[configKey];
+			//opts = opts || localground.config.Config[configKey];
 			if (this.collections[key] == null) {
 				var collectionOpts = { key: key, name: opts.name };
 				//A few special hacks for form data:

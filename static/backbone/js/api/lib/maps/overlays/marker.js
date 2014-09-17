@@ -46,12 +46,6 @@ define([
 				this.overlay.redraw();
 		}
 		
-	},
-	//second argument for static functions:
-	{
-		createNew: function(overlay){
-			alert(overlay.position);		
-		}
 	});
 	return localground.maps.overlays.Marker;
 });
