@@ -27,6 +27,8 @@ define(["backbone",
 			
 			this.listenTo(this.model, 'remove', this.remove);
 			this.listenTo(this.model, 'show-overlay', this.show);
+			this.listenTo(this.model, 'show-tip', this.showTip);
+			this.listenTo(this.model, 'show-bubble', this.showBubble);
 			this.listenTo(this.model, 'hide-overlay', this.hide);
 			this.listenTo(this.model, 'zoom-to-overlay', this.zoomTo);
 			this.listenTo(this.model, 'change', this.redraw);
@@ -59,17 +61,11 @@ define(["backbone",
 			var that = this;
 			//attach click event:
 			google.maps.event.addListener(this.getGoogleOverlay(), 'click', function() {
-				that.sb.notify({
-					type : "show-bubble",
-					data : { model: that.model, center: that.getCenter() } 
-				});
+				that.showBubble();
 			});
 			//attach mouseover event:
-			google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function() {
-				that.sb.notify({
-					type : "show-tip",
-					data : { model: that.model, center: that.getCenter() } 
-				});
+			google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function(){
+				that.showTip();
 			});
 			//attach mouseout event:
 			google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function() {
@@ -84,12 +80,44 @@ define(["backbone",
 			return this.getGoogleOverlay().getMap() != null;
 		},
 		
+		getBubbleOpts: function(){
+			var opts = {
+				model: this.model,
+				center: this.getCenter()
+			};
+			if(this.getGoogleOverlay() instanceof google.maps.Marker) {
+				opts.marker = this.getGoogleOverlay()
+			}
+			return opts;
+		},
+		
+		showBubble: function(){
+			if (!this.isVisible()) {
+				return;
+			}
+			this.sb.notify({
+				type : "show-bubble",
+				data : this.getBubbleOpts()
+			});
+		},
+		
+		showTip: function(){
+			if (!this.isVisible()) {
+				return;
+			}
+			this.sb.notify({
+				type : "show-tip",
+				data : this.getBubbleOpts()
+			});
+		},
+		
 		/** shows the google.maps overlay on the map. */		
 		show: function(){
 			var overlay = this.getGoogleOverlay();
 			overlay.setMap(this.map);
 			this.saveState();
 		},
+	
 		
 		/** hides the google.maps overlay from the map. */
 		hide: function(){
@@ -134,26 +162,19 @@ define(["backbone",
 		/********************************************************/
 		
 		/**
-		 * Creates a google.maps.Marker overlay with a photo icon
-		 * if one doesn't already exist, and returns it.
+		 * Returns the overlay's googleOverlay
 		 * @returns {Object}
 		 * Either a google.maps.Marker, google.maps.Polyline,
 		 * google.maps.Polygon, or google.maps.GroundOverlay
 		 */
 		getGoogleOverlay: function(){
-			return this.overlay.googleOverlay;
+			return this.overlay._googleOverlay;
 		},
 		
 		/** zooms to the google.maps overlay. */
 		zoomTo: function(){
 			this.overlay.zoomTo();
-			this.sb.notify({
-				type: "show-bubble",
-				data: {
-					model: this.model,
-					center: this.getCenter()
-				}
-			});
+			this.showBubble();
 		},
 		
 		/** centers the map at the google.maps overlay */

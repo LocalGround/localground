@@ -16,23 +16,21 @@ define([
 			//return null;
 			return {
 				fillColor: '#' + this.model.get("color"),
-				//markerSize: 30,
 				strokeColor: "#FFF",
 				strokeWeight: 1.5,
 				fillOpacity: 1,
 				path: this.overlay.Shapes.MAP_PIN_HOLLOW,
 				scale: 1.6,
-				anchor: new google.maps.Point(16,5), 		// anchor (x, y)
-				//size: new google.maps.Size(?, ?),			// size (width, height)
-				//origin: new google.maps.Point(?, ?)		// origin (x, y)
+				anchor: new google.maps.Point(16,30), 		// anchor (x, y)
+				size: new google.maps.Size(15, 30),			// size (width, height)
+				origin: new google.maps.Point(0,0)			// origin (x, y)
 			};
 		},
 		
 		/** adds icon to overlay. */
 		initialize: function(sb, opts){
 			localground.maps.overlays.Marker.__super__.initialize.apply(this, arguments); 
-			if(this.overlay.getType() == "Point")
-			   this.getGoogleOverlay().setIcon(this.getIcon());
+			this.redraw();
 		},
 		
 		/** shows the google.maps overlay on the map. */
@@ -43,11 +41,10 @@ define([
 		
 		redraw : function(){
 			if(this.overlay.getType() == "Point")
-				this.getGoogleOverlay().setIcon(this.getIcon());
+				this.overlay.setIcon(this.getIcon());
 			else
 				this.overlay.redraw();
 		}
-		
 		
 	});
 	return localground.maps.overlays.Marker;

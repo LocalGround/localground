@@ -16,6 +16,7 @@ define(['jquery', 'sandbox'], function(jQuery, Sandbox) {
             map: null,
             overlayView: null,
             mode: "view",
+            activeProjectID: -1,
             debug: function(on){
                 debug = on ? true : false;
             },

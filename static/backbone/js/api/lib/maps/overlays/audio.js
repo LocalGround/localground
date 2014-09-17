@@ -26,7 +26,7 @@ define(["lib/maps/overlays/base"], function() {
 		/** adds icon to overlay. */
 		initialize: function(sb, opts){
 			localground.maps.overlays.Audio.__super__.initialize.apply(this, arguments); 
-			this.getGoogleOverlay().setIcon(this.getIcon());
+			this.redraw();
 		},
 		
 		/** shows the google.maps overlay on the map. */
@@ -36,7 +36,7 @@ define(["lib/maps/overlays/base"], function() {
 		},
 		
 		redraw : function(){
-			this.getGoogleOverlay().setIcon(this.getIcon());	
+			this.overlay.setIcon(this.getIcon());	
 		}
 	});
 	return localground.maps.overlays.Audio;

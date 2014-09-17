@@ -26,7 +26,7 @@ define(["backbone"], function (Backbone) {
          * or div click (which triggers a checkbox toggle).
          */
         events: {
-            "click .close": "deleteItem",
+            "click .fa-trash-o": "deleteItem",
             'click .cb-data': 'toggleCheckbox',
             'click .data-item': 'triggerToggleCheckbox',
             'click a': 'zoomTo',
@@ -58,6 +58,8 @@ define(["backbone"], function (Backbone) {
             this.listenTo(this.model, 'remove', this.remove);
             this.listenTo(this.model, 'show-item', this.showItem);
             this.listenTo(this.model, 'hide-item', this.hideItem);
+            this.listenTo(this.model, 'check-item', this.checkItem);
+            this.listenTo(this.model, 'uncheck-item', this.uncheckItem);
             this.listenTo(this.model, 'change', this.render);
             this.listenTo(this.model, 'reset', this.render);
             this.sb.listen({"mode-change": this.setEditMode });
@@ -87,14 +89,14 @@ define(["backbone"], function (Backbone) {
 
         setEditMode: function () {
             var mode = this.sb.getMode();
-            var icon = this.$el.find('.item-icon');
-            if (!icon) return;
+            var item = this.$el.find('.item');
             if (mode === "view") {
-                icon.removeClass('icon-editable');
-                icon.prop('draggable', false);
-            } else {
-                icon.addClass('icon-editable');
-                icon.prop('draggable', true);
+                item.removeClass('editable');
+                item.find('.item-icon').prop('draggable', false);
+            }
+            else {
+                item.addClass('editable');
+                item.find('.item-icon').prop('draggable', true);
             }
         },
 
@@ -125,13 +127,23 @@ define(["backbone"], function (Backbone) {
         },
 
         showItem: function () {
-            var $cb = this.$el.find('input').attr('checked', true);
+            this.checkItem();
             this.toggleElement(true);
         },
 
         hideItem: function () {
-            var $cb = this.$el.find('input').attr('checked', false);
+            this.uncheckItem();
             this.toggleElement(false);
+        },
+        
+        checkItem: function(){
+            this.$el.find('input').attr('checked', true);
+            this.saveState();  
+        },
+        
+        uncheckItem: function(){
+            this.$el.find('input').attr('checked', false);
+            this.saveState();
         },
 
         /**
@@ -214,10 +226,7 @@ define(["backbone"], function (Backbone) {
         /** Show a tooltip on the map if the geometry exists */
         showTip: function () {
             if (this.model.get("geometry") && this.isVisible()) {
-                this.sb.notify({
-                    type: "show-tip",
-                    data: { model: this.model }
-                });
+                this.model.trigger("show-tip");
             }
         },
 
@@ -265,7 +274,8 @@ define(["backbone"], function (Backbone) {
                     e.pageY - mapContainer.offsetTop);
                 var projection = overlayView.getProjection();
                 var latLng = projection.fromContainerPixelToLatLng(point);
-                this.model.setGeometry(latLng.lat(), latLng.lng());
+                this.model.setGeometry(latLng);
+                this.model.save();
                 this.showItem();
             }
             //TODO instantiate point then add geodata to model

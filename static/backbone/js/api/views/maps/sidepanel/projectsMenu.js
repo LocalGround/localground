@@ -13,8 +13,7 @@ define([
 		/**
 		 * @lends localground.maps.views.ProjectsMenu#
 		 */
-		
-		/** A {@link localground.maps.data.DataManager} object */
+
 		projects: null,
 		/**
 		 * Initializes the project menu and fetches the available
@@ -32,7 +31,8 @@ define([
 				type : "load-projects"
 			});
 			sb.listen({ 
-                "projects-loaded": this.renderProjects
+                "projects-loaded": this.renderProjects,
+                "selected-projects-updated": this.syncCheckboxes
 			});
         },
 		/** A rendered projectItem template */
@@ -79,6 +79,15 @@ define([
 					el: $container
 				}
 			);
+		},
+		
+		syncCheckboxes: function(data){
+			this.projects.each(function(project){
+				if(data.projects.get(project.id) != null)
+					project.trigger("check-item");	
+				else
+					project.trigger("uncheck-item");
+			});
 		},
 		/**
 		 * Catches the div click event and ignores it

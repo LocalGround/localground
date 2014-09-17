@@ -138,8 +138,8 @@ class ProjectDetailSerializer(BaseNamedSerializer):
         try:
             if self.request.GET.get("include_schema") in ['True', 'true', '1']:
                 d.update({
-                    'update_metadata': serializer.metadata(),
-                    'create_metadata': serializer_class().metadata() 
+                    'update_metadata': serializer.metadata() #,
+                    #'create_metadata': serializer_class().metadata() 
                 })
         except:
             pass

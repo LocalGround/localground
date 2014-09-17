@@ -2,6 +2,7 @@ define(["backbone",
 		"core",
 		"text!" + templateDir + "/sidepanel/dataPanelHeader.html",
 		"views/maps/sidepanel/projectsMenu",
+		"views/maps/sidepanel/projectTags",
 		"views/maps/sidepanel/items"],
 	   function(Backbone, CORE, dataPanelHeader) {
 	/**
@@ -35,6 +36,12 @@ define(["backbone",
 				{ el: this.$el.find('.projects-menu') }
 			);
 			
+			sb.loadSubmodule(
+				"project-tags",
+				localground.maps.views.ProjectTags,
+				{ el: this.$el.find('.project-tags') }
+			);
+			
 			// Listen for the "new_collection" event. On each new
 			// collection event add a new ItemsView to the DataPanel.
 			sb.listen({ 
@@ -44,7 +51,12 @@ define(["backbone",
 			
 		},
 		
+		/**
+		 * Creates a new data-type listing (photos, audio, etc) in the
+		 * right-hand panel
+		 */
 		createItemsView: function(data){
+			//this.addProjectTag();
 			var $container = $("<div></div>");
 			this.$el.find('.pane-body').append($container);
 			this.sb.loadSubmodule(

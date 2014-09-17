@@ -32,10 +32,12 @@ define(
 		
 		this.initialize = function(sb) {
 			this.sb = sb;
-			sb.listen({ 
+			this.sb.listen({ 
                 "load-projects": this.fetchProjects,
 				"project-requested": this.fetchDataByProjectID,
-				"project-removal-requested": this.removeDataByProjectID
+				"project-removal-requested": this.removeDataByProjectID,
+				"set-active-project": this.setActiveProject,
+				"marker-added": updateCollection
 			});
 			
 			this.restoreState();
@@ -64,6 +66,7 @@ define(
 		 */
 		this.fetchDataByProjectID = function(data) {
 			var that = this;
+			this.sb.setActiveProjectID(data.id);
 			var project = new Project({id: data.id});
 			project.fetch({data: {format: 'json', include_schema: true}, success: function(r){
 				that.updateCollections(project);
@@ -94,8 +97,26 @@ define(
 			
 			//remove selected project:
 			this.selectedProjects.remove({id: data.id});
+			
+			//reset default project:
+			this.resetActiveProject();
+			
+			//notify the rest of the application
+			this.sb.notify({
+				type : "selected-projects-updated",
+				data: {projects: this.selectedProjects}
+			});
+			
 			this.saveState();
 		};
+		
+		this.resetActiveProject = function(){
+			this.sb.setActiveProjectID(-1);
+			var that = this;
+			this.selectedProjects.each(function(model) {
+				that.sb.setActiveProjectID(model.id);
+			});
+		}
 		
 		/**
 		 * Because projects have many different types of data
@@ -125,21 +146,30 @@ define(
 			//add child data to the collection:
 			var children = project.get("children");
 			for (var key in children) {
+				var models = [];
 				var configKey = key.split("_")[0];
 				var opts = localground.config.Config[configKey];
-				opts.name = children[key].name;
-				opts.createMetadata = children[key].create_metadata;
-				var models = [];
 				$.each(children[key].data, function(){
 					models.push(new opts.Model(this, {
 						updateMetadata: children[key].update_metadata
 					}));
 				});
+				
+				$.extend(opts, {
+					name: children[key].name,
+					createMetadata: children[key].create_metadata,
+					key: key,
+					models: models
+				});
 				//"call" method needed to set this's scope:
-				updateCollection.call(this, key, models, opts);
+				updateCollection.call(this, opts);
 			}
 			//add new project to the collection:
 			this.selectedProjects.add(project, {merge: true});
+			this.sb.notify({
+				type : "selected-projects-updated",
+				data: {projects: this.selectedProjects}
+			});
 			this.saveState();
 		};
 		
@@ -154,7 +184,16 @@ define(
 		 * An object that tells the function which collection
 		 * type to instantiate, and the name of the collection
 		 */
-		var updateCollection = function(key, models, opts) {
+		var updateCollection = function(opts) {
+			if (opts == null) {
+				//todo: create standardized way to report errors (prob. via CORE).
+				alert("Error in \"DataManager's updatedCollection\" function: opts argument cannot be null.");
+				return;
+			}
+			var key = opts.key;
+			var models = opts.models;
+			var configKey = opts.key.split("_")[0];
+			//opts = opts || localground.config.Config[configKey];
 			if (this.collections[key] == null) {
 				var collectionOpts = { key: key, name: opts.name };
 				//A few special hacks for form data:
@@ -171,9 +210,13 @@ define(
 					data : { collection: this.collections[key] } 
 				});
 				
-				
 			}
 			this.collections[key].add(models, {merge: true});
+		};
+		
+		this.setActiveProject = function(data){
+			this.sb.setActiveProjectID(data.id);
+			this.saveState();
 		};
 		
 		this.saveState = function(data){
@@ -182,7 +225,8 @@ define(
 				ids.push(model.id);	
 			});
 			this.sb.saveState({
-				projectIDs: ids
+				projectIDs: ids,
+				defaultProjectID: this.sb.getActiveProjectID()
 			});
 		};
 		
@@ -192,6 +236,12 @@ define(
 			for(var i=0; i < state.projectIDs.length; i++){
 				this.fetchDataByProjectID({ id: state.projectIDs[i] });
 			};
+			// check to make sure the default project exists in the active list:
+			var projIndex = state.projectIDs.indexOf(state.defaultProjectID);
+			// if it doesn't, set the projIndex to the last active project in the list:
+			if (projIndex == -1)
+				projIndex = state.projectIDs.length - 1;
+			this.sb.setActiveProjectID(state.projectIDs[projIndex]);
 		};
 		
 		this.initialize(sb);

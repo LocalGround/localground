@@ -1,11 +1,11 @@
-define([], function() {
+define(["underscore"], function(_) {
     /** 
      * Class that controls marker point model overlays.
      * @class Point
      */
 	localground.maps.overlays.Point = function(sb, opts) {
 		
-		this.googleOverlay = null;
+		this._googleOverlay = null;
 		this.model = null;
 		this.map = null;
 		/**
@@ -36,7 +36,7 @@ define([], function() {
 		
 		this.createOverlay = function(isVisible){
 			if (this.model.get("geometry") != null) {
-				this.googleOverlay = new google.maps.Marker({
+				this._googleOverlay = new google.maps.Marker({
 					position: this.getGoogleLatLng(),
 					map: isVisible ? this.map : null
 				});
@@ -91,31 +91,31 @@ define([], function() {
 		};
 				
 		this.makeViewable = function() {
-			this.googleOverlay.setOptions({'draggable': false, 'title': ''});
-			google.maps.event.clearListeners(this.googleOverlay, 'drag');
-			google.maps.event.clearListeners(this.googleOverlay, 'dragstart');
-			google.maps.event.clearListeners(this.googleOverlay, 'dragend');
+			this._googleOverlay.setOptions({'draggable': false, 'title': ''});
+			google.maps.event.clearListeners(this._googleOverlay, 'drag');
+			google.maps.event.clearListeners(this._googleOverlay, 'dragstart');
+			google.maps.event.clearListeners(this._googleOverlay, 'dragend');
 		};
 		
 		this.makeEditable = function(model) {
 			var that = this;
-			this.googleOverlay.setOptions({
+			this._googleOverlay.setOptions({
 				'draggable': true,
 				'title': 'Drag this icon to re-position it'
 			});
-			google.maps.event.addListener(this.googleOverlay, "dragstart", function(mEvent) {
+			google.maps.event.addListener(this._googleOverlay, "dragstart", function(mEvent) {
 				that.sb.notify({ type : "hide-tip" });
 				that.sb.notify({
 					type : "hide-bubble",
 					data : { model: model }
 				});
 			});
-			google.maps.event.addListener(this.googleOverlay, "dragend", function(mEvent) {
-				that.map.panTo(that.googleOverlay.position);
+			google.maps.event.addListener(this._googleOverlay, "dragend", function(mEvent) {
+				that.map.panTo(that._googleOverlay.position);
 				that.saveShape(model);
 			});
 
-			google.maps.event.addListener(this.googleOverlay, "drag", function(mEvent) {
+			google.maps.event.addListener(this._googleOverlay, "drag", function(mEvent) {
 				//me.checkIntersection(mEvent, true);
 			});
 		};
@@ -126,12 +126,18 @@ define([], function() {
 		};
 		
 		this.getGeoJSON = function(){
-			var latLng = this.googleOverlay.position;
+			var latLng = this._googleOverlay.position;
 			return {
 				type: 'Point',
 				coordinates: [latLng.lng(), latLng.lat()]
 			};
 		};
+		
+		this.setIcon = function(icon) {
+			this._googleOverlay.setOptions({
+				icon: icon	
+			});
+		}
 		
 		this.initialize(sb, opts);
 				
