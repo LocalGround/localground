@@ -35,35 +35,7 @@ define([], function () {
 
 
 	getDir : function() {
-		/*if(!jscolor.dir) {
-			var detected = jscolor.detectDir();
-			jscolor.dir = detected!==false ? detected : 'jscolor/';
-		}
-		return jscolor.dir;*/
-		return "/static/backbone/images/";
-	},
-
-
-	detectDir : function() {
-		var base = location.href;
-
-		var e = document.getElementsByTagName('base');
-		for(var i=0; i<e.length; i+=1) {
-			if(e[i].href) { base = e[i].href; }
-		}
-
-		var e = document.getElementsByTagName('script');
-		for(var i=0; i<e.length; i+=1) {
-			if(e[i].src && /(^|\/)jscolor\.js([?#].*)?$/i.test(e[i].src)) {
-				var src = new jscolor.URI(e[i].src);
-				var srcAbs = src.toAbsolute(base);
-				srcAbs.path = srcAbs.path.replace(/[^\/]+$/, ''); // remove filename
-				srcAbs.query = null;
-				srcAbs.fragment = null;
-				return srcAbs.toString();
-			}
-		}
-		return false;
+		return "/static/backbone/images/jscolor/";
 	},
 
 
@@ -377,7 +349,7 @@ define([], function () {
 
 		this.showPicker = function() {
 			if(!isPickerOwner()) {
-				var top = $(target).offset().top + $(target).height() + 5;
+				var top = $(target).offset().top + $(target).height() + 8;
 				var left = $(target).offset().left
 				drawPicker(left, top);
 			}
