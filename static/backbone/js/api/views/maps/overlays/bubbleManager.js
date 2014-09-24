@@ -132,7 +132,6 @@ define(
 		
 		initColorPicker: function(data){
 			var colorInput = this.$el.find('.form').find('[name="color"]');
-			console.log(colorInput);
 			if (colorInput.get(0) != null) {
 				var picker = new jscolor.color(colorInput.get(0), {})
 				picker.fromString("#" + data.model.get("color"));
