@@ -3,12 +3,13 @@ define(
 		'backbone',
 		'infobubble',
 		'config',
+		'color-picker',
 		"text!../../../../templates/infoBubble/marker.html",
 		'form',
 		"bootstrap-form-templates",
-		'slick',
+		'slick'
 		
-	], function(Backbone, InfoBubble, Config, markerBubbleTemplate) {
+	], function(Backbone, InfoBubble, Config, jscolor, markerBubbleTemplate) {
 	/**
 	 * Manages InfoBubble Rendering
 	 * @class InfoBubble
@@ -122,7 +123,19 @@ define(
 				model: data.model
 			}).render();
 			that.$el.find('.form').append(that.form.$el);
+			
+			//init color picker if applicable:
+			that.initColorPicker(data);
+			
 			that.showUpdatedContent(data);
+		},
+		
+		initColorPicker: function(data){
+			var colorInput = this.$el.find('.form').find('[name="color"]');
+			if (colorInput.get(0) != null) {
+				var picker = new jscolor.color(colorInput.get(0), {})
+				picker.fromString("#" + data.model.get("color"));
+			}
 		},
 		
 		saveForm: function(e){

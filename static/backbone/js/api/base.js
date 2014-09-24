@@ -19,7 +19,8 @@ require.config({
 		'urlon': '../external/urlon',
 		'kernel': '../external/kernel.min',
 		'core': '../external/mediator/core-jquery',
-		'sandbox': '../external/mediator/sandbox'
+		'sandbox': '../external/mediator/sandbox',
+		'color-picker': '../external/jscolor'
 	},
 	//waitSeconds: 0,
 	shim: {
