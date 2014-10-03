@@ -111,12 +111,21 @@ define(["underscore"], function(_) {
 				});
 			});
 			google.maps.event.addListener(this._googleOverlay, "dragend", function(mEvent) {
-				that.map.panTo(that._googleOverlay.position);
-				that.saveShape(model);
+				//check if bufferCircle's map is null. If it is, then georeference,
+				//otherwise, attach to marker.
+				if(that.sb.getBufferCircle().getMap() == null) {
+					that.map.panTo(that._googleOverlay.position);
+					that.saveShape(model);
+				}
+				else {
+					that.requestIntersectionCheck(mEvent.latLng, true);
+				}
 			});
 
 			google.maps.event.addListener(this._googleOverlay, "drag", function(mEvent) {
-				//me.checkIntersection(mEvent, true);
+				if(that.model.getKey() != "marker") {
+					that.requestIntersectionCheck(mEvent.latLng, false);
+				}
 			});
 		};
 		
@@ -136,6 +145,27 @@ define(["underscore"], function(_) {
 		this.setIcon = function(icon) {
 			this._googleOverlay.setOptions({
 				icon: icon	
+			});
+		}
+		
+		this.requestIntersectionCheck = function(latLng, commit) {
+			var position = this.sb.getOverlayView().getProjection().fromLatLngToDivPixel(latLng);
+			var rV = 20, rH = 10;
+			if(this._googleOverlay.icon && this._googleOverlay.icon.size) {
+				rV = this._googleOverlay.icon.size.height;  // vertical radius
+				rH = this._googleOverlay.icon.size.width;   // horizontal radius
+			}
+			var data = {
+				model: this.model,
+				top: position.y-rV,
+				bottom: position.y+rV,
+				left: position.x-rH,
+				right: position.x+rH,
+				commit: commit
+			};
+			this.sb.notify({
+				type:"check-intersection",
+				data: data
 			});
 		}
 		

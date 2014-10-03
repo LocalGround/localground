@@ -7,7 +7,7 @@ define([
      * @class Marker
      */
 	localground.maps.overlays.Marker = localground.maps.overlays.Base.extend({
-				
+		MARKER_RADIUS: 10,		
 		/**
 		 * Get the corresponding SVG marker icon
 		 * @returns {Object} icon definition
@@ -27,10 +27,19 @@ define([
 			};
 		},
 		
+		getHighlightIcon: function(){
+			var icon = this.getIcon();
+			icon.fillColor = '#FF0000';
+			return icon;
+		},
+		
 		/** adds icon to overlay. */
 		initialize: function(sb, opts){
 			localground.maps.overlays.Marker.__super__.initialize.apply(this, arguments); 
 			this.redraw();
+			this.sb.listen({
+				"check-intersection" : this.checkIntersection
+			});
 		},
 		
 		/** shows the google.maps overlay on the map. */
@@ -44,8 +53,63 @@ define([
 				this.overlay.setIcon(this.getIcon());
 			else
 				this.overlay.redraw();
-		}
+		},
 		
+		checkIntersection : function(data){
+			var googleOverlay = this.getGoogleOverlay();
+			
+			//validation checks:
+			if(googleOverlay.map == null) { return; }
+			var isMarker = googleOverlay instanceof google.maps.Marker;
+			if (!isMarker) { return; }
+			
+			var projection = this.sb.getOverlayView().getProjection();
+			var candidatePos = projection.fromLatLngToDivPixel(googleOverlay.getPosition());
+			
+			var r = this.MARKER_RADIUS;
+			var orig = googleOverlay.icon;
+			var withinBuffer = candidatePos.y  <= data.bottom + r &&
+							   candidatePos.y >= data.top - 2*r &&
+							   candidatePos.x <= data.right + r &&
+							   candidatePos.x >= data.left - r;
+				
+			if(withinBuffer) {
+				if (data.commit) {
+					this.model.attach(data.model);
+					this.clearHighlight();
+					data.model.trigger('hide-overlay');
+					data.model.trigger('hide-item');
+				}
+				else {
+					this.highlight();	
+				}
+			}
+			else {
+				this.clearHighlight();
+			}
+		},
+		
+		highlight : function(data) {
+			var googleOverlay = this.getGoogleOverlay();
+			googleOverlay.setOptions({
+				'draggable': false,
+				'icon': this.getHighlightIcon()
+			});
+			this.sb.getBufferCircle().setOptions({
+				center: googleOverlay.getPosition(),
+				map: this.map,
+				//scales radius no matter what the zoom level:
+				radius: Math.pow(2, (21 - this.map.getZoom())) * 1128.49 * 0.002
+			});	
+		},
+		
+		clearHighlight : function() {
+			var googleOverlay = this.getGoogleOverlay();
+			googleOverlay.setIcon(this.getIcon());
+			googleOverlay.setOptions({ 'draggable': true });
+			this.sb.getBufferCircle().setMap(null);	
+		}
 	});
+	
 	return localground.maps.overlays.Marker;
 });

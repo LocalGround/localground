@@ -69,6 +69,7 @@ define(
                         overlay.getGoogleOverlay().setIcon(overlay.getIcon());
                     }
                 });
+    
             },
 
             /**
