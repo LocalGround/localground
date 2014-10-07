@@ -51,13 +51,21 @@ define(["models/base",
 		},
 		
 		attach: function(model){
-			alert("marker is attaching!");
 			association = new localground.models.Association({
-				model_id: model.id,
+				object_id: model.id,
 				model_type: model.getKey(),
 				marker_id: this.id
 			});
 			association.save();
+		},
+		detach: function(model) {
+			association = new localground.models.Association({
+				id: model.id, //only define id for the detach
+				object_id: model.id,
+				model_type: model.getKey(),
+				marker_id: this.id
+			});
+			association.destroy();	
 		}
 	});
 	return localground.models.Marker;
