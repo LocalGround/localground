@@ -29,7 +29,7 @@ define([
 		
 		getHighlightIcon: function(){
 			var icon = this.getIcon();
-			icon.fillColor = '#FF0000';
+			icon.fillColor = '#73FF81';
 			return icon;
 		},
 		
@@ -60,11 +60,13 @@ define([
 			
 			//validation checks:
 			if(googleOverlay.map == null) { return; }
+			
+			//right now, it only intersects with point markers:
 			var isMarker = googleOverlay instanceof google.maps.Marker;
 			if (!isMarker) { return; }
 			
 			var projection = this.sb.getOverlayView().getProjection();
-			var candidatePos = projection.fromLatLngToDivPixel(googleOverlay.getPosition());
+			var candidatePos = projection.fromLatLngToContainerPixel(googleOverlay.getPosition());
 			
 			var r = this.MARKER_RADIUS;
 			var orig = googleOverlay.icon;

@@ -110,7 +110,7 @@ define(
                     { model: model }
                 );
                 this.overlays[id].changeMode();
-                this.overlays[id].show();
+                //this.overlays[id].show();
             },
 
             /** Shows all of the map overlays */

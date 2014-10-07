@@ -123,7 +123,7 @@ define(["underscore"], function(_) {
 			});
 
 			google.maps.event.addListener(this._googleOverlay, "drag", function(mEvent) {
-				if(that.model.getKey() != "marker") {
+				if(that.model.getKey() != "markers") {
 					that.requestIntersectionCheck(mEvent.latLng, false);
 				}
 			});
@@ -149,7 +149,7 @@ define(["underscore"], function(_) {
 		}
 		
 		this.requestIntersectionCheck = function(latLng, commit) {
-			var position = this.sb.getOverlayView().getProjection().fromLatLngToDivPixel(latLng);
+			var position = this.sb.getOverlayView().getProjection().fromLatLngToContainerPixel(latLng);
 			var rV = 20, rH = 10;
 			if(this._googleOverlay.icon && this._googleOverlay.icon.size) {
 				rV = this._googleOverlay.icon.size.height;  // vertical radius
