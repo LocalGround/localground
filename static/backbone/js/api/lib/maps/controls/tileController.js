@@ -1,5 +1,5 @@
 define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"],
-	function() {
+	function(Mapplication) {
 	/** 
      * Class that controls the map's tile options.
      * @class TileController
@@ -76,7 +76,7 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"],
 			var mapTypeID = mapType.name;
 			if (sourceName == "google") { mapTypeID = mapType.providerID; }
 			map.setMapTypeId(mapTypeID);
-			sb.notify({ type : "map-tiles-changed" });
+			//sb.notify({ type : "map-tiles-changed" });
 		};
 		
 		

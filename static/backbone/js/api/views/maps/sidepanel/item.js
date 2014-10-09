@@ -1,10 +1,11 @@
-define(["backbone"], function (Backbone) {
+define(["marionette", "jquery"], function (Marionette, $) {
+    'use strict';
     /**
      * Class that controls the right-hand listing of a single
      * Backbone Model.
      * @class Item
      */
-    localground.maps.views.Item = Backbone.View.extend({
+    var Item = Marionette.ItemView.extend({
         /**
          * @lends localground.maps.views.Item#
          */
@@ -49,10 +50,9 @@ define(["backbone"], function (Backbone) {
          * @param {Object} opts.element
          * jQuery selector element
          */
-        initialize: function (sb, opts) {
+        initialize: function (opts) {
             $.extend(this, opts);
-            this.setElement(opts.el)
-            this.sb = sb;
+            //this.setElement(opts.el);
             this.render();
             this.listenTo(this.model, 'destroy', this.remove);
             this.listenTo(this.model, 'remove', this.remove);
@@ -62,7 +62,7 @@ define(["backbone"], function (Backbone) {
             this.listenTo(this.model, 'uncheck-item', this.uncheckItem);
             this.listenTo(this.model, 'change', this.render);
             this.listenTo(this.model, 'reset', this.render);
-            this.sb.listen({"mode-change": this.setEditMode });
+            this.app.vent.on("mode-change", this.setEditMode);
             document.addEventListener('dragover', function (e) {
                 e.preventDefault();
             });
@@ -80,21 +80,21 @@ define(["backbone"], function (Backbone) {
          * on or off.
          */
         toggleElement: function (isChecked) {
-            if (isChecked)
+            if (isChecked) {
                 this.model.trigger("show-overlay");
-            else
+            } else {
                 this.model.trigger("hide-overlay");
+            }
             this.saveState();
         },
 
         setEditMode: function () {
-            var mode = this.sb.getMode();
-            var item = this.$el.find('.item');
+            var mode = this.app.getMode(),
+                item = this.$el.find('.item');
             if (mode === "view") {
                 item.removeClass('editable');
                 item.find('.item-icon').prop('draggable', false);
-            }
-            else {
+            } else {
                 item.addClass('editable');
                 item.find('.item-icon').prop('draggable', true);
             }
@@ -117,7 +117,7 @@ define(["backbone"], function (Backbone) {
          */
         triggerToggleCheckbox: function (e) {
             var $cb = this.$el.find('input');
-            if ($cb.css('visibility') != 'hidden') {
+            if ($cb.css('visibility') !== 'hidden') {
                 $cb.attr('checked', !$cb.attr('checked'));
                 this.toggleElement($cb.attr('checked'));
             }
@@ -135,13 +135,13 @@ define(["backbone"], function (Backbone) {
             this.uncheckItem();
             this.toggleElement(false);
         },
-        
-        checkItem: function(){
+
+        checkItem: function () {
             this.$el.find('input').attr('checked', true);
-            this.saveState();  
+            this.saveState();
         },
-        
-        uncheckItem: function(){
+
+        uncheckItem: function () {
             this.$el.find('input').attr('checked', false);
             this.saveState();
         },
@@ -165,31 +165,25 @@ define(["backbone"], function (Backbone) {
         toggleProjectData: function (e) {
             var $cb = this.$el.find('input');
             if ($cb.prop("checked")) {
-                this.sb.notify({
-                    type: "project-requested",
-                    data: { id: $cb.val() }
-                });
-            }
-            else {
-                this.sb.notify({
-                    type: "project-removal-requested",
-                    data: { id: $cb.val() }
-                });
+                this.app.vent.trigger('project-requested', {id: $cb.val()});
+            } else {
+                this.app.vent.trigger('project-removal-requested', {id: $cb.val()});
             }
             this.saveState();
             e.stopPropagation();
         },
 
         isVisible: function () {
-            return this.$el.find('input').attr('checked') == "checked";
+            return this.$el.find('input').attr('checked') === "checked";
         },
         /**
          * Helps the checkbox communicate with the toggleElement function.
          * @param {Event} e
          */
         zoomTo: function (e) {
-            if (this.model.get("geometry") && this.isVisible())
+            if (this.model.get("geometry") && this.isVisible()) {
                 this.model.trigger("zoom-to-overlay");
+            }
             e.stopPropagation();
         },
 
@@ -198,7 +192,7 @@ define(["backbone"], function (Backbone) {
          */
         render: function () {
             //todo: restore state here:
-            opts = this.restoreState();
+            var opts = this.restoreState();
             $.extend(opts, this.model.toTemplateJSON());
             //for the marker model:
             if (this.model.getDescriptiveText) {
@@ -232,23 +226,22 @@ define(["backbone"], function (Backbone) {
 
         /** Hide the map tooltip */
         hideTip: function () {
-            this.sb.notify({
-                type: "hide-tip",
-                data: { model: this.model }
-            });
+            this.app.vent.trigger('hide-tip', {model: this.model});
         },
         saveState: function () {
-            this.sb.saveState({
+            this.app.saveState({
                 isVisible: this.isVisible()
             });
         },
 
         restoreState: function () {
-            var state = this.sb.restoreState();
-            if (state == null)
+            var state = this.app.restoreState();
+            if (!state) {
                 return { isVisible: false };
-            else
-                return state;
+            }
+
+            return state;
+
         },
 
         destroy: function () {
@@ -258,22 +251,25 @@ define(["backbone"], function (Backbone) {
         dropItem: function (event) {
             function elementContainsPoint(domElement, x, y) {
                 return x > domElement.offsetLeft && x < domElement.offsetLeft + domElement.offsetWidth &&
-                    y > domElement.offsetTop && y < domElement.offsetTop + domElement.offsetHeight
+                    y > domElement.offsetTop && y < domElement.offsetTop + domElement.offsetHeight;
 
             }
 
 
-            var overlayView = this.sb.getOverlayView();
-            var map = this.sb.getMap();
-            var e = event.originalEvent;
+            var overlayView = this.app.getOverlayView(),
+                map = this.app.getMap(),
+                e = event.originalEvent,
+                mapContainer = map.getDiv(),
+                point,
+                projection,
+                latLng;
             e.stopPropagation();
-            var mapContainer = map.getDiv();
 
             if (elementContainsPoint(mapContainer, e.pageX, e.pageY)) {
-                var point = new google.maps.Point(e.pageX - mapContainer.offsetLeft,
+                point = new google.maps.Point(e.pageX - mapContainer.offsetLeft,
                     e.pageY - mapContainer.offsetTop);
-                var projection = overlayView.getProjection();
-                var latLng = projection.fromContainerPixelToLatLng(point);
+                projection = overlayView.getProjection();
+                latLng = projection.fromContainerPixelToLatLng(point);
                 this.model.setGeometry(latLng);
                 this.model.save();
                 this.showItem();
@@ -283,5 +279,5 @@ define(["backbone"], function (Backbone) {
 
         }
     });
-    return localground.maps.views.Item;
+    return Item;
 });

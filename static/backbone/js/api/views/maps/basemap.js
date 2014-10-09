@@ -1,19 +1,23 @@
-define(["backbone",
-    "lib/maps/controls/searchBox",
-    "lib/maps/controls/geolocation",
-    "lib/maps/controls/tileController"
-],
-    function (Backbone) {
+define(["marionette",
+        "jquery",
+        "lib/maps/controls/searchBox",
+        "lib/maps/controls/geolocation",
+        "lib/maps/controls/tileController"
+    ],
+    function (Marionette, $, SearchBox, GeoLocation, TileController) {
+        //"use strict";
         /**
          * A class that handles the basic Google Maps functionality,
          * including tiles, search, and setting the default location.
          * @class Basemap
          */
-        localground.maps.views.Basemap = Backbone.View.extend({
+
+        var Basemap = Marionette.View.extend({
+
             /**
              * @lends localground.maps.views.Basemap#
              */
-
+            id: "basemap",
             /** The google.maps.Map object */
             map: null,
             /** The default map type, if one is not specified */
@@ -42,24 +46,22 @@ define(["backbone",
              * @param {Array} opts.overlays
              * A list of available tilesets, based on user's profile.
              */
-            destroy: function () {
-                alert("bye");
-            },
-            initialize: function (sb, opts) {
-                this.sb = sb;
+            initialize: function (app, opts) {
+                this.app = app;
                 $.extend(this, opts);
-                this.restoreState();
+                this.restoreState(this.id);
 
                 //render map:
                 this.renderMap();
 
                 //add a search control, if requested:
-                if (opts.includeSearchControl)
-                    this.searchControl = new localground.maps.controls.SearchBox(this.map);
+                if (opts.includeSearchControl) {
+                    this.searchControl = new SearchBox(this.map);
+                }
 
                 //add a browser-based location detector, if requested:
                 if (opts.includeGeolocationControl) {
-                    this.geolocationControl = new localground.maps.controls.GeoLocation({
+                    this.geolocationControl = new GeoLocation({
                         map: this.map,
                         userProfile: this.userProfile,
                         defaultLocation: this.defaultLocation
@@ -68,14 +70,14 @@ define(["backbone",
 
                 //set up the various map tiles in Google maps:
                 if (this.overlays) {
-                    this.tileManager = new localground.maps.controls.TileController(sb, {
+                    this.tileManager = new TileController(this.app, {
                         map: this.map,
                         overlays: this.overlays,
                         activeMapTypeID: this.activeMapTypeID
-                    })
+                    });
                 }
                 //add event handlers:
-                this.addEventHandlers(sb);
+                this.addEventHandlers(this.app);
             },
 
             /**
@@ -112,49 +114,48 @@ define(["backbone",
                 };
                 this.map = new google.maps.Map(document.getElementById(this.mapContainerID),
                     mapOptions);
-                this.sb.setMap(this.map);
 
                 this.overlayView = new google.maps.OverlayView();
                 this.overlayView.draw = function () {
                 };
-                this.overlayView.setMap(this.map);
-                this.sb.setOverlayView(this.overlayView)
+                //this.overlayView.sb(this.map);
+                //this.sb.setOverlayView(this.overlayView)
 
 
             },
             addEventHandlers: function (sb) {
                 //add notifications:
                 google.maps.event.addListener(this.map, "maptypeid_changed", function (evnt) {
-                    sb.notify({ type: "map-tiles-changed" });
+                    //sb.notify({ type: "map-tiles-changed" });
                 });
                 google.maps.event.addListener(this.map, "idle", function (evnt) {
-                    sb.notify({ type: "map-extents-changed" });
+                    //sb.notify({ type: "map-extents-changed" });
                 });
 
                 //add listeners:
-                sb.listen({
+                /*sb.listen({
                     "map-tiles-changed": this.saveState,
                     "map-extents-changed": this.saveState,
                     "item-drop": this.handleItemDrop
-                });
+                });*/
 
                 //todo: possibly move to a layout module?
                 $(window).off('resize');
                 $(window).on('resize', function () {
-                    sb.notify({ type: "window-resized" });
+                   // sb.notify({ type: "window-resized" });
                 });
             },
 
-            saveState: function (data) {
+            saveState: function () {
                 var latLng = this.map.getCenter();
-                this.sb.saveState({
+                this.app.saveState(this.id, {
                     center: [latLng.lng(), latLng.lat()],
                     zoom: this.map.getZoom(),
                     basemapID: this.tileManager.getMapTypeId()
                 });
             },
             restoreState: function () {
-                var state = this.sb.restoreState();
+                var state = this.app.restoreState(this.id);
                 if (state) {
                     if (state.center) {
                         this.defaultLocation.center = new google.maps.LatLng(
@@ -162,14 +163,20 @@ define(["backbone",
                             state.center[0]
                         );
                     }
-                    if (state.zoom)
+                    if (state.zoom) {
                         this.defaultLocation.zoom = state.zoom;
-                    if (state.basemapID)
+                    }
+                    if (state.basemapID) {
                         this.activeMapTypeID = state.basemapID;
+                    }
                 }
-            },
+            }
 
 
         });
-        return localground.maps.views.Basemap;
+
+
+        return Basemap;
     });
+
+
