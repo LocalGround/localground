@@ -41,7 +41,8 @@ define(["backbone", "lib/maps/geometry/geometry"],
 		},
 		toTemplateJSON: function(){
 			var json = Backbone.Model.prototype.toJSON.call(this);
-			return json
+			json.key = this.getKey();
+			return json;
 		},
 		getKey: function(){
 			return this.collection.key;

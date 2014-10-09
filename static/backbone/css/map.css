@@ -214,6 +214,16 @@
 	color: #fff;
 	white-space: nowrap;
 }
+.marker-thumbnail {
+    width: 100px;
+    display: inline-block;
+    text-align: center;
+    margin-bottom: 5px;
+}
+.marker-attachment {
+    font-size: 60px !important;
+    color: #666 !important;
+}
 
 .address-input {
 	margin-top: 5px !important;

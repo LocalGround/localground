@@ -114,7 +114,9 @@ define(
 		renderEditContent: function(data){
 			var that = this;
 			var template = that.getTemplate(data.model, "InfoBubbleTemplate");
-			that.setElement($(template({mode: "edit"})));
+			var context = that.getContext(data.model);
+			context.mode = 'edit';
+			that.setElement($(template(context)));
 			var ModelForm = Backbone.Form.extend({
 				schema: data.model.updateSchema
 			});
