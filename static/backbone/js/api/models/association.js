@@ -11,6 +11,7 @@ define(["models/base"], function() {
             
             //todo: API change needed to make the model.id param not "id" but object_id.
             this.urlRoot = '/api/0/markers/' + data.marker_id + '/' + data.model_type + '/';
+			
 			this.set("ordering", data.ordering || 1);
 		}
 	});

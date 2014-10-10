@@ -58,14 +58,14 @@ define(["models/base",
 			});
 			association.save();
 		},
-		detach: function(model) {
+		detach: function(model_id, key, callback) {
 			association = new localground.models.Association({
-				id: model.id, //only define id for the detach
-				object_id: model.id,
-				model_type: model.getKey(),
+				id: model_id, //only define id for the detach
+				object_id: model_id,
+				model_type: key,
 				marker_id: this.id
 			});
-			association.destroy();	
+			association.destroy({success: callback});	
 		}
 	});
 	return localground.models.Marker;

@@ -217,12 +217,37 @@
 .marker-thumbnail {
     width: 100px;
     display: inline-block;
-    text-align: center;
     margin-bottom: 5px;
+}
+.marker-thumbnail > .holder {
+    height: 80px;
+    width: 92px;
+    text-align: center;
+}
+.thumbnail {
+    /*background-image: url(../images/bg.png);*/
+}
+.thumbnail .caption {
+    padding: 9px 0px 4px 0px !important;
+}
+.marker-thumbnail .btn-default {
+    margin-top: 8px;
+    padding: 2px 6px 2px 6px;
+    font-size: 13px;
+    font-weight: normal;
+    background-color: #eee;
 }
 .marker-attachment {
     font-size: 60px !important;
     color: #666 !important;
+}
+.marker-detach {
+    position: absolute;
+    margin-top: -10px;
+    margin-left: -10px;
+    background-color: #FFF;
+    border-radius: 10px;
+    color: #2042cc;
 }
 
 .address-input {

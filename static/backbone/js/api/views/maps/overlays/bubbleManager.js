@@ -4,6 +4,7 @@ define(
 		'infobubble',
 		'config',
 		'color-picker',
+		'models/marker',
 		"text!../../../../templates/infoBubble/marker.html",
 		'form',
 		"bootstrap-form-templates",
@@ -29,7 +30,8 @@ define(
 		tipModel: null,
 		
 		events: {
-            "click .btn-primary": "saveForm"
+            "click .btn-primary": "saveForm",
+			"click .detach": "detach" //move this to markerBubble object after refactor
 		},
 		
 		/**
@@ -174,6 +176,19 @@ define(
 			var template = this.getTemplate(data.model, "TipTemplate");
 			this.tip.setContent(template(this.getContext(data.model)));
 			this._show(this.tip, data);
+		},
+		detach: function(e){
+			// this needs to be totally refactored when a markerBubbleManager
+			// gets implemented:
+			var $a = $(e.currentTarget);
+			var markerID = parseInt($a.attr("marker-id"));
+			var key = $a.attr("key");
+			var modelID = parseInt($a.attr("item-id"));
+			var marker = new localground.models.Marker({id: markerID });
+			marker.detach(modelID, key, function(){
+				$a.parent().parent().remove();
+			});
+			e.preventDefault();
 		},
 		hideTip: function(){
 			this.tip.close();	
