@@ -34,7 +34,8 @@ define(["backbone"], function (Backbone) {
             'mouseout .data-item': 'hideTip',
             'click .project-item': 'triggerToggleProjectData',
             'click .cb-project': 'toggleProjectData',
-            'dragend .item-icon': 'dropItem'
+            'dragend .item-icon': 'dropItem',
+            'drag .item-icon': 'checkIntersection'
         },
 
         /**
@@ -50,6 +51,7 @@ define(["backbone"], function (Backbone) {
          * jQuery selector element
          */
         initialize: function (sb, opts) {
+            var that = this;
             $.extend(this, opts);
             this.setElement(opts.el)
             this.sb = sb;
@@ -256,32 +258,65 @@ define(["backbone"], function (Backbone) {
         },
 
         dropItem: function (event) {
-            function elementContainsPoint(domElement, x, y) {
-                return x > domElement.offsetLeft && x < domElement.offsetLeft + domElement.offsetWidth &&
-                    y > domElement.offsetTop && y < domElement.offsetTop + domElement.offsetHeight
-
-            }
-
-
-            var overlayView = this.sb.getOverlayView();
-            var map = this.sb.getMap();
             var e = event.originalEvent;
-            e.stopPropagation();
-            var mapContainer = map.getDiv();
+            //e.stopPropagation();
+            var point = this.getPointFromPixelPosition(e);
 
-            if (elementContainsPoint(mapContainer, e.pageX, e.pageY)) {
-                var point = new google.maps.Point(e.pageX - mapContainer.offsetLeft,
-                    e.pageY - mapContainer.offsetTop);
+            if (point != null) {
+                var overlayView = this.sb.getOverlayView();
                 var projection = overlayView.getProjection();
                 var latLng = projection.fromContainerPixelToLatLng(point);
                 this.model.setGeometry(latLng);
                 this.model.save();
-                this.showItem();
+                if(this.sb.getBufferCircle().getMap() == null) {
+                    this.showItem();
+                }
+                else {
+                    this.attachToMarker(event);
+                }
             }
-            //TODO instantiate point then add geodata to model
-            //Trigger sync, then trigger display on map
-
+        },
+        attachToMarker: function(event){
+            this.handleIntersection(event, true);
+        },
+        checkIntersection: function(event){
+            this.handleIntersection(event, false);
+        },
+        handleIntersection: function(event, commit) {
+            var e = event.originalEvent;
+            e.stopPropagation();
+            var position = this.getPointFromPixelPosition(e);
+            if (position == null) { return; }
+            var rV = 20, rH = 20;
+            var data = {
+                model: this.model,
+                top: position.y-rV,
+                bottom: position.y+rV,
+                left: position.x-rH,
+                right: position.x+rH,
+                commit: commit
+            };
+            this.sb.notify({
+                type:"check-intersection",
+                data: data
+            });
+        },
+        getPointFromPixelPosition: function(e){
+            function elementContainsPoint(domElement, x, y) {
+                return x > domElement.offsetLeft && x < domElement.offsetLeft + domElement.offsetWidth &&
+                    y > domElement.offsetTop && y < domElement.offsetTop + domElement.offsetHeight
+    
+            }
+            var map = this.sb.getMap();
+            var mapContainer = map.getDiv();
+            if (elementContainsPoint(mapContainer, e.pageX, e.pageY)) {
+                return new google.maps.Point(e.pageX - mapContainer.offsetLeft,
+                        e.pageY - mapContainer.offsetTop);
+            }
+            return null;
         }
     });
+    
+   
     return localground.maps.views.Item;
 });

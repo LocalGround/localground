@@ -59,6 +59,9 @@ define([], function() {
                 getOverlayView: function() {
                     //not sure if this makes sense to do here
                     return core.overlayView;
+                },
+                getBufferCircle: function(){
+                    return core.bufferCircle;
                 }
                 
             } 

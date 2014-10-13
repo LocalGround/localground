@@ -20,6 +20,14 @@ define(['jquery', 'sandbox'], function(jQuery, Sandbox) {
             debug: function(on){
                 debug = on ? true : false;
             },
+            bufferCircle: new google.maps.Circle({
+                strokeColor: '#339bb9',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#339bb9',
+                fillOpacity: 0.15,
+                radius: 400
+            }),
             create_module: function (moduleID, creator, opts) { 
                 var temp;
                 opts = opts || {};

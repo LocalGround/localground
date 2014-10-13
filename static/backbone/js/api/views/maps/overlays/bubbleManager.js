@@ -4,6 +4,7 @@ define(
 		'infobubble',
 		'config',
 		'color-picker',
+		'models/marker',
 		"text!../../../../templates/infoBubble/marker.html",
 		'form',
 		"bootstrap-form-templates",
@@ -29,7 +30,8 @@ define(
 		tipModel: null,
 		
 		events: {
-            "click .btn-primary": "saveForm"
+            "click .btn-primary": "saveForm",
+			"click .detach": "detach" //move this to markerBubble object after refactor
 		},
 		
 		/**
@@ -114,7 +116,9 @@ define(
 		renderEditContent: function(data){
 			var that = this;
 			var template = that.getTemplate(data.model, "InfoBubbleTemplate");
-			that.setElement($(template({mode: "edit"})));
+			var context = that.getContext(data.model);
+			context.mode = 'edit';
+			that.setElement($(template(context)));
 			var ModelForm = Backbone.Form.extend({
 				schema: data.model.updateSchema
 			});
@@ -172,6 +176,26 @@ define(
 			var template = this.getTemplate(data.model, "TipTemplate");
 			this.tip.setContent(template(this.getContext(data.model)));
 			this._show(this.tip, data);
+		},
+		detach: function(e){
+			// this needs to be totally refactored when a markerBubbleManager
+			// gets implemented:
+			var $a = $(e.currentTarget);
+			var markerID = parseInt($a.attr("marker-id"));
+			var key = $a.attr("key");
+			var modelID = parseInt($a.attr("item-id"));
+			var marker = new localground.models.Marker({id: markerID });
+			marker.detach(modelID, key, function(){
+				$a.parent().parent().remove();
+				
+				// TODO:
+				// If this marker were actually part of the marker collection
+				// rather than a new instantiation, the updated marker would auto-
+				// trigger some rendering updates. After markerBubbleManager is
+				// created, revisit this code to make it complete.
+				marker.fetch();
+			});
+			e.preventDefault();
 		},
 		hideTip: function(){
 			this.tip.close();	

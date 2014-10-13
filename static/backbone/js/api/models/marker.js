@@ -1,4 +1,5 @@
 define(["models/base",
+		"models/association",
 		"lib/maps/geometry/point",
 		"lib/maps/geometry/polyline",
 		"lib/maps/geometry/polygon"
@@ -10,7 +11,6 @@ define(["models/base",
 	 */
 	localground.models.Marker = localground.models.Base.extend({
 		urlRoot: '/api/0/markers/',
-		
 		getCenter: function(){
 			var geoJSON = this.get("geometry");
 			if (geoJSON == null) { return null; }
@@ -45,8 +45,27 @@ define(["models/base",
 			json.descriptiveText = this.getDescriptiveText();
 			return json;
 		},
+		
 		defaults: {
 			name: "Untitled"
+		},
+		
+		attach: function(model){
+			association = new localground.models.Association({
+				object_id: model.id,
+				model_type: model.getKey(),
+				marker_id: this.id
+			});
+			association.save();
+		},
+		detach: function(model_id, key, callback) {
+			association = new localground.models.Association({
+				id: model_id, //only define id for the detach
+				object_id: model_id,
+				model_type: key,
+				marker_id: this.id
+			});
+			association.destroy({success: callback});	
 		}
 	});
 	return localground.models.Marker;

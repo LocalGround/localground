@@ -18,8 +18,10 @@ define(["lib/maps/overlays/base"], function() {
 				strokeWeight: 1.5,
 				fillOpacity: 1,
 				path: this.overlay.Shapes.MAP_PIN_HOLLOW,
-				anchor: new google.maps.Point(16,5), 
-				scale: 1.6
+				scale: 1.6,
+				anchor: new google.maps.Point(16,30), 		// anchor (x, y)
+				size: new google.maps.Size(15, 30),			// size (width, height)
+				origin: new google.maps.Point(0,0)			// origin (x, y)
 			};
 		},
 		

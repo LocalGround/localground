@@ -18,7 +18,6 @@ define(["backbone",
 
 		/** called when object created */
 		initialize: function(sb, opts) {
-			//alert(localground.maps.overlays.Polyline);
 			this.sb = sb;
 			$.extend(opts, this.restoreState());
 			this.map = sb.getMap();
@@ -113,7 +112,7 @@ define(["backbone",
 		
 		/** shows the google.maps overlay on the map. */		
 		show: function(){
-			var overlay = this.getGoogleOverlay();
+            var overlay = this.getGoogleOverlay();
 			overlay.setMap(this.map);
 			this.saveState();
 		},
