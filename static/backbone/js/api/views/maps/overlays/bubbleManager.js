@@ -187,6 +187,13 @@ define(
 			var marker = new localground.models.Marker({id: markerID });
 			marker.detach(modelID, key, function(){
 				$a.parent().parent().remove();
+				
+				// TODO:
+				// If this marker were actually part of the marker collection
+				// rather than a new instantiation, the updated marker would auto-
+				// trigger some rendering updates. After markerBubbleManager is
+				// created, revisit this code to make it complete.
+				marker.fetch();
 			});
 			e.preventDefault();
 		},
