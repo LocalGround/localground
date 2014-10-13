@@ -41,7 +41,7 @@ define(["marionette",
                 app.vent.trigger('load-projects', this.collection);
             },
             syncCheckboxes: function (data) {
-                this.projects.each(function (project) {
+                this.collection.each(function (project) {
                     if (data.projects.get(project.id)) {
                         project.trigger("check-item");
                     } else {

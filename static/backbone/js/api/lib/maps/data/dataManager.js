@@ -1,8 +1,9 @@
 define(["models/project",
+        "collections/projects",
         "jquery",
         "config"
     ],
-    function (Project, $, Config) {
+    function (Project, Projects, $, Config) {
         'use strict';
 
         /**
@@ -45,10 +46,7 @@ define(["models/project",
                     // important: this trigger enables the overlayManager
                     // to create a new overlay for each model where the
                     // GeoJSON geometry is defined.
-                    this.app.notify({
-                        type: "new-collection-created",
-                        data: { collection: this.collections[key] }
-                    });
+                    this.app.vent.trigger('new-collection-created', {collection: this.collections[key]});
 
                 }
                 this.collections[key].add(models, {merge: true});
@@ -71,7 +69,7 @@ define(["models/project",
                 this.app.vent.on("project-requested", this.fetchDataByProjectID.bind(this));
                 this.app.vent.on("set-active-project", this.setActiveProject.bind(this));
                 this.app.vent.on("marker-added", updateCollection.bind(this));
-
+                this.selectedProjects = new Projects();
                 this.restoreState();
             };
 
@@ -79,10 +77,7 @@ define(["models/project",
              * Fetches the user's available projects from the data API.
              */
             this.fetchProjects = function (projectCollection) {
-                var that = this;
-                projectCollection.fetch({
-                    reset: true,
-                });
+                projectCollection.fetch({reset: true});
             };
 
             /**
@@ -136,10 +131,7 @@ define(["models/project",
                 this.resetActiveProject();
 
                 //notify the rest of the application
-                this.app.notify({
-                    type: "selected-projects-updated",
-                    data: {projects: this.selectedProjects}
-                });
+                this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
 
                 this.saveState();
             };
@@ -193,7 +185,7 @@ define(["models/project",
                     if (children.hasOwnProperty(key)) {
                         models = [];
                         configKey = key.split("_")[0];
-                        opts = Config.Config[configKey];
+                        opts = Config[configKey];
                         $.each(children[key].data, modelCreator);
 
                         $.extend(opts, {
@@ -208,10 +200,7 @@ define(["models/project",
                 }
                 //add new project to the collection:
                 this.selectedProjects.add(project, {merge: true});
-                this.app.notify({
-                    type: "selected-projects-updated",
-                    data: {projects: this.selectedProjects}
-                });
+                this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
                 this.saveState();
             };
 

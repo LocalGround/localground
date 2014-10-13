@@ -1,13 +1,13 @@
 define(["marionette",
         "backbone",
-        "jquery",
         "underscore",
         "views/maps/basemap",
         "views/maps/sidepanel/dataPanel",
         "lib/maps/data/dataManager",
-        "lib/appUtilities"
+        "lib/appUtilities",
+        "jquery.bootstrap"
     ],
-    function (Marionette, Backbone, $, _, BaseMap, DataPanel, DataManager, appUtilities) {
+    function (Marionette, Backbone, _, BaseMap, DataPanel, DataManager, appUtilities) {
         "use strict";
 
         var Mapplication = new Marionette.Application();
