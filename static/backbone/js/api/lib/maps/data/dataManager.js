@@ -63,8 +63,8 @@ define(["models/project",
              * corresponding map views.
              */
 
-            this.initialize = function (app) {
-                this.app = app;
+            this.initialize = function (opts) {
+                this.app = opts.app;
                 this.app.vent.on("load-projects", this.fetchProjects.bind(this));
                 this.app.vent.on("project-requested", this.fetchDataByProjectID.bind(this));
                 this.app.vent.on("set-active-project", this.setActiveProject.bind(this));

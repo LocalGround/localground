@@ -46,8 +46,8 @@ define(["marionette",
              * @param {Array} opts.overlays
              * A list of available tilesets, based on user's profile.
              */
-            initialize: function (app, opts) {
-                this.app = app;
+            initialize: function (opts) {
+                this.app = opts.app;
                 $.extend(this, opts);
                 this.restoreState(this.id);
 

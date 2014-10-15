@@ -1,41 +1,40 @@
-define(["backbone",
+define(["marionette",
         "underscore",
-        "jquery"],
-    function (Backbone, _, $) {
+        "jquery",
+        "text!" + templateDir + "/sidepanel/projectTag.html"],
+    function (Marionette, _, $, projectTagTemplate) {
         'use strict';
         /**
          * Class that controls the available projects tags,
          * Extends Backbone.View.
          * @class ProjectTags
          */
-        var ProjectTags = Backbone.View.extend({
+        var ProjectTags = Marionette.CollectionView.extend({
             /**
              * @lends localground.maps.views.ProjectTags#
              */
-            _projects: null,
             events: {
                 'click .fa-close': 'removeProject',
                 'click .alert': 'setActive'
             },
+            childView: Marionette.ItemView.extend({
+                template: _.template(projectTagTemplate),
+                tagName: "span",
+                modelEvents: {'change': 'render'}
+            }),
+
             /**
              * Initializes the project tags menu (an easy way to remove projects
              * and set them to be active)
              */
-            initialize: function (app, opts) {
-                this.setElement(opts.el);
-                this.app = app;
-                app.on('selected-projects-updated', this.renderProjects);
-                this.render();
+            initialize: function (opts) {
+                this.collection = opts.projects;
+                this.app = opts.app;
+               // opts.app.vent.on('selected-projects-updated', this.renderProjects);
+                //this.render();
             },
             /** A rendered projectItem template */
-            template: _.template('<div class="alert alert-info alert-dismissable' +
-                '<% if(isActive) { %> active <% } %>' +
-                '">' +
-                '<input type="hidden" value="<%= id %>" />' +
-                '<i class="fa fa-close pull-right"></i>' +
-                '<strong><%= name %></strong>' +
-                '</div>'),
-
+            /*
             render: function () {
                 if (!this._projects) {
                     return;
@@ -47,31 +46,25 @@ define(["backbone",
                     opts.isActive = (model.id == that.sb.getActiveProjectID());
                     that.$el.append($(that.template(opts)));
                 });
-            },
-
+            },*/
+            /*
             renderProjects: function (data) {
                 if (data && data.projects) {
                     this._projects = data.projects;
                 }
                 this.render();
             },
+            */
 
             removeProject: function (e) {
-                var projectID = $(e.currentTarget).parent().find("input").val();
-                this.sb.notify({
-                    type: "project-removal-requested",
-                    data: { id: projectID }
-                });
-                e.stopPropagation();
+                this.collection.remove($(e.currentTarget).parent().find("input").val());
             },
 
             setActive: function (e) {
-                var projectID = $(e.currentTarget).find("input").val();
-                this.sb.notify({
-                    type: "set-active-project",
-                    data: { id: projectID }
-                });
-                this.render();
+                var project = this.collection.get($(e.currentTarget).find("input").val());
+                if (project) {
+                    project.set('isActive', true);
+                }
                 e.stopPropagation();
             },
 

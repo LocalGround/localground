@@ -1,11 +1,10 @@
 define(["marionette",
         "text!" + templateDir + "/sidepanel/projectItem.html",
         "underscore",
-        "views/maps/sidepanel/item",
-        "collections/projects"
+        "views/maps/sidepanel/item"
 
     ],
-    function (Marionette, projectItem, _, Item, Projects) {
+    function (Marionette, projectItem, _, Item) {
         'use strict';
         /**
          * Class that controls the available projects menu,
@@ -23,7 +22,6 @@ define(["marionette",
                 template: _.template(projectItem)
             },
             childView: Item,
-            collection: new Projects(),
             /**
              * Initializes the project menu and fetches the available
              * projects from the Local Ground Data API.
@@ -33,12 +31,13 @@ define(["marionette",
              * @param {Object} opts.el
              * The jQuery element to which the projects should be attached.
              */
-            initialize: function (app) {
+            initialize: function (opts) {
                 //this.setElement(opts.el);
-                this.app = app;
-                this.childViewOptions.app = app;
-                app.vent.on('selected-projects-updated', this.syncCheckboxes.bind(this));
-                app.vent.trigger('load-projects', this.collection);
+                this.app = opts.app;
+                this.collection = opts.projects;
+                this.childViewOptions.app = this.app;
+                this.app.vent.on('selected-projects-updated', this.syncCheckboxes.bind(this));
+                this.app.vent.trigger('load-projects', this.collection);
             },
             syncCheckboxes: function (data) {
                 this.collection.each(function (project) {

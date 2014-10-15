@@ -5,9 +5,10 @@ define(["marionette",
         "views/maps/sidepanel/dataPanel",
         "lib/maps/data/dataManager",
         "lib/appUtilities",
+        "collections/projects",
         "jquery.bootstrap"
     ],
-    function (Marionette, Backbone, _, BaseMap, DataPanel, DataManager, appUtilities) {
+    function (Marionette, Backbone, _, BaseMap, DataPanel, DataManager, appUtilities, Projects) {
         "use strict";
 
         var Mapplication = new Marionette.Application();
@@ -36,9 +37,11 @@ define(["marionette",
 
 
         Mapplication.addInitializer(function (options) {
-            var basemap = new BaseMap(this, options),
-                sidePanel = new DataPanel(this, options),
-                dataManager = new DataManager(this);
+            options.projects = new Projects();
+            options.app = this;
+            var basemap = new BaseMap(options),
+                sidePanel = new DataPanel(options),
+                dataManager = new DataManager(options);
             this.map = basemap.map;
             Mapplication.mapRegion.show(basemap);
             Mapplication.sidebarRegion.show(sidePanel);

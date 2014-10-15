@@ -3,9 +3,8 @@ define(["marionette",
         "jquery",
         "text!" + templateDir + "/sidepanel/dataPanelHeader.html",
         "views/maps/sidepanel/projectsMenu",
-        "views/maps/sidepanel/projectTags",
         "views/maps/sidepanel/panelBody"],
-    function (Marionette, _, $, dataPanelHeader, ProjectsMenu, ProjectTags, PanelBody) {
+    function (Marionette, _, $, dataPanelHeader, ProjectsMenu, PanelBody) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -32,42 +31,23 @@ define(["marionette",
              * @param {Object} sb
              * The sandbox.
              */
-            initialize: function (app, opts) {
-                this.app = app;
+            initialize: function (opts) {
+                this.app = opts.app;
                 this.opts = opts;
                 //this.projectTags.show(new ProjectTags(app, opts));
                 //this.panelBody.show(new PanelBody(app, opts));
                 // Listen for the "new_collection" event. On each new
                 // collection event add a new ItemsView to the DataPanel.
                 //app.vent.on("new-collection-created", this.createItemsView.bind(this));
-                app.vent.on("window-resized", this.resize.bind(this));
+                opts.app.vent.on("window-resized", this.resize.bind(this));
             },
 
             onShow: function () {
-                this.projectMenu.show(new ProjectsMenu(this.app, this.opts));
+                this.projectMenu.show(new ProjectsMenu(this.opts));
+                this.panelBody.show(new PanelBody(this.opts));
             },
 
-            /**
-             * Creates a new data-type listing (photos, audio, etc) in the
-             * right-hand panel
-             */
-            //TODO: move to panelBody view
-            /*createItemsView: function (data) {
-                //this.addProjectTag();
-                var $container = $("<div></div>");
-                this.$el.find('.pane-body').append($container);
-
-                this.sb.loadSubmodule(
-                        "items-" + data.collection.key,
-                    localground.maps.views.Items,
-                    {
-                        collection: data.collection,
-                        el: $container
-                    }
-                );
-            },*/
-
-            /**
+            /*
              * Renders the HTML for the data panel. Called everytime
              * project data changes. Note that the project panel is
              * only rendered once.
