@@ -1,8 +1,9 @@
-define(["models/base"], function() {
-	var Form = localground.models.Base.extend({
-		defaults: {
-			name: "Untitled"
-		}
-	});
-	return Form;
+define(["models/base"], function (Base) {
+    "use strict";
+    var Form = Base.extend({
+        defaults: {
+            name: "Untitled"
+        }
+    });
+    return Form;
 });

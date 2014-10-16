@@ -1,14 +1,15 @@
-define(["backbone", "models/marker", "collections/base"], function(Backbone) {
+define(["models/marker", "collections/base"], function (Marker, Base) {
+    "use strict";
     /**
-	 * @class localground.collections.Markers
-	 */
-	localground.collections.Markers = localground.collections.Base.extend({
-        model: localground.models.Marker,
-		name: 'Markers',
+     * @class localground.collections.Markers
+     */
+    var Markers = Base.extend({
+        model: Marker,
+        name: 'Markers',
         url: '/api/0/markers/',
-		parse : function(response) {
+        parse: function (response) {
             return response.results;
-        },
+        }
     });
-    return localground.collections.Markers;
+    return Markers;
 });

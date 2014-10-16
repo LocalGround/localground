@@ -15,14 +15,22 @@ define(["marionette",
              */
             events: {
                 'click .fa-close': 'removeProject',
-                'click .alert': 'setActive'
+                'click .alert': 'makeActive'
             },
             childView: Marionette.ItemView.extend({
                 template: _.template(projectTagTemplate),
                 tagName: "span",
                 modelEvents: {'change': 'render'}
             }),
-
+            onBeforeAddChild: function () {
+                if (!this.activeProject) {
+                    if (this.collection.length > 0) {
+                        this.collection.first().set('isActive', true);
+                        this.activeProject = this.collection.first();
+                        this.app.setActiveProjectID(this.collection.first().get('id'));
+                    }
+                }
+            },
             /**
              * Initializes the project tags menu (an easy way to remove projects
              * and set them to be active)
@@ -30,9 +38,11 @@ define(["marionette",
             initialize: function (opts) {
                 this.collection = opts.projects;
                 this.app = opts.app;
+                this.listenTo(this.collection, 'selected-projects-change', this.checkActive);
                // opts.app.vent.on('selected-projects-updated', this.renderProjects);
                 //this.render();
             },
+
             /** A rendered projectItem template */
             /*
             render: function () {
@@ -56,20 +66,32 @@ define(["marionette",
             },
             */
 
-            removeProject: function (e) {
-                this.collection.remove($(e.currentTarget).parent().find("input").val());
+            setActiveProject: function (newActiveProject) {
+                if (newActiveProject) {
+                    if (this.activeProject) {
+                        this.activeProject.set('isActive', false);
+                    }
+                    newActiveProject.set('isActive', true);
+                    this.activeProject = newActiveProject;
+                    this.app.setActiveProjectID(newActiveProject.get('id'));
+                } else {
+                    this.activeProject = null;
+                    this.app.setActiveProjectID(null);
+                }
             },
 
-            setActive: function (e) {
-                var project = this.collection.get($(e.currentTarget).find("input").val());
-                if (project) {
-                    project.set('isActive', true);
-                }
+            makeActive: function (e) {
+                this.setActiveProject(this.collection.get($(e.currentTarget).find("input").val()));
                 e.stopPropagation();
             },
 
-            destroy: function () {
-                this.remove();
+            checkActive: function () {
+                if (!this.activeProject || !this.activeProject.get('isVisible')) {
+                    if (this.activeProject) {
+                        this.activeProject.set('isActive', false);
+                    }
+                    this.setActiveProject(this.collection.findWhere({isVisible: true}));
+                }
             }
 
         });

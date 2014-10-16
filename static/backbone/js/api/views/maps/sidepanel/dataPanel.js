@@ -3,8 +3,10 @@ define(["marionette",
         "jquery",
         "text!" + templateDir + "/sidepanel/dataPanelHeader.html",
         "views/maps/sidepanel/projectsMenu",
-        "views/maps/sidepanel/panelBody"],
-    function (Marionette, _, $, dataPanelHeader, ProjectsMenu, PanelBody) {
+        "views/maps/sidepanel/projectTags",
+        "views/maps/sidepanel/itemListManager"
+    ],
+    function (Marionette, _, $, dataPanelHeader, ProjectsMenu, ProjectTags, ItemListManager) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -24,7 +26,9 @@ define(["marionette",
             },
             regions: {
                 projectMenu: "#projects-menu",
-                panelBody:  ".pane-body"
+                projectTags: "#project-tags",
+                itemList: "#item-list-manager"
+
             },
             /**
              * Initializes the dataPanel
@@ -44,7 +48,9 @@ define(["marionette",
 
             onShow: function () {
                 this.projectMenu.show(new ProjectsMenu(this.opts));
-                this.panelBody.show(new PanelBody(this.opts));
+                this.projectTags.show(new ProjectTags(this.opts));
+                this.itemList.show(new ItemListManager(this.opts));
+
             },
 
             /*

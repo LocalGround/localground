@@ -8,7 +8,8 @@ define(["models/base"], function (Base) {
     var Project = Base.extend({
         defaults: {
             name: "Untitled",
-            isActive: false
+            isActive: false,
+            isVisible: true
         },
         urlRoot: "/api/0/projects/"
     });

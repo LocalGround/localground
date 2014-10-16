@@ -1,14 +1,15 @@
-define(["backbone", "models/mapimage", "collections/base"], function(Backbone) {
+define(["models/mapimage", "collections/base"], function (MapImage, Base) {
+    "use strict";
     /**
-	 * @class localground.collections.MapImages
-	 */
-	localground.collections.MapImages = localground.collections.Base.extend({
-        model: localground.models.MapImage,
+     * @class localground.collections.MapImages
+     */
+    var MapImages = Base.extend({
+        model: MapImage,
         name: 'Map Images',
         url: '/api/0/map-images/',
-		parse : function(response) {
+        parse: function (response) {
             return response.results;
-        },
+        }
     });
-    return localground.collections.MapImages;
+    return MapImages;
 });

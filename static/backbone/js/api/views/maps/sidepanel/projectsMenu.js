@@ -1,10 +1,11 @@
 define(["marionette",
         "text!" + templateDir + "/sidepanel/projectItem.html",
         "underscore",
+        "jquery",
         "views/maps/sidepanel/item"
 
     ],
-    function (Marionette, projectItem, _, Item) {
+    function (Marionette, projectItem, _, $, Item) {
         'use strict';
         /**
          * Class that controls the available projects menu,
@@ -16,12 +17,15 @@ define(["marionette",
              * @lends localground.maps.views.ProjectsMenu#
              */
             events: {
-                'click div': 'stopPropagation'
+                'click .project-item': 'toggleVisible'
             },
             childViewOptions: {
                 template: _.template(projectItem)
             },
-            childView: Item,
+            childView: Marionette.ItemView.extend({
+                template: _.template(projectItem),
+                modelEvents: {'change': 'render'}
+            }),
             /**
              * Initializes the project menu and fetches the available
              * projects from the Local Ground Data API.
@@ -36,9 +40,16 @@ define(["marionette",
                 this.app = opts.app;
                 this.collection = opts.projects;
                 this.childViewOptions.app = this.app;
-                this.app.vent.on('selected-projects-updated', this.syncCheckboxes.bind(this));
+                //this.app.vent.on('selected-projects-updated', this.syncCheckboxes.bind(this));
                 this.app.vent.trigger('load-projects', this.collection);
             },
+
+            //TODO: Need to not just load all projects immediately, probably
+            onAddChild: function (childView) {
+                var project = childView.model;
+                this.app.vent.trigger('project-requested', {id: project.get('id')});
+            },
+            /*
             syncCheckboxes: function (data) {
                 this.collection.each(function (project) {
                     if (data.projects.get(project.id)) {
@@ -48,18 +59,19 @@ define(["marionette",
                     }
                 });
             },
+            */
             /**
              * Catches the div click event and ignores it
              * @param {Event} e
              */
-            stopPropagation: function (e) {
+            toggleVisible: function (e) {
+                var project = this.collection.get($(e.target).find('input').val());
+                if (project) {
+                    project.set('isVisible', !project.get('isVisible'));
+                }
+                this.collection.trigger('selected-projects-change');
                 e.stopPropagation();
-            },
-
-            destroy: function () {
-                this.remove();
             }
-
         });
         return ProjectsMenu;
     });

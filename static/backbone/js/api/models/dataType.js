@@ -1,11 +1,12 @@
-define(["models/base"], function() {
-	var DataType = localground.models.Base.extend({
-		defaults: {
-			name: "Untitled"
-		},
-		toString: function() {
-			return this.get('name');
-		}
-	});
-	return DataType;
+define(["models/base"], function (Base) {
+    "use strict";
+    var DataType = Base.extend({
+        defaults: {
+            name: "Untitled"
+        },
+        toString: function () {
+            return this.get('name');
+        }
+    });
+    return DataType;
 });
