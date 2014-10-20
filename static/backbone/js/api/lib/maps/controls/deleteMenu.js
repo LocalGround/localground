@@ -3,10 +3,10 @@ define(["underscore"], function (_) {
     /**
      * Class that lets a user delete a selected vertex of a path.
      * @class DeleteMenu
-     * @param {Sandbox} sb
+     * @param {Application} app
      * The controller's sandbox interface
      */
-    var DeleteMenu = function (sb) {
+    var DeleteMenu = function () {
         this.div_ = document.createElement('div');
         this.div_.className = 'delete-menu';
         this.div_.innerHTML = 'Delete';
@@ -87,11 +87,9 @@ define(["underscore"], function (_) {
             this.close();
         },
 
-        initialize: function (sb) {
-            this.sb = sb;
-            this.sb.listen({
-                'show-delete-menu': this.open
-            });
+        initialize: function (opts) {
+            this.app = opts.app;
+            this.app.vent.on('show-delete-menu', this.open.bind(this));
             var menu = this;
             google.maps.event.addDomListener(this.div_, 'click', function () {
                 menu.removeVertex();

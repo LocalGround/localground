@@ -4,7 +4,7 @@ define(["jquery"], function ($) {
      * Class that controls marker point model overlays.
      * @class Point
      */
-    var Polyline = function (sb, opts) {
+    var Polyline = function (app, opts) {
 
         this._googleOverlay = null;
         this.model = null;
@@ -14,8 +14,8 @@ define(["jquery"], function ($) {
             return "Polyline";
         };
 
-        this.initialize = function (sb, opts) {
-            this.sb = sb;
+        this.initialize = function (app, opts) {
+            this.app = app;
             $.extend(this, opts);
             this.createOverlay(opts.isVisible || false);
         };
@@ -155,12 +155,9 @@ define(["jquery"], function ($) {
                 if (that._googleOverlay.getPath().getLength() <= 2) {
                     return;
                 }
-                that.sb.notify({
-                    type: 'show-delete-menu',
-                    data: {
-                        googleOverlay: that._googleOverlay,
-                        point: e.vertex
-                    }
+                that.app.vent.trigger('show-delete-menu', {
+                    googleOverlay: that._googleOverlay,
+                    point: e.vertex
                 });
             });
         };
@@ -170,7 +167,7 @@ define(["jquery"], function ($) {
             model.save();
         };
 
-        this.initialize(sb, opts);
+        this.initialize(app, opts);
 
     };
     return Polyline;

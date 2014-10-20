@@ -3,10 +3,10 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
     /**
      * Class that lets a user delete a selected vertex of a path.
      * @class DrawingManager
-     * @param {Sandbox} sb
-     * The controller's sandbox interface
+     * @param {options} opts
+     *
      */
-    var DrawingManager = function (sb) {
+    var DrawingManager = function (opts) {
         this.dm = null;
         this.polygonOptions = {
             strokeWeight: 0,
@@ -31,8 +31,8 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             }
         };
 
-        this.initialize = function (sb) {
-            this.sb = sb;
+        this.initialize = function (opts) {
+            this.app = opts.app;
             this.dm = new google.maps.drawing.DrawingManager({
                 //drawingMode: google.maps.drawing.OverlayType.MARKER,
                 markerOptions: this.markerOptions,
@@ -56,9 +56,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             var that = this;
 
             //add listeners:
-            this.sb.listen({
-                "mode-change": this.changeMode
-            });
+            this.app.vent.on("mode-change", this.changeMode.bind(this));
 
             google.maps.event.addListener(this.dm, 'overlaycomplete', function (e) {
                 that.addMarker(e.overlay);
@@ -66,7 +64,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         };
 
         this.changeMode = function () {
-            if (this.sb.getMode() === "view") {
+            if (this.app.getMode() === "view") {
                 this.hide();
             } else {
                 this.show();
@@ -74,7 +72,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         };
 
         this.show = function () {
-            this.dm.setMap(this.sb.getMap());
+            this.dm.setMap(this.app.getMap());
         };
 
         this.hide = function () {
@@ -84,7 +82,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         this.addMarker = function (googleOverlay) {
             var that = this,
                 model = new Marker({
-                    project_id: this.sb.getActiveProjectID(),
+                    project_id: this.app.getActiveProjectID(),
                     color: "999999"
                 });
             model.setGeometry(googleOverlay);
@@ -110,10 +108,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             });
 
             //notify the dataManager that a new data element has been added:
-            this.sb.notify({
-                type: "marker-added",
-                data: opts
-            });
+            this.app.vent.trigger("marker-added", opts);
 
             //shows the overlay and the bubble on the map
             model.trigger("show-overlay");
@@ -123,7 +118,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         };
 
         //call initialization function:
-        this.initialize(sb);
+        this.initialize(opts);
     };
 
 

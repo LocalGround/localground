@@ -12,7 +12,6 @@ define(["marionette", "jquery"], function (Marionette, $) {
 
         /** A rendered item template */
         template: null,
-
         /** A Backbone model */
         model: null,
 
@@ -33,8 +32,6 @@ define(["marionette", "jquery"], function (Marionette, $) {
             'click a': 'zoomTo',
             'mouseover .data-item': 'showTip',
             'mouseout .data-item': 'hideTip',
-            'click .project-item': 'triggerToggleProjectData',
-            'click .cb-project': 'toggleProjectData',
             'dragend .item-icon': 'dropItem'
         },
 
@@ -61,11 +58,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
             //this.render();
             this.listenTo(this.model, 'show-item', this.showItem);
             this.listenTo(this.model, 'hide-item', this.hideItem);
-            this.listenTo(this.model, 'check-item', this.checkItem);
-            this.listenTo(this.model, 'uncheck-item', this.uncheckItem);
-            this.listenTo(this.model, 'change', this.render);
-            this.listenTo(this.model, 'reset', this.render);
-            this.app.vent.on("mode-change", this.setEditMode);
+            this.listenTo(this.app.vent, "mode-change", this.setEditMode);
             document.addEventListener('dragover', function (e) {
                 e.preventDefault();
             });
@@ -73,6 +66,13 @@ define(["marionette", "jquery"], function (Marionette, $) {
                 e.preventDefault();
             });
 
+        },
+
+        onRender: function () {
+            if (this.showOverlay()) {
+                this.model.trigger("show-overlay");
+            }
+            this.setEditMode();
         },
 
         /**
@@ -109,7 +109,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
          */
         toggleCheckbox: function (e) {
             var $cb = this.$el.find('input');
-            this.toggleElement($cb.attr('checked'));
+            this.toggleElement($cb.is(':checked'));
             e.stopPropagation();
         },
 
@@ -121,8 +121,8 @@ define(["marionette", "jquery"], function (Marionette, $) {
         triggerToggleCheckbox: function (e) {
             var $cb = this.$el.find('input');
             if ($cb.css('visibility') !== 'hidden') {
-                $cb.attr('checked', !$cb.attr('checked'));
-                this.toggleElement($cb.attr('checked'));
+                $cb.attr('checked', !$cb.is(':checked'));
+                this.toggleElement($cb.is(':checked'));
             }
             if (e) {
                 e.stopPropagation();
@@ -131,78 +131,42 @@ define(["marionette", "jquery"], function (Marionette, $) {
 
         showItem: function () {
             this.checkItem();
-            this.toggleElement(true);
         },
 
         hideItem: function () {
             this.uncheckItem();
-            this.toggleElement(false);
         },
 
         checkItem: function () {
             this.$el.find('input').attr('checked', true);
+            this.toggleElement(true);
             this.saveState();
         },
 
         uncheckItem: function () {
             this.$el.find('input').attr('checked', false);
+            this.toggleElement(false);
             this.saveState();
         },
 
-        /**
-         * Triggers the checkbox event from a DIV click event
-         * @param {Event} e
-         */
-        triggerToggleProjectData: function (e) {
-            var $cb = this.$el.find('input');
-            $cb.attr('checked', !$cb.attr('checked'));
-            this.toggleProjectData(e);
-            e.stopPropagation();
-
-        },
-        /**
-         * Control that adds / removes project data within the
-         * data manager
-         * @param {Event} e
-         */
-        toggleProjectData: function (e) {
-            var $cb = this.$el.find('input');
-            if ($cb.prop("checked")) {
-                this.app.vent.trigger('project-requested', {id: $cb.val()});
-            } else {
-                this.app.vent.trigger('project-removal-requested', {id: $cb.val()});
-            }
-            this.saveState();
-            e.stopPropagation();
-        },
-
-        isVisible: function () {
-            return this.$el.find('input').attr('checked') === "checked";
+        showOverlay: function () {
+            return this.$el.find('input').is(":checked") && this.model.get('isVisible');
         },
         /**
          * Helps the checkbox communicate with the toggleElement function.
          * @param {Event} e
          */
         zoomTo: function (e) {
-            if (this.model.get("geometry") && this.isVisible()) {
+            if (this.model.get("geometry") && this.showOverlay()) {
                 this.model.trigger("zoom-to-overlay");
             }
             e.stopPropagation();
         },
 
-        /**
-         * Renders the HTML from the model
-         */
-        render: function () {
-            //todo: restore state here:
-            var opts = this.restoreState();
-            $.extend(opts, this.model.toTemplateJSON());
-            //for the marker model:
-            if (this.model.getDescriptiveText) {
-                opts.descriptiveText = this.model.getDescriptiveText();
-            }
-            this.$el.html(this.template(opts));
-            this.setEditMode();
+        templateHelpers: function () {
+            return {
+                showOverlay: this.showOverlay()
+            };
         },
 
         /**
@@ -222,35 +186,32 @@ define(["marionette", "jquery"], function (Marionette, $) {
 
         /** Show a tooltip on the map if the geometry exists */
         showTip: function () {
-            if (this.model.get("geometry") && this.isVisible()) {
+            if (this.model.get("geometry") && this.showOverlay()) {
                 this.model.trigger("show-tip");
             }
         },
 
         /** Hide the map tooltip */
         hideTip: function () {
-            this.app.vent.trigger('hide-tip', {model: this.model});
+            this.model.trigger('hide-tip');
         },
         saveState: function () {
             this.app.saveState(this.id, {
-                isVisible: this.isVisible()
+                showOverlay: this.showOverlay()
             });
         },
 
         restoreState: function () {
             var state = this.app.restoreState(this.id);
             if (!state) {
-                return { isVisible: false };
+                return { showOverlay: false };
             }
 
             return state;
 
         },
 
-        destroy: function () {
-            this.remove();
-        },
-
+        //todo: this needs to go elsewhere, somewhere that knows about the map
         dropItem: function (event) {
             function elementContainsPoint(domElement, x, y) {
                 return x > domElement.offsetLeft && x < domElement.offsetLeft + domElement.offsetWidth &&
@@ -276,8 +237,8 @@ define(["marionette", "jquery"], function (Marionette, $) {
                 this.model.setGeometry(latLng);
                 this.model.save();
                 this.showItem();
+                this.model.trigger('show-overlay');
             }
-            //TODO instantiate point then add geodata to model
             //Trigger sync, then trigger display on map
 
         }

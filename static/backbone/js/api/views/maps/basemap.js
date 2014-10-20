@@ -2,9 +2,12 @@ define(["marionette",
         "jquery",
         "lib/maps/controls/searchBox",
         "lib/maps/controls/geolocation",
-        "lib/maps/controls/tileController"
+        "lib/maps/controls/tileController",
+        "views/maps/overlays/overlayManager",
+        "lib/maps/controls/deleteMenu",
+        "lib/maps/controls/drawingManager"
     ],
-    function (Marionette, $, SearchBox, GeoLocation, TileController) {
+    function (Marionette, $, SearchBox, GeoLocation, TileController, OverlayManager, DeleteMenu, DrawingManager) {
         'use strict';
         /**
          * A class that handles the basic Google Maps functionality,
@@ -47,7 +50,7 @@ define(["marionette",
              * A list of available tilesets, based on user's profile.
              */
             initialize: function (opts) {
-                this.app = opts.app;
+                this.opts = opts;
                 $.extend(this, opts);
                 this.restoreState(this.id);
 
@@ -171,6 +174,11 @@ define(["marionette",
                         this.activeMapTypeID = state.basemapID;
                     }
                 }
+            },
+            onShow: function () {
+                this.overlayManager = new OverlayManager(this.opts);
+                this.deleteMenu = new DeleteMenu(this.opts);
+                this.drawingManager = new DrawingManager(this.opts);
             }
 
         });

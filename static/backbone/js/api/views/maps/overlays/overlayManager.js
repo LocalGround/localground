@@ -29,11 +29,6 @@ define(["backbone",
                 opts = _.extend(opts, data);
                 this.overlayGroups.push(new OverlayGroup(opts));
 
-                /*this.sb.loadSubmodule(
-                 "overlayGroup-" + data.collection.key,
-                 localground.maps.views.OverlayGroup,
-                 { collection: data.collection, isVisible: false }
-                 );*/
             },
             destroy: function () {
                 this.remove();

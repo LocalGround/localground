@@ -1,8 +1,9 @@
-define(["collections/dataTypes", "models/base"],
-    function (DataTypes, Base) {
+define(["underscore", "collections/dataTypes", "models/base"],
+    function (_, DataTypes, Base) {
+        'use strict';
         var Field = Base.extend({
             urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
-            defaults: {
+            defaults: _.extend({}, Base.prototype.defaults, {
                 data_type: 1,
                 col_alias: 'New Column Name',
                 is_display_field: true,
@@ -10,7 +11,7 @@ define(["collections/dataTypes", "models/base"],
                 is_printable: true,
                 has_snippet_field: true,
                 ordering: 1
-            },
+            }),
             schema: {
                 data_type: { type: 'Select', options: new DataTypes() },
                 col_alias: { type: 'Text', title: 'Column Name' },

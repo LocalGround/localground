@@ -4,7 +4,7 @@ define(["underscore", "jquery"], function (_, $) {
      * Class that controls marker point model overlays.
      * @class Point
      */
-    var Point = function (sb, opts) {
+    var Point = function (app, opts) {
 
         this._googleOverlay = null;
         this.model = null;
@@ -29,8 +29,8 @@ define(["underscore", "jquery"], function (_, $) {
             return "Point";
         };
 
-        this.initialize = function (sb, opts) {
-            this.sb = sb;
+        this.initialize = function (app, opts) {
+            this.app = app;
             $.extend(this, opts);
             this.createOverlay(opts.isVisible || false);
         };
@@ -105,11 +105,8 @@ define(["underscore", "jquery"], function (_, $) {
                 'title': 'Drag this icon to re-position it'
             });
             google.maps.event.addListener(this._googleOverlay, "dragstart", function (mEvent) {
-                that.sb.notify({ type: "hide-tip" });
-                that.sb.notify({
-                    type: "hide-bubble",
-                    data: { model: model }
-                });
+                that.app.vent.trigger({ type: "hide-tip" });
+                that.app.vent.trigger("hide-bubble", { model: model });
             });
             google.maps.event.addListener(this._googleOverlay, "dragend", function (mEvent) {
                 that.map.panTo(that._googleOverlay.position);
@@ -138,9 +135,9 @@ define(["underscore", "jquery"], function (_, $) {
             this._googleOverlay.setOptions({
                 icon: icon
             });
-        }
+        };
 
-        this.initialize(sb, opts);
+        this.initialize(app, opts);
 
     };
     return Point;

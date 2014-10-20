@@ -6,9 +6,9 @@ define(["models/base", "underscore"], function (Base, _) {
      * @see <a href="http://localground.org/api/0/projects/">http://localground.org/api/0/projects/</a>
      */
     var Record = Base.extend({
-        defaults: {
+        defaults: _.extend({}, Base.prototype.defaults, {
             name: ""
-        },
+        }),
         viewSchema: null,
         initialize: function (data, opts) {
             Base.prototype.initialize.apply(this, arguments);

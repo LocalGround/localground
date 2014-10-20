@@ -42,6 +42,7 @@ define(["jquery"],
             },
             setMode: function (mode) {
                 this.mode = mode;
+                this.vent.trigger('mode-change');
             },
             getMode: function () {
                 return this.mode;

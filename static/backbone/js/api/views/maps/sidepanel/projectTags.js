@@ -43,29 +43,6 @@ define(["marionette",
                 //this.render();
             },
 
-            /** A rendered projectItem template */
-            /*
-            render: function () {
-                if (!this._projects) {
-                    return;
-                }
-                var that = this;
-                this.$el.empty();
-                this._projects.each(function (model) {
-                    var opts = model.toJSON();
-                    opts.isActive = (model.id == that.sb.getActiveProjectID());
-                    that.$el.append($(that.template(opts)));
-                });
-            },*/
-            /*
-            renderProjects: function (data) {
-                if (data && data.projects) {
-                    this._projects = data.projects;
-                }
-                this.render();
-            },
-            */
-
             setActiveProject: function (newActiveProject) {
                 if (newActiveProject) {
                     if (this.activeProject) {
@@ -92,6 +69,11 @@ define(["marionette",
                     }
                     this.setActiveProject(this.collection.findWhere({isVisible: true}));
                 }
+            },
+
+            removeProject: function (e) {
+                var projectId = e.target.parentElement.getElementsByTagName('input')[0].value;
+                this.app.vent.trigger('toggle-project', projectId, false);
             }
 
         });

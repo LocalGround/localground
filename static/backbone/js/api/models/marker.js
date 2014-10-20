@@ -1,8 +1,9 @@
-define(["models/base",
+define(["underscore",
+    "models/base",
     "lib/maps/geometry/point",
     "lib/maps/geometry/polyline",
     "lib/maps/geometry/polygon"
-    ], function (Base, Point, Polyline, Polygon) {
+    ], function (_, Base, Point, Polyline, Polygon) {
     "use strict";
     /**
      * A Backbone Model class for the Marker datatype.
@@ -11,6 +12,12 @@ define(["models/base",
      */
     var Marker = Base.extend({
         urlRoot: '/api/0/markers/',
+
+        toTemplateJSON: function () {
+            var json = Base.prototype.toTemplateJSON.apply(this, arguments);
+            json.descriptiveText = this.getDescriptiveText();
+            return json;
+        },
 
         getCenter: function () {
             var geoJSON = this.get("geometry");
@@ -44,15 +51,6 @@ define(["models/base",
                 messages.push(this.get("record_count") + ' data record(s)');
             }
             return messages.join(', ');
-        },
-
-        toTemplateJSON: function () {
-            var json = Base.prototype.toTemplateJSON.apply(this, arguments);
-            json.descriptiveText = this.getDescriptiveText();
-            return json;
-        },
-        defaults: {
-            name: "Untitled"
         }
     });
     return Marker;

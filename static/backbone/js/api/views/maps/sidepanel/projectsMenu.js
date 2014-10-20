@@ -1,5 +1,5 @@
 define(["marionette",
-        "text!" + templateDir + "/sidepanel/projectItem.html",
+            "text!" + templateDir + "/sidepanel/projectItem.html",
         "underscore",
         "jquery"
     ],
@@ -15,7 +15,8 @@ define(["marionette",
              * @lends localground.maps.views.ProjectsMenu#
              */
             events: {
-                'click .project-item': 'toggleVisible'
+                'click .cb-project': 'toggleCheckbox',
+                'click .project-item': 'triggerToggleCheckbox'
             },
             childViewOptions: {
                 template: _.template(projectItem)
@@ -38,7 +39,7 @@ define(["marionette",
                 this.app = opts.app;
                 this.collection = opts.projects;
                 this.childViewOptions.app = this.app;
-                //this.app.vent.on('selected-projects-updated', this.syncCheckboxes.bind(this));
+                this.listenTo(this.app.vent, 'toggle-project', this.toggleProject);
                 this.app.vent.trigger('load-projects', this.collection);
             },
 
@@ -47,28 +48,33 @@ define(["marionette",
                 var project = childView.model;
                 this.app.vent.trigger('project-requested', {id: project.get('id')});
             },
-            /*
-            syncCheckboxes: function (data) {
-                this.collection.each(function (project) {
-                    if (data.projects.get(project.id)) {
-                        project.trigger("check-item");
-                    } else {
-                        project.trigger("uncheck-item");
-                    }
-                });
-            },
-            */
             /**
              * Catches the div click event and ignores it
              * @param {Event} e
              */
-            toggleVisible: function (e) {
-                var project = this.collection.get($(e.target).find('input').val());
+            toggleCheckbox: function (e) {
+                var input = $(e.target).find('input').addBack().filter('input');
+                var checked = input.is(':checked'),
+                    projectId = input.val();
+                this.app.vent.trigger('toggle-project', projectId, checked);
+
+                e.stopPropagation();
+            },
+            triggerToggleCheckbox: function (e) {
+                var $cb = $(e.target).find('input');
+                if ($cb.css('visibility') !== 'hidden') {
+                    $cb.attr('checked', !$cb.is(':checked'));
+                    this.toggleCheckbox(e);
+                }
+            },
+
+            toggleProject: function (projectId, visible) {
+                var project = this.collection.get(projectId);
                 if (project) {
-                    project.set('isVisible', !project.get('isVisible'));
+                    project.set('isVisible', visible);
                 }
                 this.collection.trigger('selected-projects-change');
-                e.stopPropagation();
+
             }
         });
         return ProjectsMenu;

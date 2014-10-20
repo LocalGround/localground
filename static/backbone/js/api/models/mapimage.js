@@ -8,9 +8,6 @@ define(["models/base"], function (Base) {
     var MapImage = Base.extend({
         getNamePlural: function () {
             return "scans";
-        },
-        defaults: {
-            name: "Untitled"
         }
     });
     return MapImage;

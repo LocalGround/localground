@@ -1,9 +1,11 @@
-define(["backbone",
+define(["marionette",
     "jquery",
+    "underscore",
     "lib/maps/overlays/point",
     "lib/maps/overlays/polyline",
-    "lib/maps/overlays/polygon"
-    ], function (Backbone, $, Point, Polyline, Polygon) {
+    "lib/maps/overlays/polygon",
+    "lib/maps/overlays/infobubbles/base"
+    ], function (Marionette, $, _, Point, Polyline, Polygon, Infobubble) {
     "use strict";
     /**
      * This class controls the rendering and underlying
@@ -11,33 +13,39 @@ define(["backbone",
      * lines, and polygons
      * @class Overlay
      */
-    var Base = Backbone.View.extend({
+    var Base = Marionette.ItemView.extend({
 
-        sb: null,
         map: null,
         model: null,
         overlay: null,
+        template: false,
+        isShowing: false,
 
+        modelEvents: {
+            'change:geometry': 'updateOverlay',
+            'change': 'render',
+            'show-overlay': 'show',
+            'hide-overlay': 'hide',
+            'zoom-to-overlay': 'zoomTo'
+        },
         /** called when object created */
         initialize: function (opts) {
-            debugger;
             //alert(localground.maps.overlays.Polyline);
             this.app = opts.app;
             this.id = this.model.get('overlay_type') + this.model.get('id');
             $.extend(opts, this.restoreState());
             this.map = opts.app.getMap();
             this.model = opts.model;
-            this.initOverlayType(opts.isVisible || false);
+            this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
+            this.initOverlayType(opts.isVisible);
 
-            this.listenTo(this.model, 'remove', this.remove);
-            this.listenTo(this.model, 'show-overlay', this.show);
-            this.listenTo(this.model, 'show-tip', this.showTip);
-            this.listenTo(this.model, 'show-bubble', this.showBubble);
-            this.listenTo(this.model, 'hide-overlay', this.hide);
-            this.listenTo(this.model, 'zoom-to-overlay', this.zoomTo);
-            this.listenTo(this.model, 'change', this.redraw);
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
 
+        },
+
+        updateOverlay: function() {
+            this.getGoogleOverlay().setMap(null);
+            this.initOverlayType(this.isShowing);
         },
 
         initOverlayType: function (isVisible) {
@@ -64,53 +72,38 @@ define(["backbone",
             var that = this;
             //attach click event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-                that.showBubble();
+                that.infoBubble.showBubble();
             });
             //attach mouseover event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
-                that.showTip();
+                that.infoBubble.showTip();
             });
             //attach mouseout event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function () {
-                that.app.vent.trigger("hide-tip");
+                that.model.trigger("hide-tip");
             });
         },
 
         /** determines whether the overlay is visible on the map. */
         isVisible: function () {
-            return this.getGoogleOverlay().getMap() != null;
-        },
-
-        getBubbleOpts: function () {
-            var opts = {
-                model: this.model,
-                center: this.getCenter()
-            };
-            if (this.getGoogleOverlay() instanceof google.maps.Marker) {
-                opts.marker = this.getGoogleOverlay();
-            }
-            return opts;
-        },
-
-        showBubble: function () {
-            if (!this.isVisible()) {
-                return;
-            }
-            this.app.vent.trigger("show-bubble", this.getBubbleOpts());
-        },
-
-        showTip: function () {
-            if (!this.isVisible()) {
-                return;
-            }
-            this.app.vent.trigger("show-tip", this.getBubbleOpts());
+            return this.getGoogleOverlay().getMap() != null && this.isShowing;
         },
 
         /** shows the google.maps overlay on the map. */
         show: function () {
             var overlay = this.getGoogleOverlay();
             overlay.setMap(this.map);
+            this.isShowing = true;
             this.saveState();
+        },
+
+        render: function () {
+            if (this.isShowing && this.model.get('isVisible')) {
+                this.redraw();
+                this.show();
+            } else {
+                this.hide();
+            }
         },
 
 
@@ -118,8 +111,9 @@ define(["backbone",
         hide: function () {
             var overlay = this.getGoogleOverlay();
             overlay.setMap(null);
-            this.app.vent.trigger("hide-bubble", { model: this.model });
+            this.model.trigger("hide-bubble");
             this.saveState();
+            this.isShowing = false;
         },
 
         saveState: function () {
@@ -136,17 +130,10 @@ define(["backbone",
             return state;
         },
 
-        remove: function () {
+        onBeforeDestroy: function () {
             var overlay = this.getGoogleOverlay();
             overlay.setMap(null);
             Base.__super__.remove.apply(this);
-        },
-
-        /**
-         * Needs to be implemented
-         */
-        destroy: function () {
-            this.remove();
         },
 
         /********************************************************/
@@ -199,7 +186,7 @@ define(["backbone",
         },
 
         redraw: function () {
-            alert("implement in child class");
+            //alert("implement in child class");
         }
 
     });

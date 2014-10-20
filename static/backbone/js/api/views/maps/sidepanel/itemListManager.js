@@ -4,10 +4,9 @@
 define(["marionette",
         "underscore",
         "jquery",
-        "text!" + templateDir + "/sidepanel/itemListManager.html",
         "views/maps/sidepanel/itemList"
     ],
-    function (Marionette, _, $, itemListManagerTemplate, ItemList) {
+    function (Marionette, _, $, ItemList) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -17,7 +16,7 @@ define(["marionette",
         var ItemListManager = Marionette.LayoutView.extend({
             tagName: 'div',
             id: 'item-list',
-            template: _.template(itemListManagerTemplate),
+            template: _.template(""),
 
             initialize: function (opts) {
                 this.app = opts.app;

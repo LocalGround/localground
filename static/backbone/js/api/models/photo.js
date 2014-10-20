@@ -8,9 +8,6 @@ define(["models/base"], function (Base) {
     var Photo = Base.extend({
         getNamePlural: function () {
             return "photos";
-        },
-        defaults: {
-            name: "Untitled"
         }
     });
     return Photo;

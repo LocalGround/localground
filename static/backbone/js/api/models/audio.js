@@ -6,9 +6,6 @@ define(["models/base"], function (Base) {
      * @see <a href="http://localground.org/api/0/audio/">http://localground.org/api/0/audio/</a>
      */
     var Audio = Base.extend({
-        defaults: {
-            name: "Untitled"
-        }
     });
     return Audio;
 });

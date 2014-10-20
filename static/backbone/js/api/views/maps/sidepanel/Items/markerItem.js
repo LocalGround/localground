@@ -1,8 +1,9 @@
 define([
+    "underscore",
     "views/maps/sidepanel/items/item",
     "lib/maps/geometry/point",
     "lib/maps/geometry/polyline"
-], function (Item, Point, Polyline) {
+], function (_, Item, Point, Polyline) {
     "use strict";
     /**
      * Class that controls photo Models. Extend the
@@ -48,6 +49,22 @@ define([
                 }
             }
             return this.googleOverlay;
+        },
+
+        templateHelpers: function () {
+            return _.extend({}, Item.prototype.templateHelpers.call(this), {
+                descriptiveText: this.model.getDescriptiveText(),
+                geometryType: this.getGeometryType()
+            });
+        },
+
+        getGeometryType: function () {
+            if (this.model.get('geometry')) {
+                return this.model.get('geometry').type;
+            }
+
+            return "";
+
         }
 
     });

@@ -3,17 +3,17 @@ define(["marionette",
         "underscore",
         "views/maps/basemap",
         "views/maps/sidepanel/dataPanel",
-        'views/maps/overlays/overlayManager',
         "lib/maps/data/dataManager",
         "lib/appUtilities",
         "collections/projects",
         "jquery.bootstrap"
     ],
-    function (Marionette, Backbone, _, BaseMap, DataPanel, OverlayManager, DataManager, appUtilities, Projects) {
+    function (Marionette, Backbone, _, BaseMap, DataPanel, DataManager, appUtilities, Projects) {
         "use strict";
 
         var Mapplication = new Marionette.Application();
         _.extend(Mapplication, appUtilities);
+        Mapplication.setMode('view');
 
         Mapplication.addRegions({
             topBarRegion: "#topbar",
@@ -42,7 +42,6 @@ define(["marionette",
             options.app = this;
             var basemap = new BaseMap(options),
                 sidePanel = new DataPanel(options),
-                overlayManager = new OverlayManager(options),
                 dataManager = new DataManager(options);
             this.map = basemap.map;
             Mapplication.mapRegion.show(basemap);

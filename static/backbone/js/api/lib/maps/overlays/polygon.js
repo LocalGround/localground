@@ -5,8 +5,8 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
      * formats and vice versa
      * @class Polygon
      */
-    var Polygon = function (sb, opts) {
-        Polyline.call(this, sb, opts);
+    var Polygon = function (app, opts) {
+        Polyline.call(this, app, opts);
 
         this.getType = function () {
             return "Polygon";
@@ -73,7 +73,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
             return { type: 'Polygon', coordinates: [coords] };
         };
 
-        this.initialize(sb, opts);
+        this.initialize(app, opts);
     };
     return Polygon;
 });

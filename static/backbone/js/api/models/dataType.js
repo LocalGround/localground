@@ -1,9 +1,7 @@
-define(["models/base"], function (Base) {
+define(["underscore", "models/base"], function (_, Base) {
     "use strict";
     var DataType = Base.extend({
-        defaults: {
-            name: "Untitled"
-        },
+
         toString: function () {
             return this.get('name');
         }

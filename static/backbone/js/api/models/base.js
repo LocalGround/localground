@@ -1,5 +1,5 @@
-define(["backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point"],
-    function (Backbone, Geometry, Point) {
+define(["backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point", "underscore"],
+    function (Backbone, Geometry, Point, _) {
         "use strict";
         /**
          * An "abstract" Backbone Model; the root of all of the other
@@ -12,8 +12,8 @@ define(["backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point"],
                 return this.get("overlay_type");
             },
             defaults: {
-                isVisible: false,
-                isExpanded: false
+                name: "Untitled",
+                isVisible: true
             },
             urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
             updateSchema: null,
@@ -61,7 +61,7 @@ define(["backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point"],
             },
             fetchCreateMetadata: function () {
                 var that = this;
-                if (this.urlRoot == null) {
+                if (!this.urlRoot) {
                     this.urlRoot = this.collection.url;
                 }
                 $.ajax({
@@ -92,7 +92,7 @@ define(["backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point"],
                 this.updateSchema = this._generateSchema(metadata, true);
             },
             _generateSchema: function (metadata, edit_only) {
-                if (metadata == null) {
+                if (!metadata) {
                     return null;
                 }
                 var schema = {};

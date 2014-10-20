@@ -1,4 +1,4 @@
-define(["models/base"], function (Base) {
+define(["underscore", "models/base"], function (_, Base) {
     "use strict";
     /**
      * A Backbone Model class for the Project datatype.
@@ -6,11 +6,10 @@ define(["models/base"], function (Base) {
      * @see <a href="http://localground.org/api/0/projects/">http://localground.org/api/0/projects/</a>
      */
     var Project = Base.extend({
-        defaults: {
-            name: "Untitled",
+        defaults: _.extend({}, Base.prototype.defaults, {
             isActive: false,
             isVisible: true
-        },
+        }),
         urlRoot: "/api/0/projects/"
     });
     return Project;
