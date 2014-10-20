@@ -14,13 +14,13 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
          * @param {Integer} opts.activeMapTypeID
          * The tileset that should be initialized on startup.
          */
-        var TileController = function (sb, opts) {
+        var TileController = function (app, opts) {
             /**
              * Raw data array of map overlays, pulled from the Local Ground Data API.
              * @see <a href="http://localground.org/api/0/tiles">Local Ground Data API</a>.
              */
             this.overlays = null;
-
+            this.app = app;
             var that = this,
 
                 /**
@@ -65,7 +65,7 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                         }
                     });
                     map.mapTypeControlOptions.mapTypeIds = mapTypeIDs;
-                }, /**
+                }.bind(this), /**
                  * @method
                  * Gets the tile information according to the key/value identifier.
                  */
@@ -77,7 +77,7 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                         }
                     }
                     return null;
-                },
+                }.bind(this),
 
                 /**
                  * Initializes the TileController
@@ -101,7 +101,7 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                     //initialize tiles and set the active map type
                     initTiles();
                     that.setActiveMapType(opts.activeMapTypeID);
-                };
+                }.bind(this);
 
 
             /**
@@ -146,7 +146,7 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                     mapTypeID = mapType.providerID;
                 }
                 map.setMapTypeId(mapTypeID);
-                //sb.notify({ type : "map-tiles-changed" });
+                this.app.vent.trigger("map-tiles-changed");
             };
 
 

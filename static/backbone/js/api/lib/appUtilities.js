@@ -7,9 +7,8 @@ define(["jquery"],
     function ($) {
         "use strict";
         return {
-            saveState: function (module_selector, obj, replace) {
-                replace = replace || false;
-                this.saveToLocalStorage(module_selector, obj, replace);
+            saveState: function (id, obj, replace) {
+                this.saveToLocalStorage(id, obj, replace);
             },
             restoreState: function (module_selector, key) {
                 this.getFromLocalStorage(module_selector, key);

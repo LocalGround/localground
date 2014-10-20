@@ -1,11 +1,9 @@
 define(["marionette",
         "text!" + templateDir + "/sidepanel/projectItem.html",
         "underscore",
-        "jquery",
-        "views/maps/sidepanel/item"
-
+        "jquery"
     ],
-    function (Marionette, projectItem, _, $, Item) {
+    function (Marionette, projectItem, _, $) {
         'use strict';
         /**
          * Class that controls the available projects menu,

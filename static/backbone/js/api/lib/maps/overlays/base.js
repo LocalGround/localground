@@ -19,11 +19,13 @@ define(["backbone",
         overlay: null,
 
         /** called when object created */
-        initialize: function (sb, opts) {
+        initialize: function (opts) {
+            debugger;
             //alert(localground.maps.overlays.Polyline);
-            this.sb = sb;
+            this.app = opts.app;
+            this.id = this.model.get('overlay_type') + this.model.get('id');
             $.extend(opts, this.restoreState());
-            this.map = sb.getMap();
+            this.map = opts.app.getMap();
             this.model = opts.model;
             this.initOverlayType(opts.isVisible || false);
 
@@ -34,9 +36,7 @@ define(["backbone",
             this.listenTo(this.model, 'hide-overlay', this.hide);
             this.listenTo(this.model, 'zoom-to-overlay', this.zoomTo);
             this.listenTo(this.model, 'change', this.redraw);
-            this.sb.listen({
-                "mode-change": this.changeMode
-            });
+            this.listenTo(this.app.vent, "mode-change", this.changeMode);
 
         },
 
@@ -48,11 +48,11 @@ define(["backbone",
                     isVisible: isVisible
                 };
             if (geoJSON.type === 'Point') {
-                this.overlay = new Point(this.sb, opts);
+                this.overlay = new Point(this.app, opts);
             } else if (geoJSON.type === 'LineString') {
-                this.overlay = new Polyline(this.sb, opts);
+                this.overlay = new Polyline(this.app, opts);
             } else if (geoJSON.type === 'Polygon') {
-                this.overlay = new Polygon(this.sb, opts);
+                this.overlay = new Polygon(this.app, opts);
             } else {
                 alert('Unknown Geometry Type');
             }
@@ -72,9 +72,7 @@ define(["backbone",
             });
             //attach mouseout event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function () {
-                that.sb.notify({
-                    type: "hide-tip",
-                });
+                that.app.vent.trigger("hide-tip");
             });
         },
 
@@ -98,20 +96,14 @@ define(["backbone",
             if (!this.isVisible()) {
                 return;
             }
-            this.sb.notify({
-                type: "show-bubble",
-                data: this.getBubbleOpts()
-            });
+            this.app.vent.trigger("show-bubble", this.getBubbleOpts());
         },
 
         showTip: function () {
             if (!this.isVisible()) {
                 return;
             }
-            this.sb.notify({
-                type: "show-tip",
-                data: this.getBubbleOpts()
-            });
+            this.app.vent.trigger("show-tip", this.getBubbleOpts());
         },
 
         /** shows the google.maps overlay on the map. */
@@ -126,21 +118,18 @@ define(["backbone",
         hide: function () {
             var overlay = this.getGoogleOverlay();
             overlay.setMap(null);
-            this.sb.notify({
-                type: "hide-bubble",
-                data: { model: this.model }
-            });
+            this.app.vent.trigger("hide-bubble", { model: this.model });
             this.saveState();
         },
 
         saveState: function () {
-            this.sb.saveState({
+            this.app.saveState(this.id, {
                 isVisible: this.isVisible()
             });
         },
 
         restoreState: function () {
-            var state = this.sb.restoreState();
+            var state = this.app.restoreState(this.id);
             if (!state) {
                 return { isVisible: false };
             }
@@ -194,7 +183,7 @@ define(["backbone",
         },
 
         changeMode: function () {
-            if (this.sb.getMode() == "view") {
+            if (this.app.getMode() === "view") {
                 this.makeViewable();
             } else {
                 this.makeEditable();

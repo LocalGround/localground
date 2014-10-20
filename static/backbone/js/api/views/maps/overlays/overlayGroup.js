@@ -1,15 +1,17 @@
-define(
-    [
-        'backbone',
-        'config'
-    ], function () {
+define(['marionette',
+        'config',
+        'jquery',
+        'underscore'
+    ],
+    function (Marionette, Config, $, _) {
+        'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
          * functionality. Also coordinates event triggers across all of
          * the constituent views.
          * @class OverlayGroup
          */
-        localground.maps.views.OverlayGroup = Backbone.View.extend({
+        var OverlayGroup = Marionette.View.extend({
             /**
              * @lends localground.maps.views.OverlayGroup#
              */
@@ -40,18 +42,18 @@ define(
              * operations (batch operations like turn on everything, or
              * zoom to extents).
              */
-            initialize: function (sb, opts) {
-                this.sb = sb;
-                this.map = sb.getMap();
+            initialize: function (opts) {
                 $.extend(this, opts);
+                this.opts = opts;
+                this.map = this.app.getMap();
                 this.overlays = {};
-                this.visibleItems = {}
+                this.visibleItems = {};
                 this.key = this.collection.key;
                 var that = this;
 
                 //listen for new data:
                 //this.collection.on('add', this.render, this);
-                this.listenTo(this.collection, 'add', this.render);
+                this.listenTo(this.collection, 'add', this.addOverlay);
                 this.listenTo(this.collection, 'change', this.updateOverlay);
                 this.listenTo(this.collection, 'zoom-to-extent', this.zoomToExtent);
                 this.listenTo(this.collection, 'show-all', this.showAll);
@@ -61,10 +63,10 @@ define(
 
                 //listen for map zoom change, re-render photo icons:
                 google.maps.event.addListener(this.map, 'zoom_changed', function () {
-                    if (that.key != 'photos') {
+                    if (that.key !== 'photos') {
                         return;
                     }
-                    for (key in that.overlays) {
+                    for (var key in that.overlays) {
                         var overlay = that.overlays[key];
                         overlay.getGoogleOverlay().setIcon(overlay.getIcon());
                     }
@@ -78,36 +80,46 @@ define(
              * where the GeoJSON geometry is defined.
              * @param {Backbone.Model} model
              */
-            render: function (model) {
-                if (model.get("geometry") == null) {
+            addOverlay: function (model) {
+                if (!model.get("geometry")) {
                     return;
                 }
                 var key = model.collection.key;
                 var id = model.id;
                 //retrieve the corresponding overlay type from the config.js.
                 var configKey = key.split("_")[0];
-                this.overlays[id] = this.sb.loadSubmodule(
+                var opts = _.clone(this.opts);
+                opts.model = model;
+                //TODO: instantiate overlays
+                this.overlays[id] = new Config[configKey].Overlay(opts);
+                /*this.overlays[id] = this.sb.loadSubmodule(
                     "overlay-" + model.getKey() + "-" + model.id,
-                    localground.config.Config[configKey].Overlay,
+                    Config[configKey].Overlay,
                     { model: model }
-                );
+                );*/
             },
 
             updateOverlay: function (model) {
-                if (model.get("geometry") == null) {
+                if (!model.get("geometry")) {
                     return;
                 }
                 var overlay = this.getOverlay(model);
-                if (overlay) overlay.remove();
+                if (overlay) {
+                    overlay.remove();
+                }
                 var key = model.collection.key;
                 var id = model.id;
                 //retrieve the corresponding overlay type from the config.js.
                 var configKey = key.split("_")[0];
+                var opts = _.clone(this.opts);
+                opts.model = model;
+                this.overlays[id] = new Config[configKey].Overlay(opts);
+                /* TODO: instantiate overlaysf
                 this.overlays[id] = this.sb.loadSubmodule(
                     "overlay-" + model.getKey() + "-" + model.id,
                     localground.config.Config[configKey].Overlay,
                     { model: model }
-                );
+                );*/
                 this.overlays[id].changeMode();
                 this.overlays[id].show();
             },
@@ -115,21 +127,23 @@ define(
             /** Shows all of the map overlays */
             showAll: function () {
                 this.isVisible = true;
-                for (key in  this.overlays)
+                for (var key in  this.overlays) {
                     this.overlays[key].show();
+                }
             },
 
             /** Hides all of the map overlays */
             hideAll: function () {
                 this.isVisible = false;
-                for (key in this.overlays)
+                for (var key in this.overlays) {
                     this.overlays[key].hide();
+                }
             },
 
             /** Zooms to the extent of the collection */
             zoomToExtent: function () {
                 var bounds = new google.maps.LatLngBounds();
-                for (key in this.overlays) {
+                for (var key in this.overlays) {
                     try {
                         //for polylines, polygons, and groundoverlays:
                         bounds.union(this.overlays[key].overlay.getBounds());
@@ -150,8 +164,8 @@ define(
                 this.remove();
             },
             removeItem: function (model) {
-                delete this.overlays[model.id]
+                delete this.overlays[model.id];
             }
         });
-        return localground.maps.views.OverlayGroup;
+        return OverlayGroup;
     });

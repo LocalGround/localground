@@ -26,13 +26,16 @@ define(
         "lib/maps/overlays/photo",
         "lib/maps/overlays/marker",
         "lib/maps/overlays/audio",
-        "lib/maps/overlays/record"
+        "lib/maps/overlays/record",
+        "views/maps/sidepanel/items/photoItem",
+        "views/maps/sidepanel/items/markerItem",
+        "views/maps/sidepanel/items/item"
     ],
     function (photoItemTemplate, audioItemTemplate, mapimageItemTemplate, markerItemTemplate, recordItemTemplate,
                  photoBubbleTemplate, photoTipTemplate, audioBubbleTemplate, audioTipTemplate, markerBubbleTemplate,
                  markerTipTemplate, recordBubbleTemplate, genericTipTemplate, Photos, AudioFiles, MapImages, Markers,
                  Records, Photo, Marker, Audio, Record, MapImage, PhotoOverlay, MarkerOverlay, AudioOverlay,
-                 RecordOverlay) {
+                 RecordOverlay, PhotoItem, MarkerItem, GenericItem) {
         "use strict";
         /**
          * Convenience object for connecting data models with
@@ -46,7 +49,8 @@ define(
                 Overlay: PhotoOverlay,
                 ItemTemplate: photoItemTemplate,
                 InfoBubbleTemplate: photoBubbleTemplate,
-                TipTemplate: photoTipTemplate
+                TipTemplate: photoTipTemplate,
+                ItemView: PhotoItem
             },
             audio: {
                 Model: Audio,
@@ -54,7 +58,8 @@ define(
                 Overlay: AudioOverlay,
                 ItemTemplate: audioItemTemplate,
                 InfoBubbleTemplate: audioBubbleTemplate,
-                TipTemplate: audioTipTemplate
+                TipTemplate: audioTipTemplate,
+                ItemView: GenericItem
             },
             scans: {
                 Model: MapImage,
@@ -62,7 +67,8 @@ define(
                 Overlay: MarkerOverlay,
                 ItemTemplate: mapimageItemTemplate,
                 InfoBubbleTemplate: audioBubbleTemplate,
-                TipTemplate: genericTipTemplate
+                TipTemplate: genericTipTemplate,
+                ItemView: GenericItem
             },
             markers: {
                 Model: Marker,
@@ -70,7 +76,8 @@ define(
                 Overlay: MarkerOverlay,
                 ItemTemplate: markerItemTemplate,
                 InfoBubbleTemplate: markerBubbleTemplate,
-                TipTemplate: markerTipTemplate
+                TipTemplate: markerTipTemplate,
+                ItemView: MarkerItem
             },
             form: {
                 Model: Record,
@@ -78,7 +85,8 @@ define(
                 Overlay: RecordOverlay,
                 ItemTemplate: recordItemTemplate,
                 InfoBubbleTemplate: recordBubbleTemplate,
-                TipTemplate: genericTipTemplate
+                TipTemplate: genericTipTemplate,
+                ItemView: GenericItem
             }
         };
         return Config;

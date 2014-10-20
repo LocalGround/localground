@@ -38,6 +38,10 @@ define(["marionette", "jquery"], function (Marionette, $) {
             'dragend .item-icon': 'dropItem'
         },
 
+        modelEvents: {
+            'change': 'render'
+        },
+
         /**
          * Initializes the object and populates the map and
          * template properties
@@ -52,10 +56,9 @@ define(["marionette", "jquery"], function (Marionette, $) {
          */
         initialize: function (opts) {
             $.extend(this, opts);
+            this.id = 'sidebar-' + this.model.get('overlay_type') + this.model.get('id');
             //this.setElement(opts.el);
-            this.render();
-            this.listenTo(this.model, 'destroy', this.remove);
-            this.listenTo(this.model, 'remove', this.remove);
+            //this.render();
             this.listenTo(this.model, 'show-item', this.showItem);
             this.listenTo(this.model, 'hide-item', this.hideItem);
             this.listenTo(this.model, 'check-item', this.checkItem);
@@ -229,13 +232,13 @@ define(["marionette", "jquery"], function (Marionette, $) {
             this.app.vent.trigger('hide-tip', {model: this.model});
         },
         saveState: function () {
-            this.app.saveState({
+            this.app.saveState(this.id, {
                 isVisible: this.isVisible()
             });
         },
 
         restoreState: function () {
-            var state = this.app.restoreState();
+            var state = this.app.restoreState(this.id);
             if (!state) {
                 return { isVisible: false };
             }

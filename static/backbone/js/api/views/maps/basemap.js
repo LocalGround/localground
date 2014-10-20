@@ -5,7 +5,7 @@ define(["marionette",
         "lib/maps/controls/tileController"
     ],
     function (Marionette, $, SearchBox, GeoLocation, TileController) {
-        //"use strict";
+        'use strict';
         /**
          * A class that handles the basic Google Maps functionality,
          * including tiles, search, and setting the default location.
@@ -116,23 +116,24 @@ define(["marionette",
                     mapOptions);
 
                 this.overlayView = new google.maps.OverlayView();
-                this.overlayView.draw = function () {
-                };
-                //this.overlayView.sb(this.map);
-                //this.sb.setOverlayView(this.overlayView)
+                this.overlayView.draw = function () {};
+                this.overlayView.setMap(this.map);
+                this.app.setOverlayView(this.overlayView);
 
 
             },
             addEventHandlers: function (sb) {
                 //add notifications:
-                google.maps.event.addListener(this.map, "maptypeid_changed", function (evnt) {
-                    //sb.notify({ type: "map-tiles-changed" });
+                var that = this;
+                google.maps.event.addListener(this.map, "maptypeid_changed", function () {
+                    that.app.vent.trigger("map-tiles-changed");
                 });
                 google.maps.event.addListener(this.map, "idle", function (evnt) {
                     //sb.notify({ type: "map-extents-changed" });
                 });
 
                 //add listeners:
+                this.listenTo(this.app.vent, "map-tiles-changed", this.saveState);
                 /*sb.listen({
                     "map-tiles-changed": this.saveState,
                     "map-extents-changed": this.saveState,
@@ -148,14 +149,14 @@ define(["marionette",
 
             saveState: function () {
                 var latLng = this.map.getCenter();
-                this.app.saveState(this.id, {
+                this.app.saveState("basemap", {
                     center: [latLng.lng(), latLng.lat()],
                     zoom: this.map.getZoom(),
                     basemapID: this.tileManager.getMapTypeId()
                 });
             },
             restoreState: function () {
-                var state = this.app.restoreState(this.id);
+                var state = this.app.restoreState("basemap");
                 if (state) {
                     if (state.center) {
                         this.defaultLocation.center = new google.maps.LatLng(
@@ -171,7 +172,6 @@ define(["marionette",
                     }
                 }
             }
-
 
         });
 

@@ -214,14 +214,14 @@ define(["models/project",
                 this.selectedProjects.each(function (model) {
                     ids.push(model.id);
                 });
-                this.app.saveState({
+                this.app.saveState("dataManager", {
                     projectIDs: ids,
                     defaultProjectID: this.app.getActiveProjectID()
                 });
             };
 
             this.restoreState = function () {
-                var state = this.app.restoreState(),
+                var state = this.app.restoreState("dataManager"),
                     i,
                     projIndex;
                 if (!state) {
