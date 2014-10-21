@@ -56,14 +56,14 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             var that = this;
 
             //add listeners:
-            this.app.vent.on("mode-change", this.changeMode.bind(this));
+            this.app.vent.on("mode-change", this.setMode.bind(this));
 
             google.maps.event.addListener(this.dm, 'overlaycomplete', function (e) {
                 that.addMarker(e.overlay);
             });
         };
 
-        this.changeMode = function () {
+        this.setMode = function () {
             if (this.app.getMode() === "view") {
                 this.hide();
             } else {
@@ -88,10 +88,9 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             model.setGeometry(googleOverlay);
             model.save({}, {
                 success: function (model, response) {
-
-                    //hide the temporary overlay and show the permenanant one:
+					//hide the temporary overlay and show the permenanant one:
                     googleOverlay.setMap(null);
-                    that.dm.setDrawingMode(null);
+					that.dm.setDrawingMode(null);
 
                     //show the edit form:
                     that.showEditForm(model, response);
@@ -101,7 +100,8 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
 
         this.showEditForm = function (model, response) {
             model.generateUpdateSchema(response.update_metadata);
-            var opts = Config.markers;
+            
+			var opts = Config.markers;
             $.extend(opts, {
                 key: "markers",
                 models: [ model ]

@@ -39,13 +39,14 @@ define(["marionette",
             this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
             this.initOverlayType(opts.isVisible);
 
-            this.listenTo(this.app.vent, "mode-change", this.changeMode);
+            this.listenTo(this.app.vent, "mode-change", this.setMode);
 
         },
 
         updateOverlay: function() {
-            this.getGoogleOverlay().setMap(null);
+			this.getGoogleOverlay().setMap(null);
             this.initOverlayType(this.isShowing);
+			this.setMode();
         },
 
         initOverlayType: function (isVisible) {
@@ -93,6 +94,7 @@ define(["marionette",
         show: function () {
             var overlay = this.getGoogleOverlay();
             overlay.setMap(this.map);
+			this.setMode();
             this.isShowing = true;
             this.saveState();
         },
@@ -169,7 +171,7 @@ define(["marionette",
             return this.overlay.getCenter();
         },
 
-        changeMode: function () {
+        setMode: function () {
             if (this.app.getMode() === "view") {
                 this.makeViewable();
             } else {

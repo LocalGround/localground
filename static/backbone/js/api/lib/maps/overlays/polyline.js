@@ -163,7 +163,7 @@ define(["jquery"], function ($) {
         };
 
         this.saveShape = function (model) {
-            model.set("geometry", this.getGeoJSON());
+			model.set("geometry", this.getGeoJSON());
             model.save();
         };
 
