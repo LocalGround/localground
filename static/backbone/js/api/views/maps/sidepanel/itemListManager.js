@@ -22,6 +22,7 @@ define(["marionette",
                 this.app = opts.app;
                 this.opts = opts;
                 this.listenTo(this.app.vent, 'new-collection-created', this.addItemList);
+                this.app.vent.trigger("adjust-layout");
             },
 
             addItemList: function (data) {

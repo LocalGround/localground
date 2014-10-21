@@ -1,3 +1,5 @@
+body { overflow: hidden; }
+
 #map_canvas {
 	height: 100%;
 	width: 70%;

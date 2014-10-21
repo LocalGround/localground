@@ -146,7 +146,7 @@ define(["marionette",
                 //todo: possibly move to a layout module?
                 $(window).off('resize');
                 $(window).on('resize', function () {
-                   // sb.notify({ type: "window-resized" });
+		   that.app.vent.trigger("adjust-layout");
                 });
             },
 

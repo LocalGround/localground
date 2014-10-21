@@ -32,8 +32,7 @@ define(["marionette",
             },
             /**
              * Initializes the dataPanel
-             * @param {Object} sb
-             * The sandbox.
+             * @param {Object} opts
              */
             initialize: function (opts) {
                 this.app = opts.app;
@@ -43,14 +42,13 @@ define(["marionette",
                 // Listen for the "new_collection" event. On each new
                 // collection event add a new ItemsView to the DataPanel.
                 //app.vent.on("new-collection-created", this.createItemsView.bind(this));
-                opts.app.vent.on("window-resized", this.resize.bind(this));
+                opts.app.vent.on("adjust-layout", this.resize.bind(this));	
             },
 
             onShow: function () {
                 this.projectMenu.show(new ProjectsMenu(this.opts));
                 this.projectTags.show(new ProjectTags(this.opts));
                 this.itemList.show(new ItemListManager(this.opts));
-
             },
 
             /*
@@ -83,7 +81,7 @@ define(["marionette",
             },
 
             resize: function () {
-                this.$el.find('.pane-body').height($('body').height() - 140);
+		this.$el.find('.pane-body').height($('body').height() - 140);
             }
         });
         return DataPanel;
