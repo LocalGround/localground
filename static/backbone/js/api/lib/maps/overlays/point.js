@@ -90,17 +90,22 @@ define(["underscore", "jquery"], function (_, $) {
                 coordinates: [latLng.lng(), latLng.lat()]
             };
         };
+		
+		this.clearEditListeners = function(){
+            google.maps.event.clearListeners(this._googleOverlay, 'drag');
+            google.maps.event.clearListeners(this._googleOverlay, 'dragstart');
+            google.maps.event.clearListeners(this._googleOverlay, 'dragend');	
+		};
 
         this.makeViewable = function () {
             this._googleOverlay.setOptions({'draggable': false, 'title': ''});
-            google.maps.event.clearListeners(this._googleOverlay, 'drag');
-            google.maps.event.clearListeners(this._googleOverlay, 'dragstart');
-            google.maps.event.clearListeners(this._googleOverlay, 'dragend');
+			this.clearEditListeners();
         };
 
         this.makeEditable = function (model) {
             var that = this;
-            this._googleOverlay.setOptions({
+            this.clearEditListeners();
+			this._googleOverlay.setOptions({
                 'draggable': true,
                 'title': 'Drag this icon to re-position it'
             });

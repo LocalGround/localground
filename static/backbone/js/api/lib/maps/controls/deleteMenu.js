@@ -18,7 +18,7 @@ define(["underscore"], function (_) {
 
         onAdd: function () {
             var deleteMenu = this,
-                map = this.getMap();
+                map = this.app.getMap();
             this.getPanes().floatPane.appendChild(this.div_);
 
             // mousedown anywhere on the map except on the menu div will close the
@@ -63,7 +63,7 @@ define(["underscore"], function (_) {
             this.set('overlay', data.googleOverlay);
             this.set('path', data.googleOverlay.getPath());
             this.set('vertex', data.point);
-            this.setMap(this.sb.getMap());
+            this.setMap(this.app.getMap());
             this.draw();
         },
 

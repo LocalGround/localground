@@ -136,8 +136,9 @@ define(["jquery"], function ($) {
         };
 
         this.makeEditable = function (model) {
-            this._googleOverlay.setOptions({'draggable': false, 'editable': true});
             var that = this;
+            google.maps.event.clearListeners(this._googleOverlay.getPath());
+			this._googleOverlay.setOptions({'draggable': false, 'editable': true});
             google.maps.event.addListener(this._googleOverlay.getPath(), 'set_at', function () {
                 that.saveShape(model);
             });
