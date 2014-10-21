@@ -1,82 +1,94 @@
 define(
-	[
-		"text!../templates/sidepanel/photoItem.html",
-		"text!../templates/sidepanel/audioItem.html",
-		"text!../templates/sidepanel/mapimageItem.html",
-		"text!../templates/sidepanel/markerItem.html",
-		"text!../templates/sidepanel/recordItem.html",
-		"text!../templates/infoBubble/photo.html",
-		"text!../templates/infoBubble/photoTip.html",
-		"text!../templates/infoBubble/audio.html",
-		"text!../templates/infoBubble/audioTip.html",
-		"text!../templates/infoBubble/marker.html",
-		"text!../templates/infoBubble/markerTip.html",
-		"text!../templates/infoBubble/record.html",
-		"text!../templates/infoBubble/genericTip.html",
-		"collections/photos",
-		"collections/audio",
-		"collections/mapimages",
-		"collections/markers",
-		"collections/records",
-		"lib/maps/overlays/photo",
-		"lib/maps/overlays/marker",
-		"lib/maps/overlays/audio",
-		"lib/maps/overlays/record"
-	], function(
-			photoItemTemplate, audioItemTemplate, mapimageItemTemplate,
-			markerItemTemplate, recordItemTemplate, photoBubbleTemplate,
-			photoTipTemplate, audioBubbleTemplate, audioTipTemplate,
-			markerBubbleTemplate, markerTipTemplate,
-			recordBubbleTemplate, genericTipTemplate
-		) {
-	/**
-	 * Convenience object for connecting data models with
-	 * their corresponding JavaScript classes
-	 * @class
-	*/
-	localground.config.Config = {
-		photos: {
-			Model: localground.models.Photo,
-			Collection: localground.collections.Photos,
-			Overlay: localground.maps.overlays.Photo,
-			ItemTemplate: photoItemTemplate,
-			InfoBubbleTemplate: photoBubbleTemplate,
-			TipTemplate: photoTipTemplate
-		},
-		audio: {
-			Model: localground.models.Audio,
-			Collection: localground.collections.AudioFiles,
-			Overlay: localground.maps.overlays.Audio,
-			ItemTemplate: audioItemTemplate,
-			InfoBubbleTemplate: audioBubbleTemplate,
-			TipTemplate: audioTipTemplate
-		},
-		scans: {
-			Model: localground.models.MapImage,
-			Collection: localground.collections.MapImages,
-			Overlay: localground.maps.overlays.Marker,
-			ItemTemplate: mapimageItemTemplate,
-			InfoBubbleTemplate: audioBubbleTemplate,
-			TipTemplate: genericTipTemplate
-		},
-		markers: {
-			Model: localground.models.Marker,
-			Collection: localground.collections.Markers,
-			Overlay: localground.maps.overlays.Marker,
-			ItemTemplate: markerItemTemplate,
-			InfoBubbleTemplate: markerBubbleTemplate,
-			TipTemplate: markerTipTemplate
-		},
-		form: {
-			Model: localground.models.Record,
-			Collection: localground.collections.Records,
-			Overlay: localground.maps.overlays.Record,
-			ItemTemplate: recordItemTemplate,
-			InfoBubbleTemplate: recordBubbleTemplate,
-			TipTemplate: genericTipTemplate
-		}
-	};
-	return localground.config.Config;
-});
-	
-	
+    [
+        "text!../templates/sidepanel/photoItem.html",
+        "text!../templates/sidepanel/audioItem.html",
+        "text!../templates/sidepanel/mapimageItem.html",
+        "text!../templates/sidepanel/markerItem.html",
+        "text!../templates/sidepanel/recordItem.html",
+        "text!../templates/infoBubble/photo.html",
+        "text!../templates/infoBubble/photoTip.html",
+        "text!../templates/infoBubble/audio.html",
+        "text!../templates/infoBubble/audioTip.html",
+        "text!../templates/infoBubble/marker.html",
+        "text!../templates/infoBubble/markerTip.html",
+        "text!../templates/infoBubble/record.html",
+        "text!../templates/infoBubble/genericTip.html",
+        "collections/photos",
+        "collections/audio",
+        "collections/mapimages",
+        "collections/markers",
+        "collections/records",
+        "models/photo",
+        "models/marker",
+        "models/audio",
+        "models/record",
+        "models/mapimage",
+        "lib/maps/overlays/photo",
+        "lib/maps/overlays/marker",
+        "lib/maps/overlays/audio",
+        "lib/maps/overlays/record",
+        "views/maps/sidepanel/items/photoItem",
+        "views/maps/sidepanel/items/markerItem",
+        "views/maps/sidepanel/items/item"
+    ],
+    function (photoItemTemplate, audioItemTemplate, mapimageItemTemplate, markerItemTemplate, recordItemTemplate,
+                 photoBubbleTemplate, photoTipTemplate, audioBubbleTemplate, audioTipTemplate, markerBubbleTemplate,
+                 markerTipTemplate, recordBubbleTemplate, genericTipTemplate, Photos, AudioFiles, MapImages, Markers,
+                 Records, Photo, Marker, Audio, Record, MapImage, PhotoOverlay, MarkerOverlay, AudioOverlay,
+                 RecordOverlay, PhotoItem, MarkerItem, GenericItem) {
+        "use strict";
+        /**
+         * Convenience object for connecting data models with
+         * their corresponding JavaScript classes
+         * @class
+         */
+        var Config = {
+            photos: {
+                Model: Photo,
+                Collection: Photos,
+                Overlay: PhotoOverlay,
+                ItemTemplate: photoItemTemplate,
+                InfoBubbleTemplate: photoBubbleTemplate,
+                TipTemplate: photoTipTemplate,
+                ItemView: PhotoItem
+            },
+            audio: {
+                Model: Audio,
+                Collection: AudioFiles,
+                Overlay: AudioOverlay,
+                ItemTemplate: audioItemTemplate,
+                InfoBubbleTemplate: audioBubbleTemplate,
+                TipTemplate: audioTipTemplate,
+                ItemView: GenericItem
+            },
+            scans: {
+                Model: MapImage,
+                Collection: MapImages,
+                Overlay: MarkerOverlay,
+                ItemTemplate: mapimageItemTemplate,
+                InfoBubbleTemplate: audioBubbleTemplate,
+                TipTemplate: genericTipTemplate,
+                ItemView: GenericItem
+            },
+            markers: {
+                Model: Marker,
+                Collection: Markers,
+                Overlay: MarkerOverlay,
+                ItemTemplate: markerItemTemplate,
+                InfoBubbleTemplate: markerBubbleTemplate,
+                TipTemplate: markerTipTemplate,
+                ItemView: MarkerItem
+            },
+            form: {
+                Model: Record,
+                Collection: Records,
+                Overlay: RecordOverlay,
+                ItemTemplate: recordItemTemplate,
+                InfoBubbleTemplate: recordBubbleTemplate,
+                TipTemplate: genericTipTemplate,
+                ItemView: GenericItem
+            }
+        };
+        return Config;
+    }
+);

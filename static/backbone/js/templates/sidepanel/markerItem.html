@@ -1,18 +1,16 @@
-<div class="item data-item" id="markers_<%= id %>">
+<div class="item data-item<% if (!isVisible) { %> hidden <% } %>" id="markers_<%= id %>">
 	<input class="cb-data" type="checkbox" value="<%= id %>"
-		<%= geometry %>											  
 		<% if(!geometry) { %>
 			style="visibility:hidden;"
 		<% } %>
-		<% if(isVisible) { %>checked<% } %>
+		<% if(showOverlay) { %> checked <% } %>
 	>
-	
-	<% if(geometry && geometry.type =="Point") { %>
+	<% if(geometryType =="Point") { %>
 		<!-- Marker Symbol -->
 		<i class="fa fa-map-marker item-icon" draggable="false" style="color: #<%= color %>"></i>
 	<% } %>
 	
-	<% if(geometry && geometry.type =="LineString") { %>
+	<% if(geometryType =="LineString") { %>
 	<!-- Polyline Symbol -->
 	<svg height="25" width="25">
 		<polyline points="0, 25 8, 10 16, 15 24, 0"
@@ -20,7 +18,7 @@
 	</svg>
 	<% } %>
 	
-	<% if(geometry && geometry.type =="Polygon") { %>
+	<% if(geometryType =="Polygon") { %>
 	<!-- Polygon Symbol -->
 	<svg height="25" width="25">
 		<polygon points="3,3 10,22 20,17 22,5 15,10, 3,3"

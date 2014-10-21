@@ -1,5 +1,6 @@
-define([], function() {
-	/** 
+define(["jquery"], function ($) {
+    "use strict";
+    /**
      * Class that initializes a MapBox tileset.
      * @class MapBox
      * @param opts Initialization options for the Stamen class.
@@ -10,22 +11,22 @@ define([], function() {
      * @param {String} name
      * The name of the tileset.
      */
-	localground.maps.tiles.MapBox = (function (opts) {
-		this.styleID = 1
-		this.maxZoom = opts.max;
-		this.styleID = opts.styleID;
-		this.name = opts.name;
-		this.tileSize = new google.maps.Size(256,256);
-		this.getTile = function(coord, zoom, ownerDocument) {
-			var url = 'http://' + ['a.', 'b.', 'c.', 'd.'][parseInt(Math.random()*4)] + 'tiles.mapbox.com/v3/';
-			return $('<div></div>').css({
-				'width': '256px',
-				'height': '256px',
-				'backgroundImage': 'url(' + url + this.styleID + '/' + zoom + '/' +
-										coord.x + '/' + coord.y + '.png)'
-		
-			}).get(0);
-		};
-	});
-	return localground.maps.tiles.MapBox;
+    var MapBox = function (opts) {
+        this.styleID = 1;
+        this.maxZoom = opts.max;
+        this.styleID = opts.styleID;
+        this.name = opts.name;
+        this.tileSize = new google.maps.Size(256, 256);
+        this.getTile = function (coord, zoom, ownerDocument) {
+            var url = 'http://' + ['a.', 'b.', 'c.', 'd.'][parseInt(Math.random() * 4, 10)] + 'tiles.mapbox.com/v3/';
+            return $('<div></div>').css({
+                'width': '256px',
+                'height': '256px',
+                'backgroundImage': 'url(' + url + this.styleID + '/' + zoom + '/' +
+                    coord.x + '/' + coord.y + '.png)'
+
+            }).get(0);
+        };
+    };
+    return MapBox;
 });

@@ -1,214 +1,194 @@
-define(["backbone",
-		"lib/maps/overlays/point",
-		"lib/maps/overlays/polyline",
-		"lib/maps/overlays/polygon"
-		], function(Backbone) {
-    /** 
+define(["marionette",
+    "jquery",
+    "underscore",
+    "lib/maps/overlays/point",
+    "lib/maps/overlays/polyline",
+    "lib/maps/overlays/polygon",
+    "lib/maps/overlays/infobubbles/base"
+    ], function (Marionette, $, _, Point, Polyline, Polygon, Infobubble) {
+    "use strict";
+    /**
      * This class controls the rendering and underlying
      * visibility of Google overlay objects, including points,
      * lines, and polygons
      * @class Overlay
      */
-	localground.maps.overlays.Base = Backbone.View.extend({
-		
-		sb: null,
-		map: null,
-		model: null,
-		overlay: null,
+    var Base = Marionette.ItemView.extend({
 
-		/** called when object created */
-		initialize: function(sb, opts) {
-			//alert(localground.maps.overlays.Polyline);
-			this.sb = sb;
-			$.extend(opts, this.restoreState());
-			this.map = sb.getMap();
-			this.model = opts.model;
-			this.initOverlayType(opts.isVisible || false);
-			
-			this.listenTo(this.model, 'remove', this.remove);
-			this.listenTo(this.model, 'show-overlay', this.show);
-			this.listenTo(this.model, 'show-tip', this.showTip);
-			this.listenTo(this.model, 'show-bubble', this.showBubble);
-			this.listenTo(this.model, 'hide-overlay', this.hide);
-			this.listenTo(this.model, 'zoom-to-overlay', this.zoomTo);
-			this.listenTo(this.model, 'change', this.redraw);
-			this.sb.listen({
-				"mode-change" : this.changeMode
-			});
-			
-		},
-		
-		initOverlayType: function(isVisible){
-			var geoJSON = this.model.get("geometry");
-			var opts = {
-				model: this.model,
-				map: this.map,
-				isVisible: isVisible
-			};
-			if (geoJSON.type == 'Point')
-				this.overlay = new localground.maps.overlays.Point(this.sb, opts);
-			else if (geoJSON.type == 'LineString')
-				this.overlay = new localground.maps.overlays.Polyline(this.sb, opts);
-			else if (geoJSON.type == 'Polygon')
-				this.overlay = new localground.maps.overlays.Polygon(this.sb, opts);
-			else
-				alert('Unknown Geometry Type');
-				
-			this.attachEventHandlers();
-		},
-		
-		attachEventHandlers: function(){
-			var that = this;
-			//attach click event:
-			google.maps.event.addListener(this.getGoogleOverlay(), 'click', function() {
-				that.showBubble();
-			});
-			//attach mouseover event:
-			google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function(){
-				that.showTip();
-			});
-			//attach mouseout event:
-			google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function() {
-				that.sb.notify({
-					type : "hide-tip",
-				});
-			});
-		},
-		
-		/** determines whether the overlay is visible on the map. */	
-		isVisible: function(){
-			return this.getGoogleOverlay().getMap() != null;
-		},
-		
-		getBubbleOpts: function(){
-			var opts = {
-				model: this.model,
-				center: this.getCenter()
-			};
-			if(this.getGoogleOverlay() instanceof google.maps.Marker) {
-				opts.marker = this.getGoogleOverlay()
-			}
-			return opts;
-		},
-		
-		showBubble: function(){
-			if (!this.isVisible()) {
-				return;
-			}
-			this.sb.notify({
-				type : "show-bubble",
-				data : this.getBubbleOpts()
-			});
-		},
-		
-		showTip: function(){
-			if (!this.isVisible()) {
-				return;
-			}
-			this.sb.notify({
-				type : "show-tip",
-				data : this.getBubbleOpts()
-			});
-		},
-		
-		/** shows the google.maps overlay on the map. */		
-		show: function(){
-			var overlay = this.getGoogleOverlay();
-			overlay.setMap(this.map);
-			this.saveState();
-		},
-	
-		
-		/** hides the google.maps overlay from the map. */
-		hide: function(){
-			var overlay = this.getGoogleOverlay();
-			overlay.setMap(null);
-			this.sb.notify({ 
-				type : "hide-bubble", 
-				data : { model: this.model } 
-			}); 
-			this.saveState();
-		},
-		
-		saveState: function(){
-			this.sb.saveState({
-				isVisible: this.isVisible()
-			});
-		},
-		
-		restoreState: function(){
-			var state = this.sb.restoreState();
-			if (state == null)
-				return { isVisible: false };
-			else
-				return state;
-		},
-		
-		remove: function(){
-			var overlay = this.getGoogleOverlay();
-			overlay.setMap(null);
-			localground.maps.overlays.Base.__super__.remove.apply(this); 
-		},
-		
-		/**
-		 * Needs to be implemented
-		 */
-		destroy: function(){
-			this.remove();
-		},
-		
-		/********************************************************/
-		/** DELEGATED METHODS ***********************************/
-		/********************************************************/
-		
-		/**
-		 * Returns the overlay's googleOverlay
-		 * @returns {Object}
-		 * Either a google.maps.Marker, google.maps.Polyline,
-		 * google.maps.Polygon, or google.maps.GroundOverlay
-		 */
-		getGoogleOverlay: function(){
-			return this.overlay._googleOverlay;
-		},
-		
-		/** zooms to the google.maps overlay. */
-		zoomTo: function(){
-			this.overlay.zoomTo();
-			this.showBubble();
-		},
-		
-		/** centers the map at the google.maps overlay */
-		centerOn: function(){
-			this.overlay.centerOn();
-		},
-		
-		/**
-		 * Delegates to underlying geometry.
-		 * @returns {google.maps.LatLng} object
-		 */
-		getCenter: function(){
-			return this.overlay.getCenter();
-		},
-		
-		changeMode: function(){
-			if (this.sb.getMode() == "view")
-				this.makeViewable();
-			else
-				this.makeEditable();
-		},
-		
-		makeViewable: function(){
-			this.overlay.makeViewable();	
-		},
-		
-		makeEditable: function(){
-			this.overlay.makeEditable(this.model);
-		},
-		
-		redraw: function(){
-			alert("implement in child class");
-		}
+        map: null,
+        model: null,
+        overlay: null,
+        template: false,
+        isShowing: false,
 
-	});
-	return localground.maps.overlays.Base;
+        modelEvents: {
+            'change:geometry': 'updateOverlay',
+            'change': 'render',
+            'show-overlay': 'show',
+            'hide-overlay': 'hide',
+            'zoom-to-overlay': 'zoomTo'
+        },
+        /** called when object created */
+        initialize: function (opts) {
+            //alert(localground.maps.overlays.Polyline);
+            this.app = opts.app;
+            this.id = this.model.get('overlay_type') + this.model.get('id');
+            $.extend(opts, this.restoreState());
+            this.map = opts.app.getMap();
+            this.model = opts.model;
+            this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
+            this.initOverlayType(opts.isVisible);
+
+            this.listenTo(this.app.vent, "mode-change", this.changeMode);
+
+        },
+
+        updateOverlay: function() {
+            this.getGoogleOverlay().setMap(null);
+            this.initOverlayType(this.isShowing);
+        },
+
+        initOverlayType: function (isVisible) {
+            var geoJSON = this.model.get("geometry"),
+                opts = {
+                    model: this.model,
+                    map: this.map,
+                    isVisible: isVisible
+                };
+            if (geoJSON.type === 'Point') {
+                this.overlay = new Point(this.app, opts);
+            } else if (geoJSON.type === 'LineString') {
+                this.overlay = new Polyline(this.app, opts);
+            } else if (geoJSON.type === 'Polygon') {
+                this.overlay = new Polygon(this.app, opts);
+            } else {
+                alert('Unknown Geometry Type');
+            }
+
+            this.attachEventHandlers();
+        },
+
+        attachEventHandlers: function () {
+            var that = this;
+            //attach click event:
+            google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
+                that.infoBubble.showBubble();
+            });
+            //attach mouseover event:
+            google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
+                that.infoBubble.showTip();
+            });
+            //attach mouseout event:
+            google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function () {
+                that.model.trigger("hide-tip");
+            });
+        },
+
+        /** determines whether the overlay is visible on the map. */
+        isVisible: function () {
+            return this.getGoogleOverlay().getMap() != null && this.isShowing;
+        },
+
+        /** shows the google.maps overlay on the map. */
+        show: function () {
+            var overlay = this.getGoogleOverlay();
+            overlay.setMap(this.map);
+            this.isShowing = true;
+            this.saveState();
+        },
+
+        render: function () {
+            if (this.isShowing && this.model.get('isVisible')) {
+                this.redraw();
+                this.show();
+            } else {
+                this.hide();
+            }
+        },
+
+
+        /** hides the google.maps overlay from the map. */
+        hide: function () {
+            var overlay = this.getGoogleOverlay();
+            overlay.setMap(null);
+            this.model.trigger("hide-bubble");
+            this.saveState();
+            this.isShowing = false;
+        },
+
+        saveState: function () {
+            this.app.saveState(this.id, {
+                isVisible: this.isVisible()
+            });
+        },
+
+        restoreState: function () {
+            var state = this.app.restoreState(this.id);
+            if (!state) {
+                return { isVisible: false };
+            }
+            return state;
+        },
+
+        onBeforeDestroy: function () {
+            var overlay = this.getGoogleOverlay();
+            overlay.setMap(null);
+            Base.__super__.remove.apply(this);
+        },
+
+        /********************************************************/
+        /** DELEGATED METHODS ***********************************/
+        /********************************************************/
+
+        /**
+         * Returns the overlay's googleOverlay
+         * @returns {Object}
+         * Either a google.maps.Marker, google.maps.Polyline,
+         * google.maps.Polygon, or google.maps.GroundOverlay
+         */
+        getGoogleOverlay: function () {
+            return this.overlay._googleOverlay;
+        },
+
+        /** zooms to the google.maps overlay. */
+        zoomTo: function () {
+            this.overlay.zoomTo();
+            this.showBubble();
+        },
+
+        /** centers the map at the google.maps overlay */
+        centerOn: function () {
+            this.overlay.centerOn();
+        },
+
+        /**
+         * Delegates to underlying geometry.
+         * @returns {google.maps.LatLng} object
+         */
+        getCenter: function () {
+            return this.overlay.getCenter();
+        },
+
+        changeMode: function () {
+            if (this.app.getMode() === "view") {
+                this.makeViewable();
+            } else {
+                this.makeEditable();
+            }
+        },
+
+        makeViewable: function () {
+            this.overlay.makeViewable();
+        },
+
+        makeEditable: function () {
+            this.overlay.makeEditable(this.model);
+        },
+
+        redraw: function () {
+            //alert("implement in child class");
+        }
+
+    });
+    return Base;
 });

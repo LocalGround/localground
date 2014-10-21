@@ -172,7 +172,7 @@ define(['jquery', 'sandbox'], function(jQuery, Sandbox) {
             },
             saveToLocalStorage: function(mod, object, replace){
                 var cache = localStorage['map-editor'];
-                cache = cache != null ? JSON.parse(cache) : {};
+                cache = cache !== null ? JSON.parse(cache) : {};
                 cache[mod] = cache[mod] || {};
                 if (replace)
                     cache[mod] = object;
@@ -190,5 +190,5 @@ define(['jquery', 'sandbox'], function(jQuery, Sandbox) {
             }
         };
     }());
-    return CORE
+    return CORE;
 });

@@ -1,11 +1,12 @@
-define(["backbone", "models/photo", "collections/base"], function(Backbone) {
+define(["models/photo", "collections/base"], function (Photo, Base) {
+    "use strict";
     /**
-	 * @class localground.collections.Photos
-	 */
-	localground.collections.Photos = localground.collections.Base.extend({
-        model: localground.models.Photo,
-		name: 'Photos',
-        url: '/api/0/photos/',
+     * @class localground.collections.Photos
+     */
+    var Photos = Base.extend({
+        model: Photo,
+        name: 'Photos',
+        url: '/api/0/photos/'
     });
-    return localground.collections.Photos;
+    return Photos;
 });

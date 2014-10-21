@@ -1,83 +1,81 @@
-define([
-		"backbone"
-		],
-	   function(Backbone) {
-    /** 
-     * Class that controls the available projects tags,
-     * Extends Backbone.View.
-     * @class ProjectTags
-     */
-	localground.maps.views.ProjectTags = Backbone.View.extend({
-		/**
-		 * @lends localground.maps.views.ProjectTags#
-		 */
-        _projects: null,
-		events: {
-			'click .fa-close': 'removeProject',
-            'click .alert': 'setActive'
-		},
-		/**
-		 * Initializes the project tags menu (an easy way to remove projects
-		 * and set them to be active)
-		*/
-        initialize: function(sb, opts) {
-			this.setElement(opts.el);
-			this.sb = sb;
-			sb.listen({ 
-                "selected-projects-updated": this.renderProjects
-			});
-            this.render();
-        },
-		/** A rendered projectItem template */
-		template: _.template('<div class="alert alert-info alert-dismissable' +
-                    '<% if(isActive) { %> active <% } %>' +     
-                    '">' + 
-                    '<input type="hidden" value="<%= id %>" />' + 
-                    '<i class="fa fa-close pull-right"></i>' + 
-                    '<strong><%= name %></strong>' + 
-                    '</div>'),
+define(["marionette",
+        "underscore",
+        "jquery",
+        "text!" + templateDir + "/sidepanel/projectTag.html"],
+    function (Marionette, _, $, projectTagTemplate) {
+        'use strict';
+        /**
+         * Class that controls the available projects tags,
+         * Extends Backbone.View.
+         * @class ProjectTags
+         */
+        var ProjectTags = Marionette.CollectionView.extend({
+            /**
+             * @lends localground.maps.views.ProjectTags#
+             */
+            events: {
+                'click .fa-close': 'removeProject',
+                'click .alert': 'makeActive'
+            },
+            childView: Marionette.ItemView.extend({
+                template: _.template(projectTagTemplate),
+                tagName: "span",
+                modelEvents: {'change': 'render'}
+            }),
+            onBeforeAddChild: function () {
+                if (!this.activeProject) {
+                    if (this.collection.length > 0) {
+                        this.collection.first().set('isActive', true);
+                        this.activeProject = this.collection.first();
+                        this.app.setActiveProjectID(this.collection.first().get('id'));
+                    }
+                }
+            },
+            /**
+             * Initializes the project tags menu (an easy way to remove projects
+             * and set them to be active)
+             */
+            initialize: function (opts) {
+                this.collection = opts.projects;
+                this.app = opts.app;
+                this.listenTo(this.collection, 'selected-projects-change', this.checkActive);
+               // opts.app.vent.on('selected-projects-updated', this.renderProjects);
+                //this.render();
+            },
 
-		render: function(){
-            if (this._projects == null) { return; }
-            var that = this;
-            this.$el.empty();
-            this._projects.each(function(model){
-                var opts = model.toJSON();
-                opts.isActive = (model.id == that.sb.getActiveProjectID());
-                that.$el.append($(that.template(opts)));	
-			});
-		},
-        
-        renderProjects: function(data){
-            if (data && data.projects) {
-                this._projects = data.projects;
+            setActiveProject: function (newActiveProject) {
+                if (newActiveProject) {
+                    if (this.activeProject) {
+                        this.activeProject.set('isActive', false);
+                    }
+                    newActiveProject.set('isActive', true);
+                    this.activeProject = newActiveProject;
+                    this.app.setActiveProjectID(newActiveProject.get('id'));
+                } else {
+                    this.activeProject = null;
+                    this.app.setActiveProjectID(null);
+                }
+            },
+
+            makeActive: function (e) {
+                this.setActiveProject(this.collection.get($(e.currentTarget).find("input").val()));
+                e.stopPropagation();
+            },
+
+            checkActive: function () {
+                if (!this.activeProject || !this.activeProject.get('isVisible')) {
+                    if (this.activeProject) {
+                        this.activeProject.set('isActive', false);
+                    }
+                    this.setActiveProject(this.collection.findWhere({isVisible: true}));
+                }
+            },
+
+            removeProject: function (e) {
+                var projectId = e.target.parentElement.getElementsByTagName('input')[0].value;
+                this.app.vent.trigger('toggle-project', projectId, false);
             }
-            this.render();
-        },
-        
-        removeProject: function(e){
-            var projectID = $(e.currentTarget).parent().find("input").val();
-            this.sb.notify({
-                type: "project-removal-requested",
-                data: { id: projectID }
-            });
-            e.stopPropagation();
-        },
-        
-        setActive: function(e) {
-            var projectID = $(e.currentTarget).find("input").val();
-            this.sb.notify({
-                type : "set-active-project",
-                data : { id: projectID } 
-            });
-            this.render();
-            e.stopPropagation();
-        },
-		
-		destroy: function(){
-			this.remove();
-		},
 
+        });
+        return ProjectTags;
     });
-    return localground.maps.views.ProjectTags;
-});

@@ -1,4 +1,4 @@
-<div class="item data-item" id="mapimage_<%= id %>">
+<div class="item data-item<% if (!isVisible) { %> hidden <% } %>" id="mapimage_<%= id %>">
 	<input class="cb-data" type="checkbox" value="<%= id %>"
 		<% if(!geometry) { %>
 			style="visibility:hidden;"

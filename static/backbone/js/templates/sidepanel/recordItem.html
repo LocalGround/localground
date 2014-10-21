@@ -1,4 +1,4 @@
-<div class="item data-item" id="records_<%= id %>">
+<div class="item data-item<% if (!isVisible) { %> hidden <% } %>" id="records_<%= id %>">
 	<input class="cb-data" type="checkbox" value="<%= id %>"
 		<% if(!geometry) { %>
 			style="visibility:hidden;"

@@ -7,31 +7,29 @@
 		<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/jquery.slick/1.3.7/slick.css"/>
 		<link rel="stylesheet" type="text/css" href="/static/backbone/css/lg.css">
 		<link rel="stylesheet" type="text/css" href="/static/backbone/css/map.css">
-		<style>
-			body { overflow: hidden; }
-		</style>
 	</head>
+
 	<body>
-		<nav class="navbar navbar-default" role="navigation">
+        <nav id="topbar" class="navbar navbar-default" role="navigation">
             <ul class="nav navbar-nav">
                 <li><a href="#">Local Ground</a></li>
             </ul>
         </nav>
-		<div id="map_canvas"></div>
-		<div id="panels"></div>
-		
-		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing,places,geometry"></script>
-		<script src="/static/backbone/js/external/require.js"></script>
-		<script src="/static/backbone/js/api/base.js"></script>
-		<script>
-			var defaultLocation = {
+        <div id="map_canvas"></div>
+        <div id="panels"></div>
+	</body>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing,places,geometry"></script>
+    <script src="/static/backbone/js/external/require.js"></script>
+    <script src="/static/backbone/js/api/base.js"></script>
+    <script>
+        var defaultLocation = {
 				center: new google.maps.LatLng(40.91351257612757, -123.4423828125),
 				zoom: 11
 			};
 			{% if lat %}
 				defaultLocation.center = new google.maps.LatLng({{lat}}, {{lng}});
 				defaultLocation.zoom = {{ zoom }};
-			{% endif %} 
+			{% endif %}
 			var basemapOpts = {
 				mapContainerID: "map_canvas",
 				defaultLocation: defaultLocation,
@@ -40,15 +38,14 @@
 				activeMapTypeID: {{ basemap_id|default:"12" }},
 				overlays: {% autoescape off %}{{ overlays }}{% endautoescape %}
 			};
-			require(
-				["jquery", "/static/backbone/js/api/views/maps/mapEditor.js"],
-				function($) {
+			 require(
+				["jquery", "/static/backbone/js/api/mapplication.js"],
+				function($, MapApplication) {
 					$(function() {
-						new localground.maps.views.MapEditor(basemapOpts);
+						MapApplication.start(basemapOpts);
 					});
 				}
-			);
-		</script>
-		
-	</body>
+             );
+
+    </script>
 </html>

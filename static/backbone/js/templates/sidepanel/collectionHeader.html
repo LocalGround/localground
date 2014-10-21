@@ -1,4 +1,4 @@
-<div id="header_<%= name %> <%= isVisible %>" class="collection-header">
+<div id="header_<%= name %>" class="collection-header">
 	<i class="fa <% if(!isExpanded) { %>fa-caret-right<% } %><% if(isExpanded) { %>fa-caret-down<% } %> show-hide"
 		style="cursor:hand;" title="show / hide"></i>
 	<input class="check-all" type="checkbox" value="<%= key %>"
@@ -6,8 +6,8 @@
 	<h4><%= name %></h4>
 	<i class="fa fa-search fa-lg pull-right zoom-to-extent" title="zoom to extent"></i>
 </div>
-<div class="collection-data"
+<div class="collection-data
 	 <% if(!isExpanded) { %>
-		style="display:none;"
+		hidden
 	<% } %>
-></div>
+ "></div>
