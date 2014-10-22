@@ -3,7 +3,7 @@
  * 
  * 'data-*' attributes control where elements are placed
  */
-(function(Form) {
+;(function(Form) {
     "use strict";
     /**
      * Boottrap 3 templates
