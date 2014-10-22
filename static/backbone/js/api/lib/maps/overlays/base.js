@@ -155,7 +155,7 @@ define(["marionette",
         /** zooms to the google.maps overlay. */
         zoomTo: function () {
             this.overlay.zoomTo();
-            this.showBubble();
+            this.infoBubble.showBubble();
         },
 
         /** centers the map at the google.maps overlay */
