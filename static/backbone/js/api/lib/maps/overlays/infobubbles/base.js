@@ -2,8 +2,7 @@ define(['jquery',
         'form',
         'marionette',
         'google-infobubble',
-        "bootstrap-form-templates",
-        'slick'
+        'bootstrap-form-templates'
     ],
     function ($, Form, Marionette, GoogleInfoBubble) {
         'use strict';
@@ -94,13 +93,6 @@ define(['jquery',
                 this.$el = $(template(this.getContext()));
 
                 this.showUpdatedContent();
-
-                //only relevant for marker in view mode:
-                window.setTimeout(function () {
-                    $('.marker-container').slick({
-                        dots: false
-                    });
-                }, 200);
             },
 
             renderEditContent: function () {

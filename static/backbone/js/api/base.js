@@ -44,8 +44,12 @@ require.config({
             deps: ['backbone'],
             exports: 'Backgrid'
         },
+        'form': {
+            deps: [ "backbone" ],
+            exports: "Backbone"
+        },
         'bootstrap-form-templates': {
-            deps: ['backbone']
+            deps: ['form']
         },
         'backbone-bootstrap-modal': {
             deps: ['backbone', 'jquery.bootstrap']

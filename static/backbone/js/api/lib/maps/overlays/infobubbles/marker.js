@@ -1,6 +1,7 @@
 define(['jquery',
         'color-picker',
-        'lib/maps/overlays/infobubbles/base'], function ($, jscolor, BaseBubble) {
+        'lib/maps/overlays/infobubbles/base',
+        'slick'], function ($, jscolor, BaseBubble) {
     "use strict";
     /**
      * Class that controls marker point model overlays.
