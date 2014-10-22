@@ -20,6 +20,7 @@ define(["marionette",
         overlay: null,
         template: false,
         isShowing: false,
+		infoBubble: null,
 
         modelEvents: {
             'change:geometry': 'updateOverlay',
@@ -36,14 +37,17 @@ define(["marionette",
             $.extend(opts, this.restoreState());
             this.map = opts.app.getMap();
             this.model = opts.model;
-            this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
-            this.initOverlayType(opts.isVisible);
+            this.initInfoBubble(opts);
+			this.initOverlayType(opts.isVisible);
 
             this.listenTo(this.app.vent, "mode-change", this.setMode);
-
         },
 
-        updateOverlay: function() {
+		initInfoBubble: function (opts) {
+			this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
+		},
+
+        updateOverlay: function () {
 			this.getGoogleOverlay().setMap(null);
             this.initOverlayType(this.isShowing);
 			this.setMode();
@@ -159,7 +163,7 @@ define(["marionette",
 
         /** zooms to the google.maps overlay. */
         zoomTo: function () {
-            this.overlay.zoomTo();
+			this.overlay.zoomTo();
             this.showBubble();
         },
 

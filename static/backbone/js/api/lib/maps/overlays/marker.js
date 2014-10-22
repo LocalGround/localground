@@ -1,6 +1,7 @@
 define([
+	"lib/maps/overlays/infobubbles/marker",
     "lib/maps/overlays/base"
-], function (Base) {
+], function (MarkerBubble, Base) {
     "use strict";
     /**
      * Class that controls marker point model overlays.
@@ -39,11 +40,16 @@ define([
             Base.prototype.show.apply(this);
             this.redraw();
         },
+
 		showBubble: function () {
 			var that = this;
 			that.model.fetch({ success: function () {
 				that.infoBubble.showBubble();
 			}});
+		},
+
+		initInfoBubble: function (opts) {
+			this.infoBubble = new MarkerBubble(_.extend({overlay: this}, opts));
 		},
 
         redraw: function () {
