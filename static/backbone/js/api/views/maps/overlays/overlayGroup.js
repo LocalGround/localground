@@ -31,19 +31,7 @@ define(['marionette',
                     }
                 });
 
-                //Rerender photos on map zoom
-                google.maps.event.addListener(this.map, 'zoom_changed', function () {
-                    if (that.key !== 'photos') {
-                        return;
-                    }
-                    for (var key in that.overlays) {
-                        var overlay = that.overlays[key];
-                        overlay.getGoogleOverlay().setIcon(overlay.getIcon());
-                    }
-                });
-
                 //listen for new data:
-
                 this.listenTo(this.collection, 'zoom-to-extent', this.zoomToExtent);
                 this.listenTo(this.collection, 'show-all', this.showAll);
                 this.listenTo(this.collection, 'hide-all', this.hideAll);
