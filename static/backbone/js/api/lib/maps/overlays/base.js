@@ -73,7 +73,7 @@ define(["marionette",
             var that = this;
             //attach click event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-                that.infoBubble.showBubble();
+				that.showBubble();
             });
             //attach mouseover event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
@@ -84,6 +84,11 @@ define(["marionette",
                 that.model.trigger("hide-tip");
             });
         },
+
+		/** shows info bubble (gets overrided in the child class). */
+		showBubble: function () {
+			this.infoBubble.showBubble();
+		},
 
         /** determines whether the overlay is visible on the map. */
         isVisible: function () {
@@ -155,7 +160,7 @@ define(["marionette",
         /** zooms to the google.maps overlay. */
         zoomTo: function () {
             this.overlay.zoomTo();
-            this.infoBubble.showBubble();
+            this.showBubble();
         },
 
         /** centers the map at the google.maps overlay */

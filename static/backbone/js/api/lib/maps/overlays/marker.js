@@ -39,6 +39,12 @@ define([
             Base.prototype.show.apply(this);
             this.redraw();
         },
+		showBubble: function () {
+			var that = this;
+			that.model.fetch({ success: function () {
+				that.infoBubble.showBubble();
+			}});
+		},
 
         redraw: function () {
             if (this.overlay.getType() === "Point") {
