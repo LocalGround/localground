@@ -21,7 +21,7 @@ define([
                 strokeColor: "#FFF",
                 strokeWeight: 1.5,
                 fillOpacity: 1,
-                path: this.overlay.Shapes.MAP_PIN_HOLLOW,
+                path: this._overlay.Shapes.MAP_PIN_HOLLOW,
                 scale: 1.6,
                 anchor: new google.maps.Point(16, 30),      // anchor (x, y)
                 size: new google.maps.Size(15, 30),         // size (width, height)
@@ -53,10 +53,10 @@ define([
 		},
 
         redraw: function () {
-            if (this.overlay.getType() === "Point") {
-                this.overlay.setIcon(this.getIcon());
+            if (this.getShapeType() === "Point") {
+                this._overlay.setIcon(this.getIcon());
             } else {
-                this.overlay.redraw();
+                Base.prototype.redraw.apply(this, arguments);
             }
         }
 

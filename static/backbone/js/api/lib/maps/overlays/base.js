@@ -17,7 +17,7 @@ define(["marionette",
 
         map: null,
         model: null,
-        overlay: null,
+        _overlay: null,
         template: false,
         isShowing: false,
 		infoBubble: null,
@@ -61,11 +61,11 @@ define(["marionette",
                     isVisible: isVisible
                 };
             if (geoJSON.type === 'Point') {
-                this.overlay = new Point(this.app, opts);
+                this._overlay = new Point(this.app, opts);
             } else if (geoJSON.type === 'LineString') {
-                this.overlay = new Polyline(this.app, opts);
+                this._overlay = new Polyline(this.app, opts);
             } else if (geoJSON.type === 'Polygon') {
-                this.overlay = new Polygon(this.app, opts);
+                this._overlay = new Polygon(this.app, opts);
             } else {
                 alert('Unknown Geometry Type');
             }
@@ -101,8 +101,8 @@ define(["marionette",
 
         /** shows the google.maps overlay on the map. */
         show: function () {
-            var overlay = this.getGoogleOverlay();
-            overlay.setMap(this.map);
+            var go = this.getGoogleOverlay();
+            go.setMap(this.map);
 			this.setMode();
             this.isShowing = true;
             this.saveState();
@@ -120,8 +120,8 @@ define(["marionette",
 
         /** hides the google.maps overlay from the map. */
         hide: function () {
-            var overlay = this.getGoogleOverlay();
-            overlay.setMap(null);
+            var go = this.getGoogleOverlay();
+            go.setMap(null);
             this.model.trigger("hide-bubble");
             this.saveState();
             this.isShowing = false;
@@ -142,8 +142,8 @@ define(["marionette",
         },
 
         onBeforeDestroy: function () {
-            var overlay = this.getGoogleOverlay();
-            overlay.setMap(null);
+            var go = this.getGoogleOverlay();
+            go.setMap(null);
             Base.__super__.remove.apply(this);
         },
 
@@ -158,18 +158,18 @@ define(["marionette",
          * google.maps.Polygon, or google.maps.GroundOverlay
          */
         getGoogleOverlay: function () {
-            return this.overlay._googleOverlay;
+            return this._overlay._googleOverlay;
         },
 
         /** zooms to the google.maps overlay. */
         zoomTo: function () {
-			this.overlay.zoomTo();
+			this._overlay.zoomTo();
             this.showBubble();
         },
 
         /** centers the map at the google.maps overlay */
         centerOn: function () {
-            this.overlay.centerOn();
+            this._overlay.centerOn();
         },
 
         /**
@@ -177,7 +177,7 @@ define(["marionette",
          * @returns {google.maps.LatLng} object
          */
         getCenter: function () {
-            return this.overlay.getCenter();
+            return this._overlay.getCenter();
         },
 
         setMode: function () {
@@ -189,16 +189,20 @@ define(["marionette",
         },
 
         makeViewable: function () {
-            this.overlay.makeViewable();
+            this._overlay.makeViewable();
         },
 
         makeEditable: function () {
-            this.overlay.makeEditable(this.model);
+            this._overlay.makeEditable(this.model);
         },
 
         redraw: function () {
-            //alert("implement in child class");
-        }
+            //implement in child class
+        },
+
+		getShapeType: function () {
+			return this._overlay.getShapeType();
+		}
 
     });
     return Base;

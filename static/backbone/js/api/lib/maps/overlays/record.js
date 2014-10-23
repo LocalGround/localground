@@ -18,7 +18,7 @@ define(["lib/maps/overlays/base"], function (Base) {
                 strokeColor: "#FFF",
                 strokeWeight: 1.5,
                 fillOpacity: 1,
-                path: this.overlay.Shapes.MAP_PIN_HOLLOW,
+                path: this._overlay.Shapes.MAP_PIN_HOLLOW,
                 anchor: new google.maps.Point(16, 5),
                 scale: 1.6
             };
@@ -37,7 +37,7 @@ define(["lib/maps/overlays/base"], function (Base) {
         },
 
         redraw: function () {
-            this.overlay.setIcon(this.getIcon());
+            this._overlay.setIcon(this.getIcon());
         }
     });
     return Record;

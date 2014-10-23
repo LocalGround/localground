@@ -10,7 +10,7 @@ define(["jquery"], function ($) {
         this.model = null;
         this.map = null;
 
-        this.getType = function () {
+        this.getShapeType = function () {
             return "Polyline";
         };
 

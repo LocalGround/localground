@@ -18,7 +18,7 @@ define(["lib/maps/overlays/base"], function (Base) {
                 strokeColor: "#FFF",
                 strokeWeight: 1.5,
                 fillOpacity: 1,
-                path: this.overlay.Shapes.SOUND,
+                path: this._overlay.Shapes.SOUND,
                 anchor: new google.maps.Point(16, 5),
                 scale: 1.6
             };
@@ -37,7 +37,7 @@ define(["lib/maps/overlays/base"], function (Base) {
         },
 
         redraw: function () {
-            this.overlay.setIcon(this.getIcon());
+            this._overlay.setIcon(this.getIcon());
         }
     });
     return Audio;

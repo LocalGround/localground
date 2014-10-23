@@ -8,7 +8,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
     var Polygon = function (app, opts) {
         Polyline.call(this, app, opts);
 
-        this.getType = function () {
+        this.getShapeType = function () {
             return "Polygon";
         };
 
@@ -27,7 +27,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         this.redraw = function () {
             this._googleOverlay.setOptions({
                 strokeColor: '#' + this.model.get("color"),
-                fillColor: '#' + this.model.get("color"),
+                fillColor: '#' + this.model.get("color")
             });
         };
         /**

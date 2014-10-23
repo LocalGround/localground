@@ -53,7 +53,7 @@ define(["lib/maps/overlays/base"], function (Base) {
         },
 
         redraw: function () {
-            this.overlay.setIcon(this.getIcon());
+            this._overlay.setIcon(this.getIcon());
         }
     });
     return Photo;

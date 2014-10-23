@@ -23,6 +23,7 @@ define(['jquery',
             tip: null,
             tipModel: null,
             template: null,
+            overlay: null,
 
             events: {
                 "click .btn-primary": "saveForm"
@@ -116,7 +117,12 @@ define(['jquery',
                 e.preventDefault();
             },
             _show: function (whichBubble) {
-                whichBubble.open(this.map, this.overlay.getGoogleOverlay());
+                if (this.overlay.getShapeType() === "Point") {
+					whichBubble.open(this.map, this.overlay.getGoogleOverlay());
+				} else {
+                    whichBubble.setPosition(this.overlay.getCenter());
+                    whichBubble.open();
+                }
             },
             /*
             showLoadingImage: function () {
