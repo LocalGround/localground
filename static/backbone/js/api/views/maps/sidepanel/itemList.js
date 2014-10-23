@@ -55,7 +55,7 @@ define(["marionette",
             },
 
             zoomToExtent: function () {
-                this.app.vent.trigger('zoom-to-extent', { key: this.opts.collection.key });
+                this.collection.trigger('zoom-to-extent');
             },
 
             isVisible: function () {

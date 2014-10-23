@@ -30,9 +30,6 @@ define(["backbone",
                 opts = _.extend(opts, data);
                 this.overlayGroups[opts.collection.key] = new OverlayGroup(opts);
             },
-			zoomToExtent: function (opts) {
-				this.overlayGroups[opts.key].zoomToExtent();
-			},
             destroy: function () {
                 this.remove();
             }

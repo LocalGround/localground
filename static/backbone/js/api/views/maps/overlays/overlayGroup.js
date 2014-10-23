@@ -32,8 +32,11 @@ define(['marionette',
 
                 //listen for new data:
                 this.listenTo(this.collection, 'zoom-to-extent', this.zoomToExtent);
-                this.listenTo(this.collection, 'show-all', this.showAll);
-                this.listenTo(this.collection, 'hide-all', this.hideAll);
+
+                //S.V.: Question: I can't find where these are called. Commenting for now:
+                //this.listenTo(this.collection, 'show-all', this.showAll);
+                //this.listenTo(this.collection, 'hide-all', this.hideAll);
+
                 //Have to manually render since this is an abstract view
                 //attached to map elements rather than the DOM
                 this.render();

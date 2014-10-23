@@ -219,7 +219,6 @@ define(["marionette", "jquery"], function (Marionette, $) {
 
             }
 
-
             var overlayView = this.app.getOverlayView(),
                 map = this.app.getMap(),
                 e = event.originalEvent,
