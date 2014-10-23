@@ -80,7 +80,7 @@ define(["marionette",
                     });
                 }
                 //add event handlers:
-                this.addEventHandlers(this.app);
+                this.addEventHandlers();
             },
 
             /**
@@ -125,14 +125,14 @@ define(["marionette",
 
 
             },
-            addEventHandlers: function (sb) {
+            addEventHandlers: function () {
                 //add notifications:
                 var that = this;
                 google.maps.event.addListener(this.map, "maptypeid_changed", function () {
                     that.app.vent.trigger("map-tiles-changed");
                 });
-                google.maps.event.addListener(this.map, "idle", function (evnt) {
-                    //sb.notify({ type: "map-extents-changed" });
+                google.maps.event.addListener(this.map, "idle", function (e) {
+					that.app.vent.trigger("map-extents-changed");
                 });
 
                 //add listeners:
@@ -146,7 +146,7 @@ define(["marionette",
                 //todo: possibly move to a layout module?
                 $(window).off('resize');
                 $(window).on('resize', function () {
-					that.app.vent.trigger("adjust-layout");
+                    that.app.vent.trigger("adjust-layout");
                 });
             },
 

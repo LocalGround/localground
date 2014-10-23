@@ -96,16 +96,16 @@ define(["underscore", "jquery"], function (_, $) {
                 coordinates: [latLng.lng(), latLng.lat()]
             };
         };
-		
-		this.clearEditListeners = function(){
+
+        this.clearEditListeners = function () {
             google.maps.event.clearListeners(this._googleOverlay, 'drag');
             google.maps.event.clearListeners(this._googleOverlay, 'dragstart');
-            google.maps.event.clearListeners(this._googleOverlay, 'dragend');	
+            google.maps.event.clearListeners(this._googleOverlay, 'dragend');
 		};
 
         this.makeViewable = function () {
             this._googleOverlay.setOptions({'draggable': false, 'title': ''});
-			this.clearEditListeners();
+            this.clearEditListeners();
         };
 
         this.makeEditable = function (model) {
@@ -119,6 +119,7 @@ define(["underscore", "jquery"], function (_, $) {
                 that.app.vent.trigger({ type: "hide-tip" });
                 that.app.vent.trigger("hide-bubble", { model: model });
             });
+
             google.maps.event.addListener(this._googleOverlay, "dragend", function (mEvent) {
                 that.map.panTo(that._googleOverlay.position);
                 that.saveShape(model);
