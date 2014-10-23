@@ -23,7 +23,8 @@ define(["marionette",
 
             events: {
                 'click .show-hide': 'toggleShow',
-                'click .check-all': 'toggleShowAll'
+                'click .check-all': 'toggleShowAll',
+                'click .zoom-to-extent': 'zoomToExtent'
             },
             //Until models are added, a given list is hidden
             className: "hidden",
@@ -51,6 +52,10 @@ define(["marionette",
                     isVisible: this.isVisible(),
                     isExpanded: this.isExpanded
                 };
+            },
+
+            zoomToExtent: function () {
+                this.app.vent.trigger('zoom-to-extent', { key: this.opts.collection.key });
             },
 
             isVisible: function () {

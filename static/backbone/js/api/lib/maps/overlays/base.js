@@ -180,6 +180,10 @@ define(["marionette",
             return this._overlay.getCenter();
         },
 
+		getBounds: function () {
+            return this._overlay.getBounds();
+        },
+
         setMode: function () {
             if (this.app.getMode() === "view") {
                 this.makeViewable();

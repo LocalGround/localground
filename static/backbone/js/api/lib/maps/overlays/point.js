@@ -48,6 +48,12 @@ define(["underscore", "jquery"], function (_, $) {
             return this.getGoogleLatLng();
         };
 
+        this.getBounds = function () {
+            var bounds = new google.maps.LatLngBounds();
+            bounds.extend(this.getCenter());
+            return bounds;
+        };
+
         this.centerOn = function () {
             this.map.panTo(this.getCenter());
         };

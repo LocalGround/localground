@@ -18,8 +18,7 @@ define(['marionette',
             initialize: function (opts) {
                 $.extend(this, opts);
                 this.collection = opts.collection;
-                var configKey = this.collection.key.split("_")[0],
-                    that = this;
+                var configKey = this.collection.key.split("_")[0];
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.key = this.collection.key;
@@ -59,16 +58,9 @@ define(['marionette',
             /** Zooms to the extent of the collection */
             zoomToExtent: function () {
                 var bounds = new google.maps.LatLngBounds();
-                for (var key in this.overlays) {
-                    try {
-                        //for polylines, polygons, and groundoverlays:
-                        bounds.union(this.overlays[key].overlay.getBounds());
-                    }
-                    catch (e) {
-                        //for points:
-                        bounds.extend(this.overlays[key].getCenter());
-                    }
-                }
+                this.children.each(function (overlay) {
+                    bounds.union(overlay.getBounds());
+                });
                 this.map.fitBounds(bounds);
             }
 
