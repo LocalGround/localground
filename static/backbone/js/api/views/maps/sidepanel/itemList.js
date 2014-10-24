@@ -35,7 +35,6 @@ define(["marionette",
 
             hidden: true,
 
-            //isExpanded: false,
 
             initialize: function (opts) {
                 this.app = opts.app;
