@@ -50,7 +50,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
          */
         initialize: function (opts) {
             $.extend(this, opts);
-            this.id = 'sidebar-' + this.model.get('overlay_type') + this.model.get('id');
+            this.id = 'sidebar-' + this.model.getKey() + "-" + this.model.get('id');
             //this.setElement(opts.el);
             //this.render();
             this.restoreState();
@@ -68,7 +68,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
 
         onRender: function () {
             ++this.numRenderings;
-            if (this.showOverlay()) {
+            if (this.isVisible()) {
                 this.model.trigger("show-overlay");
             }
             this.setEditMode();
@@ -148,13 +148,16 @@ define(["marionette", "jquery"], function (Marionette, $) {
             this.saveState();
         },
 
-        showOverlay: function () {
-            var isVisible = this.$el.find('input').is(":checked") && this.model.get('isVisible');
-            //console.log(this.numRenderings, this.state);
+        isFirstRendering: function () {
+            return this.numRenderings < 1;
+        },
 
-            //IMPORTANT:
-            //this numRenderings flag used s.t. localStorage is only honored on initialization.
-            if (this.numRenderings < 1) {
+        isVisible: function () {
+            var isVisible = this.$el.find('input').is(":checked") && this.model.get('isVisible');
+            //console.log(this.numRenderings, this.id, this.state);
+
+            // ensures that localStorage flag is only honored on initialization.
+            if (this.isFirstRendering()) {
                 isVisible = isVisible || this.state.isVisible;
             }
             return isVisible;
@@ -164,16 +167,15 @@ define(["marionette", "jquery"], function (Marionette, $) {
          * @param {Event} e
          */
         zoomTo: function (e) {
-            if (this.model.get("geometry") && this.showOverlay()) {
+            if (this.model.get("geometry") && this.isVisible()) {
                 this.model.trigger("zoom-to-overlay");
             }
             e.stopPropagation();
         },
 
         templateHelpers: function () {
-            //todo: needs to restoreStay
             return {
-                showOverlay: this.showOverlay()
+                showOverlay: this.isVisible()
             };
         },
 
@@ -181,7 +183,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
             this.app.saveState(
                 this.id,
                 {
-                    isVisible: this.showOverlay()
+                    isVisible: this.isVisible()
                 },
                 false
             );
@@ -211,7 +213,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
 
         /** Show a tooltip on the map if the geometry exists */
         showTip: function () {
-            if (this.model.get("geometry") && this.showOverlay()) {
+            if (this.model.get("geometry") && this.isVisible()) {
                 this.model.trigger("show-tip");
             }
         },

@@ -11,7 +11,6 @@ define(["marionette",
     function (Marionette, _, $, collectionHeader, Item, Config) {
         "use strict";
 
-
         var ItemList = Marionette.CompositeView.extend({
 
             template: _.template(collectionHeader),
@@ -20,6 +19,11 @@ define(["marionette",
             childView: Item,
 
             childViewContainer: ".collection-data",
+
+            /** tracks # of times this view is rendered (important for restoring state) */
+            numRenderings: 0,
+
+            state: {},
 
             events: {
                 'click .show-hide': 'toggleShow',
@@ -31,10 +35,11 @@ define(["marionette",
 
             hidden: true,
 
-            isExpanded: false,
+            //isExpanded: false,
 
             initialize: function (opts) {
                 this.app = opts.app;
+                this.id = 'sidebar-header' + opts.collection.key;
                 this.opts = opts;
                 this.collection = opts.collection;
                 if (this.collection.key) {
@@ -42,15 +47,16 @@ define(["marionette",
                     this.childView = Config[configKey].ItemView;
                     this.childViewOptions = $.extend(opts, {template: _.template(Config[configKey].ItemTemplate)});
                 }
+                this.restoreState();
                 this.listenTo(this.app.vent, 'toggle-project', this.toggleProjectData);
             },
 
             templateHelpers: function () {
                 return {
-                    name: this.opts.collection.name,
-                    key: this.opts.collection.key,
+                    name: this.collection.name,
+                    key: this.collection.key,
                     isVisible: this.isVisible(),
-                    isExpanded: this.isExpanded
+                    isExpanded: this.isExpanded()
                 };
             },
 
@@ -59,7 +65,22 @@ define(["marionette",
             },
 
             isVisible: function () {
-                return !this.hidden && this.opts.collection.length > 0;
+                var isVisible = !this.hidden && this.opts.collection.length > 0 &&
+                                    this.$el.find('.check-all').is(':checked');
+                // ensures that localStorage flag is only honored on initialization.
+                if (this.isFirstRendering()) {
+                    isVisible = isVisible || this.state.isVisible;
+                }
+                return isVisible;
+            },
+
+            isExpanded: function () {
+                var isExpanded = this.$el.find('.show-hide').hasClass('fa-caret-down');
+                // ensures that localStorage flag is only honored on initialization.
+                if (this.isFirstRendering()) {
+                    isExpanded = isExpanded || this.state.isExpanded;
+                }
+                return isExpanded;
             },
 
             onAddChild: function () {
@@ -78,12 +99,12 @@ define(["marionette",
 
             toggleShow: function () {
                 this.$el.find(this.childViewContainer).toggleClass('hidden');
-                if (this.isExpanded) {
+                if (this.isExpanded()) {
                     this.$el.find('.show-hide').removeClass('fa-caret-down').addClass('fa-caret-right');
                 } else {
                     this.$el.find('.show-hide').removeClass('fa-caret-right').addClass('fa-caret-down');
                 }
-                this.isExpanded = !this.isExpanded;
+                this.saveState();
             },
 
             toggleShowAll: function () {
@@ -96,6 +117,7 @@ define(["marionette",
                         child.uncheckItem();
                     });
                 }
+                this.saveState();
 
             },
 
@@ -113,11 +135,37 @@ define(["marionette",
                     this.$el.removeClass('hidden');
                     //this.toggleShowAll();
                 }
+                this.saveState();
+            },
+
+            onRender: function () {
+                ++this.numRenderings;
+            },
+
+            isFirstRendering: function () {
+                return this.numRenderings < 1;
+            },
+
+            saveState: function () {
+                this.app.saveState(
+                    this.id,
+                    {
+                        isVisible: this.isVisible(),
+                        isExpanded: this.isExpanded()
+                    },
+                    false
+                );
+            },
+
+            restoreState: function () {
+                this.state = this.app.restoreState(this.id);
+                if (!this.state) {
+                    this.state = {
+                        isVisible: false,
+                        isExpanded: false
+                    };
+                }
             }
-
-
-
-
 
         });
 
