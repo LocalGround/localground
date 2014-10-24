@@ -7,30 +7,32 @@ define(["jquery"],
     function ($) {
         "use strict";
         return {
-            saveState: function (id, obj, replace) {
-                this.saveToLocalStorage(id, obj, replace);
+            saveState: function (key, obj, replace) {
+                this.saveToLocalStorage(key, obj, replace);
             },
-            restoreState: function (module_selector, key) {
-                this.getFromLocalStorage(module_selector, key);
+            restoreState: function (key) {
+                return this.getFromLocalStorage(key);
             },
-            getFromLocalStorage: function (mod, key) {
-                var cache = localStorage['map-editor'];
-                if (cache === null) { return null; }
-                cache = JSON.parse(cache);
-                if (key && cache[mod]) { return cache[mod][key]; }
-                return cache[mod];
-            },
-            saveToLocalStorage: function (mod, object, replace) {
-                var cache = localStorage['map-editor'];
-                cache = cache !== null ? JSON.parse(cache) : {};
-                cache[mod] = cache[mod] || {};
-                if (replace) {
-                    cache[mod] = object;
-                } else {
-                    $.extend(cache[mod], object);
+            getFromLocalStorage: function (key) {
+                var cache = localStorage.mapplication;
+                if (!cache) { return null; }
+                try {
+                    cache = JSON.parse(cache);
+                } catch (e) {
+                    return null;
                 }
-                localStorage['map-editor'] = JSON.stringify(cache);
-                    //this.log(1, JSON.stringify(cache));
+                return cache[key];
+            },
+            saveToLocalStorage: function (key, object, replace) {
+                var cache = localStorage.mapplication;
+                cache = !cache ? {} : JSON.parse(cache);
+                cache[key] = cache[key] || {};
+                if (replace) {
+                    cache[key] = object;
+                } else {
+                    $.extend(cache[key], object);
+                }
+                localStorage.mapplication = JSON.stringify(cache);
             },
             setMap: function (map) {
                 //not sure if this makes sense to do here

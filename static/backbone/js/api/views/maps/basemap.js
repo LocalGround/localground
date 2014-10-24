@@ -129,17 +129,13 @@ define(["marionette",
                 //add notifications:
                 var that = this;
                 google.maps.event.addListener(this.map, "maptypeid_changed", function () {
-                    that.app.vent.trigger("map-tiles-changed");
+                    that.saveState();
                 });
-                google.maps.event.addListener(this.map, "idle", function (e) {
-					that.app.vent.trigger("map-extents-changed");
+                google.maps.event.addListener(this.map, "idle", function () {
+					that.saveState();
                 });
 
-                //add listeners:
-                this.listenTo(this.app.vent, "map-tiles-changed", this.saveState);
                 /*sb.listen({
-                    "map-tiles-changed": this.saveState,
-                    "map-extents-changed": this.saveState,
                     "item-drop": this.handleItemDrop
                 });*/
 

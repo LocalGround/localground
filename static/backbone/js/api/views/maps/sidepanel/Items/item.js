@@ -14,12 +14,9 @@ define(["marionette", "jquery"], function (Marionette, $) {
         template: null,
         /** A Backbone model */
         model: null,
-
-        /**
-         * A google.maps.Overlay object (Point, Polyline, Polygon,
-         * or GroundOverlay)
-         */
-        googleOverlay: null,
+        /** tracks # of times this view is rendered (important for restoring state) */
+        numRenderings: 0,
+        state: {},
 
         /**
          * Event listeners: Listens for delete checkbox toggle,
@@ -56,6 +53,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
             this.id = 'sidebar-' + this.model.get('overlay_type') + this.model.get('id');
             //this.setElement(opts.el);
             //this.render();
+            this.restoreState();
             this.listenTo(this.model, 'show-item', this.showItem);
             this.listenTo(this.model, 'hide-item', this.hideItem);
             this.listenTo(this.app.vent, "mode-change", this.setEditMode);
@@ -69,6 +67,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
         },
 
         onRender: function () {
+            ++this.numRenderings;
             if (this.showOverlay()) {
                 this.model.trigger("show-overlay");
             }
@@ -150,7 +149,15 @@ define(["marionette", "jquery"], function (Marionette, $) {
         },
 
         showOverlay: function () {
-            return this.$el.find('input').is(":checked") && this.model.get('isVisible');
+            var isVisible = this.$el.find('input').is(":checked") && this.model.get('isVisible');
+            //console.log(this.numRenderings, this.state);
+
+            //IMPORTANT:
+            //this numRenderings flag used s.t. localStorage is only honored on initialization.
+            if (this.numRenderings < 1) {
+                isVisible = isVisible || this.state.isVisible;
+            }
+            return isVisible;
         },
         /**
          * Helps the checkbox communicate with the toggleElement function.
@@ -164,9 +171,27 @@ define(["marionette", "jquery"], function (Marionette, $) {
         },
 
         templateHelpers: function () {
+            //todo: needs to restoreStay
             return {
                 showOverlay: this.showOverlay()
             };
+        },
+
+        saveState: function () {
+            this.app.saveState(
+                this.id,
+                {
+                    isVisible: this.showOverlay()
+                },
+                false
+            );
+        },
+
+        restoreState: function () {
+            this.state = this.app.restoreState(this.id);
+            if (!this.state) {
+                this.state = { isVisible: false };
+            }
         },
 
         /**
@@ -194,21 +219,6 @@ define(["marionette", "jquery"], function (Marionette, $) {
         /** Hide the map tooltip */
         hideTip: function () {
             this.model.trigger('hide-tip');
-        },
-        saveState: function () {
-            this.app.saveState(this.id, {
-                showOverlay: this.showOverlay()
-            });
-        },
-
-        restoreState: function () {
-            var state = this.app.restoreState(this.id);
-            if (!state) {
-                return { showOverlay: false };
-            }
-
-            return state;
-
         },
 
         //todo: this needs to go elsewhere, somewhere that knows about the map
