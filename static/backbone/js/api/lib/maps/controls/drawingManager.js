@@ -90,7 +90,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                 success: function (model, response) {
 					//hide the temporary overlay and show the permenanant one:
                     googleOverlay.setMap(null);
-					that.dm.setDrawingMode(null);
+                    that.dm.setDrawingMode(null);
 
                     //show the edit form:
                     that.showEditForm(model, response);
@@ -100,8 +100,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
 
         this.showEditForm = function (model, response) {
             model.generateUpdateSchema(response.update_metadata);
-            
-			var opts = Config.markers;
+            var opts = Config.markers;
             $.extend(opts, {
                 key: "markers",
                 models: [ model ]

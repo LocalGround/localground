@@ -38,7 +38,7 @@ define(["marionette",
             this.map = opts.app.getMap();
             this.model = opts.model;
             this.initInfoBubble(opts);
-			this.initOverlayType(opts.isVisible);
+            this.initOverlayType(opts.isVisible);
 
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
         },
@@ -163,7 +163,7 @@ define(["marionette",
 
         /** zooms to the google.maps overlay. */
         zoomTo: function () {
-			this._overlay.zoomTo();
+            this._overlay.zoomTo();
             this.showBubble();
         },
 
@@ -204,9 +204,9 @@ define(["marionette",
             //implement in child class
         },
 
-		getShapeType: function () {
-			return this._overlay.getShapeType();
-		}
+        getShapeType: function () {
+            return this._overlay.getShapeType();
+        }
 
     });
     return Base;

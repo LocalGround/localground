@@ -41,16 +41,16 @@ define([
             this.redraw();
         },
 
-		showBubble: function () {
-			var that = this;
-			that.model.fetch({ success: function () {
-				that.infoBubble.showBubble();
-			}});
-		},
+        showBubble: function () {
+            var that = this;
+            that.model.fetch({ success: function () {
+                that.infoBubble.showBubble();
+            }});
+        },
 
-		initInfoBubble: function (opts) {
-			this.infoBubble = new MarkerBubble(_.extend({overlay: this}, opts));
-		},
+        initInfoBubble: function (opts) {
+            this.infoBubble = new MarkerBubble(_.extend({overlay: this}, opts));
+        },
 
         redraw: function () {
             if (this.getShapeType() === "Point") {

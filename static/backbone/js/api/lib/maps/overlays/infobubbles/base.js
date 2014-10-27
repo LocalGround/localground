@@ -118,8 +118,8 @@ define(['jquery',
             },
             _show: function (whichBubble) {
                 if (this.overlay.getShapeType() === "Point") {
-					whichBubble.open(this.map, this.overlay.getGoogleOverlay());
-				} else {
+                    whichBubble.open(this.map, this.overlay.getGoogleOverlay());
+                } else {
                     whichBubble.setPosition(this.overlay.getCenter());
                     whichBubble.open();
                 }
