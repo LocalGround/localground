@@ -42,6 +42,15 @@ define(['marionette',
                 this.render();
             },
 
+            // overriding the "addChild" method so that data elements whose geometry hasn't
+            // yet been defined won't render.
+            addChild: function (child, ChildView, index) {
+                if (child.get('geometry') != null) {
+                    return Marionette.CollectionView.prototype.addChild.call(this, child, ChildView, index);
+                }
+                return null;
+            },
+
             /** Shows all of the map overlays */
             showAll: function () {
                 this.isVisible = true;
