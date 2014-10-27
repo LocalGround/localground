@@ -50,7 +50,7 @@ define(["marionette",
         updateOverlay: function () {
 			this.getGoogleOverlay().setMap(null);
             this.initOverlayType(this.isShowing);
-			this.setMode();
+			this.changeMode();
         },
 
         initOverlayType: function (isVisible) {
@@ -103,7 +103,7 @@ define(["marionette",
         show: function () {
             var go = this.getGoogleOverlay();
             go.setMap(this.map);
-			this.setMode();
+			this.changeMode();
             this.isShowing = true;
             this.saveState();
         },
@@ -184,7 +184,7 @@ define(["marionette",
             return this._overlay.getBounds();
         },
 
-        setMode: function () {
+        changeMode: function () {
             if (this.app.getMode() === "view") {
                 this.makeViewable();
             } else {

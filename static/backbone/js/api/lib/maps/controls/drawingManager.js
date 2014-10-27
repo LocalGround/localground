@@ -56,14 +56,14 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             var that = this;
 
             //add listeners:
-            this.app.vent.on("mode-change", this.setMode.bind(this));
+            this.app.vent.on("mode-change", this.changeMode.bind(this));
 
             google.maps.event.addListener(this.dm, 'overlaycomplete', function (e) {
                 that.addMarker(e.overlay);
             });
         };
 
-        this.setMode = function () {
+        this.changeMode = function () {
             if (this.app.getMode() === "view") {
                 this.hide();
             } else {
