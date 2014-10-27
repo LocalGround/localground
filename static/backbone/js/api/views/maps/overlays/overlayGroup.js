@@ -32,14 +32,20 @@ define(['marionette',
 
                 //listen for new data:
                 this.listenTo(this.collection, 'zoom-to-extent', this.zoomToExtent);
-
-                //S.V.: Question: I can't find where these are called. Commenting for now:
-                //this.listenTo(this.collection, 'show-all', this.showAll);
-                //this.listenTo(this.collection, 'hide-all', this.hideAll);
+                this.listenTo(this.collection, 'change:geometry', this.geometryUpdated);
 
                 //Have to manually render since this is an abstract view
                 //attached to map elements rather than the DOM
                 this.render();
+            },
+
+            geometryUpdated: function (model) {
+                //create a child view if one doesn't exist (necessary for
+                // data elements that have just been geo-referenced)
+                if (!this.children.findByModel(model)) {
+                    //console.log("creating child view");
+                    this.addChild(model, this.childView);
+                }
             },
 
             // overriding the "addChild" method so that data elements whose geometry hasn't

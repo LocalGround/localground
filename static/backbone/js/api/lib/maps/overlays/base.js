@@ -40,7 +40,7 @@ define(["marionette",
             this.initInfoBubble(opts);
 			this.initOverlayType(opts.isVisible);
 
-            this.listenTo(this.app.vent, "mode-change", this.setMode);
+            this.listenTo(this.app.vent, "mode-change", this.changeMode);
         },
 
 		initInfoBubble: function (opts) {
