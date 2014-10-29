@@ -101,8 +101,12 @@ define(['jquery',
                     template = that.getTemplate("InfoBubbleTemplate"),
                     ModelForm = Form.extend({
                         schema: that.model.updateSchema
-                    });
-                that.setElement($(template({mode: "edit"})));
+                    }),
+                    context = that.getContext(this.model);
+                //that.setElement($(template({mode: "edit"})));
+                //var 
+                context.mode = 'edit';
+                that.setElement($(template(context)));
                 that.form = new ModelForm({
                     model: that.model
                 }).render();

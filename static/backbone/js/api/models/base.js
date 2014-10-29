@@ -46,6 +46,7 @@ define(["backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point", "un
             },
             toTemplateJSON: function () {
                 var json = Backbone.Model.prototype.toJSON.call(this);
+                json.key = this.getKey();
                 return json;
             },
             getKey: function () {

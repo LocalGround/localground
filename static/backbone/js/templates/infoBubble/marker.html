@@ -1,38 +1,62 @@
 <% if (mode == 'view') { %>
 <div class="bubble-container" style="width: 400px;height:380px;">
 	<div class="slider marker-container">
-		<% _.each(children, function(child) { %>
-			<% if (child.overlay_type == 'photo') { %>
-				<% _.each(child.data, function(item) { %>
-					<div>
-						<img src="<%= item.path_medium %>" />
-					</div>
-				<% }); %>
-			<% } %>
-		<% }); %>
+	    <% _.each(children, function(child) { %>
+		<% if (child.overlay_type == 'photo') { %>
+		    <% _.each(child.data, function(item) { %>
+			<div>
+			    <img src="<%= item.path_medium %>" />
+			</div>
+		    <% }); %>
+		<% } %>
+	    <% }); %>
 	</div>
 	<div>
-		<p class="bubble-title"><%= name || "Untitled" %></p>
-		<% if(descriptiveText.length > 0) { %>
-			<span><%= descriptiveText %></span>
-		<% } %>
-		<p class="bubble-detail">
-			<%= description %><br>
-			<%= tags %>	
-		</p>
+	    <p class="bubble-title"><%= name || "Untitled" %></p>
+	    <% if(descriptiveText.length > 0) { %>
+		    <span><%= descriptiveText %></span>
+	    <% } %>
+	    <p class="bubble-detail">
+		    <%= description %><br>
+		    <%= tags %>	
+	    </p>
 	</div>
 	<script>
-		$('.single-item').slick({
-			dots: true	
-		});
+	    $('.single-item').slick({
+		    dots: true	
+	    });
 	</script>
 </div>
 <% } %>
 
 
 <% if (mode == 'edit') { %>
-	<div class="bubble-container" style="width: 400px;height:350px;">
-		<div class="form" style="height: 275px;"></div>
-		<button class="btn btn-primary">Submit</button>
+    <div class="bubble-container" style="width: 430px;height:350px;overflow-y:auto;">
+	<div class="form" style="margin: 10px;"></div>
+	<div style="margin: 10px;">
+	<% _.each(children, function(child, key) { %>
+	    <% _.each(child.data, function(item) { %>
+		<div class="thumbnail marker-thumbnail">
+		    <% if (key == 'photos') { %>
+			<div class="holder" style="background-image: url('<%= item.path_small %>');background-position:center center;"></div>
+		    <% } else if(key == 'audio') { %>
+			<div class="holder">
+			    <i class="fa fa-volume-up marker-attachment"></i>
+			</div>
+		    <% } else { %>
+			<div class="holder">
+			    <i class="fa fa-map-marker marker-attachment" style="color: #ccc;"></i>
+			</div>
+		    <% } %>
+		    <div class="caption">
+			<%= item.name || "Untitled" %><br />
+			<a class="btn btn-default detach" marker-id="<%= id %>" key="<%= key %>" item-id="<%= item.id %>">detach</a><br />
+		    </div>
+		    <!-- i class="fa fa-times-circle marker-detach"></i -->
+		</div>
+	    <% }); %>
+	<% }); %>
 	</div>
+	<button class="btn btn-primary">Save</button>
+    </div>
 <% } %>

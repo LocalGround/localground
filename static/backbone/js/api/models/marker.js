@@ -1,9 +1,9 @@
-define(["underscore",
-    "models/base",
+define(["models/base",
+	"models/association",
     "lib/maps/geometry/point",
     "lib/maps/geometry/polyline",
     "lib/maps/geometry/polygon"
-    ], function (_, Base, Point, Polyline, Polygon) {
+    ], function (Base, Association, Point, Polyline, Polygon) {
     "use strict";
     /**
      * A Backbone Model class for the Marker datatype.
@@ -20,20 +20,24 @@ define(["underscore",
         },
 
         getCenter: function () {
-            var geoJSON = this.get("geometry");
+            var geoJSON = this.get("geometry"),
+				point = null,
+				polyline = null,
+				polygon = null;
+
             if (!geoJSON) {
                 return null;
             }
             if (geoJSON.type === 'Point') {
-                var point = new Point();
+                point = new Point();
                 return point.getGoogleLatLng(geoJSON);
             }
             if (geoJSON.type === 'LineString') {
-                var polyline = new Polyline();
+                polyline = new Polyline();
                 return polyline.getCenterPointFromGeoJSON(geoJSON);
             }
             if (geoJSON.type === 'Polygon') {
-                var polygon = new Polygon();
+                polygon = new Polygon();
                 return polygon.getCenterPointFromGeoJSON(geoJSON);
             }
             return null;
@@ -51,7 +55,26 @@ define(["underscore",
                 messages.push(this.get("record_count") + ' data record(s)');
             }
             return messages.join(', ');
-        }
+        },
+
+        attach: function (model) {
+			var association = new Association({
+				object_id: model.id,
+				model_type: model.getKey(),
+				marker_id: this.id
+			});
+			association.save();
+		},
+
+		detach: function (model_id, key, callback) {
+            var association = new Association({
+                id: model_id, //only define id for the detach
+                object_id: model_id,
+                model_type: key,
+                marker_id: this.id
+            });
+            association.destroy({success: callback});
+		}
     });
     return Marker;
 });

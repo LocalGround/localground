@@ -29,6 +29,41 @@ define([
             };
         },
 
+        highlight: function () {
+            if (this.getShapeType() != "Point") {
+                return;
+            }
+            if (!this.highlightMarker) {
+                this.highlightMarker = new google.maps.Marker({
+                    position: this.getCenter(),
+                    icon: {
+                        path: this._overlay.Shapes.OVAL,
+                        fillColor: '#BCE8F1',
+                        strokeColor: '#3A87AD',
+                        strokeWeight: 2.5,
+                        fillOpacity: 0.5
+                    },
+                    map: this.map,
+                    zIndex: 1
+                });
+            } else {
+                this.highlightMarker.setMap(this.map);
+            }
+        },
+
+        unHighlight: function () {
+            if (!this.highlightMarker) {
+                this.highlightMarker.setMap(null);
+            }
+        },
+
+        intersects: function (overlay) {
+            if (overlay.getShapeType() == 'Point') {
+                return true;
+            }
+            return false;
+        },
+
         /** adds icon to overlay. */
         initialize: function () {
             Base.prototype.initialize.apply(this, arguments);
@@ -39,6 +74,7 @@ define([
         show: function () {
             Base.prototype.show.apply(this);
             this.redraw();
+            //this.highlight();
         },
 
         showBubble: function () {

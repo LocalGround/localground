@@ -132,7 +132,7 @@ define(["marionette",
                     that.saveState();
                 });
                 google.maps.event.addListener(this.map, "idle", function () {
-					that.saveState();
+                    that.saveState();
                 });
 
                 /*sb.listen({

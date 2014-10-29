@@ -22,9 +22,10 @@ define(["backbone",
                 this.app = opts.app;
                 this.opts = opts;
                 this.listenTo(this.app.vent, "new-collection-created", this.createOverlayGroup);
-				this.listenTo(this.app.vent, 'zoom-to-extent', this.zoomToExtent);
+                this.listenTo(this.app.vent, 'zoom-to-extent', this.zoomToExtent);
                 this.overlayGroups = {};
             },
+
             createOverlayGroup: function (data) {
                 var opts = _.clone(this.opts);
                 opts = _.extend(opts, data);

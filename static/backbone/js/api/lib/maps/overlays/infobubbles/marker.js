@@ -1,7 +1,8 @@
-define(['jquery',
+define(['underscore',
+        'jquery',
         'color-picker',
         'lib/maps/overlays/infobubbles/base',
-        'slick'], function ($, jscolor, BaseBubble) {
+        'slick'], function (_, $, jscolor, BaseBubble) {
     "use strict";
     /**
      * Class that controls marker point model overlays.
@@ -9,6 +10,12 @@ define(['jquery',
      * @class Audio
      */
     var MarkerBubble = BaseBubble.extend({
+
+        events: function () {
+            return _.extend({}, BaseBubble.prototype.events, {
+                "click .detach": "detach"
+            });
+        },
 
         renderViewContent: function () {
             BaseBubble.prototype.renderViewContent.apply(this, arguments);
@@ -33,6 +40,17 @@ define(['jquery',
                 picker = new jscolor.color(colorInput.get(0), {});
                 picker.fromString("#" + this.model.get("color"));
             }
+        },
+
+        detach: function (e) {
+            var $a = $(e.currentTarget),
+                key = $a.attr("key"),
+                modelID = parseInt($a.attr("item-id")),
+                that = this;
+            this.model.detach(modelID, key, function () {
+				$a.parent().parent().remove();
+				that.model.fetch();
+            });
         }
     });
     return MarkerBubble;
