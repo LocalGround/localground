@@ -52,16 +52,9 @@ define([
         },
 
         unHighlight: function () {
-            if (!this.highlightMarker) {
+            if (this.highlightMarker) {
                 this.highlightMarker.setMap(null);
             }
-        },
-
-        intersects: function (overlay) {
-            if (overlay.getShapeType() == 'Point') {
-                return true;
-            }
-            return false;
         },
 
         /** adds icon to overlay. */

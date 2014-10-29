@@ -15,8 +15,7 @@ define(["backbone",
 
             /**
              * Initializes the object.
-             * @param {Object} sb
-             * Sandbox
+             * @param {Object} opts
              */
             initialize: function (opts) {
                 this.app = opts.app;
@@ -31,8 +30,13 @@ define(["backbone",
                 opts = _.extend(opts, data);
                 this.overlayGroups[opts.collection.key] = new OverlayGroup(opts);
             },
+
             destroy: function () {
                 this.remove();
+            },
+
+            getMarkerOverlays: function () {
+                return this.overlayGroups.markers || [];
             }
         });
         return OverlayManager;

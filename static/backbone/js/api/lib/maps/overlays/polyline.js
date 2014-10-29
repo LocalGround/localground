@@ -168,6 +168,11 @@ define(["jquery"], function ($) {
             model.save();
         };
 
+        this.intersects = function (latLng) {
+            //alert("No yet implemented.");
+            return false;
+        };
+
         this.initialize(app, opts);
 
     };

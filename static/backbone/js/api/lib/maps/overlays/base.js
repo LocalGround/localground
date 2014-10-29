@@ -206,6 +206,10 @@ define(["marionette",
 
         getShapeType: function () {
             return this._overlay.getShapeType();
+        },
+
+        intersects: function (latLng) {
+            return this._overlay.intersects(latLng);
         }
 
     });

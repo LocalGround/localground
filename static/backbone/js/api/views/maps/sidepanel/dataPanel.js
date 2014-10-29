@@ -42,7 +42,7 @@ define(["marionette",
                 // Listen for the "new_collection" event. On each new
                 // collection event add a new ItemsView to the DataPanel.
                 //app.vent.on("new-collection-created", this.createItemsView.bind(this));
-                opts.app.vent.on("adjust-layout", this.resize.bind(this));	
+                opts.app.vent.on("adjust-layout", this.resize.bind(this));
             },
 
             onShow: function () {
@@ -81,7 +81,7 @@ define(["marionette",
             },
 
             resize: function () {
-		this.$el.find('.pane-body').height($('body').height() - 140);
+                this.$el.find('.pane-body').height($('body').height() - 140);
             }
         });
         return DataPanel;

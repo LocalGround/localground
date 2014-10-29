@@ -174,7 +174,7 @@ define(["marionette",
             onShow: function () {
                 this.overlayManager = new OverlayManager(this.opts);
                 this.deleteMenu = new DeleteMenu(this.opts);
-                this.drawingManager = new DrawingManager(this.opts);
+                //this.drawingManager = new DrawingManager(this.opts);
             }
 
         });

@@ -73,6 +73,11 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
             return { type: 'Polygon', coordinates: [coords] };
         };
 
+		this.intersects = function (latLng) {
+            //alert("No yet implemented.");
+            return false;
+        };
+
         this.initialize(app, opts);
     };
     return Polygon;

@@ -121,18 +121,29 @@ define(["underscore", "jquery"], function (_, $) {
                 'draggable': true,
                 'title': 'Drag this icon to re-position it'
             });
-            google.maps.event.addListener(this._googleOverlay, "dragstart", function (mEvent) {
-                that.app.vent.trigger({ type: "hide-tip" });
+            google.maps.event.addListener(this._googleOverlay, "dragstart", function () {
+                that.app.vent.trigger("hide-tip");
                 that.app.vent.trigger("hide-bubble", { model: model });
             });
 
             google.maps.event.addListener(this._googleOverlay, "dragend", function (mEvent) {
                 that.map.panTo(that._googleOverlay.position);
-                that.saveShape(model);
+                if (model.getKey() != "markers") {
+                    that.app.vent.trigger("drag-ended", {
+                        latLng: mEvent.latLng,
+                        model: model
+                    });
+                } else {
+                    that.saveShape(model);
+                }
             });
 
             google.maps.event.addListener(this._googleOverlay, "drag", function (mEvent) {
-                //me.checkIntersection(mEvent, true);
+                if (model.getKey() != "markers") {
+                    that.app.vent.trigger("dragging", {
+                        latLng: mEvent.latLng
+                    });
+                }
             });
         };
 
@@ -155,6 +166,33 @@ define(["underscore", "jquery"], function (_, $) {
             });
         };
 
+        this.intersects = function (latLng) {
+            var r = 10,
+                projection = this.app.getOverlayView().getProjection(),
+                position = projection.fromLatLngToContainerPixel(latLng),
+                currentPosition = projection.fromLatLngToContainerPixel(this._googleOverlay.getPosition()),
+                rV = 20,
+                rH = 10;
+
+            if (this._googleOverlay.icon && this._googleOverlay.icon.size) {
+                rV = this._googleOverlay.icon.size.height;  // vertical radius
+                rH = this._googleOverlay.icon.size.width;   // horizontal radius
+            }
+            var top = position.y - rV,
+                bottom = position.y + rV,
+                left = position.x - rH,
+                right = position.x + rH;
+			var withinBuffer = currentPosition.y  <= bottom + r &&
+							   currentPosition.y >= top - 2 * r &&
+							   currentPosition.x <= right + r &&
+							   currentPosition.x >= left - r;
+            if (withinBuffer) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+        
         this.initialize(app, opts);
 
     };

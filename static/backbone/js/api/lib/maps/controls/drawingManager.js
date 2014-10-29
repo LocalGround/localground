@@ -1,12 +1,12 @@
 define(["underscore", "jquery", "models/marker", "config"], function (_, $, Marker, Config) {
     "use strict";
     /**
-     * Class that lets a user delete a selected vertex of a path.
+     * Class that lets users update geometries and merge objects together.
      * @class DrawingManager
      * @param {options} opts
      *
      */
-    var DrawingManager = function (opts) {
+    var DrawingManager = function (opts, basemap) {
         this.dm = null;
         this.polygonOptions = {
             strokeWeight: 0,
@@ -31,8 +31,9 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             }
         };
 
-        this.initialize = function (opts) {
+        this.initialize = function (opts, basemap) {
             this.app = opts.app;
+            this.basemap = basemap;
             this.dm = new google.maps.drawing.DrawingManager({
                 //drawingMode: google.maps.drawing.OverlayType.MARKER,
                 markerOptions: this.markerOptions,
@@ -57,6 +58,8 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
 
             //add listeners:
             this.app.vent.on("mode-change", this.changeMode.bind(this));
+            this.app.vent.on("dragging", this.showDragHighlighting.bind(this));
+            this.app.vent.on("drag-ended", this.saveDragChange.bind(this));
 
             google.maps.event.addListener(this.dm, 'overlaycomplete', function (e) {
                 that.addMarker(e.overlay);
@@ -116,8 +119,45 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
 
         };
 
+        this.getMarkerOverlays = function () {
+            var overlayGroup = this.basemap.overlayManager.getMarkerOverlays();
+            return overlayGroup.children;
+        };
+
+        this.showDragHighlighting = function (opts) {
+            this.getMarkerOverlays().each(function (marker) {
+                if (marker.intersects(opts.latLng)) {
+                    marker.highlight();
+                } else {
+                    marker.unHighlight();
+                }
+            });
+        };
+
+        this.saveDragChange = function (opts) {
+            var model = opts.model,
+                latLng = opts.latLng,
+                attached = false;
+            this.getMarkerOverlays().each(function (marker) {
+                marker.unHighlight();
+                if (marker.intersects(latLng)) {
+                    attached = true;
+                    marker.model.attach(model, function () {
+                        model.trigger('hide-item');
+                        marker.model.fetch();
+                    });
+                }
+            });
+            if (!attached) {
+                //code
+                //model.set("geometry", this.getGeoJSON());
+                //model.save();
+                alert("figure out how to save!!");
+            }
+        };
+
         //call initialization function:
-        this.initialize(opts);
+        this.initialize(opts, basemap);
     };
 
 
