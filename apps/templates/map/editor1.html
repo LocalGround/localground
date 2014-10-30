@@ -36,7 +36,7 @@
 				includeSearchControl: true,
 				includeGeolocationControl: false,
 				activeMapTypeID: {{ basemap_id|default:"12" }},
-				overlays: {% autoescape off %}{{ overlays }}{% endautoescape %}
+				tilesets: {% autoescape off %}{{ overlays }}{% endautoescape %}
 			};
 			 require(
 				["jquery", "/static/backbone/js/api/mapplication.js"],

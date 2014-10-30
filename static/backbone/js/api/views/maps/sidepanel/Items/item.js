@@ -225,33 +225,10 @@ define(["marionette", "jquery"], function (Marionette, $) {
 
         //todo: this needs to go elsewhere, somewhere that knows about the map
         dropItem: function (event) {
-            function elementContainsPoint(domElement, x, y) {
-                return x > domElement.offsetLeft && x < domElement.offsetLeft + domElement.offsetWidth &&
-                    y > domElement.offsetTop && y < domElement.offsetTop + domElement.offsetHeight;
-
-            }
-
-            var overlayView = this.app.getOverlayView(),
-                map = this.app.getMap(),
-                e = event.originalEvent,
-                mapContainer = map.getDiv(),
-                point,
-                projection,
-                latLng;
-            e.stopPropagation();
-
-            if (elementContainsPoint(mapContainer, e.pageX, e.pageY)) {
-                point = new google.maps.Point(e.pageX - mapContainer.offsetLeft,
-                    e.pageY - mapContainer.offsetTop);
-                projection = overlayView.getProjection();
-                latLng = projection.fromContainerPixelToLatLng(point);
-                this.model.setGeometry(latLng);
-                this.model.save();
-                this.showItem();
-                this.model.trigger('show-overlay');
-            }
-            //Trigger sync, then trigger display on map
-
+            this.app.vent.trigger("georeference-from-div", {
+                event: event,
+                model: this.model
+            });
         }
     });
     return Item;

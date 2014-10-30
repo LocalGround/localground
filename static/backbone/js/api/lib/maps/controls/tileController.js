@@ -19,7 +19,7 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
              * Raw data array of map overlays, pulled from the Local Ground Data API.
              * @see <a href="http://localground.org/api/0/tiles">Local Ground Data API</a>.
              */
-            this.overlays = null;
+            this.tilesets = null;
             this.app = app;
             var that = this,
 
@@ -45,7 +45,7 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                  */
                 initTiles = function () {
                     //iterate through each of the user's basemap tilesets and add it to the map:
-                    $.each(this.overlays, function () {
+                    $.each(this.tilesets, function () {
                         var sourceName = this.sourceName.toLowerCase();
                         if (sourceName === "stamen" || sourceName === "mapbox") {
                             var MapType = typeLookup[sourceName];
@@ -71,9 +71,9 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                  */
                 getTileInfo = function (key, value) {
                     var i = 0;
-                    for (i; i < this.overlays.length; i++) {
-                        if (value.toString().toLowerCase() === this.overlays[i][key].toString().toLowerCase()) {
-                            return this.overlays[i];
+                    for (i; i < this.tilesets.length; i++) {
+                        if (value.toString().toLowerCase() === this.tilesets[i][key].toString().toLowerCase()) {
+                            return this.tilesets[i];
                         }
                     }
                     return null;
@@ -87,15 +87,15 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                  * A google.maps.Map object, to which the TileController
                  * should be attached.
                  *
-                 * @param {Array} opts.overlays
-                 * A list of available overlays, retrieved from the Local Ground API.
+                 * @param {Array} opts.tilesets
+                 * A list of available tilesets, retrieved from the Local Ground API.
                  *
                  * @param {Integer} opts.activeMapTypeID
                  * The tileset that should be initialized on startup.
                  */
                 initialize = function (opts) {
                     //initialize properties:
-                    this.overlays = opts.overlays;
+                    this.tilesets = opts.tilesets;
                     map = opts.map;
 
                     //initialize tiles and set the active map type

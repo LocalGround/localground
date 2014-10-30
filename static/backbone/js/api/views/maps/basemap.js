@@ -72,10 +72,10 @@ define(["marionette",
                 }
 
                 //set up the various map tiles in Google maps:
-                if (this.overlays) {
+                if (this.tilesets) {
                     this.tileManager = new TileController(this.app, {
                         map: this.map,
-                        overlays: this.overlays,
+                        tilesets: this.tilesets,
                         activeMapTypeID: this.activeMapTypeID
                     });
                 }

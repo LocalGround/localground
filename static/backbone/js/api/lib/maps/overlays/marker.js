@@ -47,6 +47,7 @@ define([
                     zIndex: 1
                 });
             } else {
+                this.highlightMarker.setPosition(this.getCenter());
                 this.highlightMarker.setMap(this.map);
             }
         },

@@ -60,6 +60,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             this.app.vent.on("mode-change", this.changeMode.bind(this));
             this.app.vent.on("dragging", this.showDragHighlighting.bind(this));
             this.app.vent.on("drag-ended", this.saveDragChange.bind(this));
+            this.app.vent.on("georeference-from-div", this.dropItem.bind(this));
 
             google.maps.event.addListener(this.dm, 'overlaycomplete', function (e) {
                 that.addMarker(e.overlay);
@@ -134,6 +135,35 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             });
         };
 
+        this.dropItem = function (opts) {
+            function elementContainsPoint(domElement, x, y) {
+                return x > domElement.offsetLeft && x < domElement.offsetLeft + domElement.offsetWidth &&
+                    y > domElement.offsetTop && y < domElement.offsetTop + domElement.offsetHeight;
+
+            }
+            var event = opts.event,
+                model = opts.model,
+                overlayView = this.app.getOverlayView(),
+                map = this.app.getMap(),
+                e = event.originalEvent,
+                mapContainer = map.getDiv(),
+                point,
+                projection,
+                latLng;
+            e.stopPropagation();
+
+            if (elementContainsPoint(mapContainer, e.pageX, e.pageY)) {
+                point = new google.maps.Point(e.pageX - mapContainer.offsetLeft,
+                    e.pageY - mapContainer.offsetTop);
+                projection = overlayView.getProjection();
+                latLng = projection.fromContainerPixelToLatLng(point);
+                model.setGeometry(latLng);
+                model.save();
+                model.trigger('show-item');
+                model.trigger('show-overlay');
+            }
+        };
+
         this.saveDragChange = function (opts) {
             var model = opts.model,
                 latLng = opts.latLng,
@@ -149,10 +179,8 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                 }
             });
             if (!attached) {
-                //code
-                //model.set("geometry", this.getGeoJSON());
-                //model.save();
-                alert("figure out how to save!!");
+                model.setGeometry(latLng);
+                model.save();
             }
         };
 
