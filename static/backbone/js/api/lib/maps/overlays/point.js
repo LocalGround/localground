@@ -172,27 +172,32 @@ define(["underscore", "jquery"], function (_, $) {
                 position = projection.fromLatLngToContainerPixel(latLng),
                 currentPosition = projection.fromLatLngToContainerPixel(this._googleOverlay.getPosition()),
                 rV = 20,
-                rH = 10;
+                rH = 10,
+                top,
+                bottom,
+                left,
+                right,
+                withinBuffer;
 
             if (this._googleOverlay.icon && this._googleOverlay.icon.size) {
                 rV = this._googleOverlay.icon.size.height;  // vertical radius
                 rH = this._googleOverlay.icon.size.width;   // horizontal radius
             }
-            var top = position.y - rV,
-                bottom = position.y + rV,
-                left = position.x - rH,
-                right = position.x + rH;
-			var withinBuffer = currentPosition.y  <= bottom + r &&
+            top = position.y - rV;
+            bottom = position.y + rV;
+            left = position.x - rH;
+            right = position.x + rH;
+
+            withinBuffer = currentPosition.y  <= bottom + r &&
 							   currentPosition.y >= top - 2 * r &&
 							   currentPosition.x <= right + r &&
 							   currentPosition.x >= left - r;
             if (withinBuffer) {
                 return true;
-            } else {
-                return false;
             }
+            return false;
         };
-        
+
         this.initialize(app, opts);
 
     };

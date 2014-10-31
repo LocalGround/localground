@@ -30,7 +30,7 @@ define(['jquery',
             },
 
             modelEvents: {
-                'show-bubble': 'showBubble',
+                //'show-bubble': 'showBubble',
                 'hide-bubble': 'hideBubble',
                 'show-tip': 'showTip',
                 'hide-tip': 'hideTip'
@@ -63,7 +63,7 @@ define(['jquery',
                 });
                 this.listenTo(this.app.vent, 'mode-change', this.refresh);
                 this.listenTo(this.app.vent, 'hide-bubbles', this.hideBubble);
-
+                this.listenTo(this.model, 'show-bubble', this.showBubble);
             },
 
             refresh: function () {

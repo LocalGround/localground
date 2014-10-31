@@ -92,32 +92,20 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             model.setGeometry(googleOverlay);
             model.save({}, {
                 success: function (model, response) {
-					//hide the temporary overlay and show the permenanant one:
+                    //notify the dataManager that a new data element has been added:
+                    model.generateUpdateSchema(response.update_metadata);
+                    that.app.vent.trigger("marker-added", {
+                        key: "markers",
+                        models: [ model ]
+                    });
+
+                    // update map overlays to reflect new state:
                     googleOverlay.setMap(null);
                     that.dm.setDrawingMode(null);
-
-                    //show the edit form:
-                    that.showEditForm(model, response);
+                    model.trigger("show-overlay");
+                    model.trigger("show-item");
                 }
             });
-        };
-
-        this.showEditForm = function (model, response) {
-            model.generateUpdateSchema(response.update_metadata);
-            var opts = Config.markers;
-            $.extend(opts, {
-                key: "markers",
-                models: [ model ]
-            });
-
-            //notify the dataManager that a new data element has been added:
-            this.app.vent.trigger("marker-added", opts);
-
-            //shows the overlay and the bubble on the map
-            model.trigger("show-overlay");
-            model.trigger("show-item");
-            model.trigger("show-bubble");
-
         };
 
         this.getMarkerOverlays = function () {

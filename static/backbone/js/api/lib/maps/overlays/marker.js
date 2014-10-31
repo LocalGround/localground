@@ -74,7 +74,7 @@ define([
         showBubble: function () {
             var that = this;
             that.model.fetch({ success: function () {
-                that.infoBubble.showBubble();
+                Base.prototype.showBubble.apply(this, arguments);
             }});
         },
 
