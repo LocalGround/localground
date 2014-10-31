@@ -41,6 +41,12 @@ define(['underscore',
                 picker.fromString("#" + this.model.get("color"));
             }
         },
+        showBubble: function () {
+            var that = this;
+            that.model.fetch({ success: function () {
+                BaseBubble.prototype.showBubble.apply(that, arguments);
+            }});
+        },
 
         detach: function (e) {
             var $a = $(e.currentTarget),

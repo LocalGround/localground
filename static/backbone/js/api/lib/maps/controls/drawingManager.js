@@ -104,6 +104,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                     that.dm.setDrawingMode(null);
                     model.trigger("show-overlay");
                     model.trigger("show-item");
+                    model.trigger("show-bubble");
                 }
             });
         };

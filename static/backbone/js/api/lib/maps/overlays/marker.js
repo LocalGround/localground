@@ -71,12 +71,13 @@ define([
             //this.highlight();
         },
 
-        showBubble: function () {
+        /*showBubble: function () {
             var that = this;
             that.model.fetch({ success: function () {
-                Base.prototype.showBubble.apply(this, arguments);
+                that.infoBubble.showBubble();
+                //Base.prototype.initialize.apply(this, arguments);
             }});
-        },
+        },*/
 
         initInfoBubble: function (opts) {
             this.infoBubble = new MarkerBubble(_.extend({overlay: this}, opts));

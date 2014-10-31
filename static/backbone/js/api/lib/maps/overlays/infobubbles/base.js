@@ -30,7 +30,7 @@ define(['jquery',
             },
 
             modelEvents: {
-                //'show-bubble': 'showBubble',
+                'show-bubble': 'showBubble',
                 'hide-bubble': 'hideBubble',
                 'show-tip': 'showTip',
                 'hide-tip': 'hideTip'
