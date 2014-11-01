@@ -29,7 +29,8 @@ define(["marionette", "jquery"], function (Marionette, $) {
             'click a': 'zoomTo',
             'mouseover .data-item': 'showTip',
             'mouseout .data-item': 'hideTip',
-            'dragend .item-icon': 'dropItem'
+            'dragend .item-icon': 'dropListener',
+            'drag .item-icon': 'dragListener'
         },
 
         modelEvents: {
@@ -223,12 +224,19 @@ define(["marionette", "jquery"], function (Marionette, $) {
             this.model.trigger('hide-tip');
         },
 
-        //todo: this needs to go elsewhere, somewhere that knows about the map
-        dropItem: function (event) {
+        dropListener: function (event) {
             this.app.vent.trigger("georeference-from-div", {
                 event: event,
                 model: this.model
             });
+        },
+
+        dragListener: function (event) {
+            if (this.model.getKey() != "markers") {
+                this.app.vent.trigger("dragging-html-element", {
+                    event: event
+                });
+            }
         }
     });
     return Item;

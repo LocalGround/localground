@@ -167,7 +167,7 @@ define(["underscore", "jquery"], function (_, $) {
         };
 
         this.intersects = function (latLng) {
-            var r = 10,
+            var r = 20,
                 projection = this.app.getOverlayView().getProjection(),
                 position = projection.fromLatLngToContainerPixel(latLng),
                 currentPosition = projection.fromLatLngToContainerPixel(this._googleOverlay.getPosition()),

@@ -4,10 +4,9 @@ define(["marionette",
         "lib/maps/controls/geolocation",
         "lib/maps/controls/tileController",
         "views/maps/overlays/overlayManager",
-        "lib/maps/controls/deleteMenu",
-        "lib/maps/controls/drawingManager"
+        "lib/maps/controls/deleteMenu"
     ],
-    function (Marionette, $, SearchBox, GeoLocation, TileController, OverlayManager, DeleteMenu, DrawingManager) {
+    function (Marionette, $, SearchBox, GeoLocation, TileController, OverlayManager, DeleteMenu) {
         'use strict';
         /**
          * A class that handles the basic Google Maps functionality,
@@ -174,7 +173,6 @@ define(["marionette",
             onShow: function () {
                 this.overlayManager = new OverlayManager(this.opts);
                 this.deleteMenu = new DeleteMenu(this.opts);
-                //this.drawingManager = new DrawingManager(this.opts);
             }
 
         });

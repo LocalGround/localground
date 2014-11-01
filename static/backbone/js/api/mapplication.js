@@ -6,10 +6,10 @@ define(["marionette",
         "lib/maps/data/dataManager",
         "lib/appUtilities",
         "collections/projects",
-        "lib/maps/controls/drawingManager",
+        "lib/maps/controls/georeferenceManager",
         "jquery.bootstrap"
     ],
-    function (Marionette, Backbone, _, BaseMap, DataPanel, DataManager, appUtilities, Projects, DrawingManager) {
+    function (Marionette, Backbone, _, BaseMap, DataPanel, DataManager, appUtilities, Projects, GeoreferenceManager) {
         "use strict";
 
         var Mapplication = new Marionette.Application();
@@ -43,7 +43,7 @@ define(["marionette",
             var basemap = new BaseMap(options),
                 sidePanel = new DataPanel(options),
                 dataManager = new DataManager(options),
-                drawingManager = new DrawingManager(options, basemap);
+                georeferenceManager = new GeoreferenceManager(options, basemap);
             this.map = basemap.map;
             Mapplication.mapRegion.show(basemap);
             Mapplication.sidebarRegion.show(sidePanel);

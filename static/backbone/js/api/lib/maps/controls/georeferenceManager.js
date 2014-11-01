@@ -6,7 +6,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
      * @param {options} opts
      *
      */
-    var DrawingManager = function (opts, basemap) {
+    var GeoreferenceManager = function (opts, basemap) {
         this.dm = null;
         this.polygonOptions = {
             strokeWeight: 0,
@@ -59,6 +59,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             //add listeners:
             this.app.vent.on("mode-change", this.changeMode.bind(this));
             this.app.vent.on("dragging", this.showDragHighlighting.bind(this));
+            this.app.vent.on("dragging-html-element", this.showHtmlDragHighlighting.bind(this));
             this.app.vent.on("drag-ended", this.saveDragChange.bind(this));
             this.app.vent.on("georeference-from-div", this.dropItem.bind(this));
 
@@ -114,6 +115,47 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             return overlayGroup.children;
         };
 
+        this.getPointFromPixelPosition = function (e) {
+            function elementContainsPoint(domElement, x, y) {
+                return x > domElement.offsetLeft && x < domElement.offsetLeft + domElement.offsetWidth &&
+                    y > domElement.offsetTop && y < domElement.offsetTop + domElement.offsetHeight;
+            }
+            var map = this.app.getMap(),
+                mapContainer = map.getDiv();
+            if (elementContainsPoint(mapContainer, e.pageX, e.pageY)) {
+                return new google.maps.Point(e.pageX - mapContainer.offsetLeft,
+                        e.pageY - mapContainer.offsetTop);
+            }
+            return null;
+        };
+
+        this.getLatLngFromHtmlDiv = function (e) {
+            var point = this.getPointFromPixelPosition(e),
+                overlayView = this.app.getOverlayView(),
+                projection = overlayView.getProjection(),
+                latLng = projection.fromContainerPixelToLatLng(point);
+            return latLng;
+        };
+
+        this.getIntersectingMarker = function (opts) {
+            var activeMarker;
+            this.getMarkerOverlays().each(function (marker) {
+                if (marker.intersects(opts.latLng)) {
+                    activeMarker = marker;
+                    return;
+                }
+            });
+            return activeMarker;
+        };
+
+        this.showHtmlDragHighlighting = function (opts) {
+            var e = opts.event.originalEvent,
+                latLng = this.getLatLngFromHtmlDiv(e);
+            if (latLng) {
+                this.showDragHighlighting({ latLng: latLng });
+            }
+        };
+
         this.showDragHighlighting = function (opts) {
             this.getMarkerOverlays().each(function (marker) {
                 if (marker.intersects(opts.latLng)) {
@@ -138,36 +180,46 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                 mapContainer = map.getDiv(),
                 point,
                 projection,
-                latLng;
+                latLng,
+                attachingMarker;
             e.stopPropagation();
 
             if (elementContainsPoint(mapContainer, e.pageX, e.pageY)) {
-                point = new google.maps.Point(e.pageX - mapContainer.offsetLeft,
-                    e.pageY - mapContainer.offsetTop);
+                point = this.getPointFromPixelPosition(e);
                 projection = overlayView.getProjection();
                 latLng = projection.fromContainerPixelToLatLng(point);
+
+                //save the data item's geometry:
                 model.setGeometry(latLng);
                 model.save();
-                model.trigger('show-item');
-                model.trigger('show-overlay');
+
+                //attach the data item to the intersecting marker, if applicable:
+                attachingMarker = this.getIntersectingMarker({latLng: latLng});
+                if (attachingMarker) {
+                    attachingMarker.model.attach(model, function () {
+                        attachingMarker.model.fetch();
+                    });
+                    attachingMarker.unHighlight();
+                    model.trigger('hide-item');
+                    model.trigger('hide-overlay');
+                } else {
+                    model.trigger('show-item');
+                    model.trigger('show-overlay');
+                }
             }
         };
 
         this.saveDragChange = function (opts) {
             var model = opts.model,
                 latLng = opts.latLng,
-                attached = false;
-            this.getMarkerOverlays().each(function (marker) {
-                marker.unHighlight();
-                if (marker.intersects(latLng)) {
-                    attached = true;
-                    marker.model.attach(model, function () {
-                        model.trigger('hide-item');
-                        marker.model.fetch();
-                    });
-                }
-            });
-            if (!attached) {
+                attachingMarker = this.getIntersectingMarker({latLng: latLng});
+            if (attachingMarker) {
+                attachingMarker.unHighlight();
+                attachingMarker.model.attach(model, function () {
+                    model.trigger('hide-item');
+                    attachingMarker.model.fetch();
+                });
+            } else {
                 model.setGeometry(latLng);
                 model.save();
             }
@@ -179,10 +231,10 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
 
 
     //extend prototype so that this function is visible to the CORE:
-    _.extend(DrawingManager.prototype, {
+    _.extend(GeoreferenceManager.prototype, {
         destroy: function () {
             this.hide();
         }
     });
-    return DrawingManager;
+    return GeoreferenceManager;
 });

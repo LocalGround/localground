@@ -41,7 +41,8 @@ define([
                         fillColor: '#BCE8F1',
                         strokeColor: '#3A87AD',
                         strokeWeight: 2.5,
-                        fillOpacity: 0.5
+                        fillOpacity: 0.5,
+                        scale: 2.0
                     },
                     map: this.map,
                     zIndex: 1
