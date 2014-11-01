@@ -42,14 +42,17 @@ define([
                         strokeColor: '#3A87AD',
                         strokeWeight: 2.5,
                         fillOpacity: 0.5,
-                        scale: 2.0
+                        scale: 1.6
                     },
                     map: this.map,
                     zIndex: 1
                 });
             } else {
                 this.highlightMarker.setPosition(this.getCenter());
-                this.highlightMarker.setMap(this.map);
+                //this if-condition helps with blinking...
+                if (!this.highlightMarker.getMap()) {
+                    this.highlightMarker.setMap(this.map);
+                }
             }
         },
 
@@ -71,14 +74,6 @@ define([
             this.redraw();
             //this.highlight();
         },
-
-        /*showBubble: function () {
-            var that = this;
-            that.model.fetch({ success: function () {
-                that.infoBubble.showBubble();
-                //Base.prototype.initialize.apply(this, arguments);
-            }});
-        },*/
 
         initInfoBubble: function (opts) {
             this.infoBubble = new MarkerBubble(_.extend({overlay: this}, opts));
