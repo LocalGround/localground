@@ -16,6 +16,10 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         this.polylineOptions = {
             editable: true
         };
+        this.Shapes = {
+            MARKER: 'M16,3.5c-4.142,0-7.5,3.358-7.5,7.5c0,4.143,7.5,18.121,7.5,18.121S23.5,15.143,23.5,11C23.5,6.858,20.143,3.5,16,3.5z M16,14.584c-1.979,0-3.584-1.604-3.584-3.584S14.021,7.416,16,7.416S19.584,9.021,19.584,11S17.979,14.584,16,14.584z',
+            OVAL: 'M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0'
+        };
         this.markerOptions = {
             draggable: true,
             icon: {
@@ -23,12 +27,39 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                 strokeColor: "#FFF",
                 strokeWeight: 1.5,
                 fillOpacity: 1,
-                path: 'M16,3.5c-4.142,0-7.5,3.358-7.5,7.5c0,4.143,7.5,18.121,7.5,18.121S23.5,15.143,23.5,11C23.5,6.858,20.143,3.5,16,3.5z M16,14.584c-1.979,0-3.584-1.604-3.584-3.584S14.021,7.416,16,7.416S19.584,9.021,19.584,11S17.979,14.584,16,14.584z',
+                path: this.Shapes.MARKER,
                 scale: 1.6,
                 anchor: new google.maps.Point(16, 30),      // anchor (x, y)
                 size: new google.maps.Size(15, 30),         // size (width, height)
                 origin: new google.maps.Point(0, 0)        // origin (x, y)
             }
+        };
+
+        this.highlightMarker = new google.maps.Marker({
+            icon: {
+                path: this.Shapes.OVAL,
+                fillColor: '#BCE8F1',
+                strokeColor: '#3A87AD',
+                strokeWeight: 2.5,
+                fillOpacity: 0.5,
+                scale: 1.4
+            },
+            zIndex: 1
+        });
+
+        this.highlight = function (marker) {
+            if (marker.getShapeType() != "Point") {
+                return;
+            }
+            this.highlightMarker.setPosition(marker.getCenter());
+            // if-condition helps with blinking...
+            if (!this.highlightMarker.getMap()) {
+                this.highlightMarker.setMap(this.app.getMap());
+            }
+        };
+
+        this.unHighlight = function () {
+            this.highlightMarker.setMap(null);
         };
 
         this.initialize = function (opts, basemap) {
@@ -157,13 +188,17 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         };
 
         this.showDragHighlighting = function (opts) {
+            var that = this,
+                intersects = false;
             this.getMarkerOverlays().each(function (marker) {
                 if (marker.intersects(opts.latLng)) {
-                    marker.highlight();
-                } else {
-                    marker.unHighlight();
+                    that.highlight(marker);
+                    intersects = true;
                 }
             });
+            if (!intersects) {
+                that.unHighlight();
+            }
         };
 
         this.dropItem = function (opts) {
@@ -199,7 +234,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                     attachingMarker.model.attach(model, function () {
                         attachingMarker.model.fetch();
                     });
-                    attachingMarker.unHighlight();
+                    this.unHighlight(attachingMarker);
                     model.trigger('hide-item');
                     model.trigger('hide-overlay');
                 } else {
@@ -214,7 +249,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                 latLng = opts.latLng,
                 attachingMarker = this.getIntersectingMarker({latLng: latLng});
             if (attachingMarker) {
-                attachingMarker.unHighlight();
+                this.unHighlight(attachingMarker);
                 attachingMarker.model.attach(model, function () {
                     model.trigger('hide-item');
                     attachingMarker.model.fetch();

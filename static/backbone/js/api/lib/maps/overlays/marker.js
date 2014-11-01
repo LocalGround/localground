@@ -29,39 +29,6 @@ define([
             };
         },
 
-        highlight: function () {
-            if (this.getShapeType() != "Point") {
-                return;
-            }
-            if (!this.highlightMarker) {
-                this.highlightMarker = new google.maps.Marker({
-                    position: this.getCenter(),
-                    icon: {
-                        path: this._overlay.Shapes.OVAL,
-                        fillColor: '#BCE8F1',
-                        strokeColor: '#3A87AD',
-                        strokeWeight: 2.5,
-                        fillOpacity: 0.5,
-                        scale: 1.6
-                    },
-                    map: this.map,
-                    zIndex: 1
-                });
-            } else {
-                this.highlightMarker.setPosition(this.getCenter());
-                //this if-condition helps with blinking...
-                if (!this.highlightMarker.getMap()) {
-                    this.highlightMarker.setMap(this.map);
-                }
-            }
-        },
-
-        unHighlight: function () {
-            if (this.highlightMarker) {
-                this.highlightMarker.setMap(null);
-            }
-        },
-
         /** adds icon to overlay. */
         initialize: function () {
             Base.prototype.initialize.apply(this, arguments);
