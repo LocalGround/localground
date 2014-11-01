@@ -163,7 +163,8 @@ define(["marionette",
 
         /** zooms to the google.maps overlay. */
         zoomTo: function () {
-            this._overlay.zoomTo();
+            //this._overlay.zoomTo();
+            //show bubble already zooms to overlay:
             this.showBubble();
         },
 

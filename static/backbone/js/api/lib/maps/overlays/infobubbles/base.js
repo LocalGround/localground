@@ -103,8 +103,6 @@ define(['jquery',
                         schema: that.model.updateSchema
                     }),
                     context = that.getContext(this.model);
-                //that.setElement($(template({mode: "edit"})));
-                //var 
                 context.mode = 'edit';
                 that.setElement($(template(context)));
                 that.form = new ModelForm({
