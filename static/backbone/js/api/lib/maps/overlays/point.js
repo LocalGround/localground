@@ -44,14 +44,18 @@ define(["underscore", "jquery"], function (_, $) {
         this.createOverlay = function (isVisible) {
             if (this.model.get("geometry") != null) {
                 this._googleOverlay = new google.maps.Marker({
-                    position: this.getGoogleLatLng(),
+                    position: this.getGoogleGeometryFromModel(),
                     map: isVisible ? this.map : null
                 });
             }
         };
 
+        this.restoreModelGeometry =  function () {
+            this._googleOverlay.setPosition(this.getGoogleGeometryFromModel());
+        };
+
         this.getCenter = function () {
-            return this.getGoogleLatLng();
+            return this.getGoogleGeometryFromModel();
         };
 
         this.getBounds = function () {
@@ -79,7 +83,7 @@ define(["underscore", "jquery"], function (_, $) {
          * @returns {google.maps.LatLng}
          * A google.maps.LatLng object
          */
-        this.getGoogleLatLng = function () {
+        this.getGoogleGeometryFromModel = function () {
             var geoJSON = this.model.get("geometry");
             return new google.maps.LatLng(
                 geoJSON.coordinates[1],

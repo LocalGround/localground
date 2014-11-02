@@ -63,7 +63,10 @@ define(["models/base",
 				model_type: model.getKey(),
 				marker_id: this.id
 			});
-			association.save(null, {success: callback});
+			association.save(null, {
+				success: callback,
+				error: callback
+			});
 		},
 
 		detach: function (model_id, key, callback) {

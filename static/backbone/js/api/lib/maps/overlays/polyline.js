@@ -22,7 +22,7 @@ define(["jquery"], function ($) {
 
         this.createOverlay = function (isVisible) {
             this._googleOverlay = new google.maps.Polyline({
-                path: this.getGooglePathFromGeoJSON(),
+                path: this.getGoogleGeometryFromModel(),
                 strokeColor: '#' + this.model.get("color"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
@@ -101,7 +101,7 @@ define(["jquery"], function ($) {
          * @returns {Array}
          * An array of google.maps.LatLng objects.
          */
-        this.getGooglePathFromGeoJSON = function () {
+        this.getGoogleGeometryFromModel = function () {
             var geoJSON = this.model.get("geometry"),
                 path = [],
                 coords = geoJSON.coordinates,
@@ -161,6 +161,10 @@ define(["jquery"], function ($) {
                     point: e.vertex
                 });
             });
+        };
+
+        this.restoreModelGeometry = function () {
+            this._googleOverlay.setPath(this.getGoogleLatLngFromModel());
         };
 
         this.saveShape = function (model) {

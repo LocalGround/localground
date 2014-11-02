@@ -27,7 +27,8 @@ define(["marionette",
             'change': 'render',
             'show-overlay': 'show',
             'hide-overlay': 'hide',
-            'zoom-to-overlay': 'zoomTo'
+            'zoom-to-overlay': 'zoomTo',
+            'reset-overlay': 'restoreModelGeometry'
         },
         /** called when object created */
         initialize: function (opts) {
@@ -211,6 +212,10 @@ define(["marionette",
 
         intersects: function (latLng) {
             return this._overlay.intersects(latLng);
+        },
+
+        restoreModelGeometry: function () {
+            this._overlay.restoreModelGeometry();
         }
 
     });

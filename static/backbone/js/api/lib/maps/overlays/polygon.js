@@ -14,7 +14,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
 
         this.createOverlay = function (isVisible) {
             this._googleOverlay = new google.maps.Polygon({
-                path: this.getGooglePathFromGeoJSON(),
+                path: this.getGoogleLatLngFromModel(),
                 strokeColor: '#' + this.model.get("color"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
@@ -38,7 +38,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
          * @returns {Array}
          * An array of google.maps.LatLng objects.
          */
-        this.getGooglePathFromGeoJSON = function () {
+        this.getGoogleLatLngFromModel = function () {
             var geoJSON = this.model.get("geometry"),
                 path = [],
                 coords = geoJSON.coordinates[0],
