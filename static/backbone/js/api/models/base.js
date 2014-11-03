@@ -1,5 +1,5 @@
-define(["backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point", "underscore"],
-    function (Backbone, Geometry, Point, _) {
+define(["jquery", "backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point", "underscore"],
+    function ($, Backbone, Geometry, Point, _) {
         "use strict";
         /**
          * An "abstract" Backbone Model; the root of all of the other
@@ -40,8 +40,9 @@ define(["backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point", "un
                 // ensure that the geometry object is serialized before it
                 // gets sent to the server:
                 var json = Backbone.Model.prototype.toJSON.call(this);
-                if (json.geometry != null)
+                if (json.geometry != null) {
                     json.geometry = JSON.stringify(json.geometry);
+                }
                 return json;
             },
             toTemplateJSON: function () {
@@ -53,11 +54,11 @@ define(["backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point", "un
                 return this.collection.key;
             },
             getCenter: function () {
-                var geoJSON = this.get("geometry");
+                var geoJSON = this.get("geometry"),
+                    point = new Point();
                 if (!geoJSON) {
                     return null;
                 }
-                var point = new Point();
                 return point.getGoogleLatLng(geoJSON);
             },
             fetchCreateMetadata: function () {
@@ -70,7 +71,7 @@ define(["backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point", "un
                     type: 'OPTIONS',
                     data: { _method: 'OPTIONS' },
                     success: function (data) {
-                        that.createMetadata = data.actions['POST'];
+                        that.createMetadata = data.actions.POST;
                     }
                 });
             },
@@ -84,7 +85,7 @@ define(["backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point", "un
                     type: 'OPTIONS',
                     data: { _method: 'OPTIONS' },
                     success: function (data) {
-                        that.updateMetadata = data.actions['POST'];
+                        that.updateMetadata = data.actions.POST;
                     }
                 });
             },
@@ -96,10 +97,10 @@ define(["backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point", "un
                 if (!metadata) {
                     return null;
                 }
-                var schema = {};
+                var schema = {}, key, val;
                 //https://github.com/powmedia/backbone-forms#schema-definition
-                for (var key in metadata) {
-                    var val = metadata[key];
+                for (key in metadata) {
+                    val = metadata[key];
                     if (this.hiddenFields.indexOf(key) === -1) {
                         if (!edit_only || !val.read_only) {
                             schema[key] = {

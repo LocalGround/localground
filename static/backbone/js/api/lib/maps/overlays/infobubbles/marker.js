@@ -1,8 +1,9 @@
 define(['underscore',
         'jquery',
         'color-picker',
+        'text!/static/backbone/js/templates/infoBubble/markerAttachTip.html',
         'lib/maps/overlays/infobubbles/base',
-        'slick'], function (_, $, jscolor, BaseBubble) {
+        'slick'], function (_, $, jscolor, markerAttachTipTemplate, BaseBubble) {
     "use strict";
     /**
      * Class that controls marker point model overlays.
@@ -13,7 +14,13 @@ define(['underscore',
 
         events: function () {
             return _.extend({}, BaseBubble.prototype.events, {
-                "click .detach": "detach"
+                'click .detach': 'detach'
+            });
+        },
+
+        modelEvents: function () {
+            return _.extend({}, BaseBubble.prototype.modelEvents, {
+                'show-tip-attaching': 'showTipAttaching'
             });
         },
 
@@ -41,6 +48,7 @@ define(['underscore',
                 picker.fromString("#" + this.model.get("color"));
             }
         },
+
         showBubble: function () {
             var that = this;
             that.model.fetch({ success: function () {
@@ -48,10 +56,16 @@ define(['underscore',
             }});
         },
 
+        showTipAttaching: function () {
+            var template = _.template(markerAttachTipTemplate);
+            this.tip.setContent(template(this.getContext()));
+            this._show(this.tip);
+        },
+
         detach: function (e) {
             var $a = $(e.currentTarget),
                 key = $a.attr("key"),
-                modelID = parseInt($a.attr("item-id")),
+                modelID = parseInt($a.attr("item-id"), 10),
                 that = this;
             this.model.detach(modelID, key, function () {
 				$a.parent().parent().remove();

@@ -57,15 +57,15 @@ define(["models/base",
             return messages.join(', ');
         },
 
-        attach: function (model, callback) {
+        attach: function (model, callbackSuccess, callbackError) {
 			var association = new Association({
 				object_id: model.id,
 				model_type: model.getKey(),
 				marker_id: this.id
 			});
 			association.save(null, {
-				success: callback,
-				error: callback
+				success: callbackSuccess,
+				error: callbackError
 			});
 		},
 
