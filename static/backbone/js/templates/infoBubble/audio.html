@@ -1,8 +1,10 @@
 <% if (mode == 'view') { %>
-<div class="bubble-container" style="width: 300px;height:100px;">
+<div class="bubble-container" style="width: 400px;height:100px;">
 	<div>
 		<p class="bubble-title"><%= name || "Untitled" %></p>
 		<p class="bubble-detail">
+            <audio id="audio-player" class="mejs-player" src="<%= file_path %>" controls="controls"
+                    data-mejsoptions='{"alwaysShowControls": true}' preload="auto"/>
 			<%= description %><br>
 			<%= tags %>	
 		</p>

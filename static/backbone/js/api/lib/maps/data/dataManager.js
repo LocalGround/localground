@@ -65,12 +65,14 @@ define(["models/project",
 
             this.initialize = function (opts) {
                 this.app = opts.app;
+                this.projects = opts.projects;
+                this.projects.on('toggleProject', this.toggleProject.bind(this));
                 this.app.vent.on("load-projects", this.fetchProjects.bind(this));
                 this.app.vent.on("project-requested", this.fetchDataByProjectID.bind(this));
                 this.app.vent.on("set-active-project", this.setActiveProject.bind(this));
                 this.app.vent.on("marker-added", updateCollection.bind(this));
                 this.selectedProjects = new Projects();
-                this.restoreState();
+                //this.restoreState();
             };
 
             /**
@@ -85,11 +87,11 @@ define(["models/project",
              * @param {Integer} id
              * The id of the project of interest.
              */
-            this.fetchDataByProjectID = function (data) {
+            this.fetchDataByProjectID = function (projectId) {
                 var that = this,
-                    project = new Project({id: data.id});
+                    project = new Project({id: projectId});
 
-                this.app.setActiveProjectID(data.id);
+                this.app.setActiveProjectID(projectId);
                 project.fetch({data: {format: 'json', include_schema: true}, success: function () {
                     that.updateCollections(project);
                 }});
@@ -102,38 +104,40 @@ define(["models/project",
              * @param {Integer} id
              * The id of the project of interest.
              */
-            this.removeDataByProjectID = function (data) {
+            this.removeDataByProjectID = function (projectId) {
                 //http://backbonejs.org/#Collection-remove
                 var key,
-                    items,
-                    collection,
-                    itemCollator = function (item) {
-                        if (item.get("project_id") === data.id) {
-                            items.push(item);
-                        }
-                    };
+                    collection;
 
                 for (key in this.collections) {
                     if (this.collections.hasOwnProperty(key)) {
                         collection = this.collections[key];
-                        items = [];
-                        collection.each(itemCollator, this);
-
-                        //remove items from the collection:
-                        this.collections[key].remove(items);
+                        collection.remove(collection.where({project_id: Number(projectId)}));
                     }
                 }
 
+
                 //remove selected project:
-                this.selectedProjects.remove({id: data.id});
+                //
+                this.selectedProjects.remove({id: projectId});
 
                 //reset default project:
-                this.resetActiveProject();
+                //TODO: this should happen automatically remove this todo after you check
+                //this.resetActiveProject();
 
                 //notify the rest of the application
-                this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
+                //TODO: ensure this actually happens automatically
+                //this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
 
                 this.saveState();
+            };
+
+            this.toggleProject = function (projectId, fetch) {
+                if (fetch) {
+                    this.fetchDataByProjectID(projectId);
+                } else {
+                    this.removeDataByProjectID(projectId);
+                }
             };
 
             this.resetActiveProject = function () {
@@ -242,8 +246,8 @@ define(["models/project",
             this.initialize(app);
         };
         /*)
-        DataManager.destroy = function () {
+         DataManager.destroy = function () {
 
-        };*/
+         };*/
         return DataManager;
     });

@@ -22,7 +22,8 @@ require.config({
         'core': '../external/mediator/core-jquery',
         'sandbox': '../external/mediator/sandbox',
         'color-picker': '../external/jscolor',
-        'mapplication': './mapplication'
+        'mapplication': './mapplication',
+        'mediaelement': '../external/mediaelement/mediaelement-and-player.min'
     },
     //waitSeconds: 0,
     shim: {
@@ -59,6 +60,9 @@ require.config({
             exports: 'colResizable'
         },
         'slick': {
+            deps: ['jquery']
+        },
+        'mediaelement': {
             deps: ['jquery']
         }
 

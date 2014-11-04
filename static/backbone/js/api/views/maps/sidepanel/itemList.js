@@ -120,23 +120,6 @@ define(["marionette",
 
             },
 
-            toggleProjectData: function (id, visible) {
-                this.collection.each(function (model) {
-                    if (model.get('project_id') === Number(id)) {
-                        model.set('isVisible', visible);
-                    }
-                });
-                this.hidden = !this.collection.any(function (model) { return model.get('isVisible'); });
-                if (this.hidden) {
-                    this.$el.addClass('hidden');
-
-                } else {
-                    this.$el.removeClass('hidden');
-                    //this.toggleShowAll();
-                }
-                this.saveState();
-            },
-
             onRender: function () {
                 ++this.numRenderings;
             },

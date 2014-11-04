@@ -5,7 +5,7 @@ define(["marionette",
     "lib/maps/overlays/polyline",
     "lib/maps/overlays/polygon",
     "lib/maps/overlays/infobubbles/base"
-    ], function (Marionette, $, _, Point, Polyline, Polygon, Infobubble) {
+], function (Marionette, $, _, Point, Polyline, Polygon, Infobubble) {
     "use strict";
     /**
      * This class controls the rendering and underlying
@@ -20,7 +20,7 @@ define(["marionette",
         _overlay: null,
         template: false,
         isShowing: false,
-		infoBubble: null,
+        infoBubble: null,
 
         modelEvents: {
             'change:geometry': 'updateOverlay',
@@ -44,14 +44,14 @@ define(["marionette",
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
         },
 
-		initInfoBubble: function (opts) {
-			this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
-		},
+        initInfoBubble: function (opts) {
+            this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
+        },
 
         updateOverlay: function () {
-			this.getGoogleOverlay().setMap(null);
+            this.getGoogleOverlay().setMap(null);
             this.initOverlayType(this.isShowing);
-			this.changeMode();
+            this.changeMode();
         },
 
         initOverlayType: function (isVisible) {
@@ -78,7 +78,7 @@ define(["marionette",
             var that = this;
             //attach click event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-				that.showBubble();
+                that.showBubble();
             });
             //attach mouseover event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
@@ -90,10 +90,10 @@ define(["marionette",
             });
         },
 
-		/** shows info bubble (gets overrided in the child class). */
-		showBubble: function () {
-			this.infoBubble.showBubble();
-		},
+        /** shows info bubble (gets overrided in the child class). */
+        showBubble: function () {
+            this.infoBubble.showBubble();
+        },
 
         /** determines whether the overlay is visible on the map. */
         isVisible: function () {
@@ -104,7 +104,7 @@ define(["marionette",
         show: function () {
             var go = this.getGoogleOverlay();
             go.setMap(this.map);
-			this.changeMode();
+            this.changeMode();
             this.isShowing = true;
             this.saveState();
         },
@@ -144,6 +144,7 @@ define(["marionette",
 
         onBeforeDestroy: function () {
             var go = this.getGoogleOverlay();
+            this.infoBubble.remove();
             go.setMap(null);
             Base.__super__.remove.apply(this);
         },
@@ -182,7 +183,7 @@ define(["marionette",
             return this._overlay.getCenter();
         },
 
-		getBounds: function () {
+        getBounds: function () {
             return this._overlay.getBounds();
         },
 
