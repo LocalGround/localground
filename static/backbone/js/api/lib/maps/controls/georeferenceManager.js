@@ -250,15 +250,16 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                 //attach the data item to the intersecting marker, if applicable:
                 attachingMarker = this.getIntersectingMarker({latLng: latLng});
                 if (attachingMarker) {
-                    attachingMarker.model.attach(model, function () {
-                        attachingMarker.model.fetch();
-                    });
+                    attachingMarker.model.attach(
+                        model,
+                        this.attachSuccessful.bind(this, attachingMarker.model),
+                        this.attachUnsuccessful.bind(this, attachingMarker.model)
+                    );
                     this.unHighlight(attachingMarker);
-                    model.trigger('hide-item');
-                    model.trigger('hide-overlay');
+                    attachingMarker.model.trigger('show-tip-attaching');
+                    model.trigger('hide-item hide-overlay');
                 } else {
-                    model.trigger('show-item');
-                    model.trigger('show-overlay');
+                    model.trigger('show-item show-overlay');
                 }
             }
         };
@@ -273,22 +274,38 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                 attachingMarker = this.getIntersectingMarker({latLng: latLng});
             if (attachingMarker) {
                 this.unHighlight(attachingMarker);
-                attachingMarker.model.attach(model, function () {
-                    model.trigger('hide-item');
-                    model.trigger('reset-overlay');
-                    attachingMarker.model.fetch();
-                });
+                attachingMarker.model.trigger('show-tip-attaching');
+                model.trigger('hide-item reset-overlay');
+                attachingMarker.model.attach(
+                    model,
+                    this.attachSuccessful.bind(this, attachingMarker.model),
+                    this.attachUnsuccessful.bind(this, attachingMarker.model)
+                );
             } else {
                 model.setGeometry(latLng);
                 model.save();
             }
         };
 
+        this.attachCallback = function (markerModel, response) {
+            console.log(response);
+            markerModel.trigger('hide-tip');
+        };
+
+        this.attachSuccessful = function (markerModel) {
+            markerModel.fetch({
+                success: function () { markerModel.trigger('hide-tip'); },
+                error: function () { markerModel.trigger('hide-tip'); }
+            });
+        };
+
+        this.attachUnsuccessful = function (markerModel) {
+            markerModel.trigger('hide-tip');
+        };
+
         //call initialization function:
         this.initialize(opts, basemap);
     };
-
-
     //extend prototype so that this function is visible to the CORE:
     _.extend(GeoreferenceManager.prototype, {
         destroy: function () {

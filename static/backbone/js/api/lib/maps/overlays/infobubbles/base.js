@@ -27,7 +27,7 @@ define(['jquery',
             overlay: null,
 
             events: {
-                "click .btn-primary": "saveForm"
+                'click .btn-primary': 'saveForm'
             },
 
             modelEvents: {

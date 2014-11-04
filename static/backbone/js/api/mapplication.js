@@ -1,15 +1,17 @@
-define(["marionette",
+define(["jquery",
+        "marionette",
         "backbone",
         "underscore",
         "views/maps/basemap",
         "views/maps/sidepanel/dataPanel",
+        "views/maps/topBar",
         "lib/maps/data/dataManager",
         "lib/appUtilities",
         "collections/projects",
         "lib/maps/controls/georeferenceManager",
         "jquery.bootstrap"
     ],
-    function (Marionette, Backbone, _, BaseMap, DataPanel, DataManager, appUtilities, Projects, GeoreferenceManager) {
+    function ($, Marionette, Backbone, _, BaseMap, DataPanel, TopBar, DataManager, appUtilities, Projects, GeoreferenceManager) {
         "use strict";
 
         var Mapplication = new Marionette.Application();
@@ -40,15 +42,32 @@ define(["marionette",
         Mapplication.addInitializer(function (options) {
             options.projects = new Projects();
             options.app = this;
-            var basemap = new BaseMap(options),
+            var that = this,
+                basemap = new BaseMap(options),
                 sidePanel = new DataPanel(options),
                 dataManager = new DataManager(options),
-                georeferenceManager = new GeoreferenceManager(options, basemap);
+                georeferenceManager = new GeoreferenceManager(options, basemap),
+                topBar = new TopBar(options);
             this.map = basemap.map;
             Mapplication.mapRegion.show(basemap);
             Mapplication.sidebarRegion.show(sidePanel);
-        });
+            Mapplication.topBarRegion.show(topBar);
 
+            // adding some global AJAX event handlers for showing messages and
+            // appending the Django authorization token:
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    that.showLoadingMessage();
+                    that.setCsrfToken(xhr, settings);
+                },
+                complete: this.hideLoadingMessage,
+                statusCode: {
+                    400: that.handleDatabaseError.bind(undefined, options),
+                    401: that.handleDatabaseError.bind(undefined, options),
+                    500: that.handleDatabaseError.bind(undefined, options)
+                }
+            });
+        });
 
         return Mapplication;
     });

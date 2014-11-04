@@ -60,7 +60,64 @@ define(["jquery"],
             },
             getOverlayView: function () {
                 return this.overlayView;
+            },
+            csrfSafeMethod: function (method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            },
+            sameOrigin: function (url) {
+                // test that a given url is a same-origin URL
+                // url could be relative or scheme relative or absolute
+                var host = document.location.host,
+                    protocol = document.location.protocol,
+                    sr_origin = '//' + host,
+                    origin = protocol + sr_origin;
+                // Allow absolute or scheme relative URLs to same origin
+                return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                    (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                    // or any other URL that isn't scheme relative or absolute i.e relative.
+                    !(/^(\/\/|http:|https:).*/.test(url));
+            },
+            setCsrfToken: function (xhr, settings) {
+                if (!this.csrfSafeMethod(settings.type) && this.sameOrigin(settings.url)) {
+                    var csrf = this.getCookie('csrftoken');
+                    //console.log(csrf);
+                    xhr.setRequestHeader("X-CSRFToken", csrf);
+                }
+            },
+            getCookie: function (name) {
+                var cookieValue, cookies, i, cookie;
+                if (document.cookie && document.cookie != '') {
+                    cookies = document.cookie.split(';');
+                    for (i = 0; i < cookies.length; i++) {
+                        cookie = $.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            },
+            showLoadingMessage: function () {
+                $('#loading_message').show();
+            },
+            hideLoadingMessage: function () {
+                $('#loading_message').hide();
+            },
+            handleDatabaseError: function (options, response) {
+                var responseJSON,
+                    message = "";
+                try {
+                    responseJSON = JSON.parse(response.responseText);
+                    message = responseJSON.non_field_errors[0];
+                } catch (e) {
+                    message = "Unknown error";
+                }
+                options.app.vent.trigger('database-error', {
+                    message: message
+                });
             }
-
         };
     });

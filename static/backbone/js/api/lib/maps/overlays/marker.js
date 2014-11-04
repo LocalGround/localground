@@ -50,7 +50,7 @@ define([
             if (this.getShapeType() === "Point") {
                 this._overlay.setIcon(this.getIcon());
             } else {
-                Base.prototype.redraw.apply(this, arguments);
+                this._overlay.redraw();
             }
         }
 
