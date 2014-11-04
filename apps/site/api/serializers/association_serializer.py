@@ -5,11 +5,11 @@ from localground.apps.site import models
 
 class AssociationSerializer(serializers.ModelSerializer):
     relation = serializers.SerializerMethodField('get_relation')
-    id = serializers.IntegerField(source="entity_id", required=True)
+    object_id = serializers.IntegerField(source="entity_id", required=True, label="object id")
 
     class Meta:
         model = models.GenericAssociation
-        fields = ('id', 'ordering', 'turned_on', 'relation')
+        fields = ('object_id', 'ordering', 'turned_on', 'relation')
 
     def validate(self, attrs):
         """
@@ -17,11 +17,11 @@ class AssociationSerializer(serializers.ModelSerializer):
         """
         from localground.apps.site.models import Base
         view = self.context.get('view')
-        id = attrs.get('entity_id') or view.kwargs.get('id')
+        object_id = attrs.get('entity_id') or view.kwargs.get('id')
         try:
-            id = int(id)
+            object_id = int(object_id)
         except Exception:
-            raise serializers.ValidationError('%s must be a whole number' % id)
+            raise serializers.ValidationError('%s must be a whole number' % object_id)
         try:
             # get access to URL params throught the view
             cls = Base.get_model(
@@ -32,11 +32,11 @@ class AssociationSerializer(serializers.ModelSerializer):
                 '\"%s\" is not a valid media type' %
                 view.kwargs.get('entity_type'))
         try:
-            cls.objects.get(id=id)
+            cls.objects.get(id=object_id)
         except cls.DoesNotExist:
             raise serializers.ValidationError(
                 '%s #%s does not exist in the system' %
-                (cls.model_name, id))
+                (cls.model_name, object_id))
         return attrs
 
     def get_relation(self, obj):

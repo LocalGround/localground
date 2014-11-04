@@ -4,10 +4,9 @@ define(["marionette",
         "lib/maps/controls/geolocation",
         "lib/maps/controls/tileController",
         "views/maps/overlays/overlayManager",
-        "lib/maps/controls/deleteMenu",
-        "lib/maps/controls/drawingManager"
+        "lib/maps/controls/deleteMenu"
     ],
-    function (Marionette, $, SearchBox, GeoLocation, TileController, OverlayManager, DeleteMenu, DrawingManager) {
+    function (Marionette, $, SearchBox, GeoLocation, TileController, OverlayManager, DeleteMenu) {
         'use strict';
         /**
          * A class that handles the basic Google Maps functionality,
@@ -72,15 +71,15 @@ define(["marionette",
                 }
 
                 //set up the various map tiles in Google maps:
-                if (this.overlays) {
+                if (this.tilesets) {
                     this.tileManager = new TileController(this.app, {
                         map: this.map,
-                        overlays: this.overlays,
+                        tilesets: this.tilesets,
                         activeMapTypeID: this.activeMapTypeID
                     });
                 }
                 //add event handlers:
-                this.addEventHandlers(this.app);
+                this.addEventHandlers();
             },
 
             /**
@@ -125,28 +124,24 @@ define(["marionette",
 
 
             },
-            addEventHandlers: function (sb) {
+            addEventHandlers: function () {
                 //add notifications:
                 var that = this;
                 google.maps.event.addListener(this.map, "maptypeid_changed", function () {
-                    that.app.vent.trigger("map-tiles-changed");
+                    that.saveState();
                 });
-                google.maps.event.addListener(this.map, "idle", function (evnt) {
-                    //sb.notify({ type: "map-extents-changed" });
+                google.maps.event.addListener(this.map, "idle", function () {
+                    that.saveState();
                 });
 
-                //add listeners:
-                this.listenTo(this.app.vent, "map-tiles-changed", this.saveState);
                 /*sb.listen({
-                    "map-tiles-changed": this.saveState,
-                    "map-extents-changed": this.saveState,
                     "item-drop": this.handleItemDrop
                 });*/
 
                 //todo: possibly move to a layout module?
                 $(window).off('resize');
                 $(window).on('resize', function () {
-                   // sb.notify({ type: "window-resized" });
+                    that.app.vent.trigger("adjust-layout");
                 });
             },
 
@@ -178,7 +173,6 @@ define(["marionette",
             onShow: function () {
                 this.overlayManager = new OverlayManager(this.opts);
                 this.deleteMenu = new DeleteMenu(this.opts);
-                this.drawingManager = new DrawingManager(this.opts);
             }
 
         });

@@ -13,6 +13,11 @@ define(["underscore", "jquery"], function (_, $) {
          Available SVG shapes.
          @see See <a href="http://raphaeljs.com/icons/#location">Shape Wizard</a>
          to add more icons.
+        
+         To generate SVGs from FontAwesome Icon set on Linux:
+            1) sudo npm install -g font-awesome-svg-png
+            2) sudo apt-get install librsvg2-bin
+            3) font-awesome-svg-png --color red --sizes 128,256 //dumps icons into a directory called "red"
          */
         this.Shapes = {
             MAP_PIN: 'M0-165c-27.618 0-50 21.966-50 49.054C-50-88.849 0 0 0 0s50-88.849 50-115.946C50-143.034 27.605-165 0-165z',
@@ -22,10 +27,11 @@ define(["underscore", "jquery"], function (_, $) {
             ROUNDED: 'M50-80c0-11-9-20-20-20h-60c-11 0-20 9-20 20v60c0 11 9 20 20 20h60c11 0 20-9 20-20V-80z',
             MAP_PIN_HOLLOW: 'M16,3.5c-4.142,0-7.5,3.358-7.5,7.5c0,4.143,7.5,18.121,7.5,18.121S23.5,15.143,23.5,11C23.5,6.858,20.143,3.5,16,3.5z M16,14.584c-1.979,0-3.584-1.604-3.584-3.584S14.021,7.416,16,7.416S19.584,9.021,19.584,11S17.979,14.584,16,14.584z',
             CIRCLE: 'M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0',
-            SOUND: 'M4.998,12.127v7.896h4.495l6.729,5.526l0.004-18.948l-6.73,5.526H4.998z M18.806,11.219c-0.393-0.389-1.024-0.389-1.415,0.002c-0.39,0.391-0.39,1.024,0.002,1.416v-0.002c0.863,0.864,1.395,2.049,1.395,3.366c0,1.316-0.531,2.497-1.393,3.361c-0.394,0.389-0.394,1.022-0.002,1.415c0.195,0.195,0.451,0.293,0.707,0.293c0.257,0,0.513-0.098,0.708-0.293c1.222-1.22,1.98-2.915,1.979-4.776C20.788,14.136,20.027,12.439,18.806,11.219z M21.101,8.925c-0.393-0.391-1.024-0.391-1.413,0c-0.392,0.391-0.392,1.025,0,1.414c1.45,1.451,2.344,3.447,2.344,5.661c0,2.212-0.894,4.207-2.342,5.659c-0.392,0.39-0.392,1.023,0,1.414c0.195,0.195,0.451,0.293,0.708,0.293c0.256,0,0.512-0.098,0.707-0.293c1.808-1.809,2.929-4.315,2.927-7.073C24.033,13.24,22.912,10.732,21.101,8.925z M23.28,6.746c-0.393-0.391-1.025-0.389-1.414,0.002c-0.391,0.389-0.391,1.023,0.002,1.413h-0.002c2.009,2.009,3.248,4.773,3.248,7.839c0,3.063-1.239,5.828-3.246,7.838c-0.391,0.39-0.391,1.023,0.002,1.415c0.194,0.194,0.45,0.291,0.706,0.291s0.513-0.098,0.708-0.293c2.363-2.366,3.831-5.643,3.829-9.251C27.115,12.389,25.647,9.111,23.28,6.746z'
+            SOUND: 'M4.998,12.127v7.896h4.495l6.729,5.526l0.004-18.948l-6.73,5.526H4.998z M18.806,11.219c-0.393-0.389-1.024-0.389-1.415,0.002c-0.39,0.391-0.39,1.024,0.002,1.416v-0.002c0.863,0.864,1.395,2.049,1.395,3.366c0,1.316-0.531,2.497-1.393,3.361c-0.394,0.389-0.394,1.022-0.002,1.415c0.195,0.195,0.451,0.293,0.707,0.293c0.257,0,0.513-0.098,0.708-0.293c1.222-1.22,1.98-2.915,1.979-4.776C20.788,14.136,20.027,12.439,18.806,11.219z M21.101,8.925c-0.393-0.391-1.024-0.391-1.413,0c-0.392,0.391-0.392,1.025,0,1.414c1.45,1.451,2.344,3.447,2.344,5.661c0,2.212-0.894,4.207-2.342,5.659c-0.392,0.39-0.392,1.023,0,1.414c0.195,0.195,0.451,0.293,0.708,0.293c0.256,0,0.512-0.098,0.707-0.293c1.808-1.809,2.929-4.315,2.927-7.073C24.033,13.24,22.912,10.732,21.101,8.925z M23.28,6.746c-0.393-0.391-1.025-0.389-1.414,0.002c-0.391,0.389-0.391,1.023,0.002,1.413h-0.002c2.009,2.009,3.248,4.773,3.248,7.839c0,3.063-1.239,5.828-3.246,7.838c-0.391,0.39-0.391,1.023,0.002,1.415c0.194,0.194,0.45,0.291,0.706,0.291s0.513-0.098,0.708-0.293c2.363-2.366,3.831-5.643,3.829-9.251C27.115,12.389,25.647,9.111,23.28,6.746z',
+            OVAL: 'M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0'
         };
 
-        this.getType = function () {
+        this.getShapeType = function () {
             return "Point";
         };
 
@@ -38,14 +44,24 @@ define(["underscore", "jquery"], function (_, $) {
         this.createOverlay = function (isVisible) {
             if (this.model.get("geometry") != null) {
                 this._googleOverlay = new google.maps.Marker({
-                    position: this.getGoogleLatLng(),
+                    position: this.getGoogleGeometryFromModel(),
                     map: isVisible ? this.map : null
                 });
             }
         };
 
+        this.restoreModelGeometry =  function () {
+            this._googleOverlay.setPosition(this.getGoogleGeometryFromModel());
+        };
+
         this.getCenter = function () {
-            return this.getGoogleLatLng();
+            return this.getGoogleGeometryFromModel();
+        };
+
+        this.getBounds = function () {
+            var bounds = new google.maps.LatLngBounds();
+            bounds.extend(this.getCenter());
+            return bounds;
         };
 
         this.centerOn = function () {
@@ -67,7 +83,7 @@ define(["underscore", "jquery"], function (_, $) {
          * @returns {google.maps.LatLng}
          * A google.maps.LatLng object
          */
-        this.getGoogleLatLng = function () {
+        this.getGoogleGeometryFromModel = function () {
             var geoJSON = this.model.get("geometry");
             return new google.maps.LatLng(
                 geoJSON.coordinates[1],
@@ -91,30 +107,47 @@ define(["underscore", "jquery"], function (_, $) {
             };
         };
 
-        this.makeViewable = function () {
-            this._googleOverlay.setOptions({'draggable': false, 'title': ''});
+        this.clearEditListeners = function () {
             google.maps.event.clearListeners(this._googleOverlay, 'drag');
             google.maps.event.clearListeners(this._googleOverlay, 'dragstart');
             google.maps.event.clearListeners(this._googleOverlay, 'dragend');
+		};
+
+        this.makeViewable = function () {
+            this._googleOverlay.setOptions({'draggable': false, 'title': ''});
+            this.clearEditListeners();
         };
 
         this.makeEditable = function (model) {
             var that = this;
-            this._googleOverlay.setOptions({
+            this.clearEditListeners();
+			this._googleOverlay.setOptions({
                 'draggable': true,
                 'title': 'Drag this icon to re-position it'
             });
-            google.maps.event.addListener(this._googleOverlay, "dragstart", function (mEvent) {
-                that.app.vent.trigger({ type: "hide-tip" });
+            google.maps.event.addListener(this._googleOverlay, "dragstart", function () {
+                that.app.vent.trigger("hide-tip");
                 that.app.vent.trigger("hide-bubble", { model: model });
             });
+
             google.maps.event.addListener(this._googleOverlay, "dragend", function (mEvent) {
                 that.map.panTo(that._googleOverlay.position);
-                that.saveShape(model);
+                if (model.getKey() != "markers") {
+                    that.app.vent.trigger("drag-ended", {
+                        latLng: mEvent.latLng,
+                        model: model
+                    });
+                } else {
+                    that.saveShape(model);
+                }
             });
 
             google.maps.event.addListener(this._googleOverlay, "drag", function (mEvent) {
-                //me.checkIntersection(mEvent, true);
+                if (model.getKey() != "markers") {
+                    that.app.vent.trigger("dragging", {
+                        latLng: mEvent.latLng
+                    });
+                }
             });
         };
 
@@ -135,6 +168,38 @@ define(["underscore", "jquery"], function (_, $) {
             this._googleOverlay.setOptions({
                 icon: icon
             });
+        };
+
+        this.intersects = function (latLng) {
+            var r = 10,
+                projection = this.app.getOverlayView().getProjection(),
+                position = projection.fromLatLngToContainerPixel(latLng),
+                currentPosition = projection.fromLatLngToContainerPixel(this._googleOverlay.getPosition()),
+                rV = 20,
+                rH = 10,
+                top,
+                bottom,
+                left,
+                right,
+                withinBuffer;
+
+            if (this._googleOverlay.icon && this._googleOverlay.icon.size) {
+                rV = this._googleOverlay.icon.size.height;  // vertical radius
+                rH = this._googleOverlay.icon.size.width;   // horizontal radius
+            }
+            top = position.y - rV;
+            bottom = position.y + rV;
+            left = position.x - rH;
+            right = position.x + rH;
+
+            withinBuffer = currentPosition.y  <= bottom + r &&
+							   currentPosition.y >= top - 2 * r &&
+							   currentPosition.x <= right + r &&
+							   currentPosition.x >= left - r;
+            if (withinBuffer) {
+                return true;
+            }
+            return false;
         };
 
         this.initialize(app, opts);

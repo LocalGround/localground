@@ -1,6 +1,7 @@
 define([
+	"lib/maps/overlays/infobubbles/marker",
     "lib/maps/overlays/base"
-], function (Base) {
+], function (MarkerBubble, Base) {
     "use strict";
     /**
      * Class that controls marker point model overlays.
@@ -20,7 +21,7 @@ define([
                 strokeColor: "#FFF",
                 strokeWeight: 1.5,
                 fillOpacity: 1,
-                path: this.overlay.Shapes.MAP_PIN_HOLLOW,
+                path: this._overlay.Shapes.MAP_PIN_HOLLOW,
                 scale: 1.6,
                 anchor: new google.maps.Point(16, 30),      // anchor (x, y)
                 size: new google.maps.Size(15, 30),         // size (width, height)
@@ -38,13 +39,18 @@ define([
         show: function () {
             Base.prototype.show.apply(this);
             this.redraw();
+            //this.highlight();
+        },
+
+        initInfoBubble: function (opts) {
+            this.infoBubble = new MarkerBubble(_.extend({overlay: this}, opts));
         },
 
         redraw: function () {
-            if (this.overlay.getType() === "Point") {
-                this.overlay.setIcon(this.getIcon());
+            if (this.getShapeType() === "Point") {
+                this._overlay.setIcon(this.getIcon());
             } else {
-                this.overlay.redraw();
+                this._overlay.redraw();
             }
         }
 

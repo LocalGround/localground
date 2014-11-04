@@ -8,13 +8,13 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
     var Polygon = function (app, opts) {
         Polyline.call(this, app, opts);
 
-        this.getType = function () {
+        this.getShapeType = function () {
             return "Polygon";
         };
 
         this.createOverlay = function (isVisible) {
             this._googleOverlay = new google.maps.Polygon({
-                path: this.getGooglePathFromGeoJSON(),
+                path: this.getGoogleLatLngFromModel(),
                 strokeColor: '#' + this.model.get("color"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
@@ -27,7 +27,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
         this.redraw = function () {
             this._googleOverlay.setOptions({
                 strokeColor: '#' + this.model.get("color"),
-                fillColor: '#' + this.model.get("color"),
+                fillColor: '#' + this.model.get("color")
             });
         };
         /**
@@ -38,7 +38,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
          * @returns {Array}
          * An array of google.maps.LatLng objects.
          */
-        this.getGooglePathFromGeoJSON = function () {
+        this.getGoogleLatLngFromModel = function () {
             var geoJSON = this.model.get("geometry"),
                 path = [],
                 coords = geoJSON.coordinates[0],
@@ -71,6 +71,11 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
             //add last coordinate again:
             coords.push([pathCoords[0].lng(), pathCoords[0].lat()]);
             return { type: 'Polygon', coordinates: [coords] };
+        };
+
+		this.intersects = function (latLng) {
+            //alert("No yet implemented.");
+            return false;
         };
 
         this.initialize(app, opts);

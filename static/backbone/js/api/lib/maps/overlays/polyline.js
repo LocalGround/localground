@@ -10,7 +10,7 @@ define(["jquery"], function ($) {
         this.model = null;
         this.map = null;
 
-        this.getType = function () {
+        this.getShapeType = function () {
             return "Polyline";
         };
 
@@ -22,7 +22,7 @@ define(["jquery"], function ($) {
 
         this.createOverlay = function (isVisible) {
             this._googleOverlay = new google.maps.Polyline({
-                path: this.getGooglePathFromGeoJSON(),
+                path: this.getGoogleGeometryFromModel(),
                 strokeColor: '#' + this.model.get("color"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
@@ -101,7 +101,7 @@ define(["jquery"], function ($) {
          * @returns {Array}
          * An array of google.maps.LatLng objects.
          */
-        this.getGooglePathFromGeoJSON = function () {
+        this.getGoogleGeometryFromModel = function () {
             var geoJSON = this.model.get("geometry"),
                 path = [],
                 coords = geoJSON.coordinates,
@@ -136,8 +136,9 @@ define(["jquery"], function ($) {
         };
 
         this.makeEditable = function (model) {
-            this._googleOverlay.setOptions({'draggable': false, 'editable': true});
             var that = this;
+            google.maps.event.clearListeners(this._googleOverlay.getPath());
+			this._googleOverlay.setOptions({'draggable': false, 'editable': true});
             google.maps.event.addListener(this._googleOverlay.getPath(), 'set_at', function () {
                 that.saveShape(model);
             });
@@ -162,9 +163,18 @@ define(["jquery"], function ($) {
             });
         };
 
+        this.restoreModelGeometry = function () {
+            this._googleOverlay.setPath(this.getGoogleLatLngFromModel());
+        };
+
         this.saveShape = function (model) {
             model.set("geometry", this.getGeoJSON());
             model.save();
+        };
+
+        this.intersects = function (latLng) {
+            //alert("No yet implemented.");
+            return false;
         };
 
         this.initialize(app, opts);

@@ -1,12 +1,10 @@
 define(['jquery',
         'form',
         'marionette',
-        'infobubble',
-        'color-picker',
-        "bootstrap-form-templates",
-        'slick'
+        'google-infobubble',
+        'bootstrap-form-templates'
     ],
-    function ($, Form, Marionette, InfoBubble, jscolor) {
+    function ($, Form, Marionette, GoogleInfoBubble) {
         'use strict';
         /**
          * Manages InfoBubble Rendering
@@ -25,9 +23,10 @@ define(['jquery',
             tip: null,
             tipModel: null,
             template: null,
+            overlay: null,
 
             events: {
-                "click .btn-primary": "saveForm"
+                'click .btn-primary': 'saveForm'
             },
 
             modelEvents: {
@@ -44,7 +43,7 @@ define(['jquery',
                 this.opts = opts;
                 $.extend(this, opts);
                 this.map = this.app.getMap();
-                this.bubble = new InfoBubble({
+                this.bubble = new GoogleInfoBubble({
                     borderRadius: 5,
                     maxHeight: 385,
                     padding: 0,
@@ -53,7 +52,7 @@ define(['jquery',
                     map: this.map
                 });
 
-                this.tip = new InfoBubble({
+                this.tip = new GoogleInfoBubble({
                     borderRadius: 5,
                     maxHeight: 385,
                     padding: 0,
@@ -64,7 +63,7 @@ define(['jquery',
                 });
                 this.listenTo(this.app.vent, 'mode-change', this.refresh);
                 this.listenTo(this.app.vent, 'hide-bubbles', this.hideBubble);
-
+                this.listenTo(this.model, 'show-bubble', this.showBubble);
             },
 
             refresh: function () {
@@ -81,6 +80,7 @@ define(['jquery',
                 this.app.vent.trigger('hide-bubbles', this.model.id);
                 this.renderBubble();
             },
+
             renderBubble: function () {
                 if (this.app.getMode() === "view") {
                     this.renderViewContent();
@@ -88,18 +88,12 @@ define(['jquery',
                     this.renderEditContent();
                 }
             },
+
             renderViewContent: function () {
                 var template = this.getTemplate("InfoBubbleTemplate");
                 this.$el = $(template(this.getContext()));
 
                 this.showUpdatedContent();
-
-                //only relevant for marker in view mode:
-                window.setTimeout(function () {
-                    $('.marker-container').slick({
-                        dots: false
-                    });
-                }, 200);
             },
 
             renderEditContent: function () {
@@ -107,25 +101,16 @@ define(['jquery',
                     template = that.getTemplate("InfoBubbleTemplate"),
                     ModelForm = Form.extend({
                         schema: that.model.updateSchema
-                    });
-                that.setElement($(template({mode: "edit"})));
+                    }),
+                    context = that.getContext(this.model);
+                context.mode = 'edit';
+                that.setElement($(template(context)));
                 that.form = new ModelForm({
                     model: that.model
                 }).render();
                 that.$el.find('.form').append(that.form.$el);
 
-                //init color picker if applicable:
-                that.initColorPicker();
-
                 that.showUpdatedContent();
-            },
-
-            initColorPicker: function () {
-                var colorInput = this.$el.find('.form').find('[name="color"]');
-                if (colorInput.get(0) != null) {
-                    var picker = new jscolor.color(colorInput.get(0), {});
-                    picker.fromString("#" + this.model.get("color"));
-                }
             },
 
             saveForm: function (e) {
@@ -134,7 +119,12 @@ define(['jquery',
                 e.preventDefault();
             },
             _show: function (whichBubble) {
-                whichBubble.open(this.map, this.overlay.getGoogleOverlay());
+                if (this.overlay.getShapeType() === "Point") {
+                    whichBubble.open(this.map, this.overlay.getGoogleOverlay());
+                } else {
+                    whichBubble.setPosition(this.overlay.getCenter());
+                    whichBubble.open();
+                }
             },
             /*
             showLoadingImage: function () {

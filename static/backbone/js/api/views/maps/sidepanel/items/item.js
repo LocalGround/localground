@@ -14,12 +14,9 @@ define(["marionette", "jquery"], function (Marionette, $) {
         template: null,
         /** A Backbone model */
         model: null,
-
-        /**
-         * A google.maps.Overlay object (Point, Polyline, Polygon,
-         * or GroundOverlay)
-         */
-        googleOverlay: null,
+        /** tracks # of times this view is rendered (important for restoring state) */
+        numRenderings: 0,
+        state: {},
 
         /**
          * Event listeners: Listens for delete checkbox toggle,
@@ -32,7 +29,8 @@ define(["marionette", "jquery"], function (Marionette, $) {
             'click a': 'zoomTo',
             'mouseover .data-item': 'showTip',
             'mouseout .data-item': 'hideTip',
-            'dragend .item-icon': 'dropItem'
+            'dragend .item-icon': 'dropListener',
+            'drag .item-icon': 'dragListener'
         },
 
         modelEvents: {
@@ -53,9 +51,10 @@ define(["marionette", "jquery"], function (Marionette, $) {
          */
         initialize: function (opts) {
             $.extend(this, opts);
-            this.id = 'sidebar-' + this.model.get('overlay_type') + this.model.get('id');
+            this.id = 'sidebar-' + this.model.getKey() + "-" + this.model.get('id');
             //this.setElement(opts.el);
             //this.render();
+            this.restoreState();
             this.listenTo(this.model, 'show-item', this.showItem);
             this.listenTo(this.model, 'hide-item', this.hideItem);
             this.listenTo(this.app.vent, "mode-change", this.setEditMode);
@@ -69,7 +68,8 @@ define(["marionette", "jquery"], function (Marionette, $) {
         },
 
         onRender: function () {
-            if (this.showOverlay()) {
+            ++this.numRenderings;
+            if (this.isVisible()) {
                 this.model.trigger("show-overlay");
             }
             this.setEditMode();
@@ -149,15 +149,26 @@ define(["marionette", "jquery"], function (Marionette, $) {
             this.saveState();
         },
 
-        showOverlay: function () {
-            return this.$el.find('input').is(":checked") && this.model.get('isVisible');
+        isFirstRendering: function () {
+            return this.numRenderings < 1;
+        },
+
+        isVisible: function () {
+            var isVisible = this.$el.find('input').is(":checked") && this.model.get('isVisible');
+            //console.log(this.numRenderings, this.id, this.state);
+
+            // ensures that localStorage flag is only honored on initialization.
+            if (this.isFirstRendering()) {
+                isVisible = isVisible || this.state.isVisible;
+            }
+            return isVisible;
         },
         /**
          * Helps the checkbox communicate with the toggleElement function.
          * @param {Event} e
          */
         zoomTo: function (e) {
-            if (this.model.get("geometry") && this.showOverlay()) {
+            if (this.model.get("geometry") && this.isVisible()) {
                 this.model.trigger("zoom-to-overlay");
             }
             e.stopPropagation();
@@ -165,8 +176,25 @@ define(["marionette", "jquery"], function (Marionette, $) {
 
         templateHelpers: function () {
             return {
-                showOverlay: this.showOverlay()
+                showOverlay: this.isVisible()
             };
+        },
+
+        saveState: function () {
+            this.app.saveState(
+                this.id,
+                {
+                    isVisible: this.isVisible()
+                },
+                false
+            );
+        },
+
+        restoreState: function () {
+            this.state = this.app.restoreState(this.id);
+            if (!this.state) {
+                this.state = { isVisible: false };
+            }
         },
 
         /**
@@ -186,7 +214,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
 
         /** Show a tooltip on the map if the geometry exists */
         showTip: function () {
-            if (this.model.get("geometry") && this.showOverlay()) {
+            if (this.model.get("geometry") && this.isVisible()) {
                 this.model.trigger("show-tip");
             }
         },
@@ -195,52 +223,20 @@ define(["marionette", "jquery"], function (Marionette, $) {
         hideTip: function () {
             this.model.trigger('hide-tip');
         },
-        saveState: function () {
-            this.app.saveState(this.id, {
-                showOverlay: this.showOverlay()
+
+        dropListener: function (event) {
+            this.app.vent.trigger("georeference-from-div", {
+                event: event,
+                model: this.model
             });
         },
 
-        restoreState: function () {
-            var state = this.app.restoreState(this.id);
-            if (!state) {
-                return { showOverlay: false };
+        dragListener: function (event) {
+            if (this.model.getKey() != "markers") {
+                this.app.vent.trigger("dragging-html-element", {
+                    event: event
+                });
             }
-
-            return state;
-
-        },
-
-        //todo: this needs to go elsewhere, somewhere that knows about the map
-        dropItem: function (event) {
-            function elementContainsPoint(domElement, x, y) {
-                return x > domElement.offsetLeft && x < domElement.offsetLeft + domElement.offsetWidth &&
-                    y > domElement.offsetTop && y < domElement.offsetTop + domElement.offsetHeight;
-
-            }
-
-
-            var overlayView = this.app.getOverlayView(),
-                map = this.app.getMap(),
-                e = event.originalEvent,
-                mapContainer = map.getDiv(),
-                point,
-                projection,
-                latLng;
-            e.stopPropagation();
-
-            if (elementContainsPoint(mapContainer, e.pageX, e.pageY)) {
-                point = new google.maps.Point(e.pageX - mapContainer.offsetLeft,
-                    e.pageY - mapContainer.offsetTop);
-                projection = overlayView.getProjection();
-                latLng = projection.fromContainerPixelToLatLng(point);
-                this.model.setGeometry(latLng);
-                this.model.save();
-                this.showItem();
-                this.model.trigger('show-overlay');
-            }
-            //Trigger sync, then trigger display on map
-
         }
     });
     return Item;

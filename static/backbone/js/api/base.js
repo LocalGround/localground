@@ -15,7 +15,7 @@ require.config({
         'colResizable': '../external/colResizable-1.3.source',
         'backbone-pageable': '../external/backbone-pageable',
         'backbone-paginator': '../external/backbone.paginator',
-        'infobubble': '../external/infobubble',
+        'google-infobubble': '../external/infobubble',
         'slick': '//cdn.jsdelivr.net/jquery.slick/1.3.7/slick.min',
         'urlon': '../external/urlon',
         'kernel': '../external/kernel.min',
@@ -44,11 +44,15 @@ require.config({
             deps: ['backbone'],
             exports: 'Backgrid'
         },
+        'form': {
+            deps: [ "backbone" ],
+            exports: "Backbone"
+        },
         'bootstrap-form-templates': {
-            deps: ['backbone'],
+            deps: ['form']
         },
         'backbone-bootstrap-modal': {
-            deps: ['backbone', 'jquery.bootstrap'],
+            deps: ['backbone', 'jquery.bootstrap']
         },
         'colResizable': {
             deps: ['jquery'],

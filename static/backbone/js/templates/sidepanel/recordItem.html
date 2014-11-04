@@ -3,7 +3,7 @@
 		<% if(!geometry) { %>
 			style="visibility:hidden;"
 		<% } %>
-		<% if(isVisible) { %>checked<% } %>
+		<% if(showOverlay) { %>checked<% } %>
 	>
 	<i class="fa fa-map-marker item-icon" style="color: #ccc;" draggable="false"></i>
 	<div><a href="#" title="<%= name %>"><%= name || 'Untitled' %></a></div>

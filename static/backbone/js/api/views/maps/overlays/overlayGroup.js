@@ -18,8 +18,7 @@ define(['marionette',
             initialize: function (opts) {
                 $.extend(this, opts);
                 this.collection = opts.collection;
-                var configKey = this.collection.key.split("_")[0],
-                    that = this;
+                var configKey = this.collection.key.split("_")[0];
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.key = this.collection.key;
@@ -31,25 +30,31 @@ define(['marionette',
                     }
                 });
 
-                //Rerender photos on map zoom
-                google.maps.event.addListener(this.map, 'zoom_changed', function () {
-                    if (that.key !== 'photos') {
-                        return;
-                    }
-                    for (var key in that.overlays) {
-                        var overlay = that.overlays[key];
-                        overlay.getGoogleOverlay().setIcon(overlay.getIcon());
-                    }
-                });
-
                 //listen for new data:
-
                 this.listenTo(this.collection, 'zoom-to-extent', this.zoomToExtent);
-                this.listenTo(this.collection, 'show-all', this.showAll);
-                this.listenTo(this.collection, 'hide-all', this.hideAll);
+                this.listenTo(this.collection, 'change:geometry', this.geometryUpdated);
+
                 //Have to manually render since this is an abstract view
                 //attached to map elements rather than the DOM
                 this.render();
+            },
+
+            geometryUpdated: function (model) {
+                //create a child view if one doesn't exist (necessary for
+                // data elements that have just been geo-referenced)
+                if (!this.children.findByModel(model)) {
+                    //console.log("creating child view");
+                    this.addChild(model, this.childView);
+                }
+            },
+
+            // overriding the "addChild" method so that data elements whose geometry hasn't
+            // yet been defined won't render.
+            addChild: function (child, ChildView, index) {
+                if (child.get('geometry') != null) {
+                    return Marionette.CollectionView.prototype.addChild.call(this, child, ChildView, index);
+                }
+                return null;
             },
 
             /** Shows all of the map overlays */
@@ -71,16 +76,9 @@ define(['marionette',
             /** Zooms to the extent of the collection */
             zoomToExtent: function () {
                 var bounds = new google.maps.LatLngBounds();
-                for (var key in this.overlays) {
-                    try {
-                        //for polylines, polygons, and groundoverlays:
-                        bounds.union(this.overlays[key].overlay.getBounds());
-                    }
-                    catch (e) {
-                        //for points:
-                        bounds.extend(this.overlays[key].getCenter());
-                    }
-                }
+                this.children.each(function (overlay) {
+                    bounds.union(overlay.getBounds());
+                });
                 this.map.fitBounds(bounds);
             }
 

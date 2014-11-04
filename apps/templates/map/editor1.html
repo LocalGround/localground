@@ -10,11 +10,7 @@
 	</head>
 
 	<body>
-        <nav id="topbar" class="navbar navbar-default" role="navigation">
-            <ul class="nav navbar-nav">
-                <li><a href="#">Local Ground</a></li>
-            </ul>
-        </nav>
+        <nav id="topbar" class="navbar navbar-default" role="navigation"></nav>
         <div id="map_canvas"></div>
         <div id="panels"></div>
 	</body>
@@ -36,7 +32,7 @@
 				includeSearchControl: true,
 				includeGeolocationControl: false,
 				activeMapTypeID: {{ basemap_id|default:"12" }},
-				overlays: {% autoescape off %}{{ overlays }}{% endautoescape %}
+				tilesets: {% autoescape off %}{{ overlays }}{% endautoescape %}
 			};
 			 require(
 				["jquery", "/static/backbone/js/api/mapplication.js"],

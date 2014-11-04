@@ -64,7 +64,7 @@ class ApiRelatedMediaListTest(
 
             # 2) append object to marker:
             response = self.client_user.post(url, {
-                'id': 1,
+                'object_id': 1,
                 'ordering': i
             },
                 HTTP_X_CSRFTOKEN=self.csrf_token
@@ -84,7 +84,7 @@ class ApiRelatedMediaListTest(
         m1 = self.create_marker(self.user, self.project)
         url = '/api/0/markers/%s/markers/' % self.marker.id
         response = self.client_user.post(url, {
-            'id': m1.id,
+            'object_id': m1.id,
             'ordering': 1
         },
             HTTP_X_CSRFTOKEN=self.csrf_token
