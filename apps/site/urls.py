@@ -108,6 +108,9 @@ urlpatterns = patterns('',
                         {'embed': True}),
                        (r'^profile/forms/(?P<object_id>\d+)/data/(?P<rec_id>\d+)/$',
                         'localground.apps.site.views.form_data.get_record'),
+                       
+                       (r'^profile/tables/$',
+                        'localground.apps.site.views.form_data.show_tables'),
 
                        #-------------------------------------------------------
                        # 4) Delete

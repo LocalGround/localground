@@ -18,6 +18,11 @@ import simplejson as json
 from django.conf import settings
 import os
 
+@login_required()
+def show_tables(request):
+    context = RequestContext(request)
+    return render_to_response('profile/tables.html', context)
+
 
 @login_required()
 def get_objects(request, object_id, format_type='table'):
