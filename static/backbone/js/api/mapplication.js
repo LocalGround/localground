@@ -1,5 +1,4 @@
-define(["jquery",
-        "marionette",
+define(["marionette",
         "backbone",
         "underscore",
         "views/maps/basemap",
@@ -11,7 +10,7 @@ define(["jquery",
         "lib/maps/controls/georeferenceManager",
         "jquery.bootstrap"
     ],
-    function ($, Marionette, Backbone, _, BaseMap, DataPanel, TopBar, DataManager, appUtilities, Projects, GeoreferenceManager) {
+    function (Marionette, Backbone, _, BaseMap, DataPanel, TopBar, DataManager, appUtilities, Projects, GeoreferenceManager) {
         "use strict";
 
         var Mapplication = new Marionette.Application();
@@ -53,20 +52,7 @@ define(["jquery",
             Mapplication.sidebarRegion.show(sidePanel);
             Mapplication.topBarRegion.show(topBar);
 
-            // adding some global AJAX event handlers for showing messages and
-            // appending the Django authorization token:
-            $.ajaxSetup({
-                beforeSend: function (xhr, settings) {
-                    that.showLoadingMessage();
-                    that.setCsrfToken(xhr, settings);
-                },
-                complete: this.hideLoadingMessage,
-                statusCode: {
-                    400: that.handleDatabaseError.bind(undefined, options),
-                    401: that.handleDatabaseError.bind(undefined, options),
-                    500: that.handleDatabaseError.bind(undefined, options)
-                }
-            });
+            this.initAJAX(options);
         });
 
         return Mapplication;

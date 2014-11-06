@@ -13,7 +13,7 @@ define([
 		"bootstrap-form-templates",
 		"backbone-bootstrap-modal"
 		
-	], function(Backbone, Backgrid, TableHeader, DataGrid, Columns, Field) {
+	], function(Backbone, Backgrid, TableHeader, DataGrid, Columns, Field, Records, Forms) {
 	var TableEditor = Backbone.View.extend({
 		el: "body",
 		tableHeader: null,
@@ -29,7 +29,7 @@ define([
 			$.extend(this, opts);
 			var that = this;
 			
-			this.forms = new localground.collections.Forms();
+			this.forms = new Forms();
 			this.tableHeader = new TableHeader({
 				collection: this.forms,
 				globalEvents: this.globalEvents
@@ -86,7 +86,7 @@ define([
 		},
 		render: function(){
 			var that = this;
-			this.records = new localground.collections.Records([], {
+			this.records = new Records([], {
 				url: this.url
 			});
 			this.grid = new DataGrid({

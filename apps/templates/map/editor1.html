@@ -34,14 +34,14 @@
 				activeMapTypeID: {{ basemap_id|default:"12" }},
 				tilesets: {% autoescape off %}{{ overlays }}{% endautoescape %}
 			};
-			 require(
+			require(
 				["jquery", "/static/backbone/js/api/mapplication.js"],
 				function($, MapApplication) {
 					$(function() {
 						MapApplication.start(basemapOpts);
 					});
 				}
-             );
+            );
 
     </script>
 </html>
