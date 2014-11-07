@@ -12,7 +12,15 @@ Important TODO:
 Since Tables now inherit form BaseAudit, we'll need to write a batch script that
 adds the auditing columns to the user-generated tables.
 '''
-
+class DataTypes:
+    TEXT = 1
+    INTEGER = 2
+    DATETIME = 3
+    BOOLEAN = 4
+    DECIMAL = 5
+    RATING = 6
+    PHOTO = 7
+    AUDIO = 8
 
 class DynamicModelMixin(BasePoint, BaseAudit):
     num = models.IntegerField(null=True, blank=True, db_column='user_num',
@@ -305,31 +313,31 @@ class ModelClassBuilder(object):
                            data_type=FieldTypes.DATE, operator='<=')
             ]
             for n in self.form.fields:
-                if n.data_type.id == 1:
+                if n.data_type.id == DataTypes.TEXT:
                     query_fields.append(
                         QueryField(
                             n.col_name,
                             title=n.col_alias,
                             operator='like'))
-                elif n.data_type.id in [2, 6]:
+                elif n.data_type.id in [DataTypes.INTEGER, DataTypes.RATING]:
                     query_fields.append(
                         QueryField(
                             n.col_name,
                             title=n.col_alias,
                             data_type=FieldTypes.INTEGER))
-                elif n.data_type.id == 3:
+                elif n.data_type.id == DataTypes.DATETIME:
                     query_fields.append(
                         QueryField(
                             n.col_name,
                             title=n.col_alias,
                             data_type=FieldTypes.DATE))
-                elif n.data_type.id == 4:
+                elif n.data_type.id == DataTypes.BOOLEAN:
                     query_fields.append(
                         QueryField(
                             n.col_name,
                             title=n.col_alias,
                             data_type=FieldTypes.BOOLEAN))
-                elif n.data_type.id == 5:
+                elif n.data_type.id == DataTypes.DECIMAL:
                     query_fields.append(
                         QueryField(
                             n.col_name,
@@ -359,16 +367,31 @@ class ModelClassBuilder(object):
                 'verbose_name': n.col_alias,
                 'db_column': n.col_name_db
             }
-            if n.data_type.id == 1:
+            if n.data_type.id == DataTypes.TEXT:
                 field = models.CharField(max_length=1000, **kwargs)
-            elif n.data_type.id in [2, 6]:
+            elif n.data_type.id in [DataTypes.INTEGER, DataTypes.RATING]:
                 field = models.IntegerField(**kwargs)
-            elif n.data_type.id == 3:
+            elif n.data_type.id == DataTypes.DATETIME:
                 field = models.DateTimeField(**kwargs)
-            elif n.data_type.id == 4:
+            elif n.data_type.id == DataTypes.BOOLEAN:
                 field = models.BooleanField(**kwargs)
-            elif n.data_type.id == 5:
+            elif n.data_type.id == DataTypes.DECIMAL:
                 field = models.FloatField(**kwargs)
+            elif n.data_type.id == DataTypes.PHOTO:
+                field = models.ForeignKey(
+                        'Photo',
+                        null=True,
+                        blank=True,
+                        db_column=n.col_name_db
+                    )
+                #raise Exception(field)
+            elif n.data_type.id == DataTypes.AUDIO:
+                field = models.ForeignKey(
+                        'Audio',
+                        null=True,
+                        blank=True,
+                        db_column=n.col_name_db
+                    )
 
             # add dynamic field:
             self.dynamic_fields.update({
