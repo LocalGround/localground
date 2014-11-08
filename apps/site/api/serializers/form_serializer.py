@@ -5,6 +5,7 @@ from django.conf import settings
 from rest_framework import serializers
 from localground.apps.site import widgets, models
 from localground.apps.site.api import fields
+from django.http import HttpResponse
 
 
 class FormSerializerList(BaseNamedSerializer):
@@ -75,23 +76,44 @@ def create_record_serializer(form):
     """
     generate a dynamic serializer from dynamic model
     """
-    form_fields = []
-    form_fields.append(form.get_num_field())
-    form_fields.extend(list(form.fields))
-
-    field_names = [f.col_name for f in form_fields]
-
-    class FormDataSerializer(BaseRecordSerializer):
-
-        class Meta:
-            from django.forms import widgets
-
-            model = form.TableModel
-            fields = BaseRecordSerializer.Meta.fields + tuple(field_names)
-            read_only_fields = BaseRecordSerializer.Meta.read_only_fields
-
-    return FormDataSerializer
-
+    #from localground.apps.site.api.fields import TablePhotoField
+    from localground.apps.site.api import fields
+    field_names, photo_fields, audio_fields = [], [], []
+    for f in form.fields:
+        field_names.append(f.col_name)
+        if f.data_type.id == 7:
+            photo_fields.append(f.col_name)
+        elif f.data_type.id == 8:
+            audio_fields.append(f.col_name)
+    field_names.append(form.get_num_field().col_name)
+    
+    class Meta:
+        model = form.TableModel
+        fields = BaseRecordSerializer.Meta.fields + tuple(field_names)
+        read_only_fields = BaseRecordSerializer.Meta.read_only_fields 
+    
+    def get_photo(self, obj):
+        #todo: why is this obj and then photo?????
+        return obj.photo.encrypt_url(obj.photo.file_name_medium_sm)
+    
+    def get_audio(self, obj):
+        #todo: why is this obj and then audio?????
+        return obj.audio.name
+    
+    attrs = {
+        '__module__': 'localground.apps.site.api.serializers.FormDataSerializer',
+        'Meta': Meta
+    }
+    for f in photo_fields:
+        attrs.update({
+            f: fields.TablePhotoField(required=False)
+        })
+    
+    for f in audio_fields:
+        attrs.update({
+            f: fields.TableAudioField(required=False)
+        })
+    return type('record_serializer_default', (BaseRecordSerializer, ), attrs)
 
 def create_compact_record_serializer(form):
     """
