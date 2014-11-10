@@ -17,6 +17,12 @@ define([
             'click .stop-audio': 'stopAudio'
         }),
 
+        initialize: function () {
+            Item.prototype.initialize.apply(this,arguments);
+            this.listenTo(this.model, 'play', this.indicatePlay);
+            this.listenTo(this.model, 'stop', this.indicateStop);
+        },
+
         playAudio: function (e) {
             this.app.vent.trigger('playAudio', this.model);
             e.stopPropagation();
@@ -25,6 +31,12 @@ define([
         stopAudio: function (e) {
             this.app.vent.trigger('stopAudio');
             e.stopPropagation();
+        },
+        indicatePlay: function () {
+            this.$el.find('.play-audio').addClass('playing');
+        },
+        indicateStop: function () {
+            this.$el.find('.play-audio').removeClass('playing');
         }
     });
     return AudioItem;

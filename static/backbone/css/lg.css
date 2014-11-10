@@ -115,6 +115,11 @@ body {
    background-color: white;
 }
 
+.audio-controls > .playing {
+   background-color: #eeeeee;
+}
+
+
 .audio-controls > button:hover {
    background-color: #dfe2db;
 }

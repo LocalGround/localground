@@ -30,6 +30,8 @@ define(['jquery',
             },
             playAudio: function (model) {
                 this.stopAudio();
+                this.model = model;
+                this.model.trigger('play');
                 this.$el.empty();
                 this.$el.append(this.template(model.toJSON()));
                 this.$el.removeClass('hidden');
@@ -37,11 +39,15 @@ define(['jquery',
                 this.currentAudio.play();
             },
             stopAudio: function () {
+                this.$el.addClass('hidden');
+
                 if (this.currentAudio) {
                     this.currentAudio.pause();
                     this.currentAudio.currentTime = 0;
                 }
-                this.$el.addClass('hidden');
+                if (this.model) {
+                    this.model.trigger('stop');
+                }
 
             },
             closePlayer: function () {
