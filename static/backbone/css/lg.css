@@ -111,10 +111,6 @@ body {
 .container-footer {
 }
 
-.audio-controls {
-    margin-top: -5px;
-}
-
 .audio-controls > button {
    background-color: white;
 }
@@ -133,9 +129,20 @@ body {
     margin-top: 0.75%;
     margin-left: 25%;
 }
+#close-player {
+    z-index: 100;
+    position: absolute;
+    margin-top: -0.15%;
+    margin-left: 55.1%;
+    cursor: pointer;
+}
 .audio-controls {
     display: inline-block;
 }
+.item > .audio-controls {
+    margin-top:3px;
+}
+
 .audio-controls span {
     height:15px;
     width: 25px;

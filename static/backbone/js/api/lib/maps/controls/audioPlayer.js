@@ -15,6 +15,10 @@ define(['jquery',
         var AudioPlayer = Backbone.View.extend({
             template: _.template(PlayerTemplate),
             id: 'audio-wrapper',
+            events: {
+                'click #close-player': 'closePlayer'
+            },
+
             initialize: function (opts) {
                 this.container = opts.el;
                 this.$el = $('<div></div>');
@@ -39,6 +43,9 @@ define(['jquery',
                 }
                 this.$el.addClass('hidden');
 
+            },
+            closePlayer: function () {
+                this.stopAudio();
             }
         });
 

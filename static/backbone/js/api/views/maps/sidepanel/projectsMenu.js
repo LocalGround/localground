@@ -97,6 +97,7 @@ define(["marionette",
                 if (project) {
                     project.set('isVisible', visible);
                 }
+                this.collection.trigger('selected-projects-change');
                 this.collection.trigger('toggleProject', projectId, visible);
                 this.saveState();
             }
