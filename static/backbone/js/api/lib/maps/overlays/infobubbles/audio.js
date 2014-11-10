@@ -12,8 +12,20 @@ define(['underscore',
 
         events: function () {
             return _.extend({}, BaseBubble.prototype.events, {
-                "click .detach": "detach"
+                "click .detach": "detach",
+                'click .play-audio': 'playAudio',
+                'click .stop-audio': 'stopAudio'
             });
+        },
+
+        playAudio: function (e) {
+            this.app.vent.trigger('playAudio', this.model);
+            e.stopPropagation();
+        },
+
+        stopAudio: function (e) {
+            this.app.vent.trigger('stopAudio');
+            e.stopPropagation();
         },
 
         renderViewContent: function () {
@@ -31,7 +43,7 @@ define(['underscore',
         },
 
         onBubbleRender: function () {
-            var player = this.$el.find('#audio-player')[0];
+            this.delegateEvents();
         },
 
         detach: function (e) {

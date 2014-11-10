@@ -29,13 +29,14 @@ define(
         "lib/maps/overlays/record",
         "views/maps/sidepanel/items/photoItem",
         "views/maps/sidepanel/items/markerItem",
-        "views/maps/sidepanel/items/item"
+        "views/maps/sidepanel/items/item",
+        "views/maps/sidepanel/items/audioItem"
     ],
     function (photoItemTemplate, audioItemTemplate, mapimageItemTemplate, markerItemTemplate, recordItemTemplate,
                  photoBubbleTemplate, photoTipTemplate, audioBubbleTemplate, audioTipTemplate, markerBubbleTemplate,
                  markerTipTemplate, recordBubbleTemplate, genericTipTemplate, Photos, AudioFiles, MapImages, Markers,
                  Records, Photo, Marker, Audio, Record, MapImage, PhotoOverlay, MarkerOverlay, AudioOverlay,
-                 RecordOverlay, PhotoItem, MarkerItem, GenericItem) {
+                 RecordOverlay, PhotoItem, MarkerItem, GenericItem, AudioItem) {
         "use strict";
         /**
          * Convenience object for connecting data models with
@@ -59,7 +60,7 @@ define(
                 ItemTemplate: audioItemTemplate,
                 InfoBubbleTemplate: audioBubbleTemplate,
                 TipTemplate: audioTipTemplate,
-                ItemView: GenericItem
+                ItemView: AudioItem
             },
             scans: {
                 Model: MapImage,

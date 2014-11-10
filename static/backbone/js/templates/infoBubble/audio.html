@@ -1,22 +1,29 @@
 <% if (mode == 'view') { %>
 <div class="bubble-container" style="width: 400px;height:100px;">
-	<div>
-		<p class="bubble-title"><%= name || "Untitled" %></p>
-		<p class="bubble-detail">
-            <audio id="audio-player" class="mejs-player" src="<%= file_path %>" controls="controls"
-                    data-mejsoptions='{"alwaysShowControls": true}' preload="auto"/>
-			<%= description %><br>
-			<%= tags %>	
-		</p>
-	</div>
+    <div>
+        <div class="bubble-title"><span class="audio-title"><%= name || "Untitled" %></span>
+            <div class="audio-controls">
+                <button type="button" class="btn btn-xs play-audio">
+                    <span class="fa fa-play"></span>
+                </button>
+                <button type="button" class="btn btn-xs stop-audio">
+                    <span class="fa fa-stop"></span>
+                </button>
+            </div>
+        </div>
+        <div class="bubble-detail">
+        <%= description %><br>
+        <%= tags %>
+        </div>
+    </div>
 </div>
 <% } %>
 
 
 <% if (mode == 'edit') { %>
-	<div class="bubble-container" style="width: 350px;height:250px;">
-		<div class="form" style="height: 175px;"></div>
-		<button class="btn btn-primary">Submit</button>
-	</div>
+<div class="bubble-container" style="width: 350px;height:250px;">
+    <div class="form" style="height: 175px;"></div>
+    <button class="btn btn-primary">Submit</button>
+</div>
 <% } %>
 
