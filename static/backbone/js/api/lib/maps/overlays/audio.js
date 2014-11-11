@@ -1,4 +1,8 @@
-define(["lib/maps/overlays/base"], function (Base) {
+define([
+    "lib/maps/overlays/base",
+    "lib/maps/overlays/infobubbles/audio",
+    "underscore"
+], function (Base, AudioBubble, _) {
     "use strict";
     /**
      * Class that controls marker point model overlays.
@@ -24,6 +28,9 @@ define(["lib/maps/overlays/base"], function (Base) {
             };
         },
 
+        initInfoBubble: function (opts) {
+            this.infoBubble = new AudioBubble(_.extend({overlay: this}, opts));
+        },
         /** adds icon to overlay. */
         initialize: function () {
             Base.prototype.initialize.apply(this, arguments);

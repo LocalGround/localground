@@ -1,5 +1,5 @@
 define([
-	"lib/maps/overlays/infobubbles/marker",
+    "lib/maps/overlays/infobubbles/marker",
     "lib/maps/overlays/base"
 ], function (MarkerBubble, Base) {
     "use strict";

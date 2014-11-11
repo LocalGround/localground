@@ -22,7 +22,7 @@ require.config({
         'core': '../external/mediator/core-jquery',
         'sandbox': '../external/mediator/sandbox',
         'color-picker': '../external/jscolor',
-        'mapplication': './mapplication'
+        'mapplication': './mapplication',
     },
     //waitSeconds: 0,
     shim: {

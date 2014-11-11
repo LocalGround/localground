@@ -25,6 +25,7 @@ define(["marionette",
                 template: _.template(projectItem),
                 modelEvents: {'change': 'render'}
             }),
+            id: 'projects-menu',
             /**
              * Initializes the project menu and fetches the available
              * projects from the Local Ground Data API.
@@ -41,12 +42,16 @@ define(["marionette",
                 this.childViewOptions.app = this.app;
                 this.listenTo(this.app.vent, 'toggle-project', this.toggleProject);
                 this.app.vent.trigger('load-projects', this.collection);
+                this.restoreState();
             },
 
-            //TODO: Need to not just load all projects immediately, probably
             onAddChild: function (childView) {
                 var project = childView.model;
-                this.app.vent.trigger('project-requested', {id: project.get('id')});
+                if (this.state) {
+                    if (_.contains(this.state.activeProjects, project.get('id'))) {
+                        this.triggerToggleCheckbox({target: childView.el});
+                    }
+                }
             },
             /**
              * Catches the div click event and ignores it
@@ -58,7 +63,9 @@ define(["marionette",
                     projectId = input.val();
                 this.app.vent.trigger('toggle-project', projectId, checked);
 
-                e.stopPropagation();
+                if (e.stopPropagation) {
+                    e.stopPropagation();
+                }
             },
             triggerToggleCheckbox: function (e) {
                 var $cb = $(e.target).find('input');
@@ -68,13 +75,31 @@ define(["marionette",
                 }
             },
 
+            saveState: function () {
+                this.app.saveState(
+                    this.id,
+                    {
+                        activeProjects: _.chain(this.collection.toJSON())
+                            .where({isVisible: true})
+                            .pluck('id')
+                            .value()
+                    },
+                    true
+                );
+            },
+
+            restoreState: function () {
+                this.state = this.app.restoreState(this.id);
+            },
+
             toggleProject: function (projectId, visible) {
                 var project = this.collection.get(projectId);
                 if (project) {
                     project.set('isVisible', visible);
                 }
                 this.collection.trigger('selected-projects-change');
-
+                this.collection.trigger('toggleProject', projectId, visible);
+                this.saveState();
             }
         });
         return ProjectsMenu;

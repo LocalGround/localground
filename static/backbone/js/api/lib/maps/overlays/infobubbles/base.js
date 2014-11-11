@@ -2,9 +2,10 @@ define(['jquery',
         'form',
         'marionette',
         'google-infobubble',
+        'underscore',
         'bootstrap-form-templates'
     ],
-    function ($, Form, Marionette, GoogleInfoBubble) {
+    function ($, Form, Marionette, GoogleInfoBubble, _) {
         'use strict';
         /**
          * Manages InfoBubble Rendering
@@ -64,6 +65,7 @@ define(['jquery',
                 this.listenTo(this.app.vent, 'mode-change', this.refresh);
                 this.listenTo(this.app.vent, 'hide-bubbles', this.hideBubble);
                 this.listenTo(this.model, 'show-bubble', this.showBubble);
+                google.maps.event.addListener(this.bubble, 'domready', this.onBubbleRender.bind(this));
             },
 
             refresh: function () {
@@ -73,6 +75,10 @@ define(['jquery',
                         latLng: this.bubble.position
                     });
                 }
+            },
+
+            onBubbleRender: function () {
+                //Override this in child class
             },
 
             showBubble: function () {
@@ -162,8 +168,9 @@ define(['jquery',
                 json.mode = this.app.getMode();
                 return json;
             },
-            destroy: function () {
-                this.remove();
+            remove: function () {
+                this.hideTip();
+                this.hideBubble();
             }
         });
         return Base;
