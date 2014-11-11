@@ -238,3 +238,8 @@
 .backgrid .select-cell.editor option::-o-focus-inner {
   border: 0;
 }
+
+.image-cell {
+    text-align: center !important;
+    color: #CCC;
+}

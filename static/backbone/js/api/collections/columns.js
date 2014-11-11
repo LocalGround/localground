@@ -6,9 +6,10 @@ define([
     "jquery",
     "backgrid",
     "lib/tables/cells/delete",
+    "lib/tables/cells/image-cell",
     "lib/tables/formatters/lat",
     "lib/tables/formatters/lng"
-], function ($, Backgrid, DeleteCell, LatFormatter, LngFormatter) {
+], function ($, Backgrid, DeleteCell, ImageCell, LatFormatter, LngFormatter) {
     "use strict";
     var Columns = Backgrid.Columns.extend({
             url: null,
@@ -18,17 +19,18 @@ define([
             ],
             initialize: function (opts) {
                 opts = opts || {};
-                $.extend(this, opts)
+                $.extend(this, opts);
                 if (!this.url) {
                     alert("opts.url cannot be null");
                 }
             },
-            fetch: function (opts) {
+            fetch: function () {
                 /* Queries the Django REST Framework OPTIONS
                  * page, which returns the API's schema as well
                  * as the filterable columns.
                  */
-                var that = this;
+                var that = this,
+                    cols;
 
                 $.ajax({
                     // Note: the json must be appended in order for the OPTIONS
@@ -37,20 +39,19 @@ define([
                     type: 'OPTIONS',
                     data: { _method: 'OPTIONS' },
                     success: function (data) {
-                        var cols = that.getColumnsFromData(data.actions['POST']);
+                        cols = that.getColumnsFromData(data.actions.POST);
                         that.reset(cols);
                     }
                 });
             },
             getColumnsFromData: function (fields) {
-                var that = this;
-                var cols = [
-                    this.getDeleteCell()
-                ];
+                var that = this,
+                    cols = [
+                        this.getDeleteCell()
+                    ];
                 $.each(fields, function (k, opts) {
-                    //console.log(JSON.stringify( opts.optionValues ));
-
-                    if (k == 'geometry') {
+                    //console.log(opts);
+                    if (opts.type == 'geojson') {
                         cols.push(that.getLatCell());
                         cols.push(that.getLngCell());
                     } else if (opts.type === 'select') {
@@ -62,8 +63,14 @@ define([
                             }),
                             editable: true
                         });
-                    }
-                    else if (that.excludeList.indexOf(k) === -1) {
+                    } else if (opts.type == 'photo') {
+                        cols.push({
+                            name: k,
+                            label: k,
+                            cell: ImageCell,
+                            editable: false
+                        });
+                    } else if (that.excludeList.indexOf(k) === -1) {
                         cols.push(that.getDefaultCell(k, opts));
                     }
                 });
@@ -78,7 +85,7 @@ define([
                     label: "Latitude",
                     cell: "number",
                     formatter: LatFormatter,
-                    editable: true,
+                    editable: true
                 };
             },
             getLngCell: function () {
@@ -87,7 +94,7 @@ define([
                     label: "Longitude",
                     cell: "number",
                     formatter: LngFormatter,
-                    editable: true,
+                    editable: true
                 };
             },
             getDefaultCell: function (name, opts) {
