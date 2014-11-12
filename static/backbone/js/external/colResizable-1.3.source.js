@@ -118,7 +118,7 @@
 	 */
 	var memento = function(t, th){ 
 		var w,m=0,i=0,aux =[];
-		if(th){										//in deserialization mode (after a postback)
+		if(th) {										//in deserialization mode (after a postback)
 			t.cg.removeAttr("width");
 			if(t.opt.flush){ S[t.id] =""; return;} 	//if flush is activated, stored data is removed
 			w = S[t.id].split(";");					//column widths is obtained
@@ -128,7 +128,7 @@
 			}			
 			for(i=0;i<t.ln;i++)
 				t.cg.eq(i).css("width", aux[i]);	//this code is required in order to create an inline CSS rule with higher precedence than an existing CSS class in the "col" elements
-		}else{							//in serialization mode (after resizing a column)
+		} else{							//in serialization mode (after resizing a column)
 			S[t.id] ="";				//clean up previous data
 			for(i in t.c){				//iterate through columns
 				w = t.c[i].width();		//width is obtained
@@ -167,21 +167,45 @@
 	* @param {bool} isOver - to identify when the function is being called from the onGripDragOver event	
 	*/
 	var syncCols = function(t,i,isOver){
-		var inc = drag.x-drag.l, c = t.c[i], c2 = t.c[i+1]; 			
-		var w = c.w + inc;	var w2= c2.w- inc;	//their new width is obtained
+		var inc = drag.x-drag.l,
+            h1 = t.c[i],
+            h2 = t.c[i+1],
+            co11 = t.find("tbody td:nth-child(" + i + ")"), //t.find('td:eq(' + i + ')'),
+            co12 = t.find('td:eq(' + (i + 1) + ')'),
+            w1 = h1.width() + inc,
+            w2= h2.width() - inc,
+            minWidth = 30;
+        console.log(co11);
+        /*if (w1 < minWidth || w2 < minWidth) {
+            syncGrips(t);
+            inc = minWidth,
+                w1 = h1.w + inc,
+                w2= h2.w - inc,
+            console.log("resetting & ignoring");
+            //return;
+        }*/
         
         //new: with fixed column headers, adjust the width of each individual cell:
         var ths = t.find(">thead>tr>th"); 
         //var tds = t.find(">tbody>tr>td");
         //ths.each(function(i){
         //t.find('td:eq(' + i + '), th:eq(' + i + ')').css({width: ths.eq(i).outerWidth() + PX});
-        t.find('td:eq(' + i + ')').width(w + PX);
-        t.find('td:eq(' + (i+1) + ')').width(w2 + PX);
-		c.width( w + PX);
-        c2.width(w2 + PX);	//and set	
-		t.cg.eq(i).width( w + 10 + PX);
+        
+        //var tableWidth = t.width() + inc;
+        //t.width(tableWidth);
+        //t.find("tbody, thead").width(tableWidth);
+        co11.width(w1 + PX);
+        co11.find("div").width(w1 + PX);
+        co12.width(w2 + PX);
+        co12.find("div").width(w2 + PX);
+
+		h1.width( w1 + PX);
+        h2.width(w2 + PX);	//and set
+        
+		t.cg.eq(i).width( w1 + 10 + PX);
         t.cg.eq(i+1).width( w2 + 10 + PX);
-		if(isOver){c.w=w; c2.w=w2;}
+		if(isOver){h1.w=w1; h2.w=w2;}
+        //initWidths(t);
 	};
     
     /**
@@ -190,16 +214,15 @@
     var initWidths = function(t) {
         var ths = t.find(">thead>tr>th"); 
         var tds = t.find(">tbody>tr>td");
-        console.log(t.c[0].get(0));
         ths.each(function(i){
             try {
-                tds.eq(i).css({ width: t.c[i].width() });
-                ths.eq(i).css({ width: t.c[i].width() });
-                //tds.eq(i).css({ width: $(this).outerWidth() });
+                tds.eq(i).width(t.c[i].width()); //+ 1);
+                ths.eq(i).width(t.c[i].width());
             } catch (e) {
                 console.log("error");
             }
         })
+        syncGrips(t);
     };
 
 	

@@ -62,7 +62,11 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
             $("#grid").find('table').css({ 'min-width': w });
             $("#grid").find('tbody').css({ 'min-width': w });
             this.$el.find('table').colResizable({ disable: true }); //a hack to run garbage collection for resizable table
-            this.$el.find('table').colResizable({ disable: false });
+            this.$el.find('table').colResizable({
+                disable: false,
+                paddingLeft: 5,
+                paddingRight: 5
+            });
         },
 
         resize: function () {

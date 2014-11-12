@@ -28,17 +28,17 @@
 
 .backgrid th,
 .backgrid td {
-  display: none;
-  height: 20px;
-  max-width: 250px;
-  padding: 0px !important;
-  overflow: hidden;
-  line-height: 20px;
-  text-align: left;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: middle;
-  border-bottom: 1px solid #DDD;
+    display: none;
+    height: 20px;
+    max-width: 250px;
+    padding: 0px !important;
+    overflow: hidden;
+    line-height: 20px;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-bottom: 1px solid #DDD;
 }
 
 .backgrid th.renderable,
@@ -56,8 +56,12 @@
   white-space: nowrap;
   cursor: pointer;
 }
+
+.backgrid div {
+    white-space: nowrap;
+    display: block
+}
 .backgrid thead tr {
-  /*display: block;*/
   position: relative;
 }
 

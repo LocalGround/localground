@@ -1,10 +1,17 @@
-define(["backgrid"], function (Backgrid) {
+define(["jquery", "backgrid"], function ($, Backgrid) {
     "use strict";
     var ImageCell = Backgrid.ImageCell = Backgrid.Cell.extend({
         className: "image-cell",
         render: function () {
             this.$el.empty();
-            this.$el.html(this.renderImage(this.model));
+            var $el = $("<div></div>").append(this.renderImage(this.model));
+            $el.css({
+                display: 'block',
+                overflow: 'hidden',
+                width: '20px',
+                height: '90px'
+            });
+            this.$el.html($el);
             this.delegateEvents();
             return this;
         },
