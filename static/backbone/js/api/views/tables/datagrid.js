@@ -59,14 +59,10 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
 
         makeColumnsResizable: function () {
             var w = (this.columns.length * this.columnWidth) + "px";
-            $("#grid").find('table').css({ 'min-width': w });
-            $("#grid").find('tbody').css({ 'min-width': w });
+            $("#grid").find('table, tbody, thead').css({ 'min-width': w });
+
             this.$el.find('table').colResizable({ disable: true }); //a hack to run garbage collection for resizable table
-            this.$el.find('table').colResizable({
-                disable: false,
-                paddingLeft: 5,
-                paddingRight: 5
-            });
+            this.$el.find('table').colResizable({ disable: false });
         },
 
         resize: function () {

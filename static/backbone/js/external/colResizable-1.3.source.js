@@ -60,8 +60,8 @@
 		// if(!(tb.style.width || tb.width)) t.width(t.width()); //I am not an IE fan at all, but it is a pitty that only IE has the currentStyle attribute working as expected. For this reason I can not check easily if the table has an explicit width or if it is rendered as "auto"
 		tables[id] = t; 	//the table object is stored using its id as key	
 		createGrips(t);		//grips are created
+        surroundCellsWithDivTag(t);
         initWidths(t);
-	
 	};
 
 
@@ -170,37 +170,29 @@
 		var inc = drag.x-drag.l,
             h1 = t.c[i],
             h2 = t.c[i+1],
-            co11 = t.find("tbody td:nth-child(" + i + ")"), //t.find('td:eq(' + i + ')'),
-            co12 = t.find('td:eq(' + (i + 1) + ')'),
+            //co11 = t.find('td:eq(' + i + ')'),
+            //co12 = t.find('td:eq(' + (i + 1) + ')'),
+            //w1 = h1.w + inc,
+            //w2= h2.w - inc,
             w1 = h1.width() + inc,
             w2= h2.width() - inc,
-            minWidth = 30;
-        console.log(co11);
-        /*if (w1 < minWidth || w2 < minWidth) {
+            minWidth = 15;
+        if (w1 < minWidth || w2 < minWidth) {
             syncGrips(t);
             inc = minWidth,
                 w1 = h1.w + inc,
-                w2= h2.w - inc,
-            console.log("resetting & ignoring");
+                w2= h2.w - inc;
             //return;
-        }*/
+        }
         
-        //new: with fixed column headers, adjust the width of each individual cell:
-        var ths = t.find(">thead>tr>th"); 
-        //var tds = t.find(">tbody>tr>td");
-        //ths.each(function(i){
-        //t.find('td:eq(' + i + '), th:eq(' + i + ')').css({width: ths.eq(i).outerWidth() + PX});
-        
-        //var tableWidth = t.width() + inc;
-        //t.width(tableWidth);
-        //t.find("tbody, thead").width(tableWidth);
-        co11.width(w1 + PX);
-        co11.find("div").width(w1 + PX);
-        co12.width(w2 + PX);
-        co12.find("div").width(w2 + PX);
+        //co11.width(w1 + PX);
+        adjustCellWidth(t, i, w1);
 
-		h1.width( w1 + PX);
-        h2.width(w2 + PX);	//and set
+        //co12.width(w2 + PX);
+        adjustCellWidth(t, (i+1), w2);
+
+		//h1.width( w1 + PX);
+        //h2.width(w2 + PX);	//and set
         
 		t.cg.eq(i).width( w1 + 10 + PX);
         t.cg.eq(i+1).width( w2 + 10 + PX);
@@ -215,14 +207,32 @@
         var ths = t.find(">thead>tr>th"); 
         var tds = t.find(">tbody>tr>td");
         ths.each(function(i){
-            try {
-                tds.eq(i).width(t.c[i].width()); //+ 1);
-                ths.eq(i).width(t.c[i].width());
-            } catch (e) {
-                console.log("error");
-            }
+            //tds.eq(i).width(t.c[i].width());
+            adjustCellWidth(t, i, t.c[i].width());
+            //ths.eq(i).width(t.c[i].width());
         })
         syncGrips(t);
+    };
+    
+    var surroundCellsWithDivTag = function (table) {
+        table.find('tbody tr:nth-child(1) td').each(function (i) {
+            $.each(table.find("tbody td:nth-child(" + (i+1) + ")"), function() {
+                var $div = $('<div class="hide-overflow"></div>');
+                $(this).html($div.append($(this).html()));     
+            });
+        });
+    }
+    
+    var adjustCellWidth = function (table, index, width) {
+        //1-based indexing
+        var header = table.find("thead th:nth-child(" + (index+1) + ")");
+        var cells = table.find("tbody td:nth-child(" + (index+1) + ")");
+        
+        header.width(width);
+        $.each(cells, function(){
+            $(this).find('div').width(width);
+            $(this).width(width);
+        });
     };
 
 	
@@ -243,8 +253,9 @@
 		drag.x = x;	 drag.css("left",  x + PX); 			//apply position increment		
 			
 		if(t.opt.liveDrag){ 								//if liveDrag is enabled
-			syncCols(t,i); syncGrips(t);					//columns and grips are synchronized
-			var cb = t.opt.onDrag;							//check if there is an onDrag callback
+			syncCols(t,i);              					//columns and grips are synchronized
+			syncGrips(t);
+            var cb = t.opt.onDrag;							//check if there is an onDrag callback
 			if (cb) { e.currentTarget = t[0]; cb(e); }		//if any, it is fired			
 		}
 		
@@ -263,8 +274,9 @@
 		drag.removeClass(drag.t.opt.draggingClass);		//remove the grip's dragging css-class
 		var t = drag.t, cb = t.opt.onResize; 			//get some values	
 		if(drag.x){ 									//only if the column width has been changed
-			syncCols(t,drag.i, true);	syncGrips(t);	//the columns and grips are updated
-			if (cb) { e.currentTarget = t[0]; cb(e); }	//if there is a callback function, it is fired
+			syncCols(t,drag.i, true);	    	        //the columns and grips are updated
+			syncGrips(t);
+            if (cb) { e.currentTarget = t[0]; cb(e); }	//if there is a callback function, it is fired
 		}	
 		if(t.p && S) memento(t); 						//if postbackSafe is enabled and there is sessionStorage support, the new layout is serialized and stored
 		drag = null;									//since the grip's dragging is over									
@@ -303,7 +315,10 @@
 				//each browser. In the begining i had a big switch for each browser, but since the code
 				//was extremelly ugly now I use a different approach with several reflows. This works 
 				//pretty well but it's a bit slower. For now, lets keep things simple...   
-				for(i=0; i<t.ln; i++) t.c[i].css("width", M.round(1000*t.c[i].w/mw)/10 + "%").l=true; 
+				for(i=0; i<t.ln; i++) {
+                    t.c[i].css("width", M.round(1000*t.c[i].w/mw)/10 + "%").l=true;
+                    //adjustCellWidth(t, i, t.c[i].width());
+                }
 				//c.l locks the column, telling us that its c.w is outdated									
 			}
 			syncGrips(t.addClass(SIGNATURE));
@@ -327,7 +342,7 @@
                 draggingClass: 'JCLRgripDrag',	//css-class used when a grip is being dragged (for visual feedback purposes)
 				gripInnerHtml: '',				//if it is required to use a custom grip it can be done using some custom HTML				
 				liveDrag: false,				//enables table-layout updaing while dragging			
-				minWidth: 15, 					//minimum width value in pixels allowed for a column 
+				minWidth: 10, 					//minimum width value in pixels allowed for a column 
 				headerOnly: false,				//specifies that the size of the the column resizing anchors will be bounded to the size of the first row 
 				hoverCursor: "e-resize",  		//cursor to be used on grip hover
 				dragCursor: "e-resize",  		//cursor to be used while dragging

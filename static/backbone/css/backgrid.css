@@ -30,7 +30,6 @@
 .backgrid td {
     display: none;
     height: 20px;
-    max-width: 250px;
     padding: 0px !important;
     overflow: hidden;
     line-height: 20px;
@@ -69,6 +68,12 @@
     display: block;
     height: 300px;
     overflow: auto;
+    margin-left: -1px;
+    margin-top: -1px;
+}
+.hide-overflow {
+    display: block;
+    overflow: hidden;
 }
 
 .backgrid thead th {

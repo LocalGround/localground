@@ -4,14 +4,7 @@ define(["jquery", "backgrid"], function ($, Backgrid) {
         className: "image-cell",
         render: function () {
             this.$el.empty();
-            var $el = $("<div></div>").append(this.renderImage(this.model));
-            $el.css({
-                display: 'block',
-                overflow: 'hidden',
-                width: '20px',
-                height: '90px'
-            });
-            this.$el.html($el);
+            this.$el.html(this.renderImage(this.model));
             this.delegateEvents();
             return this;
         },
