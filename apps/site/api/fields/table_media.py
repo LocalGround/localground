@@ -26,6 +26,3 @@ class TableAudioField(serializers.WritableField):
             'id': obj.id,
             'file_path': obj.encrypt_url(obj.file_name_new) 
         }
-    
-    
-   
