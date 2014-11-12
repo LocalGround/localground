@@ -60,6 +60,7 @@
 		// if(!(tb.style.width || tb.width)) t.width(t.width()); //I am not an IE fan at all, but it is a pitty that only IE has the currentStyle attribute working as expected. For this reason I can not check easily if the table has an explicit width or if it is rendered as "auto"
 		tables[id] = t; 	//the table object is stored using its id as key	
 		createGrips(t);		//grips are created
+        initWidths(t);
 	
 	};
 
@@ -167,11 +168,39 @@
 	*/
 	var syncCols = function(t,i,isOver){
 		var inc = drag.x-drag.l, c = t.c[i], c2 = t.c[i+1]; 			
-		var w = c.w + inc;	var w2= c2.w- inc;	//their new width is obtained					
-		c.width( w + PX);	c2.width(w2 + PX);	//and set	
-		t.cg.eq(i).width( w + PX); t.cg.eq(i+1).width( w2 + PX);
+		var w = c.w + inc;	var w2= c2.w- inc;	//their new width is obtained
+        
+        //new: with fixed column headers, adjust the width of each individual cell:
+        var ths = t.find(">thead>tr>th"); 
+        //var tds = t.find(">tbody>tr>td");
+        //ths.each(function(i){
+        //t.find('td:eq(' + i + '), th:eq(' + i + ')').css({width: ths.eq(i).outerWidth() + PX});
+        t.find('td:eq(' + i + ')').width(w + PX);
+        t.find('td:eq(' + (i+1) + ')').width(w2 + PX);
+		c.width( w + PX);
+        c2.width(w2 + PX);	//and set	
+		t.cg.eq(i).width( w + 10 + PX);
+        t.cg.eq(i+1).width( w2 + 10 + PX);
 		if(isOver){c.w=w; c2.w=w2;}
 	};
+    
+    /**
+     * S.V. Created
+     */
+    var initWidths = function(t) {
+        var ths = t.find(">thead>tr>th"); 
+        var tds = t.find(">tbody>tr>td");
+        console.log(t.c[0].get(0));
+        ths.each(function(i){
+            try {
+                tds.eq(i).css({ width: t.c[i].width() });
+                ths.eq(i).css({ width: t.c[i].width() });
+                //tds.eq(i).css({ width: $(this).outerWidth() });
+            } catch (e) {
+                console.log("error");
+            }
+        })
+    };
 
 	
 	/**

@@ -10,7 +10,6 @@ define(["backgrid"], function (Backgrid) {
         },
 
         renderImage: function (model) {
-            console.log(model);
             var img = '';
             if (this.model.attributes.drawing1) {
                 img = this.model.attributes.drawing1.file_name_small;

@@ -21,6 +21,10 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
 
             this.loadGrid();
         },
+        reset: function () {
+            alert("add");
+            this.initLayout();
+        },
 
         initEventListeners: function () {
             var that = this;
@@ -37,13 +41,14 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
                 columns: this.columns,
                 collection: this.records
             });
+
+            this.listenTo(this.records, "reset", this.initLayout);
             this.render();
         },
 
         render: function () {
             // Render the grid and attach the root to your HTML document
             this.$el.html(this.grid.render().el);
-            this.initLayout();
         },
 
         initLayout: function () {
@@ -53,9 +58,9 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
         },
 
         makeColumnsResizable: function () {
-            $("#grid").find('table').css({
-                'min-width': (this.columns.length * this.columnWidth) + "px"
-            });
+            var w = (this.columns.length * this.columnWidth) + "px";
+            $("#grid").find('table').css({ 'min-width': w });
+            $("#grid").find('tbody').css({ 'min-width': w });
             this.$el.find('table').colResizable({ disable: true }); //a hack to run garbage collection for resizable table
             this.$el.find('table').colResizable({ disable: false });
         },
