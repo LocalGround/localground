@@ -37,13 +37,60 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
         },
 
         loadGrid: function () {
+            var that = this;
+            var ZebraStrippingRow = Backgrid.Row.extend({
+                render: function () {
+                    this.$el.empty();
+                    var i,
+                        fragment = document.createDocumentFragment();
+                    for (i = 0; i < this.cells.length; i++) {
+                        fragment.appendChild(this.cells[i].render().el);
+                    }
+                    this.el.appendChild(fragment);
+                    this.delegateEvents();
+
+                    //that.trigger("row:added", this);
+                    return this;
+                }
+            });
+            var GridBody = Backgrid.Body.extend({
+                render: function () {
+                    this.$el.empty();
+                
+                    var fragment = document.createDocumentFragment();
+                    for (var i = 0; i < this.rows.length; i++) {
+                        var row = this.rows[i];
+                        fragment.appendChild(row.render().el);
+                        //alert(1);
+                    }
+                
+                    this.el.appendChild(fragment);
+                    if(this.rows.length > 0) {
+                        console.log(this.el);
+                        //alert("rendering");
+                        that.trigger("row:added", this);
+                    }
+                
+                    this.delegateEvents();
+                
+                    return this;
+                  }
+              });
+
             this.grid = new Backgrid.Grid({
+                body: GridBody,
+                row: ZebraStrippingRow,
                 columns: this.columns,
                 collection: this.records
             });
 
             this.listenTo(this.records, "reset", this.initLayout);
+            this.listenTo(this, "row:added", this.initLayout);
             this.render();
+        },
+
+        doAdd: function () {
+            console.log("added");
         },
 
         render: function () {

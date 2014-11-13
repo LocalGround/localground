@@ -104,7 +104,7 @@ define([
 
             this.paginator = new Backgrid.Extension.Paginator({
                 collection: this.records,
-                goBackFirstOnSort: true
+                goBackFirstOnSort: false
             });
             this.getRecords();
             this.$el.find('.container-footer').html(this.paginator.render().el);
