@@ -8,7 +8,8 @@ from localground.apps.site import models
 from sys import stderr
 import json
 from localground.apps.site.api.fields.geometry import GeometryField
-from localground.apps.site.api.fields.table_media import TablePhotoField, TableAudioField
+from localground.apps.site.api.fields.table_media import \
+    TablePhotoJSONField, TableAudioJSONField, TablePhotoField, TableAudioField
 
 class UrlField(relations.HyperlinkedIdentityField):
 

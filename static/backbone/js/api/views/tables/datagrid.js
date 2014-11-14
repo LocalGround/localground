@@ -87,13 +87,7 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
         },
 
         resize: function () {
-            var tbodyH = this.$el.find('tbody').height(),
-                tableH = this.$el.find('table').height();
-            if (tableH - 30 > tbodyH) {
-                this.$el.find('tbody').height($('body').height() - 136);
-            } else {
-                this.$el.find('tbody').height("auto");
-            }
+            this.$el.find('tbody').height($('body').height() - 136);
         },
 
         insertRowTop: function (e) {

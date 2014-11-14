@@ -78,41 +78,42 @@ def create_record_serializer(form):
     """
     #from localground.apps.site.api.fields import TablePhotoField
     from localground.apps.site.api import fields
-    field_names, photo_fields, audio_fields = [], [], []
+    field_names, photo_fields, photo_details, audio_fields, audio_details = [], [], [], [], []
     for f in form.fields:
         field_names.append(f.col_name)
         if f.data_type.id == 7:
-            photo_fields.append(f.col_name)
+            photo_fields.extend([f.col_name, f.col_name + "_detail"])
         elif f.data_type.id == 8:
-            audio_fields.append(f.col_name)
+            audio_fields.extend([f.col_name, f.col_name + "_detail"])
     field_names.append(form.get_num_field().col_name)
     
     class Meta:
         model = form.TableModel
-        fields = BaseRecordSerializer.Meta.fields + tuple(field_names)
-        read_only_fields = BaseRecordSerializer.Meta.read_only_fields 
-    
-    def get_photo(self, obj):
-        #todo: why is this obj and then photo?????
-        return obj.photo.encrypt_url(obj.photo.file_name_medium_sm)
-    
-    def get_audio(self, obj):
-        #todo: why is this obj and then audio?????
-        return obj.audio.name
+        fields = BaseRecordSerializer.Meta.fields + tuple(field_names) + \
+            tuple(photo_fields) + tuple(audio_fields) 
+        read_only_fields = BaseRecordSerializer.Meta.read_only_fields
     
     attrs = {
         '__module__': 'localground.apps.site.api.serializers.FormDataSerializer',
         'Meta': Meta
     }
     for f in photo_fields:
+        if f.find("_detail") != -1:
+            source = f.replace("_detail", "")
+            attrs.update({
+                f: fields.TablePhotoJSONField(read_only=True, source=source)
+            })
+            #else:
+            #attrs.update({
+            #    f: fields.TablePhotoField(required=False)
+            #})
+            
+    
+    for f in audio_details:
         attrs.update({
-            f: fields.TablePhotoField(required=False)
+            f: fields.TableAudioJSONField(required=False, read_only=True)
         })
     
-    for f in audio_fields:
-        attrs.update({
-            f: fields.TableAudioField(required=False)
-        })
     return type('record_serializer_default', (BaseRecordSerializer, ), attrs)
 
 def create_compact_record_serializer(form):
