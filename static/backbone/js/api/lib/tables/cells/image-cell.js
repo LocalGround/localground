@@ -1,24 +1,36 @@
 define(["jquery", "backgrid"], function ($, Backgrid) {
     "use strict";
-    var ImageCell = Backgrid.ImageCell = Backgrid.Cell.extend({
-        className: "image-cell",
-        render: function () {
-            this.$el.empty();
-            this.$el.html(this.renderImage(this.model));
-            this.delegateEvents();
-            return this;
-        },
-
-        renderImage: function (model) {
-            var img = '';
-            if (this.model.attributes.drawing1) {
-                img = this.model.attributes.drawing1.file_name_small;
+    var ImageCellEditor = Backgrid.InputCellEditor.extend({
+            render: function () {
+                this.$el.val(this.getImageID());
+                return this;
+            },
+            getImageID: function () {
+                var attr = this.column.get("name");
+                if (this.model.get(attr)) {
+                    return this.model.get(attr).id;
+                }
+                return null;
             }
-            if (img.length > 1) {
-                return '<img src="' + img + '" alt="" />';
+        }),
+        ImageCell = Backgrid.ImageCell = Backgrid.Cell.extend({
+            className: "image-cell",
+            editor: ImageCellEditor,
+            render: function () {
+                this.$el.empty();
+                this.$el.html(this.renderImage());
+                this.delegateEvents();
+                return this;
+            },
+            renderImage: function () {
+                var attr = this.column.get("name"),
+                    src;
+                if (this.model.get(attr)) {
+                    src = this.model.get(attr).file_name_small;
+                    return '<img src="' + src + '" alt="" />';
+                }
+                return '<i class="fa fa-file-image-o fa-4x"></i>';
             }
-            return '<i class="fa fa-file-image-o fa-4x"></i>';
-        }
-	});
+        });
     return ImageCell;
 });

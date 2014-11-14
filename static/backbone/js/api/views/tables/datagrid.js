@@ -37,60 +37,34 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
         },
 
         loadGrid: function () {
-            var that = this;
-            var ZebraStrippingRow = Backgrid.Row.extend({
-                render: function () {
-                    this.$el.empty();
-                    var i,
-                        fragment = document.createDocumentFragment();
-                    for (i = 0; i < this.cells.length; i++) {
-                        fragment.appendChild(this.cells[i].render().el);
+            var that = this,
+                GridBody = Backgrid.Body.extend({
+                    render: function () {
+                        var fragment = document.createDocumentFragment(),
+                            i,
+                            row;
+                        this.$el.empty();
+                        for (i = 0; i < this.rows.length; i++) {
+                            row = this.rows[i];
+                            fragment.appendChild(row.render().el);
+                        }
+                        this.el.appendChild(fragment);
+                        // custom code to notify view of a table re-rendering.
+                        if (this.rows.length > 0) {
+                            that.trigger("row:added", this);
+                        }
+                        this.delegateEvents();
+                        return this;
                     }
-                    this.el.appendChild(fragment);
-                    this.delegateEvents();
-
-                    //that.trigger("row:added", this);
-                    return this;
-                }
-            });
-            var GridBody = Backgrid.Body.extend({
-                render: function () {
-                    this.$el.empty();
-                
-                    var fragment = document.createDocumentFragment();
-                    for (var i = 0; i < this.rows.length; i++) {
-                        var row = this.rows[i];
-                        fragment.appendChild(row.render().el);
-                        //alert(1);
-                    }
-                
-                    this.el.appendChild(fragment);
-                    if(this.rows.length > 0) {
-                        console.log(this.el);
-                        //alert("rendering");
-                        that.trigger("row:added", this);
-                    }
-                
-                    this.delegateEvents();
-                
-                    return this;
-                  }
-              });
+                });
 
             this.grid = new Backgrid.Grid({
                 body: GridBody,
-                row: ZebraStrippingRow,
                 columns: this.columns,
                 collection: this.records
             });
-
-            this.listenTo(this.records, "reset", this.initLayout);
             this.listenTo(this, "row:added", this.initLayout);
             this.render();
-        },
-
-        doAdd: function () {
-            console.log("added");
         },
 
         render: function () {
@@ -113,7 +87,13 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
         },
 
         resize: function () {
-            this.$el.height($('body').height() - 96);
+            var tbodyH = this.$el.find('tbody').height(),
+                tableH = this.$el.find('table').height();
+            if (tableH - 30 > tbodyH) {
+                this.$el.find('tbody').height($('body').height() - 136);
+            } else {
+                this.$el.find('tbody').height("auto");
+            }
         },
 
         insertRowTop: function (e) {

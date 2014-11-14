@@ -68,7 +68,7 @@ define([
                             name: k,
                             label: k,
                             cell: ImageCell,
-                            editable: false
+                            editable: true
                         });
                     } else if (that.excludeList.indexOf(k) === -1) {
                         cols.push(that.getDefaultCell(k, opts));
