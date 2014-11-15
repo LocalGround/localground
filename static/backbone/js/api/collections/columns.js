@@ -63,7 +63,7 @@ define([
                             }),
                             editable: true
                         });
-                    } else if (opts.type == 'field') {
+                    } else if (opts.type == 'photo') {
                         cols.push({
                             name: k,
                             label: k,

@@ -71,7 +71,6 @@ class BaseRecordSerializer(serializers.ModelSerializer):
         return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
                                                obj.form.id, obj.id)
 
-
 def create_record_serializer(form):
     """
     generate a dynamic serializer from dynamic model
@@ -86,9 +85,9 @@ def create_record_serializer(form):
         elif f.data_type.id == 8:
             audio_fields.extend([f.col_name, f.col_name + "_detail"])
     field_names.append(form.get_num_field().col_name)
-    
+    TableModel = form.TableModel
     class Meta:
-        model = form.TableModel
+        model = TableModel
         fields = BaseRecordSerializer.Meta.fields + tuple(field_names) + \
             tuple(photo_fields) + tuple(audio_fields) 
         read_only_fields = BaseRecordSerializer.Meta.read_only_fields
@@ -103,10 +102,21 @@ def create_record_serializer(form):
             attrs.update({
                 f: fields.TablePhotoJSONField(read_only=True, source=source)
             })
-            #else:
-            #attrs.update({
-            #    f: fields.TablePhotoField(required=False)
-            #})
+        else:
+            model_field = TableModel()._meta.get_field(f)
+            attrs.update({
+                f: fields.CustomModelField(
+                    type_label="photo",
+                    model_field=model_field
+                )
+            })
+            '''
+            f: fields.CustomModelField(
+                required=False,
+                type_label="photo",
+                model_field=model_field #,
+                #widget=widgets.Select
+            )'''
             
     
     for f in audio_details:
