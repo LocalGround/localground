@@ -259,7 +259,7 @@
   border: 0;
 }
 
-.image-cell i {
-    text-align: center !important;
-    color: #CCC;
-}
+.image-cell { text-align: center !important; }
+.image-cell i { color: #EEE; }
+.image-cell a > i { color: #999; }
+

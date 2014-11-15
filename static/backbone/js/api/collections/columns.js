@@ -7,15 +7,18 @@ define([
     "backgrid",
     "lib/tables/cells/delete",
     "lib/tables/cells/image-cell",
+    "lib/tables/cells/audio-cell",
     "lib/tables/formatters/lat",
     "lib/tables/formatters/lng"
-], function ($, Backgrid, DeleteCell, ImageCell, LatFormatter, LngFormatter) {
+], function ($, Backgrid, DeleteCell, ImageCell, AudioCell, LatFormatter, LngFormatter) {
     "use strict";
     var Columns = Backgrid.Columns.extend({
             url: null,
             excludeList: [
                 "overlay_type",
-                "url"
+                "url",
+                "manually_reviewed",
+                "num"
             ],
             initialize: function (opts) {
                 opts = opts || {};
@@ -44,6 +47,14 @@ define([
                     }
                 });
             },
+            showColumn: function (key) {
+                // check that not in exclude list and that doesn't end with the string
+                // "_detail."
+                if (this.excludeList.indexOf(key) === -1 && !/(^\w*_detail$)/.test(key)) {
+                    return true;
+                }
+                return false;
+            },
             getColumnsFromData: function (fields) {
                 var that = this,
                     cols = [
@@ -70,7 +81,14 @@ define([
                             cell: ImageCell,
                             editable: true
                         });
-                    } else if (that.excludeList.indexOf(k) === -1) {
+                    } else if (opts.type == 'audio') {
+                        cols.push({
+                            name: k,
+                            label: k,
+                            cell: AudioCell,
+                            editable: true
+                        });
+                    } else if (that.showColumn(k)) {
                         cols.push(that.getDefaultCell(k, opts));
                     }
                 });

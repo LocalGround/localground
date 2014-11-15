@@ -110,19 +110,21 @@ def create_record_serializer(form):
                     model_field=model_field
                 )
             })
-            '''
-            f: fields.CustomModelField(
-                required=False,
-                type_label="photo",
-                model_field=model_field #,
-                #widget=widgets.Select
-            )'''
-            
     
-    for f in audio_details:
-        attrs.update({
-            f: fields.TableAudioJSONField(required=False, read_only=True)
-        })
+    for f in audio_fields:
+        if f.find("_detail") != -1:
+            source = f.replace("_detail", "")
+            attrs.update({
+                f: fields.TableAudioJSONField(read_only=True, source=source)
+            })
+        else:
+            model_field = TableModel()._meta.get_field(f)
+            attrs.update({
+                f: fields.CustomModelField(
+                    type_label="audio",
+                    model_field=model_field
+                )
+            })
     
     return type('record_serializer_default', (BaseRecordSerializer, ), attrs)
 
