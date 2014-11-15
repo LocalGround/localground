@@ -18,7 +18,8 @@ define([
                 "overlay_type",
                 "url",
                 "manually_reviewed",
-                "num"
+                "num",
+                "id" //for now...
             ],
             initialize: function (opts) {
                 opts = opts || {};
