@@ -4,7 +4,6 @@ define(["jquery", "backgrid"], function ($, Backgrid) {
             render: function () {
                 //alert("write only rendering");
                 var id = this.getImageID();
-                console.log(id);
                 this.$el.val(this.getImageID());
                 return this;
             },
@@ -28,7 +27,6 @@ define(["jquery", "backgrid"], function ($, Backgrid) {
             renderPlayer: function () {
                 var attr = this.column.get("name") + "_detail",
                     href;
-                console.log(attr);
                 if (this.model.get(attr)) {
                     href = this.model.get(attr).file_path;
                     return '<a href="' + href + '" target="_blank"><i class="fa fa-volume-up"></i> listen</a>';

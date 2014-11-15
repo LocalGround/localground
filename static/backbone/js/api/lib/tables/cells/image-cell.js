@@ -4,7 +4,6 @@ define(["jquery", "backgrid"], function ($, Backgrid) {
             render: function () {
                 //alert("write only rendering");
                 var id = this.getImageID();
-                console.log(id);
                 this.$el.val(this.getImageID());
                 return this;
             },
@@ -29,7 +28,6 @@ define(["jquery", "backgrid"], function ($, Backgrid) {
             renderImage: function () {
                 var attr = this.column.get("name") + "_detail",
                     src;
-                console.log(attr);
                 if (this.model.get(attr)) {
                     src = this.model.get(attr).file_name_small;
                     return '<img src="' + src + '" alt="" />';
