@@ -137,7 +137,7 @@ class ObjectMixin(BaseMixin):
         return q
 
     def get_objects(self, user, project=None, request=None,
-                    context=None, ordering_field='-time_stamp'):
+                    context=None, ordering_field='-id'):
         return self._get_objects(
             user, 1, project=project, request=request,
             context=context, ordering_field=ordering_field

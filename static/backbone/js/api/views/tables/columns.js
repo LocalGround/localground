@@ -18,8 +18,9 @@ define([
                 "overlay_type",
                 "url",
                 "manually_reviewed",
-                "num",
-                "id" //for now...
+                "geometry",
+                "num"//,
+                //"id" //for now...
             ],
             initialize: function (opts) {
                 opts = opts || {};
@@ -64,7 +65,7 @@ define([
                     ];
                 $.each(fields, function (k, opts) {
                     //console.log(opts);
-                    if (opts.type == 'geojson') {
+                    if (opts.type == 'geojson' && that.showColumn(k)) {
                         cols.push(that.getLatCell());
                         cols.push(that.getLngCell());
                     } else if (opts.type === 'select') {
