@@ -59,14 +59,14 @@ define(["models/base", "underscore"], function (Base, _) {
             return json;
         },
 		save: function (key, val, options) {
-			this.beforeSave(key, val, options);
+			//this.beforeSave(key, val, options);
 			return Backbone.Model.prototype.save.call(this, key, val, options);
 		},
 
 		beforeSave: function (key, val, options) {
 			//console.log(this.url());
 			//console.log("do some saving");
-			console.log(this.urlRoot);
+			//console.log(this.urlRoot);
 		}
 
     });

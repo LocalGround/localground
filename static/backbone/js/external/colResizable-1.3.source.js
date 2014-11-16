@@ -60,7 +60,7 @@
 		// if(!(tb.style.width || tb.width)) t.width(t.width()); //I am not an IE fan at all, but it is a pitty that only IE has the currentStyle attribute working as expected. For this reason I can not check easily if the table has an explicit width or if it is rendered as "auto"
 		tables[id] = t; 	//the table object is stored using its id as key	
 		createGrips(t);		//grips are created
-        surroundCellsWithDivTag(t);
+        //surroundCellsWithDivTag(t);
         initWidths(t);
 	};
 
@@ -214,14 +214,14 @@
         syncGrips(t);
     };
     
-    var surroundCellsWithDivTag = function (table) {
+    /*var surroundCellsWithDivTag = function (table) {
         table.find('tbody tr:nth-child(1) td').each(function (i) {
             $.each(table.find("tbody td:nth-child(" + (i+1) + ")"), function() {
                 var $div = $('<div class="hide-overflow"></div>');
                 $(this).html($div.append($(this).html()));     
             });
         });
-    }
+    }*/
     
     var adjustCellWidth = function (table, index, width) {
         //1-based indexing

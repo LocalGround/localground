@@ -58,6 +58,8 @@ define([
             },
             getColumnsFromData: function (fields) {
                 var that = this,
+                    col = null,
+                    i = 0,
                     cols = [
                         this.getDeleteCell()
                     ];
@@ -93,8 +95,34 @@ define([
                         cols.push(that.getDefaultCell(k, opts));
                     }
                 });
+
+                //wrap each column in an overflow div:
+                for (i = 0; i < cols.length; i++) {
+                    cols[i].cell = this.wrapCell(cols[i].cell);
+                }
                 return cols;
             },
+
+            wrapCell: function (Cell) {
+                //wraps each cell in an overflow div in order for column adjusting
+                //to work
+                var newCell = Cell.extend({
+                    render: function () {
+                        Cell.prototype.render.call(this, arguments);
+                        var idx = this.$el.index(),
+                            width = $('.backgrid').find("thead th:nth-child(" + (idx + 1) + ")").width();
+                        //console.log(width);
+                        this.$el.html(
+                            $('<div class="hide-overflow"></div>')
+                                .append(this.$el.html())
+                                .width(width)
+                        );
+                        return this;
+                    }
+                });
+                return newCell;
+            },
+
             getDeleteCell: function () {
                 return { name: "delete", label: "delete", editable: false, cell: DeleteCell };
             },
@@ -102,7 +130,7 @@ define([
                 return {
                     name: "geometry",
                     label: "Latitude",
-                    cell: "number",
+                    cell: Backgrid.NumberCell,
                     formatter: LatFormatter,
                     editable: true
                 };
@@ -111,7 +139,7 @@ define([
                 return {
                     name: "geometry",
                     label: "Longitude",
-                    cell: "number",
+                    cell: Backgrid.NumberCell,
                     formatter: LngFormatter,
                     editable: true
                 };
@@ -122,29 +150,29 @@ define([
                     name: name,
                     label: name,
                     editable: !opts.read_only,
-                    cell: Columns.cellTypeByNameLookup[opts.type] || "string"
+                    cell: Columns.cellTypeByNameLookup[opts.type] || Backgrid.StringCell
                 };
             }
         },
         //static methods are the second arguments:
             {
                 cellTypeByNameLookup: {
-                    "integer": "integer",
-                    "field": "string",
-                    "boolean": "boolean",
+                    "integer": Backgrid.IntegerCell,
+                    "field": Backgrid.StringCell,
+                    "boolean": Backgrid.BooleanCell,
                     "decimal": Backgrid.NumberCell,
                     "date-time": Backgrid.DatetimeCell,
-                    "rating": "integer",
-                    "string": "string",
+                    "rating": Backgrid.IntegerCell,
+                    "string": Backgrid.StringCell,
                     "float": Backgrid.NumberCell
                 },
                 cellTypeByIdLookup: {
                     "1": Backgrid.SelectCell, //"string",
-                    "2": "integer",
+                    "2": Backgrid.IntegerCell,
                     "3": Backgrid.DatetimeCell,
-                    "4": "boolean",
+                    "4": Backgrid.BooleanCell,
                     "5": Backgrid.NumberCell,
-                    "6": "integer"
+                    "6": Backgrid.IntegerCell
                 }
             });
     return Columns;
