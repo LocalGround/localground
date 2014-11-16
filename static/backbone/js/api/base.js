@@ -12,7 +12,7 @@ require.config({
         'form': '../external/backbone-forms',
         'bootstrap-form-templates': '../external/backbone-forms-bootstrap3-templates',
         'backbone-bootstrap-modal': '../external/backbone.bootstrap-modal',
-        'colResizable': '../external/colResizable-1.3.source',
+        'colResizable': 'lib/tables/colResizeableMod',
         'backbone-pageable': '../external/backbone-pageable',
         'backbone-paginator': '../external/backbone.paginator',
         'google-infobubble': '../external/infobubble',

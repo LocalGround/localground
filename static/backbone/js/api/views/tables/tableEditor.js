@@ -4,7 +4,7 @@ define([
     "backgrid",
     "views/tables/tableHeader",
     "views/tables/datagrid",
-    "collections/columns",
+    "views/tables/columns",
     "models/field",
     "collections/records",
     "collections/forms",

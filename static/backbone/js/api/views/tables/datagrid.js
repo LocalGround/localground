@@ -32,7 +32,7 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
                 that.insertRowTop(e);
             });
             this.globalEvents.on("insertRowBottom", function (e) {
-                this.insertRowBottom(e);
+                that.insertRowBottom(e);
             });
         },
 
@@ -80,6 +80,7 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
 
         makeColumnsResizable: function () {
             var w = (this.columns.length * this.columnWidth) + "px";
+            //console.log(this.columns.length);
             $("#grid").find('table, tbody, thead').css({ 'min-width': w });
 
             this.$el.find('table').colResizable({ disable: true }); //a hack to run garbage collection for resizable table
@@ -96,11 +97,13 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
             //  ACTUALLY: we should require that users can only edit when an
             //	active project is selected.
             this.grid.insertRow({}, { at: 0 });
+            this.initLayout();
             e.preventDefault();
         },
 
         insertRowBottom: function (e) {
-            this.grid.insertRow();
+            this.grid.insertRow({}, {});
+            this.initLayout();
             e.preventDefault();
         },
 

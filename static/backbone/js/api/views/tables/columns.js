@@ -58,7 +58,6 @@ define([
             },
             getColumnsFromData: function (fields) {
                 var that = this,
-                    col = null,
                     i = 0,
                     cols = [
                         this.getDeleteCell()

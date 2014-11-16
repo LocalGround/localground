@@ -22,7 +22,8 @@ define([
             PageableCollection.prototype.initialize.apply(this, arguments);
         },
         state: {
-            pageSize: 25,
+			currentPage: 0,
+            pageSize: 200,
             sortKey: 'id',
             order: 1
         },
@@ -33,7 +34,8 @@ define([
             totalPages: null,
             totalRecords: null,
             sortKey: "ordering",
-            pageSize: "page_size"
+            pageSize: "page_size",
+			currentPage: "page"
         },
 
         parseState: function (resp, queryParams, state, options) {
@@ -47,12 +49,19 @@ define([
         },
 
         fetch: function (options) {
+			options.data = options.data || {};
+			$.extend(options.data, {
+				page_size: this.state.pageSize,
+				format: 'json',
+				page: this.state.currentPage
+			});
             //query
             if (this.query) {
-                options.data = options.data || {};
-                $.extend(options.data, { query: this.query });
+                $.extend(options.data, {
+					query: this.query
+				});
             }
-
+			//console.log(options.data);
             PageableCollection.__super__.fetch.apply(this, arguments);
         }
     });

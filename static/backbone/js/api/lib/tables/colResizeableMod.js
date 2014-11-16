@@ -204,6 +204,8 @@
      * S.V. Created
      */
     var initWidths = function(t) {
+        //console.log(t.width());
+        t.find(">thead, >tbody").width(t.width());
         var ths = t.find(">thead>tr>th"); 
         var tds = t.find(">tbody>tr>td");
         ths.each(function(i){
