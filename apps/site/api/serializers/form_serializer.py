@@ -78,13 +78,23 @@ def create_record_serializer(form):
     #from localground.apps.site.api.fields import TablePhotoField
     from localground.apps.site.api import fields
     field_names, photo_fields, photo_details, audio_fields, audio_details = [], [], [], [], []
+    display_field = None
     for f in form.fields:
+        if f.is_display_field:
+            display_field = f
         field_names.append(f.col_name)
         if f.data_type.id == 7:
             photo_fields.extend([f.col_name, f.col_name + "_detail"])
         elif f.data_type.id == 8:
             audio_fields.extend([f.col_name, f.col_name + "_detail"])
+    
+    #append display name:
+    if display_field is not None:
+        field_names.append('display_name')   
+    
+    #append "num_field" column:
     field_names.append(form.get_num_field().col_name)
+    
     TableModel = form.TableModel
     class Meta:
         model = TableModel
@@ -96,6 +106,12 @@ def create_record_serializer(form):
         '__module__': 'localground.apps.site.api.serializers.FormDataSerializer',
         'Meta': Meta
     }
+    #set custom display name field getter, according on the display_field:
+    if display_field is not None:
+        attrs.update({
+            'display_name': serializers.Field(source=display_field.col_name)
+        })
+        
     for f in photo_fields:
         if f.find("_detail") != -1:
             source = f.replace("_detail", "")

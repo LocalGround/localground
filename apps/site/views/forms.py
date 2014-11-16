@@ -31,6 +31,12 @@ def create_update_form(request, object_id=None,
                 'data_type',
                 'is_display_field',
                 'is_printable')
+            
+        def __init__(self, *args, **kwargs):
+            super(FieldForm, self).__init__(*args, **kwargs)
+            self.fields['is_display_field'].widget.attrs.update({
+                'class': 'is_display_field'
+            })
 
     from django.forms.models import inlineformset_factory
 
