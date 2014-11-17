@@ -263,3 +263,12 @@
 .image-cell i { color: #EEE; }
 .image-cell a > i { color: #999; }
 
+.button-footer {
+    margin-top:-30px;
+    text-align: right;
+}
+.button-footer > button {
+    padding: 0px 3px 0px 3px;
+    margin: 0px 3px 3px 0px;
+}
+
