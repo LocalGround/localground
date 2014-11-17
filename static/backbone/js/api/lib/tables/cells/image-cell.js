@@ -52,13 +52,12 @@ define([
             },
             showImage: function (e) {
                 var attr = this.column.get("name") + "_detail",
-                    content = $('<img />').attr('src', this.model.get(attr).file_name_medium_sm),
                     template = _.template(ModalTemplate, {
-                        content: content.get(0)
+                        content: this.model.get(attr).file_name_medium
                     });
+                $('body').find('#image-modal').remove();
                 $('body').append(template);
-                $('#small-modal').find('.modal-content').empty().append(content);
-                $('#small-modal').modal();
+                $('#image-modal').modal();
                 e.preventDefault();
                 return false;
             }

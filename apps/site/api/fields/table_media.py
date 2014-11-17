@@ -10,7 +10,8 @@ class TablePhotoJSONField(serializers.WritableField):
         return {
             'id': obj.id,
             'file_name_medium_sm': obj.encrypt_url(obj.file_name_medium_sm),
-            'file_name_small': obj.encrypt_url(obj.file_name_small)
+            'file_name_small': obj.encrypt_url(obj.file_name_small),
+            'file_name_medium': obj.encrypt_url(obj.file_name_medium)
         }
     
 class TableAudioJSONField(serializers.WritableField):
