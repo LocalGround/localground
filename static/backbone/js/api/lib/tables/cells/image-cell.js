@@ -45,7 +45,7 @@ define([
                     $divContainer = $('<div></div>');
                     $div = $('<div></div>').addClass("button-footer");
                     $img =  $('<img src="' + src + '" alt="" />');
-                    $more = '<button class="btn"><i class="fa fa-external-link more"></i></button>';
+                    $more = '<button class="btn btn-hide"><i class="fa fa-external-link more"></i></button>';
                     return $divContainer.append($img).append($div.append($more));
                 }
                 return '<i class="fa fa-file-image-o fa-4x"></i>';

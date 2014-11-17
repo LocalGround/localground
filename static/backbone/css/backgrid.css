@@ -263,9 +263,13 @@
 .image-cell i { color: #EEE; }
 .image-cell a > i { color: #999; }
 
-.button-footer {
+td .button-footer {
     margin-top:-30px;
     text-align: right;
+    visibility: hidden;
+}
+td:hover .button-footer {
+    visibility: visible;
 }
 .button-footer > button {
     padding: 0px 3px 0px 3px;
