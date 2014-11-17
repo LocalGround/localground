@@ -19,7 +19,8 @@ define([
                 "url",
                 "manually_reviewed",
                 "geometry",
-                "num"//,
+                "num",
+                "display_name"//,
                 //"id" //for now...
             ],
             initialize: function (opts) {
