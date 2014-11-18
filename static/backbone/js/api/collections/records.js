@@ -22,7 +22,7 @@ define([
             PageableCollection.prototype.initialize.apply(this, arguments);
         },
         state: {
-			currentPage: 0,
+            currentPage: 0,
             pageSize: 200,
             sortKey: 'id',
             order: 1
