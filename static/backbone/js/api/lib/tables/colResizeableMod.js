@@ -233,12 +233,15 @@
         //1-based indexing
         var header = table.find("thead th:nth-child(" + (index+1) + ")");
         var cells = table.find("tbody td:nth-child(" + (index+1) + ")");
-        
-        header.width(width);
-        $.each(cells, function(){
+        var w = null;
+        $.each(cells, function () {
+            console.log()
             $(this).find('div').width(width);
             $(this).width(width);
+            w = $(this).width();
         });
+        //set header after to accomodate scrollbar in tbody:
+        header.width(w);
     };
 
 	
