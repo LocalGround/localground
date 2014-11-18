@@ -175,12 +175,12 @@ define([
             {
                 cellTypeByNameLookup: {
                     "integer": { cell: Backgrid.IntegerCell, width: 80 },
-                    "field": { cell: Backgrid.StringCell, width: 300 },
+                    "field": { cell: Backgrid.StringCell, width: 200 },
                     "boolean": { cell: Backgrid.BooleanCell, width: 100 },
                     "decimal": { cell: Backgrid.NumberCell, width: 100 },
                     "date-time": { cell: Backgrid.DatetimeCell, width: 100 },
                     "rating": { cell: Backgrid.IntegerCell, width: 80 },
-                    "string": { cell: Backgrid.StringCell, width: 300 },
+                    "string": { cell: Backgrid.StringCell, width: 200 },
                     "float": { cell: Backgrid.NumberCell, width: 100 }
                 },
                 cellTypeByIdLookup: {
