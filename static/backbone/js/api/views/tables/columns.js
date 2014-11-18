@@ -18,7 +18,7 @@ define([
                 "overlay_type",
                 "url",
                 "manually_reviewed",
-                //"geometry",
+                "geometry",
                 "num",
                 "display_name"//,
                 //"id" //for now...
@@ -98,7 +98,7 @@ define([
                     } else if (that.showColumn(k)) {
                         var cell = that.getDefaultCell(k, opts);
                         if (k == 'id') {
-                            cell.width = 20;
+                            cell.width = 30;
                         }
                         cols.push(cell);
                     }
