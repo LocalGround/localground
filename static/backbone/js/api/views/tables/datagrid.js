@@ -10,12 +10,17 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
         columns: null,
         globalEvents: null,
         columnWidth: 140,
+        blankRow: null,
         grid: null,
         initialize: function (opts) {
             // opts should initialize the Grid with a collection of
             // columns and a collection of records.
             opts = opts || {};
             $.extend(this, opts);
+
+            this.blankRow = {
+                project_id: this.app.projectID
+            };
 
             this.initEventListeners();
 
@@ -64,6 +69,7 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
                 collection: this.records
             });
             this.listenTo(this, "row:added", this.initLayout);
+            this.listenTo(this.records, "reset", this.initLayout);
             this.render();
         },
 
@@ -96,13 +102,13 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
             //	todo: ensure that record auto-populates w/default project selected.
             //  ACTUALLY: we should require that users can only edit when an
             //	active project is selected.
-            this.grid.insertRow({}, { at: 0 });
+            this.grid.insertRow(this.blankRow, { at: 0 });
             this.initLayout();
             e.preventDefault();
         },
 
         insertRowBottom: function (e) {
-            this.grid.insertRow({}, {});
+            this.grid.insertRow(this.blankRow, {});
             this.initLayout();
             e.preventDefault();
         },

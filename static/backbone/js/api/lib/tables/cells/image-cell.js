@@ -2,7 +2,7 @@ define([
     "jquery",
     "underscore",
     "backgrid",
-    "text!/static/backbone/js/templates/modals/smallModal.html"
+    "text!/static/backbone/js/templates/modals/imageModal.html"
 ], function ($, _, Backgrid, ModalTemplate) {
     "use strict";
     var ImageCellEditor = Backgrid.InputCellEditor.extend({

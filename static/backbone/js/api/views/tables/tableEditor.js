@@ -24,23 +24,43 @@ define([
 		columns: null,
 		records: null,
 		datagrid: null,
+        app: null,
 		globalEvents: _.extend({}, Backbone.Events),
 		initialize: function (opts) {
             opts = opts || {};
             $.extend(this, opts);
             var that = this,
                 addColumnForm,
-                modal;
+                modal,
+                AppRouter;
 
+            //shared functionality to be passed across objects:
+            this.app = {
+                router: null,
+                activeTableID: null,
+                projectID: opts.projectID
+            };
             this.forms = new Forms();
-            this.tableHeader = new TableHeader({
-                collection: this.forms,
-                globalEvents: this.globalEvents
+            AppRouter = Backbone.Router.extend({
+                routes: {
+                    ":id": "get-table-data"
+                }
             });
 
-            this.globalEvents.on("loadNewTable", function (url) {
-                that.url = url + 'data/';
+            this.router = this.app.router = new AppRouter();
+            this.router.on('route:get-table-data', function (id) {
+                that.app.activeTableID = id;
+                that.url = '/api/0/forms/' + id + '/data/';
                 that.fetchColumns();
+            });
+
+            // Start Backbone history a necessary step for bookmarkable URL's
+            Backbone.history.start();
+
+            this.tableHeader = new TableHeader({
+                collection: this.forms,
+                globalEvents: this.globalEvents,
+                app: this.app
             });
 
             this.globalEvents.on("insertColumn", function () {
@@ -95,7 +115,8 @@ define([
             this.grid = new DataGrid({
                 columns: this.columns,
                 records: this.records,
-                globalEvents: this.globalEvents
+                globalEvents: this.globalEvents,
+                app: this.app
             });
             $(window).off('resize');
             $(window).on('resize', function () {

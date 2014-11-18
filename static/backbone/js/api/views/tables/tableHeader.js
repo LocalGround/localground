@@ -4,7 +4,7 @@ define(["jquery", "backbone"], function ($, Backbone) {
         el: "#navbar",
         globalEvents: null,
         events: {
-            'click .change-table': 'triggerLoadTable',
+            //'click .change-table': 'triggerLoadTable',
             'click #add_row_top': 'triggerInsertRowTop',
             'click #add_row_bottom': 'triggerInsertRowBottom',
             'click .query': 'triggerQuery',
@@ -14,13 +14,21 @@ define(["jquery", "backbone"], function ($, Backbone) {
         initialize: function (opts) {
             opts = opts || {};
             $.extend(this, opts);
+            var that = this;
+
             this.loadFormSelector();
+            this.listenTo(this.collection, "reset", function () {
+                // if a current route hasn't been specified already in the URL,
+                // select a default one:
+                if (!Backbone.history.fragment) {
+                    that.app.router.navigate("/" + that.collection.models[0].id, true);
+                }
+            });
         },
 
         loadFormSelector: function () {
             var that = this,
                 successFunction = function () {
-                    that.globalEvents.trigger("loadNewTable", that.collection.at(0).get("url"));
                     var $tbl = that.$el.find('#tableSelect');
                     $tbl.empty();
                     $.each(that.collection.models, function () {
@@ -28,7 +36,7 @@ define(["jquery", "backbone"], function ($, Backbone) {
                             $('<li></li>').append(
                                 $('<a class="change-table"></a>')
                                     .html(this.get("name"))
-                                    .attr("href", this.get("url"))
+                                    .attr("href", "#/" + this.id)
                             )
                         );
                     });
@@ -36,12 +44,9 @@ define(["jquery", "backbone"], function ($, Backbone) {
                 };
 
             this.collection.fetch({
-                success: successFunction
+                success: successFunction,
+                reset: true
             });
-        },
-        triggerLoadTable: function (e) {
-            this.globalEvents.trigger("loadNewTable", $(e.currentTarget).attr("href"));
-            e.preventDefault();
         },
         triggerInsertRowTop: function (e) {
             this.globalEvents.trigger("insertRowTop", e);
@@ -52,7 +57,11 @@ define(["jquery", "backbone"], function ($, Backbone) {
             e.preventDefault();
         },
         triggerQuery: function (e) {
-            var sql = this.$el.find('#query_text').val();
+            var sql = this.$el.find('#query_text').val().trim();
+            if (sql.toLowerCase().indexOf("where") == -1) {
+                sql = "where " + sql;
+                this.$el.find('#query_text').val(sql);
+            }
             this.globalEvents.trigger("requery", sql);
             e.preventDefault();
         },

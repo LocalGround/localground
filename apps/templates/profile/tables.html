@@ -88,7 +88,9 @@
                         }
                     });
                     //initialize new table editor!
-                    new TableEditor();
+                    new TableEditor({
+                        projectID: {{ project_id }}
+                    });
                 });
             }
         );
