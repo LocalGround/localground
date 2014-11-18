@@ -18,7 +18,7 @@ define([
                 "overlay_type",
                 "url",
                 "manually_reviewed",
-                "geometry",
+                //"geometry",
                 "num",
                 "display_name"//,
                 //"id" //for now...
@@ -76,24 +76,31 @@ define([
                             cell: Backgrid.SelectCell.extend({
                                 optionValues: opts.optionValues
                             }),
-                            editable: true
+                            editable: true,
+                            width: 150
                         });
                     } else if (opts.type == 'photo') {
                         cols.push({
                             name: k,
                             label: k,
                             cell: ImageCell,
-                            editable: true
+                            editable: true,
+                            width: 140
                         });
                     } else if (opts.type == 'audio') {
                         cols.push({
                             name: k,
                             label: k,
                             cell: AudioCell,
-                            editable: true
+                            editable: true,
+                            width: 140
                         });
                     } else if (that.showColumn(k)) {
-                        cols.push(that.getDefaultCell(k, opts));
+                        var cell = that.getDefaultCell(k, opts);
+                        if (k == 'id') {
+                            cell.width = 20;
+                        }
+                        cols.push(cell);
                     }
                 });
 
@@ -125,7 +132,13 @@ define([
             },
 
             getDeleteCell: function () {
-                return { name: "delete", label: "delete", editable: false, cell: DeleteCell };
+                return {
+                    name: "delete",
+                    label: "delete",
+                    editable: false,
+                    cell: DeleteCell,
+                    width: 40
+                };
             },
             getLatCell: function () {
                 return {
@@ -133,7 +146,8 @@ define([
                     label: "Latitude",
                     cell: Backgrid.NumberCell,
                     formatter: LatFormatter,
-                    editable: true
+                    editable: true,
+                    width: 80
                 };
             },
             getLngCell: function () {
@@ -142,30 +156,32 @@ define([
                     label: "Longitude",
                     cell: Backgrid.NumberCell,
                     formatter: LngFormatter,
-                    editable: true
+                    editable: true,
+                    width: 80
                 };
             },
             getDefaultCell: function (name, opts) {
                 //alert(opts.type + " - " + Columns.cellTypeByNameLookup[opts.type]);
-                return {
+                var defaultCell = {
                     name: name,
                     label: name,
-                    editable: !opts.read_only,
-                    cell: Columns.cellTypeByNameLookup[opts.type] || Backgrid.StringCell
+                    editable: !opts.read_only
                 };
+                $.extend(defaultCell, Columns.cellTypeByNameLookup[opts.type]);
+                return defaultCell;
             }
         },
         //static methods are the second arguments:
             {
                 cellTypeByNameLookup: {
-                    "integer": Backgrid.IntegerCell,
-                    "field": Backgrid.StringCell,
-                    "boolean": Backgrid.BooleanCell,
-                    "decimal": Backgrid.NumberCell,
-                    "date-time": Backgrid.DatetimeCell,
-                    "rating": Backgrid.IntegerCell,
-                    "string": Backgrid.StringCell,
-                    "float": Backgrid.NumberCell
+                    "integer": { cell: Backgrid.IntegerCell, width: 80 },
+                    "field": { cell: Backgrid.StringCell, width: 300 },
+                    "boolean": { cell: Backgrid.BooleanCell, width: 100 },
+                    "decimal": { cell: Backgrid.NumberCell, width: 100 },
+                    "date-time": { cell: Backgrid.DatetimeCell, width: 100 },
+                    "rating": { cell: Backgrid.IntegerCell, width: 80 },
+                    "string": { cell: Backgrid.StringCell, width: 300 },
+                    "float": { cell: Backgrid.NumberCell, width: 100 }
                 },
                 cellTypeByIdLookup: {
                     "1": Backgrid.SelectCell, //"string",

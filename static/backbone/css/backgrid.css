@@ -69,12 +69,13 @@
 .backgrid tbody {
     display: block;
     overflow: auto;
-    margin-left: -1px;
-    margin-top: -1px;
+    /*margin-left: -1px;
+    margin-top: -1px;*/
 }
 .hide-overflow {
     display: block;
     overflow: hidden;
+    white-space: normal !important;
 }
 
 .backgrid thead th {

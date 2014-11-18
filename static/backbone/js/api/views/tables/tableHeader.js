@@ -58,7 +58,7 @@ define(["jquery", "backbone"], function ($, Backbone) {
         },
         triggerQuery: function (e) {
             var sql = this.$el.find('#query_text').val().trim();
-            if (sql.toLowerCase().indexOf("where") == -1) {
+            if (sql.toLowerCase().indexOf("where") == -1 && sql.length > 0) {
                 sql = "where " + sql;
                 this.$el.find('#query_text').val(sql);
             }
