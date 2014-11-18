@@ -80,26 +80,29 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
 
         initLayout: function () {
             this.$el.find('table').addClass('table-bordered');
-            this.makeColumnsResizable();
             this.resize();
+            this.makeColumnsResizable();
         },
 
         makeColumnsResizable: function () {
-            var w = 0, // (this.columns.length * this.columnWidth) + "px",
-                index = 0,
-                $th = null;
+            var totalWidth = 0, // (this.columns.length * this.columnWidth) + "px",
+                //index = 0,
+                w = null,
+                $td = null,
+                columnWidths = [];
             this.columns.each(function (model) {
-                $th = $("thead th:nth-child(" + (index + 1) + ")");
-                $th.width(model.get("width"));
-                w += model.get("width");
-                ++index;
+                //$td = $(">tbody>tr:first>td:nth-child(" + (index) + ")");
+                w = model.get("width");
+                //$td.width(w);
+                columnWidths.push(w);
+                //console.log(w);
+                totalWidth += w;
+                //++index;
             });
             //console.log(this.columns.length);
-            console.log(w);
-            $("#grid").find('table, tbody, thead').css({ 'width': w });
-
+            $("#grid").find('table, tbody, thead').css({ 'width': totalWidth });
             this.$el.find('table').colResizable({ disable: true }); //a hack to run garbage collection for resizable table
-            this.$el.find('table').colResizable({ disable: false });
+            this.$el.find('table').colResizable({ disable: false, columnWidths: columnWidths });
         },
 
         resize: function () {

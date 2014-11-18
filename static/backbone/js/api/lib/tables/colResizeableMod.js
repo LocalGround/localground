@@ -61,7 +61,7 @@
 		tables[id] = t; 	//the table object is stored using its id as key	
 		createGrips(t);		//grips are created
         //surroundCellsWithDivTag(t);
-        initWidths(t);
+        initWidths(t, options.columnWidths);
 	};
 
 
@@ -203,15 +203,19 @@
     /**
      * S.V. Created
      */
-    var initWidths = function(t) {
-        //console.log(t.width());
+    var initWidths = function(t, columnWidths) {
         t.find(">thead, >tbody").width(t.width());
         var ths = t.find(">thead>tr>th"); 
         var tds = t.find(">tbody>tr>td");
+        var w;
         ths.each(function(i){
-            //tds.eq(i).width(t.c[i].width());
-            adjustCellWidth(t, i, t.c[i].width());
-            //ths.eq(i).width(t.c[i].width());
+            w = t.find("tbody>tr:first>td:nth-child(" + (i + 1) + ")").width();
+            if (columnWidths) {
+                w = columnWidths[i];
+            }
+            adjustCellWidth(t, i, w);
+            //adjustCellWidth(t, i, t.c[i].width());
+            
         })
         syncGrips(t);
     };
@@ -356,7 +360,8 @@
 				
 				//events:
 				onDrag: null, 					//callback function to be fired during the column resizing process if liveDrag is enabled
-				onResize: null					//callback function fired when the dragging process is over
+				onResize: null,					//callback function fired when the dragging process is over
+                columnWidths: null
             }			
 			var options =  $.extend(defaults, options);			
             return this.each(function() {				
