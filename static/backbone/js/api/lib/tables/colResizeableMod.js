@@ -235,7 +235,6 @@
         var cells = table.find("tbody td:nth-child(" + (index+1) + ")");
         var w = null;
         $.each(cells, function () {
-            console.log()
             $(this).find('div').width(width);
             $(this).width(width);
             w = $(this).width();
