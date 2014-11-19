@@ -5,7 +5,7 @@ from localground.apps.site.tests import ViewMixin, ModelMixin
 from rest_framework import status
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import urllib, datetime
-
+from localground.apps.site.models import Field
 
 class UpdateFormTest(test.TestCase, ViewMixin):
 
@@ -24,14 +24,14 @@ class UpdateFormTest(test.TestCase, ViewMixin):
         from localground.apps.site import models
         
         d = {
-            'text_field': { 'type': 1, 'test_val': 'Column Value 1' },
-            'integer_field': { 'type': 2, 'test_val': 8 },
-            'datetime_field': { 'type': 3, 'test_val': datetime.datetime.now() },
-            'boolean_field': { 'type': 4, 'test_val': True },
-            'decimal_field': { 'type': 5, 'test_val': 1.5 },
-            'rating_field': { 'type': 6, 'test_val': 1 },
-            'photo_field': { 'type': 7, 'test_val': models.Photo.objects.get(id=1) },
-            'audio_field': { 'type': 8, 'test_val': models.Audio.objects.get(id=1) }
+            'text_field': { 'type': Field.DataTypes.TEXT, 'test_val': 'Column Value 1' },
+            'integer_field': { 'type': Field.DataTypes.INTEGER, 'test_val': 8 },
+            'datetime_field': { 'type': Field.DataTypes.DATETIME, 'test_val': datetime.datetime.now() },
+            'boolean_field': { 'type': Field.DataTypes.BOOLEAN, 'test_val': True },
+            'decimal_field': { 'type': Field.DataTypes.DECIMAL, 'test_val': 1.5 },
+            'rating_field': { 'type': Field.DataTypes.RATING, 'test_val': 1 },
+            'photo_field': { 'type': Field.DataTypes.PHOTO, 'test_val': models.Photo.objects.get(id=1) },
+            'audio_field': { 'type': Field.DataTypes.AUDIO, 'test_val': models.Audio.objects.get(id=1) }
         }
         for key in d:
             f = models.Field(col_alias=key,
@@ -41,7 +41,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
                     form=self.form,
                     owner=self.user,
                     last_updated_by=self.user,
-                    has_snippet_field=d[key]['type'] < 7
+                    has_snippet_field=d[key]['type'] < Field.DataTypes.PHOTO
                 )
             f.save()
             d[key]['field'] = f
