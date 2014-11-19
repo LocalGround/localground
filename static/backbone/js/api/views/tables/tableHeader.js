@@ -12,7 +12,6 @@ define(["jquery", "backbone"], function ($, Backbone) {
             'click #add_column': 'triggerInsertColumn'
         },
         initialize: function (opts) {
-            opts = opts || {};
             $.extend(this, opts);
             var that = this;
 

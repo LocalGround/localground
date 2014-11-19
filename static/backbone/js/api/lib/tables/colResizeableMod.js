@@ -170,10 +170,6 @@
 		var inc = drag.x-drag.l,
             h1 = t.c[i],
             h2 = t.c[i+1],
-            //co11 = t.find('td:eq(' + i + ')'),
-            //co12 = t.find('td:eq(' + (i + 1) + ')'),
-            //w1 = h1.w + inc,
-            //w2= h2.w - inc,
             w1 = h1.width() + inc,
             w2= h2.width() - inc,
             minWidth = 15;
@@ -190,10 +186,7 @@
 
         //co12.width(w2 + PX);
         adjustCellWidth(t, (i+1), w2);
-
-		//h1.width( w1 + PX);
-        //h2.width(w2 + PX);	//and set
-        
+ 
 		t.cg.eq(i).width( w1 + 10 + PX);
         t.cg.eq(i+1).width( w2 + 10 + PX);
 		if(isOver){h1.w=w1; h2.w=w2;}
@@ -201,7 +194,7 @@
 	};
     
     /**
-     * S.V. Created
+     * New fork functionality
      */
     var initWidths = function(t, columnWidths) {
         t.find(">thead, >tbody").width(t.width());
@@ -213,21 +206,10 @@
             if (columnWidths) {
                 w = columnWidths[i];
             }
-            adjustCellWidth(t, i, w);
-            //adjustCellWidth(t, i, t.c[i].width());
-            
+            adjustCellWidth(t, i, w);            
         })
         syncGrips(t);
     };
-    
-    /*var surroundCellsWithDivTag = function (table) {
-        table.find('tbody tr:nth-child(1) td').each(function (i) {
-            $.each(table.find("tbody td:nth-child(" + (i+1) + ")"), function() {
-                var $div = $('<div class="hide-overflow"></div>');
-                $(this).html($div.append($(this).html()));     
-            });
-        });
-    }*/
     
     var adjustCellWidth = function (table, index, width) {
         //1-based indexing

@@ -27,7 +27,7 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
             this.loadGrid();
         },
         reset: function () {
-            alert("add");
+            //alert("add");
             this.initLayout();
         },
 
@@ -106,7 +106,9 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
         },
 
         resize: function () {
-            this.$el.find('tbody').height($('body').height() - 126);
+            var h = $('body').height() - $("#navbar").height() -
+                    $(".container-footer").height() - $('thead').height();
+            this.$el.find('tbody').height(h);
         },
 
         insertRowTop: function (e) {
