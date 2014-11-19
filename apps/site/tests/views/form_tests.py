@@ -4,8 +4,8 @@ from localground.apps.site import models
 from localground.apps.site.tests import ViewMixin, ModelMixin
 from rest_framework import status
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
-import urllib
-
+import urllib, datetime
+from localground.apps.site.models import Field
 
 class UpdateFormTest(test.TestCase, ViewMixin):
 
@@ -22,32 +22,33 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 
     def test_add_fields_to_existing_form(self, **kwargs):
         from localground.apps.site import models
-
-        # add 2 fields to form:
-        f1 = models.Field(col_alias='Field 1',
-                          data_type=models.DataType.objects.get(id=1),
-                          display_width=10,
-                          ordering=1,
-                          form=self.form,
-                          owner=self.user,
-                          last_updated_by=self.user
-                          )
-        f1.save()
-
-        # add second field to form:
-        f2 = models.Field(col_alias='Field 2',
-                          data_type=models.DataType.objects.get(id=1),
-                          display_width=10,
-                          ordering=2,
-                          form=self.form,
-                          owner=self.user,
-                          last_updated_by=self.user
-                          )
-        f2.save()
+        
+        d = {
+            'text_field': { 'type': Field.DataTypes.TEXT, 'test_val': 'Column Value 1' },
+            'integer_field': { 'type': Field.DataTypes.INTEGER, 'test_val': 8 },
+            'datetime_field': { 'type': Field.DataTypes.DATETIME, 'test_val': datetime.datetime.now() },
+            'boolean_field': { 'type': Field.DataTypes.BOOLEAN, 'test_val': True },
+            'decimal_field': { 'type': Field.DataTypes.DECIMAL, 'test_val': 1.5 },
+            'rating_field': { 'type': Field.DataTypes.RATING, 'test_val': 1 },
+            'photo_field': { 'type': Field.DataTypes.PHOTO, 'test_val': models.Photo.objects.get(id=1) },
+            'audio_field': { 'type': Field.DataTypes.AUDIO, 'test_val': models.Audio.objects.get(id=1) }
+        }
+        for key in d:
+            f = models.Field(col_alias=key,
+                    data_type=models.DataType.objects.get(id=d[key]['type']),
+                    display_width=10,
+                    ordering=1,
+                    form=self.form,
+                    owner=self.user,
+                    last_updated_by=self.user,
+                    has_snippet_field=d[key]['type'] < Field.DataTypes.PHOTO
+                )
+            f.save()
+            d[key]['field'] = f
 
         # clear cache
         self.form.clear_table_model_cache()
-        self.assertEqual(2, len(self.form.fields))
+        self.assertEqual(len(d.keys()), len(self.form.fields))
 
         # query the new form:
         self.assertEqual(
@@ -59,15 +60,17 @@ class UpdateFormTest(test.TestCase, ViewMixin):
         record.num = 1
         record.owner = self.user
 
-        setattr(record, f1.col_name, 'Column Value 1')
-        setattr(record, f2.col_name, 'Column Value 2')
+        # set record data before insert:
+        for key in d:
+            setattr(record, d[key]['field'].col_name, d[key]['test_val'])
         record.project = self.project
         record.save(user=self.user)
 
         rec = self.form.TableModel.objects.get_objects(self.user)[0]
-        # print dir(rec)
-        self.assertEqual('Column Value 1', getattr(rec, f1.col_name))
-        self.assertEqual('Column Value 2', getattr(rec, f2.col_name))
+        
+        # check that the record data is the same after being re-queried from DB:
+        for key in d:
+            self.assertEqual(d[key]['test_val'], getattr(rec, d[key]['field'].col_name))
         self.assertIsNotNone(rec.time_stamp)
         self.assertIsNotNone(rec.date_created)
         self.assertEqual(self.user, rec.owner)

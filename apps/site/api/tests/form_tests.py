@@ -95,30 +95,22 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         # verify values:
         FormDataTestMixin.verify_success(self, d)
 
-'''
-# Not working, so commented out for now until I have more time...
-class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixin):
+
+class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
 	
 	def setUp(self):
-		ViewMixin.setUp(self)
+		ViewMixinAPI.setUp(self)
 		self.form = self.create_form_with_fields(name="Class Form", num_fields=6)
 		#requery:
 		self.form = models.Form.objects.get(id=self.form.id)
-		self.rec_1 = self.insert_form_data_record(form=self.form)
+		self.rec_1 = self.insert_form_data_record(form=self.form, project=self.project)
 		self.assertEqual(len(self.form.TableModel.objects.all()), 1)
 		records = self.form.TableModel.objects.all()
-		print records[0].id, records[0].point.x
-		raw_input('pausing')
 		self.url = '/api/0/forms/%s/data/%s/' % (self.form.id, self.rec_1.id)
 		self.urls = [self.url]
 		self.view = views.FormDataInstance.as_view()
-		
-	#def tearDown(self, ):
-	#	self.form.delete()
-
 	
 	def test_update_record_using_put(self, **kwargs):
-		print 'posting to:', self.url
 		d = FormDataTestMixin.create_form_post_data(self)
 		response = self.client_user.put(self.url,
 			data=urllib.urlencode(d),
@@ -126,4 +118,4 @@ class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixin):
 			content_type = "application/x-www-form-urlencoded"
 		)
 		FormDataTestMixin.verify_success(self, d)
-'''
+

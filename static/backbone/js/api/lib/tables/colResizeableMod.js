@@ -60,7 +60,8 @@
 		// if(!(tb.style.width || tb.width)) t.width(t.width()); //I am not an IE fan at all, but it is a pitty that only IE has the currentStyle attribute working as expected. For this reason I can not check easily if the table has an explicit width or if it is rendered as "auto"
 		tables[id] = t; 	//the table object is stored using its id as key	
 		createGrips(t);		//grips are created
-	
+        //surroundCellsWithDivTag(t);
+        initWidths(t, options.columnWidths);
 	};
 
 
@@ -117,7 +118,7 @@
 	 */
 	var memento = function(t, th){ 
 		var w,m=0,i=0,aux =[];
-		if(th){										//in deserialization mode (after a postback)
+		if(th) {										//in deserialization mode (after a postback)
 			t.cg.removeAttr("width");
 			if(t.opt.flush){ S[t.id] =""; return;} 	//if flush is activated, stored data is removed
 			w = S[t.id].split(";");					//column widths is obtained
@@ -127,7 +128,7 @@
 			}			
 			for(i=0;i<t.ln;i++)
 				t.cg.eq(i).css("width", aux[i]);	//this code is required in order to create an inline CSS rule with higher precedence than an existing CSS class in the "col" elements
-		}else{							//in serialization mode (after resizing a column)
+		} else{							//in serialization mode (after resizing a column)
 			S[t.id] ="";				//clean up previous data
 			for(i in t.c){				//iterate through columns
 				w = t.c[i].width();		//width is obtained
@@ -166,12 +167,64 @@
 	* @param {bool} isOver - to identify when the function is being called from the onGripDragOver event	
 	*/
 	var syncCols = function(t,i,isOver){
-		var inc = drag.x-drag.l, c = t.c[i], c2 = t.c[i+1]; 			
-		var w = c.w + inc;	var w2= c2.w- inc;	//their new width is obtained					
-		c.width( w + PX);	c2.width(w2 + PX);	//and set	
-		t.cg.eq(i).width( w + PX); t.cg.eq(i+1).width( w2 + PX);
-		if(isOver){c.w=w; c2.w=w2;}
+		var inc = drag.x-drag.l,
+            h1 = t.c[i],
+            h2 = t.c[i+1],
+            w1 = h1.width() + inc,
+            w2= h2.width() - inc,
+            minWidth = 15;
+        if (w1 < minWidth || w2 < minWidth) {
+            syncGrips(t);
+            inc = minWidth,
+                w1 = h1.w + inc,
+                w2= h2.w - inc;
+            //return;
+        }
+        
+        //co11.width(w1 + PX);
+        adjustCellWidth(t, i, w1);
+
+        //co12.width(w2 + PX);
+        adjustCellWidth(t, (i+1), w2);
+ 
+		t.cg.eq(i).width( w1 + 10 + PX);
+        t.cg.eq(i+1).width( w2 + 10 + PX);
+		if(isOver){h1.w=w1; h2.w=w2;}
+        //initWidths(t);
 	};
+    
+    /**
+     * New fork functionality
+     */
+    var initWidths = function(t, columnWidths) {
+        t.find(">thead, >tbody").width(t.width());
+        var ths = t.find(">thead>tr>th"); 
+        var tds = t.find(">tbody>tr>td");
+        var w;
+        ths.each(function(i){
+            w = t.find("tbody>tr:first>td:nth-child(" + (i + 1) + ")").width();
+            if (columnWidths) {
+                w = columnWidths[i];
+            }
+            adjustCellWidth(t, i, w);            
+        })
+        syncGrips(t);
+    };
+    
+    var adjustCellWidth = function (table, index, width) {
+        //1-based indexing
+        var header = table.find("thead th:nth-child(" + (index+1) + ")");
+        var cells = table.find("tbody td:nth-child(" + (index+1) + ")");
+        var w = null;
+        $.each(cells, function () {
+            $(this).find('div').width(width);
+            $(this).width(width);
+            w = $(this).width();
+        });
+        //set header after to accomodate scrollbar in tbody:
+        //http://jsfiddle.net/hashem/CrSpu/555/
+        header.width(w);
+    };
 
 	
 	/**
@@ -191,8 +244,9 @@
 		drag.x = x;	 drag.css("left",  x + PX); 			//apply position increment		
 			
 		if(t.opt.liveDrag){ 								//if liveDrag is enabled
-			syncCols(t,i); syncGrips(t);					//columns and grips are synchronized
-			var cb = t.opt.onDrag;							//check if there is an onDrag callback
+			syncCols(t,i);              					//columns and grips are synchronized
+			syncGrips(t);
+            var cb = t.opt.onDrag;							//check if there is an onDrag callback
 			if (cb) { e.currentTarget = t[0]; cb(e); }		//if any, it is fired			
 		}
 		
@@ -211,8 +265,9 @@
 		drag.removeClass(drag.t.opt.draggingClass);		//remove the grip's dragging css-class
 		var t = drag.t, cb = t.opt.onResize; 			//get some values	
 		if(drag.x){ 									//only if the column width has been changed
-			syncCols(t,drag.i, true);	syncGrips(t);	//the columns and grips are updated
-			if (cb) { e.currentTarget = t[0]; cb(e); }	//if there is a callback function, it is fired
+			syncCols(t,drag.i, true);	    	        //the columns and grips are updated
+			syncGrips(t);
+            if (cb) { e.currentTarget = t[0]; cb(e); }	//if there is a callback function, it is fired
 		}	
 		if(t.p && S) memento(t); 						//if postbackSafe is enabled and there is sessionStorage support, the new layout is serialized and stored
 		drag = null;									//since the grip's dragging is over									
@@ -251,7 +306,10 @@
 				//each browser. In the begining i had a big switch for each browser, but since the code
 				//was extremelly ugly now I use a different approach with several reflows. This works 
 				//pretty well but it's a bit slower. For now, lets keep things simple...   
-				for(i=0; i<t.ln; i++) t.c[i].css("width", M.round(1000*t.c[i].w/mw)/10 + "%").l=true; 
+				for(i=0; i<t.ln; i++) {
+                    t.c[i].css("width", M.round(1000*t.c[i].w/mw)/10 + "%").l=true;
+                    //adjustCellWidth(t, i, t.c[i].width());
+                }
 				//c.l locks the column, telling us that its c.w is outdated									
 			}
 			syncGrips(t.addClass(SIGNATURE));
@@ -275,7 +333,7 @@
                 draggingClass: 'JCLRgripDrag',	//css-class used when a grip is being dragged (for visual feedback purposes)
 				gripInnerHtml: '',				//if it is required to use a custom grip it can be done using some custom HTML				
 				liveDrag: false,				//enables table-layout updaing while dragging			
-				minWidth: 15, 					//minimum width value in pixels allowed for a column 
+				minWidth: 10, 					//minimum width value in pixels allowed for a column 
 				headerOnly: false,				//specifies that the size of the the column resizing anchors will be bounded to the size of the first row 
 				hoverCursor: "e-resize",  		//cursor to be used on grip hover
 				dragCursor: "e-resize",  		//cursor to be used while dragging
@@ -287,7 +345,8 @@
 				
 				//events:
 				onDrag: null, 					//callback function to be fired during the column resizing process if liveDrag is enabled
-				onResize: null					//callback function fired when the dragging process is over
+				onResize: null,					//callback function fired when the dragging process is over
+                columnWidths: null
             }			
 			var options =  $.extend(defaults, options);			
             return this.each(function() {				

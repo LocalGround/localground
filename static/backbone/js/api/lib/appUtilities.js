@@ -118,6 +118,23 @@ define(["jquery"],
                 options.app.vent.trigger('database-error', {
                     message: message
                 });
+            },
+            initAJAX: function (options) {
+                // adding some global AJAX event handlers for showing messages and
+                // appending the Django authorization token:
+                var that = this;
+                $.ajaxSetup({
+                    beforeSend: function (xhr, settings) {
+                        that.showLoadingMessage();
+                        that.setCsrfToken(xhr, settings);
+                    },
+                    complete: this.hideLoadingMessage,
+                    statusCode: {
+                        400: that.handleDatabaseError.bind(undefined, options),
+                        401: that.handleDatabaseError.bind(undefined, options),
+                        500: that.handleDatabaseError.bind(undefined, options)
+                    }
+                });
             }
         };
     });

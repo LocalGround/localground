@@ -31,6 +31,12 @@ def create_update_form(request, object_id=None,
                 'data_type',
                 'is_display_field',
                 'is_printable')
+            
+        def __init__(self, *args, **kwargs):
+            super(FieldForm, self).__init__(*args, **kwargs)
+            self.fields['is_display_field'].widget.attrs.update({
+                'class': 'is_display_field'
+            })
 
     from django.forms.models import inlineformset_factory
 
@@ -88,6 +94,8 @@ def create_update_form(request, object_id=None,
                         instance.last_updated_by = request.user
                         if instance.pk is None:
                             instance.owner = request.user
+                        #ensures that no snippet field generates for audio & photo data types:
+                        instance.has_snippet_field = instance.data_type.id < 7
                         instance.save()
 
             # remove unwanted fields here:
@@ -105,7 +113,7 @@ def create_update_form(request, object_id=None,
             extras.update({
                 'success': False,
                 'error_message': 'There were errors when updating the %s information.  \
-								Please review message(s) below.' % Field.model_name
+                    Please review message(s) below.' % Field.model_name
             })
     else:
         form = Form.create_form(user=request.user)(instance=form_object)
@@ -128,23 +136,3 @@ def create_update_form(request, object_id=None,
     return render_to_response(template, extras,
                               context_instance=RequestContext(request))
 
-
-'''
-@process_identity
-def get_datatypes(request, identity=None):
-	from localground.apps.site.models import DataType
-	types = DataType.objects.all().order_by('name')
-	return HttpResponse(json.dumps(dict(
-		types=[t.to_dict() for t in types]
-	)))
-	
-@process_identity
-def create_form(request, identity=None, is_json=False):
-	from django.db import connection, transaction
-	r = request.POST or request.GET
-	form = Form.create_new_form(r)
-	
-	return HttpResponse(json.dumps(dict(
-		form=form.to_dict()
-	)))
-'''

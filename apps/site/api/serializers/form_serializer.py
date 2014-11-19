@@ -5,6 +5,7 @@ from django.conf import settings
 from rest_framework import serializers
 from localground.apps.site import widgets, models
 from localground.apps.site.api import fields
+from django.http import HttpResponse
 
 
 class FormSerializerList(BaseNamedSerializer):
@@ -70,28 +71,78 @@ class BaseRecordSerializer(serializers.ModelSerializer):
         return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
                                                obj.form.id, obj.id)
 
-
 def create_record_serializer(form):
     """
     generate a dynamic serializer from dynamic model
     """
-    form_fields = []
-    form_fields.append(form.get_num_field())
-    form_fields.extend(list(form.fields))
-
-    field_names = [f.col_name for f in form_fields]
-
-    class FormDataSerializer(BaseRecordSerializer):
-
-        class Meta:
-            from django.forms import widgets
-
-            model = form.TableModel
-            fields = BaseRecordSerializer.Meta.fields + tuple(field_names)
-            read_only_fields = BaseRecordSerializer.Meta.read_only_fields
-
-    return FormDataSerializer
-
+    #from localground.apps.site.api.fields import TablePhotoField
+    from localground.apps.site.api import fields
+    field_names, photo_fields, photo_details, audio_fields, audio_details = [], [], [], [], []
+    display_field = None
+    for f in form.fields:
+        if f.is_display_field:
+            display_field = f
+        field_names.append(f.col_name)
+        if f.data_type.id == 7:
+            photo_fields.extend([f.col_name, f.col_name + "_detail"])
+        elif f.data_type.id == 8:
+            audio_fields.extend([f.col_name, f.col_name + "_detail"])
+    
+    #append display name:
+    if display_field is not None:
+        field_names.append('display_name')   
+    
+    #append "num_field" column:
+    field_names.append(form.get_num_field().col_name)
+    
+    TableModel = form.TableModel
+    class Meta:
+        model = TableModel
+        fields = BaseRecordSerializer.Meta.fields + tuple(field_names) + \
+            tuple(photo_fields) + tuple(audio_fields) 
+        read_only_fields = BaseRecordSerializer.Meta.read_only_fields
+    
+    attrs = {
+        '__module__': 'localground.apps.site.api.serializers.FormDataSerializer',
+        'Meta': Meta
+    }
+    #set custom display name field getter, according on the display_field:
+    if display_field is not None:
+        attrs.update({
+            'display_name': serializers.Field(source=display_field.col_name)
+        })
+        
+    for f in photo_fields:
+        if f.find("_detail") != -1:
+            source = f.replace("_detail", "")
+            attrs.update({
+                f: fields.TablePhotoJSONField(read_only=True, source=source)
+            })
+        else:
+            model_field = TableModel()._meta.get_field(f)
+            attrs.update({
+                f: fields.CustomModelField(
+                    type_label="photo",
+                    model_field=model_field
+                )
+            })
+    
+    for f in audio_fields:
+        if f.find("_detail") != -1:
+            source = f.replace("_detail", "")
+            attrs.update({
+                f: fields.TableAudioJSONField(read_only=True, source=source)
+            })
+        else:
+            model_field = TableModel()._meta.get_field(f)
+            attrs.update({
+                f: fields.CustomModelField(
+                    type_label="audio",
+                    model_field=model_field
+                )
+            })
+    
+    return type('record_serializer_default', (BaseRecordSerializer, ), attrs)
 
 def create_compact_record_serializer(form):
     """

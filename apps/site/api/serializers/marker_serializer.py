@@ -1,5 +1,5 @@
 from localground.apps.site.api.serializers.base_serializer import GeometrySerializer
-from localground.apps.site.api.serializers.form_serializer import create_compact_record_serializer
+from localground.apps.site.api.serializers.form_serializer import create_record_serializer
 from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
@@ -76,7 +76,7 @@ class MarkerSerializer(GeometrySerializer):
         # add table data:
         form_dict = obj.get_records(forms=forms).items()
         for form, records in form_dict:
-            SerializerClass = create_compact_record_serializer(form)
+            SerializerClass = create_record_serializer(form)
             self.records.extend(records)
             d = self.serialize_list(
                 obj,

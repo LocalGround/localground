@@ -5,6 +5,20 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 
 
 class Field(BaseAudit):
+
+    class DataTypes():
+        '''
+        Enum for simplifying field type lookups
+        '''
+        TEXT = 1
+        INTEGER = 2
+        DATETIME = 3
+        BOOLEAN = 4
+        DECIMAL = 5
+        RATING = 6
+        PHOTO = 7
+        AUDIO = 8
+        
     form = models.ForeignKey('Form')
     col_name_db = models.CharField(max_length=255, db_column="col_name")
     col_alias = models.CharField(max_length=255, verbose_name="column name")
@@ -84,27 +98,53 @@ class Field(BaseAudit):
     def add_column_to_table(self):
         if self.form.source_table_exists():
             from django.db import connection, transaction, DatabaseError
-            from localground.apps.site.models import Snippet
+            from localground.apps.site.models import Snippet, Photo, Audio
             sql = []
             sql.append(
                 'ALTER TABLE %s ADD COLUMN %s %s' %
                 (self.form.table_name, self.col_name_db, self.data_type.sql)
             )
-            # if self.has_snippet_field:
-            sql.append(
-                'ALTER TABLE %s ADD COLUMN %s_snippet_id integer' %
-                (self.form.table_name, self.col_name_db)
-            )
-            sql.append('''
-				ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
-				FOREIGN KEY(%(column_name)s)
-				REFERENCES %(snippet_table)s(id) MATCH SIMPLE
-				''' % dict(
-                table_name=self.form.table_name,
-                column_name='%s_snippet_id' % self.col_name_db,
-                snippet_table=Snippet._meta.db_table
-            )
-            )
+            if self.has_snippet_field:
+                sql.append(
+                    'ALTER TABLE %s ADD COLUMN %s_snippet_id integer' %
+                    (self.form.table_name, self.col_name_db)
+                )
+                sql.append('''
+                    ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
+                    FOREIGN KEY(%(column_name)s)
+                    REFERENCES %(snippet_table)s(id) MATCH SIMPLE
+                    ''' % dict(
+                        table_name=self.form.table_name,
+                        column_name='%s_snippet_id' % self.col_name_db,
+                        snippet_table=Snippet._meta.db_table
+                    )
+                )
+            
+            # Photo:
+            if self.data_type.id == self.DataTypes.PHOTO:
+                sql.append('''
+                    ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
+                    FOREIGN KEY(%(column_name)s)
+                    REFERENCES %(foreign_table)s(id) MATCH SIMPLE
+                    ''' % dict(
+                        table_name=self.form.table_name,
+                        column_name=self.col_name_db,
+                        foreign_table=Photo._meta.db_table
+                    )
+                )
+            
+            # Audio:
+            if self.data_type.id == self.DataTypes.AUDIO:
+                sql.append('''
+                    ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
+                    FOREIGN KEY(%(column_name)s)
+                    REFERENCES %(foreign_table)s(id) MATCH SIMPLE
+                    ''' % dict(
+                        table_name=self.form.table_name,
+                        column_name=self.col_name_db,
+                        foreign_table=Audio._meta.db_table
+                    )
+                )
 
             # EXECUTE QUERY
             try:

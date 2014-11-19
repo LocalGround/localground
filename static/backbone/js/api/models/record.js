@@ -6,6 +6,9 @@ define(["models/base", "underscore"], function (Base, _) {
      * @see <a href="http://localground.org/api/0/projects/">http://localground.org/api/0/projects/</a>
      */
     var Record = Base.extend({
+        /*
+         TODO: strip out IDs from JSON, and stash JSON elsewhere.
+         */
         defaults: _.extend({}, Base.prototype.defaults, {
             name: ""
         }),
@@ -37,7 +40,8 @@ define(["models/base", "underscore"], function (Base, _) {
             if (this.isNew()) {
                 return base + '.json';
             }
-            return base.replace(/([^\/])$/, '$1/') + encodeURIComponent(this.id) + '/.json';
+            var url = base.replace(/([^\/])$/, '$1/') + encodeURIComponent(this.id) + '/.json';
+            return url;
         },
 
         toTemplateJSON: function () {
@@ -52,7 +56,11 @@ define(["models/base", "underscore"], function (Base, _) {
                 }
             }
             return json;
-        }
+        },
+		save: function (key, val, options) {
+			return Backbone.Model.prototype.save.call(this, key, val, options);
+		}
+
     });
     return Record;
 });

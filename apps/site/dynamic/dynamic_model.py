@@ -5,6 +5,7 @@ from django.contrib.gis.db import models
 from datetime import datetime
 from django.db.models.loading import cache
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
+from localground.apps.site.models import Field
 # http://stackoverflow.com/questions/3712688/creation-of-dynamic-model-fields-in-django
 # https://code.djangoproject.com/wiki/DynamicModels
 '''
@@ -305,31 +306,31 @@ class ModelClassBuilder(object):
                            data_type=FieldTypes.DATE, operator='<=')
             ]
             for n in self.form.fields:
-                if n.data_type.id == 1:
+                if n.data_type.id == Field.DataTypes.TEXT:
                     query_fields.append(
                         QueryField(
                             n.col_name,
                             title=n.col_alias,
                             operator='like'))
-                elif n.data_type.id in [2, 6]:
+                elif n.data_type.id in [Field.DataTypes.INTEGER, Field.DataTypes.RATING]:
                     query_fields.append(
                         QueryField(
                             n.col_name,
                             title=n.col_alias,
                             data_type=FieldTypes.INTEGER))
-                elif n.data_type.id == 3:
+                elif n.data_type.id == Field.DataTypes.DATETIME:
                     query_fields.append(
                         QueryField(
                             n.col_name,
                             title=n.col_alias,
                             data_type=FieldTypes.DATE))
-                elif n.data_type.id == 4:
+                elif n.data_type.id == Field.DataTypes.BOOLEAN:
                     query_fields.append(
                         QueryField(
                             n.col_name,
                             title=n.col_alias,
                             data_type=FieldTypes.BOOLEAN))
-                elif n.data_type.id == 5:
+                elif n.data_type.id == Field.DataTypes.DECIMAL:
                     query_fields.append(
                         QueryField(
                             n.col_name,
@@ -359,16 +360,31 @@ class ModelClassBuilder(object):
                 'verbose_name': n.col_alias,
                 'db_column': n.col_name_db
             }
-            if n.data_type.id == 1:
+            if n.data_type.id == Field.DataTypes.TEXT:
                 field = models.CharField(max_length=1000, **kwargs)
-            elif n.data_type.id in [2, 6]:
+            elif n.data_type.id in [Field.DataTypes.INTEGER, Field.DataTypes.RATING]:
                 field = models.IntegerField(**kwargs)
-            elif n.data_type.id == 3:
+            elif n.data_type.id == Field.DataTypes.DATETIME:
                 field = models.DateTimeField(**kwargs)
-            elif n.data_type.id == 4:
+            elif n.data_type.id == Field.DataTypes.BOOLEAN:
                 field = models.BooleanField(**kwargs)
-            elif n.data_type.id == 5:
+            elif n.data_type.id == Field.DataTypes.DECIMAL:
                 field = models.FloatField(**kwargs)
+            elif n.data_type.id == Field.DataTypes.PHOTO:
+                field = models.ForeignKey(
+                        'Photo',
+                        null=True,
+                        blank=True,
+                        db_column=n.col_name_db
+                    )
+                #raise Exception(field)
+            elif n.data_type.id == Field.DataTypes.AUDIO:
+                field = models.ForeignKey(
+                        'Audio',
+                        null=True,
+                        blank=True,
+                        db_column=n.col_name_db
+                    )
 
             # add dynamic field:
             self.dynamic_fields.update({

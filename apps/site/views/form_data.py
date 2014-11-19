@@ -19,6 +19,16 @@ from django.conf import settings
 import os
 
 
+@login_required
+@process_project
+def show_tables(request, project=None):
+    context = RequestContext(request)
+    context.update({
+        "project_id": project.id
+    })
+    return render_to_response('profile/tables.html', context)
+
+
 @login_required()
 def get_objects(request, object_id, format_type='table'):
     context = RequestContext(request)
