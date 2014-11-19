@@ -35,6 +35,7 @@ USERNAME = 'postgres'			#Your Database Username
 PASSWORD = 'password'		        #Your Database Password
 DATABASE = 'lg_test_database'	        #Your Database Name
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis', #Code works w/PostGIS

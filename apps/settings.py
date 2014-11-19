@@ -14,6 +14,7 @@ ADMIN_EMAILS = [os.environ.get('ADMIN_EMAIL_ADDRESS', 'email@yoursite.com'), ]
 EMAIL_HOST = os.environ.get('HOST', '127.0.0.1') 
 EMAIL_PORT = os.environ.get('EMAIL_PORT', '25') 
 EMAIL_HOST_USER = ''
+LOGIN_REDIRECT_URL = '/'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -21,6 +22,10 @@ REGISTRATION_OPEN = True
 ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE = False
 ACCOUNT_ACTIVATION_DAYS = 5
 SESSION_COOKIE_NAME = 'sessionid'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'OVERRIDE THIS'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'OVERRIDE THIS'
+
 
 # Custom Local Variables
 SERVER_HOST = os.environ.get('SERVER_HOST', 'yoursite.com')
@@ -133,6 +138,12 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'localground.apps.middleware.context_processors.persistant_queries', #for our application-level context objects
+    'social.apps.django_app.context_processors.backends',
+    'social.apps.django_app.context_processors.login_redirect',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'social.backends.google.GoogleOAuth2',
 )
 
 ROOT_URLCONF = 'localground.apps.site.urls'
@@ -162,6 +173,7 @@ INSTALLED_APPS = (
     #'django.contrib.admin',
     'rest_framework',
     'corsheaders',
+    'social.apps.django_app.default',
 )
 
 REST_FRAMEWORK = {
