@@ -107,8 +107,10 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
 
         resize: function () {
             var h = $('body').height() - $("#navbar").height() -
-                    $(".container-footer").height() - $('thead').height();
-            this.$el.find('tbody').height(h);
+                    $(".container-footer").height() - 2;
+            //console.log(50, h - 50);
+            this.$el.find('#grid').height(h);
+            this.$el.find('tbody').height(h - $('thead').height());
         },
 
         insertRowTop: function (e) {
