@@ -109,7 +109,7 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
             var h = $('body').height() - $("#navbar").height() -
                     $(".container-footer").height() - 2;
             //console.log(50, h - 50);
-            this.$el.find('#grid').height(h);
+            this.$el.height(h);
             this.$el.find('tbody').height(h - $('thead').height());
         },
 
