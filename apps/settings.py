@@ -23,8 +23,6 @@ ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE = False
 ACCOUNT_ACTIVATION_DAYS = 5
 SESSION_COOKIE_NAME = 'sessionid'
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'OVERRIDE THIS'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'OVERRIDE THIS'
 
 
 # Custom Local Variables
@@ -142,8 +140,24 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social.apps.django_app.context_processors.login_redirect',
 )
 
+
+
 AUTHENTICATION_BACKENDS = (
     'social.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_PIPELINE = (
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.get_username',
+    'social.pipeline.social_auth.associate_by_email',  # <--- enable this one
+    'social.pipeline.user.create_user',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details'
 )
 
 ROOT_URLCONF = 'localground.apps.site.urls'
