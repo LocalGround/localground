@@ -178,14 +178,14 @@ define([
         //static methods are the second arguments:
             {
                 cellTypeByNameLookup: {
-                    "integer": { cell: Backgrid.IntegerCell, width: 80 },
+                    "integer": { cell: Backgrid.IntegerCell, width: 120 },
                     "field": { cell: Backgrid.StringCell, width: 200 },
                     "boolean": { cell: Backgrid.BooleanCell, width: 100 },
-                    "decimal": { cell: Backgrid.NumberCell, width: 100 },
+                    "decimal": { cell: Backgrid.NumberCell, width: 120 },
                     "date-time": { cell: Backgrid.DatetimeCell, width: 100 },
-                    "rating": { cell: Backgrid.IntegerCell, width: 80 },
+                    "rating": { cell: Backgrid.IntegerCell, width: 120 },
                     "string": { cell: Backgrid.StringCell, width: 200 },
-                    "float": { cell: Backgrid.NumberCell, width: 100 }
+                    "float": { cell: Backgrid.NumberCell, width: 120 }
                 },
                 cellTypeByIdLookup: {
                     "1": Backgrid.SelectCell, //"string",
