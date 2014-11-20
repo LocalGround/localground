@@ -20,8 +20,9 @@ define([
                 "manually_reviewed",
                 "geometry",
                 "num",
-                "display_name"//,
-                //"id" //for now...
+                "display_name",
+                "id", //for now
+                "project_id"
             ],
             initialize: function (opts) {
                 opts = opts || {};
@@ -62,11 +63,14 @@ define([
                 var that = this,
                     i = 0,
                     cols = [
-                        this.getDeleteCell()
+                        //this.getDeleteCell()
                     ];
                 $.each(fields, function (k, opts) {
-                    //console.log(opts);
-                    if (opts.type == 'geojson' && that.showColumn(k)) {
+                    if (!that.showColumn(k)) {
+                        //iterate to next:
+                        return;
+                    }
+                    if (opts.type == 'geojson') {
                         cols.push(that.getLatCell());
                         cols.push(that.getLngCell());
                     } else if (opts.type === 'select') {
@@ -79,7 +83,7 @@ define([
                             editable: true,
                             width: 150
                         });
-                    } else if (opts.type == 'photo') {
+                    } else if (opts.type == 'photo' && that.showColumn(k)) {
                         cols.push({
                             name: k,
                             label: k,
@@ -95,7 +99,7 @@ define([
                             editable: true,
                             width: 140
                         });
-                    } else if (that.showColumn(k)) {
+                    } else {
                         var cell = that.getDefaultCell(k, opts);
                         if (k == 'id') {
                             cell.width = 30;
