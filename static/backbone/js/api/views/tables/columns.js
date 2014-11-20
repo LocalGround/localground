@@ -88,7 +88,7 @@ define([
                             name: k,
                             label: k,
                             cell: ImageCell,
-                            editable: false, //true,
+                            editable: true,
                             width: 140
                         });
                     } else if (opts.type == 'audio') {
