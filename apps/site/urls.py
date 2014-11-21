@@ -141,6 +141,7 @@ urlpatterns = patterns('',
                        (r'^accounts/login/$',
                         'django.contrib.auth.views.login',
                         {'template_name': 'login.html'}),
+                       ('', include('social.apps.django_app.urls', namespace='social')),
 
                        # django-tagging:
                        url(r'^tagging_autocomplete/list/json$', 'tagging_autocomplete.views.list_tags',

@@ -46,6 +46,9 @@
                             If you have questions, please contact
                             info@localground.org.  If you are a beta-tester,
                             please log in <a href="/accounts/login/">here</a>.
+
+
+       <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">Login with Google</a>
                         </p>
                     </div>
                 </div>

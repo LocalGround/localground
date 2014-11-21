@@ -14,6 +14,7 @@ ADMIN_EMAILS = [os.environ.get('ADMIN_EMAIL_ADDRESS', 'email@yoursite.com'), ]
 EMAIL_HOST = os.environ.get('HOST', '127.0.0.1') 
 EMAIL_PORT = os.environ.get('EMAIL_PORT', '25') 
 EMAIL_HOST_USER = ''
+LOGIN_REDIRECT_URL = '/'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -21,6 +22,8 @@ REGISTRATION_OPEN = True
 ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE = False
 ACCOUNT_ACTIVATION_DAYS = 5
 SESSION_COOKIE_NAME = 'sessionid'
+
+
 
 # Custom Local Variables
 SERVER_HOST = os.environ.get('SERVER_HOST', 'yoursite.com')
@@ -133,6 +136,28 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'localground.apps.middleware.context_processors.persistant_queries', #for our application-level context objects
+    'social.apps.django_app.context_processors.backends',
+    'social.apps.django_app.context_processors.login_redirect',
+)
+
+
+
+AUTHENTICATION_BACKENDS = (
+    'social.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_PIPELINE = (
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.get_username',
+    'social.pipeline.social_auth.associate_by_email',  # <--- enable this one
+    'social.pipeline.user.create_user',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details'
 )
 
 ROOT_URLCONF = 'localground.apps.site.urls'
@@ -162,6 +187,7 @@ INSTALLED_APPS = (
     #'django.contrib.admin',
     'rest_framework',
     'corsheaders',
+    'social.apps.django_app.default',
 )
 
 REST_FRAMEWORK = {
