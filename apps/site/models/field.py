@@ -5,6 +5,20 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 
 
 class Field(BaseAudit):
+
+    class DataTypes():
+        '''
+        Enum for simplifying field type lookups
+        '''
+        TEXT = 1
+        INTEGER = 2
+        DATETIME = 3
+        BOOLEAN = 4
+        DECIMAL = 5
+        RATING = 6
+        PHOTO = 7
+        AUDIO = 8
+        
     form = models.ForeignKey('Form')
     col_name_db = models.CharField(max_length=255, db_column="col_name")
     col_alias = models.CharField(max_length=255, verbose_name="column name")
@@ -107,7 +121,7 @@ class Field(BaseAudit):
                 )
             
             # Photo:
-            if self.data_type.id == 7:
+            if self.data_type.id == self.DataTypes.PHOTO:
                 sql.append('''
                     ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
                     FOREIGN KEY(%(column_name)s)
@@ -120,7 +134,7 @@ class Field(BaseAudit):
                 )
             
             # Audio:
-            if self.data_type.id == 8:
+            if self.data_type.id == self.DataTypes.AUDIO:
                 sql.append('''
                     ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
                     FOREIGN KEY(%(column_name)s)
