@@ -11,40 +11,10 @@ define([
     "highcharts"
 ], function (_, $, Backbone, VariableSelector, Records) {
     "use strict";
-    _.extend(Records.prototype, {
-        // Comma separated list of attributes
-        sortColumn: null,
-        // Comma separated list corresponding to column list
-        sortDirection: 'asc', // - [ 'asc'|'desc' ]
-        comparator: function (a, b) {
-            if (!this.sortColumn) {
-                return 0;
-            }
-            var cols = this.sortColumn.split(','),
-                dirs = this.sortDirection.split(','),
-                cmp;
-            // First column that does not have equal values
-            cmp = _.find(cols, function (c) {
-                return a.attributes[c] != b.attributes[c];
-            });
-            // undefined means they're all equal, so we're done.
-            if (!cmp) {
-                return 0;
-            }
-            // Otherwise, use that column to determine the order
-            // match the column sequence to the methods for ascending/descending
-            // default to ascending when not defined.
-            if ((dirs[_.indexOf(cols, cmp)] || 'asc').toLowerCase() == 'asc') {
-                return (a.attributes[cmp] > b.attributes[cmp]) ? 1 : -1;
-            } else {
-                return a.attributes[cmp] < b.attributes[cmp] ? 1 : -1;
-            }
-        }
-    });
     var BarChart = Backbone.View.extend({
         url: null,
         collection: null,
-        el: "#barchart",
+        el: "#charts",
         globalEvents: _.extend({}, Backbone.Events),
         dynamicVariable: null,
         stayVariable: "q8_worm_count",
@@ -73,21 +43,13 @@ define([
             that.fetchRecords();
             this.globalEvents.on("loadChart", function (variable) {
                 that.dynamicVariable = variable;
-                /*that.collection.comparator = function (rec) {
-                    //return rec.get(that.dynamicVariable);
-                    //return -rec.get(that.stayVariable);
-                    //http://www.benknowscode.com/2013/12/multi-column-sort-in-backbone-collections.html
-                    //return [rec.get(that.stayVariable), rec.get(that.dynamicVariable)];
-                };*/
-                that.collection.sortColumn = that.stayVariable + ',' + that.dynamicVariable;
-                that.collection.sortDirection = 'desc,asc';
-                that.collection.sort();
+                that.collection.comparator = function (rec) {
+                    return rec.get(that.dynamicVariable);
+                };
                 that.collection.sort();
             });
         },
         fetchRecords: function () {
-            //console.log(this.columns);
-            //var that = this;
             this.collection = new Records([], {
                 url: this.url
             });
@@ -95,41 +57,56 @@ define([
             this.collection.fetch();
         },
         render: function () {
+            var that = this;
+            this.renderChart(this.$el.find("#chart1"), function (rec) {
+                return rec.get(that.stayVariable) > 0;
+            }, this.dynamicVariable + "<br />(at least one worm)");
+            this.renderChart(this.$el.find("#chart2"), function (rec) {
+                return rec.get(that.stayVariable) == 0;
+            }, this.dynamicVariable + "<br />(no worms)");
+        },
+        renderChart: function ($el, condition, title) {
             if (!this.dynamicVariable) {
                 return;
             }
             var that = this,
-                //user_selection = this.stayVariable,
                 labels = [],
-                data = [];
+                data = [],
+                maxVal = 0;
             this.collection.each(function (rec) {
-                labels.push(rec.get(that.displayVariable));
-                data.push({
-                    y: rec.get(that.dynamicVariable),
-                    color: that.colorRule(rec),
-                    worm_count: rec.get(that.stayVariable)
-                });
+                if (condition(rec)) {
+                    labels.push(rec.get(that.displayVariable));
+                    data.push({
+                        y: rec.get(that.dynamicVariable),
+                        color: that.colorRule(rec),
+                        worm_count: rec.get(that.stayVariable),
+                        pic: rec.get("team_photo_detail").file_name_small
+                    });
+                }
+                maxVal = Math.max(maxVal, rec.get(that.dynamicVariable));
             });
-            this.$el.highcharts({
+            $el.highcharts({
                 legend: false,
                 chart: {
                     type: 'column'
                 },
                 title: {
-                    text: this.dynamicVariable
+                    text: title
                 },
                 xAxis: {
                     categories: labels
                 },
                 yAxis: {
                     min: 0,
+                    max: maxVal,
                     title: {
                         text: this.dynamicVariable
                     }
                 },
                 tooltip: {
-                    headerFormat: '<span style="font-size:10px">{point.key}</span><table class="table table-condensed">',
-                    pointFormat: '<tr><td>' + this.dynamicVariable + ': </td><td>{point.y}</td></tr>' +
+                    headerFormat: '<table class="table table-condensed">',
+                    pointFormat: '<tr><td colspan="2" style="height: 90px;"><img src="{point.pic}"/></td></tr>' +
+                                 '<tr><td>' + this.dynamicVariable + ': </td><td>{point.y}</td></tr>' +
                                  '<tr><td>' + this.stayVariable + ': </td><td>{point.worm_count}</td></tr>',
                     footerFormat: '</table>',
                     shared: true,
