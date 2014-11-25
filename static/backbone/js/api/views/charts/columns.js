@@ -7,18 +7,10 @@ define([
     "backbone"
 ], function ($, Backbone) {
     "use strict";
-    var Columns = Backbone.Collection.extend({
+    var Columns = Backbone.View.extend({
             url: null,
-            excludeList: [
-                "overlay_type",
-                "url",
-                "manually_reviewed",
-                "geometry",
-                "num",
-                "display_name",
-                "id", //for now
-                "project_id"
-            ],
+            globalEvents: null,
+            fields: [],
             initialize: function (opts) {
                 opts = opts || {};
                 $.extend(this, opts);
@@ -31,8 +23,7 @@ define([
                  * page, which returns the API's schema as well
                  * as the filterable columns.
                  */
-                var that = this,
-                    cols;
+                var that = this;
 
                 $.ajax({
                     // Note: the json must be appended in order for the OPTIONS
@@ -41,28 +32,25 @@ define([
                     type: 'OPTIONS',
                     data: { _method: 'OPTIONS' },
                     success: function (data) {
-                        cols = that.getColumnsFromData(data.actions.POST);
-                        that.reset(cols);
+                        that.setFields(data.actions.POST);
                     }
                 });
             },
-            showColumn: function (key) {
-                // check that not in exclude list and that doesn't end with the string
-                // "_detail."
-                if (this.excludeList.indexOf(key) === -1 && !/(^\w*_detail$)/.test(key)) {
-                    return true;
+            setFields: function (fields) {
+                this.fields = [];
+                var key, val;
+                for (key in fields) {
+                    val = fields[key];
+                    val.name = key;
+                    this.fields.push(val);
                 }
-                return false;
+                this.globalEvents.trigger("variablesLoaded");
             },
-            getColumnsFromData: function (fields) {
-                var cols = [];
-                $.each(fields, function (k) {
-                    cols.push({
-                        name: k,
-                        label: k
-                    });
-                });
-                return cols;
+            each: function (f) {
+                var i = 0;
+                for (i = 0; i < this.fields.length; i++) {
+                    f(this.fields[i]);
+                }
             }
         });
     return Columns;
