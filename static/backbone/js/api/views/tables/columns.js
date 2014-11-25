@@ -63,7 +63,7 @@ define([
                 var that = this,
                     i = 0,
                     cols = [
-                        //this.getDeleteCell()
+                        this.getDeleteCell()
                     ];
                 $.each(fields, function (k, opts) {
                     if (!that.showColumn(k)) {

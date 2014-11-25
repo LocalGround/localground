@@ -22,7 +22,7 @@ define([
             PageableCollection.prototype.initialize.apply(this, arguments);
         },
         state: {
-            currentPage: 0,
+            currentPage: 1,
             pageSize: 200,
             sortKey: 'id',
             order: 1
@@ -49,6 +49,7 @@ define([
         },
 
         fetch: function (options) {
+            options = options || {};
 			options.data = options.data || {};
 			$.extend(options.data, {
 				page_size: this.state.pageSize,

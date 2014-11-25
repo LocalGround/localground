@@ -23,6 +23,8 @@ require.config({
         'sandbox': '../external/mediator/sandbox',
         'color-picker': '../external/jscolor',
         'mapplication': './mapplication',
+        'highcharts': '//code.highcharts.com/highcharts',
+        'highcharts_export': '//code.highcharts.com/modules/exporting'
     },
     //waitSeconds: 0,
     shim: {
@@ -60,6 +62,9 @@ require.config({
         },
         'slick': {
             deps: ['jquery']
+        },
+        'highcharts_export': {
+            deps: ['highcharts']
         }
 
     },
