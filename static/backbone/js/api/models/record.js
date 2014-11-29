@@ -14,7 +14,7 @@ define(["models/base", "underscore"], function (Base, _) {
         }),
         viewSchema: null,
         initialize: function (data, opts) {
-            Base.prototype.initialize.apply(this, arguments);
+            Base.prototype.initialize.apply(this, data, opts);
             this.viewSchema = this._generateSchema(opts.updateMetadata, false);
         },
         url: function () {
@@ -49,7 +49,11 @@ define(["models/base", "underscore"], function (Base, _) {
                 }
             }
             return json;
-        }
+        },
+        
+        save: function (key, val, options) {		
+            return Backbone.Model.prototype.save.call(this, key, val, options);		
+		}
 
     });
     return Record;

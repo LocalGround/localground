@@ -64,14 +64,14 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
                 }),
                 Row = Backgrid.Row.extend({
                     initialize: function (options) {
-                        Backgrid.Row.prototype.initialize.call(this, options);
                         this.listenTo(this.model, "change", function (model, options) {
-                            //console.log(this.model.id, "changed");
+                            console.log(model.changedAttributes());
                             if (options && options.save === false) {
                                 return;
                             }
-                            model.save();
+                            model.save(model.changedAttributes(), {patch: true});
                         });
+                        Backgrid.Row.prototype.initialize.call(this, options);
                     }
                 });
 
