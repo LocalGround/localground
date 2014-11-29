@@ -308,7 +308,6 @@ body { overflow: hidden; }
 }
 
 .projects-menu {
-	margin-right:120px;
 	width:250px;
 	padding: 5px;
 	max-height: 300px;
@@ -503,7 +502,18 @@ label {
 	font-size: 25px;
 	color: #333;
 }
-
+.filter-container { width: 300px; }
+.filter-container > .form-group {
+	border: none !important;
+}
+.filter-container label {
+	font-size: 13px;
+	padding: 0px;
+}
+.filter-container button:hover {
+	border: solid 1px #ccc;
+	color: #444;
+}
 /********************************************************/
 
 

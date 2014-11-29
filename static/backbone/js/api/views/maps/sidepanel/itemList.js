@@ -34,6 +34,7 @@ define(["marionette",
             className: "hidden",
 
             hidden: true,
+            doNotRender: false,
 
 
             initialize: function (opts) {
@@ -48,6 +49,7 @@ define(["marionette",
                 }
                 this.restoreState();
                 this.listenTo(this.app.vent, 'toggle-project', this.toggleProjectData);
+                this.listenTo(this.collection, "filtered", this.renderFiltered);
             },
 
             templateHelpers: function () {
@@ -55,7 +57,9 @@ define(["marionette",
                     name: this.collection.name,
                     key: this.collection.key,
                     isVisible: this.isVisible(),
-                    isExpanded: this.isExpanded()
+                    doNotRender: this.doNotRender,
+                    isExpanded: this.isExpanded(),
+                    numRenderings: this.numRenderings
                 };
             },
 
@@ -76,9 +80,9 @@ define(["marionette",
             isExpanded: function () {
                 var isExpanded = this.$el.find('.show-hide').hasClass('fa-caret-down');
                 // ensures that localStorage flag is only honored on initialization.
-                if (this.isFirstRendering()) {
-                    isExpanded = isExpanded || this.state.isExpanded;
-                }
+                //if (this.isFirstRendering()) {
+                isExpanded = isExpanded || this.state.isExpanded;
+                //}
                 return isExpanded;
             },
 
@@ -128,7 +132,20 @@ define(["marionette",
                 return this.numRenderings < 1;
             },
 
+            renderFiltered: function (opts) {
+                if (opts) {
+                    this.doNotRender = opts.doNotRender;
+                }
+                console.log(this.doNotRender);
+                this.render();
+            },
+
             saveState: function () {
+                //only save state if visible:
+                console.log("saving state...");
+                if (!this.doNotRender) {
+                    return;
+                }
                 this.app.saveState(
                     this.id,
                     {

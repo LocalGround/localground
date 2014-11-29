@@ -61,12 +61,25 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
                         this.delegateEvents();
                         return this;
                     }
+                }),
+                Row = Backgrid.Row.extend({
+                    initialize: function (options) {
+                        Backgrid.Row.prototype.initialize.call(this, options);
+                        this.listenTo(this.model, "change", function (model, options) {
+                            //console.log(this.model.id, "changed");
+                            if (options && options.save === false) {
+                                return;
+                            }
+                            model.save();
+                        });
+                    }
                 });
 
             this.grid = new Backgrid.Grid({
                 body: GridBody,
                 columns: this.columns,
-                collection: this.records
+                collection: this.records,
+                row: Row
             });
             this.listenTo(this, "row:added", this.initLayout);
             this.listenTo(this.records, "reset", this.initLayout);

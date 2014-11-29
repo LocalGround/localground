@@ -54,8 +54,7 @@ define([
         showVariable: function (name) {
             // check that not in exclude list and that doesn't end with the string
             // "_detail."
-            if (this.excludeList.indexOf(name) === -1 && !/(^\w*_detail$)/.test(name) &&
-                    name != this.activeVariable) {
+            if (this.excludeList.indexOf(name) === -1 && !/(^\w*_detail$)/.test(name)) {
                 return true;
             }
             return false;

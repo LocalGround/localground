@@ -119,6 +119,18 @@ define(["jquery", "backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/p
                 this.set({
                     geometry: geomHelper.getGeoJSON(googleOverlay)
                 });
+            },
+            save: function (attrs, options) {
+                options = options || {};
+                attrs = attrs || _.clone(this.attributes);
+
+                // Make sure that isVisible attribute doesn't sync the database
+                delete attrs.isVisible;
+
+                options.data = JSON.stringify(attrs);
+
+                // Proxy the call to the original save function
+                Backbone.Model.prototype.save.call(this, attrs, options);
             }
         });
         return Base;

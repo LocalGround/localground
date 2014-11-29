@@ -71,6 +71,8 @@ define(["models/project",
                 this.app.vent.on("project-requested", this.fetchDataByProjectID.bind(this));
                 this.app.vent.on("set-active-project", this.setActiveProject.bind(this));
                 this.app.vent.on("marker-added", updateCollection.bind(this));
+				this.app.vent.on("apply-filter", this.applyFilter.bind(this));
+				this.app.vent.on("clear-filter", this.clearFilter.bind(this));
                 this.selectedProjects = new Projects();
                 //this.restoreState();
             };
@@ -162,6 +164,24 @@ define(["models/project",
             this.getCollection = function (key) {
                 return this.collections[key];
             };
+
+			this.applyFilter = function (sql) {
+				var key;
+				for (key in this.collections) {
+                    if (this.collections.hasOwnProperty(key)) {
+						this.collections[key].applyFilter("name", "Orange Flower");
+                    }
+                }
+			};
+
+			this.clearFilter = function () {
+				var key;
+				for (key in this.collections) {
+                    if (this.collections.hasOwnProperty(key)) {
+						this.collections[key].clearFilter();
+                    }
+                }
+			};
 
             /**
              * Coordinates data pulled down from the data API
