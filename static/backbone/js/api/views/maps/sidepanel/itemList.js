@@ -136,13 +136,12 @@ define(["marionette",
                 if (opts) {
                     this.doNotRender = opts.doNotRender;
                 }
-                console.log(this.doNotRender);
                 this.render();
             },
 
             saveState: function () {
                 //only save state if visible:
-                console.log("saving state...");
+                //console.log("saving state...");
                 if (!this.doNotRender) {
                     return;
                 }

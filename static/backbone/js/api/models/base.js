@@ -11,6 +11,13 @@ define(["jquery", "backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/p
             getNamePlural: function () {
                 return this.get("overlay_type");
             },
+            filterFields: [
+                "name",
+                "tags",
+                "owner",
+                "caption",
+                "attribution"
+            ],
             defaults: {
                 name: "Untitled",
                 isVisible: true

@@ -503,8 +503,20 @@ label {
 	color: #333;
 }
 .filter-container { width: 300px; }
-.filter-container > .form-group {
+.filter-container .form-group {
 	border: none !important;
+}
+
+.filter-container .footer {
+	background-color: #EEE;
+	border-top: solid 1px #CCC;
+	padding: 5px;
+}
+.footer button {
+	padding: 3px 6px 3px 6px;
+}
+.footer > label {
+	padding-top: 10px !important;
 }
 .filter-container label {
 	font-size: 13px;
@@ -513,6 +525,18 @@ label {
 .filter-container button:hover {
 	border: solid 1px #ccc;
 	color: #444;
+}
+.filter-overflow, .sql {
+	height: 200px;
+	overflow-y: auto;
+}
+.sql {
+	display: none;
+	padding: 4px 10px 10px 10px;
+}
+#filter_sql {
+	height: 150px;
+	width: 100%;
 }
 /********************************************************/
 
