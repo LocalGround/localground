@@ -85,7 +85,7 @@ define([], function () {
                 var returnVal = false,
                     modelVal = model.get(truthStatement.key),
                     idx = -1;
-                if (!modelVal) {
+                if (typeof modelVal === 'undefined' || modelVal == null) {
                     return false;
                 }
                 if (typeof modelVal == "number") {
