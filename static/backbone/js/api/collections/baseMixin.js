@@ -8,7 +8,6 @@ define([], function () {
                 if (sqlParser.checkModel(item)) {
                     item.set("isVisible", true);
                 } else {
-                    //console.log(key, val);
                     item.set("isVisible", false);
                     ++count;
                 }

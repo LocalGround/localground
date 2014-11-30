@@ -288,7 +288,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         };
 
         this.attachCallback = function (markerModel, response) {
-            console.log(response);
+            //console.log(response);
             markerModel.trigger('hide-tip');
         };
 

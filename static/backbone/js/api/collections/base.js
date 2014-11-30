@@ -21,7 +21,6 @@ define(["underscore", "backbone", "jquery", "collections/baseMixin"],
             }
 
         });
-        console.log(CollectionMixin.prototype);
         _.extend(Base.prototype, CollectionMixin);
 
         return Base;

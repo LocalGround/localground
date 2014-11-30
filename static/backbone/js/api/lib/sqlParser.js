@@ -7,12 +7,14 @@ define([], function () {
             this.operator = "and";
             this.conjunction = null;
             this.parseStatement = function (statement, conjunction) {
-                var tokens = statement.split(/(=|>|<|>=|<=|<>|in|like)/);
+                //note: order matters here. Put the <>, <=, and <> before the
+                //      <, >, and = in the regex.
+                var tokens = statement.split(/(>=|<=|<>|>|<|=|in|like)/);
                 this.key = tokens[0].trim();
                 this.operator = tokens[1].trim();
                 this.val = tokens[2].trim();
                 this.conjunction = conjunction;
-                this.javascriptify();
+                this.compileSQLToJavascript();
             };
 
             this._trimCharacter = function (val, character) {
@@ -36,7 +38,7 @@ define([], function () {
                 return this._trimCharacter(val, "(");
             };
 
-            this.javascriptify = function () {
+            this.compileSQLToJavascript = function () {
                 var i = 0,
                     endsWith = false,
                     startsWith = false;
@@ -46,7 +48,6 @@ define([], function () {
                     for (i = 0; i < this.val.length; i++) {
                         this.val[i] = this.trimSingleQuotes(this.val[i].trim());
                     }
-                    console.log(this.val);
                 } else if (this.operator == 'like') {
                     this.val = this.trimSingleQuotes(this.val);
                     startsWith = this.val[this.val.length - 1] == '%';
@@ -82,8 +83,16 @@ define([], function () {
 
             this.check = function (model, truthStatement) {
                 var returnVal = false,
-                    modelVal = model.get(truthStatement.key).toString().toLowerCase(),
+                    modelVal = model.get(truthStatement.key),
                     idx = -1;
+                if (!modelVal) {
+                    return false;
+                }
+                if (typeof modelVal == "number") {
+                    modelVal = parseInt(modelVal, 10);
+                } else {
+                    modelVal = modelVal.toString().toLowerCase();
+                }
                 if (truthStatement.operator == '=') {
                     returnVal = modelVal == truthStatement.val;
                 } else if (truthStatement.operator == '>') {

@@ -22,7 +22,7 @@ define(["underscore",
                 'click #apply_filter': 'triggerFilter',
                 'click #clear_filter': 'clearFilter',
                 'blur input': 'updateSQL',
-                'click #filter-advanced': 'showSQL'
+                'click #filter-mode-toggle': 'showSQL'
             },
             /**
              * Initializes the project tags menu (an easy way to remove projects
@@ -53,6 +53,9 @@ define(["underscore",
                 this.$el.html(_.template(filterTemplate, {body: body}));
             },
             triggerFilter: function (e) {
+                if (this.$el.find('.filter-overflow').is(':visible')) {
+                    this.buildSQL();
+                }
                 var sql = this.$el.find('#filter_sql').val();
                 this.app.vent.trigger('apply-filter', sql);
                 e.stopPropagation();
