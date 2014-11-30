@@ -102,11 +102,13 @@ define(["marionette",
 
         /** shows the google.maps overlay on the map. */
         show: function () {
-            var go = this.getGoogleOverlay();
-            go.setMap(this.map);
-            this.changeMode();
-            this.isShowing = true;
-            this.saveState();
+            if (this.model.get("isVisible")) {
+                var go = this.getGoogleOverlay();
+                go.setMap(this.map);
+                this.changeMode();
+                this.isShowing = true;
+                this.saveState();
+            }
         },
 
         render: function () {

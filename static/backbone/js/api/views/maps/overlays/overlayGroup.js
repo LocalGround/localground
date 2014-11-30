@@ -61,7 +61,10 @@ define(['marionette',
             showAll: function () {
                 this.isVisible = true;
                 this.children.each(function (overlay) {
-                    overlay.show();
+                    console.log(overlay.model.get("isVisible"));
+                    if (overlay.model.get("isVisible")) {
+                        overlay.show();
+                    }
                 });
             },
 
@@ -75,6 +78,7 @@ define(['marionette',
 
             /** Zooms to the extent of the collection */
             zoomToExtent: function () {
+                //console.log("zoom to extent");
                 var bounds = new google.maps.LatLngBounds();
                 this.children.each(function (overlay) {
                     bounds.union(overlay.getBounds());
