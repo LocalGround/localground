@@ -53,9 +53,8 @@ define(["underscore",
                 this.$el.html(_.template(filterTemplate, {body: body}));
             },
             triggerFilter: function (e) {
-                var filterText = this.$el.find('#filter_name').val();
-                console.log(filterText);
-                this.app.vent.trigger('apply-filter', filterText);
+                var sql = this.$el.find('#filter_sql').val();
+                this.app.vent.trigger('apply-filter', sql);
                 e.stopPropagation();
             },
             clearFilter: function (e) {
@@ -63,6 +62,7 @@ define(["underscore",
                 e.stopPropagation();
             },
             showSQL: function (e) {
+                this.buildSQL();
                 if ($(e.target).html() == "advanced") {
                     $(e.target).html("basic");
                     this.$el.find('.filter-overflow').hide();
@@ -74,7 +74,7 @@ define(["underscore",
                 }
                 e.stopPropagation();
             },
-            updateSQL: function () {
+            buildSQL: function () {
                 var elements = [],
                     sql;
                 $.each(this.$el.find('input'), function () {
@@ -88,7 +88,7 @@ define(["underscore",
                     sql = '';
                 }
                 //console.log(sql);
-                this.$el.find("#filter_sql").html(sql);
+                this.$el.find("#filter_sql").val(sql);
             }
         });
         return DataFilter;

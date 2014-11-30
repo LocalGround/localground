@@ -1,9 +1,10 @@
 define(["models/project",
         "collections/projects",
         "jquery",
+        "lib/sqlParser",
         "config"
     ],
-    function (Project, Projects, $, Config) {
+    function (Project, Projects, $, SqlParser, Config) {
         'use strict';
 
         /**
@@ -166,10 +167,11 @@ define(["models/project",
             };
 
 			this.applyFilter = function (sql) {
-				var key;
+				var key,
+                    sqlParser = new SqlParser(sql);
 				for (key in this.collections) {
                     if (this.collections.hasOwnProperty(key)) {
-						this.collections[key].applyFilter("name", "Orange Flower");
+						this.collections[key].applyFilter(sqlParser);
                     }
                 }
 			};

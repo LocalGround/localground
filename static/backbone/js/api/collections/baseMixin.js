@@ -1,11 +1,13 @@
 define([], function () {
     "use strict";
     return {
-        applyFilter: function (key, val) {
+        applyFilter: function (sqlParser) {
             var count = 0,
                 hidden = false;
             this.each(function (item) {
-                if (item.get(key) !== val) {
+                if (sqlParser.checkModel(item)) {
+                    item.set("isVisible", true);
+                } else {
                     //console.log(key, val);
                     item.set("isVisible", false);
                     ++count;
