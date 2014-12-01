@@ -47,9 +47,13 @@ define(["jquery"], function ($) {
 				opt_options.closeBubbleExtras();  
 			}
 		};
-	
+
 		var options = opt_options || {};
-	  
+
+		if (options.zIndex) {
+			this.baseZIndex_ = options.zIndex;
+		}
+
 		if (options['backgroundColor'] == undefined) {
 		  options['backgroundColor'] = this.BACKGROUND_COLOR_;
 		}
