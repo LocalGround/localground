@@ -103,20 +103,20 @@ define(['jquery',
             },
 
             renderEditContent: function () {
-                var that = this,
-                    template = that.getTemplate("InfoBubbleTemplate"),
+                var template = this.getTemplate("InfoBubbleTemplate"),
                     ModelForm = Form.extend({
-                        schema: that.model.updateSchema
+                        schema: this.model.updateSchema
                     }),
-                    context = that.getContext(this.model);
+                    context = this.getContext(this.model);
+                console.log(this.model.updateSchema);
                 context.mode = 'edit';
-                that.setElement($(template(context)));
-                that.form = new ModelForm({
-                    model: that.model
+                this.setElement($(template(context)));
+                this.form = new ModelForm({
+                    model: this.model
                 }).render();
-                that.$el.find('.form').append(that.form.$el);
+                this.$el.find('.form').append(this.form.$el);
 
-                that.showUpdatedContent();
+                this.showUpdatedContent();
             },
 
             saveForm: function (e) {
