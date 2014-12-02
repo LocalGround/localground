@@ -82,7 +82,7 @@ define(["underscore",
                     sql;
                 $.each(this.$el.find('input'), function () {
                     if ($(this).val().length > 0) {
-                        elements.push($(this).attr('id').replace("filter_", "") + " = '" + $(this).val() + "'");
+                        elements.push($(this).attr('id').replace("filter_", "") + " like '%" + $(this).val() + "%'");
                     }
                 });
                 if (elements.length > 0) {

@@ -1,4 +1,4 @@
-define([], function () {
+define(["jquery"], function ($) {
     "use strict";
 
     var TruthStatement = function (statement, conjunction) {
@@ -9,7 +9,7 @@ define([], function () {
             this.parseStatement = function (statement, conjunction) {
                 //note: order matters here. Put the <>, <=, and <> before the
                 //      <, >, and = in the regex.
-                var tokens = statement.split(/(>=|<=|<>|>|<|=|in|like)/);
+                var tokens = statement.split(/(>=|<=|<>|>|<|=|in|like|contains|startswith|endswith)/);
                 this.key = tokens[0].trim();
                 this.operator = tokens[1].trim();
                 this.val = tokens[2].trim();
@@ -56,13 +56,74 @@ define([], function () {
                     if (endsWith && startsWith) {
                         this.operator = 'contains';
                     } else if (startsWith) {
-                        this.operator = 'startsWith';
+                        this.operator = 'startswith';
                     } else {
-                        this.operator = 'endsWith';
+                        this.operator = 'endswith';
                     }
                 } else {
                     this.val = this.trimSingleQuotes(this.val);
                 }
+            };
+            this.truthTest = function (model) {
+                //console.log(this);
+                var returnVal = false,
+                    modelVal = model.get(this.key),
+                    idx = -1;
+                if (typeof modelVal === 'undefined' || modelVal == null) {
+                    return false;
+                }
+                modelVal = this.convertType(modelVal);
+
+                if (this.operator == '=') {
+                    returnVal = modelVal == this.val;
+                } else if (this.operator == '>') {
+                    returnVal = modelVal > this.val;
+                } else if (this.operator == '>=') {
+                    returnVal = modelVal >= this.val;
+                } else if (this.operator == '<') {
+                    returnVal = modelVal < this.val;
+                } else if (this.operator == '<=') {
+                    returnVal = modelVal <= this.val;
+                } else if (this.operator == '<>') {
+                    returnVal = modelVal != this.val;
+                } else if (this.operator == 'in') {
+                    returnVal = this.val.indexOf(modelVal) != -1;
+                } else if (this.operator == 'contains') {
+                    returnVal = modelVal.indexOf(this.val) != -1;
+                } else if (this.operator == 'startswith') {
+                    returnVal = modelVal.indexOf(this.val) == 0;
+                } else if (this.operator == 'endswith') {
+                    idx = modelVal.length - this.val.length;
+                    returnVal =  modelVal.indexOf(this.val, idx) !== -1;
+                }
+                //console.log(returnVal, modelVal, this.val, this.operator);
+                return returnVal;
+            };
+
+            this.convertType = function (modelVal) {
+                var i = 0,
+                    isNumber = typeof modelVal == "number",
+                    isString = typeof modelVal == "string",
+                    converter = isNumber ? this.parseNum : this.parseString;
+                if ($.isArray(this.val)) {
+                    for (i = 0; i < this.val.length; i++) {
+                        this.val[i] = converter(this.val[i]);
+                    }
+                } else {
+                    this.val = converter(this.val);
+                }
+                if (isString) {
+                    modelVal = this.parseString(modelVal);
+                }
+                return modelVal;
+            };
+
+            this.parseNum = function (val) {
+                return parseInt(val, 10);
+            };
+
+            this.parseString = function (val) {
+                return val.toString().toLowerCase();
             };
 
             this.parseStatement(statement, conjunction);
@@ -81,43 +142,6 @@ define([], function () {
                 }
             };
 
-            this.check = function (model, truthStatement) {
-                var returnVal = false,
-                    modelVal = model.get(truthStatement.key),
-                    idx = -1;
-                if (typeof modelVal === 'undefined' || modelVal == null) {
-                    return false;
-                }
-                if (typeof modelVal == "number") {
-                    modelVal = parseInt(modelVal, 10);
-                } else {
-                    modelVal = modelVal.toString().toLowerCase();
-                }
-                if (truthStatement.operator == '=') {
-                    returnVal = modelVal == truthStatement.val;
-                } else if (truthStatement.operator == '>') {
-                    returnVal = modelVal > truthStatement.val;
-                } else if (truthStatement.operator == '>=') {
-                    returnVal = modelVal >= truthStatement.val;
-                } else if (truthStatement.operator == '<') {
-                    returnVal = modelVal < truthStatement.val;
-                } else if (truthStatement.operator == '<=') {
-                    returnVal = modelVal <= truthStatement.val;
-                } else if (truthStatement.operator == '<>') {
-                    returnVal = modelVal != truthStatement.val;
-                } else if (truthStatement.operator == 'in') {
-                    returnVal = truthStatement.val.indexOf(modelVal) != -1;
-                } else if (truthStatement.operator == 'contains') {
-                    returnVal = modelVal.indexOf(truthStatement.val) != -1;
-                } else if (truthStatement.operator == 'startsWith') {
-                    returnVal = modelVal.indexOf(truthStatement.val) == 0;
-                } else if (truthStatement.operator == 'endsWith') {
-                    idx = modelVal.length - truthStatement.val.length;
-                    returnVal =  modelVal.indexOf(truthStatement.val, idx) !== -1;
-                }
-                return returnVal;
-            };
-
             this.checkModel = function (model) {
                 var i = 0,
                     truthVal = true,
@@ -125,9 +149,9 @@ define([], function () {
                 for (i = 0; i < this.statements.length; i++) {
                     s = this.statements[i];
                     if (s.conjunction == 'and') {
-                        truthVal = truthVal && this.check(model, s);
+                        truthVal = truthVal && s.truthTest(model);
                     } else {
-                        truthVal = truthVal || this.check(model, s);
+                        truthVal = truthVal || s.truthTest(model);
                     }
                 }
                 return truthVal;

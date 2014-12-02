@@ -12,7 +12,18 @@
 	<body>
         <nav id="topbar" class="navbar navbar-default" role="navigation"></nav>
         <div id="map_canvas"></div>
-        <div id="panels"></div>
+        <div class="tabbable tabs-left">
+			<ul class="nav nav-tabs">
+				<li class="active">
+					<a href="#data_panel" class="fa fa-database" data-toggle="tab"></a>
+				</li>
+				<li class="">
+					<a href="#legend_panel" class="fa fa-map-marker" data-toggle="tab"></a>
+				</li>
+			</ul>
+		</div>
+		<div id="data_panel" class="side-panel tab-pane active"></div>
+		<div id="legend_panel" class="side-panel tab-pane"></div>
 	</body>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing,places,geometry"></script>
     <script src="/static/backbone/js/external/require.js"></script>

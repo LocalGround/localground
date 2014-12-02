@@ -5,7 +5,7 @@ body { overflow: hidden; }
 	width: 70%;
 	border-right: solid 1px #999;
 }
-#panels {
+.side-panel {
 	/*
 	 *padding: 10px;
 	min-height: 800px;
@@ -136,6 +136,11 @@ body { overflow: hidden; }
 
 .tab-pane {
 	padding: 0px !important;
+	display: none;
+}
+.tab-pane.active{
+	padding: 0px !important;
+	display: block;
 }
 .pane-header > h3 {
 	margin: 0px !important;
