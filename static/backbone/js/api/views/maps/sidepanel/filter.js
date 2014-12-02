@@ -30,6 +30,7 @@ define(["underscore",
              */
             initialize: function (opts) {
                 $.extend(this, opts);
+                opts.app.vent.on('selected-projects-updated', this.applyFilter, this);
             },
             ignore: function (e) {
                 e.stopPropagation();
@@ -57,8 +58,18 @@ define(["underscore",
                     this.buildSQL();
                 }
                 var sql = this.$el.find('#filter_sql').val();
-                this.app.vent.trigger('apply-filter', sql);
+                if (sql.length > 0) {
+                    this.app.vent.trigger('apply-filter', sql);
+                } else {
+                    this.clearFilter(e);
+                }
                 e.stopPropagation();
+            },
+            applyFilter: function () {
+                var sql = this.$el.find('#filter_sql').val();
+                if (sql.length > 0) {
+                    this.app.vent.trigger('apply-filter', sql);
+                }
             },
             clearFilter: function (e) {
                 this.app.vent.trigger('clear-filter');

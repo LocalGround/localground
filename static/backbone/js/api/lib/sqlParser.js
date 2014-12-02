@@ -134,11 +134,17 @@ define(["jquery"], function ($) {
             this.sql = null;
             this.init = function (sqlString) {
                 this.sql = sqlString.toLowerCase().replace("where", "");
-                var raw = this.sql.split(/(\s+and\s+|\s+or\s+)/);
+                var raw = this.sql.split(/(\s+and\s+|\s+or\s+)/),
+                    truthStatement = null;
                 raw.unshift("and");
                 for (i = 0; i < raw.length; i += 2) {
                     raw[i] = raw[i].trim();
-                    this.statements.push(new TruthStatement(raw[i + 1], raw[i]));
+                    try {
+                        truthStatement = new TruthStatement(raw[i + 1], raw[i]);
+                        this.statements.push(truthStatement);
+                    } catch (e) {
+                        console.log("error parsing truth statement: ", e);
+                    }
                 }
             };
 

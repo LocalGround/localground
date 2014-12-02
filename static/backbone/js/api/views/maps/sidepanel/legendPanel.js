@@ -42,7 +42,7 @@ define(["marionette",
             },
 
             onShow: function () {
-
+                this.resize();
             },
 
             destroy: function () {

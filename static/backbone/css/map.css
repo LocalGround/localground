@@ -61,10 +61,10 @@ body { overflow: hidden; }
 	display: block;
 }
 
-.item:hover .close {
+.data-item:hover .close {
 	display: block !important;
 }
-.item:hover {
+.data-item:hover {
 	background-image: url(../images/bg.png);
 }
 
