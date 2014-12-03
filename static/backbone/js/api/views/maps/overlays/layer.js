@@ -20,6 +20,7 @@ define(['marionette',
             overlays: null,
             dataManager: null,
             legendItem: null,
+            isVisible: false,
 
             initialize: function (opts) {
                 $.extend(this, opts);
@@ -30,6 +31,7 @@ define(['marionette',
                 this.overlays = {};
                 this.findModels();
                 this.renderOverlays();
+                this.app.vent.on("filter-applied", this.redraw.bind(this));
             },
 
             findModels: function () {
@@ -84,38 +86,51 @@ define(['marionette',
                         };
                         symbol = new Symbolized(opts);
                         this.overlays[key].push(symbol);
-                        symbol.show();
                     }
                 }
             },
 
             /** Shows all of the map overlays */
             showAll: function () {
-                //this.legendItem = data.legendItem;
-                /*this.isVisible = true;
-                this.children.each(function (overlay) {
-                    console.log(overlay.model.get("isVisible"));
-                    if (overlay.model.get("isVisible")) {
-                        overlay.show();
+                this.isVisible = true;
+                var key, i;
+                for (key in this.overlays) {
+                    for (i = 0; i < this.overlays[key].length; i++) {
+                        this.overlays[key][i].show();
                     }
-                });*/
+                }
             },
 
             /** Hides all of the map overlays */
             hideAll: function () {
                 this.isVisible = false;
-                this.children.each(function (overlay) {
-                    overlay.hide();
-                });
+                var key, i;
+                for (key in this.overlays) {
+                    for (i = 0; i < this.overlays[key].length; i++) {
+                        this.overlays[key][i].hide();
+                    }
+                }
+            },
+
+            redraw: function () {
+                if (this.isVisible) {
+                    this.showAll();
+                } else {
+                    this.hideAll();
+                }
             },
 
             /** Zooms to the extent of the collection */
             zoomToExtent: function () {
                 //console.log("zoom to extent");
-                var bounds = new google.maps.LatLngBounds();
-                this.children.each(function (overlay) {
-                    bounds.union(overlay.getBounds());
-                });
+                var bounds = new google.maps.LatLngBounds(),
+                    key,
+                    i;
+                for (key in this.overlays) {
+                    for (i = 0; i < this.overlays[key].length; i++) {
+                        bounds.union(this.overlays[key][i].getBounds());
+                    }
+                }
                 this.map.fitBounds(bounds);
             }
 

@@ -23,21 +23,24 @@ define(["backbone",
                 this.app = opts.app;
                 this.opts = opts;
                 this.listenTo(this.app.vent, "show-layer", this.showLayer);
-                this.listenTo(this.app.vent, 'zoom-to-extent', this.zoomToExtent);
+                this.listenTo(this.app.vent, "hide-layer", this.hideLayer);
+                this.listenTo(this.app.vent, 'zoom-to-layer', this.zoomToExtent);
                 this.layers = {};
             },
 
             showLayer: function (data) {
-                var key = "layer_" + data.legendItem.id,
-                    k;
+                var key = "layer_" + data.legendItem.id;
                 if (!this.layers[key]) {
-                    console.log("creating...", key);
                     this.createLayer(data);
                 }
                 this.layers[key].showAll();
-                for (k in this.layers) {
-                    console.log(k, this.layers[k].models);
+            },
+            hideLayer: function (data) {
+                var key = "layer_" + data.legendItem.id;
+                if (!this.layers[key]) {
+                    this.createLayer(data);
                 }
+                this.layers[key].hideAll();
             },
             createLayer: function (data) {
                 var opts = _.clone(this.opts);

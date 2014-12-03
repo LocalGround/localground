@@ -1,10 +1,11 @@
 define(["marionette",
         "underscore",
         "jquery",
+        "views/maps/sidepanel/filter",
         "views/maps/sidepanel/legendItem",
         "text!" + templateDir + "/sidepanel/legendPanelHeader.html"
     ],
-    function (Marionette, _, $, LegendItem, legendPanelHeader) {
+    function (Marionette, _, $, DataFilter, LegendItem, legendPanelHeader) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -90,7 +91,8 @@ define(["marionette",
                 }
             ],
             regions: {
-                legend: "#legend-manager"
+                legend: "#legend-manager",
+                dataFilter: "#data-filter"
             },
             /**
              * Initializes the dataPanel
@@ -117,6 +119,7 @@ define(["marionette",
 
             onShow: function () {
                 this.addLegendEntries();
+                this.dataFilter.show(new DataFilter(this.opts));
                 this.resize();
             },
 

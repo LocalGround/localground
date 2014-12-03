@@ -30,7 +30,6 @@ define(["lib/maps/overlays/base"], function (Base) {
         initialize: function (opts) {
             Base.prototype.initialize.apply(this, arguments);
             this.color = opts.color;
-            console.log(this.color);
             this.redraw();
         },
 

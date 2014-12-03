@@ -174,6 +174,7 @@ define(["models/project",
 						this.collections[key].applyFilter(sqlParser);
                     }
                 }
+				this.app.vent.trigger('filter-applied');
 			};
 
 			this.clearFilter = function () {
@@ -183,6 +184,7 @@ define(["models/project",
 						this.collections[key].clearFilter();
                     }
                 }
+				this.app.vent.trigger('filter-applied');
 			};
 
             /**

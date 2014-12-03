@@ -30,22 +30,16 @@ define(["backbone",
                 }));
             },
             toggleShow: function () {
-                /*if (this.$el.find('.check-all').is(':checked')) {
-                    this.children.each(function (child) {
-                        child.checkItem();
+                if (this.$el.find('.check-all').is(':checked')) {
+                    this.app.vent.trigger("show-layer", {
+                        legendItem: this
                     });
                 } else {
-                    this.children.each(function (child) {
-                        child.uncheckItem();
+                    this.app.vent.trigger("hide-layer", {
+                        legendItem: this
                     });
                 }
-                this.saveState();
-                */
-                this.app.vent.trigger("show-layer", {
-                    legendItem: this
-                });
-                //alert("show");
-                //e.preventDefault();
+                //this.saveState();
             },
             zoomToExtent: function (e) {
                 //this.collection.trigger('zoom-to-extent');
