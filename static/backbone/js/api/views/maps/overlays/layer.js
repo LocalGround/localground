@@ -118,8 +118,6 @@ define(['marionette',
             redraw: function () {
                 if (this.isVisible) {
                     this.showAll();
-                } else {
-                    this.hideAll();
                 }
             },
 

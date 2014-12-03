@@ -25,12 +25,12 @@ define(["marionette",
                     name: "Worms",
                     children: [
                         {
-                            title: "Places with at least 1 worm",
+                            title: "At least 1 worm",
                             color: "#7075FF",
                             rule: "worms > 0"
                         },
                         {
-                            title: "Places with no worms",
+                            title: "No worms",
                             color: "#F011D9",
                             rule: "worms = 0"
                         }
@@ -41,12 +41,12 @@ define(["marionette",
                     name: "Soil Moisture",
                     children: [
                         {
-                            title: "Places with moist soil",
+                            title: "Moist soil",
                             color: "#428BCA",
                             rule: "moisture = 'moist'"
                         },
                         {
-                            title: "Places with dry soil",
+                            title: "Dry soil",
                             color: "#b7f081",
                             rule: "moisture = 'dry'"
                         }
@@ -57,17 +57,17 @@ define(["marionette",
                     name: "Percolation Time",
                     children: [
                         {
-                            title: "Places with a fast percolation time",
+                            title: "Fast percolation time (<= 30s)",
                             color: "#a2e6ef",
                             rule: "percolation <= 30"
                         },
                         {
-                            title: "Places with a medium percolation time",
+                            title: "Medium percolation time (between 30 and 200s)",
                             color: "#19b8ca",
                             rule: "percolation > 30 and percolation <= 200"
                         },
                         {
-                            title: "Places with a slow percolation time",
+                            title: "Slow percolation time (more than 200s)",
                             color: "#0e727e",
                             rule: "percolation > 200"
                         }
@@ -78,12 +78,12 @@ define(["marionette",
                     name: "Pitfall Count",
                     children: [
                         {
-                            title: "Places with less than 10 invertebrates",
+                            title: "Less than 10 invertebrates",
                             color: "#5cee1e",
                             rule: "pitfall < 10"
                         },
                         {
-                            title: "Places with 10 or more invertebrates",
+                            title: "10 or more invertebrates",
                             color: "#3b9914",
                             rule: "pitfall >= 10"
                         }
