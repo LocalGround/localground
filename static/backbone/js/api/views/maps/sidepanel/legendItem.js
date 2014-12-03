@@ -20,9 +20,7 @@ define(["backbone",
             },
             initialize: function (opts) {
                 $.extend(this, opts);
-                //this.renderEntry();
-                //this.renderLegendEntries();
-                //this.app.vent.trigger("adjust-layout");
+                this.app = opts.app;
                 this.render();
             },
             render: function () {
@@ -43,7 +41,10 @@ define(["backbone",
                 }
                 this.saveState();
                 */
-                alert("show");
+                this.app.vent.trigger("show-layer", {
+                    legendItem: this
+                });
+                //alert("show");
                 //e.preventDefault();
             },
             zoomToExtent: function (e) {

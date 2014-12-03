@@ -1,4 +1,4 @@
-<div class="collection-header">
+<div class="legend-header">
     <input class="check-all" type="checkbox">
     <h4><%= name %></h4>
     <i class="fa fa-search fa-lg pull-right zoom-to-extent" title="zoom to extent"></i>
@@ -7,9 +7,6 @@
 
     <div class="item legend-item">
         <i class="fa fa-map-marker item-icon" draggable="false" style="color: <%= item.color %>"></i>
-        <div>
-            <%= item.title %>
-            <span style="color: #999;">X sites</span>
-        </div>
+        <div><%= item.title %></div>
     </div>
 <% }); %>

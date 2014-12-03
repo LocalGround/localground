@@ -9,10 +9,12 @@ define(["marionette",
         "lib/appUtilities",
         "collections/projects",
         "lib/maps/controls/georeferenceManager",
+        "views/maps/overlays/layerManager",
         "jquery.bootstrap"
     ],
     function (Marionette, Backbone, _, BaseMap, DataPanel, LegendPanel,
-              TopBar, DataManager, appUtilities, Projects, GeoreferenceManager) {
+              TopBar, DataManager, appUtilities, Projects, GeoreferenceManager,
+              LayerManager) {
         "use strict";
 
         var Mapplication = new Marionette.Application();
@@ -50,7 +52,11 @@ define(["marionette",
                 legendPanel = new LegendPanel(options),
                 dataManager = new DataManager(options),
                 georeferenceManager = new GeoreferenceManager(options, basemap),
-                topBar = new TopBar(options);
+                topBar = new TopBar(options),
+                layerManager = new LayerManager(_.extend(options, {
+                    dataManager: dataManager,
+                    basemap: basemap
+                }));
             this.map = basemap.map;
             Mapplication.mapRegion.show(basemap);
             Mapplication.dataPanelRegion.show(dataPanel);

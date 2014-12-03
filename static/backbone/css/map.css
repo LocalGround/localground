@@ -21,26 +21,24 @@ body { overflow: hidden; }
 
 
 
-.collection-header {
+.collection-header, .legend-header {
 	border-bottom-style: solid;
 	border-bottom-width: 1px;
 	border-bottom-color: rgb(204, 204, 204);
-	padding-bottom: 5px;
 	margin-bottom: 0px;
 }
-.collection-header > h4 {
+.collection-header {
+	padding-bottom: 5px;	
+}
+.collection-header > h4, .legend-header > h4 {
 	display: inline-block;
 }
-.collection-header > .fa-search {
+.collection-header > .fa-search, .legend-header > .fa-search  {
 	margin: 10px 3px 0px 0px;
+	color: #666;
 }
 
 
-.item {
-	border-bottom: solid 1px #eee;
-	padding: 2px 6px 2px 10px;
-	cursor: pointer;
-}
 .item > input, .input > img {
 	vertical-align: baseline;
 }
@@ -60,12 +58,23 @@ body { overflow: hidden; }
 	color: #444;
 	display: block;
 }
-
+.data-item {
+	padding: 2px 6px 2px 10px;
+	cursor: pointer;
+	border-bottom: solid 1px #eee;
+}
 .data-item:hover .close {
 	display: block !important;
 }
 .data-item:hover {
 	background-image: url(../images/bg.png);
+}
+.legend-item {
+	padding: 0px 6px 0px 16px;
+	color: #666;
+}
+.legend-item .item-icon {
+	margin: 0px !important;
 }
 
 .fa-map-marker {

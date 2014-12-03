@@ -108,9 +108,9 @@ define(["marionette",
                     selector;
                 $.each(this.entries, function () {
                     selector = "legend_" + this.id;
-                    console.log(that.$el);
                     that.$el.find('#legend-manager').append($('<div id="' + selector + '"></div>'));
                     that.addRegion(selector, '#' + selector);
+                    this.app = that.app;
                     that[selector].show(new LegendItem(this));
                 });
             },
