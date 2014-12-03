@@ -57,17 +57,17 @@ define(["marionette",
                     name: "Percolation Time",
                     children: [
                         {
-                            title: "Fast percolation time (<= 30s)",
+                            title: "Percolation time less than 30 seconds",
                             color: "#a2e6ef",
                             rule: "percolation <= 30"
                         },
                         {
-                            title: "Medium percolation time (between 30 and 200s)",
+                            title: "Percolation time between 30 and 200 seconds",
                             color: "#19b8ca",
                             rule: "percolation > 30 and percolation <= 200"
                         },
                         {
-                            title: "Slow percolation time (more than 200s)",
+                            title: "Percolation time more than 200 seconds",
                             color: "#0e727e",
                             rule: "percolation > 200"
                         }
