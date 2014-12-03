@@ -73,19 +73,22 @@ define(['marionette',
                     }
                     for (i = 0; i < this.models[key].length; i++) {
                         model = this.models[key][i];
-                        configKey = model.getKey().split("_")[0];
-                        opts = {
-                            app: this.app,
-                            model: model,
-                            color: key,
-                            map: this.map,
-                            infoBubbleTemplates: {
-                                InfoBubbleTemplate: _.template(Config[configKey].InfoBubbleTemplate),
-                                TipTemplate: _.template(Config[configKey].TipTemplate)
-                            }
-                        };
-                        symbol = new Symbolized(opts);
-                        this.overlays[key].push(symbol);
+                        //only create an overlay if the model's geometry is defined
+                        if (model.get('geometry') != null) {
+                            configKey = model.getKey().split("_")[0];
+                            opts = {
+                                app: this.app,
+                                model: model,
+                                color: key,
+                                map: this.map,
+                                infoBubbleTemplates: {
+                                    InfoBubbleTemplate: _.template(Config[configKey].InfoBubbleTemplate),
+                                    TipTemplate: _.template(Config[configKey].TipTemplate)
+                                }
+                            };
+                            symbol = new Symbolized(opts);
+                            this.overlays[key].push(symbol);
+                        }
                     }
                 }
             },
