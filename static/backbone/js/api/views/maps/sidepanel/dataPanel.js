@@ -31,7 +31,6 @@ define(["marionette",
                 projectTags: "#project-tags",
                 itemList: "#item-list-manager",
                 dataFilter: "#data-filter"
-
             },
             /**
              * Initializes the dataPanel
