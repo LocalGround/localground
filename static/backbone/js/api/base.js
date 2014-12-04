@@ -16,7 +16,7 @@ require.config({
         'backbone-pageable': '../external/backbone-pageable',
         'backbone-paginator': '../external/backbone.paginator',
         'google-infobubble': '../external/infobubble',
-        'slick': '//cdn.jsdelivr.net/jquery.slick/1.3.7/slick.min',
+        'slick': '../external/slick.min',
         'urlon': '../external/urlon',
         'kernel': '../external/kernel.min',
         'core': '../external/mediator/core-jquery',
