@@ -12,7 +12,10 @@
 			<% _.each(child.data, function(item) { %>
 			<div class="record">
 				<% _.each(item.list, function(field) { %>
-					<label><%= field.key %>:</label> <span><%= field.value %></span><br>
+				<div class="row">
+					<div class="col-md-4"><%= field.key %>:</div>
+					<div class="col-md-8"><%= field.value %></div>
+				</div>
 				<% }); %>
 			</div>
 			<% }); %>

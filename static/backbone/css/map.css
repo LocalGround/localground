@@ -471,19 +471,23 @@ label {
 }
 .marker-container .record {
 	background-color: #EEE;
-	height: 300px;
-	padding: 30px 0px 30px 0px;
+	height: 280px;
+	padding: 30px 0px 0px 0px;
+	overflow: auto;
 }
-.marker-container .record label {
+.marker-container .record .row {
+	padding: 2px;
+}
+.marker-container .record .col-md-4 {
 	font-size: 14px;
-	width: 150px;
 	text-align: right;
 	font-weight: bold;
 	text-transform: capitalize;
-	padding-right: 12px;
+	color: #666;
 }
-.marker-container .record span {
+.marker-container .record .col-md-8 {
 	font-size: 14px;
+	padding-left: 0px;
 }
 .bubble-title {
 	font-weight: bold;
