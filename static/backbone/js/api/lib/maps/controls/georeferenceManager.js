@@ -187,7 +187,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         this.getIntersectingMarker = function (opts) {
             var activeMarker;
             this.getMarkerOverlays().each(function (marker) {
-                if (marker.intersects(opts.latLng)) {
+                if (marker.isVisible() && marker.intersects(opts.latLng)) {
                     activeMarker = marker;
                     return;
                 }
@@ -207,7 +207,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             var that = this,
                 intersects = false;
             this.getMarkerOverlays().each(function (marker) {
-                if (marker.intersects(opts.latLng)) {
+                if (marker.isVisible() && marker.intersects(opts.latLng)) {
                     that.highlight(marker);
                     intersects = true;
                 }
