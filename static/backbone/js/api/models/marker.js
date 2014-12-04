@@ -48,7 +48,6 @@ define(["models/base",
 						}
 					}
 				}
-				console.log(this.get("children"));
 			}
             return json;
         },

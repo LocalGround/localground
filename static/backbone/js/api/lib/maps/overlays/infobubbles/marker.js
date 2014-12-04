@@ -26,7 +26,6 @@ define(['underscore',
 
         renderViewContent: function () {
             BaseBubble.prototype.renderViewContent.apply(this, arguments);
-
             //controls marker slide show:
             window.setTimeout(function () {
                 $('.marker-container').slick({
