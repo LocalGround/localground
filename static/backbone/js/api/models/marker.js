@@ -20,7 +20,11 @@ define(["models/base",
             "num",
             "display_name",
             "id",
-            "project_id"
+            "project_id",
+			"team_photo",
+			"site_photo",
+			"soil_sketch_1",
+			"soil_sketch_2"
         ],
         toTemplateJSON: function () {
             var json = Base.prototype.toTemplateJSON.apply(this, arguments),
@@ -37,7 +41,8 @@ define(["models/base",
 						for (i = 0; i < recs.length; i++) {
 							list = [];
 							for (key1 in recs[i]) {
-								if (this.excludeList.indexOf(key1) === -1 && !/(^\w*_detail$)/.test(key1)) {
+								if (this.excludeList.indexOf(key1) === -1 &&
+										!/(^\w*_detail$)/.test(key1)) {
 									list.push({
 										key: key1.split("_").join(" "),
 										value: recs[i][key1]
