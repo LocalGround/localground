@@ -80,9 +80,9 @@ define(["marionette",
             isExpanded: function () {
                 var isExpanded = this.$el.find('.show-hide').hasClass('fa-caret-down');
                 // ensures that localStorage flag is only honored on initialization.
-                //if (this.isFirstRendering()) {
-                isExpanded = isExpanded || this.state.isExpanded;
-                //}
+                if (this.isFirstRendering()) {
+                    isExpanded = isExpanded || this.state.isExpanded;
+                }
                 return isExpanded;
             },
 

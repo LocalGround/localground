@@ -8,6 +8,14 @@
 			    <img src="<%= item.path_medium %>" />
 			</div>
 		    <% }); %>
+		<% } else if (child.overlay_type == 'record') { %>
+			<% _.each(child.data, function(item) { %>
+			<div class="record">
+				<% _.each(item.list, function(field) { %>
+					<label><%= field.key %>:</label> <span><%= field.value %></span><br>
+				<% }); %>
+			</div>
+			<% }); %>
 		<% } %>
 	    <% }); %>
 	</div>
