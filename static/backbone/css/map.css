@@ -475,17 +475,17 @@ label {
 	padding: 30px 0px 0px 0px;
 	overflow: auto;
 }
-.marker-container .record .row {
+.bubble-container .row {
 	padding: 4px;
 }
-.marker-container .record .col-md-4 {
+.bubble-container .col-md-4 {
 	font-size: 14px;
 	text-align: right;
 	font-weight: bold;
 	text-transform: capitalize;
 	color: #666;
 }
-.marker-container .record .col-md-8 {
+.bubble-container .col-md-8 {
 	font-size: 14px;
 	padding-left: 0px;
 }
