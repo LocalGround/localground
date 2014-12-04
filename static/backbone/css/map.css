@@ -476,7 +476,7 @@ label {
 	overflow: auto;
 }
 .marker-container .record .row {
-	padding: 2px;
+	padding: 4px;
 }
 .marker-container .record .col-md-4 {
 	font-size: 14px;
