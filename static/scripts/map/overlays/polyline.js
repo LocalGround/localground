@@ -43,7 +43,7 @@ localground.polyline.prototype.renderOverlay = function(opts) {
 localground.polyline.prototype.createOverlay = function() {
     this.googleOverlay = new google.maps.Polyline({
 	path: this.getGooglePath(),
-	strokeColor: this.color,
+	strokeColor: '#' + this.color,
 	strokeOpacity: 1.0,
 	strokeWeight: 5
     });

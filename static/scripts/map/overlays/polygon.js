@@ -12,10 +12,10 @@ localground.polygon.prototype = new localground.polyline();
 localground.polygon.prototype.createOverlay = function() {
     this.googleOverlay = new google.maps.Polygon({
 	path: this.getGooglePath(),
-	strokeColor: this.color,
+	strokeColor: '#' + this.color,
 	strokeOpacity: 1.0,
 	strokeWeight: 5,
-	fillColor: this.color,
+	fillColor: '#' + this.color,
 	fillOpacity: 0.35
       });
 };
