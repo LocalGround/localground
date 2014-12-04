@@ -27,9 +27,13 @@ define(['underscore',
         renderViewContent: function () {
             BaseBubble.prototype.renderViewContent.apply(this, arguments);
             //controls marker slide show:
+            var that = this;
             window.setTimeout(function () {
                 $('.marker-container').slick({
                     dots: false
+                });
+                that.$el.find("button").click(function (e) {
+                    that.sendToBack(e);
                 });
             }, 200);
         },

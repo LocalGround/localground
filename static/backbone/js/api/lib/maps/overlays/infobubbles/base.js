@@ -106,7 +106,20 @@ define(['jquery',
                 });
                 this.showUpdatedContent();
             },
-
+            bringToFront: function (e) {
+                var zIndex;
+                //console.log(this.bubble.bubble_.style.zIndex);
+                zIndex = parseInt(this.bubble.bubble_.style.zIndex, 10);
+                this.bubble.bubble_.style.zIndex = zIndex + 1;
+                e.preventDefault();
+            },
+            sendToBack: function (e) {
+                var zIndex;
+                //console.log("back", this.bubble.bubble_.style.zIndex);
+                zIndex = parseInt(this.bubble.bubble_.style.zIndex, 10);
+                this.bubble.bubble_.style.zIndex = zIndex - 1;
+                e.preventDefault();
+            },
             renderEditContent: function () {
                 var template = this.getTemplate("InfoBubbleTemplate"),
                     ModelForm = Form.extend({
@@ -127,13 +140,6 @@ define(['jquery',
             saveForm: function (e) {
                 this.form.commit();       //does validation
                 this.bubble.model.save(); //does database commit
-                e.preventDefault();
-            },
-            bringToFront: function (e) {
-                var zIndex;
-                console.log(this.bubble.bubble_.style.zIndex);
-                zIndex = parseInt(this.bubble.bubble_.style.zIndex, 10);
-                this.bubble.bubble_.style.zIndex = zIndex + 1;
                 e.preventDefault();
             },
             _show: function (whichBubble) {
