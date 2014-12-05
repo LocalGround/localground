@@ -36,7 +36,7 @@ define(["jquery", "lib/maps/overlays/base"], function ($, Base) {
                     markerSize: baseSize,
                     path: this._overlay.Shapes.CIRCLE,
                     scale: size / baseSize,
-                    anchor: new google.maps.Point(0, 5),
+                    anchor: new google.maps.Point(0, 0),
                     size: new google.maps.Size(baseSize, baseSize),
                     origin: new google.maps.Point(0, 0)
                 });
