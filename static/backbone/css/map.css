@@ -76,6 +76,10 @@ body { overflow: hidden; }
 .legend-item .item-icon {
 	margin: 0px !important;
 }
+.legend-item svg {
+	margin-top: 5px;
+	vertical-align: bottom;
+}
 
 .fa-map-marker {
 	font-size: 28px;

@@ -43,12 +43,16 @@ define(["marionette",
                         {
                             title: "Moist soil",
                             color: "#428BCA",
-                            rule: "moisture = 'moist'"
+                            rule: "moisture = 'moist'",
+                            shape: "circle",
+                            width: 20
                         },
                         {
                             title: "Dry soil",
                             color: "#b7f081",
-                            rule: "moisture = 'dry'"
+                            rule: "moisture = 'dry'",
+                            shape: "circle",
+                            width: 20
                         }
                     ]
                 },
@@ -57,19 +61,23 @@ define(["marionette",
                     name: "Percolation Time",
                     children: [
                         {
-                            title: "Less than 30 seconds",
+                            title: "100 seconds or less",
                             color: "#a2e6ef",
-                            rule: "percolation <= 30"
+                            rule: "percolation <= 100",
+                            shape: "square",
+                            width: 20
                         },
-                        {
+                        /*{
                             title: "Between 30 and 200 seconds",
                             color: "#19b8ca",
                             rule: "percolation > 30 and percolation <= 200"
-                        },
+                        },*/
                         {
-                            title: "More than 200 seconds",
+                            title: "More than 100 seconds",
                             color: "#0e727e",
-                            rule: "percolation > 200"
+                            rule: "percolation > 100",
+                            shape: "square",
+                            width: 20
                         }
                     ]
                 },
