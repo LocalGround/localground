@@ -65,21 +65,21 @@ define(["marionette",
                             color: "#a2e6ef",
                             rule: "percolation <= 30",
                             shape: "square",
-                            width: 20
+                            width: 30
                         },
                         {
                             title: "Between 30 and 200 seconds",
                             color: "#19b8ca",
                             rule: "percolation > 30 and percolation <= 200",
                             shape: "square",
-                            width: 20
+                            width: 30
                         },
                         {
                             title: "More than 200 seconds",
                             color: "#0e727e",
                             rule: "percolation > 200",
                             shape: "square",
-                            width: 20
+                            width: 30
                         }
                     ]
                 },
