@@ -31,7 +31,7 @@ define(["jquery", "lib/maps/overlays/base"], function ($, Base) {
                 baseSize = 30.0,
                 size = this.symbol.width;
             if (this.symbol.shape == "circle") {
-                baseSize = 40.0,
+                baseSize = 40.0;
                 $.extend(opts, {
                     markerSize: baseSize,
                     path: this._overlay.Shapes.CIRCLE,
