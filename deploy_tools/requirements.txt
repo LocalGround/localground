@@ -18,6 +18,7 @@ psycopg2==2.4.5
 python-dateutil==1.5
 reportlab==2.5
 simplejson==2.3.2
+python-social-auth==0.2.1
 #MapScript (installed via apt-get (python-mapscript))
 #GDAL (installed via apt-get (python-gdal))
 
