@@ -43,6 +43,8 @@ define(["marionette",
             options.app = this;
             var basemap = new BaseMap(options),
                 sidePanel = new DataPanel(options),
+                dataManager = new DataManager(options),
+                georeferenceManager = new GeoreferenceManager(options, basemap),
                 topBar = new TopBar(options);
             this.map = basemap.map;
             Mapplication.mapRegion.show(basemap);
