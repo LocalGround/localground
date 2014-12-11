@@ -4,10 +4,26 @@
 	{{block.super}}
     .content p, .content form { margin-left: 20px; }
     .align { margin-left: 170px !important; }
+
+    #google-button {
+        height:40px;
+        width: 200px;
+        background-image: url('/static/images/White-signin_Long_base_32dp.png');
+        background-size: 200px 40px;
+        display: inline-block;
+        margin-bottom: -15px;
+        margin-left:  30px;
+    }
+    #google-button:hover{
+        background-image: url('/static/images/White-signin_Long_hover_32dp.png');
+    }
+    #google-button:active {
+        background-image: url('/static/images/White-signin_Long_press_32dp.png');
+    }
 {% endblock %}
 {% block page_title %}Login{% endblock %}
 {% block main_content %}
-    
+
     <form method="post" action="{% if action %}{{action}}{% else %}.{% endif %}">
       {% csrf_token %}
 	  {% if form.errors %}
@@ -25,7 +41,11 @@
               <label>&nbsp;</label>
               <div class="input">
                   <input type="submit" value="Login" class="btn primary" />
+                   <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">
+                    <span id="google-button"></span>
+                    </a>
               </div>
+
           </div>
       </fieldset>
     </form>
