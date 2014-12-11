@@ -22,7 +22,7 @@ require.config({
         'core': '../external/mediator/core-jquery',
         'sandbox': '../external/mediator/sandbox',
         'color-picker': '../external/jscolor',
-        'mapplication': './mapplication',
+        'mapplication': './mapplication'
     },
     //waitSeconds: 0,
     shim: {
@@ -108,7 +108,7 @@ var localground = {
 function getCookie(name) {
     "use strict";
     var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
+    if (document.cookie && document.cookie !== '') {
         var cookies = document.cookie.split(';');
         for (var i = 0; i < cookies.length; i++) {
             var cookie = jQuery.trim(cookies[i]);

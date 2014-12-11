@@ -30,20 +30,6 @@
                     line-height:40px;
                     margin-top:-8px;
                 }
-                #google-button {
-                    height:40px;
-                    width: 200px;
-                    background-image: url('/static/images/White-signin_Long_base_32dp.png');
-                    background-size: 200px 40px;
-                    display: inline-block;
-                    margin-bottom: -10px;
-                }
-                #google-button:hover{
-                    background-image: url('/static/images/White-signin_Long_hover_32dp.png');
-                }
-                #google-button:active {
-                    background-image: url('/static/images/White-signin_Long_press_32dp.png');
-                }
             </style>
         </head>
     
@@ -63,11 +49,8 @@
                             new enhancements and testing the system.
                             If you have questions, please contact
                             info@localground.org.  If you are a beta-tester,
-                            please log in with Local Ground <a href="/accounts/login/">here</a>
-                            or
-                                <a href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">
-                                    <span id="google-button"></span>
-                                </a>
+                            please log in <a href="/accounts/login/">here</a>
+
                         </p>
 
                     </div>
