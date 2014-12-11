@@ -19,7 +19,7 @@ define(['marionette',
             //models: null,
             //overlays: null,
             dataManager: null,
-            legendItem: null,
+            layerItem: null,
             overlays: null,
             isVisible: false,
             symbols: null,
@@ -27,18 +27,18 @@ define(['marionette',
             initialize: function (opts) {
                 $.extend(this, opts);
                 this.dataManager = opts.dataManager;
-                this.legendItem = opts.legendItem;
+                this.layerItem = opts.layerItem;
                 this.map = opts.basemap.map;
                 this.overlays = [];
                 this.symbols = [];
-                this.parseLegendItem();
+                this.parseLayerItem();
                 this.app.vent.on("filter-applied", this.redraw.bind(this));
             },
 
-            parseLegendItem: function () {
+            parseLayerItem: function () {
                 var symbol, key, i;
-                for (i = 0; i < this.legendItem.children.length; i++) {
-                    symbol = new Symbol(this.legendItem.children[i]);
+                for (i = 0; i < this.layerItem.children.length; i++) {
+                    symbol = new Symbol(this.layerItem.children[i]);
                     for (key in this.dataManager.collections) {
                         this.addMatchingModels(symbol, this.dataManager.collections[key]);
                     }

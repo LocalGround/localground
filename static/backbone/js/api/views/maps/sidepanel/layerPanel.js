@@ -2,22 +2,22 @@ define(["marionette",
         "underscore",
         "jquery",
         "views/maps/sidepanel/filter",
-        "views/maps/sidepanel/legendItem",
-        "text!" + templateDir + "/sidepanel/legendPanelHeader.html"
+        "views/maps/sidepanel/layerItem",
+        "text!" + templateDir + "/sidepanel/layerPanelHeader.html"
     ],
-    function (Marionette, _, $, DataFilter, LegendItem, legendPanelHeader) {
+    function (Marionette, _, $, DataFilter, LayerItem, LayerPanelHeader) {
         'use strict';
         /**
          * A class that handles display and rendering of the
          * data panel and projects menu
          * @class DataPanel
          */
-        var LegendPanel = Marionette.LayoutView.extend({
+        var LayerPanel = Marionette.LayoutView.extend({
             /**
              * @lends localground.maps.views.DataPanel#
              */
             template: function () {
-                return _.template(legendPanelHeader);
+                return _.template(LayerPanelHeader);
             },
             entries: [
                 {
@@ -101,7 +101,7 @@ define(["marionette",
                 }
             ],
             regions: {
-                legend: "#legend-manager",
+                layer: "#layer-manager",
                 dataFilter: "#data-filter"
             },
             /**
@@ -115,20 +115,20 @@ define(["marionette",
                 opts.app.vent.on("adjust-layout", this.resize.bind(this));
             },
 
-            addLegendEntries: function () {
+            addLayerEntries: function () {
                 var that = this,
                     selector;
                 $.each(this.entries, function () {
-                    selector = "legend_" + this.id;
-                    that.$el.find('#legend-manager').append($('<div id="' + selector + '"></div>'));
+                    selector = "layer_" + this.id;
+                    that.$el.find('#layer-manager').append($('<div id="' + selector + '"></div>'));
                     that.addRegion(selector, '#' + selector);
                     this.app = that.app;
-                    that[selector].show(new LegendItem(this));
+                    that[selector].show(new LayerItem(this));
                 });
             },
 
             onShow: function () {
-                this.addLegendEntries();
+                this.addLayerEntries();
                 this.dataFilter.show(new DataFilter(this.opts));
                 this.resize();
             },
@@ -145,5 +145,5 @@ define(["marionette",
                 this.$el.find('.pane-body').height($('body').height() - 140);
             }
         });
-        return LegendPanel;
+        return LayerPanel;
     });

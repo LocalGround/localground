@@ -3,7 +3,7 @@ define(["marionette",
         "underscore",
         "views/maps/basemap",
         "views/maps/sidepanel/dataPanel",
-        "views/maps/sidepanel/legendPanel",
+        "views/maps/sidepanel/layerPanel",
         "views/maps/topBar",
         "lib/maps/data/dataManager",
         "lib/appUtilities",
@@ -12,7 +12,7 @@ define(["marionette",
         "views/maps/overlays/layerManager",
         "jquery.bootstrap"
     ],
-    function (Marionette, Backbone, _, BaseMap, DataPanel, LegendPanel,
+    function (Marionette, Backbone, _, BaseMap, DataPanel, LayerPanel,
               TopBar, DataManager, appUtilities, Projects, GeoreferenceManager,
               LayerManager) {
         "use strict";
@@ -25,7 +25,7 @@ define(["marionette",
             topBarRegion: "#topbar",
             mapRegion: "#map_canvas",
             dataPanelRegion: "#data_panel",
-            legendPanelRegion: "#legend_panel"
+            layerPanelRegion: "#layer_panel"
         });
 
         Mapplication.navigate = function (route, options) {
@@ -48,7 +48,7 @@ define(["marionette",
             options.app = this;
             var basemap = new BaseMap(options),
                 dataPanel = new DataPanel(options),
-                legendPanel = new LegendPanel(options),
+                layerPanel = new LayerPanel(options),
                 dataManager = new DataManager(options),
                 georeferenceManager = new GeoreferenceManager(options, basemap),
                 topBar = new TopBar(options),
@@ -59,7 +59,7 @@ define(["marionette",
             this.map = basemap.map;
             Mapplication.mapRegion.show(basemap);
             Mapplication.dataPanelRegion.show(dataPanel);
-            Mapplication.legendPanelRegion.show(legendPanel);
+            Mapplication.layerPanelRegion.show(layerPanel);
             Mapplication.topBarRegion.show(topBar);
 
             this.initAJAX(options);

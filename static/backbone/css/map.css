@@ -21,7 +21,7 @@ body { overflow: hidden; }
 
 
 
-.collection-header, .legend-header {
+.collection-header, .layer-header {
 	border-bottom-style: solid;
 	border-bottom-width: 1px;
 	border-bottom-color: rgb(204, 204, 204);
@@ -30,10 +30,10 @@ body { overflow: hidden; }
 .collection-header {
 	padding-bottom: 5px;	
 }
-.collection-header > h4, .legend-header > h4 {
+.collection-header > h4, .layer-header > h4 {
 	display: inline-block;
 }
-.collection-header > .fa-search, .legend-header > .fa-search  {
+.collection-header > .fa-search, .layer-header > .fa-search  {
 	margin: 10px 3px 0px 0px;
 	color: #666;
 }
@@ -69,14 +69,14 @@ body { overflow: hidden; }
 .data-item:hover {
 	background-image: url(../images/bg.png);
 }
-.legend-item {
+.layer-item {
 	padding: 0px 6px 0px 16px;
 	color: #666;
 }
-.legend-item .item-icon {
+.layer-item .item-icon {
 	margin: 0px !important;
 }
-.legend-item svg {
+.layer-item svg {
 	margin-top: 5px;
 	vertical-align: bottom;
 }

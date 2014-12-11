@@ -5,16 +5,16 @@ define(["backbone",
         "underscore",
         "jquery",
         'views/maps/overlays/symbol',
-        "text!" + templateDir + "/sidepanel/legendEntry.html"
+        "text!" + templateDir + "/sidepanel/layerEntry.html"
     ],
-    function (Backbone, _, $, Symbol, LegendEntry) {
+    function (Backbone, _, $, Symbol, LayerEntry) {
         'use strict';
         /**
          * A class that handles display and rendering of the
          * data panel and projects menu
          * @class DataPanel
          */
-        var LegendItem = Backbone.View.extend({
+        var LayerItem = Backbone.View.extend({
             events: {
                 'click .check-all': 'toggleShow',
                 'click .zoom-to-extent': 'zoomToExtent'
@@ -25,7 +25,7 @@ define(["backbone",
                 this.render();
             },
             render: function () {
-                this.$el.html(_.template(LegendEntry, {
+                this.$el.html(_.template(LayerEntry, {
                     name: this.name,
                     //items: this.children,
                     symbols: this.getSymbols()
@@ -41,13 +41,13 @@ define(["backbone",
             },
             toggleShow: function () {
                 if (this.$el.find('.check-all').is(':checked')) {
-                    console.log('show legend layer');
+                    console.log('show layer');
                     this.app.vent.trigger("show-layer", {
-                        legendItem: this
+                        layerItem: this
                     });
                 } else {
                     this.app.vent.trigger("hide-layer", {
-                        legendItem: this
+                        layerItem: this
                     });
                 }
                 //this.saveState();
@@ -59,6 +59,6 @@ define(["backbone",
             }
         });
 
-        return LegendItem;
+        return LayerItem;
 
     });

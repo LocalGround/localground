@@ -29,14 +29,14 @@ define(["backbone",
             },
 
             showLayer: function (data) {
-                var key = "layer_" + data.legendItem.id;
+                var key = "layer_" + data.layerItem.id;
                 if (!this.layers[key]) {
                     this.createLayer(data);
                 }
                 this.layers[key].showAll();
             },
             hideLayer: function (data) {
-                var key = "layer_" + data.legendItem.id;
+                var key = "layer_" + data.layerItem.id;
                 if (!this.layers[key]) {
                     this.createLayer(data);
                 }
@@ -45,7 +45,7 @@ define(["backbone",
             createLayer: function (data) {
                 var opts = _.clone(this.opts);
                 opts = _.extend(opts, data);
-                this.layers["layer_" + data.legendItem.id] = new Layer(opts);
+                this.layers["layer_" + data.layerItem.id] = new Layer(opts);
             },
             destroy: function () {
                 this.remove();
