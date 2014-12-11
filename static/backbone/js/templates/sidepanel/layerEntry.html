@@ -6,6 +6,7 @@
 <% _.each(symbols, function(item){ %>
 
     <div class="item layer-item">
+        <input class="cb-layer-item" type="checkbox" value="<%= item.rule %>">
         <% if (item.shape == "circle") { %>
             <svg width="<%= item.width %>" height="<%= item.width %>" viewBox="-20 -20 40 40">
                 <path fill="<%= item.color %>" d="M-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0"></path>

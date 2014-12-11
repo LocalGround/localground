@@ -29,7 +29,7 @@ define(['marionette',
                 this.dataManager = opts.dataManager;
                 this.layerItem = opts.layerItem;
                 this.map = opts.basemap.map;
-                this.overlays = [];
+                this.overlays = {};
                 this.symbols = [];
                 this.parseLayerItem();
                 this.app.vent.on("filter-applied", this.redraw.bind(this));
@@ -73,7 +73,18 @@ define(['marionette',
                             TipTemplate: _.template(Config[configKey].TipTemplate)
                         }
                     };
-                    this.overlays.push(new Symbolized(opts));
+                    if (this.overlays[symbol.rule] == null) {
+                        this.overlays[symbol.rule] = [];
+                    }
+                    this.overlays[symbol.rule].push(new Symbolized(opts));
+                }
+            },
+
+            /** Shows all of the map overlays */
+            show: function (rule) {
+                var i;
+                for (i = 0; i < this.overlays[rule].length; i++) {
+                    this.overlays[rule][i].show();
                 }
             },
 
@@ -81,18 +92,26 @@ define(['marionette',
             /** Shows all of the map overlays */
             showAll: function () {
                 this.isVisible = true;
+                var key;
+                for (key in this.overlays) {
+                    this.show(key);
+                }
+            },
+
+            /** Hides all of the map overlays */
+            hide: function (rule) {
                 var i;
-                for (i = 0; i < this.overlays.length; i++) {
-                    this.overlays[i].show();
+                for (i = 0; i < this.overlays[rule].length; i++) {
+                    this.overlays[rule][i].hide();
                 }
             },
 
             /** Hides all of the map overlays */
             hideAll: function () {
                 this.isVisible = false;
-                var i;
-                for (i = 0; i < this.overlays.length; i++) {
-                    this.overlays[i].hide();
+                var key;
+                for (key in this.overlays) {
+                    this.hide(key);
                 }
             },
 
@@ -106,9 +125,13 @@ define(['marionette',
             zoomToExtent: function () {
                 //console.log("zoom to extent");
                 var bounds = new google.maps.LatLngBounds(),
-                    i;
-                for (i = 0; i < this.overlays.length; i++) {
-                    bounds.union(this.overlays[i].getBounds());
+                    i,
+                    key;
+                for (key in this.overlays) {
+                    for (i = 0; i < this.overlays[key].length; i++) {
+                        this.overlays[key][i].hide();
+                        bounds.union(this.overlays[key][i].getBounds());
+                    }
                 }
                 this.map.fitBounds(bounds);
             }

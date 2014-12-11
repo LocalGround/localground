@@ -70,7 +70,7 @@ body { overflow: hidden; }
 	background-image: url(../images/bg.png);
 }
 .layer-item {
-	padding: 0px 6px 0px 16px;
+	padding: 2px 6px 0px 20px;
 	color: #666;
 }
 .layer-item .item-icon {

@@ -16,7 +16,8 @@ define(["backbone",
          */
         var LayerItem = Backbone.View.extend({
             events: {
-                'click .check-all': 'toggleShow',
+                'click .check-all': 'toggleShowAll',
+                'click .cb-layer-item': 'toggleShow',
                 'click .zoom-to-extent': 'zoomToExtent'
             },
             initialize: function (opts) {
@@ -39,13 +40,30 @@ define(["backbone",
                 }
                 return symbols;
             },
-            toggleShow: function () {
+            toggleShow: function (e) {
+                if ($(e.target).is(':checked')) {
+                    //console.log('show symbol');
+                    this.app.vent.trigger("show-symbol", {
+                        layerItem: this,
+                        rule: $(e.target).val()
+                    });
+                } else {
+                    this.app.vent.trigger("hide-symbol", {
+                        layerItem: this,
+                        rule: $(e.target).val()
+                    });
+                }
+                //this.saveState();
+            },
+            toggleShowAll: function () {
                 if (this.$el.find('.check-all').is(':checked')) {
-                    console.log('show layer');
+                    //console.log('show layer');
+                    this.$el.find('input').attr('checked', true);
                     this.app.vent.trigger("show-layer", {
                         layerItem: this
                     });
                 } else {
+                    this.$el.find('input').attr('checked', false);
                     this.app.vent.trigger("hide-layer", {
                         layerItem: this
                     });
