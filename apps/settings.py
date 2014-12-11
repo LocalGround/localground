@@ -171,6 +171,7 @@ FIXTURE_DIRS = (
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 
 INSTALLED_APPS = (
     'django.contrib.auth',

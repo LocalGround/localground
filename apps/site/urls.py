@@ -134,14 +134,14 @@ urlpatterns = patterns('',
                         'localground.apps.site.views.generic.get_contacts_autocomplete'),
                        (r'^profile/get-my-contacts/$',
                         'localground.apps.site.views.generic.get_my_contacts_autocomplete'),
-
+                        (r'^accounts/login/$',
+                        'localground.apps.site.views.login.login_check',
+                        {'template_name': 'login.html'}),
                        # django authentication:
                        (r'^accounts/',
                         include('localground.apps.registration.urls')),
-                       (r'^accounts/login/$',
-                        'django.contrib.auth.views.login',
-                        {'template_name': 'login.html'}),
                        ('', include('social.apps.django_app.urls', namespace='social')),
+
 
                        # django-tagging:
                        url(r'^tagging_autocomplete/list/json$', 'tagging_autocomplete.views.list_tags',
