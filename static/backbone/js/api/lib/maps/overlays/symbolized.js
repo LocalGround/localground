@@ -65,9 +65,11 @@ define(["jquery", "lib/maps/overlays/base"], function ($, Base) {
 
         /** adds icon to overlay. */
         initialize: function (opts) {
+            // important to initialize this flag as not showing, or things
+            // get out of whack.
+            this.isShowing = false;
             Base.prototype.initialize.apply(this, arguments);
             this.symbol = opts.symbol;
-            this.redraw();
         },
 
         /** shows the google.maps overlay on the map. */

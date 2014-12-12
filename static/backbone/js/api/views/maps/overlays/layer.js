@@ -83,6 +83,9 @@ define(['marionette',
             /** Shows all of the map overlays */
             show: function (rule) {
                 var i;
+                if (!this.overlays[rule]) {
+                    return;
+                }
                 for (i = 0; i < this.overlays[rule].length; i++) {
                     this.overlays[rule][i].show();
                 }
@@ -101,6 +104,9 @@ define(['marionette',
             /** Hides all of the map overlays */
             hide: function (rule) {
                 var i;
+                if (!this.overlays[rule]) {
+                    return;
+                }
                 for (i = 0; i < this.overlays[rule].length; i++) {
                     this.overlays[rule][i].hide();
                 }

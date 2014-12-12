@@ -32,15 +32,13 @@ define(["marionette",
         },
         /** called when object created */
         initialize: function (opts) {
-            //alert(localground.maps.overlays.Polyline);
             this.app = opts.app;
             this.id = this.model.get('overlay_type') + this.model.get('id');
             $.extend(opts, this.restoreState());
             this.map = opts.app.getMap();
             this.model = opts.model;
             this.initInfoBubble(opts);
-            this.initOverlayType(opts.isVisible);
-
+            this.initOverlayType(this.isShowing);
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
         },
 
