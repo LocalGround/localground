@@ -27,12 +27,14 @@ define(["marionette",
                         {
                             title: "At least 1 worm",
                             color: "#7075FF",
-                            rule: "worms > 0"
+                            rule: "worms > 0",
+                            width: 50
                         },
                         {
                             title: "No worms",
                             color: "#F011D9",
-                            rule: "worms = 0"
+                            rule: "worms = 0",
+                            width: 50
                         }
                     ]
                 },

@@ -7,10 +7,6 @@ define(["jquery", "lib/maps/overlays/base"], function ($, Base) {
      */
     var Symbolized = Base.extend({
         symbol: null,
-        Symbols: {
-            PIN: "pin",
-            CIRCLE: "circle"
-        },
         modelEvents: {
             'change:geometry': 'updateOverlay',
             'change': 'render'
@@ -21,52 +17,31 @@ define(["jquery", "lib/maps/overlays/base"], function ($, Base) {
          * @returns {Object} icon definition
          */
         getIcon: function () {
-            var opts = {
-                    fillColor: this.symbol.color,
-                    markerSize: 30,
-                    strokeColor: "#FFF",
-                    strokeWeight: 1.5,
-                    fillOpacity: 1
-                },
-                baseSize = 30.0,
-                size = this.symbol.width;
+            var opts, baseMarker;
             if (this.symbol.shape == "circle") {
-                baseSize = 40.0;
-                $.extend(opts, {
-                    markerSize: baseSize,
-                    path: this._overlay.Shapes.CIRCLE,
-                    scale: size / baseSize,
-                    anchor: new google.maps.Point(0, 0),
-                    size: new google.maps.Size(baseSize, baseSize),
-                    origin: new google.maps.Point(0, 0)
-                });
+                baseMarker = this._overlay.Shapes.CIRCLE;
             } else if (this.symbol.shape == "square") {
-                baseSize = 100;
-                $.extend(opts, {
-                    markerSize: baseSize,
-                    path: this._overlay.Shapes.ROUNDED,
-                    scale: size / baseSize,
-                    anchor: new google.maps.Point(0, -1 * baseSize / 2),
-                    size: new google.maps.Size(baseSize, baseSize),
-                    origin: new google.maps.Point(100, 100)
-                });
+                baseMarker = this._overlay.Shapes.SQUARE;
             } else {
-                $.extend(opts, {
-                    markerSize: baseSize,
-                    path: this._overlay.Shapes.MAP_PIN_HOLLOW,
-                    scale: 1.6,
-                    anchor: new google.maps.Point(16, 30),      // anchor (x, y)
-                    size: new google.maps.Size(15, 30),         // size (width, height)
-                    origin: new google.maps.Point(0, 0)        // origin (x, y)    
-                });
+                baseMarker = this._overlay.Shapes.MAP_PIN_HOLLOW;
             }
+            opts = {
+                fillColor: this.symbol.color,
+                markerSize: 30,
+                strokeColor: "#FFF",
+                strokeWeight: 1.5,
+                fillOpacity: 1
+            };
+            $.extend(opts, baseMarker);
+            $.extend(opts, { scale: baseMarker.scale * this.symbol.width / baseMarker.markerSize });
             return opts;
         },
 
         /** adds icon to overlay. */
         initialize: function (opts) {
-            // important to initialize this flag as not showing, or things
-            // get out of whack.
+            // important to initialize this flag as not showing, so that
+            // it's display status is independent of the visibility status of the
+            // model itself.
             this.isShowing = false;
             Base.prototype.initialize.apply(this, arguments);
             this.symbol = opts.symbol;
