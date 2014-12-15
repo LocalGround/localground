@@ -16,14 +16,14 @@ define([
          * @returns {Object} icon definition
          */
         getIcon: function () {
-            var opts = this._overlay.Shapes.MAP_PIN_HOLLOW;
-            _.extend(opts, {
+            var opts = {
                 fillColor: '#' + this.model.get("color"),
                 strokeColor: "#FFF",
                 strokeWeight: 1.5,
                 fillOpacity: 1,
                 scale: 1.6
-            });
+            };
+            _.extend(opts, _.clone(this._overlay.Shapes.MAP_PIN_HOLLOW));
             return opts;
         },
 

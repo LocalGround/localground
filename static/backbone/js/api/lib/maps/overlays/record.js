@@ -12,7 +12,7 @@ define(["underscore", "lib/maps/overlays/base"], function (_, Base) {
          * @returns {Object} icon definition
          */
 		getIcon: function () {
-            var opts = this._overlay.Shapes.MAP_PIN_HOLLOW;
+            var opts = _.clone(this._overlay.Shapes.MAP_PIN_HOLLOW);
             _.extend(opts, {
                 fillColor: "#CCC",
                 strokeColor: "#FFF",

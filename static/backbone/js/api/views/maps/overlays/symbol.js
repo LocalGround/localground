@@ -1,5 +1,5 @@
-define(['jquery', 'lib/sqlParser'],
-    function ($, SqlParser) {
+define(['jquery', 'lib/sqlParser', 'lib/maps/overlays/point'],
+    function ($, SqlParser, Point) {
         'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
@@ -10,13 +10,23 @@ define(['jquery', 'lib/sqlParser'],
         var Symbol = function (opts) {
             this.models = [];
             this.color = null;
-            this.symbol = null;
+            this.shape = null;
             this.width = null;
             this.rule = null;
             this.sqlParser = null;
             this.init = function (opts) {
+                var markerShape;
                 $.extend(this, opts);
                 this.width = this.width || 30;
+                if (this.shape == "circle") {
+                    markerShape = Point.Shapes.CIRCLE;
+                } else if (this.shape == "square") {
+                    markerShape = Point.Shapes.SQUARE;
+                } else {
+                    markerShape = Point.Shapes.MAP_PIN_HOLLOW;
+                }
+                $.extend(this, markerShape);
+                $.extend(this, { scale: markerShape.scale * this.width / markerShape.markerSize });
                 this.sqlParser = new SqlParser(this.rule);
             };
             this.checkModel = function (model) {

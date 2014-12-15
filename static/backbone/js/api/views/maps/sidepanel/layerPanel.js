@@ -28,13 +28,13 @@ define(["marionette",
                             title: "At least 1 worm",
                             color: "#7075FF",
                             rule: "worms > 0",
-                            width: 50
+                            width: 30
                         },
                         {
                             title: "No worms",
                             color: "#F011D9",
                             rule: "worms = 0",
-                            width: 50
+                            width: 30
                         }
                     ]
                 },
@@ -92,12 +92,14 @@ define(["marionette",
                         {
                             title: "Less than 10 invertebrates",
                             color: "#5cee1e",
-                            rule: "pitfall < 10"
+                            rule: "pitfall < 10",
+                            width: 30
                         },
                         {
                             title: "10 or more invertebrates",
                             color: "#3b9914",
-                            rule: "pitfall >= 10"
+                            rule: "pitfall >= 10",
+                            width: 30
                         }
                     ]
                 }
