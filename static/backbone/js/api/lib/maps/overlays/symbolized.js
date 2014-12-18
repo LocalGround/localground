@@ -1,4 +1,4 @@
-define(["jquery", "lib/maps/overlays/base"], function ($, Base) {
+define(["underscore", "lib/maps/overlays/base"], function (_, Base) {
     "use strict";
     /**
      * Class that controls marker point model overlays.
@@ -32,8 +32,8 @@ define(["jquery", "lib/maps/overlays/base"], function ($, Base) {
                 strokeWeight: 1.5,
                 fillOpacity: 1
             };
-            $.extend(opts, baseMarker);
-            $.extend(opts, { scale: baseMarker.scale * this.symbol.width / baseMarker.markerSize });
+            _.extend(opts, _.clone(baseMarker));
+            _.extend(opts, { scale: baseMarker.scale * this.symbol.width / baseMarker.markerSize });
             return opts;
         },
 

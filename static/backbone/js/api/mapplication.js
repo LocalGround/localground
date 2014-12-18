@@ -4,6 +4,7 @@ define(["marionette",
         "views/maps/basemap",
         "views/maps/sidepanel/dataPanel",
         "views/maps/sidepanel/layerPanel",
+        //"views/maps/sidepanel/tabs",
         "views/maps/topBar",
         "lib/maps/data/dataManager",
         "lib/appUtilities",
@@ -12,7 +13,7 @@ define(["marionette",
         "views/maps/overlays/layerManager",
         "jquery.bootstrap"
     ],
-    function (Marionette, Backbone, _, BaseMap, DataPanel, LayerPanel,
+    function (Marionette, Backbone, _, BaseMap, DataPanel, LayerPanel, //Tabs
               TopBar, DataManager, appUtilities, Projects, GeoreferenceManager,
               LayerManager) {
         "use strict";

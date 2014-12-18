@@ -64,6 +64,13 @@ define(["backbone",
                 opts = _.extend(opts, data);
                 this.layers["layer_" + data.layerItem.id] = new Layer(opts);
             },
+            zoomToExtent: function (data) {
+                var key =  "layer_" + data.layerItem.id,
+                    layer = this.layers[key];
+                if (layer) {
+                    layer.zoomToExtent();
+                }
+            },
             destroy: function () {
                 this.remove();
             }

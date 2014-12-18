@@ -135,7 +135,6 @@ define(['marionette',
                     key;
                 for (key in this.overlays) {
                     for (i = 0; i < this.overlays[key].length; i++) {
-                        this.overlays[key][i].hide();
                         bounds.union(this.overlays[key][i].getBounds());
                     }
                 }

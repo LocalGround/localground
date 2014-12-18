@@ -72,7 +72,9 @@ define(["backbone",
             },
             zoomToExtent: function (e) {
                 //this.collection.trigger('zoom-to-extent');
-                alert("zoom to extent");
+                this.app.vent.trigger("zoom-to-layer", {
+                    layerItem: this
+                });
                 e.preventDefault();
             }
         });
