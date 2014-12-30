@@ -287,3 +287,15 @@ class PresentationUser(ObjectUserPermissions):
         app_label = 'site'
         managed = False
         db_table = 'v_private_presentations'
+        
+class LegendUser(ObjectUserPermissions):
+    view = models.ForeignKey(
+        'Legend',
+        db_column='id',
+        on_delete=models.DO_NOTHING,
+        related_name='authuser')
+
+    class Meta:
+        app_label = 'site'
+        managed = False
+        db_table = 'v_private_legends'

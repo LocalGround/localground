@@ -62,6 +62,13 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.ViewList.as_view(),
         name='view-list'),
     url(
+        r'^legends/(?P<pk>[0-9]+)/$',
+        views.LegendInstance.as_view(),
+        name='legend-detail'),
+    url(r'^legends/$',
+        views.LegendList.as_view(),
+        name='legend-list'),
+    url(
         r'^photos/(?P<pk>[0-9]+)/$',
         views.PhotoInstance.as_view(),
         name='photo-detail'),
