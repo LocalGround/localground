@@ -83,18 +83,23 @@ class JSONField(serializers.WritableField):
 
     def from_native(self, data):
         try:
-            json.loads(data)
+            d = json.loads(data)
+            if isinstance(d, dict) or isinstance(d, list):
+                return d
+            else:
+                raise serializers.ValidationError('Error parsing JSON')
         except:
             raise serializers.ValidationError('Error parsing JSON')
         return data
 
     def to_native(self, value):
         if value is not None:
-            if value is None or isinstance(
-                    value,
-                    dict) or isinstance(
-                    value,
-                    list):
+            if isinstance(value, dict) or isinstance(value, list):
                 return value
-            return json.loads(value)
+            value = json.loads(value)
+            if isinstance(value, dict) or isinstance(value, list):
+                return value
+            else:
+                raise Exception('Error parsing JSON')
+        return None
 

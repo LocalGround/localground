@@ -144,6 +144,19 @@ class ModelMixin(object):
         )
         v.save()
         return v
+    
+    def create_legend(self, user, name='Test Legend', authority_id=1):
+        import random
+        slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16)
+        l = models.Legend(
+            name=name,
+            owner=user,
+            last_updated_by=user,
+            access_authority=models.ObjectAuthority.objects.get(
+                id=authority_id)
+        )
+        l.save()
+        return l
 
     def create_presentation(
             self,

@@ -12,7 +12,7 @@ class Legend(BaseNamed, BasePermissions):
         db_index=True,
         help_text='A few words, separated by dashes "-", to be used as part of the url')
     
-    legend_object = JSONField()
+    legend_object = JSONField(blank=True, null=True)
     objects = LegendManager()
     
     class Meta:
