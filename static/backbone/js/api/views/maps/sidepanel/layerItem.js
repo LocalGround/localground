@@ -36,7 +36,7 @@ define(["backbone",
             },
             getSymbols: function () {
                 var i = 0,
-                    symbolList = this.model.get("legend_object"),
+                    symbolList = this.model.get("symbols"),
                     symbols = [];
                 for (i = 0; i < symbolList.length; i++) {
                     symbols.push(new Symbol(symbolList[i]));
@@ -59,7 +59,7 @@ define(["backbone",
                 //this.saveState();
             },
             getSymbolConfig: function () {
-                return this.model.get("legend_object");
+                return this.model.get("symbols");
             },
             toggleShowAll: function () {
                 if (this.$el.find('.check-all').is(':checked')) {

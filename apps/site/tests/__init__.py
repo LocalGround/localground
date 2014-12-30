@@ -145,10 +145,10 @@ class ModelMixin(object):
         v.save()
         return v
     
-    def create_legend(self, user, name='Test Legend', authority_id=1):
+    def create_layer(self, user, name='Test Layer', authority_id=1):
         import random
         slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16)
-        l = models.Legend(
+        l = models.Layer(
             name=name,
             owner=user,
             last_updated_by=user,

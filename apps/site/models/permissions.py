@@ -288,9 +288,9 @@ class PresentationUser(ObjectUserPermissions):
         managed = False
         db_table = 'v_private_presentations'
         
-class LegendUser(ObjectUserPermissions):
+class LayerUser(ObjectUserPermissions):
     view = models.ForeignKey(
-        'Legend',
+        'Layer',
         db_column='id',
         on_delete=models.DO_NOTHING,
         related_name='authuser')
@@ -298,4 +298,4 @@ class LegendUser(ObjectUserPermissions):
     class Meta:
         app_label = 'site'
         managed = False
-        db_table = 'v_private_legends'
+        db_table = 'v_private_layers'

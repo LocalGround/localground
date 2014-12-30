@@ -114,22 +114,22 @@ SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
 ) v
 GROUP BY v.id, v.name, v.user_id;
 
------------------------------  
--- v_private_legendss --
------------------------------
--- A view to show all of the legends, who can access 
+----------------------  
+-- v_private_layers --
+----------------------
+-- A view to show all of the layers, who can access 
 -- them, and at what security level (view, edit, or manage)
-CREATE OR REPLACE VIEW v_private_legends AS 
+CREATE OR REPLACE VIEW v_private_layers AS 
 SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
 FROM 
 (
     SELECT g.id, g.name, a.user_id, a.authority_id
-    FROM site_legend g, site_userauthorityobject a
+    FROM site_layer g, site_userauthorityobject a
     WHERE g.id = a.object_id
-		AND a.content_type_id = (select id from django_content_type where model = 'legend')
+		AND a.content_type_id = (select id from django_content_type where model = 'layer')
   UNION 
     SELECT id, name, owner_id as user_id, 3 AS authority_id
-    FROM site_legend
+    FROM site_layer
 ) v
 GROUP BY v.id, v.name, v.user_id;
 

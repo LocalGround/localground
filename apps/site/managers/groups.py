@@ -243,7 +243,7 @@ class PresentationManager(models.GeoManager, PresentationMixin):
         return PresentationQuerySet(self.model, using=self._db)
     
     
-class LegendMixin(GroupMixin):
+class LayerMixin(GroupMixin):
     prefetch_fields = []
 
     def _get_objects(self, user, authority_id=1, request=None, context=None,
@@ -273,11 +273,11 @@ class LegendMixin(GroupMixin):
         return []
 
 
-class LegendQuerySet(QuerySet, LegendMixin):
+class LayerQuerySet(QuerySet, LayerMixin):
     pass
 
 
-class LegendManager(models.GeoManager, LegendMixin):
+class LayerManager(models.GeoManager, LayerMixin):
 
     def get_query_set(self):
-        return LegendQuerySet(self.model, using=self._db)
+        return LayerQuerySet(self.model, using=self._db)

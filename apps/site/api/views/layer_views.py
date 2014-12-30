@@ -8,12 +8,12 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 
-class LegendList(QueryableListCreateAPIView, AuditCreate):
+class LayerList(QueryableListCreateAPIView, AuditCreate):
     error_messages = {}
     warnings = []
-    serializer_class = serializers.LegendSerializer
+    serializer_class = serializers.LayerSerializer
     filter_backends = (filters.SQLFilterBackend,)
-    model = models.Legend
+    model = models.Layer
     paginate_by = 100
 
     def get_queryset(self):
@@ -29,7 +29,7 @@ class LegendList(QueryableListCreateAPIView, AuditCreate):
         obj.access_authority = models.ObjectAuthority.objects.get(id=1)
 
     def create(self, request, *args, **kwargs):
-        response = super(LegendList, self).create(request, *args, **kwargs)
+        response = super(LayerList, self).create(request, *args, **kwargs)
         if len(self.warnings) > 0:
             response.data.update({'warnings': self.warnings})
         if self.error_messages:
@@ -38,20 +38,20 @@ class LegendList(QueryableListCreateAPIView, AuditCreate):
         return response
 
 
-class LegendInstance(
+class LayerInstance(
         generics.RetrieveUpdateDestroyAPIView,
         AuditUpdate):
     error_messages = {}
     warnings = []
-    queryset = models.Legend.objects.select_related('owner').all()
-    serializer_class = serializers.LegendDetailSerializer
-    model = models.Legend
+    queryset = models.Layer.objects.select_related('owner').all()
+    serializer_class = serializers.LayerDetailSerializer
+    model = models.Layer
 
     def pre_save(self, obj):
         AuditUpdate.pre_save(self, obj)
 
     def update(self, request, *args, **kwargs):
-        response = super(LegendInstance, self).update(request, *args, **kwargs)
+        response = super(LayerInstance, self).update(request, *args, **kwargs)
         if len(self.warnings) > 0:
             response.data.update({'warnings': self.warnings})
         if self.error_messages:

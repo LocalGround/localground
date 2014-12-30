@@ -8,7 +8,7 @@ from localground.apps.site.api.views.presentation_views import PresentationList,
 from localground.apps.site.api.views.print_views import PrintList, PrintInstance, LayoutViewSet
 from localground.apps.site.api.views.project_views import ProjectList, ProjectInstance
 from localground.apps.site.api.views.view_views import ViewList, ViewInstance
-from localground.apps.site.api.views.legend_views import LegendList, LegendInstance
+from localground.apps.site.api.views.layer_views import LayerList, LayerInstance
 
 from localground.apps.site.api.views.marker_views import MarkerList, MarkerInstance
 from localground.apps.site.api.views.association_views import (
@@ -57,7 +57,7 @@ def api_root(request, format=None, **kwargs):
     d['prints'] = reverse('print-list', request=request, format=format)
     d['projects'] = reverse('project-list', request=request, format=format)
     d['views'] = reverse('view-list', request=request, format=format)
-    d['legends'] = reverse('legend-list', request=request, format=format)
+    d['layers'] = reverse('layer-list', request=request, format=format)
     d['tiles'] = reverse('wmsoverlay-list', request=request, format=format)
     d['users'] = reverse('user-list', request=request, format=format)
     d['userprofile-list'] = reverse('userprofile-list',

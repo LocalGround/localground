@@ -6,8 +6,8 @@ from localground.apps.site.models.abstract.media import BaseMedia, BaseUploadedM
 from localground.apps.site.models.abstract.geometry import BasePoint, BaseExtents
 from localground.apps.site.models.abstract.mixins import ProjectMixin, BaseGenericRelationMixin
 
-#legends
-from localground.apps.site.models.legend import Legend
+#layers
+from localground.apps.site.models.layer import Layer
 
 # lookups
 from localground.apps.site.models.lookups import StatusCode, UploadSource, \
@@ -28,7 +28,7 @@ from localground.apps.site.models.permissions import \
     BasePermissions, ObjectUserPermissions, UserAuthorityObject, \
     UserAuthority, ObjectAuthority, AudioUser, PhotoUser, MarkerUser, \
     ViewUser, ProjectUser, AttachmentUser, VideoUser, ScanUser, PrintUser, \
-    FormUser, PresentationUser, LegendUser
+    FormUser, PresentationUser, LayerUser
 from localground.apps.site.models.genericassociation import GenericAssociation
 
 # snippet

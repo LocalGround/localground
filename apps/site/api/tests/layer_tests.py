@@ -7,27 +7,27 @@ import json
 from rest_framework import status
 
 
-class ApiLegendTest(test.TestCase, ViewMixinAPI):
-    name = 'New Legend Name'
-    description = 'Test legend description'
+class ApiLayerTest(test.TestCase, ViewMixinAPI):
+    name = 'New Layer Name'
+    description = 'Test layer description'
     tags = 'a, b, c'
-    slug = 'my_legend'
-    legend_object = [
+    slug = 'my_layer'
+    symbols = [
         {"color": "#7075FF", "width": 30, "rule": "worms > 0", "title": "At least 1 worm"},
         {"color": "#F011D9", "width": 30, "rule": "worms = 0", "title": "No worms"}
     ]
-    invalid_legend_object = [
+    invalid_symbols = [
         {"color": "#7075FF", "width": 30, "rule": "worms > 0", "title": "At least 1 worm"},
         {"color": "#F011D9", "width": 30, "rule": "worms = 0", "title": "No worms"}
     ]
 
-    def _test_save_legend(self, method, status_id, legend_object):
+    def _test_save_layer(self, method, status_id, symbols):
         d = {
             'name': self.name,
             'description': self.description,
             'tags': self.tags,
             'slug': self.slug,
-            'legend_object': json.dumps(legend_object)
+            'symbols': json.dumps(symbols)
         }
         # print d
         response = method(self.url,
@@ -41,7 +41,7 @@ class ApiLegendTest(test.TestCase, ViewMixinAPI):
         # if it was successful, verify data:
         if status_id in [status.HTTP_201_CREATED, status.HTTP_200_OK]:
             if hasattr(self, 'obj'):
-                rec = models.Legend.objects.get(id=self.obj.id)
+                rec = models.Layer.objects.get(id=self.obj.id)
             else:
                 rec = self.model.objects.all().order_by('-id',)[0]
             self.assertEqual(rec.name, self.name)
@@ -50,48 +50,48 @@ class ApiLegendTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(rec.slug, self.slug)
 
 
-class ApiLegendListTest(ApiLegendTest):
+class ApiLayerListTest(ApiLayerTest):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.url = '/api/0/legends/'
+        self.url = '/api/0/layers/'
         self.urls = [self.url]
-        self.model = models.Legend
-        self.view = views.LegendList.as_view()
+        self.model = models.Layer
+        self.view = views.LayerList.as_view()
 
-    def test_create_legend_using_post(self, **kwargs):
-        self._test_save_legend(
+    def test_create_layer_using_post(self, **kwargs):
+        self._test_save_layer(
             self.client_user.post,
             status.HTTP_201_CREATED,
-            self.legend_object
+            self.symbols
         )
 
     def test_create_view_invalid_json(self, **kwargs):
-        self._test_save_legend(
+        self._test_save_layer(
             self.client_user.post,
             status.HTTP_400_BAD_REQUEST,
             'dsadaadasdasdjkjdkasda/ewqeqw/'
         )
 
 
-class ApiLegendInstanceTest(ApiLegendTest):
+class ApiLayerInstanceTest(ApiLayerTest):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.obj = self.create_legend(
+        self.obj = self.create_layer(
             self.user,
-            name='Test Legend 1',
+            name='Test Layer 1',
             authority_id=1)
-        self.url = '/api/0/legends/%s/' % self.obj.id
+        self.url = '/api/0/layers/%s/' % self.obj.id
         self.urls = [self.url]
-        self.model = models.Legend
-        self.view = views.LegendInstance.as_view()
+        self.model = models.Layer
+        self.view = views.LayerInstance.as_view()
 
     def test_update_view_using_put(self, **kwargs):
-        self._test_save_legend(
+        self._test_save_layer(
             self.client_user.put,
             status.HTTP_200_OK,
-            self.legend_object
+            self.symbols
         )
 
     def test_update_view_using_patch(self, **kwargs):
@@ -103,23 +103,22 @@ class ApiLegendInstanceTest(ApiLegendTest):
                                           content_type="application/x-www-form-urlencoded"
                                           )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        rec = models.Legend.objects.get(id=self.obj.id)
+        rec = models.Layer.objects.get(id=self.obj.id)
         self.assertEqual(rec.name, self.name)
         self.assertNotEqual(self.obj.name, self.name)
 
     def test_update_view_invalid_children_put(self, **kwargs):
-        self._test_save_legend(self.client_user.put, status.HTTP_400_BAD_REQUEST,
-                             json.dumps(self.invalid_legend_object))
+        self._test_save_layer(self.client_user.put, status.HTTP_400_BAD_REQUEST,
+                             json.dumps(self.invalid_symbols))
 
     def test_update_view_invalid_children_patch(self, **kwargs):
-        self._test_save_legend(
+        self._test_save_layer(
             self.client_user.patch,
             status.HTTP_400_BAD_REQUEST,
-            json.dumps(
-                self.invalid_legend_object))
+            json.dumps(self.invalid_symbols))
 
     def test_update_view_invalid_json(self, **kwargs):
-        self._test_save_legend(
+        self._test_save_layer(
             self.client_user.put,
             status.HTTP_400_BAD_REQUEST,
             'dsadaadasdasdjkjdkasda/ewqeqw/'
@@ -127,22 +126,22 @@ class ApiLegendInstanceTest(ApiLegendTest):
 
     def test_clear_children(self, **kwargs):
         # first add children:
-        self._test_save_legend(
+        self._test_save_layer(
             self.client_user.put,
             status.HTTP_200_OK,
-            self.legend_object
+            self.symbols
         )
 
         # and then get rid of them:
         response = self.client_user.patch(self.url,
                                           data=urllib.urlencode({
-                                              'legend_object': []
+                                              'symbols': []
                                           }),
                                           HTTP_X_CSRFTOKEN=self.csrf_token,
                                           content_type="application/x-www-form-urlencoded"
                                           )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        rec = models.Legend.objects.get(id=self.obj.id)
+        rec = models.Layer.objects.get(id=self.obj.id)
 
     def test_delete_view(self, **kwargs):
         view_id = self.obj.id
