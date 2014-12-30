@@ -20,91 +20,6 @@ define(["marionette",
             template: function () {
                 return _.template(LayerPanelHeader);
             },
-            entries: [
-                {
-                    id: 1,
-                    name: "Worms",
-                    children: [
-                        {
-                            title: "At least 1 worm",
-                            color: "#7075FF",
-                            rule: "worms > 0",
-                            width: 30
-                        },
-                        {
-                            title: "No worms",
-                            color: "#F011D9",
-                            rule: "worms = 0",
-                            width: 30
-                        }
-                    ]
-                },
-                {
-                    id: 2,
-                    name: "Soil Moisture",
-                    children: [
-                        {
-                            title: "Moist soil",
-                            color: "#428BCA",
-                            rule: "moisture = 'moist'",
-                            shape: "circle",
-                            width: 20
-                        },
-                        {
-                            title: "Dry soil",
-                            color: "#b7f081",
-                            rule: "moisture = 'dry'",
-                            shape: "circle",
-                            width: 20
-                        }
-                    ]
-                },
-                {
-                    id: 3,
-                    name: "Percolation Time",
-                    children: [
-                        {
-                            title: "30 seconds or less",
-                            color: "#a2e6ef",
-                            rule: "percolation <= 30",
-                            shape: "square",
-                            width: 30
-                        },
-                        {
-                            title: "Between 30 and 200 seconds",
-                            color: "#19b8ca",
-                            rule: "percolation > 30 and percolation <= 200",
-                            shape: "square",
-                            width: 30
-                        },
-                        {
-                            title: "More than 200 seconds",
-                            color: "#0e727e",
-                            rule: "percolation > 200",
-                            shape: "square",
-                            width: 30
-                        }
-                    ]
-                },
-                {
-                    id: 4,
-                    name: "Pitfall Count",
-                    children: [
-                        {
-                            title: "Less than 10 invertebrates",
-                            color: "#5cee1e",
-                            rule: "pitfall < 10",
-                            width: 30
-                        },
-                        {
-                            title: "10 or more invertebrates",
-                            color: "#3b9914",
-                            rule: "pitfall >= 10",
-                            width: 30
-                        }
-                    ]
-                }
-            ],
             regions: {
                 layer: "#layer-manager",
                 dataFilter: "#data-filter",
@@ -117,24 +32,26 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.opts = opts;
-                //opts.app.vent.on("new-collection-created", this.applyToCollection.bind(this));
-                opts.app.vent.on("adjust-layout", this.resize.bind(this));
+                this.app.vent.on("adjust-layout", this.resize.bind(this));
+                this.app.vent.on("add-layer", this.addLayerEntry.bind(this));
+                this.app.vent.on("remove-layer", this.removeLayerEntry.bind(this));
             },
-
-            addLayerEntries: function () {
-                var that = this,
-                    selector;
-                $.each(this.entries, function () {
-                    selector = "layer_" + this.id;
-                    that.$el.find('#layer-manager').append($('<div id="' + selector + '"></div>'));
-                    that.addRegion(selector, '#' + selector);
-                    this.app = that.app;
-                    that[selector].show(new LayerItem(this));
-                });
+            addLayerEntry: function (data) {
+                var model = data.layer,
+                    selector = "layer_" + model.id;
+                this.$el.find('#layer-manager').append($('<div id="' + selector + '"></div>'));
+                this.addRegion(selector, '#' + selector);
+                this[selector].show(new LayerItem({
+                    model: model,
+                    app: this.app
+                }));
             },
-
+            removeLayerEntry: function (data) {
+                var model = data.layer,
+                    selector = "layer_" + model.id;
+                this.removeRegion(selector);
+            },
             onShow: function () {
-                this.addLayerEntries();
                 this.dataFilter.show(new DataFilter(this.opts));
                 this.layersMenu.show(new LayersMenu(this.opts));
                 this.resize();

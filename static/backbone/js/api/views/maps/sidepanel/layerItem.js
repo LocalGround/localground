@@ -15,28 +15,31 @@ define(["backbone",
          * @class DataPanel
          */
         var LayerItem = Backbone.View.extend({
+            model: null,
             events: {
                 'click .check-all': 'toggleShowAll',
                 'click .cb-layer-item': 'toggleShow',
                 'click .zoom-to-extent': 'zoomToExtent'
             },
             initialize: function (opts) {
-                $.extend(this, opts);
+                this.model = opts.model;
+                //$.extend(this, opts);
                 this.app = opts.app;
                 this.render();
             },
             render: function () {
                 this.$el.html(_.template(LayerEntry, {
-                    name: this.name,
+                    name: this.model.get("name"),
                     //items: this.children,
                     symbols: this.getSymbols()
                 }));
             },
             getSymbols: function () {
                 var i = 0,
+                    symbolList = this.model.get("legend_object"),
                     symbols = [];
-                for (i = 0; i < this.children.length; i++) {
-                    symbols.push(new Symbol(this.children[i]));
+                for (i = 0; i < symbolList.length; i++) {
+                    symbols.push(new Symbol(symbolList[i]));
                 }
                 return symbols;
             },
@@ -60,20 +63,19 @@ define(["backbone",
                     //console.log('show layer');
                     this.$el.find('input').attr('checked', true);
                     this.app.vent.trigger("show-layer", {
-                        layerItem: this
+                        layerItem: this.model.get("legend_object")
                     });
                 } else {
                     this.$el.find('input').attr('checked', false);
                     this.app.vent.trigger("hide-layer", {
-                        layerItem: this
+                        layerItem: this.model.get("legend_object")
                     });
                 }
                 //this.saveState();
             },
             zoomToExtent: function (e) {
-                //this.collection.trigger('zoom-to-extent');
                 this.app.vent.trigger("zoom-to-layer", {
-                    layerItem: this
+                    layerItem: this.model.get("legend_object")
                 });
                 e.preventDefault();
             }

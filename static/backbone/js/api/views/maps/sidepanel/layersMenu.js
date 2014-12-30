@@ -16,8 +16,8 @@ define(["marionette",
              * @lends localground.maps.views.ProjectsMenu#
              */
             events: {
-                'click .cb-project': 'toggleCheckbox',
-                'click .project-item': 'triggerToggleCheckbox'
+                'click .cb-item': 'toggleCheckbox',
+                'click .item': 'triggerToggleCheckbox'
             },
             childViewOptions: {
                 template: _.template(projectItem)
@@ -26,7 +26,6 @@ define(["marionette",
                 template: _.template(projectItem),
                 modelEvents: {'change': 'render'}
             }),
-            id: 'projects-menu',
             /**
              * Initializes the project menu and fetches the available
              * projects from the Local Ground Data API.
@@ -41,7 +40,7 @@ define(["marionette",
                 this.app = opts.app;
                 this.collection = new Layers();
                 this.childViewOptions.app = this.app;
-                this.collection.fetch({ reset: true });
+                this.collection.fetch();
                 this.listenTo(this.app.vent, 'toggle-layer', this.toggleLayer);
                 this.restoreState();
             },
@@ -53,9 +52,8 @@ define(["marionette",
             toggleCheckbox: function (e) {
                 var input = $(e.target).find('input').addBack().filter('input'),
 					checked = input.is(':checked'),
-                    projectId = input.val();
-                this.app.vent.trigger('toggle-layer', projectId, checked);
-
+                    id = input.val();
+                this.app.vent.trigger('toggle-layer', id, checked);
                 if (e.stopPropagation) {
                     e.stopPropagation();
                 }
@@ -72,6 +70,15 @@ define(["marionette",
                 var model = this.collection.get(id);
                 if (model) {
                     model.set('isVisible', visible);
+                }
+                if (visible) {
+                    this.app.vent.trigger("add-layer", {
+                        layer: model
+                    });
+                } else {
+                    this.app.vent.trigger("remove-layer", {
+                        layer: model
+                    });
                 }
                 this.saveState();
             },

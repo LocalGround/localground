@@ -15,8 +15,8 @@ define(["marionette",
              * @lends localground.maps.views.ProjectsMenu#
              */
             events: {
-                'click .cb-project': 'toggleCheckbox',
-                'click .project-item': 'triggerToggleCheckbox'
+                'click .cb-item': 'toggleCheckbox',
+                'click .item': 'triggerToggleCheckbox'
             },
             childViewOptions: {
                 template: _.template(projectItem)
