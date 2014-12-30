@@ -20,7 +20,7 @@ class ApiPresentationTest(test.TestCase, ViewMixinAPI):
                               'description': self.description,
                               'tags': self.tags,
                               'slug': self.slug,
-                              'code': code
+                              'code': json.dumps(code)
                           }),
                           HTTP_X_CSRFTOKEN=self.csrf_token,
                           content_type="application/x-www-form-urlencoded"
@@ -53,7 +53,7 @@ class ApiPresentationListTest(ApiPresentationTest):
         self._test_save_presentation(
             self.client_user.post,
             status.HTTP_201_CREATED,
-            json.dumps([])
+            {"test": 1}
         )
 
     def test_create_presentation_using_post_invalid_code(self, **kwargs):
@@ -81,7 +81,7 @@ class ApiPresentationInstanceTest(ApiPresentationTest):
         self._test_save_presentation(
             self.client_user.put,
             status.HTTP_200_OK,
-            json.dumps({'name': 'Berkeley'})
+            {'name': 'Berkeley'}
         )
 
     def test_update_presentation_using_patch(self, **kwargs):
@@ -116,7 +116,7 @@ class ApiPresentationInstanceTest(ApiPresentationTest):
         self._test_save_presentation(
             self.client_user.put,
             status.HTTP_200_OK,
-            json.dumps([{"a": "This is a test"}])
+            [{"a": "This is a test"}]
         )
 
         # and then get rid of them:
