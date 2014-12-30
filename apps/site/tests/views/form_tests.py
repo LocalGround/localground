@@ -88,10 +88,12 @@ class UpdateFormTest(test.TestCase, ViewMixin):
             'access_authority': models.ObjectAuthority.PRIVATE,
             'field-0-col_alias': 'my first column',
             'field-0-data_type': 1,
+            'field-0-ordering': 1,
             'field-0-is_printable': 'on',
             'field-0-is_display_field': 'on',
             'field-1-col_alias': 'my second column',
             'field-1-data_type': 6,
+            'field-1-ordering': 2,
             'field-1-is_printable': 'on',
         }
         management_form = {
@@ -113,6 +115,8 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 
         data = self.make_post_dictionary(name, description, tags, slug)
         data.update({'projects': project})
+        
+        #print data
 
         # form should not have any fields:
         self.assertEqual(len(self.form.fields), 0)
