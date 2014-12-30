@@ -23,7 +23,7 @@ define(["backbone",
             },
             initialize: function (opts) {
                 this.model = opts.model;
-                //$.extend(this, opts);
+                this.id = this.model.id;
                 this.app = opts.app;
                 this.render();
             },
@@ -58,24 +58,26 @@ define(["backbone",
                 }
                 //this.saveState();
             },
+            getSymbolConfig: function () {
+                return this.model.get("legend_object");
+            },
             toggleShowAll: function () {
                 if (this.$el.find('.check-all').is(':checked')) {
-                    //console.log('show layer');
                     this.$el.find('input').attr('checked', true);
                     this.app.vent.trigger("show-layer", {
-                        layerItem: this.model.get("legend_object")
+                        layerItem: this
                     });
                 } else {
                     this.$el.find('input').attr('checked', false);
                     this.app.vent.trigger("hide-layer", {
-                        layerItem: this.model.get("legend_object")
+                        layerItem: this
                     });
                 }
                 //this.saveState();
             },
             zoomToExtent: function (e) {
                 this.app.vent.trigger("zoom-to-layer", {
-                    layerItem: this.model.get("legend_object")
+                    layerItem: this
                 });
                 e.preventDefault();
             }

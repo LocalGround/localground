@@ -36,9 +36,9 @@ define(['marionette',
             },
 
             parseLayerItem: function () {
-                var symbol, key, i;
-                for (i = 0; i < this.layerItem.length; i++) {
-                    symbol = new Symbol(this.layerItem[i]);
+                var symbol, key, i, symbolConfig = this.layerItem.getSymbolConfig();
+                for (i = 0; i < symbolConfig.length; i++) {
+                    symbol = new Symbol(symbolConfig[i]);
                     for (key in this.dataManager.collections) {
                         this.addMatchingModels(symbol, this.dataManager.collections[key]);
                     }

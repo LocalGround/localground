@@ -72,13 +72,9 @@ define(["marionette",
                     model.set('isVisible', visible);
                 }
                 if (visible) {
-                    this.app.vent.trigger("add-layer", {
-                        layer: model
-                    });
+                    this.app.vent.trigger("add-layer", { layer: model });
                 } else {
-                    this.app.vent.trigger("remove-layer", {
-                        layer: model
-                    });
+                    this.app.vent.trigger("remove-layer", { layer: model });
                 }
                 this.saveState();
             },

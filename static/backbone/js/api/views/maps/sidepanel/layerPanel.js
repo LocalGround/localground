@@ -49,6 +49,10 @@ define(["marionette",
             removeLayerEntry: function (data) {
                 var model = data.layer,
                     selector = "layer_" + model.id;
+                // turn off the map overlays also:
+                this.app.vent.trigger("hide-layer", {
+                    layerItem: this[selector].currentView
+                });
                 this.removeRegion(selector);
             },
             onShow: function () {

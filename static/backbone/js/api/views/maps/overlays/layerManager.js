@@ -10,11 +10,8 @@ define(["backbone",
          */
         var LayerManager = Backbone.View.extend({
             /**
-             * @lends localground.maps.views.OverlayManager#
+             * @lends localground.maps.views.LayerManager#
              */
-            //dataManager: null,
-            //basemap: null,
-
             /**
              * Initializes the object.
              * @param {Object} opts
