@@ -37,8 +37,14 @@ body { overflow: hidden; }
 	margin: 10px 3px 0px 0px;
 	color: #666;
 }
-
-
+.dropdown-menu .item {
+	border-bottom: solid 1px #eee;
+	padding: 2px 6px 2px 10px;
+	cursor: pointer;
+}
+.dropdown-menu .item:hover {
+	background-image: url(../images/bg.png);
+}
 .item > input, .input > img {
 	vertical-align: baseline;
 }

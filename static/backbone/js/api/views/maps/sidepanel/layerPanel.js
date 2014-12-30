@@ -3,9 +3,10 @@ define(["marionette",
         "jquery",
         "views/maps/sidepanel/filter",
         "views/maps/sidepanel/layerItem",
-        "text!" + templateDir + "/sidepanel/layerPanelHeader.html"
+        "text!" + templateDir + "/sidepanel/layerPanelHeader.html",
+        "views/maps/sidepanel/layersMenu"
     ],
-    function (Marionette, _, $, DataFilter, LayerItem, LayerPanelHeader) {
+    function (Marionette, _, $, DataFilter, LayerItem, LayerPanelHeader, LayersMenu) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -106,7 +107,8 @@ define(["marionette",
             ],
             regions: {
                 layer: "#layer-manager",
-                dataFilter: "#data-filter"
+                dataFilter: "#data-filter",
+                layersMenu: "#layers-menu"
             },
             /**
              * Initializes the dataPanel
@@ -115,7 +117,7 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.opts = opts;
-                opts.app.vent.on("new-collection-created", this.applyToCollection.bind(this));
+                //opts.app.vent.on("new-collection-created", this.applyToCollection.bind(this));
                 opts.app.vent.on("adjust-layout", this.resize.bind(this));
             },
 
@@ -134,11 +136,8 @@ define(["marionette",
             onShow: function () {
                 this.addLayerEntries();
                 this.dataFilter.show(new DataFilter(this.opts));
+                this.layersMenu.show(new LayersMenu(this.opts));
                 this.resize();
-            },
-
-            applyToCollection: function (opts) {
-                //console.log(opts.collection);
             },
 
             destroy: function () {
