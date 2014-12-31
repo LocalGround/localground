@@ -31,8 +31,8 @@ define(["marionette",
                 this.app = opts.app;
                 this.buildSymbolMap();
                 this.restoreState();
-                //this.render();
             },
+
             templateHelpers: function () {
                 return {
                     name: this.model.get("name"),
@@ -40,6 +40,7 @@ define(["marionette",
                     showOverlay: this.showOverlay
                 };
             },
+
             onRender: function () {
                 //trigger the map overlays to render if they're turned on:
                 var that = this;
@@ -49,6 +50,7 @@ define(["marionette",
                     }
                 });
             },
+
             buildSymbolMap: function () {
                 if (!this.symbolMap) {
                     this.symbolMap = {};
@@ -59,9 +61,11 @@ define(["marionette",
                     }
                 }
             },
+
             getSymbols: function () {
                 return _.values(this.symbolMap);
             },
+
             toggleShow: function (e) {
                 var rule = $(e.target).val(),
                     isChecked = $(e.target).is(':checked');
@@ -79,9 +83,7 @@ define(["marionette",
                 this.symbolMap[rule].showOverlay = isChecked;
                 this.saveState();
             },
-            getSymbolConfig: function () {
-                return this.model.get("symbols");
-            },
+
             toggleShowAll: function () {
                 var isChecked = this.$el.find('.check-all').is(':checked');
                 if (isChecked) {
@@ -94,28 +96,29 @@ define(["marionette",
                 this.showOverlay = isChecked;
                 this.saveState();
             },
+
             zoomToExtent: function (e) {
-                this.app.vent.trigger("zoom-to-layer", {
-                    layerItem: this
-                });
+                this.app.vent.trigger("zoom-to-layer", { layerItem: this });
                 e.preventDefault();
             },
+
             saveState: function () {
                 //remember layer and symbol visibility
                 var visMemory = { showOverlay: true },
-                    key = null;
-                for (key in this.symbolMap) {
-                    visMemory[key] = this.symbolMap[key].showOverlay;
+                    rule = null;
+                for (rule in this.symbolMap) {
+                    visMemory[rule] = this.symbolMap[rule].showOverlay;
                 }
                 this.app.saveState(this.id, visMemory, false);
             },
 
             restoreState: function () {
+                //restore layer and symbol visibility
+                var rule;
                 this.state = this.app.restoreState(this.id) || {};
-                var key;
                 this.showOverlay = this.state.showOverlay || false;
-                for (key in this.symbolMap) {
-                    this.symbolMap[key].showOverlay = this.state[key] || false;
+                for (rule in this.symbolMap) {
+                    this.symbolMap[rule].showOverlay = this.state[rule] || false;
                 }
             }
         });

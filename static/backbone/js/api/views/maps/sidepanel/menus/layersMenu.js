@@ -4,7 +4,7 @@ define(["marionette",
         "jquery",
         "collections/layers"
     ],
-    function (Marionette, projectItem, _, $, Layers) {
+    function (Marionette, menuItem, _, $, Layers) {
         'use strict';
         /**
          * Class that controls the available projects menu,
@@ -20,12 +20,9 @@ define(["marionette",
                 'click .item': 'triggerToggleCheckbox'
             },
             childViewOptions: {
-                template: _.template(projectItem)
+                template: _.template(menuItem)
             },
-            childView: Marionette.ItemView.extend({
-                template: _.template(projectItem),
-                modelEvents: {'change': 'render'}
-            }),
+            childView: null,
             id: 'layers-menu',
             /**
              * Initializes the project menu and fetches the available
@@ -41,6 +38,20 @@ define(["marionette",
                 this.app = opts.app;
                 this.collection = new Layers();
                 this.childViewOptions.app = this.app;
+                this.childView = Marionette.ItemView.extend({
+                    template: _.template(menuItem),
+                    modelEvents: {'change': 'render'},
+                    /*templateHelpers: function () {
+                        return {
+                            name: this.model.get("name"),
+                            symbols: this.getSymbols(),
+                            showOverlay: this.showOverlay
+                        };
+                    },*/
+                    onRender: function () {
+                        opts.app.vent.trigger("add-layer", { layer: this.model });
+                    }
+                });
                 this.collection.fetch();
                 this.listenTo(this.app.vent, 'toggle-layer', this.toggleItem);
                 this.restoreState();
