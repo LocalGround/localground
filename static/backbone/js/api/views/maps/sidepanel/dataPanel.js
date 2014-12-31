@@ -2,7 +2,7 @@ define(["marionette",
         "underscore",
         "jquery",
         "text!" + templateDir + "/sidepanel/dataPanelHeader.html",
-        "views/maps/sidepanel/projectsMenu",
+        "views/maps/sidepanel/menus/projectsMenu",
         "views/maps/sidepanel/projectTags",
         "views/maps/sidepanel/itemListManager"
     ],

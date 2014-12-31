@@ -8,6 +8,7 @@ define(['jquery', 'lib/sqlParser', 'lib/maps/overlays/point'],
          * @class OverlayGroup
          */
         var Symbol = function (opts) {
+            this.showOverlay = false;
             this.models = [];
             this.color = null;
             this.shape = null;

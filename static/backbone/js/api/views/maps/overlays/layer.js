@@ -2,10 +2,9 @@ define(['marionette',
         'config',
         'jquery',
         'underscore',
-        'views/maps/overlays/symbol',
         'lib/maps/overlays/symbolized'
     ],
-    function (Backbone, Config, $, _, Symbol, Symbolized) {
+    function (Backbone, Config, $, _, Symbolized) {
         'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
@@ -36,14 +35,13 @@ define(['marionette',
             },
 
             parseLayerItem: function () {
-                var symbol, key, i, symbolConfig = this.layerItem.getSymbolConfig();
-                for (i = 0; i < symbolConfig.length; i++) {
-                    symbol = new Symbol(symbolConfig[i]);
-                    for (key in this.dataManager.collections) {
-                        this.addMatchingModels(symbol, this.dataManager.collections[key]);
-                    }
-                    this.symbols.push(symbol);
-                }
+                var that = this;
+                this.symbols = this.layerItem.getSymbols();
+                _.each(this.symbols, function (symbol) {
+                    _.each(_.values(that.dataManager.collections), function (collection) {
+                        that.addMatchingModels(symbol, collection);
+                    });
+                });
             },
 
             addMatchingModels: function (symbol, collection) {

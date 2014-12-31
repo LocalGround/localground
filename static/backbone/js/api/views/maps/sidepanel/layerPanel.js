@@ -2,9 +2,9 @@ define(["marionette",
         "underscore",
         "jquery",
         "views/maps/sidepanel/filter",
-        "views/maps/sidepanel/layerItem",
+        "views/maps/sidepanel/items/layerItem",
         "text!" + templateDir + "/sidepanel/layerPanelHeader.html",
-        "views/maps/sidepanel/layersMenu"
+        "views/maps/sidepanel/menus/layersMenu"
     ],
     function (Marionette, _, $, DataFilter, LayerItem, LayerPanelHeader, LayersMenu) {
         'use strict';
@@ -38,7 +38,7 @@ define(["marionette",
             },
             addLayerEntry: function (data) {
                 var model = data.layer,
-                    selector = "layer_" + model.id;
+                    selector = "layer_panel_" + model.id;
                 this.$el.find('#layer-manager').append($('<div id="' + selector + '"></div>'));
                 this.addRegion(selector, '#' + selector);
                 this[selector].show(new LayerItem({
@@ -48,7 +48,7 @@ define(["marionette",
             },
             removeLayerEntry: function (data) {
                 var model = data.layer,
-                    selector = "layer_" + model.id;
+                    selector = "layer_panel_" + model.id;
                 // turn off the map overlays also:
                 this.app.vent.trigger("hide-layer", {
                     layerItem: this[selector].currentView
