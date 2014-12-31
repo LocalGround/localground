@@ -9,6 +9,7 @@ define(['jquery', 'lib/sqlParser', 'lib/maps/overlays/point'],
          */
         var Symbol = function (opts) {
             this.showOverlay = false;
+            //note: these can be heterogeneous models from many different collections
             this.models = [];
             this.color = null;
             this.shape = null;

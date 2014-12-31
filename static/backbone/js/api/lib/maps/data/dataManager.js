@@ -123,6 +123,7 @@ define(["models/project",
                 //remove selected project:
                 //
                 this.selectedProjects.remove({id: projectId});
+				this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
 
                 //reset default project:
                 //TODO: this should happen automatically remove this todo after you check
@@ -131,7 +132,6 @@ define(["models/project",
                 //notify the rest of the application
                 //TODO: ensure this actually happens automatically
                 //this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
-
                 this.saveState();
             };
 
@@ -269,9 +269,5 @@ define(["models/project",
 
             this.initialize(app);
         };
-        /*)
-         DataManager.destroy = function () {
-
-         };*/
         return DataManager;
     });

@@ -15,8 +15,6 @@ define(['marionette',
         var Layer = Backbone.View.extend({
             /** A google.maps.Map object */
             map: null,
-            //models: null,
-            //overlays: null,
             dataManager: null,
             layerItem: null,
             overlays: null,
@@ -31,17 +29,28 @@ define(['marionette',
                 this.overlays = {};
                 this.symbols = [];
                 this.parseLayerItem();
+                //this.app.vent.on("filter-applied", this.redraw.bind(this));
+                this.listenTo(this.app.vent, 'selected-projects-updated', this.parseLayerItem);
                 this.app.vent.on("filter-applied", this.redraw.bind(this));
             },
 
             parseLayerItem: function () {
+                console.log("parseLayerItem");
                 var that = this;
                 this.symbols = this.layerItem.getSymbols();
                 _.each(this.symbols, function (symbol) {
+                    //clear out old overlays and models
+                    that.clear(symbol);
                     _.each(_.values(that.dataManager.collections), function (collection) {
                         that.addMatchingModels(symbol, collection);
                     });
                 });
+            },
+
+            clear: function (symbol) {
+                symbol.models = [];
+                this.hide(symbol.rule);
+                this.overlays[symbol.rule] = [];
             },
 
             addMatchingModels: function (symbol, collection) {

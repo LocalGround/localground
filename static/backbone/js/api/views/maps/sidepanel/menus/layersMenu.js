@@ -41,13 +41,11 @@ define(["marionette",
                 this.childView = Marionette.ItemView.extend({
                     template: _.template(menuItem),
                     modelEvents: {'change': 'render'},
-                    /*templateHelpers: function () {
+                    templateHelpers: function () {
                         return {
-                            name: this.model.get("name"),
-                            symbols: this.getSymbols(),
-                            showOverlay: this.showOverlay
+                            isVisible: true
                         };
-                    },*/
+                    },
                     onRender: function () {
                         opts.app.vent.trigger("add-layer", { layer: this.model });
                     }

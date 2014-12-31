@@ -45,6 +45,9 @@ define(["underscore", "lib/maps/overlays/base"], function (_, Base) {
             this.isShowing = false;
             Base.prototype.initialize.apply(this, arguments);
             this.symbol = opts.symbol;
+            if (this.symbol.showOverlay) {
+                this.show();
+            }
         },
 
         /** shows the google.maps overlay on the map. */
