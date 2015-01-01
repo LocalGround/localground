@@ -21,6 +21,10 @@ define(["marionette",
 
             removeFromCollection: function (data) {
                 this.collection.remove(data.layer);
+                // also hide overlays from the map:
+                this.app.vent.trigger("hide-layer", {
+                    layerItem: data.layer
+                });
             }
         });
         return LayerList;
