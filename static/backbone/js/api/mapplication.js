@@ -4,7 +4,7 @@ define(["marionette",
         "views/maps/basemap",
         "views/maps/sidepanel/dataPanel",
         "views/maps/sidepanel/layerPanel",
-        //"views/maps/sidepanel/tabs",
+        "views/maps/sidepanel/tabs",
         "views/maps/topBar",
         "lib/maps/data/dataManager",
         "lib/appUtilities",
@@ -13,7 +13,7 @@ define(["marionette",
         "views/maps/overlays/layerManager",
         "jquery.bootstrap"
     ],
-    function (Marionette, Backbone, _, BaseMap, DataPanel, LayerPanel, //Tabs
+    function (Marionette, Backbone, _, BaseMap, DataPanel, LayerPanel, Tabs,
               TopBar, DataManager, appUtilities, Projects, GeoreferenceManager,
               LayerManager) {
         "use strict";
@@ -23,6 +23,7 @@ define(["marionette",
         Mapplication.setMode('view');
 
         Mapplication.addRegions({
+            tabsRegion: "#vertical-tabs",
             topBarRegion: "#topbar",
             mapRegion: "#map_canvas",
             dataPanelRegion: "#data_panel",
@@ -49,6 +50,7 @@ define(["marionette",
             options.app = this;
             var basemap = new BaseMap(options),
                 dataPanel = new DataPanel(options),
+                tabs = new Tabs({app: this}),
                 layerPanel = new LayerPanel(options),
                 dataManager = new DataManager(options),
                 georeferenceManager = new GeoreferenceManager(options, basemap),
@@ -58,6 +60,7 @@ define(["marionette",
                     basemap: basemap
                 }));
             this.map = basemap.map;
+            Mapplication.tabsRegion.show(tabs);
             Mapplication.mapRegion.show(basemap);
             Mapplication.dataPanelRegion.show(dataPanel);
             Mapplication.layerPanelRegion.show(layerPanel);

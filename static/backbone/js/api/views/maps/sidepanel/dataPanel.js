@@ -37,11 +37,6 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.opts = opts;
-                //this.projectTags.show(new ProjectTags(app, opts));
-                //this.panelBody.show(new PanelBody(app, opts));
-                // Listen for the "new_collection" event. On each new
-                // collection event add a new ItemsView to the DataPanel.
-                //app.vent.on("new-collection-created", this.createItemsView.bind(this));
                 opts.app.vent.on("adjust-layout", this.resize.bind(this));
             },
 

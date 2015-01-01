@@ -61,7 +61,7 @@ define(['marionette',
             showAll: function () {
                 this.isVisible = true;
                 this.children.each(function (overlay) {
-                    console.log(overlay.model.get("isVisible"));
+                    //console.log(overlay.model.get("isVisible"));
                     if (overlay.model.get("isVisible")) {
                         overlay.show();
                     }

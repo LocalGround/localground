@@ -49,7 +49,6 @@ define(["marionette",
             },
 
             triggerToggleCheckbox: function (e) {
-                console.log("triggerToggleCheckbox");
                 var $cb = $(e.target).find('input');
                 if ($cb.css('visibility') !== 'hidden') {
                     $cb.attr('checked', !$cb.is(':checked'));
@@ -58,7 +57,6 @@ define(["marionette",
             },
 
             toggleItem: function (id, visible) {
-                console.log("toggling", id, visible);
                 var model = this.collection.get(id);
                 model.set("isVisible", visible);
                 if (visible) {
@@ -70,7 +68,6 @@ define(["marionette",
             },
 
             onAddChild: function (childView) {
-                console.log(this.state.activeLayers);
                 var layer = childView.model;
                 if (this.state) {
                     if (_.contains(this.state.activeLayers, layer.get('id'))) {

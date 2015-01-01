@@ -35,7 +35,7 @@ define(['marionette',
             },
 
             parseLayerItem: function () {
-                console.log("parseLayerItem");
+                //console.log("parseLayerItem");
                 var that = this;
                 this.symbols = this.layerItem.getSymbols();
                 _.each(this.symbols, function (symbol) {
