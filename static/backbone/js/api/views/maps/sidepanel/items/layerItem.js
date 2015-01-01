@@ -12,7 +12,7 @@ define(["marionette",
         /**
          * A class that handles display and rendering of the
          * data panel and projects menu
-         * @class DataPanel
+         * @class LayerItem
          */
         var LayerItem = Marionette.ItemView.extend({
             model: null,
@@ -81,18 +81,19 @@ define(["marionette",
                     });
                 }
                 this.symbolMap[rule].showOverlay = isChecked;
+                e.preventDefault();
                 this.saveState();
             },
 
             toggleShowAll: function () {
-                var isChecked = this.$el.find('.check-all').is(':checked');
+                var isChecked = this.$el.find('.check-all').is(':checked'),
+                    $el = this.$el.find('input');
                 if (isChecked) {
-                    this.$el.find('input').attr('checked', true);
                     this.app.vent.trigger("show-layer", { layerItem: this });
                 } else {
-                    this.$el.find('input').attr('checked', false);
                     this.app.vent.trigger("hide-layer", { layerItem: this });
                 }
+                $el.attr('checked', isChecked);
                 this.showOverlay = isChecked;
                 this.saveState();
             },

@@ -51,7 +51,7 @@ define(["marionette",
                     }
                 });
                 this.collection.fetch();
-                this.listenTo(this.app.vent, 'toggle-layer', this.toggleItem);
+                //this.listenTo(this.app.vent, 'toggle-layer', this.toggleItem);
                 this.restoreState();
             },
 
@@ -61,9 +61,9 @@ define(["marionette",
              */
             toggleCheckbox: function (e) {
                 var input = $(e.target).find('input').addBack().filter('input'),
-					checked = input.is(':checked'),
-                    id = input.val();
-                this.app.vent.trigger('toggle-layer', id, checked);
+                    checked = input.is(':checked');
+                this.toggleItem(input.val(), checked);
+
                 if (e.stopPropagation) {
                     e.stopPropagation();
                 }
@@ -78,9 +78,6 @@ define(["marionette",
 
             toggleItem: function (id, visible) {
                 var model = this.collection.get(id);
-                if (model) {
-                    model.set('isVisible', visible);
-                }
                 if (visible) {
                     this.app.vent.trigger("add-layer", { layer: model });
                 } else {
