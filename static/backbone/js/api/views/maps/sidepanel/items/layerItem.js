@@ -81,7 +81,6 @@ define(["marionette",
                     });
                 }
                 this.symbolMap[rule].showOverlay = isChecked;
-                e.preventDefault();
                 this.saveState();
             },
 

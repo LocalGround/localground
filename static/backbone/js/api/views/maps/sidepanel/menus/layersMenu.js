@@ -20,45 +20,24 @@ define(["marionette",
                 'click .item': 'triggerToggleCheckbox'
             },
             childViewOptions: {
-                template: _.template(menuItem)
+                template: _.template(menuItem),
+                modelEvents: {'change': 'render'}
             },
-            childView: null,
+            childView: Marionette.ItemView,
             id: 'layers-menu',
-            /**
-             * Initializes the project menu and fetches the available
-             * projects from the Local Ground Data API.
-             * @see <a href="http://localground.org/api/0/projects">http://localground.org/api/0/projects</a>.
-             * @param {Object} opts
-             * Dictionary of initialization options
-             * @param {Object} opts.el
-             * The jQuery element to which the projects should be attached.
-             */
+
             initialize: function (opts) {
-                //this.setElement(opts.el);
                 this.app = opts.app;
                 this.collection = new Layers();
                 this.childViewOptions.app = this.app;
-                this.childView = Marionette.ItemView.extend({
+                /*this.childView = Marionette.ItemView.extend({
                     template: _.template(menuItem),
-                    modelEvents: {'change': 'render'},
-                    templateHelpers: function () {
-                        return {
-                            isVisible: true
-                        };
-                    },
-                    onRender: function () {
-                        opts.app.vent.trigger("add-layer", { layer: this.model });
-                    }
-                });
+                    modelEvents: {'change': 'render'}
+                });*/
                 this.collection.fetch();
-                //this.listenTo(this.app.vent, 'toggle-layer', this.toggleItem);
                 this.restoreState();
             },
 
-            /**
-             * Catches the div click event and ignores it
-             * @param {Event} e
-             */
             toggleCheckbox: function (e) {
                 var input = $(e.target).find('input').addBack().filter('input'),
                     checked = input.is(':checked');
@@ -68,7 +47,9 @@ define(["marionette",
                     e.stopPropagation();
                 }
             },
+
             triggerToggleCheckbox: function (e) {
+                console.log("triggerToggleCheckbox");
                 var $cb = $(e.target).find('input');
                 if ($cb.css('visibility') !== 'hidden') {
                     $cb.attr('checked', !$cb.is(':checked'));
@@ -77,13 +58,25 @@ define(["marionette",
             },
 
             toggleItem: function (id, visible) {
+                console.log("toggling", id, visible);
                 var model = this.collection.get(id);
+                model.set("isVisible", visible);
                 if (visible) {
                     this.app.vent.trigger("add-layer", { layer: model });
                 } else {
                     this.app.vent.trigger("remove-layer", { layer: model });
                 }
                 this.saveState();
+            },
+
+            onAddChild: function (childView) {
+                console.log(this.state.activeLayers);
+                var layer = childView.model;
+                if (this.state) {
+                    if (_.contains(this.state.activeLayers, layer.get('id'))) {
+                        this.triggerToggleCheckbox({target: childView.el});
+                    }
+                }
             },
 
 			saveState: function () {

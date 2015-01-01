@@ -16,6 +16,7 @@ define(["marionette",
             },
 
             addToCollection: function (data) {
+                console.log("add to collection");
                 this.collection.add(data.layer);
             },
 
