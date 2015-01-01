@@ -2,16 +2,16 @@ define(["marionette",
         "underscore",
         "jquery",
         "views/maps/sidepanel/filter",
-        "views/maps/sidepanel/items/layerItem",
         "text!" + templateDir + "/sidepanel/layerPanelHeader.html",
-        "views/maps/sidepanel/menus/layersMenu"
+        "views/maps/sidepanel/menus/layersMenu",
+        "views/maps/sidepanel/layerList"
     ],
-    function (Marionette, _, $, DataFilter, LayerItem, LayerPanelHeader, LayersMenu) {
+    function (Marionette, _, $, DataFilter, LayerPanelHeader, LayersMenu, LayerList) {
         'use strict';
         /**
          * A class that handles display and rendering of the
          * data panel and projects menu
-         * @class DataPanel
+         * @class LayerPanel
          */
         var LayerPanel = Marionette.LayoutView.extend({
             /**
@@ -21,41 +21,18 @@ define(["marionette",
                 return _.template(LayerPanelHeader);
             },
             regions: {
-                layer: "#layer-manager",
+                layerList: "#layer-manager",
                 dataFilter: "#data-filter",
                 layersMenu: "#layers-menu"
             },
-            /**
-             * Initializes the dataPanel
-             * @param {Object} opts
-             */
+
             initialize: function (opts) {
                 this.app = opts.app;
                 this.opts = opts;
                 this.app.vent.on("adjust-layout", this.resize.bind(this));
-                this.app.vent.on("add-layer", this.addLayerEntry.bind(this));
-                this.app.vent.on("remove-layer", this.removeLayerEntry.bind(this));
-            },
-            addLayerEntry: function (data) {
-                var model = data.layer,
-                    selector = "layer_panel_" + model.id;
-                this.$el.find('#layer-manager').append($('<div id="' + selector + '"></div>'));
-                this.addRegion(selector, '#' + selector);
-                this[selector].show(new LayerItem({
-                    model: model,
-                    app: this.app
-                }));
-            },
-            removeLayerEntry: function (data) {
-                var model = data.layer,
-                    selector = "layer_panel_" + model.id;
-                // turn off the map overlays also:
-                this.app.vent.trigger("hide-layer", {
-                    layerItem: this[selector].currentView
-                });
-                this.removeRegion(selector);
             },
             onShow: function () {
+                this.layerList.show(new LayerList(this.opts));
                 this.dataFilter.show(new DataFilter(this.opts));
                 this.layersMenu.show(new LayersMenu(this.opts));
                 this.resize();
