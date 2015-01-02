@@ -51,7 +51,7 @@ define(["jquery", "lib/truthStatement"], function ($, TruthStatement) {
             });
         });
 
-        $.each(['asdsadasdas'], function () {
+        $.each(invalid_statements, function () {
             var whereClause = this;
             it("Does not produce 3 tokens for \"" + whereClause + "\"", function () {
                 expect(function () {
@@ -79,6 +79,27 @@ define(["jquery", "lib/truthStatement"], function ($, TruthStatement) {
                 expect(function () {
                     s.setTokens(whereClause);
                     s.setOperator(s.tokens[1]);
+                }).toThrow();
+            });
+        });
+    });
+
+    describe("Checking overall parser (combination of the above tests)", function () {
+        var s;// = new TruthStatement();
+        $.each(valid_statements, function () {
+            var whereClause = this;
+            it("Sucessfully parsed: \"" + whereClause + "\"", function () {
+                expect(function () {
+                    s = new TruthStatement(whereClause, "and");
+                }).not.toThrow();
+            });
+        });
+
+        $.each(invalid_statements, function () {
+            var whereClause = this;
+            it("Failed to parse: \"" + whereClause + "\"", function () {
+                expect(function () {
+                    s = new TruthStatement(whereClause, "and");
                 }).toThrow();
             });
         });

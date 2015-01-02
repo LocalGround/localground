@@ -169,11 +169,9 @@ define(["jquery"], function ($) {
             return val.toString().toLowerCase();
         };
 
+        //initialize if user passed in arguments:
         if (statement != null && conjunction != null) {
-            console.log('initializing...');
             this.parseStatement(statement, conjunction);
-        } else {
-            console.log('NOT initializing...');
         }
     };
 
