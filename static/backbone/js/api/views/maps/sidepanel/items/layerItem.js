@@ -52,12 +52,17 @@ define(["marionette",
 
             onRender: function () {
                 //trigger the map overlays to render if they're turned on:
-                var that = this;
+                var that = this,
+                    counter = 0;
                 _.each(this.getSymbols(), function (item) {
                     if (item.showOverlay) {
                         that.app.vent.trigger("show-symbol", { layerItem: that, rule: item.rule });
+                        ++counter;
                     }
                 });
+                if (counter < this.getSymbols().length) {
+                    alert("trigger show whole layer");
+                }
             },
 
             buildSymbolMap: function () {

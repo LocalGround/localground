@@ -1,30 +1,34 @@
 require.config({
     baseUrl: "/static/backbone/js/api",
     paths: {
-        'jquery': '//code.jquery.com/jquery-1.8.0.min',
         'backbone': '../external/backbone-min',
-        'underscore': '../external/underscore-min',
-        'text': '../external/text',
-        'jquery.bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min',
-        'backgrid': '../external/backgrid.min',
-        'backgrid-paginator': '../external/backgrid-paginator-svw-debugged',
-        'marionette': '../external/backbone.marionette',
-        'form': '../external/backbone-forms',
-        'bootstrap-form-templates': '../external/backbone-forms-bootstrap3-templates',
         'backbone-bootstrap-modal': '../external/backbone.bootstrap-modal',
-        'colResizable': 'lib/tables/colResizeableMod',
+        'backbone.localStorage': '../backbone.localStorage-min',
         'backbone-pageable': '../external/backbone-pageable',
         'backbone-paginator': '../external/backbone.paginator',
-        'google-infobubble': '../external/infobubble',
-        'slick': '../external/slick.min',
-        'urlon': '../external/urlon',
-        'kernel': '../external/kernel.min',
-        'core': '../external/mediator/core-jquery',
-        'sandbox': '../external/mediator/sandbox',
+        'backgrid': '../external/backgrid.min',
+        'backgrid-paginator': '../external/backgrid-paginator-svw-debugged',
+        'boot': '/static/backbone/js/external/jasmine-2.1.3/boot',
+        'bootstrap-form-templates': '../external/backbone-forms-bootstrap3-templates',
+        'colResizable': 'lib/tables/colResizeableMod',
         'color-picker': '../external/jscolor',
-        'mapplication': './mapplication',
+        'core': '../external/mediator/core-jquery',
+        'form': '../external/backbone-forms',
+        'google-infobubble': '../external/infobubble',
+        'jasmine': '../external/jasmine-2.1.3/jasmine',
+        'jasmine-html': '../external/jasmine-2.1.3/jasmine-html',
         'highcharts': '//code.highcharts.com/highcharts',
-        'highcharts_export': '//code.highcharts.com/modules/exporting'
+        'highcharts_export': '//code.highcharts.com/modules/exporting',
+        'jquery': '//code.jquery.com/jquery-1.8.0.min',
+        'jquery.bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min',
+        'kernel': '../external/kernel.min',
+        'mapplication': './mapplication',
+        'marionette': '../external/backbone.marionette',
+        'sandbox': '../external/mediator/sandbox',
+        'slick': '../external/slick.min',
+        'text': '../external/text',
+        'underscore': '../external/underscore-min',
+        'urlon': '../external/urlon'
     },
     //waitSeconds: 0,
     shim: {
@@ -65,8 +69,22 @@ require.config({
         },
         'highcharts_export': {
             deps: ['highcharts']
+        },
+        'backbone.localStorage': {
+            deps: ['backbone'],
+            exports: 'Backbone'
+        },
+        jasmine: {
+            exports: 'jasmine'
+        },
+        'jasmine-html': {
+            deps: ['jasmine'],
+            exports: 'jasmine'
+        },
+        'boot': {
+            deps: ['jasmine', 'jasmine-html'],
+            exports: 'window.jasmineRequire'
         }
-
     },
     urlArgs: "bust=" + (new Date()).getTime()
 });
@@ -74,7 +92,8 @@ require.config({
 /** Javascript template directory */
 var templateDir = '/static/backbone/js/templates';
 
-/** Namespace definition */
+/** Namespace definition
+ * TODO: Delete, now that we're no longer using namespaces.
 var localground = {
     maps: {
         tiles: {},
@@ -89,7 +108,6 @@ var localground = {
     collections: {},
     models: {},
     events: {
-        /** A list of the events that this particular manager listens for */
         EventTypes: {
             SHOW_OVERLAY: "show_overlay",
             HIDE_OVERLAY: "hide_overlay",
@@ -103,7 +121,7 @@ var localground = {
         }
     }
 };
-
+*/
 
 /**
  * Global: cookie getter
