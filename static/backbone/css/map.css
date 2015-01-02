@@ -24,7 +24,7 @@ body { overflow: hidden; }
 .collection-header, .layer-header {
 	border-bottom-style: solid;
 	border-bottom-width: 1px;
-	border-bottom-color: rgb(204, 204, 204);
+	border-bottom-color: #DDD;
 	margin-bottom: 0px;
 }
 .collection-header {
@@ -36,6 +36,14 @@ body { overflow: hidden; }
 .collection-header > .fa-search, .layer-header > .fa-search  {
 	margin: 10px 3px 0px 0px;
 	color: #666;
+}
+.layer-header h4 {
+	margin-top: 20px;
+	margin-bottom: 2px;
+}
+.layer-header > .fa-search  {
+	margin: 20px 3px 0px 0px;
+	color: #999;
 }
 .dropdown-menu .item {
 	border-bottom: solid 1px #eee;

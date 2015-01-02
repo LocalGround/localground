@@ -5,9 +5,10 @@ define(["marionette",
         "underscore",
         "jquery",
         'views/maps/overlays/symbol',
+        "text!" + templateDir + "/sidepanel/layerEntrySimple.html",
         "text!" + templateDir + "/sidepanel/layerEntry.html"
     ],
-    function (Marionette, _, $, Symbol, LayerEntry) {
+    function (Marionette, _, $, Symbol, LayerEntrySimple, LayerEntry) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -18,6 +19,7 @@ define(["marionette",
             model: null,
             symbolMap: null,
             showOverlay: false,
+            basic: false,
             template: _.template(LayerEntry),
             events: {
                 'click .check-all': 'toggleShowAll',
@@ -30,15 +32,22 @@ define(["marionette",
                 this.id = this.model.id;
                 this.app = opts.app;
                 this.buildSymbolMap();
+                if (this.basic) {
+                    this.template = _.template(LayerEntrySimple);
+                }
                 this.restoreState();
             },
 
             templateHelpers: function () {
-                return {
+                var extras = {
                     name: this.model.get("name"),
                     symbols: this.getSymbols(),
                     showOverlay: this.showOverlay
                 };
+                if (this.basic) {
+                    extras.item = this.getSymbols()[0];
+                }
+                return extras;
             },
 
             onRender: function () {
@@ -52,6 +61,10 @@ define(["marionette",
             },
 
             buildSymbolMap: function () {
+                //set the basic flag:
+                if (this.model.get("symbols").length == 1) {
+                    this.basic = true;
+                }
                 if (!this.symbolMap) {
                     this.symbolMap = {};
                     var i = 0,
