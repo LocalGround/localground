@@ -15,7 +15,9 @@ define(["models/base", "underscore"], function (Base, _) {
         viewSchema: null,
         initialize: function (data, opts) {
             Base.prototype.initialize.apply(this, arguments);
-            this.viewSchema = this._generateSchema(opts.updateMetadata, false);
+            if (opts) {
+                this.viewSchema = this._generateSchema(opts.updateMetadata, false);
+            }
         },
         url: function () {
             /*

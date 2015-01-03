@@ -43,6 +43,7 @@ if (system.args.length !== 2) {
 
 var page = require('webpage').create();
 
+
 // Route "console.log()" calls from within the Page context to the main Phantom context (i.e. current "this")
 page.onConsoleMessage = function(msg) {
     console.log(msg);
@@ -61,7 +62,8 @@ page.open(system.args[1], function(status){
             var exitCode = page.evaluate(function(){
                 try {
                     console.log('');
-                    console.log(document.body.querySelector('.description').innerText);
+                    console.log(document.body.querySelector('.alert').innerText);
+                    /*console.log(document.body.querySelector('.description').innerText);
                     var list = document.body.querySelectorAll('.results > #details > .specDetail.failed');
                     if (list && list.length > 0) {
                       console.log('');
@@ -79,12 +81,15 @@ page.open(system.args[1], function(status){
                     } else {
                       console.log(document.body.querySelector('.alert > .passingAlert.bar').innerText);
                       return 0;
-                    }
+                    }*/
                 } catch (ex) {
                     console.log(ex);
                     return 1;
                 }
             });
+            setTimeout(function(){
+                phantom.exit();
+            }, 0);
             phantom.exit(exitCode);
         });
     }

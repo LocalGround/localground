@@ -1,4 +1,4 @@
-define(["jquery", "lib/truthStatement"], function ($, TruthStatement) {
+define(["jquery", "lib/truthStatement", "../../test/spec-helper"], function ($, TruthStatement) {
     'use strict';
     var valid_statements = [
             'a = 3',
@@ -37,6 +37,8 @@ define(["jquery", "lib/truthStatement"], function ($, TruthStatement) {
             //should not throw an exception:
             expect(function () { s.setConjunction('and'); }).not.toThrow();
             expect(function () { s.setConjunction('or'); }).not.toThrow();
+            console.log(this.photos);
+            console.log(this.markers);
         });
     });
 
@@ -102,6 +104,28 @@ define(["jquery", "lib/truthStatement"], function ($, TruthStatement) {
                     s = new TruthStatement(whereClause, "and");
                 }).toThrow();
             });
+        });
+    });
+
+    describe("Utility function tests", function () {
+        var s = new TruthStatement();
+        it("Successfully trims single quotes", function () {
+            expect(s.trimSingleQuotes("'hello'")).toEqual("hello");
+            expect(s.trimSingleQuotes("'hello'")).not.toEqual("'hello'");
+            expect(s.trimSingleQuotes("'hello'")).not.toEqual("hello'");
+            expect(s.trimSingleQuotes("'hello'")).not.toEqual("'hello");
+        });
+        it("Successfully trims percentages", function () {
+            expect(s.trimPercentages("%hello%")).toEqual("hello");
+            expect(s.trimPercentages("%hello%")).not.toEqual("%hello%");
+            expect(s.trimPercentages("%hello%")).not.toEqual("hello%");
+            expect(s.trimPercentages("%hello%")).not.toEqual("%hello");
+        });
+        it("Successfully trims parentheses", function () {
+            expect(s.trimParentheses("(hello)")).toEqual("hello");
+            expect(s.trimParentheses("(hello)")).not.toEqual("(hello)");
+            expect(s.trimParentheses("(hello)")).not.toEqual("hello)");
+            expect(s.trimParentheses("(hello)")).not.toEqual("(hello");
         });
     });
 

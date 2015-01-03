@@ -13,6 +13,7 @@ define(["jquery"], function ($) {
                 ' like ', ' contains ', ' startswith ', ' endswith '
             ];
         this.validConjunctions = ['and', 'or'];
+
         this.parseStatement = function (statement, conjunction) {
             this.setTokens(statement);
             this.key = this.tokens[0].trim();
@@ -47,14 +48,6 @@ define(["jquery"], function ($) {
         this.setConjunction = function (conjunction) {
             conjunction = conjunction.toLowerCase().trim();
             if (this.validConjunctions.indexOf(conjunction) == -1) {
-                throw new Error("Conjunction must be 'AND' or 'OR' (case insensitive)");
-            }
-            this.conjunction = conjunction;
-        };
-
-        this.setConjunction = function (conjunction) {
-            conjunction = conjunction.toLowerCase().trim();
-            if (['and', 'or'].indexOf(conjunction) == -1) {
                 throw new Error("Conjunction must be 'AND' or 'OR' (case insensitive)");
             }
             this.conjunction = conjunction;
@@ -107,6 +100,7 @@ define(["jquery"], function ($) {
                 this.val = this.trimSingleQuotes(this.val);
             }
         };
+
         this.truthTest = function (model) {
             //console.log(this);
             var returnVal = false,
