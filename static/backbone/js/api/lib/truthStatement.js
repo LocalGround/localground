@@ -110,7 +110,6 @@ define(["jquery"], function ($) {
                 return false;
             }
             modelVal = this.convertType(modelVal);
-
             if (this.operator == '=') {
                 returnVal = modelVal == this.val;
             } else if (this.operator == '>') {
@@ -161,6 +160,13 @@ define(["jquery"], function ($) {
 
         this.parseString = function (val) {
             return val.toString().toLowerCase();
+        };
+
+        this.debug = function () {
+            console.log("key: ", this.key);
+            console.log("operator: ", this.operator);
+            console.log("value: ", this.val);
+            console.log("conjunction: ", this.conjunction);
         };
 
         //initialize if user passed in arguments:

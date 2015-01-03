@@ -14,6 +14,10 @@ define(
     function (Photos, AudioFiles, MapImages, Markers, Records, Photo, Marker, Audio, Record, MapImage) {
         'use strict';
         beforeEach(function () {
+            /**
+             * Adding some dummy data for testing convenience.
+             * Availabe to all of the tests.
+             */
             this.photos = new Photos([
                 new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute'}),
                 new Photo({id: 2, name: "Dog", tags: 'animal, dog'}),
@@ -35,10 +39,18 @@ define(
                 new Marker({id: 3, name: "POI 3", tags: 'coffee shop'})
             ]);
             this.records = new Records([
-                new Record({ id: 1, name: "POI 1", tags: 'my house'}),
-                new Record({id: 2, name: "POI 2", tags: 'friend\'s house'}),
-                new Record({id: 3, name: "POI 3", tags: 'coffee shop'})
+                new Record({ id: 1, team_name: "Blue team", tags: 'my house', worm_count: 4 }),
+                new Record({id: 2, team_name: "Green team", tags: 'friend\'s house', worm_count: 8 }),
+                new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 2 })
             ], { 'url': 'dummy/url' });
+
+            this.dataDictionary = {
+                records: this.records,
+                photos: this.photos,
+                audio: this.audio,
+                map_images: this.map_images,
+                markers: this.markers
+            };
         });
     }
 );
