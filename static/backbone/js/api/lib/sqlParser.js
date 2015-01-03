@@ -4,6 +4,8 @@ define(["lib/truthStatement"], function (TruthStatement) {
             var i = 0;
             this.statements = [];
             this.sql = null;
+            this.failureFlag = 0;
+            this.failureMessage = '';
             this.init = function (sqlString) {
                 this.sql = sqlString.toLowerCase().replace("where", "");
                 var raw = this.sql.split(/(\s+and\s+|\s+or\s+)/),
@@ -12,18 +14,25 @@ define(["lib/truthStatement"], function (TruthStatement) {
                 raw.unshift("and");
                 for (i = 0; i < raw.length; i += 2) {
                     raw[i] = raw[i].trim();
+                    /*
+                     * Fails silently.
+                     * TODO: have UI check for failureFlag / Message and give
+                     *       user feedback.
+                     */
                     try {
                         truthStatement = new TruthStatement(raw[i + 1], raw[i]);
                         this.statements.push(truthStatement);
                     } catch (e) {
-                        console.log("error parsing truth statement: ", e);
+                        //console.log("error parsing truth statement: " +  e);
+                        this.failureFlag = 1;
+                        this.failureMessage = "error parsing truth statement: " +  e;
                     }
                 }
             };
 
             this.checkModel = function (model) {
                 var i = 0,
-                    truthVal = true,
+                    truthVal = !this.failureFlag,
                     s;
                 for (i = 0; i < this.statements.length; i++) {
                     s = this.statements[i];

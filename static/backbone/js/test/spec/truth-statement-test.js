@@ -28,7 +28,7 @@ define(["jquery", "lib/truthStatement", "../../test/spec-helper"], function ($, 
             'ainb',
             'random sentance'
         ];
-    describe("Check conjunctions", function () {
+    describe("TruthStatement: Check conjunctions", function () {
         it("Check that conjunction is 'AND' or 'OR' keyword (case-insensitive)", function () {
             var s = new TruthStatement();
             //should throw an exception:
@@ -40,7 +40,7 @@ define(["jquery", "lib/truthStatement", "../../test/spec-helper"], function ($, 
         });
     });
 
-    describe("Check token splitting", function () {
+    describe("TruthStatement: Check token splitting", function () {
         var s = new TruthStatement();
         $.each(valid_statements, function () {
             var whereClause = this;
@@ -61,7 +61,7 @@ define(["jquery", "lib/truthStatement", "../../test/spec-helper"], function ($, 
         });
     });
 
-    describe("Check operator validation", function () {
+    describe("TruthStatement: Check operator validation", function () {
         var s = new TruthStatement();
         $.each(valid_statements, function () {
             var whereClause = this;
@@ -84,7 +84,7 @@ define(["jquery", "lib/truthStatement", "../../test/spec-helper"], function ($, 
         });
     });
 
-    describe("Checking overall parser (combination of the above tests)", function () {
+    describe("TruthStatement: Checking overall parser (combination of the above tests)", function () {
         var s;// = new TruthStatement();
         $.each(valid_statements, function () {
             var whereClause = this;
@@ -105,7 +105,7 @@ define(["jquery", "lib/truthStatement", "../../test/spec-helper"], function ($, 
         });
     });
 
-    describe("Utility function tests", function () {
+    describe("TruthStatement: Utility function tests", function () {
         var s = new TruthStatement();
         it("Successfully trims single quotes", function () {
             expect(s.trimSingleQuotes("'hello'")).toEqual("hello");
@@ -135,7 +135,7 @@ define(["jquery", "lib/truthStatement", "../../test/spec-helper"], function ($, 
         });
     });
 
-    describe("Model comparison tests", function () {
+    describe("TruthStatement: Model comparison tests", function () {
         var s1 = new TruthStatement("id = 1", "and"),
             s2 = new TruthStatement("name = 'dog'", "and"),
             match_dictionary = {
