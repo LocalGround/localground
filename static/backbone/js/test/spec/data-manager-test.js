@@ -149,10 +149,6 @@ define(["backbone",
 
         describe("DataManager: Tests event listeners / handlers", function () {
             var dm;
-            /*
-            this.app.vent.on("apply-filter", this.applyFilter.bind(this));
-            this.app.vent.on("clear-filter", this.clearFilter.bind(this));
-            */
             it("Test projects.trigger(\"toggleProject\"). Only tests \"Off\" functionality", function () {
                 dm = new DataManager({
                     app: app,
@@ -168,6 +164,9 @@ define(["backbone",
                 expect(dm.selectedProjects.length).toEqual(1);
                 this.projectsLite.trigger("toggleProject", 2, false);
                 expect(dm.selectedProjects.length).toEqual(0);
+
+                //To spoof fetching, take a look at this blog post:
+                //http://blog.katworksgames.com/2013/03/30/bb_model_test_jasmine/
             });
 
             it("Test vent.trigger(\"set-active-project\")", function () {
@@ -210,6 +209,7 @@ define(["backbone",
                     app: app,
                     projects: this.projectsLite
                 });
+                //make sure that filter calls via event triggers are working:
                 dm.updateCollections(this.projects.at(0));
                 dm.updateCollections(this.projects.at(1));
                 expect(getCount(dm.collections)).toEqual(12);

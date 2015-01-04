@@ -94,12 +94,12 @@ define(["models/project",
              * @param {Integer} id
              * The id of the project of interest.
              */
-            this.fetchDataByProjectID = function (projectId) {
+            this.fetchDataByProjectID = function (projectID) {
                 var that = this,
-                    project = new Project({id: projectId});
+                    project = new Project({id: projectID});
 
                 project.fetch({data: {format: 'json', include_schema: true}, success: function () {
-                    that.updateCollections(project);
+					that.updateCollections(project);
                 }});
             };
 
