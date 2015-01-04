@@ -32,6 +32,9 @@ define(["models/project",
                     //console.log("Error in \"DataManager's updatedCollection\" function: opts argument cannot be null.");
                     return;
                 }
+				if (!opts.models) {
+                    return;
+                }
                 var key = opts.key,
                     models = opts.models,
                     collectionOpts;
@@ -94,7 +97,6 @@ define(["models/project",
                 var that = this,
                     project = new Project({id: projectId});
 
-                this.app.setActiveProjectID(projectId);
                 project.fetch({data: {format: 'json', include_schema: true}, success: function () {
                     that.updateCollections(project);
                 }});
@@ -124,14 +126,7 @@ define(["models/project",
                 //
                 this.selectedProjects.remove({id: projectId});
 				this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
-
-                //reset default project:
-                //TODO: this should happen automatically remove this todo after you check
-                //this.resetActiveProject();
-
-                //notify the rest of the application
-                //TODO: ensure this actually happens automatically
-                //this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
+                this.resetActiveProject();
                 this.saveState();
             };
 
@@ -208,7 +203,7 @@ define(["models/project",
                             updateMetadata: children[key].update_metadata
                         }));
                     };
-
+				this.app.setActiveProjectID(project.get("id"));
                 for (key in children) {
                     if (children.hasOwnProperty(key)) {
                         models = [];
