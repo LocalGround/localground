@@ -28,18 +28,19 @@ define(["models/project",
              */
             var updateCollection = function (opts) {
                 if (!opts) {
-                    //TODO: create standardized way to report errors.
-                    //console.log("Error in \"DataManager's updatedCollection\" function: opts argument cannot be null.");
-                    return;
-                }
-				if (!opts.models) {
-                    return;
+					throw new Error("opts cannot be null");
+                } else if (!opts.models) {
+                    throw new Error("opts.models cannot be null");
                 }
                 var key = opts.key,
                     models = opts.models,
                     collectionOpts;
-                //opts = opts || localground.config.Config[configKey];
                 if (!this.collections[key]) {
+					if (!opts.name) {
+						throw new Error("opts.name must be defined");
+					} else if (!opts.Collection) {
+						throw new Error("opts.Collection must be defined");
+					}
                     collectionOpts = { key: key, name: opts.name };
                     //A few special hacks for form data:
                     if (key.indexOf("form") !== -1) {

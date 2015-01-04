@@ -1,5 +1,12 @@
-define(["backbone", "underscore", "lib/maps/data/dataManager", "collections/projects", "lib/appUtilities", "../../test/spec-helper"],
-    function (Backbone, _, DataManager, Projects, appUtilities) {
+define(["backbone",
+        "underscore",
+        "lib/maps/data/dataManager",
+        "collections/projects",
+        "collections/markers",
+        "models/marker",
+        "lib/appUtilities",
+        "../../test/spec-helper"],
+    function (Backbone, _, DataManager, Projects, Markers, Marker, appUtilities) {
         'use strict';
 
         /**
@@ -9,7 +16,18 @@ define(["backbone", "underscore", "lib/maps/data/dataManager", "collections/proj
          *  - fetchDataByProjectID ('cause it queries the api)
          *  TODO: there's a way to fake a server w/Backbone + Jasmine. Look into it.
          */
-        var app = _.extend({}, appUtilities);
+        var app = _.extend({}, appUtilities),
+            getCount = function (collections) {
+                var count = 0;
+                _.map(collections, function (collection) {
+                    collection.each(function (model) {
+                        if (model.get("isVisible")) {
+                            ++count;
+                        }
+                    });
+                });
+                return count;
+            };
         _.extend(app, {
             vent: _.extend({}, Backbone.Events)
         });
@@ -65,18 +83,7 @@ define(["backbone", "underscore", "lib/maps/data/dataManager", "collections/proj
             var dm = new DataManager({
                     app: app,
                     projects: new Projects()
-                }),
-                getCount = function (collections) {
-                    var count = 0;
-                    _.map(collections, function (collection) {
-                        collection.each(function (model) {
-                            if (model.get("isVisible")) {
-                                ++count;
-                            }
-                        });
-                    });
-                    return count;
-                };
+                });
             it("All models are visible when no filter is applied", function () {
                 //add data:
                 dm.updateCollections(this.projects.at(0));
@@ -137,6 +144,79 @@ define(["backbone", "underscore", "lib/maps/data/dataManager", "collections/proj
                 state = dm.app.restoreState("dataManager");
                 expect(_.difference(state.projectIDs, [1]).length).toEqual(0);
 
+            });
+        });
+
+        describe("DataManager: Tests event listeners / handlers", function () {
+            var dm;
+            /*
+            this.app.vent.on("apply-filter", this.applyFilter.bind(this));
+            this.app.vent.on("clear-filter", this.clearFilter.bind(this));
+            */
+            it("Test projects.trigger(\"toggleProject\"). Only tests \"Off\" functionality", function () {
+                dm = new DataManager({
+                    app: app,
+                    projects: this.projectsLite
+                });
+                //add data:
+                dm.updateCollections(this.projects.at(0));
+                dm.updateCollections(this.projects.at(1));
+
+                //uncheck selectedProjects:
+                expect(dm.selectedProjects.length).toEqual(2);
+                this.projectsLite.trigger("toggleProject", 1, false);
+                expect(dm.selectedProjects.length).toEqual(1);
+                this.projectsLite.trigger("toggleProject", 2, false);
+                expect(dm.selectedProjects.length).toEqual(0);
+            });
+
+            it("Test vent.trigger(\"set-active-project\")", function () {
+                dm = new DataManager({
+                    app: app,
+                    projects: this.projectsLite
+                });
+                //add data:
+                dm.updateCollections(this.projects.at(0));
+                dm.updateCollections(this.projects.at(1));
+
+                //uncheck selectedProjects:
+                dm.app.vent.trigger("set-active-project", { id: 1 });
+                expect(dm.app.getActiveProjectID()).toEqual(1);
+                dm.app.vent.trigger("set-active-project", { id: 2 });
+                expect(dm.app.getActiveProjectID()).toEqual(2);
+            });
+
+            it("Test vent.trigger(\"marker-added\")", function () {
+                dm = new DataManager({
+                    app: app,
+                    projects: this.projectsLite
+                });
+                //add data:
+                dm.updateCollections(this.projects.at(0));
+
+                //uncheck selectedProjects:
+                expect(dm.getCollection("markers")).not.toBeDefined();
+                dm.app.vent.trigger("marker-added", {
+                    key: "markers",
+                    models: [new Marker({"id": 1, "project_id": 1, name: "New marker"})],
+                    name: "Markers",
+                    Collection: Markers
+                });
+                expect(dm.getCollection("markers").length).toEqual(1);
+            });
+
+            it("Test vent.trigger(\"apply-filter\") and vent.trigger(\"clear-filter\")", function () {
+                dm = new DataManager({
+                    app: app,
+                    projects: this.projectsLite
+                });
+                dm.updateCollections(this.projects.at(0));
+                dm.updateCollections(this.projects.at(1));
+                expect(getCount(dm.collections)).toEqual(12);
+                dm.app.vent.trigger("apply-filter", "where name = cat");
+                expect(getCount(dm.collections)).toEqual(1);
+                dm.app.vent.trigger("clear-filter");
+                expect(getCount(dm.collections)).toEqual(12);
             });
         });
     });

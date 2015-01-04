@@ -55,6 +55,14 @@ define(
                 markers: this.markers
             };
 
+            this.projectsLite = new Projects([
+                new Project({ id: 1, name: "Project 1" }),
+                new Project({ id: 2, name: "Project 2" }),
+                new Project({ id: 3, name: "Project 3" }),
+                new Project({ id: 4, name: "Project 4" }),
+                new Project({ id: 5, name: "Project 5" })
+            ]);
+
             this.projects = new Projects([
                 new Project({ id: 1, name: "Project 1", tags: 'tag1, tag2',
                     children: {
