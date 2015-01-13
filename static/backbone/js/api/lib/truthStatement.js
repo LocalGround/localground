@@ -167,6 +167,7 @@ define(["jquery"], function ($) {
             console.log("operator: ", this.operator);
             console.log("value: ", this.val);
             console.log("conjunction: ", this.conjunction);
+            console.log("tokens: ", this.tokens);
         };
 
         //initialize if user passed in arguments:
