@@ -1,8 +1,9 @@
-define([], function () {
+define(["lib/sqlParser"], function (SqlParser) {
     "use strict";
     return {
-        applyFilter: function (sqlParser) {
-            var count = 0,
+        applyFilter: function (sql) {
+            var sqlParser = new SqlParser(sql),
+                count = 0,
                 hidden = false;
             this.each(function (item) {
                 if (sqlParser.checkModel(item)) {
@@ -22,6 +23,15 @@ define([], function () {
                 item.set("isVisible", true);
             });
             this.trigger("filtered", { doNotRender: false });
+        },
+        getVisibleModels: function () {
+            var models = [];
+            this.each(function (item) {
+                if (item.get("isVisible")) {
+                    models.push(item);
+                }
+            });
+            return models;
         }
     };
 });
