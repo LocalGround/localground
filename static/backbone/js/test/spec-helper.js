@@ -1,5 +1,7 @@
 define(
     [
+        "backbone",
+        "lib/appUtilities",
         "collections/projects",
         "collections/photos",
         "collections/audio",
@@ -13,7 +15,7 @@ define(
         "models/record",
         "models/mapimage"
     ],
-    function (Projects, Photos, AudioFiles, MapImages, Markers, Records,
+    function (Backbone, appUtilities, Projects, Photos, AudioFiles, MapImages, Markers, Records,
                 Project, Photo, Marker, Audio, Record, MapImage) {
         'use strict';
         beforeEach(function () {
@@ -116,6 +118,11 @@ define(
                     {"sourceName": "stamen", "max": 20, "is_printable": false, "providerID": "watercolor", "id": 20, "typeID": 1, "name": "Watercolor", "min": 1, "url": "", "sourceID": 6, "type": "Base Tileset"}
                 ]
             };
+
+            this.app = _.extend({}, appUtilities);
+            _.extend(this.app, {
+                vent: _.extend({}, Backbone.Events)
+            });
         });
     }
 );

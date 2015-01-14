@@ -21,7 +21,13 @@ define(["models/base"], function (Base) {
             }
             //if valid, returns null;
             return null;
-		}
+		},
+        getKey: function () {
+            if (this.collection) {
+                return this.collection.key;
+            }
+            return "layers";
+        }
     });
     return Layer;
 });

@@ -1,23 +1,12 @@
-define(["backbone",
-        "underscore",
+define(["underscore",
         "lib/maps/data/dataManager",
-        "collections/projects",
         "collections/markers",
         "models/marker",
-        "lib/appUtilities",
         "../../test/spec-helper"],
-    function (Backbone, _, DataManager, Projects, Markers, Marker, appUtilities) {
+    function (_, DataManager, Markers, Marker) {
         'use strict';
 
-        /**
-         * Note, these tests do not test:
-         *  - updateCollection ('cause it's private)
-         *  - fetchProjects ('cause it queries the api)
-         *  - fetchDataByProjectID ('cause it queries the api)
-         *  TODO: there's a way to fake a server w/Backbone + Jasmine. Look into it.
-         */
-        var app = _.extend({}, appUtilities),
-            getCount = function (collections) {
+        var getCount = function (collections) {
                 var count = 0;
                 _.map(collections, function (collection) {
                     collection.each(function (model) {
@@ -27,28 +16,35 @@ define(["backbone",
                     });
                 });
                 return count;
+            },
+            getDataManager = function (scope) {
+                return new DataManager({
+                    app: scope.app,
+                    projects: scope.projectsLite
+                });
             };
-        _.extend(app, {
-            vent: _.extend({}, Backbone.Events)
-        });
+
+        /**
+         * Note, these tests do not test:
+         *  - updateCollection ('cause it's private)
+         *  - fetchProjects ('cause it queries the api)
+         *  - fetchDataByProjectID ('cause it queries the api)
+         *  TODO: there's a way to fake a server w/Backbone + Jasmine. Look into it.
+         */
         describe("DataManager: Tests data manager initialization", function () {
-            var dm = null;
+            var dm;
             it("Can initialize with empty Projects collection", function () {
+                var that = this;
                 expect(function () {
-                    dm = new DataManager({
-                        app: app,
-                        projects: new Projects()
-                    });
+                    dm = getDataManager(that);
                 }).not.toThrow();
             });
         });
 
         describe("DataManager: Tests adding and removing of project data", function () {
-            var dm = new DataManager({
-                app: app,
-                projects: new Projects()
-            });
             it("Adds new project data successfully, using updateCollections and getCollection", function () {
+                var dm = getDataManager(this);
+
                 //add first project:
                 expect(dm.getCollection("photos")).not.toBeDefined();
                 expect(dm.getCollection("audio")).not.toBeDefined();
@@ -65,6 +61,9 @@ define(["backbone",
             });
 
             it("Removes project data successfully (tests removeDataByProjectID, removeDataByProjectID)", function () {
+                var dm = getDataManager(this);
+                dm.updateCollections(this.projects.at(0));
+                dm.updateCollections(this.projects.at(1));
                 expect(dm.app.getActiveProjectID()).toEqual(2);
 
                 //remove project 2:
@@ -80,11 +79,8 @@ define(["backbone",
         });
 
         describe("DataManager: Tests data filters", function () {
-            var dm = new DataManager({
-                    app: app,
-                    projects: new Projects()
-                });
             it("All models are visible when no filter is applied", function () {
+                var dm = getDataManager(this);
                 //add data:
                 dm.updateCollections(this.projects.at(0));
                 dm.updateCollections(this.projects.at(1));
@@ -92,7 +88,12 @@ define(["backbone",
                 //before filter applied, expect all models to be visible (count == 12):
                 expect(getCount(dm.collections)).toEqual(12);
             });
+
             it("Select models are visible when filter is applied", function () {
+                var dm = getDataManager(this);
+                dm.updateCollections(this.projects.at(0));
+                dm.updateCollections(this.projects.at(1));
+
                 //filter for tags that exist just within one collection ("animal"):
                 dm.applyFilter("where tags contains animal");
                 expect(getCount(dm.collections)).toEqual(3);
@@ -117,13 +118,9 @@ define(["backbone",
         });
 
         describe("DataManager: Tests save state", function () {
-            var dm = new DataManager({
-                    app: app,
-                    projects: new Projects()
-                }),
-                state;
+            var state;
             it("Test save and restore state under various conditions...", function () {
-
+                var dm = getDataManager(this);
                 //save state and check that there are no active projects:
                 dm.saveState();
                 state = dm.app.restoreState("dataManager");
@@ -148,12 +145,8 @@ define(["backbone",
         });
 
         describe("DataManager: Tests event listeners / handlers", function () {
-            var dm;
             it("Test projects.trigger(\"toggleProject\"). Only tests \"Off\" functionality", function () {
-                dm = new DataManager({
-                    app: app,
-                    projects: this.projectsLite
-                });
+                var dm = getDataManager(this);
                 //add data:
                 dm.updateCollections(this.projects.at(0));
                 dm.updateCollections(this.projects.at(1));
@@ -170,10 +163,7 @@ define(["backbone",
             });
 
             it("Test vent.trigger(\"set-active-project\")", function () {
-                dm = new DataManager({
-                    app: app,
-                    projects: this.projectsLite
-                });
+                var dm = getDataManager(this);
                 //add data:
                 dm.updateCollections(this.projects.at(0));
                 dm.updateCollections(this.projects.at(1));
@@ -186,10 +176,7 @@ define(["backbone",
             });
 
             it("Test vent.trigger(\"marker-added\")", function () {
-                dm = new DataManager({
-                    app: app,
-                    projects: this.projectsLite
-                });
+                var dm = getDataManager(this);
                 //add data:
                 dm.updateCollections(this.projects.at(0));
 
@@ -205,10 +192,7 @@ define(["backbone",
             });
 
             it("Test vent.trigger(\"apply-filter\") and vent.trigger(\"clear-filter\")", function () {
-                dm = new DataManager({
-                    app: app,
-                    projects: this.projectsLite
-                });
+                var dm = getDataManager(this);
                 //make sure that filter calls via event triggers are working:
                 dm.updateCollections(this.projects.at(0));
                 dm.updateCollections(this.projects.at(1));
