@@ -16,20 +16,18 @@ define(['marionette',
             /** A google.maps.Map object */
             map: null,
             dataManager: null,
-            layerItem: null,
             overlays: null,
+            model: null,
             isVisible: false,
             symbols: null,
 
             initialize: function (opts) {
                 $.extend(this, opts);
                 this.dataManager = opts.dataManager;
-                this.layerItem = opts.layerItem;
+                this.model = opts.model; //a sidepanel LayerItem object
                 this.map = opts.basemap.map;
                 this.overlays = {};
-                this.symbols = [];
                 this.parseLayerItem();
-                //this.app.vent.on("filter-applied", this.redraw.bind(this));
                 this.listenTo(this.app.vent, 'selected-projects-updated', this.parseLayerItem);
                 this.app.vent.on("filter-applied", this.redraw.bind(this));
             },
@@ -37,8 +35,7 @@ define(['marionette',
             parseLayerItem: function () {
                 //console.log("parseLayerItem");
                 var that = this;
-                this.symbols = this.layerItem.getSymbols();
-                _.each(this.symbols, function (symbol) {
+                _.each(this.model.getSymbols(), function (symbol) {
                     //clear out old overlays and models
                     that.clear(symbol);
                     _.each(_.values(that.dataManager.collections), function (collection) {

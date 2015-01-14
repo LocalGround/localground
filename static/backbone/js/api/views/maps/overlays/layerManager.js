@@ -27,7 +27,7 @@ define(["backbone",
                 this.layers = {};
             },
             showLayerSymbol: function (data) {
-                var key = "layer_" + data.layerItem.id,
+                var key = "layer_" + data.model.id,
                     rule = data.rule;
                 if (!this.layers[key]) {
                     this.createLayer(data);
@@ -35,14 +35,14 @@ define(["backbone",
                 this.layers[key].show(rule);
             },
             showLayer: function (data) {
-                var key = "layer_" + data.layerItem.id;
+                var key = "layer_" + data.model.id;
                 if (!this.layers[key]) {
                     this.createLayer(data);
                 }
                 this.layers[key].showAll();
             },
             hideLayerSymbol: function (data) {
-                var key = "layer_" + data.layerItem.id,
+                var key = "layer_" + data.model.id,
                     rule = data.rule;
                 if (!this.layers[key]) {
                     this.createLayer(data);
@@ -50,7 +50,7 @@ define(["backbone",
                 this.layers[key].hide(rule);
             },
             hideLayer: function (data) {
-                var key = "layer_" + data.layerItem.id;
+                var key = "layer_" + data.model.id;
                 if (!this.layers[key]) {
                     this.createLayer(data);
                 }
@@ -59,10 +59,10 @@ define(["backbone",
             createLayer: function (data) {
                 var opts = _.clone(this.opts);
                 opts = _.extend(opts, data);
-                this.layers["layer_" + data.layerItem.id] = new Layer(opts);
+                this.layers["layer_" + data.model.id] = new Layer(opts);
             },
             zoomToExtent: function (data) {
-                var key =  "layer_" + data.layerItem.id,
+                var key =  "layer_" + data.model.id,
                     layer = this.layers[key];
                 if (layer) {
                     layer.zoomToExtent();

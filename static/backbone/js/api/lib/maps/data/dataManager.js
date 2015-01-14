@@ -69,8 +69,8 @@ define(["models/project",
 
             this.initialize = function (opts) {
                 this.app = opts.app;
-                this.projects = opts.projects;
-                this.projects.on('toggleProject', this.toggleProject.bind(this));
+                this.availableProjects = opts.availableProjects;
+                this.availableProjects.on('toggleProject', this.toggleProject.bind(this));
                 this.app.vent.on("load-projects", this.fetchProjects.bind(this));
                 this.app.vent.on("project-requested", this.fetchDataByProjectID.bind(this));
                 this.app.vent.on("set-active-project", this.setActiveProject.bind(this));

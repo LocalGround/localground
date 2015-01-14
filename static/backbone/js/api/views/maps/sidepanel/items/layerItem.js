@@ -4,11 +4,10 @@
 define(["marionette",
         "underscore",
         "jquery",
-        'views/maps/overlays/symbol',
         "text!" + templateDir + "/sidepanel/layerEntrySimple.html",
         "text!" + templateDir + "/sidepanel/layerEntry.html"
     ],
-    function (Marionette, _, $, Symbol, LayerEntrySimple, LayerEntry) {
+    function (Marionette, _, $, LayerEntrySimple, LayerEntry) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -17,7 +16,6 @@ define(["marionette",
          */
         var LayerItem = Marionette.ItemView.extend({
             model: null,
-            symbolMap: null,
             showOverlay: false,
             basic: false,
             template: _.template(LayerEntry),
@@ -28,10 +26,9 @@ define(["marionette",
             },
             initialize: function (opts) {
                 this.model = opts.model;
+                this.app = opts.app;
                 this.id = 'sidebar-' + this.model.getKey() + "-" + this.model.get('id');
                 this.id = this.model.id;
-                this.app = opts.app;
-                this.buildSymbolMap();
                 if (this.basic) {
                     this.template = _.template(LayerEntrySimple);
                 }
@@ -41,7 +38,7 @@ define(["marionette",
             templateHelpers: function () {
                 var extras = {
                     name: this.model.get("name"),
-                    symbols: this.getSymbols(),
+                    symbols: this.model.getSymbols(),
                     showOverlay: this.showOverlay
                 };
                 if (this.basic) {
@@ -54,34 +51,15 @@ define(["marionette",
                 //trigger the map overlays to render if they're turned on:
                 var that = this,
                     counter = 0;
-                _.each(this.getSymbols(), function (item) {
+                _.each(this.model.getSymbols(), function (item) {
                     if (item.showOverlay) {
-                        that.app.vent.trigger("show-symbol", { layerItem: that, rule: item.rule });
+                        that.app.vent.trigger("show-symbol", { model: that.model, rule: item.rule });
                         ++counter;
                     }
                 });
-                if (counter < this.getSymbols().length) {
+                if (counter < this.model.getSymbols().length) {
                     alert("trigger show whole layer");
                 }
-            },
-
-            buildSymbolMap: function () {
-                //set the basic flag:
-                if (this.model.get("symbols").length == 1) {
-                    this.basic = true;
-                }
-                if (!this.symbolMap) {
-                    this.symbolMap = {};
-                    var i = 0,
-                        symbolList = this.model.get("symbols");
-                    for (i = 0; i < symbolList.length; i++) {
-                        this.symbolMap[symbolList[i].rule] = new Symbol(symbolList[i]);
-                    }
-                }
-            },
-
-            getSymbols: function () {
-                return _.values(this.symbolMap);
             },
 
             toggleShow: function (e) {
@@ -89,16 +67,16 @@ define(["marionette",
                     isChecked = $(e.target).is(':checked');
                 if (isChecked) {
                     this.app.vent.trigger("show-symbol", {
-                        layerItem: this,
+                        model: this.model,
                         rule: rule
                     });
                 } else {
                     this.app.vent.trigger("hide-symbol", {
-                        layerItem: this,
+                        model: this.model,
                         rule: rule
                     });
                 }
-                this.symbolMap[rule].showOverlay = isChecked;
+                this.model.getSymbol(rule).showOverlay = isChecked;
                 this.saveState();
             },
 
@@ -106,9 +84,9 @@ define(["marionette",
                 var isChecked = this.$el.find('.check-all').is(':checked'),
                     $el = this.$el.find('input');
                 if (isChecked) {
-                    this.app.vent.trigger("show-layer", { layerItem: this });
+                    this.app.vent.trigger("show-layer", { model: this.model });
                 } else {
-                    this.app.vent.trigger("hide-layer", { layerItem: this });
+                    this.app.vent.trigger("hide-layer", { model: this.model });
                 }
                 $el.attr('checked', isChecked);
                 this.showOverlay = isChecked;
@@ -116,27 +94,29 @@ define(["marionette",
             },
 
             zoomToExtent: function (e) {
-                this.app.vent.trigger("zoom-to-layer", { layerItem: this });
+                this.app.vent.trigger("zoom-to-layer", { model: this.model });
                 e.preventDefault();
             },
 
             saveState: function () {
                 //remember layer and symbol visibility
                 var visMemory = { showOverlay: true },
-                    rule = null;
-                for (rule in this.symbolMap) {
-                    visMemory[rule] = this.symbolMap[rule].showOverlay;
+                    rule = null,
+                    symbolMap = this.model.getSymbolMap();
+                for (rule in symbolMap) {
+                    visMemory[rule] = symbolMap[rule].showOverlay;
                 }
                 this.app.saveState(this.id, visMemory, false);
             },
 
             restoreState: function () {
                 //restore layer and symbol visibility
-                var rule;
+                var rule,
+                    symbolMap = this.model.getSymbolMap();
                 this.state = this.app.restoreState(this.id) || {};
                 this.showOverlay = this.state.showOverlay || false;
-                for (rule in this.symbolMap) {
-                    this.symbolMap[rule].showOverlay = this.state[rule] || false;
+                for (rule in symbolMap) {
+                    symbolMap[rule].showOverlay = this.state[rule] || false;
                 }
             }
         });

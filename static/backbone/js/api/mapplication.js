@@ -46,7 +46,7 @@ define(["marionette",
         });
 
         Mapplication.addInitializer(function (options) {
-            options.projects = new Projects();
+            options.availableProjects = new Projects();
             options.app = this;
             var basemap = new BaseMap(options),
                 dataPanel = new DataPanel(options),

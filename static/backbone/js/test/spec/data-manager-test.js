@@ -1,9 +1,8 @@
 define(["underscore",
-        "lib/maps/data/dataManager",
         "collections/markers",
         "models/marker",
         "../../test/spec-helper"],
-    function (_, DataManager, Markers, Marker) {
+    function (_, Markers, Marker) {
         'use strict';
 
         var getCount = function (collections) {
@@ -16,12 +15,6 @@ define(["underscore",
                     });
                 });
                 return count;
-            },
-            getDataManager = function (scope) {
-                return new DataManager({
-                    app: scope.app,
-                    projects: scope.projectsLite
-                });
             };
 
         /**
@@ -36,14 +29,14 @@ define(["underscore",
             it("Can initialize with empty Projects collection", function () {
                 var that = this;
                 expect(function () {
-                    dm = getDataManager(that);
+                    dm = that.dataManager;
                 }).not.toThrow();
             });
         });
 
         describe("DataManager: Tests adding and removing of project data", function () {
             it("Adds new project data successfully, using updateCollections and getCollection", function () {
-                var dm = getDataManager(this);
+                var dm = this.dataManager;
 
                 //add first project:
                 expect(dm.getCollection("photos")).not.toBeDefined();
@@ -61,7 +54,7 @@ define(["underscore",
             });
 
             it("Removes project data successfully (tests removeDataByProjectID, removeDataByProjectID)", function () {
-                var dm = getDataManager(this);
+                var dm = this.dataManager;
                 dm.updateCollections(this.projects.at(0));
                 dm.updateCollections(this.projects.at(1));
                 expect(dm.app.getActiveProjectID()).toEqual(2);
@@ -80,7 +73,7 @@ define(["underscore",
 
         describe("DataManager: Tests data filters", function () {
             it("All models are visible when no filter is applied", function () {
-                var dm = getDataManager(this);
+                var dm = this.dataManager;
                 //add data:
                 dm.updateCollections(this.projects.at(0));
                 dm.updateCollections(this.projects.at(1));
@@ -90,7 +83,7 @@ define(["underscore",
             });
 
             it("Select models are visible when filter is applied", function () {
-                var dm = getDataManager(this);
+                var dm = this.dataManager;
                 dm.updateCollections(this.projects.at(0));
                 dm.updateCollections(this.projects.at(1));
 
@@ -120,7 +113,7 @@ define(["underscore",
         describe("DataManager: Tests save state", function () {
             var state;
             it("Test save and restore state under various conditions...", function () {
-                var dm = getDataManager(this);
+                var dm = this.dataManager;
                 //save state and check that there are no active projects:
                 dm.saveState();
                 state = dm.app.restoreState("dataManager");
@@ -146,7 +139,7 @@ define(["underscore",
 
         describe("DataManager: Tests event listeners / handlers", function () {
             it("Test projects.trigger(\"toggleProject\"). Only tests \"Off\" functionality", function () {
-                var dm = getDataManager(this);
+                var dm = this.dataManager;
                 //add data:
                 dm.updateCollections(this.projects.at(0));
                 dm.updateCollections(this.projects.at(1));
@@ -163,7 +156,7 @@ define(["underscore",
             });
 
             it("Test vent.trigger(\"set-active-project\")", function () {
-                var dm = getDataManager(this);
+                var dm = this.dataManager;
                 //add data:
                 dm.updateCollections(this.projects.at(0));
                 dm.updateCollections(this.projects.at(1));
@@ -176,7 +169,7 @@ define(["underscore",
             });
 
             it("Test vent.trigger(\"marker-added\")", function () {
-                var dm = getDataManager(this);
+                var dm = this.dataManager;
                 //add data:
                 dm.updateCollections(this.projects.at(0));
 
@@ -192,7 +185,7 @@ define(["underscore",
             });
 
             it("Test vent.trigger(\"apply-filter\") and vent.trigger(\"clear-filter\")", function () {
-                var dm = getDataManager(this);
+                var dm = this.dataManager;
                 //make sure that filter calls via event triggers are working:
                 dm.updateCollections(this.projects.at(0));
                 dm.updateCollections(this.projects.at(1));

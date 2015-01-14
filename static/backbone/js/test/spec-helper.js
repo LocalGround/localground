@@ -2,31 +2,35 @@ define(
     [
         "backbone",
         "lib/appUtilities",
+        "lib/maps/data/dataManager",
         "collections/projects",
         "collections/photos",
         "collections/audio",
         "collections/mapimages",
         "collections/markers",
         "collections/records",
+        "collections/layers",
         "models/project",
         "models/photo",
         "models/marker",
         "models/audio",
         "models/record",
-        "models/mapimage"
+        "models/mapimage",
+        "models/layer"
     ],
-    function (Backbone, appUtilities, Projects, Photos, AudioFiles, MapImages, Markers, Records,
-                Project, Photo, Marker, Audio, Record, MapImage) {
+    function (Backbone, appUtilities, DataManager,
+              Projects, Photos, AudioFiles, MapImages, Markers, Records, Layers,
+              Project, Photo, Marker, Audio, Record, MapImage, Layer) {
         'use strict';
         beforeEach(function () {
             /**
-             * Adding some dummy data for testing convenience.
+             * Adds some dummy data for testing convenience.
              * Availabe to all of the tests.
              */
             this.photos = new Photos([
                 new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1 }),
                 new Photo({id: 2, name: "Dog", tags: 'animal, dog', project_id: 1 }),
-                new Photo({id: 3, name: "Frog", tags: 'animal, amphibian, cute', project_id: 1 })
+                new Photo({id: 3, name: "Frog", tags: 'animal, amphibian, cute, frog', project_id: 1 })
             ]);
             this.audio = new AudioFiles([
                 new Audio({ id: 1, name: "Nirvana", tags: '90s, grunge', project_id: 1 }),
@@ -48,6 +52,19 @@ define(
                 new Record({id: 2, team_name: "Green team", tags: 'friend\'s house, tag1', worm_count: 8, project_id: 2  }),
                 new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 2, project_id: 2  })
             ], { 'url': 'dummy/url' });
+            this.layers = new Layers([
+                new Layer({id: 1, name: "worms", symbols: [
+                    { color: "#7075FF", width: 30, rule: "worms > 0", title: "At least 1 worm" },
+                    { color: "#F011D9", width: 30, rule: "worms = 0", title: "No worms" }
+                ]}),
+                new Layer({id: 2, name: "pets", symbols: [
+                    { color: "#F00", width: 20, rule: "tags contains cat", title: "Cats" },
+                    { color: "#0F0", width: 20, rule: "tags contains dog", title: "Dogs" }
+                ]}),
+                new Layer({id: 2, name: "pets", symbols: [
+                    { color: "#F00", width: 20, rule: "tags contains frog", title: "Frogs" }
+                ]})
+            ]);
 
             this.dataDictionary = {
                 records: this.records,
@@ -122,6 +139,11 @@ define(
             this.app = _.extend({}, appUtilities);
             _.extend(this.app, {
                 vent: _.extend({}, Backbone.Events)
+            });
+
+            this.dataManager = new DataManager({
+                app: this.app,
+                availableProjects: this.projectsLite
             });
         });
     }
