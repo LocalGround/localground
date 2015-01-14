@@ -15,14 +15,15 @@ define(["models/base", "views/maps/overlays/symbol"], function (Base, Symbol) {
         getNamePlural: function () {
             return "layers";
         },
+        basic: false,
         initialize: function (data, opts) {
 			Base.prototype.initialize.apply(this, arguments);
             this.buildSymbolMap();
 		},
 		validate: function (attrs) {
-            //makes sure that symbols is either null or an array:
-            if (attrs.hasOwnProperty('symbols') && (!_.isArray(attrs.symbols) && !_.isNull(attrs.symbols))) {
-                return 'Layer.symbols must be a JSON array';
+            //if symbols is an array or it's null or it's empty, raise an exception:
+            if (!_.isArray(attrs.symbols) || _.isNull(attrs.symbols) || attrs.symbols.length == 0) {
+                return 'Layer.symbols must be a JSON array with at least one entry';
             }
             //if valid, returns null;
             return null;

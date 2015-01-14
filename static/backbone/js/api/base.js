@@ -17,6 +17,7 @@ require.config({
         'google-infobubble': '../external/infobubble',
         'jasmine': '../external/jasmine-2.1.3/jasmine',
         'jasmine-html': '../external/jasmine-2.1.3/jasmine-html',
+        'jasmine-jquery': '../external/jasmine-2.1.3/jasmine-jquery',
         'highcharts': '//code.highcharts.com/highcharts',
         'highcharts_export': '//code.highcharts.com/modules/exporting',
         'jquery': '//code.jquery.com/jquery-1.8.0.min',
@@ -81,6 +82,10 @@ require.config({
             deps: ['jasmine'],
             exports: 'jasmine'
         },
+        'jasmine-jquery': {
+            deps: ['jquery', 'jasmine'],
+            exports: 'jasmine'
+        },
         'boot': {
             deps: ['jasmine', 'jasmine-html'],
             exports: 'window.jasmineRequire'
@@ -91,37 +96,6 @@ require.config({
 
 /** Javascript template directory */
 var templateDir = '/static/backbone/js/templates';
-
-/** Namespace definition
- * TODO: Delete, now that we're no longer using namespaces.
-var localground = {
-    maps: {
-        tiles: {},
-        controls: {},
-        data: {},
-        views: {},
-        geometry: {},
-        overlays: {}
-    },
-    tables: {},
-    config: {},
-    collections: {},
-    models: {},
-    events: {
-        EventTypes: {
-            SHOW_OVERLAY: "show_overlay",
-            HIDE_OVERLAY: "hide_overlay",
-            ZOOM_TO_OVERLAY: "zoom_to_overlay",
-            ZOOM_TO_EXTENT: "zoom_to_extent",
-            SHOW_ALL: "show_all",
-            HIDE_ALL: "hide_all",
-            EXPAND: "expand",
-            CONTRACT: "contract",
-            NEW_COLLECTION: "new_collection"
-        }
-    }
-};
-*/
 
 /**
  * Global: cookie getter

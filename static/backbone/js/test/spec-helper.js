@@ -61,8 +61,8 @@ define(
                     { color: "#F00", width: 20, rule: "tags contains cat", title: "Cats" },
                     { color: "#0F0", width: 20, rule: "tags contains dog", title: "Dogs" }
                 ]}),
-                new Layer({id: 2, name: "pets", symbols: [
-                    { color: "#F00", width: 20, rule: "tags contains frog", title: "Frogs" }
+                new Layer({id: 3, name: "frogs", symbols: [
+                    { color: "#00F", width: 20, rule: "tags contains frog", title: "Frogs" }
                 ]})
             ]);
 

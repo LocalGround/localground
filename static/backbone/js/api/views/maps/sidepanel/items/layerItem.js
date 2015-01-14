@@ -17,7 +17,6 @@ define(["marionette",
         var LayerItem = Marionette.ItemView.extend({
             model: null,
             showOverlay: false,
-            basic: false,
             template: _.template(LayerEntry),
             events: {
                 'click .check-all': 'toggleShowAll',
@@ -28,8 +27,7 @@ define(["marionette",
                 this.model = opts.model;
                 this.app = opts.app;
                 this.id = 'sidebar-' + this.model.getKey() + "-" + this.model.get('id');
-                this.id = this.model.id;
-                if (this.basic) {
+                if (this.model.basic) {
                     this.template = _.template(LayerEntrySimple);
                 }
                 this.restoreState();
@@ -41,8 +39,8 @@ define(["marionette",
                     symbols: this.model.getSymbols(),
                     showOverlay: this.showOverlay
                 };
-                if (this.basic) {
-                    extras.item = this.getSymbols()[0];
+                if (this.model.basic) {
+                    extras.item = this.model.getSymbols()[0];
                 }
                 return extras;
             },
@@ -51,14 +49,14 @@ define(["marionette",
                 //trigger the map overlays to render if they're turned on:
                 var that = this,
                     counter = 0;
-                _.each(this.model.getSymbols(), function (item) {
-                    if (item.showOverlay) {
-                        that.app.vent.trigger("show-symbol", { model: that.model, rule: item.rule });
+                _.each(this.model.getSymbols(), function (symbol) {
+                    if (symbol.showOverlay) {
+                        that.app.vent.trigger("show-symbol", { model: that.model, rule: symbol.rule });
                         ++counter;
                     }
                 });
                 if (counter < this.model.getSymbols().length) {
-                    alert("trigger show whole layer");
+                    console.log("trigger show whole layer");
                 }
             },
 
