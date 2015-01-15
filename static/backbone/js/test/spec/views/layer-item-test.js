@@ -55,20 +55,33 @@ define([
 
                 //trigger the checkbox click event:
                 var $cb = layerItem1.$el.find('.cb-layer-item:first'),
-                    //spyEvent = spyOnEvent($cb, 'click'),
-                    symbol = layerItem1.model.getSymbol("worms > 0");
-                console.log(symbol.showOverlay);
-                expect($cb).not.toBeChecked();
-                $cb.trigger('click');
-                //expect('click').toHaveBeenTriggeredOn($cb);
-                //expect(spyEvent).toHaveBeenTriggered();
+                    symbol = layerItem1.model.getSymbol("worms > 0"),
+                    show_symbol_triggered = false,
+                    hide_symbol_triggered = false;
 
-                expect($cb).toBeChecked();
-                console.log(symbol.showOverlay);
+                //ensure that event handlers get called:
+                function checkShowing() { expect(show_symbol_triggered).toBeTruthy(); }
+                function checkHiding() { expect(hide_symbol_triggered).toBeTruthy(); }
+
+                layerItem1.app.vent.on("show-symbol", function () {
+                    show_symbol_triggered = true;
+                    checkShowing();
+                });
+                layerItem1.app.vent.on("hide-symbol", function () {
+                    hide_symbol_triggered = true;
+                    checkHiding();
+                });
+
+                //ensure that event handler behaves correctly when checkbox is off:
+                //http://bugs.jquery.com/ticket/3827#comment:9
+                $cb.attr('checked', false);
+                $cb.trigger('click');
+                expect(symbol.showOverlay).toBeFalsy();
+
+                //ensure that event handler behaves correctly when checkbox is on:
+                $cb.attr('checked', true);
+                $cb.trigger('click');
                 expect(symbol.showOverlay).toBeTruthy();
-                //$cb.click();
-                //expect($cb).not.toBeChecked();
-                //expect(layerItem1.model.getSymbol("worms > 0").showOverlay).toBeTruthy();
             });
         });
     });

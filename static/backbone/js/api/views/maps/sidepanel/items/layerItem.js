@@ -23,6 +23,7 @@ define(["marionette",
                 'click .cb-layer-item': 'toggleShow',
                 'click .zoom-to-extent': 'zoomToExtent'
             },
+
             initialize: function (opts) {
                 this.model = opts.model;
                 this.app = opts.app;
