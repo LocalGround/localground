@@ -138,12 +138,12 @@ define(
 
             this.app = _.extend({}, appUtilities);
             _.extend(this.app, {
-                vent: _.extend({}, Backbone.Events)
+                vent: _.extend({}, Backbone.Events),
+                availableProjects: this.projectsLite
             });
 
             this.dataManager = new DataManager({
-                app: this.app,
-                availableProjects: this.projectsLite
+                app: this.app
             });
         });
     }

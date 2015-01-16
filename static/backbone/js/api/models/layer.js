@@ -60,6 +60,18 @@ define(["models/base", "views/maps/overlays/symbol"], function (Base, Symbol) {
 
         getSymbolMap: function () {
             return this.symbolMap;
+        },
+
+        hideSymbols: function () {
+            _.each(this.getSymbols(), function (symbol) {
+                symbol.showOverlay = false;
+            });
+        },
+
+        showSymbols: function () {
+            _.each(this.getSymbols(), function (symbol) {
+                symbol.showOverlay = true;
+            });
         }
     });
     return Layer;

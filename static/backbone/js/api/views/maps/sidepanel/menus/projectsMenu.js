@@ -38,7 +38,7 @@ define(["marionette",
             initialize: function (opts) {
                 //this.setElement(opts.el);
                 this.app = opts.app;
-                this.collection = opts.availableProjects;
+                this.collection = this.app.availableProjects;
                 this.childViewOptions.app = this.app;
                 this.listenTo(this.app.vent, 'toggle-project', this.toggleItem);
                 this.app.vent.trigger('load-projects', this.collection);

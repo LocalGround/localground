@@ -29,12 +29,16 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.opts = opts;
+                this.layers = opts.layers;
                 this.app.vent.on("adjust-layout", this.resize.bind(this));
             },
             onShow: function () {
-                this.layerList.show(new LayerList(this.opts));
-                this.dataFilter.show(new DataFilter(this.opts));
-                this.layersMenu.show(new LayersMenu(this.opts));
+                var options = {
+                    app: this.app
+                };
+                this.layerList.show(new LayerList(_.extend(options, {collection: this.layers})));
+                this.dataFilter.show(new DataFilter(options));
+                this.layersMenu.show(new LayersMenu(options));
                 this.resize();
             },
 

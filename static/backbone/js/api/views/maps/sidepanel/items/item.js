@@ -50,6 +50,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
          * jQuery selector element
          */
         initialize: function (opts) {
+            console.log(opts);
             $.extend(this, opts);
             this.id = 'sidebar-' + this.model.getKey() + "-" + this.model.get('id');
             //this.setElement(opts.el);

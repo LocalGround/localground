@@ -46,34 +46,16 @@ define(["marionette",
                 return extras;
             },
 
-            onRender: function () {
-                //trigger the map overlays to render if they're turned on:
-                var that = this,
-                    counter = 0;
-                _.each(this.model.getSymbols(), function (symbol) {
-                    if (symbol.showOverlay) {
-                        that.app.vent.trigger("show-symbol", { model: that.model, rule: symbol.rule });
-                        ++counter;
-                    }
-                });
-                if (counter < this.model.getSymbols().length) {
-                    console.log("trigger show whole layer");
-                }
-            },
-
             toggleShow: function (e) {
                 var rule = $(e.target).val(),
                     isChecked = $(e.target).is(':checked');
                 if (isChecked) {
-                    this.app.vent.trigger("show-symbol", {
-                        model: this.model,
-                        rule: rule
-                    });
+                    this.model.trigger('show-overlay', rule);
                 } else {
-                    this.app.vent.trigger("hide-symbol", {
-                        model: this.model,
-                        rule: rule
-                    });
+                    this.model.trigger('hide-overlay', rule);
+                    // turn off "everything checked" if one symbol becomes unchecked:
+                    this.$el.find('.check-all').attr('checked', false);
+                    this.showOverlay = false;
                 }
                 this.model.getSymbol(rule).showOverlay = isChecked;
                 this.saveState();
@@ -83,9 +65,10 @@ define(["marionette",
                 var isChecked = this.$el.find('.check-all').is(':checked'),
                     $el = this.$el.find('input');
                 if (isChecked) {
-                    this.app.vent.trigger("show-layer", { model: this.model });
+                    this.model.trigger('show-overlay');
                 } else {
-                    this.app.vent.trigger("hide-layer", { model: this.model });
+                    //this.app.vent.trigger("hide-layer", { model: this.model });
+                    this.model.trigger('hide-overlay');
                 }
                 $el.attr('checked', isChecked);
                 this.showOverlay = isChecked;
@@ -93,13 +76,13 @@ define(["marionette",
             },
 
             zoomToExtent: function (e) {
-                this.app.vent.trigger("zoom-to-layer", { model: this.model });
+                this.model.trigger("zoom-to-layer");
                 e.preventDefault();
             },
 
             saveState: function () {
                 //remember layer and symbol visibility
-                var visMemory = { showOverlay: true },
+                var visMemory = { showOverlay: this.showOverlay },
                     rule = null,
                     symbolMap = this.model.getSymbolMap();
                 for (rule in symbolMap) {
@@ -115,8 +98,9 @@ define(["marionette",
                 this.state = this.app.restoreState(this.id) || {};
                 this.showOverlay = this.state.showOverlay || false;
                 for (rule in symbolMap) {
-                    symbolMap[rule].showOverlay = this.state[rule] || false;
+                    symbolMap[rule].showOverlay = this.state[rule] || this.showOverlay || false;
                 }
+                this.model.trigger('redraw');
             }
         });
 
