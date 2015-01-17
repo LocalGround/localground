@@ -46,10 +46,6 @@ define([
         });
 
         describe("LayerItem: make sure event handlers are working", function () {
-            function checkTriggered(name, val) {
-                console.log(name + " was triggered");
-                expect(val).toBeTruthy();
-            }
             it("Symbol-level event handlers working", function () {
                 layerItem1 = new LayerItem({
                     model: this.layers.at(0),
@@ -60,10 +56,6 @@ define([
                 //trigger the checkbox click event:
                 var $cb = layerItem1.$el.find('.cb-layer-item:first'),
                     symbol = layerItem1.model.getSymbol("worms > 0");
-
-                //ensure that event handlers get called:
-                layerItem1.app.vent.on("show-symbol", function () { checkTriggered('show-symbol', true); });
-                layerItem1.app.vent.on("hide-symbol", function () { checkTriggered('hide-symbol', true); });
 
                 //ensure that event handler behaves correctly when checkbox is off:
                 //http://bugs.jquery.com/ticket/3827#comment:9
@@ -83,22 +75,17 @@ define([
                     app: this.app
                 });
                 layerItem1.render();
-
-                //ensure that event handlers get called:
-                layerItem1.app.vent.on("show-layer", function () { checkTriggered('show-layer', true); });
-                layerItem1.app.vent.on("hide-layer", function () { checkTriggered('hide-layer', true); });
-
                 var $cb = layerItem1.$el.find('.check-all');
 
                 //ensure that event handler behaves correctly when checkbox is off:
                 $cb.attr('checked', false);
                 $cb.trigger('click');
-                expect(layerItem1.showOverlay).toBeFalsy();
+                expect(layerItem1.model.get("showOverlay")).toBeFalsy();
 
                 //ensure that event handler behaves correctly when checkbox is on:
                 $cb.attr('checked', true);
                 $cb.trigger('click');
-                expect(layerItem1.showOverlay).toBeTruthy();
+                expect(layerItem1.model.get("showOverlay")).toBeTruthy();
             });
         });
     });

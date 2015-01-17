@@ -28,7 +28,7 @@ define(["marionette",
 
             initialize: function (opts) {
                 this.app = opts.app;
-                this.collection = new Layers();
+                this.collection = this.app.selectedLayers;
                 this.childViewOptions.app = this.app;
                 /*this.childView = Marionette.ItemView.extend({
                     template: _.template(menuItem),
@@ -60,9 +60,9 @@ define(["marionette",
                 var model = this.collection.get(id);
                 model.set("isVisible", visible);
                 if (visible) {
-                    this.app.vent.trigger("add-layer", { layer: model });
+                    this.app.vent.trigger("add-layer", model);
                 } else {
-                    this.app.vent.trigger("remove-layer", { layer: model });
+                    this.app.vent.trigger("remove-layer", model);
                 }
                 this.saveState();
             },

@@ -9,13 +9,14 @@ define(["marionette",
         "lib/maps/data/dataManager",
         "lib/appUtilities",
         "collections/projects",
+        "collections/layers",
         "lib/maps/controls/georeferenceManager",
         "views/maps/overlays/layerManager",
         "jquery.bootstrap"
     ],
     function (Marionette, Backbone, _, BaseMap, DataPanel, LayerPanel, Tabs,
-              TopBar, DataManager, appUtilities, Projects, GeoreferenceManager,
-              LayerManager) {
+              TopBar, DataManager, appUtilities, Projects, Layers,
+              GeoreferenceManager, LayerManager) {
         "use strict";
 
         var Mapplication = new Marionette.Application();
@@ -47,6 +48,7 @@ define(["marionette",
 
         Mapplication.addInitializer(function (options) {
             options.availableProjects = new Projects();
+            this.selectedLayers = new Layers();
             options.app = this;
             var basemap = new BaseMap(options),
                 dataPanel = new DataPanel(options),
