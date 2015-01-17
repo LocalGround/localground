@@ -20,7 +20,7 @@ define(['marionette',
             showOverlay: false,
             symbols: null,
             modelEvents: {
-                'change': 'redraw',
+                'change:showOverlay': 'redraw',
                 'symbol-change': 'renderSymbol'
             },
             initialize: function (opts) {
@@ -34,7 +34,6 @@ define(['marionette',
                 this.app.vent.on("filter-applied", this.redraw.bind(this));
             },
             redraw: function () {
-                console.log("redraw!!!");
                 if (this.model.get("showOverlay")) {
                     this.model.showSymbols();
                 } else {
@@ -43,13 +42,14 @@ define(['marionette',
                 this.render();
             },
             renderSymbol: function (rule) {
-                console.log("rendersymbol!!!");
                 var i;
                 for (i = 0; i < this.overlays[rule].length; i++) {
                     this.overlays[rule][i].redraw();
                 }
             },
             render: function () {
+                //might be called to frequently. keep an eye out.
+                //console.log("render");
                 var rule;
                 for (rule in this.overlays) {
                     this.renderSymbol(rule);

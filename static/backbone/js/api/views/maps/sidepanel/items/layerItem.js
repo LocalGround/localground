@@ -47,7 +47,6 @@ define(["marionette",
             },
 
             toggleShow: function (e) {
-                console.log("toggleShow");
                 var rule = $(e.target).val(),
                     isChecked = $(e.target).is(':checked');
                 this.model.getSymbol(rule).showOverlay = isChecked;
@@ -56,7 +55,6 @@ define(["marionette",
             },
 
             toggleShowAll: function () {
-                console.log("toggleShowAll");
                 var isChecked = this.$el.find('.check-all').is(':checked'),
                     $cbs = this.$el.find('input');
                 $cbs.attr('checked', isChecked);

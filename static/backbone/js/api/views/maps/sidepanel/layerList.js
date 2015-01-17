@@ -8,7 +8,6 @@ define(["marionette",
 
             initialize: function (opts) {
                 this.app = opts.app;
-                console.log(this.app.selectedLayers);
                 this.collection = this.app.selectedLayers;
                 this.childViewOptions = opts;
                 this.app.vent.on("add-layer", this.addToCollection, this);
@@ -16,7 +15,6 @@ define(["marionette",
             },
 
             addToCollection: function (model) {
-                console.log("add layer");
                 this.collection.add(model);
             },
 
