@@ -208,7 +208,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
 
         templateHelpers: function () {
             return {
-                showOverlay: this.isShowingOnMap()
+                isShowingOnMap: this.isShowingOnMap()
             };
         },
 

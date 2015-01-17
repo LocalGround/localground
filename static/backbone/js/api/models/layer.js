@@ -64,13 +64,13 @@ define(["models/base", "views/maps/overlays/symbol"], function (Base, Symbol) {
 
         hideSymbols: function () {
             _.each(this.getSymbols(), function (symbol) {
-                symbol.showOverlay = false;
+                symbol.isShowingOnMap = false;
             });
         },
 
         showSymbols: function () {
             _.each(this.getSymbols(), function (symbol) {
-                symbol.showOverlay = true;
+                symbol.isShowingOnMap = true;
             });
         }
     });

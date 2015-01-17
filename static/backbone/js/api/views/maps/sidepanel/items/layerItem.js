@@ -16,7 +16,7 @@ define(["marionette",
          */
         var LayerItem = Marionette.ItemView.extend({
             model: null,
-            showOverlay: false,
+            isShowingOnMap: false,
             template: _.template(LayerEntry),
             events: {
                 'click .check-all': 'toggleShowAll',
@@ -38,7 +38,7 @@ define(["marionette",
                 var extras = {
                     name: this.model.get("name"),
                     symbols: this.model.getSymbols(),
-                    showOverlay: this.model.get("showOverlay")
+                    isShowingOnMap: this.model.get("isShowingOnMap")
                 };
                 if (this.model.basic) {
                     extras.item = this.model.getSymbols()[0];
@@ -49,7 +49,7 @@ define(["marionette",
             toggleShow: function (e) {
                 var rule = $(e.target).val(),
                     isChecked = $(e.target).is(':checked');
-                this.model.getSymbol(rule).showOverlay = isChecked;
+                this.model.getSymbol(rule).isShowingOnMap = isChecked;
                 this.model.trigger('symbol-change', rule);
                 this.saveState();
             },
@@ -58,7 +58,7 @@ define(["marionette",
                 var isChecked = this.$el.find('.check-all').is(':checked'),
                     $cbs = this.$el.find('input');
                 $cbs.attr('checked', isChecked);
-                this.model.set("showOverlay", isChecked);
+                this.model.set("isShowingOnMap", isChecked);
                 this.saveState();
             },
 
@@ -69,11 +69,11 @@ define(["marionette",
 
             saveState: function () {
                 //remember layer and symbol visibility
-                var visMemory = { showOverlay: this.model.get("showOverlay") },
+                var visMemory = { isShowingOnMap: this.model.get("isShowingOnMap") },
                     rule = null,
                     symbolMap = this.model.getSymbolMap();
                 for (rule in symbolMap) {
-                    visMemory[rule] = symbolMap[rule].showOverlay;
+                    visMemory[rule] = symbolMap[rule].isShowingOnMap;
                 }
                 this.app.saveState(this.id, visMemory, false);
             },
@@ -83,9 +83,9 @@ define(["marionette",
                 var rule,
                     symbolMap = this.model.getSymbolMap();
                 this.state = this.app.restoreState(this.id) || {};
-                this.model.set("showOverlay", this.state.showOverlay || false);
+                this.model.set("isShowingOnMap", this.state.isShowingOnMap || false);
                 for (rule in symbolMap) {
-                    symbolMap[rule].showOverlay = this.state[rule] || this.model.get("showOverlay") || false;
+                    symbolMap[rule].isShowingOnMap = this.state[rule] || this.model.get("isShowingOnMap") || false;
                 }
             }
         });

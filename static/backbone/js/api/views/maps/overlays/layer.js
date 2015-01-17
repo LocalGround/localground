@@ -17,10 +17,10 @@ define(['marionette',
             dataManager: null,
             overlays: null,
             model: null,
-            showOverlay: false,
+            isShowingOnMap: false,
             symbols: null,
             modelEvents: {
-                'change:showOverlay': 'redraw',
+                'change:isShowingOnMap': 'redraw',
                 'symbol-change': 'renderSymbol'
             },
             initialize: function (opts) {
@@ -34,7 +34,7 @@ define(['marionette',
                 this.app.vent.on("filter-applied", this.redraw.bind(this));
             },
             redraw: function () {
-                if (this.model.get("showOverlay")) {
+                if (this.model.get("isShowingOnMap")) {
                     this.model.showSymbols();
                 } else {
                     console.log("hide");

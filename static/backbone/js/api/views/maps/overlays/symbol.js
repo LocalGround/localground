@@ -8,7 +8,7 @@ define(['jquery', 'lib/sqlParser', 'lib/maps/overlays/point'],
          * @class OverlayGroup
          */
         var Symbol = function (opts) {
-            this.showOverlay = false;
+            this.isShowingOnMap = false;
             //note: these can be heterogeneous models from many different collections
             this.models = [];
             this.color = null;

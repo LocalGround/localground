@@ -39,9 +39,10 @@ define(["underscore", "lib/maps/overlays/base"], function (_, Base) {
 
         /** adds icon to overlay. */
         initialize: function (opts) {
-            // important to initialize this flag as not showing, so that
-            // it's display status is independent of the visibility status of the
-            // model itself.
+            // Because an OverlayGroup instance and a Layer instance may be
+            // sharing the same models, it is important to initialize this flag as
+            // *not showing, so that it's display status isnt' confounded with the
+            // display status of a corresponding OverlayGroup.
             this._isShowingOnMap = false;
             Base.prototype.initialize.apply(this, arguments);
             this.symbol = opts.symbol;
@@ -55,7 +56,7 @@ define(["underscore", "lib/maps/overlays/base"], function (_, Base) {
         },
 
         redraw: function () {
-            if (this.symbol.showOverlay) {
+            if (this.symbol.isShowingOnMap) {
                 this.show();
             } else {
                 this.hide();
