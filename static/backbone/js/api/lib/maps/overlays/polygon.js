@@ -12,7 +12,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
             return "Polygon";
         };
 
-        this.createOverlay = function (isVisible) {
+        this.createOverlay = function (isShowingOnMap) {
             this._googleOverlay = new google.maps.Polygon({
                 path: this.getGoogleLatLngFromModel(),
                 strokeColor: '#' + this.model.get("color"),
@@ -20,7 +20,7 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
                 strokeWeight: 5,
                 fillColor: '#' + this.model.get("color"),
                 fillOpacity: 0.35,
-                map: isVisible ? this.map : null
+                map: isShowingOnMap ? this.map : null
             });
         };
 

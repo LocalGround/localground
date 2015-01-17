@@ -59,9 +59,8 @@ define(['marionette',
 
             /** Shows all of the map overlays */
             showAll: function () {
-                this.isVisible = true;
+                //this._isShowingOnMap = true;
                 this.children.each(function (overlay) {
-                    //console.log(overlay.model.get("isVisible"));
                     if (overlay.model.get("isVisible")) {
                         overlay.show();
                     }
@@ -70,7 +69,7 @@ define(['marionette',
 
             /** Hides all of the map overlays */
             hideAll: function () {
-                this.isVisible = false;
+                //this._isShowingOnMap = false;
                 this.children.each(function (overlay) {
                     overlay.hide();
                 });

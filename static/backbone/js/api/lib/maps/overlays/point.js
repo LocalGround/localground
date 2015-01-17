@@ -19,14 +19,14 @@ define(["jquery", "underscore"], function ($, _) {
             this.app = app;
             $.extend(this, opts);
             this.Shapes = _.clone(Point.Shapes); //call to static method.
-            this.createOverlay(opts.isVisible || false);
+            this.createOverlay(opts.isShowingOnMap || false);
         };
 
-        this.createOverlay = function (isVisible) {
+        this.createOverlay = function (isShowingOnMap) {
             if (this.model.get("geometry") != null) {
                 this._googleOverlay = new google.maps.Marker({
                     position: this.getGoogleGeometryFromModel(),
-                    map: isVisible ? this.map : null
+                    map: isShowingOnMap ? this.map : null
                 });
             }
         };

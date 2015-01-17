@@ -21,7 +21,7 @@ define(["marionette",
             removeFromCollection: function (model) {
                 // hide all overlays from the map:
                 model.set("showOverlay", false);
-                //then remove from collection:
+                // then remove from collection
                 this.collection.remove(model);
             }
         });

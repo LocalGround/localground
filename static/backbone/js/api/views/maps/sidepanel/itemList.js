@@ -67,6 +67,9 @@ define(["marionette",
                 this.collection.trigger('zoom-to-extent');
             },
 
+            /**
+             * Determines whether or not the itemList should be shown at all.
+             */
             isVisible: function () {
                 var isVisible = !this.hidden && this.opts.collection.length > 0 &&
                                     this.$el.find('.check-all').is(':checked');

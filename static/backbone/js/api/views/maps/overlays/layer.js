@@ -37,6 +37,7 @@ define(['marionette',
                 if (this.model.get("showOverlay")) {
                     this.model.showSymbols();
                 } else {
+                    console.log("hide");
                     this.model.hideSymbols();
                 }
                 this.render();
@@ -49,7 +50,7 @@ define(['marionette',
             },
             render: function () {
                 //might be called to frequently. keep an eye out.
-                console.log("render");
+                //console.log("render");
                 var rule;
                 for (rule in this.overlays) {
                     this.renderSymbol(rule);
@@ -69,6 +70,7 @@ define(['marionette',
                 symbol.models = [];
                 this.hideSymbol(symbol.rule);
                 this.overlays[symbol.rule] = [];
+                //alert("none should be showing");
             },
             addMatchingModels: function (symbol, collection) {
                 var match = false,
