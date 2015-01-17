@@ -45,16 +45,13 @@ define(["underscore", "lib/maps/overlays/base"], function (_, Base) {
             this.isShowing = false;
             Base.prototype.initialize.apply(this, arguments);
             this.symbol = opts.symbol;
-            if (this.symbol.showOverlay) {
-                this.redraw();
-            }
+            this.redraw();
         },
 
         /** shows the google.maps overlay on the map. */
         show: function () {
             Base.prototype.show.apply(this);
             this._overlay.setIcon(this.getIcon());
-            //this.redraw();
         },
 
         redraw: function () {

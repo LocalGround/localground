@@ -38,7 +38,7 @@ define(["marionette",
                 var extras = {
                     name: this.model.get("name"),
                     symbols: this.model.getSymbols(),
-                    showOverlay: this.showOverlay
+                    showOverlay: this.model.get("showOverlay")
                 };
                 if (this.model.basic) {
                     extras.item = this.model.getSymbols()[0];
@@ -49,29 +49,16 @@ define(["marionette",
             toggleShow: function (e) {
                 var rule = $(e.target).val(),
                     isChecked = $(e.target).is(':checked');
-                if (isChecked) {
-                    this.model.trigger('show-overlay', rule);
-                } else {
-                    this.model.trigger('hide-overlay', rule);
-                    // turn off "everything checked" if one symbol becomes unchecked:
-                    this.$el.find('.check-all').attr('checked', false);
-                    this.showOverlay = false;
-                }
                 this.model.getSymbol(rule).showOverlay = isChecked;
+                this.model.trigger('symbol-change', rule);
                 this.saveState();
             },
 
             toggleShowAll: function () {
                 var isChecked = this.$el.find('.check-all').is(':checked'),
-                    $el = this.$el.find('input');
-                if (isChecked) {
-                    this.model.trigger('show-overlay');
-                } else {
-                    //this.app.vent.trigger("hide-layer", { model: this.model });
-                    this.model.trigger('hide-overlay');
-                }
-                $el.attr('checked', isChecked);
-                this.showOverlay = isChecked;
+                    $cbs = this.$el.find('input');
+                $cbs.attr('checked', isChecked);
+                this.model.set("showOverlay", isChecked);
                 this.saveState();
             },
 
@@ -82,7 +69,7 @@ define(["marionette",
 
             saveState: function () {
                 //remember layer and symbol visibility
-                var visMemory = { showOverlay: this.showOverlay },
+                var visMemory = { showOverlay: this.model.get("showOverlay") },
                     rule = null,
                     symbolMap = this.model.getSymbolMap();
                 for (rule in symbolMap) {
@@ -96,11 +83,10 @@ define(["marionette",
                 var rule,
                     symbolMap = this.model.getSymbolMap();
                 this.state = this.app.restoreState(this.id) || {};
-                this.showOverlay = this.state.showOverlay || false;
+                this.model.set("showOverlay", this.state.showOverlay || false);
                 for (rule in symbolMap) {
-                    symbolMap[rule].showOverlay = this.state[rule] || this.showOverlay || false;
+                    symbolMap[rule].showOverlay = this.state[rule] || this.model.get("showOverlay") || false;
                 }
-                this.model.trigger('redraw');
             }
         });
 

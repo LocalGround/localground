@@ -59,8 +59,7 @@ define(["marionette",
                 topBar = new TopBar(options),
                 layerManager = new LayerManager(_.extend(options, {
                     dataManager: dataManager,
-                    basemap: basemap,
-                    collection: new Layers()
+                    basemap: basemap
                 }));
             this.map = basemap.map;
             Mapplication.tabsRegion.show(tabs);

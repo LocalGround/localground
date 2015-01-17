@@ -26,13 +26,11 @@ define(["marionette",
             },
 
             addItemList: function (data) {
-                if (data.collection.key) {
-                    var collection = data.collection,
-                        selector =  collection.key + '-list';
-                    this.$el.append($('<div id="' + selector + '"></div>'));
-                    this.addRegion(collection.key, '#' + selector);
-                    this[collection.key].show(new ItemList(_.extend({collection: collection}, _.clone(this.opts))));
-                }
+                var collection = data.collection,
+                    selector =  collection.key + '-list';
+                this.$el.append($('<div id="' + selector + '"></div>'));
+                this.addRegion(collection.key, '#' + selector);
+                this[collection.key].show(new ItemList(_.extend({collection: collection}, _.clone(this.opts))));
             }
         });
 

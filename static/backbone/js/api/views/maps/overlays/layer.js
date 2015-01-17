@@ -1,10 +1,9 @@
 define(['marionette',
         'config',
-        'jquery',
         'underscore',
         'lib/maps/overlays/symbolized'
     ],
-    function (Marionette, Config, $, _, Symbolized) {
+    function (Marionette, Config, _, Symbolized) {
         'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
@@ -21,11 +20,11 @@ define(['marionette',
             showOverlay: false,
             symbols: null,
             modelEvents: {
-                'show-overlay': 'showTheOverlay',
-                'hide-overlay': 'hideTheOverlay'
+                'change:showOverlay': 'redraw',
+                'symbol-change': 'renderSymbol'
             },
             initialize: function (opts) {
-                $.extend(this, opts);
+                this.app = opts.app;
                 this.dataManager = opts.dataManager;
                 this.model = opts.model; //a sidepanel LayerItem object
                 this.map = opts.basemap.map;
@@ -34,34 +33,28 @@ define(['marionette',
                 this.listenTo(this.app.vent, 'selected-projects-updated', this.parseLayerItem);
                 this.app.vent.on("filter-applied", this.redraw.bind(this));
             },
-            showTheOverlay: function (rule) {
-                if (rule) {
-                    this.model.getSymbol(rule).showOverlay = true;
-                } else {
-                    this.showOverlay = true;
+            redraw: function () {
+                if (this.model.get("showOverlay")) {
                     this.model.showSymbols();
-                }
-                this.render();
-            },
-            hideTheOverlay: function (rule) {
-                if (rule) {
-                    this.model.getSymbol(rule).showOverlay = false;
                 } else {
-                    this.showOverlay = false;
                     this.model.hideSymbols();
                 }
                 this.render();
             },
-            render: function () {
-                console.log("render layer overlay");
-                var rule, i;
-                for (rule in this.overlays) {
-                    for (i = 0; i < this.overlays[rule].length; i++) {
-                        this.overlays[rule][i].redraw();
-                    }
+            renderSymbol: function (rule) {
+                var i;
+                for (i = 0; i < this.overlays[rule].length; i++) {
+                    this.overlays[rule][i].redraw();
                 }
             },
-
+            render: function () {
+                //might be called to frequently. keep an eye out.
+                //console.log("render");
+                var rule;
+                for (rule in this.overlays) {
+                    this.renderSymbol(rule);
+                }
+            },
             parseLayerItem: function () {
                 var that = this;
                 _.each(this.model.getSymbols(), function (symbol) {
@@ -72,13 +65,11 @@ define(['marionette',
                     });
                 });
             },
-
             clear: function (symbol) {
                 symbol.models = [];
-                this.hide(symbol.rule);
+                this.hideSymbol(symbol.rule);
                 this.overlays[symbol.rule] = [];
             },
-
             addMatchingModels: function (symbol, collection) {
                 var match = false,
                     that = this;
@@ -90,7 +81,6 @@ define(['marionette',
                     }
                 });
             },
-
             addOverlay: function (symbol, model) {
                 var configKey,
                     opts;
@@ -113,31 +103,7 @@ define(['marionette',
                 }
             },
 
-            /** Shows all of the map overlays */
-            show: function (rule) {
-                var i;
-                if (!this.overlays[rule]) {
-                    return;
-                }
-                for (i = 0; i < this.overlays[rule].length; i++) {
-                    this.overlays[rule][i].show();
-                }
-            },
-
-
-            /** Shows all of the map overlays */
-            showAll: function () {
-                console.log("showAll", this.model.get("name"), this.overlays);
-                this.showOverlay = true;
-                var key;
-                for (key in this.overlays) {
-                    this.overlays[key].isShowing = true;
-                    this.show(key);
-                }
-            },
-
-            /** Hides all of the map overlays */
-            hide: function (rule) {
+            hideSymbol: function (rule) {
                 var i;
                 if (!this.overlays[rule]) {
                     return;
@@ -147,21 +113,6 @@ define(['marionette',
                 }
             },
 
-            /** Hides all of the map overlays */
-            hideAll: function () {
-                console.log("hide all");
-                this.showOverlay = false;
-                var key;
-                for (key in this.overlays) {
-                    this.hide(key);
-                }
-            },
-
-            redraw: function () {
-                if (this.showOverlay) {
-                    this.showAll();
-                }
-            },
 
             /** Zooms to the extent of the collection */
             zoomToExtent: function () {

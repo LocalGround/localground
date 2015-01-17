@@ -28,7 +28,7 @@ define(["marionette",
 
             initialize: function (opts) {
                 this.app = opts.app;
-                this.collection = new Layers();
+                this.collection = this.app.selectedLayers;
                 this.childViewOptions.app = this.app;
                 /*this.childView = Marionette.ItemView.extend({
                     template: _.template(menuItem),
