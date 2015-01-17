@@ -30,10 +30,6 @@ define(["marionette",
                 this.app = opts.app;
                 this.collection = new Layers();
                 this.childViewOptions.app = this.app;
-                /*this.childView = Marionette.ItemView.extend({
-                    template: _.template(menuItem),
-                    modelEvents: {'change': 'render'}
-                });*/
                 this.collection.fetch();
                 this.restoreState();
             },

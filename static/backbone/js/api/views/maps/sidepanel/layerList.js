@@ -19,11 +19,10 @@ define(["marionette",
             },
 
             removeFromCollection: function (model) {
+                // hide all overlays from the map:
+                model.set("showOverlay", false);
+                //then remove from collection:
                 this.collection.remove(model);
-                // also hide overlays from the map:
-                this.app.vent.trigger("hide-layer", {
-                    model: model
-                });
             }
         });
         return LayerList;

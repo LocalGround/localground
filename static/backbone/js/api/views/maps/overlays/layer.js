@@ -49,7 +49,7 @@ define(['marionette',
             },
             render: function () {
                 //might be called to frequently. keep an eye out.
-                //console.log("render");
+                console.log("render");
                 var rule;
                 for (rule in this.overlays) {
                     this.renderSymbol(rule);
