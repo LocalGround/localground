@@ -69,24 +69,21 @@ define(["marionette",
 
             saveState: function () {
                 //remember layer and symbol visibility
-                var visMemory = { isShowingOnMap: this.model.get("isShowingOnMap") },
-                    rule = null,
-                    symbolMap = this.model.getSymbolMap();
-                for (rule in symbolMap) {
-                    visMemory[rule] = symbolMap[rule].isShowingOnMap;
-                }
+                var visMemory = { isShowingOnMap: this.model.get("isShowingOnMap") };
+                _.each(this.model.getSymbols(), function (symbol) {
+                    visMemory[symbol.rule] = symbol.isShowingOnMap;
+                });
                 this.app.saveState(this.id, visMemory, false);
             },
 
             restoreState: function () {
                 //restore layer and symbol visibility
-                var rule,
-                    symbolMap = this.model.getSymbolMap();
                 this.state = this.app.restoreState(this.id) || {};
                 this.model.set("isShowingOnMap", this.state.isShowingOnMap || false);
-                for (rule in symbolMap) {
-                    symbolMap[rule].isShowingOnMap = this.state[rule] || this.model.get("isShowingOnMap") || false;
-                }
+                var that = this;
+                _.each(this.model.getSymbols(), function (symbol) {
+                    symbol.isShowingOnMap = that.state[symbol.rule] || false;
+                });
             }
         });
 
