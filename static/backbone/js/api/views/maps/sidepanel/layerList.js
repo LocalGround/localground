@@ -19,9 +19,6 @@ define(["marionette",
             },
 
             removeFromCollection: function (model) {
-                // hide all overlays from the map:
-                model.set("isShowingOnMap", false);
-                // then remove from collection
                 this.collection.remove(model);
             }
         });

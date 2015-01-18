@@ -10,7 +10,7 @@ define(['jquery', 'lib/sqlParser', 'lib/maps/overlays/point'],
         var Symbol = function (opts) {
             this.isShowingOnMap = false;
             //note: these can be heterogeneous models from many different collections
-            this.models = [];
+            this.models = null;
             this.color = null;
             this.shape = null;
             this.width = null;
@@ -20,6 +20,7 @@ define(['jquery', 'lib/sqlParser', 'lib/maps/overlays/point'],
                 var markerShape;
                 $.extend(this, opts);
                 this.width = this.width || 30;
+                this.models = [];
                 if (this.shape == "circle") {
                     markerShape = Point.Shapes.CIRCLE;
                 } else if (this.shape == "square") {
@@ -36,6 +37,7 @@ define(['jquery', 'lib/sqlParser', 'lib/maps/overlays/point'],
             };
             this.addModel = function (model) {
                 this.models.push(model);
+                //console.log(this.models.length);
             };
             this.init(opts);
         };

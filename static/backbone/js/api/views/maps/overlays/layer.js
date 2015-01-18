@@ -24,6 +24,7 @@ define(['marionette',
                 'symbol-change': 'renderSymbol'
             },
             initialize: function (opts) {
+                //console.log("initialize Layer!");
                 this.app = opts.app;
                 this.dataManager = opts.dataManager;
                 this.model = opts.model; //a sidepanel LayerItem object
@@ -32,12 +33,21 @@ define(['marionette',
                 this.parseLayerItem();
                 this.listenTo(this.app.vent, 'selected-projects-updated', this.parseLayerItem);
                 this.app.vent.on("filter-applied", this.redraw.bind(this));
+                this.render();
+            },
+            onBeforeDestroy: function () {
+                //console.log("destroying ", this.model.get("name"));
+                var rule, i;
+                for (rule in this.overlays) {
+                    for (i = 0; i < this.overlays[rule].length; i++) {
+                        this.overlays[rule][i].hide();
+                    }
+                }
             },
             redraw: function () {
                 if (this.model.get("isShowingOnMap")) {
                     this.model.showSymbols();
                 } else {
-                    console.log("hide");
                     this.model.hideSymbols();
                 }
                 this.render();
@@ -49,8 +59,6 @@ define(['marionette',
                 }
             },
             render: function () {
-                //might be called to frequently. keep an eye out.
-                //console.log("render");
                 var rule;
                 for (rule in this.overlays) {
                     this.renderSymbol(rule);
