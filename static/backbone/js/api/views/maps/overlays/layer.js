@@ -39,9 +39,12 @@ define(['marionette',
                 //console.log("destroying ", this.model.get("name"));
                 var rule, i;
                 for (rule in this.overlays) {
+                    //hide all overlays
                     for (i = 0; i < this.overlays[rule].length; i++) {
                         this.overlays[rule][i].hide();
                     }
+                    //once hidden, remove all symbolized map overlay objects for g.c.
+                    this.overlays[rule] = [];
                 }
             },
             redraw: function () {
