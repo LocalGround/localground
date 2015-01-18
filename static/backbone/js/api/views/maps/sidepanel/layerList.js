@@ -10,8 +10,17 @@ define(["marionette",
                 this.app = opts.app;
                 this.collection = this.app.selectedLayers;
                 this.childViewOptions = opts;
+                this.applyEventHandlerBugfix();
+
+                //listen for global events:
                 this.app.vent.on("add-layer", this.addToCollection, this);
                 this.app.vent.on("remove-layer", this.removeFromCollection, this);
+            },
+
+            applyEventHandlerBugfix: function () {
+                this.listenTo(this.collection, 'add', this._onCollectionAdd);
+                this.listenTo(this.collection, 'remove', this._onCollectionRemove);
+                this.listenTo(this.collection, 'reset', this.render);
             },
 
             addToCollection: function (model) {

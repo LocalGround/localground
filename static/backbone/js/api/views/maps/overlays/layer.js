@@ -27,9 +27,10 @@ define(['marionette',
             initialize: function (opts) {
                 //console.log("initialize Layer!");
                 this.app = opts.app;
+                this.model = opts.model; //a sidepanel LayerItem object
+
                 this.dataManager = this.app.dataManager;
                 this.map = this.app.map;
-                this.model = opts.model; //a sidepanel LayerItem object
                 this.overlays = {};
                 this.parseLayerItem();
                 this.listenTo(this.app.vent, 'selected-projects-updated', this.parseLayerItem);
@@ -37,15 +38,10 @@ define(['marionette',
             },
             onBeforeDestroy: function () {
                 //console.log("destroying ", this.model.get("name"));
-                var rule, i;
-                for (rule in this.overlays) {
-                    //hide all overlays
-                    for (i = 0; i < this.overlays[rule].length; i++) {
-                        this.overlays[rule][i].hide();
-                    }
-                    //once hidden, remove all symbolized map overlay objects for g.c.
-                    this.overlays[rule] = [];
-                }
+                var that = this;
+                _.each(this.model.getSymbols(), function (symbol) {
+                    that.clear(symbol);
+                });
             },
             redraw: function () {
                 if (this.model.get("isShowingOnMap")) {
@@ -62,7 +58,7 @@ define(['marionette',
                 }
             },
             render: function () {
-                //console.log("rendering");
+                //console.log("rendering ", this.model.get("name"));
                 var rule;
                 for (rule in this.overlays) {
                     this.renderSymbol(rule);
@@ -81,8 +77,8 @@ define(['marionette',
             clear: function (symbol) {
                 symbol.models = [];
                 this.hideSymbol(symbol.rule);
+                //once hidden, remove all symbolized map overlay objects for g.c.
                 this.overlays[symbol.rule] = [];
-                //alert("none should be showing");
             },
             addMatchingModels: function (symbol, collection) {
                 var match = false,

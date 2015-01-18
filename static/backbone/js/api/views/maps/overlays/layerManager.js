@@ -21,17 +21,17 @@ define(["marionette",
                 this.childView = Layer;
                 this.childViewOptions = opts;
 
-                // Bugfix: these events should be called automatically, but they're not, for
-                // some reason (though they are in other CollectionViews). Weird. But this
-                // works. I think it has to do with the fact that two CollectionView classes
-                // are referencing the same collection.
+                // Bugfix: reset events should be called automatically, but they're not, for
+                // some reason (though they are in other CollectionViews).
                 this.applyEventHandlerBugfix();
+
+                this.render();
             },
 
             applyEventHandlerBugfix: function () {
-                this.listenTo(this.collection, 'add', this._onCollectionAdd);
-                this.listenTo(this.collection, 'remove', this._onCollectionRemove);
-                //this.listenTo(this.collection, 'reset', this.render);
+                //this.listenTo(this.collection, 'add', this._onCollectionAdd);
+                //this.listenTo(this.collection, 'remove', this._onCollectionRemove);
+                this.listenTo(this.collection, 'reset', this.render);
             }
         });
         return LayerManager;

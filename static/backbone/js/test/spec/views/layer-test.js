@@ -4,17 +4,23 @@ define([
 ],
     function (LayerView) {
         'use strict';
-        describe("Layer View: Map Layer can be initialized & drawn", function () {
+
+        function initLayerView(scope) {
+            return new LayerView({
+                app: scope.app,
+                model: scope.layers.get(0)
+            });
+        }
+        describe("Layer view: Map Layer can be initialized & drawn", function () {
+
             it("Can initialize a map layer", function () {
-                var that = this;
+                var layerView,
+                    that = this;
                 expect(function () {
-                    var layerView = new LayerView({
-                        app: that.app,
-                        dataManager: that.app.dataManager,
-                        model: that.layers.at(0),
-                        map: that.app.map
-                    });
+                    layerView = initLayerView(that);
                 }).not.toThrow();
             });
+
         });
+
     });
