@@ -8,7 +8,7 @@ define([
         function initLayerView(scope) {
             return new LayerView({
                 app: scope.app,
-                model: scope.layers.get(0)
+                model: scope.layers.at(0)
             });
         }
         describe("Layer view: Map Layer can be initialized & drawn", function () {

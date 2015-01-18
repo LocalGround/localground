@@ -10,7 +10,6 @@ define(["marionette",
                 this.app = opts.app;
                 this.collection = this.app.selectedLayers;
                 this.childViewOptions = opts;
-                this.applyEventHandlerBugfix();
 
                 //listen for global events:
                 this.app.vent.on("add-layer", this.addToCollection, this);

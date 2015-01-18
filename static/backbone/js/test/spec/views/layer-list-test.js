@@ -25,6 +25,9 @@ define([
                 var layerList = initLayerList(this),
                     m1 = this.layers.at(0),
                     m2 = this.layers.at(1);
+                //Weird: these work in the application, but need to be manually applied for
+                //the tests to work. Not sure why. 
+                layerList.applyEventHandlerBugfix();
 
                 //add to the layers collection:
                 layerList.collection.add(m1);
@@ -45,6 +48,11 @@ define([
 
             it("Yields two child LayerItems when 2 models are added / removed via the global event handlers", function () {
                 var layerList = initLayerList(this);
+
+                //As stated above, these work in the application, but need to be 
+                //manually applied for the tests to work.
+                layerList.applyEventHandlerBugfix();
+
                 this.app.vent.trigger('add-layer', this.layers.at(0));
                 this.app.vent.trigger('add-layer', this.layers.at(1));
 
@@ -55,33 +63,6 @@ define([
                     expect(view).toEqual(jasmine.any(LayerItem));
                 });
             });
-
-            /*
-            it("Yields three child LayerViews for three models passed in upon initialization", function () {
-                var layerManager = initLayerManager(this);
-
-                //ensure that three children have been rendered (one for each add):
-                expect(layerManager.collection.length).toBe(3);
-                expect(layerManager.children.length).toBe(3);
-
-                //make sure that children are of type LayerView
-                layerManager.children.each(function (view) {
-                    expect(view).toEqual(jasmine.any(LayerView));
-                });
-            });
-
-            it("Yields two child LayerViews once model is removed", function () {
-                var layerManager = initLayerManager(this);
-
-                //ensure that three children have been rendered (one for each add):
-                expect(layerManager.collection.length).toBe(3);
-                expect(layerManager.children.length).toBe(3);
-
-                //remove model from collection:
-                layerManager.collection.remove(this.layers.at(0));
-                expect(layerManager.collection.length).toBe(2);
-                expect(layerManager.children.length).toBe(2);
-            });*/
 
         });
     });

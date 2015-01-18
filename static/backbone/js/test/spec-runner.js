@@ -16,7 +16,7 @@ require(['boot'], function () {
         // VIEWS
         'spec/views/layer-manager-test.js',
         'spec/views/layer-list-test.js',
-        //'spec/views/layer-test.js',
+        'spec/views/layer-test.js',
         'spec/views/layer-item-test.js'
     ];
     require(specs, function () {
