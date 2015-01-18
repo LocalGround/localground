@@ -78,9 +78,9 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             this.highlightMarker.setMap(null);
         };
 
-        this.initialize = function (opts, basemap) {
+        this.initialize = function (opts) {
             this.app = opts.app;
-            this.basemap = basemap;
+            this.basemap = this.app.basemap;
             this.dm = new google.maps.drawing.DrawingManager({
                 //drawingMode: google.maps.drawing.OverlayType.MARKER,
                 markerOptions: this.markerOptions,

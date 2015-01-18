@@ -9,10 +9,10 @@ define([
                 var that = this;
                 expect(function () {
                     var layerView = new LayerView({
-                        dataManager: that.dataManager,
+                        app: that.app,
+                        dataManager: that.app.dataManager,
                         model: that.layers.at(0),
-                        basemap: { map: { fitBounds: 'a' }},
-                        app: that.app
+                        map: that.app.map
                     });
                 }).not.toThrow();
             });

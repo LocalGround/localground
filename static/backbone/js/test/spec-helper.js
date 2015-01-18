@@ -136,15 +136,20 @@ define(
                 ]
             };
 
+            //initialize this.app:
             this.app = _.extend({}, appUtilities);
             _.extend(this.app, {
                 vent: _.extend({}, Backbone.Events),
-                availableProjects: this.projectsLite
+                availableProjects: this.projectsLite,
+                selectedLayers: new Layers(),
+                map: { fitBounds: function () {} }
             });
-
+            //initialize dataManager:
             this.dataManager = new DataManager({
                 app: this.app
             });
+            //give the app a reference to the dataManager (for convenience);
+            _.extend(this.app, { dataManager: this.dataManager });
         });
     }
 );

@@ -21,19 +21,19 @@ define(['marionette',
             symbols: null,
             modelEvents: {
                 'change:isShowingOnMap': 'redraw',
-                'symbol-change': 'renderSymbol'
+                'symbol-change': 'renderSymbol',
+                'zoom-to-layer': 'zoomToExtent'
             },
             initialize: function (opts) {
                 //console.log("initialize Layer!");
                 this.app = opts.app;
-                this.dataManager = opts.dataManager;
+                this.dataManager = this.app.dataManager;
+                this.map = this.app.map;
                 this.model = opts.model; //a sidepanel LayerItem object
-                this.map = opts.basemap.map;
                 this.overlays = {};
                 this.parseLayerItem();
                 this.listenTo(this.app.vent, 'selected-projects-updated', this.parseLayerItem);
                 this.app.vent.on("filter-applied", this.redraw.bind(this));
-                this.render();
             },
             onBeforeDestroy: function () {
                 //console.log("destroying ", this.model.get("name"));
@@ -62,6 +62,7 @@ define(['marionette',
                 }
             },
             render: function () {
+                //console.log("rendering");
                 var rule;
                 for (rule in this.overlays) {
                     this.renderSymbol(rule);

@@ -55,13 +55,12 @@ define(["marionette",
                 tabs = new Tabs({app: this}),
                 layerPanel = new LayerPanel(options),
                 dataManager = new DataManager(options),
-                georeferenceManager = new GeoreferenceManager(options, basemap),
+                georeferenceManager = new GeoreferenceManager(options),
                 topBar = new TopBar(options),
-                layerManager = new LayerManager(_.extend(options, {
-                    dataManager: dataManager,
-                    basemap: basemap
-                }));
+                layerManager = new LayerManager(options);
+            this.dataManager = dataManager;
             this.map = basemap.map;
+            
             Mapplication.tabsRegion.show(tabs);
             Mapplication.mapRegion.show(basemap);
             Mapplication.dataPanelRegion.show(dataPanel);
