@@ -1,36 +1,51 @@
 define([
-    "underscore",
-    "views/maps/overlays/layer",
-    "lib/maps/data/dataManager",
+    "views/maps/overlays/symbol",
     "../../../test/spec-helper"
 ],
-    function (_, LayerView, DataManager) {
+    function (Symbol) {
         'use strict';
 
-        function initLayerView(scope) {
-            return new LayerView({
-                app: scope.app,
-                model: scope.layers.at(0)
-            });
-        }
-        describe("Layer view: Map Layer can be initialized & drawn", function () {
+        describe("Symbol: checks for correct initialization params", function () {
 
-            /*it("Can initialize a map layer", function () {
-                var layerView,
+            it("Can initialize if initialization params are correct", function () {
+                var symbol,
                     that = this;
                 expect(function () {
-                    layerView = initLayerView(that);
+                    symbol = new Symbol({
+                        app: that.app,
+                        color: "#0F0",
+                        width: 20,
+                        title: "Dogs",
+                        rule: "tags contains dog"
+                    });
                 }).not.toThrow();
-                expect(layerView.dataManager).toEqual(jasmine.any(DataManager));
-                expect(_.isObject(layerView.overlays)).toBeTruthy();
             });
 
-            it("Correctly renders \"Symbolized\" overlays on initialization", function () {
-                var layerView = initLayerView(this);
+            it("Throws error if missing rule specification", function () {
+                var symbol,
+                    that = this;
+                expect(function () {
+                    symbol = new Symbol({
+                        app: that.app,
+                        color: "#0F0",
+                        width: 20,
+                        title: "Dogs"
+                    });
+                }).toThrow();
+            });
 
-                //ensure that the underlying model has 3 symbols:
-                expect(layerView.model.getSymbols().length).toBe(2);
-            });*/
+            it("Throws error if missing title", function () {
+                var symbol,
+                    that = this;
+                expect(function () {
+                    symbol = new Symbol({
+                        app: that.app,
+                        color: "#0F0",
+                        width: 20,
+                        rule: "tags contains dog"
+                    });
+                }).toThrow();
+            });
 
         });
 

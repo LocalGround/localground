@@ -1,5 +1,5 @@
-define(['jquery', 'lib/sqlParser', 'lib/maps/overlays/point'],
-    function ($, SqlParser, Point) {
+define(['underscore', 'lib/sqlParser', 'lib/maps/overlays/point'],
+    function (_, SqlParser, Point) {
         'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
@@ -18,7 +18,7 @@ define(['jquery', 'lib/sqlParser', 'lib/maps/overlays/point'],
             this.sqlParser = null;
             this.init = function (opts) {
                 var markerShape;
-                $.extend(this, opts);
+                _.extend(this, opts);
                 this.width = this.width || 30;
                 this.modelMap = {};
                 if (this.shape == "circle") {
@@ -28,8 +28,14 @@ define(['jquery', 'lib/sqlParser', 'lib/maps/overlays/point'],
                 } else {
                     markerShape = Point.Shapes.MAP_PIN_HOLLOW;
                 }
-                $.extend(this, markerShape);
-                $.extend(this, { scale: markerShape.scale * this.width / markerShape.markerSize });
+                _.extend(this, markerShape);
+                _.extend(this, { scale: markerShape.scale * this.width / markerShape.markerSize });
+                if (_.isUndefined(this.rule)) {
+                    throw new Error("rule must be defined");
+                }
+                if (_.isUndefined(this.title)) {
+                    throw new Error("title must be defined");
+                }
                 this.sqlParser = new SqlParser(this.rule);
             };
             this.checkModel = function (model) {
@@ -40,7 +46,6 @@ define(['jquery', 'lib/sqlParser', 'lib/maps/overlays/point'],
                 if (_.isUndefined(this.modelMap[hash])) {
                     this.modelMap[hash] = model;
                 }
-                //console.log(hash);
             };
             this.getModels = function () {
                 return _.values(this.modelMap);
