@@ -1,6 +1,7 @@
 define(
     [
         "backbone",
+        "jquery",
         "lib/appUtilities",
         "lib/maps/data/dataManager",
         "collections/projects",
@@ -18,50 +19,52 @@ define(
         "models/mapimage",
         "models/layer"
     ],
-    function (Backbone, appUtilities, DataManager,
+    function (Backbone, $, appUtilities, DataManager,
               Projects, Photos, AudioFiles, MapImages, Markers, Records, Layers,
               Project, Photo, Marker, Audio, Record, MapImage, Layer) {
         'use strict';
         beforeEach(function () {
+            var $map_container = $('<div id="map_canvas"></div>');
+            $(document.body).append($map_container);
             /**
              * Adds some dummy data for testing convenience.
              * Availabe to all of the tests.
              */
             this.photos = new Photos([
-                new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1 }),
-                new Photo({id: 2, name: "Dog", tags: 'animal, dog', project_id: 1 }),
-                new Photo({id: 3, name: "Frog", tags: 'animal, amphibian, cute, frog', project_id: 1 })
+                new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1, overlay_type: "photo", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
+                new Photo({id: 2, name: "Dog", tags: 'animal, dog', project_id: 1, overlay_type: "photo", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] } }),
+                new Photo({id: 3, name: "Frog", tags: 'animal, amphibian, cute, frog', project_id: 1, overlay_type: "photo", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] } })
             ]);
             this.audio = new AudioFiles([
-                new Audio({ id: 1, name: "Nirvana", tags: '90s, grunge', project_id: 1 }),
-                new Audio({id: 2, name: "Duran Duran", tags: '80s, amazing, tag1', project_id: 1 }),
-                new Audio({id: 3, name: "Flo Rida", tags: 'florida, hip hop', project_id: 1 })
+                new Audio({ id: 1, name: "Nirvana", tags: '90s, grunge', project_id: 1, overlay_type: "audio" }),
+                new Audio({id: 2, name: "Duran Duran", tags: '80s, amazing, tag1', project_id: 1, overlay_type: "audio" }),
+                new Audio({id: 3, name: "Flo Rida", tags: 'florida, hip hop', project_id: 1, overlay_type: "audio" })
             ]);
             this.map_images = new MapImages([
-                new MapImage({ id: 1, name: "Map 1", tags: 'parks, oakland', project_id: 3 }),
-                new MapImage({id: 2, name: "Map 2", tags: 'parks, berkeley, tag1', project_id: 3 }),
-                new MapImage({id: 3, name: "Map 3", tags: 'emeryville', project_id: 3 })
+                new MapImage({ id: 1, name: "Map 1", tags: 'parks, oakland', project_id: 3, overlay_type: "map-image" }),
+                new MapImage({id: 2, name: "Map 2", tags: 'parks, berkeley, tag1', project_id: 3, overlay_type: "map-image" }),
+                new MapImage({id: 3, name: "Map 3", tags: 'emeryville', project_id: 3, overlay_type: "map-image" })
             ]);
             this.markers = new Markers([
-                new Marker({ id: 1, name: "POI 1", tags: 'my house', project_id: 2 }),
-                new Marker({id: 2, name: "POI 2", tags: 'friend\'s house, tag1', project_id: 2 }),
-                new Marker({id: 3, name: "POI 3", tags: 'coffee shop, tag1', project_id: 2 })
+                new Marker({ id: 1, name: "POI 1", tags: 'my house', project_id: 2, overlay_type: "marker" }),
+                new Marker({id: 2, name: "POI 2", tags: 'friend\'s house, tag1', project_id: 2, overlay_type: "marker" }),
+                new Marker({id: 3, name: "POI 3", tags: 'coffee shop, tag1', project_id: 2, overlay_type: "marker" })
             ]);
             this.records = new Records([
-                new Record({ id: 1, team_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 2  }),
-                new Record({id: 2, team_name: "Green team", tags: 'friend\'s house, tag1', worm_count: 8, project_id: 2  }),
-                new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 2, project_id: 2  })
+                new Record({ id: 1, team_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 2, overlay_type: "record" }),
+                new Record({id: 2, team_name: "Green team", tags: 'friend\'s house, tag1', worm_count: 8, project_id: 2, overlay_type: "record" }),
+                new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 2, project_id: 2, overlay_type: "record" })
             ], { 'url': 'dummy/url' });
             this.layers = new Layers([
-                new Layer({id: 1, name: "worms", symbols: [
+                new Layer({id: 1, name: "worms", overlay_type: "layer", symbols: [
                     { color: "#7075FF", width: 30, rule: "worms > 0", title: "At least 1 worm" },
                     { color: "#F011D9", width: 30, rule: "worms = 0", title: "No worms" }
                 ]}),
-                new Layer({id: 2, name: "pets", symbols: [
+                new Layer({id: 2, name: "pets", overlay_type: "layer", symbols: [
                     { color: "#F00", width: 20, rule: "tags contains cat", title: "Cats" },
                     { color: "#0F0", width: 20, rule: "tags contains dog", title: "Dogs" }
                 ]}),
-                new Layer({id: 3, name: "frogs", symbols: [
+                new Layer({id: 3, name: "frogs", overlay_type: "layer", symbols: [
                     { color: "#00F", width: 20, rule: "tags contains frog", title: "Frogs" }
                 ]})
             ]);
@@ -75,15 +78,15 @@ define(
             };
 
             this.projectsLite = new Projects([
-                new Project({ id: 1, name: "Project 1" }),
-                new Project({ id: 2, name: "Project 2" }),
-                new Project({ id: 3, name: "Project 3" }),
-                new Project({ id: 4, name: "Project 4" }),
-                new Project({ id: 5, name: "Project 5" })
+                new Project({ id: 1, name: "Project 1", overlay_type: "project" }),
+                new Project({ id: 2, name: "Project 2", overlay_type: "project" }),
+                new Project({ id: 3, name: "Project 3", overlay_type: "project" }),
+                new Project({ id: 4, name: "Project 4", overlay_type: "project" }),
+                new Project({ id: 5, name: "Project 5", overlay_type: "project" })
             ]);
 
             this.projects = new Projects([
-                new Project({ id: 1, name: "Project 1", tags: 'tag1, tag2',
+                new Project({ id: 1, name: "Project 1", tags: 'tag1, tag2', overlay_type: "project",
                     children: {
                         photos: {
                             name: "Photos",
@@ -98,7 +101,7 @@ define(
                             data: this.audio.toJSON()
                         }
                     }}),
-                new Project({ id: 2, name: "Project 2", tags: 'tag3, tag2',
+                new Project({ id: 2, name: "Project 2", tags: 'tag3, tag2', overlay_type: "project",
                     children: {
                         form_1: {
                             name: "Soil Form",
@@ -142,7 +145,7 @@ define(
                 vent: _.extend({}, Backbone.Events),
                 availableProjects: this.projectsLite,
                 selectedLayers: new Layers(),
-                map: { fitBounds: function () {} }
+                map: { fitBounds: function () {} } //a light stand-in for a Google Map, to speed it up; save our API calls.
             });
             //initialize dataManager:
             this.dataManager = new DataManager({

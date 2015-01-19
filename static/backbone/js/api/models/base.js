@@ -1,5 +1,5 @@
-define(["jquery", "backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point", "underscore"],
-    function ($, Backbone, Geometry, Point, _) {
+define(["underscore", "jquery", "backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point"],
+    function (_, $, Backbone, Geometry, Point) {
         "use strict";
         /**
          * An "abstract" Backbone Model; the root of all of the other
@@ -42,6 +42,11 @@ define(["jquery", "backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/p
             initialize: function (data, opts) {
                 opts = opts || {};
                 this.generateUpdateSchema(opts.updateMetadata);
+                //in case geometry comes in as stringified:
+                var geom = this.get("geometry");
+                if (!_.isUndefined(geom) && _.isString(geom)) {
+                    this.set("geometry", JSON.parse(geom));
+                }
             },
             toJSON: function () {
                 // ensure that the geometry object is serialized before it

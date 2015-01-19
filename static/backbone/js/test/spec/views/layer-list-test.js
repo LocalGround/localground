@@ -25,16 +25,19 @@ define([
                 var layerList = initLayerList(this),
                     m1 = this.layers.at(0),
                     m2 = this.layers.at(1);
-                //Weird: these work in the application, but need to be manually applied for
-                //the tests to work. Not sure why. 
+
+                // Weird: Marionette event handlers work in the application,
+                // but need to be manually applied for the tests to work.
+                // Not sure what's going on. 
                 layerList.applyEventHandlerBugfix();
 
                 //add to the layers collection:
                 layerList.collection.add(m1);
                 layerList.collection.add(m2);
 
-                //ensure that three children have been rendered (one for each add):
+                //ensure that two children have been rendered (one for each add):
                 expect(layerList.children.length).toBe(2);
+
                 //make sure that children are of type LayerView
                 layerList.children.each(function (view) {
                     expect(view).toEqual(jasmine.any(LayerItem));
@@ -47,21 +50,30 @@ define([
             });
 
             it("Yields two child LayerItems when 2 models are added / removed via the global event handlers", function () {
-                var layerList = initLayerList(this);
+                var layerList = initLayerList(this),
+                    m1 = this.layers.at(0),
+                    m2 = this.layers.at(1);
 
-                //As stated above, these work in the application, but need to be 
-                //manually applied for the tests to work.
+                // As stated above, Marionette event handlers work in the application,
+                // but need to be manually applied for the tests to work.
                 layerList.applyEventHandlerBugfix();
 
-                this.app.vent.trigger('add-layer', this.layers.at(0));
-                this.app.vent.trigger('add-layer', this.layers.at(1));
+                this.app.vent.trigger('add-layer', m1);
+                this.app.vent.trigger('add-layer', m2);
 
-                //ensure that three children have been rendered (one for each add):
+                //ensure that two children have been rendered (one for each add):
                 expect(layerList.children.length).toBe(2);
+
                 //make sure that children are of type LayerView
                 layerList.children.each(function (view) {
                     expect(view).toEqual(jasmine.any(LayerItem));
                 });
+
+                //remove the models:
+                //remove from layers collection:
+                this.app.vent.trigger('remove-layer', m1);
+                this.app.vent.trigger('remove-layer', m2);
+                expect(layerList.children.length).toBe(0);
             });
 
         });
