@@ -1,4 +1,6 @@
-define(["underscore", "lib/maps/overlays/base"], function (_, Base) {
+define(["underscore",
+        "lib/maps/overlays/infobubbles/symbolized",
+        "lib/maps/overlays/base"], function (_, SymbolizedBubble, Base) {
     "use strict";
     /**
      * Class that controls marker point model overlays.
@@ -61,6 +63,9 @@ define(["underscore", "lib/maps/overlays/base"], function (_, Base) {
             } else {
                 this.hide();
             }
+        },
+        initInfoBubble: function (opts) {
+            this.infoBubble = new SymbolizedBubble(_.extend({overlay: this}, opts));
         }
     });
     return Symbolized;
