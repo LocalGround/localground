@@ -96,4 +96,15 @@ define([
             });
         });
 
+        describe("Layer view: event handlers correctly zoom", function () {
+            it("Listens for zoom to extent button click", function () {
+                //workaround that allows Jasmine spies to work with Backbone's
+                //modelEvent listeners. Spy on Class.prototype:
+                spyOn(LayerView.prototype, "zoomToExtent");
+                var layerView = initLayerView(this);
+                layerView.model.trigger('zoom-to-layer');
+                expect(layerView.zoomToExtent).toHaveBeenCalled();
+            });
+        });
+
     });

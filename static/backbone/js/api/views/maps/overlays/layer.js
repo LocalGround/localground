@@ -28,7 +28,6 @@ define(['marionette',
                 //console.log("initialize Layer!");
                 this.app = opts.app;
                 this.model = opts.model; //a sidepanel LayerItem object
-
                 this.dataManager = this.app.dataManager;
                 this.map = this.app.map;
                 this.overlayMap = {};
@@ -136,7 +135,7 @@ define(['marionette',
 
             /** Zooms to the extent of the collection */
             zoomToExtent: function () {
-                //console.log("zoom to extent");
+                console.log("zoom to extent");
                 var bounds = new google.maps.LatLngBounds(),
                     i,
                     key;
