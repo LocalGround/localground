@@ -85,7 +85,7 @@ define(['jquery',
 
             showBubble: function () {
                 this.tip.close();
-                //this.app.vent.trigger('hide-bubbles', this.model.id);
+                this.app.vent.trigger('hide-bubbles', this.model.id);
                 this.renderBubble();
             },
 
