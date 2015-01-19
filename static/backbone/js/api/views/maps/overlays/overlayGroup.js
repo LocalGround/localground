@@ -37,6 +37,14 @@ define(['marionette',
                 //Have to manually render since this is an abstract view
                 //attached to map elements rather than the DOM
                 this.render();
+                //If we want everything to default to visible (say, we are loading a view),
+                //Display it once the map is loaded
+                //TODO: think of a better place to put this map interaction
+                google.maps.event.addListenerOnce(this.map, 'idle', function () {
+                    if (this.opts.startVisible) {
+                        this.showAll();
+                    }
+                }.bind(this));
             },
 
             geometryUpdated: function (model) {

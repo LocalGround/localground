@@ -153,6 +153,21 @@ define(["marionette",
                 $(window).on('resize', function () {
                     that.app.vent.trigger("adjust-layout");
                 });
+
+                this.listenTo(this.app.vent, 'change-zoom', this.changeZoom.bind(this));
+                this.listenTo(this.app.vent, 'change-center', this.changeCenter.bind(this));
+            },
+
+            changeZoom: function (zoom) {
+                google.maps.event.addListenerOnce(this.map, 'idle', function () {
+                    this.setZoom(zoom);
+                });
+            },
+
+            changeCenter: function (center) {
+                google.maps.event.addListenerOnce(this.map, 'idle', function () {
+                    this.setCenter(new google.maps.LatLng(center.coordinates[0], center.coordinates[1]));
+                });
             },
 
             saveState: function () {

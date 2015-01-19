@@ -129,7 +129,7 @@ body {
     margin-right:20px;
     display: inline-block;
 }
-#audio-player {
+#player-wrapper {
     position: absolute;
     margin-top: 0.75%;
     margin-left: 25%;
@@ -137,10 +137,18 @@ body {
 #close-player {
     z-index: 100;
     position: absolute;
-    margin-top: -0.15%;
-    margin-left: 55.1%;
+    margin-top: -40px;
+    margin-left: 285px;
     cursor: pointer;
 }
+
+#close-player:hover {
+    z-index: 100;
+    color: #888;
+    margin-left: 283px;
+
+}
+
 .audio-controls {
     display: inline-block;
 }
