@@ -4,9 +4,10 @@ define(["marionette",
         "views/maps/sidepanel/filter",
         "text!" + templateDir + "/sidepanel/layerPanelHeader.html",
         "views/maps/sidepanel/menus/layersMenu",
-        "views/maps/sidepanel/layerList"
+        "views/maps/sidepanel/layerList",
+        "views/maps/sidepanel/layerEditor"
     ],
-    function (Marionette, _, $, DataFilter, LayerPanelHeader, LayersMenu, LayerList) {
+    function (Marionette, _, $, DataFilter, LayerPanelHeader, LayersMenu, LayerList, LayerEditor) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -17,28 +18,42 @@ define(["marionette",
             /**
              * @lends localground.maps.views.DataPanel#
              */
+            app: null,
+            opts: null,
+
             template: function () {
                 return _.template(LayerPanelHeader);
             },
+
             regions: {
-                layerList: "#layer-manager",
-                dataFilter: "#data-filter",
-                layersMenu: "#layers-menu"
+                layerListRegion: "#layer-manager",
+                dataFilterRegion: "#data-filter",
+                layersMenuRegion: "#layers-menu"
+            },
+
+            events: {
+                'click #add-layer': 'showLayerEditor'
             },
 
             initialize: function (opts) {
                 this.app = opts.app;
                 this.opts = opts;
-                this.layers = this.app.layers;
                 this.app.vent.on("adjust-layout", this.resize.bind(this));
+                this.app.vent.on("show-layer-list", this.showLayerList.bind(this));
             },
+
+            showLayerEditor: function () {
+                this.layerListRegion.show(new LayerEditor(this.opts));
+            },
+
+            showLayerList: function () {
+                this.layerListRegion.show(new LayerList(this.opts));
+            },
+
             onShow: function () {
-                var options = {
-                    app: this.app
-                };
-                this.layerList.show(new LayerList(_.extend(options)));
-                this.dataFilter.show(new DataFilter(options));
-                this.layersMenu.show(new LayersMenu(options));
+                this.layerListRegion.show(new LayerList(this.opts));
+                this.dataFilterRegion.show(new DataFilter(this.opts));
+                this.layersMenuRegion.show(new LayersMenu(this.opts));
                 this.resize();
             },
 

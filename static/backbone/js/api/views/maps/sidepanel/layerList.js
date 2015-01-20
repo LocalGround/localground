@@ -14,6 +14,7 @@ define(["marionette",
                 //listen for global events:
                 this.app.vent.on("add-layer", this.addToCollection, this);
                 this.app.vent.on("remove-layer", this.removeFromCollection, this);
+                this.app.vent.on('hide-layers', this.hide, this);
             },
 
             applyEventHandlerBugfix: function () {
@@ -28,6 +29,14 @@ define(["marionette",
 
             removeFromCollection: function (model) {
                 this.collection.remove(model);
+            },
+
+            hide: function () {
+                this.$el.hide();
+            },
+
+            show: function () {
+                this.$el.show();
             }
         });
         return LayerList;
