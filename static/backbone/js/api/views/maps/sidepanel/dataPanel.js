@@ -4,9 +4,18 @@ define(["marionette",
         "text!" + templateDir + "/sidepanel/dataPanelHeader.html",
         "views/maps/sidepanel/projectsMenu",
         "views/maps/sidepanel/projectTags",
-        "views/maps/sidepanel/itemListManager"
+        "views/maps/sidepanel/itemListManager",
+        "views/maps/sidepanel/shareModal/shareModal"
     ],
-    function (Marionette, _, $, dataPanelHeader, ProjectsMenu, ProjectTags, ItemListManager) {
+    function (Marionette,
+              _,
+              $,
+              dataPanelHeader,
+              ProjectsMenu,
+              ProjectTags,
+              ItemListManager,
+              ShareModal) {
+
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -22,12 +31,14 @@ define(["marionette",
             },
 
             events: {
-                'click #mode_toggle': 'toggleEditMode'
+                'click #mode_toggle': 'toggleEditMode',
+                'click #share-data': 'showShareModal'
             },
             regions: {
                 projectMenu: "#projects-menu",
                 projectTags: "#project-tags",
-                itemList: "#item-list-manager"
+                itemList: "#item-list-manager",
+                shareModalWrapper: "#share-modal-wrapper"
 
             },
             /**
@@ -49,21 +60,9 @@ define(["marionette",
                 this.projectMenu.show(new ProjectsMenu(this.opts));
                 this.projectTags.show(new ProjectTags(this.opts));
                 this.itemList.show(new ItemListManager(this.opts));
+                this.shareModalWrapper.show(new ShareModal(this.opts));
             },
 
-            /*
-             * Renders the HTML for the data panel. Called everytime
-             * project data changes. Note that the project panel is
-             * only rendered once.
-             */
-            /*
-            //TODO: maybe need to add some onRender behavior?
-            render: function () {
-                this.$el.empty().append(this.template());
-                this.resize();
-                return this;
-            },
-            */
             toggleEditMode: function () {
                 if (this.app.getMode() === "view") {
                     this.app.setMode("edit");
@@ -82,6 +81,10 @@ define(["marionette",
 
             resize: function () {
                 this.$el.find('.pane-body').height($('body').height() - 140);
+            },
+
+            showShareModal: function () {
+                this.shareModalWrapper.$el.modal();
             }
         });
         return DataPanel;
