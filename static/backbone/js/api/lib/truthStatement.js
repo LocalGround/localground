@@ -102,7 +102,6 @@ define(["jquery"], function ($) {
         };
 
         this.truthTest = function (model) {
-            //console.log(this);
             var returnVal = false,
                 modelVal = model.get(this.key),
                 idx = -1;
@@ -132,7 +131,6 @@ define(["jquery"], function ($) {
                 idx = modelVal.length - this.val.length;
                 returnVal =  modelVal.indexOf(this.val, idx) !== -1;
             }
-            //console.log(returnVal, modelVal, this.val, this.operator);
             return returnVal;
         };
 

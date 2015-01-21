@@ -108,14 +108,12 @@ define(['jquery',
             },
             bringToFront: function (e) {
                 var zIndex;
-                //console.log(this.bubble.bubble_.style.zIndex);
                 zIndex = parseInt(this.bubble.bubble_.style.zIndex, 10);
                 this.bubble.bubble_.style.zIndex = zIndex + 1;
                 e.preventDefault();
             },
             sendToBack: function (e) {
                 var zIndex;
-                //console.log("back", this.bubble.bubble_.style.zIndex);
                 zIndex = parseInt(this.bubble.bubble_.style.zIndex, 10);
                 this.bubble.bubble_.style.zIndex = zIndex - 1;
                 e.preventDefault();

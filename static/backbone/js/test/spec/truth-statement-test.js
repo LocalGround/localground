@@ -26,7 +26,7 @@ define(["jquery", "lib/truthStatement", "../../test/spec-helper"], function ($, 
             'acontains b',
             'a likeb',
             'ainb',
-            'random sentance'
+            'random sentence'
         ];
     describe("TruthStatement: Check conjunctions", function () {
         it("Check that conjunction is 'AND' or 'OR' keyword (case-insensitive)", function () {

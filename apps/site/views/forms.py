@@ -89,7 +89,6 @@ def create_update_form(request, object_id=None,
                     instance = form.instance
                     if not instance in formset.deleted_forms:
                         instance.display_width = 10
-                        #instance.ordering = i
                         if instance.pk is None:
                             instance.form = form_object
                         instance.last_updated_by = request.user

@@ -25,7 +25,6 @@ define(['marionette',
                 'zoom-to-layer': 'zoomToExtent'
             },
             initialize: function (opts) {
-                //console.log("initialize Layer!");
                 this.app = opts.app;
                 this.model = opts.model; //a sidepanel LayerItem object
                 this.dataManager = this.app.dataManager;
@@ -36,7 +35,6 @@ define(['marionette',
                 this.app.vent.on("filter-applied", this.redraw.bind(this));
             },
             onBeforeDestroy: function () {
-                //console.log("destroying ", this.model.get("name"));
                 var that = this;
                 _.each(this.model.getSymbols(), function (symbol) {
                     that.clear(symbol);
@@ -67,7 +65,6 @@ define(['marionette',
                 });
             },
             render: function () {
-                //console.log("rendering ", this.model.get("name"));
                 var rule;
                 for (rule in this.overlayMap) {
                     this.renderSymbol(rule);
@@ -135,7 +132,6 @@ define(['marionette',
 
             /** Zooms to the extent of the collection */
             zoomToExtent: function () {
-                console.log("zoom to extent");
                 var bounds = new google.maps.LatLngBounds(),
                     i,
                     key;
@@ -144,7 +140,9 @@ define(['marionette',
                         bounds.union(this.overlayMap[key][i].getBounds());
                     }
                 }
-                this.map.fitBounds(bounds);
+                if (!bounds.isEmpty()) {
+                    this.map.fitBounds(bounds);
+                }
             }
 
         });

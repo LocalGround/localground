@@ -23,7 +23,6 @@ define(["lib/truthStatement"], function (TruthStatement) {
                         truthStatement = new TruthStatement(raw[i + 1], raw[i]);
                         this.statements.push(truthStatement);
                     } catch (e) {
-                        //console.log("error parsing truth statement: " +  e);
                         this.failureFlag = 1;
                         this.failureMessage = "error parsing truth statement: " +  e;
                     }
