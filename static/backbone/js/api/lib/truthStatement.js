@@ -4,7 +4,7 @@ define(["jquery"], function ($) {
         this.tokens = null;
         this.key = null;
         this.val = null;
-        this.operator = "and";
+        this.operator = null;
         this.conjunction = null;
         //note: order matters here. Put the <>, <=, !=, and <> before the
         //      <, >, and = in the regex. Also, English words need to be
