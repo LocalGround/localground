@@ -198,6 +198,7 @@ define(["marionette",
             onShow: function () {
                 this.overlayManager = new OverlayManager(this.opts);
                 this.deleteMenu = new DeleteMenu(this.opts);
+                this.app.vent.trigger('map-ready');
             }
 
         });

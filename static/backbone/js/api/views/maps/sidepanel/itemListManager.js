@@ -17,7 +17,7 @@ define(["marionette",
             tagName: 'div',
             id: 'item-list',
             template: _.template(""),
-
+            collections: [],
             initialize: function (opts) {
                 this.app = opts.app;
                 this.opts = opts;
@@ -31,6 +31,14 @@ define(["marionette",
                 this.$el.append($('<div id="' + selector + '"></div>'));
                 this.addRegion(collection.key, '#' + selector);
                 this[collection.key].show(new ItemList(_.extend({collection: collection}, _.clone(this.opts))));
+                this.collections.push(collection);
+            },
+
+            //Dispatch calls to each child to load a set of items
+            loadView: function (view) {
+                _.each(view.children, function (collection, key) {
+                    this[key].currentView.loadItems(_.pluck(collection.data, 'id'));
+                }.bind(this));
             }
         });
 

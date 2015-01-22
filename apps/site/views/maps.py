@@ -47,7 +47,7 @@ def show_map_viewer(request, username, slug, access_key=None):
 
 
 @login_required()
-def show_map_editor(request, template='map/editor.html'):
+def show_map_editor(request, template='map/editor.html', slug=None):
     u = request.user
     context = RequestContext(request)
     username = u.username
@@ -73,11 +73,21 @@ def show_map_editor(request, template='map/editor.html'):
         'presentations': json.dumps(presentations),
         'num_projects': len(projects)
     })
+    if slug is not None:
+        view = get_object_or_404(View, slug=slug)
+        view = view.to_dict()
+        context.update({
+            'view': json.dumps(view)
+        })
     return render_to_response(template, context)
 
 @login_required()
 def show_map_editor_new(request, template='map/editor1.html'):
     return show_map_editor(request, template=template)
+
+def show_map_editor_embedded(request, slug, template='map/editor1.html'):
+    return show_map_editor(request, template=template, slug=slug)
+
 
 
 def show_ebays_map_viewer(request):

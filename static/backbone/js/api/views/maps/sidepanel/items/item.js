@@ -85,7 +85,9 @@ define(["marionette", "jquery"], function (Marionette, $) {
         toggleElement: function (isChecked) {
             if (isChecked) {
                 this.model.trigger("show-overlay");
+                this.model.set('showingOnMap', true);
             } else {
+                this.model.set('showingOnMap', false);
                 this.model.trigger("hide-overlay");
             }
             this.saveState();
@@ -194,6 +196,8 @@ define(["marionette", "jquery"], function (Marionette, $) {
             this.state = this.app.restoreState(this.id);
             if (!this.state) {
                 this.state = { isVisible: false };
+            } else {
+                this.model.set('showingOnMap', this.state.isVisible);
             }
         },
 

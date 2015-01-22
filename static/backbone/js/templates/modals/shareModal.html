@@ -7,15 +7,15 @@
         </div>
         <div class="modal-body">
             <div id="some-shit">
-                <div id="view-list-container"></div>
-
-                <input type="text" placeholder="Type a name for your snapshot here" />
+                <div id="view-list-container" class="list-group"></div>
+                <input id="save-view-name" type="text" placeholder="Type a name for your snapshot here"/>
 
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+            <button type="button" class="btn btn-default dismiss-modal" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary load disabled" >Load</button>
+            <button type="button" class="btn btn-success save" >Save</button>
         </div>
     </div>
 </div>

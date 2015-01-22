@@ -4,7 +4,7 @@
 define(["marionette",
         "underscore",
         "jquery",
-        "text!" + templateDir + "/sidepanel/collectionHeader.html",
+            "text!" + templateDir + "/sidepanel/collectionHeader.html",
         "views/maps/sidepanel/items/item",
         "config"
     ],
@@ -65,7 +65,7 @@ define(["marionette",
 
             isVisible: function () {
                 var isVisible = !this.hidden && this.opts.collection.length > 0 &&
-                                    this.$el.find('.check-all').is(':checked');
+                    this.$el.find('.check-all').is(':checked');
                 // ensures that localStorage flag is only honored on initialization.
                 if (this.isFirstRendering()) {
                     isVisible = isVisible || this.state.isVisible;
@@ -108,16 +108,24 @@ define(["marionette",
 
             toggleShowAll: function () {
                 if (this.$el.find('.check-all').is(':checked')) {
-                    this.children.each(function (child) {
-                        child.checkItem();
-                    });
+                    this.showAll();
                 } else {
-                    this.children.each(function (child) {
-                        child.uncheckItem();
-                    });
+                    this.hideAll();
                 }
                 this.saveState();
 
+            },
+
+            showAll: function () {
+                this.children.each(function (child) {
+                    child.checkItem();
+                });
+            },
+
+            hideAll: function () {
+                this.children.each(function (child) {
+                    child.uncheckItem();
+                });
             },
 
             onRender: function () {
@@ -147,6 +155,15 @@ define(["marionette",
                         isExpanded: false
                     };
                 }
+            },
+
+            loadItems: function (itemIds) {
+                this.hideAll();
+                _.each(this.children.filter(function (child) {return _.contains(itemIds, child.model.attributes.id); }),
+                    function (child) {
+                        child.showItem();
+                    });
+
             }
 
         });

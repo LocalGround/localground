@@ -4,7 +4,7 @@ define(["marionette",
         "text!" + templateDir + "/modals/viewItem.html",
         "models/view"
     ],
-    function (Marionette, _, $, viewItem, View) {
+    function (Marionette, _, $, viewItem) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -13,12 +13,13 @@ define(["marionette",
          */
 
         var ViewItem = Marionette.ItemView.extend({
-            class: 'view-item',
+            tagName: 'a',
+            className: 'view-item list-group-item',
             /**
              * @lends localground.maps.views.DataPanel#
              */
             template: function (model) {
-                return _.template(viewItem, model);
+                return _.template(viewItem, _.extend({}, model, {urlRoot: document.location.origin}));
             },
 
             events: {
@@ -27,6 +28,8 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.opts = opts;
+                this.id = 'view-item-' + this.model.id;
+                this.el.id = this.id;
             }
         });
         return ViewItem;

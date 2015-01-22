@@ -65,17 +65,15 @@ define(["models/view",
              */
 
             this.initialize = function (opts) {
-                this.view = new View();
-                this.view.set('id', 1);
+                this.view = new View(opts.view);
                 this.app = opts.app;
                 var that = this;
-                this.view.fetch({success: function (response) {
+                this.app.vent.once('map-ready', function() {
                     that.updateCollections(that.view);
                     that.app.vent.trigger('change-center', that.view.get('center'));
                     that.app.vent.trigger('change-zoom', that.view.get('zoom'));
-                    window.view = that.view;
-                }});
-                //this.restoreState();
+                });
+
             };
 
             /**

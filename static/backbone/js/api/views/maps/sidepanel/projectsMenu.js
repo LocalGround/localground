@@ -58,8 +58,8 @@ define(["marionette",
              * @param {Event} e
              */
             toggleCheckbox: function (e) {
-                var input = $(e.target).find('input').addBack().filter('input');
-                var checked = input.is(':checked'),
+                var input = $(e.target).find('input').addBack().filter('input'),
+                    checked = input.is(':checked'),
                     projectId = input.val();
                 this.app.vent.trigger('toggle-project', projectId, checked);
 
@@ -100,7 +100,12 @@ define(["marionette",
                 this.collection.trigger('selected-projects-change');
                 this.collection.trigger('toggleProject', projectId, visible);
                 this.saveState();
+            },
+
+            loadProjects: function (projectIds) {
+                _.each(projectIds, function (id) {this.toggleProject(id, true); }.bind(this));
             }
+
         });
         return ProjectsMenu;
     });

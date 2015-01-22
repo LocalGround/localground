@@ -61,6 +61,7 @@ define(["marionette",
                 this.projectTags.show(new ProjectTags(this.opts));
                 this.itemList.show(new ItemListManager(this.opts));
                 this.shareModalWrapper.show(new ShareModal(this.opts));
+                this.listenTo(this.shareModalWrapper.currentView, 'load-view', this.loadView);
             },
 
             toggleEditMode: function () {
@@ -84,7 +85,37 @@ define(["marionette",
             },
 
             showShareModal: function () {
+                this.shareModalWrapper.currentView.setSerializedEntities(this.serializeActiveEntities());
                 this.shareModalWrapper.$el.modal();
+            },
+
+            //A convenience method to gather all currently active map markers for saving in a view
+            serializeActiveEntities: function () {
+                var entities = [];
+                _.each(this.itemList.currentView.collections, function (collection) {
+                    var entityIds = collection.where({'showingOnMap': true}).map(function (model) {return model.id; });
+                    if (entityIds.length > 0) {
+                        entities.push({
+                            overlay_type: collection.first().attributes.overlay_type,
+                            ids: entityIds
+                        });
+                    }
+                });
+                return JSON.stringify(entities);
+            },
+
+            loadView: function (view) {
+                var v = view.toJSON(),
+                    //Take all unique project ids from the view
+                    projectIds = _.chain(v.children)
+                        .map(function (collection) {
+                            return _.pluck(collection.data, 'project_id');
+                        }).flatten().uniq().value();
+
+                //dispatch call to projectMenu to load appropriate projects
+                this.projectMenu.currentView.loadProjects(projectIds);
+                //dispatch call to itemManager to only show appropriate items
+                this.itemList.currentView.loadView(v);
             }
         });
         return DataPanel;
