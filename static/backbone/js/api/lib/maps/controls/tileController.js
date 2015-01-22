@@ -101,6 +101,8 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                     //initialize tiles and set the active map type
                     initTiles();
                     that.setActiveMapType(opts.activeMapTypeID);
+                    this.app.vent.on('set-map-type', this.setActiveMapType.bind(this));
+
                 }.bind(this);
 
 

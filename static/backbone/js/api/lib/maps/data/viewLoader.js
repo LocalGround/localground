@@ -117,7 +117,6 @@ define(["models/view",
                 //add new project to the collection:
                 //this.selectedProjects.add(view, {merge: true});
                 //this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
-                this.saveState();
             };
 
 

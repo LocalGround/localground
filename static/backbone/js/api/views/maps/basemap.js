@@ -165,9 +165,7 @@ define(["marionette",
             },
 
             changeCenter: function (center) {
-                google.maps.event.addListenerOnce(this.map, 'idle', function () {
-                    this.setCenter(new google.maps.LatLng(center.coordinates[0], center.coordinates[1]));
-                });
+                this.map.setCenter(new google.maps.LatLng(center.coordinates[1], center.coordinates[0]));
             },
 
             saveState: function () {

@@ -108,7 +108,10 @@ define(["marionette",
                 view.set('center', JSON.stringify(this.geometry.getGeoJSON(this.app.map.getCenter())));
                 view.set('zoom', this.app.map.getZoom());
                 //TODO: can't remember where to fetch this id from
-                view.set('basemap', 12);
+                var mapName = this.app.map.mapTypeId;
+                //capitalize first letter
+                mapName = mapName.charAt(0).toUpperCase() + mapName.slice(1);
+                view.set('basemap', _.findWhere(this.opts.tilesets, {name: mapName}).id);
                 view.set('view_authority', 3);
                 view.save(null, {success: function (newView) {
                     this.collection.add(newView);
