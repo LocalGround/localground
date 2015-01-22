@@ -10,22 +10,11 @@ define(["models/view",
         'use strict';
 
         /**
-         * The Viewloader class fetches a specified view from the
-         * API server, and loads the data for the map
+         * The Viewloader class just structes the data
+         * necessary to load a view
          * @class ViewLoader
          */
         var ViewLoader = function (app) {
-            /**
-             * Helper function that files Backbone models into their
-             * appropriate Backbone collection
-             * @method updateCollections
-             * @param {String} key
-             * @param {Array} models
-             * A list of Backbone models
-             * @param {Object} opts
-             * An object that tells the function which collection
-             * type to instantiate, and the name of the collection
-             */
             var updateCollection = function (opts) {
                 if (!opts) {
                     //TODO: create standardized way to report errors.
@@ -34,7 +23,6 @@ define(["models/view",
                 var key = opts.key,
                     models = opts.models,
                     collectionOpts;
-                //opts = opts || localground.config.Config[configKey];
                 if (!this.collections[key]) {
                     collectionOpts = { key: key, name: opts.name };
                     //A few special hacks for form data:
@@ -59,16 +47,11 @@ define(["models/view",
              */
             this.collections = {};
 
-            /**
-             * The projects that are currently loaded in
-             * corresponding map views.
-             */
-
             this.initialize = function (opts) {
                 this.view = new View(opts.view);
                 this.app = opts.app;
                 var that = this;
-                this.app.vent.once('map-ready', function() {
+                this.app.vent.once('map-ready', function () {
                     that.updateCollections(that.view);
                     that.app.vent.trigger('change-center', that.view.get('center'));
                     that.app.vent.trigger('change-zoom', that.view.get('zoom'));
@@ -76,78 +59,6 @@ define(["models/view",
 
             };
 
-            /**
-             * Fetches the user's available projects from the data API.
-             */
-            this.fetchProjects = function (projectCollection) {
-                projectCollection.fetch({reset: true});
-            };
-
-            /**
-             * Fetches a particular project from the data API.
-             * @param {Integer} id
-             * The id of the project of interest.
-             */
-            this.fetchDataByProjectID = function (projectId) {
-                var that = this,
-                    project = new Project({id: projectId});
-
-                this.app.setActiveProjectID(projectId);
-                project.fetch({data: {format: 'json', include_schema: true}, success: function () {
-                    that.updateCollections(project);
-                }});
-            };
-
-            /**
-             * Removes project data from memory (which subsequently
-             * removes this data from the views which are bound to
-             * the data).
-             * @param {Integer} id
-             * The id of the project of interest.
-             */
-            this.removeDataByProjectID = function (projectId) {
-                //http://backbonejs.org/#Collection-remove
-                var key,
-                    collection;
-
-                for (key in this.collections) {
-                    if (this.collections.hasOwnProperty(key)) {
-                        collection = this.collections[key];
-                        collection.remove(collection.where({project_id: Number(projectId)}));
-                    }
-                }
-
-
-                //remove selected project:
-                //
-                this.selectedProjects.remove({id: projectId});
-
-                //reset default project:
-                //TODO: this should happen automatically remove this todo after you check
-                //this.resetActiveProject();
-
-                //notify the rest of the application
-                //TODO: ensure this actually happens automatically
-                //this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
-
-                this.saveState();
-            };
-
-            this.toggleProject = function (projectId, fetch) {
-                if (fetch) {
-                    this.fetchDataByProjectID(projectId);
-                } else {
-                    this.removeDataByProjectID(projectId);
-                }
-            };
-
-            this.resetActiveProject = function () {
-                this.app.setActiveProjectID(-1);
-                var that = this;
-                this.selectedProjects.each(function (model) {
-                    that.app.setActiveProjectID(model.id);
-                });
-            };
 
             /**
              * Because projects have many different types of data
@@ -209,37 +120,6 @@ define(["models/view",
                 this.saveState();
             };
 
-            this.setActiveProject = function (data) {
-                this.app.setActiveProjectID(data.id);
-                this.saveState();
-            };
-
-            this.saveState = function () {
-                var ids = [];
-                this.app.saveState("viewLoader", {
-                    viewId: this.view.get('id')
-                    //defaultProjectID: this.app.getActiveProjectID()
-                });
-            };
-
-            this.restoreState = function () {
-//                var state = this.app.restoreState("viewLoader"),
-//                    i,
-//                    projIndex;
-//                if (!state) {
-//                    return;
-//                }
-//                for (i = 0; i < state.projectIDs.length; i++) {
-//                    this.fetchDataByProjectID({ id: state.projectIDs[i] });
-//                }
-//                // check to make sure the default project exists in the active list:
-//                projIndex = state.projectIDs.indexOf(state.defaultProjectID);
-//                // if it doesn't, set the projIndex to the last active project in the list:
-//                if (projIndex === -1) {
-//                    projIndex = state.projectIDs.length - 1;
-//                }
-//                this.app.setActiveProjectID(state.projectIDs[projIndex]);
-            };
 
             this.initialize(app);
         };
