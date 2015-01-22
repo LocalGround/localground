@@ -17,16 +17,16 @@ define(["jquery"], function ($) {
         this.initialize = function (app, opts) {
             this.app = app;
             $.extend(this, opts);
-            this.createOverlay(opts.isVisible || false);
+            this.createOverlay(opts.isShowingOnMap || false);
         };
 
-        this.createOverlay = function (isVisible) {
+        this.createOverlay = function (isShowingOnMap) {
             this._googleOverlay = new google.maps.Polyline({
                 path: this.getGoogleGeometryFromModel(),
                 strokeColor: '#' + this.model.get("color"),
                 strokeOpacity: 1.0,
                 strokeWeight: 5,
-                map: isVisible ? this.map : null
+                map: isShowingOnMap ? this.map : null
             });
         };
 

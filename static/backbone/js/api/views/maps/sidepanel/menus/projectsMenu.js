@@ -1,5 +1,5 @@
 define(["marionette",
-            "text!" + templateDir + "/sidepanel/projectItem.html",
+            "text!" + templateDir + "/sidepanel/menuItem.html",
         "underscore",
         "jquery"
     ],
@@ -15,8 +15,8 @@ define(["marionette",
              * @lends localground.maps.views.ProjectsMenu#
              */
             events: {
-                'click .cb-project': 'toggleCheckbox',
-                'click .project-item': 'triggerToggleCheckbox'
+                'click .cb-item': 'toggleCheckbox',
+                'click .item': 'triggerToggleCheckbox'
             },
             childViewOptions: {
                 template: _.template(projectItem)
@@ -36,11 +36,10 @@ define(["marionette",
              * The jQuery element to which the projects should be attached.
              */
             initialize: function (opts) {
-                //this.setElement(opts.el);
                 this.app = opts.app;
-                this.collection = opts.projects;
+                this.collection = opts.availableProjects;
                 this.childViewOptions.app = this.app;
-                this.listenTo(this.app.vent, 'toggle-project', this.toggleProject);
+                this.listenTo(this.app.vent, 'toggle-project', this.toggleItem);
                 this.app.vent.trigger('load-projects', this.collection);
                 this.restoreState();
             },
@@ -92,7 +91,7 @@ define(["marionette",
                 this.state = this.app.restoreState(this.id);
             },
 
-            toggleProject: function (projectId, visible) {
+            toggleItem: function (projectId, visible) {
                 var project = this.collection.get(projectId);
                 if (project) {
                     project.set('isVisible', visible);

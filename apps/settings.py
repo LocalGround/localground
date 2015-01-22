@@ -45,6 +45,10 @@ QR_READER_PATH = '%s/lib/barcodereader' % APPS_ROOT
 MAP_FILE = FILE_ROOT + '/mapserver/localground.map'
 TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_MEDIA_DIR
 
+# From Google Developer Console:
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'YOUR_CLIENT_KEY'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'YOUR_SECRET'
+
 DEFAULT_BASEMAP_ID = 12
 #OS variables:
 USER_ACCOUNT = 'linux-user-account'     #account to use for creating new OS files / directories

@@ -27,15 +27,19 @@ define(["models/project",
              */
             var updateCollection = function (opts) {
                 if (!opts) {
-                    //TODO: create standardized way to report errors.
-                    //console.log("Error in \"DataManager's updatedCollection\" function: opts argument cannot be null.");
-                    return;
+                    throw new Error("opts cannot be null");
+                } else if (!opts.models) {
+                    throw new Error("opts.models cannot be null");
                 }
                 var key = opts.key,
                     models = opts.models,
                     collectionOpts;
-                //opts = opts || localground.config.Config[configKey];
                 if (!this.collections[key]) {
+                    if (!opts.name) {
+                        throw new Error("opts.name must be defined");
+                    } else if (!opts.Collection) {
+                        throw new Error("opts.Collection must be defined");
+                    }
                     collectionOpts = { key: key, name: opts.name };
                     //A few special hacks for form data:
                     if (key.indexOf("form") !== -1) {
@@ -65,13 +69,15 @@ define(["models/project",
 
             this.initialize = function (opts) {
                 this.app = opts.app;
-                this.projects = opts.projects;
-                this.projects.on('toggleProject', this.toggleProject.bind(this));
+                this.availableProjects = opts.availableProjects;
+                this.availableProjects.on('toggleProject', this.toggleProject.bind(this));
                 this.app.vent.on("load-projects", this.fetchProjects.bind(this));
                 this.app.vent.on("project-requested", this.fetchDataByProjectID.bind(this));
                 this.app.vent.on("set-active-project", this.setActiveProject.bind(this));
                 this.app.vent.on("marker-added", updateCollection.bind(this));
                 this.app.vent.on('load-view-list', this.fetchViews.bind(this));
+                this.app.vent.on("apply-filter", this.applyFilter.bind(this));
+                this.app.vent.on("clear-filter", this.clearFilter.bind(this));
                 this.selectedProjects = new Projects();
                 //this.restoreState();
             };
@@ -88,11 +94,10 @@ define(["models/project",
              * @param {Integer} id
              * The id of the project of interest.
              */
-            this.fetchDataByProjectID = function (projectId) {
+            this.fetchDataByProjectID = function (projectID) {
                 var that = this,
-                    project = new Project({id: projectId});
+                    project = new Project({id: projectID});
 
-                this.app.setActiveProjectID(projectId);
                 project.fetch({data: {format: 'json', include_schema: true}, success: function () {
                     that.updateCollections(project);
                 }});
@@ -121,15 +126,8 @@ define(["models/project",
                 //remove selected project:
                 //
                 this.selectedProjects.remove({id: projectId});
-
-                //reset default project:
-                //TODO: this should happen automatically remove this todo after you check
-                //this.resetActiveProject();
-
-                //notify the rest of the application
-                //TODO: ensure this actually happens automatically
-                //this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
-
+                this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
+                this.resetActiveProject();
                 this.saveState();
             };
 
@@ -164,6 +162,26 @@ define(["models/project",
                 return this.collections[key];
             };
 
+            this.applyFilter = function (sql) {
+                var key;
+                for (key in this.collections) {
+                    if (this.collections.hasOwnProperty(key)) {
+                        this.collections[key].applyFilter(sql);
+                    }
+                }
+                this.app.vent.trigger('filter-applied');
+            };
+
+            this.clearFilter = function () {
+                var key;
+                for (key in this.collections) {
+                    if (this.collections.hasOwnProperty(key)) {
+                        this.collections[key].clearFilter();
+                    }
+                }
+                this.app.vent.trigger('filter-applied');
+            };
+
             /**
              * Coordinates data pulled down from the data API
              * with the local Backbone collections being stored
@@ -185,7 +203,7 @@ define(["models/project",
                             updateMetadata: children[key].update_metadata
                         }));
                     };
-
+                this.app.setActiveProjectID(project.get("id"));
                 for (key in children) {
                     if (children.hasOwnProperty(key)) {
                         models = [];
@@ -250,9 +268,5 @@ define(["models/project",
 
             this.initialize(app);
         };
-        /*)
-         DataManager.destroy = function () {
-
-         };*/
         return DataManager;
     });

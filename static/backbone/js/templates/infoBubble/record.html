@@ -1,8 +1,11 @@
 <% if (mode == 'view') { %>
-<div class="bubble-container" style="width: 320px;height:250px;background-image: url('/static/backbone/images/bg.png')">
+<div class="bubble-container" style="width: 400px;height:250px;background-image: url('/static/backbone/images/bg.png')">
 	<div class="record-container">
 		<% _.each(list, function(field) { %>
-			<strong><%= field.key %></strong> : <%= field.value %><br>
+			<div class="row">
+                <div class="col-md-4"><%= field.key %>:</div>
+                <div class="col-md-8"><%= field.value %></div>
+            </div>
 		<% }); %>
 	</div>
 	<script>

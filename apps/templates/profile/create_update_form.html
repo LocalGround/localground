@@ -63,6 +63,7 @@
 					<th>Data Type</th>
 					<th>Printable?</th>
 					<th>Display on Map?</th>
+					<th>Order</th>
 					<th style="display:none;">Hidden Fields</th>
 					<th style="width: 10px;">&nbsp;</th>
 				</tr>	
@@ -88,6 +89,10 @@
 					<td {% if form.is_display_field.errors or form.non_field_errors %}class="error"{% endif %}>
 						{{ form.is_display_field }}
 						{{ form.is_display_field.errors }}
+					</td>
+                    <td {% if form.ordering.errors or form.non_field_errors %}class="error"{% endif %}>
+						{{ form.ordering }}
+						{{ form.ordering.errors }}
 					</td>
 					<td style="display:none;">
 						{% if form.instance.pk %}

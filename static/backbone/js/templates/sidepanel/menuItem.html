@@ -1,0 +1,6 @@
+<div class="item <%= overlay_type %>-item" id="<%= overlay_type %>_<%= id %>">
+	<input class="cb-item" type="checkbox" value="<%= id %>"
+	<% if(isVisible) { %>checked<% } %>
+	>
+	<%= name || 'Untitled' %>
+</div>

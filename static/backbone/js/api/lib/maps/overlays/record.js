@@ -1,4 +1,4 @@
-define(["lib/maps/overlays/base"], function (Base) {
+define(["underscore", "lib/maps/overlays/base"], function (_, Base) {
     "use strict";
     /**
      * Class that controls marker point model overlays.
@@ -11,21 +11,17 @@ define(["lib/maps/overlays/base"], function (Base) {
          * Get the corresponding SVG marker icon
          * @returns {Object} icon definition
          */
-        getIcon: function () {
-            return {
+		getIcon: function () {
+            var opts = _.clone(this._overlay.Shapes.MAP_PIN_HOLLOW);
+            _.extend(opts, {
                 fillColor: "#CCC",
-                markerSize: 30,
                 strokeColor: "#FFF",
                 strokeWeight: 1.5,
                 fillOpacity: 1,
-                path: this._overlay.Shapes.MAP_PIN_HOLLOW,
-				scale: 1.6,
-                anchor: new google.maps.Point(16, 30),      // anchor (x, y)
-                size: new google.maps.Size(15, 30),         // size (width, height)
-                origin: new google.maps.Point(0, 0)        // origin (x, y)
-            };
+                scale: 1.6
+            });
+            return opts;
         },
-
         /** adds icon to overlay. */
         initialize: function () {
             Base.prototype.initialize.apply(this, arguments);

@@ -1,8 +1,10 @@
 define([
+    "underscore",
     "backbone-pageable",
     "models/record",
-    "jquery"
-], function (PageableCollection, Record, $) {
+    "jquery",
+    "collections/baseMixin"
+], function (_, PageableCollection, Record, $, CollectionMixin) {
     "use strict";
     var Records = PageableCollection.extend({
         model: Record,
@@ -22,7 +24,7 @@ define([
             PageableCollection.prototype.initialize.apply(this, arguments);
         },
         state: {
-            currentPage: 0,
+            currentPage: 1,
             pageSize: 200,
             sortKey: 'id',
             order: 1
@@ -49,6 +51,7 @@ define([
         },
 
         fetch: function (options) {
+            options = options || {};
 			options.data = options.data || {};
 			$.extend(options.data, {
 				page_size: this.state.pageSize,
@@ -65,5 +68,6 @@ define([
             PageableCollection.__super__.fetch.apply(this, arguments);
         }
     });
+    _.extend(Records.prototype, CollectionMixin);
     return Records;
 });

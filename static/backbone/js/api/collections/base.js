@@ -1,5 +1,5 @@
-define(["backbone", "jquery"],
-    function (Backbone, $) {
+define(["underscore", "backbone", "collections/baseMixin"],
+    function (_, Backbone, CollectionMixin) {
         "use strict";
         /**
          * An "abstract" Backbone Collection; the root of all of the other
@@ -14,14 +14,14 @@ define(["backbone", "jquery"],
                 isVisible: true
             },
             initialize: function (model, opts) {
-                opts = opts || {};
-                $.extend(this, opts);
+                _.extend(this, opts);
             },
             parse: function (response) {
                 return response.results;
             }
 
         });
+        _.extend(Base.prototype, CollectionMixin);
 
         return Base;
     });

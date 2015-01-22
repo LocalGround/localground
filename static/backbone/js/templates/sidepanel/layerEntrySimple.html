@@ -1,0 +1,9 @@
+<div class="layer-header layer-simple">
+    <input class="check-all" type="checkbox" <% if(isShowingOnMap) { %>checked<% } %>>
+    <svg width="<%= item.width %>" viewBox="<%= item.viewBox %>"
+        style="margin-top:3px;">
+        <path fill="<%= item.color %>" d="<%= item.path %>"></path>
+    </svg>
+    <h4><%= name %></h4>
+    <i class="fa fa-search pull-right zoom-to-extent" title="zoom to extent"></i>
+</div>

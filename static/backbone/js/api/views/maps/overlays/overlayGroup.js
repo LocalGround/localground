@@ -67,15 +67,17 @@ define(['marionette',
 
             /** Shows all of the map overlays */
             showAll: function () {
-                this.isVisible = true;
+                //this._isShowingOnMap = true;
                 this.children.each(function (overlay) {
-                    overlay.show();
+                    if (overlay.model.get("isVisible")) {
+                        overlay.show();
+                    }
                 });
             },
 
             /** Hides all of the map overlays */
             hideAll: function () {
-                this.isVisible = false;
+                //this._isShowingOnMap = false;
                 this.children.each(function (overlay) {
                     overlay.hide();
                 });
@@ -83,6 +85,7 @@ define(['marionette',
 
             /** Zooms to the extent of the collection */
             zoomToExtent: function () {
+                //console.log("zoom to extent");
                 var bounds = new google.maps.LatLngBounds();
                 this.children.each(function (overlay) {
                     bounds.union(overlay.getBounds());

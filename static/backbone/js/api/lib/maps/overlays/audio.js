@@ -16,16 +16,16 @@ define([
          * @returns {Object} icon definition
          */
         getIcon: function () {
-            return {
+			var opts = this._overlay.Shapes.SOUND;
+			_.extend(opts, {
                 fillColor: "#333",
-                markerSize: 30,
                 strokeColor: "#FFF",
                 strokeWeight: 1.5,
                 fillOpacity: 1,
-                path: this._overlay.Shapes.SOUND,
-                anchor: new google.maps.Point(16, 5),
+                //anchor: new google.maps.Point(16, 5),
                 scale: 1.6
-            };
+            });
+			return opts;
         },
 
         initInfoBubble: function (opts) {

@@ -1,7 +1,8 @@
 define([
+    "underscore",
     "lib/maps/overlays/infobubbles/marker",
     "lib/maps/overlays/base"
-], function (MarkerBubble, Base) {
+], function (_, MarkerBubble, Base) {
     "use strict";
     /**
      * Class that controls marker point model overlays.
@@ -15,18 +16,15 @@ define([
          * @returns {Object} icon definition
          */
         getIcon: function () {
-            //return null;
-            return {
+            var opts = {
                 fillColor: '#' + this.model.get("color"),
                 strokeColor: "#FFF",
                 strokeWeight: 1.5,
                 fillOpacity: 1,
-                path: this._overlay.Shapes.MAP_PIN_HOLLOW,
-                scale: 1.6,
-                anchor: new google.maps.Point(16, 30),      // anchor (x, y)
-                size: new google.maps.Size(15, 30),         // size (width, height)
-                origin: new google.maps.Point(0, 0)        // origin (x, y)
+                scale: 1.6
             };
+            _.extend(opts, _.clone(this._overlay.Shapes.MAP_PIN_HOLLOW));
+            return opts;
         },
 
         /** adds icon to overlay. */

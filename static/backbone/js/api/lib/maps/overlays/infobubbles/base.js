@@ -47,6 +47,7 @@ define(['jquery',
                 this.bubble = new GoogleInfoBubble({
                     borderRadius: 5,
                     maxHeight: 385,
+                    zIndex: 200,
                     padding: 0,
                     model: opts.model,
                     disableAnimation: true,
@@ -57,6 +58,7 @@ define(['jquery',
                     borderRadius: 5,
                     maxHeight: 385,
                     padding: 0,
+                    zIndex: 100,
                     disableAnimation: true,
                     disableAutoPan: true,
                     hideCloseButton: true,
@@ -96,27 +98,41 @@ define(['jquery',
             },
 
             renderViewContent: function () {
-                var template = this.getTemplate("InfoBubbleTemplate");
+                var template = this.getTemplate("InfoBubbleTemplate"),
+                    that = this;
                 this.$el = $(template(this.getContext()));
-
+                this.$el.click(function (e) {
+                    that.bringToFront(e);
+                });
                 this.showUpdatedContent();
             },
-
+            bringToFront: function (e) {
+                var zIndex;
+                zIndex = parseInt(this.bubble.bubble_.style.zIndex, 10);
+                this.bubble.bubble_.style.zIndex = zIndex + 1;
+                e.preventDefault();
+            },
+            sendToBack: function (e) {
+                var zIndex;
+                zIndex = parseInt(this.bubble.bubble_.style.zIndex, 10);
+                this.bubble.bubble_.style.zIndex = zIndex - 1;
+                e.preventDefault();
+            },
             renderEditContent: function () {
-                var that = this,
-                    template = that.getTemplate("InfoBubbleTemplate"),
+                var template = this.getTemplate("InfoBubbleTemplate"),
                     ModelForm = Form.extend({
-                        schema: that.model.updateSchema
+                        schema: this.model.updateSchema
                     }),
-                    context = that.getContext(this.model);
+                    context = this.getContext(this.model);
+                console.log(this.model.updateSchema);
                 context.mode = 'edit';
-                that.setElement($(template(context)));
-                that.form = new ModelForm({
-                    model: that.model
+                this.setElement($(template(context)));
+                this.form = new ModelForm({
+                    model: this.model
                 }).render();
-                that.$el.find('.form').append(that.form.$el);
+                this.$el.find('.form').append(this.form.$el);
 
-                that.showUpdatedContent();
+                this.showUpdatedContent();
             },
 
             saveForm: function (e) {

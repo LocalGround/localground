@@ -69,7 +69,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
 
         onRender: function () {
             ++this.numRenderings;
-            if (this.isVisible()) {
+            if (this.isShowingOnMap()) {
                 this.model.trigger("show-overlay");
             }
             this.setEditMode();
@@ -155,50 +155,15 @@ define(["marionette", "jquery"], function (Marionette, $) {
             return this.numRenderings < 1;
         },
 
-        isVisible: function () {
-            var isVisible = this.$el.find('input').is(":checked") && this.model.get('isVisible');
-            //console.log(this.numRenderings, this.id, this.state);
-
-            // ensures that localStorage flag is only honored on initialization.
-            if (this.isFirstRendering()) {
-                isVisible = isVisible || this.state.isVisible;
-            }
-            return isVisible;
-        },
         /**
          * Helps the checkbox communicate with the toggleElement function.
          * @param {Event} e
          */
         zoomTo: function (e) {
-            if (this.model.get("geometry") && this.isVisible()) {
+            if (this.model.get("geometry") && this.isShowingOnMap()) {
                 this.model.trigger("zoom-to-overlay");
             }
             e.stopPropagation();
-        },
-
-        templateHelpers: function () {
-            return {
-                showOverlay: this.isVisible()
-            };
-        },
-
-        saveState: function () {
-            this.app.saveState(
-                this.id,
-                {
-                    isVisible: this.isVisible()
-                },
-                false
-            );
-        },
-
-        restoreState: function () {
-            this.state = this.app.restoreState(this.id);
-            if (!this.state) {
-                this.state = { isVisible: false };
-            } else {
-                this.model.set('showingOnMap', this.state.isVisible);
-            }
         },
 
         /**
@@ -218,7 +183,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
 
         /** Show a tooltip on the map if the geometry exists */
         showTip: function () {
-            if (this.model.get("geometry") && this.isVisible()) {
+            if (this.model.get("geometry") && this.isShowingOnMap()) {
                 this.model.trigger("show-tip");
             }
         },
@@ -240,6 +205,42 @@ define(["marionette", "jquery"], function (Marionette, $) {
                 this.app.vent.trigger("dragging-html-element", {
                     event: event
                 });
+            }
+        },
+
+        templateHelpers: function () {
+            return {
+                isShowingOnMap: this.isShowingOnMap()
+            };
+        },
+
+        /**
+        * Determines whether or not the item entry should be checked (i.e. that the corresponding
+        * map overlay should be visible).
+        */
+        isShowingOnMap: function () {
+            var _isShowingOnMap = this.$el.find('input').is(":checked") && this.model.get('isVisible');
+            // ensures that localStorage flag is only honored on initialization.
+            if (this.isFirstRendering() && this.state._isShowingOnMap) {
+                _isShowingOnMap = true;
+            }
+            return _isShowingOnMap;
+        },
+
+        saveState: function () {
+            this.app.saveState(
+                this.id,
+                {
+                    _isShowingOnMap: this.isShowingOnMap()
+                },
+                false
+            );
+        },
+
+        restoreState: function () {
+            this.state = this.app.restoreState(this.id);
+            if (!this.state) {
+                this.state = { _isShowingOnMap: false };
             }
         }
     });

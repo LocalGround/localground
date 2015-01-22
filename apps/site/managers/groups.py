@@ -241,3 +241,43 @@ class PresentationManager(models.GeoManager, PresentationMixin):
 
     def get_query_set(self):
         return PresentationQuerySet(self.model, using=self._db)
+    
+    
+class LayerMixin(GroupMixin):
+    prefetch_fields = []
+
+    def _get_objects(self, user, authority_id=1, request=None, context=None,
+                     ordering_field='-time_stamp', with_counts=True, **kwargs):
+
+        if user is None or not user.is_authenticated():
+            raise GenericLocalGroundError('The user cannot be empty')
+
+        q = (
+            self.model.objects
+            .select_related(*self.related_fields)
+            .filter(
+                Q(authuser__user=user) &
+                Q(authuser__user_authority__id__gte=authority_id)
+            )
+        )
+        if request:
+            q = self._apply_sql_filter(q, request, context)
+        q = q.prefetch_related(*self.prefetch_fields)
+        if ordering_field:
+            q = q.order_by(ordering_field)
+        return q  # self.populate_tags_for_queryset(q)
+
+    def to_dict_list(self):
+        # does this need to be implemented, or can we just rely on
+        # the ProjectSerializer in the API?
+        return []
+
+
+class LayerQuerySet(QuerySet, LayerMixin):
+    pass
+
+
+class LayerManager(models.GeoManager, LayerMixin):
+
+    def get_query_set(self):
+        return LayerQuerySet(self.model, using=self._db)

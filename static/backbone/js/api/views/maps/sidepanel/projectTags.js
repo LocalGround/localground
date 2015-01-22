@@ -36,11 +36,9 @@ define(["marionette",
              * and set them to be active)
              */
             initialize: function (opts) {
-                this.collection = opts.projects;
                 this.app = opts.app;
+                this.collection = opts.availableProjects;
                 this.listenTo(this.collection, 'selected-projects-change', this.checkActive);
-               // opts.app.vent.on('selected-projects-updated', this.renderProjects);
-                //this.render();
             },
 
             setActiveProject: function (newActiveProject) {
