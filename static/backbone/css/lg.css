@@ -161,7 +161,7 @@ body {
 .audio-controls {
     display: inline-block;
 }
-.item  {
+.item > .audio-controls {
     margin-top:3px;
 }
 

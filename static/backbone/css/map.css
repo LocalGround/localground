@@ -101,7 +101,7 @@ body { overflow: hidden; }
 
 .fa-trash-o {
 	margin: 5px 0px 5px 0px !important;
-	display: none; !important;
+	display: none !important;
 	float: right;
 	color: #000;
 	opacity: 0.2;

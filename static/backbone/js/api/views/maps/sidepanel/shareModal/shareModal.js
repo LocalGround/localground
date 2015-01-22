@@ -3,9 +3,10 @@ define(["marionette",
         "text!" + templateDir + "/modals/shareModal.html",
         "collections/views",
         "views/maps/sidepanel/shareModal/viewItem",
-        "models/view"
+        "models/view",
+        "lib/maps/geometry/geometry"
     ],
-    function (Marionette, _, shareModal, Views, ViewItem, View) {
+    function (Marionette, _, shareModal, Views, ViewItem, View, Geometry) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -40,6 +41,7 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.opts = opts;
+                this.geometry = new Geometry();
                 this.collection = new Views();
                 this.collection.comparator = function (model) {return -model.id; };
                 this.app.vent.trigger('load-view-list', this.collection);
@@ -103,7 +105,7 @@ define(["marionette",
                     });
                 }
                 view.set('entities', this.serializedEntities);
-                view.set('center', this.formatGeoJSON(this.app.map.getCenter()));
+                view.set('center', JSON.stringify(this.geometry.getGeoJSON(this.app.map.getCenter())));
                 view.set('zoom', this.app.map.getZoom());
                 //TODO: can't remember where to fetch this id from
                 view.set('basemap', 12);
@@ -139,15 +141,6 @@ define(["marionette",
             cleanUp: function () {
                 this.unsetActiveViewItem();
                 this.resetInput();
-            },
-
-            //Utility method that probably exists elsewhere
-            //TODO: fix this before merge
-            formatGeoJSON: function (center) {
-                return JSON.stringify({
-                    type: 'Point',
-                    coordinates: [center.lat(), center.lng()]
-                });
             }
 
 
