@@ -143,13 +143,12 @@ define(
             this.app = _.extend({}, appUtilities);
             _.extend(this.app, {
                 vent: _.extend({}, Backbone.Events),
-                availableProjects: this.projectsLite,
-                selectedLayers: new Layers(),
                 map: { fitBounds: function () {} } //a light stand-in for a Google Map, to speed it up; save our API calls.
             });
             //initialize dataManager:
             this.dataManager = new DataManager({
-                app: this.app
+                app: this.app,
+                availableProjects: this.projectsLite
             });
             //give the app a reference to the dataManager (for convenience);
             _.extend(this.app, { dataManager: this.dataManager });

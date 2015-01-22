@@ -47,20 +47,20 @@ define(["marionette",
         });
 
         Mapplication.addInitializer(function (options) {
-            this.availableProjects = new Projects();
-            this.selectedLayers = new Layers();
             options.app = this;
-            var basemap = new BaseMap(options),
-                dataPanel = new DataPanel(options),
+            var layerOpts = _.extend(_.clone(options), { selectedLayers: new Layers() }),
+                dataOpts = _.extend(_.clone(options), { availableProjects: new Projects() }),
+                basemap = new BaseMap(options),
+                dataPanel = new DataPanel(dataOpts),
                 tabs = new Tabs({app: this}),
-                layerPanel = new LayerPanel(options),
-                dataManager = new DataManager(options),
+                layerPanel = new LayerPanel(layerOpts),
+                dataManager = new DataManager(dataOpts),
                 georeferenceManager = new GeoreferenceManager(options),
                 topBar = new TopBar(options),
-                layerManager = new LayerManager(options);
+                layerManager = new LayerManager(layerOpts);
             this.dataManager = dataManager;
             this.map = basemap.map;
-            
+
             Mapplication.tabsRegion.show(tabs);
             Mapplication.mapRegion.show(basemap);
             Mapplication.dataPanelRegion.show(dataPanel);

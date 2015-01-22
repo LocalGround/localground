@@ -1,14 +1,16 @@
 define([
     "views/maps/sidepanel/items/layerItem",
     "views/maps/sidepanel/layerList",
+    "collections/layers",
     "../../../test/spec-helper"
 ],
-    function (LayerItem, LayerList) {
+    function (LayerItem, LayerList, Layers) {
         'use strict';
 
         function initLayerList(scope) {
             return new LayerList({
-                app: scope.app
+                app: scope.app,
+                selectedLayers: new Layers()
             });
         }
         describe("LayerList: Initializes and renders child views when data added and removed", function () {

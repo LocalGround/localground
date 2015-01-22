@@ -37,7 +37,7 @@ define(["marionette",
              */
             initialize: function (opts) {
                 this.app = opts.app;
-                this.collection = this.app.availableProjects;
+                this.collection = opts.availableProjects;
                 this.listenTo(this.collection, 'selected-projects-change', this.checkActive);
             },
 

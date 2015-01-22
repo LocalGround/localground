@@ -8,7 +8,7 @@ define(["marionette",
 
             initialize: function (opts) {
                 this.app = opts.app;
-                this.collection = this.app.selectedLayers;
+                this.collection = opts.selectedLayers;
                 this.childViewOptions = opts;
 
                 //listen for global events:

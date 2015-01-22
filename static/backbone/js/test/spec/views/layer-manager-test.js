@@ -1,20 +1,22 @@
 define([
     "views/maps/overlays/layer",
     "views/maps/overlays/layerManager",
+    "collections/layers",
     "../../../test/spec-helper"
 ],
-    function (LayerView, LayerManager) {
+    function (LayerView, LayerManager, Layers) {
         'use strict';
 
         function initLayerManagerEmpty(scope) {
             return new LayerManager({
-                app: scope.app
+                app: scope.app,
+                selectedLayers: new Layers()
             });
         }
         function initLayerManager(scope) {
-            scope.app.selectedLayers = scope.layers;
             return new LayerManager({
-                app: scope.app
+                app: scope.app,
+                selectedLayers: scope.layers
             });
         }
         describe("LayerManager: Initializes and renders child views when data added and removed", function () {

@@ -36,9 +36,8 @@ define(["marionette",
              * The jQuery element to which the projects should be attached.
              */
             initialize: function (opts) {
-                //this.setElement(opts.el);
                 this.app = opts.app;
-                this.collection = this.app.availableProjects;
+                this.collection = opts.availableProjects;
                 this.childViewOptions.app = this.app;
                 this.listenTo(this.app.vent, 'toggle-project', this.toggleItem);
                 this.app.vent.trigger('load-projects', this.collection);

@@ -16,7 +16,7 @@ define(["marionette",
 
             initialize: function (opts) {
                 this.app = opts.app;
-                this.collection = this.app.selectedLayers;
+                this.collection = opts.selectedLayers;
                 this.opts = opts;
                 this.childView = Layer;
                 this.childViewOptions = opts;
