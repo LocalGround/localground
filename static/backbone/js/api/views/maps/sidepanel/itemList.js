@@ -4,7 +4,7 @@
 define(["marionette",
         "underscore",
         "jquery",
-            "text!" + templateDir + "/sidepanel/collectionHeader.html",
+        "text!" + templateDir + "/sidepanel/collectionHeader.html",
         "views/maps/sidepanel/items/item",
         "config"
     ],
