@@ -70,7 +70,7 @@ class ViewList(QueryableListCreateAPIView, ViewMixin, AuditCreate):
 
     def pre_save(self, obj):
         AuditCreate.pre_save(self, obj)
-        obj.access_authority = models.ObjectAuthority.objects.get(id=1)
+        obj.access_authority = models.ObjectAuthority.objects.get(id=3)
 
     def post_save(self, obj, created=False):
         ViewMixin.post_save(self, obj, created=False)

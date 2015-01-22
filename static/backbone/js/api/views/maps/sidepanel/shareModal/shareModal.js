@@ -107,6 +107,7 @@ define(["marionette",
                 view.set('zoom', this.app.map.getZoom());
                 //TODO: can't remember where to fetch this id from
                 view.set('basemap', 12);
+                view.set('view_authority', 3);
                 view.save(null, {success: function (newView) {
                     this.collection.add(newView);
                     this.collection.sort();

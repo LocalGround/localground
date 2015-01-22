@@ -11,7 +11,7 @@ from localground.apps.site.models import Base, Scan, Print, Project, View, Prese
 from django.core.exceptions import ObjectDoesNotExist
 
 # Constants describing default latitudes, longitudes, and zoom
-DEFAULT_LAT = 21.698265
+DEFAULT_LAT = 21.698265;
 DEFAULT_LONG = 14.765625
 DEFAULT_ZOOM = 8
 
@@ -73,6 +73,25 @@ def show_map_editor(request, template='map/editor.html', slug=None):
         'presentations': json.dumps(presentations),
         'num_projects': len(projects)
     })
+    return render_to_response(template, context)
+
+@login_required()
+def show_map_editor_new(request, template='map/editor1.html'):
+    return show_map_editor(request, template=template)
+
+
+def show_map_viewer_embedded(request, slug, template='map/embedded.html'):
+    context = RequestContext(request)
+
+    # set defaults:
+    lat, lng, zoom = DEFAULT_LAT, DEFAULT_LONG, DEFAULT_ZOOM
+    context.update({
+        'lat': lat,
+        'lng': lng,
+        'zoom': zoom,
+        'num_projects': 1,
+        'read_only': True
+    })
     if slug is not None:
         view = get_object_or_404(View, slug=slug)
         view = view.to_dict()
@@ -80,13 +99,7 @@ def show_map_editor(request, template='map/editor.html', slug=None):
             'view': json.dumps(view)
         })
     return render_to_response(template, context)
-
-@login_required()
-def show_map_editor_new(request, template='map/editor1.html'):
-    return show_map_editor(request, template=template)
-
-def show_map_editor_embedded(request, slug, template='map/editor1.html'):
-    return show_map_editor(request, template=template, slug=slug)
+    #return show_map_editor(request, template=template, slug=slug)
 
 
 
