@@ -99,7 +99,7 @@ define(["marionette",
                         name: this.ui.saveName.val(),
                         description: '',
                         tags: '',
-                        slug: this.ui.saveName.val().toLowerCase().split(' ').join('-')
+                        slug: btoa(Math.random() * 1000000000).replace(/=/g, '-') //Generate random slug string
                     });
                 }
                 view.set('entities', this.serializedEntities);
