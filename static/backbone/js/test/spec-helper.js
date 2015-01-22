@@ -26,6 +26,7 @@ define(
         beforeEach(function () {
             var $map_container = $('<div id="map_canvas"></div>');
             $(document.body).append($map_container);
+
             /**
              * Adds some dummy data for testing convenience.
              * Availabe to all of the tests.
@@ -117,7 +118,15 @@ define(
                         }
                     }})
             ]);
-
+            this.tilesets = [
+                {"sourceName": "mapbox", "max": 19, "is_printable": true, "providerID": "lg.i1p5alka", "id": 1, "typeID": 1, "name": "Mapnik", "min": 1, "url": "", "sourceID": 1, "type": "Base Tileset"},
+                {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "roadmap", "id": 2, "typeID": 1, "name": "Roadmap", "min": 1, "url": "http://maps.google.com/maps/api/staticmap?sensor=false&maptype=roadmap&style=feature:poi.school|element:geometry|saturation:-79|lightness:75", "sourceID": 5, "type": "Base Tileset"},
+                {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "hybrid", "id": 3, "typeID": 1, "name": "Hybrid", "min": 1, "url": "http://maps.google.com/maps/api/staticmap?sensor=false&maptype=hybrid", "sourceID": 5, "type": "Base Tileset"},
+                {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "terrain", "id": 4, "typeID": 1, "name": "Terrain", "min": 1, "url": "http://maps.google.com/maps/api/staticmap?sensor=false&maptype=terrain", "sourceID": 5, "type": "Base Tileset"},
+                {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "satellite", "id": 9, "typeID": 1, "name": "Satellite", "min": 1, "url": "http://maps.google.com/maps/api/staticmap?sensor=false&maptype=satellite", "sourceID": 5, "type": "Base Tileset"},
+                {"sourceName": "mapbox", "max": 19, "is_printable": true, "providerID": "lg.i1p2e2cf", "id": 12, "typeID": 1, "name": "Grayscale", "min": 1, "url": "", "sourceID": 1, "type": "Base Tileset"},
+                {"sourceName": "stamen", "max": 20, "is_printable": false, "providerID": "watercolor", "id": 20, "typeID": 1, "name": "Watercolor", "min": 1, "url": "", "sourceID": 6, "type": "Base Tileset"}
+            ];
             this.mapEditorInitializationParams = {
                 defaultLocation: {
                     center: new google.maps.LatLng(21.698265, 14.765625),
@@ -128,15 +137,41 @@ define(
 				includeGeolocationControl: false,
                 includeAudioControl: true,
 				activeMapTypeID: 12,
-				tilesets: [
-                    {"sourceName": "mapbox", "max": 19, "is_printable": true, "providerID": "lg.i1p5alka", "id": 1, "typeID": 1, "name": "Mapnik", "min": 1, "url": "", "sourceID": 1, "type": "Base Tileset"},
-                    {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "roadmap", "id": 2, "typeID": 1, "name": "Roadmap", "min": 1, "url": "http://maps.google.com/maps/api/staticmap?sensor=false&maptype=roadmap&style=feature:poi.school|element:geometry|saturation:-79|lightness:75", "sourceID": 5, "type": "Base Tileset"},
-                    {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "hybrid", "id": 3, "typeID": 1, "name": "Hybrid", "min": 1, "url": "http://maps.google.com/maps/api/staticmap?sensor=false&maptype=hybrid", "sourceID": 5, "type": "Base Tileset"},
-                    {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "terrain", "id": 4, "typeID": 1, "name": "Terrain", "min": 1, "url": "http://maps.google.com/maps/api/staticmap?sensor=false&maptype=terrain", "sourceID": 5, "type": "Base Tileset"},
-                    {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "satellite", "id": 9, "typeID": 1, "name": "Satellite", "min": 1, "url": "http://maps.google.com/maps/api/staticmap?sensor=false&maptype=satellite", "sourceID": 5, "type": "Base Tileset"},
-                    {"sourceName": "mapbox", "max": 19, "is_printable": true, "providerID": "lg.i1p2e2cf", "id": 12, "typeID": 1, "name": "Grayscale", "min": 1, "url": "", "sourceID": 1, "type": "Base Tileset"},
-                    {"sourceName": "stamen", "max": 20, "is_printable": false, "providerID": "watercolor", "id": 20, "typeID": 1, "name": "Watercolor", "min": 1, "url": "", "sourceID": 6, "type": "Base Tileset"}
-                ]
+				tilesets: this.tilesets
+            };
+
+            this.view = {
+                access: "Public (everyone)",
+                basemap: 12,
+                center: { type: "Point", coordinates: [-122, 37] },
+                description: "",
+                entities: [ { entities: [ 19 ], overlay_type: "photo" } ],
+                children: {
+                    photos: {
+                        overlay_type: "photo",
+                        data: [
+                            {
+                                id: 19,
+                                name: "Tree with Bird",
+                                description: "",
+                                overlay_type: "photo",
+                                tags: "tree, napali coast",
+                                project_id: 1,
+                                geometry: { type: "Point", coordinates: [-122, 37] }
+                            }
+                        ],
+                        id: "photos",
+                        name: "Photos"
+                    }
+                },
+                id: 3,
+                name: "Napali Coast",
+                overlay_type: "view",
+                owner: "vanwars",
+                slug: "Njk3OTQyNTI3LjI0Mzg2NzU-",
+                tags: "",
+                url: "/api/0/views/1/",
+                zoom: 18
             };
 
             //initialize this.app:
