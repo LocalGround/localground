@@ -55,6 +55,7 @@ define(["models/view",
                     that.updateCollections(that.view);
                     that.app.vent.trigger('change-center', that.view.get('center'));
                     that.app.vent.trigger('change-zoom', that.view.get('zoom'));
+                    that.app.vent.trigger('set-map-type', that.view.get('basemap'));
                 });
 
             };
