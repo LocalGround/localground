@@ -39,7 +39,7 @@ define(["marionette",
                 this.app = opts.app;
                 this.collection = opts.availableProjects;
                 this.childViewOptions.app = this.app;
-                this.listenTo(this.app.vent, 'toggle-project', this.toggleItem);
+                this.listenTo(this.app.vent, 'toggle-project', this.toggleProject);
                 this.app.vent.trigger('load-projects', this.collection);
                 this.restoreState();
             },
@@ -91,7 +91,7 @@ define(["marionette",
                 this.state = this.app.restoreState(this.id);
             },
 
-            toggleItem: function (projectId, visible) {
+            toggleProject: function (projectId, visible) {
                 var project = this.collection.get(projectId);
                 if (project) {
                     project.set('isVisible', visible);
