@@ -4,6 +4,7 @@ from localground.apps.site.api.tests.association_tests import *
 from localground.apps.site.api.tests.form_tests import *
 from localground.apps.site.api.tests.field_tests import *
 from localground.apps.site.api.tests.homepage_tests import *
+from localground.apps.site.api.tests.layer_tests import ApiLayerListTest, ApiLayerInstanceTest
 from localground.apps.site.api.tests.marker_tests import *
 from localground.apps.site.api.tests.print_tests import *
 from localground.apps.site.api.tests.presentation_tests import ApiPresentationListTest, \

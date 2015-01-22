@@ -19,7 +19,7 @@ define(["marionette",
         model: null,
         _overlay: null,
         template: false,
-        isShowing: false,
+        _isShowingOnMap: false,
         infoBubble: null,
 
         modelEvents: {
@@ -32,15 +32,13 @@ define(["marionette",
         },
         /** called when object created */
         initialize: function (opts) {
-            //alert(localground.maps.overlays.Polyline);
             this.app = opts.app;
             this.id = this.model.get('overlay_type') + this.model.get('id');
             $.extend(opts, this.restoreState());
             this.map = opts.app.getMap();
             this.model = opts.model;
             this.initInfoBubble(opts);
-            this.initOverlayType(opts.isVisible);
-
+            this.initOverlayType(this._isShowingOnMap);
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
         },
 
@@ -50,16 +48,16 @@ define(["marionette",
 
         updateOverlay: function () {
             this.getGoogleOverlay().setMap(null);
-            this.initOverlayType(this.isShowing);
+            this.initOverlayType(this._isShowingOnMap);
             this.changeMode();
         },
 
-        initOverlayType: function (isVisible) {
+        initOverlayType: function (isShowingOnMap) {
             var geoJSON = this.model.get("geometry"),
                 opts = {
                     model: this.model,
                     map: this.map,
-                    isVisible: isVisible
+                    isShowingOnMap: isShowingOnMap
                 };
             if (geoJSON.type === 'Point') {
                 this._overlay = new Point(this.app, opts);
@@ -96,21 +94,23 @@ define(["marionette",
         },
 
         /** determines whether the overlay is visible on the map. */
-        isVisible: function () {
-            return this.getGoogleOverlay().getMap() != null && this.isShowing;
+        isShowingOnMap: function () {
+            return this.getGoogleOverlay().getMap() != null && this._isShowingOnMap;
         },
 
         /** shows the google.maps overlay on the map. */
         show: function () {
-            var go = this.getGoogleOverlay();
-            go.setMap(this.map);
-            this.changeMode();
-            this.isShowing = true;
-            this.saveState();
+            if (this.model.get("isVisible")) {
+                var go = this.getGoogleOverlay();
+                go.setMap(this.map);
+                this.changeMode();
+                this._isShowingOnMap = true;
+                this.saveState();
+            }
         },
 
         render: function () {
-            if (this.isShowing && this.model.get('isVisible')) {
+            if (this._isShowingOnMap && this.model.get('isVisible')) {
                 this.redraw();
                 this.show();
             } else {
@@ -125,19 +125,19 @@ define(["marionette",
             go.setMap(null);
             this.model.trigger("hide-bubble");
             this.saveState();
-            this.isShowing = false;
+            this._isShowingOnMap = false;
         },
 
         saveState: function () {
             this.app.saveState(this.id, {
-                isVisible: this.isVisible()
+                _isShowingOnMap: this._isShowingOnMap
             });
         },
 
         restoreState: function () {
             var state = this.app.restoreState(this.id);
             if (!state) {
-                return { isVisible: false };
+                return { _isShowingOnMap: false };
             }
             return state;
         },

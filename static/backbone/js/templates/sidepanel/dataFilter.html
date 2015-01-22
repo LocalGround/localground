@@ -1,0 +1,19 @@
+<form class="form-horizontal filter-container">
+    <div class="filter-overflow">
+        <%= body %>
+        <br />
+        <br />
+    </div>
+    <div class="sql">
+        <textarea id="filter_sql"></textarea>
+    </div>
+    <div class="form-group footer">
+        <label class="col-sm-4">
+            <a id="filter-mode-toggle" href="#">basic</a>
+        </label>
+        <div class="col-sm-8">
+            <button id="apply_filter" type="button" class="btn btn-primary">Apply</button>
+            <button id="clear_filter" type="button" class="btn">Clear</button>
+        </div>
+    </div>
+</form>

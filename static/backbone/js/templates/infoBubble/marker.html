@@ -1,14 +1,31 @@
 <% if (mode == 'view') { %>
 <div class="bubble-container" style="width: 400px;height:380px;">
 	<div class="slider marker-container">
+		<!-- first render records -->
+		<% _.each(children, function(child) { %>
+			<% if (child.overlay_type == 'record') { %>
+				<% _.each(child.data, function(item) { %>
+				<div class="record">
+					<% _.each(item.list, function(field) { %>
+					<div class="row">
+						<div class="col-md-4"><%= field.key %>:</div>
+						<div class="col-md-8"><%= field.value %></div>
+					</div>
+					<% }); %>
+				</div>
+				<% }); %>
+			<% } %>
+		<% }); %>
+		
+		<!-- then render photos -->
 	    <% _.each(children, function(child) { %>
-		<% if (child.overlay_type == 'photo') { %>
-		    <% _.each(child.data, function(item) { %>
-			<div>
-			    <img src="<%= item.path_medium %>" />
-			</div>
-		    <% }); %>
-		<% } %>
+			<% if (child.overlay_type == 'photo') { %>
+				<% _.each(child.data, function(item) { %>
+				<div>
+					<img src="<%= item.path_medium %>" />
+				</div>
+				<% }); %>
+			<% } %>
 	    <% }); %>
 	</div>
 	<div>

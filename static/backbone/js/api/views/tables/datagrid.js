@@ -61,12 +61,25 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
                         this.delegateEvents();
                         return this;
                     }
+                }),
+                Row = Backgrid.Row.extend({
+                    initialize: function (options) {
+                        this.listenTo(this.model, "change", function (model, options) {
+                            //console.log(model.changedAttributes());
+                            if (options && options.save === false) {
+                                return;
+                            }
+                            model.save(model.changedAttributes(), {patch: true});
+                        });
+                        Backgrid.Row.prototype.initialize.call(this, options);
+                    }
                 });
 
             this.grid = new Backgrid.Grid({
                 body: GridBody,
                 columns: this.columns,
-                collection: this.records
+                collection: this.records,
+                row: Row
             });
             this.listenTo(this, "row:added", this.initLayout);
             this.listenTo(this.records, "reset", this.initLayout);
@@ -107,8 +120,10 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
 
         resize: function () {
             var h = $('body').height() - $("#navbar").height() -
-                    $(".container-footer").height() - $('thead').height();
-            this.$el.find('tbody').height(h);
+                    $(".container-footer").height() - 2;
+            //console.log(50, h - 50);
+            this.$el.height(h);
+            this.$el.find('tbody').height(h - $('thead').height());
         },
 
         insertRowTop: function (e) {

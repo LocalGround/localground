@@ -17,6 +17,7 @@ from localground.apps.site.api.serializers.presentation_serializer import Presen
 from localground.apps.site.api.serializers.print_serializer import PrintSerializer, PrintSerializerDetail
 from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializer, AttachmentSerializer
 from localground.apps.site.api.serializers.user_profile_serializer import UserProfileSerializer
+from localground.apps.site.api.serializers.layer_serializer import LayerSerializer, LayerDetailSerializer
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

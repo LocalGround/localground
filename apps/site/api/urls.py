@@ -62,6 +62,13 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.ViewList.as_view(),
         name='view-list'),
     url(
+        r'^layers/(?P<pk>[0-9]+)/$',
+        views.LayerInstance.as_view(),
+        name='layer-detail'),
+    url(r'^layers/$',
+        views.LayerList.as_view(),
+        name='layer-list'),
+    url(
         r'^photos/(?P<pk>[0-9]+)/$',
         views.PhotoInstance.as_view(),
         name='photo-detail'),

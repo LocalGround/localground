@@ -12,6 +12,7 @@ define(
         "text!../templates/infoBubble/marker.html",
         "text!../templates/infoBubble/markerTip.html",
         "text!../templates/infoBubble/record.html",
+        "text!../templates/infoBubble/recordTip.html",
         "text!../templates/infoBubble/genericTip.html",
         "collections/photos",
         "collections/audio",
@@ -34,7 +35,7 @@ define(
     ],
     function (photoItemTemplate, audioItemTemplate, mapimageItemTemplate, markerItemTemplate, recordItemTemplate,
                  photoBubbleTemplate, photoTipTemplate, audioBubbleTemplate, audioTipTemplate, markerBubbleTemplate,
-                 markerTipTemplate, recordBubbleTemplate, genericTipTemplate, Photos, AudioFiles, MapImages, Markers,
+                 markerTipTemplate, recordBubbleTemplate, recordTipTemplate, genericTipTemplate, Photos, AudioFiles, MapImages, Markers,
                  Records, Photo, Marker, Audio, Record, MapImage, PhotoOverlay, MarkerOverlay, AudioOverlay,
                  RecordOverlay, PhotoItem, MarkerItem, GenericItem, AudioItem) {
         "use strict";
@@ -86,7 +87,7 @@ define(
                 Overlay: RecordOverlay,
                 ItemTemplate: recordItemTemplate,
                 InfoBubbleTemplate: recordBubbleTemplate,
-                TipTemplate: genericTipTemplate,
+                TipTemplate: recordTipTemplate,
                 ItemView: GenericItem
             }
         };

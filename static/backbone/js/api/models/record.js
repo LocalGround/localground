@@ -15,14 +15,9 @@ define(["models/base", "underscore"], function (Base, _) {
         viewSchema: null,
         initialize: function (data, opts) {
             Base.prototype.initialize.apply(this, arguments);
-            this.viewSchema = this._generateSchema(opts.updateMetadata, false);
-            this.on("change", function (model, options) {
-                if (options && options.save === false) {
-                    return;
-                }
-                model.save();
-            });
-
+            if (opts) {
+                this.viewSchema = this._generateSchema(opts.updateMetadata, false);
+            }
         },
         url: function () {
             /*
@@ -35,20 +30,21 @@ define(["models/base", "underscore"], function (Base, _) {
              */
             var base =
                 _.result(this, 'urlRoot') ||
-                _.result(this.collection, 'url') ||
-                urlError();
+                _.result(this.collection, 'url') || urlError(),
+                url;
             if (this.isNew()) {
                 return base + '.json';
             }
-            var url = base.replace(/([^\/])$/, '$1/') + encodeURIComponent(this.id) + '/.json';
+            url = base.replace(/([^\/])$/, '$1/') + encodeURIComponent(this.id) + '/.json';
             return url;
         },
 
         toTemplateJSON: function () {
-            var json = Base.prototype.toTemplateJSON.apply(this, arguments);
+            var json = Base.prototype.toTemplateJSON.apply(this, arguments),
+                key;
             json.list = [];
-            for (var key in this.viewSchema) {
-                if (this.hiddenFields.indexOf(key) === -1) {
+            for (key in this.viewSchema) {
+                if (this.hiddenFields.indexOf(key) === -1 && !/(^\w*_detail$)/.test(key)) {
                     json.list.push({
                         key: this.viewSchema[key].title || key,
                         value: this.get(key)
@@ -57,8 +53,9 @@ define(["models/base", "underscore"], function (Base, _) {
             }
             return json;
         },
-		save: function (key, val, options) {
-			return Backbone.Model.prototype.save.call(this, key, val, options);
+        
+        save: function (key, val, options) {		
+            return Backbone.Model.prototype.save.call(this, key, val, options);		
 		}
 
     });

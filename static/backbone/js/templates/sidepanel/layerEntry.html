@@ -1,0 +1,19 @@
+<div class="layer-header">
+    <input class="check-all" type="checkbox" <% if(isShowingOnMap) { %>checked<% } %>>
+    <h4><%= name %></h4>
+    <i class="fa fa-search pull-right zoom-to-extent" title="zoom to extent"></i>
+</div>
+<div class="layer-list">
+<% _.each(symbols, function(item){ %>
+
+    <div class="item layer-item">
+        <input class="cb-layer-item" type="checkbox" value="<%= item.rule %>"
+            <% if(item.isShowingOnMap) { %>checked<% } %>>
+        <svg width="<%= item.width %>" viewBox="<%= item.viewBox %>"
+            style="margin-top:3px;">
+            <path fill="<%= item.color %>" d="<%= item.path %>"></path>
+        </svg>
+        <div><%= item.title %></div>
+    </div>
+<% }); %>
+</div>

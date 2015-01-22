@@ -78,9 +78,9 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             this.highlightMarker.setMap(null);
         };
 
-        this.initialize = function (opts, basemap) {
+        this.initialize = function (opts) {
             this.app = opts.app;
-            this.basemap = basemap;
+            this.basemap = this.app.basemap;
             this.dm = new google.maps.drawing.DrawingManager({
                 //drawingMode: google.maps.drawing.OverlayType.MARKER,
                 markerOptions: this.markerOptions,
@@ -187,7 +187,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         this.getIntersectingMarker = function (opts) {
             var activeMarker;
             this.getMarkerOverlays().each(function (marker) {
-                if (marker.intersects(opts.latLng)) {
+                if (marker.isShowingOnMap() && marker.intersects(opts.latLng)) {
                     activeMarker = marker;
                     return;
                 }
@@ -207,7 +207,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             var that = this,
                 intersects = false;
             this.getMarkerOverlays().each(function (marker) {
-                if (marker.intersects(opts.latLng)) {
+                if (marker.isShowingOnMap() && marker.intersects(opts.latLng)) {
                     that.highlight(marker);
                     intersects = true;
                 }
@@ -288,7 +288,6 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         };
 
         this.attachCallback = function (markerModel, response) {
-            console.log(response);
             markerModel.trigger('hide-tip');
         };
 

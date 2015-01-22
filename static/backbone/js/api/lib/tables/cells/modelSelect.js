@@ -17,7 +17,6 @@ define(["backgrid", "collections/projects"], function (Backgrid, Projects) {
             SelectCell.__super__.initialize.apply(this, arguments);
         },
         setOptions: function () {
-            //console.log("setting options");
             var that = this;
             this.optionValues = [];
             this.collection.each(function (model) {

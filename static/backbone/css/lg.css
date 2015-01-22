@@ -64,8 +64,10 @@ body { height: 100%; margin: 0; padding: 0; overflow: hidder}
 	-moz-border-radius: 0px;
 	border-radius: 0px;
 }
-.sidebar-opts > button:hover, .button-group > a:hover {
-	background-color: #fff;
+.sidebar-opts > button:hover, .button-group > a:hover,
+.sidebar-opts button:hover
+{
+	background-color: #fff !important;
 }
 .navbar {
 	margin-bottom: 0px;
@@ -89,9 +91,16 @@ body { height: 100%; margin: 0; padding: 0; overflow: hidder}
 	color: #ddd;
 	background-color: #555;
 }
-
-
-
+.btn-group {
+	border-width: 0px !important;
+}
+.btn-group {
+	margin-left: 0px !important;
+}
+.btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+  margin-left: 0px !important;
+  border-right: solid 1px #ccc !important;
+}
 
 html {
   position: relative;

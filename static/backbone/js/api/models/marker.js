@@ -12,10 +12,48 @@ define(["models/base",
      */
     var Marker = Base.extend({
         urlRoot: '/api/0/markers/',
-
+		excludeList: [
+            "overlay_type",
+            "url",
+            "manually_reviewed",
+            "geometry",
+            "num",
+            "display_name",
+            "id",
+            "project_id",
+			"team_photo",
+			"site_photo",
+			"soil_sketch_1",
+			"soil_sketch_2"
+        ],
         toTemplateJSON: function () {
-            var json = Base.prototype.toTemplateJSON.apply(this, arguments);
+            var json = Base.prototype.toTemplateJSON.apply(this, arguments),
+				key,
+				recs,
+				i = 0,
+				key1,
+				list;
             json.descriptiveText = this.getDescriptiveText();
+			if (this.get("children")) {
+				for (key in this.get("children")) {
+					if (key.indexOf("form_") != -1) {
+						recs = this.get("children")[key].data;
+						for (i = 0; i < recs.length; i++) {
+							list = [];
+							for (key1 in recs[i]) {
+								if (this.excludeList.indexOf(key1) === -1 &&
+										!/(^\w*_detail$)/.test(key1)) {
+									list.push({
+										key: key1.split("_").join(" "),
+										value: recs[i][key1]
+									});
+								}
+							}
+							recs[i].list = list;
+						}
+					}
+				}
+			}
             return json;
         },
 

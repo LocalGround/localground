@@ -2,11 +2,12 @@ define(["marionette",
         "underscore",
         "jquery",
         "text!" + templateDir + "/sidepanel/dataPanelHeader.html",
-        "views/maps/sidepanel/projectsMenu",
+        "views/maps/sidepanel/menus/projectsMenu",
         "views/maps/sidepanel/projectTags",
         "views/maps/sidepanel/itemListManager"
     ],
-    function (Marionette, _, $, dataPanelHeader, ProjectsMenu, ProjectTags, ItemListManager) {
+    function (Marionette, _, $, dataPanelHeader, ProjectsMenu, ProjectTags,
+                ItemListManager) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -28,7 +29,6 @@ define(["marionette",
                 projectMenu: "#projects-menu",
                 projectTags: "#project-tags",
                 itemList: "#item-list-manager"
-
             },
             /**
              * Initializes the dataPanel
@@ -37,11 +37,6 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.opts = opts;
-                //this.projectTags.show(new ProjectTags(app, opts));
-                //this.panelBody.show(new PanelBody(app, opts));
-                // Listen for the "new_collection" event. On each new
-                // collection event add a new ItemsView to the DataPanel.
-                //app.vent.on("new-collection-created", this.createItemsView.bind(this));
                 opts.app.vent.on("adjust-layout", this.resize.bind(this));
             },
 
