@@ -241,6 +241,8 @@ define(["marionette", "jquery"], function (Marionette, $) {
             this.state = this.app.restoreState(this.id);
             if (!this.state) {
                 this.state = { _isShowingOnMap: false };
+            } else {
+                this.model.set('showingOnMap', this.state.isVisible);
             }
         }
     });
