@@ -9,7 +9,9 @@ define([
         'use strict';
 
         function initLayerView(scope) {
-            scope.app.map = new google.maps.Map(document.getElementById('map_canvas'), {});
+            scope.app.map = new google.maps.Map(document.getElementById('map_canvas'), {
+                center: { lat: -34, lng: 150 }
+            });
             var layerView = new LayerView({
                 app: scope.app,
                 model: scope.layers.at(1) //cat & dog layer
