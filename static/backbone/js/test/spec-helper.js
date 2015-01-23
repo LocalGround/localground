@@ -134,7 +134,7 @@ define(
                 },
                 mapContainerID: "map_canvas",
 				includeSearchControl: true,
-				includeGeolocationControl: false,
+				includeGeolocationControl: true,
                 includeAudioControl: true,
 				activeMapTypeID: 12,
 				tilesets: this.tilesets
