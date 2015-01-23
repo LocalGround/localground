@@ -111,6 +111,8 @@ define(["marionette",
                 this.itemList.currentView.loadView(v);
                 //set center to view's center
                 this.app.vent.trigger('change-center', v.center);
+                //set zoom
+                this.app.vent.trigger('change-zoom', v.zoom);
                 //set map type to the view's map type
                 this.app.vent.trigger('set-map-type', v.basemap);
             }

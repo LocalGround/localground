@@ -41,9 +41,8 @@ define(["marionette",
         Mapplication.addInitializer(function (options) {
             options.projects = new Projects();
             options.app = this;
-            var basemap = new BaseMap(options),
-                georeferenceManager = new GeoreferenceManager(options, basemap),
-                viewLoader = new ViewLoader(options);
+            var viewLoader = new ViewLoader(options),
+                basemap = new BaseMap(options);
             this.map = basemap.map;
             Mapplication.mapRegion.show(basemap);
 

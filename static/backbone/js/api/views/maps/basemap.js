@@ -159,9 +159,7 @@ define(["marionette",
             },
 
             changeZoom: function (zoom) {
-                google.maps.event.addListenerOnce(this.map, 'idle', function () {
-                    this.setZoom(zoom);
-                });
+                this.map.setZoom(zoom);
             },
 
             changeCenter: function (center) {
