@@ -15,6 +15,7 @@ require(['boot'], function () {
         'spec/collections/layers-test.js',
 
         // VIEWS
+        'spec/views/basemap-test.js',
         'spec/views/layer-manager-test.js',
         'spec/views/layer-panel-test.js',
         'spec/views/layer-list-test.js',

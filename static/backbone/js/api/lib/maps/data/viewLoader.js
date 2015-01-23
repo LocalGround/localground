@@ -53,7 +53,11 @@ define(["models/view",
                 var that = this;
                 this.app.vent.once('map-ready', function () {
                     that.updateCollections(that.view);
-                    that.app.vent.trigger('change-center', that.view.get('center'));
+                    // minor consistency fix: ensuring that all point geometries are
+                    // Google objects geometries (not raw geoJSON). 
+                    var c = that.view.get('center'),
+                        centerPoint = new google.maps.LatLng(c.coordinates[1], c.coordinates[0]);
+                    that.app.vent.trigger('change-center', centerPoint);
                     that.app.vent.trigger('change-zoom', that.view.get('zoom'));
                     that.app.vent.trigger('set-map-type', that.view.get('basemap'));
                 });
