@@ -186,6 +186,12 @@ body {
     height: 30px;
 }
 
+.view-name {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 .view-item .active {
     background-color: #CCCCCC;
 }
