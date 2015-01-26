@@ -31,7 +31,7 @@ same view and parameters. Then, you can use this name in reverse URL matching.
 '''
 
 object_types_plural = ['photos', 'audio', 'videos', 'map-images', 'projects',
-                       'views', 'prints', 'forms', 'attachments', 'tiles']
+                       'snapshots', 'prints', 'forms', 'attachments', 'tiles']
 #handler500 = 'localground.apps.account.views.server_error'
 urlpatterns = patterns('',
 
@@ -51,11 +51,11 @@ urlpatterns = patterns('',
                        # 1) Create:
                        #-------------------------------------------------------
                        #  a) Groups & Views:
-                       (r'^profile/(?P<object_type_plural>projects|views)/(?P<action>create)/embed/$',
+                       (r'^profile/(?P<object_type_plural>projects|snapshots)/(?P<action>create)/embed/$',
                         'localground.apps.site.views.sharing.create_update_group_with_sharing',
                         {'embed': True}),
                        (
-                           r'^profile/(?P<object_type_plural>projects|views)/(?P<action>create)/$',
+                           r'^profile/(?P<object_type_plural>projects|snapshots)/(?P<action>create)/$',
                            'localground.apps.site.views.sharing.create_update_group_with_sharing'),
                        #  b) Media
                        (r'^upload/media/post/$',
@@ -75,11 +75,11 @@ urlpatterns = patterns('',
                        #-------------------------------------------------------
                        # 3) Update:
                        #-------------------------------------------------------
-                       (r'^profile/(?P<object_type_plural>projects|views|forms)/(?P<object_id>\d+)/(?P<action>update|share)/embed/$',
+                       (r'^profile/(?P<object_type_plural>projects|snapshots|forms)/(?P<object_id>\d+)/(?P<action>update|share)/embed/$',
                         'localground.apps.site.views.sharing.create_update_group_with_sharing',
                         {'embed': True}),
                        (
-                           r'^profile/(?P<object_type_plural>projects|views|forms)/(?P<object_id>\d+)/(?P<action>update|share)/$',
+                           r'^profile/(?P<object_type_plural>projects|snapshots|forms)/(?P<object_id>\d+)/(?P<action>update|share)/$',
                            'localground.apps.site.views.sharing.create_update_group_with_sharing'),
                        (r'^profile/forms/create/embed/$',
                         'localground.apps.site.views.forms.create_update_form',

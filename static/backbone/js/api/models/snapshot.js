@@ -8,8 +8,8 @@ define(["models/base"], function (Base) {
      * @class Project
      * @see <a href="http://localground.org/api/0/projects/">http://localground.org/api/0/projects/</a>
      */
-    var View = Base.extend({
-        urlRoot: "/api/0/views/"
+    var Snapshot = Base.extend({
+        urlRoot: "/api/0/snapshots/"
     });
-    return View;
+    return Snapshot;
 });

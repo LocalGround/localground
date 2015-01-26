@@ -7,7 +7,7 @@ from django.template import RequestContext
 import simplejson as json
 from django.core.context_processors import csrf
 from django.contrib.auth.models import User
-from localground.apps.site.models import Base, Scan, Print, Project, View, Presentation
+from localground.apps.site.models import Base, Scan, Print, Project, Snapshot, Presentation
 from django.core.exceptions import ObjectDoesNotExist
 
 # Constants describing default latitudes, longitudes, and zoom
@@ -56,8 +56,8 @@ def show_map_editor(request, template='map/editor.html', slug=None):
     if u.is_authenticated():
         projects = Project.objects.get_objects(u)
         projects = [p.to_dict() for p in projects]
-        views = View.objects.get_objects(u)
-        views = [v.to_dict() for v in views]
+        snapshots = Snapshot.objects.get_objects(u)
+        #snapshots = [v.to_dict() for v in snapshots]
         presentations = Presentation.objects.get_objects(u)
         presentations = [pr.to_dict() for pr in presentations]
         if u.profile.default_location is not None:
@@ -69,7 +69,7 @@ def show_map_editor(request, template='map/editor.html', slug=None):
         'lng': lng,
         'zoom': zoom,
         'projects': json.dumps(projects),
-        'views': json.dumps(views),
+        #'snapshots': json.dumps(snapshots),
         'presentations': json.dumps(presentations),
         'num_projects': len(projects)
     })
@@ -93,10 +93,10 @@ def show_map_viewer_embedded(request, slug, template='map/embedded.html'):
         'read_only': True
     })
     if slug is not None:
-        view = get_object_or_404(View, slug=slug)
-        view = view.to_dict()
+        snapshot = get_object_or_404(Snapshot, slug=slug)
+        view = snapshot.to_dict()
         context.update({
-            'view': json.dumps(view)
+            'snapshot': json.dumps(snapshot)
         })
     return render_to_response(template, context)
     #return show_map_editor(request, template=template, slug=slug)

@@ -1,10 +1,10 @@
 define(["marionette",
         "underscore",
         "jquery",
-        "text!" + templateDir + "/modals/viewItem.html",
-        "models/view"
+        "text!" + templateDir + "/modals/snapshotItem.html",
+        "models/snapshot"
     ],
-    function (Marionette, _, $, viewItem) {
+    function (Marionette, _, $, snapshotItem) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -12,14 +12,14 @@ define(["marionette",
          * @class DataPanel
          */
 
-        var ViewItem = Marionette.ItemView.extend({
+        var SnapshotItem = Marionette.ItemView.extend({
             tagName: 'a',
-            className: 'view-item list-group-item',
+            className: 'snapshot-item list-group-item',
             /**
              * @lends localground.maps.views.DataPanel#
              */
             template: function (model) {
-                return _.template(viewItem, _.extend({}, model, {urlRoot: document.location.origin}));
+                return _.template(snapshotItem, _.extend({}, model, {urlRoot: document.location.origin}));
             },
 
             events: {
@@ -28,9 +28,9 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.opts = opts;
-                this.id = 'view-item-' + this.model.id;
+                this.id = 'snapshot-item-' + this.model.id;
                 this.el.id = this.id;
             }
         });
-        return ViewItem;
+        return SnapshotItem;
     });

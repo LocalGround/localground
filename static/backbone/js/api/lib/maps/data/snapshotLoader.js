@@ -1,20 +1,20 @@
 /**
  * Created by zmmachar on 12/17/14.
  */
-define(["models/view",
+define(["models/snapshot",
         "collections/projects",
         "jquery",
         "config"
     ],
-    function (View, Projects, $, Config) {
+    function (Snapshot, Projects, $, Config) {
         'use strict';
 
         /**
-         * The Viewloader class just structes the data
-         * necessary to load a view
-         * @class ViewLoader
+         * The Snapshotloader class just structes the data
+         * necessary to load a snapshot
+         * @class SnapshotLoader
          */
-        var ViewLoader = function (app) {
+        var SnapshotLoader = function (app) {
             var updateCollection = function (opts) {
                 if (!opts) {
                     //TODO: create standardized way to report errors.
@@ -48,18 +48,18 @@ define(["models/view",
             this.collections = {};
 
             this.initialize = function (opts) {
-                this.view = new View(opts.view);
+                this.snapshot = new Snapshot(opts.snapshot);
                 this.app = opts.app;
                 var that = this;
                 this.app.vent.once('map-ready', function () {
-                    that.updateCollections(that.view);
+                    that.updateCollections(that.snapshot);
                     // minor consistency fix: ensuring that all point geometries are
                     // Google objects geometries (not raw geoJSON). 
-                    var c = that.view.get('center'),
+                    var c = that.snapshot.get('center'),
                         centerPoint = new google.maps.LatLng(c.coordinates[1], c.coordinates[0]);
                     that.app.vent.trigger('change-center', centerPoint);
-                    that.app.vent.trigger('change-zoom', that.view.get('zoom'));
-                    that.app.vent.trigger('set-map-type', that.view.get('basemap'));
+                    that.app.vent.trigger('change-zoom', that.snapshot.get('zoom'));
+                    that.app.vent.trigger('set-map-type', that.snapshot.get('basemap'));
                 });
 
             };
@@ -89,12 +89,12 @@ define(["models/view",
              * A project detail data structure returned from the
              * Local Ground data API.
              */
-            this.updateCollections = function (view) {
+            this.updateCollections = function (snapshot) {
                 //add child data to the collection:
                 var models,
                     configKey,
                     opts,
-                    children = view.get("children"),
+                    children = snapshot.get("children"),
                     key,
                     modelCreator = function () {
                         models.push(new opts.Model(this, {
@@ -119,13 +119,10 @@ define(["models/view",
                         updateCollection.call(this, opts);
                     }
                 }
-                //add new project to the collection:
-                //this.selectedProjects.add(view, {merge: true});
-                //this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
             };
 
 
             this.initialize(app);
         };
-        return ViewLoader;
+        return SnapshotLoader;
     });

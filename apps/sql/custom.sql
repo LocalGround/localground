@@ -16,10 +16,10 @@ CREATE OR REPLACE VIEW v_projects_shared_with AS
 -- helper view to concatenate shared users:
 CREATE OR REPLACE VIEW v_views_shared_with AS
  SELECT g.id, g.name, array_to_string(array_agg(u.username), ', ') AS shared_with
-   FROM site_view g, site_userauthorityobject a, auth_user u
+   FROM site_snapshot g, site_userauthorityobject a, auth_user u
   WHERE g.id = a.object_id AND a.user_id = u.id AND a.content_type_id = ( SELECT django_content_type.id
            FROM django_content_type
-          WHERE django_content_type.model = 'view')
+          WHERE django_content_type.model = 'snapshot')
   GROUP BY g.id, g.name;
   
 -- helper view to concatenate form fields:
@@ -62,12 +62,12 @@ SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
 FROM 
 (
     SELECT g.id, g.name, a.user_id, a.authority_id
-    FROM site_view g, site_userauthorityobject a
+    FROM site_snapshot g, site_userauthorityobject a
     WHERE g.id = a.object_id
-		AND a.content_type_id = (select id from django_content_type where model = 'view')
+		AND a.content_type_id = (select id from django_content_type where model = 'snapshot')
   UNION 
     SELECT id, name, owner_id as user_id, 3 AS authority_id
-    FROM site_view
+    FROM site_snapshot
 ) v
 GROUP BY v.id, v.name, v.user_id;
 
@@ -333,9 +333,9 @@ GROUP BY v.id, v.user_id;
 CREATE OR REPLACE VIEW v_public_photos AS 
  SELECT t.id, max(t.view_authority) AS view_authority, array_to_string(array_agg(t.access_key), ','::text) AS access_keys
    FROM (         SELECT a.entity_id AS id, v.view_authority, v.access_key
-                   FROM site_genericassociation a, site_view v
+                   FROM site_genericassociation a, site_snapshot v
                   WHERE a.source_id = v.id
-					AND a.source_type_id = (select id from django_content_type where model = 'view')
+					AND a.source_type_id = (select id from django_content_type where model = 'snapshot')
 					AND a.entity_type_id = (select id from django_content_type where model = 'photo')
         UNION 
                  SELECT p.id, pr.view_authority, pr.access_key
@@ -353,10 +353,10 @@ select t.id, max(t.view_authority) as view_authority,
 from 
 (
 select a.entity_id as id, v.view_authority, v.access_key
-from site_genericassociation a, site_view v
+from site_genericassociation a, site_snapshot v
 where 
   a.source_id = v.id and
-  a.source_type_id = (select id from django_content_type where model = 'view') and 
+  a.source_type_id = (select id from django_content_type where model = 'snapshot') and
   a.entity_type_id = (select id from django_content_type where model = 'audio') 
 union
 select a.id, pr.view_authority, pr.access_key
@@ -375,10 +375,10 @@ select t.id, max(t.view_authority) as view_authority,
 from 
 (
 select a.entity_id as id, v.view_authority, v.access_key
-from site_genericassociation a, site_view v
+from site_genericassociation a, site_snapshot v
 where 
   a.source_id = v.id and
-  a.source_type_id = (select id from django_content_type where model = 'view') and 
+  a.source_type_id = (select id from django_content_type where model = 'snapshot') and
   a.entity_type_id = (select id from django_content_type where model = 'marker') 
 union
 select m.id, pr.view_authority, pr.access_key

@@ -5,13 +5,13 @@ define(["marionette",
         "backbone",
         "underscore",
         "views/maps/basemap",
-        "lib/maps/data/viewLoader",
+        "lib/maps/data/snapshotLoader",
         "lib/appUtilities",
         "collections/projects",
         "lib/maps/controls/georeferenceManager",
         "jquery.bootstrap"
     ],
-    function (Marionette, Backbone, _, BaseMap, ViewLoader, appUtilities, Projects, GeoreferenceManager) {
+    function (Marionette, Backbone, _, BaseMap, SnapshotLoader, appUtilities, Projects, GeoreferenceManager) {
         "use strict";
 
         var Mapplication = new Marionette.Application();
@@ -41,7 +41,7 @@ define(["marionette",
         Mapplication.addInitializer(function (options) {
             options.projects = new Projects();
             options.app = this;
-            var viewLoader = new ViewLoader(options),
+            var snapshotLoader = new SnapshotLoader(options),
                 basemap = new BaseMap(options);
             this.map = basemap.map;
             Mapplication.mapRegion.show(basemap);

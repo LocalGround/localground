@@ -163,7 +163,7 @@ define(["marionette",
             },
 
             changeCenter: function (center) {
-                this.map.setCenter(center);
+                this.map.setCenter(new google.maps.LatLng(center.coordinates[1], center.coordinates[0]));
             },
 
             saveState: function () {

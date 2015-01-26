@@ -9,7 +9,7 @@ class EntitiesField(serializers.WritableField):
         '''
         Alas, this doesn't cover it...only does most of the validation.
         To execute the actual database commit, you need to implement code
-        in the view. Please see "views_view" for details. A total hack.
+        in the view. Please see "snapshots_view" for details. A total hack.
         '''
         import json
 

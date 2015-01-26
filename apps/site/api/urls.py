@@ -33,11 +33,11 @@ urlpatterns = patterns('',
 
 urlpatterns += format_suffix_patterns(patterns('',
     url(
-        r'^(?P<group_name_plural>markers|views|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/$',
+        r'^(?P<group_name_plural>markers|snapshots|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/$',
         views.RelatedMediaList.as_view(),
         name='related-media-list'),
     url(
-        r'^(?P<group_name_plural>markers|views|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$',
+        r'^(?P<group_name_plural>markers|snapshots|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$',
         views.RelatedMediaInstance.as_view(),
         name='related-media-detail'),
     url(
@@ -55,12 +55,12 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.PresentationList.as_view(),
         name='presentation-list'),
     url(
-        r'^views/(?P<pk>[0-9]+)/$',
-        views.ViewInstance.as_view(),
-        name='view-detail'),
-    url(r'^views/$',
-        views.ViewList.as_view(),
-        name='view-list'),
+        r'^snapshots/(?P<pk>[0-9]+)/$',
+        views.SnapshotInstance.as_view(),
+        name='snapshot-detail'),
+    url(r'^snapshots/$',
+        views.SnapshotList.as_view(),
+        name='snapshot-list'),
     url(
         r'^layers/(?P<pk>[0-9]+)/$',
         views.LayerInstance.as_view(),

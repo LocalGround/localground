@@ -12,7 +12,7 @@ from localground.apps.site.models.video import Video
 from localground.apps.site.models import \
     Marker, WMSOverlay, ObjectTypes, BaseNamed, BaseGenericRelationMixin
 
-from localground.apps.site.managers import ProjectManager, ViewManager
+from localground.apps.site.managers import ProjectManager, SnapshotManager
 
 from django.contrib.gis.db import models
 from datetime import datetime
@@ -220,7 +220,7 @@ class Project(Group):
         ).order_by('-time_stamp')[0]
 
 
-class View(Group):
+class Snapshot(Group):
 
     """
     A user-generated grouping of media.  Media associations are specified in the
@@ -228,7 +228,7 @@ class View(Group):
     """
     center = models.PointField()
     zoom = models.IntegerField()
-    objects = ViewManager()
+    objects = SnapshotManager()
 
     class Meta(Group.Meta):
         verbose_name = 'view'
@@ -236,21 +236,21 @@ class View(Group):
 
     @classmethod
     def sharing_form(cls):
-        from localground.apps.site.forms import ViewPermissionsForm
+        from localground.apps.site.forms import SnapshotPermissionsForm
 
-        return ViewPermissionsForm
+        return SnapshotPermissionsForm
 
     @classmethod
     def inline_form(cls, user=None):
-        from localground.apps.site.forms import ViewInlineUpdateForm
+        from localground.apps.site.forms import SnapshotInlineUpdateForm
 
-        return ViewInlineUpdateForm
+        return SnapshotInlineUpdateForm
 
     @classmethod
     def get_form(cls):
-        from localground.apps.site.forms import ViewCreateForm
+        from localground.apps.site.forms import SnapshotCreateForm
 
-        return ViewCreateForm
+        return SnapshotCreateForm
 
     def get_markers_with_counts(self):
         """
@@ -290,8 +290,8 @@ class View(Group):
     '''
 
     def to_dict(self, detailed=False):
-        from localground.apps.site.api.serializers import ViewSerializer, ViewDetailSerializer
+        from localground.apps.site.api.serializers import SnapshotSerializer, SnapshotDetailSerializer
 
         if detailed:
-            return ViewDetailSerializer(self, context={'request': {}}).data
-        return ViewSerializer(self, context={'request': {}}).data
+            return SnapshotDetailSerializer(self, context={'request': {}}).data
+        return SnapshotSerializer(self, context={'request': {}}).data

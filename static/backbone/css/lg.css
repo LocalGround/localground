@@ -181,21 +181,21 @@ body {
     overflow: scroll;
 }
 
-.view-item {
+.snapshot-item {
     padding: 5px 5px 5px 5px;
     height: 30px;
 }
 
-.view-name {
+.snapshot-name {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
 }
 
-.view-item .active {
+.snapshot-item .active {
     background-color: #CCCCCC;
 }
-#save-view-name {
+#save-snapshot-name {
     width: 100%;
 }
 
@@ -203,7 +203,7 @@ body {
     display:none
 }
 
-.delete-view {
+.delete-snapshot {
     cursor: pointer;
     padding-top:3px;
 }

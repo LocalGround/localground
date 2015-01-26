@@ -10,7 +10,7 @@ from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 
 
-class ViewSerializer(BaseNamedSerializer):
+class SnapshotSerializer(BaseNamedSerializer):
     name = serializers.CharField(required=True)
     access = serializers.SerializerMethodField('get_access')
     entities = fields.EntitiesField(widget=widgets.JSONWidget, required=False)
@@ -23,7 +23,7 @@ class ViewSerializer(BaseNamedSerializer):
     children = serializers.SerializerMethodField('get_children')
 
     class Meta:
-        model = models.View
+        model = models.Snapshot
         fields = BaseNamedSerializer.Meta.fields + \
             ('owner', 'slug', 'access', 'zoom', 'center', 'basemap', 'entities', 'children')
         depth = 0
@@ -123,10 +123,10 @@ class ViewSerializer(BaseNamedSerializer):
         return d
 
 
-class ViewDetailSerializer(ViewSerializer):
+class SnapshotDetailSerializer(SnapshotSerializer):
     #children = serializers.SerializerMethodField('get_children')
 
     class Meta:
-        model = models.View
-        fields = ViewSerializer.Meta.fields  # + ('children',)
+        model = models.Snapshot
+        fields = SnapshotSerializer.Meta.fields  # + ('children',)
         depth = 0

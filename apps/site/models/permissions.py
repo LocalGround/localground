@@ -241,9 +241,9 @@ class ScanUser(ObjectUserPermissions):
         db_table = 'v_private_scans'
 
 
-class ViewUser(ObjectUserPermissions):
-    view = models.ForeignKey(
-        'View',
+class SnapshotUser(ObjectUserPermissions):
+    snapshot = models.ForeignKey(
+        'Snapshot',
         db_column='id',
         on_delete=models.DO_NOTHING,
         related_name='authuser')
@@ -277,7 +277,7 @@ class FormUser(ObjectUserPermissions):
 
 
 class PresentationUser(ObjectUserPermissions):
-    view = models.ForeignKey(
+    presentation = models.ForeignKey(
         'Presentation',
         db_column='id',
         on_delete=models.DO_NOTHING,
@@ -289,7 +289,7 @@ class PresentationUser(ObjectUserPermissions):
         db_table = 'v_private_presentations'
         
 class LayerUser(ObjectUserPermissions):
-    view = models.ForeignKey(
+    layer = models.ForeignKey(
         'Layer',
         db_column='id',
         on_delete=models.DO_NOTHING,

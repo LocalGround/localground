@@ -12,4 +12,4 @@ from localground.apps.site.api.tests.presentation_tests import ApiPresentationLi
 from localground.apps.site.api.tests.project_tests import *
 from localground.apps.site.api.tests.photo_tests import *
 from localground.apps.site.api.tests.scan_tests import *
-from localground.apps.site.api.tests.view_tests import ApiViewListTest, ApiViewInstanceTest
+from localground.apps.site.api.tests.snapshot_tests import ApiSnapshotListTest, ApiSnapshotInstanceTest

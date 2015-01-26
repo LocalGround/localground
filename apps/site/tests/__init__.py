@@ -121,13 +121,13 @@ class ModelMixin(object):
         p.save()
         return p
 
-    def create_view(self, user, name='Test View', authority_id=1):
+    def create_snapshot(self, user, name='Test Snapshot', authority_id=1):
         import random
         from django.contrib.gis.geos import Point
         lat = 37.8705
         lng = -122.2819
         slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16)
-        v = models.View(
+        v = models.Snapshot(
             name=name,
             owner=user,
             last_updated_by=user,

@@ -32,7 +32,7 @@
                 includeAudioControl: true,
 				activeMapTypeID: {{ basemap_id|default:"12" }},
 				tilesets: {% autoescape off %}{{ overlays }}{% endautoescape %},
-                view: {% autoescape off %} {{ view }}　{% endautoescape %}
+                snapshot: {% autoescape off %} {{ snapshot }}　{% endautoescape %}
 			};
 			require(
 				["jquery", "/static/backbone/js/api/embedded-mapplication.js"],

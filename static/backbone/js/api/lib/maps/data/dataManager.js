@@ -75,7 +75,7 @@ define(["models/project",
                 this.app.vent.on("project-requested", this.fetchDataByProjectID.bind(this));
                 this.app.vent.on("set-active-project", this.setActiveProject.bind(this));
                 this.app.vent.on("marker-added", updateCollection.bind(this));
-                this.app.vent.on('load-view-list', this.fetchViews.bind(this));
+                this.app.vent.on('load-snapshot-list', this.fetchSnapshots.bind(this));
                 this.app.vent.on("apply-filter", this.applyFilter.bind(this));
                 this.app.vent.on("clear-filter", this.clearFilter.bind(this));
                 this.selectedProjects = new Projects();
@@ -262,8 +262,8 @@ define(["models/project",
                 this.app.setActiveProjectID(state.projectIDs[projIndex]);
             };
 
-            this.fetchViews = function (viewCollection) {
-                viewCollection.fetch({reset: true});
+            this.fetchSnapshots = function (snapshotCollection) {
+                snapshotCollection.fetch({reset: true});
             };
 
             this.initialize(app);

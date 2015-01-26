@@ -35,8 +35,8 @@ define(["marionette",
             },
 
             //Dispatch calls to each child to load a set of items
-            loadView: function (view) {
-                _.each(view.children, function (collection, key) {
+            loadSnapshot: function (snapshot) {
+                _.each(snapshot.children, function (collection, key) {
                     this[key].currentView.loadItems(_.pluck(collection.data, 'id'));
                 }.bind(this));
             }

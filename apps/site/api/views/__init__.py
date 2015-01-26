@@ -7,7 +7,7 @@ from localground.apps.site.api.views.photo_views import (
 from localground.apps.site.api.views.presentation_views import PresentationList, PresentationInstance
 from localground.apps.site.api.views.print_views import PrintList, PrintInstance, LayoutViewSet
 from localground.apps.site.api.views.project_views import ProjectList, ProjectInstance
-from localground.apps.site.api.views.view_views import ViewList, ViewInstance
+from localground.apps.site.api.views.snapshot_views import SnapshotList, SnapshotInstance
 from localground.apps.site.api.views.layer_views import LayerList, LayerInstance
 
 from localground.apps.site.api.views.marker_views import MarkerList, MarkerInstance
@@ -56,7 +56,7 @@ def api_root(request, format=None, **kwargs):
         format=format)
     d['prints'] = reverse('print-list', request=request, format=format)
     d['projects'] = reverse('project-list', request=request, format=format)
-    d['views'] = reverse('view-list', request=request, format=format)
+    d['snapshots'] = reverse('snapshot-list', request=request, format=format)
     d['layers'] = reverse('layer-list', request=request, format=format)
     d['tiles'] = reverse('wmsoverlay-list', request=request, format=format)
     d['users'] = reverse('user-list', request=request, format=format)

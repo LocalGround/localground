@@ -56,7 +56,7 @@ class ProjectManager(models.GeoManager, ProjectMixin):
         return ProjectQuerySet(self.model, using=self._db)
 
 
-class ViewMixin(GroupMixin):
+class SnapshotMixin(GroupMixin):
 
     def _get_objects(self, user, authority_id=1, request=None, context=None,
                      ordering_field='-time_stamp', with_counts=True, **kwargs):
@@ -79,14 +79,14 @@ class ViewMixin(GroupMixin):
             sql = '''select count(entity_id) from site_genericassociation a
 				where a.source_type_id = (select id from django_content_type where model = 'view')
 				and a.entity_type_id = (select id from django_content_type where model = '{0}')
-				and a.source_id = site_view.id'''
+				and a.source_id = site_snapshot.id'''
             q = q.extra(
                 select={
                     'photo_count': sql.format('photo'),
                     'audio_count': sql.format('audio'),
                     'processed_maps_count': sql.format('scan'),
                     'marker_count': sql.format('marker'),
-                    'shared_with': 'select shared_with from v_views_shared_with WHERE v_views_shared_with.id = site_view.id'
+                    'shared_with': 'select shared_with from v_views_shared_with WHERE v_views_shared_with.id = site_snapshot.id'
                 }
             )
         if ordering_field:
@@ -99,14 +99,14 @@ class ViewMixin(GroupMixin):
         return []
 
 
-class ViewQuerySet(QuerySet, ViewMixin):
+class SnapshotQuerySet(QuerySet, SnapshotMixin):
     pass
 
 
-class ViewManager(models.GeoManager, ViewMixin):
+class SnapshotManager(models.GeoManager, SnapshotMixin):
 
     def get_query_set(self):
-        return ViewQuerySet(self.model, using=self._db)
+        return SnapshotQuerySet(self.model, using=self._db)
 
 
 class FormMixin(GroupMixin):

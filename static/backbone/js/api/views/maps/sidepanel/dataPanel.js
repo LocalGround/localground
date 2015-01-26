@@ -54,7 +54,7 @@ define(["marionette",
                 this.projectTags.show(new ProjectTags(this.opts));
                 this.itemList.show(new ItemListManager(this.opts));
                 this.shareModalWrapper.show(new ShareModal(this.opts));
-                this.listenTo(this.shareModalWrapper.currentView, 'load-view', this.loadView);
+                this.listenTo(this.shareModalWrapper.currentView, 'load-snapshot', this.loadSnapshot);
             },
 
             toggleEditMode: function () {
@@ -97,9 +97,9 @@ define(["marionette",
                 return JSON.stringify(entities);
             },
 
-            loadView: function (view) {
-                var v = view.toJSON(),
-                    //Take all unique project ids from the view
+            loadSnapshot: function (snapshot) {
+                var v = snapshot.toJSON(),
+                    //Take all unique project ids from the snapshot
                     projectIds = _.chain(v.children)
                         .map(function (collection) {
                             return _.pluck(collection.data, 'project_id');
@@ -108,7 +108,7 @@ define(["marionette",
                 //dispatch call to projectMenu to load appropriate projects
                 this.projectMenu.currentView.loadProjects(projectIds);
                 //dispatch call to itemManager to only show appropriate items
-                this.itemList.currentView.loadView(v);
+                this.itemList.currentView.loadSnapshot(v);
                 //set center to view's center
                 this.app.vent.trigger('change-center', v.center);
                 //set zoom

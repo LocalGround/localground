@@ -2,7 +2,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 import json
-from localground.apps.site.models import Project, View
+from localground.apps.site.models import Project, Snapshot
 #from localground.apps.lib import sqlparse
 
 
@@ -30,7 +30,7 @@ def get_group_if_authorized(function):
         r = request.GET
         TYPE_LU = {
             'projects': Project,
-            'views': View
+            'views': Snapshot
         }
         ModelClass = TYPE_LU.get(object_type)
         try:

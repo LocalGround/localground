@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 
 
-class ViewMixin(object):
+class SnapshotMixin(object):
 
     def post_save(self, obj, created=False):
         '''
@@ -52,12 +52,12 @@ class ViewMixin(object):
                         connection._rollback()
 
 
-class ViewList(QueryableListCreateAPIView, ViewMixin, AuditCreate):
+class SnapshotList(QueryableListCreateAPIView, SnapshotMixin, AuditCreate):
     error_messages = {}
     warnings = []
-    serializer_class = serializers.ViewSerializer
+    serializer_class = serializers.SnapshotSerializer
     filter_backends = (filters.SQLFilterBackend,)
-    model = models.View
+    model = models.Snapshot
     paginate_by = 100
 
     def get_queryset(self):
@@ -73,10 +73,10 @@ class ViewList(QueryableListCreateAPIView, ViewMixin, AuditCreate):
         obj.access_authority = models.ObjectAuthority.objects.get(id=3)
 
     def post_save(self, obj, created=False):
-        ViewMixin.post_save(self, obj, created=False)
+        SnapshotMixin.post_save(self, obj, created=False)
 
     def create(self, request, *args, **kwargs):
-        response = super(ViewList, self).create(request, *args, **kwargs)
+        response = super(SnapshotList, self).create(request, *args, **kwargs)
         if len(self.warnings) > 0:
             response.data.update({'warnings': self.warnings})
         if self.error_messages:
@@ -85,24 +85,24 @@ class ViewList(QueryableListCreateAPIView, ViewMixin, AuditCreate):
         return response
 
 
-class ViewInstance(
+class SnapshotInstance(
         generics.RetrieveUpdateDestroyAPIView,
-        ViewMixin,
+        SnapshotMixin,
         AuditUpdate):
     error_messages = {}
     warnings = []
-    queryset = models.View.objects.select_related('owner').all()
-    serializer_class = serializers.ViewDetailSerializer
-    model = models.View
+    queryset = models.Snapshot.objects.select_related('owner').all()
+    serializer_class = serializers.SnapshotDetailSerializer
+    model = models.Snapshot
 
     def pre_save(self, obj):
         AuditUpdate.pre_save(self, obj)
 
     def post_save(self, obj, created=False):
-        ViewMixin.post_save(self, obj, created=False)
+        SnapshotMixin.post_save(self, obj, created=False)
 
     def update(self, request, *args, **kwargs):
-        response = super(ViewInstance, self).update(request, *args, **kwargs)
+        response = super(SnapshotInstance, self).update(request, *args, **kwargs)
         if len(self.warnings) > 0:
             response.data.update({'warnings': self.warnings})
         if self.error_messages:
