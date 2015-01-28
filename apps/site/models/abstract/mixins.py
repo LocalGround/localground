@@ -58,3 +58,9 @@ class BaseGenericRelationMixin(models.Model):
             from localground.apps.site.models.marker import Marker
             self._markers = self._get_filtered_entities(Marker)
         return self._markers
+
+    # def entities(self, key):
+    #     associations = (models.GenericAssociation.objects
+    #                     .filter(source_type=self.get_content_type()).filter(source_id=self.id))
+    #     form_classes = ContentType.objects\
+    #         .filter(id__in=[a.entity_type_id for a in associations])

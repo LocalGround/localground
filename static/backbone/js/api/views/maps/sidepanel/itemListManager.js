@@ -36,6 +36,9 @@ define(["marionette",
 
             //Dispatch calls to each child to load a set of items
             loadSnapshot: function (snapshot) {
+                _.each(this.regionManager.getRegions(), function (region) {
+                    region.currentView.hideAll();
+                });
                 _.each(snapshot.children, function (collection, key) {
                     this[key].currentView.loadItems(_.pluck(collection.data, 'id'));
                 }.bind(this));

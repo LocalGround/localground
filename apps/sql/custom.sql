@@ -146,7 +146,7 @@ SELECT m.id as view_id, m.name, t1.model as parent,
   m.user_id, m.authority_id
 FROM site_genericassociation a, django_content_type t1, 
   django_content_type t2, v_private_views m
-WHERE a.source_type_id = t1.id and t1.model = 'view' and
+WHERE a.source_type_id = t1.id and t1.model = 'snapshot' and
   a.entity_type_id = t2.id and a.source_id = m.id;
   
 -----------------------

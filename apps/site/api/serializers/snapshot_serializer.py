@@ -1,3 +1,4 @@
+import sys
 from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
 from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializer
@@ -41,11 +42,15 @@ class SnapshotSerializer(BaseNamedSerializer):
             models.Scan,
             models.Project,
             models.Marker]
+        associations = (models.GenericAssociation.objects
+                        .filter(source_type=models.Snapshot.get_content_type()).filter(source_id=obj.id))
+
+        form_classes = ContentType.objects\
+            .filter(id__in=[a.entity_type_id for a in associations])
+
+        #TODO: this is really awful there must be a better way to do this haha
         forms = (models.Form.objects
-                 .select_related('projects')
-                 .prefetch_related('field_set', 'field_set__data_type')
-                 .filter(projects=obj)
-                 )
+                     .filter(id__in=[f.model.split('_')[-1] for f in form_classes if 'form' in f.model]))
         for form in forms:
             candidates.append(form.TableModel)
         # this caches the ContentTypes so that we don't keep executing one-off
@@ -55,76 +60,82 @@ class SnapshotSerializer(BaseNamedSerializer):
             'photos': self.get_photos(obj),
             'audio': self.get_audio(obj),
             'scans': self.get_scans(obj),
-            'markers': self.get_markers(obj, forms)
+            'markers': self.get_markers(obj, forms),
         }
+
+
 
         # add table data:
         for form in forms:
-            form_data = self.get_table_records(obj, form)
+            #TODO: Jesus christ
+            form_data = self.get_table_records(obj, form, (a.entity_id for a in associations.filter(entity_type_id=form_classes.get(model__contains=str(form.id)).id)))
             if len(form_data.get('data')) > 0:
                 children['form_%s' % form.id] = form_data
         return children
 
     def get_photos(self, obj):
-        data = PhotoSerializer(
+        serializer = PhotoSerializer(
             obj.photos, many=True, context={'request': {}}
-        ).data
-        return self.serialize_list(models.Photo, data)
+        )
+        return self.serialize_list(models.Photo, serializer)
 
     def get_audio(self, obj):
-        data = AudioSerializer(
+        serializer = AudioSerializer(
             obj.audio, many=True, context={'request': {}}
-        ).data
-        return self.serialize_list(models.Audio, data)
+        )
+        return self.serialize_list(models.Audio, serializer)
 
     def get_scans(self, obj):
-        data = ScanSerializer(
+        serializer = ScanSerializer(
             obj.map_images, many=True, context={'request': {}}
-        ).data
-        return self.serialize_list(models.Scan, data)
+        )
+        return self.serialize_list(models.Scan, serializer)
 
     def get_markers(self, obj, forms):
-        data = MarkerSerializerCounts(
+        serializer = MarkerSerializerCounts(
             obj.markers, many=True, context={'request': {}}
-        ).data
-        return self.serialize_list(models.Marker, data)
+        )
+        return self.serialize_list(models.Marker, serializer)
 
-    def serialize_list(self, cls, data, name=None, overlay_type=None,
+
+    def serialize_list(self, model_class, serializer, name=None, overlay_type=None,
                        model_name_plural=None):
         if name is None:
-            name = cls.model_name_plural.title()
+            name = model_class.model_name_plural.title()
         if overlay_type is None:
-            overlay_type = cls.model_name
+            overlay_type = model_class.model_name
         if model_name_plural is None:
-            model_name_plural = cls.model_name_plural
-        return {
+            model_name_plural = model_class.model_name_plural
+
+        d = {
             'id': model_name_plural,
             'name': name,
             'overlay_type': overlay_type,
-            'data': data
+            'data': serializer.data
         }
+        try:
+            if self.request.GET.get("include_schema") in ['True', 'true', '1']:
+                d.update({
+                    'update_metadata': serializer.metadata() #,
+                    #'create_metadata': serializer_class().metadata()
+                })
+        except:
+            pass
+        return d
 
-    def get_table_records(self, obj, form):
-        SerializerClass = create_compact_record_serializer(form)
-        data = SerializerClass(
-            form.TableModel.objects.get_objects(obj.owner, project=obj)
-            #form.get_data_query_lite(obj.owner, project=obj, limit=1000)
-        ).data
-        d = self.serialize_list(
+    def get_table_records(self, obj, form, ids):
+        serializer = create_record_serializer(form)
+        return self.serialize_list(
             form.TableModel,
-            data,
+            serializer(form.TableModel.objects.get_objects(obj.owner).filter(id__in=ids)),
             name=form.name,
             overlay_type='record',
             model_name_plural='form_%s' % form.id
         )
-        d.update({
-            'headers': [f.col_alias for f in form.fields]
-        })
-        return d
 
 
 class SnapshotDetailSerializer(SnapshotSerializer):
-    #children = serializers.SerializerMethodField('get_children')
+    children = serializers.SerializerMethodField('get_children')
 
     class Meta:
         model = models.Snapshot

@@ -177,7 +177,6 @@ define(["marionette",
             },
 
             loadItems: function (itemIds) {
-                this.hideAll();
                 _.each(this.children.filter(function (child) {return _.contains(itemIds, child.model.attributes.id); }),
                     function (child) {
                         child.showItem();

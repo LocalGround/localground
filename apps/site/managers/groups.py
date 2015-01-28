@@ -77,7 +77,7 @@ class SnapshotMixin(GroupMixin):
         q = q.prefetch_related(*self.prefetch_fields)
         if with_counts:
             sql = '''select count(entity_id) from site_genericassociation a
-				where a.source_type_id = (select id from django_content_type where model = 'view')
+				where a.source_type_id = (select id from django_content_type where model = 'snapshot')
 				and a.entity_type_id = (select id from django_content_type where model = '{0}')
 				and a.source_id = site_snapshot.id'''
             q = q.extra(

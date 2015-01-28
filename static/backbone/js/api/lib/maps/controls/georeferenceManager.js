@@ -158,7 +158,8 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         };
 
         this.getMarkerOverlays = function () {
-            var overlayGroup = this.basemap.overlayManager.getMarkerOverlays();
+            //TODO: fix hacky fix for drag and drop
+            var overlayGroup = this.app.mapRegion.currentView.overlayManager.getMarkerOverlays();
             return overlayGroup.children;
         };
 
@@ -256,9 +257,11 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                         this.attachUnsuccessful.bind(this, attachingMarker.model)
                     );
                     this.unHighlight(attachingMarker);
+                    debugger;
                     attachingMarker.model.trigger('show-tip-attaching');
                     model.trigger('hide-item hide-overlay');
                 } else {
+                    debugger;
                     model.trigger('show-item show-overlay');
                 }
             }

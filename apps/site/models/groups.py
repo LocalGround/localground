@@ -231,8 +231,8 @@ class Snapshot(Group):
     objects = SnapshotManager()
 
     class Meta(Group.Meta):
-        verbose_name = 'view'
-        verbose_name_plural = 'views'
+        verbose_name = 'snapshot'
+        verbose_name_plural = 'snapshots'
 
     @classmethod
     def sharing_form(cls):
