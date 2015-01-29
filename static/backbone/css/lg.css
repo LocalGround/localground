@@ -195,12 +195,14 @@ body {
 .snapshot-item .active {
     background-color: #CCCCCC;
 }
-#save-snapshot-name {
+
+.snapshot-description {
     width: 100%;
 }
 
-#view-overwrite-warning {
-    display:none
+#save-snapshot-caption {
+    height:4em;
+    vertical-align: text-top;
 }
 
 .delete-snapshot {

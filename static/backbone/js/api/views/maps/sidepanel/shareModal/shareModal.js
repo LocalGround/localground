@@ -25,6 +25,8 @@ define(["marionette",
 
             ui: {
                 saveName: '#save-snapshot-name',
+                saveCaption: '#save-snapshot-caption',
+                snapshotFields: '.snapshot-description',
                 urlModal: '#url-modal',
                 loadButton: '.load'
             },
@@ -55,7 +57,6 @@ define(["marionette",
                 var target = e.currentTarget;
                 this.unsetActiveSnapshotItem();
                 this.setActiveSnapshotItem(target);
-                this.ui.saveName.val(target.firstChild.dataset.name);
             },
 
             unsetActiveSnapshotItem: function () {
@@ -63,6 +64,7 @@ define(["marionette",
                     this.activeSnapshotItem.classList.remove('active');
                     this.activeSnapshotItem = null;
                     this.ui.loadButton.addClass('disabled');
+                    this.ui.saveCaption.val('');
                 }
             },
 
@@ -73,13 +75,17 @@ define(["marionette",
             },
 
             resetInput: function () {
-                this.ui.saveName.val('');
+                this.ui.snapshotFields.val('');
             },
 
             setActiveSnapshotItem: function (target) {
                 this.activeSnapshotItem = target;
                 this.activeSnapshotItem.classList.add('active');
                 this.ui.loadButton.removeClass('disabled');
+                this.ui.saveName.val(target.firstChild.dataset.name);
+                this.ui.saveCaption.val(target.firstChild.dataset.caption);
+
+
             },
 
             checkInput: function (e) {
@@ -112,12 +118,13 @@ define(["marionette",
                 //capitalize first letter
                 mapName = mapName.charAt(0).toUpperCase() + mapName.slice(1);
                 snapshot.set('basemap', _.findWhere(this.opts.tilesets, {name: mapName}).id);
+                snapshot.set('description', this.ui.saveCaption.val());
                 snapshot.set('Snapshot_authority', 3);
                 snapshot.save(null, {success: function (newSnapshot) {
                     this.collection.add(newSnapshot);
                     this.collection.sort();
                     this.collection.trigger('reset');
-                    this.ui.saveName.val('');
+                    this.resetInput();
                 }.bind(this)});
             },
 

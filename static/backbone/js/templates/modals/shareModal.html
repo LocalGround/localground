@@ -6,9 +6,16 @@
             <h4 class="modal-title" id="myModalLabel">Save Snapshot</h4>
         </div>
         <div class="modal-body">
-            <div id="some-shit">
+            <div id="snapshot-contents">
                 <div id="snapshot-list-container" class="list-group"></div>
-                <input id="save-snapshot-name" type="text" placeholder="Type a name for your snapshot here"/>
+                <div id="snapshot-name">
+                    <input id="save-snapshot-name" class="snapshot-description"
+                           type="text" placeholder="Type a name for your snapshot here">
+                </div>
+                <div id="snapshot-caption">
+                    <textarea rows="10" cols="80" id="save-snapshot-caption" class="snapshot-description"
+                              type="text" placeholder="Give your snapshot a description!"></textarea>
+                </div>
 
             </div>
         </div>
