@@ -94,7 +94,7 @@ def show_map_viewer_embedded(request, slug, template='map/embedded.html'):
     })
     if slug is not None:
         snapshot = get_object_or_404(Snapshot, slug=slug)
-        view = snapshot.to_dict()
+        snapshot = snapshot.to_dict()
         context.update({
             'snapshot': json.dumps(snapshot)
         })

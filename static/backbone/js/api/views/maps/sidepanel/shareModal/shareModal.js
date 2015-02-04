@@ -113,7 +113,6 @@ define(["marionette",
                 snapshot.set('entities', this.serializedEntities);
                 snapshot.set('center', JSON.stringify(this.geometry.getGeoJSON(this.app.map.getCenter())));
                 snapshot.set('zoom', this.app.map.getZoom());
-                //TODO: can't remember where to fetch this id from
                 var mapName = this.app.map.mapTypeId;
                 //capitalize first letter
                 mapName = mapName.charAt(0).toUpperCase() + mapName.slice(1);
