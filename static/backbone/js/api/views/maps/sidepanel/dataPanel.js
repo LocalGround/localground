@@ -109,12 +109,16 @@ define(["marionette",
                 this.projectMenu.currentView.loadProjects(projectIds);
                 //dispatch call to itemManager to only show appropriate items
                 this.itemList.currentView.loadSnapshot(v);
-                //set center to view's center
-                this.app.vent.trigger('change-center', v.center);
                 //set zoom
                 this.app.vent.trigger('change-zoom', v.zoom);
                 //set map type to the view's map type
                 this.app.vent.trigger('set-map-type', v.basemap);
+                //set center to view's center
+                var c = v.center,
+                    centerPoint = new google.maps.LatLng(c.coordinates[1], c.coordinates[0]);
+
+                this.app.vent.trigger('change-center', centerPoint);
+
             }
         });
         return DataPanel;
