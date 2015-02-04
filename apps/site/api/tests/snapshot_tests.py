@@ -1,5 +1,5 @@
 from django import test
-from localground.apps.site.api import snapshots
+from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib
@@ -81,7 +81,7 @@ class ApiSnapshotListTest(ApiSnapshotTest):
         self.url = '/api/0/snapshots/'
         self.urls = [self.url]
         self.model = models.Snapshot
-        self.snapshot = snapshots.SnapshotList.as_snapshot()
+        self.view = views.SnapshotList.as_view()
 
     def test_create_snapshot_using_post(self, **kwargs):
         self._test_save_snapshot(
@@ -116,7 +116,7 @@ class ApiSnapshotInstanceTest(ApiSnapshotTest):
         self.url = '/api/0/snapshots/%s/' % self.obj.id
         self.urls = [self.url]
         self.model = models.Snapshot
-        self.snapshot = snapshots.SnapshotInstance.as_snapshot()
+        self.view = views.SnapshotInstance.as_view()
 
     def test_update_snapshot_using_put(self, **kwargs):
         self._test_save_snapshot(
