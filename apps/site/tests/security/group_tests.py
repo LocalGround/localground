@@ -14,7 +14,7 @@ class GroupManageSecurityTest(test.TestCase, ModelMixin):
         ModelMixin.setUp(self)
         self.groups = [
             self.project,
-            self.create_view(self.user),
+            self.create_snapshot(self.user),
             self.create_form_with_fields()
         ]
 
@@ -58,7 +58,7 @@ class GroupEditSecurityTest(test.TestCase, ModelMixin):
         ModelMixin.setUp(self)
         self.groups = [
             self.project,
-            self.create_view(self.user),
+            self.create_snapshot(self.user),
             self.create_form_with_fields()
         ]
 
@@ -103,7 +103,7 @@ class GroupViewSecurityTest(test.TestCase, ModelMixin):
         self.key = 'r3VqnUjxIUI245ns'
         self.groups = [
             self.project,
-            self.create_view(self.user),
+            self.create_snapshot(self.user),
             self.create_form_with_fields()
         ]
 

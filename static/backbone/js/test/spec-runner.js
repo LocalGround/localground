@@ -5,7 +5,7 @@ require(['boot'], function () {
         'spec/sql-parser-test.js',
         'spec/truth-statement-test.js',
         'spec/data-manager-test.js',
-        'spec/view-loader-test.js',
+        'spec/snapshot-loader-test.js',
 
         // MODELS
         'spec/models/layer-test.js',
