@@ -1,5 +1,5 @@
 define(["underscore",
-        "lib/maps/data/viewLoader",
+        "lib/maps/data/snapshotLoader",
         "views/maps/basemap",
         "../../test/spec-helper"],
     function (_, ViewLoader, Basemap) {

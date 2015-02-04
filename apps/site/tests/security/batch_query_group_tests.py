@@ -261,12 +261,12 @@ class BatchViewQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
         models.Snapshot.objects.all().delete()
 
         # and add two new ones:
-        self.group1 = self.create_view(
+        self.group1 = self.create_snapshot(
             self.owner,
             name='View #1',
             authority_id=1
         )
-        self.group2 = self.create_view(
+        self.group2 = self.create_snapshot(
             self.owner,
             name='View #2',
             authority_id=1

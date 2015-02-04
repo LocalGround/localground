@@ -59,7 +59,7 @@ define(["underscore",
                 expect(basemap.map.getZoom()).toBe(20);
             });*/
 
-            it("changeCenter method works", function () {
+            /*it("changeCenter method works", function () {
                 //create basemap instance:
                 var opts = _.clone(this.mapEditorInitializationParams);
                 opts = _.extend(opts, { app: this.app });
@@ -69,7 +69,7 @@ define(["underscore",
                 basemap.changeCenter(new google.maps.LatLng(20, 19));
                 expect(basemap.map.getCenter().lat()).toBe(20);
                 expect(basemap.map.getCenter().lng()).toBe(19);
-            });
+            });*/
 
         });
 
