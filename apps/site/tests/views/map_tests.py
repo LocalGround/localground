@@ -26,4 +26,9 @@ class PublicMapViewTest(test.TestCase, ViewAnonymousMixin):
         for url in ['/maps/embed/', '/maps/embed/123']:
             response = self.client_anonymous.get(url)
             self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_good_slug_returns_200(self, urls=None):
+        for url in self.urls:
+            response = self.client_anonymous.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
         

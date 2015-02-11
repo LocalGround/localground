@@ -2,11 +2,10 @@
  * Created by zmmachar on 12/17/14.
  */
 define(["models/snapshot",
-        "collections/projects",
         "jquery",
         "config"
     ],
-    function (Snapshot, Projects, $, Config) {
+    function (Snapshot, $, Config) {
         'use strict';
 
         /**
@@ -54,7 +53,7 @@ define(["models/snapshot",
                 this.app.vent.once('map-ready', function () {
                     that.updateCollections(that.snapshot);
                     // minor consistency fix: ensuring that all point geometries are
-                    // Google objects geometries (not raw geoJSON). 
+                    // Google objects geometries (not raw geoJSON).
                     var c = that.snapshot.get('center'),
                         centerPoint = new google.maps.LatLng(c.coordinates[1], c.coordinates[0]);
                     that.app.vent.trigger('change-center', centerPoint);

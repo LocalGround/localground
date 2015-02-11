@@ -4,6 +4,7 @@ define(
         "jquery",
         "lib/appUtilities",
         "lib/maps/data/dataManager",
+        "lib/maps/data/snapshotLoader",
         "collections/projects",
         "collections/photos",
         "collections/audio",
@@ -19,7 +20,7 @@ define(
         "models/mapimage",
         "models/layer"
     ],
-    function (Backbone, $, appUtilities, DataManager,
+    function (Backbone, $, appUtilities, DataManager, SnapshotLoader,
               Projects, Photos, AudioFiles, MapImages, Markers, Records, Layers,
               Project, Photo, Marker, Audio, Record, MapImage, Layer) {
         'use strict';
@@ -140,7 +141,7 @@ define(
 				tilesets: this.tilesets
             };
 
-            this.view = {
+            this.snapshot = {
                 access: "Public (everyone)",
                 basemap: 12,
                 center: { type: "Point", coordinates: [-122, 37] },
