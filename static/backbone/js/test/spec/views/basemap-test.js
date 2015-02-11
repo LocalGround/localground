@@ -22,8 +22,10 @@ define(["underscore",
                 expect(basemap.tileManager).toEqual(jasmine.any(TileController));
                 expect(basemap.geolocationControl).toEqual(jasmine.any(GeoLocation));
                 expect(basemap.searchControl).toEqual(jasmine.any(SearchControl));
+                google.maps.event.trigger(basemap.map, 'idle');
+
                 //can't test AudioPlayer functionality unless map.idle event handler removed
-                //expect(basemap.audioPlayer).toEqual(jasmine.any(AudioPlayer));
+                expect(basemap.audioPlayer).toEqual(jasmine.any(AudioPlayer));
             });
 
             it("Listens for change-zoom and change-center event handlers", function () {
@@ -50,16 +52,17 @@ define(["underscore",
         describe("Basemap: Internal methods work correctly", function () {
 
             //changeZoom method untestable (to my knowledge) b/c of the 'map idle' clause
-            /*it("changeZoom method works", function () {
+            it("changeZoom method works", function () {
+
                 //create basemap instance:
                 var opts = _.clone(this.mapEditorInitializationParams);
                 opts = _.extend(opts, { app: this.app });
                 basemap = new Basemap(opts);
                 basemap.changeZoom(20);
                 expect(basemap.map.getZoom()).toBe(20);
-            });*/
+            });
 
-            /*it("changeCenter method works", function () {
+            it("changeCenter method works", function () {
                 //create basemap instance:
                 var opts = _.clone(this.mapEditorInitializationParams);
                 opts = _.extend(opts, { app: this.app });
@@ -69,7 +72,7 @@ define(["underscore",
                 basemap.changeCenter(new google.maps.LatLng(20, 19));
                 expect(basemap.map.getCenter().lat()).toBe(20);
                 expect(basemap.map.getCenter().lng()).toBe(19);
-            });*/
+            });
 
         });
 
