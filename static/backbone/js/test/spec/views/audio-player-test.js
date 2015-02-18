@@ -41,7 +41,6 @@ define(["underscore",
                 this.app.vent.trigger('playAudio');
 
                 expect(audioPlayer.playAudio).toHaveBeenCalled();
-                debugger;
             });
 
             it('Stops the player when told', function () {
@@ -56,7 +55,6 @@ define(["underscore",
                 this.app.vent.trigger('stopAudio');
 
                 expect(audioPlayer.stopAudio).toHaveBeenCalled();
-                debugger;
             });
         });
 

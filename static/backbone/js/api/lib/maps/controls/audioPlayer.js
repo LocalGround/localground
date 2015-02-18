@@ -25,12 +25,10 @@ define(['jquery',
                 this.$el.attr('id', this.id).attr('class', 'hidden');
                 $('#' + this.container).append(this.$el);
                 this.app = opts.app;
-                debugger;
                 this.listenTo(this.app.vent, 'playAudio', this.playAudio);
                 this.listenTo(this.app.vent, 'stopAudio', this.stopAudio);
             },
             playAudio: function (model) {
-                debugger;
                 this.stopAudio();
                 this.model = model;
                 this.model.trigger('play');
