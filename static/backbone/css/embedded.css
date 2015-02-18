@@ -1,9 +1,8 @@
 body { overflow: hidden; }
 
 #map_canvas {
-	height: 100%;
 	width: 100%;
-	border-right: solid 1px #999;
+    height: 100%;
 }
 
 .fa-map-marker {
@@ -428,6 +427,46 @@ label {
 	font-size: 25px;
 	color: #333;
 }
+#caption-container {
+    display: none;
+    position:absolute;
+    bottom:0;
+    z-index:1;
+    background-color:white;
+    width:100%;
+}
+
+#caption-toggle {
+    cursor: pointer;
+    width: 30px;
+    text-align: center;
+    position: absolute;
+    margin-top: -12px;
+    margin-left: 25px;
+    background: white;
+    border-radius: 10px 10px 0px 0px;
+    z-index: -1;
+}
+
+#caption {
+    padding: 5px 5px 5px 15px;
+}
+
+#fullscreen-toggle {
+    position: fixed;
+    bottom: 30px;
+    right:20px;
+    height:20px;
+    cursor: pointer;
+    background-color:white;
+    border-radius: 3px;
+    padding: 3px;
+    text-align:center;
+}
+#fullscreen-toggle:hover {
+    background-color: #b6b6b6;
+}
+
 
 
 

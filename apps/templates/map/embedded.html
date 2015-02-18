@@ -30,6 +30,8 @@
 				includeSearchControl: true,
 				includeGeolocationControl: false,
                 includeAudioControl: true,
+                includeFullScreenCtrl: true,
+                includeCaption: true,
 				activeMapTypeID: {{ basemap_id|default:"12" }},
 				tilesets: {% autoescape off %}{{ overlays }}{% endautoescape %},
                 snapshot: {% autoescape off %} {{ snapshot }}　{% endautoescape %}

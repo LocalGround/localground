@@ -1,9 +1,7 @@
 define(["underscore",
         "lib/maps/data/snapshotLoader",
-        "views/maps/basemap",
-        "../../test/spec-helper",
-        "models/snapshot"],
-    function (_, SnapshotLoader, Basemap, Snapshot) {
+        "../../test/spec-helper"],
+    function (_, SnapshotLoader) {
         'use strict';
         var snapshotLoader, that;
 
@@ -12,7 +10,7 @@ define(["underscore",
             it("Loads correctly if an initial view is passed in", function () {
                 that = this;
                 expect(function () {
-                    snapshotLoader = new SnapshotLoader({
+                    var snapshotLoader = new SnapshotLoader({
                         app: that.app,
                         snapshot: that.snapshot
                     });
@@ -44,7 +42,6 @@ define(["underscore",
                 var centerPoint = new google.maps.LatLng(this.snapshot.center.coordinates[1],
                     this.snapshot.center.coordinates[0]);
                 //expect(this.app.vent.trigger).toHaveBeenCalledWith('new-collection-created');
-
                 expect(snapshotLoader.updateCollections).toHaveBeenCalled();
                 expect(this.app.vent.trigger).toHaveBeenCalledWith('change-center', centerPoint);
                 expect(this.app.vent.trigger).toHaveBeenCalledWith('change-zoom', this.snapshot.zoom);

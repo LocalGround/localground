@@ -1,48 +1,28 @@
 /**
  * Created by zmmachar on 12/11/14.
  */
-define(["marionette",
-        "backbone",
-        "underscore",
+define(["underscore",
+        "base-mapplication",
         "views/maps/basemap",
+        "views/maps/caption/caption",
         "lib/maps/data/snapshotLoader",
-        "lib/appUtilities",
         "collections/projects",
-        "lib/maps/controls/georeferenceManager",
         "jquery.bootstrap"
     ],
-    function (Marionette, Backbone, _, BaseMap, SnapshotLoader, appUtilities, Projects, GeoreferenceManager) {
+    function (_, BaseMapplication, BaseMap, CaptionManager, SnapshotLoader, Projects) {
         "use strict";
 
-        var Mapplication = new Marionette.Application();
-        _.extend(Mapplication, appUtilities);
-        Mapplication.setMode('view');
+        var Mapplication = BaseMapplication;
 
         Mapplication.addRegions({
-            mapRegion: "#map_canvas",
-            sidebarRegion: "#panels"
-        });
-
-        Mapplication.navigate = function (route, options) {
-            options = options || {};
-            Backbone.history.navigate(route, options);
-        };
-
-        Mapplication.getCurrentRoute = function () {
-            return Backbone.history.fragment;
-        };
-
-        Mapplication.on("start", function () {
-            if (Backbone.history) {
-                Backbone.history.start();
-            }
+            mapRegion: "#map_canvas"
         });
 
         Mapplication.addInitializer(function (options) {
             options.projects = new Projects();
             options.app = this;
             var snapshotLoader = new SnapshotLoader(options),
-                basemap = new BaseMap(options);
+                basemap = new BaseMap(_.defaults({snapshot: snapshotLoader.snapshot}, options));
             this.map = basemap.map;
             Mapplication.mapRegion.show(basemap);
 

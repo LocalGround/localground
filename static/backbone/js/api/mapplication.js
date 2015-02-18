@@ -1,6 +1,5 @@
-define(["marionette",
-        "backbone",
-        "underscore",
+define(["underscore",
+        "base-mapplication",
         "views/maps/basemap",
         "views/maps/sidepanel/dataPanel",
         "views/maps/sidepanel/layerPanel",
@@ -14,14 +13,12 @@ define(["marionette",
         "views/maps/overlays/layerManager",
         "jquery.bootstrap"
     ],
-    function (Marionette, Backbone, _, BaseMap, DataPanel, LayerPanel, Tabs,
+    function (_, BaseMapplication, BaseMap, DataPanel, LayerPanel, Tabs,
               TopBar, DataManager, appUtilities, Projects, Layers,
               GeoreferenceManager, LayerManager) {
         "use strict";
 
-        var Mapplication = new Marionette.Application();
-        _.extend(Mapplication, appUtilities);
-        Mapplication.setMode('view');
+        var Mapplication = BaseMapplication;
 
         Mapplication.addRegions({
             tabsRegion: "#vertical-tabs",
@@ -29,21 +26,6 @@ define(["marionette",
             mapRegion: "#map_canvas",
             dataPanelRegion: "#data_panel",
             layerPanelRegion: "#layer_panel"
-        });
-
-        Mapplication.navigate = function (route, options) {
-            options = options || {};
-            Backbone.history.navigate(route, options);
-        };
-
-        Mapplication.getCurrentRoute = function () {
-            return Backbone.history.fragment;
-        };
-
-        Mapplication.on("start", function () {
-            if (Backbone.history) {
-                Backbone.history.start();
-            }
         });
 
         Mapplication.addInitializer(function (options) {

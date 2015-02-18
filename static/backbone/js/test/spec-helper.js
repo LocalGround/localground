@@ -145,7 +145,7 @@ define(
                 access: "Public (everyone)",
                 basemap: 12,
                 center: { type: "Point", coordinates: [-122, 37] },
-                description: "",
+                description: "This is a cool description for cool, humble people",
                 entities: [ { entities: [ 19 ], overlay_type: "photo" } ],
                 children: {
                     photos: {

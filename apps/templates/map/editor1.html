@@ -34,6 +34,7 @@
 				includeSearchControl: true,
 				includeGeolocationControl: false,
                 includeAudioControl: true,
+                includeFullScreenCtrl: true,
 				activeMapTypeID: {{ basemap_id|default:"12" }},
 				tilesets: {% autoescape off %}{{ overlays }}{% endautoescape %}
 			};
