@@ -79,7 +79,7 @@ define(["marionette",
 
             showShareModal: function () {
                 this.shareModalWrapper.currentView.setSerializedEntities(this.serializeActiveEntities());
-                this.shareModalWrapper.$el.modal();
+                this.shareModalWrapper.currentView.showModal();
             },
 
             //A convenience method to gather all currently active map markers for saving in a view
