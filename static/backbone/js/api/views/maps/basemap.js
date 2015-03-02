@@ -5,9 +5,12 @@ define(["marionette",
         "lib/maps/controls/tileController",
         "views/maps/overlays/overlayManager",
         "lib/maps/controls/deleteMenu",
-        "lib/maps/controls/audioPlayer"
+        "lib/maps/controls/audioPlayer",
+        "lib/maps/controls/fullScreenCtrl",
+        "views/maps/caption/caption"
     ],
-    function (Marionette, $, SearchBox, GeoLocation, TileController, OverlayManager, DeleteMenu, AudioPlayer) {
+    function (Marionette, $, SearchBox, GeoLocation, TileController, OverlayManager, DeleteMenu, AudioPlayer,
+              FullScreenCtrl, CaptionController) {
         'use strict';
         /**
          * A class that handles the basic Google Maps functionality,
@@ -79,6 +82,8 @@ define(["marionette",
                         activeMapTypeID: this.activeMapTypeID
                     });
                 }
+
+
                 //add event handlers:
                 this.addEventHandlers();
             },
@@ -118,11 +123,27 @@ define(["marionette",
                 this.map = new google.maps.Map(document.getElementById(this.mapContainerID),
                     mapOptions);
                 var that = this;
+
+                //Controls overlaid over the map inside the map div
+                //need to wait for the map to load or be clobbered
                 google.maps.event.addListenerOnce(this.map, 'idle', function () {
                     if (that.opts.includeAudioControl) {
                         that.audioPlayer = new AudioPlayer({
                             el: that.mapContainerID,
                             app: that.app
+                        });
+                    }
+                    if (that.opts.includeFullScreenCtrl) {
+                        that.fullScreenCtrl = new FullScreenCtrl({
+                            el: that.mapContainerID,
+                            map: that.map
+                        });
+                    }
+                    if (that.opts.includeCaption && that.snapshot) {
+                        that.caption = new CaptionController({
+                            container: that.mapContainerID,
+                            app: that.app,
+                            snapshot: that.snapshot
                         });
                     }
                 });

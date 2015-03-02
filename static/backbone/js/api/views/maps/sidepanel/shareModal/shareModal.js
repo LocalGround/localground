@@ -4,9 +4,10 @@ define(["marionette",
         "collections/snapshots",
         "views/maps/sidepanel/shareModal/snapshotItem",
         "models/snapshot",
-        "lib/maps/geometry/geometry"
+        "lib/maps/geometry/geometry",
+        "views/maps/sidepanel/shareModal/confirmation"
     ],
-    function (Marionette, _, shareModal, Snapshots, SnapshotItem, Snapshot, Geometry) {
+    function (Marionette, _, shareModal, Snapshots, SnapshotItem, Snapshot, Geometry, Confirmation) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -15,7 +16,7 @@ define(["marionette",
          */
 
         var ShareModal = Marionette.CompositeView.extend({
-            id: 'share-modal',
+            id: 'share-modal-wrapper',
             childView: SnapshotItem,
             childViewContainer: "#snapshot-list-container",
             activeSnapshotItem: null,
@@ -34,7 +35,7 @@ define(["marionette",
             events: {
                 'click .snapshot-item': 'selectSnapshot',
                 'input #save-snapshot-name': 'checkInput',
-                'click .save': 'saveSnapshot',
+                'click .save': 'trySaveSnapshot',
                 'click .delete-snapshot': 'deleteSnapshot',
                 'click .dismiss-modal': 'cleanUp',
                 'click .load': 'loadSnapshot'
@@ -96,6 +97,20 @@ define(["marionette",
                 }
             },
 
+
+            trySaveSnapshot: function (e) {
+                if (this.activeSnapshotItem) {
+                    var snapshot = this.getActiveSnapshotObject();
+                    Confirmation.confirm({
+                        message: "Really overwrite '" + snapshot.get('name') + "'?" +
+                            "  This will replace all of its contents with your current state.",
+                        callback: this.saveSnapshot.bind(this)
+                    });
+                } else {
+                    this.saveSnapshot();
+                }
+            },
+
             saveSnapshot: function (e) {
                 var snapshot = null;
                 //A convenience method to make sure the collection is sorted properly
@@ -127,6 +142,7 @@ define(["marionette",
                 }.bind(this)});
             },
 
+
             loadSnapshot: function () {
                 var snapshot = this.getActiveSnapshotObject();
                 //If all is well and we have the corresponding Snapshot...
@@ -150,6 +166,10 @@ define(["marionette",
             cleanUp: function () {
                 this.unsetActiveSnapshotItem();
                 this.resetInput();
+            },
+
+            showModal: function () {
+                this.$el.find('#share-modal').modal();
             }
 
 

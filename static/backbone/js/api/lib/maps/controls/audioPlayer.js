@@ -2,7 +2,7 @@
  * Created by zmmachar on 11/3/14.
  */
 define(['jquery',
-        'backbone',
+        'marionette',
         'underscore',
             'text!' + templateDir + '/mapControls/audioPlayer.html'],
     function ($, Backbone, _, PlayerTemplate) {

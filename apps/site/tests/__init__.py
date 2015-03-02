@@ -126,7 +126,7 @@ class ModelMixin(object):
         from django.contrib.gis.geos import Point
         lat = 37.8705
         lng = -122.2819
-        slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16)
+        slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
         v = models.Snapshot(
             name=name,
             owner=user,
@@ -398,31 +398,20 @@ class ModelMixin(object):
         audio.save()
         return audio
 
-
-class ViewMixin(ModelMixin):
+class ViewAnonymousMixin(ModelMixin):
     fixtures = ['initial_data.json', 'test_data.json']
 
     def setUp(self):
         ModelMixin.setUp(self)
 
-    def test_page_403_or_302_status_anonymous_user(self, urls=None):
-        if urls is None:
-            urls = self.urls
-        for url in urls:
-            response = self.client_anonymous.get(url)
-            self.assertIn(response.status_code, [
-                status.HTTP_302_FOUND,
-                status.HTTP_403_FORBIDDEN
-            ])
-
     def test_page_200_status_basic_user(self, urls=None, **kwargs):
         if urls is None:
             urls = self.urls
         for url in urls:
-            # print url
+            #print url
             response = self.client_user.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-
+            
     def test_page_resolves_to_view(self, urls=None):
         if urls is None:
             urls = self.urls
@@ -434,6 +423,22 @@ class ViewMixin(ModelMixin):
                 self.view.__name__)
             # print url, func_name, view_name
             self.assertEqual(func_name, view_name)
+            
+class ViewMixin(ViewAnonymousMixin):
+    fixtures = ['initial_data.json', 'test_data.json']
+
+    def setUp(self):
+        ViewAnonymousMixin.setUp(self)
+
+    def test_page_403_or_302_status_anonymous_user(self, urls=None):
+        if urls is None:
+            urls = self.urls
+        for url in urls:
+            response = self.client_anonymous.get(url)
+            self.assertIn(response.status_code, [
+                status.HTTP_302_FOUND,
+                status.HTTP_403_FORBIDDEN
+            ])
 
 
 # import tests from other directories:

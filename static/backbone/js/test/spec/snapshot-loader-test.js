@@ -1,44 +1,51 @@
 define(["underscore",
         "lib/maps/data/snapshotLoader",
-        "views/maps/basemap",
         "../../test/spec-helper"],
-    function (_, ViewLoader, Basemap) {
+    function (_, SnapshotLoader) {
         'use strict';
-        var viewLoader, that;
-        describe("ViewLoader: Test that initializes correctly", function () {
+        var snapshotLoader, that;
+
+        describe("SnapshotLoader: Test that initializes correctly", function () {
 
             it("Loads correctly if an initial view is passed in", function () {
                 that = this;
                 expect(function () {
-                    viewLoader = new ViewLoader({
+                    var snapshotLoader = new SnapshotLoader({
                         app: that.app,
-                        view: that.view
+                        snapshot: that.snapshot
                     });
                 }).not.toThrow();
             });
 
         });
 
-        describe("ViewLoader: Check that view loads correctly", function () {
+        describe("SnapshotLoader: Check that view loads correctly", function () {
 
             it("Triggers the changeZoom and the changeCenter methods in Basemap", function () {
                 //spyOn(Basemap.prototype, "changeZoom");
                 //spyOn(Basemap.prototype, "changeCenter");
-                //spyOn(ViewLoader.prototype, "initialize");
-                spyOn(google.maps.Map.prototype, 'setZoom');
+                //spyOn(SnapshotLoader.prototype, "initialize");
+                //spyOn(google.maps.Map.prototype, 'setZoom');
                 //spyOn(google.maps.Map.prototype, 'idle');
 
-                var basemapOpts = _.extend(_.clone(this.mapEditorInitializationParams), { app: this.app }),
-                    basemap = new Basemap(basemapOpts);
-                viewLoader = new ViewLoader({
+                //var snapshotModel = new Snapshot(this.snapshot);
+                var snapshotLoader = new SnapshotLoader({
                     app: this.app,
-                    view: this.view
+                    snapshot: this.snapshot
                 });
-                expect(basemap.map.setZoom).toHaveBeenCalled();
-                //expect(basemap.map.idle).toHaveBeenCalled();
-                //console.log(basemap.map.setZoom.calls.count());
-                //expect(basemap.changeZoom).toHaveBeenCalled();
-                //expect(basemap.changeCenter).toHaveBeenCalled();
+                spyOn(this.app.vent, 'trigger').and.callThrough();
+                spyOn(snapshotLoader, 'updateCollections');
+
+
+                this.app.vent.trigger('map-ready');
+
+                var centerPoint = new google.maps.LatLng(this.snapshot.center.coordinates[1],
+                    this.snapshot.center.coordinates[0]);
+                //expect(this.app.vent.trigger).toHaveBeenCalledWith('new-collection-created');
+                expect(snapshotLoader.updateCollections).toHaveBeenCalled();
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('change-center', centerPoint);
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('change-zoom', this.snapshot.zoom);
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('set-map-type', this.snapshot.basemap);
             });
         });
     });
