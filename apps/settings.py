@@ -49,7 +49,10 @@ TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_ME
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'YOUR_CLIENT_KEY'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'YOUR_SECRET'
 
+SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
+
 DEFAULT_BASEMAP_ID = 12
+
 #OS variables:
 USER_ACCOUNT = 'linux-user-account'     #account to use for creating new OS files / directories
 GROUP_ACCOUNT = 'linux-user-group'      #group to use for creating new OS files / directories
@@ -188,11 +191,12 @@ INSTALLED_APPS = (
     'localground.apps.site',
     'localground.apps.registration',        #taken from the django-registration module
     'tagging',                              #for tagging of blog posts in Django
-    'localground.apps.contenttypes',
+    #'localground.apps.contenttypes',
     #'django.contrib.admin',
     'rest_framework',
     'corsheaders',
     'social.apps.django_app.default',
+    'swampdragon'
 )
 
 REST_FRAMEWORK = {

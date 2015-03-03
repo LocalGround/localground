@@ -27,7 +27,7 @@ class BaseMedia(BaseAudit):
         'GenericAssociation',
         content_type_field='entity_type',
         object_id_field='entity_id',
-        related_name="%(app_label)s_%(class)s_related")
+        related_query_name="%(app_label)s_%(class)s_related")
 
     @classmethod
     def inline_form(cls, user):

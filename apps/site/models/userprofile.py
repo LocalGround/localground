@@ -22,7 +22,7 @@ class UserProfile(models.Model):
         help_text='Your default sharing settings for your maps and media')  # default to private
     contacts = models.ManyToManyField(
         'auth.User',
-        related_name='%(app_label)s_%(class)s_related',
+        related_query_name='%(app_label)s_%(class)s_related',
         null=True,
         blank=True,
         verbose_name="Users You're Following")

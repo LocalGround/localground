@@ -23,7 +23,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
     map_provider = models.ForeignKey(
         'WMSOverlay',
         db_column='fk_provider',
-        related_name='prints_print_wmsoverlays')
+        related_query_name='prints_print_wmsoverlays')
     layout = models.ForeignKey('Layout')
     map_width = models.IntegerField()
     map_height = models.IntegerField()

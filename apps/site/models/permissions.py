@@ -116,7 +116,7 @@ class UserAuthorityObject(models.Model):
     time_stamp = models.DateTimeField(default=datetime.now)
     granted_by = models.ForeignKey(
         'auth.User',
-        related_name="%(app_label)s_%(class)s_related")
+        related_query_name="%(app_label)s_%(class)s_related")
 
     # Following fields are required for using GenericForeignKey
     content_type = models.ForeignKey(ContentType)
@@ -155,7 +155,7 @@ class AudioUser(ObjectUserPermissions):
         'Audio',
         db_column='id',
         on_delete=models.DO_NOTHING,
-        related_name='authuser')
+        related_query_name='authuser')
 
     class Meta:
         app_label = 'site'
@@ -168,7 +168,7 @@ class PhotoUser(ObjectUserPermissions):
         'Photo',
         db_column='id',
         on_delete=models.DO_NOTHING,
-        related_name='authuser')
+        related_query_name='authuser')
 
     class Meta:
         app_label = 'site'
@@ -181,7 +181,7 @@ class VideoUser(ObjectUserPermissions):
         'Video',
         db_column='id',
         on_delete=models.DO_NOTHING,
-        related_name='authuser')
+        related_query_name='authuser')
 
     class Meta:
         app_label = 'site'
@@ -194,7 +194,7 @@ class MarkerUser(ObjectUserPermissions):
         'Marker',
         db_column='id',
         on_delete=models.DO_NOTHING,
-        related_name='authuser')
+        related_query_name='authuser')
 
     class Meta:
         app_label = 'site'
@@ -207,7 +207,7 @@ class PrintUser(ObjectUserPermissions):
         'Print',
         db_column='id',
         on_delete=models.DO_NOTHING,
-        related_name='authuser')
+        related_query_name='authuser')
 
     class Meta:
         app_label = 'site'
@@ -220,7 +220,7 @@ class AttachmentUser(ObjectUserPermissions):
         'Attachment',
         db_column='id',
         on_delete=models.DO_NOTHING,
-        related_name='authuser')
+        related_query_name='authuser')
 
     class Meta:
         app_label = 'site'
@@ -233,7 +233,7 @@ class ScanUser(ObjectUserPermissions):
         'Scan',
         db_column='id',
         on_delete=models.DO_NOTHING,
-        related_name='authuser')
+        related_query_name='authuser')
 
     class Meta:
         app_label = 'site'
@@ -246,7 +246,7 @@ class SnapshotUser(ObjectUserPermissions):
         'Snapshot',
         db_column='id',
         on_delete=models.DO_NOTHING,
-        related_name='authuser')
+        related_query_name='authuser')
 
     class Meta:
         app_label = 'site'
@@ -257,7 +257,7 @@ class SnapshotUser(ObjectUserPermissions):
 class ProjectUser(ObjectUserPermissions):
     project = models.ForeignKey('Project', db_column='id',
                                 on_delete=models.DO_NOTHING,
-                                related_name='authuser')
+                                related_query_name='authuser')
 
     class Meta:
         app_label = 'site'
@@ -268,7 +268,7 @@ class ProjectUser(ObjectUserPermissions):
 class FormUser(ObjectUserPermissions):
     form = models.ForeignKey('Form', db_column='id',
                              on_delete=models.DO_NOTHING,
-                             related_name='authuser')
+                             related_query_name='authuser')
 
     class Meta:
         app_label = 'site'
@@ -281,7 +281,7 @@ class PresentationUser(ObjectUserPermissions):
         'Presentation',
         db_column='id',
         on_delete=models.DO_NOTHING,
-        related_name='authuser')
+        related_query_name='authuser')
 
     class Meta:
         app_label = 'site'
@@ -293,7 +293,7 @@ class LayerUser(ObjectUserPermissions):
         'Layer',
         db_column='id',
         on_delete=models.DO_NOTHING,
-        related_name='authuser')
+        related_query_name='authuser')
 
     class Meta:
         app_label = 'site'

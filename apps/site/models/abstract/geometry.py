@@ -112,7 +112,7 @@ class BaseExtents(Base):
         return self.display_coords()
 
 
-class StatusCode(models.Model):
+class ProcessingStatusCode(models.Model):
     READY_FOR_PROCESSING = 1
     PROCESSED_SUCCESSFULLY = 2
     PROCESSED_MANUALLY = 3
@@ -136,10 +136,10 @@ class StatusCode(models.Model):
 
     @classmethod
     def get_status(cls, code_id):
-        return StatusCode.objects.get(id=code_id)
+        return ProcessingStatusCode.objects.get(id=code_id)
 
 
-class UploadSource(models.Model):
+class UploadSrc(models.Model):
     WEB_FORM = 1
     EMAIL = 2
     MANUAL = 3
@@ -153,4 +153,4 @@ class UploadSource(models.Model):
 
     @classmethod
     def get_source(cls, source_id):
-        return UploadSource.objects.get(id=source_id)
+        return UploadSrc.objects.get(id=source_id)
