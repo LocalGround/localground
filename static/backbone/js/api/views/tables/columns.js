@@ -18,7 +18,7 @@ define([
                 "overlay_type",
                 "url",
                 "manually_reviewed",
-                //"geometry",
+                "geometry",
                 "num",
                 "display_name" //,
                 //"id", //for now
