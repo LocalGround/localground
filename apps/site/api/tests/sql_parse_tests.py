@@ -52,3 +52,6 @@ class SQLParseTest(test.TestCase):
 
     def test_is_null_operator(self, **kwargs):
         self.compare_sql("WHERE point is not null", Photo)
+
+    def test_equality_operator(self, **kwargs):
+        self.compare_sql("WHERE file_name_orig='2013-02-15 17.40.50.jpg'", Photo)
