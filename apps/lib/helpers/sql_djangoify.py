@@ -158,11 +158,12 @@ def like_pattern(col, val):
 @parser.pattern_handler(r"""
         (?P<col>[a-z0-9._]+)\s*
         in\s*
-        \((?P<vals>.*)\)$
+        \((?P<vals>[^)]*)\)
         """, re.I | re.X)
-def in_pattern(col, val):
-    key = "{}__{}".format(col, sql_lookup["LIKE"])
-    val = val
+def in_pattern(col, vals):
+    key = "{}__in".format(col)
+    vals = vals.strip("'") # remove start and end quotes
+    val = re.split(r",'?\s*'?", vals)
     args = {key: val}
     return Q(**args)
 

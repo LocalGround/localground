@@ -110,6 +110,9 @@ class SQLParseTest(test.TestCase):
     def test_like_operator(self):
         self.compare_sql("WHERE device like '%I5%'", Photo)
 
+    def test_in_operator(self):
+        self.compare_sql("WHERE id in (1,2,5)", Photo)
+        self.compare_sql("WHERE file_name_orig in ('2013-07-04 16.56.55.jpg', '2013-06-30 18.25.38.jpg')", Photo)
 
     def test_geo_query(self, **kwargs):
         self.compare_sql("WHERE ST_DISTANCE(point, POINT(-122.2459916666666686, 37.8964594444444458)) < 1", Photo)
