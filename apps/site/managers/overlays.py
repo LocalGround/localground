@@ -71,14 +71,14 @@ class MarkerMixin(ObjectMixin):
         return []
 
 
-class MarkerQuerySet(QuerySet, MarkerMixin):
-    pass
+#class MarkerQuerySet(QuerySet, MarkerMixin):
+#    pass
 
 
 class MarkerManager(GeoManager, MarkerMixin):
-
-    def get_query_set(self):
-        return MarkerQuerySet(self.model, using=self._db)
+    #def get_query_set(self):
+    #    return MarkerQuerySet(self.model, using=self._db)
+    pass
 
 
 class WMSOverlayMixin(BaseMixin):
@@ -103,8 +103,8 @@ class WMSOverlayMixin(BaseMixin):
 class WMSOverlayQuerySet(QuerySet, WMSOverlayMixin):
     pass
 
-
 class WMSOverlayManager(GeoManager, WMSOverlayMixin):
-
+    
     def get_query_set(self):
         return WMSOverlayQuerySet(self.model, using=self._db)
+    

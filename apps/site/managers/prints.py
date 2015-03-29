@@ -5,15 +5,14 @@ from django.db.models import Count
 from localground.apps.site.managers.base import ObjectMixin
 
 
-class PrintPermissionsQuerySet(QuerySet, ObjectMixin):
-    pass
+#class PrintPermissionsQuerySet(QuerySet, ObjectMixin):
+#    pass
 
 
 class PrintPermissionsManager(models.GeoManager, ObjectMixin):
-
-    def get_query_set(self):
-        return PrintPermissionsQuerySet(self.model, using=self._db)
-
+    #def get_query_set(self):
+    #    return PrintPermissionsQuerySet(self.model, using=self._db)
+    pass
 
 class PrintMixin(ObjectMixin):
     related_fields = ['project', 'owner', 'last_updated_by', 'map_provider']
@@ -85,6 +84,6 @@ class PrintQuerySet(QuerySet, PrintMixin):
 
 
 class PrintManager(models.GeoManager, PrintMixin):
-
     def get_query_set(self):
         return PrintQuerySet(self.model, using=self._db)
+
