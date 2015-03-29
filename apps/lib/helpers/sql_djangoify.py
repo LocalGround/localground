@@ -110,6 +110,14 @@ class ClauseInterpreter:
             
 
     def pattern_handler(self, pattern, flags=None):
+        """
+        Decorator to add a function to the parser.
+
+        params:
+        pattern - regex pattern to check for a match and create keywords. 
+                    The groupdict from a match will be passed to the decorated function
+        flags - standard regex flags to be used in compiling pattern
+        """
         def wrapper(func):
             self._handlers.append({
                 "func": func,
