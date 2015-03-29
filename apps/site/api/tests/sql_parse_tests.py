@@ -104,6 +104,9 @@ class SQLParseTest(test.TestCase):
     def test_and_conjunction(self):
         self.compare_sql("WHERE device='SCH-I535' and id < 6", Photo)
 
+    def test_or_conjunction(self):
+        self.compare_sql("WHERE device='SCH-I535' or id < 6", Photo)
+
     def test_like_operator(self):
         self.compare_sql("WHERE device like '%I5%'", Photo)
 
