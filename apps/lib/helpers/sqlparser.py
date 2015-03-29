@@ -214,13 +214,6 @@ class QueryParser(object):
                 self.error = True
                 self.error_message = 'Invalid query "%s"' % self.query_text
         
-    def get_field(self, col_name, operator):
-        for c in self.where_conditions:
-            if c.col_name.lower() == col_name.lower() and \
-                c.operator.lower() == operator.lower():
-                return c
-        return None
-        
     def __repr__(self):
         return 'Filter Text: %s\n%s' % (self.query_text, self.to_dict_list(debug=True))
         
@@ -229,12 +222,6 @@ class QueryParser(object):
         
     def to_dict_list(self, debug=False):
         return [c.to_dict(debug=True) for c in self.where_conditions]
-        
-    def remove_whitespaces(self, tokens):
-        stripped = []
-        for t in tokens:
-            if t.ttype != T.Whitespace: stripped.append(t)
-        return stripped
     
     def parse(self):
         if self.query_text is None:

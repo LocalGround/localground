@@ -85,7 +85,7 @@ class ClauseInterpreter:
 
             if query and conjunction:
                 if conjunction.lower() == 'and':
-                    query = query.filter(q)
+                    query = query & q
                 elif conjunction.lower() == 'or':
                     query = query | q
                 else:
