@@ -29,8 +29,7 @@ def get_data_sets_from_sql(where_clause, model):
     """
     sql = "SELECT * FROM {} {} ORDER BY ID LIMIT 10"\
             .format(model._meta.db_table, where_clause)
-    raw_dataset = model.objects.raw(sql)
-
+    raw_dataset = model.objects.raw(sql.replace("%", "%%")) # % signs need to be escaped or the connection expects parameters
 
     f = QueryParser(model, sql)
     parsed_dataset = f.extend_query(model.objects.order_by('id'))[:10]
@@ -88,13 +87,23 @@ class SQLParseTest(test.TestCase):
             self.assertEqual(r.id, p.id)
 
         if n== 0:
-            self.fail("no results to compare")
+            raw_count = len(list(raw_dataset))
+            parsed_count = len(list(parsed_dataset))
+            self.fail("no results to compare - raw:{} parsed:{}".format(raw_count, parsed_count))
 
     def test_no_where_should_be_equal(self, **kwargs):
         self.compare_sql("", Photo)
 
     def test_equality_operator(self, **kwargs):
+        # test string compare
         self.compare_sql("WHERE file_name_orig='2013-02-15 17.40.50.jpg'", Photo)
+
+        # test number compare
+        self.compare_sql("WHERE id<3", Photo)
+
+    def test_like_operator(self):
+        self.compare_sql("WHERE device like '%I5%'", Photo)
+
 
     def test_geo_query(self, **kwargs):
         self.compare_sql("WHERE ST_DISTANCE(point, POINT(-122.2459916666666686, 37.8964594444444458)) < 1", Photo)
