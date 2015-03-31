@@ -15,7 +15,7 @@ from localground.apps.site.models.photo import Photo
 
 
 
-def get_data_sets_from_sql(where_clause, model):
+def get_data_sets_from_sql(model, raw_where_clause, parsed_where_clause=None):
     """
     Get's a data set for the given model,using provided where_clause, using
     raw sql and the QueryParser. Datasets are ordered by id and limited to 10
@@ -24,14 +24,21 @@ def get_data_sets_from_sql(where_clause, model):
     returns a dataset based on raw execution and a dataset based on parsed execution
 
     params:
-    sql - string of sql query
     model - django model being queried
+    raw_where_clause - string of sql query to be used for raw data set
+    parsed_where_clause - string of sql query to be used for parsed data set
     """
-    sql = "SELECT * FROM {} {} ORDER BY ID LIMIT 10"\
-            .format(model._meta.db_table, where_clause)
-    raw_dataset = model.objects.raw(sql.replace("%", "%%")) # % signs need to be escaped or the connection expects parameters
+    if not parsed_where_clause:
+        parsed_where_clause = raw_where_clause
 
-    f = QueryParser(model, sql)
+    raw_sql = "SELECT * FROM {} {} ORDER BY ID LIMIT 10"\
+            .format(model._meta.db_table, raw_where_clause)
+
+    parsed_sql = "SELECT * FROM {} {}"\
+            .format(model._meta.db_table, parsed_where_clause)
+    raw_dataset = model.objects.raw(raw_sql.replace("%", "%%")) # % signs need to be escaped or the connection expects parameters
+
+    f = QueryParser(model, parsed_sql)
     parsed_dataset = f.extend_query(model.objects.order_by('id'))[:10]
 
     return raw_dataset, parsed_dataset
@@ -92,30 +99,30 @@ class SQLParseTest(test.TestCase):
             self.fail("no results to compare - raw:{} parsed:{}".format(raw_count, parsed_count))
 
     def test_no_where_should_be_equal(self, **kwargs):
-        self.compare_sql("", Photo)
+        self.compare_sql(Photo, "")
 
     def test_equality_operator(self, **kwargs):
         # test string compare
-        self.compare_sql("WHERE file_name_orig='2013-02-15 17.40.50.jpg'", Photo)
+        self.compare_sql(Photo, "WHERE file_name_orig='2013-02-15 17.40.50.jpg'")
 
         # test number compare
-        self.compare_sql("WHERE id<3", Photo)
+        self.compare_sql(Photo, "WHERE id<3",)
 
     def test_and_conjunction(self):
-        self.compare_sql("WHERE device='SCH-I535' and id < 6", Photo)
+        self.compare_sql(Photo, "WHERE device='SCH-I535' and id < 6",)
 
     def test_or_conjunction(self):
-        self.compare_sql("WHERE device='SCH-I535' or id < 6", Photo)
+        self.compare_sql(Photo, "WHERE device='SCH-I535' or id < 6",)
 
     def test_like_operator(self):
-        self.compare_sql("WHERE device like '%I5%'", Photo)
+        self.compare_sql(Photo, "WHERE device like '%I5%'")
 
     def test_in_operator(self):
-        self.compare_sql("WHERE id in (1,2,5)", Photo)
-        self.compare_sql("WHERE file_name_orig in ('2013-07-04 16.56.55.jpg', '2013-06-30 18.25.38.jpg')", Photo)
+        self.compare_sql(Photo, "WHERE id in (1,2,5)")
+        self.compare_sql(Photo, "WHERE file_name_orig in ('2013-07-04 16.56.55.jpg', '2013-06-30 18.25.38.jpg')")
 
     def test_geo_query(self, **kwargs):
-        self.compare_sql("WHERE ST_DISTANCE(point, POINT(-122.2459916666666686, 37.8964594444444458)) < 1", Photo)
+        self.compare_sql(Photo, "WHERE ST_DISTANCE(point, POINT(-122.2459916666666686, 37.8964594444444458)) < 1")
 
     def test_simple_geo_query(self):
         point = Point(-122.2459916666666686, 37.8964594444444458)
