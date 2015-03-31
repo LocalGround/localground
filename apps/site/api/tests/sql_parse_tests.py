@@ -86,8 +86,8 @@ class SQLStatementTest(test.TestCase):
 class SQLParseTest(test.TestCase):
     fixtures = ['initial_data.json', 'test_data.json']
 
-    def compare_sql(self, where_clause, model):
-        raw_dataset, parsed_dataset = get_data_sets_from_sql(where_clause, model)
+    def compare_sql(self, model, raw_where, parsed_where=None):
+        raw_dataset, parsed_dataset = get_data_sets_from_sql(model, raw_where, parsed_where)
         n = 0
         for r, p in zip(raw_dataset, parsed_dataset):
             n+=1
@@ -122,7 +122,9 @@ class SQLParseTest(test.TestCase):
         self.compare_sql(Photo, "WHERE file_name_orig in ('2013-07-04 16.56.55.jpg', '2013-06-30 18.25.38.jpg')")
 
     def test_geo_query(self, **kwargs):
-        self.compare_sql(Photo, "WHERE ST_DISTANCE(point, POINT(-122.2459916666666686, 37.8964594444444458)) < 1")
+        raw_where = "WHERE ST_DISTANCE(point, ST_SetSRID(ST_MakePoint(-122.2459916666666686, 37.8964594444444458), 4326)) < 1"
+        parsed_where = "WHERE ST_DISTANCE(point, POINT(-122.2459916666666686, 37.8964594444444458)) < 1"
+        self.compare_sql(Photo, raw_where, parsed_where)
 
     def test_simple_geo_query(self):
         point = Point(-122.2459916666666686, 37.8964594444444458)
