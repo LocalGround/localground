@@ -120,6 +120,14 @@ class SQLParseTest(test.TestCase):
     def test_like_operator(self):
         self.compare_sql(Photo, "WHERE device like '%I5%'")
 
+    def test_startswith_operator(self):
+        self.compare_sql(Photo, "WHERE device like 'HTC%'")
+
+
+    def test_endswith_operator(self):
+        self.compare_sql(Photo, "WHERE device like '%535'")
+
+
     def test_in_operator(self):
         self.compare_sql(Photo, "WHERE id in (1,2,5)")
         self.compare_sql(Photo, "WHERE file_name_orig in ('2013-07-04 16.56.55.jpg', '2013-06-30 18.25.38.jpg')")

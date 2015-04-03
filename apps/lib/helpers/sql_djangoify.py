@@ -132,7 +132,7 @@ parser = ClauseInterpreter()
 @parser.pattern_handler(r"""
         (?P<col>[a-z0-9._]+)\s*
         (?P<op>[<>=]{1,2})\s*
-        (?:(?P<num>\d+(\.\d+)?)|'(?P<text>[^']*)')
+        (?:(?P<num>\d+(\.\d+)?)|'(?P<text>.*)'$)
         """, re.I | re.X)
 def comparison_pattern(col, op, num=None, text=None):
     key = "{}__{}".format(col, sql_lookup[op])
@@ -146,10 +146,34 @@ def comparison_pattern(col, op, num=None, text=None):
 @parser.pattern_handler(r"""
         (?P<col>[a-z0-9._]+)\s*
         like\s*
-        '(?P<val>[^']*)'
+        '%(?P<val>.*)%'$
         """, re.I | re.X)
-def like_pattern(col, val):
-    key = "{}__{}".format(col, sql_lookup["LIKE"])
+def contains(col, val):
+    key = "{}__icontains".format(col, sql_lookup["LIKE"])
+    val = val
+    args = {key: val}
+    print args
+    return Q(**args)
+
+@parser.pattern_handler(r"""
+        (?P<col>[a-z0-9._]+)\s*
+        like\s*
+        '(?P<val>.*)%'$
+        """, re.I | re.X)
+def startswith(col, val):
+    key = "{}__startswith".format(col, sql_lookup["LIKE"])
+    val = val
+    args = {key: val}
+    print args
+    return Q(**args)
+
+@parser.pattern_handler(r"""
+        (?P<col>[a-z0-9._]+)\s*
+        like\s*
+        '%(?P<val>.*)'$
+        """, re.I | re.X)
+def endswith(col, val):
+    key = "{}__iendswith".format(col, sql_lookup["LIKE"])
     val = val
     args = {key: val}
     print args
@@ -158,7 +182,7 @@ def like_pattern(col, val):
 @parser.pattern_handler(r"""
         (?P<col>[a-z0-9._]+)\s*
         in\s*
-        \((?P<vals>[^)]*)\)
+        \((?P<vals>.*)\)$
         """, re.I | re.X)
 def in_pattern(col, vals):
     key = "{}__in".format(col)
