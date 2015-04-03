@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 
-where_finder = re.compile(r"(?:where)(.+?)(?:order by \w+|limit \d+)?$", re.I)
+where_finder = re.compile(r"(?:where)(.+?)(?:(order by \w+|limit \d+)\s*){0,2}$", re.I)
 
 def get_where_clause(sql):
     """

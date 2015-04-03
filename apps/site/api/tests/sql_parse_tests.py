@@ -56,6 +56,9 @@ class SQLStatementTest(test.TestCase):
         sql = "select * from stuff where " + where + " order by stuff"
         self.assertEqual(where, get_where_clause(sql))
 
+        sql = "select * from stuff where " + where + " order by stuff limit 10"
+        self.assertEqual(where, get_where_clause(sql))
+
     def test_statement_extraction(self):
         statements = [
                 "col1 = val1",
