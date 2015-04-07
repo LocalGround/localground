@@ -207,3 +207,55 @@ class MarkerSerializerCounts(GeometrySerializer):
         if self.request and self.request.method == 'POST':
             return self.metadata()
         return None
+    
+class MarkerSerializerLists(GeometrySerializer):
+    geometry = fields.GeometryField(
+        help_text='Assign a GeoJSON string',
+        required=False,
+        widget=widgets.JSONWidget,
+        geom_types=[
+            'Point',
+            'LineString',
+            'Polygon'])
+    color = fields.ColorField(required=False)
+    photo_array = serializers.SerializerMethodField('get_photo_count')
+    audio_array = serializers.SerializerMethodField('get_audio_count')
+    map_image_array = serializers.SerializerMethodField('get_map_image_count')
+    record_array = serializers.SerializerMethodField('get_record_count')
+    update_metadata = serializers.SerializerMethodField('get_update_metadata')
+
+    class Meta:
+        model = models.Marker
+        fields = GeometrySerializer.Meta.fields + \
+            ('photo_array', 'audio_array', 'record_array', 'map_image_array', 'color',
+             'update_metadata')
+        depth = 0
+
+    def get_photo_count(self, obj):
+        try:
+            return obj.photo_array
+        except:
+            return None
+
+    def get_audio_count(self, obj):
+        try:
+            return obj.audio_array
+        except:
+            return None
+
+    def get_map_image_count(self, obj):
+        try:
+            return obj.map_image_array
+        except:
+            return None
+
+    def get_record_count(self, obj):
+        try:
+            return obj.record_array
+        except:
+            return None
+        
+    def get_update_metadata(self, obj):
+        if self.request and self.request.method == 'POST':
+            return self.metadata()
+        return None

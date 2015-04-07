@@ -4,7 +4,7 @@ from localground.apps.site.api.serializers.barcoded_serializer import ScanSerial
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 from localground.apps.site.api.serializers.form_serializer import create_record_serializer, \
     create_compact_record_serializer
-from localground.apps.site.api.serializers.marker_serializer import MarkerSerializerCounts
+from localground.apps.site.api.serializers.marker_serializer import MarkerSerializerLists
 from rest_framework import serializers
 from localground.apps.site import models
 
@@ -110,8 +110,8 @@ class ProjectDetailSerializer(BaseNamedSerializer):
     def get_markers(self, obj, forms):
         return self.serialize_list(
             models.Marker,
-            MarkerSerializerCounts,
-            models.Marker.objects.get_objects_with_counts(
+            MarkerSerializerLists,
+            models.Marker.objects.get_objects_with_lists(
                 obj.owner,
                 project=obj,
                 forms=forms
