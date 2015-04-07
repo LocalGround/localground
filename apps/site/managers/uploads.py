@@ -46,19 +46,18 @@ class ScanQuerySet(QuerySet, ScanMixin):
 
 
 class ScanManager(models.GeoManager, ScanMixin):
-
     def get_query_set(self):
         return ScanQuerySet(self.model, using=self._db)
 
 
-class AttachmentQuerySet(QuerySet, UploadMixin):
-    pass
+#class AttachmentQuerySet(QuerySet, UploadMixin):
+#    pass
 
 
 class AttachmentManager(models.GeoManager, ScanMixin):
-
-    def get_query_set(self):
-        return AttachmentQuerySet(self.model, using=self._db)
+    #def get_query_set(self):
+    #    return AttachmentQuerySet(self.model, using=self._db)
+    pass
 
 
 class PhotoMixin(UploadMixin):
@@ -75,42 +74,42 @@ class PrintPermissionsMixin(object):
             return [p.to_dict() for p in self]
 
 
-class PhotoQuerySet(QuerySet, PhotoMixin):
-    pass
+#class PhotoQuerySet(QuerySet, PhotoMixin):
+#    pass
 
 
 class PhotoManager(models.GeoManager, PhotoMixin):
-
-    def get_query_set(self):
-        return PhotoQuerySet(self.model, using=self._db)
+    #def get_query_set(self):
+    #    return PhotoQuerySet(self.model, using=self._db)
+    pass
 
 
 class AudioMixin(UploadMixin):
     pass
 
 
-class AudioQuerySet(QuerySet, AudioMixin):
-    pass
+#class AudioQuerySet(QuerySet, AudioMixin):
+#    pass
 
 
 class AudioManager(models.GeoManager, AudioMixin):
-
-    def get_query_set(self):
-        return AudioQuerySet(self.model, using=self._db)
+    #def get_query_set(self):
+    #    return AudioQuerySet(self.model, using=self._db)
+    pass
 
 
 class VideoMixin(UploadMixin):
     pass
 
 
-class VideoQuerySet(QuerySet, AudioMixin):
-    pass
+#class VideoQuerySet(QuerySet, AudioMixin):
+#    pass
 
 
 class VideoManager(models.GeoManager, VideoMixin):
-
-    def get_query_set(self):
-        return VideoQuerySet(self.model, using=self._db)
+    #def get_query_set(self):
+    #    return VideoQuerySet(self.model, using=self._db)
+    pass
 
 
 class SnippetManager(models.Manager):
@@ -154,15 +153,15 @@ class RecordMixin(UploadMixin):
         return q
 
 
-class RecordQuerySet(QuerySet, AudioMixin):
-    pass
+#class RecordQuerySet(QuerySet, AudioMixin):
+#    pass
 
 
 class RecordManager(models.GeoManager, RecordMixin):
     related_fields = ['project', 'owner', 'form']
 
-    def get_query_set(self):
-        return RecordQuerySet(self.model, using=self._db)
+#    def get_query_set(self):
+#        return RecordQuerySet(self.model, using=self._db)
 
     def get_objects_detailed(self, user, project=None, request=None,
                              context=None, ordering_field='-time_stamp',

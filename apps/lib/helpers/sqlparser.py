@@ -3,6 +3,7 @@ from django.conf import settings
 from localground.apps.lib import sqlparse
 from localground.apps.lib.sqlparse import tokens as T
 from localground.apps.lib.sqlparse.sql import Where, Comparison, Identifier
+from localground.apps.lib.helpers.sql_djangoify import parser
 from datetime import datetime
 
 class FieldTypes(object):
@@ -213,13 +214,6 @@ class QueryParser(object):
                 self.error = True
                 self.error_message = 'Invalid query "%s"' % self.query_text
         
-    def get_field(self, col_name, operator):
-        for c in self.where_conditions:
-            if c.col_name.lower() == col_name.lower() and \
-                c.operator.lower() == operator.lower():
-                return c
-        return None
-        
     def __repr__(self):
         return 'Filter Text: %s\n%s' % (self.query_text, self.to_dict_list(debug=True))
         
@@ -228,75 +222,18 @@ class QueryParser(object):
         
     def to_dict_list(self, debug=False):
         return [c.to_dict(debug=True) for c in self.where_conditions]
-        
-    def remove_whitespaces(self, tokens):
-        stripped = []
-        for t in tokens:
-            if t.ttype != T.Whitespace: stripped.append(t)
-        return stripped
     
     def parse(self):
         if self.query_text is None:
             return
-        self.query_text = sqlparse.format(self.query_text, reindent=False, keyword_case='upper')
-        statement = sqlparse.parse(self.query_text)[0]
-        where_clause = None
-        for i, t in enumerate(statement.tokens):
-            if isinstance(t, Where):
-                where_clause =  t
-        if where_clause is None: return
-        
-        tokens = self.remove_whitespaces(where_clause.tokens)
-        tokens.pop(0)
-                
-        for i in range(0, len(tokens)):
-            t = tokens[i]
-            #parse equalities and inequalities:
-            if isinstance(t, Comparison):
-                children = [str(c) for c in self.remove_whitespaces(t.tokens)]
-                wc = WhereCondition(children[0], operator=children[1], val=children[2])
-                if len(self.where_conditions) > 0: wc.conjunction = str(tokens[i-1])
-                self.where_conditions.append(wc)
-            #elif str(t) in ['=', '>', '<', '>=', '<=']:
-            elif t.ttype == T.Comparison:
-                '''
-                This elif block is a total hack. Really, I need to rework this section
-                and write tests!
-                '''
-                wc = WhereCondition(str(tokens[i-1]), operator=str(tokens[i]), val=str(tokens[i+1]))                
-                if len(self.where_conditions) > 0: wc.conjunction = str(tokens[i-2])
-                self.where_conditions.append(wc)
-                
-            elif t.ttype == T.Keyword:
-                #parse "in" clauses:
-                if str(t) == 'IN':
-                    lst = str(self.remove_whitespaces(tokens[i+1].tokens)[1]).split(',')
-                    wc = WhereCondition(str(tokens[i-1]), operator='IN', val=lst)
-                    if len(self.where_conditions) > 0: wc.conjunction = str(tokens[i-2])
-                    self.where_conditions.append(wc)
-                    
-                #parse "like" clauses:
-                elif str(t) == 'LIKE':
-                    wc = WhereCondition(str(tokens[i-1]), operator='LIKE', val=str(tokens[i+1]))
-                    if len(self.where_conditions) > 0: wc.conjunction = str(tokens[i-2])
-                    self.where_conditions.append(wc)
+
+        self.where_conditions = parser.parse_sql(self.query_text)
              
     def extend_query(self, q):
-        #raise Exception(self.where_conditions)
-        from django.db.models import Q
-        if len(self.where_conditions) == 0:
+        if self.where_conditions:
+            return q.filter(self.where_conditions)
+        else:
             return q
-        args = Q(**self.where_conditions[0].get_expression(q.model))
-        if len(self.where_conditions) > 1:
-            for i in range(1, len(self.where_conditions)):
-                c = self.where_conditions[i]
-                if c.conjunction == 'AND':
-                    args = args & Q(**c.get_expression(q.model))
-                else: #OR condition:
-                    args = args | Q(**c.get_expression(q.model))
-        
-        q = q.filter(args)
-        return q
     
     def populate_filter_fields(self):
         '''
