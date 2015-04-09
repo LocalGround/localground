@@ -7,7 +7,7 @@
         <li class="clearfix">
         <label>{{ ff.title }}:</label>
         <div class="input">
-            {% if ff.id == 'project_id' and projects %}
+            {% if ff.id == 'project_id' or ff.id == 'project' and projects %}
                 <select id="{{ ff.id }}" name="{{ff.col_name}}" data-operator="{{ ff.operator }}">
                     <option value="">-- All --</option>
                     {% for p in projects %}
@@ -31,7 +31,7 @@
     {% endfor %}
     
     <li>
-        <textarea name="query" id="sql">{{ sql }}</textarea>   
+        <textarea name="query" id="sql">{{ sql|default_if_none:"" }}</textarea>   
     </li>
     <li class="divider"></li>  
     <li class="clearfix">

@@ -14,16 +14,23 @@ class FieldTypes(object):
 
 class QueryField(object):
     def __init__(self, col_name, id=None, title=None, data_type=None, operator='=',
-                    django_col_name=None):
+                    django_col_name=None, help_text=None):
         self.id = id
         self.col_name = col_name
         self.title = title
         self.data_type = data_type
         self.operator = operator
         self.django_col_name = col_name
+        self.help_text = help_text
         if self.django_col_name is None:
             self.django_col_name = col_name
         self.value = None
+    
+    def set_value(self, value):
+        if self.operator.lower() == 'in':
+            self.value = ', '.join(value)
+        else:
+            self.value = value
             
         
     def __repr__(self):
@@ -45,12 +52,21 @@ class QueryField(object):
 
 class QueryParser(object):
     error = False
+    django_operator_lookup = {
+        'exact': '=',
+        'gt': '>',
+        'gte': '>=',
+        'lt': '<',
+        'lte': '<=',
+        'icontains': 'LIKE',
+        'in': 'IN'
+    }
     
     def __init__(self, model_class, query_text, debug=True):
         self.model_class = model_class
         self.query_text = query_text
         self.where_conditions = []
-        #raise Exception(query_text)
+        self.filter_fields = []
         if debug:
             self.parse()
         else:
@@ -84,19 +100,16 @@ class QueryParser(object):
         '''
         Populates the UI filter fields with data, if applicable
         '''
-        filter_fields = self.model_class.filter_fields()
-        for i in range(0, len(filter_fields)):
-            filter_fields[i].value = self.get_field_value(filter_fields[i].col_name)
-        return filter_fields
-
-    def get_field_value(self, col_name):
+        filter_fields = self.model_class.get_filter_fields()
         if not self.where_conditions:
-            return None
-        for c in self.where_conditions.children:
-            field_name = "__".join(c[0].split("__")[:-1])
-            if field_name.lower() == col_name.lower():
-                return c[1]
-        return None 
+            return filter_fields
+        for filter_field in filter_fields:
+            for c in self.where_conditions.children:
+                field_name = "__".join(c[0].split("__")[:-1])
+                if field_name.lower() == filter_field.col_name.lower():
+                    filter_field.operator = self.django_operator_lookup.get(c[0].split("__")[-1])
+                    filter_field.set_value(c[1])
+        return filter_fields
     
     def to_dict_list(self):
         '''

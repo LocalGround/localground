@@ -16,6 +16,7 @@ class BaseAudit(Base):
         app_label = 'site'
         abstract = True
 
+    '''
     @classmethod
     def filter_fields(cls):
         from localground.apps.lib.helpers import QueryField, FieldTypes
@@ -43,3 +44,4 @@ class BaseAudit(Base):
             if f.col_name == name and f.operator.lower() == operator.lower():
                 return f
         return None
+    '''
