@@ -9,22 +9,23 @@ class BaseMixin(object):
     related_fields = ['owner', 'last_updated_by']
 
     def _apply_sql_filter(self, queryset, request, context):
+        #raise Exception('_apply_sql_filter')
         if request is None or request.GET.get('query') is None:
             return queryset
 
         from localground.apps.lib.helpers import QueryParser
-        f = QueryParser(self.model, request.GET.get('query'))
-        if f.error:
+        query = QueryParser(self.model, request.GET.get('query'))
+        if query.error:
             context.update({'error_message': query.error_message})
             return queryset
 
         # Add some information to the request context
         context.update({
-            'filter_fields': f.populate_filter_fields(),
-            'sql': f.query_text,
+            'filter_fields': query.populate_filter_fields(),
+            'sql': query.query_text,
             'has_filters': True
         })
-        return f.extend_query(queryset)
+        return query.extend_query(queryset)
 
     def get_objects(
             self,

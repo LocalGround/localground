@@ -12,16 +12,16 @@
                     <option value="">-- All --</option>
                     {% for p in projects %}
                         <option value="{{p.id}}"
-                            {% if p.id == ff.value_original %}selected{% endif %}>
+                            {% if p.id|slugify == ff.value %}selected{% endif %}>
                             {{ p.name }}
                         </option>
                     {% endfor%}
                 </select>
             {% else %}
                 <input id="{{ff.id}}" name="{{ff.col_name}}" type="text" data-operator="{{ ff.operator }}"
-                    {%if ff.data_type == 'date' %}value="{{ ff.value_original|date:"m/d/Y" }}"
+                    {%if ff.data_type == 'date' %}value="{{ ff.value|date:"m/d/Y" }}"
                     {% else %}
-                       value="{{ ff.value_original }}"
+                       value="{{ ff.value|default_if_none:"" }}"
                     {% endif %}
                     {%if ff.data_type == 'tag' %}class="tags"{% endif %}
                     {%if ff.data_type == 'date' %}class="date-picker"{% endif %}/>

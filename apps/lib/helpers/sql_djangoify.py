@@ -59,7 +59,15 @@ sql_lookup = {
 
 
 class UnrecognizedPatternError(Exception):
-    pass
+    def __init__(self, sql, clause):
+        self.sql = sql
+        self.clause = clause
+        
+    def __str__(self):
+        return repr('''UnrecognizedPatternError:
+                    The following segment of your SQL could not be understood: "{0}."
+                    Original SQL statement: "{1}"
+            '''.format(self.clause, self.sql))
 
 class UnrecognizedConjunctionError(Exception):
     pass
@@ -73,7 +81,9 @@ class ClauseInterpreter:
         self._handlers = [] # holds interpreters for sql functions
 
     def parse_sql(self, sql):
+        self.sql = sql
         conditions = get_where_conditions(sql)
+        #raise Exception(conditions)
         if conditions is None:
             return None
 
@@ -106,7 +116,7 @@ class ClauseInterpreter:
                 return h["func"](**args)
 
         # if nothing matches, raise error
-        raise UnrecognizedPatternError
+        raise UnrecognizedPatternError(self.sql, clause)
             
 
     def pattern_handler(self, pattern, flags=None):
@@ -137,7 +147,7 @@ parser = ClauseInterpreter()
 def comparison_pattern(col, op, num=None, text=None):
     key = "{}__{}".format(col, sql_lookup[op])
     if num is None:
-        val = text
+        val = str(text)
     else:
         val = num
     args = {key: val}
