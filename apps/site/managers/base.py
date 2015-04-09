@@ -9,7 +9,8 @@ class BaseMixin(object):
     related_fields = ['owner', 'last_updated_by']
 
     def _apply_sql_filter(self, queryset, request, context):
-        #raise Exception('_apply_sql_filter')
+        if context.get('has_filters') is not None:
+            return queryset
         if request is None or request.GET.get('query') is None:
             return queryset
 
@@ -43,7 +44,7 @@ class BaseMixin(object):
                  .select_related(*self.related_fields)
                  .filter(owner=user)
              )
-        q = self._apply_sql_filter(q, request, context)
+        #q = self._apply_sql_filter(q, request, context)
 
         if ordering_field:
             q = q.order_by(ordering_field)

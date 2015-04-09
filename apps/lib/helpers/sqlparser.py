@@ -76,8 +76,6 @@ class QueryParser(object):
              
     def extend_query(self, q):
         if self.where_conditions:
-            q = q.filter(self.where_conditions)
-            #raise Exception(q.query)
             return q.filter(self.where_conditions)
         else:
             return q
@@ -92,6 +90,8 @@ class QueryParser(object):
         return filter_fields
 
     def get_field_value(self, col_name):
+        if not self.where_conditions:
+            return None
         for c in self.where_conditions.children:
             field_name = "__".join(c[0].split("__")[:-1])
             if field_name.lower() == col_name.lower():

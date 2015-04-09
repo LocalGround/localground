@@ -162,7 +162,7 @@ def contains(col, val):
     key = "{}__icontains".format(col, sql_lookup["LIKE"])
     val = val
     args = {key: val}
-    print args
+    #print args
     return Q(**args)
 
 @parser.pattern_handler(r"""
@@ -174,7 +174,7 @@ def startswith(col, val):
     key = "{}__startswith".format(col, sql_lookup["LIKE"])
     val = val
     args = {key: val}
-    print args
+    #print args
     return Q(**args)
 
 @parser.pattern_handler(r"""
@@ -186,7 +186,7 @@ def endswith(col, val):
     key = "{}__iendswith".format(col, sql_lookup["LIKE"])
     val = val
     args = {key: val}
-    print args
+    #print args
     return Q(**args)
 
 @parser.pattern_handler(r"""
@@ -197,8 +197,9 @@ def endswith(col, val):
 def in_pattern(col, vals):
     key = "{}__in".format(col)
     vals = vals.strip("'") # remove start and end quotes
-    val = re.split(r",'?\s*'?", vals)
+    val = re.split(r"',\s*'|,\s*", vals)
     args = {key: val}
+    #raise Exception(args)
     return Q(**args)
 
 @parser.pattern_handler(r"""

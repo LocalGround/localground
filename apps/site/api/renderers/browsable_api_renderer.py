@@ -26,6 +26,7 @@ class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
                     break
             context.update({
                 'filter_fields': filter_fields,
+                'sql': query.query_text,
                 'object_type': model.model_name,
                 'object_name_plural': model.model_name_plural,
                 'has_filters': True,
