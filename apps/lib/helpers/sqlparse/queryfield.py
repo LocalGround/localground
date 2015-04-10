@@ -67,13 +67,19 @@ class QueryField(object):
     
     def update_from_sql(self, where_conditions):
         if not where_conditions: return None
-        for c in where_conditions.children:
-            field_name = "__".join(c[0].split("__")[:-1])
-            #field = QueryField.get_field_from_django_field(self.model_class, field_name)
-            if field_name.lower() == self.django_fieldname.lower():
-                operator = self.django_operator_lookup.get(c[0].split("__")[-1])
-                self.operator = operator or self.operator
-                self.set_value(c[1])
+        try:
+            for c in where_conditions.children:
+                field_name = "__".join(c[0].split("__")[:-1])
+                #field = QueryField.get_field_from_django_field(self.model_class, field_name)
+                if field_name.lower() == self.django_fieldname.lower():
+                    operator = self.django_operator_lookup.get(c[0].split("__")[-1])
+                    self.operator = operator or self.operator
+                    self.set_value(c[1])
+        except:
+            # Todo: Q objects can be nested inside of Q objects (especially if you used
+            # the "OR" conjunction. I need to write a tree traversal to implement
+            # this correctly. Adding try/except block for now.
+            pass
     
     
     
