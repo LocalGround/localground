@@ -52,10 +52,10 @@ class QueryField(object):
         
     def to_dict(self, col_name=True):
         d = {
-            'django_fieldname': self.django_fieldname,
+            #'django_fieldname': self.django_fieldname,
+            #'operator': self.operator,
             'title': self.title,
-            'operator': self.operator,
-            'data_type': self.data_type
+            'type': self.data_type
         }
         if col_name:
             d.update({

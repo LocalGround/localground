@@ -53,6 +53,6 @@ class QueryParser(object):
         '''
         Populates the UI filter fields with data, if applicable
         '''
-        fields = self.model_class.get_filter_fields()
+        fields = self.model_class.get_filter_fields().values()
         return [f.to_dict(col_name=True) for f in fields]
  
