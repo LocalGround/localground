@@ -149,13 +149,13 @@ class SQLParseTest(test.TestCase, ModelMixin):
     '''
         
     def test_geo_query_new(self, **kwargs):
-        sql = "WHERE point in buffer(-122.246, 37.896, 1000)" #return all photos within 1,000 meters
+        sql = "WHERE point within buffer(-122.246, 37.896, 1000)" #return all photos within 1,000 meters
         f = QueryParser(Photo, sql)
         parsed_dataset = f.extend_query(Photo.objects.order_by('id'))
         #expect two photos to return 
         self.assertEqual(len(parsed_dataset), 2)
         
-        sql = "WHERE point in buffer(-122.246, 37.896, 10)" #return all photos within 10 meters
+        sql = "WHERE point within buffer(-122.246, 37.896, 10)" #return all photos within 10 meters
         f = QueryParser(Photo, sql)
         parsed_dataset = f.extend_query(Photo.objects.order_by('id'))
         #expect 1 photo to return 

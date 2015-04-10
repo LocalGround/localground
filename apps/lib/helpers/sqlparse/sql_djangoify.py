@@ -228,7 +228,7 @@ def distance_pattern(col, lat, lon, op, dist):
 
 @parser.pattern_handler(r'''
         (?P<col>[a-z0-9._]+)\s*
-        in\s*
+        within\s*
         buffer\(
         (?P<lat>-?\d+\.\d*),\s*
         (?P<lon>-?\d+\.\d*),\s*

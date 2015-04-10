@@ -17,7 +17,7 @@ class QueryField(object):
         'lte': '<=',
         'icontains': 'LIKE',
         'in': 'IN',
-        'distance_lt': 'in'
+        'distance_lt': 'within'
     }
     
     @classmethod
