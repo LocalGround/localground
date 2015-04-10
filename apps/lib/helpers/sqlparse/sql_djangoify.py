@@ -222,6 +222,25 @@ def distance_pattern(col, lat, lon, op, dist):
     key = "{}__distance_{}".format(col, sql_lookup[op])
     args = {
         key: val
-        }
+    }
+    print args
+    return Q(**args)
 
+@parser.pattern_handler(r'''
+        (?P<col>[a-z0-9._]+)\s*
+        in\s*
+        buffer\(
+        (?P<lat>-?\d+\.\d*),\s*
+        (?P<lon>-?\d+\.\d*),\s*
+        (?P<dist>\d+)
+        \)$
+        ''', re.I | re.X)
+def buffer_pattern(col, lat, lon, dist):
+    point = Point(float(lat), float(lon))
+    val = (point, D(m=dist))
+    key = "{}__distance_lt".format(col)
+    args = {
+        key: val
+    }
+    #print args
     return Q(**args)

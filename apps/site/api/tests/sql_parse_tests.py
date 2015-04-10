@@ -6,15 +6,13 @@ from django.contrib.gis.measure import D
 from django.db.models.query import QuerySet
 from django.db.models import Q
 
-from localground.apps.lib.helpers import QueryParser
-from localground.apps.lib.helpers.sql_djangoify import get_where_clause, split_statements, get_where_conditions
+from localground.apps.lib.helpers.sqlparse.sqlparser import QueryParser
+from localground.apps.lib.helpers.sqlparse.sql_djangoify import get_where_clause, split_statements, get_where_conditions
 from localground.apps.site import models
 
 # model imports
 from localground.apps.site.models.marker import Marker
 from localground.apps.site.models.photo import Photo
-
-
 
 def get_data_sets_from_sql(model, raw_where_clause, parsed_where_clause=None):
     """
@@ -96,8 +94,8 @@ class SQLParseTest(test.TestCase, ModelMixin):
         are actually matching, given the data.
         '''
         ModelMixin.setUp(self)
-        self.photo1 = self.create_photo(self.user, self.project, file_name='2013-07-04 16.56.55.jpg')
-        self.photo2 = self.create_photo(self.user, self.project, file_name='2013-06-30 18.25.38.jpg',
+        self.photo1 = self.create_photo(self.user, self.project, file_name='2013-07-04 16.56.55.jpg', point=Point(-122.246, 37.896))
+        self.photo2 = self.create_photo(self.user, self.project, file_name='2013-06-30 18.25.38.jpg', point=Point(-122.846, 37.396),
                                         device='SCH-I535')
 
     def compare_sql(self, model, raw_where, parsed_where=None):
@@ -143,11 +141,27 @@ class SQLParseTest(test.TestCase, ModelMixin):
         self.compare_sql(Photo, "WHERE file_name_orig in ('{}', '{}')".format(self.photo1.file_name_orig, self.photo2.file_name_orig))
         self.compare_sql(Photo, "WHERE id in ({},{})".format(self.photo1.id, self.photo2.id))
         
+    '''
     def test_geo_query(self, **kwargs):
-        raw_where = "WHERE ST_DISTANCE(point, ST_SetSRID(ST_MakePoint(-122.2459916666666686, 37.8964594444444458), 4326)) < 1"
-        parsed_where = "WHERE ST_DISTANCE(point, POINT(-122.2459916666666686, 37.8964594444444458)) < 1"
+        raw_where = "WHERE ST_DISTANCE(point, ST_SetSRID(ST_MakePoint(-122.246, 37.896), 4326)) < 1"
+        parsed_where = "WHERE point in buffer(-122.246, 37.896, 1)"
         self.compare_sql(Photo, raw_where, parsed_where)
+    '''
+        
+    def test_geo_query_new(self, **kwargs):
+        sql = "WHERE point in buffer(-122.246, 37.896, 1000)" #return all photos within 1,000 meters
+        f = QueryParser(Photo, sql)
+        parsed_dataset = f.extend_query(Photo.objects.order_by('id'))
+        #expect two photos to return 
+        self.assertEqual(len(parsed_dataset), 2)
+        
+        sql = "WHERE point in buffer(-122.246, 37.896, 10)" #return all photos within 10 meters
+        f = QueryParser(Photo, sql)
+        parsed_dataset = f.extend_query(Photo.objects.order_by('id'))
+        #expect 1 photo to return 
+        self.assertEqual(len(parsed_dataset), 1)
+        
 
     def test_simple_geo_query(self):
-        point = Point(-122.2459916666666686, 37.8964594444444458)
+        point = Point(-122.246, 37.896)
         Photo.objects.filter(point__distance_lt=(point, D(m=5)))

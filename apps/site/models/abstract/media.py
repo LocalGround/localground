@@ -129,7 +129,7 @@ class BaseUploadedMedia(BaseNamedMedia):
     file_name_new = models.CharField(max_length=255)
     attribution = models.CharField(max_length=500, blank=True,
                                    null=True, verbose_name="Author / Creator")
-    filter_fields = BaseNamedMedia.filter_fields + ('attribution',)
+    filter_fields = BaseNamedMedia.filter_fields + ('attribution', 'point')
 
     class Meta:
         abstract = True

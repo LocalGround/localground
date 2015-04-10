@@ -19,7 +19,7 @@ class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
         filter_fields = query.populate_filter_fields()
         filters_on = False
         for ff in filter_fields:
-            if hasattr(ff, 'value'):
+            if hasattr(ff, 'value') and ff.value is not None:
                 filters_on = True
                 break
         context.update({

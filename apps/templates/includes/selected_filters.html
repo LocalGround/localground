@@ -10,8 +10,8 @@
             {% else %}
                 {{ ff.value }}
             {% endif %}
-            <a class="remove-filter" id="remove_{{ff.id}}" href="#"
-                    data-target="{{ff.id}}" title="remove filter">×</a>
+            <a class="remove-filter" id="remove_{{ff.col_name}}" href="#"
+                    data-target="{{ff.col_name}}" title="remove filter">×</a>
         </div>
         {% endif %}
     {% endfor %}

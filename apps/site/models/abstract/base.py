@@ -64,7 +64,8 @@ class Base(models.Model):
                 'AutoField': FieldTypes.INTEGER,
                 'ForeignKey': FieldTypes.INTEGER,
                 'CharField': FieldTypes.STRING,
-                'DateTimeField': FieldTypes.DATE
+                'DateTimeField': FieldTypes.DATE,
+                'PointField': FieldTypes.POINT
             }
             return data_types.get(model_field.get_internal_type()) or model_field.get_internal_type()
         query_fields = {}
@@ -75,6 +76,7 @@ class Base(models.Model):
                         f.name, django_fieldname=f.name, title=f.verbose_name,
                         help_text=f.help_text, data_type=get_data_type(f)
                     )
+        #raise Exception(query_fields)
         return query_fields
 
     @classproperty

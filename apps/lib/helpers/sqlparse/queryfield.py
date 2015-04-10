@@ -6,6 +6,7 @@ class FieldTypes(object):
     LIST = 'list'
     FLOAT = 'float'
     BOOLEAN = 'boolean'
+    POINT = 'point'
 
 class QueryField(object):
     django_operator_lookup = {
@@ -15,23 +16,14 @@ class QueryField(object):
         'lt': '<',
         'lte': '<=',
         'icontains': 'LIKE',
-        'in': 'IN'
+        'in': 'IN',
+        'distance_lt': 'in'
     }
     
     @classmethod
     def get_field_from_alias(cls, model_class, alias):
         search_fields = model_class.get_filter_fields()
-        #raise Exception(search_fields)
         return search_fields.get(alias)
-    
-    @classmethod
-    def get_field_from_django_field(cls, model_class, django_fieldname):
-        search_fields = model_class.get_filter_fields()
-        for field in search_fields.values():
-            if field.django_fieldname == django_fieldname:
-                return field
-        return None
-        
         
     def __init__(self, col_name, id=None, title=None, data_type=None, operator='=',
                     django_fieldname=None, help_text=None):
@@ -47,7 +39,9 @@ class QueryField(object):
         self.value = None
     
     def set_value(self, value):
-        if self.operator.lower() == 'in':
+        if self.data_type == 'point':
+            self.value = '({}, {}, {})'.format(value[0].x, value[0].y, int(value[1].m))
+        elif self.operator.lower() == 'in':
             self.value = ', '.join(value)
         else:
             self.value = value
@@ -60,7 +54,8 @@ class QueryField(object):
         d = {
             'django_fieldname': self.django_fieldname,
             'title': self.title,
-            'operator': self.operator
+            'operator': self.operator,
+            'data_type': self.data_type
         }
         if col_name:
             d.update({
@@ -76,7 +71,8 @@ class QueryField(object):
             field_name = "__".join(c[0].split("__")[:-1])
             #field = QueryField.get_field_from_django_field(self.model_class, field_name)
             if field_name.lower() == self.django_fieldname.lower():
-                self.operator = self.django_operator_lookup.get(c[0].split("__")[-1])
+                operator = self.django_operator_lookup.get(c[0].split("__")[-1])
+                self.operator = operator or self.operator
                 self.set_value(c[1])
     
     
