@@ -7,8 +7,8 @@
         <li class="clearfix">
         <label>{{ ff.title }}:</label>
         <div class="input">
-            {% if ff.id == 'project_id' or ff.id == 'project' and projects %}
-                <select id="{{ ff.id }}" name="{{ff.col_name}}" data-operator="{{ ff.operator }}">
+            {% if ff.col_name == 'project_id' or ff.col_name == 'project' and projects %}
+                <select id="{{ ff.col_name }}" name="{{ff.col_name}}" data-operator="{{ ff.operator }}">
                     <option value="">-- All --</option>
                     {% for p in projects %}
                         <option value="{{p.id}}"
@@ -18,7 +18,7 @@
                     {% endfor%}
                 </select>
             {% else %}
-                <input id="{{ff.id}}" name="{{ff.col_name}}" type="text" data-operator="{{ ff.operator }}"
+                <input id="{{ff.col_name}}" name="{{ff.col_name}}" type="text" data-operator="{{ ff.operator }}"
                     {%if ff.data_type == 'date' %}value="{{ ff.value|date:"m/d/Y" }}"
                     {% else %}
                        value="{{ ff.value|default_if_none:"" }}"

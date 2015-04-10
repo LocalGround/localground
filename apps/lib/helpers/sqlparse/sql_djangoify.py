@@ -5,6 +5,7 @@ import re
 from django.db.models import Q
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
+from localground.apps.lib.helpers.sqlparse.queryfield import QueryField
 
 where_finder = re.compile(r"(?:where)(.+?)(?:(order by \w+|limit \d+)\s*){0,2}$", re.I)
 
@@ -80,10 +81,10 @@ class ClauseInterpreter:
     def __init__(self):
         self._handlers = [] # holds interpreters for sql functions
 
-    def parse_sql(self, sql):
+    def parse_sql(self, sql, model_class):
         self.sql = sql
+        self.model_class = model_class
         conditions = get_where_conditions(sql)
-        #raise Exception(conditions)
         if conditions is None:
             return None
 
@@ -113,6 +114,10 @@ class ClauseInterpreter:
             m = h["matcher"].match(clause)
             if m:
                 args = m.groupdict()
+                field = QueryField.get_field_from_alias(self.model_class, args.get('col'))
+                if field is None:
+                    raise Exception('{} is not a searchable field.'.format(args.get('col')))
+                args['col'] = field.django_fieldname
                 return h["func"](**args)
 
         # if nothing matches, raise error

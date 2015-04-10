@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 
 
 class Base(models.Model):
-    filter_fields = []
+    filter_fields = ('id',)
     
     class Meta:
         app_label = 'site'
@@ -67,15 +67,14 @@ class Base(models.Model):
                 'DateTimeField': FieldTypes.DATE
             }
             return data_types.get(model_field.get_internal_type()) or model_field.get_internal_type()
-        query_fields = []
+        query_fields = {}
         for field in cls.filter_fields:
             for f in cls._meta.fields:
                 if f.name == field:
-                    query_fields.append(
-                        QueryField(
-                            f.column, id=f.name, title=f.verbose_name,
-                            help_text=f.help_text, data_type=get_data_type(f)
-                    ))
+                    query_fields[f.name] = QueryField(
+                        f.name, django_fieldname=f.name, title=f.verbose_name,
+                        help_text=f.help_text, data_type=get_data_type(f)
+                    )
         return query_fields
 
     @classproperty

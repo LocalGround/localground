@@ -28,6 +28,7 @@ class BaseMedia(BaseAudit):
         content_type_field='entity_type',
         object_id_field='entity_id',
         related_name="%(app_label)s_%(class)s_related")
+    filter_fields = ('id', 'project', 'date_created', 'file_name_orig',)
 
     @classmethod
     def inline_form(cls, user):
@@ -117,6 +118,7 @@ class BaseNamedMedia(BaseMedia, ProjectMixin):
     name = models.CharField(max_length=255, blank=True)
     description = models.TextField(null=True, blank=True)
     tags = TagAutocompleteField(blank=True, null=True)
+    filter_fields = BaseMedia.filter_fields + ('name', 'description', 'tags')
 
     class Meta:
         app_label = 'site'
@@ -127,7 +129,7 @@ class BaseUploadedMedia(BaseNamedMedia):
     file_name_new = models.CharField(max_length=255)
     attribution = models.CharField(max_length=500, blank=True,
                                    null=True, verbose_name="Author / Creator")
-    filter_fields = ('id', 'project', 'name', 'tags', 'date_created', 'file_name_new', 'owner')
+    filter_fields = BaseNamedMedia.filter_fields + ('attribution',)
 
     class Meta:
         abstract = True

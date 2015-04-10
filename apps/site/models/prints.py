@@ -38,44 +38,11 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
                                         db_column='form_column_ids')
     form = models.ForeignKey('Form', null=True, blank=True)
     deleted = models.BooleanField(default=False)
+    filter_fields = BaseMedia.filter_fields + ('name', 'description', 'tags', 'uuid', 'form')
     #layers = models.ManyToManyField('WMSOverlay', null=True, blank=True)
     objects = PrintManager()
 
-    @classmethod
-    def filter_fields(cls):
-        from localground.apps.lib.helpers import QueryField, FieldTypes
-        return [
-            QueryField(
-                'project__id',
-                id='project_id',
-                title='Project ID',
-                data_type=FieldTypes.INTEGER),
-            QueryField(
-                'map_title',
-                id='map_title',
-                title='Map Title',
-                operator='like'),
-            QueryField(
-                'owner__username',
-                id='owned_by',
-                title='Owned By'),
-            QueryField(
-                'map_image_path',
-                id='map_image_path',
-                title='File Name'),
-            QueryField(
-                'date_created',
-                id='date_created_after',
-                title='After',
-                data_type=FieldTypes.DATE,
-                operator='>='),
-            QueryField(
-                'date_created',
-                id='date_created_before',
-                title='Before',
-                data_type=FieldTypes.DATE,
-                operator='<=')]
-
+   
     @classmethod
     def inline_form(cls, user):
         from localground.apps.site.forms import get_inline_form_with_tags

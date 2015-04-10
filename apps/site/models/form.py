@@ -170,34 +170,6 @@ class Form(BaseNamed, BasePermissions):
             self._data_entry_form_class = dfb.data_entry_form_class
         return self._data_entry_form_class
 
-    @classmethod
-    def filter_fields(cls):
-        from localground.apps.lib.helpers import QueryField, FieldTypes
-        return [
-            QueryField(
-                'name',
-                title='Name',
-                operator='like'),
-            QueryField(
-                'description',
-                title='Description',
-                operator='like'),
-            QueryField(
-                'tags',
-                title='Tags'),
-            QueryField(
-                'date_created',
-                id='date_created_after',
-                title='After',
-                data_type=FieldTypes.DATE,
-                operator='>='),
-            QueryField(
-                'date_created',
-                id='date_created_before',
-                title='Before',
-                data_type=FieldTypes.DATE,
-                operator='<=')]
-
     def sync_db(self):
         mcb = ModelClassBuilder(self)
         mcb.sync_db()

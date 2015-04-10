@@ -23,6 +23,7 @@ class DynamicModelMixin(BasePoint, BaseAudit):
     snippet = models.ForeignKey('Snippet', null=True, blank=True)
     project = models.ForeignKey('Project')
     manually_reviewed = models.BooleanField()
+    filter_fields = BaseAudit.filter_fields + ('project',)
     objects = RecordManager()
 
     class Meta:
@@ -270,12 +271,17 @@ class ModelClassBuilder(object):
 
         # Add in any fields that were provided
         attrs.update(self.additional_fields)
+        attrs.update({
+            'filter_fields': DynamicModelMixin.filter_fields + tuple(self.dynamic_fields.keys())
+        })
+
+
 
         '''
-		-------------------
-		Begin Model Methods
-		-------------------
-		'''
+        -------------------
+        Begin Model Methods
+        -------------------
+        '''
 
         def save(self, user, *args, **kwargs):
             is_new = self.pk is None
@@ -289,58 +295,10 @@ class ModelClassBuilder(object):
             self.time_stamp = get_timestamp_no_milliseconds()
             #self.project = self.form.project
             super(self.__class__, self).save(*args, **kwargs)
-
-        @classmethod
-        def filter_fields(cls):
-            from localground.apps.lib.helpers import QueryField, FieldTypes
-            query_fields = [
-                QueryField(
-                    'project__id',
-                    id='project_id',
-                    title='Project ID',
-                    data_type=FieldTypes.INTEGER),
-                #QueryField('col_4', title='col_4', operator='like'),
-                QueryField('date_created', id='date_created_after', title='After',
-                           data_type=FieldTypes.DATE, operator='>='),
-                QueryField('date_created', id='date_created_before', title='Before',
-                           data_type=FieldTypes.DATE, operator='<=')
-            ]
-            for n in self.form.fields:
-                if n.data_type.id == Field.DataTypes.TEXT:
-                    query_fields.append(
-                        QueryField(
-                            n.col_name,
-                            title=n.col_alias,
-                            operator='like'))
-                elif n.data_type.id in [Field.DataTypes.INTEGER, Field.DataTypes.RATING]:
-                    query_fields.append(
-                        QueryField(
-                            n.col_name,
-                            title=n.col_alias,
-                            data_type=FieldTypes.INTEGER))
-                elif n.data_type.id == Field.DataTypes.DATETIME:
-                    query_fields.append(
-                        QueryField(
-                            n.col_name,
-                            title=n.col_alias,
-                            data_type=FieldTypes.DATE))
-                elif n.data_type.id == Field.DataTypes.BOOLEAN:
-                    query_fields.append(
-                        QueryField(
-                            n.col_name,
-                            title=n.col_alias,
-                            data_type=FieldTypes.BOOLEAN))
-                elif n.data_type.id == Field.DataTypes.DECIMAL:
-                    query_fields.append(
-                        QueryField(
-                            n.col_name,
-                            title=n.col_alias,
-                            data_type=FieldTypes.FLOAT))
-            return query_fields
-
+            
         attrs.update(dict(
             save=save,
-            filter_fields=filter_fields
+            #filter_fields=('id', 'name')
         ))
 
         # Create the class, which automatically triggers ModelBase processing
