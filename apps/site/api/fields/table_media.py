@@ -1,9 +1,9 @@
 from rest_framework import serializers
     
-class TablePhotoJSONField(serializers.WritableField):
+class TablePhotoJSONField(serializers.Field):
     type_label = 'json'
     
-    def to_native(self, obj):
+    def to_representation(self, obj):
         if obj is None:
             return None
         #return obj.id
@@ -14,10 +14,10 @@ class TablePhotoJSONField(serializers.WritableField):
             'file_name_medium': obj.encrypt_url(obj.file_name_medium)
         }
     
-class TableAudioJSONField(serializers.WritableField):
+class TableAudioJSONField(serializers.Field):
     type_label = 'json'
     
-    def to_native(self, obj):
+    def to_representation(self, obj):
         if obj is None:
             return None
         return {

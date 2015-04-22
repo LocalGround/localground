@@ -3,7 +3,6 @@ from django.conf import settings
 from django.shortcuts import render as direct_to_template
 import sys
 from django.contrib import admin
-admin.autodiscover()
 
 #from django.shortcuts import render as direct_to_template
 

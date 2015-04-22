@@ -14,7 +14,7 @@ class WMSOverlay(BaseNamed):
     overlay_type = models.ForeignKey('OverlayType')
     overlay_source = models.ForeignKey('OverlaySource')
     extents = models.PolygonField(null=True, blank=True)
-    auth_groups = models.ManyToManyField('auth.Group', null=True)
+    auth_groups = models.ManyToManyField('auth.Group', blank=True)
     is_printable = models.BooleanField(default=False)
     provider_id = models.CharField(max_length=30, blank=True)
     objects = WMSOverlayManager()

@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 
 
 class ProjectMixin(models.Model):
-    project = models.ForeignKey('Project', related_query_name='%(class)s')
+    project = models.ForeignKey('Project', related_name='%(class)s+')
 
     class Meta:
         abstract = True

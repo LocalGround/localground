@@ -14,7 +14,7 @@ class GenericAssociation(BaseAudit):
     the reference above for more information about the contenttypes framework.
     """
     ordering = models.IntegerField(default=1)
-    turned_on = models.BooleanField()
+    turned_on = models.BooleanField(default=False)
 
     # analogous to the "subject" in a triplet,
     # (e.g. "The 'source' has an 'entity.'")
@@ -25,7 +25,7 @@ class GenericAssociation(BaseAudit):
     # analogous to the "object" in a triplet
     entity_type = models.ForeignKey(
         ContentType,
-        related_query_name="%(app_label)s_%(class)s_related")
+        related_name="%(app_label)s_%(class)s_related")
     entity_id = models.PositiveIntegerField()
     entity_object = generic.GenericForeignKey('entity_type', 'entity_id')
 

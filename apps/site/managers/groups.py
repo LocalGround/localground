@@ -52,7 +52,7 @@ class ProjectQuerySet(QuerySet, ProjectMixin):
 
 class ProjectManager(models.GeoManager, ProjectMixin):
 
-    def get_query_set(self):
+    def get_queryset(self):
         return ProjectQuerySet(self.model, using=self._db)
 
 
@@ -105,7 +105,7 @@ class SnapshotQuerySet(QuerySet, SnapshotMixin):
 
 class SnapshotManager(models.GeoManager, SnapshotMixin):
 
-    def get_query_set(self):
+    def get_queryset(self):
         return SnapshotQuerySet(self.model, using=self._db)
 
 
@@ -205,7 +205,7 @@ class FormQuerySet(QuerySet, FormMixin):
 
 class FormManager(models.GeoManager, FormMixin):
 
-    def get_query_set(self):
+    def get_queryset(self):
         return FormQuerySet(self.model, using=self._db)
 
 
@@ -239,7 +239,7 @@ class PresentationQuerySet(QuerySet, PresentationMixin):
 
 class PresentationManager(models.GeoManager, PresentationMixin):
 
-    def get_query_set(self):
+    def get_queryset(self):
         return PresentationQuerySet(self.model, using=self._db)
     
     
@@ -279,5 +279,5 @@ class LayerQuerySet(QuerySet, LayerMixin):
 
 class LayerManager(models.GeoManager, LayerMixin):
 
-    def get_query_set(self):
+    def get_queryset(self):
         return LayerQuerySet(self.model, using=self._db)

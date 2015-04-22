@@ -11,7 +11,7 @@ class PrintPermissionsQuerySet(QuerySet, ObjectMixin):
 
 class PrintPermissionsManager(models.GeoManager, ObjectMixin):
 
-    def get_query_set(self):
+    def get_queryset(self):
         return PrintPermissionsQuerySet(self.model, using=self._db)
 
 
@@ -86,5 +86,5 @@ class PrintQuerySet(QuerySet, PrintMixin):
 
 class PrintManager(models.GeoManager, PrintMixin):
 
-    def get_query_set(self):
+    def get_queryset(self):
         return PrintQuerySet(self.model, using=self._db)

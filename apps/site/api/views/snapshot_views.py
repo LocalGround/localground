@@ -43,7 +43,8 @@ class SnapshotMixin(object):
                         entity_type=entity_type,
                         owner=self.request.user,
                         last_updated_by=self.request.user,
-                        time_stamp=get_timestamp_no_milliseconds()
+                        time_stamp=get_timestamp_no_milliseconds(),
+                        turned_on=True,
                     )
                     try:
                         a.save()

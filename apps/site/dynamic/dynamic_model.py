@@ -38,10 +38,11 @@ class DynamicModelMixin(BasePoint, BaseAudit):
     def form(self):
         if not hasattr(self, '_form'):
             from localground.apps.site.models import Form
+
             self._form = (Form.objects
-                          #.prefetch_related('field_set', 'field_set__data_type')
+                          # .prefetch_related('field_set', 'field_set__data_type')
                           .get(table_name=self._meta.db_table)
-                          )
+            )
         return self._form
 
     @property
@@ -226,7 +227,6 @@ class DynamicModelMixin(BasePoint, BaseAudit):
 
 
 class ModelClassBuilder(object):
-
     def __init__(self, form):
         self.name = 'form_%s' % form.id
         self.form = form
@@ -266,6 +266,8 @@ class ModelClassBuilder(object):
             del cache.app_models[self.app_label][self.name.lower()]
         except KeyError:
             pass
+        except AttributeError:
+            pass
         attrs = {'__module__': self.module, 'Meta': ModelClassBuilder}
 
         # Add in any fields that were provided
@@ -287,19 +289,20 @@ class ModelClassBuilder(object):
                 self.date_created = get_timestamp_no_milliseconds()
             self.last_updated_by = user
             self.time_stamp = get_timestamp_no_milliseconds()
-            #self.project = self.form.project
+            # self.project = self.form.project
             super(self.__class__, self).save(*args, **kwargs)
 
         @classmethod
         def filter_fields(cls):
             from localground.apps.lib.helpers import QueryField, FieldTypes
+
             query_fields = [
                 QueryField(
                     'project__id',
                     id='project_id',
                     title='Project ID',
                     data_type=FieldTypes.INTEGER),
-                #QueryField('col_4', title='col_4', operator='like'),
+                # QueryField('col_4', title='col_4', operator='like'),
                 QueryField('date_created', id='date_created_after', title='After',
                            data_type=FieldTypes.DATE, operator='>='),
                 QueryField('date_created', id='date_created_before', title='Before',
@@ -345,8 +348,8 @@ class ModelClassBuilder(object):
 
         # Create the class, which automatically triggers ModelBase processing
         self._model_class = type(self.name, (DynamicModelMixin, ), attrs)
-        #import sys
-        #sys.stderr.write('\n%s' % self._model_class._meta.get_all_field_names())
+        # import sys
+        # sys.stderr.write('\n%s' % self._model_class._meta.get_all_field_names())
         #sys.stderr.write('\n%s' % self.additional_fields)
         return self._model_class
 
@@ -372,19 +375,19 @@ class ModelClassBuilder(object):
                 field = models.FloatField(**kwargs)
             elif n.data_type.id == Field.DataTypes.PHOTO:
                 field = models.ForeignKey(
-                        'Photo',
-                        null=True,
-                        blank=True,
-                        db_column=n.col_name_db
-                    )
-                #raise Exception(field)
+                    'Photo',
+                    null=True,
+                    blank=True,
+                    db_column=n.col_name_db
+                )
+                # raise Exception(field)
             elif n.data_type.id == Field.DataTypes.AUDIO:
                 field = models.ForeignKey(
-                        'Audio',
-                        null=True,
-                        blank=True,
-                        db_column=n.col_name_db
-                    )
+                    'Audio',
+                    null=True,
+                    blank=True,
+                    db_column=n.col_name_db
+                )
 
             # add dynamic field:
             self.dynamic_fields.update({
@@ -403,8 +406,8 @@ class ModelClassBuilder(object):
                 })
         self.additional_fields.update(self.dynamic_fields)
         self.additional_fields.update(self.snippet_fields)
-        #import sys
-        #sys.stderr.write('%s' % self.additional_fields)
+        # import sys
+        # sys.stderr.write('%s' % self.additional_fields)
 
     def sync_db(self):
         '''
@@ -442,42 +445,31 @@ class ModelClassBuilder(object):
                 self.model_class,
                 no_style(),
                 pending_references))
-
-        errors_encountered = False
         try:
-            for statement in sql:
-                cursor.execute(statement)
+            with transaction.atomic():
+                errors_encountered = False
+                for statement in sql:
+                    cursor.execute(statement)
+
+                # Install SQL indices for newly created model
+                for model in seen_models:
+                    if model in created_models:
+                        index_sql = connection.creation.sql_indexes_for_model(
+                            model,
+                            no_style())
+                        if index_sql:
+                            for sql in index_sql:
+                                cursor.execute(sql)
         except Exception:
             self.stderr.write("Failed to install index for %s.%s model: %s\n" %
                               (app_name, model._meta.object_name, e))
-            errors_encountered = True
 
-        # Install SQL indices for newly created model
-        if not errors_encountered:
-            for model in seen_models:
-                if model in created_models:
-                    index_sql = connection.creation.sql_indexes_for_model(
-                        model,
-                        no_style())
-                    if index_sql:
-                        try:
-                            for sql in index_sql:
-                                cursor.execute(sql)
-                        except Exception as e:
-                            self.stderr.write(
-                                "Failed to install index for %s.%s model: %s\n" %
-                                (app_name, model._meta.object_name, e))
-                            errors_encountered = True
-
-        if errors_encountered:
-            transaction.rollback_unless_managed()
-        else:
-            transaction.commit_unless_managed()
 
         '''
-		Add to ContentTypes also:
-		'''
+        Add to ContentTypes also:
+        '''
         from django.utils.encoding import smart_text
+
         ct = ContentType(
             name=smart_text(self.model_class._meta.verbose_name_raw),
             app_label=self.model_class._meta.app_label,

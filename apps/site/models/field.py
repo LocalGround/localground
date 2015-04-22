@@ -88,12 +88,16 @@ class Field(BaseAudit):
             self.add_column_to_table()
 
         # 3. reset the application cache with the new table structure:
-        from django.db.models.loading import cache
+        from django.apps import apps
         from localground.apps.site.dynamic import ModelClassBuilder
-        cache.app_models['site'][
-            'form_%s' %
-            self.form.id] = ModelClassBuilder(
-            self.form).model_class
+        #form = apps.get_model('site', self.form.name)
+        #del apps.get_app_config('site').models[ModelClassBuilder(self.form).name]
+        apps.register_model('site',  ModelClassBuilder(
+            self.form).model_class)
+        # cache.app_models['site'][
+        #     'form_%s' %
+        #     self.form.id] = ModelClassBuilder(
+        #     self.form).model_class
 
     def add_column_to_table(self):
         if self.form.source_table_exists():
@@ -151,7 +155,6 @@ class Field(BaseAudit):
                 cursor = connection.cursor()
                 for statement in sql:
                     cursor.execute(statement)
-                transaction.commit_unless_managed()
 
             except Exception as e:
                 import sys

@@ -29,7 +29,8 @@ require.config({
         'slick': '../external/slick.min',
         'text': '../external/text',
         'underscore': '../external/underscore-min',
-        'urlon': '../external/urlon'
+        'urlon': '../external/urlon',
+        'socketio': '../external/socket.io'
     },
     //waitSeconds: 0,
     shim: {
@@ -89,6 +90,9 @@ require.config({
         'boot': {
             deps: ['jasmine', 'jasmine-html'],
             exports: 'window.jasmineRequire'
+        },
+        'socketio': {
+            exports: 'io'
         }
     },
     urlArgs: "bust=" + (new Date()).getTime()

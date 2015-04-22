@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 import json
 
-class GeometryField(serializers.WritableField):
+class GeometryField(serializers.Field):
 
     """
     A field to handle GeoDjango Geometry fields
@@ -35,8 +35,8 @@ class GeometryField(serializers.WritableField):
 
         super(GeometryField, self).__init__(*args, **kwargs)
 
-    def field_from_native(self, data, files, field_name, into):
-        geom = self.from_native(data.get(field_name))
+    def get_value(self, data, files, field_name, into):
+        geom = self.to_internal_value(data.get(field_name))
         if geom is None:
             
             #if we can't null out the field, then do nothing:
@@ -73,7 +73,7 @@ class GeometryField(serializers.WritableField):
         if 'Polygon' in self.geom_types:
             into[self.polygon_field_name] = polygon
 
-    def to_native(self, value):
+    def to_representation(self, value):
         if value is not None:
             if isinstance(value, dict) or value is None:
                 return value
@@ -81,7 +81,7 @@ class GeometryField(serializers.WritableField):
             # a Python object
             return json.loads(value.geojson)
 
-    def from_native(self, value):
+    def to_internal_value(self, value):
         if value is not None and value != '':
             try:
                 return GEOSGeometry(value)

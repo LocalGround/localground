@@ -20,34 +20,34 @@ class UrlField(relations.HyperlinkedIdentityField):
         return url
 
 
-class OwnerField(serializers.WritableField):
+class OwnerField(serializers.Field):
 
-    def to_native(self, obj):
+    def to_representation(self, obj):
         return obj.id
 
-    def from_native(self, data):
+    def to_internal_value(self, data):
         return User.objects.get(id=int(data))
 
 
-class ColorField(serializers.WritableField):
+class ColorField(serializers.Field):
     type_label = 'color'
 
 
-class DescriptionField(serializers.WritableField):
+class DescriptionField(serializers.Field):
     type_label = 'memo'
 
 
-class TagField(serializers.WritableField):
+class TagField(serializers.Field):
     type_label = 'tags'
 
 
-class ProjectField(serializers.WritableField):
+class ProjectField(serializers.Field):
     type_label = 'select'
 
-    def to_native(self, obj):
+    def to_representation(self, obj):
         return obj.id
 
-    def from_native(self, data):
+    def to_internal_value(self, data):
         id = None
         try:
             id = int(data)
@@ -82,13 +82,13 @@ class ProjectField(serializers.WritableField):
 
 
 
-class ProjectsField(serializers.WritableField):
+class ProjectsField(serializers.Field):
     type_label = 'integer'
 
-    def to_native(self, obj):
+    def to_representation(self, obj):
         return ', '.join([str(p.id) for p in obj.all()])
 
-    def from_native(self, data):
+    def to_internal_value(self, data):
         ids = None
         try:
             ids = data.split(',')
@@ -112,7 +112,7 @@ class FileField(serializers.CharField):
     type_label = 'file'
     label = 'file_name'
 
-    def field_from_native(self, data, files, field_name, into):
+    def get_value(self, data, files, field_name, into):
         try:
             if files.get(self.source):
                 value = files.get(self.source).name
@@ -121,7 +121,7 @@ class FileField(serializers.CharField):
             value = None
             into[self.source] = value
 
-    def to_native(self, obj):
+    def to_representation(self, obj):
         return obj
 
 
@@ -133,10 +133,10 @@ class EntityTypeField(serializers.ChoiceField):
         ('marker', 'marker')
     ]
 
-    def to_native(self, obj):
+    def to_representation(self, obj):
         return obj.model
 
-    def from_native(self, data):
+    def to_internal_value(self, data):
         from localground.apps.site.models import Base
 
         cls = Base.get_model(model_name=data)

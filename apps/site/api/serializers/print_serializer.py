@@ -18,12 +18,13 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         read_only=True)
     pdf = serializers.SerializerMethodField('get_pdf')
     thumb = serializers.SerializerMethodField('get_thumb')
-    instructions = serializers.WritableField(
+    instructions = serializers.Field(
         label='instructions',
         source='description',
         required=True,
-        widget=widgets.Textarea)
-    map_title = serializers.WritableField(
+        style={'base_template':'widgets/textarea.html'})
+        #widget=widgets.Textarea)
+    map_title = serializers.Field(
         label='map_title',
         source='name',
         required=True)

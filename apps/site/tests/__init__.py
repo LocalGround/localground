@@ -4,6 +4,33 @@ from rest_framework import status
 from localground.apps.site import models
 from django.contrib.auth.models import User
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
+import os
+from sys import path
+from django.core import serializers
+
+
+
+"""
+Really hacky workaround - fixtures are deprecated, so I'm manually loading them here
+TODO: move fixture loading into actual python code, probably
+This is super duper slow and dumb
+"""
+
+fixture_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fixtures'))
+fixture_filename = 'test_data.json'
+fixture_file = os.path.join(fixture_dir, fixture_filename)
+fixture = open(fixture_file, 'rb')
+json = [json for json in fixture]
+fixture.close()
+json = "".join(json)
+
+
+def load_test_fixtures():
+    objects = serializers.deserialize('json', json, ignorenonexistent=True)
+    for obj in objects:
+        obj.save()
+
+
 
 
 class Client(test.Client):
@@ -27,7 +54,7 @@ class Client(test.Client):
 
 class ModelMixin(object):
     user_password = 'top_secret'
-    fixtures = ['initial_data.json', 'test_data.json']
+    #fixtures = ['test_data.json']
 
     def setUp(self):
         self._superuser = None
@@ -37,6 +64,8 @@ class ModelMixin(object):
         self._client_anonymous = None
         self._client_user = None
         self._client_superuser = None
+        load_test_fixtures()
+
 
     @property
     def user(self):
@@ -103,7 +132,8 @@ class ModelMixin(object):
             username,
             first_name='superuser',
             email='',
-            password=self.user_password)
+            password=self.user_password,
+            id=2)
 
     def get_user(self, username='tester'):
         return User.objects.get(username=username)
@@ -144,7 +174,7 @@ class ModelMixin(object):
         )
         v.save()
         return v
-    
+
     def create_layer(self, user, name='Test Layer', authority_id=1):
         import random
         slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16)
@@ -290,7 +320,7 @@ class ModelMixin(object):
             fld.save()
         f.clear_table_model_cache()
         return f
-    
+
     def create_field(self, form, name='Field 1', data_type=None, ordering=1):
         data_type = data_type or models.DataType.objects.get(id=1)
         f = models.Field(
@@ -304,7 +334,7 @@ class ModelMixin(object):
         )
         f.save()
         return f
-    
+
 
     def insert_form_data_record(self, form, project=None):
 
@@ -399,7 +429,7 @@ class ModelMixin(object):
         return audio
 
 class ViewAnonymousMixin(ModelMixin):
-    fixtures = ['initial_data.json', 'test_data.json']
+    fixtures = ['test_data.json']
 
     def setUp(self):
         ModelMixin.setUp(self)
@@ -411,7 +441,7 @@ class ViewAnonymousMixin(ModelMixin):
             #print url
             response = self.client_user.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            
+
     def test_page_resolves_to_view(self, urls=None):
         if urls is None:
             urls = self.urls
@@ -423,9 +453,9 @@ class ViewAnonymousMixin(ModelMixin):
                 self.view.__name__)
             # print url, func_name, view_name
             self.assertEqual(func_name, view_name)
-            
+
 class ViewMixin(ViewAnonymousMixin):
-    fixtures = ['initial_data.json', 'test_data.json']
+    fixtures = ['test_data.json']
 
     def setUp(self):
         ViewAnonymousMixin.setUp(self)
@@ -439,9 +469,3 @@ class ViewMixin(ViewAnonymousMixin):
                 status.HTTP_302_FOUND,
                 status.HTTP_403_FORBIDDEN
             ])
-
-
-# import tests from other directories:
-from localground.apps.site.api.tests import *
-from localground.apps.site.tests.views import *
-from localground.apps.site.tests.security import *

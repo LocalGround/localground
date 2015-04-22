@@ -11,9 +11,10 @@ sys.path.append(workspace)
 #sys.path.append('C:\\yml\\_myScript_\\dj_things\\web_development\\svn_views\\django-registration')
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'localground.apps.settings'
-import django.core.handlers.wsgi
-application = django.core.handlers.wsgi.WSGIHandler()
-
+#import django.core.handlers.wsgi
+#application = django.core.handlers.wsgi.WSGIHandler()
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
 
 
 

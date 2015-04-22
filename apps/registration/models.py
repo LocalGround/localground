@@ -61,26 +61,26 @@ class RegistrationManager(models.Manager):
     
     def create_inactive_user(self, username, email, password,
                              site, send_email=True):
-        """
-        Create a new, inactive ``User``, generate a
-        ``RegistrationProfile`` and email its activation key to the
-        ``User``, returning the new ``User``.
+        with transaction.atomic():
+            """
+            Create a new, inactive ``User``, generate a
+            ``RegistrationProfile`` and email its activation key to the
+            ``User``, returning the new ``User``.
 
-        By default, an activation email will be sent to the new
-        user. To disable this, pass ``send_email=False``.
-        
-        """
-        new_user = User.objects.create_user(username, email, password)
-        new_user.is_active = False
-        new_user.save()
+            By default, an activation email will be sent to the new
+            user. To disable this, pass ``send_email=False``.
 
-        registration_profile = self.create_profile(new_user)
+            """
+            new_user = User.objects.create_user(username, email, password)
+            new_user.is_active = False
+            new_user.save()
 
-        if send_email:
-            registration_profile.send_activation_email(site)
+            registration_profile = self.create_profile(new_user)
+
+            if send_email:
+                registration_profile.send_activation_email(site)
 
         return new_user
-    create_inactive_user = transaction.commit_on_success(create_inactive_user)
 
     def create_profile(self, user):
         """
@@ -162,7 +162,7 @@ class RegistrationProfile(models.Model):
     """
     ACTIVATED = u"ALREADY_ACTIVATED"
     
-    user = models.ForeignKey(User, unique=True, verbose_name=_('user'))
+    user = models.OneToOneField(User, unique=True, verbose_name=_('user'))
     activation_key = models.CharField(_('activation key'), max_length=40)
     
     objects = RegistrationManager()

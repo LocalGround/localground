@@ -10,6 +10,8 @@ from localground.apps.site.models import (
     BaseExtents)
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os
+from django.contrib.contenttypes import generic
+
 
 
 class Processor(BaseUploadedMedia):
@@ -208,7 +210,6 @@ class Scan(Processor):
 
 
 class Attachment(Processor):
-    source_scan = models.ForeignKey(Scan, blank=True, null=True)
     is_short_form = models.BooleanField(default=False)
     directory_name = 'attachments'
     objects = AttachmentManager()

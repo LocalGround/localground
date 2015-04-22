@@ -23,7 +23,8 @@ ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE = False
 ACCOUNT_ACTIVATION_DAYS = 5
 SESSION_COOKIE_NAME = 'sessionid'
 
-
+#TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Custom Local Variables
 SERVER_HOST = os.environ.get('SERVER_HOST', 'yoursite.com')
@@ -49,7 +50,7 @@ TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_ME
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'YOUR_CLIENT_KEY'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'YOUR_SECRET'
 
-SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
+#SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
 
 DEFAULT_BASEMAP_ID = 12
 
@@ -88,7 +89,7 @@ DATABASES = {
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = None
+TIME_ZONE = 'UTC'
 
 DATE_INPUT_FORMATS = ('%m/%d/%Y', '%Y-%m-%d', '%m/%d/%y', '%m-%d-%y', '%m-%d-%Y')
 TIME_INPUT_FORMATS = ('%I:%M:%S %p', '%H:%M:%S', '%H:%M')
@@ -172,9 +173,9 @@ ROOT_URLCONF = 'localground.apps.site.urls'
 TEMPLATE_DIRS = (
     '%s/templates' % APPS_ROOT,
 )
-FIXTURE_DIRS = (
-    '%s/fixtures' % APPS_ROOT,
-)
+#FIXTURE_DIRS = (
+#    '%s/fixtures' % APPS_ROOT,
+#)
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
@@ -196,7 +197,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'corsheaders',
     'social.apps.django_app.default',
-    'swampdragon'
+    #'swampdragon'
 )
 
 REST_FRAMEWORK = {
@@ -206,9 +207,9 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'localground.apps.site.api.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.JSONPRenderer',
+        'rest_framework_jsonp.renderers.JSONPRenderer',
         'localground.apps.site.api.renderers.CSVRenderer',
-        'rest_framework.renderers.XMLRenderer'
+        'rest_framework_xml.renderers.XMLRenderer'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',

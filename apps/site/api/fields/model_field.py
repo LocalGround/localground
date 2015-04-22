@@ -1,5 +1,5 @@
 from rest_framework.relations import PrimaryKeyRelatedField
-from rest_framework.serializers import _resolve_model
+from rest_framework.utils.model_meta import _resolve_model
 
 class CustomModelField(PrimaryKeyRelatedField):
     '''

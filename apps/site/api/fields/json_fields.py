@@ -1,11 +1,11 @@
 from rest_framework import serializers
 import json
     
-class EntitiesField(serializers.WritableField):
+class EntitiesField(serializers.Field):
     type_label = 'json'
     type_name = 'EntitiesField'
 
-    def field_from_native(self, data, files, field_name, into):
+    def get_value(self, data, files, field_name, into):
         '''
         Alas, this doesn't cover it...only does most of the validation.
         To execute the actual database commit, you need to implement code
@@ -59,7 +59,7 @@ class EntitiesField(serializers.WritableField):
                                 id)  # entity['id'])
                         )
 
-    def to_native(self, value):
+    def to_representation(self, value):
         if value is not None:
             entity_dict = {}
             for e in value.all():
@@ -77,11 +77,11 @@ class EntitiesField(serializers.WritableField):
             return entry_list
 
 
-class JSONField(serializers.WritableField):
+class JSONField(serializers.Field):
     type_label = 'json'
     type_name = 'JSONField'
 
-    def from_native(self, data):
+    def to_internal_value(self, data):
         try:
             d = json.loads(data)
             if isinstance(d, dict) or isinstance(d, list):
@@ -92,7 +92,7 @@ class JSONField(serializers.WritableField):
             raise serializers.ValidationError('Error parsing JSON')
         return data
 
-    def to_native(self, value):
+    def to_representation(self, value):
         if value is not None:
             if isinstance(value, dict) or isinstance(value, list):
                 return value

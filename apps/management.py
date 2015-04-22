@@ -18,6 +18,5 @@ def load_customized_sql(app, created_models, verbosity=2, **kwargs):
 			fp = open(os.path.join(app_dir, custom_file), 'U')
 			cursor = connection.cursor()
 			cursor.execute(fp.read().decode(settings.FILE_CHARSET))
-			transaction.commit_unless_managed()
 
 signals.post_syncdb.connect(load_customized_sql)

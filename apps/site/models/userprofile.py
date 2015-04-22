@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from localground.apps.site.models.permissions import ObjectAuthority
 from localground.apps.site.models.groups import Project
 from datetime import datetime
+from django.conf import settings
 
 
 class UserProfile(models.Model):
@@ -22,8 +23,7 @@ class UserProfile(models.Model):
         help_text='Your default sharing settings for your maps and media')  # default to private
     contacts = models.ManyToManyField(
         'auth.User',
-        related_query_name='%(app_label)s_%(class)s_related',
-        null=True,
+        related_name='%(app_label)s_%(class)s_related',
         blank=True,
         verbose_name="Users You're Following")
     date_created = models.DateTimeField(default=datetime.now)

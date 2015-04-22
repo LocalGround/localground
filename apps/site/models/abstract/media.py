@@ -5,7 +5,7 @@ from localground.apps.site.models.abstract.mixins import ProjectMixin
 from tagging_autocomplete.models import TagAutocompleteField
 import base64
 from django.conf import settings
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericRelation
 import os
 import stat
 
@@ -23,7 +23,7 @@ class BaseMedia(BaseAudit):
     virtual_path = models.CharField(max_length=255)
     file_name_orig = models.CharField(max_length=255)
     content_type = models.CharField(max_length=50)
-    groups = generic.GenericRelation(
+    groups = GenericRelation(
         'GenericAssociation',
         content_type_field='entity_type',
         object_id_field='entity_id',
