@@ -22,7 +22,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         label='instructions',
         source='description',
         required=True,
-        style={'base_template':'widgets/textarea.html'})
+        style={'base_template':'textarea.html'})
         #widget=widgets.Textarea)
     map_title = serializers.Field(
         label='map_title',
