@@ -20,9 +20,9 @@ define([
                 "manually_reviewed",
                 "geometry",
                 "num",
-                "display_name",
-                "id", //for now
-                "project_id"
+                "display_name" //,
+                //"id", //for now
+                //"project_id"
             ],
             initialize: function (opts) {
                 opts = opts || {};
@@ -88,7 +88,7 @@ define([
                             name: k,
                             label: k,
                             cell: ImageCell,
-                            editable: false, //true,
+                            editable: true, //false
                             width: 140
                         });
                     } else if (opts.type == 'audio') {
@@ -96,7 +96,7 @@ define([
                             name: k,
                             label: k,
                             cell: AudioCell,
-                            editable: false, //true,
+                            editable: true, //false,
                             width: 140
                         });
                     } else {
