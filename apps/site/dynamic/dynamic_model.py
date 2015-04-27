@@ -370,7 +370,7 @@ class ModelClassBuilder(object):
             elif n.data_type.id == Field.DataTypes.DATETIME:
                 field = models.DateTimeField(**kwargs)
             elif n.data_type.id == Field.DataTypes.BOOLEAN:
-                field = models.BooleanField(**kwargs)
+                field = models.NullBooleanField(**kwargs)
             elif n.data_type.id == Field.DataTypes.DECIMAL:
                 field = models.FloatField(**kwargs)
             elif n.data_type.id == Field.DataTypes.PHOTO:

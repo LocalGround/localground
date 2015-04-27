@@ -8,15 +8,23 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super(BaseSerializer, self).__init__(*args, **kwargs)
-        if not hasattr(self.opts, 'view_name'):
-            # method of the DRF's serializers.HyperlinkedModelSerializer class:
-            self.opts.view_name = self._get_default_view_name(self.opts.model)
+        # if not hasattr(self.Meta, 'extra_kwargs'):
+        #     self.Meta.extra_kwargs = dict()
+        # if 'view_name' not in self.Meta.extra_kwargs.keys():
+        #     # method of the DRF's serializers.HyperlinkedModelSerializer class:
+        #     self.opts.view_name = self._get_default_view_name(self.opts.model)
 
         #raise Exception('%s - %s' % (self.opts.view_name, self.opts.lookup_field))
 
+        model_meta = self.Meta.model._meta
+        format_kwargs = {
+            'app_label': model_meta.app_label,
+            'model_name': model_meta.object_name.lower()
+        }
+
         url_field = fields.UrlField(
-            view_name=self.opts.view_name,
-            lookup_field=self.opts.lookup_field
+            view_name='%(model_name)s-detail'.format(format_kwargs), #self.opts.view_name,
+            lookup_field='pk'#self.opts.lookup_field
         )
         url_field.initialize(self, 'url')
         self.fields['url'] = url_field

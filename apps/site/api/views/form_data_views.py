@@ -106,13 +106,12 @@ class FormDataInstance(QueryableRetrieveUpdateDestroyView, FormDataMixin):
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
-        self.object = self.get_object_or_none()
-
-        if self.object is None:
+        try:
+            self.object = self.get_object()
             created = True
             save_kwargs = {'force_insert': True}
             success_status_code = status.HTTP_201_CREATED
-        else:
+        except Http404:
             created = False
             save_kwargs = {'force_update': True}
             success_status_code = status.HTTP_200_OK

@@ -3,12 +3,12 @@ from rest_framework import renderers, exceptions, parsers, status, VERSION
 from rest_framework.settings import api_settings
 from localground.apps.lib.helpers import QueryParser
 import sys
+import pdb
 
 
 class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
 
     def get_context(self, data, accepted_media_type, renderer_context):
-
         context = super(BrowsableAPIRenderer, self).get_context(
             data, accepted_media_type, renderer_context
         )
