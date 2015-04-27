@@ -31,7 +31,8 @@ class BaseNamedSerializer(BaseSerializer):
     tags = fields.TagField(
         label='tags',
         required=False,
-        widget=widgets.TagAutocomplete,
+        #widget=widgets.TagAutocomplete,
+        style={'base_template:input.html'},
         help_text='Tag your object here')
     name = serializers.CharField(required=False, label='name')
     description = fields.DescriptionField(required=False, label='caption')
@@ -59,7 +60,8 @@ class BaseNamedSerializer(BaseSerializer):
 class GeometrySerializer(BaseNamedSerializer):
     geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
                                     required=False,
-                                    widget=widgets.JSONWidget)
+                                    #widget=widgets.JSONWidget)
+                                    style={'base_template:input.html'})
 
     project_id = fields.ProjectField(source='project', required=False)
 
@@ -84,7 +86,8 @@ class ExtentsSerializer(BaseNamedSerializer):
         required=False)
     center = fields.GeometryField(help_text='Assign a GeoJSON string',
                                   required=False,
-                                  widget=widgets.JSONWidget,
+                                  style={'base_template:input.html'},
+                                  #widget=widgets.JSONWidget,
                                   point_field_name='center')
 
 

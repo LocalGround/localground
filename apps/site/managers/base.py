@@ -176,9 +176,9 @@ class GroupMixin(ObjectMixin):
     related_fields = [
         'owner',
         'last_updated_by',
-        'access_authority',
-        'tag',
-        'tags']
+        'access_authority',]
+        #'tag',
+        #'tags']
     #prefetch_fields = ['users__user']
     prefetch_fields = []
 

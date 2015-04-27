@@ -10,7 +10,10 @@ class PresentationSerializer(BaseNamedSerializer):
                             required=True,
                             widget=widgets.JSONWidget)
     '''
-    code = fields.JSONField(widget=widgets.JSONWidget, required=False)
+    code = fields.JSONField(
+        #widget=widgets.JSONWidget,
+        style={'base_template:input.html'},
+        required=False)
 
     class Meta:
         model = models.Presentation

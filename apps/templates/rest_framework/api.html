@@ -1,11 +1,13 @@
 {% extends "base/base.html" %}
 {% load url from future %}
 {% load rest_framework %}
+{% load static %}
 {% block top_menu %}
     {% include "includes/menus/top_nav.html" %}
 {% endblock %}
 
 {% block style_links %}
+
     <!-- link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap-tweaks.css" %}"/ -->
     <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
     <!-- link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/ -->

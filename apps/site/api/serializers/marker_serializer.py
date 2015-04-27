@@ -15,7 +15,8 @@ class MarkerSerializer(GeometrySerializer):
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
         required=False,
-        widget=widgets.JSONWidget,
+        #widget=widgets.JSONWidget,
+        style={'base_template:input.html'},
         geom_types=[
             'Point',
             'LineString',
@@ -160,7 +161,8 @@ class MarkerSerializerCounts(GeometrySerializer):
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
         required=False,
-        widget=widgets.JSONWidget,
+        #widget=widgets.JSONWidget,
+        style={'base_template:input.html'},
         geom_types=[
             'Point',
             'LineString',

@@ -4,7 +4,7 @@ from localground.apps.site import models
 
 
 class AssociationSerializer(serializers.ModelSerializer):
-    relation = serializers.SerializerMethodField('get_relation')
+    relation = serializers.SerializerMethodField()
     object_id = serializers.IntegerField(source="entity_id", required=True, label="object id")
 
     class Meta:
@@ -49,8 +49,8 @@ class AssociationSerializer(serializers.ModelSerializer):
 
 
 class AssociationSerializerDetail(AssociationSerializer):
-    parent = serializers.SerializerMethodField('get_parent')
-    child = serializers.SerializerMethodField('get_child')
+    parent = serializers.SerializerMethodField()
+    child = serializers.SerializerMethodField()
 
     class Meta:
         model = models.GenericAssociation

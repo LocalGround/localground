@@ -2,6 +2,7 @@ __author__ = 'zmmachar'
 from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.site.api import fields
+from django.contrib.auth.models import User
 
 
 class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
@@ -21,7 +22,7 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
         depth = 1
 
     id = serializers.IntegerField(required=True, label='id')
-    email_announcements = serializers.BooleanField(
+    email_announcements = serializers.NullBooleanField(
         required=False,
         label='email_announcements')
     default_location = fields.GeometryField(
@@ -29,13 +30,13 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
         label='default_location')
     time_stamp = serializers.DateTimeField(required=False, label='time_stamp')
     user = serializers.HyperlinkedRelatedField(
-        required=False,
         label='user',
-        view_name='user-detail')
+        view_name='user-detail',
+        read_only=True)
     contacts = serializers.RelatedField(
-        required=False,
         many=True,
-        label='contacts')
+        label='contacts',
+        read_only=True)
     date_created = serializers.DateTimeField(
         required=False,
         label='date_created')

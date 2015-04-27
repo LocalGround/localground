@@ -92,8 +92,8 @@ class Field(BaseAudit):
         from localground.apps.site.dynamic import ModelClassBuilder
         #form = apps.get_model('site', self.form.name)
         #del apps.get_app_config('site').models[ModelClassBuilder(self.form).name]
-        apps.register_model('site',  ModelClassBuilder(
-            self.form).model_class)
+        #apps.register_model('site',  ModelClassBuilder(
+            #self.form).model_class)
         # cache.app_models['site'][
         #     'form_%s' %
         #     self.form.id] = ModelClassBuilder(

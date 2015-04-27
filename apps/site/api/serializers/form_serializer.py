@@ -46,7 +46,8 @@ class BaseRecordSerializer(serializers.ModelSerializer):
 
     geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
                                     required=False,
-                                    widget=widgets.JSONWidget)
+                                    style={'base_template:input.html'})
+                                    #widget=widgets.JSONWidget)
     overlay_type = serializers.SerializerMethodField('get_overlay_type')
     url = serializers.SerializerMethodField('get_detail_url')
     project_id = fields.ProjectField(

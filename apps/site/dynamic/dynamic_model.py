@@ -22,7 +22,7 @@ class DynamicModelMixin(BasePoint, BaseAudit):
                                     db_column='user_num_snippet_id')
     snippet = models.ForeignKey('Snippet', null=True, blank=True)
     project = models.ForeignKey('Project')
-    manually_reviewed = models.BooleanField()
+    manually_reviewed = models.BooleanField(default=False)
     objects = RecordManager()
 
     class Meta:

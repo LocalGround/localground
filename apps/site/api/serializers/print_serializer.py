@@ -31,7 +31,8 @@ class PrintSerializerMixin(serializers.ModelSerializer):
     tags = fields.TagField(
         label='tags',
         required=False,
-        widget=TagAutocomplete,
+        style={'base_template:input.html'},
+        #widget=TagAutocomplete,
         help_text='Tag your object here')
     edit_url = serializers.SerializerMethodField('get_configuration_url')
 
@@ -69,10 +70,11 @@ class PrintSerializerMixin(serializers.ModelSerializer):
 
 
 class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
-    layout = serializers.SlugRelatedField(label='layout', slug_field='id')
+    layout = serializers.SlugRelatedField(label='layout', slug_field='id', read_only=True)
     map_provider = serializers.SlugRelatedField(
         label='map_provider',
-        slug_field='id')
+        slug_field='id',
+        read_only=True)
 
     class Meta:
         model = models.Print

@@ -81,8 +81,7 @@ class FormDataList(QueryableListCreateAPIView, FormDataMixin):
         base class
         '''
         serializer = self.get_serializer(
-            data=request.DATA,
-            files=request.FILES)
+            data=request.data)
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
@@ -118,8 +117,8 @@ class FormDataInstance(QueryableRetrieveUpdateDestroyView, FormDataMixin):
             save_kwargs = {'force_update': True}
             success_status_code = status.HTTP_200_OK
 
-        serializer = self.get_serializer(self.object, data=request.DATA,
-                                         files=request.FILES, partial=partial)
+        serializer = self.get_serializer(self.object, data=request.data,
+                                        partial=partial)
         save_kwargs.update({'user': self.request.user})
         if serializer.is_valid():
             self.pre_save(serializer.object)

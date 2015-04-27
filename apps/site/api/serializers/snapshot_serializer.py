@@ -14,12 +14,17 @@ from localground.apps.site.api import fields
 class SnapshotSerializer(BaseNamedSerializer):
     name = serializers.CharField(required=True)
     access = serializers.SerializerMethodField('get_access')
-    entities = fields.EntitiesField(widget=widgets.JSONWidget, required=False)
+    entities = fields.EntitiesField(
+        #widget=widgets.JSONWidget,
+        style={'base_template:input.html'},
+        required=False)
     center = fields.GeometryField(help_text='Assign a GeoJSON string',
                                   required=True,
-                                  widget=widgets.JSONWidget,
+                                  #widget=widgets.JSONWidget,
+                                  style={'base_template:input.html'},
                                   point_field_name='center')
-    basemap = serializers.PrimaryKeyRelatedField()
+    #TODO: add queryset for wmsoverlay
+    basemap = serializers.PrimaryKeyRelatedField(queryset=models.WMSOverlay.objects.all())
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
     children = serializers.SerializerMethodField('get_children')
 
