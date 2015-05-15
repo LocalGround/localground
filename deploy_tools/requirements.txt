@@ -23,6 +23,7 @@ python-dateutil==2.4.2
 reportlab==2.5
 simplejson==2.3.2
 python-social-auth==0.2.6
+sqlparse==0.1.15
 #MapScript (installed via apt-get (python-mapscript))
 #GDAL (installed via apt-get (python-gdal))
 
