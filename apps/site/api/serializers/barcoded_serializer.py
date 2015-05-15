@@ -6,7 +6,7 @@ from localground.apps.site.api.fields import FileField
 
 
 class AttachmentSerializer(BaseNamedSerializer):
-    overlay_type = serializers.SerializerMethodField('get_overlay_type')
+    overlay_type = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Attachment

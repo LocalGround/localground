@@ -48,7 +48,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
                                     required=False,
                                     style={'base_template:input.html'})
                                     #widget=widgets.JSONWidget)
-    overlay_type = serializers.SerializerMethodField('get_overlay_type')
+    overlay_type = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField('get_detail_url')
     project_id = fields.ProjectField(
         label='project_id',

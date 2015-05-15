@@ -13,7 +13,7 @@ class PhotoSerializer(MediaGeometrySerializer):
     path_marker_lg = serializers.SerializerMethodField('get_path_marker_lg')
     path_marker_sm = serializers.SerializerMethodField(
         'get_path_path_marker_sm')
-    overlay_type = serializers.SerializerMethodField('get_overlay_type')
+    overlay_type = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Photo

@@ -44,8 +44,8 @@ class BaseNamedSerializer(BaseSerializer):
         help_text='Tag your object here')
     name = serializers.CharField(required=False, label='name')
     description = fields.DescriptionField(required=False, label='caption')
-    overlay_type = serializers.SerializerMethodField('get_overlay_type')
-    owner = serializers.SerializerMethodField('get_owner')
+    overlay_type = serializers.SerializerMethodField()
+    owner = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         '''

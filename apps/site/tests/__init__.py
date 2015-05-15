@@ -5,7 +5,6 @@ from localground.apps.site import models
 from django.contrib.auth.models import User
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os
-from sys import path
 from django.core import serializers
 
 
