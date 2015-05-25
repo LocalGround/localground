@@ -8,7 +8,7 @@ import urllib
 
 class GroupManageSecurityTest(test.TestCase, ModelMixin):
 
-    fixtures = ['initial_data.json', 'test_data.json']
+    fixtures = ['test_data.json'] #'initial_data.json', 
 
     def setUp(self):
         ModelMixin.setUp(self)
@@ -52,8 +52,8 @@ class GroupManageSecurityTest(test.TestCase, ModelMixin):
 
 class GroupEditSecurityTest(test.TestCase, ModelMixin):
 
-    fixtures = ['initial_data.json', 'test_data.json']
-
+    fixtures = ['test_data.json'] #'initial_data.json',
+    
     def setUp(self):
         ModelMixin.setUp(self)
         self.groups = [
@@ -96,7 +96,7 @@ class GroupEditSecurityTest(test.TestCase, ModelMixin):
 
 class GroupViewSecurityTest(test.TestCase, ModelMixin):
 
-    fixtures = ['initial_data.json', 'test_data.json']
+    fixtures = ['test_data.json'] #'initial_data.json', 
 
     def setUp(self):
         ModelMixin.setUp(self)

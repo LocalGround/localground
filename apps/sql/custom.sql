@@ -40,7 +40,7 @@ CREATE OR REPLACE VIEW v_form_fields as
 -- A view to show all of the projects, who can access 
 -- them, and at what security level (view, edit, or manage)
 CREATE OR REPLACE VIEW v_private_projects AS
-SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+SELECT v.id as project_id, v.name, v.user_id, max(v.authority_id) AS authority_id
  FROM (         
   (SELECT g.id, g.name, a.user_id, a.authority_id
   FROM site_project g, site_userauthorityobject a
@@ -77,7 +77,7 @@ GROUP BY v.id, v.name, v.user_id;
 -- A view to show all of the presentations, who can access 
 -- them, and at what security level (view, edit, or manage)
 CREATE OR REPLACE VIEW v_private_presentations AS 
-SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+SELECT v.id as presentation_id, v.name, v.user_id, max(v.authority_id) AS authority_id
 FROM 
 (
     SELECT g.id, g.name, a.user_id, a.authority_id
@@ -110,7 +110,7 @@ SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
   --users who have been given access to a form via their projects:
   SELECT fp.form_id as id, p.name, p.user_id, p.authority_id
   FROM site_form_projects fp, v_private_projects p
-  WHERE fp.project_id = p.id
+  WHERE fp.project_id = p.project_id
 ) v
 GROUP BY v.id, v.name, v.user_id;
 
@@ -165,7 +165,7 @@ FROM  (
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
     FROM site_marker m, v_private_projects p
-    WHERE m.project_id = p.id 
+    WHERE m.project_id = p.project_id 
   UNION 
     -- accessible because is marker owner
     SELECT m.id, m.owner_id, 3 AS authority_id
@@ -215,7 +215,7 @@ FROM  (
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
     FROM site_audio m, v_private_projects p
-    WHERE m.project_id = p.id 
+    WHERE m.project_id = p.project_id 
   UNION 
     -- accessible b/c user is audio owner
     SELECT m.id, m.owner_id, 3 AS authority_id
@@ -237,7 +237,7 @@ FROM  (
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
     FROM site_photo m, v_private_projects p
-    WHERE m.project_id = p.id 
+    WHERE m.project_id = p.project_id 
   UNION 
     -- accessible b/c user is photo owner
     SELECT m.id, m.owner_id, 3 AS authority_id
@@ -259,7 +259,7 @@ FROM  (
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
     FROM site_scan m, v_private_projects p
-    WHERE m.project_id = p.id 
+    WHERE m.project_id = p.project_id 
   UNION 
     -- accessible b/c user is scan owner
     SELECT m.id, m.owner_id, 3 AS authority_id
@@ -281,7 +281,7 @@ FROM  (
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
     FROM site_video m, v_private_projects p
-    WHERE m.project_id = p.id 
+    WHERE m.project_id = p.project_id 
   UNION 
     -- accessible b/c user is scan owner
     SELECT m.id, m.owner_id, 3 AS authority_id
@@ -298,7 +298,7 @@ FROM  (
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
     FROM site_attachment m, v_private_projects p
-    WHERE m.project_id = p.id 
+    WHERE m.project_id = p.project_id 
   UNION 
     -- accessible b/c user is attachment owner
     SELECT m.id, m.owner_id, 3 AS authority_id
@@ -315,7 +315,7 @@ FROM  (
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
     FROM site_print m, v_private_projects p
-    WHERE m.project_id = p.id 
+    WHERE m.project_id = p.project_id 
   UNION 
     -- accessible b/c user is print owner
     SELECT m.id, m.owner_id, 3 AS authority_id

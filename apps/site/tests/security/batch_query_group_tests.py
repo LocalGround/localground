@@ -9,7 +9,7 @@ import urllib
 
 
 class BatchQueryGroupMixin(ModelMixin):
-    fixtures = ['initial_data.json', 'test_data.json']
+    fixtures = ['test_data.json'] #'initial_data.json', 
     model = models.Group
 
     def setUp(self):

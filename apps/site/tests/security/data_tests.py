@@ -8,7 +8,7 @@ import urllib
 
 class DataSecurityTest(test.TestCase, ModelMixin):
 
-    fixtures = ['initial_data.json', 'test_data.json']
+    fixtures = ['test_data.json'] #'initial_data.json', 
 
     def setUp(self):
         ModelMixin.setUp(self)

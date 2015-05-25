@@ -8,7 +8,7 @@ import urllib
 
 
 class BatchQueryObjectMixin(ModelMixin):
-    fixtures = ['initial_data.json', 'test_data.json']
+    fixtures = ['test_data.json'] #'initial_data.json'
     model = models.BaseMedia
     create_function_name = None
     file_names = ['a', 'b', 'c']

@@ -79,7 +79,8 @@ def create_profile_on_insert(sender, instance, created, **kwargs):
     # project.  Works just like a database trigger.
 
     if created:
-        try:
+        UserProfile.create(instance)
+        '''try:
             UserProfile.create(instance)
         except Exception:
             # Makes sure if the user isn't the very first user created,
@@ -90,6 +91,7 @@ def create_profile_on_insert(sender, instance, created, **kwargs):
             if instance.id != 1:
                 raise Exception('UserProfile not created')
             pass
+        '''
 
 
 signals.post_save.connect(create_profile_on_insert, sender=User)

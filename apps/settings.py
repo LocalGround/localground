@@ -193,7 +193,7 @@ INSTALLED_APPS = (
     'localground.apps.registration',        #taken from the django-registration module
     'tagging',                              #for tagging of blog posts in Django
     #'localground.apps.contenttypes',
-    #'django.contrib.admin',
+    'django.contrib.admin',
     'rest_framework',
     'corsheaders',
     'social.apps.django_app.default',
