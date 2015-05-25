@@ -80,31 +80,28 @@ class MarkerManager(GeoManager, MarkerMixin):
     #    return MarkerQuerySet(self.model, using=self._db)
     pass
 
-
-class WMSOverlayMixin(BaseMixin):
+class WMSOverlayQuerySet(QuerySet, BaseMixin):
     related_fields = ['overlay_source', 'overlay_type']
 
     def get_objects(self, user=None, filter=None, is_printable=None,
                     ordering_field=None, **kwargs):
-        '''
-        todo: we want to deprecate group-level overlays in favor of individual-level
-        site; for now, exclude any overlays; only include base tiles, until we can
-        figure out what to do:
-        '''
-        q = (self.model.objects
+        (self.model.objects
              .select_related(*self.related_fields)
              .filter(overlay_type__id=1)
              )
         if is_printable is not None:
-            q = q.filter(is_printable=is_printable)
-        return q
+            self.filter(is_printable=is_printable)
+        return self
 
+class ManagerMixin(object):
 
-class WMSOverlayQuerySet(QuerySet, WMSOverlayMixin):
-    pass
-
-class WMSOverlayManager(GeoManager, WMSOverlayMixin):
+    def get_objects(self, **kwargs):
+        return self.get_query_set().get_objects(**kwargs)
+    
+class WMSOverlayManager(GeoManager, ManagerMixin):
 
     def get_query_set(self):
         return WMSOverlayQuerySet(self.model, using=self._db)
+    
+    
     
