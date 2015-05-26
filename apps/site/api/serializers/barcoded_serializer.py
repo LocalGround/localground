@@ -16,16 +16,15 @@ class AttachmentSerializer(BaseNamedSerializer):
 
 
 class ScanSerializer(BaseNamedSerializer):
-    file_name_orig = FileField(required=False, source='file_name_orig')
-    overlay_type = serializers.SerializerMethodField('get_overlay_type')
+    file_name_orig = FileField(required=False)
+    overlay_type = serializers.SerializerMethodField()
     project_id = fields.ProjectField(source='project', required=False)
-    north = serializers.SerializerMethodField('get_north')
-    south = serializers.SerializerMethodField('get_south')
-    east = serializers.SerializerMethodField('get_east')
-    west = serializers.SerializerMethodField('get_west')
-    #center = serializers.SerializerMethodField('get_center')
-    zoom = serializers.SerializerMethodField('get_zoom')
-    overlay_path = serializers.SerializerMethodField('get_overlay_path')
+    north = serializers.SerializerMethodField()
+    south = serializers.SerializerMethodField()
+    east = serializers.SerializerMethodField()
+    west = serializers.SerializerMethodField()
+    zoom = serializers.SerializerMethodField()
+    overlay_path = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Scan

@@ -29,7 +29,7 @@ class OwnerField(serializers.Field):
         return User.objects.get(id=int(data))
 
 
-class ColorField(serializers.Field):
+class ColorField(serializers.CharField):
     type_label = 'color'
 
 

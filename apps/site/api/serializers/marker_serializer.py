@@ -14,20 +14,22 @@ class MarkerSerializer(GeometrySerializer):
     
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
+        allow_null=True,
+        source='point',
         required=False,
-        #widget=widgets.JSONWidget,
-        style={'base_template:input.html'},
+        style={'base_template': 'textarea.html'},
         geom_types=[
             'Point',
             'LineString',
             'Polygon'])
-    children = serializers.SerializerMethodField('get_children')
+
+    children = serializers.SerializerMethodField()
     color = fields.ColorField(required=False)
-    form_ids = serializers.SerializerMethodField('get_form_ids')
-    photo_count = serializers.SerializerMethodField('get_photo_count')
-    audio_count = serializers.SerializerMethodField('get_audio_count')
-    map_image_count = serializers.SerializerMethodField('get_map_image_count')
-    record_count = serializers.SerializerMethodField('get_record_count')
+    form_ids = serializers.SerializerMethodField()
+    photo_count = serializers.SerializerMethodField()
+    audio_count = serializers.SerializerMethodField()
+    map_image_count = serializers.SerializerMethodField()
+    record_count = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
@@ -99,9 +101,7 @@ class MarkerSerializer(GeometrySerializer):
 
         data = PhotoSerializer(
             obj.photos,
-            many=True,
-            context={
-                'request': self.request}).data
+            many=True).data
         return self.serialize_list(obj, models.Photo, data)
 
     def get_audio(self, obj):
@@ -109,9 +109,7 @@ class MarkerSerializer(GeometrySerializer):
 
         data = AudioSerializer(
             obj.audio,
-            many=True,
-            context={
-                'request': self.request}).data
+            many=True).data
         return self.serialize_list(obj, models.Audio, data)
 
     def get_map_images(self, obj):
@@ -119,9 +117,7 @@ class MarkerSerializer(GeometrySerializer):
 
         data = ScanSerializer(
             obj.map_images,
-            many=True,
-            context={
-                'request': self.request}).data
+            many=True).data
         return self.serialize_list(obj, models.Scan, data)
     
     def get_photo_count(self, obj):
@@ -160,25 +156,26 @@ class MarkerSerializer(GeometrySerializer):
 class MarkerSerializerCounts(GeometrySerializer):
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
+        allow_null=True,
         required=False,
-        #widget=widgets.JSONWidget,
-        style={'base_template:input.html'},
+        source='point',
+        style={'base_template': 'textarea.html'},
         geom_types=[
             'Point',
             'LineString',
             'Polygon'])
     color = fields.ColorField(required=False)
-    photo_count = serializers.SerializerMethodField('get_photo_count')
-    audio_count = serializers.SerializerMethodField('get_audio_count')
-    map_image_count = serializers.SerializerMethodField('get_map_image_count')
-    record_count = serializers.SerializerMethodField('get_record_count')
-    update_metadata = serializers.SerializerMethodField('get_update_metadata')
+    photo_count = serializers.SerializerMethodField()
+    audio_count = serializers.SerializerMethodField()
+    map_image_count = serializers.SerializerMethodField()
+    record_count = serializers.SerializerMethodField()
+    #update_metadata = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
         fields = GeometrySerializer.Meta.fields + \
-            ('photo_count', 'audio_count', 'record_count', 'map_image_count', 'color',
-             'update_metadata')
+            ('photo_count', 'audio_count', 'record_count', 'map_image_count', 'color')
+            #,update_metadata')
         depth = 0
 
     def get_photo_count(self, obj):
@@ -205,7 +202,9 @@ class MarkerSerializerCounts(GeometrySerializer):
         except:
             return None
         
+    '''
     def get_update_metadata(self, obj):
         if self.request and self.request.method == 'POST':
             return self.metadata()
         return None
+    '''

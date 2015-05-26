@@ -34,5 +34,5 @@ class ProjectInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
     queryset = models.Project.objects.select_related('owner').all()
     serializer_class = serializers.ProjectDetailSerializer
 
-    def pre_save(self, obj):
-        AuditUpdate.pre_save(self, obj)
+    def perform_update(self, obj):
+        AuditUpdate.perform_update(self, obj)

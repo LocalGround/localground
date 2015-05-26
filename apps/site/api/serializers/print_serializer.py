@@ -7,30 +7,39 @@ from localground.apps.site.api import fields
 
 
 class PrintSerializerMixin(serializers.ModelSerializer):
-    uuid = serializers.SerializerMethodField('get_uuid')
+    uuid = serializers.SerializerMethodField()
+    project_id = serializers.PrimaryKeyRelatedField(queryset=models.Project.objects.all(), source='project')
     layout_url = serializers.HyperlinkedRelatedField(
         view_name='layout-detail',
         source='layout',
         read_only=True)
+    layout = serializers.PrimaryKeyRelatedField(queryset=models.Layout.objects.all())
     map_provider_url = serializers.HyperlinkedRelatedField(
         view_name='wmsoverlay-detail',
         source='map_provider',
         read_only=True)
-    pdf = serializers.SerializerMethodField('get_pdf')
-    thumb = serializers.SerializerMethodField('get_thumb')
-    instructions = serializers.Field(
+    map_provider = serializers.PrimaryKeyRelatedField(queryset=models.WMSOverlay.objects.all())
+    pdf = serializers.SerializerMethodField()
+    thumb = serializers.SerializerMethodField()
+    instructions = serializers.CharField(
         label='instructions',
         source='description',
         required=True,
-        style={'base_template':'textarea.html'})
-        #widget=widgets.Textarea)
-    map_title = serializers.Field(
+        style={'base_template':'textarea.html'}
+    )
+    map_title = serializers.CharField(
         label='map_title',
         source='name',
         required=True)
-    tags = serializers.CharField(required=False, label='tags', help_text='Tag your object here')
+    tags = serializers.CharField(required=False, help_text='Tag your object here')
+    zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
     edit_url = serializers.SerializerMethodField('get_configuration_url')
-
+    overlay_type = serializers.SerializerMethodField()
+    center = fields.GeometryField(
+                help_text='Assign a GeoJSON center point',
+                style={'base_template': 'textarea.html'},
+            )
+    
     def get_pdf(self, obj):
         return obj.pdf()
 
@@ -43,6 +52,11 @@ class PrintSerializerMixin(serializers.ModelSerializer):
     def get_configuration_url(self, obj):
         return obj.configuration_url
 
+    def get_overlay_type(self, obj):
+        return obj._meta.verbose_name
+    
+    
+    
     class Meta:
         abstract = True
         fields = (
@@ -61,15 +75,12 @@ class PrintSerializerMixin(serializers.ModelSerializer):
             'layout_url',
             'center',
             'overlay_type',
-            'edit_url')
+            'edit_url',
+            'project_id'
+        )
 
 
 class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
-    layout = serializers.SlugRelatedField(label='layout', slug_field='id', read_only=True)
-    map_provider = serializers.SlugRelatedField(
-        label='map_provider',
-        slug_field='id',
-        read_only=True)
 
     class Meta:
         model = models.Print
@@ -79,11 +90,11 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
 
 
 class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
-    center = serializers.SerializerMethodField('get_center')
-    layout = serializers.SerializerMethodField('get_layout')
-    map_provider = serializers.SerializerMethodField('get_map_provider')
-    project_id = serializers.SerializerMethodField('get_project')
-
+    center = serializers.SerializerMethodField()
+    layout = serializers.SerializerMethodField()
+    map_provider = serializers.SerializerMethodField()
+    #project_id = serializers.SerializerMethodField('get_project')
+    
     class Meta:
         model = models.Print
         fields = PrintSerializerMixin.Meta.fields

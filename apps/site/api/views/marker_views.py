@@ -20,13 +20,13 @@ class MarkerList(QueryableListCreateAPIView, AuditCreate):
                 access_key=self.request.GET.get('access_key')
             )
 
-    def pre_save(self, obj):
-        AuditCreate.pre_save(self, obj)
+    def perform_create(self, obj):
+        AuditCreate.perform_create(self, obj)
 
 
 class MarkerInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
     queryset = models.Marker.objects.select_related('owner', 'project')
     serializer_class = serializers.MarkerSerializer
 
-    def pre_save(self, obj):
-        AuditUpdate.pre_save(self, obj)
+    def perform_update(self, obj):
+        AuditUpdate.perform_update(self, obj)

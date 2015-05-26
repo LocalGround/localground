@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 import json
 
-class GeometryField(serializers.DictField):
+class GeometryField(serializers.CharField):
 
     """
     A field to handle GeoDjango Geometry fields
@@ -16,7 +16,6 @@ class GeometryField(serializers.DictField):
     point_field_name = 'point'
     polyline_field_name = 'polyline'
     polygon_field_name = 'polygon'
-    nullable = False
 
     
     def __init__(self, *args, **kwargs):
@@ -30,11 +29,6 @@ class GeometryField(serializers.DictField):
             self.polyline_field_name = kwargs.pop('polyline_field_name')
         if kwargs.get('polygon_field_name'):
             self.polygon_field_name = kwargs.pop('polygon_field_name')
-        
-        # this is a hack because the required keyword doesn't seem to be
-        # working
-        if kwargs.get('required') != None:
-            self.nullable = not kwargs.pop('required')
     
         super(GeometryField, self).__init__(*args, **kwargs) 
 
@@ -47,8 +41,11 @@ class GeometryField(serializers.DictField):
             return json.loads(obj.geojson)
 
     def to_internal_value(self, value):
+        #raise serializers.ValidationError(value)
+        return GEOSGeometry(value)
         if value is not None and value != '':
             try:
+                #value = json.loads(value)
                 return GEOSGeometry(value)
             except (ValueError, GEOSException, OGRException, TypeError) as e:
                 raise serializers.ValidationError(
