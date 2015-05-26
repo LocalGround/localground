@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 import json
 
-class GeometryField(serializers.Field):
+class GeometryField(serializers.DictField):
 
     """
     A field to handle GeoDjango Geometry fields
@@ -18,24 +18,48 @@ class GeometryField(serializers.Field):
     polygon_field_name = 'polygon'
     nullable = False
 
+    
     def __init__(self, *args, **kwargs):
+        
         if kwargs.get('geom_types'):
             self.geom_types = kwargs.pop('geom_types')
+        
         if kwargs.get('point_field_name'):
             self.point_field_name = kwargs.pop('point_field_name')
         if kwargs.get('polyline_field_name'):
             self.polyline_field_name = kwargs.pop('polyline_field_name')
         if kwargs.get('polygon_field_name'):
             self.polygon_field_name = kwargs.pop('polygon_field_name')
-
+        
         # this is a hack because the required keyword doesn't seem to be
         # working
         if kwargs.get('required') != None:
             self.nullable = not kwargs.pop('required')
+    
+        super(GeometryField, self).__init__(*args, **kwargs) 
 
-        super(GeometryField, self).__init__(*args, **kwargs)
+    def to_representation(self, obj):
+        if obj is not None:
+            if isinstance(obj, dict) or obj is None:
+                return obj
+            # Get GeoDjango geojson serialization and then convert it _back_ to
+            # a Python object
+            return json.loads(obj.geojson)
 
-    def get_value(self, data, files, field_name, into):
+    def to_internal_value(self, value):
+        if value is not None and value != '':
+            try:
+                return GEOSGeometry(value)
+            except (ValueError, GEOSException, OGRException, TypeError) as e:
+                raise serializers.ValidationError(
+                    _('Invalid format: "{0}" unrecognized as WKT EWKT, and HEXEWKB.'.format(value))
+                )
+            return value
+        return None
+    
+        
+    '''
+    def get_value1(self, data, files, field_name, into):
         geom = self.to_internal_value(data.get(field_name))
         if geom is None:
             
@@ -72,24 +96,5 @@ class GeometryField(serializers.Field):
             into[self.polyline_field_name] = polyline
         if 'Polygon' in self.geom_types:
             into[self.polygon_field_name] = polygon
-
-    def to_representation(self, value):
-        if value is not None:
-            if isinstance(value, dict) or value is None:
-                return value
-            # Get GeoDjango geojson serialization and then convert it _back_ to
-            # a Python object
-            return json.loads(value.geojson)
-
-    def to_internal_value(self, value):
-        if value is not None and value != '':
-            try:
-                return GEOSGeometry(value)
-            except (ValueError, GEOSException, OGRException, TypeError) as e:
-                raise serializers.ValidationError(
-                        _('''Invalid format: "{0}"
-                          unrecognized as WKT EWKT, and HEXEWKB.'''.format(value)))
-
-            return value
-        return None
+    '''  
 

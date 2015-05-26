@@ -15,7 +15,6 @@ class ProjectSerializer(BaseNamedSerializer):
     class Meta:
         model = models.Project
         fields = BaseNamedSerializer.Meta.fields + ('owner', 'slug', 'access')
-        #read_only_fields = ('owner',)
         depth = 0
 
     def get_access_name(self, obj):

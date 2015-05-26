@@ -67,14 +67,15 @@ class BaseNamedSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class GeometrySerializer(BaseNamedSerializer):
-    '''
-    geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
-                                    required=False,
-                                    #widget=widgets.JSONWidget)
-                                    style={'base_template:input.html'})
-    '''
-    #project_id = serializers.IntegerField(source='project.id', required=True, label='project_id')
-    project_id = serializers.PrimaryKeyRelatedField(queryset=models.Project.objects.all())
+    geometry = fields.GeometryField(
+                    help_text='Assign a GeoJSON string',
+                    required=False,
+                    style={'base_template': 'textarea.html'},
+                    source='point'
+                )
+    
+                                    
+    project_id = serializers.PrimaryKeyRelatedField(queryset=models.Project.objects.all(), source='project')
 
     class Meta:
         fields = BaseNamedSerializer.Meta.fields + \
@@ -95,11 +96,13 @@ class ExtentsSerializer(BaseNamedSerializer):
         label='project_id',
         source='project',
         required=False)
-    center = fields.GeometryField(help_text='Assign a GeoJSON string',
-                                  required=False,
-                                  style={'base_template:input.html'},
-                                  #widget=widgets.JSONWidget,
-                                  point_field_name='center')
+    center = fields.GeometryField(
+                        help_text='Assign a GeoJSON string',
+                        required=False,
+                        style={'base_template:input.html'},
+                        #widget=widgets.JSONWidget,
+                        #point_field_name='center'
+                    )
 
 
 class Meta:
