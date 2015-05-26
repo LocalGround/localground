@@ -58,7 +58,7 @@ GROUP BY v.id, v.name, v.user_id;
 -- A view to show all of the "views", who can access 
 -- them, and at what security level (view, edit, or manage)
 CREATE OR REPLACE VIEW v_private_views AS 
-SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+SELECT v.id as snapshot_id, v.name, v.user_id, max(v.authority_id) AS authority_id
 FROM 
 (
     SELECT g.id, g.name, a.user_id, a.authority_id
@@ -96,7 +96,7 @@ GROUP BY v.id, v.name, v.user_id;
 -- A view to show all of the forms, who can access 
 -- them, and at what security level (view, edit, or manage)
 CREATE OR REPLACE VIEW v_private_forms AS
-SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+SELECT v.id as form_id, v.name, v.user_id, max(v.authority_id) AS authority_id
  FROM ( 
   --users who have been given direct access to a form:        
   SELECT g.id, g.name, a.user_id, a.authority_id
@@ -141,13 +141,13 @@ GROUP BY v.id, v.name, v.user_id;
 -- accessible to a particular set of users based on the parent
 -- view's permissions, and at what security level (view, edit, or manage)
 CREATE OR REPLACE VIEW v_private_view_accessible_media AS
-SELECT m.id as view_id, m.name, t1.model as parent, 
+SELECT m.snapshot_id, m.name, t1.model as parent, 
   a.entity_id as id, t2.model as child,
   m.user_id, m.authority_id
 FROM site_genericassociation a, django_content_type t1, 
   django_content_type t2, v_private_views m
 WHERE a.source_type_id = t1.id and t1.model = 'snapshot' and
-  a.entity_type_id = t2.id and a.source_id = m.id;
+  a.entity_type_id = t2.id and a.source_id = m.snapshot_id;
   
 -----------------------
 -- v_private_markers --
@@ -155,7 +155,7 @@ WHERE a.source_type_id = t1.id and t1.model = 'snapshot' and
 -- A view to show all of the markers, who can access 
 -- them, and at what security level (view, edit, or manage)
 CREATE OR REPLACE VIEW v_private_markers AS 
-SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+SELECT v.id as marker_id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
     -- accessible via view permissions
     SELECT id, user_id, authority_id  
@@ -181,13 +181,13 @@ GROUP BY v.id, v.user_id;
 -- accessible to a particular set of users based on the
 -- accessibility of a parent marker (is read-only)
 CREATE OR REPLACE VIEW v_private_marker_accessible_media AS
-SELECT m.id as marker_id, t1.model as parent, 
+SELECT m.marker_id, t1.model as parent, 
   a.entity_id as id, t2.model as child,
   m.user_id, 1 as authority_id
 FROM site_genericassociation a, django_content_type t1, 
   django_content_type t2, v_private_markers m
 WHERE a.source_type_id = t1.id and t1.model = 'marker' and
-  a.entity_type_id = t2.id and a.source_id = m.id;
+  a.entity_type_id = t2.id and a.source_id = m.marker_id;
   
 --------------------------------
 -- v_private_associated_media --
@@ -227,7 +227,7 @@ GROUP BY v.id, v.user_id;
 -- View: v_private_photos
 -------------------------
 CREATE OR REPLACE VIEW v_private_photos AS 
-SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+SELECT v.id as photo_id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
     -- accessible from view and marker permissions via associations 
     SELECT id, user_id, authority_id  
@@ -249,7 +249,7 @@ GROUP BY v.id, v.user_id;
 -- View: v_private_scans
 ------------------------
 CREATE OR REPLACE VIEW v_private_scans AS 
-SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+SELECT v.id as scan_id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
     -- accessible from view and marker permissions via associations 
     SELECT id, user_id, authority_id  
@@ -271,7 +271,7 @@ GROUP BY v.id, v.user_id;
 -- View: v_private_videos
 -------------------------
 CREATE OR REPLACE VIEW v_private_videos AS 
-SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+SELECT v.id as video_id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
     -- accessible from view and marker permissions via associations 
     SELECT id, user_id, authority_id  
@@ -293,7 +293,7 @@ GROUP BY v.id, v.user_id;
 -- View: v_private_attachments
 ------------------------------  
 CREATE OR REPLACE VIEW v_private_attachments AS 
-SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+SELECT v.id as attachment_id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
@@ -310,7 +310,7 @@ GROUP BY v.id, v.user_id;
 -- View: v_private_prints
 -------------------------
 CREATE OR REPLACE VIEW v_private_prints AS 
-SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+SELECT v.id as print_id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
@@ -331,7 +331,7 @@ GROUP BY v.id, v.user_id;
 -- View: v_public_photos
 ------------------------
 CREATE OR REPLACE VIEW v_public_photos AS 
- SELECT t.id, max(t.view_authority) AS view_authority, array_to_string(array_agg(t.access_key), ','::text) AS access_keys
+ SELECT t.id as photo_id, max(t.view_authority) AS view_authority, array_to_string(array_agg(t.access_key), ','::text) AS access_keys
    FROM (         SELECT a.entity_id AS id, v.view_authority, v.access_key
                    FROM site_genericassociation a, site_snapshot v
                   WHERE a.source_id = v.id
@@ -348,7 +348,7 @@ CREATE OR REPLACE VIEW v_public_photos AS
 -- View: v_public_audio
 -------------------------
 CREATE OR REPLACE VIEW v_public_audio AS
-select t.id, max(t.view_authority) as view_authority, 
+select t.id as audio_id, max(t.view_authority) as view_authority, 
 	array_to_string(array_agg(t.access_key), ',') as access_keys
 from 
 (
@@ -370,7 +370,7 @@ group by t.id;
 -- View: v_public_markers
 -------------------------
 CREATE OR REPLACE VIEW v_public_markers AS
-select t.id, max(t.view_authority) as view_authority, 
+select t.id as marker_id, max(t.view_authority) as view_authority, 
 	array_to_string(array_agg(t.access_key), ',') as access_keys
 from 
 (

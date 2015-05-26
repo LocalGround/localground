@@ -23,7 +23,7 @@ class ProjectSerializer(BaseNamedSerializer):
 
 
 class ProjectDetailSerializer(BaseNamedSerializer):
-    children = serializers.SerializerMethodField('get_children')
+    children = serializers.SerializerMethodField('get_children_dict')
 
     class Meta:
         model = models.Project
@@ -32,7 +32,7 @@ class ProjectDetailSerializer(BaseNamedSerializer):
         )
         depth = 0
 
-    def get_children(self, obj):
+    def get_children_dict(self, obj):
         from django.contrib.contenttypes.models import ContentType
         from localground.apps.site import models
 
@@ -42,6 +42,7 @@ class ProjectDetailSerializer(BaseNamedSerializer):
             models.Scan,
             models.Project,
             models.Marker]
+        '''
         forms = (models.Form.objects
                  .select_related('projects')
                  .prefetch_related('field_set', 'field_set__data_type')
@@ -49,6 +50,7 @@ class ProjectDetailSerializer(BaseNamedSerializer):
                  )
         for form in forms:
             candidates.append(form.TableModel)
+        '''
         # this caches the ContentTypes so that we don't keep executing one-off
         # queries
         ContentType.objects.get_for_models(*candidates, concrete_model=False)
@@ -56,17 +58,21 @@ class ProjectDetailSerializer(BaseNamedSerializer):
             'photos': self.get_photos(obj),
             'audio': self.get_audio(obj),
             'scans': self.get_scans(obj),
-            'markers': self.get_markers(obj, forms)
+            #'markers': self.get_markers(obj, forms)
         }
 
+        '''
         # add table data:
         for form in forms:
             form_data = self.get_table_records(obj, form)
             if len(form_data.get('data')) > 0:
                 children['form_%s' % form.id] = form_data
+        '''
         return children
+        
 
     def get_table_records(self, obj, form):
+        return []
         return self.serialize_list(
             form.TableModel,
             create_record_serializer(form),

@@ -5,15 +5,13 @@ from localground.apps.site.api.fields import FileField
 
 
 class PhotoSerializer(MediaGeometrySerializer):
-    file_name_orig = FileField(required=False, source='file_name_orig')
-    path_large = serializers.SerializerMethodField('get_path_large')
-    path_medium = serializers.SerializerMethodField('get_path_medium')
-    path_medium_sm = serializers.SerializerMethodField('get_path_medium_sm')
-    path_small = serializers.SerializerMethodField('get_path_small')
-    path_marker_lg = serializers.SerializerMethodField('get_path_marker_lg')
-    path_marker_sm = serializers.SerializerMethodField(
-        'get_path_path_marker_sm')
-    overlay_type = serializers.SerializerMethodField()
+    #file_name_orig = FileField(required=False)
+    path_large = serializers.SerializerMethodField()
+    path_medium = serializers.SerializerMethodField()
+    path_medium_sm = serializers.SerializerMethodField()
+    path_small = serializers.SerializerMethodField()
+    path_marker_lg = serializers.SerializerMethodField()
+    path_marker_sm = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Photo
@@ -22,7 +20,7 @@ class PhotoSerializer(MediaGeometrySerializer):
             'path_small', 'path_marker_lg', 'path_marker_sm',
             'file_name_orig'
         )
-        depth = 1
+        depth = 0
 
     def get_path_large(self, obj):
         return obj.encrypt_url(obj.file_name_large)
@@ -39,5 +37,5 @@ class PhotoSerializer(MediaGeometrySerializer):
     def get_path_marker_lg(self, obj):
         return obj.encrypt_url(obj.file_name_marker_lg)
 
-    def get_path_path_marker_sm(self, obj):
+    def get_path_marker_sm(self, obj):
         return obj.encrypt_url(obj.file_name_marker_sm)

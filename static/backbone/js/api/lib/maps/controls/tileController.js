@@ -61,7 +61,7 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                         } else if (sourceName === "google") {
                             mapTypeIDs.unshift(this.providerID);
                         } else {
-                            alert("Error in localground.maps.TileManager: unknown map type");
+                            alert("Error in localground.maps.TileManager: unknown map type: " + sourceName);
                         }
                     });
                     map.mapTypeControlOptions.mapTypeIds = mapTypeIDs;
