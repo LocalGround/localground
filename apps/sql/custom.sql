@@ -120,7 +120,7 @@ GROUP BY v.id, v.name, v.user_id;
 -- A view to show all of the layers, who can access 
 -- them, and at what security level (view, edit, or manage)
 CREATE OR REPLACE VIEW v_private_layers AS 
-SELECT v.id, v.name, v.user_id, max(v.authority_id) AS authority_id
+SELECT v.id as layer_id, v.name, v.user_id, max(v.authority_id) AS authority_id
 FROM 
 (
     SELECT g.id, g.name, a.user_id, a.authority_id
@@ -205,7 +205,7 @@ CREATE OR REPLACE VIEW v_private_associated_media AS
 -- View: v_private_audio
 ------------------------
 CREATE OR REPLACE VIEW v_private_audio AS 
-SELECT v.id, v.user_id, max(v.authority_id) AS authority_id
+SELECT v.id as audio_id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
     -- accessible from view and marker permissions via associations 
     SELECT id, user_id, authority_id  

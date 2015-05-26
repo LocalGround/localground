@@ -33,14 +33,6 @@ class ColorField(serializers.Field):
     type_label = 'color'
 
 
-class DescriptionField(serializers.Field):
-    type_label = 'memo'
-
-
-class TagField(serializers.Field):
-    type_label = 'tags'
-
-
 class ProjectField(serializers.Field):
     type_label = 'select'
 

@@ -22,28 +22,29 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
             'model_name': model_meta.object_name.lower()
         }
 
+        '''
         url_field = fields.UrlField(
             view_name='%(model_name)s-detail'.format(format_kwargs), #self.opts.view_name,
             lookup_field='pk'#self.opts.lookup_field
         )
-        url_field.initialize(self, 'url')
+        #url_field.initialize(self, 'url')
         self.fields['url'] = url_field
+        '''
 
         # Extra Sneaky:  give access to the request object in the
         # HyperlinkedSerializer so that child objects can also use
         # it:
-        self.request = url_field.context.get('request', None)
+        #self.request = url_field.context.get('request', None)
+    class Meta:
+        fields = ('id',)
 
 
-class BaseNamedSerializer(BaseSerializer):
-    tags = fields.TagField(
-        label='tags',
-        required=False,
-        #widget=widgets.TagAutocomplete,
-        style={'base_template:input.html'},
-        help_text='Tag your object here')
-    name = serializers.CharField(required=False, label='name')
-    description = fields.DescriptionField(required=False, label='caption')
+class BaseNamedSerializer(serializers.HyperlinkedModelSerializer):
+    tags = serializers.CharField(required=False, allow_null=True, label='tags',
+                                    help_text='Tag your object here')
+    name = serializers.CharField(required=False, allow_null=True, label='name')
+    description = serializers.CharField(required=False, allow_null=True, label='caption',
+                                        style={'base_template': 'textarea.html'})
     overlay_type = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
 
@@ -56,7 +57,7 @@ class BaseNamedSerializer(BaseSerializer):
         super(BaseNamedSerializer, self).__init__(*args, **kwargs)
 
     class Meta:
-        fields = ('id', 'name', 'description', 'overlay_type', 'tags', 'owner')
+        fields = ('url', 'id', 'name', 'description', 'overlay_type', 'tags', 'owner')
 
     def get_overlay_type(self, obj):
         return obj._meta.verbose_name
@@ -66,16 +67,17 @@ class BaseNamedSerializer(BaseSerializer):
 
 
 class GeometrySerializer(BaseNamedSerializer):
+    '''
     geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
                                     required=False,
                                     #widget=widgets.JSONWidget)
                                     style={'base_template:input.html'})
-
-    project_id = fields.ProjectField(source='project', required=False)
+    '''
+    #project_id = fields.ProjectField(source='project', required=False)
 
     class Meta:
         fields = BaseNamedSerializer.Meta.fields + \
-            ('project_id', 'geometry', 'owner')
+            ('project', 'geometry')
 
 
 class MediaGeometrySerializer(GeometrySerializer):

@@ -10,7 +10,7 @@ from localground.apps.site import models
 
 
 class ProjectSerializer(BaseNamedSerializer):
-    access = serializers.SerializerMethodField('get_access')
+    access = serializers.SerializerMethodField('get_access_name')
 
     class Meta:
         model = models.Project
@@ -18,7 +18,7 @@ class ProjectSerializer(BaseNamedSerializer):
         #read_only_fields = ('owner',)
         depth = 0
 
-    def get_access(self, obj):
+    def get_access_name(self, obj):
         return obj.access_authority.name
 
 

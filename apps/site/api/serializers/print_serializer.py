@@ -28,12 +28,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         label='map_title',
         source='name',
         required=True)
-    tags = fields.TagField(
-        label='tags',
-        required=False,
-        style={'base_template:input.html'},
-        #widget=TagAutocomplete,
-        help_text='Tag your object here')
+    tags = serializers.CharField(required=False, label='tags', help_text='Tag your object here')
     edit_url = serializers.SerializerMethodField('get_configuration_url')
 
     def get_pdf(self, obj):

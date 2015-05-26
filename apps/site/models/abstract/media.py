@@ -114,7 +114,7 @@ class BaseMedia(BaseAudit):
 
 
 class BaseNamedMedia(BaseMedia, ProjectMixin):
-    name = models.CharField(max_length=255, blank=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     tags = TagAutocompleteField(blank=True, null=True)
 
