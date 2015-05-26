@@ -15,7 +15,7 @@ class FormSerializerList(BaseNamedSerializer):
         required=True,
         help_text='A comma-separated list of all of the projects to which this form should belong'
     )
-    data_url = serializers.SerializerMethodField('get_data_url')
+    data_url = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Form

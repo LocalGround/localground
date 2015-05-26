@@ -82,6 +82,10 @@ class ProjectsField(serializers.Field):
 
     def to_internal_value(self, data):
         ids = None
+        ids = data.split(',')
+        ids = [int(child_id.strip()) for child_id in ids]
+        return [models.Project.objects.get(id__in=ids)]
+        '''
         try:
             ids = data.split(',')
             ids = [int(child_id.strip()) for child_id in ids]
@@ -98,6 +102,7 @@ class ProjectsField(serializers.Field):
             raise serializers.ValidationError(
                 "project_ids=%s is invalid" %
                 data)
+        '''
 
 
 class FileField(serializers.CharField):

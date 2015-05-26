@@ -22,8 +22,12 @@ class FormList(QueryableListCreateAPIView, AuditCreate):
 
     paginate_by = 100
 
-    def pre_save(self, obj):
-        AuditCreate.pre_save(self, obj)
+    def perform_create(self, serializer):
+        d = self.get_presave_dictionary()
+        d.update({
+            'access_authority': models.ObjectAuthority.objects.get(id=1)
+        })
+        serializer.save(**d)
 
 
 class FormInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):

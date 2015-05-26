@@ -73,7 +73,8 @@ class GeometrySerializer(BaseNamedSerializer):
                                     #widget=widgets.JSONWidget)
                                     style={'base_template:input.html'})
     '''
-    project_id = serializers.IntegerField(source='project.id', required=True, label='project_id')
+    #project_id = serializers.IntegerField(source='project.id', required=True, label='project_id')
+    project_id = serializers.PrimaryKeyRelatedField(queryset=models.Project.objects.all())
 
     class Meta:
         fields = BaseNamedSerializer.Meta.fields + \
@@ -82,7 +83,7 @@ class GeometrySerializer(BaseNamedSerializer):
 
 class MediaGeometrySerializer(GeometrySerializer):
     file_name = serializers.CharField(source='file_name_new')
-    caption = serializers.CharField(source='description')
+    caption = serializers.CharField(source='description', allow_null=True, required=False)
 
     class Meta:
         fields = GeometrySerializer.Meta.fields + ('attribution',

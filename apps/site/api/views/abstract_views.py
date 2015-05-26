@@ -1,29 +1,33 @@
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.api import filters
-from localground.apps.site.models import Project, UserProfile
+from localground.apps.site import models
 from rest_framework import generics, status, exceptions
 from localground.apps.site.api.serializers.user_profile_serializer import UserProfileSerializer
 
 
 class AuditCreate(object):
 
-    def pre_save(self, obj):
-        '''
-        For database inserts
-        '''
-        obj.owner = self.request.user
-        obj.last_updated_by = self.request.user
-        obj.timestamp = get_timestamp_no_milliseconds()
+    def get_presave_dictionary(self):
+        return {
+            'owner': self.request.user,
+            'last_updated_by': self.request.user,
+            'time_stamp': get_timestamp_no_milliseconds()
+        }
+    
+    def perform_create(self, serializer):
+        serializer.save(**self.get_presave_dictionary())
 
 
-class AuditUpdate(AuditCreate):
+class AuditUpdate(object):
+    
+    def get_presave_dictionary(self):
+        return {
+            'last_updated_by': self.request.user,
+            'time_stamp': get_timestamp_no_milliseconds()
+        }
 
-    def pre_save(self, obj):
-        '''
-        For database updates
-        '''
-        obj.last_updated_by = self.request.user
-        obj.timestamp = get_timestamp_no_milliseconds()
+    def perform_update(self, serializer):
+        serializer.save(**self.get_presave_dictionary())
 
 
 class QueryableListCreateAPIView(generics.ListCreateAPIView):
@@ -73,8 +77,9 @@ class MediaList(QueryableListCreateAPIView, AuditCreate):
                 access_key=self.request.GET.get('access_key')
             )
 
-    def pre_save(self, obj):
-        AuditCreate.pre_save(self, obj)
+    def perform_create(self, serializer):
+        # Todo: this needs to be reviewed
+        AuditCreate.perform_create(self, serializer)
 
         # save uploaded image to file system
         f = self.request.FILES['file_name_orig']
@@ -87,12 +92,12 @@ class MediaList(QueryableListCreateAPIView, AuditCreate):
             if ext not in self.ext_whitelist:
                 raise exceptions.UnsupportedMediaType(
                     f,
-                    '{0} is not a valid {1} file type. Valid options are: {2}' .format(
+                    '{0} is not a valid {1} file type. Valid options are: {2}'.format(
                         ext,
                         self.model.model_name,
                         self.ext_whitelist))
             project_id = self.request.DATA.get('project_id')
-            project = Project.objects.get(id=project_id)
+            project = models.Project.objects.get(id=project_id)
             if not project.can_edit(self.request.user):
                 raise exceptions.PermissionDenied(
                     detail='You do not have edit access to the project #{0}'.format(project_id))
@@ -104,5 +109,5 @@ class MediaInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
     def get_queryset(self):
         return self.model.objects.select_related('owner').all()
 
-    def pre_save(self, obj):
-        AuditUpdate.pre_save(self, obj)
+    def perform_update(self, serializer):
+        AuditUpdate.perform_update(self, serializer)
