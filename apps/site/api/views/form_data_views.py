@@ -52,8 +52,11 @@ class FormDataList(QueryableListCreateAPIView, FormDataMixin):
     ordering_fields = '__all__'
     model = models.Form
 
-    def pre_save(self, obj):
-        obj.manually_reviewed = True
+    def perform_create(self, serializer):
+        serializer.save(manually_reviewed=True)
+        
+    #def perform_update(self, obj):
+    #    AuditUpdate.perform_update(self, obj)
 
     def get_serializer_class(self):
         return FormDataMixin.get_serializer_class(self, is_list=True)
@@ -84,7 +87,7 @@ class FormDataList(QueryableListCreateAPIView, FormDataMixin):
             data=request.data)
 
         if serializer.is_valid():
-            self.pre_save(serializer.object)
+            self.perform_create(serializer)
             self.object = serializer.save(force_insert=True, user=request.user)
             self.post_save(self.object, created=True)
             headers = self.get_success_headers(serializer.data)
@@ -104,6 +107,8 @@ class FormDataInstance(QueryableRetrieveUpdateDestroyView, FormDataMixin):
         ret = super(QueryableRetrieveUpdateDestroyView, self).metadata(request)
         return metadata(ret, self, request)
 
+
+    '''
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         try:
@@ -120,9 +125,8 @@ class FormDataInstance(QueryableRetrieveUpdateDestroyView, FormDataMixin):
                                         partial=partial)
         save_kwargs.update({'user': self.request.user})
         if serializer.is_valid():
-            self.pre_save(serializer.object)
             self.object = serializer.save(**save_kwargs)
-            self.post_save(self.object, created=created)
+            #self.post_save(self.object, created=created)
             return Response(serializer.data, status=success_status_code)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -131,3 +135,4 @@ class FormDataInstance(QueryableRetrieveUpdateDestroyView, FormDataMixin):
         kwargs['partial'] = True
         kwargs['user'] = request.user
         return self.update(request, *args, **kwargs)
+    '''

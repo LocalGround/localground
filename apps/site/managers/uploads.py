@@ -158,7 +158,7 @@ class RecordMixin(UploadMixin):
 
 
 class RecordManager(models.GeoManager, RecordMixin):
-    related_fields = ['project', 'owner', 'form']
+    related_fields = ['project', 'owner'] #, 'form']
 
 #    def get_query_set(self):
 #        return RecordQuerySet(self.model, using=self._db)
@@ -172,8 +172,8 @@ class RecordManager(models.GeoManager, RecordMixin):
         '''
         from localground.apps.site import models
         self.related_fields = ['snippet', 'num_snippet', 'project',
-                               'snippet__source_attachment', 'owner',
-                               'form', 'form__project__id']
+                               'snippet__source_attachment', 'owner'] #,
+                               #'form', 'form__project__id']
         form = models.Form.objects.get(table_name=self.model._meta.db_table)
         queryset = self.get_objects(
             user,

@@ -46,14 +46,15 @@ class BaseRecordSerializer(serializers.ModelSerializer):
 
     geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
                                     required=False,
-                                    style={'base_template:input.html'})
-                                    #widget=widgets.JSONWidget)
+                                    style={'base_template': 'input.html'},
+                                    source='point')
     overlay_type = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField('get_detail_url')
-    project_id = fields.ProjectField(
-        label='project_id',
-        source='project',
-        required=False)
+    project_id = serializers.PrimaryKeyRelatedField(
+                                queryset=models.Project.objects.all(),
+                                source='project',
+                                required=False
+                            )
 
     class Meta:
         fields = (
@@ -152,9 +153,9 @@ def create_compact_record_serializer(form):
     col_names = [f.col_name for f in form.fields]
 
     class FormDataSerializer(BaseRecordSerializer):
-        recs = serializers.SerializerMethodField('get_recs')
+        recs = serializers.SerializerMethodField()
         url = serializers.SerializerMethodField('get_detail_url')
-        project_id = serializers.SerializerMethodField('get_project_id')
+        project_id = serializers.SerializerMethodField()
 
         class Meta:
             model = form.TableModel

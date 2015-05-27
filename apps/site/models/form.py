@@ -143,9 +143,9 @@ class Form(BaseNamed, BasePermissions):
 
         #appConfig.models is a private attribute so this may break without warning in a new version
         #TODO: find a better way to do this
-        if apps.get_model('site', 'form_%s' % self.id):
-            del apps.get_app_config('site').models['form_%s' % self.id]
-        self._fields = None
+        #if apps.get_model('site', 'form_%s' % self.id):
+        #    del apps.get_app_config('site').models['form_%s' % self.id]
+        #self._fields = None
 
     @property
     def TableModel(self):

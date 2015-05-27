@@ -139,9 +139,9 @@ class SnapshotSerializer(BaseNamedSerializer):
 
 
 class SnapshotDetailSerializer(SnapshotSerializer):
-    children = serializers.SerializerMethodField('get_children')
+    children = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Snapshot
-        fields = SnapshotSerializer.Meta.fields  # + ('children',)
+        fields = SnapshotSerializer.Meta.fields + ('children',)
         depth = 0

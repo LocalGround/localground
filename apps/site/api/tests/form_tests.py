@@ -16,15 +16,6 @@ class ApiFormListTest(test.TestCase, ViewMixinAPI):
         self.urls = ['/api/0/forms/']
         self.view = views.FormList.as_view()
 
-'''
-class ApiFormInstanceTest(test.TestCase, ViewMixinAPI):
-	def setUp(self):
-		ViewMixin.setUp(self)
-		self.urls = ['/api/0/forms/1/', '/api/0/forms/2/', '/api/0/forms/3/']
-		self.view = views.FormInstance.as_view()
-'''
-
-
 class FormDataTestMixin(object):
 
     POINT = {
@@ -94,28 +85,29 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
 
         # verify values:
         FormDataTestMixin.verify_success(self, d)
-
-
+        
 class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
-	
-	def setUp(self):
-		ViewMixinAPI.setUp(self)
-		self.form = self.create_form_with_fields(name="Class Form", num_fields=6)
-		#requery:
-		self.form = models.Form.objects.get(id=self.form.id)
-		self.rec_1 = self.insert_form_data_record(form=self.form, project=self.project)
-		self.assertEqual(len(self.form.TableModel.objects.all()), 1)
-		records = self.form.TableModel.objects.all()
-		self.url = '/api/0/forms/%s/data/%s/' % (self.form.id, self.rec_1.id)
-		self.urls = [self.url]
-		self.view = views.FormDataInstance.as_view()
-	
-	def test_update_record_using_put(self, **kwargs):
-		d = FormDataTestMixin.create_form_post_data(self)
-		response = self.client_user.put(self.url,
-			data=urllib.urlencode(d),
-			HTTP_X_CSRFTOKEN=self.csrf_token,
-			content_type = "application/x-www-form-urlencoded"
-		)
-		FormDataTestMixin.verify_success(self, d)
+    
+    def setUp(self):
+        ViewMixinAPI.setUp(self)
+        self.form = self.create_form_with_fields(name="Class Form", num_fields=6)
+        #requery:
+        self.form = models.Form.objects.get(id=self.form.id)
+        self.rec_1 = self.insert_form_data_record(form=self.form, project=self.project)
+        self.assertEqual(len(self.form.TableModel.objects.all()), 1)
+        records = self.form.TableModel.objects.all()
+        self.url = '/api/0/forms/%s/data/%s/' % (self.form.id, self.rec_1.id)
+        self.urls = [self.url]
+        self.view = views.FormDataInstance.as_view()
+
+    def test_update_record_using_put(self, **kwargs):
+        d = FormDataTestMixin.create_form_post_data(self)
+        print d
+        response = self.client_user.put(self.url,
+        data=urllib.urlencode(d),
+        HTTP_X_CSRFTOKEN=self.csrf_token,
+        content_type = "application/x-www-form-urlencoded"
+        )
+        print response.data
+        FormDataTestMixin.verify_success(self, d)
 

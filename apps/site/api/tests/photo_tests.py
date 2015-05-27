@@ -36,14 +36,14 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
             "coordinates": [12.492324113849, 41.890307434153]
         }
         response = self.client_user.put(self.url,
-                                        data=urllib.urlencode({
-                                            'geometry': point,
-                                            'name': name,
-                                            'description': description
-                                        }),
-                                        HTTP_X_CSRFTOKEN=self.csrf_token,
-                                        content_type="application/x-www-form-urlencoded"
-                                        )
+                            data=urllib.urlencode({
+                                'geometry': point,
+                                'name': name,
+                                'description': description
+                            }),
+                            HTTP_X_CSRFTOKEN=self.csrf_token,
+                            content_type="application/x-www-form-urlencoded"
+                        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_photo = models.Photo.objects.get(id=self.photo.id)
         self.assertEqual(updated_photo.name, name)

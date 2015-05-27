@@ -5,7 +5,7 @@ from localground.apps.site.api.fields import FileField
 
 
 class PhotoSerializer(MediaGeometrySerializer):
-    #file_name_orig = FileField(required=False)
+    file_name_orig = serializers.CharField(required=False)
     path_large = serializers.SerializerMethodField()
     path_medium = serializers.SerializerMethodField()
     path_medium_sm = serializers.SerializerMethodField()

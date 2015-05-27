@@ -42,7 +42,7 @@ class FormInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
                 access_key=self.request.GET.get('access_key')
             )
 
-    def pre_save(self, obj):
-        AuditUpdate.pre_save(self, obj)
+    def perform_update(self, obj):
+        AuditUpdate.perform_update(self, obj)
 
 
