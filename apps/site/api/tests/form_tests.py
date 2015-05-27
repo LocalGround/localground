@@ -102,7 +102,6 @@ class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
 
     def test_update_record_using_put(self, **kwargs):
         d = FormDataTestMixin.create_form_post_data(self)
-        print d
         response = self.client_user.put(self.url,
         data=urllib.urlencode(d),
         HTTP_X_CSRFTOKEN=self.csrf_token,

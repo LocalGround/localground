@@ -53,7 +53,8 @@ class FormDataList(QueryableListCreateAPIView, FormDataMixin):
     model = models.Form
 
     def perform_create(self, serializer):
-        serializer.save(manually_reviewed=True)
+        instance = serializer.save(manually_reviewed=True)
+        instance.save(force_insert=True, user=self.request.user)
         
     #def perform_update(self, obj):
     #    AuditUpdate.perform_update(self, obj)
@@ -76,24 +77,7 @@ class FormDataList(QueryableListCreateAPIView, FormDataMixin):
             return form.TableModel.objects.get_objects_public(
                 access_key=self.request.GET.get('access_key')
             )
-
-    def create(self, request, *args, **kwargs):
-        '''
-        Overriding this method so that the object's save method can pass
-        in an argument (e.g.: obj.save(user=user)).  Todo:  move this into a
-        base class
-        '''
-        serializer = self.get_serializer(
-            data=request.data)
-
-        if serializer.is_valid():
-            self.perform_create(serializer)
-            self.object = serializer.save(force_insert=True, user=request.user)
-            self.post_save(self.object, created=True)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED,
-                            headers=headers)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 class FormDataInstance(QueryableRetrieveUpdateDestroyView, FormDataMixin):
 
@@ -106,30 +90,12 @@ class FormDataInstance(QueryableRetrieveUpdateDestroyView, FormDataMixin):
     def metadata(self, request):
         ret = super(QueryableRetrieveUpdateDestroyView, self).metadata(request)
         return metadata(ret, self, request)
-
+    
+    #def put(self, request, *args, **kwargs):
+    #    raise Exception(args)
+    #    return self.update1(request, *args, **kwargs)
 
     '''
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        try:
-            self.object = self.get_object()
-            created = True
-            save_kwargs = {'force_insert': True}
-            success_status_code = status.HTTP_201_CREATED
-        except Http404:
-            created = False
-            save_kwargs = {'force_update': True}
-            success_status_code = status.HTTP_200_OK
-
-        serializer = self.get_serializer(self.object, data=request.data,
-                                        partial=partial)
-        save_kwargs.update({'user': self.request.user})
-        if serializer.is_valid():
-            self.object = serializer.save(**save_kwargs)
-            #self.post_save(self.object, created=created)
-            return Response(serializer.data, status=success_status_code)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True

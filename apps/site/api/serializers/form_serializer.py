@@ -1,6 +1,7 @@
 from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
 from localground.apps.site.api.serializers.field_serializer import FieldSerializer
 import datetime
+from rest_framework.serializers import raise_errors_on_nested_writes, model_meta
 from django.conf import settings
 from rest_framework import serializers
 from localground.apps.site import widgets, models
@@ -39,14 +40,12 @@ class FormSerializerDetail(FormSerializerList):
             obj.fields, many=True,
             context={'request': {}}).data
 
-# BaseNamedSerializer?
-
-
 class BaseRecordSerializer(serializers.ModelSerializer):
 
     geometry = fields.GeometryField(help_text='Assign a GeoJSON string',
                                     required=False,
-                                    style={'base_template': 'input.html'},
+                                    allow_null=True,
+                                    style={'base_template': 'textarea.html'},
                                     source='point')
     overlay_type = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField('get_detail_url')
@@ -72,6 +71,47 @@ class BaseRecordSerializer(serializers.ModelSerializer):
     def get_detail_url(self, obj):
         return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
                                                obj.form.id, obj.id)
+    
+    def update(self, instance, validated_data):
+        raise_errors_on_nested_writes('update', self, validated_data)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save(self.context.get('request').user)
+        return instance
+    
+    def create(self, validated_data):
+        #raise Exception(validated_data)
+        serializers.raise_errors_on_nested_writes('create', self, validated_data)
+
+        ModelClass = self.Meta.model
+        info = model_meta.get_field_info(ModelClass)
+        many_to_many = {}
+        for field_name, relation_info in info.relations.items():
+            if relation_info.to_many and (field_name in validated_data):
+                many_to_many[field_name] = validated_data.pop(field_name)
+
+        try:
+            instance = ModelClass(**validated_data)
+        except TypeError as exc:
+            msg = (
+                'Got a `TypeError` when calling `%s.objects.create()`. '
+                'This may be because you have a writable field on the '
+                'serializer class that is not a valid argument to '
+                '`%s.objects.create()`. You may need to make the field '
+                'read-only, or override the %s.create() method to handle '
+                'this correctly.\nOriginal exception text was: %s.' %
+                (
+                    ModelClass.__name__,
+                    ModelClass.__name__,
+                    self.__class__.__name__,
+                    exc
+                )
+            )
+            raise TypeError(msg)
+        if many_to_many:
+            for field_name, value in many_to_many.items():
+                setattr(instance, field_name, value)
+        return instance
 
 def create_record_serializer(form):
     """
@@ -81,6 +121,7 @@ def create_record_serializer(form):
     from localground.apps.site.api import fields
     field_names, photo_fields, photo_details, audio_fields, audio_details = [], [], [], [], []
     display_field = None
+    
     for f in form.fields:
         if f.is_display_field:
             display_field = f
@@ -102,7 +143,7 @@ def create_record_serializer(form):
         model = TableModel
         fields = BaseRecordSerializer.Meta.fields + tuple(field_names) + \
             tuple(photo_fields) + tuple(audio_fields) 
-        read_only_fields = BaseRecordSerializer.Meta.read_only_fields
+        read_only_fields = BaseRecordSerializer.Meta.read_only_fields + ('display_name', )
     
     attrs = {
         '__module__': 'localground.apps.site.api.serializers.FormDataSerializer',
@@ -111,9 +152,10 @@ def create_record_serializer(form):
     #set custom display name field getter, according on the display_field:
     if display_field is not None:
         attrs.update({
-            'display_name': serializers.Field(source=display_field.col_name)
+            'display_name': serializers.CharField(source=display_field.col_name, read_only=True)
         })
         
+    
     for f in photo_fields:
         if f.find("_detail") != -1:
             source = f.replace("_detail", "")
@@ -144,6 +186,7 @@ def create_record_serializer(form):
                 )
             })
     
+    
     return type('record_serializer_default', (BaseRecordSerializer, ), attrs)
 
 def create_compact_record_serializer(form):
@@ -169,7 +212,6 @@ def create_compact_record_serializer(form):
                 'overlay_type')
 
         def get_recs(self, obj):
-            # return [getattr(obj, col_name) for col_name in col_names]
             recs = []
             for col_name in col_names:
                 val = getattr(obj, col_name)
