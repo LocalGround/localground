@@ -147,6 +147,7 @@ class Form(BaseNamed, BasePermissions):
             del apps.get_app_config('site').models['form_%s' % self.id]
         self._fields = None
         '''
+        # see: http://dynamic-models.readthedocs.org/en/latest/topics/model.html#topics-model
         from django.conf import settings
         from django.utils.importlib import import_module
         from django.core.urlresolvers import clear_url_caches
@@ -452,7 +453,7 @@ class Form(BaseNamed, BasePermissions):
         try:
             from django.contrib.contenttypes.models import ContentType
 
-            ct = ContentType.objects.get(name='form_%s' % self.id)
+            ct = ContentType.objects.get(model='form_%s' % self.id)
             ct.delete()
         except ContentType.DoesNotExist:
             pass

@@ -18,7 +18,7 @@ fixture_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fix
 fixture_filenames = ['database_initialization.json', 'test_data.json']
 
 def load_test_fixtures():
-    print 'loading test fixtures...'
+    #print 'loading test fixtures...'
     for fixture_filename in fixture_filenames:
         fixture_file = os.path.join(fixture_dir, fixture_filename)
     
@@ -51,7 +51,7 @@ class ModelMixin(object):
     user_password = 'top_secret'
     #fixtures = ['test_data.json']
 
-    def setUp(self):
+    def setUp(self, load_fixtures=True):
         self._superuser = None
         self._user = None
         self._project = None
@@ -59,7 +59,8 @@ class ModelMixin(object):
         self._client_anonymous = None
         self._client_user = None
         self._client_superuser = None
-        load_test_fixtures()
+        if load_fixtures:
+            load_test_fixtures()
 
 
     @property
@@ -131,7 +132,10 @@ class ModelMixin(object):
             id=2)
 
     def get_user(self, username='tester'):
-        return User.objects.get(username=username)
+        try:
+            return User.objects.get(username=username)
+        except:
+            return self.create_user()
 
     def create_project(self, user, name='Test Project', authority_id=1):
         import random

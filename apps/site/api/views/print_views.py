@@ -19,30 +19,37 @@ class PrintList(QueryableListCreateAPIView, AuditCreate):
             )
 
     paginate_by = 100
-
-    def pre_save(self, obj):
-        AuditCreate.pre_save(self, obj)
-        p = models.Print.insert_print_record(
+    
+    def perform_create(self, serializer):
+        posted_data = serializer.validated_data
+        d = self.get_presave_dictionary()
+        # Do some extra work to generate the PDF and calculate the map extents:
+        instance = models.Print.insert_print_record(
             self.request.user,
-            obj.project,
-            obj.layout,
-            obj.map_provider,
-            obj.zoom,
-            obj.center,
+            posted_data.get('project'),
+            posted_data.get('layout'),
+            posted_data.get('map_provider'),
+            posted_data.get('zoom'),
+            posted_data.get('center'),
             self.request.get_host(),
-            map_title=obj.name,
-            instructions=obj.description,
-            form=None,
-            layer_ids=None,
-            scan_ids=None,
+            map_title=posted_data.get('name'),
+            instructions=posted_data.get('description'),
             do_save=False
         )
-        p.generate_pdf(has_extra_form_page=False)
-        # copy data from unsaved print object into API object
-        #(this may be unsafe):
-        for f in p._meta.fields:
-            obj.__dict__[f.name] = getattr(p, f.name)
-
+        instance.generate_pdf(has_extra_form_page=False)
+        d.update({
+            'northeast': instance.northeast,
+            'southwest': instance.southwest,
+            'extents': instance.extents,
+            'host': instance.host,
+            'map_image_path': instance.map_image_path,
+            'pdf_path': instance.pdf_path,
+            'preview_image_path': instance.preview_image_path,
+            'map_image_path': instance.map_image_path,
+            'map_width': instance.map_width,
+            'map_height': instance.map_height
+        })
+        serializer.save(**d)
 
 class PrintInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
     queryset = models.Print.objects.select_related(
@@ -51,8 +58,8 @@ class PrintInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
         'map_provider').all()
     serializer_class = serializers.PrintSerializerDetail
 
-    def pre_save(self, obj):
-        AuditUpdate.pre_save(self, obj)
+    def perform_update(self, serializer):
+        AuditUpdate.perform_update(self, serializer)
 
 
 class LayoutViewSet(viewsets.ModelViewSet, AuditUpdate):
@@ -61,5 +68,5 @@ class LayoutViewSet(viewsets.ModelViewSet, AuditUpdate):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SQLFilterBackend,)
 
-    def pre_save(self, obj):
-        AuditUpdate.pre_save(self, obj)
+    def perform_update(self, serializer):
+        AuditUpdate.perform_update(self, serializer)

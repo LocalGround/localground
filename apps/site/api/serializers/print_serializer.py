@@ -33,7 +33,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         required=True)
     tags = serializers.CharField(required=False, help_text='Tag your object here')
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
-    edit_url = serializers.SerializerMethodField('get_configuration_url')
+    #edit_url = serializers.SerializerMethodField('get_configuration_url')
     overlay_type = serializers.SerializerMethodField()
     center = fields.GeometryField(
                 help_text='Assign a GeoJSON center point',
@@ -49,8 +49,8 @@ class PrintSerializerMixin(serializers.ModelSerializer):
     def get_uuid(self, obj):
         return obj.uuid
 
-    def get_configuration_url(self, obj):
-        return obj.configuration_url
+    #def get_configuration_url(self, obj):
+    #    return obj.configuration_url
 
     def get_overlay_type(self, obj):
         return obj._meta.verbose_name
@@ -75,7 +75,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
             'layout_url',
             'center',
             'overlay_type',
-            'edit_url',
+            #'edit_url',
             'project_id'
         )
 
@@ -93,7 +93,10 @@ class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
     center = serializers.SerializerMethodField()
     layout = serializers.SerializerMethodField()
     map_provider = serializers.SerializerMethodField()
-    #project_id = serializers.SerializerMethodField('get_project')
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Project.objects.all(),
+        source='project',
+        required=False)
     
     class Meta:
         model = models.Print

@@ -60,7 +60,7 @@ class Report():
         pdfmetrics.registerFont(justFont)
         pdfmetrics.registerFont(TTFont('HandSean', ttfFile))
         
-        response = HttpResponse(mimetype='application/pdf')
+        response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename=' + self.file_name
         
         self.set_orientation(self.is_landscape)

@@ -9,7 +9,6 @@ import urllib
 
 
 class BatchQueryGroupMixin(ModelMixin):
-    fixtures = ['test_data.json'] #'initial_data.json', 
     model = models.Group
 
     def setUp(self):
@@ -17,7 +16,7 @@ class BatchQueryGroupMixin(ModelMixin):
         # are owned by self.owner.  A unique, private project
         # will be assigned to each form.
 
-        ModelMixin.setUp(self)
+        ModelMixin.setUp(self, load_fixtures=False)
 
         # create 3 users:
         self.users = [self.create_user(username=u)

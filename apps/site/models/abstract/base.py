@@ -130,10 +130,10 @@ class Base(models.Model):
               .filter(entity_type=cls.get_content_type())
               .order_by('ordering',))
         ids = [rec.entity_id for rec in qs]
-        objects = cls.objects.select_related(
-            'project',
-            'project__owner',
-            'owner').filter(
+        related_fields = ['owner']
+        if hasattr(cls, 'project'):
+            related_fields.extend(['project', 'project__owner'])
+        objects = cls.objects.select_related(*related_fields).filter(
             id__in=ids)
 
         entities = []

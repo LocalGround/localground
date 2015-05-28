@@ -83,6 +83,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 
     @property
     def embedded_layers(self):
+        #raise Exception('emdedded')
         from localground.apps.site.models import WMSOverlay
         if not hasattr(self, '_embedded_layers'):
             self._embedded_layers = self.grab(WMSOverlay)

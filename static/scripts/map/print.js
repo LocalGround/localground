@@ -29,7 +29,7 @@ localground.print.prototype.initialize=function(opts){
     
     this.initFormsMenu();
     this.initProjectsMenu();
-    this.initViewsMenu();
+    //this.initViewsMenu();
     this.initLayout();
     this.initMap(opts);
     this.initLayoutFormset();

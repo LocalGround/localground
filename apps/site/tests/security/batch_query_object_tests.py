@@ -1,4 +1,5 @@
 from django import test
+from django.core import management
 from django.contrib.auth.models import AnonymousUser
 from localground.apps.site import models
 from localground.apps.site.managers.base import GenericLocalGroundError
@@ -8,13 +9,13 @@ import urllib
 
 
 class BatchQueryObjectMixin(ModelMixin):
-    fixtures = ['test_data.json', 'initial_data.json']
     model = models.BaseMedia
     create_function_name = None
     file_names = ['a', 'b', 'c']
 
     def setUp(self):
-        ModelMixin.setUp(self)
+        #for this test, don't use the default fixtures
+        ModelMixin.setUp(self, load_fixtures=False)
 
         # create 3 users:
         self.users = [self.create_user(username=u)
@@ -32,7 +33,7 @@ class BatchQueryObjectMixin(ModelMixin):
 
         # create 3 objects per project:
         self._create_objects()
-
+        
     def _create_objects(self):
         create_object_function = getattr(self, self.create_function_name)
         self.objects = []
