@@ -14,23 +14,19 @@ Really hacky workaround - fixtures are deprecated, so I'm manually loading them 
 TODO: move fixture loading into actual python code, probably
 This is super duper slow and dumb
 """
-
 fixture_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fixtures'))
-fixture_filename = 'test_data.json'
-fixture_file = os.path.join(fixture_dir, fixture_filename)
-fixture = open(fixture_file, 'rb')
-json = [json for json in fixture]
-fixture.close()
-json = "".join(json)
-
+fixture_filenames = ['database_initialization.json', 'test_data.json']
 
 def load_test_fixtures():
-    objects = serializers.deserialize('json', json, ignorenonexistent=True)
-    for obj in objects:
-        obj.save()
-
-
-
+    print 'loading test fixtures...'
+    for fixture_filename in fixture_filenames:
+        fixture_file = os.path.join(fixture_dir, fixture_filename)
+    
+        fixture = open(fixture_file, 'rb')
+        objects = serializers.deserialize('json', fixture, ignorenonexistent=True)
+        for obj in objects:
+            obj.save()
+        fixture.close()
 
 class Client(test.Client):
 
@@ -428,7 +424,7 @@ class ModelMixin(object):
         return audio
 
 class ViewAnonymousMixin(ModelMixin):
-    fixtures = ['test_data.json']
+    #fixtures = ['test_data.json']
 
     def setUp(self):
         ModelMixin.setUp(self)
@@ -454,7 +450,7 @@ class ViewAnonymousMixin(ModelMixin):
             self.assertEqual(func_name, view_name)
 
 class ViewMixin(ViewAnonymousMixin):
-    fixtures = ['test_data.json']
+    #fixtures = ['test_data.json']
 
     def setUp(self):
         ViewAnonymousMixin.setUp(self)

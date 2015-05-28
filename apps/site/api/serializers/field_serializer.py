@@ -10,6 +10,12 @@ class FieldSerializerBase(serializers.ModelSerializer):
     '''
     url = serializers.SerializerMethodField()#'get_url')
     col_name = serializers.SerializerMethodField()
+    form = serializers.SerializerMethodField()
+    data_type = serializers.SlugRelatedField(
+                                queryset=models.DataType.objects.all(),
+                                slug_field='name',
+                                required=False
+                            )
 
     class Meta:
         model = models.Field
@@ -23,16 +29,18 @@ class FieldSerializerBase(serializers.ModelSerializer):
         
     def get_col_name(self, obj):
         return obj.col_name
+    
+    def get_form(self, obj):
+        return obj.form.id
 
 class FieldSerializer(FieldSerializerBase):
-    #data_type = serializers.SlugRelatedField(slug_field='name')
     class Meta:
         model = models.Field
-        #read_only_fields = ( 'form', )  #can't be required and read only
         fields = FieldSerializerBase.Meta.fields
     
 class FieldSerializerUpdate(FieldSerializerBase):
+    data_type = serializers.SlugRelatedField(slug_field='name', read_only=True)
     class Meta:
         model = models.Field
-        read_only_fields = ( 'data_type')#, 'form') #can't be required and read only
+        read_only_fields = ( 'data_type')
         fields =  FieldSerializerBase.Meta.fields

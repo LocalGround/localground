@@ -27,14 +27,14 @@ class ApiFieldListTest(test.TestCase, ViewMixinAPI):
                             'is_printable': True,
                             'has_snippet_field': True,
                             'ordering': 2,
-                            'data_type': 1,
+                            'data_type': 'text',
                             'display_width': 10
                         }),
                         HTTP_X_CSRFTOKEN=self.csrf_token,
                         content_type="application/x-www-form-urlencoded"
                     )
         if response.status_code != status.HTTP_201_CREATED:
-            print response.content
+            print response.data
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         new_obj = self.model.objects.all().order_by('-id',)[0]
         self.assertEqual(new_obj.col_alias, 'Field 3')
@@ -77,6 +77,7 @@ class ApiFieldInstanceTest(test.TestCase, ViewMixinAPI):
                         HTTP_X_CSRFTOKEN=self.csrf_token,
                         content_type="application/x-www-form-urlencoded"
                     )
+        print response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_field = models.Field.objects.get(id=self.field.id)
         self.assertEqual(updated_field.col_alias, 'Address')

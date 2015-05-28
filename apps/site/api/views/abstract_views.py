@@ -15,7 +15,7 @@ class AuditCreate(object):
         }
     
     def perform_create(self, serializer):
-        serializer.save(**self.get_presave_dictionary())
+        return serializer.save(**self.get_presave_dictionary())
 
 
 class AuditUpdate(object):
@@ -27,7 +27,7 @@ class AuditUpdate(object):
         }
 
     def perform_update(self, serializer):
-        serializer.save(**self.get_presave_dictionary())
+        return serializer.save(**self.get_presave_dictionary())
 
 
 class QueryableListCreateAPIView(generics.ListCreateAPIView):
@@ -110,4 +110,4 @@ class MediaInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
         return self.model.objects.select_related('owner').all()
 
     def perform_update(self, serializer):
-        AuditUpdate.perform_update(self, serializer)
+        return AuditUpdate.perform_update(self, serializer)
