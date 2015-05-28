@@ -133,19 +133,26 @@ class Form(BaseNamed, BasePermissions):
         for form in forms:
             m = form.TableModel
             #apps.get_app_config(m._meta.app_label).models[m._meta.object_name.lower()] = m
-            apps.register_model('site', m)
+            apps.register_model(m._meta.app_label, m)
             # cache.app_models[
             #     m._meta.app_label][
             #     m._meta.object_name.lower()] = m
 
     def clear_table_model_cache(self):
+        '''
         from django.apps import apps
-
         #appConfig.models is a private attribute so this may break without warning in a new version
         #TODO: find a better way to do this
-        #if apps.get_model('site', 'form_%s' % self.id):
-        #    del apps.get_app_config('site').models['form_%s' % self.id]
-        #self._fields = None
+        if apps.get_model('site', 'form_%s' % self.id):
+            del apps.get_app_config('site').models['form_%s' % self.id]
+        self._fields = None
+        '''
+        from django.conf import settings
+        from django.utils.importlib import import_module
+        from django.core.urlresolvers import clear_url_caches
+        
+        reload(import_module(settings.ROOT_URLCONF))
+        clear_url_caches()
 
     @property
     def TableModel(self):

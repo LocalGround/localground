@@ -51,9 +51,10 @@ class FormDataTestMixin(object):
         self.assertEqual(rec.num, d.get('num'))
         fields = self.form.fields
         length = len(d.keys()) - 1
+        print dir(rec)
         for i in range(0, 5):
-            # print fields[i].col_name, d.get(fields[i].col_name), getattr(rec,
-            # fields[i].col_name)
+            print fields[i].col_name, d.get(fields[i].col_name), getattr(rec,
+            fields[i].col_name)
             self.assertEqual(
                 d.get(
                     fields[i].col_name), getattr(
@@ -81,9 +82,11 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
             data=urllib.urlencode(d),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded")
+        print response.data
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # verify values:
+        print d
         FormDataTestMixin.verify_success(self, d)
         
 class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
@@ -107,6 +110,6 @@ class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         HTTP_X_CSRFTOKEN=self.csrf_token,
         content_type = "application/x-www-form-urlencoded"
         )
-        print response.data
+        #print response.data
         FormDataTestMixin.verify_success(self, d)
 
