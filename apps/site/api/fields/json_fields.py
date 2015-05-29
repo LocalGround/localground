@@ -4,27 +4,30 @@ import json
 class EntitiesField(serializers.Field):
     type_label = 'json'
     type_name = 'EntitiesField'
-
-    def get_value(self, data, files, field_name, into):
+    
+    
+    def get_attribute(self, obj):
+        # We pass the object instance onto `to_representation`,
+        # not just the field attribute.
+        return obj
+    
+    
+    def to_internal_value(self, value):
         '''
-        Alas, this doesn't cover it...only does most of the validation.
-        To execute the actual database commit, you need to implement code
-        in the view. Please see "snapshots_view" for details. A total hack.
+        This is a hack to do some pre-validation. The building of the
+        GenericRelations must be done in the view itself (snapshot_views),
+        b/c it needs access to the saved instance.
         '''
         import json
-
-        entities_str = data.get('entities')
-        if entities_str:
+        if value:
             try:
-                entities = json.loads(entities_str)
+                entities = json.loads(value)
             except:
                 raise serializers.ValidationError('Error parsing JSON')
 
             for child in entities:
-                # validate each dictionary entry:
                 try:
                     overlay_type = child['overlay_type']
-                    #innerEntities = child['entities']
                     ids = child['ids']
                 except:
                     raise serializers.ValidationError(
@@ -34,35 +37,29 @@ class EntitiesField(serializers.Field):
                     raise serializers.ValidationError(
                         '%s must be a list' % ids
                     )
-                '''
-                #Zack code...
-                if not isinstance(innerEntities, list):
-                    raise serializers.ValidationError(
-                    '%s must be a list' % innerEntities
-                    )
-                '''
 
-                # for entity in innerEntities:
                 for id in ids:
                     # ensure that the requested child item exists:
                     from localground.apps.site.models import Base
-
                     try:
                         obj = Base.get_model(
                             model_name=overlay_type
                         ).objects.get(id=id)
-                        # entity['id']
                     except:
                         raise serializers.ValidationError(
                             'No %s object exists with id=%s' % (
                                 overlay_type,
-                                id)  # entity['id'])
+                                id)
                         )
-
-    def to_representation(self, value):
-        if value is not None:
+        # this exception prevents the 'entities' dictionary from being
+        # directly applied to the entities many-to-many (which is impossible)
+        # to specify before the object has been created.
+        raise serializers.SkipField()
+    
+    def to_representation(self, obj):
+        if obj.entities is not None:
             entity_dict = {}
-            for e in value.all():
+            for e in obj.entities.all():
                 overlay_type = e.entity_type.name
                 if entity_dict.get(overlay_type) is None:
                     entity_dict[overlay_type] = []
@@ -72,7 +69,7 @@ class EntitiesField(serializers.Field):
             for key in entity_dict:
                 entry_list.append({
                     'overlay_type': key,
-                    'entities': entity_dict[key]
+                    'ids': entity_dict[key]
                 })
             return entry_list
 

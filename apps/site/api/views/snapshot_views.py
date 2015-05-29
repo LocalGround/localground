@@ -8,20 +8,17 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 
-
 class SnapshotMixin(object):
 
-    def post_save(self, obj, created=False):
+    def save_generic_relations(self, obj, entities):
         '''
         Saves all children:
         '''
         from localground.apps.lib.helpers import get_timestamp_no_milliseconds
         import json
         from django.db import connection, IntegrityError, DatabaseError
-
-        entities_str = self.request.DATA.get('entities')
-        if entities_str:
-            entities = json.loads(entities_str)
+        if entities:
+            entities = json.loads(entities)
             source_type = self.model.get_content_type()
             source_id = obj.id
             # 1) clear out existing child media:
@@ -33,8 +30,6 @@ class SnapshotMixin(object):
                 entity_type = models.Base.get_model(
                     model_name=overlay_type
                 ).get_content_type()
-                #inner_entities = child.get('entities')
-                # for entity in inner_entities:
                 for id in child.get('ids'):
                     a = models.GenericAssociation(
                         source_id=source_id,
@@ -69,21 +64,18 @@ class SnapshotList(QueryableListCreateAPIView, SnapshotMixin, AuditCreate):
                 access_key=self.request.GET.get('access_key')
             )
 
-    def pre_save(self, obj):
-        AuditCreate.pre_save(self, obj)
-        obj.access_authority = models.ObjectAuthority.objects.get(id=3)
+    def perform_create(self, serializer):
+        d = self.get_presave_dictionary()
+        d.update({
+            'access_authority': models.ObjectAuthority.objects.get(id=3)
+        })
+        obj = serializer.save(**d)
+        self.save_generic_relations(obj, serializer.initial_data.get('entities'))
+        
 
     def post_save(self, obj, created=False):
         SnapshotMixin.post_save(self, obj, created=False)
 
-    def create(self, request, *args, **kwargs):
-        response = super(SnapshotList, self).create(request, *args, **kwargs)
-        if len(self.warnings) > 0:
-            response.data.update({'warnings': self.warnings})
-        if self.error_messages:
-            response.data = self.error_messages
-            response.status = status.HTTP_400_BAD_REQUEST
-        return response
 
 
 class SnapshotInstance(
@@ -96,17 +88,7 @@ class SnapshotInstance(
     serializer_class = serializers.SnapshotDetailSerializer
     model = models.Snapshot
 
-    def pre_save(self, obj):
-        AuditUpdate.pre_save(self, obj)
+    def perform_update(self, serializer):
+        obj = AuditUpdate.perform_update(self, serializer)
+        self.save_generic_relations(obj, serializer.initial_data.get('entities'))
 
-    def post_save(self, obj, created=False):
-        SnapshotMixin.post_save(self, obj, created=False)
-
-    def update(self, request, *args, **kwargs):
-        response = super(SnapshotInstance, self).update(request, *args, **kwargs)
-        if len(self.warnings) > 0:
-            response.data.update({'warnings': self.warnings})
-        if self.error_messages:
-            response.data = self.error_messages
-            response.status = status.HTTP_400_BAD_REQUEST
-        return response

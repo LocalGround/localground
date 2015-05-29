@@ -9,7 +9,7 @@ from rest_framework import status
 class ObjectShareFormProfileTest(test.TestCase, ViewMixin):
 
     def setUp(self):
-        ViewMixin.setUp(self)
+        ViewMixin.setUp(self, load_fixtures=False)
         self.urls = [
             '/profile/projects/1/share/',
             '/profile/projects/1/share/embed/',

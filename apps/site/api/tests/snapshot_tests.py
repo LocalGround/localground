@@ -17,16 +17,6 @@ class ApiSnapshotTest(test.TestCase, ViewMixinAPI):
         {'overlay_type': 'audio', 'ids': [1]},
         {'overlay_type': 'marker', 'ids': [1]}
     ]
-    entities_zack = [
-        {
-            "overlay_type": "marker",
-                            "entities": [{"id": 55}, {"id": 56}]
-        },
-        {
-            "overlay_type": "photo",
-                            "entities": [{"id": 102}]
-        }
-    ]
     invalid_entities = [
         {'overlay_type': 'photo', 'ids': [1000, 2000000, 300]},
         {'overlay_type': 'audio', 'ids': [1]},
@@ -55,8 +45,8 @@ class ApiSnapshotTest(test.TestCase, ViewMixinAPI):
                           HTTP_X_CSRFTOKEN=self.csrf_token,
                           content_type="application/x-www-form-urlencoded"
                           )
-        # if response.status_code != status_id:
-        #	print response.content
+        if response.status_code != status_id:
+            print response.data
         self.assertEqual(response.status_code, status_id)
 
         # if it was successful, verify data:

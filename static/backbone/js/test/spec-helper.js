@@ -146,7 +146,7 @@ define(
                 basemap: 12,
                 center: { type: "Point", coordinates: [-122, 37] },
                 description: "This is a cool description for cool, humble people",
-                entities: [ { entities: [ 19 ], overlay_type: "photo" } ],
+                entities: [ { ids: [ 19 ], overlay_type: "photo" } ],
                 children: {
                     photos: {
                         overlay_type: "photo",
