@@ -37,7 +37,7 @@ class GeomMixin(object):
 class ApiMarkerListTest(test.TestCase, ViewMixinAPI, GeomMixin):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self)
+        ViewMixinAPI.setUp(self, load_fixtures=False)
         self.urls = ['/api/0/markers/']
         self.view = views.MarkerList.as_view()
 

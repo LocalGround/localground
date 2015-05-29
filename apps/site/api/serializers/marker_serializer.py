@@ -17,11 +17,7 @@ class MarkerSerializer(GeometrySerializer):
         allow_null=True,
         source='point',
         required=False,
-        style={'base_template': 'textarea.html'},
-        geom_types=[
-            'Point',
-            'LineString',
-            'Polygon'])
+        style={'base_template': 'textarea.html'})
 
     children = serializers.SerializerMethodField()
     color = fields.ColorField(required=False)
@@ -159,11 +155,7 @@ class MarkerSerializerCounts(GeometrySerializer):
         allow_null=True,
         required=False,
         source='point',
-        style={'base_template': 'textarea.html'},
-        geom_types=[
-            'Point',
-            'LineString',
-            'Polygon'])
+        style={'base_template': 'textarea.html'})
     color = fields.ColorField(required=False)
     photo_count = serializers.SerializerMethodField()
     audio_count = serializers.SerializerMethodField()

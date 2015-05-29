@@ -234,6 +234,10 @@ class Snapshot(Group):
         verbose_name = 'snapshot'
         verbose_name_plural = 'snapshots'
 
+    @property
+    def geometry(self):
+        return self.center
+    
     @classmethod
     def sharing_form(cls):
         from localground.apps.site.forms import SnapshotPermissionsForm

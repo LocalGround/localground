@@ -6,8 +6,8 @@ from rest_framework import status
 class ViewMixinAPISuperuser(ModelMixin):
     fixtures = ['test_data.json'] #'initial_data.json', 
 
-    def setUp(self):
-        ModelMixin.setUp(self)
+    def setUp(self, load_fixtures=True):
+        ModelMixin.setUp(self, load_fixtures=load_fixtures)
 
     def test_page_403_or_302_status_anonymous_user(self, urls=None):
         if urls is None:
@@ -50,22 +50,8 @@ class ViewMixinAPISuperuser(ModelMixin):
 class ViewMixinAPI(ModelMixin):
     fixtures = ['test_data.json'] #'initial_data.json', 
 
-    def setUp(self):
-        ModelMixin.setUp(self)
-
-    '''
-	This generic test no longer makes sense, because some pages will
-	be accessible, while others won't.  Commenting out for now.
-	def test_page_403_or_302_status_anonymous_user(self, urls=None):
-		if urls is None:
-			urls = self.urls
-		for url in urls:
-			response = self.client_anonymous.get(url)
-			self.assertIn(response.status_code, [
-				status.HTTP_302_FOUND,
-				status.HTTP_403_FORBIDDEN
-			])
-	'''
+    def setUp(self, load_fixtures=True):
+        ModelMixin.setUp(self, load_fixtures=load_fixtures)
 
     def test_page_200_status_basic_user(self, urls=None, **kwargs):
         if urls is None:

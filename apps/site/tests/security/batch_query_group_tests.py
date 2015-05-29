@@ -141,7 +141,7 @@ class BatchProjectQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
 
     def _create_groups(self):
         # delete all projects in database:
-        models.Project.objects.all().delete()
+        #models.Project.objects.all().delete()
 
         # and add two new ones:
         self.group1 = self.create_project(

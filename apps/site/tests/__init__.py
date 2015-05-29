@@ -99,8 +99,9 @@ class ModelMixin(object):
     def client_user(self):
         if self._client_user is None:
             self._client_user = Client(enforce_csrf_checks=True)
+            user = self.get_user()
             self._client_user.login(
-                username='tester',
+                username=user.username,
                 password=self.user_password)
             self._client_user.cookies['csrftoken'] = self.csrf_token
         return self._client_user
@@ -430,8 +431,8 @@ class ModelMixin(object):
 class ViewAnonymousMixin(ModelMixin):
     #fixtures = ['test_data.json']
 
-    def setUp(self):
-        ModelMixin.setUp(self)
+    def setUp(self, load_fixtures=True):
+        ModelMixin.setUp(self, load_fixtures=load_fixtures)
 
     def test_page_200_status_basic_user(self, urls=None, **kwargs):
         if urls is None:
@@ -456,8 +457,8 @@ class ViewAnonymousMixin(ModelMixin):
 class ViewMixin(ViewAnonymousMixin):
     #fixtures = ['test_data.json']
 
-    def setUp(self):
-        ViewAnonymousMixin.setUp(self)
+    def setUp(self, load_fixtures=True):
+        ViewAnonymousMixin.setUp(self, load_fixtures=load_fixtures)
 
     def test_page_403_or_302_status_anonymous_user(self, urls=None):
         if urls is None:
