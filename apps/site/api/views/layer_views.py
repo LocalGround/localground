@@ -24,9 +24,12 @@ class LayerList(QueryableListCreateAPIView, AuditCreate):
                 access_key=self.request.GET.get('access_key')
             )
 
-    def pre_save(self, obj):
-        AuditCreate.pre_save(self, obj)
-        obj.access_authority = models.ObjectAuthority.objects.get(id=1)
+    def perform_create(self, serializer):
+        d = self.get_presave_dictionary()
+        d.update({
+            'access_authority': models.ObjectAuthority.objects.get(id=1)
+        })
+        serializer.save(**d)
 
     def create(self, request, *args, **kwargs):
         response = super(LayerList, self).create(request, *args, **kwargs)
@@ -47,8 +50,8 @@ class LayerInstance(
     serializer_class = serializers.LayerDetailSerializer
     model = models.Layer
 
-    def pre_save(self, obj):
-        AuditUpdate.pre_save(self, obj)
+    def perform_update(self, serializer):
+        AuditUpdate.perform_update(self, serializer)
 
     def update(self, request, *args, **kwargs):
         response = super(LayerInstance, self).update(request, *args, **kwargs)

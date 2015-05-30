@@ -7,8 +7,8 @@ import urllib
 from rest_framework import status
 
 class ApiFieldListTest(test.TestCase, ViewMixinAPI):
-    def setUp(self):
-        ViewMixinAPI.setUp(self)
+    def setUp(self, load_fixtures=False):
+        ViewMixinAPI.setUp(self, load_fixtures=False)
         self.form = self.create_form_with_fields(
                         name="Class Form",
                         num_fields=0
@@ -33,6 +33,7 @@ class ApiFieldListTest(test.TestCase, ViewMixinAPI):
                         HTTP_X_CSRFTOKEN=self.csrf_token,
                         content_type="application/x-www-form-urlencoded"
                     )
+        
         if response.status_code != status.HTTP_201_CREATED:
             print response.data
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -40,7 +41,7 @@ class ApiFieldListTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(new_obj.col_alias, 'Field 3')
         self.assertEqual(new_obj.col_name, 'field_3')
         
-        # also check to see if the new column exists in the Dynamic tabke
+        # also check to see if the new column exists in the Dynamic table
         # and that we can add data to it:
         new_rec = new_obj.form.TableModel()
         new_rec.project = self.project

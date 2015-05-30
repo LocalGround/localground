@@ -488,14 +488,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='ProcessingStatusCode',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.CharField(max_length=2000, null=True, blank=True)),
-            ],
-        ),
-        migrations.CreateModel(
             name='Project',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -607,13 +599,6 @@ class Migration(migrations.Migration):
         ),
         migrations.CreateModel(
             name='UploadSource',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=255)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='UploadSrc',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=255)),

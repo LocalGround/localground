@@ -4,8 +4,7 @@ from rest_framework import status
 
 
 class ViewMixinAPISuperuser(ModelMixin):
-    fixtures = ['test_data.json'] #'initial_data.json', 
-
+    
     def setUp(self, load_fixtures=True):
         ModelMixin.setUp(self, load_fixtures=load_fixtures)
 
@@ -48,8 +47,7 @@ class ViewMixinAPISuperuser(ModelMixin):
 
 
 class ViewMixinAPI(ModelMixin):
-    fixtures = ['test_data.json'] #'initial_data.json', 
-
+    
     def setUp(self, load_fixtures=True):
         ModelMixin.setUp(self, load_fixtures=load_fixtures)
 
