@@ -312,7 +312,6 @@ class ModelMixin(object):
         f = self.create_form(name, description, user=user,
                              authority_id=authority_id)
         for i in range(0, num_fields):
-            # add 2 fields to form:
             fld = self.create_field(name='Field %s' % (i + 1),
                                 data_type=models.DataType.objects.get(id=(i + 1)),
                                 ordering=(i + 1),

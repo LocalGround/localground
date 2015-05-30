@@ -51,7 +51,7 @@ class ProjectMixin(GroupMixin):
 
 
 class ProjectManager(models.GeoManager, ProjectMixin):
-    #def get_query_set(self):
+    #def get_queryset(self):
     #    return ProjectQuerySet(self.model, using=self._db)
     pass
 
@@ -104,7 +104,7 @@ class SnapshotMixin(GroupMixin):
 
 
 class SnapshotManager(models.GeoManager, SnapshotMixin):
-    #def get_query_set(self):
+    #def get_queryset(self):
     #    return SnapshotQuerySet(self.model, using=self._db)
     pass
 
@@ -204,7 +204,7 @@ class FormMixin(GroupMixin):
 
 
 class FormManager(models.GeoManager, FormMixin):
-    #def get_query_set(self):
+    #def get_queryset(self):
     #    return FormQuerySet(self.model, using=self._db)
     pass
 
@@ -238,7 +238,7 @@ class PresentationMixin(GroupMixin):
 
 
 class PresentationManager(models.GeoManager, PresentationMixin):
-    #def get_query_set(self):
+    #def get_queryset(self):
     #    return PresentationQuerySet(self.model, using=self._db)
     pass
 
@@ -278,6 +278,6 @@ class LayerMixin(GroupMixin):
 
 
 class LayerManager(models.GeoManager, LayerMixin):
-    #def get_query_set(self):
+    #def get_queryset(self):
     #    return LayerQuerySet(self.model, using=self._db)
     pass

@@ -45,7 +45,6 @@ class PrintViewTest(test.TestCase, ViewMixin):
             'short_form': 'on',
             'generate_pdf': 'on'
         }
-
         for i, field in enumerate(form.fields):
             d.update({
                 'field_layout-%s-field' % i: field.id,
@@ -58,6 +57,7 @@ class PrintViewTest(test.TestCase, ViewMixin):
             'field_layout-MAX_NUM_FORMS': 1000
         }
         d.update(management_form)
+        print d
 
         response = self.client_user.post(
             self.url,

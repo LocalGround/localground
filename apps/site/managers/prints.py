@@ -10,7 +10,7 @@ from localground.apps.site.managers.base import ObjectMixin
 
 
 class PrintPermissionsManager(models.GeoManager, ObjectMixin):
-    #def get_query_set(self):
+    #def get_queryset(self):
     #    return PrintPermissionsQuerySet(self.model, using=self._db)
     pass
 
@@ -64,26 +64,11 @@ class PrintMixin(ObjectMixin):
 
         return return_obj
 
-        '''poly = Polygon(((west, north), (east, north), (east, south), (west, south), (west, north)))
-        poly.srid = srid=4326
-        scans = list(Scan.objects
-                    .filter(source_print__deleted=False)
-                    .filter(deleted=False)
-                    .filter(source_print__isnull=False)
-                    .filter(source_print__northeast__intersects=poly)
-                    #.select_related()
-                    .values('source_print__id',)# 'source_print__extents')
-                    .annotate(num_scans=Count('id'))
-                )
-        
-        '''
-
-
 class PrintQuerySet(QuerySet, PrintMixin):
     pass
 
 
 class PrintManager(models.GeoManager, PrintMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return PrintQuerySet(self.model, using=self._db)
 

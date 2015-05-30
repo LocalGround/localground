@@ -76,7 +76,7 @@ class MarkerMixin(ObjectMixin):
 
 
 class MarkerManager(GeoManager, MarkerMixin):
-    #def get_query_set(self):
+    #def get_queryset(self):
     #    return MarkerQuerySet(self.model, using=self._db)
     pass
 

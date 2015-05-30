@@ -46,8 +46,12 @@ class ScanQuerySet(QuerySet, ScanMixin):
 
 
 class ScanManager(models.GeoManager, ScanMixin):
-    def get_query_set(self):
+    def get_queryset(self):
         return ScanQuerySet(self.model, using=self._db)
+    
+    
+    
+
 
 
 #class AttachmentQuerySet(QuerySet, UploadMixin):
@@ -55,7 +59,7 @@ class ScanManager(models.GeoManager, ScanMixin):
 
 
 class AttachmentManager(models.GeoManager, ScanMixin):
-    #def get_query_set(self):
+    #def get_queryset(self):
     #    return AttachmentQuerySet(self.model, using=self._db)
     pass
 
@@ -79,7 +83,7 @@ class PrintPermissionsMixin(object):
 
 
 class PhotoManager(models.GeoManager, PhotoMixin):
-    #def get_query_set(self):
+    #def get_queryset(self):
     #    return PhotoQuerySet(self.model, using=self._db)
     pass
 
@@ -93,7 +97,7 @@ class AudioMixin(UploadMixin):
 
 
 class AudioManager(models.GeoManager, AudioMixin):
-    #def get_query_set(self):
+    #def get_queryset(self):
     #    return AudioQuerySet(self.model, using=self._db)
     pass
 
@@ -107,7 +111,7 @@ class VideoMixin(UploadMixin):
 
 
 class VideoManager(models.GeoManager, VideoMixin):
-    #def get_query_set(self):
+    #def get_queryset(self):
     #    return VideoQuerySet(self.model, using=self._db)
     pass
 
@@ -160,7 +164,7 @@ class RecordMixin(UploadMixin):
 class RecordManager(models.GeoManager, RecordMixin):
     related_fields = ['project', 'owner'] #, 'form']
 
-#    def get_query_set(self):
+#    def get_queryset(self):
 #        return RecordQuerySet(self.model, using=self._db)
 
     def get_objects_detailed(self, user, project=None, request=None,

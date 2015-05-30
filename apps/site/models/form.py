@@ -154,6 +154,7 @@ class Form(BaseNamed, BasePermissions):
         
         reload(import_module(settings.ROOT_URLCONF))
         clear_url_caches()
+        self._fields = None
 
     @property
     def TableModel(self):
