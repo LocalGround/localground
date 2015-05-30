@@ -38,7 +38,6 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
                                         db_column='form_column_ids')
     form = models.ForeignKey('Form', null=True, blank=True)
     deleted = models.BooleanField(default=False)
-    #layers = models.ManyToManyField('WMSOverlay', null=True, blank=True)
     objects = PrintManager()
 
     @classmethod
@@ -263,6 +262,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         p.southwest = southwest
         p.extents = extents
         p.virtual_path = p.generate_relative_path()
+        p.form = form
         if layout.is_data_entry and form is not None:
             p.form = form
 

@@ -82,7 +82,7 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
             data=urllib.urlencode(d),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded")
-        print response.data
+        #print response.data
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # verify values:

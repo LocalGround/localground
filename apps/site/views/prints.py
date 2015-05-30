@@ -44,7 +44,6 @@ def generate_print(
         # get existing form:
         if r.get('form_id') != '-1' and r.get('form_id') is not None:
             form = models.Form.objects.get(id=int(r.get('form_id', 1)))
-
     forms = models.Form.objects.filter(owner=request.user).order_by('name', )
     #forms = models.Form.objects.filter(project=project).order_by('name',)
     layers, layer_ids = [], []

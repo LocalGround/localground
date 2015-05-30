@@ -78,7 +78,7 @@ class ApiFieldInstanceTest(test.TestCase, ViewMixinAPI):
                         HTTP_X_CSRFTOKEN=self.csrf_token,
                         content_type="application/x-www-form-urlencoded"
                     )
-        print response.data
+        #print response.data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_field = models.Field.objects.get(id=self.field.id)
         self.assertEqual(updated_field.col_alias, 'Address')

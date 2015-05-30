@@ -57,7 +57,7 @@ class PrintViewTest(test.TestCase, ViewMixin):
             'field_layout-MAX_NUM_FORMS': 1000
         }
         d.update(management_form)
-        print d
+        #print d
 
         response = self.client_user.post(
             self.url,
