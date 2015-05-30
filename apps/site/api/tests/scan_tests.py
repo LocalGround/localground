@@ -14,7 +14,7 @@ class ApiScanListTest(test.TestCase, ViewMixinAPI):
 class ApiScanDetailTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self)
+        ViewMixinAPI.setUp(self, load_fixtures=True)
         self.scan = self.create_scan(self.user, self.project)
         self.urls = ['/api/0/map-images/%s/' % self.scan.id]
         self.view = views.ScanInstance.as_view()

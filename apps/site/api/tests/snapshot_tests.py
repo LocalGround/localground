@@ -67,7 +67,7 @@ class ApiSnapshotTest(test.TestCase, ViewMixinAPI):
 class ApiSnapshotListTest(ApiSnapshotTest):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self)
+        ViewMixinAPI.setUp(self, load_fixtures=True)
         self.url = '/api/0/snapshots/'
         self.urls = [self.url]
         self.model = models.Snapshot
@@ -98,7 +98,7 @@ class ApiSnapshotListTest(ApiSnapshotTest):
 class ApiSnapshotInstanceTest(ApiSnapshotTest):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self)
+        ViewMixinAPI.setUp(self, load_fixtures=True)
         self.obj = self.create_snapshot(
             self.user,
             name='Test Snapshot 1',

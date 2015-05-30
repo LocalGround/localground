@@ -8,7 +8,7 @@ from rest_framework import status
 class ObjectListFormProfileTest(test.TestCase, ViewMixin):
 
     def setUp(self):
-        ViewMixin.setUp(self)
+        ViewMixin.setUp(self, load_fixtures=True)
         self.urls = ['/profile/photos/',
                      '/profile/audio/',
                      '/profile/prints/',

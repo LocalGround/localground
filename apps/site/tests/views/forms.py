@@ -10,7 +10,7 @@ from localground.apps.site.models import Field
 class UpdateFormTest(test.TestCase, ViewMixin):
 
     def setUp(self):
-        ViewMixin.setUp(self)
+        ViewMixin.setUp(self, load_fixtures=True)
         self.form = self.create_form(name="Class Form")
         self.urls = [
             '/profile/forms/%s/' % self.form.id,

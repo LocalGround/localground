@@ -38,8 +38,8 @@ class ApiRelatedMediaListTest(
         self.view = views.RelatedMediaList.as_view()
         
         #create 1 photo and 1 audio object:
-        photo = self.create_photo(self.user, self.project)
-        audio = self.create_audio(self.user, self.project)
+        self.photo = self.create_photo(self.user, self.project)
+        self.audio = self.create_audio(self.user, self.project)
         
 
     def test_page_404_if_invalid_marker_id(self, **kwargs):
@@ -54,6 +54,7 @@ class ApiRelatedMediaListTest(
 
     def test_attach_media_to_marker(self, **kwargs):
         source_type = models.Marker.get_content_type()
+        entity_id = self.photo.id # id should be the same for both photo and audio object
         for i, url in enumerate(self.urls):
             entity_type = models.Base.get_model(
                 model_name_plural=url.split('/')[-2]
@@ -69,11 +70,13 @@ class ApiRelatedMediaListTest(
 
             # 2) append object to marker:
             response = self.client_user.post(url, {
-                'object_id': 1,
-                'ordering': i
-            },
+                    'object_id': entity_id,
+                    'ordering': i
+                },
                 HTTP_X_CSRFTOKEN=self.csrf_token
             )
+            if response.status_code != status.HTTP_201_CREATED:
+                print response.data
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
             # 3) Make sure it's in there:

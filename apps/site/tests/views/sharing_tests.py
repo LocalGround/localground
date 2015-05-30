@@ -45,7 +45,6 @@ class ObjectShareFormProfileTest(test.TestCase, ViewMixin):
             'groupuser-MAX_NUM_FORMS': 1000
         }
         data.update(management_form)
-        print data
         response = self.client_user.post(
             '/profile/%s/%s/share/' %
             (self.project.model_name_plural,
@@ -76,9 +75,9 @@ class ObjectShareFormProfileTest(test.TestCase, ViewMixin):
             'access_authority': self.project.access_authority.id,
             'owner_autocomplete': self.project.owner.username,
             'slug': slug,
-            'groupuser-0-id': 1,
+            'groupuser-0-id': user_ids[0],
             'groupuser-0-user_autocomplete': 'test1',
-            'groupuser-0-authority': user_ids[0],
+            'groupuser-0-authority': 2,
             'groupuser-0-DELETE': 'on',
             'groupuser-1-id': user_ids[1],
             'groupuser-1-user_autocomplete': 'test2',
@@ -90,6 +89,7 @@ class ObjectShareFormProfileTest(test.TestCase, ViewMixin):
             'groupuser-MAX_NUM_FORMS': 1000
         }
         data.update(management_form)
+        print data
         response = self.client_user.post(
             '/profile/%s/%s/share/' %
             (self.project.model_name_plural,
@@ -97,7 +97,7 @@ class ObjectShareFormProfileTest(test.TestCase, ViewMixin):
             data=urllib.urlencode(data),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/x-www-form-urlencoded")
-
+        
         # successfully redirected
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 

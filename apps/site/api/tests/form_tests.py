@@ -51,10 +51,7 @@ class FormDataTestMixin(object):
         self.assertEqual(rec.num, d.get('num'))
         fields = self.form.fields
         length = len(d.keys()) - 1
-        #print dir(rec)
         for i in range(0, 5):
-            print fields[i].col_name, d.get(fields[i].col_name), getattr(rec,
-            fields[i].col_name)
             self.assertEqual(
                 d.get(
                     fields[i].col_name), getattr(

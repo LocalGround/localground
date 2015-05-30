@@ -79,7 +79,7 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI):
 class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self)
+        ViewMixinAPI.setUp(self, load_fixtures=True)
         self.print_object = self.create_print()
         self.url = '/api/0/prints/%s/' % self.print_object.id
         self.urls = [self.url]
