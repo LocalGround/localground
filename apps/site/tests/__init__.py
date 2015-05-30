@@ -15,7 +15,7 @@ TODO: move fixture loading into actual python code, probably
 This is super duper slow and dumb
 """
 fixture_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fixtures'))
-fixture_filenames = ['database_initialization.json', 'test_data.json']
+fixture_filenames = ['test_data.json'] #'database_initialization.json', 
 
 def load_test_fixtures():
     #print 'loading test fixtures...'
@@ -51,7 +51,7 @@ class ModelMixin(object):
     user_password = 'top_secret'
     #fixtures = ['test_data.json']
 
-    def setUp(self, load_fixtures=True):
+    def setUp(self, load_fixtures=False):
         self._superuser = None
         self._user = None
         self._project = None
@@ -430,7 +430,7 @@ class ModelMixin(object):
 class ViewAnonymousMixin(ModelMixin):
     #fixtures = ['test_data.json']
 
-    def setUp(self, load_fixtures=True):
+    def setUp(self, load_fixtures=False):
         ModelMixin.setUp(self, load_fixtures=load_fixtures)
 
     def test_page_200_status_basic_user(self, urls=None, **kwargs):
@@ -456,7 +456,7 @@ class ViewAnonymousMixin(ModelMixin):
 class ViewMixin(ViewAnonymousMixin):
     #fixtures = ['test_data.json']
 
-    def setUp(self, load_fixtures=True):
+    def setUp(self, load_fixtures=False):
         ViewAnonymousMixin.setUp(self, load_fixtures=load_fixtures)
 
     def test_page_403_or_302_status_anonymous_user(self, urls=None):

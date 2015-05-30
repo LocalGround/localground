@@ -22,7 +22,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
 class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self)
+        ViewMixinAPI.setUp(self, load_fixtures=True)
         self.photo = models.Photo.objects.get(id=1)
         self.url = '/api/0/photos/%s/' % self.photo.id
         self.urls = [self.url]

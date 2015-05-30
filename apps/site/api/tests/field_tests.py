@@ -7,8 +7,8 @@ import urllib
 from rest_framework import status
 
 class ApiFieldListTest(test.TestCase, ViewMixinAPI):
-    def setUp(self, load_fixtures=False):
-        ViewMixinAPI.setUp(self, load_fixtures=False)
+    def setUp(self):
+        ViewMixinAPI.setUp(self)
         self.form = self.create_form_with_fields(
                         name="Class Form",
                         num_fields=0

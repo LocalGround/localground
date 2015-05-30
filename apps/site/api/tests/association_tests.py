@@ -20,7 +20,6 @@ class APIRelatedMediaMixin(object):
         r.save()
         return r
 
-
 class ApiRelatedMediaListTest(
         test.TestCase,
         ViewMixinAPI,
@@ -28,7 +27,8 @@ class ApiRelatedMediaListTest(
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.marker = self.get_marker()
+        #self.marker = self.get_marker()
+        self.marker = self.create_marker(self.user, self.project)
         url = '/api/0/markers/%s/%s/'
         self.urls = [
             url % (self.marker.id, 'photos'),
@@ -36,6 +36,11 @@ class ApiRelatedMediaListTest(
             #url % (self.marker.id, 'map-images')
         ]
         self.view = views.RelatedMediaList.as_view()
+        
+        #create 1 photo and 1 audio object:
+        photo = self.create_photo(self.user, self.project)
+        audio = self.create_audio(self.user, self.project)
+        
 
     def test_page_404_if_invalid_marker_id(self, **kwargs):
         url = '/api/0/markers/%s/%s/'
@@ -97,29 +102,29 @@ class ApiRelatedMediaInstanceTest(
         test.TestCase,
         ViewMixinAPI,
         APIRelatedMediaMixin):
-
+    
+    
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        self.marker = self.get_marker()
-        self.create_relation(models.Photo.get_content_type(), id=1)
-        self.create_relation(models.Audio.get_content_type(), id=1)
+        #self.marker = self.get_marker()
+        self.marker = self.create_marker(self.user, self.project)
         url = '/api/0/markers/%s/%s/'
         self.urls = [
             url % (self.marker.id, 'photos'),
             url % (self.marker.id, 'audio')
         ]
         self.view = views.RelatedMediaInstance.as_view()
-
-    '''
-	def test_page_403_or_302_status_anonymous_user(self):
-		url = '/api/0/markers/%s/%s/%s/'
-		urls = [
-			url % (self.marker.id, 'photos', 1),
-			url % (self.marker.id, 'audio', 1)
-		]
-		ViewMixinAPI.test_page_403_or_302_status_anonymous_user(self, urls=urls)
-	'''
-
+        
+        # create 2 photo, 2 audio, and 2 relation objecs:
+        self.photo1 = self.create_photo(self.user, self.project)
+        self.photo2 = self.create_photo(self.user, self.project)
+        self.audio1 = self.create_audio(self.user, self.project)
+        self.audio2 = self.create_audio(self.user, self.project)
+        #print self.photo1.id, self.photo2.id, self.audio1.id, self.audio2.id
+        self.create_relation(models.Photo.get_content_type(), id=self.photo1.id)
+        self.create_relation(models.Audio.get_content_type(), id=self.audio1.id)
+        
+        
     def test_page_200_status_basic_user(self, **kwargs):
         url = '/api/0/markers/%s/%s/%s/'
         urls = [
@@ -149,7 +154,7 @@ class ApiRelatedMediaInstanceTest(
             ).get_content_type()
 
             # 0)  Attach media to marker
-            entity_id = 2
+            entity_id = self.photo2.id
             self.create_relation(entity_type, id=entity_id)
 
             # 1) make sure that the object is appended to the marker:
@@ -193,7 +198,7 @@ class ApiRelatedMediaInstanceTest(
             ).get_content_type()
 
             # Attach media to marker
-            entity_id = 2
+            entity_id = self.photo2.id
             relation = self.create_relation(entity_type, id=entity_id)
             self.assertEqual(relation.ordering, 1)
             self.assertEqual(relation.turned_on, False)
@@ -222,7 +227,7 @@ class ApiRelatedMediaInstanceTest(
             ).get_content_type()
 
             # Attach media to marker
-            entity_id = 2
+            entity_id = self.photo2.id
             relation = self.create_relation(entity_type, id=entity_id)
             self.assertEqual(relation.turned_on, False)
             import urllib

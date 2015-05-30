@@ -51,7 +51,7 @@ class FormDataTestMixin(object):
         self.assertEqual(rec.num, d.get('num'))
         fields = self.form.fields
         length = len(d.keys()) - 1
-        print dir(rec)
+        #print dir(rec)
         for i in range(0, 5):
             print fields[i].col_name, d.get(fields[i].col_name), getattr(rec,
             fields[i].col_name)
@@ -86,7 +86,7 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # verify values:
-        print d
+        #print d
         FormDataTestMixin.verify_success(self, d)
         
 class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):

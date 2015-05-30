@@ -19,8 +19,11 @@ class GeometryField(serializers.CharField):
         return obj
 
     def to_representation(self, obj):
-        if obj.geometry is not None:
-            return json.loads(obj.geometry.geojson)
+        geom = getattr(obj, self.source)
+        if hasattr(obj, 'geometry'):
+            geom = obj.geometry
+        if geom is not None:
+            return json.loads(geom.geojson)  
         return None
         
     def get_geosgeometry(self, value):

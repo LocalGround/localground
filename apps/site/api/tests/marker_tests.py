@@ -37,7 +37,7 @@ class GeomMixin(object):
 class ApiMarkerListTest(test.TestCase, ViewMixinAPI, GeomMixin):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self, load_fixtures=False)
+        ViewMixinAPI.setUp(self)
         self.urls = ['/api/0/markers/']
         self.view = views.MarkerList.as_view()
 
@@ -93,7 +93,7 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, GeomMixin):
 class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, GeomMixin):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self)
+        ViewMixinAPI.setUp(self, load_fixtures=True)
         self.marker = self.get_marker()
         self.urls = ['/api/0/markers/%s/' % self.marker.id]
         self.view = views.MarkerInstance.as_view()

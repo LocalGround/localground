@@ -4,6 +4,8 @@ from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpd
 from localground.apps.site import models
 from django.http import Http404, HttpResponse
 from rest_framework.response import Response
+from django.db import IntegrityError
+from rest_framework.serializers import ValidationError
 
 
 class RelatedMediaList(generics.ListCreateAPIView,
@@ -31,29 +33,9 @@ class RelatedMediaList(generics.ListCreateAPIView,
             entity_type=entity_type,
             source_type=group_model.get_content_type(),
             source_id=self.kwargs.get('source_id'))
-
-    def create(request, *args, **kwargs):
-        '''
-        This is a hack:  not sure how to handle generic database errors.
-        There's probably a more generic solution.
-        '''
-        from django.db import connection, IntegrityError, DatabaseError
-
-        try:
-            return generics.ListCreateAPIView.create(request, *args, **kwargs)
-        except IntegrityError as e:
-            connection._rollback()
-            # For a verbose error:
-            messages = str(e).strip().split('\n')
-            d = {'non_field_errors': messages}
-
-            # For a vanilla error:
-            d = {
-                'non_field_errors': ['This relationship already exists in the system']}
-            return Response(d, status=status.HTTP_400_BAD_REQUEST)
-
-    def pre_save(self, obj):
-        AuditCreate.pre_save(self, obj)
+    
+    def perform_create(self, serializer):
+        d = self.get_presave_dictionary()
         group_model = models.Base.get_model(
             model_name_plural=self.kwargs.get('group_name_plural')
         )
@@ -70,10 +52,17 @@ class RelatedMediaList(generics.ListCreateAPIView,
                 'You cannot attach a %s to a %s' % (
                     entity_model.model_name, group_model.model_name
                 ))
-        setattr(obj, 'source_type', source_type)
-        setattr(obj, 'source_id', self.kwargs.get('source_id'))
-        setattr(obj, 'entity_type', entity_type)
-
+        d.update({
+            'source_type': source_type,
+            'source_id': self.kwargs.get('source_id'),
+            'entity_type': entity_type
+        })
+        try:
+            serializer.save(**d)
+        except IntegrityError as e:
+            raise ValidationError({
+                'non_field_errors': ['This relationship already exists in the system']
+            })
 
 class RelatedMediaInstance(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.GenericAssociation.objects.all()

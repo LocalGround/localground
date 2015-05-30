@@ -45,6 +45,7 @@ class ObjectShareFormProfileTest(test.TestCase, ViewMixin):
             'groupuser-MAX_NUM_FORMS': 1000
         }
         data.update(management_form)
+        print data
         response = self.client_user.post(
             '/profile/%s/%s/share/' %
             (self.project.model_name_plural,

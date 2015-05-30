@@ -5,7 +5,7 @@ from rest_framework import status
 
 class ViewMixinAPISuperuser(ModelMixin):
     
-    def setUp(self, load_fixtures=True):
+    def setUp(self, load_fixtures=False):
         ModelMixin.setUp(self, load_fixtures=load_fixtures)
 
     def test_page_403_or_302_status_anonymous_user(self, urls=None):
@@ -48,7 +48,7 @@ class ViewMixinAPISuperuser(ModelMixin):
 
 class ViewMixinAPI(ModelMixin):
     
-    def setUp(self, load_fixtures=True):
+    def setUp(self, load_fixtures=False):
         ModelMixin.setUp(self, load_fixtures=load_fixtures)
 
     def test_page_200_status_basic_user(self, urls=None, **kwargs):
