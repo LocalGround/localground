@@ -75,4 +75,4 @@ before_script:
   - mkdir userdata/deleted
   - ./deploy_tools/gis.sh
   
-script: cd apps && python manage.py test site
+script: cd apps && python manage.py test --verbosity=2
