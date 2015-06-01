@@ -34,6 +34,9 @@ class BatchQueryObjectMixin(ModelMixin):
         # create 3 objects per project:
         self._create_objects()
         
+    def tearDown(self):
+        models.Form.objects.all().delete()
+        
     def _create_objects(self):
         create_object_function = getattr(self, self.create_function_name)
         self.objects = []

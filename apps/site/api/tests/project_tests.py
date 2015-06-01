@@ -14,6 +14,9 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
         self.urls = [self.url]
         self.model = models.Project
         self.view = views.ProjectList.as_view()
+        
+    def tearDown(self):
+        models.Form.objects.all().delete()
 
     def test_create_project_using_post(self, **kwargs):
         name = 'New Project!'

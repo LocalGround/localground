@@ -7,6 +7,8 @@ import json
 from rest_framework import status
 from django.contrib.gis.geos import GEOSGeometry
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
+from django.db import transaction
+        
 
 
 class ApiFormListTest(test.TestCase, ViewMixinAPI):
@@ -68,6 +70,10 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         self.url = '/api/0/forms/%s/data/' % self.form.id
         self.urls = [self.url]
         self.view = views.FormDataList.as_view()
+        
+    def tearDown(self):
+        for m in models.Form.objects.all():
+            m.remove_table_from_cache()
 
     def test_create_record_using_post(self, **kwargs):
 
@@ -99,7 +105,12 @@ class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         self.url = '/api/0/forms/%s/data/%s/' % (self.form.id, self.rec_1.id)
         self.urls = [self.url]
         self.view = views.FormDataInstance.as_view()
+        
+    def tearDown(self):
+        for m in models.Form.objects.all():
+            m.remove_table_from_cache()
 
+    @transaction.non_atomic_requests
     def test_update_record_using_put(self, **kwargs):
         d = FormDataTestMixin.create_form_post_data(self)
         response = self.client_user.put(self.url,
@@ -109,4 +120,4 @@ class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         )
         #print response.data
         FormDataTestMixin.verify_success(self, d)
-
+    

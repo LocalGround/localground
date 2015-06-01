@@ -27,6 +27,9 @@ class BatchQueryGroupMixin(ModelMixin):
 
         # create 2 groups:
         self._create_groups()
+        
+    def tearDown(self):
+        models.Form.objects.all().delete()
 
     def _debug(self):
         fus = FormUser.objects.filter(form=self.group1)
@@ -137,11 +140,18 @@ class BatchProjectQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
     model = models.Project
 
     def setUp(self):
+        print 'setting up...'
         BatchQueryGroupMixin.setUp(self)
+        
+    
+    def tearDown(self):
+        BatchQueryGroupMixin.tearDown(self)
+    
+
 
     def _create_groups(self):
         # delete all projects in database:
-        #models.Project.objects.all().delete()
+        models.Project.objects.all().delete()
 
         # and add two new ones:
         self.group1 = self.create_project(
@@ -154,6 +164,11 @@ class BatchProjectQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
             name='Project #2',
             authority_id=1
         )
+        self.form = self.create_form_with_fields(
+            user=self.owner,
+            authority_id=1,
+            project=self.group1
+        )
 
 
 class BatchFormQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
@@ -161,6 +176,9 @@ class BatchFormQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
 
     def setUp(self):
         BatchQueryGroupMixin.setUp(self)
+        
+    def tearDown(self):
+        BatchQueryGroupMixin.tearDown(self)
 
     def _create_groups(self):
         self.project1 = self.create_project(
@@ -254,6 +272,9 @@ class BatchViewQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
 
     def setUp(self):
         BatchQueryGroupMixin.setUp(self)
+        
+    def tearDown(self):
+        BatchQueryGroupMixin.tearDown(self)
 
     def _create_groups(self):
         # delete all views in database:

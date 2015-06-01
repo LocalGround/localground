@@ -39,6 +39,7 @@ class ProjectMixin(GroupMixin):
         if ordering_field:
             q = q.order_by(ordering_field)
         return q  # self.populate_tags_for_queryset(q)
+    
 
     def to_dict_list(self):
         # does this need to be implemented, or can we just rely on
@@ -46,14 +47,14 @@ class ProjectMixin(GroupMixin):
         return []
 
 
-#class ProjectQuerySet(QuerySet, ProjectMixin):
-#    pass
+class ProjectQuerySet(QuerySet, ProjectMixin):
+    pass
 
 
 class ProjectManager(models.GeoManager, ProjectMixin):
-    #def get_queryset(self):
-    #    return ProjectQuerySet(self.model, using=self._db)
-    pass
+    
+    def get_queryset(self):
+        return ProjectQuerySet(self.model, using=self._db)
 
 
 class SnapshotMixin(GroupMixin):
@@ -199,14 +200,19 @@ class FormMixin(GroupMixin):
         return q
 
 
-#class FormQuerySet(QuerySet, FormMixin):
-#    pass
+class FormQuerySet(QuerySet, FormMixin):
+    
+    def delete(self):
+        # ensure that the model's overrided delete method is called here
+        for m in list(self):
+            m.delete()
 
 
 class FormManager(models.GeoManager, FormMixin):
-    #def get_queryset(self):
-    #    return FormQuerySet(self.model, using=self._db)
-    pass
+    
+    def get_queryset(self):
+        return FormQuerySet(self.model, using=self._db)
+
 
 
 class PresentationMixin(GroupMixin):

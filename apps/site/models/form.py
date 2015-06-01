@@ -151,9 +151,11 @@ class Form(BaseNamed, BasePermissions):
         from django.conf import settings
         from django.utils.importlib import import_module
         from django.core.urlresolvers import clear_url_caches
+        from django.apps import apps
         
         reload(import_module(settings.ROOT_URLCONF))
         clear_url_caches()
+        apps.clear_cache()
         self._fields = None
 
     @property
@@ -449,14 +451,22 @@ class Form(BaseNamed, BasePermissions):
 
                 cursor = connection.cursor()
                 cursor.execute('drop table %s' % self.table_name)
+                cursor.close()
 
         # remove referenced ContentType
         try:
             from django.contrib.contenttypes.models import ContentType
-
             ct = ContentType.objects.get(model='form_%s' % self.id)
             ct.delete()
         except ContentType.DoesNotExist:
             pass
-
+        
+        self.remove_table_from_cache()
         super(Form, self).delete(**kwargs)
+        
+    def remove_table_from_cache(self):
+        from django.apps import apps
+        app_models = apps.all_models[self.TableModel._meta.app_label]
+        del app_models[self.TableModel._meta.model_name]
+        apps.clear_cache()
+        self.clear_table_model_cache()

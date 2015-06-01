@@ -20,6 +20,10 @@ class ApiFieldListTest(test.TestCase, ViewMixinAPI):
         self.urls = [self.url]
         self.view = views.FieldList.as_view()
         
+    def tearDown(self):
+        for m in models.Form.objects.all():
+            m.remove_table_from_cache()
+        
     def test_create_field_using_post(self, **kwargs):
         response = self.client_user.post(self.url,
                         data=urllib.urlencode({
@@ -65,6 +69,9 @@ class ApiFieldInstanceTest(test.TestCase, ViewMixinAPI):
         self.url2 = '/api/0/forms/%s/fields/%s/' % (self.field2.form.id, self.field2.id)
         self.urls = [self.url]
         self.view = views.FieldInstance.as_view()
+    
+    def tearDown(self):
+        models.Form.objects.all().delete()
     
     def test_update_field_using_put(self, **kwargs):
         response = self.client_user.put(self.url,

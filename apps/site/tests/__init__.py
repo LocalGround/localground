@@ -270,7 +270,8 @@ class ModelMixin(object):
 
     def create_form(self, name='A title',
                     description='A description', user=None,
-                    authority_id=models.ObjectAuthority.PRIVATE):
+                    authority_id=models.ObjectAuthority.PRIVATE,
+                    project=None):
 
         oa = models.ObjectAuthority.objects.get(
             id=authority_id
@@ -288,7 +289,8 @@ class ModelMixin(object):
             access_authority=oa
         )
         f.save()
-        f.projects.add(self.project)
+        project = project or self.project
+        f.projects.add(project)
         f.save()
         return f
 
@@ -298,7 +300,8 @@ class ModelMixin(object):
             description='A description',
             user=None,
             authority_id=models.ObjectAuthority.PRIVATE,
-            num_fields=2):
+            num_fields=2,
+            project=None):
         '''
         TEXT = 1
         INTEGER = 2
@@ -310,7 +313,8 @@ class ModelMixin(object):
         if user is None:
             user = self.user
         f = self.create_form(name, description, user=user,
-                             authority_id=authority_id)
+                             authority_id=authority_id,
+                             project=project)
         for i in range(0, num_fields):
             fld = self.create_field(name='Field %s' % (i + 1),
                                 data_type=models.DataType.objects.get(id=(i + 1)),

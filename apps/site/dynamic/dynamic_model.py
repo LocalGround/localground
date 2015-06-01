@@ -410,11 +410,10 @@ class ModelClassBuilder(object):
         # sys.stderr.write('%s' % self.additional_fields)
 
     def sync_db(self):
-        '''
-        This function uses the same code that's used in syncdb to dynamically
-        execute DDL sql on-the-fly.  Copied from:
-        /usr/local/lib/python2.6/dist-packages/django/core/management/commands/syncdb.py
-        '''
+        # This function uses the same code that's used in syncdb to dynamically
+        # execute DDL sql on-the-fly.  Copied from:
+        # /usr/local/lib/python2.6/dist-packages/django/core/management/commands/syncdb.py
+        
         from django.core.management.color import no_style
         from django.db import connection, transaction
 
@@ -464,10 +463,8 @@ class ModelClassBuilder(object):
             self.stderr.write("Failed to install index for %s.%s model: %s\n" %
                               (app_name, model._meta.object_name, e))
 
-
-        '''
-        Add to ContentTypes also:
-        '''
+        #Add to ContentTypes also:
+        
         from django.utils.encoding import smart_text
 
         ct = ContentType(
