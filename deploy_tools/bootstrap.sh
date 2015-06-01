@@ -118,7 +118,7 @@ mkdir userdata/deleted
 ###############################################
 cd /localground/apps
 python manage.py syncdb --noinput
-python manage.py test site --verbosity=2
+python manage.py test --verbosity=2
 
 echo '------------------------------------'
 echo ' Server configured. Check it out at '
