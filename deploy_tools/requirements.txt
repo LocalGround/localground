@@ -8,15 +8,16 @@ django-filter==0.10.0
 django-jenkins==0.14.0
 django-tagging==0.3.6
 django-tagging-autocomplete==0.4.2
-djangorestframework==3.1.2
+djangorestframework==3.1.1
 djangorestframework-csv==1.2.0
+djangorestframework-gis==0.8.2
 djangorestframework-jsonp==1.0.0
 djangorestframework-xml==1.0.1
 django-cors-headers==0.12
 django-websocket-redis==0.4.3
 jsonfield==1.0.0
 flup==1.0.3.dev-20110405
-numpy
+numpy==1.6.1
 oauth==1.0.1
 psycopg2==2.6
 python-dateutil==2.4.2
@@ -24,6 +25,8 @@ reportlab==2.5
 simplejson==2.3.2
 python-social-auth==0.2.6
 sqlparse==0.1.15
+six==1.9.0
+South==1.0.2
 #MapScript (installed via apt-get (python-mapscript))
 #GDAL (installed via apt-get (python-gdal))
 
