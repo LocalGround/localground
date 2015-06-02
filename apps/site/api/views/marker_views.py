@@ -10,14 +10,15 @@ class MarkerGeometryMixin(object):
         geom = serializer.validated_data.get('point')
         del serializer.validated_data['point']
         point, polyline, polygon = None, None, None
-        if geom.geom_type == 'Point':
-            point = geom
-        elif geom.geom_type == 'LineString':
-            polyline = geom
-        elif geom.geom_type == 'Polygon':
-            polygon = geom
-        else:
-            raise serializers.ValidationError('Unsupported geometry type')
+        if geom is not None:
+            if geom.geom_type == 'Point':
+                point = geom
+            elif geom.geom_type == 'LineString':
+                polyline = geom
+            elif geom.geom_type == 'Polygon':
+                polygon = geom
+            else:
+                raise serializers.ValidationError('Unsupported geometry type')
         
         # clear out existing geometries (marker can either be a point, polyline, or polygon),
         # but not more than one

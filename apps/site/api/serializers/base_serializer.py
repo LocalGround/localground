@@ -8,33 +8,12 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super(BaseSerializer, self).__init__(*args, **kwargs)
-        # if not hasattr(self.Meta, 'extra_kwargs'):
-        #     self.Meta.extra_kwargs = dict()
-        # if 'view_name' not in self.Meta.extra_kwargs.keys():
-        #     # method of the DRF's serializers.HyperlinkedModelSerializer class:
-        #     self.opts.view_name = self._get_default_view_name(self.opts.model)
-
-        #raise Exception('%s - %s' % (self.opts.view_name, self.opts.lookup_field))
-
         model_meta = self.Meta.model._meta
         format_kwargs = {
             'app_label': model_meta.app_label,
             'model_name': model_meta.object_name.lower()
         }
 
-        '''
-        url_field = fields.UrlField(
-            view_name='%(model_name)s-detail'.format(format_kwargs), #self.opts.view_name,
-            lookup_field='pk'#self.opts.lookup_field
-        )
-        #url_field.initialize(self, 'url')
-        self.fields['url'] = url_field
-        '''
-
-        # Extra Sneaky:  give access to the request object in the
-        # HyperlinkedSerializer so that child objects can also use
-        # it:
-        #self.request = url_field.context.get('request', None)
     class Meta:
         fields = ('id',)
 
@@ -47,14 +26,18 @@ class BaseNamedSerializer(serializers.HyperlinkedModelSerializer):
                                         style={'base_template': 'textarea.html'})
     overlay_type = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
-
-    def __init__(self, *args, **kwargs):
-        '''
-        Overriding HyperlinkedModelSerializer constructor to use a
-        slightly altered version of the HyperlinkedIdentityField class
-        that takes some query params into account.
-        '''
-        super(BaseNamedSerializer, self).__init__(*args, **kwargs)
+    
+    def get_projects(self):
+        if self.context.get('view'):
+            view = self.context['view']
+            if view.request.user.is_authenticated():
+                return models.Project.objects.get_objects(view.request.user)
+            else:
+                return models.Project.objects.get_objects_public(
+                    access_key=view.request.GET.get('access_key')
+                )
+        else:
+            return models.Project.objects.all()
 
     class Meta:
         fields = ('url', 'id', 'name', 'description', 'overlay_type', 'tags', 'owner')
@@ -68,14 +51,22 @@ class BaseNamedSerializer(serializers.HyperlinkedModelSerializer):
 
 class GeometrySerializer(BaseNamedSerializer):
     geometry = fields.GeometryField(
-                    help_text='Assign a GeoJSON string',
-                    required=False,
-                    style={'base_template': 'textarea.html'},
-                    source='point'
-                )
+        help_text='Assign a GeoJSON string',
+        required=False,
+        style={'base_template': 'textarea.html'},
+        source='point'
+    )
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Project.objects.all(),
+        source='project',
+        required=False
+    )
     
-                                    
-    project_id = serializers.PrimaryKeyRelatedField(queryset=models.Project.objects.all(), source='project', required=False)
+    def get_fields(self, *args, **kwargs):
+        fields = super(GeometrySerializer, self).get_fields(*args, **kwargs)
+        #restrict project list at runtime:
+        fields['project_id'].queryset = self.get_projects()
+        return fields
 
     class Meta:
         fields = BaseNamedSerializer.Meta.fields + \

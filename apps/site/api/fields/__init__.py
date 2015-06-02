@@ -81,17 +81,13 @@ class ProjectsField(serializers.Field):
         return ', '.join([str(p.id) for p in obj.all()])
 
     def to_internal_value(self, data):
-        ids = None
-        ids = data.split(',')
-        ids = [int(child_id.strip()) for child_id in ids]
-        return [models.Project.objects.get(id__in=ids)]
-        '''
         try:
             ids = data.split(',')
-            ids = [int(child_id.strip()) for child_id in ids]
+            ids = [int(id.strip()) for id in ids]
         except:
             raise serializers.ValidationError(
                 "Project IDs must be a list of comma-separated integers")
+        return [models.Project.objects.get(id__in=ids)]
         try:
             return [models.Project.objects.get(id__in=ids)]
         except models.Project.DoesNotExist:
@@ -101,8 +97,9 @@ class ProjectsField(serializers.Field):
         except:
             raise serializers.ValidationError(
                 "project_ids=%s is invalid" %
-                data)
-        '''
+                ids)
+        return [models.Project.objects.get(id__in=ids)]
+        
 
 
 class FileField(serializers.CharField):

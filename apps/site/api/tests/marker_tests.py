@@ -68,15 +68,17 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, GeomMixin):
                 geom = getattr(self, k)
                 response = self.client_user.post(
                     url,
-                    data=urllib.urlencode(
-                        {
-                            'geometry': geom,
-                            'name': name,
-                            'description': description,
-                            'color': color,
-                            'project_id': self.project.id}),
+                    data=urllib.urlencode({
+                        'geometry': geom,
+                        'name': name,
+                        'description': description,
+                        'color': color,
+                        'project_id': self.project.id
+                    }),
                     HTTP_X_CSRFTOKEN=self.csrf_token,
                     content_type="application/x-www-form-urlencoded")
+                if response.status_code != status.HTTP_201_CREATED:
+                    print response.data
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 new_marker = models.Marker.objects.all().order_by('-id',)[0]
                 self.assertEqual(new_marker.name, name)

@@ -7,6 +7,12 @@ from localground.apps.site.api import fields
 
 
 class PrintSerializerMixin(serializers.ModelSerializer):
+    def get_fields(self, *args, **kwargs):
+        fields = super(PrintSerializerMixin, self).get_fields(*args, **kwargs)
+        #note: queryset restricted at runtime
+        fields['project_id'].queryset = self.get_projects()
+        return fields
+    
     uuid = serializers.SerializerMethodField()
     project_id = serializers.PrimaryKeyRelatedField(queryset=models.Project.objects.all(), source='project')
     layout_url = serializers.HyperlinkedRelatedField(

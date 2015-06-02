@@ -1,5 +1,5 @@
 from localground.apps.site.api.serializers.base_serializer import GeometrySerializer
-from localground.apps.site.api.serializers.form_serializer import create_record_serializer
+from localground.apps.site.api.serializers.record_serializer import create_record_serializer
 from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields

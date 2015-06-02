@@ -140,7 +140,7 @@ class ModelMixin(object):
 
     def create_project(self, user, name='Test Project', authority_id=1):
         import random
-        slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16)
+        slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
         p = models.Project(
             name=name,
             owner=user,
@@ -177,7 +177,7 @@ class ModelMixin(object):
 
     def create_layer(self, user, name='Test Layer', authority_id=1):
         import random
-        slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16)
+        slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
         l = models.Layer(
             name=name,
             owner=user,
@@ -194,7 +194,7 @@ class ModelMixin(object):
             name='Test Presentation',
             authority_id=1):
         import random
-        slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16)
+        slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
         p = models.Presentation(
             name=name,
             owner=user,
@@ -226,7 +226,8 @@ class ModelMixin(object):
         self._add_group_user(group, user, models.UserAuthority.CAN_MANAGE)
 
     def get_project(self, project_id=1):
-        return models.Project.objects.get(id=project_id)
+        return self.create_project(self.get_user())
+        #return models.Project.objects.get(id=project_id)
 
     def create_marker(self, user, project):
         from django.contrib.gis.geos import Point
@@ -277,7 +278,7 @@ class ModelMixin(object):
             id=authority_id
         )
         import random
-        slug = random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16)
+        slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
         if user is None:
             user = self.user
         f = models.Form(
