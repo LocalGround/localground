@@ -61,10 +61,10 @@ class ProjectDetailSerializer(BaseNamedSerializer):
         
         # add table data:
         # todo: start here tomorrow:
-        #for form in forms:
-            #form_data = self.get_table_records(obj, form)
-            #if len(form_data.get('data')) > 0:
-            #    children['form_%s' % form.id] = form_data
+        for form in forms:
+            form_data = self.get_table_records(obj, form)
+            if len(form_data.get('data')) > 0:
+                children['form_%s' % form.id] = form_data
         return children
         
 

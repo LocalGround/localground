@@ -23,14 +23,14 @@ class BaseRecordSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField('get_detail_url')
 
     def get_fields(self, *args, **kwargs):
+        fields = super(BaseRecordSerializer, self).get_fields(*args, **kwargs)
         if self.context.get('view'):
             view = self.context['view']
-            fields = super(BaseRecordSerializer, self).get_fields(*args, **kwargs)
             form = models.Form.objects.get(id=view.kwargs.get('form_id'))
             fields['project_id'].queryset = form.projects.all()
-            return fields
         else:
-            return models.Form.objects.all()
+            fields['project_id'].queryset = models.Form.objects.all()
+        return fields
     
     class Meta:
         fields = (
