@@ -1,5 +1,5 @@
 from rest_framework import serializers, metadata
-from rest_framework.utils.field_mapping import ClassLookupDict
+from localground.apps.lib.helpers import QueryParser
 
 class CustomMetadata(metadata.SimpleMetadata):
     
@@ -10,3 +10,13 @@ class CustomMetadata(metadata.SimpleMetadata):
         elif field.source == 'description':
             field_info['type'] = 'memo'
         return field_info
+    
+    
+    def determine_metadata(self, request, view):
+        metadata = super(CustomMetadata, self).determine_metadata(request, view)
+        if hasattr(view, 'get_queryset'):
+            model = view.get_queryset().model
+            if hasattr(model, 'filterfields'):
+                metadata['filters'] = [ff.to_dict() for ff in model.filter_fields()]
+        return metadata
+    
