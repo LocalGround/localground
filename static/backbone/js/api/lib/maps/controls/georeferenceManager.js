@@ -257,11 +257,11 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                         this.attachUnsuccessful.bind(this, attachingMarker.model)
                     );
                     this.unHighlight(attachingMarker);
-                    debugger;
+                    //debugger;
                     attachingMarker.model.trigger('show-tip-attaching');
                     model.trigger('hide-item hide-overlay');
                 } else {
-                    debugger;
+                    //debugger;
                     model.trigger('show-item show-overlay');
                 }
             }

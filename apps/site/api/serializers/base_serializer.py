@@ -20,10 +20,10 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
 
 class BaseNamedSerializer(serializers.HyperlinkedModelSerializer):
     tags = serializers.CharField(required=False, allow_null=True, label='tags',
-                                    help_text='Tag your object here')
-    name = serializers.CharField(required=False, allow_null=True, label='name')
+                                    help_text='Tag your object here', allow_blank=True)
+    name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     description = serializers.CharField(required=False, allow_null=True, label='caption',
-                                        style={'base_template': 'textarea.html'})
+                                        style={'base_template': 'textarea.html'}, allow_blank=True)
     overlay_type = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
     
@@ -53,6 +53,7 @@ class GeometrySerializer(BaseNamedSerializer):
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
         required=False,
+        allow_null=True,
         style={'base_template': 'textarea.html'},
         source='point'
     )
@@ -74,8 +75,8 @@ class GeometrySerializer(BaseNamedSerializer):
 
 
 class MediaGeometrySerializer(GeometrySerializer):
-    file_name = serializers.CharField(source='file_name_new', required=False)
-    caption = serializers.CharField(source='description', allow_null=True, required=False)
+    file_name = serializers.CharField(source='file_name_new', required=False, read_only=True)
+    caption = serializers.CharField(source='description', allow_null=True, required=False, allow_blank=True)
 
     class Meta:
         fields = GeometrySerializer.Meta.fields + ('attribution',

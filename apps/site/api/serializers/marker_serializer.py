@@ -4,7 +4,7 @@ from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 from django.conf import settings
-
+from localground.apps.site.api.metadata import CustomMetadata
 
 class MarkerSerializer(GeometrySerializer):
     
@@ -75,7 +75,7 @@ class MarkerSerializer(GeometrySerializer):
         # add table data:
         form_dict = obj.get_records(forms=forms).items()
         for form, records in form_dict:
-            SerializerClass = create_record_serializer(form)
+            SerializerClass = create_record_serializer(form, context={ 'request': {} })
             self.records.extend(records)
             d = self.serialize_list(
                 obj,
@@ -97,7 +97,7 @@ class MarkerSerializer(GeometrySerializer):
 
         data = PhotoSerializer(
             obj.photos,
-            many=True).data
+            many=True, context={ 'request': {} }).data
         return self.serialize_list(obj, models.Photo, data)
 
     def get_audio(self, obj):
@@ -105,7 +105,7 @@ class MarkerSerializer(GeometrySerializer):
 
         data = AudioSerializer(
             obj.audio,
-            many=True).data
+            many=True, context={ 'request': {} }).data
         return self.serialize_list(obj, models.Audio, data)
 
     def get_map_images(self, obj):
@@ -113,7 +113,7 @@ class MarkerSerializer(GeometrySerializer):
 
         data = ScanSerializer(
             obj.map_images,
-            many=True).data
+            many=True, context={ 'request': {} }).data
         return self.serialize_list(obj, models.Scan, data)
     
     def get_photo_count(self, obj):
@@ -161,13 +161,13 @@ class MarkerSerializerCounts(GeometrySerializer):
     audio_count = serializers.SerializerMethodField()
     map_image_count = serializers.SerializerMethodField()
     record_count = serializers.SerializerMethodField()
-    #update_metadata = serializers.SerializerMethodField()
+    update_metadata = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
         fields = GeometrySerializer.Meta.fields + \
-            ('photo_count', 'audio_count', 'record_count', 'map_image_count', 'color')
-            #,update_metadata')
+            ('photo_count', 'audio_count', 'record_count', 'map_image_count', 'color',
+            'update_metadata')
         depth = 0
 
     def get_photo_count(self, obj):
@@ -194,9 +194,7 @@ class MarkerSerializerCounts(GeometrySerializer):
         except:
             return None
         
-    '''
     def get_update_metadata(self, obj):
-        if self.request and self.request.method == 'POST':
-            return self.metadata()
-        return None
-    '''
+        m = CustomMetadata()
+        return m.get_serializer_info(self)
+    

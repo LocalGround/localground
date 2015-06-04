@@ -202,7 +202,8 @@ INSTALLED_APPS = (
 REST_FRAMEWORK = {
     'PAGINATE_BY': 10,
     'PAGINATE_BY_PARAM': 'page_size',
-    'MAX_PAGINATE_BY': 8000,          
+    'MAX_PAGINATE_BY': 8000,
+    'DEFAULT_METADATA_CLASS': 'localground.apps.site.api.metadata.CustomMetadata',
     'DEFAULT_RENDERER_CLASSES': (
         'localground.apps.site.api.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',

@@ -5,6 +5,7 @@ from localground.apps.site.api.serializers.audio_serializer import AudioSerializ
 from localground.apps.site.api.serializers.record_serializer import create_record_serializer, \
     create_compact_record_serializer
 from localground.apps.site.api.serializers.marker_serializer import MarkerSerializerCounts
+from localground.apps.site.api.metadata import CustomMetadata
 from rest_framework import serializers
 from localground.apps.site import models
 
@@ -23,13 +24,17 @@ class ProjectSerializer(BaseNamedSerializer):
 
 class ProjectDetailSerializer(BaseNamedSerializer):
     children = serializers.SerializerMethodField('get_children_dict')
-
+    view = None
     class Meta:
         model = models.Project
         fields = BaseNamedSerializer.Meta.fields + (
             'slug', 'children'
         )
         depth = 0
+    
+    def get_metadata(self, serializer_class):
+        m = CustomMetadata()
+        return m.get_serializer_info(serializer_class)
 
     def get_children_dict(self, obj):
         from django.contrib.contenttypes.models import ContentType
@@ -138,12 +143,16 @@ class ProjectDetailSerializer(BaseNamedSerializer):
             'overlay_type': overlay_type,
             'data': serializer.data
         }
+        d.update({
+            'update_metadata': self.get_metadata(serializer)
+        })
+        '''
         try:
             if self.request.GET.get("include_schema") in ['True', 'true', '1']:
                 d.update({
-                    'update_metadata': serializer.metadata() #,
-                    #'create_metadata': serializer_class().metadata() 
+                    'update_metadata': serializer.metadata()
                 })
         except:
             pass
+        '''
         return d
