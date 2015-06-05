@@ -70,3 +70,24 @@ class ViewMixinAPI(ModelMixin):
                 self.view.__name__)
             # print url, func_name, view_name
             self.assertEqual(func_name, view_name)
+            
+    def test_check_metadata(self):
+        for url in self.urls:
+            response = self.client_user.options(url,
+                                HTTP_X_CSRFTOKEN=self.csrf_token,
+                                content_type="application/x-www-form-urlencoded"
+                            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            fields = response.data['actions'][self.metadata_method]
+            
+            #ensure that dictionary is not empty:
+            self.assertFalse(not fields)
+            
+            #ensure that the two dictionaries are the same length:
+            self.assertEqual(len(fields.keys()), len(self.metadata.keys()))
+            
+            #ensure that field specs match:
+            for key in fields.keys():
+                self.assertEqual(fields[key]['type'], self.metadata[key]['type'])
+                self.assertEqual(fields[key]['required'], self.metadata[key]['required'])
+                self.assertEqual(fields[key]['read_only'], self.metadata[key]['read_only'])
