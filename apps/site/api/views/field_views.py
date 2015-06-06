@@ -26,7 +26,7 @@ class FieldList(QueryableListCreateAPIView, AuditCreate):
             'form': form
         })
         instance = serializer.save(**d)
-        instance.form.clear_table_model_cache()
+        instance.form.remove_table_from_cache()
     
     def get_form(self):
         #raise Exception(self.kwargs)
@@ -58,4 +58,4 @@ class FieldInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
                 raise exceptions.ParseError(
                     'There is already a form field called "%s"' % data.get('col_alias'))
         instance = AuditUpdate.perform_update(self, serializer)
-        instance.form.clear_table_model_cache()
+        instance.form.remove_table_from_cache()

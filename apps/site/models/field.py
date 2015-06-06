@@ -88,7 +88,7 @@ class Field(BaseAudit):
             self.add_column_to_table()
 
         # 3. reset the application cache with the new table structure:
-        self.form.clear_table_model_cache()
+        self.form.remove_table_from_cache()
 
     def add_column_to_table(self):
         if self.form.source_table_exists():

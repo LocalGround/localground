@@ -132,11 +132,13 @@ class Form(BaseNamed, BasePermissions):
             'field_set__data_type').all()
         for form in forms:
             m = form.TableModel
-            #apps.get_app_config(m._meta.app_label).models[m._meta.object_name.lower()] = m
+            
+            #first remove from cache:
+            app_models = apps.all_models[form.TableModel._meta.app_label]
+            del app_models[form.TableModel._meta.model_name]
+            
+            # then register
             apps.register_model(m._meta.app_label, m)
-            # cache.app_models[
-            #     m._meta.app_label][
-            #     m._meta.object_name.lower()] = m
 
     def clear_table_model_cache(self):
         '''
@@ -152,6 +154,9 @@ class Form(BaseNamed, BasePermissions):
         from django.utils.importlib import import_module
         from django.core.urlresolvers import clear_url_caches
         from django.apps import apps
+
+        app_models = apps.all_models[self.TableModel._meta.app_label]
+        del app_models[self.TableModel._meta.model_name]
         
         reload(import_module(settings.ROOT_URLCONF))
         clear_url_caches()
@@ -461,12 +466,8 @@ class Form(BaseNamed, BasePermissions):
         except ContentType.DoesNotExist:
             pass
         
-        self.remove_table_from_cache()
+        self.clear_table_model_cache()
         super(Form, self).delete(**kwargs)
         
     def remove_table_from_cache(self):
-        from django.apps import apps
-        app_models = apps.all_models[self.TableModel._meta.app_label]
-        del app_models[self.TableModel._meta.model_name]
-        apps.clear_cache()
         self.clear_table_model_cache()

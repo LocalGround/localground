@@ -102,7 +102,7 @@ def create_update_form(request, object_id=None,
             for form in formset.deleted_forms:
                 form.instance.delete()
 
-            form_object.clear_table_model_cache()
+            form_object.remove_table_from_cache()
 
             url = '/profile/forms/%s/' % form_object.id
             if embed:

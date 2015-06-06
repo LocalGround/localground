@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from localground.apps.site.models import Base
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes import fields
 from django.conf import settings
 
 
@@ -16,7 +16,7 @@ class BasePermissions(models.Model):
                                          db_column='view_authority',
                                          verbose_name='Sharing')
     access_key = models.CharField(max_length=16, null=True, blank=True)
-    users = generic.GenericRelation('UserAuthorityObject')
+    users = fields.GenericRelation('UserAuthorityObject')
 
     def _has_user_permissions(self, user, authority_id):
         # anonymous or null users don't have user-level permissions:
@@ -122,7 +122,7 @@ class UserAuthorityObject(models.Model):
     # Following fields are required for using GenericForeignKey
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
-    object = generic.GenericForeignKey()
+    object = fields.GenericForeignKey()
 
     def to_dict(self):
         return {

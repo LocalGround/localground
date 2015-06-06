@@ -9,13 +9,13 @@ class ProjectMixin(models.Model):
 
 
 class BaseGenericRelationMixin(models.Model):
-    from django.contrib.contenttypes import generic
+    from django.contrib.contenttypes import fields
     _photos = None
     _audio = None
     _map_images = None
     _markers = None
 
-    entities = generic.GenericRelation(
+    entities = fields.GenericRelation(
         'GenericAssociation',
         content_type_field='source_type',
         object_id_field='source_id',

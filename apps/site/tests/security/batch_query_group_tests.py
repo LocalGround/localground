@@ -140,7 +140,6 @@ class BatchProjectQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
     model = models.Project
 
     def setUp(self):
-        print 'setting up...'
         BatchQueryGroupMixin.setUp(self)
         
     

@@ -14,8 +14,27 @@ class LayoutMixin(object):
         'name': {'read_only': False, 'required': True, 'type': 'string'}
     }
 
+def get_metadata():
+    return {
+        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
+        'layout': {'read_only': False, 'required': True, 'type': 'field'},
+        'uuid': {'read_only': True, 'required': False, 'type': 'field'},
+        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'map_provider_url': {'read_only': True, 'required': False, 'type': 'field'},
+        'center': {'read_only': False, 'required': True, 'type': 'geojson'},
+        'thumb': {'read_only': True, 'required': False, 'type': 'field'},
+        'zoom': {'read_only': False, 'required': False, 'type': 'integer'},
+        'map_title': {'read_only': False, 'required': True, 'type': 'string'},
+        'map_provider': {'read_only': False, 'required': True, 'type': 'field'},
+        'pdf': {'read_only': True, 'required': False, 'type': 'field'},
+        'project_id': {'read_only': False, 'required': True, 'type': 'field'},
+        'id': {'read_only': True, 'required': False, 'type': 'integer'},
+        'layout_url': {'read_only': True, 'required': False, 'type': 'field'},
+        'instructions': {'read_only': False, 'required': True, 'type': 'memo'}
+    }
+
 class PrintMixin(object):
-    metadata = {}
+    metadata = get_metadata()
 
 class ApiLayoutListTest(test.TestCase, ViewMixinAPI, LayoutMixin):
 
@@ -94,6 +113,13 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
         self.urls = [self.url]
         self.view = views.PrintInstance.as_view()
         self.model = models.Print
+        self.metadata = get_metadata()
+        self.metadata.update({
+            'center': {'read_only': True, 'required': False, 'type': 'geojson'},
+            'layout': {'read_only': True, 'required': False, 'type': 'field'},
+            'map_provider': {'read_only': True, 'required': False, 'type': 'field'}, 
+            'project_id': {'read_only': False, 'required': False, 'type': 'field'}
+        })
 
     def test_update_print_using_patch(self, **kwargs):
         name, description, tags = 'A', 'B', 'C'

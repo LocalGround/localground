@@ -44,6 +44,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
     center = fields.GeometryField(
                 help_text='Assign a GeoJSON center point',
                 style={'base_template': 'textarea.html'},
+                required=True
             )
     
     def get_pdf(self, obj):
@@ -96,7 +97,11 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
 
 
 class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
-    center = serializers.SerializerMethodField()
+    center = fields.GeometryField(
+                help_text='Assign a GeoJSON center point',
+                style={'base_template': 'textarea.html'},
+                read_only=True
+            )
     layout = serializers.SerializerMethodField()
     map_provider = serializers.SerializerMethodField()
     project_id = serializers.PrimaryKeyRelatedField(
@@ -109,12 +114,6 @@ class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
         fields = PrintSerializerMixin.Meta.fields
         read_only_fields = ('zoom',)
         depth = 0
-
-    def get_center(self, obj):
-        return {
-            'lat': obj.center.y,
-            'lng': obj.center.x
-        }
 
     def get_map_provider(self, obj):
         return obj.map_provider.id

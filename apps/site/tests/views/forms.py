@@ -47,7 +47,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
             d[key]['field'] = f
 
         # clear cache
-        self.form.clear_table_model_cache()
+        self.form.remove_table_from_cache()
         self.assertEqual(len(d.keys()), len(self.form.fields))
 
         # query the new form:

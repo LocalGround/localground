@@ -322,7 +322,7 @@ class ModelMixin(object):
                                 ordering=(i + 1),
                                 form=f)
             fld.save()
-        f.clear_table_model_cache()
+        f.remove_table_from_cache()
         return f
 
     def create_field(self, form, name='Field 1', data_type=None, ordering=1):

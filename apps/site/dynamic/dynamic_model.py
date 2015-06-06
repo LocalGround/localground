@@ -3,7 +3,7 @@ from localground.apps.site.managers import RecordManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
 from datetime import datetime
-from django.db.models.loading import cache
+#from django.db.models.loading import cache
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.models import Field
 # http://stackoverflow.com/questions/3712688/creation-of-dynamic-model-fields-in-django
@@ -262,12 +262,14 @@ class ModelClassBuilder(object):
                 setattr(ModelClassBuilder, key, value)
 
         # Set up a dictionary to simulate declarations within a class
+        '''
         try:
             del cache.app_models[self.app_label][self.name.lower()]
         except KeyError:
             pass
         except AttributeError:
             pass
+        '''
         attrs = {'__module__': self.module, 'Meta': ModelClassBuilder}
 
         # Add in any fields that were provided

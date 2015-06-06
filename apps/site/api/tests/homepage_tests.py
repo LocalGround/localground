@@ -16,6 +16,9 @@ class ApiHomePageTest(test.TestCase, ViewMixinAPI):
             response = self.client_user.get(url)
             if response.status_code == status.HTTP_200_OK:
                 for item in [
-                    'projects', 'photos', 'audio', 'users', 'groups', 'markers'
+                    'projects', 'photos', 'audio', 'users', 'groups', 'markers', 'snapshots',
+                    'tiles', 'prints', 'map-images', 'forms'
                 ]:
                     self.assertIn(item, response.content)
+    def test_check_metadata(self):
+        pass
