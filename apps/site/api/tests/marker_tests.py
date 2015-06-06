@@ -7,6 +7,23 @@ import json
 from rest_framework import status
 from django.contrib.gis.geos import GEOSGeometry
 
+def get_metadata():
+    return {
+        'photo_count': {'read_only': True, 'required': False, 'type': 'field'},
+        'description': {'read_only': False, 'required': False, 'type': 'memo'},
+        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'url': {'read_only': True, 'required': False, 'type': 'field'},
+        'audio_count': {'read_only': True, 'required': False, 'type': 'field'},
+        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
+        'map_image_count': {'read_only': True, 'required': False, 'type': 'field'},
+        'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
+        'record_count': {'read_only': True, 'required': False, 'type': 'field'},
+        'owner': {'read_only': True, 'required': False, 'type': 'field'},
+        'project_id': {'read_only': False, 'required': False, 'type': 'field'},
+        'id': {'read_only': True, 'required': False, 'type': 'integer'},
+        'color': {'read_only': False, 'required': False, 'type': 'color'},
+        'name': {'read_only': False, 'required': False, 'type': 'string'}
+    }
 
 class GeomMixin(object):
     Point = {
@@ -40,6 +57,11 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, GeomMixin):
         ViewMixinAPI.setUp(self)
         self.urls = ['/api/0/markers/']
         self.view = views.MarkerList.as_view()
+        self.metadata = get_metadata()
+        self.metadata.update({
+            'update_metadata': {'read_only': True, 'required': False, 'type': 'field'}
+        })
+        
 
     def test_bad_json_create_fails(self, **kwargs):
         for k in ['Crazy1', 'Crazy2']:
@@ -99,6 +121,11 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, GeomMixin):
         self.marker = self.get_marker()
         self.urls = ['/api/0/markers/%s/' % self.marker.id]
         self.view = views.MarkerInstance.as_view()
+        self.metadata = get_metadata()
+        self.metadata.update({
+            'children': {'read_only': True, 'required': False, 'type': u'field'},
+            'form_ids': {'read_only': True, 'required': False, 'type': u'field'}
+        })
 
     def test_bad_json_update_fails(self, **kwargs):
         for k in ['Crazy1', 'Crazy2']:

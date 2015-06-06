@@ -6,6 +6,19 @@ from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib
 from rest_framework import status
 
+def get_base_metadata():
+    return {
+            'form': {'read_only': True, 'required': False, 'type': 'field'},
+            'ordering': {'read_only': False, 'required': True, 'type': 'integer'},
+            'is_printable': {'read_only': False, 'required': False, 'type': 'boolean'},
+            'col_alias': {'read_only': False, 'required': True, 'type': 'string'},
+            'col_name': {'read_only': True, 'required': False, 'type': 'field'},
+            'is_display_field': {'read_only': False, 'required': False, 'type': 'boolean'},
+            'url': {'read_only': True, 'required': False, 'type': 'field'},
+            'display_width': {'read_only': False, 'required': True, 'type': 'integer'},
+            'id': {'read_only': True, 'required': False, 'type': 'integer'},
+            'has_snippet_field': {'read_only': False, 'required': False, 'type': 'boolean'}
+        }
 class ApiFieldListTest(test.TestCase, ViewMixinAPI):
     def setUp(self):
         ViewMixinAPI.setUp(self)
@@ -18,6 +31,10 @@ class ApiFieldListTest(test.TestCase, ViewMixinAPI):
         self.model = models.Field
         self.url = '/api/0/forms/%s/fields/' % self.form.id
         self.urls = [self.url]
+        self.metadata = {
+            'data_type': {'read_only': False, 'required': False, 'type': 'field'}
+        }
+        self.metadata.update(get_base_metadata())
         self.view = views.FieldList.as_view()
         
     def tearDown(self):
@@ -68,6 +85,10 @@ class ApiFieldInstanceTest(test.TestCase, ViewMixinAPI):
         self.url = '/api/0/forms/%s/fields/%s/' % (self.field.form.id, self.field.id)
         self.url2 = '/api/0/forms/%s/fields/%s/' % (self.field2.form.id, self.field2.id)
         self.urls = [self.url]
+        self.metadata = {
+            'data_type': {'read_only': True, 'required': False, 'type': 'field'}
+        }
+        self.metadata.update(get_base_metadata())
         self.view = views.FieldInstance.as_view()
     
     def tearDown(self):

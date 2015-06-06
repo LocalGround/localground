@@ -14,9 +14,16 @@ class CustomMetadata(metadata.SimpleMetadata):
     
     def determine_metadata(self, request, view):
         metadata = super(CustomMetadata, self).determine_metadata(request, view)
+        model = None
         if hasattr(view, 'get_queryset'):
-            model = view.get_queryset().model
-            if hasattr(model, 'filterfields'):
+            try:
+                model = view.get_queryset().model
+            except:
+                try:
+                    model = view.model
+                except:
+                    pass
+            if model and hasattr(model, 'filterfields'):
                 metadata['filters'] = [ff.to_dict() for ff in model.filter_fields()]
         return metadata
     

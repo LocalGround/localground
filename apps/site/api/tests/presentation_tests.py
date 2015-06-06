@@ -7,11 +7,22 @@ import json
 from rest_framework import status
 
 
-class ApiPresentationTest(test.TestCase, ViewMixinAPI):
+class ApiPresentationTest(object):
     name = 'New Presentation'
     description = 'description of presentation'
     tags = "a, b, c"
     slug = 'new-friendly-url'
+    metadata = {
+        'code': {'read_only': False, 'required': False, 'type': 'json'},
+        'description': {'read_only': False, 'required': False, 'type': 'memo'},
+        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'url': {'read_only': True, 'required': False, 'type': 'field'},
+        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
+        'slug': {'read_only': False, 'required': True, 'type': 'slug'},
+        'owner': {'read_only': True, 'required': False, 'type': 'field'},
+        'id': {'read_only': True, 'required': False, 'type': 'integer'},
+        'name': {'read_only': False, 'required': False, 'type': 'string'}
+    }
 
     def _test_save_presentation(self, method, status_id, code):
         response = method(self.url,
@@ -40,7 +51,7 @@ class ApiPresentationTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(rec.code, code)
 
 
-class ApiPresentationListTest(ApiPresentationTest):
+class ApiPresentationListTest(test.TestCase, ViewMixinAPI, ApiPresentationTest):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
@@ -64,7 +75,7 @@ class ApiPresentationListTest(ApiPresentationTest):
         )
 
 
-class ApiPresentationInstanceTest(ApiPresentationTest):
+class ApiPresentationInstanceTest(test.TestCase, ViewMixinAPI, ApiPresentationTest):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)

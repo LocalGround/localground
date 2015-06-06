@@ -7,8 +7,17 @@ import json
 from rest_framework import status
 from django.contrib.gis.geos import GEOSGeometry
 
+class LayoutMixin(object):
+    metadata = {
+        'display_name': {'read_only': False, 'required': False, 'type': 'string'},
+        'id': {'read_only': True, 'required': False, 'type': 'integer'},
+        'name': {'read_only': False, 'required': True, 'type': 'string'}
+    }
 
-class ApiLayoutListTest(test.TestCase, ViewMixinAPI):
+class PrintMixin(object):
+    metadata = {}
+
+class ApiLayoutListTest(test.TestCase, ViewMixinAPI, LayoutMixin):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
@@ -16,7 +25,7 @@ class ApiLayoutListTest(test.TestCase, ViewMixinAPI):
         self.view = views.LayoutViewSet.as_view({'get': 'list'})
 
 
-class ApiLayoutInstanceTest(test.TestCase, ViewMixinAPI):
+class ApiLayoutInstanceTest(test.TestCase, ViewMixinAPI, LayoutMixin):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
@@ -27,7 +36,7 @@ class ApiLayoutInstanceTest(test.TestCase, ViewMixinAPI):
         self.view = views.LayoutViewSet.as_view({'get': 'detail'})
 
 
-class ApiPrintListTest(test.TestCase, ViewMixinAPI):
+class ApiPrintListTest(test.TestCase, ViewMixinAPI, PrintMixin):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
@@ -76,7 +85,7 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(new_object.map_provider.id, layout)
 
 
-class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI):
+class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=True)

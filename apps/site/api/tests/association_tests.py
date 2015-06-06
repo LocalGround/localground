@@ -40,7 +40,6 @@ class ApiRelatedMediaListTest(
             "turned_on": {"type": "boolean", "required": False, "read_only": False },
             "relation": { "type": "field", "required": False, "read_only": True }
         }
-        self.metadata_method = 'POST'
         self.view = views.RelatedMediaList.as_view()
         
         #create 1 photo and 1 audio object:
@@ -122,7 +121,6 @@ class ApiRelatedMediaInstanceTest(
             "parent": { "type": "field", "required": False, "read_only": True },
             "child": { "type": "field", "required": False, "read_only": True }
         }
-        self.metadata_method = 'PUT'
         self.view = views.RelatedMediaInstance.as_view()
         
         # create 2 photo, 2 audio, and 2 relation objecs:

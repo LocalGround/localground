@@ -7,11 +7,23 @@ import json
 from rest_framework import status
 
 
-class ApiLayerTest(test.TestCase, ViewMixinAPI):
+class ApiLayerTest(object):
     name = 'New Layer Name'
     description = 'Test layer description'
     tags = 'a, b, c'
     slug = 'my_layer'
+    metadata = {
+        'symbols': {'read_only': False, 'required': False, 'type': 'json'},
+        'description': {'read_only': False, 'required': False, 'type': 'memo'},
+        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'url': {'read_only': True, 'required': False, 'type': 'field'},
+        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
+        'slug': {'read_only': False, 'required': True, 'type': 'slug'},
+        'access': {'read_only': True, 'required': False, 'type': 'field'},
+        'owner': {'read_only': True, 'required': False, 'type': 'field'},
+        'id': {'read_only': True, 'required': False, 'type': 'integer'},
+        'name': {'read_only': False, 'required': False, 'type': 'string'}
+    }
     symbols = [
         {"color": "#7075FF", "width": 30, "rule": "worms > 0", "title": "At least 1 worm"},
         {"color": "#F011D9", "width": 30, "rule": "worms = 0", "title": "No worms"}
@@ -50,7 +62,7 @@ class ApiLayerTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(rec.slug, self.slug)
 
 
-class ApiLayerListTest(ApiLayerTest):
+class ApiLayerListTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
@@ -74,7 +86,7 @@ class ApiLayerListTest(ApiLayerTest):
         )
 
 
-class ApiLayerInstanceTest(ApiLayerTest):
+class ApiLayerInstanceTest(test.TestCase, ViewMixinAPI, ApiLayerTest):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)

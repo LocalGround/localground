@@ -6,12 +6,30 @@ import urllib
 import json
 from rest_framework import status
 
+def get_metadata():
+    return {
+        'description': {'read_only': False, 'required': False, 'type': 'memo'},
+        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'url': {'read_only': True, 'required': False, 'type': 'field'},
+        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
+        'children': {'read_only': True, 'required': False, 'type': 'field'},
+        'zoom': {'read_only': False, 'required': False, 'type': 'integer'},
+        'slug': {'read_only': False, 'required': True, 'type': 'slug'},
+        'access': {'read_only': True, 'required': False, 'type': 'field'},
+        'entities': {'read_only': False, 'required': False, 'type': 'json'},
+        'center': {'read_only': False, 'required': True, 'type': 'geojson'},
+        'owner': {'read_only': True, 'required': False, 'type': 'field'},
+        'basemap': {'read_only': False, 'required': True, 'type': 'field'},
+        'id': {'read_only': True, 'required': False, 'type': 'integer'},
+        'name': {'read_only': False, 'required': False, 'type': 'string'}
+    }
 
-class ApiSnapshotTest(test.TestCase, ViewMixinAPI):
+class ApiSnapshotTest(object):
     name = 'New Snapshot Name'
     description = 'Test description'
     tags = 'a, b, c'
     slug = 'new-friendly-url'
+    metadata = get_metadata()
     entities = [
         {'overlay_type': 'photo', 'ids': [1, 2, 3]},
         {'overlay_type': 'audio', 'ids': [1]},
@@ -64,7 +82,7 @@ class ApiSnapshotTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(1, len(rec.markers))
 
 
-class ApiSnapshotListTest(ApiSnapshotTest):
+class ApiSnapshotListTest(test.TestCase, ViewMixinAPI, ApiSnapshotTest):
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=True)
@@ -95,7 +113,7 @@ class ApiSnapshotListTest(ApiSnapshotTest):
         )
 
 
-class ApiSnapshotInstanceTest(ApiSnapshotTest):
+class ApiSnapshotInstanceTest(test.TestCase, ViewMixinAPI, ApiSnapshotTest):
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=True)

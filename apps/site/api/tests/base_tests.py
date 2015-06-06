@@ -78,16 +78,37 @@ class ViewMixinAPI(ModelMixin):
                                 content_type="application/x-www-form-urlencoded"
                             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            fields = response.data['actions'][self.metadata_method]
+            fields = response.data['actions'].get('PUT') or response.data['actions'].get('POST') 
             
             #ensure that dictionary is not empty:
             self.assertFalse(not fields)
             
-            #ensure that the two dictionaries are the same length:
-            self.assertEqual(len(fields.keys()), len(self.metadata.keys()))
-            
-            #ensure that field specs match:
-            for key in fields.keys():
-                self.assertEqual(fields[key]['type'], self.metadata[key]['type'])
-                self.assertEqual(fields[key]['required'], self.metadata[key]['required'])
-                self.assertEqual(fields[key]['read_only'], self.metadata[key]['read_only'])
+            try:
+                #ensure that the two dictionaries are the same length:
+                self.assertEqual(len(fields.keys()), len(self.metadata.keys()))
+                
+                #ensure that field specs match:
+                for key in self.metadata.keys():
+                    self.assertEqual(fields[key]['type'], self.metadata[key]['type'])
+                    self.assertEqual(fields[key]['required'], self.metadata[key]['required'])
+                    self.assertEqual(fields[key]['read_only'], self.metadata[key]['read_only'])
+            except:
+                self.debug_metadata(fields)
+    
+    def debug_metadata(self, fields):
+        d = {}
+        for key in fields.keys():
+            d[key] = {}
+            d[key]['type'] = fields[key]['type']
+            d[key]['required'] = fields[key]['required']
+            d[key]['read_only'] = fields[key]['read_only']
+        print '-'*100
+        print '-'*40, 'THERE WAS AN ERROR', '-'*40
+        print str(d).replace(': u\'', ': \'')
+        print '-'*100
+        self.assertEqual(len(fields.keys()), len(self.metadata.keys()))
+        for key in self.metadata.keys():
+            print key
+            self.assertEqual(fields[key]['type'], self.metadata[key]['type'])
+            self.assertEqual(fields[key]['required'], self.metadata[key]['required'])
+            self.assertEqual(fields[key]['read_only'], self.metadata[key]['read_only'])   

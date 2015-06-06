@@ -12,24 +12,23 @@ from localground.apps.site import models
 
 class ProjectSerializer(BaseNamedSerializer):
     access = serializers.SerializerMethodField('get_access_name')
-
+    slug = serializers.SlugField(max_length=100, label='friendly url')
     class Meta:
         model = models.Project
-        fields = BaseNamedSerializer.Meta.fields + ('owner', 'slug', 'access')
+        fields = BaseNamedSerializer.Meta.fields + ('slug', 'access')
         depth = 0
 
     def get_access_name(self, obj):
         return obj.access_authority.name
 
 
-class ProjectDetailSerializer(BaseNamedSerializer):
+class ProjectDetailSerializer(ProjectSerializer):
+    slug = serializers.SlugField(max_length=100, label='friendly url', required=False)
     children = serializers.SerializerMethodField('get_children_dict')
     view = None
     class Meta:
         model = models.Project
-        fields = BaseNamedSerializer.Meta.fields + (
-            'slug', 'children'
-        )
+        fields = ProjectSerializer.Meta.fields + ('children', )
         depth = 0
     
     def get_metadata(self, serializer_class):
@@ -135,7 +134,6 @@ class ProjectDetailSerializer(BaseNamedSerializer):
         if model_name_plural is None:
             model_name_plural = model_class.model_name_plural
         
-        #serializer = serializer_class(many=True, context={ 'request': {} })
         serializer = serializer_class( records, many=True, context={ 'request': {} })
         d = {
             'id': model_name_plural,
@@ -146,13 +144,4 @@ class ProjectDetailSerializer(BaseNamedSerializer):
         d.update({
             'update_metadata': self.get_metadata(serializer)
         })
-        '''
-        try:
-            if self.request.GET.get("include_schema") in ['True', 'true', '1']:
-                d.update({
-                    'update_metadata': serializer.metadata()
-                })
-        except:
-            pass
-        '''
         return d

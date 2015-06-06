@@ -34,7 +34,6 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         ViewMixinAPI.setUp(self)
         self.urls = ['/api/0/photos/']
         self.view = views.PhotoList.as_view()
-        self.metadata_method = 'POST'
         self.metadata = metadata
 
     def test_create_photo_using_post(self, **kwargs):
@@ -49,7 +48,6 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         self.url = '/api/0/photos/%s/' % self.photo.id
         self.urls = [self.url]
         self.view = views.PhotoInstance.as_view()
-        self.metadata_method = 'PUT'
         self.metadata = metadata
 
     def test_update_photo_using_put(self, **kwargs):

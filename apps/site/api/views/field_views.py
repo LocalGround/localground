@@ -8,6 +8,7 @@ from django.http import Http404
 class FieldList(QueryableListCreateAPIView, AuditCreate):
     serializer_class = serializers.FieldSerializer
     filter_backends = (filters.SQLFilterBackend,)
+    model = models.Field
 
     def get_queryset(self):
         return self.get_form().fields
