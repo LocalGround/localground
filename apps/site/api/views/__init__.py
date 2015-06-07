@@ -28,14 +28,14 @@ from localground.apps.site.api.views.tags_views import TagList
 from localground.apps.site.api.views.user_profile_views import UserProfileList, UserProfileInstance
 
 from rest_framework.decorators import api_view
-from django.utils.datastructures import SortedDict
+from collections import OrderedDict
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 
 @api_view(('GET',))
 def api_root(request, format=None, **kwargs):
-    d = SortedDict()
+    d = OrderedDict()
     d['audio'] = reverse('audio-list', request=request, format=format)
     d['forms'] = reverse('form-list', request=request, format=format)
     d['groups'] = reverse('group-list', request=request, format=format)

@@ -141,22 +141,15 @@ class Form(BaseNamed, BasePermissions):
             apps.register_model(m._meta.app_label, m)
 
     def clear_table_model_cache(self):
-        '''
-        from django.apps import apps
-        #appConfig.models is a private attribute so this may break without warning in a new version
-        #TODO: find a better way to do this
-        if apps.get_model('site', 'form_%s' % self.id):
-            del apps.get_app_config('site').models['form_%s' % self.id]
-        self._fields = None
-        '''
         # see: http://dynamic-models.readthedocs.org/en/latest/topics/model.html#topics-model
         from django.conf import settings
-        from django.utils.importlib import import_module
+        from importlib import import_module
         from django.core.urlresolvers import clear_url_caches
         from django.apps import apps
 
         app_models = apps.all_models[self.TableModel._meta.app_label]
-        del app_models[self.TableModel._meta.model_name]
+        if app_models.get(self.TableModel._meta.model_name):
+            del app_models[self.TableModel._meta.model_name]
         
         reload(import_module(settings.ROOT_URLCONF))
         clear_url_caches()

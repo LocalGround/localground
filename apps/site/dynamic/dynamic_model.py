@@ -347,12 +347,18 @@ class ModelClassBuilder(object):
             save=save,
             filter_fields=filter_fields
         ))
+        
+        # --------------------------------------------------
+        # remove model from  application cache, if it exists
+        # --------------------------------------------------
+        from django.apps import apps
+        app_models = apps.all_models[self.app_label]
+        if app_models.get(self.name):
+            del app_models[self.name]
+        # --------------------------------------------------
 
         # Create the class, which automatically triggers ModelBase processing
         self._model_class = type(self.name, (DynamicModelMixin, ), attrs)
-        # import sys
-        # sys.stderr.write('\n%s' % self._model_class._meta.get_all_field_names())
-        #sys.stderr.write('\n%s' % self.additional_fields)
         return self._model_class
 
     def add_dynamic_fields_to_model(self):
