@@ -54,9 +54,6 @@ DATABASES = {
 TEMPLATE_DIRS = (
     '%s/templates' % APPS_ROOT,
 )
-FIXTURE_DIRS = (
-    '%s/fixtures' % APPS_ROOT,
-)
 
 #Turns on Django Debugging
 '''
