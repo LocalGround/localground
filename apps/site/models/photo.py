@@ -14,6 +14,7 @@ class Photo(BasePoint, BaseUploadedMedia):
     file_name_marker_lg = models.CharField(max_length=255)
     file_name_marker_sm = models.CharField(max_length=255)
     device = models.CharField(max_length=255, blank=True, null=True)
+    filter_fields = BaseUploadedMedia.filter_fields + ('device',)
     objects = PhotoManager()
 
     def __unicode__(self):

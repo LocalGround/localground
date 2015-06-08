@@ -7,21 +7,21 @@
         <li class="clearfix">
         <label>{{ ff.title }}:</label>
         <div class="input">
-            {% if ff.id == 'project_id' and projects %}
-                <select id="{{ ff.id }}" name="{{ff.col_name}}" data-operator="{{ ff.operator }}">
+            {% if ff.col_name == 'project_id' or ff.col_name == 'project' and projects %}
+                <select id="{{ ff.col_name }}" name="{{ff.col_name}}" data-operator="{{ ff.operator }}">
                     <option value="">-- All --</option>
                     {% for p in projects %}
                         <option value="{{p.id}}"
-                            {% if p.id == ff.value_original %}selected{% endif %}>
+                            {% if p.id|slugify == ff.value %}selected{% endif %}>
                             {{ p.name }}
                         </option>
                     {% endfor%}
                 </select>
             {% else %}
-                <input id="{{ff.id}}" name="{{ff.col_name}}" type="text" data-operator="{{ ff.operator }}"
-                    {%if ff.data_type == 'date' %}value="{{ ff.value_original|date:"m/d/Y" }}"
+                <input id="{{ff.col_name}}" name="{{ff.col_name}}" type="text" data-operator="{{ ff.operator }}"
+                    {%if ff.data_type == 'date' %}value="{{ ff.value|date:"m/d/Y" }}"
                     {% else %}
-                       value="{{ ff.value_original }}"
+                       value="{{ ff.value|default_if_none:"" }}"
                     {% endif %}
                     {%if ff.data_type == 'tag' %}class="tags"{% endif %}
                     {%if ff.data_type == 'date' %}class="date-picker"{% endif %}/>
@@ -31,7 +31,7 @@
     {% endfor %}
     
     <li>
-        <textarea name="query" id="sql">{{ sql }}</textarea>   
+        <textarea name="query" id="sql">{{ sql|default_if_none:"" }}</textarea>   
     </li>
     <li class="divider"></li>  
     <li class="clearfix">

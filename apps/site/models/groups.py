@@ -33,49 +33,13 @@ class Group(BaseNamed, BaseGenericRelationMixin, BasePermissions):
     basemap = models.ForeignKey(
         'WMSOverlay',
         default=12)  # default to grayscale
+    filter_fields = BaseNamed.filter_fields + ('slug',)
 
     class Meta:
         abstract = True
         app_label = 'site'
         unique_together = ('slug', 'owner')
 
-    @classmethod
-    def filter_fields(cls):
-        from localground.apps.lib.helpers import QueryField, FieldTypes
-
-        return [
-            QueryField(
-                'name',
-                id='name',
-                title='Name',
-                operator='like'),
-            QueryField(
-                'description',
-                id='description',
-                title='Description',
-                operator='like'),
-            QueryField(
-                'tags',
-                id='tags',
-                title='Tags',
-                data_type=FieldTypes.TAG,
-                operator='in'),
-            QueryField(
-                'owner__username',
-                id='owned_by',
-                title='Owned By'),
-            QueryField(
-                'date_created',
-                id='date_created_after',
-                title='After',
-                data_type=FieldTypes.DATE,
-                operator='>='),
-            QueryField(
-                'date_created',
-                id='date_created_before',
-                title='Before',
-                data_type=FieldTypes.DATE,
-                operator='<=')]
 
     @staticmethod
     def get_users():

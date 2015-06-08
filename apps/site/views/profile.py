@@ -96,7 +96,7 @@ def object_list_form(
         context=context
     )
 
-    # return HttpResponse(objects.query)
+    #return HttpResponse(objects.query)
     per_page = 10
 
     def getModelClassFormSet(**kwargs):
@@ -171,7 +171,7 @@ def object_list_form(
                         (ModelClass.listing_url(), context.get('sql')), })
     else:
         context.update({
-            'filter_fields': ModelClass.filter_fields(),
+            'filter_fields': ModelClass.get_filter_fields(),
             'sql': '',
             'has_filters': False
         })

@@ -17,6 +17,9 @@ ui.filtermenu.prototype.initialize = function() {
                     case 'like':
                         val	= '\'%' + $(this).val() + '%\'';
                         break;
+                    case 'within':
+                        val = 'buffer' + $(this).val();
+                        break;
                     case 'in':
                         var oldList = $(this).val().split(',');
                         var newList = [];

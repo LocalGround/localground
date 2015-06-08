@@ -23,6 +23,7 @@ class DynamicModelMixin(BasePoint, BaseAudit):
     snippet = models.ForeignKey('Snippet', null=True, blank=True)
     project = models.ForeignKey('Project')
     manually_reviewed = models.BooleanField(default=False)
+    filter_fields = BaseAudit.filter_fields + ('project',)
     objects = RecordManager()
 
     class Meta:
@@ -274,12 +275,17 @@ class ModelClassBuilder(object):
 
         # Add in any fields that were provided
         attrs.update(self.additional_fields)
+        attrs.update({
+            'filter_fields': DynamicModelMixin.filter_fields + tuple(self.dynamic_fields.keys())
+        })
+
+
 
         '''
-		-------------------
-		Begin Model Methods
-		-------------------
-		'''
+        -------------------
+        Begin Model Methods
+        -------------------
+        '''
 
         def save(self, user, *args, **kwargs):
             is_new = self.pk is None
@@ -297,14 +303,13 @@ class ModelClassBuilder(object):
         @classmethod
         def filter_fields(cls):
             from localground.apps.lib.helpers import QueryField, FieldTypes
-
             query_fields = [
                 QueryField(
                     'project__id',
                     id='project_id',
                     title='Project ID',
                     data_type=FieldTypes.INTEGER),
-                # QueryField('col_4', title='col_4', operator='like'),
+                #QueryField('col_4', title='col_4', operator='like'),
                 QueryField('date_created', id='date_created_after', title='After',
                            data_type=FieldTypes.DATE, operator='>='),
                 QueryField('date_created', id='date_created_before', title='Before',
@@ -345,7 +350,7 @@ class ModelClassBuilder(object):
 
         attrs.update(dict(
             save=save,
-            filter_fields=filter_fields
+            #filter_fields=('id', 'name')
         ))
         
         # --------------------------------------------------

@@ -81,20 +81,6 @@
 		{% endblock %}
 		
 		<div class="row" style="height:38px;">
-			{% comment %}
-			<div class="btn-toolbar">
-				<div class="btn-group">
-					<button type="button" id="add_object" class="btn btn-default"><span class="icon-dark icon-plus-sign"></span> New</button>
-					<button type="button" id="delete_objects" class="btn btn-default"><span class="icon-dark icon-trash"></span> Delete</button>
-					<button class="btn btn-default" data-toggle="dropdown">
-						<span class="icon-dark icon-filter"></span> Filter
-						<span class="dark-caret"></span>
-					</button>
-					{% include "includes/filter_menu.html" %}
-					<button type="button" class="btn btn-default"><span class="icon-dark icon-th"></span> More</button>
-				</div>
-			</div>
-			{% endcomment %}
 			<ul class="tabs cell1" style="margin-bottom: 0px !important;border:none;">
 				{% block other_menus %}{% endblock %}
 				{% if objects.object_list|length > 0 %}

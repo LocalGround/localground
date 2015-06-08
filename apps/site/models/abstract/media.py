@@ -27,7 +27,9 @@ class BaseMedia(BaseAudit):
         'GenericAssociation',
         content_type_field='entity_type',
         object_id_field='entity_id',
-        related_query_name="%(app_label)s_%(class)s_related")
+        related_query_name="%(app_label)s_%(class)s_related"
+    )
+    filter_fields = ('id', 'project', 'date_created', 'file_name_orig',)
 
     @classmethod
     def inline_form(cls, user):
@@ -117,6 +119,7 @@ class BaseNamedMedia(BaseMedia, ProjectMixin):
     name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     tags = TagAutocompleteField(blank=True, null=True)
+    filter_fields = BaseMedia.filter_fields + ('name', 'description', 'tags')
 
     class Meta:
         app_label = 'site'
@@ -127,57 +130,7 @@ class BaseUploadedMedia(BaseNamedMedia):
     file_name_new = models.CharField(max_length=255)
     attribution = models.CharField(max_length=500, blank=True,
                                    null=True, verbose_name="Author / Creator")
-
-    @classmethod
-    def filter_fields(cls):
-        #white_list = ()
-        # for f in Photo._meta.fields: print '%s: %s: %s' % (f.name,
-        # f.verbose_name, f.db_type())
-        from localground.apps.lib.helpers import QueryField, FieldTypes
-        #owner, last_updated_by, date_created, time_stamp, file_name_orig, name,
-        #description, tags, project, attribution
-        return [
-            QueryField(
-                'project__id',
-                id='project_id',
-                title='Project ID',
-                data_type=FieldTypes.INTEGER),
-            QueryField(
-                'name',
-                id='name',
-                title='Name',
-                operator='like'),
-            QueryField(
-                'description',
-                id='description',
-                title='Description',
-                operator='like'),
-            QueryField(
-                'tags',
-                id='tags',
-                title='Tags',
-                data_type=FieldTypes.TAG,
-                operator='in'),
-            QueryField(
-                'owner__username',
-                id='owned_by',
-                title='Owned By'),
-            QueryField(
-                'file_name_new',
-                id='file_name',
-                title='File Name'),
-            QueryField(
-                'date_created',
-                id='date_created_after',
-                title='After',
-                data_type=FieldTypes.DATE,
-                operator='>='),
-            QueryField(
-                'date_created',
-                id='date_created_before',
-                title='Before',
-                data_type=FieldTypes.DATE,
-                operator='<=')]
+    filter_fields = BaseNamedMedia.filter_fields + ('attribution', 'point')
 
     class Meta:
         abstract = True

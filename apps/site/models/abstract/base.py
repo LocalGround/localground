@@ -5,7 +5,8 @@ from django.contrib.contenttypes.models import ContentType
 
 
 class Base(models.Model):
-
+    filter_fields = ('id',)
+    
     class Meta:
         app_label = 'site'
         abstract = True
@@ -53,6 +54,30 @@ class Base(models.Model):
                 except:
                     pass
         raise Http404
+    
+    @classmethod
+    def get_filter_fields(cls):
+        from localground.apps.lib.helpers import QueryField, FieldTypes
+        
+        def get_data_type(model_field):
+            data_types = {
+                'AutoField': FieldTypes.INTEGER,
+                'ForeignKey': FieldTypes.INTEGER,
+                'CharField': FieldTypes.STRING,
+                'DateTimeField': FieldTypes.DATE,
+                'PointField': FieldTypes.POINT
+            }
+            return data_types.get(model_field.get_internal_type()) or model_field.get_internal_type()
+        query_fields = {}
+        for field in cls.filter_fields:
+            for f in cls._meta.fields:
+                if f.name == field:
+                    query_fields[f.name] = QueryField(
+                        f.name, django_fieldname=f.name, title=f.verbose_name,
+                        help_text=f.help_text, data_type=get_data_type(f)
+                    )
+        #raise Exception(query_fields)
+        return query_fields
 
     @classproperty
     def model_name(cls):

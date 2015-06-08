@@ -6,21 +6,31 @@ from localground.apps.site.api import fields
 from django.conf import settings
 from localground.apps.site.api.metadata import CustomMetadata
 
-class MarkerSerializer(GeometrySerializer):
-    
-    def __init__(self, *args, **kwargs):
-        super(MarkerSerializer, self).__init__(*args, **kwargs)
-        self.records = []
-    
+class MarkerSerializerMixin(GeometrySerializer):
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
         allow_null=True,
         source='point',
         required=False,
         style={'base_template': 'textarea.html'})
+    color = fields.ColorField(required=False)
+    
+    class Meta:
+        model = models.Marker
+        fields = GeometrySerializer.Meta.fields + ('color', )
+        depth = 0
+        
+    def get_update_metadata(self, obj):
+        m = CustomMetadata()
+        return m.get_serializer_info(self)
+
+class MarkerSerializer(MarkerSerializerMixin):
+    
+    def __init__(self, *args, **kwargs):
+        super(MarkerSerializer, self).__init__(*args, **kwargs)
+        self.records = []
 
     children = serializers.SerializerMethodField()
-    color = fields.ColorField(required=False)
     form_ids = serializers.SerializerMethodField()
     photo_count = serializers.SerializerMethodField()
     audio_count = serializers.SerializerMethodField()
@@ -29,8 +39,8 @@ class MarkerSerializer(GeometrySerializer):
 
     class Meta:
         model = models.Marker
-        fields = GeometrySerializer.Meta.fields + \
-            ('children', 'color', 'form_ids', 'photo_count', 'audio_count', 'record_count', 'map_image_count')
+        fields = MarkerSerializerMixin.Meta.fields + \
+            ('children', 'form_ids', 'photo_count', 'audio_count', 'record_count', 'map_image_count')
         depth = 0
 
     def get_form_ids(self, obj):
@@ -50,7 +60,7 @@ class MarkerSerializer(GeometrySerializer):
             models.Project,
             models.Marker]
         forms = (
-            models.Form.objects .prefetch_related(
+            models.Form.objects.prefetch_related(
                 'field_set',
                 'field_set__data_type',
                 'projects') .filter(
@@ -149,14 +159,7 @@ class MarkerSerializer(GeometrySerializer):
              model_name_plural)}
 
 
-class MarkerSerializerCounts(GeometrySerializer):
-    geometry = fields.GeometryField(
-        help_text='Assign a GeoJSON string',
-        allow_null=True,
-        required=False,
-        source='point',
-        style={'base_template': 'textarea.html'})
-    color = fields.ColorField(required=False)
+class MarkerSerializerCounts(MarkerSerializerMixin):
     photo_count = serializers.SerializerMethodField()
     audio_count = serializers.SerializerMethodField()
     map_image_count = serializers.SerializerMethodField()
@@ -165,9 +168,8 @@ class MarkerSerializerCounts(GeometrySerializer):
 
     class Meta:
         model = models.Marker
-        fields = GeometrySerializer.Meta.fields + \
-            ('photo_count', 'audio_count', 'record_count', 'map_image_count', 'color',
-            'update_metadata')
+        fields = MarkerSerializerMixin.Meta.fields + \
+            ('photo_count', 'audio_count', 'record_count', 'map_image_count', 'update_metadata')
         depth = 0
 
     def get_photo_count(self, obj):
@@ -193,8 +195,40 @@ class MarkerSerializerCounts(GeometrySerializer):
             return obj.record_count
         except:
             return None
-        
-    def get_update_metadata(self, obj):
-        m = CustomMetadata()
-        return m.get_serializer_info(self)
     
+class MarkerSerializerLists(MarkerSerializerMixin):
+    photo_array = serializers.SerializerMethodField()
+    audio_array = serializers.SerializerMethodField()
+    map_image_array = serializers.SerializerMethodField()
+    record_array = serializers.SerializerMethodField()
+    update_metadata = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Marker
+        fields = MarkerSerializerMixin.Meta.fields + \
+            ('photo_array', 'audio_array', 'record_array', 'map_image_array', 'update_metadata')
+        depth = 0
+
+    def get_photo_array(self, obj):
+        try:
+            return obj.photo_array
+        except:
+            return None
+
+    def get_audio_array(self, obj):
+        try:
+            return obj.audio_array
+        except:
+            return None
+
+    def get_map_image_array(self, obj):
+        try:
+            return obj.map_image_array
+        except:
+            return None
+
+    def get_record_array(self, obj):
+        try:
+            return obj.record_array
+        except:
+            return None

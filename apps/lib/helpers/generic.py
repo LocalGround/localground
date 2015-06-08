@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import datetime
 from django.conf import settings
-from django.db import connection
+from django.db import connection, transaction
 from django.core.paginator import Paginator
+
 
 class FastPaginator(Paginator):
     """
@@ -13,29 +14,35 @@ class FastPaginator(Paginator):
     """
     def __init__(self, object_list, per_page=10, orphans=0, allow_empty_first_page=True):
         Paginator.__init__(self, object_list, per_page, orphans, allow_empty_first_page)
+      
+    #@transaction.autocommit
+    def _get_count_shortcut(self):
+        try:
+            '''
+            Convert to a form that looks like this (fast):
+                SELECT COUNT(a.col_4) FROM (SELECT DISTINCT col_4 FROM table_vanwars_xgb5qaw826) a
+            
+            ...instead of this (slow):
+            SELECT COUNT(DISTINCT col_4) FROM "table_vanwars_xgb5qaw826"
+
+            '''
+            sql = '%s' % self.object_list.query
+            sql = 'select count(a) from (' + sql + ') a'
+            cursor = connection.cursor()
+            cursor.execute(sql)
+            return int(cursor.fetchone()[0])
+        except:
+            #transaction.rollback()
+            return None
         
     def _get_count(self):
         "Returns the total number of objects, across all pages."
         if self._count is None:
-            try:
-                '''
-                Convert to a form that looks like this (fast):
-                    SELECT COUNT(a.col_4) FROM (SELECT DISTINCT col_4 FROM table_vanwars_xgb5qaw826) a
-                
-                ...instead of this (slow):
-                SELECT COUNT(DISTINCT col_4) FROM "table_vanwars_xgb5qaw826"
-
-                '''
-                #self._count = self.object_list.count()
-                sql = '%s' % self.object_list.query
-                sql = 'select count(a) from (' + sql + ') a'
-                from django.db import connection
-                cursor = connection.cursor()
-                cursor.execute(sql)
-                self._count = int(cursor.fetchone()[0])
-            except:
-                # thrown if object_list is a list instead of a QuerySet (which happens when a RawQuerySet)
-                self._count = len(self.object_list)
+            # first, try the fast way:
+            self._count = self._get_count_shortcut()
+        if self._count is None:
+            # if that doesn't work, try the slow way:
+            self._count = len(self.object_list)
         return self._count
     count = property(_get_count)
 

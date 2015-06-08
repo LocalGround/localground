@@ -6,12 +6,12 @@
         {% if ff.value %}
         <div class="filter info">{{ff.title|lower}}: 
             {%if ff.data_type == 'date' %}
-                {{ ff.value_original|date:"m/d/Y" }}
+                {{ ff.value|date:"m/d/Y" }}
             {% else %}
-                {{ ff.value_original }}
+                {{ ff.value }}
             {% endif %}
-            <a class="remove-filter" id="remove_{{ff.id}}" href="#"
-                    data-target="{{ff.id}}" title="remove filter">×</a>
+            <a class="remove-filter" id="remove_{{ff.col_name}}" href="#"
+                    data-target="{{ff.col_name}}" title="remove filter">×</a>
         </div>
         {% endif %}
     {% endfor %}

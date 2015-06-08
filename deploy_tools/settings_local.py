@@ -61,6 +61,6 @@ FIXTURE_DIRS = (
 #Turns on Django Debugging
 '''
 INSTALLED_APPS += ('debug_toolbar',)
-INTERNAL_IPS = ('127.0.0.1', )
+INTERNAL_IPS = ('127.0.0.1', '10.0.2.2') #note the 10.0.2.2 is the IP for Vagrant connections
 MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 '''

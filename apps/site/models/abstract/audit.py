@@ -11,35 +11,20 @@ class BaseAudit(Base):
     date_created = models.DateTimeField(default=get_timestamp_no_milliseconds)
     time_stamp = models.DateTimeField(default=get_timestamp_no_milliseconds,
                                       db_column='last_updated')
+    filter_fields = Base.filter_fields + ('date_created', 'time_stamp')
+    
+    @classmethod
+    def get_filter_fields(cls):
+        from localground.apps.lib.helpers import QueryField, FieldTypes
+        query_fields = super(BaseAudit, cls).get_filter_fields()
+        query_fields['owner'] = QueryField(
+            'owner', django_fieldname='owner__username', title='owner',
+            help_text='Username of user who owns the project',
+            data_type=FieldTypes.STRING
+        )
+        #raise Exception(query_fields)
+        return query_fields
 
     class Meta:
         app_label = 'site'
         abstract = True
-
-    @classmethod
-    def filter_fields(cls):
-        from localground.apps.lib.helpers import QueryField, FieldTypes
-        return [
-            QueryField(
-                'owner__username',
-                id='owned_by',
-                title='Owned By'),
-            QueryField(
-                'date_created',
-                id='date_created_after',
-                title='After',
-                data_type=FieldTypes.DATE,
-                operator='>='),
-            QueryField(
-                'date_created',
-                id='date_created_before',
-                title='Before',
-                data_type=FieldTypes.DATE,
-                operator='<=')]
-
-    @classmethod
-    def get_field_by_name(cls, name, operator='='):
-        for f in cls.filter_fields():
-            if f.col_name == name and f.operator.lower() == operator.lower():
-                return f
-        return None

@@ -20,6 +20,7 @@ class Form(BaseNamed, BasePermissions):
     objects = FormManager()
     _model_class = None
     _data_entry_form_class = None
+    filter_fields = BaseNamed.filter_fields + ('slug',)
 
     class Meta:
         app_label = 'site'
@@ -158,15 +159,6 @@ class Form(BaseNamed, BasePermissions):
 
     @property
     def TableModel(self):
-        # This may be dangerous -- pretty sure the cache spans multiple
-        # sessions.  If weird bugs appear, this is a suspect method
-        '''from django.db.models.loading import cache
-        if cache.app_models['site'].get('form_%s' % self.id) is None:
-            cache.app_models['site'][
-                'form_%s' %
-                self.id] = ModelClassBuilder(self).model_class
-        return cache.app_models['site']['form_%s' % self.id]
-        '''
         return ModelClassBuilder(self).model_class
 
     def has_access(self, user, access_key=None):
@@ -189,35 +181,6 @@ class Form(BaseNamed, BasePermissions):
             dfb = DynamicFormBuilder(self)
             self._data_entry_form_class = dfb.data_entry_form_class
         return self._data_entry_form_class
-
-    @classmethod
-    def filter_fields(cls):
-        from localground.apps.lib.helpers import QueryField, FieldTypes
-
-        return [
-            QueryField(
-                'name',
-                title='Name',
-                operator='like'),
-            QueryField(
-                'description',
-                title='Description',
-                operator='like'),
-            QueryField(
-                'tags',
-                title='Tags'),
-            QueryField(
-                'date_created',
-                id='date_created_after',
-                title='After',
-                data_type=FieldTypes.DATE,
-                operator='>='),
-            QueryField(
-                'date_created',
-                id='date_created_before',
-                title='Before',
-                data_type=FieldTypes.DATE,
-                operator='<=')]
 
     def sync_db(self):
         mcb = ModelClassBuilder(self)

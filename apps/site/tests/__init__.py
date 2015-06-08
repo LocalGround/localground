@@ -407,14 +407,17 @@ class ModelMixin(object):
         return scan
 
     def create_photo(self, user, project, name='Photo Name',
-                     file_name='my_photo.jpg'):
+                     file_name='my_photo.jpg', device='HTC',
+                     point=None):
         photo = models.Photo(
             project=project,
             owner=user,
             last_updated_by=user,
             name=name,
             description='Photo Description',
-            file_name_orig=file_name
+            file_name_orig=file_name,
+            device=device,
+            point=point
         )
         photo.save()
         return photo
