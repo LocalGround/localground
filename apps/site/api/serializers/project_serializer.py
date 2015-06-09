@@ -113,17 +113,28 @@ class ProjectDetailSerializer(ProjectSerializer):
                 processed_only=True
             )
         )
-
+    
     def get_markers(self, obj, forms):
-        return self.serialize_list(
-            models.Marker,
-            MarkerSerializerLists,
-            models.Marker.objects.get_objects_with_lists(
-                obj.owner,
-                project=obj,
-                forms=forms
+        if self.context['view'].request.GET.get('marker_media_arrays') in ['1', 'true', 'True']:
+            return self.serialize_list(
+                models.Marker,
+                MarkerSerializerLists,
+                models.Marker.objects.get_objects_with_lists(
+                    obj.owner,
+                    project=obj,
+                    forms=forms
+                )
             )
-        )
+        else:
+            return self.serialize_list(
+                models.Marker,
+                MarkerSerializerCounts,
+                models.Marker.objects.get_objects_with_counts(
+                    obj.owner,
+                    project=obj,
+                    forms=forms
+                )
+            )
     
     def serialize_list(self, model_class, serializer_class, records,
                         name=None, overlay_type=None, model_name_plural=None):

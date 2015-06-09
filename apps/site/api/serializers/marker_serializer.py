@@ -14,6 +14,8 @@ class MarkerSerializerMixin(GeometrySerializer):
         required=False,
         style={'base_template': 'textarea.html'})
     color = fields.ColorField(required=False)
+    update_metadata = serializers.SerializerMethodField()
+
     
     class Meta:
         model = models.Marker
@@ -158,13 +160,11 @@ class MarkerSerializer(MarkerSerializerMixin):
              obj.id,
              model_name_plural)}
 
-
 class MarkerSerializerCounts(MarkerSerializerMixin):
     photo_count = serializers.SerializerMethodField()
     audio_count = serializers.SerializerMethodField()
     map_image_count = serializers.SerializerMethodField()
     record_count = serializers.SerializerMethodField()
-    update_metadata = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker
@@ -201,7 +201,6 @@ class MarkerSerializerLists(MarkerSerializerMixin):
     audio_array = serializers.SerializerMethodField()
     map_image_array = serializers.SerializerMethodField()
     record_array = serializers.SerializerMethodField()
-    update_metadata = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Marker

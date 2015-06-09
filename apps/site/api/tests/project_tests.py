@@ -65,6 +65,42 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
             'children': {'read_only': True, 'required': False, 'type': 'field'},
             'slug': {'read_only': False, 'required': False, 'type': 'slug'}
         })
+        
+    def _check_children(self, children):
+        self.assertTrue(not children is None)
+        for k in ['photos', 'audio', 'markers', 'scans']:
+            self.assertTrue(not children.get(k) is None)
+            self.assertTrue(isinstance(children.get(k).get('update_metadata'), dict))
+            self.assertTrue(isinstance(children.get(k).get('overlay_type'), basestring))
+            self.assertTrue(isinstance(children.get(k).get('data'), list))
+            self.assertTrue(isinstance(children.get(k).get('id'), basestring))
+            self.assertTrue(isinstance(children.get(k).get('name'), basestring))
+        
+    def test_get_project_with_marker_counts(self, **kwargs):
+        self.create_marker(self.user, self.project)
+        response = self.client_user.get(self.url)
+        children = response.data.get("children")
+        self._check_children(children)
+            
+        #check counts:
+        marker = children.get('markers').get('data')[0]
+        self.assertTrue(marker.has_key('photo_count'))
+        self.assertTrue(marker.has_key('audio_count'))
+        self.assertTrue(marker.has_key('record_count'))
+        self.assertTrue(marker.has_key('map_image_count'))
+        
+    def test_get_project_with_marker_arrays(self, **kwargs):
+        self.create_marker(self.user, self.project)
+        response = self.client_user.get(self.url, { 'marker_counts_as_arrays': 1 })
+        children = response.data.get("children")
+        self._check_children(children)
+            
+        #check arrays:
+        marker = children.get('markers').get('data')[0]
+        self.assertTrue(marker.has_key('photo_array'))
+        self.assertTrue(marker.has_key('audio_array'))
+        self.assertTrue(marker.has_key('record_array'))
+        self.assertTrue(marker.has_key('map_image_array'))
 
     def test_update_project_using_put(self, **kwargs):
         name, description = 'New Project Name', 'Test description'
