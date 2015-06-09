@@ -19,7 +19,7 @@ class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
         try:
             model = context.get('view').get_queryset().model
             query = QueryParser(model, r.get('query'))
-            if hasattr(model, 'filterfields'):
+            if hasattr(model, 'filter_fields'):
                 filter_fields = query.populate_filter_fields()
                 for ff in filter_fields:
                     if hasattr(ff, 'value'):
