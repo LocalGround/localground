@@ -115,7 +115,7 @@ class ProjectDetailSerializer(ProjectSerializer):
         )
     
     def get_markers(self, obj, forms):
-        if self.context['view'].request.GET.get('marker_media_arrays') in ['1', 'true', 'True']:
+        if self.context['view'].request.GET.get('marker_with_media_arrays') in ['1', 'true', 'True']:
             return self.serialize_list(
                 models.Marker,
                 MarkerSerializerLists,

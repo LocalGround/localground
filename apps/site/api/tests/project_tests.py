@@ -91,7 +91,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         
     def test_get_project_with_marker_arrays(self, **kwargs):
         self.create_marker(self.user, self.project)
-        response = self.client_user.get(self.url, { 'marker_counts_as_arrays': 1 })
+        response = self.client_user.get(self.url, { 'marker_with_media_arrays': 1 })
         children = response.data.get("children")
         self._check_children(children)
             
