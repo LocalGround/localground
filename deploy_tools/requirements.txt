@@ -27,6 +27,7 @@ python-social-auth==0.2.10
 sqlparse==0.1.15
 six==1.9.0
 South==1.0.2
+SwampDragon==0.4.2.2
 #MapScript (installed via apt-get (python-mapscript))
 #GDAL (installed via apt-get (python-gdal))
 
