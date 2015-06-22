@@ -88,80 +88,80 @@ class SQLStatementTest(test.TestCase):
 class SQLParseTest(test.TestCase, ModelMixin):
     fixtures = ['initial_data.json', 'test_data.json']
     
-    def setUp(self):
-        '''
-        Create some dummy data using the ModelMixin, to make sure that the queries
-        are actually matching, given the data.
-        '''
-        ModelMixin.setUp(self)
-        self.photo1 = self.create_photo(self.user, self.project, file_name='2013-07-04 16.56.55.jpg', point=Point(-122.246, 37.896))
-        self.photo2 = self.create_photo(self.user, self.project, file_name='2013-06-30 18.25.38.jpg', point=Point(-122.846, 37.396),
-                                        device='SCH-I535')
+    # def setUp(self):
+    #     '''
+    #     Create some dummy data using the ModelMixin, to make sure that the queries
+    #     are actually matching, given the data.
+    #     '''
+    #     ModelMixin.setUp(self)
+    #     self.photo1 = self.create_photo(self.user, self.project, file_name='2013-07-04 16.56.55.jpg', point=Point(-122.246, 37.896))
+    #     self.photo2 = self.create_photo(self.user, self.project, file_name='2013-06-30 18.25.38.jpg', point=Point(-122.846, 37.396),
+    #                                     device='SCH-I535')
 
-    def compare_sql(self, model, raw_where, parsed_where=None):
-        raw_dataset, parsed_dataset = get_data_sets_from_sql(model, raw_where, parsed_where)
-        n = 0
-        for r, p in zip(raw_dataset, parsed_dataset):
-            n+=1
-            self.assertEqual(r.id, p.id)
+    # def compare_sql(self, model, raw_where, parsed_where=None):
+    #     raw_dataset, parsed_dataset = get_data_sets_from_sql(model, raw_where, parsed_where)
+    #     n = 0
+    #     for r, p in zip(raw_dataset, parsed_dataset):
+    #         n+=1
+    #         self.assertEqual(r.id, p.id)
 
-        if n== 0:
-            raw_count = len(list(raw_dataset))
-            parsed_count = len(list(parsed_dataset))
-            self.fail("no results to compare - raw:{} parsed:{}".format(raw_count, parsed_count))
+    #     if n== 0:
+    #         raw_count = len(list(raw_dataset))
+    #         parsed_count = len(list(parsed_dataset))
+    #         self.fail("no results to compare - raw:{} parsed:{}".format(raw_count, parsed_count))
 
-    def test_no_where_should_be_equal(self, **kwargs):
-        self.compare_sql(Photo, "")
+    # def test_no_where_should_be_equal(self, **kwargs):
+    #     self.compare_sql(Photo, "")
 
-    def test_equality_operator(self, **kwargs):
-        # test string compare
-        self.compare_sql(Photo, "WHERE file_name_orig='%s'" % (self.photo1.file_name_orig))
+    # def test_equality_operator(self, **kwargs):
+    #     # test string compare
+    #     self.compare_sql(Photo, "WHERE file_name_orig='%s'" % (self.photo1.file_name_orig))
 
-        # test number compare
-        self.compare_sql(Photo, "WHERE id<%s" % self.photo2.id,)
+    #     # test number compare
+    #     self.compare_sql(Photo, "WHERE id<%s" % self.photo2.id,)
 
-    def test_and_conjunction(self):
-        self.compare_sql(Photo, "WHERE device='SCH-I535' and id < %s" % self.photo1.id,)
+    # def test_and_conjunction(self):
+    #     self.compare_sql(Photo, "WHERE device='SCH-I535' and id < %s" % self.photo1.id,)
 
-    def test_or_conjunction(self):
-        self.compare_sql(Photo, "WHERE device='SCH-I535' or id < %s" % self.photo1.id,)
+    # def test_or_conjunction(self):
+    #     self.compare_sql(Photo, "WHERE device='SCH-I535' or id < %s" % self.photo1.id,)
 
-    def test_like_operator(self):
-        self.compare_sql(Photo, "WHERE device like '%I5%'")
+    # def test_like_operator(self):
+    #     self.compare_sql(Photo, "WHERE device like '%I5%'")
 
-    def test_startswith_operator(self):
-        self.compare_sql(Photo, "WHERE device like 'HTC%'")
-
-
-    def test_endswith_operator(self):
-        self.compare_sql(Photo, "WHERE device like '%535'")
+    # def test_startswith_operator(self):
+    #     self.compare_sql(Photo, "WHERE device like 'HTC%'")
 
 
-    def test_in_operator(self):
-        self.compare_sql(Photo, "WHERE file_name_orig in ('{}', '{}')".format(self.photo1.file_name_orig, self.photo2.file_name_orig))
-        self.compare_sql(Photo, "WHERE id in ({},{})".format(self.photo1.id, self.photo2.id))
+    # def test_endswith_operator(self):
+    #     self.compare_sql(Photo, "WHERE device like '%535'")
+
+
+    # def test_in_operator(self):
+    #     self.compare_sql(Photo, "WHERE file_name_orig in ('{}', '{}')".format(self.photo1.file_name_orig, self.photo2.file_name_orig))
+    #     self.compare_sql(Photo, "WHERE id in ({},{})".format(self.photo1.id, self.photo2.id))
         
-    '''
-    def test_geo_query(self, **kwargs):
-        raw_where = "WHERE ST_DISTANCE(point, ST_SetSRID(ST_MakePoint(-122.246, 37.896), 4326)) < 1"
-        parsed_where = "WHERE point in buffer(-122.246, 37.896, 1)"
-        self.compare_sql(Photo, raw_where, parsed_where)
-    '''
+    # '''
+    # def test_geo_query(self, **kwargs):
+    #     raw_where = "WHERE ST_DISTANCE(point, ST_SetSRID(ST_MakePoint(-122.246, 37.896), 4326)) < 1"
+    #     parsed_where = "WHERE point in buffer(-122.246, 37.896, 1)"
+    #     self.compare_sql(Photo, raw_where, parsed_where)
+    # '''
         
-    def test_geo_query_new(self, **kwargs):
-        sql = "WHERE point within buffer(-122.246, 37.896, 1000)" #return all photos within 1,000 meters
-        f = QueryParser(Photo, sql)
-        parsed_dataset = f.extend_query(Photo.objects.order_by('id'))
-        #expect two photos to return 
-        self.assertEqual(len(parsed_dataset), 2)
+    # def test_geo_query_new(self, **kwargs):
+    #     sql = "WHERE point within buffer(-122.246, 37.896, 1000)" #return all photos within 1,000 meters
+    #     f = QueryParser(Photo, sql)
+    #     parsed_dataset = f.extend_query(Photo.objects.order_by('id'))
+    #     #expect two photos to return 
+    #     self.assertEqual(len(parsed_dataset), 2)
         
-        sql = "WHERE point within buffer(-122.246, 37.896, 10)" #return all photos within 10 meters
-        f = QueryParser(Photo, sql)
-        parsed_dataset = f.extend_query(Photo.objects.order_by('id'))
-        #expect 1 photo to return 
-        self.assertEqual(len(parsed_dataset), 1)
+    #     sql = "WHERE point within buffer(-122.246, 37.896, 10)" #return all photos within 10 meters
+    #     f = QueryParser(Photo, sql)
+    #     parsed_dataset = f.extend_query(Photo.objects.order_by('id'))
+    #     #expect 1 photo to return 
+    #     self.assertEqual(len(parsed_dataset), 1)
         
 
-    def test_simple_geo_query(self):
-        point = Point(-122.246, 37.896)
-        Photo.objects.filter(point__distance_lt=(point, D(m=5)))
+    # def test_simple_geo_query(self):
+    #     point = Point(-122.246, 37.896)
+    #     Photo.objects.filter(point__distance_lt=(point, D(m=5)))

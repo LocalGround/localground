@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-sudo apt-get dist-upgrade
+
 sudo apt-get update
 ############################
 # Install Useful Utilities #
@@ -86,6 +86,8 @@ sudo add-apt-repository -y ppa:mc3man/trusty-media #trusty ubuntu doesn't have a
 sudo apt-get update
 echo "Y" | sudo apt-get install ffmpeg
 #echo "Y" | sudo apt-get install libavcodec-extra-53
+echo "Y" | sudo apt-get install redis-server
+
 
 ############################
 # Install PIP Dependencies #
@@ -108,9 +110,9 @@ echo "Y" | sudo npm install -g bower
 ####################################
 sudo a2enmod proxy_http
 sudo cp /localground/deploy_tools/apache_localground_config /etc/apache2/sites-available/localground.conf
-sudo ln -s /etc/apache2/sites-available/localground /etc/apache2/sites-enabled/localground.conf
+sudo ln -s /etc/apache2/sites-available/localground.conf /etc/apache2/sites-enabled/localground.conf
 sudo cp /localground/deploy_tools/settings_local.py /localground/apps/.
-sudo rm /etc/apache2/sites-enabled/000-default 
+sudo rm /etc/apache2/sites-enabled/000-default.conf 
 sudo service apache2 restart
 
 ###############################
@@ -123,14 +125,18 @@ mkdir userdata/prints
 mkdir userdata/deleted
 #Avoiding the issue w/serving django contrib static files vs. Apache's alias
 sudo cp -r /usr/local/lib/python2.7/dist-packages/swampdragon/static/swampdragon /localground/static/swampdragon
+#################
+# Install Redis #
+#################
+sudo apt-get install redis-server
 
 ###############################################
 # Create required Django tables and run tests #
 ###############################################
 cd /localground/apps
 sudo ln -s /usr/lib/libgdal.so.1.17.1 /usr/lib/libgdal.so.1.17.0
-#python manage.py syncdb --noinput
-#python manage.py test --verbosity=2
+python manage.py syncdb --noinput
+python manage.py test --verbosity=2
 
 echo '------------------------------------'
 echo ' Server configured. Check it out at '

@@ -232,10 +232,13 @@ DRAGON_URL='http://sd.localground.org:7777/' #remove port for prod
 #SWAMP_DRAGON_REDIS_HOST - defaults to localhost
 #SWAMP_DRAGON_HOST - defaults to localhost
 #SWAMP_DRAGON_REDIS_DB - redis db number, defaults to 0
-#SWAMP_DRAGON_SETTINGS - dict exposed to javascript users if you embed
+#SWAMP_DRAGON - dict exposed to javascript users if you embed
 #                        {% load swampdragon_tags %} in a template with 
 #                        {% swampdragon_settings %} somewhere in the page
-SWAMP_DRAGON_SETTINGS = {'um': 'okay'}
+SWAMP_DRAGON = {'um': 'okay'}
+
+CORS_ORIGIN_ALLOW_ALL = True
+
 
 # Local settings override project settings
 try:
@@ -246,5 +249,4 @@ except NameError:
     except ImportError:
         pass
 
-CORS_ORIGIN_ALLOW_ALL = True
 
