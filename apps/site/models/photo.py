@@ -10,7 +10,7 @@ from localground.apps.site.api.realtime_serializers import PhotoRTSerializer
 
 
 
-class Photo(BasePoint, BaseUploadedMedia, SelfPublishModel):
+class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
     file_name_large = models.CharField(max_length=255)
     file_name_medium = models.CharField(max_length=255)
     file_name_medium_sm = models.CharField(max_length=255)
@@ -20,7 +20,7 @@ class Photo(BasePoint, BaseUploadedMedia, SelfPublishModel):
     device = models.CharField(max_length=255, blank=True, null=True)
     filter_fields = BaseUploadedMedia.filter_fields + ('device',)
     objects = PhotoManager()
-    serializer_class = PhotoRTSerializer
+    #serializer_class = PhotoRTSerializer
 
     def __unicode__(self):
         return self.name + ' (' + self.file_name_orig + ')'
