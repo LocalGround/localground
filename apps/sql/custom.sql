@@ -5,6 +5,29 @@
 --------------------------------------------------------------------------------------
 -- Convenience Views
 --------------------------------------------------------------------------------------
+-- drop all views:
+DROP VIEW IF EXISTS v_projects_shared_with cascade;
+DROP VIEW IF EXISTS v_views_shared_with cascade;
+DROP VIEW IF EXISTS v_form_fields cascade;
+DROP VIEW IF EXISTS v_private_projects cascade;
+DROP VIEW IF EXISTS v_private_views cascade;
+DROP VIEW IF EXISTS v_private_presentations cascade;
+DROP VIEW IF EXISTS v_private_forms cascade;
+DROP VIEW IF EXISTS v_private_layers cascade; 
+DROP VIEW IF EXISTS v_private_view_accessible_media cascade;
+DROP VIEW IF EXISTS v_private_markers cascade; 
+DROP VIEW IF EXISTS v_private_marker_accessible_media cascade;
+DROP VIEW IF EXISTS v_private_associated_media cascade;
+DROP VIEW IF EXISTS v_private_audio cascade;
+DROP VIEW IF EXISTS v_private_photos cascade;
+DROP VIEW IF EXISTS v_private_scans cascade;
+DROP VIEW IF EXISTS v_private_videos cascade;
+DROP VIEW IF EXISTS v_private_attachments cascade;
+DROP VIEW IF EXISTS v_private_prints cascade;
+DROP VIEW IF EXISTS v_public_photos cascade;
+DROP VIEW IF EXISTS v_public_audio cascade;
+DROP VIEW IF EXISTS v_public_markers cascade;
+
 
 -- helper view to concatenate shared users:
 CREATE OR REPLACE VIEW v_projects_shared_with AS 
