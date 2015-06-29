@@ -16,7 +16,7 @@
         serverURL: '{{serverURL}}', 
         overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
         showOutlines: false,
-	initialMapLayerID: {{ basemap_id|default:"12" }}
+	initialMapLayerID: {{ basemap_id|default:"2" }}
     };
     {% if markerID %}
         opts.markerID = {{markerID}};

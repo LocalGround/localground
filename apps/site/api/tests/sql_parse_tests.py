@@ -5,7 +5,7 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.db.models.query import QuerySet
 from django.db.models import Q
-
+import pdb
 from localground.apps.lib.helpers.sqlparse.sqlparser import QueryParser
 from localground.apps.lib.helpers.sqlparse.sql_djangoify import get_where_clause, split_statements, get_where_conditions
 from localground.apps.site import models

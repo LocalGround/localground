@@ -13,7 +13,7 @@ localground.basemap = function() {
     this.zoom               = null;
     this.center             = null;
     this.searchBox          = null;
-    this.initialMapLayerID  = 12; //(2 = roadmap); // (12 = Grayscale);
+    this.initialMapLayerID  = 2; //(2 = roadmap); // (12 = Grayscale);
     this.minimizeRightPanel = false;
     this.selectedLayers     = [];
     this.googleMapStyles    = [{
@@ -252,6 +252,7 @@ localground.basemap.prototype.initTiles = function() {
     
     //figure out base layer keyword from initial provider id
     var initialMapLayer = self.getOverlaySourceInfo('id', this.initialMapLayerID);
+    
     switch(initialMapLayer.sourceName.toLowerCase()) {
         case 'google':
             this.map.setMapTypeId(initialMapLayer.providerID);

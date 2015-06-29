@@ -22,8 +22,9 @@ class CustomModelField(PrimaryKeyRelatedField):
         
         related_model = _resolve_model(model_field.rel.to)
         kwargs = {
-            'queryset': related_model._default_manager,
-            'many': False
+            'queryset': related_model._default_manager
+            #,
+            #'many': False
         }
         if model_field:
             kwargs['required'] = not(model_field.null or model_field.blank)

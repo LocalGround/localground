@@ -1,5 +1,5 @@
 <VirtualHost *:80>
-    DocumentRoot "/localground"
+    DocumentRoot /localground
     #ServerName localground
 
     # ------------------------------------------------------------------
@@ -11,17 +11,18 @@
     XSendFile on
     XSendFilePath /localground/userdata
     <Directory "/localground/userdata">
-       Deny from all
+       Require all denied
     </Directory>
 
     # --------------------------------------
     # For static files (css, js, and images)
     #---------------------------------------
+
     Alias /static/ "/localground/static/"
     <Directory "/localground/static">
-        Order allow,deny
+        Options +FollowSymlinks
         Options Indexes
-        Allow from all
+        Require all granted
         IndexOptions FancyIndexing
     </Directory>
 
@@ -31,7 +32,7 @@
     WSGIScriptAlias / "/localground/apache/app_config.wsgi"
     WSGIPassAuthorization On
     <Directory "/localground/apache">
-        Allow from all
+        Require all granted
     </Directory>
 
     # ----------------------------------------------------------------
@@ -45,17 +46,29 @@
     <Directory "/var/www/ows">
         AllowOverride None
         Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
-        Order allow,deny
-        Allow from all
+        Require all granted
     </Directory>
 
     ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
     <Directory "/usr/lib/cgi-bin">
         AllowOverride None
         Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
-        Order allow,deny
-        Allow from all
+        Require all granted
     </Directory>
 
 </VirtualHost>
 
+<VirtualHost *:80>
+    ServerName sd.localground.org
+    ProxyPreserveHost On
+    ProxyRequests Off
+    <Proxy sd.localground.org>
+        Require all granted
+    </Proxy>
+    ProxyPassMatch /data/(\d+)/(\w+)/websocket ws://127.0.0.1:9999/data/$1/$2/websocket
+    ProxyPass /data/info http://127.0.0.1:9999/data/info
+    ProxyPassReverse /data/info http://127.0.0.1:9999/data/info
+    ProxyPass /settings.js http://127.0.0.1:9999/settings.js
+    ProxyPassReverse /settings.js http://127.0.0.1:9999/settings.js
+    ProxyVia On
+</VirtualHost>

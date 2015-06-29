@@ -87,12 +87,12 @@ class MarkerSerializer(MarkerSerializerMixin):
         # add table data:
         form_dict = obj.get_records(forms=forms).items()
         for form, records in form_dict:
-            SerializerClass = create_record_serializer(form, context={ 'request': {} })
+            SerializerClass = create_record_serializer(form)
             self.records.extend(records)
             d = self.serialize_list(
                 obj,
                 form.TableModel,
-                SerializerClass(records).data,
+                SerializerClass(records, context={ 'request': {} }, many=True).data,
                 name=form.name,
                 overlay_type='record',
                 model_name_plural='form_%s' % form.id

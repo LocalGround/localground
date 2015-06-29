@@ -186,6 +186,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.gis',
+    'django.contrib.staticfiles',
     'localground',
     'localground.apps',
     'localground.apps.management',
@@ -195,8 +196,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'rest_framework',
     'corsheaders',
-    'social.apps.django_app.default'
-    #'swampdragon'
+    'social.apps.django_app.default',
+    'swampdragon'
 )
 
 REST_FRAMEWORK = {
@@ -223,6 +224,21 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ),
 }
+SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
+SWAMP_DRAGON_REDIS_PORT = 6379 #default
+SWAMP_DRAGON_PORT = 9999 #default
+DRAGON_URL='http://sd.localground.org:7777/' #remove port for prod
+#Other swampdragon settings that may be important for production server
+#SWAMP_DRAGON_REDIS_HOST - defaults to localhost
+#SWAMP_DRAGON_HOST - defaults to localhost
+#SWAMP_DRAGON_REDIS_DB - redis db number, defaults to 0
+#SWAMP_DRAGON - dict exposed to javascript users if you embed
+#                        {% load swampdragon_tags %} in a template with 
+#                        {% swampdragon_settings %} somewhere in the page
+SWAMP_DRAGON = {'um': 'okay'}
+
+CORS_ORIGIN_ALLOW_ALL = True
+
 
 # Local settings override project settings
 try:
@@ -233,5 +249,4 @@ except NameError:
     except ImportError:
         pass
 
-CORS_ORIGIN_ALLOW_ALL = True
 
