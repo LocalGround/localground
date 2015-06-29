@@ -43,6 +43,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
         read_only_fields = ('manually_reviewed',)
 
     def get_overlay_type(self, obj):
+        #raise Exception(obj)
         return obj._meta.verbose_name
 
     def get_detail_url(self, obj):
@@ -90,7 +91,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
                 setattr(instance, field_name, value)
         return instance
 
-def create_record_serializer(form):
+def create_record_serializer(form, **kwargs):
     """
     generate a dynamic serializer from dynamic model
     """

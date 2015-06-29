@@ -22,7 +22,8 @@ class CustomModelField(PrimaryKeyRelatedField):
         
         related_model = _resolve_model(model_field.rel.to)
         kwargs = {
-            'queryset': related_model._default_manager #,
+            'queryset': related_model._default_manager
+            #,
             #'many': False
         }
         if model_field:
