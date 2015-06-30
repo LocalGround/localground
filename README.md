@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/LocalGround/localground.svg)](https://travis-ci.org/LocalGround/localground)
 # About
 Local Ground is a software platform for online mapping that allows you to create and share your own annotated online maps.  Using this tool, you can draw on existing maps, add pictures, audio, video and other data, and share with your friends, family and colleagues.  This tool is currently being developed by the Represent Research Group at the I School at the University of California, Berkeley.  
 
