@@ -10,7 +10,7 @@ class PhotoSerializer(MediaGeometrySerializer):
 	path_medium_sm = serializers.SerializerMethodField('get_path_medium_sm')
 	path_small = serializers.SerializerMethodField('get_path_small')
 	path_marker_lg = serializers.SerializerMethodField('get_path_marker_lg')
-	path_marker_sm = serializers.SerializerMethodField('get_path_path_marker_sm')
+	path_marker_sm = serializers.SerializerMethodField('get_path_marker_sm')
 	overlay_type = serializers.SerializerMethodField('get_overlay_type')
 
 	class Meta:
@@ -36,8 +36,10 @@ class PhotoSerializer(MediaGeometrySerializer):
 	
 	def get_path_marker_lg(self, obj):
 		return obj.encrypt_url(obj.file_name_marker_lg)
+		#return obj.encrypt_url(obj.file_name_small)
+		#return obj.file_name_marker_lg
 	
-	def get_path_path_marker_sm(self, obj):
+	def get_path_marker_sm(self, obj):
 		return obj.encrypt_url(obj.file_name_marker_sm)
 	
 	

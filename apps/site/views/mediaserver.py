@@ -15,7 +15,8 @@ def serve_media(request, object_type, hash):
     """
     can_view = True
     relative_image_path = base64.b64decode(hash)
-    #return HttpResponse(relative_image_path)
+    relative_image_path = relative_image_path.split('#')[0]
+    #raise Exception(relative_image_path)
     if can_view is False:
         return HttpResponseNotFound()
     else:

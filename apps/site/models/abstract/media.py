@@ -62,7 +62,9 @@ class BaseMedia(BaseAudit):
 			host = self.host
 			#host = 'dev.localground.org' #for debugging
 		from django.http import HttpResponse
-		#return path
+		import time
+		timestamp = int(time.time())
+		path = path + '#' + str(timestamp)
 		return 'http://%s/profile/%s/%s/' % (host, self.model_name_plural.replace(' ', '-'), base64.b64encode(path))
 		 
 	def encrypt_url(self, file_name):
