@@ -22,6 +22,7 @@ require.config({
         'highcharts_export': '//code.highcharts.com/modules/exporting',
         'jquery': '//code.jquery.com/jquery-1.8.0.min',
         'jquery.bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min',
+        'jquery.ui': '//code.jquery.com/ui/1.11.4/jquery-ui.min',
         'kernel': '../external/kernel.min',
         'mapplication': './mapplication',
         'marionette': '../external/backbone.marionette',
@@ -48,6 +49,7 @@ require.config({
         'jquery.bootstrap': {
             deps: ['jquery']
         },
+        'jquery.ui': ['jquery'],
         'backgrid': {
             deps: ['backbone'],
             exports: 'Backgrid'

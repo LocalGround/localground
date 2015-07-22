@@ -146,8 +146,9 @@ body { overflow: hidden; }
 .close {
 	font-size: 16px !important;
 	margin-top: 4px;
-	display: none !important;
+	display: block;
 }
+
 
 #closer-item {
 	background-color: #FFF !important;	
@@ -591,6 +592,23 @@ label {
 #filter_sql {
 	height: 150px;
 	width: 100%;
+}
+#upload-modal > .modal-dialog {
+	width:90%;
+	height:800px;
+}
+
+#upload-modal > .modal-dialog > .modal-content {
+	height: 100%;
+}
+
+#upload-modal-body{
+	 height: 80%; 
+}
+
+#upload-iframe {
+	width:100%;
+	height:100%;
 }
 /********************************************************/
 

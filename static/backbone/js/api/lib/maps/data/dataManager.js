@@ -78,6 +78,7 @@ define(["models/project",
                 this.app.vent.on('load-snapshot-list', this.fetchSnapshots.bind(this));
                 this.app.vent.on("apply-filter", this.applyFilter.bind(this));
                 this.app.vent.on("clear-filter", this.clearFilter.bind(this));
+                this.app.vent.on("refresh-collections", this.refreshCollections.bind(this));
                 this.selectedProjects = new Projects();
                 //this.restoreState();
             };
@@ -130,6 +131,17 @@ define(["models/project",
                 this.resetActiveProject();
                 this.saveState();
             };
+
+            this.refreshCollections = function() {
+                var key;
+                for (key in this.collections) {
+                    this.collections[key].fetch({
+                        success: function(collection, response, options) {
+                            collection.trigger('refresh');
+                        }.bind(this), 
+                });
+                }
+            }
 
             this.toggleProject = function (projectId, fetch) {
                 if (fetch) {

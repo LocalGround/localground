@@ -58,6 +58,8 @@ define(["marionette", "jquery"], function (Marionette, $) {
             this.listenTo(this.model, 'show-item', this.showItem);
             this.listenTo(this.model, 'hide-item', this.hideItem);
             this.listenTo(this.app.vent, "mode-change", this.setEditMode);
+            this.listenTo(this.model.collection, 'refresh', this.refreshItem);
+
             document.addEventListener('dragover', function (e) {
                 e.preventDefault();
             });
@@ -112,7 +114,17 @@ define(["marionette", "jquery"], function (Marionette, $) {
         toggleCheckbox: function (e) {
             var $cb = this.$el.find('input');
             this.toggleElement($cb.is(':checked'));
-            e.stopPropagation();
+            if(e) {
+                e.stopPropagation();
+            }
+        },
+
+        refreshItem: function(e) {
+            debugger;
+            this.toggleCheckbox();
+            // if(this.isShowingOnMap()) {
+            //     debugger;
+            // }
         },
 
         /**

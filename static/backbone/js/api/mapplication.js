@@ -40,7 +40,7 @@ define(["underscore",
                 georeferenceManager = new GeoreferenceManager(options),
                 topBar = new TopBar(options),
                 layerManager = new LayerManager(layerOpts);
-            this.dataManager = dataManager;
+                this.dataManager = dataManager;
             this.map = basemap.map;
 
             Mapplication.tabsRegion.show(tabs);
