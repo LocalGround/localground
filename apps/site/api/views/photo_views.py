@@ -39,7 +39,7 @@ def rotate_left(request, pk, format='html'):
         photo = models.Photo.objects.get(id=pk)
         photo.rotate_left(request.user)
 
-        return Response(serializers.PhotoSerializer(photo).data,
+        return Response(serializers.PhotoSerializer(photo, context=context).data,
                         status=status.HTTP_200_OK)
     except models.Photo.DoesNotExist:
         return Response(
@@ -52,7 +52,7 @@ def rotate_right(request, pk, format='html'):
     try:
         photo = models.Photo.objects.get(id=pk)
         photo.rotate_right(request.user)
-        return Response(serializers.PhotoSerializer(photo).data,
+        return Response(serializers.PhotoSerializer(photo, context=context).data,
                         status=status.HTTP_200_OK)
     except models.Photo.DoesNotExist:
         return Response(
