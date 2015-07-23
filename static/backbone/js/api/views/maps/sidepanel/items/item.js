@@ -120,11 +120,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
         },
 
         refreshItem: function(e) {
-            debugger;
             this.toggleCheckbox();
-            // if(this.isShowingOnMap()) {
-            //     debugger;
-            // }
         },
 
         /**

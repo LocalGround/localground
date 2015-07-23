@@ -133,14 +133,9 @@ define(["models/project",
             };
 
             this.refreshCollections = function() {
-                var key;
-                for (key in this.collections) {
-                    this.collections[key].fetch({
-                        success: function(collection, response, options) {
-                            collection.trigger('refresh');
-                        }.bind(this), 
-                });
-                }
+                this.selectedProjects.each(function(project) {
+                    this.fetchDataByProjectID(project.id);
+                }.bind(this));
             }
 
             this.toggleProject = function (projectId, fetch) {
