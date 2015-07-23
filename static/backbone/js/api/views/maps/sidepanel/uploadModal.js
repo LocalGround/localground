@@ -6,8 +6,8 @@ define(["marionette",
         'use strict';
         /**
          * A class that handles display and rendering of the
-         * share Snapshot modal
-         * @class DataPanel
+         * upload data modal
+         * @class UploadModal
          */
 
         var UploadModal = Marionette.ItemView.extend({
