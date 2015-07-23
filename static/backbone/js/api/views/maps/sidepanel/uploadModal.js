@@ -15,16 +15,19 @@ define(["marionette",
             template: function (data) {
                 return _.template(uploadModal, data);
             },
-
-            events: {
-                'click .dismiss-modal': 'cleanUp',
+            ui: {
+                modal: '#upload-modal'
             },
-
             initialize: function (opts) {
                 this.app = opts.app;
                 this.opts = opts;
                 this.url = opts.url;
             },
+
+            onRender: function() {
+                this.ui.modal.on('hidden.bs.modal', this.cleanUp.bind(this));
+            },
+
             serializeData: function(){
                 return {
                   urlRoot: location.origin,
@@ -37,7 +40,7 @@ define(["marionette",
             },
 
             showModal: function () {
-                this.$el.find('#upload-modal').modal();
+                this.ui.modal.modal();
             }
 
 
