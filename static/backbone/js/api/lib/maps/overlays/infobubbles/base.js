@@ -27,7 +27,8 @@ define(['jquery',
             overlay: null,
 
             events: {
-                'click .btn-primary': 'saveForm'
+                'click .btn-primary': 'saveForm',
+                'click .btn-secondary': 'hideBubble'
             },
 
             modelEvents: {
@@ -138,6 +139,7 @@ define(['jquery',
             saveForm: function (e) {
                 this.form.commit();       //does validation
                 this.bubble.model.save(); //does database commit
+                this.hideBubble();
                 e.preventDefault();
             },
             _show: function (whichBubble) {
