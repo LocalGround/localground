@@ -46,37 +46,5 @@ define(["underscore",
 
         });
 
-        // describe("Audio Player: Test that it renders when called", function () {
-
-
-        //     it("Starts player when told", function () {
-
-        //         spyOn(AudioPlayer.prototype, 'playAudio').and.callThrough();
-
-        //         audioPlayer = new AudioPlayer({
-        //             container: container,
-        //             app: that.app
-        //         });
-
-        //         this.app.vent.trigger('playAudio');
-
-        //         expect(audioPlayer.playAudio).toHaveBeenCalled();
-        //     });
-
-        //     it('Stops the player when told', function () {
-
-        //         spyOn(AudioPlayer.prototype, 'stopAudio').and.callThrough();
-
-        //         audioPlayer = new AudioPlayer({
-        //             container: container,
-        //             app: that.app
-        //         });
-
-        //         this.app.vent.trigger('stopAudio');
-
-        //         expect(audioPlayer.stopAudio).toHaveBeenCalled();
-        //     });
-        // });
-
 
     });
