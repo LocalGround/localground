@@ -1,8 +1,10 @@
-define(["marionette",
+define(["jquery",
+        "marionette",
         "underscore",
         "text!" + templateDir + "/modals/uploadModal.html",
+        "backbone-bootstrap-modal"
     ],
-    function (Marionette, _, uploadModal) {
+    function ($, Marionette, _, uploadModal) {
         'use strict';
         /**
          * A class that handles display and rendering of the
