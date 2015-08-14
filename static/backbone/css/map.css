@@ -614,7 +614,7 @@ label {
 }
 #upload-modal > .modal-dialog {
 	width:90%;
-	height:800px;
+	height:90%;
 }
 
 #upload-modal > .modal-dialog > .modal-content {
