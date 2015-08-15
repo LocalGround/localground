@@ -2,7 +2,7 @@
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.conf import settings
 import base64
-from datetime import datetime
+import urllib
 
 # sudo apt-get install libapache2-mod-xsendfile
 # http://localground/profile/<plural-object-type>/<the-hash>/
@@ -17,18 +17,15 @@ def serve_media(request, object_type, hash):
     """
     can_view = True
     relative_image_path = base64.b64decode(hash)
-    relative_image_paths = relative_image_path.split('#')
-    relative_image_path = relative_image_paths[0]
-    timestamp = relative_image_paths[1]
-    # return HttpResponse(relative_image_path)
+    relative_image_path = relative_image_path.split('#')[0]
+    #return HttpResponse(relative_image_path)
     if can_view is False:
         return HttpResponseNotFound()
     else:
         response = HttpResponse()
         media_path = '%s%s' % (settings.FILE_ROOT, relative_image_path)
         response['X-Sendfile'] = media_path
-        #response['Expires'] = datetime.now()
-        #response['Cache-Control'] = 'public,max-age=1'
+        #response['X-Sendfile'] = urllib.quote(media_path.encode('utf-8'))
         if object_type in ['photos', 'snippets', 'attachments', 'map-images']:
             content_type = 'image/%s' % \
                 (relative_image_path.split('.')[-1]).replace('jpg', 'jpeg')
@@ -39,6 +36,6 @@ def serve_media(request, object_type, hash):
         else:
             content_type = 'application/octet-stream'
         response['Content-Type'] = content_type
-        response['Content-Disposition'] = 'attachment; filename="%s/your_media_%s.%s"' % \
-            (object_type, timestamp, relative_image_path.split('.')[-1])
+        response['Content-Disposition'] = 'attachment; filename="%s/%s"' % \
+            (object_type, relative_image_path.split('/')[-1])
         return response

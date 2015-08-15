@@ -200,19 +200,6 @@ INSTALLED_APPS = (
     'swampdragon'
 )
 
-'''
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/var/tmp/django_cache',
-        'TIMEOUT': 0,
-        'OPTIONS': {
-            'MAX_ENTRIES': 1000
-        }
-    }
-}
-'''
-
 REST_FRAMEWORK = {
     'PAGINATE_BY': 10,
     'PAGINATE_BY_PARAM': 'page_size',

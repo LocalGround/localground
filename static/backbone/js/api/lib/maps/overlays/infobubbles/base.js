@@ -68,6 +68,7 @@ define(['jquery',
                 this.listenTo(this.app.vent, 'mode-change', this.refresh);
                 this.listenTo(this.app.vent, 'hide-bubbles', this.hideBubble);
                 this.listenTo(this.model, 'show-bubble', this.showBubble);
+                this.listenTo(this.model, 'change', this.refresh);
                 google.maps.event.addListener(this.bubble, 'domready', this.onBubbleRender.bind(this));
             },
 
