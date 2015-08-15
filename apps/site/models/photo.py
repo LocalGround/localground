@@ -87,6 +87,8 @@ class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
 
     def _rotate(self, user, degrees):
         from PIL import Image, ImageOps
+        import time
+        timestamp = int(time.time())
         media_path = self.get_absolute_path()
 
         # do the rotation:
@@ -106,9 +108,9 @@ class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
                 im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
             else:
                 im.thumbnail((s, s), Image.ANTIALIAS)
-            abs_path = '%s%s_%s%s' % (media_path, file_name, s, ext)
-            im.save(abs_path)
-            photo_paths.append('%s_%s%s' % (file_name, s, ext))
+            path = '%s_%s_%s%s' % (file_name, s, timestamp, ext)
+            im.save('%s%s' % (media_path, path))
+            photo_paths.append(path)
 
         self.file_name_large = photo_paths[0]
         self.file_name_medium = photo_paths[1]
