@@ -7,9 +7,6 @@ import os
 from swampdragon.models import SelfPublishModel
 from localground.apps.site.api.realtime_serializers import PhotoRTSerializer
 
-
-
-
 class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
     file_name_large = models.CharField(max_length=255)
     file_name_medium = models.CharField(max_length=255)
