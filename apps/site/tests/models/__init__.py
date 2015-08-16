@@ -1,0 +1,1 @@
+from localground.apps.site.tests.models.photo_tests import *
