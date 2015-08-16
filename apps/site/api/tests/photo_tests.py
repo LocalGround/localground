@@ -43,12 +43,17 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
 class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self, load_fixtures=True)
-        self.photo = models.Photo.objects.get(id=1)
+        ViewMixinAPI.setUp(self, load_fixtures=False)
+        self.photo = self.create_photo(self.user, self.project, with_file=True)
         self.url = '/api/0/photos/%s/' % self.photo.id
         self.urls = [self.url]
         self.view = views.PhotoInstance.as_view()
         self.metadata = metadata
+        
+    def tearDown(self):
+        #delete method also removes files from file system:
+        for photo in models.Photo.objects.all():
+            photo.delete()
 
     def test_update_photo_using_put(self, **kwargs):
         name, description, color = 'New Photo Name', \
@@ -109,3 +114,36 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         except models.Photo.DoesNotExist:
             # trigger assertion success if photo is removed
             self.assertEqual(1, 1)
+    
+    def test_rotate_photo_left_using_put(self, **kwargs):
+        self._test_rotate_photo_using_put('/api/0/photos/%s/rotate-left/' % self.photo.id, **kwargs)
+        
+    def test_rotate_photo_right_using_put(self, **kwargs):
+        self._test_rotate_photo_using_put('/api/0/photos/%s/rotate-right/' % self.photo.id, **kwargs)
+            
+    def _test_rotate_photo_using_put(self, rotation_url, **kwargs):
+        import Image
+        img_path = '%s%s' % (self.photo.get_absolute_path(), self.photo.file_name_orig)
+        img = Image.open(img_path)
+        (width, height) = img.size
+        
+        #check that the dimensions are as they should be:
+        self.assertEqual(width, 200)
+        self.assertEqual(height, 100)
+        
+        #call rotate function:
+        response = self.client_user.put(
+                            rotation_url,
+                            HTTP_X_CSRFTOKEN=self.csrf_token,
+                            content_type="application/x-www-form-urlencoded"
+                        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_photo = models.Photo.objects.get(id=self.photo.id)
+        
+        img_path = '%s%s' % (updated_photo.get_absolute_path(), updated_photo.file_name_orig)
+        img = Image.open(img_path)
+        (width, height) = img.size
+        self.assertEqual(width, 100)
+        self.assertEqual(height, 200)
+        
+
