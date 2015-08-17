@@ -4,28 +4,12 @@ from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 from rest_framework import status
 
-class APIRelatedMediaMixin(object):
-
-    def create_relation(self, entity_type, id=1, ordering=1):
-        r = models.GenericAssociation(
-            entity_type=entity_type,
-            entity_id=id,
-            source_type=models.Marker.get_content_type(),
-            source_id=self.marker.id,
-            ordering=ordering,
-            owner=self.user,
-            last_updated_by=self.user
-        )
-        r.save()
-        return r
-
 class ApiRelatedMediaListTest(
         test.TestCase,
-        ViewMixinAPI,
-        APIRelatedMediaMixin):
+        ViewMixinAPI):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self)
+        ViewMixinAPI.setUp(self, load_fixtures=False)
         #self.marker = self.get_marker()
         self.marker = self.create_marker(self.user, self.project)
         url = '/api/0/markers/%s/%s/'
@@ -59,11 +43,15 @@ class ApiRelatedMediaListTest(
 
     def test_attach_media_to_marker(self, **kwargs):
         source_type = models.Marker.get_content_type()
-        entity_id = self.photo.id # id should be the same for both photo and audio object
         for i, url in enumerate(self.urls):
             entity_type = models.Base.get_model(
                 model_name_plural=url.split('/')[-2]
             ).get_content_type()
+            
+            if entity_type.name == "photo":
+                entity_id = self.photo.id
+            else:
+                entity_id = self.audio.id
 
             # 1) make sure that no objects are appended to the marker:
             queryset = models.GenericAssociation.objects.filter(
@@ -108,12 +96,11 @@ class ApiRelatedMediaListTest(
 
 class ApiRelatedMediaInstanceTest(
         test.TestCase,
-        ViewMixinAPI,
-        APIRelatedMediaMixin):
+        ViewMixinAPI):
     
     
     def setUp(self):
-        ViewMixinAPI.setUp(self)
+        ViewMixinAPI.setUp(self, load_fixtures=False)
         self.marker = self.create_marker(self.user, self.project)
         self.metadata = {
             "ordering": { "type": "integer", "required": False, "read_only": False },
@@ -128,8 +115,8 @@ class ApiRelatedMediaInstanceTest(
         self.photo2 = self.create_photo(self.user, self.project)
         self.audio1 = self.create_audio(self.user, self.project)
         self.audio2 = self.create_audio(self.user, self.project)
-        self.create_relation(models.Photo.get_content_type(), id=self.photo1.id)
-        self.create_relation(models.Audio.get_content_type(), id=self.audio1.id)
+        self.create_relation(models.Photo.get_content_type(), id=self.photo1.id, ordering=1)
+        self.create_relation(models.Audio.get_content_type(), id=self.audio1.id, ordering=1)
         
         # create urls:
         url = '/api/0/markers/%s/%s/%s/'
@@ -197,15 +184,8 @@ class ApiRelatedMediaInstanceTest(
                 source_id=self.marker.id,
             )
             self.assertEqual(len(queryset), 0)
-
-    def test_update_relation_using_put(self, **kwargs):
-        '''
-        Test Client still a bit idiosyncratic.  Unlike for POST
-        requests, for PUT requests, you need to 1) manually set
-        the content type (which means that you also have to
-        urlencode the params dictionary)
-        https://github.com/jgorset/django-respite/issues/38
-        '''
+            
+    def _test_using_put_or_patch(self, f, params, **kwargs):
         source_type = models.Marker.get_content_type()
         url = '/api/0/markers/%s/%s/'
         for i, url in enumerate([ url % (self.marker.id, 'photos'), url % (self.marker.id, 'audio') ]):
@@ -214,48 +194,40 @@ class ApiRelatedMediaInstanceTest(
             ).get_content_type()
 
             # Attach media to marker
-            entity_id = self.photo2.id
+            if entity_type.name == "photo":
+                entity_id = self.photo2.id
+            else:
+                entity_id = self.audio2.id
+                
             relation = self.create_relation(entity_type, id=entity_id)
             self.assertEqual(relation.ordering, 1)
             self.assertEqual(relation.turned_on, False)
             import urllib
-            response = self.client_user.put(
-                '%s%s/' %
-                (url,
-                 entity_id),
-                data=urllib.urlencode(
-                    {
-                        'ordering': 5,
-                        'turned_on': True}),
+            url = '%s%s/' % (url, entity_id)
+            response = f(
+                url,
+                data=urllib.urlencode(params),
                 HTTP_X_CSRFTOKEN=self.csrf_token,
                 content_type="application/x-www-form-urlencoded")
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            updated_relation = models.GenericAssociation.objects.get(
-                id=relation.id)
-            self.assertEqual(updated_relation.ordering, 5)
-            self.assertEqual(updated_relation.turned_on, True)
+            updated_relation = models.GenericAssociation.objects.get(id=relation.id)
+            
+            #check that values have been updated:
+            for key in params.keys():
+                self.assertEqual(getattr(updated_relation, key), params[key])
+        
+
+    def test_update_relation_using_put(self, **kwargs):
+        self._test_using_put_or_patch(
+            self.client_user.put,
+            { 'ordering': 5, 'turned_on': True },
+            **kwargs
+        )
+        
 
     def test_update_relation_using_patch(self, **kwargs):
-        source_type = models.Marker.get_content_type()
-        url = '/api/0/markers/%s/%s/'
-        for i, url in enumerate([ url % (self.marker.id, 'photos'), url % (self.marker.id, 'audio') ]):
-            entity_type = models.Base.get_model(
-                model_name_plural=url.split('/')[-2]
-            ).get_content_type()
-
-            # Attach media to marker
-            entity_id = self.photo2.id
-            relation = self.create_relation(entity_type, id=entity_id)
-            self.assertEqual(relation.turned_on, False)
-            import urllib
-            response = self.client_user.patch(
-                '%s%s/' % (url, entity_id),
-                data=urllib.urlencode({
-                    'turned_on': True
-                }),
-                HTTP_X_CSRFTOKEN=self.csrf_token,
-                content_type="application/x-www-form-urlencoded")
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-            updated_relation = models.GenericAssociation.objects.get(
-                id=relation.id)
-            self.assertEqual(updated_relation.turned_on, True)
+        self._test_using_put_or_patch(
+            self.client_user.patch,
+            { 'turned_on': True },
+            **kwargs
+        )
