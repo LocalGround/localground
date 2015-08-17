@@ -71,6 +71,9 @@ before_script:
   - psql -c 'CREATE EXTENSION postgis_topology;' -U postgres -d lg_database
   - mkdir userdata
   - mkdir userdata/media
+  - mkdir userdata/media/tester
+  - mkdir userdata/media/tester/photos
+  - mkdir userdata/media/tester/audio
   - mkdir userdata/prints
   - mkdir userdata/deleted
   - ./deploy_tools/gis.sh
