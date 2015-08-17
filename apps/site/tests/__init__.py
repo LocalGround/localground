@@ -435,6 +435,11 @@ class ModelMixin(object):
         width = 200
         height = 100
         img_path = '%s%s' % (photo.get_absolute_path(), photo.file_name_orig)
+        
+        # create the directory if it doesn't already exist:
+        if not os.path.exists(photo.get_absolute_path()):
+            photo.make_directory(photo.get_absolute_path())
+            
         img_io = StringIO.StringIO()
         img = Image.new('RGBA', (width, height))
         draw = ImageDraw.Draw(img)
