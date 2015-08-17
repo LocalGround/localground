@@ -18,7 +18,7 @@ define([
                 "overlay_type",
                 "url",
                 "manually_reviewed",
-                "geometry",
+                //"geometry",
                 "num",
                 "display_name" //,
                 //"id", //for now
@@ -164,6 +164,7 @@ define([
                     width: 80
                 };
             },
+            defaultCellType: { cell: Backgrid.StringCell, width: 200 },
             getDefaultCell: function (name, opts) {
                 //alert(opts.type + " - " + Columns.cellTypeByNameLookup[opts.type]);
                 var defaultCell = {
@@ -171,7 +172,7 @@ define([
                     label: name,
                     editable: !opts.read_only
                 };
-                $.extend(defaultCell, Columns.cellTypeByNameLookup[opts.type]);
+                $.extend(defaultCell, Columns.cellTypeByNameLookup[opts.type] || this.defaultCellType);
                 return defaultCell;
             }
         },
@@ -185,6 +186,7 @@ define([
                     "date-time": { cell: Backgrid.DatetimeCell, width: 100 },
                     "rating": { cell: Backgrid.IntegerCell, width: 120 },
                     "string": { cell: Backgrid.StringCell, width: 200 },
+                    "memo": { cell: Backgrid.StringCell, width: 200 },
                     "float": { cell: Backgrid.NumberCell, width: 120 }
                 },
                 cellTypeByIdLookup: {

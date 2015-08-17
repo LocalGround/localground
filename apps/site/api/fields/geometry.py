@@ -28,6 +28,9 @@ class GeometryField(serializers.CharField):
         
     def get_geosgeometry(self, value):
         if value is not None and value != '':
+            if isinstance(value, dict):
+                value = json.dumps(value)
+            
             try:
                 return GEOSGeometry(value)
             except (ValueError, GEOSException, OGRException, TypeError) as e:

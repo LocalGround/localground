@@ -29,6 +29,7 @@ define([], function () {
             var geom = model.get("geometry");
             if (geom) {
                 geom.coordinates[index] = model[key];
+                //model.set("geometry", JSON.stringify(geom));
                 model.set("geometry", geom);
                 model.trigger('change', model);
                 return geom;
@@ -43,7 +44,7 @@ define([], function () {
                         parseFloat(model.lat)
                     ]
                 };
-                model.set("geometry", geom);
+                model.set("geometry", JSON.stringify(geom));
                 model.trigger('change', model);
                 return geom;
             }
