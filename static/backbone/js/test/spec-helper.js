@@ -33,7 +33,9 @@ define(
              * Availabe to all of the tests.
              */
             this.photos = new Photos([
-                new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1, overlay_type: "photo", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
+                new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1, overlay_type: "photo", 
+                    geometry: {"type": "Point", "coordinates": [-122.294, 37.864]},
+                    path_small:'//:0', path_medium:"//:0", path_large:"//:0" }),
                 new Photo({id: 2, name: "Dog", tags: 'animal, dog', project_id: 1, overlay_type: "photo", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] } }),
                 new Photo({id: 3, name: "Frog", tags: 'animal, amphibian, cute, frog', project_id: 1, overlay_type: "photo", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] } })
             ]);
