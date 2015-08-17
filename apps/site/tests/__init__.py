@@ -470,6 +470,20 @@ class ModelMixin(object):
         )
         audio.save()
         return audio
+    
+    def create_relation(self, entity_type, id=1, ordering=1, turned_on=False):
+        r = models.GenericAssociation(
+            entity_type=entity_type,
+            entity_id=id,
+            source_type=models.Marker.get_content_type(),
+            source_id=self.marker.id,
+            ordering=ordering,
+            owner=self.user,
+            turned_on=turned_on,
+            last_updated_by=self.user
+        )
+        r.save()
+        return r
 
 class ViewAnonymousMixin(ModelMixin):
     #fixtures = ['test_data.json']
