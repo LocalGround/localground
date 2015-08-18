@@ -27,7 +27,8 @@ define(['jquery',
             overlay: null,
 
             events: {
-                'click .btn-primary': 'saveForm'
+                'click .btn-primary': 'saveForm',
+                'click .btn-secondary': 'hideBubble'
             },
 
             modelEvents: {
@@ -67,6 +68,7 @@ define(['jquery',
                 this.listenTo(this.app.vent, 'mode-change', this.refresh);
                 this.listenTo(this.app.vent, 'hide-bubbles', this.hideBubble);
                 this.listenTo(this.model, 'show-bubble', this.showBubble);
+                this.listenTo(this.model, 'change', this.refresh);
                 google.maps.event.addListener(this.bubble, 'domready', this.onBubbleRender.bind(this));
             },
 
@@ -138,6 +140,7 @@ define(['jquery',
             saveForm: function (e) {
                 this.form.commit();       //does validation
                 this.bubble.model.save(); //does database commit
+                this.hideBubble();
                 e.preventDefault();
             },
             _show: function (whichBubble) {

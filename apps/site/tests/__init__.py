@@ -140,6 +140,7 @@ class ModelMixin(object):
 
     def create_project(self, user, name='Test Project', authority_id=1):
         import random
+        from localground.apps.site import models
         slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
         p = models.Project(
             name=name,
@@ -407,8 +408,9 @@ class ModelMixin(object):
         return scan
 
     def create_photo(self, user, project, name='Photo Name',
-                     file_name='my_photo.jpg', device='HTC',
-                     point=None):
+                     file_name='myphoto.jpg', device='HTC',
+                     point=None, with_file=False):
+        from localground.apps.site import models
         photo = models.Photo(
             project=project,
             owner=user,
@@ -419,8 +421,42 @@ class ModelMixin(object):
             device=device,
             point=point
         )
+        photo.virtual_path = photo.generate_relative_path()
         photo.save()
+        if with_file:
+            self.create_image_from_scratch(photo)
         return photo
+    
+    def create_image_from_scratch(self, photo):
+        import Image, ImageFont, ImageDraw, StringIO, os
+        from django.core.files import File
+        
+        # 1) create and save PIL image to disk:
+        width = 200
+        height = 100
+        img_path = '%s%s' % (photo.get_absolute_path(), photo.file_name_orig)
+        
+        # create the directory if it doesn't already exist:
+        if not os.path.exists(photo.get_absolute_path()):
+            photo.make_directory(photo.get_absolute_path())
+            
+        img_io = StringIO.StringIO()
+        img = Image.new('RGBA', (width, height))
+        draw = ImageDraw.Draw(img)
+        draw.text((10, 10),"Sample Text",(255,255,255))          
+        img.save(img_path)
+        
+        # 2) create Django file object from disk:
+        img_data = open(img_path, 'r')
+        f = File(img_data)
+        f.name = photo.file_name_orig
+        
+        # 3) remove temporary PIL image from disk:
+        if os.path.exists(img_path):
+            os.remove(img_path)
+            
+        # 4) simulate file upload:
+        photo.save_upload(f, photo.owner, photo.project)
 
     def create_audio(self, user, project, name='Audio Name',
                      file_name='my_audio.jpg'):
@@ -434,6 +470,20 @@ class ModelMixin(object):
         )
         audio.save()
         return audio
+    
+    def create_relation(self, entity_type, id=1, ordering=1, turned_on=False):
+        r = models.GenericAssociation(
+            entity_type=entity_type,
+            entity_id=id,
+            source_type=models.Marker.get_content_type(),
+            source_id=self.marker.id,
+            ordering=ordering,
+            owner=self.user,
+            turned_on=turned_on,
+            last_updated_by=self.user
+        )
+        r.save()
+        return r
 
 class ViewAnonymousMixin(ModelMixin):
     #fixtures = ['test_data.json']

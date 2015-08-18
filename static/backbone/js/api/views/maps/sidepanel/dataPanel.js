@@ -5,7 +5,8 @@ define(["marionette",
         "views/maps/sidepanel/menus/projectsMenu",
         "views/maps/sidepanel/projectTags",
         "views/maps/sidepanel/itemListManager",
-        "views/maps/sidepanel/shareModal/shareModal"
+        "views/maps/sidepanel/shareModal/shareModal",
+        "views/maps/sidepanel/uploadModal"
     ],
     function (Marionette,
               _,
@@ -14,7 +15,8 @@ define(["marionette",
               ProjectsMenu,
               ProjectTags,
               ItemListManager,
-              ShareModal) {
+              ShareModal,
+              UploadModal) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -31,13 +33,15 @@ define(["marionette",
 
             events: {
                 'click #mode_toggle': 'toggleEditMode',
-                'click #share-data': 'showShareModal'
+                'click #share-data': 'showShareModal',
+                'click #upload': 'showUploadModal'
             },
             regions: {
                 projectMenu: "#projects-menu",
                 projectTags: "#project-tags",
                 itemList: "#item-list-manager",
-                shareModalWrapper: "#share-modal-wrapper"
+                shareModalWrapper: "#share-modal-wrapper",
+                uploadModalWrapper: "#upload-modal-wrapper"
             },
             /**
              * Initializes the dataPanel
@@ -54,6 +58,7 @@ define(["marionette",
                 this.projectTags.show(new ProjectTags(this.opts));
                 this.itemList.show(new ItemListManager(this.opts));
                 this.shareModalWrapper.show(new ShareModal(this.opts));
+                this.uploadModalWrapper.show(new UploadModal(_.defaults({url:'/upload/embed'}, this.opts)));
                 this.listenTo(this.shareModalWrapper.currentView, 'load-snapshot', this.loadSnapshot);
             },
 
@@ -80,6 +85,10 @@ define(["marionette",
             showShareModal: function () {
                 this.shareModalWrapper.currentView.setSerializedEntities(this.serializeActiveEntities());
                 this.shareModalWrapper.currentView.showModal();
+            },
+
+            showUploadModal: function () {
+                this.uploadModalWrapper.currentView.showModal();
             },
 
             //A convenience method to gather all currently active map markers for saving in a view

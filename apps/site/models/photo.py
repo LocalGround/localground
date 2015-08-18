@@ -7,9 +7,6 @@ import os
 from swampdragon.models import SelfPublishModel
 from localground.apps.site.api.realtime_serializers import PhotoRTSerializer
 
-
-
-
 class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
     file_name_large = models.CharField(max_length=255)
     file_name_medium = models.CharField(max_length=255)
@@ -87,15 +84,17 @@ class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
 
     def _rotate(self, user, degrees):
         from PIL import Image, ImageOps
+        import time
+        timestamp = int(time.time())
         media_path = self.get_absolute_path()
 
-        # do the rotation:
+        # 1) do the rotation:
         im = Image.open(media_path + self.file_name_new)
         file_name, ext = os.path.splitext(self.file_name_new)
         im = im.rotate(degrees)
         im.save(media_path + self.file_name_new)
 
-        # create thumbnails:
+        # 2) create thumbnails:
         sizes = [1000, 500, 250, 128, 50, 20]
         photo_paths = []
         for s in sizes:
@@ -106,10 +105,24 @@ class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
                 im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
             else:
                 im.thumbnail((s, s), Image.ANTIALIAS)
-            abs_path = '%s%s_%s%s' % (media_path, file_name, s, ext)
-            im.save(abs_path)
-            photo_paths.append('%s_%s%s' % (file_name, s, ext))
-
+            new_file_path = '%s_%s_%s%s' % (file_name, s, timestamp, ext)
+            im.save('%s%s' % (media_path, new_file_path))
+            photo_paths.append(new_file_path)
+            
+        # 3) delete old, pre-rotated files on file systems:
+        file_paths = [
+            '%s%s' % (media_path, self.file_name_large),
+            '%s%s' % (media_path, self.file_name_medium),
+            '%s%s' % (media_path, self.file_name_medium_sm),
+            '%s%s' % (media_path, self.file_name_small),
+            '%s%s' % (media_path, self.file_name_marker_lg),
+            '%s%s' % (media_path, self.file_name_marker_sm)
+        ]
+        for f in file_paths:
+            if os.path.exists(f) and f.find(settings.USER_MEDIA_DIR) > 0:
+                os.remove(f)
+        
+        # 4) save pointers to new files in database:
         self.file_name_large = photo_paths[0]
         self.file_name_medium = photo_paths[1]
         self.file_name_medium_sm = photo_paths[2]

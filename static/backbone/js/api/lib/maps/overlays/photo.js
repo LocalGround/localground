@@ -1,4 +1,4 @@
-define(["lib/maps/overlays/base"], function (Base) {
+define(["lib/maps/overlays/base", "lib/maps/overlays/infobubbles/photo"], function (Base, PhotoBubble) {
     "use strict";
     /**
      * Class that controls photo model overlays.
@@ -54,6 +54,9 @@ define(["lib/maps/overlays/base"], function (Base) {
 
         redraw: function () {
             this._overlay.setIcon(this.getIcon());
+        },
+        initInfoBubble: function (opts) {
+            this.infoBubble = new PhotoBubble(_.extend({overlay: this}, opts));
         }
     });
     return Photo;

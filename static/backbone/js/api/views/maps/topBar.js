@@ -4,11 +4,6 @@ define(["marionette",
     ],
     function (Marionette, $, MapNavbar) {
         'use strict';
-        /**
-         * A class that handles the basic Google Maps functionality,
-         * including tiles, search, and setting the default location.
-         * @class Basemap
-         */
 
         var TopBar = Marionette.View.extend({
 
