@@ -24,14 +24,13 @@ define([
 		columns: null,
 		records: null,
 		datagrid: null,
+        modal: null,
         app: null,
 		globalEvents: _.extend({}, Backbone.Events),
 		initialize: function (opts) {
             opts = opts || {};
             $.extend(this, opts);
             var that = this,
-                addColumnForm,
-                modal,
                 AppRouter;
 
             //shared functionality to be passed across objects:
@@ -63,8 +62,12 @@ define([
             });
 
             this.globalEvents.on("insertColumn", function () {
+                var addColumnForm, field;
+                console.log(that.url);
+                console.log(that);
+
                 //1. define a new field:
-                var field = new Field({
+                field = new Field({
                     urlRoot: that.url.replace('data/', 'fields/'),
                     ordering: that.columns.length
                 });
@@ -74,10 +77,10 @@ define([
                     model: field
                 }).render();
 
-                modal = new Backbone.BootstrapModal({ content: addColumnForm }).open();
-                modal.on('ok', function () {
+                this.modal = new Backbone.BootstrapModal({ content: addColumnForm }).open();
+                this.modal.on('ok', function () {
                     addColumnForm.commit();	//does validation
-                    field.save();            //does database commit
+                    field.save();           //does database commit
                 });
 
                 //3. once the new field has been added to the database,
@@ -103,8 +106,8 @@ define([
             this.columns = new Columns({
                 url: this.url
             });
-            this.columns.fetch();
             this.columns.on('reset', this.render, this);
+            this.columns.fetch();
         },
         render: function () {
             var that = this;
