@@ -14,6 +14,9 @@ require(['boot'], function () {
         'spec/collections/base-test.js',
         'spec/collections/layers-test.js',
 
+        // SPREADSHEET
+        'spec/spreadsheet/init-spreadsheet-test.js',
+
         // VIEWS
         'spec/views/basemap-test.js',
         'spec/views/layer-manager-test.js',
