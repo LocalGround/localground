@@ -210,7 +210,7 @@ define(["models/project",
                             updateMetadata: children[key].update_metadata
                         }));
                     };
-                //this.app.setActiveProjectID(project.get("id"));
+                this.app.setActiveProjectID(project.get("id"));
                 for (key in children) {
                     if (children.hasOwnProperty(key)) {
                         models = [];
