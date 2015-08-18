@@ -1,34 +1,30 @@
 define(["underscore",
         "jquery",
-        "views/maps/basemap",
         "lib/maps/overlays/infobubbles/photo",
         "lib/maps/overlays/photo",
         "config",
         "../../../test/spec-helper"],
-    function (_, $, Basemap, PhotoBubble, PhotoOverlay, Config) {
+    function (_, $, PhotoBubble, PhotoOverlay, Config) {
         'use strict';
 
         function initPhotoOverlay(scope) {
-            var opts = _.clone(scope.mapEditorInitializationParams);
-            opts = _.extend(opts, { app: scope.app });
-            var basemap = new Basemap(opts);
-            scope.app.setMap(basemap.map);
-            //mock the getIcon method
-            spyOn(PhotoOverlay.prototype,'getIcon').and.callFake(function() {
-                return {
-                    path: google.maps.SymbolPath.CIRCLE
-                }
-            });
-            return new PhotoOverlay({
-                app: scope.app,
-                model: scope.photos.models[0],
-                infoBubbleTemplates: {
-                    InfoBubbleTemplate: _.template(Config['photos'].InfoBubbleTemplate),
-                    TipTemplate: _.template(Config['photos'].TipTemplate)
-                },
-                
-            });
-        }
+                scope.app.setMap(new google.maps.Map('',{}));
+                //mock the getIcon method
+                spyOn(PhotoOverlay.prototype,'getIcon').and.callFake(function() {
+                    return {
+                        path: google.maps.SymbolPath.CIRCLE
+                    }
+                });
+                return new PhotoOverlay({
+                    app: scope.app,
+                    model: scope.photos.models[0],
+                    infoBubbleTemplates: {
+                        InfoBubbleTemplate: _.template(Config['photos'].InfoBubbleTemplate),
+                        TipTemplate: _.template(Config['photos'].TipTemplate)
+                    },
+                    
+                });
+        }   
 
         describe("PhotoBubble", function () {
             var photoOverlay;
