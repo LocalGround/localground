@@ -126,7 +126,6 @@ define(['jquery',
                         schema: this.model.updateSchema
                     }),
                     context = this.getContext(this.model);
-                console.log(this.model.updateSchema);
                 context.mode = 'edit';
                 this.setElement($(template(context)));
                 this.form = new ModelForm({

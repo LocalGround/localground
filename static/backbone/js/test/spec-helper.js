@@ -4,38 +4,69 @@ define(
         "jquery",
         "lib/appUtilities",
         "lib/maps/data/dataManager",
-        "lib/maps/data/snapshotLoader",
         "collections/projects",
         "collections/photos",
         "collections/audio",
         "collections/mapimages",
         "collections/markers",
         "collections/records",
+        "collections/forms",
         "collections/layers",
         "models/project",
         "models/photo",
         "models/marker",
         "models/audio",
         "models/record",
+        "models/form",
         "models/mapimage",
         "models/layer"
     ],
-    function (Backbone, $, appUtilities, DataManager, SnapshotLoader,
-              Projects, Photos, AudioFiles, MapImages, Markers, Records, Layers,
-              Project, Photo, Marker, Audio, Record, MapImage, Layer) {
+    function (Backbone, $, appUtilities, DataManager,
+              Projects, Photos, AudioFiles, MapImages, Markers, Records, Forms,
+              Layers, Project, Photo, Marker, Audio, Record, Form, MapImage, Layer) {
         'use strict';
+
+        var initAjaxSpies = function (scope) {
+            spyOn($, 'ajax').and.callFake(function (options) {
+                var d = $.Deferred(),
+                    response = {};
+                switch (options.type) {
+                case "OPTIONS":
+                    response = {name: "Form Data List", description: "", "actions": {"POST": {"id": {"type": "integer", "required": false, "read_only": true, "label": "ID"}}}};
+                    break;
+                case "GET":
+                    if ("/api/0/forms/" == options.url) {
+                        response = { results: scope.forms.toJSON() };
+                    } else if ("/api/0/layers/" == options.url) {
+                        response = { results: scope.layers.toJSON() };
+                    } else if ("/api/0/photos/" == options.url) {
+                        response = { results: scope.photos.toJSON() };
+                    } else if (/\/api\/0\/forms\/\d+\/data\//.test(options.url)) {
+                        response = { results: scope.records.toJSON() };
+                    } else {
+                        alert("No match: " + options.url);
+                    }
+                    break;
+                }
+                d.resolve(response);
+                options.success(response);
+                return d.promise();
+            });
+        };
         beforeEach(function () {
             var $map_container = $('<div id="map_canvas"></div>');
+               // $grid_container = $('<div id="grid"></div>');
             $(document.body).append($map_container);
+            //$(document.body).append($grid_container);
 
             /**
              * Adds some dummy data for testing convenience.
              * Availabe to all of the tests.
              */
             this.photos = new Photos([
-                new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1, overlay_type: "photo", 
-                    geometry: {"type": "Point", "coordinates": [-122.294, 37.864]},
-                    path_small:'//:0', path_medium:"//:0", path_large:"//:0" }),
+                new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1, overlay_type: "photo",
+                          geometry: {"type": "Point", "coordinates": [-122.294, 37.864]},
+                          path_small: '//:0', path_medium: "//:0", path_large: "//:0" }),
                 new Photo({id: 2, name: "Dog", tags: 'animal, dog', project_id: 1, overlay_type: "photo", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] } }),
                 new Photo({id: 3, name: "Frog", tags: 'animal, amphibian, cute, frog', project_id: 1, overlay_type: "photo", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] } })
             ]);
@@ -53,6 +84,9 @@ define(
                 new Marker({ id: 1, name: "POI 1", tags: 'my house', project_id: 2, overlay_type: "marker" }),
                 new Marker({id: 2, name: "POI 2", tags: 'friend\'s house, tag1', project_id: 2, overlay_type: "marker" }),
                 new Marker({id: 3, name: "POI 3", tags: 'coffee shop, tag1', project_id: 2, overlay_type: "marker" })
+            ]);
+            this.forms = new Forms([
+                new Form({ "id": 2, "name": "Snippets", "description": "", "overlay_type": "form", "tags": "", "owner": "tester", "slug": "snippets", "project_ids": [ 2 ] })
             ]);
             this.records = new Records([
                 new Record({ id: 1, team_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 2, overlay_type: "record" }),
@@ -199,6 +233,9 @@ define(
             });
             //give the app a reference to the dataManager (for convenience);
             _.extend(this.app, { dataManager: this.dataManager });
+
+            //intercepts all fetch calls and returns dummy data (as defined above):
+            initAjaxSpies(this);
         });
     }
 );

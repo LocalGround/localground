@@ -55,8 +55,7 @@ define([
             });
 
             // Start Backbone history a necessary step for bookmarkable URL's
-            Backbone.history.start();
-
+            try { Backbone.history.start(); } catch (ex) {}
             this.tableHeader = new TableHeader({
                 collection: this.forms,
                 globalEvents: this.globalEvents,

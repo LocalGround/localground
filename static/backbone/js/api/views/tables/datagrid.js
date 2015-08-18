@@ -101,7 +101,6 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
             var totalWidth = 0, // (this.columns.length * this.columnWidth) + "px",
                 //index = 0,
                 w = null,
-                $td = null,
                 columnWidths = [];
             this.columns.each(function (model) {
                 //$td = $(">tbody>tr:first>td:nth-child(" + (index) + ")");

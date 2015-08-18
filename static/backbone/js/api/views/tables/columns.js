@@ -38,7 +38,6 @@ define([
                  */
                 var that = this,
                     cols;
-
                 $.ajax({
                     // Note: the json must be appended in order for the OPTIONS
                     // query to return JSON (it ignores the 'format' parameter)
