@@ -181,8 +181,17 @@ define(
             this.app = _.extend({}, appUtilities);
             _.extend(this.app, {
                 vent: _.extend({}, Backbone.Events),
-                map: { fitBounds: function () {} } //a light stand-in for a Google Map, to speed it up; save our API calls.
+                activeProjectID: this.projects.models[0].id,
+                map: {
+                    fitBounds: function () {}
+                } //a light stand-in for a Google Map, to speed it up; save our API calls.
             });
+
+            this.spreadsheetApp = {
+                router: null,
+                activeTableID: null
+            };
+
             //initialize dataManager:
             this.dataManager = new DataManager({
                 app: this.app,
