@@ -42,7 +42,10 @@ define(["jquery",
             },
 
             showModal: function () {
+                var iframe;
                 this.ui.modal.modal();
+                iframe = this.$el.find('iframe')[0];
+                iframe.contentDocument.getElementById(this.app.activeProjectID).click();
             }
 
 
