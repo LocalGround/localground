@@ -251,7 +251,7 @@ localground.basemap.prototype.initTiles = function() {
     }
     
     //figure out base layer keyword from initial provider id
-    var initialMapLayer = self.getOverlaySourceInfo('id', this.initialMapLayerID);
+    var initialMapLayer = self.getOverlaySourceInfo('id', 2);//this.initialMapLayerID);
     
     switch(initialMapLayer.sourceName.toLowerCase()) {
         case 'google':
