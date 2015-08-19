@@ -1,4 +1,123 @@
-html, body {
+#print-form {
+    background-color: #eee;
+    height: 68px;
+}
+
+.print-option {
+    width: 170px;
+    height: 68px;
+    float:left;
+    padding: 2px 5px 5px 5px;
+    margin-left: 5px;
+    font-size:12px;
+    border-right: 1px solid #ccc;
+}
+
+.print-option:last-child {
+    border-right: none;
+}
+
+.print-option-title {
+    font-weight: bold;
+}
+
+#print-mockup-container {
+    height: 100%;
+    background-color: #999;
+    padding:30px 50px 30px 5px;
+    overflow:scroll;
+}
+
+#print-mockup {
+    background-color: white;
+    width: 1060px;
+    padding: 40px 40px 100px 40px;
+    margin-bottom:100px;
+}
+
+#print-map-canvas {
+    border: 3px solid black;
+    height: 515px;
+    width: 975px;
+    clear:both;
+}
+
+#print-mockup-header > div {
+    float:right;
+    clear:both;
+    width:375px;
+}
+
+#print-mockup-header > div > label {
+    padding-top: 6px;
+    font-size: 13px;
+    line-height: 18px;
+    float: left;
+    width: 130px;
+    text-align: right;
+    color: #404040;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    display: inline-block;
+}
+
+.blank {
+    border-bottom: 1px solid black;
+    display: inline-block;
+    width: 232px;
+    margin-left: 5px;
+    margin-top: 20px;
+}
+#circle-container {
+    width: 232px;
+    height: 20px;
+    overflow: visible;
+    white-space: nowrap;
+    padding-left: 135px;
+    margin-top: 5px;
+}
+.circle {
+    width: 16px;
+    height: 16px;
+    border: 1px solid black;
+    display: inline-block;
+    border-radius: 10px;
+    margin-right: 7px;
+}
+.print-map-title-control {
+    width:975px;
+}
+
+#print-map-title {
+    clear:both;
+    font-weight: normal;
+    color: #404040;
+    font: 18px/18px 'lg';
+    cursor: pointer;
+    margin-bottom:10px;
+    font-weight: normal;
+    padding-top: 5px;
+    height: 35px;
+}
+#print-map-title:hover {
+    background-color:rgb(238,238,238);
+}
+
+#print-map-title-input {
+    display:none;
+}
+#print-map-description: {
+    cursor: pointer;
+}
+#print-map-description-input {
+    display: none;
+}
+#print-map-qr {
+    float:right;
+    border: 3px solid black;
+}
+
+/*html, body {
     margin: 0px !important;
     background-color: #999 !important;
 	overflow-x: hidden !important;
@@ -26,7 +145,7 @@ select { width: 180px !important; }
 .paper_form {
     margin: 3px !important;
     /*width: auto !important;*/
-    border: 4px solid #000;
+/*    border: 4px solid #000;
     -webkit-border-radius: 0px;
     -moz-border-radius: 0px;
     border-radius: 0px;
@@ -93,4 +212,4 @@ select { width: 180px !important; }
 }
 #tbl span { display: inline !important; }
 #tbl input { width: 30px !important; }
-#tbl td { padding: 3px !important; }
+#tbl td { padding: 3px !important; }*/

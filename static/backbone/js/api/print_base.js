@@ -3,27 +3,38 @@
  */
 define(["underscore",
         "base-mapplication",
-        "views/maps/basemap",
         "lib/printLoader",
         "collections/projects",
+        "views/maps/topBar",
+        "views/prints/printForm",
+        "views/prints/printMockup",
         "jquery.bootstrap"
     ],
-    function (_, BaseMapplication, BaseMap, PrintLoader, Projects) {
+    function (_, BaseMapplication, PrintLoader, Projects, TopBar, PrintForm, PrintMockup) {
         "use strict";
 
         var PrintBase = BaseMapplication;
 
         PrintBase.addRegions({
-            mapRegion: "#map_canvas"
+            topBarRegion: "#topbar",
+            printFormRegion: "#print-form-container",
+            printMockupRegion: "#print-mockup-container"
+
         });
 
         PrintBase.addInitializer(function (options) {
             options.projects = new Projects();
             options.app = this;
             var printLoader = new PrintLoader(options),
-                basemap = new BaseMap(options);
-            this.map = basemap.map;
-            PrintBase.mapRegion.show(basemap);
+                topBar = new TopBar(options),
+                printForm = new PrintForm(options),
+                printMockup = new PrintMockup(options);
+
+
+            PrintBase.topBarRegion.show(topBar);
+            PrintBase.printFormRegion.show(printForm);
+            PrintBase.printMockupRegion.show(printMockup)
+
 
             this.initAJAX(options);
         });
