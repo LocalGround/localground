@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>L.G. Rewrite</title>
+		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap.min.css" rel="stylesheet">
+		<link href="http://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="/static/backbone/css/slick.css"/>
+		<link rel="stylesheet" type="text/css" href="/static/backbone/css/lg.css">
+		<link rel="stylesheet" type="text/css" href="/static/backbone/css/map.css">
+	</head>
+
+	<body>
+        <nav id="topbar" class="navbar navbar-default" role="navigation"></nav>
+        <div id="map_canvas"></div>
+        <div id="vertical-tabs" class="tabbable tabs-left"></div>
+		<div id="data_panel" class="side-panel tab-pane active"></div>
+		<div id="layer_panel" class="side-panel tab-pane"></div>
+	</body>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing,places,geometry"></script>
+    <script src="/static/backbone/js/external/require.js"></script>
+    <script src="/static/backbone/js/api/base.js"></script>
+    <script>
+        var defaultLocation = {
+				center: new google.maps.LatLng(40.91351257612757, -123.4423828125),
+				zoom: 11
+			};
+			{% if lat %}
+				defaultLocation.center = new google.maps.LatLng({{lat}}, {{lng}});
+				defaultLocation.zoom = {{ zoom }};
+			{% endif %}
+			var basemapOpts = {
+				center: new google.maps.LatLng({{center_lat}}, {{center_lng}}),
+		        zoom: {{zoom}},
+		        serverURL: '{{serverURL}}', 
+		        overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
+		        scans: {% autoescape off %}{{ scans }}{% endautoescape %},
+		        forms: {% autoescape off %}{{ forms }}{% endautoescape %},
+		        isPrint: true,
+		        initialMapLayerID: {{basemap_id | default:"1"}},
+		        initial_overlays: {% autoescape off %}{{ layer_ids }}{% endautoescape %},
+		        layouts: {% autoescape off %}{{ layouts }}{% endautoescape %},
+		        selectedLayoutID: {{ selectedLayout_id }},
+		        numProjects: {{projects|length}},
+				prefix: '{{ prefix }}',
+				mapContainerID: "map_canvas",
+				defaultLocation: defaultLocation,
+				includeSearchControl: true,
+				includeGeolocationControl: false,
+                includeAudioControl: true,
+                includeFullScreenCtrl: true,
+				activeMapTypeID: {{ basemap_id|default:"12" }},
+				tilesets: {% autoescape off %}{{ overlays }}{% endautoescape %}
+			};
+		    {% if form.id %}
+		        basemapOpts.form = {{form.id }};
+		    {% endif %}
+		    {% if selected_project %}
+		        basemapOpts.selectedProjectID = {{selected_project.id}}; 
+		    {% endif %}
+
+			require(
+				["jquery", "/static/backbone/js/api/print_base.js"],
+				function($, PrintBase) {
+					$(function() {
+						PrintBase.start(basemapOpts);
+					});
+				}
+            );
+
+    </script>
+</html>

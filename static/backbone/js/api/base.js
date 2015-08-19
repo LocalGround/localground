@@ -25,6 +25,7 @@ require.config({
         'jquery.ui': '//code.jquery.com/ui/1.11.4/jquery-ui.min',
         'kernel': '../external/kernel.min',
         'mapplication': './mapplication',
+        'print_base': "./print_base",
         'marionette': '../external/backbone.marionette',
         'sandbox': '../external/mediator/sandbox',
         'slick': '../external/slick.min',
