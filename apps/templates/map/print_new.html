@@ -7,14 +7,16 @@
 		<link rel="stylesheet" type="text/css" href="/static/backbone/css/slick.css"/>
 		<link rel="stylesheet" type="text/css" href="/static/backbone/css/lg.css">
 		<link rel="stylesheet" type="text/css" href="/static/backbone/css/map.css">
+		<link rel="stylesheet" type="text/css" href="/static/backbone/css/prints.css">
+
 	</head>
 
 	<body>
         <nav id="topbar" class="navbar navbar-default" role="navigation"></nav>
-        <div id="map_canvas"></div>
-        <div id="vertical-tabs" class="tabbable tabs-left"></div>
-		<div id="data_panel" class="side-panel tab-pane active"></div>
-		<div id="layer_panel" class="side-panel tab-pane"></div>
+        <div id="print-form-container"></div>
+        <div id="print-mockup-container">
+        	
+        </div>
 	</body>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&v=3.11&libraries=drawing,places,geometry"></script>
     <script src="/static/backbone/js/external/require.js"></script>
@@ -42,7 +44,7 @@
 		        selectedLayoutID: {{ selectedLayout_id }},
 		        numProjects: {{projects|length}},
 				prefix: '{{ prefix }}',
-				mapContainerID: "map_canvas",
+				mapContainerID: "print-map-canvas",
 				defaultLocation: defaultLocation,
 				includeSearchControl: true,
 				includeGeolocationControl: false,

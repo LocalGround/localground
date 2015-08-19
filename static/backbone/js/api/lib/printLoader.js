@@ -1,11 +1,11 @@
 /**
  * Created by zmmachar on 12/17/14.
  */
-define(["models/snapshot",
+define(["collections/projects",
         "jquery",
         "config"
     ],
-    function (Snapshot, $, Config) {
+    function (Projects, $, Config) {
         'use strict';
 
         /**
@@ -13,7 +13,7 @@ define(["models/snapshot",
          * necessary to load a snapshot
          * @class SnapshotLoader
          */
-        var PrintLoader = function (app) {
+        var PrintLoader = function (opts) {
             // var updateCollection = function (opts) {
             //     if (!opts) {
             //         //TODO: create standardized way to report errors.
@@ -47,7 +47,14 @@ define(["models/snapshot",
             // this.collections = {};
 
             this.initialize = function (opts) {
-
+                opts.projects.fetch({
+                    success: function (collection, response, request) {
+                        
+                    },
+                    error: function () {
+                        debugger;
+                    }
+                })
                 // this.snapshot = new Snapshot(opts.snapshot);
                 // this.app = opts.app;
                 // var that = this;
@@ -122,7 +129,7 @@ define(["models/snapshot",
     //         };
 
 
-            this.initialize(app);
+            this.initialize(opts);
         };
         return PrintLoader;
     });

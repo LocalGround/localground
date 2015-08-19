@@ -1,0 +1,31 @@
+<div id="layout-selection" class="print-option">
+    <div class='print-option-title'>Choose a layout:</div>
+    <input type="radio" name="orientation" id="portrait" value="portrait" class="layout_control" checked="checked"> Portrait<br>
+    <input type="radio" name="orientation" id="landscape" value="landscape" class="layout_control"> Landscape<br>
+</div>
+<div id="data-collection-toggle" class="print-option">
+    <div class='print-option-title'>Will you be collecting data?</div>
+    <input type="radio" name="print_type" id="map_form" value="map_form" class="layout_control" checked="checked"> Yes<br>
+    <input type="radio" name="print_type" id="map_report" value="map_report" class="layout_control"> No<br>
+</div>
+<div id="table-inclusion" style="display: none;" class="print-option">
+    <div class='print-option-title'>Include a table?</div>
+    <span id="span_same_page" style="float:left; margin-right: 15px;">
+        <input id="short_form" name="short_form" type="checkbox" class="layout_control"> Same page
+    </span>
+    <input id="long_form" name="long_form" type="checkbox" class="layout_control"> Next page  <br>
+    <select id="form" name="form_id" style="display: none;"><option id="-1" value="-1">-- Create New --</option></select>
+    <input name="form_name" id="form_name" type="text" value="Enter table name..." style="display:none;width:140px;" onfocus="if(this.value == 'Enter table name...') {this.value = '';}" onblur="if (this.value == '') {this.value = 'Enter table name...';}">
+    <a href="#" id="cancel_add_new_form" style="display:none;float:right;margin-top:6px;">×</a>
+</div>
+<div id="project_options" class="print-option">
+    <div class='print-option-title'>Choose a project:</div>
+    <select id="project-selector" name="project_id" class="form-control">
+        
+    </select>
+</div>
+
+    <div id="print-submit" class="print-option">
+        <input id="submit" type="submit" value="Generate Map PDF" class="btn btn-primary" style="margin:15px 0px 15px 0px;">
+    </div>
+    
