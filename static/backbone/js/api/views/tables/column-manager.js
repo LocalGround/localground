@@ -36,7 +36,7 @@ define([
             }
         },
         addColumnToGrid: function () {
-            this.globalEvents.trigger('add-column-to-grid', {
+            this.globalEvents.trigger('insertColumnConfirmed', {
                 name: this.model.get("col_name"),
                 label: this.model.get("col_alias"),
                 cell: Columns.cellTypeByIdLookup[this.model.get("data_type").toString()],

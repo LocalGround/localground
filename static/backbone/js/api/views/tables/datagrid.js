@@ -39,6 +39,9 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
             this.globalEvents.on("insertRowBottom", function (e) {
                 that.insertRowBottom(e);
             });
+            this.globalEvents.on("insertColumnConfirmed", function (e) {
+                that.insertColumn(e);
+            });
         },
 
         loadGrid: function () {
@@ -142,6 +145,8 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
         },
 
         insertColumn: function (columnDef) {
+            console.log(columnDef);
+            alert(columnDef);
             this.$el.find('table').css({'width': 'auto'});
             this.$el.find('th').css({'width': 'auto'});
             this.grid.insertColumn([columnDef]);
