@@ -12,6 +12,7 @@ define(
         "collections/records",
         "collections/forms",
         "collections/layers",
+        "collections/dataTypes",
         "models/project",
         "models/photo",
         "models/marker",
@@ -19,11 +20,14 @@ define(
         "models/record",
         "models/form",
         "models/mapimage",
-        "models/layer"
+        "models/layer",
+        "models/dataType"
     ],
     function (Backbone, $, appUtilities, DataManager,
-              Projects, Photos, AudioFiles, MapImages, Markers, Records, Forms,
-              Layers, Project, Photo, Marker, Audio, Record, Form, MapImage, Layer) {
+              Projects, Photos, AudioFiles, MapImages, Markers,
+              Records, Forms, Layers, DataTypes,
+              Project, Photo, Marker, Audio, Record, Form,
+              MapImage, Layer, DataType) {
         'use strict';
 
         var initAjaxSpies = function (scope) {
@@ -50,6 +54,8 @@ define(
                         response = { results: scope.markers.toJSON() };
                     } else if ("/api/0/audio/" == options.url) {
                         response = { results: scope.audio.toJSON() };
+                    } else if ("/api/0/data-types/" == options.url) {
+                        response = { results: scope.dataTypes.toJSON() };
                     } else if (/\/api\/0\/forms\/\d+\/data\//.test(options.url)) {
                         response = { results: scope.records.toJSON() };
                     } else {
@@ -96,6 +102,16 @@ define(
             ]);
             this.forms = new Forms([
                 new Form({ "id": 2, "name": "Nature form", "description": "teams & worm counts", "overlay_type": "form", "tags": "", "owner": "tester", "slug": "worms-form", "project_ids": [ 1 ], fields: [/*todo: populate if needed*/] })
+            ]);
+            this.dataTypes = new DataTypes([
+                new DataType({id: 8, name: "audio"}),
+                new DataType({id: 7, name: "photo"}),
+                new DataType({id: 6, name: "rating"}),
+                new DataType({id: 5, name: "decimal"}),
+                new DataType({id: 4, name: "boolean"}),
+                new DataType({id: 3, name: "date-time"}),
+                new DataType({id: 2, name: "integer"}),
+                new DataType({id: 1, name: "text"})
             ]);
             this.records = new Records([
                 new Record({ id: 1, team_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 2, overlay_type: "record", team_photo: 1, audio_clip: 1 }),

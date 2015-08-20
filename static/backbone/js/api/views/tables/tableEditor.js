@@ -5,15 +5,14 @@ define([
     "views/tables/tableHeader",
     "views/tables/datagrid",
     "views/tables/columns",
-    "models/field",
+    "views/tables/column-manager",
     "collections/records",
     "collections/forms",
     "colResizable",
     "backgrid-paginator",
-    "form",
     "bootstrap-form-templates",
     "backbone-bootstrap-modal"
-], function ($, Backbone, Backgrid, TableHeader, DataGrid, Columns, Field, Records, Forms) {
+], function ($, Backbone, Backgrid, TableHeader, DataGrid, Columns, ColumnManager, Records, Forms) {
 	"use strict";
     var TableEditor = Backbone.View.extend({
 		el: "body",
@@ -24,6 +23,7 @@ define([
 		columns: null,
 		records: null,
 		datagrid: null,
+        columnManager: null,
         modal: null,
         app: null,
 		globalEvents: _.extend({}, Backbone.Events),
@@ -61,44 +61,18 @@ define([
                 app: this.app
             });
 
-            this.globalEvents.on("insertColumn", function () {
-                var addColumnForm, field;
-                console.log(that.url);
-                console.log(that);
-
-                //1. define a new field:
-                field = new Field({
-                    urlRoot: that.url.replace('data/', 'fields/'),
-                    ordering: that.columns.length
-                });
-
-                //2. generate the form that will be used to create the new field:
-                addColumnForm = new Backbone.Form({
-                    model: field
-                }).render();
-
-                this.modal = new Backbone.BootstrapModal({ content: addColumnForm }).open();
-                this.modal.on('ok', function () {
-                    addColumnForm.commit();	//does validation
-                    field.save();           //does database commit
-                });
-
-                //3. once the new field has been added to the database,
-                //	 add it to the table:
-                field.on('sync', function () {
-                    that.grid.insertColumn({
-                        name: field.get("col_name"),
-                        label: field.get("col_alias"),
-                        cell: Columns.cellTypeByIdLookup[field.get("data_type").toString()],
-                        editable: true
-                    });
-                });
-            });
-
-            this.globalEvents.on("requery", function (sql) {
+            that.globalEvents.on("requery", function (sql) {
                 that.query = sql;
                 //that.getRecords({query: sql});
                 that.getRecords();
+            });
+
+            this.globalEvents.on("insertColumn", function (scope) {
+                if (scope && scope instanceof TableEditor) { that = scope; }
+                that.columnManager = new ColumnManager({
+                    url: that.url,
+                    ordering: that.columns.length
+                });
             });
 
         },

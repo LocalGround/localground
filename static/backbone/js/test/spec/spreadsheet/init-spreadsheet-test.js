@@ -1,22 +1,22 @@
 define(["views/tables/tableEditor",
         "collections/records",
+        "views/tables/column-manager",
+        "views/tables/columns",
         "../../../test/spec-helper"],
-    function (TableEditor, Records) {
+    function (TableEditor, Records, ColumnAdder, Columns) {
         'use strict';
-        var tableEditor,
-            initTableEditor = function (scope) {
-                //if (!tableEditor) {
-                    console.log("initializing table...");
-                    tableEditor = new TableEditor({
-                        projectID: scope.projects.models[0].id,
-                        url: '/api/0/forms/2/data/'
-                    });
-                //}
+        var initTableEditor = function (scope) {
+                //console.log("initializing table...");
+                return new TableEditor({
+                    projectID: scope.projects.models[0].id,
+                    url: '/api/0/forms/2/data/'
+                });
             };
 
         describe("TableEditor: Test that initializes correctly", function () {
+            var tableEditor;
             beforeEach(function () {
-                initTableEditor(this);
+                tableEditor = initTableEditor(this);
             });
 
             it("Loads correctly if an initial projectID is passed in", function () {
@@ -39,8 +39,9 @@ define(["views/tables/tableEditor",
         });
 
         describe("TableEditor: Test fetching columns and records", function () {
+            var tableEditor;
             beforeEach(function () {
-                initTableEditor(this);
+                tableEditor = initTableEditor(this);
             });
 
             it("Fetches Columns", function () {
@@ -77,17 +78,17 @@ define(["views/tables/tableEditor",
             });
         });
 
-        describe("TableEditor: Test add column functionality", function () {
+        describe("TableEditor: Test add column functionality.", function () {
+            var tableEditor;
             beforeEach(function () {
-                initTableEditor(this);
+                tableEditor = initTableEditor(this);
             });
 
-            it("Ensure that triggering the globalEvents.insertColumn event calls the insertColumn method", function () {
+            it("Ensure that triggering the globalEvents.insertColumn fires.", function () {
                 tableEditor.fetchColumns();
-                console.log(tableEditor);
-                expect(tableEditor.columns).not.toBeNull();
-                tableEditor.globalEvents.trigger('insertColumn');
-                //expect(tableEditor.modal).not.toBeNull();
+                expect(tableEditor.columns instanceof Columns).toBeTruthy();
+                tableEditor.globalEvents.trigger('insertColumn', tableEditor);
+                expect(tableEditor.columnManager instanceof ColumnAdder).toBeTruthy();
             });
         });
     });
