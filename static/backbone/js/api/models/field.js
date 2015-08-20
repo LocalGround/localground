@@ -5,6 +5,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
             urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
             defaults: _.extend({}, Base.prototype.defaults, {
                 col_alias: 'New Column Name',
+                data_type: "text",
                 is_display_field: true,
                 display_width: 100,
                 is_printable: true,

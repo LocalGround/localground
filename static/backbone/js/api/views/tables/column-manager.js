@@ -18,22 +18,32 @@ define([
             'schema-ready': 'render'
         },
         initialize: function (opts) {
-            var that = this;
             _.extend(this, opts);
+            if (!this.url) {
+                throw "\"url\" initialization parameter is required";
+            }
+            if (!this.ordering) {
+                throw "\"ordering\" initialization parameter is required";
+            }
+            if (!this.globalEvents) {
+                throw "\"globalEvents\" initialization parameter is required";
+            }
             this.model = new Field(null, {
                 urlRoot: this.url.replace('data/', 'fields/'),
                 ordering: this.ordering
             });
             // once the new field has been added to the database,
             //	add it to the table:
-            this.model.on('sync', function () {
-                that.grid.insertColumn({
-                    name: this.model.get("col_name"),
-                    label: this.model.get("col_alias"),
-                    cell: Columns.cellTypeByIdLookup[this.model.get("data_type").toString()],
-                    editable: true
-                });
+            this.model.on('sync', this.addColumnToGrid, this);
+        },
+        addColumnToGrid: function () {
+            this.globalEvents.trigger('add-column-to-grid', {
+                name: this.model.get("col_name"),
+                label: this.model.get("col_alias"),
+                cell: Columns.cellTypeByIdLookup[this.model.get("data_type").toString()],
+                editable: true
             });
+            //this.grid.insertColumn();
         },
         render: function () {
             var key, val, that = this;

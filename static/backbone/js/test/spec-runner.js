@@ -16,6 +16,7 @@ require(['boot'], function () {
 
         // SPREADSHEET
         'spec/spreadsheet/init-spreadsheet-test.js',
+        'spec/spreadsheet/column-manager-test.js',
 
         // VIEWS
         'spec/views/basemap-test.js',

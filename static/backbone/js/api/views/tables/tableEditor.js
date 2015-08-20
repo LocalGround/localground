@@ -71,6 +71,7 @@ define([
                 if (scope && scope instanceof TableEditor) { that = scope; }
                 that.columnManager = new ColumnManager({
                     url: that.url,
+                    globalEvents: that.globalEvents,
                     ordering: that.columns.length
                 });
             });

@@ -3,7 +3,7 @@ define(["views/tables/tableEditor",
         "views/tables/column-manager",
         "views/tables/columns",
         "../../../test/spec-helper"],
-    function (TableEditor, Records, ColumnAdder, Columns) {
+    function (TableEditor, Records, ColumnManager, Columns) {
         'use strict';
         var initTableEditor = function (scope) {
                 //console.log("initializing table...");
@@ -88,7 +88,7 @@ define(["views/tables/tableEditor",
                 tableEditor.fetchColumns();
                 expect(tableEditor.columns instanceof Columns).toBeTruthy();
                 tableEditor.globalEvents.trigger('insertColumn', tableEditor);
-                expect(tableEditor.columnManager instanceof ColumnAdder).toBeTruthy();
+                expect(tableEditor.columnManager instanceof ColumnManager).toBeTruthy();
             });
         });
     });
