@@ -1,4 +1,7 @@
-define(["jquery", "backbone"], function ($, Backbone) {
+define(["jquery",
+        "backbone",
+        "jquery.bootstrap"
+        ], function ($, Backbone) {
     "use strict";
     var TableHeader = Backbone.View.extend({
         el: "#navbar",

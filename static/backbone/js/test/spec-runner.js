@@ -8,6 +8,7 @@ require(['boot'], function () {
         'spec/snapshot-loader-test.js',
 
         // MODELS
+        'spec/models/field-test.js',
         'spec/models/layer-test.js',
 
         // COLLECTIONS

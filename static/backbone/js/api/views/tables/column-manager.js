@@ -13,21 +13,15 @@ define([
         modal: null,
         FormClass: null,
         addColumnForm: null,
-        schema: {},
+        formSchema: null,
         modelEvents: {
             'schema-ready': 'render'
         },
         initialize: function (opts) {
             _.extend(this, opts);
-            if (!this.url) {
-                throw "\"url\" initialization parameter is required";
-            }
-            if (!this.ordering) {
-                throw "\"ordering\" initialization parameter is required";
-            }
-            if (!this.globalEvents) {
-                throw "\"globalEvents\" initialization parameter is required";
-            }
+            this.ensureRequiredParam("url");
+            this.ensureRequiredParam("ordering");
+            this.ensureRequiredParam("globalEvents");
             this.model = new Field(null, {
                 urlRoot: this.url.replace('data/', 'fields/'),
                 ordering: this.ordering
@@ -35,6 +29,11 @@ define([
             // once the new field has been added to the database,
             //	add it to the table:
             this.model.on('sync', this.addColumnToGrid, this);
+        },
+        ensureRequiredParam: function (param) {
+            if (!this[param]) {
+                throw "\"" + param + "\" initialization parameter is required";
+            }
         },
         addColumnToGrid: function () {
             this.globalEvents.trigger('add-column-to-grid', {
@@ -46,22 +45,13 @@ define([
             //this.grid.insertColumn();
         },
         render: function () {
-            var key, val, that = this;
-            for (key in this.model.schema) {
-                val = this.model.schema[key];
-                this.schema[key] = {
-                    type: 'Text',
-                    title: val.label || key,
-                    help: val.help_text || key
-                };
-            }
+            var that = this;
             this.FormClass = EditForm.extend({
-                schema: this.schema
+                schema: this.model.getFormSchema()
             });
             this.addColumnForm = new this.FormClass({
                 model: this.model
             }).render();
-            console.log(this.addColumnForm);
 
             this.modal = new Backbone.BootstrapModal({
                 content: this.addColumnForm

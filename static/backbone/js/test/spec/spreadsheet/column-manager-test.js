@@ -5,7 +5,7 @@ define(["backbone",
     function (Backbone, Field, ColumnManager) {
         'use strict';
         var globalEvents = Backbone.Events;
-        describe("ColumnManager:", function () {
+        describe("ColumnManager: Test initialization", function () {
             it("Loads correctly if initialization params have been properly set.", function () {
                 var cm;
                 expect(function () {
@@ -39,20 +39,56 @@ define(["backbone",
                 });
                 expect(cm.model instanceof Field).toBeTruthy();
                 cm.model.trigger('sync');
-                expect(cm.addColumnToGrid).toHaveBeenCalled();
+                expect(ColumnManager.prototype.addColumnToGrid).toHaveBeenCalled();
             });
+        });
 
-            it("Renders the \"add field\" form", function () {
-                //add spy to prototype before you create the instance:
+        describe("ColumnManager: Test events", function () {
+            //add spies to prototype before you create the instance:
+            var cm;
+            beforeEach(function () {
                 spyOn(ColumnManager.prototype, 'render');
-                var cm = new ColumnManager({
+                spyOn(ColumnManager.prototype, 'addColumnToGrid');
+                cm = new ColumnManager({
                     url: '/api/0/forms/2/fields',
                     ordering: 5,
                     globalEvents: globalEvents
                 });
+            });
+
+            it("Renders the \"add field\" form when field's schema is ready", function () {
                 cm.model.trigger('schema-ready');
                 expect(ColumnManager.prototype.render).toHaveBeenCalled();
             });
 
+            it("Calls \"addColumnToGrid\" when the popup form is saved.", function () {
+                expect(cm.model instanceof Field).toBeTruthy();
+                cm.model.trigger('sync');
+                expect(ColumnManager.prototype.addColumnToGrid).toHaveBeenCalled();
+            });
+
+        });
+
+        describe("ColumnManager: Test modal", function () {
+            //add spies to prototype before you create the instance:
+            var cm;
+            beforeEach(function () {
+                cm = new ColumnManager({
+                    url: '/api/0/forms/2/fields',
+                    ordering: 5,
+                    globalEvents: globalEvents
+                });
+            });
+
+            it("Ensure modal has been rendered & that modal events work", function () {
+                cm.render();
+                expect(cm.addColumnForm).not.toBeNull();
+                expect(cm.modal).not.toBeNull();
+                spyOn(cm.addColumnForm, 'commit');
+                spyOn(cm.model, 'save');
+                cm.modal.trigger('ok');
+                expect(cm.addColumnForm.commit).toHaveBeenCalled();
+                expect(cm.model.save).toHaveBeenCalled();
+            });
         });
     });
