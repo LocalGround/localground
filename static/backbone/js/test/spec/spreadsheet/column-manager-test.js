@@ -6,8 +6,11 @@ define(["backbone",
         'use strict';
         var globalEvents = Backbone.Events;
         describe("ColumnManager: Test initialization", function () {
+            var cm;
+            afterEach(function () {
+                cm.$el.empty();
+            });
             it("Loads correctly if initialization params have been properly set.", function () {
-                var cm;
                 expect(function () {
                     cm = new ColumnManager({
                         url: '/api/0/forms/2/fields',
@@ -55,6 +58,9 @@ define(["backbone",
                     globalEvents: globalEvents
                 });
             });
+            afterEach(function () {
+                cm.$el.empty();
+            });
 
             it("Renders the \"add field\" form when field's schema is ready", function () {
                 cm.model.trigger('schema-ready');
@@ -78,6 +84,9 @@ define(["backbone",
                     ordering: 5,
                     globalEvents: globalEvents
                 });
+            });
+            afterEach(function () {
+                cm.$el.empty();
             });
 
             it("Ensure modal has been rendered & that modal events work", function () {

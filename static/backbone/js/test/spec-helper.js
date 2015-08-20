@@ -278,5 +278,12 @@ define(
             //intercepts all fetch calls and returns dummy data (as defined above):
             initAjaxSpies(this);
         });
+
+        afterEach(function () {
+            //clean up:
+            $("#map_canvas").remove();
+            $(".modal").remove();
+            $(".modal-backdrop").remove();
+        });
     }
 );
