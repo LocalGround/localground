@@ -2,79 +2,70 @@
  * http://backgridjs.com/ref/column.html#getting-the-column-definitions-from-the-server
  http://stackoverflow.com/questions/13358477/override-backbones-collection-fetch
  */
+var collection;
 define([
     "jquery",
     "backgrid",
+    "models/field",
     "lib/tables/cells/delete",
     "lib/tables/cells/image-cell",
     "lib/tables/cells/audio-cell",
     "lib/tables/formatters/lat",
     "lib/tables/formatters/lng"
-], function ($, Backgrid, DeleteCell, ImageCell, AudioCell, LatFormatter, LngFormatter) {
+], function ($, Backgrid, Field, DeleteCell, ImageCell, AudioCell, LatFormatter, LngFormatter) {
     "use strict";
     var Columns = Backgrid.Columns.extend({
             url: null,
-            excludeList: [
-                "overlay_type",
-                "url",
-                "manually_reviewed",
-                //"geometry",
-                "num",
-                "display_name" //,
-                //"id", //for now
-                //"project_id"
-            ],
+            //model: Field,
             initialize: function (opts) {
                 opts = opts || {};
+                var that = this;
                 $.extend(this, opts);
                 if (!this.url) {
                     alert("opts.url cannot be null");
                 }
-            },
-            fetch: function () {
-                /* Queries the Django REST Framework OPTIONS
-                 * page, which returns the API's schema as well
-                 * as the filterable columns.
-                 */
-                var that = this,
-                    cols;
-                $.ajax({
-                    // Note: the json must be appended in order for the OPTIONS
-                    // query to return JSON (it ignores the 'format' parameter)
-                    url: this.url + '.json',
-                    type: 'OPTIONS',
-                    data: { _method: 'OPTIONS' },
-                    success: function (data) {
-                        cols = that.getColumns(data.actions.POST);
-                        that.reset(cols);
-                    }
+                this.fetch({set: true, success: function () {
+                    that.addExtras();
+                }});
+                //this.on('reset', this.addExtras, this);
+                this.globalEvents.on("add-to-columns", function (model) {
+                    model = that.conformRecordToModel(model);
+                    that.add(model);
+                    console.log(that);
                 });
             },
+            conformRecordToModel: function (model) {
+                model.set("label", model.get("col_alias"));
+                model.set("name", model.get("col_name"));
+                model.set("width", 200); //Math.min(model.get("display_width"), 100));
+                model.set("headerCell", Columns.HeaderCell);
+                model.set("cell", this.wrapCell(Backgrid.StringCell));
+                return model;
+            },
+            parse: function (response) {
+                return response.results;
+            },
             showColumn: function (key) {
-                // check that not in exclude list and that doesn't end with the string
-                // "_detail."
-                if (this.excludeList.indexOf(key) === -1 && !/(^\w*_detail$)/.test(key)) {
+                // check that doesn't end with the string "_detail."
+                if (!/(^\w*_detail$)/.test(key)) {
                     return true;
                 }
                 return false;
             },
-            getColumns: function (fields) {
-                var that = this,
-                    i = 0,
-                    cols = [
-                        Columns.getDeleteCell()
-                    ];
-                $.each(fields, function (k, opts) {
-                    if (that.showColumn(k)) {
-                        cols = cols.concat(Columns.generateColumnsFromField(k, opts));
-                    }
+            addExtras: function () {
+                var that = this;
+                this.each(function (model) {
+                    model = that.conformRecordToModel(model);
                 });
-
-                //wrap each column in an overflow div:
-                for (i = 0; i < cols.length; i++) {
-                    cols[i].cell = this.wrapCell(cols[i].cell);
-                }
-                return cols;
+                console.log(this.models);
+                console.log(Columns.getLngCell());
+                var cell1 = _.extend(Columns.getLngCell(), {id: parseInt(Math.random() * 10000) });
+                var cell2 = _.extend(Columns.getLatCell(), {id: parseInt(Math.random() * 10000) });
+                var cell3 = _.extend(Columns.getDeleteCell(), {id: parseInt(Math.random() * 10000) });
+                //cell.cell = this.wrapCell(cell.cell);
+                this.add(cell1, {at: 0});
+                this.add(cell2, {at: 0});
+                this.add(cell3, {at: 0});
             },
 
             wrapCell: function (Cell) {
@@ -146,7 +137,6 @@ define([
                     };
                 },
                 generateColumnsFromField: function (k, opts) {
-                    console.log(opts);
                     var cols = [], cell, optionValues = [];
                     if (opts.type == 'geojson') {
                         cols.push(Columns.getLatCell());
@@ -180,7 +170,7 @@ define([
                             width: 140,
                             headerCell: Columns.HeaderCell
                         });
-                    } else if (opts.type == 'field' && opts.choices) {
+                    } /*else if (opts.type == 'field' && opts.choices) {
                         _.each(opts.choices, function (choice) {
                             optionValues.push([choice.display_name, choice.value]);
                         });
@@ -194,7 +184,7 @@ define([
                             width: 140,
                             headerCell: Columns.HeaderCell
                         });
-                    } else {
+                    }*/ else {
                         cell = Columns.getDefaultCell(k, opts);
                         if (k == 'id') {
                             cell.width = 30;
@@ -224,9 +214,14 @@ define([
                 },
                 HeaderCell: Backgrid.HeaderCell.extend({
                     events: {
-                        "click a.sorter": "onClick"
+                        "click a.sorter": "onClick",
+                        "click i.fa-trash-o": "deleteColumn"
+                    },
+                    deleteColumn: function () {
+                        this.column.destroy();
                     },
                     render: function () {
+                        //console.log(this.column);
                         this.$el.empty();
                         var column = this.column,
                             sortable = Backgrid.callByNeed(column.sortable(), column, this.collection),
@@ -236,11 +231,14 @@ define([
                         } else {
                             label = document.createTextNode(column.get("label"));
                         }
-                        this.$el.append($('<div class="column-menu"></div>').html(column.get("label")));
+                        this.$el.append(
+                            $('<div class="column-menu"></div>')
+                                //.html(column.get("label"))
+                                .append($('<i class="fa fa-trash-o" style="cursor:pointer;"></i>'))
+                        );
                         this.$el.append(label);
                         this.$el.addClass(column.get("name"));
                         this.$el.addClass(column.get("direction"));
-                        //this.$el.append($('<i class="fa fa-trash-o" style="cursor:pointer;"></i>'));
                         this.delegateEvents();
                         return this;
                     }

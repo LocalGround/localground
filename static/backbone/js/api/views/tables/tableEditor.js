@@ -78,11 +78,14 @@ define([
 
         },
         fetchColumns: function () {
+            //alert(this.url);
             this.columns = new Columns({
-                url: this.url
+                url: this.url.replace('data/', 'fields/'),
+                globalEvents: this.globalEvents
             });
             this.columns.on('reset', this.render, this);
-            this.columns.fetch();
+            this.columns.on('add', this.render, this);
+            this.columns.on('remove', this.render, this);
         },
         render: function () {
             var that = this;
@@ -104,7 +107,7 @@ define([
                 collection: this.records,
                 goBackFirstOnSort: false
             });
-            this.getRecords();
+            //this.getRecords();
             this.$el.find('.container-footer').html(this.paginator.render().el);
         },
         getRecords: function () {

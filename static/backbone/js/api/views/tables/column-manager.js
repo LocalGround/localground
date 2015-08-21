@@ -27,7 +27,10 @@ define([
             });
             // once the new field has been added to the database,
             //	add it to the table:
-            this.model.on('sync', this.addColumnToGrid, this);
+            //this.model.on('sync', this.addColumnToGrid, this);
+            /*this.globalEvents.on("insertRowTop", function (e) {
+                that.insertRowTop(e);
+            });*/
         },
         ensureRequiredParam: function (param) {
             if (!this[param]) {
@@ -41,8 +44,8 @@ define([
                     editable: true
                 },
                 cols = Columns.generateColumnsFromField(this.model.get("col_name"), opts);
-            console.log(cols);
-            this.globalEvents.trigger('insertColumnsToGrid', cols);
+            //console.log(cols);
+            //this.globalEvents.trigger('insertColumnsToGrid', cols);
         },
         render: function () {
             var that = this;
@@ -57,8 +60,10 @@ define([
                 content: this.addColumnForm
             }).open();
             this.modal.on('ok', function () {
-                that.addColumnForm.commit();    //does validation
-                that.model.save();              //does database commit
+                that.addColumnForm.commit();                //does validation
+                that.model.save(null, {success: function () {     //does database commit
+                    that.globalEvents.trigger("add-to-columns", that.model);
+                }});
             });
         }
     });

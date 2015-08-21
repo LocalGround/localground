@@ -295,5 +295,15 @@ td:hover .button-footer {
 .column-menu {
     background: url(../images/bg.png);
     padding: 2px 5px 2px 5px;
+    color: #999;
+    min-height: 20px;
 }
+.column-menu .fa {
+    display: none;
+}
+.column-menu:hover .fa {
+    display: block;
+    float: right;
+}
+
 
