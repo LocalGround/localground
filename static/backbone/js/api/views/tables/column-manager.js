@@ -20,6 +20,7 @@ define([
                 ordering: this.columns.length + 1,
                 urlRoot: this.url.replace('data/', 'fields/')
             });
+            //this.render();
         },
         ensureRequiredParam: function (param) {
             if (!this[param]) {
@@ -46,6 +47,7 @@ define([
                 that.model.url = that.columns.url;
                 that.model.save();
                 that.columns.add(that.model);
+                that.columns.trigger('render-grid');
                 /*that.model.save(null, {success: function () {     //does database commit
                     alert('saving');
                     that.globalEvents.trigger("add-to-columns", that.model);

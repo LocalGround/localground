@@ -7,27 +7,23 @@ define(["underscore", "backgrid", "collections/columns", "collections/dataTypes"
             dataTypes: new DataTypes(),
             initialize: function (data, opts) {
                 console.log(data);
-                Backgrid.Column.__super__.initialize.apply(this, arguments);
+                //Backgrid.Column.__super__.initialize.apply(this, arguments);
                 Field.__super__.initialize.apply(this, arguments);
+                this.fetchOptions();
                 //_.extend(this, opts);
                 //this.ensureUrlRoot();
-                //this.collection.on("change", this.conformRecordToModel, this);
+                //this.on("save", this.conformRecordToModel, this);
+                this.bind('sync', this.conformRecordToModel, this);
                 this.conformRecordToModel();
-                //this.fetchOptions();
             },
             conformRecordToModel: function () {
-                console.log('conform', this);
-                console.log(this instanceof Field);
-                //console.log(model instanceof Field);
+                console.log("CONFORM");
                 this.set("label", this.get("col_alias") || "SUP");
                 this.set("name", this.get("col_name") || "SUP");
                 this.set("width", 200); //Math.min(model.get("display_width"), 100));
                 if (!this.get("cell")) {
                     this.set("cell", Backgrid.StringCell);
                 }
-                //this.set("headerCell", Columns.HeaderCell);
-                //this.set("cell", Columns.wrapCell(Backgrid.StringCell));
-                console.log('success');
             },
             defaults: _.extend(Backgrid.Column.prototype.defaults, {
                 col_alias: 'New Column Name',

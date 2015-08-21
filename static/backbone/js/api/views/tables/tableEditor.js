@@ -68,6 +68,7 @@ define([
             });
 
             this.globalEvents.on("insertColumn", function (scope) {
+                alert("insertColumn!");
                 if (scope && scope instanceof TableEditor) { that = scope; }
                 if (that.columnManager) {
                     that.columnManager.destroy();

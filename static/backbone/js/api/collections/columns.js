@@ -24,7 +24,7 @@ define([
                 if (!this.url) {
                     alert("opts.url cannot be null");
                 }
-                this.fetch({set: true, success: function () {
+                this.fetch({set: true, data: { page_size: 100}, success: function () {
                     that.addExtras();
                 }});
                 /*this.globalEvents.on("add-to-columns", function (model) {
