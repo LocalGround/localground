@@ -27,7 +27,6 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
             this.loadGrid();
         },
         reset: function () {
-            //alert("add");
             this.initLayout();
         },
 

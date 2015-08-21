@@ -4,7 +4,7 @@ define([
     "backgrid",
     "views/tables/tableHeader",
     "views/tables/datagrid",
-    "views/tables/columns",
+    "collections/columns",
     "views/tables/column-manager",
     "collections/records",
     "collections/forms",
@@ -69,10 +69,13 @@ define([
 
             this.globalEvents.on("insertColumn", function (scope) {
                 if (scope && scope instanceof TableEditor) { that = scope; }
+                if (that.columnManager) {
+                    that.columnManager.destroy();
+                }
                 that.columnManager = new ColumnManager({
                     url: that.url,
                     globalEvents: that.globalEvents,
-                    ordering: that.columns.length + 1
+                    columns: that.columns
                 });
             });
 
@@ -83,11 +86,10 @@ define([
                 url: this.url.replace('data/', 'fields/'),
                 globalEvents: this.globalEvents
             });
-            this.columns.on('reset', this.render, this);
-            this.columns.on('add', this.render, this);
-            this.columns.on('remove', this.render, this);
+            this.columns.on('render-grid', this.render, this);
         },
         render: function () {
+            console.log('rendering table editor');
             var that = this;
             this.records = new Records([], {
                 url: this.url
@@ -107,7 +109,7 @@ define([
                 collection: this.records,
                 goBackFirstOnSort: false
             });
-            //this.getRecords();
+            this.getRecords();
             this.$el.find('.container-footer').html(this.paginator.render().el);
         },
         getRecords: function () {

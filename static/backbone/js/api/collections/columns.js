@@ -16,7 +16,7 @@ define([
     "use strict";
     var Columns = Backgrid.Columns.extend({
             url: null,
-            //model: Field,
+            model: Field,
             initialize: function (opts) {
                 opts = opts || {};
                 var that = this;
@@ -27,20 +27,15 @@ define([
                 this.fetch({set: true, success: function () {
                     that.addExtras();
                 }});
-                //this.on('reset', this.addExtras, this);
-                this.globalEvents.on("add-to-columns", function (model) {
-                    model = that.conformRecordToModel(model);
+                /*this.globalEvents.on("add-to-columns", function (model) {
+                    console.log('added model:', model);
                     that.add(model);
-                    console.log(that);
-                });
-            },
-            conformRecordToModel: function (model) {
-                model.set("label", model.get("col_alias"));
-                model.set("name", model.get("col_name"));
-                model.set("width", 200); //Math.min(model.get("display_width"), 100));
-                model.set("headerCell", Columns.HeaderCell);
-                model.set("cell", this.wrapCell(Backgrid.StringCell));
-                return model;
+                    model = that.conformRecordToModel(model);
+                    that.trigger('render-grid');
+                    //that.fetch({reset: true, success: function () {
+                    //    that.addExtras();
+                    //}});
+                });*/
             },
             parse: function (response) {
                 return response.results;
@@ -53,39 +48,19 @@ define([
                 return false;
             },
             addExtras: function () {
-                var that = this;
-                this.each(function (model) {
-                    model = that.conformRecordToModel(model);
-                });
-                console.log(this.models);
-                console.log(Columns.getLngCell());
-                var cell1 = _.extend(Columns.getLngCell(), {id: parseInt(Math.random() * 10000) });
-                var cell2 = _.extend(Columns.getLatCell(), {id: parseInt(Math.random() * 10000) });
-                var cell3 = _.extend(Columns.getDeleteCell(), {id: parseInt(Math.random() * 10000) });
-                //cell.cell = this.wrapCell(cell.cell);
+                var that = this,
+                    getDummyID = function () {
+                        return Math.floor(Math.random() * 10000);
+                    },
+                    cell1 = _.extend(Columns.getProjectCell(), {id: getDummyID() }),
+                    cell2 = _.extend(Columns.getLngCell(), {id: getDummyID() }),
+                    cell3 = _.extend(Columns.getLatCell(), {id: getDummyID() }),
+                    cell4 = _.extend(Columns.getDeleteCell(), {id: getDummyID() });
                 this.add(cell1, {at: 0});
                 this.add(cell2, {at: 0});
                 this.add(cell3, {at: 0});
-            },
-
-            wrapCell: function (Cell) {
-                //wraps each cell in an overflow div in order for column adjusting
-                //to work
-                var newCell = Cell.extend({
-                    render: function () {
-                        Cell.prototype.render.call(this, arguments);
-                        var idx = this.$el.index(),
-                            width = $('.backgrid').find("thead th:nth-child(" + (idx + 1) + ")").width();
-                        //console.log(width);
-                        this.$el.html(
-                            $('<div class="hide-overflow"></div>')
-                                .append(this.$el.html())
-                                .width(width)
-                        );
-                        return this;
-                    }
-                });
-                return newCell;
+                this.add(cell4, {at: 0});
+                this.trigger('render-grid');
             }
         },
             // static methods are the second arguments.
@@ -101,38 +76,50 @@ define([
                         editable: !opts.read_only,
                         headerCell: Columns.HeaderCell
                     };
-                    $.extend(defaultCell, Columns.cellTypeByNameLookup[opts.type] || Columns.defaultCellType);
+                    $.extend(defaultCell, Columns.getCellTypeByNameLookup[opts.type] || Columns.defaultCellType);
                     return defaultCell;
+                },
+                getProjectCell: function () {
+                    return {
+                        col_name: "project_id",
+                        col_alias: "Project",
+                        cell: Columns.wrapCell(Backgrid.SelectCell.extend({
+                            optionValues: [["Project 2", "2"], ["Project 3", "3"]]
+                        })),
+                        editable: true,
+                        width: 140,
+                        headerCell: Columns.HeaderCell
+                    };
                 },
                 getDeleteCell: function () {
                     return {
-                        name: "delete",
-                        label: "delete",
+                        col_name: "delete",
+                        col_alias: "delete",
                         editable: false,
-                        cell: DeleteCell,
-                        width: 40,
+                        cell: Columns.wrapCell(DeleteCell),
+                        width: 100,
                         headerCell: Columns.HeaderCell
                     };
                 },
                 getLatCell: function () {
                     return {
-                        name: "latitude",
-                        label: "Latitude",
-                        cell: Backgrid.NumberCell,
+                        col_name: "latitude",
+                        col_alias: "Latitude",
+                        cell: Columns.wrapCell(Backgrid.NumberCell),
                         formatter: LatFormatter,
                         editable: true,
-                        width: 80,
+                        width: 100,
                         headerCell: Columns.HeaderCell
                     };
                 },
                 getLngCell: function () {
                     return {
-                        name: "longitude",
-                        label: "Longitude",
-                        cell: Backgrid.NumberCell,
+                        col_name: "longitude",
+                        col_alias: "Longitude",
+                        cell: Columns.wrapCell(Backgrid.NumberCell),
                         formatter: LngFormatter,
                         editable: true,
-                        width: 80,
+                        width: 100,
                         headerCell: Columns.HeaderCell
                     };
                 },
@@ -150,7 +137,7 @@ define([
                             }),
                             editable: true,
                             width: 150,
-                            headerCell: Columns.HeaderCell
+                            headerCell: Columns.wrapCell(Columns.HeaderCell)
                         });
                     } else if (opts.type == 'photo') {
                         cols.push({
@@ -159,7 +146,7 @@ define([
                             cell: ImageCell,
                             editable: true, //false
                             width: 140,
-                            headerCell: Columns.HeaderCell
+                            headerCell: Columns.wrapCell(Columns.HeaderCell)
                         });
                     } else if (opts.type == 'audio') {
                         cols.push({
@@ -168,23 +155,9 @@ define([
                             cell: AudioCell,
                             editable: true, //false,
                             width: 140,
-                            headerCell: Columns.HeaderCell
+                            headerCell: Columns.wrapCell(Columns.HeaderCell)
                         });
-                    } /*else if (opts.type == 'field' && opts.choices) {
-                        _.each(opts.choices, function (choice) {
-                            optionValues.push([choice.display_name, choice.value]);
-                        });
-                        cols.push({
-                            name: k,
-                            label: opts.label,
-                            cell: Backgrid.SelectCell.extend({
-                                optionValues: optionValues
-                            }),
-                            editable: true,
-                            width: 140,
-                            headerCell: Columns.HeaderCell
-                        });
-                    }*/ else {
+                    } else {
                         cell = Columns.getDefaultCell(k, opts);
                         if (k == 'id') {
                             cell.width = 30;
@@ -193,24 +166,38 @@ define([
                     }
                     return cols;
                 },
-                cellTypeByNameLookup: {
-                    "integer": { cell: Backgrid.IntegerCell, width: 120 },
-                    "field": { cell: Backgrid.StringCell, width: 200 },
-                    "boolean": { cell: Backgrid.BooleanCell, width: 100 },
-                    "decimal": { cell: Backgrid.NumberCell, width: 120 },
-                    "date-time": { cell: Backgrid.DatetimeCell, width: 100 },
-                    "rating": { cell: Backgrid.IntegerCell, width: 120 },
-                    "string": { cell: Backgrid.StringCell, width: 200 },
-                    "memo": { cell: Backgrid.StringCell, width: 200 },
-                    "float": { cell: Backgrid.NumberCell, width: 120 }
+                getCellTypeByNameLookup: function (key) {
+                    var d = {
+                        "integer": { cell: Columns.wrapCell(Backgrid.IntegerCell), width: 120 },
+                        "field": { cell: Columns.wrapCell(Backgrid.StringCell), width: 200 },
+                        "boolean": { cell: Columns.wrapCell(Backgrid.BooleanCell), width: 100 },
+                        "decimal": { cell: Columns.wrapCell(Backgrid.NumberCell), width: 120 },
+                        "date-time": { cell: Columns.wrapCell(Backgrid.DatetimeCell), width: 100 },
+                        "rating": { cell: Columns.wrapCell(Backgrid.IntegerCell), width: 120 },
+                        "string": { cell: Columns.wrapCell(Backgrid.StringCell), width: 200 },
+                        "memo": { cell: Columns.wrapCell(Backgrid.StringCell), width: 200 },
+                        "float": { cell: Columns.wrapCell(Backgrid.NumberCell), width: 120 }
+                    };
+                    return d[key];
                 },
-                cellTypeByIdLookup: {
-                    "1": Backgrid.SelectCell, //"string",
-                    "2": Backgrid.IntegerCell,
-                    "3": Backgrid.DatetimeCell,
-                    "4": Backgrid.BooleanCell,
-                    "5": Backgrid.NumberCell,
-                    "6": Backgrid.IntegerCell
+                wrapCell: function (Cell) {
+                    //wraps each cell in an overflow div in order for column adjusting
+                    //to work
+                    var newCell = Cell.extend({
+                        render: function () {
+                            Cell.prototype.render.call(this, arguments);
+                            var idx = this.$el.index(),
+                                width = $('.backgrid').find("thead th:nth-child(" + (idx + 1) + ")").width();
+                            //console.log(width);
+                            this.$el.html(
+                                $('<div class="hide-overflow"></div>')
+                                    .append(this.$el.html())
+                                    .width(width)
+                            );
+                            return this;
+                        }
+                    });
+                    return newCell;
                 },
                 HeaderCell: Backgrid.HeaderCell.extend({
                     events: {
@@ -218,10 +205,12 @@ define([
                         "click i.fa-trash-o": "deleteColumn"
                     },
                     deleteColumn: function () {
+                        var collection = this.column.collection;
                         this.column.destroy();
+                        collection.trigger('render-grid');
                     },
                     render: function () {
-                        //console.log(this.column);
+                        console.log("rendering header column", this.column, this.column.get("name"), this.column.name);
                         this.$el.empty();
                         var column = this.column,
                             sortable = Backgrid.callByNeed(column.sortable(), column, this.collection),

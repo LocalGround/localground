@@ -1,10 +1,35 @@
-define(["underscore", "collections/dataTypes", "models/base"],
-    function (_, DataTypes, Base) {
+define(["underscore", "backgrid", "collections/columns", "collections/dataTypes", "models/base"],
+    function (_, Backgrid, Columns, DataTypes, Base) {
         'use strict';
-        var Field = Base.extend({
-            urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
+        //https://github.com/wyuenho/backgrid/blob/3b9f08c89281f3e0c13a63c559a6b76f4c940783/src/column.js
+        var Field = Backgrid.Column.extend({
+            urlRoot: null,
             dataTypes: new DataTypes(),
-            defaults: _.extend({}, Base.prototype.defaults, {
+            initialize: function (data, opts) {
+                console.log(data);
+                Backgrid.Column.__super__.initialize.apply(this, arguments);
+                Field.__super__.initialize.apply(this, arguments);
+                //_.extend(this, opts);
+                //this.ensureUrlRoot();
+                //this.collection.on("change", this.conformRecordToModel, this);
+                this.conformRecordToModel();
+                //this.fetchOptions();
+            },
+            conformRecordToModel: function () {
+                console.log('conform', this);
+                console.log(this instanceof Field);
+                //console.log(model instanceof Field);
+                this.set("label", this.get("col_alias") || "SUP");
+                this.set("name", this.get("col_name") || "SUP");
+                this.set("width", 200); //Math.min(model.get("display_width"), 100));
+                if (!this.get("cell")) {
+                    this.set("cell", Backgrid.StringCell);
+                }
+                //this.set("headerCell", Columns.HeaderCell);
+                //this.set("cell", Columns.wrapCell(Backgrid.StringCell));
+                console.log('success');
+            },
+            defaults: _.extend(Backgrid.Column.prototype.defaults, {
                 col_alias: 'New Column Name',
                 data_type: "text",
                 is_display_field: true,
@@ -14,8 +39,8 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 ordering: 1
             }),
             schema: {
-                data_type: { type: 'Select', options: [] },
                 col_alias: { type: 'Text', title: 'Column Name' },
+                data_type: { type: 'Select', options: [] },
                 is_display_field: 'Hidden',
                 display_width: 'Hidden',
                 is_printable: 'Hidden',
@@ -42,15 +67,13 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 this.schema.data_type.options = _.pluck(this.dataTypes.toJSON(), "name");
                 this.trigger('schema-ready');
             },
-            initialize: function (data, opts) {
-                Field.__super__.initialize.apply(this, arguments);
-                _.extend(this, opts);
-                this.ensureRequiredParam("urlRoot");
-                this.fetchOptions();
-            },
-            ensureRequiredParam: function (param) {
-                if (!this[param]) {
-                    throw "\"" + param + "\" initialization parameter is required";
+            ensureUrlRoot: function () {
+                if (!this.urlRoot) {
+                    if (this.collection) {
+                        this.urlRoot = this.collection.url;
+                    } else {
+                        throw "\"urlRoot\" initialization parameter is required";
+                    }
                 }
             }
         });
