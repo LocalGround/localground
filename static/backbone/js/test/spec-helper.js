@@ -11,6 +11,7 @@ define(
         "collections/markers",
         "collections/records",
         "collections/forms",
+        "collections/Columns",
         "collections/layers",
         "collections/dataTypes",
         "models/project",
@@ -21,13 +22,14 @@ define(
         "models/form",
         "models/mapimage",
         "models/layer",
-        "models/dataType"
+        "models/dataType",
+        "models/field"
     ],
     function (Backbone, $, appUtilities, DataManager,
               Projects, Photos, AudioFiles, MapImages, Markers,
-              Records, Forms, Layers, DataTypes,
+              Records, Forms, Columns, Layers, DataTypes,
               Project, Photo, Marker, Audio, Record, Form,
-              MapImage, Layer, DataType) {
+              MapImage, Layer, DataType, Field) {
         'use strict';
 
         var initAjaxSpies = function (scope) {
@@ -58,11 +60,16 @@ define(
                         response = { results: scope.dataTypes.toJSON() };
                     } else if (/\/api\/0\/forms\/\d+\/data\//.test(options.url)) {
                         response = { results: scope.records.toJSON() };
+                    } else if (/\/api\/0\/forms\/\d+\/fields\//.test(options.url)) {
+                        console.log('querying form fields');
+                        response = { results: scope.columns.toJSON() };
                     } else {
                         alert("No match. Please see the spec-helper.js \"initAjaxSpies\" function and add code to intercept the \"" + options.url + "\" AJAX request.");
                     }
                     break;
                 }
+                //console.log(response);
+                //debugger;
                 d.resolve(response);
                 options.success(response);
                 return d.promise();
@@ -134,6 +141,20 @@ define(
                     "audio_clip": {type: "audio", required: false, read_only: false, label: "Audio Clip"}
                 }}
             };
+            this.columns = new Columns([
+                new Field(
+                    { id: 1, form: 2, col_alias: "Tags", col_name: "tags", display_width: 100, ordering: 1, data_type: "text" },
+                    { urlRoot: '/api/0/forms/2/fields/' }
+                ),
+                new Field(
+                    { id: 2, form: 2, col_alias: "Photo", col_name: "photo", display_width: 100, ordering: 2, data_type: "photo" },
+                    { urlRoot: '/api/0/forms/2/fields/' }
+                ),
+                new Field(
+                    { id: 3, form: 2, col_alias: "Audio", col_name: "audio", display_width: 100, ordering: 3, data_type: "audio" },
+                    { urlRoot: '/api/0/forms/2/fields/' }
+                )
+            ], { 'url': '/api/0/forms/2/fields/' });
             this.layers = new Layers([
                 new Layer({id: 1, name: "worms", overlay_type: "layer", symbols: [
                     { color: "#7075FF", width: 30, rule: "worms > 0", title: "At least 1 worm" },
@@ -281,7 +302,7 @@ define(
 
         afterEach(function () {
             //clean up:
-            $("#map_canvas").remove();
+            //$("#map_canvas").remove();
             $(".modal").remove();
             $(".modal-backdrop").remove();
         });

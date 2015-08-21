@@ -1,25 +1,38 @@
 define(["backbone",
         "models/field",
+        "collections/columns",
         "views/tables/column-manager",
         "../../../test/spec-helper"],
-    function (Backbone, Field, ColumnManager) {
+    function (Backbone, Field, Columns, ColumnManager) {
         'use strict';
         var globalEvents = Backbone.Events;
         describe("ColumnManager: Test initialization", function () {
-            var cm;
-            afterEach(function () {
-                cm.$el.empty();
+            var cm,
+                url = '/api/0/forms/2/fields/',
+                columns = new Columns(null, {
+                    url: url,
+                    globalEvents: globalEvents
+                });
+            cm = new ColumnManager({
+                url: url,
+                columns: columns,
+                globalEvents: globalEvents
             });
+            //afterEach(function () {
+            //    cm.$el.empty();
+            //});
             it("Loads correctly if initialization params have been properly set.", function () {
+                expect(columns instanceof Columns).toBeTruthy();
+                expect(cm.columns instanceof Columns).toBeTruthy();
                 expect(function () {
                     cm = new ColumnManager({
-                        url: '/api/0/forms/2/fields',
-                        ordering: 5,
+                        url: url,
+                        columns: columns,
                         globalEvents: globalEvents
                     });
                 }).not.toThrow();
 
-                expect(function () {
+                /*expect(function () {
                     cm = new ColumnManager({ url: '/api/0/forms/2/fields' });
                 }).toThrow();
 
@@ -29,7 +42,7 @@ define(["backbone",
 
                 expect(function () {
                     cm = new ColumnManager();
-                }).toThrow();
+                }).toThrow();*/
             });
 
             it("Initializes parameters correctly", function () {

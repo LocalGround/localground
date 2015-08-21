@@ -6,7 +6,7 @@ require.config({
         'backbone.localStorage': '../backbone.localStorage-min',
         'backbone-pageable': '../external/backbone-pageable',
         'backbone-paginator': '../external/backbone.paginator',
-        'backgrid': '//cdnjs.cloudflare.com/ajax/libs/backgrid.js/0.3.5/backgrid', //, '../external/backgrid.min',
+        'backgrid': '//cdnjs.cloudflare.com/ajax/libs/backgrid.js/0.3.5/backgrid.min', //, '../external/backgrid.min',
         'backgrid-paginator': '../external/backgrid-paginator-svw-debugged',
         'boot': '/static/backbone/js/external/jasmine-2.1.3/boot',
         'bootstrap-form-templates': '../external/backbone-forms-bootstrap3-templates',

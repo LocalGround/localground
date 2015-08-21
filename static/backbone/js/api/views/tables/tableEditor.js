@@ -83,7 +83,7 @@ define([
         },
         fetchColumns: function () {
             //alert(this.url);
-            this.columns = new Columns({
+            this.columns = new Columns(null, {
                 url: this.url.replace('data/', 'fields/'),
                 globalEvents: this.globalEvents
             });

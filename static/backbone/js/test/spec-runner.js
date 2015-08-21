@@ -14,10 +14,11 @@ require(['boot'], function () {
         // COLLECTIONS
         'spec/collections/base-test.js',
         'spec/collections/layers-test.js',
+        'spec/collections/columns-test.js',
 
         // SPREADSHEET
-        'spec/spreadsheet/init-spreadsheet-test.js',
-        'spec/spreadsheet/column-manager-test.js',
+        //'spec/spreadsheet/init-spreadsheet-test.js',
+        //'spec/spreadsheet/column-manager-test.js',
 
         // VIEWS
         'spec/views/basemap-test.js',

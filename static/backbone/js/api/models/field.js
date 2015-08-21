@@ -1,29 +1,38 @@
-define(["underscore", "backgrid", "collections/columns", "collections/dataTypes", "models/base"],
-    function (_, Backgrid, Columns, DataTypes, Base) {
+define(["jquery",
+        "underscore",
+        "backgrid",
+        "collections/columns",
+        "collections/dataTypes",
+        "lib/tables/cells/cell-helpers"],
+    function ($, _, Backgrid, Columns, DataTypes, CellHelpers) {
         'use strict';
         //https://github.com/wyuenho/backgrid/blob/3b9f08c89281f3e0c13a63c559a6b76f4c940783/src/column.js
         var Field = Backgrid.Column.extend({
             urlRoot: null,
             dataTypes: new DataTypes(),
+            fetchOptions: null,
             initialize: function (data, opts) {
-                console.log(data);
-                //Backgrid.Column.__super__.initialize.apply(this, arguments);
+                opts = opts || {};
+                this.urlRoot = opts.urlRoot;
+                this.fetchOptions = opts.fetchOptions;
+                if (!this.urlRoot && (!this.collection || !this.collection.url)) {
+                    throw new Error("Field initialization error: either urlRoot or collection must be defined");
+                }
                 Field.__super__.initialize.apply(this, arguments);
-                this.fetchOptions();
-                //_.extend(this, opts);
-                //this.ensureUrlRoot();
-                //this.on("save", this.conformRecordToModel, this);
+                if (this.fetchOptions) {
+                    this.fetchOptions();
+                }
                 this.bind('sync', this.conformRecordToModel, this);
                 this.conformRecordToModel();
             },
             conformRecordToModel: function () {
-                console.log("CONFORM");
-                this.set("label", this.get("col_alias") || "SUP");
-                this.set("name", this.get("col_name") || "SUP");
-                this.set("width", 200); //Math.min(model.get("display_width"), 100));
+                this.set("label", this.get("col_alias"));
+                this.set("name", this.get("col_name"));
+                this.set("width", 200);
                 if (!this.get("cell")) {
-                    this.set("cell", Backgrid.StringCell);
+                    this.set("cell", this.getCell(this.get("data_type")));
                 }
+                this.set("headerCell", this.HeaderCell);
             },
             defaults: _.extend(Backgrid.Column.prototype.defaults, {
                 col_alias: 'New Column Name',
@@ -62,16 +71,8 @@ define(["underscore", "backgrid", "collections/columns", "collections/dataTypes"
             updateDataTypes: function () {
                 this.schema.data_type.options = _.pluck(this.dataTypes.toJSON(), "name");
                 this.trigger('schema-ready');
-            },
-            ensureUrlRoot: function () {
-                if (!this.urlRoot) {
-                    if (this.collection) {
-                        this.urlRoot = this.collection.url;
-                    } else {
-                        throw "\"urlRoot\" initialization parameter is required";
-                    }
-                }
             }
         });
+        _.extend(Field.prototype, CellHelpers);
         return Field;
     });

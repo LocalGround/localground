@@ -1,7 +1,7 @@
 define(["views/tables/tableEditor",
         "collections/records",
         "views/tables/column-manager",
-        "views/tables/columns",
+        "collections/columns",
         "../../../test/spec-helper"],
     function (TableEditor, Records, ColumnManager, Columns) {
         'use strict';

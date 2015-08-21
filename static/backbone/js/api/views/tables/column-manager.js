@@ -16,11 +16,9 @@ define([
             this.ensureRequiredParam("url");
             this.ensureRequiredParam("columns");
             this.ensureRequiredParam("globalEvents");
-            this.model = new Field({
-                ordering: this.columns.length + 1,
+            this.model = new Field(null, {
                 urlRoot: this.url.replace('data/', 'fields/')
             });
-            //this.render();
         },
         ensureRequiredParam: function (param) {
             if (!this[param]) {
@@ -28,7 +26,7 @@ define([
             }
         },
         render: function () {
-            alert("schema ready");
+            console.log("schema ready");
             var that = this,
                 modal,
                 FormClass = EditForm.extend({
