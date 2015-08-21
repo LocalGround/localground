@@ -69,6 +69,7 @@ define(["backbone",
 
             it("Calls \"addColumnToGrid\" when the popup form is saved.", function () {
                 expect(cm.model instanceof Field).toBeTruthy();
+                expect(cm.model.get("ordering")).toBe(5);
                 cm.model.trigger('sync');
                 expect(ColumnManager.prototype.addColumnToGrid).toHaveBeenCalled();
             });

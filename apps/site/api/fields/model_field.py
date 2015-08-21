@@ -11,6 +11,7 @@ class CustomModelField(PrimaryKeyRelatedField):
     type_label = 'field'
     
     def __init__(self, *args, **kwargs):
+        #raise Exception(kwargs)
         try:
             self.type_label = kwargs.pop('type_label')
         except KeyError:
@@ -22,11 +23,8 @@ class CustomModelField(PrimaryKeyRelatedField):
         
         related_model = _resolve_model(model_field.rel.to)
         kwargs = {
-            'queryset': related_model._default_manager
-            #,
-            #'many': False
+            'queryset': related_model._default_manager,
+            'allow_null': model_field.null or model_field.blank,
+            'required': not(model_field.null or model_field.blank)
         }
-        if model_field:
-            kwargs['required'] = not(model_field.null or model_field.blank)
-            
         super(CustomModelField, self).__init__(**kwargs)

@@ -72,7 +72,7 @@ define([
                 that.columnManager = new ColumnManager({
                     url: that.url,
                     globalEvents: that.globalEvents,
-                    ordering: that.columns.length
+                    ordering: that.columns.length + 1
                 });
             });
 

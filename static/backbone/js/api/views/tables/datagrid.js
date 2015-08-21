@@ -39,8 +39,8 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
             this.globalEvents.on("insertRowBottom", function (e) {
                 that.insertRowBottom(e);
             });
-            this.globalEvents.on("insertColumnConfirmed", function (e) {
-                that.insertColumn(e);
+            this.globalEvents.on("insertColumnsToGrid", function (e) {
+                that.insertColumns(e);
             });
         },
 
@@ -83,6 +83,12 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
                 columns: this.columns,
                 collection: this.records,
                 row: Row
+            });
+            this.listenTo(this.grid.collection, 'backgrid:next', function (i, j, outOfBound) {
+                console.log(i, j, outOfBound);
+                if (outOfBound) {
+                    this.grid.insertRow(this.blankRow, { at: (i + 1) });
+                }
             });
             this.listenTo(this, "row:added", this.initLayout);
             this.listenTo(this.records, "reset", this.initLayout);
@@ -144,13 +150,25 @@ define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
             e.preventDefault();
         },
 
-        insertColumn: function (columnDef) {
-            console.log(columnDef);
-            alert(columnDef);
-            this.$el.find('table').css({'width': 'auto'});
-            this.$el.find('th').css({'width': 'auto'});
-            this.grid.insertColumn([columnDef]);
-            this.makeColumnsResizable();
+        insertColumns: function (cols) {
+            var that = this;
+            console.log("len cols: ", this.columns.length);
+            _.each(cols, function (col) {
+                that.grid.insertColumn(col);
+                //that.columns.add(new Backgrid.Column(col));
+            });
+            
+            console.log("len cols: ", this.columns.length);
+            this.initLayout();
+            //this.render();
+            //this.resize();
+            //this.makeColumnsResizable();
+            /*this.initialize({
+                columns: this.columns,
+                records: this.records,
+                globalEvents: this.globalEvents,
+                app: this.app
+            });*/
         }
     });
     return DataGrid;

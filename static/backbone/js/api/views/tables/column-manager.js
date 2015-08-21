@@ -22,9 +22,8 @@ define([
             this.ensureRequiredParam("url");
             this.ensureRequiredParam("ordering");
             this.ensureRequiredParam("globalEvents");
-            this.model = new Field(null, {
-                urlRoot: this.url.replace('data/', 'fields/'),
-                ordering: this.ordering
+            this.model = new Field({ ordering: this.ordering }, {
+                urlRoot: this.url.replace('data/', 'fields/')
             });
             // once the new field has been added to the database,
             //	add it to the table:
@@ -36,13 +35,14 @@ define([
             }
         },
         addColumnToGrid: function () {
-            this.globalEvents.trigger('insertColumnConfirmed', {
-                name: this.model.get("col_name"),
-                label: this.model.get("col_alias"),
-                cell: Columns.cellTypeByIdLookup[this.model.get("data_type").toString()],
-                editable: true
-            });
-            //this.grid.insertColumn();
+            var opts = {
+                    name: this.model.get("col_name"),
+                    label: this.model.get("col_alias"),
+                    editable: true
+                },
+                cols = Columns.generateColumnsFromField(this.model.get("col_name"), opts);
+            console.log(cols);
+            this.globalEvents.trigger('insertColumnsToGrid', cols);
         },
         render: function () {
             var that = this;

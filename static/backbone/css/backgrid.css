@@ -35,10 +35,9 @@
 .backgrid th,
 .backgrid td {
     display: none;
-    height: 20px;
+    height: 30px;
     padding: 0px !important;
     overflow: hidden;
-    line-height: 20px;
     text-align: left;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -283,5 +282,18 @@ td:hover .button-footer {
 
 .table-bordered {
     border: none !important;
+}
+
+.backgrid th, .backgrid td {
+    padding: 0px !important;
+}
+
+.backgrid th > .sorter {
+    padding: 5px !important;
+}
+
+.column-menu {
+    background: url(../images/bg.png);
+    padding: 2px 5px 2px 5px;
 }
 

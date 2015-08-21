@@ -20,7 +20,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 display_width: 'Hidden',
                 is_printable: 'Hidden',
                 has_snippet_field: 'Hidden',
-                ordering: 'Hidden'
+                ordering: { type: 'Text', title: 'Column Position' }
             },
             getFormSchema: function () {
                 var key, val, formSchema = {};
@@ -43,10 +43,10 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 this.trigger('schema-ready');
             },
             initialize: function (data, opts) {
+                Field.__super__.initialize.apply(this, arguments);
                 _.extend(this, opts);
                 this.ensureRequiredParam("urlRoot");
                 this.fetchOptions();
-                Field.__super__.initialize.apply(this, arguments);
             },
             ensureRequiredParam: function (param) {
                 if (!this[param]) {
