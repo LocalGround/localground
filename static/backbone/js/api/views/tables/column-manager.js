@@ -23,7 +23,7 @@ define([
                 this.model = new Field(null, {
                     urlRoot: this.url.replace('data/', 'fields/')
                 });
-                this.model.set("ordering", this.columns.length + 1);
+                this.model.set("ordering", (this.columns.length + 1));
             }
             this.dataTypes.fetch({reset: true});
         },
@@ -44,7 +44,6 @@ define([
                 content: addColumnForm
             }).open();
             this.modal.on('ok', function () {
-                console.log(that.columns, that.model);
                 addColumnForm.commit();
                 that.model.url = that.columns.url;
                 that.model.save();

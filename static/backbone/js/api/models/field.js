@@ -40,7 +40,7 @@ define(["underscore",
                 display_width: 'Hidden',
                 is_printable: 'Hidden',
                 has_snippet_field: 'Hidden',
-                ordering: { type: 'Text', title: 'Column Position' }
+                ordering: { type: 'Number', title: 'Column Position' }
             },
             getFormSchema: function (dataTypes) {
                 if (!dataTypes) {

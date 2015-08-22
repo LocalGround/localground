@@ -73,36 +73,42 @@ define(["backbone",
                 expect(cm.modal.$el.html()).toContain('btn ok');
             });
 
-            it("sets the \"ordering\" parameter correctly", function () {
-                expect(cm.model instanceof Field).toBeTruthy();
+            it("ensure modal has been rendered & that modal events work", function () {
+                spyOn(cm.model, 'save');
+                cm.render();
+                cm.modal.trigger('ok');
                 expect(cm.model.get("ordering")).toBe(4);
+                expect(cm.model.save).toHaveBeenCalled();
             });
-
         });
 
-        describe("ColumnManager: Test modal", function () {
+        describe("ColumnManager: Test destructor", function () {
             //add spies to prototype before you create the instance:
             var cm;
             beforeEach(function () {
+                spyOn(ColumnManager.prototype, 'render');
+                spyOn(ColumnManager.prototype.dataTypes, 'fetch');
                 cm = new ColumnManager({
                     url: url,
                     columns: columns,
                     globalEvents: globalEvents
                 });
-            });
-            afterEach(function () {
-                cm.$el.empty();
+                columns.fetch();
             });
 
-            it("Ensure modal has been rendered & that modal events work", function () {
-                cm.render();
-                expect(cm.addColumnForm).not.toBeNull();
-                expect(cm.modal).not.toBeNull();
-                spyOn(cm.addColumnForm, 'commit');
-                spyOn(cm.model, 'save');
-                cm.modal.trigger('ok');
-                expect(cm.addColumnForm.commit).toHaveBeenCalled();
-                expect(cm.model.save).toHaveBeenCalled();
+            it("before destructor called $el and eventListeners work", function () {
+                expect(cm.$el).not.toBeNull();
+                cm.model.trigger('schema-ready');
+                expect(ColumnManager.prototype.render).toHaveBeenCalled();
             });
+
+            it("removes $el and destroys eventListeners", function () {
+                cm.destroy();
+                expect(cm.$el).toBeNull();
+                cm.model.trigger('schema-ready');
+                expect(ColumnManager.prototype.render).not.toHaveBeenCalled();
+            });
+
         });
+
     });

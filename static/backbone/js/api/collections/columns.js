@@ -29,7 +29,6 @@ define([
             return false;
         },
         addAdministrativeColumns: function () {
-            console.log(this);
             var getDummyID = function () {
                     return Math.floor(Math.random() * 10000);
                 },

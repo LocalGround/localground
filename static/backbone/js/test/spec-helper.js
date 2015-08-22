@@ -65,15 +65,12 @@ define(
                     } else if (/\/api\/0\/forms\/\d+\/data\//.test(options.url)) {
                         response = { results: scope.records.toJSON() };
                     } else if (/\/api\/0\/forms\/\d+\/fields\//.test(options.url)) {
-                        console.log('querying form fields');
                         response = { results: scope.columns.toJSON() };
                     } else {
                         alert("No match. Please see the spec-helper.js \"initAjaxSpies\" function and add code to intercept the \"" + options.url + "\" AJAX request.");
                     }
                     break;
                 }
-                //console.log(response);
-                //debugger;
                 d.resolve(response);
                 options.success(response);
                 return d.promise();
