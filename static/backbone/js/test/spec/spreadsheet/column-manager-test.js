@@ -65,7 +65,7 @@ define(["backbone",
                 columns.fetch();
             });
 
-            it("renders the form modal correctly", function () {
+            it("Renders the form modal correctly", function () {
                 cm.render();
                 expect(cm.modal instanceof Backbone.BootstrapModal).toBeTruthy();
                 expect(cm.modal.$el.find('.form-group').length).toBe(3);
@@ -73,7 +73,7 @@ define(["backbone",
                 expect(cm.modal.$el.html()).toContain('btn ok');
             });
 
-            it("ensure modal has been rendered & that modal events work", function () {
+            it("Ensure modal has been rendered & that modal events work", function () {
                 spyOn(cm.model, 'save');
                 cm.render();
                 cm.modal.trigger('ok');
@@ -96,13 +96,13 @@ define(["backbone",
                 columns.fetch();
             });
 
-            it("before destructor called $el and eventListeners work", function () {
+            it("Before destructor called $el and eventListeners work", function () {
                 expect(cm.$el).not.toBeNull();
                 cm.model.trigger('schema-ready');
                 expect(ColumnManager.prototype.render).toHaveBeenCalled();
             });
 
-            it("removes $el and destroys eventListeners", function () {
+            it("Removes $el and destroys eventListeners", function () {
                 cm.destroy();
                 expect(cm.$el).toBeNull();
                 cm.model.trigger('schema-ready');
