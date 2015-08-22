@@ -2,15 +2,12 @@ define(["jquery",
         "underscore",
         "backgrid",
         "collections/columns",
-        "collections/dataTypes",
         "lib/tables/cells/cell-helpers"],
-    function ($, _, Backgrid, Columns, DataTypes, CellHelpers) {
+    function ($, _, Backgrid, Columns, CellHelpers) {
         'use strict';
         //https://github.com/wyuenho/backgrid/blob/3b9f08c89281f3e0c13a63c559a6b76f4c940783/src/column.js
         var Field = Backgrid.Column.extend({
             urlRoot: null,
-            dataTypes: new DataTypes(),
-            fetchOptions: null,
             initialize: function (data, opts) {
                 opts = opts || {};
                 this.urlRoot = opts.urlRoot;
@@ -19,9 +16,6 @@ define(["jquery",
                     throw new Error("Field initialization error: either urlRoot or collection must be defined");
                 }
                 Field.__super__.initialize.apply(this, arguments);
-                if (this.fetchOptions) {
-                    this.fetchOptions();
-                }
                 this.bind('sync', this.conformRecordToModel, this);
                 this.conformRecordToModel();
             },
@@ -52,8 +46,9 @@ define(["jquery",
                 has_snippet_field: 'Hidden',
                 ordering: { type: 'Text', title: 'Column Position' }
             },
-            getFormSchema: function () {
+            getFormSchema: function (dataTypes) {
                 var key, val, formSchema = {};
+                this.schema.data_type.options = _.pluck(dataTypes.toJSON(), "name");
                 for (key in this.schema) {
                     val = this.schema[key];
                     formSchema[key] = {
@@ -63,14 +58,6 @@ define(["jquery",
                     };
                 }
                 return formSchema;
-            },
-            fetchOptions: function () {
-                this.dataTypes.fetch({reset: true});
-                this.dataTypes.on('reset', this.updateDataTypes, this);
-            },
-            updateDataTypes: function () {
-                this.schema.data_type.options = _.pluck(this.dataTypes.toJSON(), "name");
-                this.trigger('schema-ready');
             }
         });
         _.extend(Field.prototype, CellHelpers);

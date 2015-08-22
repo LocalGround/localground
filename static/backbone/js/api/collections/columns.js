@@ -12,16 +12,18 @@ define([
     var Columns = Backgrid.Columns.extend({
         url: null,
         model: Field,
+        doFetch: false,
         initialize: function (data, opts) {
             opts = opts || {};
             var that = this;
             $.extend(this, opts);
             if (!this.url) {
-                alert("opts.url cannot be null");
+                throw new Error("opts.url cannot be null");
             }
-            this.fetch({set: true, data: { page_size: 100}, success: function () {
-                that.addAdministrativeColumns();
-            }});
+            this.on('reset', this.addAdministrativeColumns, this);
+            if (this.doFetch) {
+                this.fetch({reset: true, data: { page_size: 100 }});
+            }
         },
         parse: function (response) {
             return response.results;

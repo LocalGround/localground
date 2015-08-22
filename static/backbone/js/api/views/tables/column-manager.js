@@ -2,12 +2,14 @@ define([
     "backbone",
     "marionette",
     "models/field",
+    "collections/dataTypes",
     "form",
     "bootstrap-form-templates",
     "backbone-bootstrap-modal"
-], function (Backbone, Marionette, Field, EditForm) {
+], function (Backbone, Marionette, Field, DataTypes, EditForm) {
 	"use strict";
     var ColumnManager = Marionette.ItemView.extend({
+        dataTypes: new DataTypes(),
         modelEvents: {
             'schema-ready': 'render'
         },
@@ -19,6 +21,8 @@ define([
             this.model = new Field(null, {
                 urlRoot: this.url.replace('data/', 'fields/')
             });
+            this.dataTypes.fetch({reset: true});
+            //this.dataTypes.on('reset', this.render, this);
         },
         ensureRequiredParam: function (param) {
             if (!this[param]) {
@@ -26,11 +30,11 @@ define([
             }
         },
         render: function () {
-            console.log("schema ready");
+            //console.log("schema ready");
             var that = this,
                 modal,
                 FormClass = EditForm.extend({
-                    schema: this.model.getFormSchema()
+                    schema: this.model.getFormSchema(this.dataTypes)
                 }),
                 addColumnForm = new FormClass({
                     model: this.model

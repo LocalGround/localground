@@ -40,6 +40,12 @@ define([
                 projectID: opts.projectID
             };
             this.forms = new Forms();
+            this.tableHeader = new TableHeader({
+                collection: this.forms,
+                globalEvents: this.globalEvents,
+                app: this.app
+            });
+
             AppRouter = Backbone.Router.extend({
                 routes: {
                     ":id": "get-table-data"
@@ -47,47 +53,37 @@ define([
             });
 
             this.router = this.app.router = new AppRouter();
-            this.router.on('route:get-table-data', function (id) {
-                that.app.activeTableID = id;
-                that.url = '/api/0/forms/' + id + '/data/';
-                that.fetchColumns();
-            });
-
-            // Start Backbone history a necessary step for bookmarkable URL's
+            this.router.on('route:get-table-data', this.createTableSchema, this);
             try { Backbone.history.start(); } catch (ex) {}
-            this.tableHeader = new TableHeader({
-                collection: this.forms,
-                globalEvents: this.globalEvents,
-                app: this.app
-            });
-
-            that.globalEvents.on("requery", function (sql) {
+            this.attachEventHandlers();
+        },
+        attachEventHandlers: function () {
+            var that = this;
+            this.globalEvents.on("requery", function (sql) {
                 that.query = sql;
                 //that.getRecords({query: sql});
                 that.getRecords();
             });
 
             this.globalEvents.on("insertColumn", function (scope) {
-                alert("insertColumn!");
                 if (scope && scope instanceof TableEditor) { that = scope; }
-                if (that.columnManager) {
-                    that.columnManager.destroy();
-                }
-                that.columnManager = new ColumnManager({
-                    url: that.url,
-                    globalEvents: that.globalEvents,
-                    columns: that.columns
-                });
+                that.columnManager.render();
             });
-
         },
-        fetchColumns: function () {
-            //alert(this.url);
+        createTableSchema: function (id) {
+            this.app.activeTableID = id;
+            this.url = '/api/0/forms/' + id + '/data/';
             this.columns = new Columns(null, {
                 url: this.url.replace('data/', 'fields/'),
                 globalEvents: this.globalEvents
             });
+            this.columns.fetch({reset: true, data: { page_size: 100 }});
             this.columns.on('render-grid', this.render, this);
+            this.columnManager = new ColumnManager({
+                url: this.url,
+                globalEvents: this.globalEvents,
+                columns: this.columns
+            });
         },
         render: function () {
             console.log('rendering table editor');
