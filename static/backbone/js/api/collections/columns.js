@@ -3,27 +3,20 @@
  http://stackoverflow.com/questions/13358477/override-backbones-collection-fetch
  */
 define([
-    "jquery",
     "backgrid",
     "models/field",
     "lib/tables/cells/cell-helpers"
-], function ($, Backgrid, Field, CellHelpers) {
+], function (Backgrid, Field, CellHelpers) {
     "use strict";
     var Columns = Backgrid.Columns.extend({
         url: null,
         model: Field,
-        doFetch: false,
         initialize: function (data, opts) {
-            opts = opts || {};
-            var that = this;
-            $.extend(this, opts);
+            try { this.url = opts.url; } catch (e) {}
             if (!this.url) {
                 throw new Error("opts.url cannot be null");
             }
             this.on('reset', this.addAdministrativeColumns, this);
-            if (this.doFetch) {
-                this.fetch({reset: true, data: { page_size: 100 }});
-            }
         },
         parse: function (response) {
             return response.results;
@@ -53,11 +46,7 @@ define([
         toJSON: function () {
             var json = [];
             this.each(function (model) {
-                json.push({
-                    id: model.get("id"),
-                    col_name: model.get("col_name"),
-                    col_alias: model.get("col_alias")
-                });
+                json.push(model.toJSON());
             });
             return json;
         }

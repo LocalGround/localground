@@ -1,16 +1,13 @@
-define(["jquery",
-        "underscore",
+define(["underscore",
         "backgrid",
-        "collections/columns",
         "lib/tables/cells/cell-helpers"],
-    function ($, _, Backgrid, Columns, CellHelpers) {
+    function (_, Backgrid, CellHelpers) {
         'use strict';
         //https://github.com/wyuenho/backgrid/blob/3b9f08c89281f3e0c13a63c559a6b76f4c940783/src/column.js
         var Field = Backgrid.Column.extend({
             urlRoot: null,
             initialize: function (data, opts) {
-                opts = opts || {};
-                this.urlRoot = opts.urlRoot;
+                try { this.urlRoot = opts.urlRoot; } catch (e) {}
                 if (!this.urlRoot && (!this.collection || !this.collection.url)) {
                     throw new Error("Field initialization error: either urlRoot or collection must be defined");
                 }
@@ -33,7 +30,7 @@ define(["jquery",
                 is_display_field: true,
                 display_width: 100,
                 is_printable: true,
-                has_snippet_field: true,
+                has_snippet_field: false,
                 ordering: 1
             }),
             schema: {
@@ -46,6 +43,9 @@ define(["jquery",
                 ordering: { type: 'Text', title: 'Column Position' }
             },
             getFormSchema: function (dataTypes) {
+                if (!dataTypes) {
+                    throw new Error("Field model error: dataTypes (a DataTypes collection) is a required argument.");
+                }
                 var key, val, formSchema = {};
                 this.schema.data_type.options = _.pluck(dataTypes.toJSON(), "name");
                 for (key in this.schema) {
@@ -57,6 +57,15 @@ define(["jquery",
                     };
                 }
                 return formSchema;
+            },
+            toJSON: function () {
+                var that = this,
+                    d = {},
+                    fields = ["col_alias", "col_name", "data_type", "display_width", "ordering"];
+                _.each(fields, function (key) {
+                    d[key] = that.get(key);
+                });
+                return d;
             }
         });
         _.extend(Field.prototype, CellHelpers);

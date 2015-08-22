@@ -22,7 +22,6 @@ define([
                 urlRoot: this.url.replace('data/', 'fields/')
             });
             this.dataTypes.fetch({reset: true});
-            //this.dataTypes.on('reset', this.render, this);
         },
         ensureRequiredParam: function (param) {
             if (!this[param]) {

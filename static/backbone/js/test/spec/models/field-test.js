@@ -13,7 +13,7 @@ define(["models/field",
                 expect(model.defaults.data_type).toBe('text');
                 expect(model.defaults.is_display_field).toBe(true);
                 expect(model.defaults.is_printable).toBe(true);
-                expect(model.defaults.has_snippet_field).toBe(true);
+                expect(model.defaults.has_snippet_field).toBe(false);
                 expect(model.defaults.ordering).toBe(1);
                 expect(function () {
                     model = new Field(null, {});
@@ -22,6 +22,9 @@ define(["models/field",
 
             it("Generates a valid form schema", function () {
                 model = new Field(null, { urlRoot: '/api/0/forms/2/fields/' });
+                expect(function () {
+                    model.getFormSchema();
+                }).toThrow();
                 expect(Object.keys(model.getFormSchema(this.dataTypes)).length).toBe(7);
                 expect(model.schema.data_type.options.length).toBe(8);
             });

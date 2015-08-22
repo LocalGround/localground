@@ -35,6 +35,10 @@ define(
         var initAjaxSpies = function (scope) {
             /* Suggestion taken from:
              * http://blog.ricca509.me/jasmine-mock-ajax-for-backbone-requests
+             * IMPORTANT NOTE: This intercepts ajax requests that are issued directly
+             * from the tests, but does not intercept ajax requests from the source
+             * code. So, it's important that you capture those requests via method
+             * spies, or else the tests will slam the server and run very slowly.
              */
             spyOn($, 'ajax').and.callFake(function (options) {
                 var d = $.Deferred(),

@@ -7,6 +7,9 @@ define(["backbone",
         'use strict';
         var globalEvents = Backbone.Events;
         describe("ColumnManager: Test initialization", function () {
+            beforeEach(function () {
+                spyOn(ColumnManager.prototype.dataTypes, 'fetch');
+            });
             var cm,
                 url = '/api/0/forms/2/fields/',
                 columns = new Columns(null, {

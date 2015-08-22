@@ -74,8 +74,7 @@ define([
             this.app.activeTableID = id;
             this.url = '/api/0/forms/' + id + '/data/';
             this.columns = new Columns(null, {
-                url: this.url.replace('data/', 'fields/'),
-                globalEvents: this.globalEvents
+                url: this.url.replace('data/', 'fields/')
             });
             this.columns.fetch({reset: true, data: { page_size: 100 }});
             this.columns.on('render-grid', this.render, this);
