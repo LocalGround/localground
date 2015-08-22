@@ -5,28 +5,19 @@ define(["backbone",
         "../../../test/spec-helper"],
     function (Backbone, Field, Columns, ColumnManager) {
         'use strict';
-        var globalEvents = Backbone.Events;
+        var globalEvents = Backbone.Events,
+            cm,
+            url = '/api/0/forms/2/fields/',
+            columns = new Columns(null, {
+                url: '/api/0/forms/2/fields/'
+            });
         describe("ColumnManager: Test initialization", function () {
             beforeEach(function () {
                 spyOn(ColumnManager.prototype.dataTypes, 'fetch');
+                spyOn(ColumnManager.prototype, 'render');
             });
-            var cm,
-                url = '/api/0/forms/2/fields/',
-                columns = new Columns(null, {
-                    url: url,
-                    globalEvents: globalEvents
-                });
-            cm = new ColumnManager({
-                url: url,
-                columns: columns,
-                globalEvents: globalEvents
-            });
-            //afterEach(function () {
-            //    cm.$el.empty();
-            //});
+
             it("Loads correctly if initialization params have been properly set.", function () {
-                expect(columns instanceof Columns).toBeTruthy();
-                expect(cm.columns instanceof Columns).toBeTruthy();
                 expect(function () {
                     cm = new ColumnManager({
                         url: url,
@@ -35,59 +26,56 @@ define(["backbone",
                     });
                 }).not.toThrow();
 
-                /*expect(function () {
-                    cm = new ColumnManager({ url: '/api/0/forms/2/fields' });
+                expect(function () {
+                    cm = new ColumnManager({ url: url });
                 }).toThrow();
 
                 expect(function () {
-                    cm = new ColumnManager({ ordering: 1 });
+                    cm = new ColumnManager({ columns: columns });
                 }).toThrow();
 
                 expect(function () {
                     cm = new ColumnManager();
-                }).toThrow();*/
+                }).toThrow();
             });
 
-            it("Initializes parameters correctly", function () {
-                //add spy to prototype before you create the instance:
-                spyOn(ColumnManager.prototype, 'addColumnToGrid');
+            it("Sets parameters & triggers events correctly on initialization", function () {
                 var cm = new ColumnManager({
-                    url: '/api/0/forms/2/fields',
-                    ordering: 5,
+                    url: url,
+                    columns: columns,
                     globalEvents: globalEvents
                 });
                 expect(cm.model instanceof Field).toBeTruthy();
-                cm.model.trigger('sync');
-                expect(ColumnManager.prototype.addColumnToGrid).toHaveBeenCalled();
-            });
-        });
-
-        describe("ColumnManager: Test events", function () {
-            //add spies to prototype before you create the instance:
-            var cm;
-            beforeEach(function () {
-                spyOn(ColumnManager.prototype, 'render');
-                spyOn(ColumnManager.prototype, 'addColumnToGrid');
-                cm = new ColumnManager({
-                    url: '/api/0/forms/2/fields',
-                    ordering: 5,
-                    globalEvents: globalEvents
-                });
-            });
-            afterEach(function () {
-                cm.$el.empty();
-            });
-
-            it("Renders the \"add field\" form when field's schema is ready", function () {
+                expect(ColumnManager.prototype.dataTypes.fetch).toHaveBeenCalled();
                 cm.model.trigger('schema-ready');
                 expect(ColumnManager.prototype.render).toHaveBeenCalled();
             });
+        });
 
-            it("Calls \"addColumnToGrid\" when the popup form is saved.", function () {
+        describe("ColumnManager: Test renderer", function () {
+            //add spies to prototype before you create the instance:
+            var cm;
+            beforeEach(function () {
+                spyOn(ColumnManager.prototype.dataTypes, 'fetch');
+                cm = new ColumnManager({
+                    url: url,
+                    columns: columns,
+                    globalEvents: globalEvents
+                });
+                columns.fetch();
+            });
+
+            it("renders the form modal correctly", function () {
+                cm.render();
+                expect(cm.modal instanceof Backbone.BootstrapModal).toBeTruthy();
+                expect(cm.modal.$el.find('.form-group').length).toBe(3);
+                expect(cm.modal.$el.html()).toContain('btn cancel');
+                expect(cm.modal.$el.html()).toContain('btn ok');
+            });
+
+            it("sets the \"ordering\" parameter correctly", function () {
                 expect(cm.model instanceof Field).toBeTruthy();
-                expect(cm.model.get("ordering")).toBe(5);
-                cm.model.trigger('sync');
-                expect(ColumnManager.prototype.addColumnToGrid).toHaveBeenCalled();
+                expect(cm.model.get("ordering")).toBe(4);
             });
 
         });
@@ -97,8 +85,8 @@ define(["backbone",
             var cm;
             beforeEach(function () {
                 cm = new ColumnManager({
-                    url: '/api/0/forms/2/fields',
-                    ordering: 5,
+                    url: url,
+                    columns: columns,
                     globalEvents: globalEvents
                 });
             });

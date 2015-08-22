@@ -10,6 +10,7 @@ define([
 	"use strict";
     var ColumnManager = Marionette.ItemView.extend({
         dataTypes: new DataTypes(),
+        modal: null,
         modelEvents: {
             'schema-ready': 'render'
         },
@@ -18,9 +19,12 @@ define([
             this.ensureRequiredParam("url");
             this.ensureRequiredParam("columns");
             this.ensureRequiredParam("globalEvents");
-            this.model = new Field(null, {
-                urlRoot: this.url.replace('data/', 'fields/')
-            });
+            if (!this.model) {
+                this.model = new Field(null, {
+                    urlRoot: this.url.replace('data/', 'fields/')
+                });
+                this.model.set("ordering", this.columns.length + 1);
+            }
             this.dataTypes.fetch({reset: true});
         },
         ensureRequiredParam: function (param) {
@@ -29,31 +33,23 @@ define([
             }
         },
         render: function () {
-            //console.log("schema ready");
             var that = this,
-                modal,
                 FormClass = EditForm.extend({
                     schema: this.model.getFormSchema(this.dataTypes)
                 }),
                 addColumnForm = new FormClass({
                     model: this.model
                 }).render();
-
-            modal = new Backbone.BootstrapModal({
+            this.modal = new Backbone.BootstrapModal({
                 content: addColumnForm
             }).open();
-            modal.on('ok', function () {
+            this.modal.on('ok', function () {
                 console.log(that.columns, that.model);
                 addColumnForm.commit();
                 that.model.url = that.columns.url;
                 that.model.save();
                 that.columns.add(that.model);
                 that.columns.trigger('render-grid');
-                /*that.model.save(null, {success: function () {     //does database commit
-                    alert('saving');
-                    that.globalEvents.trigger("add-to-columns", that.model);
-                    that.model.set("ordering", ++that.ordering);
-                }});*/
             });
         },
         destroy: function () {
