@@ -21,20 +21,20 @@ define(["models/field",
             });
 
             it("Generates a valid form schema", function () {
-                spyOn(Field.prototype, 'fetchOptions');
                 model = new Field(null, { urlRoot: '/api/0/forms/2/fields/' });
-                expect(Object.keys(model.getFormSchema()).length).toBe(7);
-                expect(model.fetchOptions).toHaveBeenCalled();
+                expect(Object.keys(model.getFormSchema(this.dataTypes)).length).toBe(7);
+                expect(model.schema.data_type.options.length).toBe(8);
             });
 
-            it("Triggers the 'schema-ready' event after fetching options", function () {
-                var spy;
-                model = new Field(null, { urlRoot: '/api/0/forms/2/fields/' });
-                spy = jasmine.createSpy('event');
-                model.on('schema-ready', spy);
-                model.fetchOptions();
-                expect(spy).toHaveBeenCalled();
-                expect(model.schema.data_type.options.length).toBe(8);
+            it("Generates the required model attributes for a BackGrid Column model", function () {
+                model = new Field(
+                    { id: 1, form: 2, col_alias: "Tags", col_name: "tags", display_width: 100, ordering: 1, data_type: "text" },
+                    { urlRoot: '/api/0/forms/2/fields/' }
+                );
+                expect(model.get("label")).toBe(model.get("col_alias"));
+                expect(model.get("name")).toBe(model.get("col_name"));
+                expect(model.get("cell")).not.toBeNull();
+                expect(model.get("headerCell")).not.toBeNull();
             });
 
         });

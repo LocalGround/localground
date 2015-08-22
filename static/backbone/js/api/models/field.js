@@ -11,7 +11,6 @@ define(["jquery",
             initialize: function (data, opts) {
                 opts = opts || {};
                 this.urlRoot = opts.urlRoot;
-                this.fetchOptions = opts.fetchOptions;
                 if (!this.urlRoot && (!this.collection || !this.collection.url)) {
                     throw new Error("Field initialization error: either urlRoot or collection must be defined");
                 }
