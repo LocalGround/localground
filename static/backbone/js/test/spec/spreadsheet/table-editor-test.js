@@ -16,6 +16,7 @@ define(["views/tables/tableEditor",
         describe("TableEditor: Test that initializes correctly", function () {
             var tableEditor;
             beforeEach(function () {
+                spyOn(TableEditor.prototype, 'getRecords');
                 tableEditor = initTableEditor(this);
             });
 
@@ -26,14 +27,21 @@ define(["views/tables/tableEditor",
                         projectID: that.projects.models[0].id
                     });
                 }).not.toThrow();
+                expect(function () {
+                    tableEditor = new TableEditor();
+                }).toThrow();
             });
 
             it("Initializes all needed properties", function () {
-                expect(tableEditor.forms).not.toBeNull();
                 expect(tableEditor.app).not.toBeNull();
                 expect(tableEditor.router).not.toBeNull();
                 expect(tableEditor.tableHeader).not.toBeNull();
                 expect(tableEditor.globalEvents).not.toBeNull();
+            });
+
+            it("Initializes event handlers", function () {
+                tableEditor.globalEvents.trigger('requery');
+                expect(TableEditor.prototype.getRecords).toHaveBeenCalled();
             });
 
         });
