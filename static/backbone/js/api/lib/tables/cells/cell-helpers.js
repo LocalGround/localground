@@ -96,7 +96,7 @@ define([
                 collection.trigger('render-grid');
             },
             render: function () {
-                console.log("rendering header column", this.column, this.column.get("name"), this.column.name);
+                //console.log("rendering header column", this.column, this.column.get("name"), this.column.name);
                 this.$el.empty();
                 var column = this.column,
                     sortable = Backgrid.callByNeed(column.sortable(), column, this.collection),
