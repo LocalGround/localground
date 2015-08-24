@@ -41,14 +41,14 @@ define([
             this.add(cell3, {at: 0});
             this.add(cell4, {at: 0});
             this.trigger('render-grid');
-        },
+        }/*,
         toJSON: function () {
             var json = [];
             this.each(function (model) {
                 json.push(model.toJSON());
             });
             return json;
-        }
+        }*/
     });
     _.extend(Columns.prototype, CellHelpers);
     return Columns;

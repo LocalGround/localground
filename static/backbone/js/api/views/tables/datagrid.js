@@ -26,12 +26,12 @@ define(["backbone",
             this.recordsURL = '/api/0/forms/' + this.app.activeTableID + '/data/';
             this.blankRow = { project_id: this.app.projectID };
             this.columns = new Columns(null, { url: this.columnsURL });
+            this.records = new Records(null, { url: this.recordsURL, mode: "client" });
             this.columnManager = new ColumnManager({
                 url: this.columnsURL,
                 globalEvents: this.globalEvents,
                 columns: this.columns
             });
-            this.records = new Records([], { url: this.recordsURL });
             this.grid = new Backgrid.Grid({
                 body: this.getGridBody(),
                 columns: this.columns,
@@ -63,35 +63,41 @@ define(["backbone",
                 that.columnManager.render();
             });
 
-            this.columns.on('render-grid', this.initGrid, this);
+            //this.columns.on('render-grid', this.initGrid, this);
+            this.columns.on('reset', this.initGrid, this);
+            this.records.on('init-grid', this.render, this);
 
-            this.listenTo(this.grid.collection, 'backgrid:next', function (i, j, outOfBound) {
+            this.listenTo(this.records, 'backgrid:next', function (i, j, outOfBound) {
                 console.log(i, j, outOfBound);
                 if (outOfBound) {
                     this.grid.insertRow(this.blankRow, { at: (i + 1) });
                 }
             });
-            this.listenTo(this.grid.collection, "backgrid:sort", function () { alert("sorting!"); });
         },
 
         getColumns: function () {
+            console.log('getColumns');
             this.columns.fetch({reset: true, data: { page_size: 100 }});
         },
 
         getRecords: function () {
+            console.log('getRecords');
             this.records.query = this.query;
             //	Make sure when a query is issued,
             //	the current page is reset to the first page:
             this.records.state.currentPage = 1;
             this.records.fetch({ reset: true, data: { format: 'json' } });
+            this.records.trigger('init-grid');
         },
 
         initGrid: function () {
+            console.log('initGrid');
             this.getRecords();
-            this.render();
+            //this.render();
         },
 
         render: function () {
+            console.log('render');
             this.$el.html(this.grid.render().el);
         },
 

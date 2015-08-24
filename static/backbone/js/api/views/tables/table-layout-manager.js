@@ -4,11 +4,10 @@ define(["jquery", "backbone"], function ($, Backbone) {
         datagrid: null,
         $el: null,
         initialize: function (opts) {
-            return;
             $.extend(this, opts);
             this.$el = this.datagrid.$el;
             this.listenTo(this.datagrid, "row:added", this.initLayout);
-            this.listenTo(this.datagrid.records, "reset", this.initLayout);
+            //this.listenTo(this.datagrid.records, "reset", this.initLayout);
         },
 
         initLayout: function () {

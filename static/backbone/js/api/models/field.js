@@ -57,7 +57,7 @@ define(["underscore",
                     };
                 }
                 return formSchema;
-            },
+            }/*,
             toJSON: function () {
                 var that = this,
                     d = {},
@@ -66,7 +66,7 @@ define(["underscore",
                     d[key] = that.get(key);
                 });
                 return d;
-            }
+            }*/
         });
         _.extend(Field.prototype, CellHelpers);
         return Field;
