@@ -1,13 +1,13 @@
 define(["jquery",
         "backbone",
-        "collections/forms",
         "jquery.bootstrap"
-        ], function ($, Backbone, Forms) {
+        ], function ($, Backbone) {
     "use strict";
     var TableHeader = Backbone.View.extend({
         el: "#navbar",
         globalEvents: null,
         events: {
+            //'click .change-table': 'triggerLoadTable',
             'click #add_row_top': 'triggerInsertRowTop',
             'click #add_row_bottom': 'triggerInsertRowBottom',
             'click .query': 'triggerQuery',
@@ -16,17 +16,18 @@ define(["jquery",
         },
         initialize: function (opts) {
             $.extend(this, opts);
-            this.collection = new Forms();
+            var that = this;
+
             this.loadFormSelector();
-            this.listenTo(this.collection, "reset", this.navigateToTable);
+            this.listenTo(this.collection, "reset", function () {
+                // if a current route hasn't been specified already in the URL,
+                // select a default one:
+                if (!Backbone.history.fragment) {
+                    that.app.router.navigate("/" + that.collection.models[0].id, true);
+                }
+            });
         },
-        navigateToTable: function () {
-            // if a current route hasn't been specified already in the URL,
-            // select a default one:
-            if (!Backbone.history.fragment) {
-                this.app.router.navigate("/" + this.collection.models[0].id, true);
-            }
-        },
+
         loadFormSelector: function () {
             var that = this,
                 successFunction = function () {

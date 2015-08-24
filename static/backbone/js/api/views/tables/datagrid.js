@@ -1,10 +1,4 @@
-define(["backbone",
-        "backgrid",
-        "collections/columns",
-        "collections/records",
-        "views/tables/column-manager",
-        "views/tables/table-layout-manager"
-    ], function (Backbone, Backgrid, Columns, Records, ColumnManager, TableLayoutManager) {
+define(["jquery", "backbone", "backgrid"], function ($, Backbone, Backgrid) {
 	/**
      * Class that initializes a DataGrid tileset.
      * @class DataGrid
@@ -12,35 +6,28 @@ define(["backbone",
     "use strict";
     var DataGrid = Backbone.View.extend({
         el: "#grid",
-        formID: null,
         records: null,
         columns: null,
-        layoutManager: null,
         globalEvents: null,
+        columnWidth: 140,
         blankRow: null,
         grid: null,
         initialize: function (opts) {
-            this.globalEvents = opts.globalEvents;
-            this.app = opts.app;
-            this.columnsURL = '/api/0/forms/' + this.app.activeTableID + '/fields/';
-            this.recordsURL = '/api/0/forms/' + this.app.activeTableID + '/data/';
-            this.blankRow = { project_id: this.app.projectID };
-            this.columns = new Columns(null, { url: this.columnsURL });
-            this.columnManager = new ColumnManager({
-                url: this.columnsURL,
-                globalEvents: this.globalEvents,
-                columns: this.columns
-            });
-            this.records = new Records([], { url: this.recordsURL });
-            this.grid = new Backgrid.Grid({
-                body: this.getGridBody(),
-                columns: this.columns,
-                collection: this.records,
-                row: this.getGridRow()
-            });
-            this.layoutManager = new TableLayoutManager({ datagrid: this });
+            // opts should initialize the Grid with a collection of
+            // columns and a collection of records.
+            opts = opts || {};
+            $.extend(this, opts);
+
+            this.blankRow = {
+                project_id: this.app.projectID
+            };
+
             this.initEventListeners();
-            this.getColumns();
+
+            this.loadGrid();
+        },
+        reset: function () {
+            this.initLayout();
         },
 
         initEventListeners: function () {
@@ -48,88 +35,102 @@ define(["backbone",
             this.globalEvents.on("insertRowTop", function (e) {
                 that.insertRowTop(e);
             });
-
             this.globalEvents.on("insertRowBottom", function (e) {
                 that.insertRowBottom(e);
             });
-
-            this.globalEvents.on("requery", function (sql) {
-                that.query = sql;
-                //that.getRecords({query: sql});
-                that.getRecords();
+            this.globalEvents.on("insertColumnsToGrid", function (e) {
+                that.insertColumns(e);
             });
+        },
 
-            this.globalEvents.on("insertColumn", function () {
-                that.columnManager.render();
+        loadGrid: function () {
+            var that = this,
+                GridBody = Backgrid.Body.extend({
+                    render: function () {
+                        var fragment = document.createDocumentFragment(),
+                            i,
+                            row;
+                        this.$el.empty();
+                        for (i = 0; i < this.rows.length; i++) {
+                            row = this.rows[i];
+                            fragment.appendChild(row.render().el);
+                        }
+                        this.el.appendChild(fragment);
+                        // custom code to notify view of a table re-rendering.
+                        if (this.rows.length > 0) {
+                            that.trigger("row:added", this);
+                        }
+                        this.delegateEvents();
+                        return this;
+                    }
+                }),
+                Row = Backgrid.Row.extend({
+                    initialize: function (options) {
+                        this.listenTo(this.model, "change", function (model, options) {
+                            //console.log(model.changedAttributes());
+                            if (options && options.save === false) {
+                                return;
+                            }
+                            model.save(model.changedAttributes(), {patch: true});
+                        });
+                        Backgrid.Row.prototype.initialize.call(this, options);
+                    }
+                });
+
+            this.grid = new Backgrid.Grid({
+                body: GridBody,
+                columns: this.columns,
+                collection: this.records,
+                row: Row
             });
-
-            this.columns.on('render-grid', this.initGrid, this);
-
             this.listenTo(this.grid.collection, 'backgrid:next', function (i, j, outOfBound) {
                 console.log(i, j, outOfBound);
                 if (outOfBound) {
                     this.grid.insertRow(this.blankRow, { at: (i + 1) });
                 }
             });
-            this.listenTo(this.grid.collection, "backgrid:sort", function () { alert("sorting!"); });
-        },
-
-        getColumns: function () {
-            this.columns.fetch({reset: true, data: { page_size: 100 }});
-        },
-
-        getRecords: function () {
-            this.records.query = this.query;
-            //	Make sure when a query is issued,
-            //	the current page is reset to the first page:
-            this.records.state.currentPage = 1;
-            this.records.fetch({ reset: true, data: { format: 'json' } });
-        },
-
-        initGrid: function () {
-            this.getRecords();
+            this.listenTo(this, "row:added", this.initLayout);
+            this.listenTo(this.records, "reset", this.initLayout);
             this.render();
         },
 
         render: function () {
+            // Render the grid and attach the root to your HTML document
             this.$el.html(this.grid.render().el);
         },
 
-        getGridBody: function () {
-            var that = this;
-            return Backgrid.Body.extend({
-                render: function () {
-                    var fragment = document.createDocumentFragment(),
-                        i,
-                        row;
-                    this.$el.empty();
-                    for (i = 0; i < this.rows.length; i++) {
-                        row = this.rows[i];
-                        fragment.appendChild(row.render().el);
-                    }
-                    this.el.appendChild(fragment);
-                    // custom code to notify view of a table re-rendering.
-                    if (this.rows.length > 0) {
-                        that.trigger("row:added", this);
-                    }
-                    this.delegateEvents();
-                    return this;
-                }
-            });
+        initLayout: function () {
+            this.$el.find('table').addClass('table-bordered');
+            this.resize();
+            this.makeColumnsResizable();
         },
 
-        getGridRow: function () {
-            return Backgrid.Row.extend({
-                initialize: function (options) {
-                    this.listenTo(this.model, "change", function (model, options) {
-                        if (options && options.save === false) {
-                            return;
-                        }
-                        model.save(model.changedAttributes(), {patch: true});
-                    });
-                    Backgrid.Row.prototype.initialize.call(this, options);
-                }
+        makeColumnsResizable: function () {
+            var totalWidth = 0, // (this.columns.length * this.columnWidth) + "px",
+                //index = 0,
+                w = null,
+                columnWidths = [];
+            this.columns.each(function (model) {
+                //$td = $(">tbody>tr:first>td:nth-child(" + (index) + ")");
+                w = model.get("width");
+                //$td.width(w);
+                columnWidths.push(w);
+                //console.log(w);
+                totalWidth += w;
+                //++index;
             });
+            //console.log(this.columns.length);
+            $("#grid").find('table, tbody, thead').css({ 'width': totalWidth });
+            this.$el.find('table').colResizable({ disable: true }); //a hack to run garbage collection for resizable table
+            this.$el.find('table').colResizable({ disable: false, columnWidths: columnWidths });
+        },
+
+        resize: function () {
+            var h = $('body').height() - $("#navbar").height() -
+                    $(".container-footer").height() - 2;
+            //console.log(50, h - 50);
+            this.$el.height(h);
+            this.$el.find('tbody').height(h - $('thead').height());
         },
 
         insertRowTop: function (e) {
@@ -143,14 +144,30 @@ define(["backbone",
         },
 
         insertRowBottom: function (e) {
-            this.grid.insertRow(this.blankRow, { at: this.records.length});
+            this.grid.insertRow(this.blankRow, {});
             this.initLayout();
             e.preventDefault();
         },
 
-        reset: function () {
-            console.log('reset happened...does anything call this function?');
+        insertColumns: function (cols) {
+            var that = this;
+            console.log("len cols: ", this.columns.length);
+            _.each(cols, function (col) {
+                that.grid.insertColumn(col);
+                //that.columns.add(new Backgrid.Column(col));
+            });
+            
+            console.log("len cols: ", this.columns.length);
             this.initLayout();
+            //this.render();
+            //this.resize();
+            //this.makeColumnsResizable();
+            /*this.initialize({
+                columns: this.columns,
+                records: this.records,
+                globalEvents: this.globalEvents,
+                app: this.app
+            });*/
         }
     });
     return DataGrid;
