@@ -19,12 +19,12 @@ define([
             this.ensureRequiredParam("url");
             this.ensureRequiredParam("columns");
             this.ensureRequiredParam("globalEvents");
-            if (!this.model) {
+            /*if (!this.model) {
                 this.model = new Field(null, {
                     urlRoot: this.url.replace('data/', 'fields/')
                 });
                 this.model.set("ordering", (this.columns.length + 1));
-            }
+            }*/
             this.dataTypes.fetch({reset: true});
         },
         ensureRequiredParam: function (param) {
@@ -33,13 +33,19 @@ define([
             }
         },
         render: function () {
+            this.model = new Field(null, {
+                urlRoot: this.url.replace('data/', 'fields/')
+            });
             var that = this,
+                ordering = this.columns.at(this.columns.length - 1).get("ordering") + 1,
                 FormClass = EditForm.extend({
                     schema: this.model.getFormSchema(this.dataTypes)
                 }),
                 addColumnForm = new FormClass({
                     model: this.model
                 }).render();
+
+            this.model.set("ordering", ordering);
             this.modal = new Backbone.BootstrapModal({
                 content: addColumnForm
             }).open();
@@ -48,7 +54,9 @@ define([
                 that.model.url = that.columns.url;
                 that.model.save();
                 that.columns.add(that.model);
-                that.columns.trigger('render-grid');
+                console.log(that.model);
+                //that.columns.trigger('render-grid');
+                that.grid.getRecords();
             });
         },
         destroy: function () {

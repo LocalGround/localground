@@ -30,7 +30,8 @@ define(["backbone",
             this.columnManager = new ColumnManager({
                 url: this.columnsURL,
                 globalEvents: this.globalEvents,
-                columns: this.columns
+                columns: this.columns,
+                grid: this
             });
             this.grid = new Backgrid.Grid({
                 body: this.getGridBody(),
@@ -38,6 +39,7 @@ define(["backbone",
                 collection: this.records,
                 row: this.getGridRow()
             });
+            this.$el.html(this.grid.render().el);
             this.layoutManager = new TableLayoutManager({ datagrid: this });
             this.initEventListeners();
             this.getColumns();
@@ -63,7 +65,7 @@ define(["backbone",
                 that.columnManager.render();
             });
 
-            //this.columns.on('render-grid', this.initGrid, this);
+            this.columns.on('render-grid', this.render, this);
             this.columns.on('reset', this.initGrid, this);
             this.records.on('init-grid', this.render, this);
 
@@ -98,7 +100,7 @@ define(["backbone",
 
         render: function () {
             console.log('render');
-            this.$el.html(this.grid.render().el);
+            this.grid.render();
         },
 
         getGridBody: function () {
@@ -152,11 +154,6 @@ define(["backbone",
             this.grid.insertRow(this.blankRow, { at: this.records.length});
             this.initLayout();
             e.preventDefault();
-        },
-
-        reset: function () {
-            console.log('reset happened...does anything call this function?');
-            this.initLayout();
         }
     });
     return DataGrid;
