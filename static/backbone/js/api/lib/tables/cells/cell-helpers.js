@@ -35,7 +35,7 @@ define([
                 col_name: "project_id",
                 col_alias: "Project",
                 editable: true,
-                width: 140
+                display_width: 100
             };
         },
         getDeleteCell: function () {
@@ -44,7 +44,7 @@ define([
                 col_name: "delete",
                 col_alias: "delete",
                 editable: false,
-                width: 100
+                display_width: 50
             };
         },
         getLatCell: function () {
@@ -54,7 +54,7 @@ define([
                 col_alias: "Latitude",
                 formatter: LatFormatter,
                 editable: true,
-                width: 100
+                display_width: 80
             };
         },
         getLngCell: function () {
@@ -64,7 +64,7 @@ define([
                 col_alias: "Longitude",
                 formatter: LngFormatter,
                 editable: true,
-                width: 100
+                display_width: 80
             };
         },
 

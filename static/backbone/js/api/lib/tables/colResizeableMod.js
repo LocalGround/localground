@@ -270,13 +270,17 @@
 		if(drag.x){ 									//only if the column width has been changed
 			syncCols(t,drag.i, true);	    	        //the columns and grips are updated
 			syncGrips(t);
-            if (cb) { e.currentTarget = t[0]; cb(e); }	//if there is a callback function, it is fired
+            if (cb) {                                   //if there is a callback function, it is fired
+                e.currentTarget = t[0];
+                cb([
+                    { idx: drag.i, width: t.c[drag.i].width() },
+                    { idx: drag.i + 1, width: t.c[drag.i + 1].width() },
+                ]);
+            }	
 		}	
 		if(t.p && S) memento(t); 						//if postbackSafe is enabled and there is sessionStorage support, the new layout is serialized and stored
-		drag = null;									//since the grip's dragging is over
-        console.log(e);
-        alert("done");
-		
+		console.log(drag.i);
+        drag = null;									//since the grip's dragging is over
 	};	
 	
 

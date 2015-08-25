@@ -18,7 +18,7 @@ define(["underscore",
             conformRecordToModel: function () {
                 this.set("label", this.get("col_alias"));
                 this.set("name", this.get("col_name"));
-                this.set("width", 200);
+                this.set("width", this.get("display_width"));
                 this.set("cell", this.getCell(this.get("data_type")));
                 this.set("headerCell", this.HeaderCell);
                 this.trigger("model-columnized");

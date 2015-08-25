@@ -28,7 +28,9 @@ define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
         makeColumnsResizable: function () {
             var totalWidth = 0, // (this.columns.length * this.columnWidth) + "px",
                 w = null,
-                columnWidths = [];
+                columnWidths = [],
+                that = this,
+                field = null;
             this.datagrid.columns.each(function (model) {
                 w = model.get("width");
                 columnWidths.push(w);
@@ -36,7 +38,17 @@ define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
             });
             this.$el.find('table, tbody, thead').css({ 'width': totalWidth });
             this.$el.find('table').colResizable({ disable: true }); //a hack to run garbage collection for resizable table
-            this.$el.find('table').colResizable({ disable: false, columnWidths: columnWidths });
+            this.$el.find('table').colResizable({
+                disable: false,
+                columnWidths: columnWidths,
+                onResize: function (diffs) {
+                    //callback that saves new column widths to the database:
+                    _.each(diffs, function (diff) {
+                        field = that.datagrid.columns.at(diff.idx);
+                        field.save({display_width: diff.width }, {patch: true});
+                    });
+                }
+            });
         },
 
         resize: function () {
