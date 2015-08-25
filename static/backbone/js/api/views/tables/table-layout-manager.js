@@ -1,4 +1,4 @@
-define(["jquery", "backbone"], function ($, Backbone) {
+define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
     "use strict";
     var TableLayoutManager = Backbone.View.extend({
         datagrid: null,
@@ -6,11 +6,24 @@ define(["jquery", "backbone"], function ($, Backbone) {
         initialize: function (opts) {
             $.extend(this, opts);
             this.$el = this.datagrid.$el;
-            this.listenTo(this.datagrid, "row:added", this.initLayout);
-            //this.listenTo(this.datagrid.records, "reset", this.initLayout);
+            this.listenTo(this.datagrid.records, "backgrid:refresh", this.initLayout);
+            //this.listenTo(this.datagrid.records, "reset", this.resetAfter);
+            this.listenTo(this.datagrid.columns, "remove", this.initLayout);
+            this.listenTo(this.datagrid.records, "backgrid:sorted", this.sorted);
+        },
+
+        resetAfter: function () {
+            console.log('records.reset');
+            this.initLayout();
+        },
+
+        sorted: function () {
+            console.log('sorted');
+            this.initLayout();
         },
 
         initLayout: function () {
+            console.log('initializing layout');
             var that = this;
             this.$el.find('table').addClass('table-bordered');
             this.resize();
@@ -47,6 +60,12 @@ define(["jquery", "backbone"], function ($, Backbone) {
                     $(".container-footer").height() - 2;
             this.$el.height(h);
             this.$el.find('tbody').height(h - $('thead').height());
+        },
+
+        destroy: function () {
+            this.undelegateEvents();
+            //this.remove();
+            //this.$el = null;
         }
     });
     return TableLayoutManager;

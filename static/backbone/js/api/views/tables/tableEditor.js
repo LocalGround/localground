@@ -4,7 +4,6 @@ define([
     "backgrid",
     "views/tables/tableHeader",
     "views/tables/datagrid",
-    "colResizable",
     "backgrid-paginator"
 ], function (_, Backbone, Backgrid, TableHeader, DataGrid) {
 	"use strict";
@@ -53,7 +52,7 @@ define([
 
             //question: should paginator be part of the datagrid?
             this.paginator = new Backgrid.Extension.Paginator({
-                collection: this.records,
+                collection: this.grid.records,
                 goBackFirstOnSort: false
             });
             this.$el.find('.container-footer').html(this.paginator.render().el);
