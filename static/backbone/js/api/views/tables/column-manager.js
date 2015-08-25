@@ -36,6 +36,7 @@ define([
             this.model = new Field(null, {
                 urlRoot: this.url.replace('data/', 'fields/')
             });
+            this.listenTo(this.model, 'model-columnized', this.addColumn);
             var that = this,
                 ordering = this.columns.at(this.columns.length - 1).get("ordering") + 1,
                 FormClass = EditForm.extend({
@@ -50,15 +51,20 @@ define([
                 content: addColumnForm
             }).open();
             this.modal.on('ok', function () {
-                addColumnForm.commit();
-                that.model.url = that.columns.url;
-                that.model.save(null, {success: function () {
-                    that.model.conformRecordToModel();
-                    that.columns.add(that.model);
-                    console.log(that.model.toJSON());
-                    that.columns.trigger('column-added');
-                }});
+                that.commitChanges(addColumnForm);
             });
+        },
+        commitChanges: function (addColumnForm) {
+            console.log("commitChanges");
+            addColumnForm.commit();
+            this.model.url = this.columns.url;
+            this.model.save();
+        },
+        addColumn: function () {
+            console.log("addColumn");
+            //this.model.conformRecordToModel();
+            this.columns.add(this.model);
+            this.columns.trigger('column-added');
         },
         destroy: function () {
             this.undelegateEvents();

@@ -21,35 +21,37 @@ define([
                 "memo": this.wrapCell(Backgrid.StringCell),
                 "float": this.wrapCell(Backgrid.NumberCell),
                 "photo": this.wrapCell(ImageCell),
-                "audio": this.wrapCell(AudioCell)
+                "audio": this.wrapCell(AudioCell),
+                "project": this.wrapCell(Backgrid.SelectCell.extend({
+                    optionValues: [["Project 2", "2"], ["Project 3", "3"]]
+                })),
+                "delete": this.wrapCell(DeleteCell)
             };
             return d[type] || Backgrid.StringCell;
         },
         getProjectCell: function () {
             return {
+                data_type: "project",
                 col_name: "project_id",
                 col_alias: "Project",
-                cell: this.wrapCell(Backgrid.SelectCell.extend({
-                    optionValues: [["Project 2", "2"], ["Project 3", "3"]]
-                })),
                 editable: true,
                 width: 140
             };
         },
         getDeleteCell: function () {
             return {
+                data_type: "delete",
                 col_name: "delete",
                 col_alias: "delete",
                 editable: false,
-                cell: this.wrapCell(DeleteCell),
                 width: 100
             };
         },
         getLatCell: function () {
             return {
+                data_type: "float",
                 col_name: "latitude",
                 col_alias: "Latitude",
-                cell: this.wrapCell(Backgrid.NumberCell),
                 formatter: LatFormatter,
                 editable: true,
                 width: 100
@@ -57,9 +59,9 @@ define([
         },
         getLngCell: function () {
             return {
+                data_type: "float",
                 col_name: "longitude",
                 col_alias: "Longitude",
-                cell: this.wrapCell(Backgrid.NumberCell),
                 formatter: LngFormatter,
                 editable: true,
                 width: 100
@@ -93,10 +95,10 @@ define([
             deleteColumn: function () {
                 var collection = this.column.collection;
                 this.column.destroy();
-                collection.trigger('render-grid');
+                collection.trigger('schema-updated');
             },
             render: function () {
-                //console.log("rendering header column", this.column, this.column.get("name"), this.column.name);
+                console.log("rendering header column");
                 this.$el.empty();
                 var column = this.column,
                     sortable = Backgrid.callByNeed(column.sortable(), column, this.collection),

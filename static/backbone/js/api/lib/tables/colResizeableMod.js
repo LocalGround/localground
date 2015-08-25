@@ -61,6 +61,10 @@
 		tables[id] = t; 	//the table object is stored using its id as key	
 		createGrips(t);		//grips are created
         //surroundCellsWithDivTag(t);
+        
+        // calling this twice is necessary...the second initWidths call
+        // aligns things much better, for a reason unknown to me.
+        initWidths(t, options.columnWidths);
         initWidths(t, options.columnWidths);
 	};
 
@@ -258,7 +262,6 @@
 	 * Event handler fired when the dragging is over, updating table layout
 	 */
 	var onGripDragOver = function(e){	
-		
 		d.unbind('mousemove.'+SIGNATURE).unbind('mouseup.'+SIGNATURE);
 		$("head :last-child").remove(); 				//remove the dragging cursor style	
 		if(!drag) return;
@@ -270,7 +273,10 @@
             if (cb) { e.currentTarget = t[0]; cb(e); }	//if there is a callback function, it is fired
 		}	
 		if(t.p && S) memento(t); 						//if postbackSafe is enabled and there is sessionStorage support, the new layout is serialized and stored
-		drag = null;									//since the grip's dragging is over									
+		drag = null;									//since the grip's dragging is over
+        console.log(e);
+        alert("done");
+		
 	};	
 	
 

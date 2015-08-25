@@ -21,6 +21,7 @@ define(["underscore",
                 this.set("width", 200);
                 this.set("cell", this.getCell(this.get("data_type")));
                 this.set("headerCell", this.HeaderCell);
+                this.trigger("model-columnized");
             },
             defaults: _.extend(Backgrid.Column.prototype.defaults, {
                 col_alias: 'New Column Name',

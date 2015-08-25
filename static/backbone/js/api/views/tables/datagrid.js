@@ -64,7 +64,6 @@ define(["backbone",
             this.globalEvents.on("insertColumn", function () {
                 that.columnManager.render();
             });
-            this.listenTo(this.columns, 'column-added', this.getRecords);
             this.listenTo(this.columns, 'reset', this.initGrid);
             this.listenTo(this.columns, 'init-grid', this.render);
 
@@ -100,6 +99,7 @@ define(["backbone",
         render: function () {
             console.log('render');
             this.grid.render();
+            this.layoutManager.initLayout();
         },
 
         getGridBody: function () {
