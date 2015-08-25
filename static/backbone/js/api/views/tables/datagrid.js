@@ -64,10 +64,9 @@ define(["backbone",
             this.globalEvents.on("insertColumn", function () {
                 that.columnManager.render();
             });
-
-            this.columns.on('render-grid', this.render, this);
-            this.columns.on('reset', this.initGrid, this);
-            this.records.on('init-grid', this.render, this);
+            this.listenTo(this.columns, 'column-added', this.getRecords);
+            this.listenTo(this.columns, 'reset', this.initGrid);
+            this.listenTo(this.columns, 'init-grid', this.render);
 
             this.listenTo(this.records, 'backgrid:next', function (i, j, outOfBound) {
                 console.log(i, j, outOfBound);

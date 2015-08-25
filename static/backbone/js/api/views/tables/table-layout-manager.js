@@ -9,6 +9,7 @@ define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
             this.listenTo(this.datagrid.records, "backgrid:refresh", this.initLayout);
             this.listenTo(this.datagrid.grid, "backgrid:rendered", this.initLayout);
             //this.listenTo(this.datagrid.g, "reset", this.resetAfter);
+            this.listenTo(this.datagrid.columns, "column-added", this.initLayout);
             this.listenTo(this.datagrid.columns, "remove", this.initLayout);
             this.listenTo(this.datagrid.records, "backgrid:sorted", this.sorted);
         },

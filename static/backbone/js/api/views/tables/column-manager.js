@@ -55,8 +55,7 @@ define([
                 that.model.save();
                 that.columns.add(that.model);
                 console.log(that.model);
-                //that.columns.trigger('render-grid');
-                that.grid.getRecords();
+                that.columns.trigger('column-added');
             });
         },
         destroy: function () {
