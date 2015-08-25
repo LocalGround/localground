@@ -170,30 +170,40 @@
 	* @param {nunmber} i - index of the grip being dragged
 	* @param {bool} isOver - to identify when the function is being called from the onGripDragOver event	
 	*/
-	var syncCols = function(t,i,isOver){
-		var inc = drag.x-drag.l,
+	var syncCols = function(t,i,isOver) {
+        
+        var subtract = 0;
+        var cells = t.find(">thead>tr>th");
+        for(n=0; n < i; n++) {
+            subtract += $(cells.get(n)).width();
+        }
+        //alert(subtract);
+        console.log(drag.x, drag.l, subtract, t.c[i].width(), drag.x - subtract);
+		var inc = drag.x - subtract//, drag.l,
             h1 = t.c[i],
-            h2 = t.c[i+1],
-            w1 = h1.width() + inc,
-            w2= h2.width() - inc,
-            minWidth = 15;
-        if (w1 < minWidth || w2 < minWidth) {
+            //h2 = t.c[i+1],
+            w1 = inc,//h1.width() + inc,
+            //w2= h2.width() - inc,
+            minWidth = 35;
+        /*if (w1 < minWidth || w2 < minWidth) {
             syncGrips(t);
             inc = minWidth,
-                w1 = h1.w + inc,
-                w2= h2.w - inc;
+                w1 = h1.w + inc;//,
+                //w2= h2.w - inc;
             //return;
-        }
+        }*/
+        t.opt.columnWidths[i] = w1;
+        //initWidths(t, t.opt.columnWidths);
         
         //co11.width(w1 + PX);
-        adjustCellWidth(t, i, w1);
+        //adjustCellWidth(t, i, w1);
 
         //co12.width(w2 + PX);
-        adjustCellWidth(t, (i+1), w2);
+        //adjustCellWidth(t, (i+1), w2);
  
-		t.cg.eq(i).width( w1 + 10 + PX);
-        t.cg.eq(i+1).width( w2 + 10 + PX);
-		if(isOver){h1.w=w1; h2.w=w2;}
+		//t.cg.eq(i).width( w1 + 10 + PX);
+        //t.cg.eq(i+1).width( w2 + 10 + PX);
+		//if(isOver){h1.w=w1; h2.w=w2;}
         //initWidths(t);
 	};
     
@@ -201,7 +211,7 @@
      * New fork functionality
      */
     var initWidths = function(t, columnWidths) {
-        t.find(">thead, >tbody").width(t.width());
+        //t.find(">thead, >tbody").width(t.width());
         var ths = t.find(">thead>tr>th"); 
         var tds = t.find(">tbody>tr>td");
         var w;
@@ -243,12 +253,13 @@
 
 		var max = i == t.ln-1? t.w-l: t.g[i+1].position().left-t.cs-mw; //max position according to the contiguous cells
 		var min = i? t.g[i-1].position().left+t.cs+mw: l;				//min position according to the contiguous cells
-		
+		max = 10000000;
+        min = 0;
 		x = M.max(min, M.min(max, x));						//apply boundings		
 		drag.x = x;	 drag.css("left",  x + PX); 			//apply position increment		
 			
 		if(t.opt.liveDrag){ 								//if liveDrag is enabled
-			syncCols(t,i);              					//columns and grips are synchronized
+			syncCols(t,i, opt);              					//columns and grips are synchronized
 			syncGrips(t);
             var cb = t.opt.onDrag;							//check if there is an onDrag callback
 			if (cb) { e.currentTarget = t[0]; cb(e); }		//if any, it is fired			
@@ -273,8 +284,8 @@
             if (cb) {                                   //if there is a callback function, it is fired
                 e.currentTarget = t[0];
                 cb([
-                    { idx: drag.i, width: t.c[drag.i].width() },
-                    { idx: drag.i + 1, width: t.c[drag.i + 1].width() },
+                    { idx: drag.i, width: Math.max(t.opt.minWidth, t.opt.columnWidths[drag.i]) },
+                    //{ idx: drag.i + 1, width: Math.max(t.opt.minWidth, t.c[drag.i + 1].width()) + 4 }
                 ]);
             }	
 		}	
@@ -343,7 +354,7 @@
                 draggingClass: 'JCLRgripDrag',	//css-class used when a grip is being dragged (for visual feedback purposes)
 				gripInnerHtml: '',				//if it is required to use a custom grip it can be done using some custom HTML				
 				liveDrag: false,				//enables table-layout updaing while dragging			
-				minWidth: 10, 					//minimum width value in pixels allowed for a column 
+				minWidth: 35, 					//minimum width value in pixels allowed for a column 
 				headerOnly: false,				//specifies that the size of the the column resizing anchors will be bounded to the size of the first row 
 				hoverCursor: "e-resize",  		//cursor to be used on grip hover
 				dragCursor: "e-resize",  		//cursor to be used while dragging

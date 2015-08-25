@@ -50,8 +50,9 @@ class FieldInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
     def perform_update(self, serializer):
         form = self.get_form()
         data = serializer.validated_data
-        for f in form.fields:
-            if f.col_alias.lower() == data.get('col_alias').lower() and f.id != int(self.kwargs.get('pk')):
-                raise exceptions.ParseError(
-                    'There is already a form field called "%s"' % data.get('col_alias'))
+        if data.get('col_alias'):
+            for f in form.fields:
+                if f.col_alias.lower() == data.get('col_alias').lower() and f.id != int(self.kwargs.get('pk')):
+                    raise exceptions.ParseError(
+                        'There is already a form field called "%s"' % data.get('col_alias'))
         instance = AuditUpdate.perform_update(self, serializer)

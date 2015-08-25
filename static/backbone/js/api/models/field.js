@@ -27,7 +27,7 @@ define(["underscore",
                 col_alias: 'New Column Name',
                 data_type: "text",
                 is_display_field: true,
-                display_width: 100,
+                display_width: 200,
                 is_printable: true,
                 has_snippet_field: false,
                 ordering: 1

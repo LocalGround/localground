@@ -10,8 +10,12 @@ define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
             this.listenTo(this.datagrid.columns, "column-added", this.initLayout);
             this.listenTo(this.datagrid.columns, "remove", this.initLayout);
             this.listenTo(this.datagrid.records, "backgrid:sorted", this.initLayout);
+            this.listenTo(this.datagrid.columns, "change", this.changeddddd);
         },
-
+        changeddddd: function () {
+            console.log('changed');
+            this.initLayout();
+        },
         initLayout: function () {
             console.log('initializing layout');
             var that = this;
