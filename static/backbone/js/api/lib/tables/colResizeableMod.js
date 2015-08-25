@@ -172,39 +172,12 @@
 	*/
 	var syncCols = function(t,i,isOver) {
         
-        var subtract = 0;
+        var leftTableWidth = 0;
         var cells = t.find(">thead>tr>th");
         for(n=0; n < i; n++) {
-            subtract += $(cells.get(n)).width();
+            leftTableWidth += $(cells.get(n)).width();
         }
-        //alert(subtract);
-        console.log(drag.x, drag.l, subtract, t.c[i].width(), drag.x - subtract);
-		var inc = drag.x - subtract//, drag.l,
-            h1 = t.c[i],
-            //h2 = t.c[i+1],
-            w1 = inc,//h1.width() + inc,
-            //w2= h2.width() - inc,
-            minWidth = 35;
-        /*if (w1 < minWidth || w2 < minWidth) {
-            syncGrips(t);
-            inc = minWidth,
-                w1 = h1.w + inc;//,
-                //w2= h2.w - inc;
-            //return;
-        }*/
-        t.opt.columnWidths[i] = w1;
-        //initWidths(t, t.opt.columnWidths);
-        
-        //co11.width(w1 + PX);
-        //adjustCellWidth(t, i, w1);
-
-        //co12.width(w2 + PX);
-        //adjustCellWidth(t, (i+1), w2);
- 
-		//t.cg.eq(i).width( w1 + 10 + PX);
-        //t.cg.eq(i+1).width( w2 + 10 + PX);
-		//if(isOver){h1.w=w1; h2.w=w2;}
-        //initWidths(t);
+        t.opt.columnWidths[i] = drag.x - leftTableWidth;
 	};
     
     /**
@@ -280,17 +253,15 @@
 		var t = drag.t, cb = t.opt.onResize; 			//get some values	
 		if(drag.x){ 									//only if the column width has been changed
 			syncCols(t,drag.i, true);	    	        //the columns and grips are updated
-			syncGrips(t);
+			//syncGrips(t);
             if (cb) {                                   //if there is a callback function, it is fired
                 e.currentTarget = t[0];
                 cb([
-                    { idx: drag.i, width: Math.max(t.opt.minWidth, t.opt.columnWidths[drag.i]) },
-                    //{ idx: drag.i + 1, width: Math.max(t.opt.minWidth, t.c[drag.i + 1].width()) + 4 }
+                    { idx: drag.i, width: Math.max(t.opt.minWidth, t.opt.columnWidths[drag.i]) }
                 ]);
             }	
 		}	
 		if(t.p && S) memento(t); 						//if postbackSafe is enabled and there is sessionStorage support, the new layout is serialized and stored
-		console.log(drag.i);
         drag = null;									//since the grip's dragging is over
 	};	
 	
