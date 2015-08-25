@@ -19,9 +19,7 @@ define(["underscore",
                 this.set("label", this.get("col_alias"));
                 this.set("name", this.get("col_name"));
                 this.set("width", 200);
-                if (!this.get("cell")) {
-                    this.set("cell", this.getCell(this.get("data_type")));
-                }
+                this.set("cell", this.getCell(this.get("data_type")));
                 this.set("headerCell", this.HeaderCell);
             },
             defaults: _.extend(Backgrid.Column.prototype.defaults, {

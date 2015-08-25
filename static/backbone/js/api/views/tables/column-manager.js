@@ -52,10 +52,12 @@ define([
             this.modal.on('ok', function () {
                 addColumnForm.commit();
                 that.model.url = that.columns.url;
-                that.model.save();
-                that.columns.add(that.model);
-                console.log(that.model);
-                that.columns.trigger('column-added');
+                that.model.save(null, {success: function () {
+                    that.model.conformRecordToModel();
+                    that.columns.add(that.model);
+                    console.log(that.model.toJSON());
+                    that.columns.trigger('column-added');
+                }});
             });
         },
         destroy: function () {
