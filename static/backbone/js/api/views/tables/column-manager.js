@@ -19,12 +19,6 @@ define([
             this.ensureRequiredParam("url");
             this.ensureRequiredParam("columns");
             this.ensureRequiredParam("globalEvents");
-            /*if (!this.model) {
-                this.model = new Field(null, {
-                    urlRoot: this.url.replace('data/', 'fields/')
-                });
-                this.model.set("ordering", (this.columns.length + 1));
-            }*/
             this.dataTypes.fetch({reset: true});
         },
         ensureRequiredParam: function (param) {
@@ -39,14 +33,11 @@ define([
             this.listenTo(this.model, 'model-columnized', this.addColumn);
             var that = this,
                 ordering = this.columns.at(this.columns.length - 1).get("ordering") + 1,
-                FormClass = EditForm.extend({
-                    schema: this.model.getFormSchema(this.dataTypes)
-                }),
-                addColumnForm = new FormClass({
-                    model: this.model
-                }).render();
-
+                FormClass,
+                addColumnForm;
             this.model.set("ordering", ordering);
+            FormClass = EditForm.extend({ schema: this.model.getFormSchema(this.dataTypes) });
+            addColumnForm = new FormClass({ model: this.model }).render();
             this.modal = new Backbone.BootstrapModal({
                 content: addColumnForm
             }).open();

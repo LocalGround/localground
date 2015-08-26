@@ -40,15 +40,12 @@ define(["backbone",
             });
 
             it("Sets parameters & triggers events correctly on initialization", function () {
-                var cm = new ColumnManager({
+                cm = new ColumnManager({
                     url: url,
                     columns: columns,
                     globalEvents: globalEvents
                 });
-                expect(cm.model instanceof Field).toBeTruthy();
                 expect(ColumnManager.prototype.dataTypes.fetch).toHaveBeenCalled();
-                cm.model.trigger('schema-ready');
-                expect(ColumnManager.prototype.render).toHaveBeenCalled();
             });
         });
 
@@ -67,6 +64,7 @@ define(["backbone",
 
             it("Renders the form modal correctly", function () {
                 cm.render();
+                expect(cm.model instanceof Field).toBeTruthy();
                 expect(cm.modal instanceof Backbone.BootstrapModal).toBeTruthy();
                 expect(cm.modal.$el.find('.form-group').length).toBe(3);
                 expect(cm.modal.$el.html()).toContain('btn cancel');
@@ -74,41 +72,24 @@ define(["backbone",
             });
 
             it("Ensure modal has been rendered & that modal events work", function () {
-                spyOn(cm.model, 'save');
+                spyOn(ColumnManager.prototype, 'addColumn');
+                expect(ColumnManager.prototype.addColumn).not.toHaveBeenCalled();
                 cm.render();
-                cm.modal.trigger('ok');
                 expect(cm.model.get("ordering")).toBe(4);
+
+                spyOn(cm.model, 'save');
+                expect(cm.model.save).not.toHaveBeenCalled();
+
+                cm.modal.trigger('ok');
                 expect(cm.model.save).toHaveBeenCalled();
-            });
-        });
 
-        describe("ColumnManager: Test destructor", function () {
-            //add spies to prototype before you create the instance:
-            var cm;
-            beforeEach(function () {
-                spyOn(ColumnManager.prototype, 'render');
-                spyOn(ColumnManager.prototype.dataTypes, 'fetch');
-                cm = new ColumnManager({
-                    url: url,
-                    columns: columns,
-                    globalEvents: globalEvents
-                });
-                columns.fetch();
+                cm.model.trigger('model-columnized');
+                expect(cm.addColumn).toHaveBeenCalled();
             });
 
-            it("Before destructor called $el and eventListeners work", function () {
-                expect(cm.$el).not.toBeNull();
-                cm.model.trigger('schema-ready');
-                expect(ColumnManager.prototype.render).toHaveBeenCalled();
+            it("Ensure that addColumn method works", function () {
+                expect(1).toBe(2);
             });
-
-            it("Removes $el and destroys eventListeners", function () {
-                cm.destroy();
-                expect(cm.$el).toBeNull();
-                cm.model.trigger('schema-ready');
-                expect(ColumnManager.prototype.render).not.toHaveBeenCalled();
-            });
-
         });
 
     });
