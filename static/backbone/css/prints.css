@@ -1,3 +1,7 @@
+#print-container, #print {
+    height:100%;
+}
+
 #print-form {
     background-color: #eee;
     height: 68px;
@@ -31,9 +35,23 @@
 #print-mockup {
     background-color: white;
     width: 1060px;
-    padding: 40px 40px 100px 40px;
+    padding: 40px 40px 120px 40px;
     margin-bottom:100px;
 }
+
+#print-mockup.portrait {
+    width: 830px;
+}
+
+#print-mockup.portrait > #print-map-canvas {
+    width: 735px;
+    height: 750px;
+}
+
+#print-mockup.portrait > .print-map-title-control {
+    width: 735px;
+}
+
 
 #print-map-canvas {
     border: 3px solid black;
@@ -99,22 +117,50 @@
     padding-top: 5px;
     height: 35px;
 }
-#print-map-title:hover {
+
+#print-map-title:hover, #print-map-description:hover {
     background-color:rgb(238,238,238);
 }
 
 #print-map-title-input {
     display:none;
+    margin-bottom: 19px;
 }
-#print-map-description: {
+#print-map-description {
     cursor: pointer;
 }
+.print-map-description {
+    float:left;
+    height:81px;
+    margin-top:5px;
+    width:894px;
+}
+
+#print-mockup.portrait > .print-map-description {
+    width: 649px;
+}
+
+
 #print-map-description-input {
     display: none;
 }
 #print-map-qr {
     float:right;
     border: 3px solid black;
+    margin-top:5px;
+    margin-right:5px;
+}
+
+#print-mockup.portrait > #print-map-qr {
+    margin-right:15px;
+}
+
+#print-modal > .modal-dialog {
+    width:1200px;
+}
+
+#print-modal-body {
+    padding: 0 0 0 0;
 }
 
 /*html, body {

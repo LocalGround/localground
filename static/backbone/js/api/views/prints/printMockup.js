@@ -1,13 +1,13 @@
 define(["marionette",
         "underscore",
         "jquery",
-        "views/maps/basemap",
+        "views/prints/printMap",
         "text!" + templateDir + "/prints/printMockup.html"
     ],
     function (Marionette,
               _,
               $,
-              BaseMap,
+              PrintMap,
               printMockupTemplate) {
         'use strict';
         /**
@@ -25,12 +25,20 @@ define(["marionette",
 
             tagName: 'div',
             id: 'print-mockup',
-
-            events: {
-                
-            },
             regions: {
-                mapRegion: "#print-map-canvas",
+                printMapRegion: "#print-map-canvas",
+            },
+            ui: {
+                title: '#print-map-title',
+                titleInput: '#print-map-title-input',
+                description: '#print-map-description',
+                descriptionInput: '#print-map-description-input'
+            },
+            events: {
+                'click #print-map-title': 'showTitleInput',
+                'click #print-map-description': 'showDescriptionInput',
+                'blur #print-map-title-input': 'hideTitleInput',
+                'blur #print-map-description-input': 'hideDescriptionInput'
             },
             /**
              * Initializes the printMockup
@@ -39,14 +47,54 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.opts = opts;
+                this.controller = opts.controller;
                 this.collection = opts.projects;
+                this.listenTo(this.controller, 'change-layout', this.changeLayout);
             },
 
             onShow: function () {
-                var basemap = new BaseMap(this.opts);
-                this.app.map = basemap.map;
-                this.mapRegion.show(basemap);
+                var printmap = new PrintMap(_.defaults({mapContainerID: "print-map-canvas"},this.opts));
+                this.map = printmap.map;
+                this.printMapRegion.show(printmap);
+            },
+
+            changeLayout: function (choice) {
+                this.el.className = choice;
+            },
+            
+            showTitleInput: function () {
+                this.ui.title.hide();
+                this.ui.titleInput.show();
+                this.ui.titleInput.focus();
+            },
+
+            showDescriptionInput: function () {
+                this.ui.description.hide();
+                this.ui.descriptionInput.show();
+                this.ui.descriptionInput.focus();
+            },
+
+            hideTitleInput: function (event) {
+                var newTitle = event.target.value;
+                if(!newTitle) {
+                  newTitle = 'Click to enter a map title'
+                }
+                this.ui.title.text(newTitle);
+                this.ui.titleInput.hide();
+                this.ui.title.show();
+            },
+
+            hideDescriptionInput: function () {
+                var newDescription = event.target.value;
+                if(!newDescription) {
+                  newDescription = 'Click to enter instructions'
+                }
+                this.ui.description.text(newDescription);
+                this.ui.descriptionInput.hide();
+                this.ui.description.show();
             }
+
+
                 
         });
         return PrintMockup;
