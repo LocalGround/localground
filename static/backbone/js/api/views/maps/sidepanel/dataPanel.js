@@ -6,7 +6,8 @@ define(["marionette",
         "views/maps/sidepanel/projectTags",
         "views/maps/sidepanel/itemListManager",
         "views/maps/sidepanel/shareModal/shareModal",
-        "views/maps/sidepanel/uploadModal"
+        "views/maps/sidepanel/uploadModal",
+        "views/maps/sidepanel/printModal"
     ],
     function (Marionette,
               _,
@@ -16,7 +17,8 @@ define(["marionette",
               ProjectTags,
               ItemListManager,
               ShareModal,
-              UploadModal) {
+              UploadModal,
+              PrintModal) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -34,14 +36,16 @@ define(["marionette",
             events: {
                 'click #mode_toggle': 'toggleEditMode',
                 'click #share-data': 'showShareModal',
-                'click #upload': 'showUploadModal'
+                'click #upload': 'showUploadModal',
+                'click #print': 'showPrintModal'
             },
             regions: {
                 projectMenu: "#projects-menu",
                 projectTags: "#project-tags",
                 itemList: "#item-list-manager",
                 shareModalWrapper: "#share-modal-wrapper",
-                uploadModalWrapper: "#upload-modal-wrapper"
+                uploadModalWrapper: "#upload-modal-wrapper",
+                printModalWrapper: "#print-modal-wrapper"
             },
             /**
              * Initializes the dataPanel
@@ -89,6 +93,12 @@ define(["marionette",
 
             showUploadModal: function () {
                 this.uploadModalWrapper.currentView.showModal();
+            },
+            showPrintModal: function () {
+                if(!this.printModalWrapper.currentView) {
+                    this.printModalWrapper.show(new PrintModal(this.opts));
+                }
+                this.printModalWrapper.currentView.showModal();
             },
 
             //A convenience method to gather all currently active map markers for saving in a view

@@ -226,6 +226,15 @@ body {
 .confirmation-modal-dialog {
 }
 
+#topbar-nav {
+	font: 18px/18px 'lg';
+}
+
+.modal-title {
+    font: 18px/18px 'lg';
+}
+
+
 
 
 

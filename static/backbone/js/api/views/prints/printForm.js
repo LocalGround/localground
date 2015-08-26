@@ -25,9 +25,7 @@ define(["marionette",
             id: 'print-form',
 
             events: {
-                
-            },
-            regions: {
+                'click .layout-control': 'changeLayout'
             },
             childViewContainer: "#project-selector",
 
@@ -47,11 +45,17 @@ define(["marionette",
              */
             initialize: function (opts) {
                 this.app = opts.app;
+                this.controller = opts.controller;
                 this.opts = opts;
                 this.collection = opts.projects;
             },
 
             onShow: function () {
+            },
+
+            changeLayout: function (e) {
+              var choice = e.target.value;
+              this.controller.trigger('change-layout', choice)
             }
 
         });
