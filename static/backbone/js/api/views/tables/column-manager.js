@@ -57,10 +57,10 @@ define([
         commitChanges: function (addColumnForm) {
             console.log("commitChanges");
             addColumnForm.commit();
-            this.model.url = this.columns.url;
             this.model.save();
         },
         addColumn: function () {
+            console.log(this.model.urlRoot);// = this.columns.url + this.model.get("id") + "/";
             console.log("addColumn");
             //this.model.conformRecordToModel();
             this.columns.add(this.model);

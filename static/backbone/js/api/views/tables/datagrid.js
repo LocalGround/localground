@@ -47,31 +47,30 @@ define(["backbone",
 
         initEventListeners: function () {
             var that = this;
-            this.globalEvents.on("insertRowTop", function (e) {
-                that.insertRowTop(e);
+            this.listenTo(this.columns, 'reset', this.initGrid);
+            this.listenTo(this.columns, 'init-grid', this.render);
+            /*this.listenTo(this.columns, 'schema-updated', function () {
+                console.log('schema updated');
+                that.render();
+            });*/
+            this.listenTo(this.records, 'backgrid:next', function (i, j, outOfBound) {
+                console.log(i, j, outOfBound);
+                if (outOfBound) {
+                    that.grid.insertRow(this.blankRow, { at: (i + 1) });
+                }
             });
+            /*this.listenTo(this.columns, 'schema-updated', function () {
+                console.log('schema-updated');
+                that.render();
+            });*/
 
-            this.globalEvents.on("insertRowBottom", function (e) {
-                that.insertRowBottom(e);
-            });
-
+            this.globalEvents.on("insertRowTop", this.insertRowTop, this);
+            this.globalEvents.on("insertRowBottom", this.insertRowBottom, this);
+            this.globalEvents.on("insertColumn", this.columnManager.render, this);
             this.globalEvents.on("requery", function (sql) {
                 that.query = sql;
                 //that.getRecords({query: sql});
                 that.getRecords();
-            });
-
-            this.globalEvents.on("insertColumn", function () {
-                that.columnManager.render();
-            });
-            this.listenTo(this.columns, 'reset', this.initGrid);
-            this.listenTo(this.columns, 'init-grid', this.render);
-
-            this.listenTo(this.records, 'backgrid:next', function (i, j, outOfBound) {
-                console.log(i, j, outOfBound);
-                if (outOfBound) {
-                    this.grid.insertRow(this.blankRow, { at: (i + 1) });
-                }
             });
         },
 
@@ -99,7 +98,7 @@ define(["backbone",
         render: function () {
             console.log('render');
             this.grid.render();
-            this.layoutManager.initLayout();
+            //this.layoutManager.initLayout();
         },
 
         getGridBody: function () {

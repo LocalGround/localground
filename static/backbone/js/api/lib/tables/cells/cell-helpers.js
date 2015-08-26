@@ -94,8 +94,11 @@ define([
             },
             deleteColumn: function () {
                 var collection = this.column.collection;
-                this.column.destroy();
-                collection.trigger('schema-updated');
+                //hack: need to pass dataType: "text" in order to trigger the success callback:
+                this.column.destroy({ dataType: "text", success: function () {
+                    console.log('schema-updated');
+                    collection.trigger('schema-updated');
+                }});
             },
             render: function () {
                 console.log("rendering header column");

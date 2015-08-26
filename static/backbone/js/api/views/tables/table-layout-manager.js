@@ -6,18 +6,34 @@ define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
         initialize: function (opts) {
             $.extend(this, opts);
             this.$el = this.datagrid.$el;
-            this.listenTo(this.datagrid.records, "backgrid:refresh", this.initLayout);
-            this.listenTo(this.datagrid.columns, "column-added", this.initLayout);
-            this.listenTo(this.datagrid.columns, "remove", this.initLayout);
-            this.listenTo(this.datagrid.records, "backgrid:sorted", this.initLayout);
-            this.listenTo(this.datagrid.columns, "change", this.changeddddd);
+            this.listenTo(this.datagrid.records, "backgrid:refresh", this.refresh);
+            this.listenTo(this.datagrid.columns, "column-added", this.added);
+            this.listenTo(this.datagrid.columns, "schema-updated", this.removed);
+            //this.listenTo(this.datagrid.records, "backgrid:sorted", this.sorted);
+            this.listenTo(this.datagrid.columns, "change:display_width", this.changed);
         },
-        changeddddd: function () {
+        refresh: function () {
+            console.log('backgrid:refresh');
+            this.initLayout();
+        },
+        added: function () {
+            console.log('column-added');
+            this.initLayout();
+        },
+        removed: function () {
+            console.log('schema-updated');
+            this.initLayout();
+        },
+        changed: function () {
             console.log('changed');
             this.initLayout();
         },
+        /*sorted: function () {
+            console.log('sorted');
+            this.initLayout();
+        },*/
         initLayout: function () {
-            console.log('initializing layout');
+            //console.log('initializing layout');
             var that = this;
             this.$el.find('table').addClass('table-bordered');
             this.resize();
@@ -36,7 +52,7 @@ define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
                 that = this,
                 field = null;
             this.datagrid.columns.each(function (model) {
-                w = model.get("width");
+                w = model.get("display_width");
                 columnWidths.push(w);
                 totalWidth += w;
             });
