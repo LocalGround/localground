@@ -48,11 +48,10 @@ define(["collections/columns",
                 json = columns.toJSON();
                 expect(json.length).toBe(7);
                 var entry = json[6];
-                fields = ["col_alias", "col_name", "data_type", "display_width", "ordering"];
+                fields = ["col_alias", "col_name", "data_type", "display_width", "ordering", "name", "label"];
                 _.each(fields, function (key) {
                     expect(entry[key]).toBeDefined();
                 });
-                expect(entry.name).not.toBeDefined();
             });
         });
     });

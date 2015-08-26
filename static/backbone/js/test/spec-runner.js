@@ -17,9 +17,10 @@ require(['boot'], function () {
         'spec/collections/columns-test.js',
 
         // SPREADSHEET
-        'spec/spreadsheet/table-editor-test.js',
-        'spec/spreadsheet/column-manager-test.js',
-        'spec/spreadsheet/datagrid-test.js',
+        //'spec/spreadsheet/table-editor-test.js',
+        //'spec/spreadsheet/column-manager-test.js',
+        //'spec/spreadsheet/datagrid-test.js',
+        'spec/spreadsheet/cell-header-test.js',
 
         // VIEWS
         'spec/views/basemap-test.js',

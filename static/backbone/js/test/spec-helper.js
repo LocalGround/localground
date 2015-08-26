@@ -68,7 +68,11 @@ define(
                         response = { results: scope.columns.toJSON() };
                     } else {
                         alert("No match. Please see the spec-helper.js \"initAjaxSpies\" function and add code to intercept the \"" + options.url + "\" AJAX request.");
+                        response = "";
                     }
+                    break;
+                default:
+                    alert("Not handled: " + options.type);
                     break;
                 }
                 d.resolve(response);
