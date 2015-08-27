@@ -19,12 +19,10 @@ define([
             var collection = this.column.collection;
             //hack: need to pass dataType: "text" in order to trigger the success callback:
             this.column.destroy({ dataType: "text", success: function () {
-                console.log('schema-updated');
                 collection.trigger('schema-updated');
             }});
         },
         render: function () {
-            console.log("rendering header column");
             this.$el.empty();
             var column = this.column,
                 sortable = Backgrid.callByNeed(column.sortable(), column, this.collection),

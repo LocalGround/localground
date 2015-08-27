@@ -81,10 +81,10 @@ define(
             });
         };
         beforeEach(function () {
-            var $map_container = $('<div id="map_canvas"></div>');
-               // $grid_container = $('<div id="grid"></div>');
+            var $map_container = $('<div id="map_canvas"></div>'),
+                $grid_container = $('<div id="grid"></div>');
             $(document.body).append($map_container);
-            //$(document.body).append($grid_container);
+            $(document.body).append($grid_container);
 
             /**
              * Adds some dummy data for testing convenience.
@@ -308,6 +308,7 @@ define(
         afterEach(function () {
             //clean up:
             //$("#map_canvas").remove();
+            $("#grid").remove();
             $(".modal").remove();
             $(".modal-backdrop").remove();
         });

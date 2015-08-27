@@ -5,33 +5,21 @@ define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
         $el: null,
         initialize: function (opts) {
             $.extend(this, opts);
+            this.ensureRequiredParam("datagrid");
             this.$el = this.datagrid.$el;
-            this.listenTo(this.datagrid.records, "backgrid:refresh", this.refresh);
-            this.listenTo(this.datagrid.columns, "column-added", this.added);
-            this.listenTo(this.datagrid.columns, "schema-updated", this.removed);
-            //this.listenTo(this.datagrid.records, "backgrid:sorted", this.sorted);
-            this.listenTo(this.datagrid.columns, "change:display_width", this.changed);
+            this.initEventListeners();
         },
-        refresh: function () {
-            console.log('backgrid:refresh');
-            this.initLayout();
+        ensureRequiredParam: function (param) {
+            if (!this[param]) {
+                throw "\"" + param + "\" initialization parameter is required";
+            }
         },
-        added: function () {
-            console.log('column-added');
-            this.initLayout();
+        initEventListeners: function () {
+            this.listenTo(this.datagrid.records, "backgrid:refresh", this.initLayout);
+            this.listenTo(this.datagrid.columns, "column-added", this.initLayout);
+            this.listenTo(this.datagrid.columns, "schema-updated", this.initLayout);
+            this.listenTo(this.datagrid.columns, "change:display_width", this.initLayout);
         },
-        removed: function () {
-            console.log('schema-updated');
-            this.initLayout();
-        },
-        changed: function () {
-            console.log('changed');
-            this.initLayout();
-        },
-        /*sorted: function () {
-            console.log('sorted');
-            this.initLayout();
-        },*/
         initLayout: function () {
             //console.log('initializing layout');
             var that = this;
@@ -46,11 +34,9 @@ define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
         },
 
         makeColumnsResizable: function () {
-            var totalWidth = 0, // (this.columns.length * this.columnWidth) + "px",
+            var totalWidth = 0,
                 w = null,
-                columnWidths = [],
-                that = this,
-                field = null;
+                columnWidths = [];
             this.datagrid.columns.each(function (model) {
                 w = model.get("display_width");
                 columnWidths.push(w);
@@ -61,13 +47,15 @@ define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
             this.$el.find('table').colResizable({
                 disable: false,
                 columnWidths: columnWidths,
-                onResize: function (diffs) {
-                    //callback that saves new column widths to the database:
-                    _.each(diffs, function (diff) {
-                        field = that.datagrid.columns.at(diff.idx);
-                        field.save({display_width: diff.width }, {patch: true});
-                    });
-                }
+                onResize: this.saveResizeToDatabase.bind(this) //callback that saves new column widths to the database:
+            });
+        },
+
+        saveResizeToDatabase: function (diffs) {
+            var field, that = this;
+            _.each(diffs, function (diff) {
+                field = that.datagrid.columns.at(diff.idx);
+                field.save({display_width: diff.width }, {patch: true});
             });
         },
 
@@ -76,12 +64,6 @@ define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
                     $(".container-footer").height() - 2;
             this.$el.height(h);
             this.$el.find('tbody').height(h - $('thead').height());
-        },
-
-        destroy: function () {
-            this.undelegateEvents();
-            //this.remove();
-            //this.$el = null;
         }
     });
     return TableLayoutManager;

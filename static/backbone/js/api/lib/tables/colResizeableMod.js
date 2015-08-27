@@ -13,6 +13,8 @@
 	
 	If you are going to use this plugin in production environments it is 
 	strongly recomended to use its minified version: colResizable.min.js
+	
+	SV: This has been forked to accomodate server-side postback using BackGrid.
 
 */
 
@@ -218,7 +220,7 @@
 	 * Event handler used while dragging a grip. It checks if the next grip's position is valid and updates it. 
 	 * @param {event} e - mousemove event binded to the window object
 	 */
-	var onGripDrag = function(e){	
+	var onGripDrag = function(e){
 		if(!drag) return; var t = drag.t;		//table object reference 
 		var x = e.pageX - drag.ox + drag.l;		//next position according to horizontal mouse position increment
 		var mw = t.opt.minWidth, i = drag.i ;	//cell's min width
@@ -245,13 +247,13 @@
 	/**
 	 * Event handler fired when the dragging is over, updating table layout
 	 */
-	var onGripDragOver = function(e){	
+	var onGripDragOver = function(e, args){
 		d.unbind('mousemove.'+SIGNATURE).unbind('mouseup.'+SIGNATURE);
 		$("head :last-child").remove(); 				//remove the dragging cursor style	
 		if(!drag) return;
 		drag.removeClass(drag.t.opt.draggingClass);		//remove the grip's dragging css-class
 		var t = drag.t, cb = t.opt.onResize; 			//get some values	
-		if(drag.x){ 									//only if the column width has been changed
+		if(drag.x || args.testing) { 						//only if the column width has been changed
 			syncCols(t,drag.i, true);	    	        //the columns and grips are updated
 			//syncGrips(t);
             if (cb) {                                   //if there is a callback function, it is fired

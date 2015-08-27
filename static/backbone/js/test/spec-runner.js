@@ -22,7 +22,7 @@ require(['boot'], function () {
         'spec/spreadsheet/datagrid-test.js',
         'spec/spreadsheet/table-editor-test.js',
         //'spec/spreadsheet/table-header-test.js',
-        //'spec/spreadsheet/table-layout-test.js',
+        'spec/spreadsheet/table-layout-test.js',
 
         // VIEWS
         'spec/views/basemap-test.js',

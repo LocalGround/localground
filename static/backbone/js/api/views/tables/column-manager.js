@@ -52,10 +52,6 @@ define([
         addColumn: function () {
             this.columns.add(this.model);
             this.columns.trigger('column-added');
-        },
-        destroy: function () {
-            this.undelegateEvents();
-            this.$el = null;
         }
     });
     return ColumnManager;

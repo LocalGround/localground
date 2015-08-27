@@ -72,12 +72,10 @@ define(["backbone",
         },
 
         getColumns: function () {
-            console.log('getColumns');
             this.columns.fetch({reset: true, data: { page_size: 100 }});
         },
 
         getRecords: function () {
-            console.log('getRecords');
             this.records.query = this.query;
             //	Make sure when a query is issued,
             //	the current page is reset to the first page:
@@ -87,13 +85,11 @@ define(["backbone",
         },
 
         initGrid: function () {
-            console.log('initGrid');
             this.getRecords();
             //this.render();
         },
 
         render: function () {
-            console.log('render');
             this.grid.render();
             //this.layoutManager.initLayout();
         },
