@@ -1,8 +1,9 @@
 define(["jquery",
         "backbone",
         "collections/forms",
+        "text!../../../templates/spreadsheet/navbar.html",
         "jquery.bootstrap"
-        ], function ($, Backbone, Forms) {
+        ], function ($, Backbone, Forms, Template) {
     "use strict";
     var TableHeader = Backbone.View.extend({
         el: "#navbar",
@@ -16,9 +17,21 @@ define(["jquery",
         },
         initialize: function (opts) {
             $.extend(this, opts);
+            this.ensureRequiredParam("app");
+            this.ensureRequiredParam("globalEvents");
             this.collection = new Forms();
             this.loadFormSelector();
+            this.render();
             this.listenTo(this.collection, "reset", this.navigateToTable);
+        },
+        render: function () {
+            this.$el.html(_.template(Template));
+            return this;
+        },
+        ensureRequiredParam: function (param) {
+            if (!this[param]) {
+                throw "\"" + param + "\" initialization parameter is required";
+            }
         },
         navigateToTable: function () {
             // if a current route hasn't been specified already in the URL,
