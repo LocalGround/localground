@@ -88,7 +88,10 @@ define(["backbone",
             });
 
             it("Ensure that addColumn method works", function () {
-                expect(1).toBe(2);
+                var numColumns = cm.columns.length;
+                cm.render();
+                cm.addColumn();
+                expect(numColumns + 1).toBe(cm.columns.length);
             });
         });
 

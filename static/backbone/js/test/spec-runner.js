@@ -19,7 +19,7 @@ require(['boot'], function () {
         // SPREADSHEET
         //'spec/spreadsheet/table-editor-test.js',
         'spec/spreadsheet/column-manager-test.js',
-        //'spec/spreadsheet/datagrid-test.js',
+        'spec/spreadsheet/datagrid-test.js',
         'spec/spreadsheet/cell-header-test.js',
 
         // VIEWS

@@ -20,15 +20,17 @@ define(["backbone",
         blankRow: null,
         grid: null,
         initialize: function (opts) {
-            this.globalEvents = opts.globalEvents;
-            this.app = opts.app;
-            this.columnsURL = '/api/0/forms/' + this.app.activeTableID + '/fields/';
-            this.recordsURL = '/api/0/forms/' + this.app.activeTableID + '/data/';
+            _.extend(this, opts);
+            this.ensureRequiredParam("globalEvents");
+            this.ensureRequiredParam("app");
+
+            var columnsURL = '/api/0/forms/' + this.app.activeTableID + '/fields/',
+                recordsURL = '/api/0/forms/' + this.app.activeTableID + '/data/';
             this.blankRow = { project_id: this.app.projectID };
-            this.columns = new Columns(null, { url: this.columnsURL });
-            this.records = new Records(null, { url: this.recordsURL, mode: "client" });
+            this.columns = new Columns(null, { url: columnsURL });
+            this.records = new Records(null, { url: recordsURL, mode: "client" });
             this.columnManager = new ColumnManager({
-                url: this.columnsURL,
+                url: columnsURL,
                 globalEvents: this.globalEvents,
                 columns: this.columns,
                 grid: this
@@ -44,26 +46,21 @@ define(["backbone",
             this.initEventListeners();
             this.getColumns();
         },
-
+        ensureRequiredParam: function (param) {
+            if (!this[param]) {
+                throw "\"" + param + "\" initialization parameter is required";
+            }
+        },
         initEventListeners: function () {
             var that = this;
             this.listenTo(this.columns, 'reset', this.initGrid);
-            this.listenTo(this.columns, 'init-grid', this.render);
-            /*this.listenTo(this.columns, 'schema-updated', function () {
-                console.log('schema updated');
-                that.render();
-            });*/
+            this.listenTo(this.records, 'init-grid', this.render);
             this.listenTo(this.records, 'backgrid:next', function (i, j, outOfBound) {
                 console.log(i, j, outOfBound);
                 if (outOfBound) {
                     that.grid.insertRow(this.blankRow, { at: (i + 1) });
                 }
             });
-            /*this.listenTo(this.columns, 'schema-updated', function () {
-                console.log('schema-updated');
-                that.render();
-            });*/
-
             this.globalEvents.on("insertRowTop", this.insertRowTop, this);
             this.globalEvents.on("insertRowBottom", this.insertRowBottom, this);
             this.globalEvents.on("insertColumn", this.columnManager.render, this);
@@ -144,14 +141,14 @@ define(["backbone",
             //  ACTUALLY: we should require that users can only edit when an
             //	active project is selected.
             this.grid.insertRow(this.blankRow, { at: 0 });
-            this.initLayout();
-            e.preventDefault();
+            this.layoutManager.initLayout();
+            if (e) { e.preventDefault(); }
         },
 
         insertRowBottom: function (e) {
             this.grid.insertRow(this.blankRow, { at: this.records.length});
-            this.initLayout();
-            e.preventDefault();
+            this.layoutManager.initLayout();
+            if (e) { e.preventDefault(); }
         }
     });
     return DataGrid;

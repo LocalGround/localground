@@ -68,7 +68,8 @@ define(["backbone",
             });
 
             it("Deletes the column when deleteColumnConfirmed is called", function () {
-                var deleted = false;
+                var deleted = false,
+                    numColumns = headerCell.collection.length;
                 spyOn(Backbone, 'sync').and.callFake(function (method, model, success, error) {
                     if (method == "delete") {
                         deleted = true;
@@ -78,6 +79,7 @@ define(["backbone",
                 expect(deleted).toBeFalsy();
                 headerCell.deleteColumnConfirmed();
                 expect(deleted).toBeTruthy();
+                expect(numColumns - 1).toBe(headerCell.collection.length);
             });
         });
     });
