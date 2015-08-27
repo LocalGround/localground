@@ -1,9 +1,11 @@
-define(["views/tables/tableEditor",
+define(["backgrid",
+        "views/tables/tableEditor",
+        "views/tables/datagrid",
         "collections/records",
         "views/tables/column-manager",
         "collections/columns",
         "../../../test/spec-helper"],
-    function (TableEditor, Records, ColumnManager, Columns) {
+    function (Backgrid, TableEditor, DataGrid, Records, ColumnManager, Columns) {
         'use strict';
         var initTableEditor = function (scope) {
                 //console.log("initializing table...");
@@ -15,17 +17,11 @@ define(["views/tables/tableEditor",
 
         describe("TableEditor: Test that initializes correctly", function () {
             var tableEditor;
-            beforeEach(function () {
-                spyOn(TableEditor.prototype, 'getRecords');
-                tableEditor = initTableEditor(this);
-            });
 
             it("Loads correctly if an initial projectID is passed in", function () {
                 var that = this;
                 expect(function () {
-                    tableEditor = new TableEditor({
-                        projectID: that.projects.models[0].id
-                    });
+                    tableEditor = new TableEditor({ projectID: that.projects.models[0].id });
                 }).not.toThrow();
                 expect(function () {
                     tableEditor = new TableEditor();
@@ -33,70 +29,35 @@ define(["views/tables/tableEditor",
             });
 
             it("Initializes all needed properties", function () {
+                tableEditor = initTableEditor(this);
                 expect(tableEditor.app).not.toBeNull();
                 expect(tableEditor.router).not.toBeNull();
                 expect(tableEditor.tableHeader).not.toBeNull();
                 expect(tableEditor.globalEvents).not.toBeNull();
             });
 
-            it("Initializes event handlers", function () {
-                tableEditor.globalEvents.trigger('requery');
-                expect(TableEditor.prototype.getRecords).toHaveBeenCalled();
-            });
-
-        });
-
-        describe("TableEditor: Test fetching columns and records", function () {
-            var tableEditor;
-            beforeEach(function () {
+            it("Routes correctly", function () {
+                spyOn(TableEditor.prototype, 'loadGrid');
                 tableEditor = initTableEditor(this);
+                tableEditor.router.trigger('route:get-table-data', 2);
+                expect(TableEditor.prototype.loadGrid).toHaveBeenCalledWith(2);
             });
 
-            it("Fetches Columns", function () {
-                // Dynamically fetch and populate datagrid columns:
-                tableEditor.fetchColumns();
-                expect(tableEditor.columns.models.length).toBe(10);
-            });
+            it("Calls loadGrid() correctly", function () {
+                //catch so as not to query database:
+                spyOn(Columns.prototype, 'fetch');
+                spyOn(Records.prototype, 'fetch');
+                spyOn(ColumnManager.prototype.dataTypes, 'fetch');
+                spyOn(ColumnManager.prototype, 'render');
 
-            it("Fetches Records", function () {
-                // Fetch datagrid records:
-                tableEditor.records = new Records([], {url: '/api/0/forms/2/data/'});
-                tableEditor.records.fetch();
-                expect(tableEditor.records.models.length).toBe(3);
-            });
-
-            it("Ensure that router triggers fetchColumns()", function () {
-                spyOn(tableEditor, 'fetchColumns');
-                tableEditor.router.trigger("route:get-table-data", 2);
-                expect(tableEditor.fetchColumns).toHaveBeenCalled();
-            });
-
-            it("Ensure that fetchColumns triggers render()", function () {
-                spyOn(tableEditor, 'render');
-                tableEditor.fetchColumns();
-                expect(tableEditor.render).toHaveBeenCalled();
-            });
-
-            it("Ensure that render triggers getRecords()", function () {
-                spyOn(tableEditor, 'getRecords');
-                tableEditor.render();
-                expect(tableEditor.getRecords).toHaveBeenCalled();
-                expect(tableEditor.grid).not.toBeNull();
-                expect(tableEditor.paginator).not.toBeNull();
-            });
-        });
-
-        describe("TableEditor: Test add column functionality.", function () {
-            var tableEditor;
-            beforeEach(function () {
                 tableEditor = initTableEditor(this);
+                tableEditor.loadGrid(2);
+
+                expect(tableEditor.app.activeTableID).toBe(2);
+                expect(tableEditor.grid instanceof DataGrid).toBeTruthy();
+                expect(tableEditor.paginator instanceof Backgrid.Extension.Paginator).toBeTruthy();
             });
 
-            it("Ensure that triggering the globalEvents.insertColumn fires.", function () {
-                tableEditor.fetchColumns();
-                expect(tableEditor.columns instanceof Columns).toBeTruthy();
-                tableEditor.globalEvents.trigger('insertColumn', tableEditor);
-                expect(tableEditor.columnManager instanceof ColumnManager).toBeTruthy();
-            });
         });
+
     });
