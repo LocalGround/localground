@@ -1,11 +1,13 @@
 define([
+    "jquery",
     "underscore",
     "backbone",
     "backgrid",
     "views/tables/tableHeader",
     "views/tables/datagrid",
+    "text!/static/backbone/js/templates/modals/errorModal.html",
     "backgrid-paginator"
-], function (_, Backbone, Backgrid, TableHeader, DataGrid) {
+], function ($, _, Backbone, Backgrid, TableHeader, DataGrid, ModalTemplate) {
 	"use strict";
     var TableEditor = Backbone.View.extend({
 		el: "body",
@@ -32,6 +34,19 @@ define([
                 app: this.app
             });
             this.configureRouter();
+            $(document).ajaxError(this.displayServerError);
+        },
+        displayServerError: function (event, request, settings) {
+            var detail = JSON.parse(request.responseText).detail,
+                template = _.template(ModalTemplate, {
+                    status: request.status,
+                    type: settings.type,
+                    url: settings.url,
+                    message: detail
+                });
+            $('body').find('#error-modal').remove();
+            $('body').append(template);
+            $('#error-modal').modal();
         },
         configureRouter: function () {
             var AppRouter = Backbone.Router.extend({
