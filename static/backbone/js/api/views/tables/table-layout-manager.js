@@ -1,4 +1,9 @@
-define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
+define([
+    "jquery",
+    "backbone",
+    "views/tables/table-utilities-mixin",
+    "colResizable"
+], function ($, Backbone, Utilities) {
     "use strict";
     var TableLayoutManager = Backbone.View.extend({
         datagrid: null,
@@ -8,11 +13,6 @@ define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
             this.ensureRequiredParam("datagrid");
             this.$el = this.datagrid.$el;
             this.initEventListeners();
-        },
-        ensureRequiredParam: function (param) {
-            if (!this[param]) {
-                throw "\"" + param + "\" initialization parameter is required";
-            }
         },
         initEventListeners: function () {
             this.listenTo(this.datagrid.records, "backgrid:refresh", this.initLayout);
@@ -66,5 +66,6 @@ define(["jquery", "backbone", "colResizable"], function ($, Backbone) {
             this.$el.find('tbody').height(h - $('thead').height());
         }
     });
+    _.extend(TableLayoutManager.prototype, Utilities);
     return TableLayoutManager;
 });

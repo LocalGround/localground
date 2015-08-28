@@ -1,10 +1,12 @@
-define(["backbone",
-        "backgrid",
-        "collections/columns",
-        "collections/records",
-        "views/tables/column-manager",
-        "views/tables/table-layout-manager"
-    ], function (Backbone, Backgrid, Columns, Records, ColumnManager, TableLayoutManager) {
+define([
+    "backbone",
+    "backgrid",
+    "collections/columns",
+    "collections/records",
+    "views/tables/column-manager",
+    "views/tables/table-layout-manager",
+    "views/tables/table-utilities-mixin"
+], function (Backbone, Backgrid, Columns, Records, ColumnManager, TableLayoutManager, Utilities) {
 	/**
      * Class that initializes a DataGrid tileset.
      * @class DataGrid
@@ -45,11 +47,6 @@ define(["backbone",
             this.layoutManager = new TableLayoutManager({ datagrid: this });
             this.initEventListeners();
             this.getColumns();
-        },
-        ensureRequiredParam: function (param) {
-            if (!this[param]) {
-                throw "\"" + param + "\" initialization parameter is required";
-            }
         },
         initEventListeners: function () {
             var that = this;
@@ -147,5 +144,6 @@ define(["backbone",
             if (e) { e.preventDefault(); }
         }
     });
+    _.extend(DataGrid.prototype, Utilities);
     return DataGrid;
 });

@@ -4,9 +4,10 @@ define([
     "models/field",
     "collections/dataTypes",
     "form",
+    "views/tables/table-utilities-mixin",
     "bootstrap-form-templates",
     "backbone-bootstrap-modal"
-], function (Backbone, Marionette, Field, DataTypes, EditForm) {
+], function (Backbone, Marionette, Field, DataTypes, EditForm, Utilities) {
 	"use strict";
     var ColumnManager = Marionette.ItemView.extend({
         dataTypes: new DataTypes(),
@@ -20,11 +21,6 @@ define([
             this.ensureRequiredParam("columns");
             this.ensureRequiredParam("globalEvents");
             this.dataTypes.fetch({reset: true});
-        },
-        ensureRequiredParam: function (param) {
-            if (!this[param]) {
-                throw "\"" + param + "\" initialization parameter is required";
-            }
         },
         render: function () {
             this.model = new Field(null, {
@@ -54,5 +50,6 @@ define([
             this.columns.trigger('column-added');
         }
     });
+    _.extend(ColumnManager.prototype, Utilities);
     return ColumnManager;
 });

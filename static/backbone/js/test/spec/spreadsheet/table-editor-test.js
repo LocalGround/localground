@@ -1,11 +1,12 @@
-define(["backgrid",
+define(["jquery",
+        "backgrid",
         "views/tables/tableEditor",
         "views/tables/datagrid",
         "collections/records",
         "views/tables/column-manager",
         "collections/columns",
         "../../../test/spec-helper"],
-    function (Backgrid, TableEditor, DataGrid, Records, ColumnManager, Columns) {
+    function ($, Backgrid, TableEditor, DataGrid, Records, ColumnManager, Columns) {
         'use strict';
         var initTableEditor = function (scope) {
                 //console.log("initializing table...");
@@ -58,6 +59,21 @@ define(["backgrid",
                 expect(tableEditor.paginator instanceof Backgrid.Extension.Paginator).toBeTruthy();
             });
 
+        });
+
+        describe("TableEditor: Test AJAX error handler", function () {
+            var tableEditor,
+                request = { responseText: "{\"detail\":\"There is already a form field called 'photo'\"}", status: 400 },
+                settings = { type: 'PUT', url: '/dummy/url/' };
+
+            it("should receive an Ajax error", function () {
+                spyOn(TableEditor.prototype, "displayServerError").and.callThrough();
+                tableEditor = initTableEditor(this);
+                $(document).trigger("ajaxError", [request, settings]);
+                expect(TableEditor.prototype.displayServerError).toHaveBeenCalled();
+                expect($(document).find('#error-modal').html()).toContain("HTTP 400 Error returned from server when issuing PUT");
+                expect($(document).find('#error-modal').html()).toContain("request to /dummy/url/: There is already a form field called 'photo'");
+            });
         });
 
     });

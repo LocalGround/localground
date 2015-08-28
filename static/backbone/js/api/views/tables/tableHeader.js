@@ -1,9 +1,10 @@
 define(["jquery",
         "backbone",
         "collections/forms",
+        "views/tables/table-utilities-mixin",
         "text!../../../templates/spreadsheet/navbar.html",
         "jquery.bootstrap"
-        ], function ($, Backbone, Forms, Template) {
+        ], function ($, Backbone, Forms, Utilities, Template) {
     "use strict";
     var TableHeader = Backbone.View.extend({
         el: "#navbar",
@@ -27,11 +28,6 @@ define(["jquery",
         render: function () {
             this.$el.html(_.template(Template));
             return this;
-        },
-        ensureRequiredParam: function (param) {
-            if (!this[param]) {
-                throw "\"" + param + "\" initialization parameter is required";
-            }
         },
         navigateToTable: function () {
             // if a current route hasn't been specified already in the URL,
@@ -87,5 +83,6 @@ define(["jquery",
             this.globalEvents.trigger("insertColumn", e);
         }
     });
+    _.extend(TableHeader.prototype, Utilities);
     return TableHeader;
 });

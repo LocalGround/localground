@@ -5,9 +5,9 @@ define([
     "backgrid",
     "views/tables/tableHeader",
     "views/tables/datagrid",
-    "text!/static/backbone/js/templates/modals/errorModal.html",
+    "views/tables/table-utilities-mixin",
     "backgrid-paginator"
-], function ($, _, Backbone, Backgrid, TableHeader, DataGrid, ModalTemplate) {
+], function ($, _, Backbone, Backgrid, TableHeader, DataGrid, Utilities) {
 	"use strict";
     var TableEditor = Backbone.View.extend({
 		el: "body",
@@ -36,18 +36,6 @@ define([
             this.configureRouter();
             $(document).ajaxError(this.displayServerError);
         },
-        displayServerError: function (event, request, settings) {
-            var detail = JSON.parse(request.responseText).detail,
-                template = _.template(ModalTemplate, {
-                    status: request.status,
-                    type: settings.type,
-                    url: settings.url,
-                    message: detail
-                });
-            $('body').find('#error-modal').remove();
-            $('body').append(template);
-            $('#error-modal').modal();
-        },
         configureRouter: function () {
             var AppRouter = Backbone.Router.extend({
                 routes: {
@@ -73,5 +61,6 @@ define([
             this.$el.find('.container-footer').html(this.paginator.render().el);
         }
     });
+    _.extend(TableEditor.prototype, Utilities);
     return TableEditor;
 });
