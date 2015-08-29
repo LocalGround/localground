@@ -2,25 +2,11 @@ define([
     "jquery",
     "underscore",
     "backgrid",
+    "lib/tables/cells/image-cell-editor",
     "text!/static/backbone/js/templates/modals/imageModal.html"
-], function ($, _, Backgrid, ModalTemplate) {
+], function ($, _, Backgrid, ImageCellEditor, ModalTemplate) {
     "use strict";
-    var ImageCellEditor = Backgrid.InputCellEditor.extend({
-            render: function () {
-                //alert("write only rendering");
-                //var id = this.getImageID();
-                this.$el.val(this.getImageID());
-                return this;
-            },
-            getImageID: function () {
-                var attr = this.column.get("name");
-                if (this.model.get(attr)) {
-                    return this.model.get(attr); //.id;
-                }
-                return null;
-            }
-        }),
-        ImageCell = Backgrid.ImageCell = Backgrid.Cell.extend({
+    var ImageCell = Backgrid.ImageCell = Backgrid.Cell.extend({
             className: "image-cell",
             editor: ImageCellEditor,
             events: _.extend(Backgrid.Cell.prototype.events, {

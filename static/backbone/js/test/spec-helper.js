@@ -126,10 +126,28 @@ define(
                 new DataType({id: 1, name: "text"})
             ]);
             this.records = new Records([
-                new Record({ id: 1, team_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 2, overlay_type: "record", team_photo: 1, audio_clip: 1 }),
-                new Record({id: 2, team_name: "Green team", tags: 'friend\'s house, tag1', worm_count: 8, project_id: 2, overlay_type: "record", team_photo: 2, audio_clip: 2 }),
-                new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 2, project_id: 2, overlay_type: "record", team_photo: 3, audio_clip: 3 })
-            ], { 'url': 'dummy/url' });
+                new Record({ id: 1, team_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 2, overlay_type: "record", team_photo: 1, audio_clip: 1, geometry: {"type": "Point", "coordinates": [-122.2581, 37.8491]}, yes_no: true }),
+                new Record({id: 2, team_name: "Green team", tags: 'friend\'s house, tag1', worm_count: 8, project_id: 2, overlay_type: "record", team_photo: 2, audio_clip: 2, geometry: {"type": "Point", "coordinates": [-121.2581, 38.8491]}, yes_no: false }),
+                new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 2, project_id: 2, overlay_type: "record", team_photo: 3, audio_clip: 3, geometry: {"type": "Point", "coordinates": [-120.2581, 39.8491]}, yes_no: true})
+            ], { 'url': '/api/0/forms/2/data/' });
+            this.columns = new Columns([
+                new Field(
+                    { id: 1, form: 2, col_alias: "Tags", col_name: "tags", display_width: 100, ordering: 1, data_type: "text"},
+                    { urlRoot: '/api/0/forms/2/fields/' }
+                ),
+                new Field(
+                    { id: 2, form: 2, col_alias: "Team Photo", col_name: "team_photo", display_width: 100, ordering: 2, data_type: "photo" },
+                    { urlRoot: '/api/0/forms/2/fields/' }
+                ),
+                new Field(
+                    { id: 3, form: 2, col_alias: "Audio Clip", col_name: "audio_clip", display_width: 100, ordering: 3, data_type: "audio" },
+                    { urlRoot: '/api/0/forms/2/fields/' }
+                ),
+                new Field(
+                    { id: 4, form: 2, col_alias: "Yes / No", col_name: "yes_no", display_width: 100, ordering: 4, data_type: "boolean"},
+                    { urlRoot: '/api/0/forms/2/fields/' }
+                )
+            ], { 'url': '/api/0/forms/2/fields/' });
             this.recordSchema = {
                 name: "Form Data List",
                 description: "",
@@ -143,23 +161,10 @@ define(
                     "project_id": {type: "field", required: false, read_only: false, label: "Project ID"},
                     "overlay_type": {type: "field", required: false, read_only: true, label: "Overlay Type"},
                     "team_photo": {type: "photo", required: false, read_only: false, label: "Team photo"},
-                    "audio_clip": {type: "audio", required: false, read_only: false, label: "Audio Clip"}
+                    "audio_clip": {type: "audio", required: false, read_only: false, label: "Audio Clip"},
+                    "yes_no": {type: "audio", required: false, read_only: false, label: "Yes / No"}
                 }}
             };
-            this.columns = new Columns([
-                new Field(
-                    { id: 1, form: 2, col_alias: "Tags", col_name: "tags", display_width: 100, ordering: 1, data_type: "text" },
-                    { urlRoot: '/api/0/forms/2/fields/' }
-                ),
-                new Field(
-                    { id: 2, form: 2, col_alias: "Photo", col_name: "photo", display_width: 100, ordering: 2, data_type: "photo" },
-                    { urlRoot: '/api/0/forms/2/fields/' }
-                ),
-                new Field(
-                    { id: 3, form: 2, col_alias: "Audio", col_name: "audio", display_width: 100, ordering: 3, data_type: "audio" },
-                    { urlRoot: '/api/0/forms/2/fields/' }
-                )
-            ], { 'url': '/api/0/forms/2/fields/' });
             this.layers = new Layers([
                 new Layer({id: 1, name: "worms", overlay_type: "layer", symbols: [
                     { color: "#7075FF", width: 30, rule: "worms > 0", title: "At least 1 worm" },

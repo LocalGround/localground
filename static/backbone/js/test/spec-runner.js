@@ -17,6 +17,7 @@ require(['boot'], function () {
         'spec/collections/columns-test.js',
 
         // SPREADSHEET
+        'spec/spreadsheet/backgrid-test.js',
         'spec/spreadsheet/cell-header-test.js',
         'spec/spreadsheet/column-manager-test.js',
         'spec/spreadsheet/datagrid-test.js',

@@ -75,7 +75,7 @@ define(["backbone",
                 spyOn(ColumnManager.prototype, 'addColumn');
                 expect(ColumnManager.prototype.addColumn).not.toHaveBeenCalled();
                 cm.render();
-                expect(cm.model.get("ordering")).toBe(4);
+                expect(cm.model.get("ordering")).toBe(5);
 
                 spyOn(cm.model, 'save');
                 expect(cm.model.save).not.toHaveBeenCalled();

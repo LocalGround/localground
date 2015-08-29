@@ -1,22 +1,7 @@
-define(["jquery", "backgrid"], function ($, Backgrid) {
+define(["backgrid", "lib/tables/cells/audio-cell-editor"], function (Backgrid, AudioCellEditor) {
     "use strict";
-    var AudioCellEditor = Backgrid.InputCellEditor.extend({
-            render: function () {
-                //alert("write only rendering");
-                var id = this.getImageID();
-                this.$el.val(this.getImageID());
-                return this;
-            },
-            getImageID: function () {
-                var attr = this.column.get("name");
-                if (this.model.get(attr)) {
-                    return this.model.get(attr); //.id;
-                }
-                return null;
-            }
-        }),
-        AudioCell = Backgrid.ImageCell = Backgrid.Cell.extend({
-            className: "image-cell",
+    var AudioCell = Backgrid.ImageCell = Backgrid.Cell.extend({
+            className: "audio-cell",
             editor: AudioCellEditor,
             render: function () {
                 this.$el.empty();

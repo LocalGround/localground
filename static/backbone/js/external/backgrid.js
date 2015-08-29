@@ -737,7 +737,7 @@ var InputCellEditor = Backgrid.InputCellEditor = CellEditor.extend({
      @param {Event} e
   */
   saveOrCancel: function (e) {
-
+    console.log("InputCellEditor.saveOrCancel");
     var formatter = this.formatter;
     var model = this.model;
     var column = this.column;
@@ -901,6 +901,7 @@ var Cell = Backgrid.Cell = Backbone.View.extend({
      model's column, and an `error` CSS class is added to the cell accordingly.
   */
   enterEditMode: function () {
+    console.log('Backgrid.Cell.enterEditMode');
     var model = this.model;
     var column = this.column;
 
@@ -1288,6 +1289,7 @@ var BooleanCellEditor = Backgrid.BooleanCellEditor = CellEditor.extend({
      uncheck otherwise.
   */
   render: function () {
+    console.log("BooleanCellEditor.render");
     var model = this.model;
     var val = this.formatter.fromRaw(model.get(this.column.get("name")), model);
     this.$el.prop("checked", val);
@@ -1311,6 +1313,7 @@ var BooleanCellEditor = Backgrid.BooleanCellEditor = CellEditor.extend({
      if `escape` was pressed.
   */
   saveOrCancel: function (e) {
+    console.log("BooleanCellEditor.saveOrCancel");
     var model = this.model;
     var column = this.column;
     var formatter = this.formatter;

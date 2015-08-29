@@ -40,13 +40,13 @@ define(["collections/columns",
             it("Adds the required fields to the user-defined columns", function () {
                 expect(columns.at(3).get("name")).toBe("project_id");
                 expect(columns.at(4).get("name")).toBe("tags");
-                expect(columns.at(5).get("name")).toBe("photo");
-                expect(columns.at(6).get("name")).toBe("audio");
+                expect(columns.at(5).get("name")).toBe("team_photo");
+                expect(columns.at(6).get("name")).toBe("audio_clip");
             });
 
             it("Returns a dictionary of columns when the toJSON() method is called", function () {
                 json = columns.toJSON();
-                expect(json.length).toBe(7);
+                expect(json.length).toBe(8);
                 var entry = json[6];
                 fields = ["col_alias", "col_name", "data_type", "display_width", "ordering", "name", "label"];
                 _.each(fields, function (key) {

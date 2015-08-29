@@ -8,9 +8,14 @@ define(["lib/tables/formatters/latlng"], function (LatLngFormatter) {
     var LatFormatter = {
         fromRaw: function (rawValue, model) {
             try {
+                //console.log(rawValue.coordinates[1].toFixed(4));
                 return rawValue.coordinates[1].toFixed(4);
             } catch (e) {
-                return model.lat || "";
+                if (model.get("geometry")) {
+                    //console.log(model.get("geometry").coordinates[1].toFixed(4));
+                    return model.get("geometry").coordinates[1].toFixed(4);
+                }
+                return "";
             }
         },
         toRaw: function (formattedData, model) {

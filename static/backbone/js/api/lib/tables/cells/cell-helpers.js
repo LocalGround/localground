@@ -23,6 +23,7 @@ define([
                 "photo": this.wrapCell(ImageCell),
                 "audio": this.wrapCell(AudioCell),
                 "project": this.wrapCell(Backgrid.SelectCell.extend({
+                    className: "project-cell",
                     optionValues: [["Project 2", "2"], ["Project 3", "3"]]
                 })),
                 "delete": this.wrapCell(DeleteCell)

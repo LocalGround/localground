@@ -5,7 +5,8 @@ define(["backgrid", "underscore"], function (Backgrid, _) {
      * @class DeleteCell
      */
     var DeleteCell = Backgrid.Cell.extend({
-        template: _.template('<i class="fa fa-trash-o" style="cursor:pointer;"></i>'),
+        className: "delete-cell",
+        template: _.template('<i class="fa fa-trash-o delete-cell" style="cursor:pointer;"></i>'),
         events: {
             "click": "deleteRow"
         },

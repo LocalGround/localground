@@ -130,4 +130,19 @@ define(["backbone",
                 expect(LayoutManager.prototype.initLayout).toHaveBeenCalled();
             });
         });
+
+        describe("Datagrid: Edit cell tests", function () {
+            var datagrid;
+            beforeEach(function () {
+                datagrid = new DataGrid({ globalEvents: globalEvents, app: app });
+            });
+            it("Calls insertRowBottom() successfully", function () {
+                spyOn(Backgrid.Grid.prototype, 'insertRow');
+                spyOn(LayoutManager.prototype, 'initLayout');
+                datagrid = new DataGrid({ globalEvents: globalEvents, app: app });
+                datagrid.insertRowBottom();
+                expect(Backgrid.Grid.prototype.insertRow).toHaveBeenCalled();
+                expect(LayoutManager.prototype.initLayout).toHaveBeenCalled();
+            });
+        });
     });
