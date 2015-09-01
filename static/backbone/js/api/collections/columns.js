@@ -10,6 +10,7 @@ define([
     "use strict";
     var Columns = Backgrid.Columns.extend({
         url: null,
+        grid: null,
         model: Field,
         initialize: function (data, opts) {
             try { this.url = opts.url; } catch (e) {}

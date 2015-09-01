@@ -1,16 +1,13 @@
 define(["backgrid",
         "lib/tables/gridBody",
         "lib/tables/gridRow",
-        "lib/tables/formatters/lat",
-        "lib/tables/formatters/lng",
         "lib/tables/cells/delete",
         "lib/tables/cells/image-cell",
         "lib/tables/cells/image-cell-editor",
         "lib/tables/cells/audio-cell",
         "lib/tables/cells/audio-cell-editor",
         "../../../test/spec-helper"],
-    function (Backgrid, GridBody, GridRow, LatFormatter, LngFormatter,
-              DeleteCell, ImageCell, ImageCellEditor, AudioCell, AudioCellEditor) {
+    function (Backgrid, GridBody, GridRow, DeleteCell, ImageCell, ImageCellEditor, AudioCell, AudioCellEditor) {
         'use strict';
         var grid,
             initGrid = function (scope) {
@@ -37,7 +34,7 @@ define(["backgrid",
                     expectedValues = [
                         [DeleteCell, "delete-cell", false, Backgrid.CellFormatter, Backgrid.InputCellEditor],
                         [Backgrid.NumberCell, "number-cell", true, Object, Backgrid.InputCellEditor],
-                        [Backgrid.NumberCell, "number-cell", true, LngFormatter, Backgrid.InputCellEditor],
+                        [Backgrid.NumberCell, "number-cell", true, Object, Backgrid.InputCellEditor],
                         [Backgrid.SelectCell, "project-cell", true, Backgrid.SelectFormatter, Backgrid.SelectCellEditor],
                         [Backgrid.StringCell, "string-cell", true, Backgrid.StringFormatter, Backgrid.InputCellEditor],
                         [ImageCell, "image-cell", true, Backgrid.CellFormatter, ImageCellEditor],
@@ -95,37 +92,37 @@ define(["backgrid",
                 expect(this.records.at(0).get(column.get("name"))).toBeFalsy();
             });
 
-            /*it("Renders point geometries correctly", function () {
-                var row = grid.body.rows[0],
-                    lat = row.cells[1],
-                    lng = row.cells[2];
-                expect(lat.$el.find('div').html()).toBe('37.8491');
-                //expect(lng.$el.find('div').html()).toBe('-122.2581');
-                spyOn(lat.model, "trigger").and.callThrough();
-                lat.enterEditMode();
-                expect(lat.model.trigger).toHaveBeenCalled();
-                console.log(lat.$el.html());
-                //expect(lat.$el.html()).toBe('37.8491');
-                //expect(lng.$el.html()).toBe('-122.2581');
-            });*/
+            it("Renders point geometry cells correctly", function () {
+                spyOn(Backgrid.InputCellEditor.prototype, "saveOrCancel").and.callThrough();
+                spyOn(Backgrid.InputCellEditor.prototype, "render").and.callThrough();
+                spyOn(Backgrid.NumberCell.prototype, "enterEditMode").and.callThrough();
+                initGrid(this);
+                var lat = grid.body.rows[0].cells[1],
+                    latCol = lat.column,
+                    model = lat.model,
+                    latVal = model.get("geometry").coordinates[1];
+                expect(lat.$el.find('div').html()).toBe(latVal.toString());
 
-            /*it("Yields the appropriate EditCell when the cell is clicked", function () {
-                var row = grid.body.rows[0],
-                    i = 0,
-                    expectedValues = [DeleteCell, "delete-cell", false, Backgrid.CellFormatter],
-                        [Backgrid.NumberCell, "number-cell", true, LatFormatter],
-                        [Backgrid.NumberCell, "number-cell", true, LngFormatter],
-                        [Backgrid.SelectCell, "project-cell", true, Backgrid.SelectFormatter],
-                        [Backgrid.StringCell, "string-cell", true, Backgrid.StringFormatter],
-                        [ImageCell, "image-cell", true, Backgrid.CellFormatter],
-                        [AudioCell, "audio-cell", true, Backgrid.CellFormatter]
-                    ];
-                for (i = 0; i < row.cells.length; i++) {
-                    expect(row.cells[i] instanceof expectedValues[i][0]).toBeTruthy();
-                    expect(row.cells[i].className).toBe(expectedValues[i][1]);
-                    expect(row.cells[i].column.editable()).toBe(expectedValues[i][2]);
-                    expect(row.cells[i].formatter instanceof expectedValues[i][3]).toBeTruthy();
-                }
-            });*/
+                // impersonate user clicking into the cell:
+                spyOn(model, "trigger");
+                lat.$el.trigger('click');
+
+                // ensure that edit mode works:
+                expect(Backgrid.NumberCell.prototype.enterEditMode).toHaveBeenCalled();
+                expect(Backgrid.InputCellEditor.prototype.render).toHaveBeenCalled();
+                expect(model.trigger).toHaveBeenCalledWith("backgrid:edit", model, latCol, lat, lat.currentEditor);
+                expect(lat.$el.find('input').val()).toBe(latVal.toString());
+
+                // impersonate user editing lat:
+                lat.$el.find('input').val('40.8491');
+
+                // impersonate user moving to next cell:
+                lat.currentEditor.$el.trigger('blur');
+                expect(Backgrid.InputCellEditor.prototype.saveOrCancel).toHaveBeenCalled();
+
+                //check that the model has been updated:
+                expect(model.get("geometry").coordinates[1]).toBe(40.8491);
+            });
+
         });
     });
