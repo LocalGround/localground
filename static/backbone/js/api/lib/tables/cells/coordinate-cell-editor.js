@@ -1,15 +1,13 @@
 define(["backgrid"], function (Backgrid) {
     "use strict";
     var CoordinateCellEditor = Backgrid.InputCellEditor.extend({
-        /*initialize: function (options) {
-            CoordinateCellEditor.__super__.initialize.apply(this, arguments);
-            if (this.columnName != "lat" && this.columnName != "lng") {
-                throw new Error("CoordinateCellEditor Error: this.columnName property must be defined as \"lat\" or \"lng.\"");
-            }
-            console.log(this);
-        },*/
         saveOrCancel: function (e) {
-            console.log("InputCellEditor.saveOrCancel");
+            /**
+            * Note: this method pretty much breaks encapsulation b/c the
+            * lat and lng column need to know about each other to update geoJSON
+            * ...and also because it's relying on column names that have a particular
+            * naming convention ("latitude" and "longitude").
+            */
             this.columnName = this.column.get("name");
             var formatter = this.formatter,
                 model = this.model,
@@ -47,10 +45,8 @@ define(["backgrid"], function (Backgrid) {
                     if (!lat && !lng) {
                         model.set("geometry", null);
                     } else {
-                        console.log(lat, lng);
                         model.set("geometry", { "type": "Point", "coordinates": [lng, lat] });
                     }
-                    //model.set("geometry", { "type": "Point", "coordinates": [lng, lat] });
                     model.trigger("backgrid:edited", model, column, command);
                 }
             } else if (command.cancel()) { //esc

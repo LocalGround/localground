@@ -20,8 +20,8 @@ define([
                 "string": this.wrapCell(Backgrid.StringCell),
                 "memo": this.wrapCell(Backgrid.StringCell),
                 "float": this.wrapCell(Backgrid.NumberCell),
-                "lat": CoordinateCell.extend({ columnName: "lat" }),
-                "lng": CoordinateCell.extend({ columnName: "lng" }),
+                "lat": this.wrapCell(CoordinateCell.extend({ columnName: "lat" })),
+                "lng": this.wrapCell(CoordinateCell.extend({ columnName: "lng" })),
                 "photo": this.wrapCell(ImageCell),
                 "audio": this.wrapCell(AudioCell),
                 "project": this.wrapCell(Backgrid.SelectCell.extend({

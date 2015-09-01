@@ -71,6 +71,9 @@ define(
                         response = "";
                     }
                     break;
+                case 'PATCH':
+                    response = "";
+                    break;
                 default:
                     alert("Not handled: " + options.type);
                     break;

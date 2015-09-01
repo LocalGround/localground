@@ -6,8 +6,10 @@ define(["backgrid",
         "lib/tables/cells/image-cell-editor",
         "lib/tables/cells/audio-cell",
         "lib/tables/cells/audio-cell-editor",
+        "lib/tables/cells/coordinate-cell",
+        "lib/tables/cells/coordinate-cell-editor",
         "../../../test/spec-helper"],
-    function (Backgrid, GridBody, GridRow, DeleteCell, ImageCell, ImageCellEditor, AudioCell, AudioCellEditor) {
+    function (Backgrid, GridBody, GridRow, DeleteCell, ImageCell, ImageCellEditor, AudioCell, AudioCellEditor, CoordinateCell, CoordinateCellEditor) {
         'use strict';
         var grid,
             initGrid = function (scope) {
@@ -33,8 +35,8 @@ define(["backgrid",
                     i = 0,
                     expectedValues = [
                         [DeleteCell, "delete-cell", false, Backgrid.CellFormatter, Backgrid.InputCellEditor],
-                        [Backgrid.NumberCell, "number-cell", true, Object, Backgrid.InputCellEditor],
-                        [Backgrid.NumberCell, "number-cell", true, Object, Backgrid.InputCellEditor],
+                        [CoordinateCell, "coordinate-cell", true, Object, Backgrid.InputCellEditor],
+                        [CoordinateCell, "coordinate-cell", true, Object, Backgrid.InputCellEditor],
                         [Backgrid.SelectCell, "project-cell", true, Backgrid.SelectFormatter, Backgrid.SelectCellEditor],
                         [Backgrid.StringCell, "string-cell", true, Backgrid.StringFormatter, Backgrid.InputCellEditor],
                         [ImageCell, "image-cell", true, Backgrid.CellFormatter, ImageCellEditor],
@@ -93,12 +95,12 @@ define(["backgrid",
             });
 
             it("Renders point geometry cells correctly", function () {
-                spyOn(Backgrid.InputCellEditor.prototype, "saveOrCancel").and.callThrough();
-                spyOn(Backgrid.InputCellEditor.prototype, "render").and.callThrough();
-                spyOn(Backgrid.NumberCell.prototype, "enterEditMode").and.callThrough();
+                spyOn(CoordinateCellEditor.prototype, "saveOrCancel").and.callThrough();
+                spyOn(CoordinateCellEditor.prototype, "render").and.callThrough();
+                spyOn(CoordinateCell.prototype, "enterEditMode").and.callThrough();
                 initGrid(this);
                 var lat = grid.body.rows[0].cells[1],
-                    latCol = lat.column,
+                    column = lat.column,
                     model = lat.model,
                     latVal = model.get("geometry").coordinates[1];
                 expect(lat.$el.find('div').html()).toBe(latVal.toString());
@@ -108,9 +110,9 @@ define(["backgrid",
                 lat.$el.trigger('click');
 
                 // ensure that edit mode works:
-                expect(Backgrid.NumberCell.prototype.enterEditMode).toHaveBeenCalled();
-                expect(Backgrid.InputCellEditor.prototype.render).toHaveBeenCalled();
-                expect(model.trigger).toHaveBeenCalledWith("backgrid:edit", model, latCol, lat, lat.currentEditor);
+                expect(CoordinateCell.prototype.enterEditMode).toHaveBeenCalled();
+                expect(CoordinateCellEditor.prototype.render).toHaveBeenCalled();
+                expect(model.trigger).toHaveBeenCalledWith("backgrid:edit", model, column, lat, lat.currentEditor);
                 expect(lat.$el.find('input').val()).toBe(latVal.toString());
 
                 // impersonate user editing lat:
@@ -118,11 +120,73 @@ define(["backgrid",
 
                 // impersonate user moving to next cell:
                 lat.currentEditor.$el.trigger('blur');
-                expect(Backgrid.InputCellEditor.prototype.saveOrCancel).toHaveBeenCalled();
+                expect(model.trigger).toHaveBeenCalledWith("backgrid:edited", model, column, jasmine.any(Backgrid.Command));
+                expect(CoordinateCellEditor.prototype.saveOrCancel).toHaveBeenCalled();
 
                 //check that the model has been updated:
                 expect(model.get("geometry").coordinates[1]).toBe(40.8491);
             });
+        });
 
+        describe("Backgrid Test: Handles null lat values appropriately", function () {
+            it("Handles null longitude values", function () {
+                initGrid(this);
+                var lat = grid.body.rows[0].cells[1],
+                    model = lat.model,
+                    expectedValue = { "type": "Point", "coordinates": [0, 40.8491] };
+                //clear out the model:
+                model.set("geometry", null);
+
+                // impersonate user clicking into the cell:
+                spyOn(model, "trigger");
+                lat.$el.trigger('click');
+                expect(lat.$el.find('input').val()).toBe("");
+
+                // impersonate user editing lat:
+                lat.$el.find('input').val('40.8491');
+
+                // impersonate user moving to next cell:
+                lat.currentEditor.$el.trigger('blur');
+                expect(model.get("geometry").type).toBe(expectedValue.type);
+                expect(model.get("geometry").coordinates[0]).toBe(expectedValue.coordinates[0]);
+                expect(model.get("geometry").coordinates[1]).toBe(expectedValue.coordinates[1]);
+
+                // impersonate user clearing out the cell:
+                lat.$el.trigger('click');
+                lat.$el.find('input').val('');
+                lat.currentEditor.$el.trigger('blur');
+                expect(model.trigger).toHaveBeenCalledWith("backgrid:edited", model, lat.column, jasmine.any(Backgrid.Command));
+                expect(model.get("geometry")).toBeNull();
+            });
+
+            it("Handles null latitude values", function () {
+                initGrid(this);
+                var lng = grid.body.rows[0].cells[2],
+                    model = lng.model,
+                    expectedValue = { "type": "Point", "coordinates": [-122.123, 0] };
+                //clear out the model:
+                model.set("geometry", null);
+
+                // impersonate user clicking into the cell:
+                spyOn(model, "trigger");
+                lng.$el.trigger('click');
+                expect(lng.$el.find('input').val()).toBe("");
+
+                // impersonate user editing lat:
+                lng.$el.find('input').val('-122.123');
+
+                // impersonate user moving to next cell:
+                lng.currentEditor.$el.trigger('blur');
+                expect(model.get("geometry").type).toBe(expectedValue.type);
+                expect(model.get("geometry").coordinates[0]).toBe(expectedValue.coordinates[0]);
+                expect(model.get("geometry").coordinates[1]).toBe(expectedValue.coordinates[1]);
+
+                // impersonate user clearing out the cell:
+                lng.$el.trigger('click');
+                lng.$el.find('input').val('');
+                lng.currentEditor.$el.trigger('blur');
+                expect(model.trigger).toHaveBeenCalledWith("backgrid:edited", model, lng.column, jasmine.any(Backgrid.Command));
+                expect(model.get("geometry")).toBeNull();
+            });
         });
     });

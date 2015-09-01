@@ -1,9 +1,5 @@
-define(["lib/tables/formatters/latlng"], function (LatLngFormatter) {
+define([], function () {
     "use strict";
-    /**
-     * Note: this breaks encapsulation b/c the lat and lng column need to
-     * know about each other.
-     */
     var CoordinateFormatter = {
         columnName: null,
         fromRaw: function (rawValue, model) {
