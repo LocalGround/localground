@@ -55,7 +55,13 @@ define([
             var field, that = this;
             _.each(diffs, function (diff) {
                 field = that.datagrid.columns.at(diff.idx);
-                field.save({display_width: diff.width }, {patch: true});
+                if (!field.get("isAdmin")) { //not an admin field
+                    field.save({display_width: diff.width }, {patch: true});
+                } else {
+                    // don't commit to the database if it's an admin field
+                    // because there's no such field:
+                    field.set("display_width", diff.width);
+                }
             });
         },
 

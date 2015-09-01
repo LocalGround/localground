@@ -25,7 +25,6 @@ define([
                 "photo": this.wrapCell(ImageCell),
                 "audio": this.wrapCell(AudioCell),
                 "project": this.wrapCell(Backgrid.SelectCell.extend({
-                    className: "project-cell",
                     optionValues: [["Project 2", "2"], ["Project 3", "3"]]
                 })),
                 "delete": this.wrapCell(DeleteCell)
@@ -38,7 +37,8 @@ define([
                 col_name: "project_id",
                 col_alias: "Project",
                 editable: true,
-                display_width: 100
+                display_width: 100,
+                isAdmin: true
             };
         },
         getDeleteCell: function () {
@@ -47,7 +47,8 @@ define([
                 col_name: "delete",
                 col_alias: "delete",
                 editable: false,
-                display_width: 50
+                display_width: 50,
+                isAdmin: true
             };
         },
         getLatCell: function () {
@@ -57,7 +58,8 @@ define([
                 col_alias: "Latitude",
                 formatter: _.extend({}, CoordinateFormatter, { columnName: "latitude" }),
                 editable: true,
-                display_width: 80
+                display_width: 80,
+                isAdmin: true
             };
         },
         getLngCell: function () {
@@ -67,7 +69,8 @@ define([
                 col_alias: "Longitude",
                 formatter: _.extend({}, CoordinateFormatter, { columnName: "longitude" }),
                 editable: true,
-                display_width: 80
+                display_width: 80,
+                isAdmin: true
             };
         },
 

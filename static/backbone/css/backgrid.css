@@ -305,5 +305,11 @@ td:hover .button-footer {
     display: block;
     float: right;
 }
+.audio-cell {
+    text-align: center !important;
+}
+.audio-cell .fa {
+    color: #eee;
+}
 
 
