@@ -23,10 +23,16 @@ define(["marionette",
 
             tagName: 'div',
             id: 'print-form',
-
             events: {
-                'click .layout-control': 'changeLayout'
+                'click .layout-control': 'changeLayout',
+                'click #submit': 'generatePrint'
             },
+
+            ui: {
+                layoutSelection: '.layout-control',
+                projectSelection: '#project-selector'
+            },
+
             childViewContainer: "#project-selector",
 
             childView: Marionette.ItemView.extend({
@@ -56,6 +62,17 @@ define(["marionette",
             changeLayout: function (e) {
               var choice = e.target.value;
               this.controller.trigger('change-layout', choice)
+            },
+
+            generatePrint: function () {
+              this.controller.trigger('generatePrint');
+            },
+
+            getFormData: function () {
+                return {
+                  orientation: this.ui.layoutSelection.filter(':checked').val(),
+                  project_id: this.ui.projectSelection.val()
+                }
             }
 
         });

@@ -28,7 +28,7 @@
 #print-mockup-container {
     height: 100%;
     background-color: #999;
-    padding:30px 50px 30px 5px;
+    padding:30px 50px 30px 30px;
     overflow:scroll;
 }
 

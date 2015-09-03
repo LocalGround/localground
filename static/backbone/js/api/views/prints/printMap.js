@@ -143,10 +143,15 @@ define(["marionette",
 
                 //set up the various map tiles in Google maps:
                 if (this.tilesets) {
+
+                    if(mapState.basemapID) {
+                        this.activeMapTypeID = mapState.basemapID;
+                    }
+
                     this.tileManager = new TileController(this.app, {
                         map: this.map,
                         tilesets: this.tilesets,
-                        activeMapTypeID: mapState.activeMapTypeID || this.activeMapTypeID
+                        activeMapTypeID: this.activeMapTypeID
                     });
                 }
 
