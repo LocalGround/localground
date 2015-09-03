@@ -9,8 +9,67 @@ from django.forms.models import inlineformset_factory
 from localground.apps.site.forms import FieldLayoutForm
 from django.http import HttpResponse
 
-def generate_print_pdf():
-    pass;
+def generate_print_pdf(request):
+    # get / create form (if requested):
+    prefix = 'field_layout'
+    r = request.GET or request.POST
+
+    project = None
+    if r.get('project_id'):
+        project = models.Project.objects.get(id=r.get('project_id'))
+    else:
+        project = models.Project.get_default_project(request.user)
+
+    # initialize variables / data based on query params:
+    map_provider = models.WMSOverlay.objects.get(
+        id=int(r.get('map_provider', settings.DEFAULT_BASEMAP_ID)))
+
+    # get / create form (if requested):
+    form = None
+    layers, layer_ids = [], []
+    scans, scan_ids = [], []
+
+    layouts = models.Layout.objects.filter(is_active=True).order_by('id', )
+    layout_id = int(r.get('layout', 1))
+    layout = models.Layout.objects.get(id=layout_id)
+    zoom = int(r.get('zoom', 17))
+    profile = models.UserProfile.objects.get(user=request.user)
+
+    # set lat / lng (including defaults, if not defined any other way):
+    center_lat, center_lng = 55.16, 61.4
+    if profile.default_location is not None:
+        center_lat = profile.default_location.y
+        center_lng = profile.default_location.x
+    center_lat = float(r.get('center_lat', center_lat))
+    center_lng = float(r.get('center_lng', center_lng))
+    center = Point(center_lng, center_lat, srid=4326)
+    map_title = r.get('map_title', None)
+    instructions = r.get('instructions', None)
+    if instructions is not None:  # preserve line breaks in the pdf report
+        instructions = '<br/>'.join(instructions.splitlines())
+
+    extras = {}
+
+    has_extra_form_page = layout.is_data_entry and r.get('long_form') is not None and \
+        form is not None
+
+    p = models.Print.insert_print_record(
+            request.user,
+            project,
+            layout,
+            map_provider,
+            zoom,
+            center,
+            request.get_host(),
+            map_title=r.get('map_title'),
+            instructions=r.get('instructions'),
+            form=form,
+            layer_ids=None,
+            scan_ids=scan_ids
+        )
+    return HttpResponse()
+
+    #half done nonsense
     # if r.get('generate_pdf') is not None:
     #     p = models.Print.insert_print_record(
     #         request.user,
@@ -24,7 +83,7 @@ def generate_print_pdf():
     #         instructions=r.get('instructions'),
     #         form=form,
     #         layer_ids=None,
-    #         scan_ids=scan_ids
+    #         scan_ids=None
     #     )
     #     # save the form layout to the database:
     #     formset = FieldLayoutFormset(request.POST, instance=p, prefix=prefix)
@@ -47,7 +106,7 @@ def generate_print_new(
     prefix = 'field_layout'
 
     if request.POST:
-        generate_print_pdf()
+        generate_print_pdf(request)
         return HttpResponse(request.POST)
 
     r = request.GET
@@ -71,39 +130,7 @@ def generate_print_new(
     map_provider = models.WMSOverlay.objects.get(
         id=int(r.get('map_provider', settings.DEFAULT_BASEMAP_ID)))
 
-    # get / create form (if requested):
-    form = None
-    if is_form_requested:
-        # get existing form:
-        if r.get('form_id') != '-1' and r.get('form_id') is not None:
-            form = models.Form.objects.get(id=int(r.get('form_id', 1)))
-    forms = models.Form.objects.filter(owner=request.user).order_by('name', )
-    #forms = models.Form.objects.filter(project=project).order_by('name',)
-    layers, layer_ids = [], []
-    if r.get('layer_ids') is not None and len(r.get('layer_ids')) > 0:
-        layer_ids = [int(n) for n in r.get('layer_ids').split(',')]
-        layers = models.WMSOverlay.objects.filter(id__in=layer_ids)
-
-    scans, scan_ids = [], []
-    if r.get('scan_ids') is not None and len(r.get('scan_ids')) > 0:
-        scan_ids = [n for n in r.get('scan_ids').split(',')]
-        scans = models.Scan.objects.select_related(
-            'source_print').filter(id__in=scan_ids).to_dict_list()
-
-    layouts = models.Layout.objects.filter(is_active=True).order_by('id', )
-    layout_id = int(r.get('layout', 1))
-    layout = models.Layout.objects.get(id=layout_id)
-    zoom = int(r.get('zoom', 17))
-    profile = models.UserProfile.objects.get(user=request.user)
-
-    # set lat / lng (including defaults, if not defined any other way):
-    center_lat, center_lng = 55.16, 61.4
-    if profile.default_location is not None:
-        center_lat = profile.default_location.y
-        center_lng = profile.default_location.x
-    center_lat = float(r.get('center_lat', center_lat))
-    center_lng = float(r.get('center_lng', center_lng))
-    center = Point(center_lng, center_lat, srid=4326)
+    
 
     map_title = r.get('map_title', None)
     instructions = r.get('instructions', None)

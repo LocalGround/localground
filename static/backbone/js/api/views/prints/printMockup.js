@@ -23,6 +23,9 @@ define(["marionette",
                 return _.template(printMockupTemplate);
             },
 
+            DEFAULT_TITLE: 'Click to enter a map title',
+            DEFAULT_DESCRIPTION: 'Click to enter instructions',
+
             tagName: 'div',
             id: 'print-mockup',
             regions: {
@@ -54,8 +57,13 @@ define(["marionette",
 
             onShow: function () {
                 var printmap = new PrintMap(_.defaults({mapContainerID: "print-map-canvas"},this.opts));
-                this.map = printmap.map;
                 this.printMapRegion.show(printmap);
+                this.map = printmap.map;
+                this.mapView = printmap;
+            },
+
+            resizeMap: function () {
+                google.maps.event.trigger(this.map, "resize");
             },
 
             changeLayout: function (choice) {
@@ -77,7 +85,7 @@ define(["marionette",
             hideTitleInput: function (event) {
                 var newTitle = event.target.value;
                 if(!newTitle) {
-                  newTitle = 'Click to enter a map title'
+                  newTitle = this.DEFAULT_TITLE;
                 }
                 this.ui.title.text(newTitle);
                 this.ui.titleInput.hide();
@@ -87,11 +95,30 @@ define(["marionette",
             hideDescriptionInput: function () {
                 var newDescription = event.target.value;
                 if(!newDescription) {
-                  newDescription = 'Click to enter instructions'
+                  newDescription = this.DEFAULT_DESCRIPTION;
                 }
                 this.ui.description.text(newDescription);
                 this.ui.descriptionInput.hide();
                 this.ui.description.show();
+            },
+
+            getFormData : function () {
+                return {
+                    map_title: this.getTitle(),
+                    instructions: this.getInstructions(),
+                    zoom: this.map.zoom,
+                    center_lat: this.map.center.lat(),
+                    center_lng: this.map.center.lng(),
+                    map_provider: this.mapView.tileManager.getMapTypeId()
+                }
+            },
+
+            getTitle: function () {
+                return this.ui.titleInput.val();
+            },
+
+            getInstructions: function () {
+                return this.ui.descriptionInput.val();
             }
 
 
