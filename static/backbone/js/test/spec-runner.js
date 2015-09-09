@@ -25,7 +25,9 @@ require(['boot'], function () {
         'spec/views/caption-test.js',
         'spec/views/fullscreenCtrl-test.js',
         'spec/views/upload-modal-test.js',
-        'spec/views/photo-bubble-test.js'
+        //'spec/views/photo-bubble-test.js',
+        'spec/views/print-form-test.js',
+        //'spec/views/print-mockup-test.js'
         //'spec/views/audio-player-test.js'
     ];
     require(specs, function () {
