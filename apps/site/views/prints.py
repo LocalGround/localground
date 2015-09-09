@@ -9,8 +9,11 @@ from django.forms.models import inlineformset_factory
 from localground.apps.site.forms import FieldLayoutForm
 from django.http import HttpResponse
 
+#shorthand for debugging
+layout_id_map = {'landscape': 1, 'portrait': 2}
+
 def generate_print_pdf(request):
-    # get / create form (if requested):
+    
     prefix = 'field_layout'
     r = request.GET or request.POST
 
@@ -18,7 +21,8 @@ def generate_print_pdf(request):
     if r.get('project_id'):
         project = models.Project.objects.get(id=r.get('project_id'))
     else:
-        project = models.Project.get_default_project(request.user)
+        pass
+        #TODO produce exception
 
     # initialize variables / data based on query params:
     map_provider = models.WMSOverlay.objects.get(
@@ -30,19 +34,21 @@ def generate_print_pdf(request):
     scans, scan_ids = [], []
 
     layouts = models.Layout.objects.filter(is_active=True).order_by('id', )
-    layout_id = int(r.get('layout', 1))
+    layout_id = layout_id_map[r.get('orientation')]
     layout = models.Layout.objects.get(id=layout_id)
     zoom = int(r.get('zoom', 17))
     profile = models.UserProfile.objects.get(user=request.user)
 
-    # set lat / lng (including defaults, if not defined any other way):
-    center_lat, center_lng = 55.16, 61.4
-    if profile.default_location is not None:
-        center_lat = profile.default_location.y
-        center_lng = profile.default_location.x
-    center_lat = float(r.get('center_lat', center_lat))
-    center_lng = float(r.get('center_lng', center_lng))
+    # set lat / lng (including defaults, produce exception if not provided):
+    if not (r.get('center_lat') and r.get('center_lng')):
+        pass
+        #TODO: Throw exception
+
+    center_lat = float(r.get('center_lat'))
+    center_lng = float(r.get('center_lng'))
     center = Point(center_lng, center_lat, srid=4326)
+    
+
     map_title = r.get('map_title', None)
     instructions = r.get('instructions', None)
     if instructions is not None:  # preserve line breaks in the pdf report
@@ -50,8 +56,8 @@ def generate_print_pdf(request):
 
     extras = {}
 
-    has_extra_form_page = layout.is_data_entry and r.get('long_form') is not None and \
-        form is not None
+    #TODO: remove this
+    has_extra_form_page = False
 
     p = models.Print.insert_print_record(
             request.user,
@@ -67,36 +73,10 @@ def generate_print_pdf(request):
             layer_ids=None,
             scan_ids=scan_ids
         )
-    return HttpResponse()
+    p.generate_pdf(has_extra_form_page=has_extra_form_page)
 
-    #half done nonsense
-    # if r.get('generate_pdf') is not None:
-    #     p = models.Print.insert_print_record(
-    #         request.user,
-    #         project,
-    #         layout,
-    #         map_provider,
-    #         zoom,
-    #         center,
-    #         request.get_host(),
-    #         map_title=r.get('map_title'),
-    #         instructions=r.get('instructions'),
-    #         form=form,
-    #         layer_ids=None,
-    #         scan_ids=None
-    #     )
-    #     # save the form layout to the database:
-    #     formset = FieldLayoutFormset(request.POST, instance=p, prefix=prefix)
-    #     if formset.is_valid() and form is not None:
-    #         for fieldlayoutform in formset.forms:
-    #             fieldlayoutform.instance.save(user=request.user)
-
-    #     p.generate_pdf(has_extra_form_page=has_extra_form_page)
-    #     extras.update({
-    #         'map': p.thumb(),
-    #         'pdf': p.pdf()
-    #     })
-    # else:
+    #just return pdf location
+    return HttpResponse(p.pdf())
 
 @login_required
 def generate_print_new(
@@ -105,13 +85,11 @@ def generate_print_new(
     template_name='map/print_new.html'):
     prefix = 'field_layout'
 
-    if request.POST:
-        generate_print_pdf(request)
-        return HttpResponse(request.POST)
+    if request.method == "POST":
+        return generate_print_pdf(request)
 
     r = request.GET
-    is_form_requested = r.get('short_form') is not None or \
-        r.get('long_form') is not None
+    is_form_requested = False
 
     FieldLayoutFormset = inlineformset_factory(
         models.Print,
@@ -129,8 +107,25 @@ def generate_print_new(
     # initialize variables / data based on query params:
     map_provider = models.WMSOverlay.objects.get(
         id=int(r.get('map_provider', settings.DEFAULT_BASEMAP_ID)))
-
     
+    layouts = models.Layout.objects.filter(is_active=True).order_by('id', )
+    layout_id = int(r.get('layout', 1))
+    layout = models.Layout.objects.get(id=layout_id)
+
+    zoom = int(r.get('zoom', 17))
+    profile = models.UserProfile.objects.get(user=request.user)
+
+
+    # set lat / lng (including defaults, if not defined any other way):
+    center_lat, center_lng = 55.16, 61.4
+    if profile.default_location is not None:
+        center_lat = profile.default_location.y
+        center_lng = profile.default_location.x
+    center_lat = float(r.get('center_lat', center_lat))
+    center_lng = float(r.get('center_lng', center_lng))
+    center = Point(center_lng, center_lat, srid=4326)
+
+
 
     map_title = r.get('map_title', None)
     instructions = r.get('instructions', None)
@@ -144,6 +139,15 @@ def generate_print_new(
 
     
     formset = FieldLayoutFormset(prefix=prefix)
+    form = None
+    if is_form_requested:
+        # get existing form:
+        if r.get('form_id') != '-1' and r.get('form_id') is not None:
+            form = models.Form.objects.get(id=int(r.get('form_id', 1)))
+    forms = models.Form.objects.filter(owner=request.user).order_by('name', )
+
+    layers, layer_ids = [], []
+    scans, scan_ids = [], []
 
     extras.update({
         'width': layout.map_width_pixels,
