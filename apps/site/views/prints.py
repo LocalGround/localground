@@ -18,11 +18,7 @@ def generate_print_pdf(request):
     r = request.GET or request.POST
 
     project = None
-    if r.get('project_id'):
-        project = models.Project.objects.get(id=r.get('project_id'))
-    else:
-        pass
-        #TODO produce exception
+    project = models.Project.objects.get(id=r.get('project_id'))
 
     # initialize variables / data based on query params:
     map_provider = models.WMSOverlay.objects.get(
@@ -39,11 +35,6 @@ def generate_print_pdf(request):
     zoom = int(r.get('zoom', 17))
     profile = models.UserProfile.objects.get(user=request.user)
 
-    # set lat / lng (including defaults, produce exception if not provided):
-    if not (r.get('center_lat') and r.get('center_lng')):
-        pass
-        #TODO: Throw exception
-
     center_lat = float(r.get('center_lat'))
     center_lng = float(r.get('center_lng'))
     center = Point(center_lng, center_lat, srid=4326)
@@ -56,7 +47,6 @@ def generate_print_pdf(request):
 
     extras = {}
 
-    #TODO: remove this
     has_extra_form_page = False
 
     p = models.Print.insert_print_record(

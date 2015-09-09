@@ -51,7 +51,6 @@ define(["marionette",
                 this.app = opts.app;
                 this.opts = opts;
                 this.controller = opts.controller;
-                this.collection = opts.projects;
                 this.listenTo(this.controller, 'change-layout', this.changeLayout);
             },
 
