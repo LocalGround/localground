@@ -53,19 +53,26 @@ define(["marionette",
                 this.app = opts.app;
                 this.controller = opts.controller;
                 this.opts = opts;
-                this.collection = opts.projects;
+                this.collection = opts.availableProjects;
             },
 
             onShow: function () {
             },
 
+            refreshActiveProject: function () {
+                var activeProject = this.app.getActiveProjectID();
+                if(activeProject) {
+                    this.ui.projectSelection.val(activeProject);
+                }
+            },
+
             changeLayout: function (e) {
-              var choice = e.target.value;
-              this.controller.trigger('change-layout', choice)
+                var choice = e.target.value;
+                this.controller.trigger('change-layout', choice)
             },
 
             generatePrint: function () {
-              this.controller.trigger('generatePrint');
+                this.controller.trigger('generatePrint');
             },
 
             getFormData: function () {

@@ -21,7 +21,7 @@ define(["underscore",
         });
 
         PrintBase.addInitializer(function (options) {
-            options.projects = new Projects();
+            options.availableProjects = new Projects();
             options.app = this;
             var printLoader = new PrintLoader(options),
                 topBar = new TopBar(options),
