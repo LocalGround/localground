@@ -91,7 +91,7 @@ define(["marionette",
                 this.ui.title.show();
             },
 
-            hideDescriptionInput: function () {
+            hideDescriptionInput: function (event) {
                 var newDescription = event.target.value;
                 if(!newDescription) {
                   newDescription = this.DEFAULT_DESCRIPTION;
