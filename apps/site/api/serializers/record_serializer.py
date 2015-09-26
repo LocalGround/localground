@@ -143,7 +143,9 @@ def create_record_serializer(form, **kwargs):
             attrs.update({
                 f: fields.CustomModelField(
                     type_label="photo",
-                    model_field=model_field
+                    model_field=model_field,
+                    null=True,
+                    blank=True
                 )
             })
     
@@ -158,7 +160,9 @@ def create_record_serializer(form, **kwargs):
             attrs.update({
                 f: fields.CustomModelField(
                     type_label="audio",
-                    model_field=model_field
+                    model_field=model_field,
+                    null=True,
+                    blank=True
                 )
             })
     

@@ -1,10 +1,15 @@
-define(["jquery", "backbone"], function ($, Backbone) {
+define(["jquery",
+        "backbone",
+        "collections/forms",
+        "views/tables/table-utilities-mixin",
+        "text!../../../templates/spreadsheet/navbar.html",
+        "jquery.bootstrap"
+        ], function ($, Backbone, Forms, Utilities, Template) {
     "use strict";
     var TableHeader = Backbone.View.extend({
         el: "#navbar",
         globalEvents: null,
         events: {
-            //'click .change-table': 'triggerLoadTable',
             'click #add_row_top': 'triggerInsertRowTop',
             'click #add_row_bottom': 'triggerInsertRowBottom',
             'click .query': 'triggerQuery',
@@ -13,18 +18,24 @@ define(["jquery", "backbone"], function ($, Backbone) {
         },
         initialize: function (opts) {
             $.extend(this, opts);
-            var that = this;
-
+            this.ensureRequiredParam("app");
+            this.ensureRequiredParam("globalEvents");
+            this.collection = new Forms();
             this.loadFormSelector();
-            this.listenTo(this.collection, "reset", function () {
-                // if a current route hasn't been specified already in the URL,
-                // select a default one:
-                if (!Backbone.history.fragment) {
-                    that.app.router.navigate("/" + that.collection.models[0].id, true);
-                }
-            });
+            this.render();
+            this.listenTo(this.collection, "reset", this.navigateToTable);
         },
-
+        render: function () {
+            this.$el.html(_.template(Template));
+            return this;
+        },
+        navigateToTable: function () {
+            // if a current route hasn't been specified already in the URL,
+            // select a default one:
+            if (!Backbone.history.fragment) {
+                this.app.router.navigate("/" + this.collection.models[0].id, true);
+            }
+        },
         loadFormSelector: function () {
             var that = this,
                 successFunction = function () {
@@ -72,5 +83,6 @@ define(["jquery", "backbone"], function ($, Backbone) {
             this.globalEvents.trigger("insertColumn", e);
         }
     });
+    _.extend(TableHeader.prototype, Utilities);
     return TableHeader;
 });

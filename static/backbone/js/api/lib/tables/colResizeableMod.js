@@ -13,6 +13,8 @@
 	
 	If you are going to use this plugin in production environments it is 
 	strongly recomended to use its minified version: colResizable.min.js
+	
+	SV: This has been forked to accomodate server-side postback using BackGrid.
 
 */
 
@@ -61,6 +63,10 @@
 		tables[id] = t; 	//the table object is stored using its id as key	
 		createGrips(t);		//grips are created
         //surroundCellsWithDivTag(t);
+        
+        // calling this twice is necessary...the second initWidths call
+        // aligns things much better, for a reason unknown to me.
+        initWidths(t, options.columnWidths);
         initWidths(t, options.columnWidths);
 	};
 
@@ -166,38 +172,21 @@
 	* @param {nunmber} i - index of the grip being dragged
 	* @param {bool} isOver - to identify when the function is being called from the onGripDragOver event	
 	*/
-	var syncCols = function(t,i,isOver){
-		var inc = drag.x-drag.l,
-            h1 = t.c[i],
-            h2 = t.c[i+1],
-            w1 = h1.width() + inc,
-            w2= h2.width() - inc,
-            minWidth = 15;
-        if (w1 < minWidth || w2 < minWidth) {
-            syncGrips(t);
-            inc = minWidth,
-                w1 = h1.w + inc,
-                w2= h2.w - inc;
-            //return;
-        }
+	var syncCols = function(t,i,isOver) {
         
-        //co11.width(w1 + PX);
-        adjustCellWidth(t, i, w1);
-
-        //co12.width(w2 + PX);
-        adjustCellWidth(t, (i+1), w2);
- 
-		t.cg.eq(i).width( w1 + 10 + PX);
-        t.cg.eq(i+1).width( w2 + 10 + PX);
-		if(isOver){h1.w=w1; h2.w=w2;}
-        //initWidths(t);
+        var leftTableWidth = 0;
+        var cells = t.find(">thead>tr>th");
+        for(n=0; n < i; n++) {
+            leftTableWidth += $(cells.get(n)).width();
+        }
+        t.opt.columnWidths[i] = drag.x - leftTableWidth;
 	};
     
     /**
      * New fork functionality
      */
     var initWidths = function(t, columnWidths) {
-        t.find(">thead, >tbody").width(t.width());
+        //t.find(">thead, >tbody").width(t.width());
         var ths = t.find(">thead>tr>th"); 
         var tds = t.find(">tbody>tr>td");
         var w;
@@ -231,7 +220,7 @@
 	 * Event handler used while dragging a grip. It checks if the next grip's position is valid and updates it. 
 	 * @param {event} e - mousemove event binded to the window object
 	 */
-	var onGripDrag = function(e){	
+	var onGripDrag = function(e){
 		if(!drag) return; var t = drag.t;		//table object reference 
 		var x = e.pageX - drag.ox + drag.l;		//next position according to horizontal mouse position increment
 		var mw = t.opt.minWidth, i = drag.i ;	//cell's min width
@@ -239,12 +228,13 @@
 
 		var max = i == t.ln-1? t.w-l: t.g[i+1].position().left-t.cs-mw; //max position according to the contiguous cells
 		var min = i? t.g[i-1].position().left+t.cs+mw: l;				//min position according to the contiguous cells
-		
+		max = 10000000;
+        min = 0;
 		x = M.max(min, M.min(max, x));						//apply boundings		
 		drag.x = x;	 drag.css("left",  x + PX); 			//apply position increment		
 			
 		if(t.opt.liveDrag){ 								//if liveDrag is enabled
-			syncCols(t,i);              					//columns and grips are synchronized
+			syncCols(t,i, opt);              					//columns and grips are synchronized
 			syncGrips(t);
             var cb = t.opt.onDrag;							//check if there is an onDrag callback
 			if (cb) { e.currentTarget = t[0]; cb(e); }		//if any, it is fired			
@@ -257,20 +247,24 @@
 	/**
 	 * Event handler fired when the dragging is over, updating table layout
 	 */
-	var onGripDragOver = function(e){	
-		
+	var onGripDragOver = function(e, args){
 		d.unbind('mousemove.'+SIGNATURE).unbind('mouseup.'+SIGNATURE);
 		$("head :last-child").remove(); 				//remove the dragging cursor style	
 		if(!drag) return;
 		drag.removeClass(drag.t.opt.draggingClass);		//remove the grip's dragging css-class
 		var t = drag.t, cb = t.opt.onResize; 			//get some values	
-		if(drag.x){ 									//only if the column width has been changed
+		if(drag.x || args.testing) { 						//only if the column width has been changed
 			syncCols(t,drag.i, true);	    	        //the columns and grips are updated
-			syncGrips(t);
-            if (cb) { e.currentTarget = t[0]; cb(e); }	//if there is a callback function, it is fired
+			//syncGrips(t);
+            if (cb) {                                   //if there is a callback function, it is fired
+                e.currentTarget = t[0];
+                cb([
+                    { idx: drag.i, width: Math.max(t.opt.minWidth, t.opt.columnWidths[drag.i]) }
+                ]);
+            }	
 		}	
 		if(t.p && S) memento(t); 						//if postbackSafe is enabled and there is sessionStorage support, the new layout is serialized and stored
-		drag = null;									//since the grip's dragging is over									
+        drag = null;									//since the grip's dragging is over
 	};	
 	
 
@@ -333,7 +327,7 @@
                 draggingClass: 'JCLRgripDrag',	//css-class used when a grip is being dragged (for visual feedback purposes)
 				gripInnerHtml: '',				//if it is required to use a custom grip it can be done using some custom HTML				
 				liveDrag: false,				//enables table-layout updaing while dragging			
-				minWidth: 10, 					//minimum width value in pixels allowed for a column 
+				minWidth: 35, 					//minimum width value in pixels allowed for a column 
 				headerOnly: false,				//specifies that the size of the the column resizing anchors will be bounded to the size of the first row 
 				hoverCursor: "e-resize",  		//cursor to be used on grip hover
 				dragCursor: "e-resize",  		//cursor to be used while dragging

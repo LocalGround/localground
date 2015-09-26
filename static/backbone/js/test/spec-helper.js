@@ -4,38 +4,99 @@ define(
         "jquery",
         "lib/appUtilities",
         "lib/maps/data/dataManager",
-        "lib/maps/data/snapshotLoader",
         "collections/projects",
         "collections/photos",
         "collections/audio",
         "collections/mapimages",
         "collections/markers",
         "collections/records",
+        "collections/forms",
+        "collections/Columns",
         "collections/layers",
+        "collections/dataTypes",
         "models/project",
         "models/photo",
         "models/marker",
         "models/audio",
         "models/record",
+        "models/form",
         "models/mapimage",
-        "models/layer"
+        "models/layer",
+        "models/dataType",
+        "models/field"
     ],
-    function (Backbone, $, appUtilities, DataManager, SnapshotLoader,
-              Projects, Photos, AudioFiles, MapImages, Markers, Records, Layers,
-              Project, Photo, Marker, Audio, Record, MapImage, Layer) {
+    function (Backbone, $, appUtilities, DataManager,
+              Projects, Photos, AudioFiles, MapImages, Markers,
+              Records, Forms, Columns, Layers, DataTypes,
+              Project, Photo, Marker, Audio, Record, Form,
+              MapImage, Layer, DataType, Field) {
         'use strict';
+
+        var initAjaxSpies = function (scope) {
+            /* Suggestion taken from:
+             * http://blog.ricca509.me/jasmine-mock-ajax-for-backbone-requests
+             * IMPORTANT NOTE: This intercepts ajax requests that are issued directly
+             * from the tests, but does not intercept ajax requests from the source
+             * code. So, it's important that you capture those requests via method
+             * spies, or else the tests will slam the server and run very slowly.
+             */
+            spyOn($, 'ajax').and.callFake(function (options) {
+                var d = $.Deferred(),
+                    response = {};
+                switch (options.type) {
+                case "OPTIONS":
+                    response = scope.recordSchema;
+                    break;
+                case "GET":
+                    if ("/api/0/forms/" == options.url) {
+                        response = { results: scope.forms.toJSON() };
+                    } else if ("/api/0/layers/" == options.url) {
+                        response = { results: scope.layers.toJSON() };
+                    } else if ("/api/0/photos/" == options.url) {
+                        response = { results: scope.photos.toJSON() };
+                    } else if ("/api/0/map-images/" == options.url) {
+                        response = { results: scope.map_images.toJSON() };
+                    } else if ("/api/0/markers/" == options.url) {
+                        response = { results: scope.markers.toJSON() };
+                    } else if ("/api/0/audio/" == options.url) {
+                        response = { results: scope.audio.toJSON() };
+                    } else if ("/api/0/data-types/" == options.url) {
+                        response = { results: scope.dataTypes.toJSON() };
+                    } else if (/\/api\/0\/forms\/\d+\/data\//.test(options.url)) {
+                        response = { results: scope.records.toJSON() };
+                    } else if (/\/api\/0\/forms\/\d+\/fields\//.test(options.url)) {
+                        response = { results: scope.columns.toJSON() };
+                    } else {
+                        alert("No match. Please see the spec-helper.js \"initAjaxSpies\" function and add code to intercept the \"" + options.url + "\" AJAX request.");
+                        response = "";
+                    }
+                    break;
+                case 'PATCH':
+                    response = "";
+                    break;
+                default:
+                    alert("Not handled: " + options.type);
+                    break;
+                }
+                d.resolve(response);
+                options.success(response);
+                return d.promise();
+            });
+        };
         beforeEach(function () {
-            var $map_container = $('<div id="map_canvas"></div>');
+            var $map_container = $('<div id="map_canvas"></div>'),
+                $grid_container = $('<div id="grid"></div>');
             $(document.body).append($map_container);
+            $(document.body).append($grid_container);
 
             /**
              * Adds some dummy data for testing convenience.
              * Availabe to all of the tests.
              */
             this.photos = new Photos([
-                new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1, overlay_type: "photo", 
-                    geometry: {"type": "Point", "coordinates": [-122.294, 37.864]},
-                    path_small:'//:0', path_medium:"//:0", path_large:"//:0" }),
+                new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1, overlay_type: "photo",
+                          geometry: {"type": "Point", "coordinates": [-122.294, 37.864]},
+                          path_small: '//:0', path_medium: "//:0", path_large: "//:0" }),
                 new Photo({id: 2, name: "Dog", tags: 'animal, dog', project_id: 1, overlay_type: "photo", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] } }),
                 new Photo({id: 3, name: "Frog", tags: 'animal, amphibian, cute, frog', project_id: 1, overlay_type: "photo", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] } })
             ]);
@@ -54,11 +115,59 @@ define(
                 new Marker({id: 2, name: "POI 2", tags: 'friend\'s house, tag1', project_id: 2, overlay_type: "marker" }),
                 new Marker({id: 3, name: "POI 3", tags: 'coffee shop, tag1', project_id: 2, overlay_type: "marker" })
             ]);
+            this.forms = new Forms([
+                new Form({ "id": 2, "name": "Nature form", "description": "teams & worm counts", "overlay_type": "form", "tags": "", "owner": "tester", "slug": "worms-form", "project_ids": [ 1 ], fields: [/*todo: populate if needed*/] })
+            ]);
+            this.dataTypes = new DataTypes([
+                new DataType({id: 8, name: "audio"}),
+                new DataType({id: 7, name: "photo"}),
+                new DataType({id: 6, name: "rating"}),
+                new DataType({id: 5, name: "decimal"}),
+                new DataType({id: 4, name: "boolean"}),
+                new DataType({id: 3, name: "date-time"}),
+                new DataType({id: 2, name: "integer"}),
+                new DataType({id: 1, name: "text"})
+            ]);
             this.records = new Records([
-                new Record({ id: 1, team_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 2, overlay_type: "record" }),
-                new Record({id: 2, team_name: "Green team", tags: 'friend\'s house, tag1', worm_count: 8, project_id: 2, overlay_type: "record" }),
-                new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 2, project_id: 2, overlay_type: "record" })
-            ], { 'url': 'dummy/url' });
+                new Record({ id: 1, team_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 2, overlay_type: "record", team_photo: 1, audio_clip: 1, geometry: {"type": "Point", "coordinates": [-122.2581, 37.8491]}, yes_no: true }),
+                new Record({id: 2, team_name: "Green team", tags: 'friend\'s house, tag1', worm_count: 8, project_id: 2, overlay_type: "record", team_photo: 2, audio_clip: 2, geometry: {"type": "Point", "coordinates": [-121.2581, 38.8491]}, yes_no: false }),
+                new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 2, project_id: 2, overlay_type: "record", team_photo: 3, audio_clip: 3, geometry: {"type": "Point", "coordinates": [-120.2581, 39.8491]}, yes_no: true})
+            ], { 'url': '/api/0/forms/2/data/' });
+            this.columns = new Columns([
+                new Field(
+                    { id: 1, form: 2, col_alias: "Tags", col_name: "tags", display_width: 100, ordering: 1, data_type: "text"},
+                    { urlRoot: '/api/0/forms/2/fields/' }
+                ),
+                new Field(
+                    { id: 2, form: 2, col_alias: "Team Photo", col_name: "team_photo", display_width: 100, ordering: 2, data_type: "photo" },
+                    { urlRoot: '/api/0/forms/2/fields/' }
+                ),
+                new Field(
+                    { id: 3, form: 2, col_alias: "Audio Clip", col_name: "audio_clip", display_width: 100, ordering: 3, data_type: "audio" },
+                    { urlRoot: '/api/0/forms/2/fields/' }
+                ),
+                new Field(
+                    { id: 4, form: 2, col_alias: "Yes / No", col_name: "yes_no", display_width: 100, ordering: 4, data_type: "boolean"},
+                    { urlRoot: '/api/0/forms/2/fields/' }
+                )
+            ], { 'url': '/api/0/forms/2/fields/' });
+            this.recordSchema = {
+                name: "Form Data List",
+                description: "",
+                "actions": {"POST": {
+                    "id": {"type": "integer", "required": false, "read_only": true, "label": "ID"},
+                    "team_name": {type: "string", required: false, read_only: false, label: "Team Name"},
+                    "geometry": {type: "geojson", required: false, read_only: false, label: "Geometry"},
+                    "display_name": {type: "string", required: false, read_only: true, label: "Display Name"},
+                    "tags": {type: "string", required: false, read_only: false, label: "Tags", max_length: 1000},
+                    "worm_count": {type: "integer", required: false, read_only: false, label: "Worm Count"},
+                    "project_id": {type: "field", required: false, read_only: false, label: "Project ID"},
+                    "overlay_type": {type: "field", required: false, read_only: true, label: "Overlay Type"},
+                    "team_photo": {type: "photo", required: false, read_only: false, label: "Team photo"},
+                    "audio_clip": {type: "audio", required: false, read_only: false, label: "Audio Clip"},
+                    "yes_no": {type: "audio", required: false, read_only: false, label: "Yes / No"}
+                }}
+            };
             this.layers = new Layers([
                 new Layer({id: 1, name: "worms", overlay_type: "layer", symbols: [
                     { color: "#7075FF", width: 30, rule: "worms > 0", title: "At least 1 worm" },
@@ -199,6 +308,17 @@ define(
             });
             //give the app a reference to the dataManager (for convenience);
             _.extend(this.app, { dataManager: this.dataManager });
+
+            //intercepts all fetch calls and returns dummy data (as defined above):
+            initAjaxSpies(this);
+        });
+
+        afterEach(function () {
+            //clean up:
+            //$("#map_canvas").remove();
+            $("#grid").remove();
+            $(".modal").remove();
+            $(".modal-backdrop").remove();
         });
     }
 );

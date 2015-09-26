@@ -126,6 +126,18 @@ class ApiFieldInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_field = models.Field.objects.get(id=self.field.id)
         self.assertEqual(updated_field.col_alias, 'Address 1')
+        
+    def test_update_display_width_using_patch(self, **kwargs):
+        response = self.client_user.patch(self.url,
+                        data=urllib.urlencode({
+                            'display_width': 200
+                        }),
+                        HTTP_X_CSRFTOKEN=self.csrf_token,
+                        content_type="application/x-www-form-urlencoded"
+                    )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated_field = models.Field.objects.get(id=self.field.id)
+        self.assertEqual(updated_field.display_width, 200)
 
     def test_no_columns_same_name(self, **kwargs):
         response = self.client_user.patch(self.url2,

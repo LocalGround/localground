@@ -58,8 +58,9 @@ define(["underscore",
                 var opts = _.clone(this.mapEditorInitializationParams);
                 opts = _.extend(opts, { app: this.app });
                 basemap = new Basemap(opts);
+                spyOn(basemap.map, 'setZoom');
                 basemap.changeZoom(20);
-                expect(basemap.map.getZoom()).toBe(20);
+                expect(basemap.map.setZoom).toHaveBeenCalledWith(20);
             });
 
             it("changeCenter method works", function () {
@@ -67,11 +68,10 @@ define(["underscore",
                 var opts = _.clone(this.mapEditorInitializationParams);
                 opts = _.extend(opts, { app: this.app });
                 basemap = new Basemap(opts);
-
+                spyOn(basemap.map, 'setCenter');
                 //change center:
                 basemap.changeCenter(new google.maps.LatLng(20, 19));
-                expect(basemap.map.getCenter().lat()).toBe(20);
-                expect(basemap.map.getCenter().lng()).toBe(19);
+                expect(basemap.map.setCenter).toHaveBeenCalledWith(new google.maps.LatLng(20, 19));
             });
 
         });
