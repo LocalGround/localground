@@ -46,7 +46,7 @@ define(["underscore",
             Mapplication.tabsRegion.show(tabs);
             Mapplication.mapRegion.show(basemap);
             Mapplication.dataPanelRegion.show(dataPanel);
-            Mapplication.layerPaneflRegion.show(layerPanel);
+            Mapplication.layerPanelRegion.show(layerPanel);
             Mapplication.topBarRegion.show(topBar);
 
             this.initAJAX(options);
