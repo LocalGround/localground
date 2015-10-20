@@ -12,7 +12,7 @@ class PresentationSerializer(BaseNamedSerializer):
     '''
     code = fields.JSONField(
         #widget=widgets.JSONWidget,
-        style={'base_template': 'textarea.html'},
+        style={'base_template': 'json.html'},
         required=False)
 
     class Meta:

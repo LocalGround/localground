@@ -54,7 +54,7 @@ class GeometrySerializer(BaseNamedSerializer):
         help_text='Assign a GeoJSON string',
         required=False,
         allow_null=True,
-        style={'base_template': 'textarea.html'},
+        style={'base_template': 'json.html'},
         source='point'
     )
     project_id = serializers.PrimaryKeyRelatedField(
@@ -91,9 +91,7 @@ class ExtentsSerializer(BaseNamedSerializer):
     center = fields.GeometryField(
                         help_text='Assign a GeoJSON string',
                         required=False,
-                        style={'base_template:input.html'},
-                        #widget=widgets.JSONWidget,
-                        #point_field_name='center'
+                        style={'base_template:json.html'}
                     )
 
 
