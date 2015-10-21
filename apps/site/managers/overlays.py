@@ -79,6 +79,17 @@ class MarkerMixin(ObjectMixin):
             access_key=access_key,
             ordering_field=ordering_field)
         return self.append_extras(q, "count", project=project, forms=forms)
+    
+    def get_objects_public_with_lists(
+            self,
+            forms=None,
+            project=None,
+            access_key=None,
+            ordering_field=None):
+        q = self.get_objects_public(
+            access_key=access_key,
+            ordering_field=ordering_field)
+        return self.append_extras(q, "array_agg", project=project, forms=forms)
 
     def to_dict_list(self):
         # does this need to be implemented, or can we just rely on

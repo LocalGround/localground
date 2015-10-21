@@ -173,12 +173,6 @@ class MarkerSerializerCounts(MarkerSerializerMixin):
     audio_count = serializers.SerializerMethodField()
     map_image_count = serializers.SerializerMethodField()
     record_count = serializers.SerializerMethodField()
-    
-    def __init__(self, *args, **kwargs):
-        super(MarkerSerializerCounts, self).__init__(*args, **kwargs)
-        r = self.context.get('request') 
-        if r and r.GET.get('include_metadata') in ['True', 'true', '1']:
-            self.Meta.fields += ('update_metadata',)
 
     class Meta:
         model = models.Marker
@@ -209,18 +203,18 @@ class MarkerSerializerCounts(MarkerSerializerMixin):
             return obj.record_count
         except:
             return None
+        
+class MarkerSerializerCountsWithMetadata(MarkerSerializerCounts):
+    class Meta:
+        model = models.Marker
+        fields = MarkerSerializerCounts.Meta.fields + ('update_metadata', )
+        depth = 0
     
 class MarkerSerializerLists(MarkerSerializerMixin):
     photo_array = serializers.SerializerMethodField()
     audio_array = serializers.SerializerMethodField()
     map_image_array = serializers.SerializerMethodField()
     record_array = serializers.SerializerMethodField()
-    
-    def __init__(self, *args, **kwargs):
-        super(MarkerSerializerLists, self).__init__(*args, **kwargs)
-        r = self.context.get('request') 
-        if r and r.GET.get('include_metadata') in ['True', 'true', '1']:
-            self.Meta.fields += ('update_metadata',)
 
     class Meta:
         model = models.Marker
@@ -251,3 +245,9 @@ class MarkerSerializerLists(MarkerSerializerMixin):
             return obj.record_array
         except:
             return None
+        
+class MarkerSerializerListsWithMetadata(MarkerSerializerLists):
+    class Meta:
+        model = models.Marker
+        fields = MarkerSerializerLists.Meta.fields + ('update_metadata', )
+        depth = 0
