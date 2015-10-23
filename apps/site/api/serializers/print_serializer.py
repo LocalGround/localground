@@ -43,7 +43,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
     overlay_type = serializers.SerializerMethodField()
     center = fields.GeometryField(
                 help_text='Assign a GeoJSON center point',
-                style={'base_template': 'textarea.html'},
+                style={'base_template': 'json.html'},
                 required=True
             )
     
@@ -99,7 +99,7 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
 class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
     center = fields.GeometryField(
                 help_text='Assign a GeoJSON center point',
-                style={'base_template': 'textarea.html'},
+                style={'base_template': 'json.html'},
                 read_only=True
             )
     layout = serializers.SerializerMethodField()

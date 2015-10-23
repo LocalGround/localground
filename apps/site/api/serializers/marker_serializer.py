@@ -5,6 +5,7 @@ from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 from django.conf import settings
 from localground.apps.site.api.metadata import CustomMetadata
+from localground.apps.site.api.fields.json_fields import JSONField
 
 class MarkerSerializerMixin(GeometrySerializer):
     geometry = fields.GeometryField(
@@ -12,14 +13,21 @@ class MarkerSerializerMixin(GeometrySerializer):
         allow_null=True,
         source='point',
         required=False,
-        style={'base_template': 'textarea.html'})
+        style={'base_template': 'json.html'})
+    
+    extras = JSONField(
+        help_text='Store arbitrary key / value pairs here',
+        allow_null=True,
+        required=False,
+        style={'base_template': 'json.html'})
+    
     color = fields.ColorField(required=False)
     update_metadata = serializers.SerializerMethodField()
 
     
     class Meta:
         model = models.Marker
-        fields = GeometrySerializer.Meta.fields + ('color', )
+        fields = GeometrySerializer.Meta.fields + ('color', 'extras')
         depth = 0
         
     def get_update_metadata(self, obj):
@@ -169,7 +177,7 @@ class MarkerSerializerCounts(MarkerSerializerMixin):
     class Meta:
         model = models.Marker
         fields = MarkerSerializerMixin.Meta.fields + \
-            ('photo_count', 'audio_count', 'record_count', 'map_image_count', 'update_metadata')
+            ('photo_count', 'audio_count', 'record_count', 'map_image_count')
         depth = 0
 
     def get_photo_count(self, obj):
@@ -195,6 +203,12 @@ class MarkerSerializerCounts(MarkerSerializerMixin):
             return obj.record_count
         except:
             return None
+        
+class MarkerSerializerCountsWithMetadata(MarkerSerializerCounts):
+    class Meta:
+        model = models.Marker
+        fields = MarkerSerializerCounts.Meta.fields + ('update_metadata', )
+        depth = 0
     
 class MarkerSerializerLists(MarkerSerializerMixin):
     photo_array = serializers.SerializerMethodField()
@@ -205,7 +219,7 @@ class MarkerSerializerLists(MarkerSerializerMixin):
     class Meta:
         model = models.Marker
         fields = MarkerSerializerMixin.Meta.fields + \
-            ('photo_array', 'audio_array', 'record_array', 'map_image_array', 'update_metadata')
+            ('photo_array', 'audio_array', 'record_array', 'map_image_array')
         depth = 0
 
     def get_photo_array(self, obj):
@@ -231,3 +245,9 @@ class MarkerSerializerLists(MarkerSerializerMixin):
             return obj.record_array
         except:
             return None
+        
+class MarkerSerializerListsWithMetadata(MarkerSerializerLists):
+    class Meta:
+        model = models.Marker
+        fields = MarkerSerializerLists.Meta.fields + ('update_metadata', )
+        depth = 0

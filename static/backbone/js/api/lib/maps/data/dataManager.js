@@ -99,7 +99,7 @@ define(["models/project",
                 var that = this,
                     project = new Project({id: projectID});
 
-                project.fetch({data: {format: 'json', include_schema: true}, success: function () {
+                project.fetch({data: {format: 'json', include_metadata: true}, success: function () {
                     that.updateCollections(project);
                 }});
             };

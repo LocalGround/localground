@@ -6,7 +6,7 @@ from localground.apps.site.api import fields
 
 class LayerSerializer(BaseNamedSerializer):
     access = serializers.SerializerMethodField()
-    symbols = fields.JSONField(style={'base_template': 'textarea.html'},
+    symbols = fields.JSONField(style={'base_template': 'json.html'},
                                required=False)
 
     class Meta:
