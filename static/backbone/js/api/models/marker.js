@@ -82,8 +82,12 @@ define(["models/base",
         },
 
         setExtras: function (extras) {
-            extras = JSON.parse(extras);
-            this.set({ extras: extras }, { silent: true }); //note: "set" calls an auto-commit
+            try {
+                extras = JSON.parse(extras);
+                this.set({ extras: extras }, { silent: true });
+            } catch (e) {
+                this.set({ extras: null }, { silent: true });
+            }
         },
 
         getDescriptiveText: function () {

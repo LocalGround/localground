@@ -60,12 +60,15 @@ define(['underscore',
         },
 
         saveForm: function (e) {
-            this.form.commit();       //does validation
-            var extras = this.bubble.model.get("extras");
-            if (extras) {
-                this.bubble.model.setExtras(extras);
-            }
-            this.bubble.model.save(); //does database commit
+            //does validation
+            var errors = this.form.commit();
+            if (errors) { return; }
+
+            // some JSON post-processing:
+            this.bubble.model.setExtras(this.bubble.model.get("extras"));
+
+            //does database commit
+            this.bubble.model.save();
             this.hideBubble();
             e.preventDefault();
         },

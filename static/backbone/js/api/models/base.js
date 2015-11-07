@@ -33,6 +33,18 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 "num",
                 "manually_reviewed"
             ],
+            validatorFunction: function (value, formValues) {
+                var err = {
+                    type: 'json',
+                    message: 'Value must be a JSON object'
+                };
+                try {
+                    JSON.parse(value);
+                    return null;
+                } catch (e) {
+                    return err;
+                }
+            },
             dataTypes: {
                 'string': 'Text',
                 'float': 'Number',
@@ -127,6 +139,9 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                                 title: val.label || key,
                                 help: val.help_text
                             };
+                            if (val.type.indexOf("json") != -1) {
+                                schema[key].validators = [ this.validatorFunction ];
+                            }
                         }
                     }
 

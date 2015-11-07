@@ -138,7 +138,10 @@ define(['jquery',
             },
 
             saveForm: function (e) {
-                this.form.commit();       //does validation
+                //does validation
+                var errors = this.form.commit();
+                if (errors) { return; }
+
                 this.bubble.model.save(); //does database commit
                 this.hideBubble();
                 e.preventDefault();

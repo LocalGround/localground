@@ -16,7 +16,7 @@ class MarkerSerializerMixin(GeometrySerializer):
         style={'base_template': 'json.html'})
     
     extras = JSONField(
-        help_text='Store arbitrary key / value pairs here',
+        help_text='Store arbitrary key / value pairs here in JSON form. Example: {"key": "value"}',
         allow_null=True,
         required=False,
         style={'base_template': 'json.html'})
