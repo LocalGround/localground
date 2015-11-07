@@ -1,5 +1,5 @@
-define(["underscore", "jquery", "backbone", "lib/maps/geometry/geometry", "lib/maps/geometry/point"],
-    function (_, $, Backbone, Geometry, Point) {
+define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry", "lib/maps/geometry/point"],
+    function (_, $, Backbone, Form, Geometry, Point) {
         "use strict";
         /**
          * An "abstract" Backbone Model; the root of all of the other
@@ -7,6 +7,7 @@ define(["underscore", "jquery", "backbone", "lib/maps/geometry/geometry", "lib/m
          * the various models create forms to update models.
          * @class Base
          */
+        var JSONFormatter = Form.JSONFormatter = function () {};
         var Base = Backbone.Model.extend({
             getNamePlural: function () {
                 return this.get("overlay_type");
@@ -37,7 +38,9 @@ define(["underscore", "jquery", "backbone", "lib/maps/geometry/geometry", "lib/m
                 'float': 'Number',
                 'integer': 'Number',
                 'boolean': 'Checkbox',
-                'geojson': 'TextArea'
+                'geojson': 'TextArea',
+                'memo': 'TextArea',
+                'json': 'TextArea'
             },
             initialize: function (data, opts) {
                 opts = opts || {};
@@ -54,6 +57,9 @@ define(["underscore", "jquery", "backbone", "lib/maps/geometry/geometry", "lib/m
                 var json = Backbone.Model.prototype.toJSON.call(this);
                 if (json.geometry != null) {
                     json.geometry = JSON.stringify(json.geometry);
+                }
+                if (json.extras != null) {
+                    json.extras = JSON.stringify(json.extras);
                 }
                 return json;
             },

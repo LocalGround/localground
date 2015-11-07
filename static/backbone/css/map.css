@@ -410,9 +410,11 @@ label {
 	margin: 5px 0 5px 0;
 	overflow-y: auto;
 	overflow-x: hidden;
-	border-top: 1px solid #cccccc;
 	border-bottom: 1px solid #cccccc;
+	/*
+	border-top: 1px solid #cccccc;
 	height: 200px;
+	*/
 }
 
 

@@ -1063,7 +1063,11 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
 
       this.model = options.model;
 
-      this.value = this.model.get(options.key);
+      
+      //SJVW edit:
+      //this.value = this.model.get(options.key);
+      var json = this.model.toJSON();
+      this.value = json[options.key];
     }
     else if (options.value !== undefined) {
       this.value = options.value;

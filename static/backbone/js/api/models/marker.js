@@ -81,6 +81,11 @@ define(["models/base",
             return null;
         },
 
+        setExtras: function (extras) {
+            extras = JSON.parse(extras);
+            this.set({ extras: extras }, { silent: true }); //note: "set" calls an auto-commit
+        },
+
         getDescriptiveText: function () {
             var messages = [];
             if (this.get("photo_count") > 0) {

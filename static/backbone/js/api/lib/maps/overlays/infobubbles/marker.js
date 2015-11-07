@@ -59,6 +59,17 @@ define(['underscore',
             }});
         },
 
+        saveForm: function (e) {
+            this.form.commit();       //does validation
+            var extras = this.bubble.model.get("extras");
+            if (extras) {
+                this.bubble.model.setExtras(extras);
+            }
+            this.bubble.model.save(); //does database commit
+            this.hideBubble();
+            e.preventDefault();
+        },
+
         showTipAttaching: function () {
             var template = _.template(markerAttachTipTemplate);
             this.tip.setContent(template(this.getContext()));

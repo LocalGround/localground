@@ -13,7 +13,7 @@ require.config({
         'colResizable': 'lib/tables/colResizeableMod',
         'color-picker': '../external/jscolor',
         'core': '../external/mediator/core-jquery',
-        'form': '../external/backbone-forms',
+        'form': '../external/backbone-forms-forked',
         'google-infobubble': '../external/infobubble',
         'jasmine': '../external/jasmine-2.1.3/jasmine',
         'jasmine-html': '../external/jasmine-2.1.3/jasmine-html',
