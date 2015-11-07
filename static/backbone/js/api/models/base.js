@@ -42,7 +42,8 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                     JSON.parse(value);
                     return null;
                 } catch (e) {
-                    return err;
+                    if (value) { return err; }
+                    return null;
                 }
             },
             dataTypes: {
