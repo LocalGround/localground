@@ -140,19 +140,22 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
             model.setGeometry(googleOverlay);
             model.save({}, {
                 success: function (model, response) {
-                    //notify the dataManager that a new data element has been added:
-                    model.generateUpdateSchema(response.update_metadata);
-                    that.app.vent.trigger("marker-added", {
-                        key: "markers",
-                        models: [ model ]
+                    //fetch schema...
+                    model.fetchUpdateMetadata(function () {
+                        //...and render the popup form:
+                        model.generateUpdateSchema(model.updateMetadata);
+                        that.app.vent.trigger("marker-added", {
+                            key: "markers",
+                            models: [ model ]
+                        });
+    
+                        // update map overlays to reflect new state:
+                        googleOverlay.setMap(null);
+                        that.dm.setDrawingMode(null);
+                        model.trigger("show-overlay");
+                        model.trigger("show-item");
+                        model.trigger("show-bubble");
                     });
-
-                    // update map overlays to reflect new state:
-                    googleOverlay.setMap(null);
-                    that.dm.setDrawingMode(null);
-                    model.trigger("show-overlay");
-                    model.trigger("show-item");
-                    model.trigger("show-bubble");
                 }
             });
         };

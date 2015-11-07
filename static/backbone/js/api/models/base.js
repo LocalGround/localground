@@ -93,7 +93,7 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                     }
                 });
             },
-            fetchUpdateMetadata: function () {
+            fetchUpdateMetadata: function (callback) {
                 var that = this;
                 if (this.urlRoot == null) {
                     this.urlRoot = this.collection.url;
@@ -103,7 +103,8 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                     type: 'OPTIONS',
                     data: { _method: 'OPTIONS' },
                     success: function (data) {
-                        that.updateMetadata = data.actions.POST;
+                        that.updateMetadata = data.actions.PUT;
+                        callback();
                     }
                 });
             },
