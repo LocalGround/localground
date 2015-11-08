@@ -49,34 +49,36 @@
 
 <% if (mode == 'edit') { %>
     <div class="bubble-container" style="width: 430px;height:350px;overflow-y:auto;">
-	<div class="form" style="margin: 10px;"></div>
-	<div style="margin: 10px;">
-	<% _.each(children, function(child, key) { %>
-	    <% _.each(child.data, function(item) { %>
-		<div class="thumbnail marker-thumbnail">
-		    <% if (key == 'photos') { %>
-			<div class="holder" style="background-image: url('<%= item.path_small %>');background-position:center center;"></div>
-		    <% } else if(key == 'audio') { %>
-			<div class="holder">
-			    <i class="fa fa-volume-up marker-attachment"></i>
-			</div>
-		    <% } else { %>
-			<div class="holder">
-			    <i class="fa fa-map-marker marker-attachment" style="color: #ccc;"></i>
-			</div>
-		    <% } %>
-		    <div class="caption">
-			<%= item.display_name || item.name || "Untitled" %><br />
-			<a class="btn btn-default detach" marker-id="<%= id %>" key="<%= key %>" item-id="<%= item.id %>">detach</a><br />
-		    </div>
-		    <!-- i class="fa fa-times-circle marker-detach"></i -->
-		</div>
-	    <% }); %>
-	<% }); %>
-	</div>
-	<div class="edit-button-container">
-		<button class="btn btn-primary">Save</button>
-		<button class="btn btn-secondary">Cancel</button>
-	</div>
+        <div class="infobubble-contents" style="margin: 10px;height:280px;">
+            <div class="form"></div>
+            <div style="margin: 10px;">
+            <% _.each(children, function(child, key) { %>
+                <% _.each(child.data, function(item) { %>
+                <div class="thumbnail marker-thumbnail">
+                    <% if (key == 'photos') { %>
+                    <div class="holder" style="background-image: url('<%= item.path_small %>');background-position:center center;"></div>
+                    <% } else if(key == 'audio') { %>
+                    <div class="holder">
+                        <i class="fa fa-volume-up marker-attachment"></i>
+                    </div>
+                    <% } else { %>
+                    <div class="holder">
+                        <i class="fa fa-map-marker marker-attachment" style="color: #ccc;"></i>
+                    </div>
+                    <% } %>
+                    <div class="caption">
+                    <%= item.display_name || item.name || "Untitled" %><br />
+                    <a class="btn btn-default detach" marker-id="<%= id %>" key="<%= key %>" item-id="<%= item.id %>">detach</a><br />
+                    </div>
+                    <!-- i class="fa fa-times-circle marker-detach"></i -->
+                </div>
+                <% }); %>
+            <% }); %>
+            </div>
+        </div>
+        <div class="edit-button-container">
+            <button class="btn btn-primary">Save</button>
+            <button class="btn btn-secondary">Cancel</button>
+        </div>
     </div>
 <% } %>

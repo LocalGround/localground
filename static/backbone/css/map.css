@@ -406,12 +406,12 @@ label {
 }
 
 
-.bubble-container .form {
-	margin: 5px 0 5px 0;
+.bubble-container .infobubble-contents {
 	overflow-y: auto;
 	overflow-x: hidden;
-	border-bottom: 1px solid #cccccc;
 	/*
+    margin: 5px 0 5px 0;
+    border-bottom: 1px solid #cccccc;
 	border-top: 1px solid #cccccc;
 	height: 200px;
 	*/
@@ -452,9 +452,10 @@ label {
 }
 
 .photo-container {
-	max-width: 320px;
+	width: 318px;
 	height: 230px;
 	overflow: hidden;
+    border-radius: 5px 5px 0px 0px;
 	background-image: url('/static/backbone/images/bg.png');
 	/*background-image: url('/static/images/fabric_bg.png');*/
 }
@@ -468,7 +469,9 @@ label {
 	margin-top: 0px;
 }
 .edit-photo-container {
-	max-width: 320px;
+    width: 318px;
+	overflow: hidden;
+    border-radius: 5px 5px 0px 0px;
 	height: 150px;
 	overflow: hidden;
 	background-image: url('/static/backbone/images/bg.png');
@@ -535,7 +538,7 @@ label {
 	margin: 5px 0px 5px 0px;
 	padding-bottom: 3px;
 	font-size: 14px;
-	border-bottom: solid 1px #CCC;
+	/*border-bottom: solid 1px #CCC;*/
 }
 .bubble-detail {
 	margin: 5px 0px 0px 15px;
@@ -646,6 +649,8 @@ label {
 }
 .edit-button-container {
 	text-align:center;
+    border-top: solid 1px #eee;
+    padding-top: 5px;
 }
 .edit-button-container > .btn {
 	margin:0 5px 0 5px;

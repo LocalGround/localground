@@ -258,8 +258,8 @@ define(["jquery"], function ($) {
 	
 	  // Content area
 	  var contentContainer = this.contentContainer_ = document.createElement('DIV');
-	  contentContainer.style['overflowX'] = 'hidden';//'auto';
-	  contentContainer.style['overflowY'] = 'hidden';//'auto';
+	  //contentContainer.style['overflowX'] = 'hidden';//'auto';
+	  //contentContainer.style['overflowY'] = 'hidden';//'auto';
 	  contentContainer.style['cursor'] = 'default';
 	  contentContainer.style['clear'] = 'both';
 	  contentContainer.style['position'] = 'relative';

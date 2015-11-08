@@ -21,17 +21,21 @@
 
 
 <% if (mode == 'edit') { %>
-<div class="bubble-container" style="width: 350px;height:250px;">
-    <div class="bubble-title"><span class="audio-title"><%= name || "Untitled" %></span>
-    <div class="audio-controls">
-        <button type="button" class="btn btn-xs play-audio">
-            <span class="fa fa-play"></span>
-        </button>
-        <button type="button" class="btn btn-xs stop-audio">
-            <span class="fa fa-stop"></span>
-        </button>
+<div class="bubble-container" style="width: 350px;height:260px;">
+    <div class="infobubble-contents" style="margin: 10px;height:190px;">
+        <div class="bubble-title">
+            <span class="audio-title"><%= name || "Untitled" %></span>
+            <div class="audio-controls">
+                <button type="button" class="btn btn-xs play-audio">
+                    <span class="fa fa-play"></span>
+                </button>
+                <button type="button" class="btn btn-xs stop-audio">
+                    <span class="fa fa-stop"></span>
+                </button>
+            </div>
+            <div class="form"></div>
+        </div>
     </div>
-    <div class="form" style="height: 175px;"></div>
     <div class="edit-button-container">
         <button class="btn btn-primary">Save</button>
         <button class="btn btn-secondary">Cancel</button>
