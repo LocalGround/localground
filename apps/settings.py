@@ -210,7 +210,8 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'rest_framework_jsonp.renderers.JSONPRenderer',
         'localground.apps.site.api.renderers.CSVRenderer',
-        'rest_framework_xml.renderers.XMLRenderer'
+        'rest_framework_xml.renderers.XMLRenderer',
+        'localground.apps.site.api.renderers.GeoJSONRenderer',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
