@@ -16,23 +16,35 @@ class GeoJSONRenderer(renderers.JSONRenderer):
         """ Pre-processing to put dictionary into GeoJSON Format """
         geoResults = []
         
-        # List Views
+        # List Views (multiple records)
         if data.get('results'):
             for entry in data.get('results'):
-                geoResults.append({
+                d = {
                     "type": "Feature",
-                    "geometry": entry.pop("geometry"),
                     "properties": entry
-                })
+                }
+                if entry.get("geometry"):
+                    d.update({ "geometry": entry.pop("geometry") })
+                # incorporate extras dictionary into properties:
+                if entry.get('extras'):
+                    entry.update(entry.pop("extras"))
+                geoResults.append(d)
             data["type"] = "FeatureCollection"
             data["features"] = geoResults
             data.pop("results")
+        
+        # Detail Views (single record)
         else:
-            data = {
-               "type": "Feature",
-                "geometry": data.pop("geometry"),
+            d = {
+                "type": "Feature",
                 "properties": data 
             }
+            if data.get("geometry"):
+                d.update({ "geometry": data.pop("geometry") })# incorporate extras dictionary into properties:
+            if data.get('extras'):
+                data.update(data.pop("extras"))
+            data = d
+            
         return super(GeoJSONRenderer, self).render(
             data, accepted_media_type=accepted_media_type, renderer_context=renderer_context
         )

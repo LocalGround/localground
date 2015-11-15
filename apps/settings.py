@@ -224,6 +224,11 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
+    'TEST_REQUEST_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'localground.apps.site.api.renderers.GeoJSONRenderer',
+        'rest_framework_xml.renderers.XMLRenderer'
+    )
 }
 SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
 SWAMP_DRAGON_REDIS_PORT = 6379 #default

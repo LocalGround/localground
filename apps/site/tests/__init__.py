@@ -4,7 +4,7 @@ from rest_framework import status
 from localground.apps.site import models
 from django.contrib.auth.models import User
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
-import os
+import os, json
 from django.core import serializers
 
 
@@ -230,18 +230,32 @@ class ModelMixin(object):
         return self.create_project(self.get_user())
         #return models.Project.objects.get(id=project_id)
 
-    def create_marker(self, user, project):
-        from django.contrib.gis.geos import Point
-        # create a marker:
-        lat = 37.8705
-        lng = -122.2819
+    def create_marker(self, user, project, name="Marker Test", geoJSON=None, extras={"key": "value"}):
+        geom = None
+        if geoJSON is None:
+            from django.contrib.gis.geos import Point
+            lat = 37.8705
+            lng = -122.2819
+            geom = Point(lng, lat, srid=4326)
+        else:
+            from django.contrib.gis.geos import GEOSGeometry
+            geom = GEOSGeometry(json.dumps(geoJSON))
+            
         m = models.Marker(
             project=project,
+            name=name,
             owner=user,
+            geometry=geom,
             color='CCCCCC',
-            last_updated_by=user,
-            point=Point(lng, lat, srid=4326)
+            extras=extras,
+            last_updated_by=user
         )
+        if geom.geom_type == "Point":
+            m.point = geom
+        elif geom.geom_type == "LineString":
+            m.polyline = geom
+        else:
+            m.polygon = geom
         m.save()
         return m
 

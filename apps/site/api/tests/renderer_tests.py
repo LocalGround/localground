@@ -1,137 +1,68 @@
 from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
-from localground.apps.site.api.tests.base_tests import ViewMixinAPI
-import urllib
+from localground.apps.site.api.tests.marker_tests import get_metadata
+from localground.apps.site.tests import Client, ModelMixin
+import urllib, json
 from rest_framework import status
+point = {
+    "type": "Point",
+    "coordinates": [12.492324113849, 41.890307434153]
+}
+line = {
+    "type": "LineString",
+    "coordinates": [[102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]]
+}
 
-class ApiProjectListTest(test.TestCase, ViewMixinAPI):
+class GeoJSONRendererListTest(test.TestCase, ModelMixin):
+    '''
+    These tests test the GeoJSON renderer using the /api/0/markers/ (though any
+    geospatial endpoint could be used).
+    '''
 
     def setUp(self):
-        ViewMixinAPI.setUp(self)
-        self.url = '/api/0/projects/'
-        self.urls = [self.url]
-        self.model = models.Project
-        self.view = views.ProjectList.as_view()
-        self.metadata = get_metadata()
+        ModelMixin.setUp(self)
+        self.url = '/api/0/markers/.geojson'
+        
+    def test_geojson_format_looks_correct(self):
+        self.create_marker(self.user, self.project, name="Marker 1", geoJSON=point)
+        self.create_marker(self.user, self.project, name="Marker 2", geoJSON=line)
+        response = self.client_user.get(self.url)
+        data = json.loads(response.content)
+        
+        # Check outer attributes:
+        self.assertEqual(data.get("type"), "FeatureCollection")
+        self.assertEqual(len(data.get("features")), 2)
+        rec = data.get("features")[1]
+        
+        #Check inner attributes:
+        self.assertEqual(rec.get("type"), "Feature")
+        self.assertEqual(rec.get("geometry"), line)
+        self.assertTrue(isinstance(rec.get("properties"), dict))
+        
+        # Make sure 'extras' attribute gets merged into the properties:
+        self.assertEqual(rec.get("properties").get("key"), "value")
         
     def tearDown(self):
         models.Form.objects.all().delete()
 
-    def test_create_project_using_post(self, **kwargs):
-        name = 'New Project!'
-        description = 'New project description'
-        tags = "d, e, f"
-        slug = 'new-project-123'
-        response = self.client_user.post(self.url,
-                                         data=urllib.urlencode({
-                                             'name': name,
-                                             'description': description,
-                                             'tags': tags,
-                                             'slug': slug
-                                         }),
-                                         HTTP_X_CSRFTOKEN=self.csrf_token,
-                                         content_type="application/x-www-form-urlencoded"
-                                         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        new_obj = self.model.objects.all().order_by('-id',)[0]
-        self.assertEqual(new_obj.name, name)
-        self.assertEqual(new_obj.description, description)
-        self.assertEqual(new_obj.tags, tags)
-        self.assertEqual(new_obj.slug, slug)
-        
-class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
+      
+class GeoJSONRendererInstanceTest(test.TestCase, ModelMixin):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self)
-        self.url = '/api/0/projects/%s/' % self.project.id
-        self.urls = [self.url]
-        self.view = views.ProjectInstance.as_view()
-        self.metadata = get_metadata()
-        self.metadata.update({
-            'children': {'read_only': True, 'required': False, 'type': 'field'},
-            'slug': {'read_only': False, 'required': False, 'type': 'slug'}
-        })
+        ModelMixin.setUp(self)
+        self.marker = self.create_marker(self.user, self.project, name="Marker 1", geoJSON=point)
+        self.url = '/api/0/markers/%s/.geojson' % self.marker.id
         
-    def _check_children(self, children):
-        self.assertTrue(not children is None)
-        for k in ['photos', 'audio', 'markers', 'scans']:
-            self.assertTrue(not children.get(k) is None)
-            self.assertTrue(isinstance(children.get(k).get('update_metadata'), dict))
-            self.assertTrue(isinstance(children.get(k).get('overlay_type'), basestring))
-            self.assertTrue(isinstance(children.get(k).get('data'), list))
-            self.assertTrue(isinstance(children.get(k).get('id'), basestring))
-            self.assertTrue(isinstance(children.get(k).get('name'), basestring))
+    def test_geojson_format_looks_correct(self):
+        response = self.client_user.get(self.url, format='json')
+        data = json.loads(response.content)
         
-    def test_get_project_with_marker_counts(self, **kwargs):
-        self.create_marker(self.user, self.project)
-        response = self.client_user.get(self.url)
-        children = response.data.get("children")
-        self._check_children(children)
-            
-        #check counts:
-        marker = children.get('markers').get('data')[0]
-        self.assertTrue(marker.has_key('photo_count'))
-        self.assertTrue(marker.has_key('audio_count'))
-        self.assertTrue(marker.has_key('record_count'))
-        self.assertTrue(marker.has_key('map_image_count'))
+        self.assertEqual(data.get("type"), "Feature")
+        self.assertEqual(data.get("geometry"), point)
+        self.assertTrue(isinstance(data.get("properties"), dict))
         
-    def test_get_project_with_marker_arrays(self, **kwargs):
-        self.create_marker(self.user, self.project)
-        response = self.client_user.get(self.url, { 'marker_with_media_arrays': 1 })
-        children = response.data.get("children")
-        self._check_children(children)
-            
-        #check arrays:
-        marker = children.get('markers').get('data')[0]
-        self.assertTrue(marker.has_key('photo_array'))
-        self.assertTrue(marker.has_key('audio_array'))
-        self.assertTrue(marker.has_key('record_array'))
-        self.assertTrue(marker.has_key('map_image_array'))
-
-    def test_update_project_using_put(self, **kwargs):
-        name, description = 'New Project Name', 'Test description'
-        response = self.client_user.put(self.url,
-                            data=urllib.urlencode({
-                                'name': name,
-                                'description': description
-                            }),
-                            HTTP_X_CSRFTOKEN=self.csrf_token,
-                            content_type="application/x-www-form-urlencoded"
-                        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        updated_project = models.Project.objects.get(id=self.project.id)
-        self.assertEqual(updated_project.name, name)
-        self.assertEqual(updated_project.description, description)
-
-    def test_update_project_using_patch(self, **kwargs):
-        import json
-        name = 'Dummy name'
-        response = self.client_user.patch(self.url,
-                                          data=urllib.urlencode({'name': name}),
-                                          HTTP_X_CSRFTOKEN=self.csrf_token,
-                                          content_type="application/x-www-form-urlencoded")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        updated_project = models.Project.objects.get(id=self.project.id)
-        self.assertEqual(updated_project.name, name)
-
-    def test_delete_project(self, **kwargs):
-        project_id = self.project.id
-        # ensure project exists:
-        models.Project.objects.get(id=project_id)
-
-        # delete project:
-        response = self.client_user.delete(self.url,
-                                           HTTP_X_CSRFTOKEN=self.csrf_token
-                                           )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # check to make sure it's gone:
-        try:
-            models.Project.objects.get(id=project_id)
-            # throw assertion error if project still in database
-            print 'Project not deleted'
-            self.assertEqual(1, 0)
-        except models.Project.DoesNotExist:
-            # trigger assertion success if project is removed
-            self.assertEqual(1, 1)
+        # Make sure 'extras' attribute gets merged into the properties:
+        self.assertEqual(data.get("properties").get("key"), "value")
+        
+    
