@@ -252,7 +252,9 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                 model.save();
 
                 //attach the data item to the intersecting marker, if applicable:
-                attachingMarker = this.getIntersectingMarker({latLng: latLng});
+                if (model.get("overlay_type") != "marker") {
+                    attachingMarker = this.getIntersectingMarker({latLng: latLng});
+                }
                 if (attachingMarker) {
                     attachingMarker.model.attach(
                         model,
