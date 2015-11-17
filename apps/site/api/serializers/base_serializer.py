@@ -76,7 +76,7 @@ class GeometrySerializer(BaseNamedSerializer):
 
 class MediaGeometrySerializer(GeometrySerializer):
     file_name = serializers.CharField(source='file_name_new', required=False, read_only=True)
-    caption = serializers.CharField(source='description', allow_null=True, required=False, allow_blank=True)
+    caption = serializers.CharField(source='description', allow_null=True, required=False, allow_blank=True, read_only=True)
 
     class Meta:
         fields = GeometrySerializer.Meta.fields + ('attribution',

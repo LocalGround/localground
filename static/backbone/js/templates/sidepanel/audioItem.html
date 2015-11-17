@@ -5,8 +5,9 @@
 		<% } %>
 		<% if(isShowingOnMap) { %>checked<% } %>
 	>
-	<i class="fa fa-volume-up item-icon" draggable="false"></i>
+	<i class="fa fa-2x fa-volume-up"></i>
 	<div><a href="#" title="<%= name %>"><%= name || 'Untitled' %></a></div>
+    <i class="fa fa-trash-o pull-right"></i>
     <div class="audio-controls btn-group pull-right">
         <button type="button" class="btn btn-xs play-audio">
           <span class="fa fa-play"></span>
@@ -15,5 +16,9 @@
           <span class="fa fa-stop"></span>
         </button>
     </div>
-	<i class="fa fa-trash-o pull-right"></i>
+    <div class="edit-mode-extras" style="clear:both;">
+        <i class="fa fa-volume-up fa-4x item-icon" draggable="false"></i>
+        <p style="color: #999;"><%= description %></p>
+        <div style="clear:both;"></div>
+    </div>
 </div>

@@ -63,6 +63,7 @@ body { overflow: hidden; }
 	padding-bottom: 3px;*/
 	line-height: 15px;
 	background-image: none;
+    border: solid 1px rgba(255, 255, 255, 0); /* Chrome Hack */
 }
 .item > img {
 	vertical-align: text-bottom;
@@ -108,7 +109,7 @@ body { overflow: hidden; }
 	font-size: 20px;
 }
 
-.editable:hover > .fa-trash-o {
+.editable:hover .fa-trash-o {
 	display: block !important;	
 }
 
@@ -117,30 +118,60 @@ body { overflow: hidden; }
 	33%  { -webkit-transform: rotate(10deg);  }
 	66%  { -webkit-transform: rotate(-10deg); }
     100% { -webkit-transform: rotate(0deg);   }
+}
 
+@-webkit-keyframes wiggle1 {
+	0%   { -webkit-transform: rotate(0deg);   }
+	25%  { -webkit-transform: rotate(2deg);  }
+	50%  { -webkit-transform: rotate(0deg); }
+	75%  { -webkit-transform: rotate(-2deg); }
+    100% { -webkit-transform: rotate(0deg);   }
 }
 .thumbsmall {
     border: 1px solid #CCCCCC;
 }
+
 .item-icon {
     margin: 2px 5px 0px 5px;
     display: inline-block;
 	padding: 2px;
 }
 
-.editable > .item-icon  {
+.editable .item-icon  {
 	border-width: 1px;
 	border-style: solid;
     border-color: #77BC3E;
     cursor: pointer;
 }
 
-.editable > .item-icon:hover {
+.editable .item-icon:hover {
     -webkit-animation-name: wiggle;
-	-webkit-animation-duration: 0.4s;
+	-webkit-animation-duration: 0.8s;
 	-webkit-transform-origin:50% 50%;
-	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-iteration-count: 10;
 	-webkit-animation-timing-function: linear;
+    border-color: #77BC3E;
+}
+.data-item.editable .edit-mode-extras img:hover {
+    -webkit-animation-name: wiggle1;
+	-webkit-animation-duration: 0.8s;
+	-webkit-transform-origin:50% 50%;
+	-webkit-animation-iteration-count: 10;
+	-webkit-animation-timing-function: linear;
+    border-color: #77BC3E;
+}
+
+.data-item .edit-mode-extras {
+    display: none;
+}
+.data-item.editable .edit-mode-extras {
+    display: block;
+}
+.data-item.editable .edit-mode-extras img, .data-item.editable .edit-mode-extras .fa-volume-up {
+    margin: 2px 5px 2px 14px;
+    border: solid 1px #77BC3E;
+    padding: 4px;
+    float: left;
 }
 
 .close {
@@ -367,7 +398,6 @@ body { overflow: hidden; }
 
 
 .fa-volume-up {
-	font-size: 20px;
 	color: #333;
 }
 
