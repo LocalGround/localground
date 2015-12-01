@@ -52,8 +52,14 @@
 				<input class="checkone" id="cb_{{form.instance.id}}" name="id" type="checkbox" value="{{form.instance.id}}" />
 			</td>
 			<td>
-				<img class="thumb" src="{{form.instance.thumb}}" />
-				<input type="hidden" value="{{form.instance.absolute_virtual_path_medium}}">
+                {{ form.instance.overlay_source.id }}
+                {% if form.instance.overlay_source.name == "mapbox" %}
+                    <img src="http://api.mapbox.com/v4/{{ form.instance.provider_id }}/-73.975,40.767,5/300x200.png?access_token={{ MAPBOX_KEY }}" />
+                {% elif form.instance.overlay_source.name == "google" %}
+                    Google ({{ form.instance.provider_id }})
+                {% elif form.instance.overlay_source.name == "stamen" %}
+                    Stamen
+                {% endif %}
 			</td>
 			<td>
 				{% include "includes/forms/generic_form_renderer.html" %}	
@@ -80,14 +86,6 @@
 						<label>Map Image:</label><div class="input">{{ form.instance.source_scan.name }}</div>
 					</div>
 				{% endif %}
-				{% if form.instance.source_marker %}
-					<div class="thin">
-						<label>Marker:</label><div class="input">{{ form.instance.source_marker.get_name }}</div>
-					</div>
-				{% endif %}
-				<div class="thin">
-					<label>Coordinates:</label><div class="input">{{ form.instance.display_coords }}</div>
-				</div>
 			</td>
 		</tr>
 	{% endfor %}

@@ -21,7 +21,9 @@ def persistant_queries(request):
         'JQUERY_PATH': settings.JQUERY_PATH,
         'JQUERY_UI_PATH': settings.JQUERY_UI_PATH,
         'BOOTSTRAP_JS_PATH': settings.BOOTSTRAP_JS_PATH,
-        'ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE': settings.ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE
+        'ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE': settings.ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE,
+        'GOOGLE_MAPS_KEY': settings.GOOGLE_MAPS_KEY,
+        'MAPBOX_KEY': settings.MAPBOX_KEY
     }
     if request.user.is_authenticated():
         context.update({

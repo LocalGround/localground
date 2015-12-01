@@ -50,6 +50,9 @@ TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_ME
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'YOUR_CLIENT_KEY'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'YOUR_SECRET'
 
+GOOGLE_MAPS_KEY = 'AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4'
+MAPBOX_KEY = 'pk.eyJ1IjoibGciLCJhIjoibWd5aTl2VSJ9.W9ZsT1zQsI9ZP72KtTdZTA'
+
 #SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
 
 DEFAULT_BASEMAP_ID = 12
