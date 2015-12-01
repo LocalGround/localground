@@ -1,0 +1,99 @@
+{% extends "profile/data_list.html" %}
+{% block page_title %}
+	<img class="header-icon" src="/static/images/camera_large.png" />
+	Manage <span style="color:#ccc">Tiles</span>
+{% endblock %}
+
+{% block script_links %}
+	{{ block.super }}
+    <script type="text/javascript" src="/static/scripts/site/account/photos.js"></script>
+{% endblock %}
+{% block extra_styles %}
+	{{block.super}}
+{% endblock %}
+
+{% block pageload_scripts %}
+	o = new localground.photos();
+    o.initialize(opts);
+{% endblock %}
+
+{% block hidden_form_fields %}
+	{{ block.super }}
+	
+	{{cookies}}
+{% endblock %}
+
+{% block controls_menus %}
+	<li class="dropdown" data-dropdown="dropdown" style="width:100px;">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
+		<ul class="dropdown-menu" style="width:200px;">
+			<li><a id="delete_objects" href="#">Delete</a></li>
+			<!-- li><a id="add_object" href="#">Upload</a></li -->
+			<li><a id="move_project" href="#">Move to another project</a></li>
+		</ul>
+	</li>
+{% endblock %}
+
+{% block row_header %}
+	<tr>
+		<th scope="col" class="column-cb" >
+			<input class="checkall" type="checkbox" name="checkall"/>
+		</th>
+		<th scope="col">Image</th>
+		<th scope="col">Name</th>
+		<th scope="col">Map Info</th>
+	</tr>
+{% endblock %}
+
+{% block rows %}
+	{% for form in formset.forms %}
+		<tr>
+			<td class="column-cb">
+				<input class="checkone" id="cb_{{form.instance.id}}" name="id" type="checkbox" value="{{form.instance.id}}" />
+			</td>
+			<td>
+				<img class="thumb" src="{{form.instance.thumb}}" />
+				<input type="hidden" value="{{form.instance.absolute_virtual_path_medium}}">
+			</td>
+			<td>
+				{% include "includes/forms/generic_form_renderer.html" %}	
+			</td>
+			<td>
+				<div class="thin">
+					<label>ID:</label><div class="input">{{ form.instance.id }}</div>
+				</div>
+				<div class="thin">
+					<label>Last Updated:</label>
+					<div class="input">
+						on {{form.instance.time_stamp|date:"n/j/Y P" }}<br />
+						by {{ form.instance.last_updated_by}}
+					</div>
+				</div>
+				<div class="thin">
+					<label>Project:</label><div class="input">{{ form.instance.project.name }}</div>
+				</div>
+				<div class="thin">
+					<label>Owned by:</label><div class="input">{{  form.instance.owner }}</div>
+				</div>
+				{% if form.instance.source_scan %}
+					<div class="thin">
+						<label>Map Image:</label><div class="input">{{ form.instance.source_scan.name }}</div>
+					</div>
+				{% endif %}
+				{% if form.instance.source_marker %}
+					<div class="thin">
+						<label>Marker:</label><div class="input">{{ form.instance.source_marker.get_name }}</div>
+					</div>
+				{% endif %}
+				<div class="thin">
+					<label>Coordinates:</label><div class="input">{{ form.instance.display_coords }}</div>
+				</div>
+			</td>
+		</tr>
+	{% endfor %}
+{% endblock %}
+
+
+{% block no_objects %}
+	{{ block.super }}
+{% endblock %}
