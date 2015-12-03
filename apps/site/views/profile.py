@@ -11,6 +11,8 @@ import json
 from django.contrib.gis.geos import GEOSGeometry
 import sys
 
+object_types_per_project_plural = ['photos', 'audio', 'videos', 'map-images',
+                                    'prints', 'tiles']
 
 @login_required()
 def change_user_profile(request, template_name='account/user_prefs.html'):
@@ -96,7 +98,15 @@ def object_list_form(
         context=context
     )
 
-    #return HttpResponse(objects.query)
+    # objects IS A QUERYSET.
+    # profile PAGE NOW HAS MEDIA TYPES UNDER A PROJECT.
+    # SO, THE QUERYSET SHOULD BE FILTERED BY THE PROJECT ID FOR SELECTED MEDIA TYPES.
+    # THE TYPES ARE DEFINED IN object_types_per_project_plural.
+    project_filter = request.GET.get('project_id', None)
+    if project_filter:
+        objects = objects.filter(project=project_filter)
+        
+    # return HttpResponse(objects.query)
     per_page = 10
 
     def getModelClassFormSet(**kwargs):

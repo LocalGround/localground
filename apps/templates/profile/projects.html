@@ -54,26 +54,34 @@
 					</div>
 				</div>
 			</td>
-			
+			<!-- http://bootstrapdocs.com/v1.3.0/docs/ -->
 			<td>
 				ID: <span>{{ form.instance.id}}</span><br>
 				Owner: <span>{% if form.instance.owner %} {{ form.instance.owner}} {% else %} anonymous {% endif %}</span><br>
 				Last Updated: <span>{{form.instance.time_stamp|date:"n/j/Y P" }}</span>.		
 				<ul class="print_details" style="margin-bottom:0px">
 					<li>
-						Map Images: {{form.instance.processed_maps_count}}
+						<a href="/profile/photos/{% if embed %}embed{% endif %}?project_id={{ form.instance.id }}">Photos: {{form.instance.photo_count}}</a>
 					</li>
 					<li>
-						Photos: {{form.instance.photo_count}}
+						<a href="/profile/audio/{% if embed %}embed{% endif %}?project_id={{ form.instance.id }}">Audio: {{form.instance.audio_count}}</a>
 					</li>
 					<li>
-						Audio: {{form.instance.audio_count}}
+						<a href="/profile/videos/{% if embed %}embed{% endif %}?project_id={{ form.instance.id }}">Videos: {{form.instance.video_count}}</a>
 					</li>
 					<li>
-						Markers: {{form.instance.marker_count}}
+						<a href="/profile/map-images/{% if embed %}embed{% endif %}?project_id={{ form.instance.id }}">Map Images: {{form.instance.processed_maps_count}}</a>
 					</li>
+					<li>
+						<a href="/profile/prints/{% if embed %}embed{% endif %}?project_id={{ form.instance.id }}">Prints: {{form.instance.processed_print_count}}</a>
+					</li>
+					<li>
+						<a href="/profile/tiles/{% if embed %}embed{% endif %}?project_id={{ form.instance.id }}">Map Tiles: {{form.instance.processed_tile_count}}</a>
+					</li>
+					<!-- <li>
+						<a href="/profile/videos/{% if embed %}embed{% endif %}">Markers: {{form.instance.marker_count}}</a>
+					</li> -->
 					<li><strong>Shared with:</strong> {{ form.instance.shared_with|default_if_none:"Unshared" }}</li>
-					
 				</ul>
 			</td>
 		</tr>
