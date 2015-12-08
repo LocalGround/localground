@@ -48,13 +48,6 @@ define(["underscore",
                     });
                 });
 
-                it("correctly sets active project", function () {
-                    expect(printForm.ui.projectSelection.val()).toEqual("1");
-                    this.app.setActiveProjectID(2);
-                    printForm.refreshActiveProject();
-                    expect(printForm.ui.projectSelection.val()).toEqual("2");
-                });
-
                 it("correctly triggers print generation", function () {
                     printForm.$el.find('#submit').click();
                     expect(printFormOpts.controller.trigger).toHaveBeenCalledWith('generatePrint');
@@ -68,9 +61,7 @@ define(["underscore",
                     expect(formData.project_id).toEqual('1')
 
                     printForm.$el.find('#portrait').click();
-                    this.app.setActiveProjectID(2);
-                    printForm.refreshActiveProject();
-                    
+                    this.app.setActiveProjectID(2);                    
                     formData = printForm.getFormData();
                     expect(formData.orientation).toEqual('portrait');
                     expect(formData.project_id).toEqual('2')

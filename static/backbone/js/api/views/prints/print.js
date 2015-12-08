@@ -47,9 +47,6 @@ define(["jquery",
                 if (printMockup) {
                     printMockup.resizeMap();
                 }
-                if (printForm) {
-                    printForm.refreshActiveProject();
-                }
             },
 
             generatePrint: function () {
