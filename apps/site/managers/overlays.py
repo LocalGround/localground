@@ -3,7 +3,7 @@ from django.db.models.query import QuerySet
 from django.db.models import Q
 from localground.apps.site.managers.base import BaseMixin, ObjectMixin, GenericLocalGroundError
 # Useful reference for chaining Model Managers together:
-#    //djangosnippets.org/snippets/2114/
+#    http://djangosnippets.org/snippets/2114/
 
 
 class MarkerMixin(ObjectMixin):
@@ -34,7 +34,7 @@ class MarkerMixin(ObjectMixin):
 
     def append_extras(self, q, sql_function, forms=None, project=None, user=None):
         # Excellent resource on using extras:
-        # //timmyomahony.com/blog/2012/11/16/filtering-annotations-django/
+        # http://timmyomahony.com/blog/2012/11/16/filtering-annotations-django/
         from localground.apps.site import models
         from django.contrib.contenttypes.models import ContentType
         suffix = sql_function.split("_")[0] #should either be "count" or "array"

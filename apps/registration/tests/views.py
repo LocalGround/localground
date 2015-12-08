@@ -61,7 +61,7 @@ class RegistrationViewTests(TestCase):
                                           'password1': 'swordfish',
                                           'password2': 'swordfish'})
         self.assertRedirects(response,
-                             '//testserver%s' % reverse('registration_complete'))
+                             'http://testserver%s' % reverse('registration_complete'))
         self.assertEqual(len(mail.outbox), 1)
 
     def test_registration_view_failure(self):
@@ -90,7 +90,7 @@ class RegistrationViewTests(TestCase):
         old_allowed = getattr(settings, 'REGISTRATION_OPEN', True)
         settings.REGISTRATION_OPEN = False
 
-        closed_redirect = '//testserver%s' % reverse('registration_disallowed')
+        closed_redirect = 'http://testserver%s' % reverse('registration_disallowed')
 
         response = self.client.get(reverse('registration_register'))
         self.assertRedirects(response, closed_redirect)
@@ -136,7 +136,7 @@ class RegistrationViewTests(TestCase):
         old_allowed = getattr(settings, 'REGISTRATION_OPEN', True)
         settings.REGISTRATION_OPEN = False
 
-        closed_redirect = '//testserver%s' % reverse('registration_test_custom_disallowed')
+        closed_redirect = 'http://testserver%s' % reverse('registration_test_custom_disallowed')
 
         response = self.client.get(reverse('registration_test_register_disallowed_url'))
         self.assertRedirects(response, closed_redirect)
@@ -149,7 +149,7 @@ class RegistrationViewTests(TestCase):
         in a redirect to that URL when registration is successful.
         
         """
-        success_redirect = '//testserver%s' % reverse('registration_test_custom_success_url')
+        success_redirect = 'http://testserver%s' % reverse('registration_test_custom_success_url')
         response = self.client.post(reverse('registration_test_register_success_url'),
                                     data={'username': 'alice',
                                           'email': 'alice@example.com',
@@ -164,7 +164,7 @@ class RegistrationViewTests(TestCase):
         activation window).
 
         """
-        success_redirect = '//testserver%s' % reverse('registration_activation_complete')
+        success_redirect = 'http://testserver%s' % reverse('registration_activation_complete')
         
         # First, register an account.
         self.client.post(reverse('registration_register'),
@@ -211,7 +211,7 @@ class RegistrationViewTests(TestCase):
         the redirect.
         
         """
-        success_redirect = '//testserver%s' % reverse('registration_test_custom_success_url')
+        success_redirect = 'http://testserver%s' % reverse('registration_test_custom_success_url')
         self.client.post(reverse('registration_register'),
                          data={'username': 'alice',
                                'email': 'alice@example.com',

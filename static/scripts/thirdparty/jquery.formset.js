@@ -7,7 +7,7 @@
  * All rights reserved.
  *
  * Licensed under the New BSD License
- * See: //www.opensource.org/licenses/bsd-license.php
+ * See: http://www.opensource.org/licenses/bsd-license.php
  */
 ;(function($) {
     $.fn.formset = function(opts)

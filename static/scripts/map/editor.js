@@ -1,10 +1,10 @@
 /******************
 Useful links:
   1) delete polygon vertex:
-     //stackoverflow.com/questions/8831382/google-maps-v3-delete-vertex-on-polygon 
-     //jsbin.com/ajimur/10
+     http://stackoverflow.com/questions/8831382/google-maps-v3-delete-vertex-on-polygon 
+     http://jsbin.com/ajimur/10
   2) use the toolbar:
-     //gmaps-samples-v3.googlecode.com/svn-history/r282/trunk/drawing/drawing-tools.html
+     http://gmaps-samples-v3.googlecode.com/svn-history/r282/trunk/drawing/drawing-tools.html
 ********************/
 
 var self;
@@ -49,7 +49,7 @@ localground.editor.prototype.initDrawingManager = function() {
         //drawingMode: google.maps.drawing.OverlayType.MARKER,
         markerOptions: {
             draggable: true,
-            icon: '//chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|CCCCCC|13|b|'
+            icon: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|CCCCCC|13|b|'
         },
         polylineOptions: {
             editable: true

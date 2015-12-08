@@ -6,7 +6,7 @@
  * https://blueimp.net
  *
  * Licensed under the MIT license:
- * //www.opensource.org/licenses/MIT
+ * http://www.opensource.org/licenses/MIT
  */
 
 window.locale = {

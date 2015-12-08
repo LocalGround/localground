@@ -1,8 +1,8 @@
 /**
  * Ajax Queue Plugin
  * 
- * Homepage: //jquery.com/plugins/project/ajaxqueue
- * Documentation: //docs.jquery.com/AjaxQueue
+ * Homepage: http://jquery.com/plugins/project/ajaxqueue
+ * Documentation: http://docs.jquery.com/AjaxQueue
  */
 
 /**

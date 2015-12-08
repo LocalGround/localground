@@ -1,6 +1,6 @@
 /* ===================================================
  * bootstrap-transition.js v2.2.2
- * //twitter.github.com/bootstrap/javascript.html#transitions
+ * http://twitter.github.com/bootstrap/javascript.html#transitions
  * ===================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@
   "use strict"; // jshint ;_;
 
 
-  /* CSS TRANSITION SUPPORT (//www.modernizr.com/)
+  /* CSS TRANSITION SUPPORT (http://www.modernizr.com/)
    * ======================================================= */
 
   $(function () {
@@ -60,7 +60,7 @@
 }(window.jQuery);
 /* =========================================================
  * bootstrap-modal.js v2.2.2
- * //twitter.github.com/bootstrap/javascript.html#modals
+ * http://twitter.github.com/bootstrap/javascript.html#modals
  * =========================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -68,7 +68,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -306,7 +306,7 @@
 
 /* ============================================================
  * bootstrap-dropdown.js v2.2.2
- * //twitter.github.com/bootstrap/javascript.html#dropdowns
+ * http://twitter.github.com/bootstrap/javascript.html#dropdowns
  * ============================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -314,7 +314,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -467,7 +467,7 @@
 }(window.jQuery);
 /* =============================================================
  * bootstrap-scrollspy.js v2.2.2
- * //twitter.github.com/bootstrap/javascript.html#scrollspy
+ * http://twitter.github.com/bootstrap/javascript.html#scrollspy
  * =============================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -475,7 +475,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -629,7 +629,7 @@
 }(window.jQuery);
 /* ========================================================
  * bootstrap-tab.js v2.2.2
- * //twitter.github.com/bootstrap/javascript.html#tabs
+ * http://twitter.github.com/bootstrap/javascript.html#tabs
  * ========================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -637,7 +637,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -773,7 +773,7 @@
 }(window.jQuery);
 /* ===========================================================
  * bootstrap-tooltip.js v2.2.2
- * //twitter.github.com/bootstrap/javascript.html#tooltips
+ * http://twitter.github.com/bootstrap/javascript.html#tooltips
  * Inspired by the original jQuery.tipsy by Jason Frame
  * ===========================================================
  * Copyright 2012 Twitter, Inc.
@@ -782,7 +782,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -1060,7 +1060,7 @@
 }(window.jQuery);
 /* ===========================================================
  * bootstrap-popover.js v2.2.2
- * //twitter.github.com/bootstrap/javascript.html#popovers
+ * http://twitter.github.com/bootstrap/javascript.html#popovers
  * ===========================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -1068,7 +1068,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -1174,7 +1174,7 @@
 }(window.jQuery);
 /* ==========================================================
  * bootstrap-affix.js v2.2.2
- * //twitter.github.com/bootstrap/javascript.html#affix
+ * http://twitter.github.com/bootstrap/javascript.html#affix
  * ==========================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -1182,7 +1182,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -1291,7 +1291,7 @@
 }(window.jQuery);
 /* ==========================================================
  * bootstrap-alert.js v2.2.2
- * //twitter.github.com/bootstrap/javascript.html#alerts
+ * http://twitter.github.com/bootstrap/javascript.html#alerts
  * ==========================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -1299,7 +1299,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -1390,7 +1390,7 @@
 }(window.jQuery);
 /* ============================================================
  * bootstrap-button.js v2.2.2
- * //twitter.github.com/bootstrap/javascript.html#buttons
+ * http://twitter.github.com/bootstrap/javascript.html#buttons
  * ============================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -1398,7 +1398,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -1495,7 +1495,7 @@
 }(window.jQuery);
 /* =============================================================
  * bootstrap-collapse.js v2.2.2
- * //twitter.github.com/bootstrap/javascript.html#collapse
+ * http://twitter.github.com/bootstrap/javascript.html#collapse
  * =============================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -1503,7 +1503,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -1662,7 +1662,7 @@
 }(window.jQuery);
 /* ==========================================================
  * bootstrap-carousel.js v2.2.2
- * //twitter.github.com/bootstrap/javascript.html#carousel
+ * http://twitter.github.com/bootstrap/javascript.html#carousel
  * ==========================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -1670,7 +1670,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -1847,7 +1847,7 @@
 }(window.jQuery);
 /* =============================================================
  * bootstrap-typeahead.js v2.2.2
- * //twitter.github.com/bootstrap/javascript.html#typeahead
+ * http://twitter.github.com/bootstrap/javascript.html#typeahead
  * =============================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -1855,7 +1855,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,

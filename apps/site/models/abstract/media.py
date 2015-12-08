@@ -17,7 +17,7 @@ class BaseMedia(BaseAudit):
     deletes.  For example, if a photo gets deleted, you also want to ensure
     that its associations w/any markers / views also get deleted.  The reverse
     relationship needs to be defined here in order for this to occur:
-    //stackoverflow.com/questions/6803018/why-wont-my-genericforeignkey-cascade-when-deleting
+    http://stackoverflow.com/questions/6803018/why-wont-my-genericforeignkey-cascade-when-deleting
     '''
     host = models.CharField(max_length=255)
     virtual_path = models.CharField(max_length=255)
@@ -75,7 +75,7 @@ class BaseMedia(BaseAudit):
         import time
         timestamp = int(time.time())
         path = path + '#' + str(timestamp)
-        return '//%s/profile/%s/%s/' % (host,
+        return 'http://%s/profile/%s/%s/' % (host,
                                              self.model_name_plural.replace(
                                                  ' ',
                                                  '-'),

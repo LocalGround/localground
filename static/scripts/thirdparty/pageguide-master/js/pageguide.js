@@ -3,7 +3,7 @@
  *
  * Copyright 2013 Tracelytics
  * Free to use under the MIT license.
- * //www.opensource.org/licenses/mit-license.php
+ * http://www.opensource.org/licenses/mit-license.php
  *
  * Contributing Author: Tracelytics Team
  */

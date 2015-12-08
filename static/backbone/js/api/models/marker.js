@@ -8,7 +8,7 @@ define(["models/base",
     /**
      * A Backbone Model class for the Marker datatype.
      * @class Marker
-     * @see <a href="//localground.org/api/0/markers/">//localground.org/api/0/markers/</a>
+     * @see <a href="http://localground.org/api/0/markers/">http://localground.org/api/0/markers/</a>
      */
     var Marker = Base.extend({
         urlRoot: '/api/0/markers/',

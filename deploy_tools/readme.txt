@@ -70,6 +70,6 @@ TODOS
 * Check that the mod_xsendfile is installed and enabled
 * Run script to create a new PostGIS database, if requested,  Also check 
 * Automate some of this with Fabric (though the bash script might be good enough for now):
-	//chimera.labs.oreilly.com/books/1234000000754/ch08.html#_automating_deployment_with_fabric
-	//dan.bravender.us/2012/5/11/git-based_fabric_deploys_are_awesome.html
+	http://chimera.labs.oreilly.com/books/1234000000754/ch08.html#_automating_deployment_with_fabric
+	http://dan.bravender.us/2012/5/11/git-based_fabric_deploys_are_awesome.html
 	

@@ -5,7 +5,7 @@ import base64
 import urllib
 
 # sudo apt-get install libapache2-mod-xsendfile
-# //localground/profile/<plural-object-type>/<the-hash>/
+# http://localground/profile/<plural-object-type>/<the-hash>/
 
 
 def serve_media(request, object_type, hash):

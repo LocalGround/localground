@@ -152,7 +152,7 @@ define(["underscore",
                 expect(dm.selectedProjects.length).toEqual(0);
 
                 //To spoof fetching, take a look at this blog post:
-                ////blog.katworksgames.com/2013/03/30/bb_model_test_jasmine/
+                //http://blog.katworksgames.com/2013/03/30/bb_model_test_jasmine/
             });
 
             it("Test vent.trigger(\"set-active-project\")", function () {

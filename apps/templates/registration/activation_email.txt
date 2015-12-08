@@ -3,13 +3,13 @@ Thank you for using {{ site.name }} to map, visualize and share your data.
 To complete your registration please confirm your account within {{ expiration_days }} days.
 
 Click this link to confirm your account:
-//{{ site.domain }}{% url "registration_activate" activation_key %}
+http://{{ site.domain }}{% url "registration_activate" activation_key %}
 You can also paste the link into a browser.
 
 Your username is: {{username}}
-If you have forgotten your password, you may reset it here (after you have confirmed your registration): //{{ site.domain }}/accounts/password/reset/.
+If you have forgotten your password, you may reset it here (after you have confirmed your registration): http://{{ site.domain }}/accounts/password/reset/.
 
-For more information about {{ site.name }}, please visit //localground.org.
+For more information about {{ site.name }}, please visit http://localground.org.
 
 Thank you,
 The {{ site.name }} Team

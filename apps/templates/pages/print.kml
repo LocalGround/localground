@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<kml xmlns="//www.opengis.net/kml/2.2" xmlns:gx="//www.google.com/kml/ext/2.2" xmlns:kml="//www.opengis.net/kml/2.2" xmlns:atom="//www.w3.org/2005/Atom">
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
 <Document>
     <name>Local Ground map images for {{print.map_title }}</name>
     <description>
@@ -13,7 +13,7 @@
         <GroundOverlay>
             <name>Map #{{scan.id}}</name>
             <Icon>
-                <href>//localground.org/static/scans/{{scan.id}}/colorImage.png</href>
+                <href>http://localground.org/static/scans/{{scan.id}}/colorImage.png</href>
             </Icon>
             <LatLonBox>
                 <north>{{print.northeast.y}}</north>

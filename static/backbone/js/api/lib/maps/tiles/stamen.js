@@ -18,7 +18,7 @@ define(["jquery"], function ($) {
         this.name = opts.name;
         this.tileSize = new google.maps.Size(256, 256);
         this.getTile = function (coord, zoom, ownerDocument) {
-            var url = '//' + ['', 'a.', 'b.', 'c.', 'd.'][parseInt(Math.random() * 5, 10)] + 'tile.stamen.com/';
+            var url = 'http://' + ['', 'a.', 'b.', 'c.', 'd.'][parseInt(Math.random() * 5, 10)] + 'tile.stamen.com/';
             return $('<div></div>').css({
                 'width': '256px',
                 'height': '256px',

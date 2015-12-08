@@ -6,7 +6,7 @@ define(["models/base"], function (Base) {
     /**
      * A Backbone Model class for the View datatype.
      * @class Project
-     * @see <a href="//localground.org/api/0/projects/">//localground.org/api/0/projects/</a>
+     * @see <a href="http://localground.org/api/0/projects/">http://localground.org/api/0/projects/</a>
      */
     var Snapshot = Base.extend({
         urlRoot: "/api/0/snapshots/"

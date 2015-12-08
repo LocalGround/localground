@@ -64,7 +64,7 @@ define([
                 expect(symbolChanged).toBeFalsy();
 
                 //ensure that event handler behaves correctly when checkbox is off:
-                ////bugs.jquery.com/ticket/3827#comment:9
+                //http://bugs.jquery.com/ticket/3827#comment:9
                 $cb.attr('checked', false);
                 $cb.trigger('click');
                 expect(symbol.isShowingOnMap).toBeFalsy();

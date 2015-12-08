@@ -141,11 +141,11 @@ var imageData = null;
 var c=0;
 var stype=0;
 
-var camhtml='  	<object  id="iembedflash" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="//download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" width="320" height="240"> '+
+var camhtml='  	<object  id="iembedflash" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" width="320" height="240"> '+
   		'<param name="movie" value="camcanvas.swf" />'+
   		'<param name="quality" value="high" />'+
 		'<param name="allowScriptAccess" value="always" />'+
-  		'<embed  allowScriptAccess="always"  id="embedflash" src="camcanvas.swf" quality="high" width="320" height="240" type="application/x-shockwave-flash" pluginspage="//www.macromedia.com/go/getflashplayer" mayscript="true"  />'+
+  		'<embed  allowScriptAccess="always"  id="embedflash" src="camcanvas.swf" quality="high" width="320" height="240" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" mayscript="true"  />'+
     '</object>';
 var imghtml='<div id="qrfile"><canvas id="out-canvas" width="320" height="240"></canvas>'+
     '<div id="imghelp">drag and drop a QRCode here'+
@@ -255,7 +255,7 @@ function htmlEntities(str) {
 function read(a)
 {
     var html="<br>";
-    if(a.indexOf("//") === 0)
+    if(a.indexOf("http://") === 0)
         html+="<a target='_blank' href='"+a+"'>"+a+"</a><br>";
     html+="<b>"+htmlEntities(a)+"</b><br><br>";
     document.getElementById("result").innerHTML=html;
@@ -280,7 +280,7 @@ function load()
 		document.getElementById("mainbody").style.display="inline";
 		document.getElementById("mainbody").innerHTML='<p id="mp1">QR code scanner for HTML5 capable browsers</p><br>'+
         '<br><p id="mp2">sorry your browser is not supported</p><br><br>'+
-        '<p id="mp1">try <a href="//www.mozilla.com/firefox"><img src="firefox.png"/></a> or <a href="//chrome.google.com"><img src="chrome_logo.gif"/></a></p>';
+        '<p id="mp1">try <a href="http://www.mozilla.com/firefox"><img src="firefox.png"/></a> or <a href="http://chrome.google.com"><img src="chrome_logo.gif"/></a></p>';
 	}
 }
 
@@ -323,7 +323,7 @@ function setimg()
 
   (function() {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : '//www') + '.google-analytics.com/ga.js';
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 
@@ -336,7 +336,7 @@ function setimg()
 <div id="header">
 <table border="0" width="100%">
 <tr><td width="150px" align="center">
-<a href="//www.webqr.com"><img src="logo2.gif" alt="Web QR"/></a>
+<a href="http://www.webqr.com"><img src="logo2.gif" alt="Web QR"/></a>
 </td>
 <td align="center" valign="bottom">
 <div style="position:relative;top:-10px;left:-160px;"><g:plusone size="medium"></g:plusone></div>
@@ -381,7 +381,7 @@ QR code scanner for HTML5 capable browsers
 </table>
 </div>&nbsp;
 <div id="footer">
-<h5 align="center">Copyright &copy; 2011 <a target="_blank" href="//www.lazarsoft.info">Lazar Laszlo</a></h5>
+<h5 align="center">Copyright &copy; 2011 <a target="_blank" href="http://www.lazarsoft.info">Lazar Laszlo</a></h5>
 </div>
 </div>
 <canvas id="qr-canvas" width="800" height="600"></canvas>

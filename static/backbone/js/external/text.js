@@ -1,7 +1,7 @@
 /**
  * @license RequireJS text 2.0.12 Copyright (c) 2010-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
- * see: //github.com/requirejs/text for details
+ * see: http://github.com/requirejs/text for details
  */
 /*jslint regexp: true */
 /*global require, XMLHttpRequest, ActiveXObject,
@@ -321,10 +321,10 @@ define(['module'], function (module) {
                 line = input.readLine();
 
                 // Byte Order Mark (BOM) - The Unicode Standard, version 3.0, page 324
-                // //www.unicode.org/faq/utf_bom.html
+                // http://www.unicode.org/faq/utf_bom.html
 
                 // Note that when we use utf-8, the BOM should appear as "EF BB BF", but it doesn't due to this bug in the JDK:
-                // //bugs.sun.com/bugdatabase/view_bug.do?bug_id=4508058
+                // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4508058
                 if (line && line.length() && line.charAt(0) === 0xfeff) {
                     // Eat the BOM, since we've already found the encoding on this file,
                     // and we plan to concatenating this buffer with others; the BOM should

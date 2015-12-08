@@ -105,7 +105,7 @@
     /**
      * Creates an instance of a Bootstrap Modal
      *
-     * @see //twitter.github.com/bootstrap/javascript.html#modals
+     * @see http://twitter.github.com/bootstrap/javascript.html#modals
      *
      * @param {Object} options
      * @param {String|View} [options.content]     Modal content. Default: none

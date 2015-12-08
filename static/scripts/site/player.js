@@ -1,5 +1,5 @@
 //documentation:
-//  //flash-mp3-player.net/players/js/documentation/
+//  http://flash-mp3-player.net/players/js/documentation/
 localground.player = function(opts){
     this.activeControl = null;
     this.mp3URL = null;

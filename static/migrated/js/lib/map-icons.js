@@ -2,7 +2,7 @@
  * Map Icons created by Scott de Jonge
  *
  * @version 2.1
- * @url //map-icons.com
+ * @url http://map-icons.com
  *
  */
 
@@ -14,7 +14,7 @@ var ROUTE = 'M49.986-58.919c-0.51-27.631-16.538-38.612-17.195-39.049l-2.479-1.69
 var ROUNDED = 'M50-80c0-11-9-20-20-20h-60c-11 0-20 9-20 20v60c0 11 9 20 20 20h60c11 0 20-9 20-20V-80z';
 
 // Function to do the inheritance properly
-// Inspired by: //stackoverflow.com/questions/9812783/cannot-inherit-google-maps-map-v3-in-my-custom-class-javascript
+// Inspired by: http://stackoverflow.com/questions/9812783/cannot-inherit-google-maps-map-v3-in-my-custom-class-javascript
 var inherits = function(childCtor, parentCtor) {
    /** @constructor */
    function tempCtor() {};

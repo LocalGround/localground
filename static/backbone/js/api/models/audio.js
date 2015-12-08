@@ -3,7 +3,7 @@ define(["models/base", "underscore"], function (Base, _) {
     /**
      * A Backbone Model class for the Audio datatype.
      * @class Audio
-     * @see <a href="//localground.org/api/0/audio/">//localground.org/api/0/audio/</a>
+     * @see <a href="http://localground.org/api/0/audio/">http://localground.org/api/0/audio/</a>
      */
     var Audio = Base.extend({
         getExtension: function () {

@@ -27,7 +27,7 @@ localground.viewer = function () {
     this.initViewID = null;
     this.mode = 'view';
     this.hideIfMarker = false;
-    this.infoBubble = null; ////google-maps-utility-library-v3.googlecode.com/svn/trunk/infobubble/examples/example.html
+    this.infoBubble = null; //http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobubble/examples/example.html
     this.editMarker = null;
     this.currentOverlay = null;
     this.fullExtent = null;
@@ -481,7 +481,7 @@ localground.viewer.prototype.loadPrintForm = function (opts) {
     if (self.lastProjectSelection != null)
         params.project_id = self.lastProjectSelection;
 
-    var url = '//' + document.location.hostname + '/maps/print/'
+    var url = 'http://' + document.location.hostname + '/maps/print/'
     if (opts.iframe) {
         url += 'embed/?' + $.param(params);
     }

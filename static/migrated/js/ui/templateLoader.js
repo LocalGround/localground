@@ -1,4 +1,4 @@
-////coenraets.org/blog/2012/01/backbone-js-lessons-learned-and-improved-sample-app/
+//http://coenraets.org/blog/2012/01/backbone-js-lessons-learned-and-improved-sample-app/
 localground.Templates = (function(){
 	var templates = {};
 	var templatesDir = '/static/migrated/js/templates/';

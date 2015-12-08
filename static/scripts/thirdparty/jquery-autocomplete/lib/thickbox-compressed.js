@@ -1,8 +1,8 @@
 /*
  * Thickbox 3 - One Box To Rule Them All.
- * By Cody Lindley (//www.codylindley.com)
+ * By Cody Lindley (http://www.codylindley.com)
  * Copyright (c) 2007 cody lindley
- * Licensed under the MIT License: //www.opensource.org/licenses/mit-license.php
+ * Licensed under the MIT License: http://www.opensource.org/licenses/mit-license.php
 */
 
 var tb_pathToImage = "images/loadingAnimation.gif";

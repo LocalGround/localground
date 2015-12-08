@@ -229,7 +229,7 @@ class PointWidget(Textarea):
 
     class Media:
         js = (
-            '//maps.google.com/maps/api/js?sensor=false',
+            'http://maps.google.com/maps/api/js?sensor=false',
         )
 
 

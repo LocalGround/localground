@@ -29,7 +29,7 @@ define(["marionette",
             /**
              * Initializes the project menu and fetches the available
              * projects from the Local Ground Data API.
-             * @see <a href="//localground.org/api/0/projects">//localground.org/api/0/projects</a>.
+             * @see <a href="http://localground.org/api/0/projects">http://localground.org/api/0/projects</a>.
              * @param {Object} opts
              * Dictionary of initialization options
              * @param {Object} opts.el

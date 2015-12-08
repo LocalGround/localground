@@ -19,7 +19,7 @@ function setCredentials() {
     setURLs();
 }
 function setURLs() {
-    url = "//" + document.domain + "/api/0/photos/";
+    url = "http://" + document.domain + "/api/0/photos/";
     $('.url').val(url);
     if (username && username.length > 0) {
         $.ajax({

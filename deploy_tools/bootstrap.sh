@@ -140,6 +140,6 @@ python manage.py test --verbosity=2
 
 echo '------------------------------------'
 echo ' Server configured. Check it out at '
-echo ' //localhost:7777              '
+echo ' http://localhost:7777              '
 echo '------------------------------------'
 

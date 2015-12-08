@@ -24,7 +24,7 @@ class Units():
     EPSG_3310 = 3310        #California Teale Albers
     
     # all of the pixel / latlng conversion code adapted from Bing Maps site:
-    # //msdn.microsoft.com/en-us/library/bb259689.aspx
+    # http://msdn.microsoft.com/en-us/library/bb259689.aspx
     # bless them for publishing their code
     earth_radius = 6378137
     min_lat = -85.05112878

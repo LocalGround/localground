@@ -6,7 +6,7 @@
 
     No warranty expressed or implied. Use at your own risk.
 
-    See //www.JSON.org/js.html
+    See http://www.JSON.org/js.html
 
     This is a reference implementation. You are free to copy, modify, or
     redistribute.

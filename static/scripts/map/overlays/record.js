@@ -18,7 +18,7 @@ localground.record = function(opts, color){
     
 	if(!opts.noMap) {
 		//initialize icons in the constructor:
-		this.image = '//chart.apis.google.com/chart?cht=it&chs=';
+		this.image = 'http://chart.apis.google.com/chart?cht=it&chs=';
 		this.image += this.size + 'x' + this.size + '&chco=' + color;
 		this.image += ',000000ff,ffffff01&chl=&chx=000000,0&chf=bg,s,00000000&ext=.png';
 		this.iconSmall = this.iconLarge = new google.maps.MarkerImage(this.image,

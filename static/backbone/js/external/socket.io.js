@@ -29,8 +29,8 @@ var cache = exports.managers = {};
  * Looks up an existing `Manager` for multiplexing.
  * If the user summons:
  *
- *   `io('//localhost/a');`
- *   `io('//localhost/b');`
+ *   `io('http://localhost/a');`
+ *   `io('http://localhost/b');`
  *
  * We reuse the existing instance based on same scheme/port/host,
  * and we initialize sockets for each namespace.
@@ -2880,7 +2880,7 @@ Request.prototype.create = function(){
     xhr.open(this.method, this.uri, this.async);
     if (this.supportsBinary) {
       // This has to be done after open because Firefox is stupid
-      // //stackoverflow.com/questions/13216903/get-binary-data-with-xmlhttprequest-in-a-firefox-extension
+      // http://stackoverflow.com/questions/13216903/get-binary-data-with-xmlhttprequest-in-a-firefox-extension
       xhr.responseType = 'arraybuffer';
     }
 
@@ -3572,7 +3572,7 @@ module.exports = function(opts) {
   var xdomain = opts.xdomain;
 
   // scheme must be same when usign XDomainRequest
-  // //blogs.msdn.com/b/ieinternals/archive/2010/05/13/xdomainrequest-restrictions-limitations-and-workarounds.aspx
+  // http://blogs.msdn.com/b/ieinternals/archive/2010/05/13/xdomainrequest-restrictions-limitations-and-workarounds.aspx
   var xscheme = opts.xscheme;
 
   // XDomainRequest has a flow of not sending cookie, therefore it should be disabled as a default.
@@ -3647,9 +3647,9 @@ exports.colors = [
  */
 
 function useColors() {
-  // is webkit? //stackoverflow.com/a/16459606/376773
+  // is webkit? http://stackoverflow.com/a/16459606/376773
   return ('WebkitAppearance' in document.documentElement.style) ||
-    // is firebug? //stackoverflow.com/a/398120/376773
+    // is firebug? http://stackoverflow.com/a/398120/376773
     (window.console && (console.firebug || (console.exception && console.table))) ||
     // is firefox >= v31?
     // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
@@ -4088,7 +4088,7 @@ var utf8 = _dereq_('utf8');
  * Check if we are running an android browser. That requires us to use
  * ArrayBuffer with polling transports...
  *
- * //ghinda.net/jpeg-blob-ajax-android/
+ * http://ghinda.net/jpeg-blob-ajax-android/
  */
 
 var isAndroid = navigator.userAgent.match(/Android/i);
@@ -4867,7 +4867,7 @@ module.exports = (function() {
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],31:[function(_dereq_,module,exports){
 (function (global){
-/*! //mths.be/utf8js v2.0.0 by @mathias */
+/*! http://mths.be/utf8js v2.0.0 by @mathias */
 ;(function(root) {
 
 	// Detect free variables `exports`
@@ -4888,7 +4888,7 @@ module.exports = (function() {
 
 	var stringFromCharCode = String.fromCharCode;
 
-	// Taken from //mths.be/punycode
+	// Taken from http://mths.be/punycode
 	function ucs2decode(string) {
 		var output = [];
 		var counter = 0;
@@ -4915,7 +4915,7 @@ module.exports = (function() {
 		return output;
 	}
 
-	// Taken from //mths.be/punycode
+	// Taken from http://mths.be/punycode
 	function ucs2encode(array) {
 		var length = array.length;
 		var index = -1;
@@ -6056,7 +6056,7 @@ function isBuf(obj) {
 },{}],46:[function(_dereq_,module,exports){
 module.exports=_dereq_(37)
 },{}],47:[function(_dereq_,module,exports){
-/*! JSON v3.2.6 | //bestiejs.github.io/json3 | Copyright 2012-2013, Kit Cambridge | //kit.mit-license.org */
+/*! JSON v3.2.6 | http://bestiejs.github.io/json3 | Copyright 2012-2013, Kit Cambridge | http://kit.mit-license.org */
 ;(function (window) {
   // Convenience aliases.
   var getClass = {}.toString, isProperty, forEach, undef;

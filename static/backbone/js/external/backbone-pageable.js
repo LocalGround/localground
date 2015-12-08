@@ -205,7 +205,7 @@ define([
 
        - Backbone.PageableCollection#state
        - Backbone.PageableCollection#queryParams
-       - [Backbone.Collection#initialize](//backbonejs.org/#Collection-constructor)
+       - [Backbone.Collection#initialize](http://backbonejs.org/#Collection-constructor)
 
        @param {Array.<Object>} [models]
 
@@ -805,7 +805,7 @@ define([
        @param {number|string} index The page index to go to, or the page name to
        look up from #links in infinite mode.
        @param {Object} [options] {@link #fetch} options or
-       [reset](//backbonejs.org/#Collection-reset) options for client mode
+       [reset](http://backbonejs.org/#Collection-reset) options for client mode
        when `options.fetch` is `false`.
        @param {boolean} [options.fetch=false] If true, force a {@link #fetch} in
        client mode.
@@ -969,7 +969,7 @@ define([
        state object, it is checked for errors.
 
        The second structure is the
-       [Backbone.Collection#parse](//backbonejs.org/#Collection-parse)
+       [Backbone.Collection#parse](http://backbonejs.org/#Collection-parse)
        default.
 
        **Note:** this method has been further simplified since 1.1.7. While
@@ -1077,7 +1077,7 @@ define([
        page will reset after fetch.
 
        @param {Object} [options] Accepts all
-       [Backbone.Collection#fetch](//backbonejs.org/#Collection-fetch)
+       [Backbone.Collection#fetch](http://backbonejs.org/#Collection-fetch)
        options.
 
        @return {XMLHttpRequest}
@@ -1191,7 +1191,7 @@ define([
        @param {number} [order=this.state.order] See `state.order`.
        @param {(function(Backbone.Model, string): Object) | string} [sortValue] See #setSorting.
 
-       See [Backbone.Collection.comparator](//backbonejs.org/#Collection-comparator).
+       See [Backbone.Collection.comparator](http://backbonejs.org/#Collection-comparator).
     */
     _makeComparator: function (sortKey, order, sortValue) {
       var state = this.state;

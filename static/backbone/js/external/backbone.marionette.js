@@ -5,7 +5,7 @@
 // Copyright (c)2014 Derick Bailey, Muted Solutions, LLC.
 // Distributed under MIT license
 //
-// //marionettejs.com
+// http://marionettejs.com
 
 
 /*!
@@ -43,7 +43,7 @@
   // Copyright (c)2014 Derick Bailey, Muted Solutions, LLC.
   // Distributed under MIT license
   //
-  // //github.com/marionettejs/backbone.babysitter
+  // http://github.com/marionettejs/backbone.babysitter
   (function(Backbone, _) {
     "use strict";
     var previousChildViewContainer = Backbone.ChildViewContainer;
@@ -152,7 +152,7 @@
         }
       });
       // Borrowing this code from Backbone.Collection:
-      // //backbonejs.org/docs/backbone.html#section-106
+      // http://backbonejs.org/docs/backbone.html#section-106
       //
       // Mix in methods from Underscore, for iteration, and other
       // collection related features.
@@ -183,7 +183,7 @@
   // Copyright (c)2014 Derick Bailey, Muted Solutions, LLC.
   // Distributed under MIT license
   //
-  // //github.com/marionettejs/backbone.wreqr
+  // http://github.com/marionettejs/backbone.wreqr
   (function(Backbone, _) {
     "use strict";
     var previousWreqr = Backbone.Wreqr;
@@ -611,7 +611,7 @@
   // Mix in methods from Underscore, for iteration, and other
   // collection related features.
   // Borrowing this code from Backbone.Collection:
-  // //backbonejs.org/docs/backbone.html#section-121
+  // http://backbonejs.org/docs/backbone.html#section-121
   Marionette.actAsCollection = function(object, listProperty) {
     var methods = ['forEach', 'each', 'map', 'find', 'detect', 'filter',
       'select', 'reject', 'every', 'all', 'some', 'any', 'include',
@@ -843,7 +843,7 @@
   var errorProps = ['description', 'fileName', 'lineNumber', 'name', 'message', 'number'];
   
   Marionette.Error = Marionette.extend.call(Error, {
-    urlRoot: '//marionettejs.com/docs/' + Marionette.VERSION + '/',
+    urlRoot: 'http://marionettejs.com/docs/' + Marionette.VERSION + '/',
   
     constructor: function(message, options) {
       if (_.isObject(message)) {
@@ -1016,7 +1016,7 @@
   // ------
   //
   // Manage the visual regions of your composite application. See
-  // //lostechies.com/derickbailey/2011/12/12/composite-js-apps-regions-and-region-managers/
+  // http://lostechies.com/derickbailey/2011/12/12/composite-js-apps-regions-and-region-managers/
   
   Marionette.Region = function(options) {
     this.options = options || {};

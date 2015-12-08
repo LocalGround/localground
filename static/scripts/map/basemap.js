@@ -53,7 +53,7 @@ localground.basemap.prototype.initialize=function(opts) {
     
     this.isAdmin            = opts.isAdmin || false;
     this.overlayConfigArray = opts.overlays;
-    this.serverURL          = opts.serverURL || '//localground';
+    this.serverURL          = opts.serverURL || 'http://localground';
     this.mapServerURL       = opts.serverURL + '/ows/ms.fcgi';
     this.tileCacheURL       = opts.serverURL + '/ows/tilecache.fcgi/1.0.0/';
     this.hasDefaultLocale   = (opts.center)? true: false;
@@ -186,7 +186,7 @@ localground.basemap.prototype.isGoogleMapsAPIRunning = function() {
     if(google.maps.MapTypeControlStyle.DROPDOWN_MENU == null){
         this.displayMessage(
             ['The Google API is not available at this time.',
-             '<a href="//api-status.com/" target="_blank">API Status Check</a>']
+             '<a href="http://api-status.com/" target="_blank">API Status Check</a>']
         );
         return false;
     }
@@ -445,7 +445,7 @@ localground.basemap.prototype.getScans = function() {
             }
             $("#scanList").html("");
             $.each(result, function(){
-                var kml     = '//' + host + '/static/scans/' + this.pk + '/processed_' + this.pk + '.kml'
+                var kml     = 'http://' + host + '/static/scans/' + this.pk + '/processed_' + this.pk + '.kml'
                 if(self.scanOverlays[this.pk] == null)
                 {
                     self.scanOverlays[this.pk] = { 'kml': new google.maps.KmlLayer(kml), 'checked': false };

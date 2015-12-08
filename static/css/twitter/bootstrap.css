@@ -3,7 +3,7 @@
  *
  * Copyright 2011 Twitter, Inc
  * Licensed under the Apache License v2.0
- * //www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Designed and built with all the love in the world @twitter by @mdo and @fat.
  * Date: Fri Sep 16 14:07:03 PDT 2011
@@ -2741,7 +2741,7 @@ button.btn::-moz-focus-inner, input[type=submit].btn::-moz-focus-inner {
 
 
 /* Next version of bootstrap */
-/* scroll to bottom of this -> //twitter.github.com/bootstrap/base-css.html for samples */
+/* scroll to bottom of this -> http://twitter.github.com/bootstrap/base-css.html for samples */
 [class^="icon-"],[class*=" icon-"]{display:inline-block;width:14px;height:14px;line-height:14px;vertical-align:text-top;background-image:url("glyphicons-halflings.png");background-position:14px 14px;background-repeat:no-repeat;*margin-right:.3em;}[class^="icon-"]:last-child,[class*=" icon-"]:last-child{*margin-left:0;}
 .icon-white{background-image:url("glyphicons-halflings-white.png");}
 .icon-dark{background-image:url("glyphicons-halflings.png");}

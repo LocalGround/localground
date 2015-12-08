@@ -51,12 +51,12 @@ class DataMixin(object):
                          [100.0, 1.0], [100.0, 0.0]]]
     }
     ExtrasGood = '''{
-        "source": "//google.com",
+        "source": "http://google.com",
         "video": "youtube.com",
         "order": 5
     }'''
     ExtrasBad = '''{
-        "source": "//google.com",
+        "source": "http://google.com",
         "video",
         "order": 5
     }'''
