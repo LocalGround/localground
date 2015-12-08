@@ -31,7 +31,7 @@ td, tbody th, span, li, #unregistered {
     font-weight: normal;
 }
 .tbl thead tr th,.tbl tfoot tr th {
-    background: url("http://localground.org/static/css/themes/images/ui-bg_highlight-soft_75_cccccc_1x100.png") repeat-x scroll 50% 50% #CCCCCC;
+    background: url("//localground.org/static/css/themes/images/ui-bg_highlight-soft_75_cccccc_1x100.png") repeat-x scroll 50% 50% #CCCCCC;
     text-align: left;
 }
 

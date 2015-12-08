@@ -267,7 +267,7 @@ localground.overlay.prototype.zoomToOverlay = function() {
 		if(overlayTurnedOn && (newOverlay || bubbleNotInView)) {
 			//bug workaround: make sure you pass an empty {} to the trigger
 			//or you get an error if the overlay is a polyline / polygon:
-			//http://code.google.com/p/gmaps-api-issues/issues/detail?id=5763
+			////code.google.com/p/gmaps-api-issues/issues/detail?id=5763
             google.maps.event.trigger(this.googleOverlay, 'click', {});
         }
         self.currentOverlay = this;

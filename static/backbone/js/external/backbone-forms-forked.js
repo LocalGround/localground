@@ -8,7 +8,7 @@
  * Copyright (c) 2013 Charles Davison, Pow Media Ltd
  * 
  * License and more information at:
- * http://github.com/powmedia/backbone-forms
+ * //github.com/powmedia/backbone-forms
  */
 define(['underscore', 'backbone'], function(_, Backbone) {
 

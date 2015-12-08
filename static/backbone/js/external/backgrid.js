@@ -1,6 +1,6 @@
 /*!
   backgrid
-  http://github.com/wyuenho/backgrid
+  //github.com/wyuenho/backgrid
 
   Copyright (c) 2014 Jimmy Yuen Ho Wong and contributors <wyuenho@gmail.com>
   Licensed under the MIT license.
@@ -22,7 +22,7 @@
 
 /*
   backgrid
-  http://github.com/wyuenho/backgrid
+  //github.com/wyuenho/backgrid
 
   Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT license.
@@ -31,13 +31,13 @@
 // Copyright 2009, 2010 Kristopher Michael Kowal
 // https://github.com/kriskowal/es5-shim
 // ES5 15.5.4.20
-// http://es5.github.com/#x15.5.4.20
+// //es5.github.com/#x15.5.4.20
 var ws = "\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003" +
   "\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028" +
   "\u2029\uFEFF";
 if (!String.prototype.trim || ws.trim()) {
-  // http://blog.stevenlevithan.com/archives/faster-trim-javascript
-  // http://perfectionkills.com/whitespace-deviations/
+  // //blog.stevenlevithan.com/archives/faster-trim-javascript
+  // //perfectionkills.com/whitespace-deviations/
   ws = "[" + ws + "]";
   var trimBeginRegexp = new RegExp("^" + ws + ws + "*"),
   trimEndRegexp = new RegExp(ws + ws + "*$");
@@ -171,7 +171,7 @@ _.extend(Command.prototype, {
 
 /*
   backgrid
-  http://github.com/wyuenho/backgrid
+  //github.com/wyuenho/backgrid
 
   Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT license.
@@ -616,7 +616,7 @@ _.extend(SelectFormatter.prototype, {
 
 /*
   backgrid
-  http://github.com/wyuenho/backgrid
+  //github.com/wyuenho/backgrid
 
   Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT license.
@@ -1533,7 +1533,7 @@ var SelectCellEditor = Backgrid.SelectCellEditor = CellEditor.extend({
    definition.
 
    See:
-     [$.fn.val()](http://api.jquery.com/val/)
+     [$.fn.val()](//api.jquery.com/val/)
 
    @class Backgrid.SelectCell
    @extends Backgrid.Cell
@@ -1642,7 +1642,7 @@ var SelectCell = Backgrid.SelectCell = Cell.extend({
 
 /*
   backgrid
-  http://github.com/wyuenho/backgrid
+  //github.com/wyuenho/backgrid
 
   Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT license.
@@ -1862,7 +1862,7 @@ var Columns = Backgrid.Columns = Backbone.Collection.extend({
 
 /*
   backgrid
-  http://github.com/wyuenho/backgrid
+  //github.com/wyuenho/backgrid
 
   Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT license.
@@ -2022,7 +2022,7 @@ var EmptyRow = Backgrid.EmptyRow = Backbone.View.extend({
 
 /*
   backgrid
-  http://github.com/wyuenho/backgrid
+  //github.com/wyuenho/backgrid
 
   Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT license.
@@ -2250,7 +2250,7 @@ var Header = Backgrid.Header = Backbone.View.extend({
 
 /*
   backgrid
-  http://github.com/wyuenho/backgrid
+  //github.com/wyuenho/backgrid
 
   Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT license.
@@ -2322,11 +2322,11 @@ var Body = Backgrid.Body = Backbone.View.extend({
 
   /**
      This method can be called either directly or as a callback to a
-     [Backbone.Collecton#add](http://backbonejs.org/#Collection-add) event.
+     [Backbone.Collecton#add](//backbonejs.org/#Collection-add) event.
 
      When called directly, it accepts a model or an array of models and an
      option hash just like
-     [Backbone.Collection#add](http://backbonejs.org/#Collection-add) and
+     [Backbone.Collection#add](//backbonejs.org/#Collection-add) and
      delegates to it. Once the model is added, a new row is inserted into the
      body and automatically rendered.
 
@@ -2336,12 +2336,12 @@ var Body = Backgrid.Body = Backbone.View.extend({
      @param {Backbone.Model} model The model to render as a row.
      @param {Backbone.Collection} collection When called directly, this
      parameter is actually the options to
-     [Backbone.Collection#add](http://backbonejs.org/#Collection-add).
+     [Backbone.Collection#add](//backbonejs.org/#Collection-add).
      @param {Object} options When called directly, this must be null.
 
      See:
 
-     - [Backbone.Collection#add](http://backbonejs.org/#Collection-add)
+     - [Backbone.Collection#add](//backbonejs.org/#Collection-add)
   */
   insertRow: function (model, collection, options) {
 
@@ -2377,12 +2377,12 @@ var Body = Backgrid.Body = Backbone.View.extend({
 
   /**
      The method can be called either directly or as a callback to a
-     [Backbone.Collection#remove](http://backbonejs.org/#Collection-remove)
+     [Backbone.Collection#remove](//backbonejs.org/#Collection-remove)
      event.
 
      When called directly, it accepts a model or an array of models and an
      option hash just like
-     [Backbone.Collection#remove](http://backbonejs.org/#Collection-remove) and
+     [Backbone.Collection#remove](//backbonejs.org/#Collection-remove) and
      delegates to it. Once the model is removed, a corresponding row is removed
      from the body.
 
@@ -2392,12 +2392,12 @@ var Body = Backgrid.Body = Backbone.View.extend({
      @param {Backbone.Model} model The model to remove from the body.
      @param {Backbone.Collection} collection When called directly, this
      parameter is actually the options to
-     [Backbone.Collection#remove](http://backbonejs.org/#Collection-remove).
+     [Backbone.Collection#remove](//backbonejs.org/#Collection-remove).
      @param {Object} options When called directly, this must be null.
 
      See:
 
-     - [Backbone.Collection#remove](http://backbonejs.org/#Collection-remove)
+     - [Backbone.Collection#remove](//backbonejs.org/#Collection-remove)
   */
   removeRow: function (model, collection, options) {
 
@@ -2486,7 +2486,7 @@ var Body = Backgrid.Body = Backbone.View.extend({
 
      If the underlying collection is a Backbone.PageableCollection in
      client-mode, or any
-     [Backbone.Collection](http://backbonejs.org/#Collection) instance, sorting
+     [Backbone.Collection](//backbonejs.org/#Collection) instance, sorting
      is done on the client side. If the collection is an instance of a
      Backbone.PageableCollection, sorting will be done globally on all the pages
      and the current page will then be returned.
@@ -2497,7 +2497,7 @@ var Body = Backgrid.Body = Backbone.View.extend({
      @param {Backgrid.Column} column
      @param {null|"ascending"|"descending"} direction
 
-     See [Backbone.Collection#comparator](http://backbonejs.org/#Collection-comparator)
+     See [Backbone.Collection#comparator](//backbonejs.org/#Collection-comparator)
   */
   sort: function (column, direction) {
 
@@ -2635,7 +2635,7 @@ var Body = Backgrid.Body = Backbone.View.extend({
 
 /*
   backgrid
-  http://github.com/wyuenho/backgrid
+  //github.com/wyuenho/backgrid
 
   Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT license.
@@ -2675,7 +2675,7 @@ var Footer = Backgrid.Footer = Backbone.View.extend({
 
 /*
   backgrid
-  http://github.com/wyuenho/backgrid
+  //github.com/wyuenho/backgrid
 
   Copyright (c) 2013 Jimmy Yuen Ho Wong and contributors
   Licensed under the MIT license.

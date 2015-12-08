@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#http://stackoverflow.com/questions/2242909/django-user-impersonation-by-admin
+#//stackoverflow.com/questions/2242909/django-user-impersonation-by-admin
 class ImpersonateMiddleware(object):
     def process_request(self, request):
         from django.contrib.auth.models import User

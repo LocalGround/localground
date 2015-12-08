@@ -13,7 +13,7 @@ class RelatedMediaList(generics.ListCreateAPIView,
     # return HttpResponse(self.kwargs.get('entity_name_plural'))
     model = models.GenericAssociation
     serializer_class = serializers.AssociationSerializer
-    # http://stackoverflow.com/questions/3210491/association-of-entities-in-a-rest-service
+    # //stackoverflow.com/questions/3210491/association-of-entities-in-a-rest-service
 
     def get_queryset(self):
         group_model = models.Base.get_model(

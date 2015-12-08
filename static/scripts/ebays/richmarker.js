@@ -1,6 +1,6 @@
 // ==ClosureCompiler==
 // @compilation_level ADVANCED_OPTIMIZATIONS
-// @externs_url http://closure-compiler.googlecode.com/svn/trunk/contrib/externs/maps/google_maps_api_v3.js
+// @externs_url //closure-compiler.googlecode.com/svn/trunk/contrib/externs/maps/google_maps_api_v3.js
 // @output_wrapper (function() {%output%})();
 // ==/ClosureCompiler==
 

@@ -24,7 +24,7 @@ if (!Function.prototype.bind) { // check if native implementation available
 
 
 
-//http://bayarearides.com/rides/joaquinmiller/track.gpx
+////bayarearides.com/rides/joaquinmiller/track.gpx
 Map = function() {
     this.map;
     this.overlay;

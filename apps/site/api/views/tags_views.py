@@ -31,7 +31,7 @@ class TagSerializer(serializers.Serializer):
 
 
 class TagList(generics.ListAPIView):
-    # http://django-tagging.googlecode.com/svn/trunk/docs/overview.txt
+    # //django-tagging.googlecode.com/svn/trunk/docs/overview.txt
     serializer_class = TagSerializer
     paginate_by = 100
     paginator_class = FastPaginator

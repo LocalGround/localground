@@ -2,7 +2,7 @@
 
 	SearchField 
 	written by Alen Grakalic, provided by Css Globe (cssglobe.com)
-	please visit http://cssglobe.com/post/1202/style-your-websites-search-field-with-jscss/ for more info
+	please visit //cssglobe.com/post/1202/style-your-websites-search-field-with-jscss/ for more info
 	
 */
 

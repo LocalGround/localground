@@ -30,9 +30,9 @@ class StaticMap():
     Creates static map (based on a pretty long set of possible
     options).  Reads the MapServer configuration file, and renders maps
     according to user-specified preferences.
-    Helpful reference:  http://mapserver.org/mapscript/mapscript.html for swig
+    Helpful reference:  //mapserver.org/mapscript/mapscript.html for swig
     """
-    #http://caladapt/ows/ms.fcgi?request=getMap&layers=coastal_flood,sealevelrise,county_dark&format=aggpng24&version=1.1.1&height=512&width=512&srs=epsg%3A4326&bbox=-124.625,31.875,-113,44
+    #//caladapt/ows/ms.fcgi?request=getMap&layers=coastal_flood,sealevelrise,county_dark&format=aggpng24&version=1.1.1&height=512&width=512&srs=epsg%3A4326&bbox=-124.625,31.875,-113,44
     
     def __init__(self):
         """
@@ -52,17 +52,17 @@ class StaticMap():
         import os, urllib, StringIO, Image
         #units.Units.add_pixels_to_latlng(center_lat, center_lng, zoom, 300, 300)
         map_url = None
-        # http://api.tiles.mapbox.com/v3/{mapid}/{lon},{lat},{z}/{width}x{height}.{format}
-        # http://api.tiles.mapbox.com/v3/examples.map-zr0njcqy/-73.99,40.70,13/500x300.png
+        # //api.tiles.mapbox.com/v3/{mapid}/{lon},{lat},{z}/{width}x{height}.{format}
+        # //api.tiles.mapbox.com/v3/examples.map-zr0njcqy/-73.99,40.70,13/500x300.png
         if map_type.overlay_source.name == 'mapbox':
             styleid = map_type.provider_id
             '''
-            map_url = 'http://staticmaps.cloudmade.com/' + api_key + \
+            map_url = '//staticmaps.cloudmade.com/' + api_key + \
                 '/staticmap?styleid=' + styleid + '&zoom=' + str(zoom) + \
                 '&center=' + str(center.y) + ',' + str(center.x) + \
                 '&size=' + str(width) + 'x' + str(height)
             '''
-            map_url = 'http://api.tiles.mapbox.com/v3/{0}/{1},{2},{3}/{4}x{5}.png'
+            map_url = '//api.tiles.mapbox.com/v3/{0}/{1},{2},{3}/{4}x{5}.png'
             map_url = map_url.format(map_type.provider_id, center.x, center.y, zoom, width, height)
         #if google is the map provider:
         else:
@@ -225,7 +225,7 @@ class StaticMap():
     
     @classmethod
     def generate_qrcode(cls, uuid, num, path, size, border_width):
-        qr_url = 'http://chart.apis.google.com/chart?cht=qr&chld=Q|0'
+        qr_url = '//chart.apis.google.com/chart?cht=qr&chld=Q|0'
         qr_url += '&chl=' + uuid + '_' + str(num)
         qr_url += '&chs=' + str(size) + 'x' + str(size)
         file = urllib.urlopen(qr_url)

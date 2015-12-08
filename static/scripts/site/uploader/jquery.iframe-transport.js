@@ -6,7 +6,7 @@
  * https://blueimp.net
  *
  * Licensed under the MIT license:
- * http://www.opensource.org/licenses/MIT
+ * //www.opensource.org/licenses/MIT
  */
 
 /*jslint unparam: true, nomen: true */

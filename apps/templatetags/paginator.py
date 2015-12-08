@@ -1,9 +1,9 @@
-#  Based on: http://www.djangosnippets.org/snippets/73/
+#  Based on: //www.djangosnippets.org/snippets/73/
 #
 #  Modified by Sean Reifschneider to be smarter about surrounding page
 #  link context.  For usage documentation see:
 #
-#     http://www.tummy.com/Community/Articles/django-pagination/
+#     //www.tummy.com/Community/Articles/django-pagination/
 
 from django import template
 

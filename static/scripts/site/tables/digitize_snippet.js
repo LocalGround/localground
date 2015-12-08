@@ -126,8 +126,8 @@ localground.snippet.prototype.initialize=function(opts){
 };
 
 localground.snippet.prototype.getIcon = function(isActive, iconText) {
-    //http://gmaps-utility-library-dev.googlecode.com/svn/tags/mapiconmaker/1.1/examples/markericonoptions-wizard.html
-    var imageURL = 'http://chart.apis.google.com/chart?';
+    ////gmaps-utility-library-dev.googlecode.com/svn/tags/mapiconmaker/1.1/examples/markericonoptions-wizard.html
+    var imageURL = '//chart.apis.google.com/chart?';
     var color = 'CCCCCC', fontColor = '000000';
     if(isActive) {
         /*color = 'DD1C77', fontColor = 'FFFFFF'; //'66A61E';

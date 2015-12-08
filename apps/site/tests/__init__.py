@@ -274,7 +274,7 @@ class ModelMixin(object):
             models.WMSOverlay.objects.get(id=map_provider),
             zoom,
             Point(lng, lat, srid=4326),
-            'http://localground.stage',
+            '//localground.stage',
             map_title=map_title,
             instructions=instructions,
             form=None,

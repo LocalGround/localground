@@ -2,11 +2,11 @@
  * jQuery UI Widget 1.8.18+amd
  * https://github.com/blueimp/jQuery-File-Upload
  *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Copyright 2011, AUTHORS.txt (//jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
+ * //jquery.org/license
  *
- * http://docs.jquery.com/UI/Widget
+ * //docs.jquery.com/UI/Widget
  */
 
 (function (factory) {
@@ -26,7 +26,7 @@ if ( $.cleanData ) {
 		for ( var i = 0, elem; (elem = elems[i]) != null; i++ ) {
 			try {
 				$( elem ).triggerHandler( "remove" );
-			// http://bugs.jquery.com/ticket/8235
+			// //bugs.jquery.com/ticket/8235
 			} catch( e ) {}
 		}
 		_cleanData( elems );
@@ -40,7 +40,7 @@ if ( $.cleanData ) {
 					$( "*", this ).add( [ this ] ).each(function() {
 						try {
 							$( this ).triggerHandler( "remove" );
-						// http://bugs.jquery.com/ticket/8235
+						// //bugs.jquery.com/ticket/8235
 						} catch( e ) {}
 					});
 				}

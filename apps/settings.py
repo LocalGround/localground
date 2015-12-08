@@ -28,7 +28,7 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Custom Local Variables
 SERVER_HOST = os.environ.get('SERVER_HOST', 'yoursite.com')
-SERVER_URL = 'http://%s' % SERVER_HOST
+SERVER_URL = '//%s' % SERVER_HOST
 
 FILE_ROOT = os.environ.get('FILE_ROOT', '/home/directory/for/localground') 
 STATIC_MEDIA_DIR = 'static'
@@ -83,7 +83,7 @@ DATABASES = {
 }
 
 # Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# //en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # On Unix systems, a value of None will cause Django to use the same
 # timezone as the operating system.
@@ -102,7 +102,7 @@ for date_format in DATE_INPUT_FORMATS:
 DATETIME_INPUT_FORMATS = tuple(DATETIME_INPUT_FORMATS)
 
 # Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
+# //www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
@@ -115,8 +115,8 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-JQUERY_PATH = 'http://code.jquery.com/jquery-1.8.0.min.js'
-JQUERY_UI_PATH = 'http://code.jquery.com/ui/1.9.2/jquery-ui.min.js'
+JQUERY_PATH = '//code.jquery.com/jquery-1.8.0.min.js'
+JQUERY_UI_PATH = '//code.jquery.com/ui/1.9.2/jquery-ui.min.js'
 BOOTSTRAP_JS_PATH = '/static/bootstrap2.2.2/js/complete/bootstrap.min.js'
 
 # Make this unique, and don't share it with anybody.
@@ -233,7 +233,7 @@ REST_FRAMEWORK = {
 SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
 SWAMP_DRAGON_REDIS_PORT = 6379 #default
 SWAMP_DRAGON_PORT = 9999 #default
-DRAGON_URL='http://sd.localground.org:7777/' #remove port for prod
+DRAGON_URL='//sd.localground.org:7777/' #remove port for prod
 #Other swampdragon settings that may be important for production server
 #SWAMP_DRAGON_REDIS_HOST - defaults to localhost
 #SWAMP_DRAGON_HOST - defaults to localhost

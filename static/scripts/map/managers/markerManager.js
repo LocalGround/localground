@@ -143,7 +143,7 @@ localground.markerManager.prototype.intersectMarkers = function(mEvent, point, i
 				if(this.googleOverlay.map != null && candidatePos.y  <= bottom + rad &&
 					candidatePos.y >= top - rad && candidatePos.x <= right + rad &&
 					candidatePos.x >= left - rad) {
-					this.googleOverlay.icon = 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|339bb9|13|b|';
+					this.googleOverlay.icon = '//chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|339bb9|13|b|';
 					this.googleOverlay.setOptions({ 'draggable': false });
 					candidateMarker = this;
 					me.bufferCircle.setOptions({
@@ -207,7 +207,7 @@ localground.markerManager.prototype.toggleIconChooser = function() {
                 var color = this;
                 $div.append(
                     $('<img />')
-                        .attr('src', 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.4|0|' +
+                        .attr('src', '//chart.googleapis.com/chart?chst=d_map_spin&chld=0.4|0|' +
                                         color + '|13|b|')
                         .attr('target', color)
                         .css({
@@ -217,7 +217,7 @@ localground.markerManager.prototype.toggleIconChooser = function() {
                         }).click(function(event){
                             event.stopPropagation();
                             $('#color-preview')
-                                .attr('src', 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
+                                .attr('src', '//chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
                                         $(this).attr('target') + '|13|b|'
                                                      );
                             $('#marker_color').val(color);

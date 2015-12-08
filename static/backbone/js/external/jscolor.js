@@ -2,11 +2,11 @@
  * jscolor, JavaScript Color Picker
  *
  * @version 1.4.2
- * @license GNU Lesser General Public License, http://www.gnu.org/copyleft/lesser.html
- * @author  Jan Odvarko, http://odvarko.cz
+ * @license GNU Lesser General Public License, //www.gnu.org/copyleft/lesser.html
+ * @author  Jan Odvarko, //odvarko.cz
  * @created 2008-06-15
  * @updated 2013-11-25
- * @link    http://jscolor.com
+ * @link    //jscolor.com
  */
 
 define([], function () {

@@ -142,7 +142,7 @@ class Form(BaseNamed, BasePermissions):
             apps.register_model(m._meta.app_label, m)
 
     def clear_table_model_cache(self):
-        # see: http://dynamic-models.readthedocs.org/en/latest/topics/model.html#topics-model
+        # see: //dynamic-models.readthedocs.org/en/latest/topics/model.html#topics-model
         from django.conf import settings
         from importlib import import_module
         from django.core.urlresolvers import clear_url_caches

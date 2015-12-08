@@ -6,7 +6,7 @@ from datetime import datetime
 #from django.db.models.loading import cache
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.models import Field
-# http://stackoverflow.com/questions/3712688/creation-of-dynamic-model-fields-in-django
+# //stackoverflow.com/questions/3712688/creation-of-dynamic-model-fields-in-django
 # https://code.djangoproject.com/wiki/DynamicModels
 '''
 Important TODO:

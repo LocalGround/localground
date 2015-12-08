@@ -622,7 +622,7 @@ class ImageUtilities(General):
         
     @staticmethod
     def get_angles(polygon):
-        #http://stackoverflow.com/questions/1211212/how-to-calculate-an-angle-from-three-points
+        #//stackoverflow.com/questions/1211212/how-to-calculate-an-angle-from-three-points
         if polygon is None:
             return None
         points = ImageUtilities.sort_points(polygon)

@@ -3,9 +3,9 @@
     <head>
         <title>Local Ground</title>
         <link rel="stylesheet" type="text/css" href="prettify.css" />
-        <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" />
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
-        <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" />
+        <script type="text/javascript" src="//code.jquery.com/jquery-1.8.0.min.js"></script>
+        <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
         <script src="helpers.js"></script>
         <script src="form_generator.js"></script>
         <script src="sample.js"></script>
@@ -148,7 +148,7 @@
             and fields are available for a particular resource or resource list.
         </p>
         <div class="input-group">
-            <input type="text" id="url-options" class="form-control url" value="http://localground.org/api/0/photos/" />
+            <input type="text" id="url-options" class="form-control url" value="//localground.org/api/0/photos/" />
             <span class="input-group-btn">
                 <button class="btn btn-primary" type="button" onclick="getOptions();">GET OPTIONS</button>
             </span>
@@ -166,7 +166,7 @@
         <h2>4. GET</h2>
         <p>Use the POST action when you want to query a resource or set of resources.</p>
         <div class="input-group">
-            <input type="text" id="url-get" class="form-control url" value="http://localground.org/api/0/photos/" />
+            <input type="text" id="url-get" class="form-control url" value="//localground.org/api/0/photos/" />
             <span class="input-group-btn">
                 <button class="btn btn-primary" type="button" onclick="getList($('#url-get').val());">GET</button>
             </span>
@@ -183,7 +183,7 @@
         <h2>5. POST</h2>
         <p>Use the POST action when you want to create a new resource.</p>
         <div class="input-group">
-            <input type="text" id="url-post" class="form-control url" value="http://localground.org/api/0/photos/" />
+            <input type="text" id="url-post" class="form-control url" value="//localground.org/api/0/photos/" />
             <span class="input-group-btn">
                 <button class="btn btn-info" button" onclick="generateForm('POST', $('#url-post').val(), $('#post-code'));">Generate Form</button>
                 <button class="btn btn-primary" type="button" onclick="postData();">POST</button>
@@ -201,7 +201,7 @@
         <h2>6. PUT</h2>
         <p>Use the PUT action when you want to update a resource.</p>
         <div class="input-group">
-            <input type="text" id="url-put" class="form-control url detail" value="http://localground.org/api/0/photos/2/" />
+            <input type="text" id="url-put" class="form-control url detail" value="//localground.org/api/0/photos/2/" />
             <span class="input-group-btn">
                 <button class="btn btn-info" button" onclick="generateUpdateForm('PUT', $('#url-put').val(), $('#put-code'));">Generate Form</button>
                 <button class="btn btn-primary" type="button" onclick="putData();">PUT</button>
@@ -231,7 +231,7 @@
         <h2>7. PATCH</h2>
         <p>Use the PATCH action when you only want to update only some of the resource's fields.</p>
         <div class="input-group">
-            <input type="text" id="url-patch" class="form-control url detail" value="http://localground.org/api/0/photos/2/" />
+            <input type="text" id="url-patch" class="form-control url detail" value="//localground.org/api/0/photos/2/" />
             <span class="input-group-btn">
                 <button class="btn btn-info" button" onclick="generateUpdateForm('PUT', $('#url-patch').val(), $('#patch-code'));">Generate Form</button>
                 <button class="btn btn-primary" type="button" onclick="patchData();">PATCH</button>
@@ -261,7 +261,7 @@
         <h2>8. DELETE</h2>
         <p>The delete request permanently deletes internet resources. This cannot be undone.</p>
         <div class="input-group">
-            <input type="text" id="url-delete" class="form-control url detail" value="http://localground.org/api/0/photos/2/" />
+            <input type="text" id="url-delete" class="form-control url detail" value="//localground.org/api/0/photos/2/" />
             <span class="input-group-btn">
                 <button class="btn btn-primary" type="button" onclick="deleteData($('#url-delete').val());">DELETE</button>
             </span>

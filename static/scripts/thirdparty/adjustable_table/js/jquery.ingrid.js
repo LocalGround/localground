@@ -1,10 +1,10 @@
 /**
  * Ingrid : JQuery Datagrid Control
  *
- * Copyright (c) 2007-2009 Matthew Knight (http://www.reconstrukt.com http://slu.sh)
+ * Copyright (c) 2007-2009 Matthew Knight (//www.reconstrukt.com //slu.sh)
  * 
- * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) 
- * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+ * Dual licensed under the MIT (//www.opensource.org/licenses/mit-license.php) 
+ * and GPL (//www.opensource.org/licenses/gpl-license.php) licenses.
  *
  * @requires jQuery v1.2+
  * @version 0.9.3

@@ -1,6 +1,6 @@
 /* Useful Websites:
- * http://backgridjs.com/ref/column.html#getting-the-column-definitions-from-the-server
- http://stackoverflow.com/questions/13358477/override-backbones-collection-fetch
+ * //backgridjs.com/ref/column.html#getting-the-column-definitions-from-the-server
+ //stackoverflow.com/questions/13358477/override-backbones-collection-fetch
  */
 define([
     "underscore",
@@ -39,7 +39,7 @@ define([
             this.variableSelector = new VariableSelector({
                 globalEvents: this.globalEvents
             });
-            this.url = 'http://dev.localground.org/api/0/forms/7/data/';
+            this.url = '//dev.localground.org/api/0/forms/7/data/';
             that.fetchRecords();
             this.globalEvents.on("loadChart", function (variable) {
                 that.dynamicVariable = variable;

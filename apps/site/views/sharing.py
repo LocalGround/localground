@@ -23,8 +23,8 @@ def create_update_group_with_sharing(
     user-level permissions to a particular project.
     This form uses the contenttypes framework (so object-user permissions can
     be arbitrarily assigned to more than one object).  Helpful links here:
-      * http://hdknr.github.com/docs/django/modules/django/contrib/contenttypes/generic.html
-      * http://weispeaks.wordpress.com/2009/11/04/overcoming-limitations-in-django-using-generic-foreign-keys/
+      * //hdknr.github.com/docs/django/modules/django/contrib/contenttypes/generic.html
+      * //weispeaks.wordpress.com/2009/11/04/overcoming-limitations-in-django-using-generic-foreign-keys/
     '''
     from django.forms import models, formsets
     from django.contrib.contenttypes import generic

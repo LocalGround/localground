@@ -14,7 +14,7 @@ $(function () {
 
       test("should render popover element", function () {
         $.support.transition = false
-        var popover = $('<a href="#" title="mdo" data-content="http://twitter.com/mdo">@mdo</a>')
+        var popover = $('<a href="#" title="mdo" data-content="//twitter.com/mdo">@mdo</a>')
           .appendTo('#qunit-runoff')
           .popover()
           .popover('show')
@@ -27,7 +27,7 @@ $(function () {
 
       test("should store popover instance in popover data object", function () {
         $.support.transition = false
-        var popover = $('<a href="#" title="mdo" data-content="http://twitter.com/mdo">@mdo</a>')
+        var popover = $('<a href="#" title="mdo" data-content="//twitter.com/mdo">@mdo</a>')
           .popover()
 
         ok(!!popover.data('popover'), 'popover instance exists')

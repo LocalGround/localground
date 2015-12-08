@@ -251,7 +251,7 @@ def move_to_project(request, identity=None):
     
 def export_file(format, ext, username, form, project=None, driver=None,
                 extra_filters=None):
-    #http://www.bostongis.com/PrinterFriendly.aspx?content_name=ogr_cheatsheet
+    #//www.bostongis.com/PrinterFriendly.aspx?content_name=ogr_cheatsheet
     from datetime import datetime
     path = settings.USER_MEDIA_ROOT + '/media/%s/downloads/%s' % \
                         (username, format)
@@ -277,15 +277,15 @@ def export_file(format, ext, username, form, project=None, driver=None,
               'source_marker__id', 'snippet__source_attachment__source_scan__id']
     extras = {
         'snippet_path':
-            '\'http://\' || site_snippet.host || ' +
+            '\'//\' || site_snippet.host || ' +
             'site_snippet.virtual_path || ' +
             'site_snippet.file_name_orig',
         'form_path':
-            'select \'http://\' || a.host || \'/static/attachments/\' || a.uuid || \'/\' || ' +
+            'select \'//\' || a.host || \'/static/attachments/\' || a.uuid || \'/\' || ' +
             'a.file_name_orig from site_attachment a ' +
             'where a.id = site_snippet.source_attachment_id',
         'map_path':
-            'select \'http://\' || s.host || \'/static/scans/\' || ' +
+            'select \'//\' || s.host || \'/static/scans/\' || ' +
             's.uuid || \'/\' || s.file_name_orig from site_scan s ' +
             'where s.id = site_attachment.source_scan_id',
         'project_name':
@@ -385,7 +385,7 @@ def export_file(format, ext, username, form, project=None, driver=None,
 @process_identity
 def download(request, format='shapefile', identity=None):
     # to subset the table:
-    # http://stackoverflow.com/questions/3016682/split-or-save-a-subset-of-a-esri-shape-shp-file-to-a-new-file
+    # //stackoverflow.com/questions/3016682/split-or-save-a-subset-of-a-esri-shape-shp-file-to-a-new-file
     r = request.GET or request.POST
     form_id = int(r.get('form_id'))
     project_id = r.get('project_id')

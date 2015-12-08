@@ -18,7 +18,7 @@ localground.marker = function(opts){
     if(opts)
         $.extend(this, opts);
 	this.image = this.markerImage = this.iconSmall = this.iconLarge =
-        'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
+        '//chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
         this.color + '|13|b|';
     this.bubbleWidth = 480;
     this.bubbleHeight = 360;
@@ -380,7 +380,7 @@ localground.marker.prototype.renderAudioPanel = function($container){
 
 localground.marker.prototype.refresh = function() {
     this.image = this.markerImage = this.iconSmall = this.iconLarge =
-    'http://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
+    '//chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|' +
     this.color + '|13|b|';
     this.googleOverlay.setIcon(this.getIcon());
     localground.overlay.prototype.refresh.call(this);

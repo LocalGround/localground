@@ -5,7 +5,7 @@ class Email():
         'a Local Ground account, which allows you to create and share hand-drawn and digital maps. ' +
         'Local Ground is a project sponsored by UC Berkeley to encourage the documentation ' +
         'and sharing of knowledge within local communities.  If you are interested, ' +
-        'please register for a free account here:  http://localground.org/accounts/register/ ' +
+        'please register for a free account here:  //localground.org/accounts/register/ ' +
         '\n\nThanks!\n\n--The Local Ground Team')
     
     def send_invitation(self, recipients, user, subject=None, body=None): #an array of email address strings
