@@ -1,6 +1,5 @@
 define(["jquery",
         "marionette",
-        "backbone",
         "underscore",
         "text!" + templateDir + "/prints/print.html",
         "views/prints/printForm",
@@ -9,7 +8,7 @@ define(["jquery",
         "backbone-bootstrap-modal"
 
     ],
-    function ($, Marionette, Backbone, _, print, PrintForm, PrintMockup, Confirmation) {
+    function ($, Marionette, _, print, PrintForm, PrintMockup, Confirmation) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -33,7 +32,7 @@ define(["jquery",
                 this.on('generatePrint', this.generatePrint.bind(this));
             },
 
-            onShow: function() {
+            onShow: function () {
                 this.form = new PrintForm(_.defaults({controller: this}, this.opts));
                 this.mockup = new PrintMockup(_.defaults({controller: this}, this.opts));
 
@@ -45,17 +44,17 @@ define(["jquery",
             resize: function () {
                 var printMockup = this.printMockupRegion.currentView,
                     printForm = this.printFormRegion.currentView;
-                if(printMockup) {
+                if (printMockup) {
                     printMockup.resizeMap();
                 }
-                if(printForm) {
+                if (printForm) {
                     printForm.refreshActiveProject();
                 }
             },
 
             generatePrint: function () {
                 var formData = _.extend(this.form.getFormData(), this.mockup.getFormData());
-                if(!formData.map_title) {
+                if (!formData.map_title) {
                     Confirmation.confirm({
                         message: 'Are you sure you want to create a print with no title?',
                         callback: _.partial(this.requestPrint, formData)
@@ -66,19 +65,12 @@ define(["jquery",
             },
 
             requestPrint: function (formData) {
-                $.post('/maps/print/new/',
-                    formData,
-                    function (printUrl) {
-                            document.location = printUrl;
-                        }
-                    ).fail(function (err) {
-                        console.error('failed to download print pdf');
+                $.post('/maps/print/new/', formData, function (printUrl) {
+                    document.location = printUrl;
+                }).fail(function (err) {
+                    console.error('failed to download print pdf: ' + err);
                 });
-                
             }
-
-
-
 
         });
         return Print;

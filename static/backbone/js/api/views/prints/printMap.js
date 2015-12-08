@@ -5,8 +5,7 @@ define(["marionette",
         "lib/maps/controls/tileController",
         "lib/maps/controls/fullScreenCtrl"
     ],
-    function (Marionette, $, SearchBox, GeoLocation, TileController, 
-              FullScreenCtrl) {
+    function (Marionette, $, SearchBox, GeoLocation, TileController, FullScreenCtrl) {
         'use strict';
         /**
          * A class that handles the basic Google Maps functionality,
@@ -50,8 +49,6 @@ define(["marionette",
              */
             initialize: function (opts) {
                 $.extend(this, opts);
-                //this.restoreState(this.id);
-                
             },
 
             /**
@@ -62,13 +59,10 @@ define(["marionette",
                 var mapOptions = {
                     scrollwheel: false,
                     minZoom: this.minZoom,
-                    streetViewControl: true,
+                    streetViewControl: false,
                     scaleControl: true,
                     panControl: false,
-                    mapTypeControlOptions: {
-                        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-                        position: google.maps.ControlPosition.TOP_LEFT
-                    },
+                    mapTypeControl: false,
                     zoomControlOptions: {
                         style: google.maps.ZoomControlStyle.SMALL
                     },
@@ -88,9 +82,6 @@ define(["marionette",
                 };
                 this.map = new google.maps.Map(document.getElementById(this.mapContainerID),
                     mapOptions);
-                var that = this;
-
-
             },
             addEventHandlers: function () {
                 this.listenTo(this.app.vent, 'change-zoom', this.changeZoom.bind(this));

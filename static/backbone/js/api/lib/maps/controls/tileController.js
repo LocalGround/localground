@@ -64,7 +64,10 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                             alert("Error in localground.maps.TileManager: unknown map type: " + sourceName);
                         }
                     });
-                    map.mapTypeControlOptions.mapTypeIds = mapTypeIDs;
+                    if (map.mapTypeControlOptions) {
+                        //map controls may or may not be activated (but tiles still need to be initialized)
+                        map.mapTypeControlOptions.mapTypeIds = mapTypeIDs;
+                    }
                 }.bind(this), /**
                  * @method
                  * Gets the tile information according to the key/value identifier.

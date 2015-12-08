@@ -1,12 +1,8 @@
 define(["marionette",
         "underscore",
-        "jquery",
         "text!" + templateDir + "/prints/printForm.html"
     ],
-    function (Marionette,
-              _,
-              $,
-              printFormTemplate) {
+    function (Marionette, _, printFormTemplate) {
         'use strict';
         /**
          * A class that handles display and rendering of the

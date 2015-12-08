@@ -1,15 +1,11 @@
-/**
- * Created by zmmachar on 12/11/14.
- */
-define(["underscore",
-        "base-mapplication",
+define(["base-mapplication",
         "lib/printLoader",
         "collections/projects",
         "views/maps/topBar",
         "views/prints/print",
         "jquery.bootstrap"
     ],
-    function (_, BaseMapplication, PrintLoader, Projects, TopBar, Print) {
+    function (BaseMapplication, PrintLoader, Projects, TopBar, Print) {
         "use strict";
 
         var PrintBase = BaseMapplication;
@@ -17,7 +13,6 @@ define(["underscore",
         PrintBase.addRegions({
             topBarRegion: "#topbar",
             printRegion: "#print-container"
-
         });
 
         PrintBase.addInitializer(function (options) {
@@ -27,7 +22,6 @@ define(["underscore",
                 topBar = new TopBar(options),
                 print = new Print(options);
 
-
             PrintBase.topBarRegion.show(topBar);
             PrintBase.printRegion.show(print);
 
@@ -36,4 +30,4 @@ define(["underscore",
         });
 
         return PrintBase;
-});
+    });
