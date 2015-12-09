@@ -144,15 +144,11 @@ body { overflow: hidden; }
     cursor: pointer;
 }
 
-.data-item.editable .thumbsmall, .data-item.editable .fa-2x.fa-volume-up {
-    display: none;
-}
-
 .editable .item-icon:hover {
     -webkit-animation-name: wiggle;
 	-webkit-animation-duration: 0.8s;
 	-webkit-transform-origin:50% 50%;
-	-webkit-animation-iteration-count: 3;
+	-webkit-animation-iteration-count: 10;
 	-webkit-animation-timing-function: linear;
     border-color: #77BC3E;
 }
@@ -160,7 +156,7 @@ body { overflow: hidden; }
     -webkit-animation-name: wiggle1;
 	-webkit-animation-duration: 0.8s;
 	-webkit-transform-origin:50% 50%;
-	-webkit-animation-iteration-count: 3;
+	-webkit-animation-iteration-count: 10;
 	-webkit-animation-timing-function: linear;
     border-color: #77BC3E;
 }
