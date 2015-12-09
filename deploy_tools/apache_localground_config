@@ -66,9 +66,9 @@
         Require all granted
     </Proxy>
     ProxyPassMatch /data/(\d+)/(\w+)/websocket ws://127.0.0.1:9999/data/$1/$2/websocket
-    ProxyPass /data/info http://127.0.0.1:9999/data/info
-    ProxyPassReverse /data/info http://127.0.0.1:9999/data/info
-    ProxyPass /settings.js http://127.0.0.1:9999/settings.js
-    ProxyPassReverse /settings.js http://127.0.0.1:9999/settings.js
+    ProxyPass /data/info //127.0.0.1:9999/data/info
+    ProxyPassReverse /data/info //127.0.0.1:9999/data/info
+    ProxyPass /settings.js //127.0.0.1:9999/settings.js
+    ProxyPassReverse /settings.js //127.0.0.1:9999/settings.js
     ProxyVia On
 </VirtualHost>

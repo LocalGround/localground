@@ -17,7 +17,7 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
         var TileController = function (app, opts) {
             /**
              * Raw data array of map overlays, pulled from the Local Ground Data API.
-             * @see <a href="http://localground.org/api/0/tiles">Local Ground Data API</a>.
+             * @see <a href="//localground.org/api/0/tiles">Local Ground Data API</a>.
              */
             this.tilesets = null;
             this.app = app;

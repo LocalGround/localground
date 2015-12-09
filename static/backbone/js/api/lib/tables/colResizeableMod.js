@@ -222,7 +222,7 @@
             w = $(this).width();
         });
         //set header after to accomodate scrollbar in tbody:
-        //http://jsfiddle.net/hashem/CrSpu/555/
+        ////jsfiddle.net/hashem/CrSpu/555/
         header.width(w);
     };
 
