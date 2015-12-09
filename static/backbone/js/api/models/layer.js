@@ -3,7 +3,7 @@ define(["models/base", "views/maps/overlays/symbol"], function (Base, Symbol) {
     /**
      * A Backbone Model class for the Photo datatype.
      * @class Layer
-     * @see <a href="http://localground.org/api/0/layers/">http://localground.org/api/0/layers/</a>
+     * @see <a href="//localground.org/api/0/layers/">//localground.org/api/0/layers/</a>
      * Attributes: id, name, description, overlay_type, tags, owner, slug, access, symbols
      */
     var Layer = Base.extend({
