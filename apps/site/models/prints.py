@@ -71,7 +71,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
 
     def get_abs_virtual_path(self):
-        return 'http://%s%s' % (self.host, self.virtual_path)
+        return '%s%s' % (settings.SERVER_URL, self.virtual_path)
 
     def generate_relative_path(self):
         return '/%s/%s/%s/' % (settings.USER_MEDIA_DIR,
@@ -89,7 +89,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
             'instructions': self.description.encode('utf8'),
             'scan_ids': ','.join([str(s.id) for s in self.embedded_scans])
         })
-        return 'http://' + self.host + '/maps/print/?' + data
+        return settings.SERVER_URL + '/maps/print/?' + data
 
     def thumb(self):
         path = '%s%s' % (self.virtual_path, self.preview_image_path)
