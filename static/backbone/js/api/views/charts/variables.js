@@ -1,6 +1,6 @@
 /* Useful Websites:
- * http://backgridjs.com/ref/column.html#getting-the-column-definitions-from-the-server
- http://stackoverflow.com/questions/13358477/override-backbones-collection-fetch
+ * //backgridjs.com/ref/column.html#getting-the-column-definitions-from-the-server
+ //stackoverflow.com/questions/13358477/override-backbones-collection-fetch
  */
 define([
     "jquery",
@@ -33,7 +33,7 @@ define([
             var that = this;
             opts = opts || {};
             $.extend(this, opts);
-            this.url = 'http://dev.localground.org/api/0/forms/7/data/';
+            this.url = '//dev.localground.org/api/0/forms/7/data/';
             this.collection = new Columns({
                 url: this.url,
                 globalEvents: this.globalEvents

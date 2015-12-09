@@ -3,7 +3,7 @@ define(["models/base", "underscore"], function (Base, _) {
     /**
      * A Backbone Model class for the Project datatype.
      * @class Project
-     * @see <a href="http://localground.org/api/0/projects/">http://localground.org/api/0/projects/</a>
+     * @see <a href="//localground.org/api/0/projects/">//localground.org/api/0/projects/</a>
      */
     var Record = Base.extend({
         /*

@@ -190,7 +190,7 @@ define(["jquery", "underscore"], function ($, _) {
         STATIC METHOD
         --------------------------------------------------------------------------------------
         Available SVG shapes.
-        @see See <a href="http://raphaeljs.com/icons/#location">Shape Wizard</a>
+        @see See <a href="//raphaeljs.com/icons/#location">Shape Wizard</a>
         to add more icons.
        
         To generate SVGs from FontAwesome Icon set on Linux:

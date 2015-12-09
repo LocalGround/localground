@@ -112,7 +112,7 @@ define(["models/project",
              * The id of the project of interest.
              */
             this.removeDataByProjectID = function (projectId) {
-                //http://backbonejs.org/#Collection-remove
+                ////backbonejs.org/#Collection-remove
                 var key,
                     collection;
 

@@ -1,6 +1,6 @@
 /* Useful Websites:
- * http://backgridjs.com/ref/column.html#getting-the-column-definitions-from-the-server
- http://stackoverflow.com/questions/13358477/override-backbones-collection-fetch
+ * //backgridjs.com/ref/column.html#getting-the-column-definitions-from-the-server
+ //stackoverflow.com/questions/13358477/override-backbones-collection-fetch
  */
 define([
     "jquery",
