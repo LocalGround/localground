@@ -3,7 +3,7 @@ define(["models/base", "jquery"], function (Base, $) {
     /**
      * A Backbone Model class for the Photo datatype.
      * @class Photo
-     * @see <a href="http://localground.org/api/0/photos/">http://localground.org/api/0/photos/</a>
+     * @see <a href="//localground.org/api/0/photos/">//localground.org/api/0/photos/</a>
      */
     var Photo = Base.extend({
         getNamePlural: function () {
