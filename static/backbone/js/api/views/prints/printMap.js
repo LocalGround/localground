@@ -2,10 +2,9 @@ define(["marionette",
         "jquery",
         "lib/maps/controls/searchBox",
         "lib/maps/controls/geolocation",
-        "lib/maps/controls/tileController",
-        "lib/maps/controls/fullScreenCtrl"
+        "lib/maps/controls/tileController"
     ],
-    function (Marionette, $, SearchBox, GeoLocation, TileController, FullScreenCtrl) {
+    function (Marionette, $, SearchBox, GeoLocation, TileController) {
         'use strict';
         /**
          * A class that handles the basic Google Maps functionality,
@@ -100,9 +99,9 @@ define(["marionette",
                 //Try pulling the basemap state from the cache
                 var state = this.app.restoreState("basemap");
                 if (!state) {
-                    state = {center: this.defaultLocation.center, zoom: this.defaultLocation.zoom}
+                    state = {center: this.defaultLocation.center, zoom: this.defaultLocation.zoom};
                 } else {
-                    if(state.center) {
+                    if (state.center) {
                         state.center = new google.maps.LatLng(state.center[1], state.center[0]);
                     }
                 }
@@ -129,13 +128,10 @@ define(["marionette",
                     });
                 }
 
-
-
-
                 //set up the various map tiles in Google maps:
                 if (this.tilesets) {
 
-                    if(mapState.basemapID) {
+                    if (mapState.basemapID) {
                         this.activeMapTypeID = mapState.basemapID;
                     }
 

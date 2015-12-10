@@ -1,3 +1,6 @@
+.modal-content {
+   background: #EEE; 
+}
 #print-container, #print {
     height:100%;
 }
@@ -26,7 +29,7 @@
 
 #print-mockup-container {
     height: 100%;
-    background-color: #999;
+    background-color: #EEE;
     padding:30px 50px 30px 30px;
     overflow:scroll;
 }
@@ -36,6 +39,7 @@
     width: 1060px;
     padding: 40px 40px 120px 40px;
     margin-bottom: 10px;
+    border: solid 1px #CCC;
 }
 
 #print-mockup.portrait {
@@ -132,11 +136,11 @@
     float:left;
     height:81px;
     margin-top:5px;
-    width:894px;
+    width:880px;
 }
 
 #print-mockup.portrait > .print-map-description {
-    width: 649px;
+    width: 640px;
 }
 
 
@@ -155,9 +159,9 @@
 }
 
 #print-modal > .modal-dialog {
-    width:1200px;
+    width:1160px;
 }
 
 #print-modal-body {
-    padding: 0 0 0 0;
+    padding: 4px;
 }

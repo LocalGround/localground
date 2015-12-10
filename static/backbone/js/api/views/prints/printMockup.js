@@ -1,12 +1,10 @@
 define(["marionette",
         "underscore",
-        "jquery",
         "views/prints/printMap",
         "text!" + templateDir + "/prints/printMockup.html"
     ],
     function (Marionette,
               _,
-              $,
               PrintMap,
               printMockupTemplate) {
         'use strict';
@@ -14,7 +12,7 @@ define(["marionette",
          * A class that handles display and rendering of the
          * print mockup
          * @class PrintMockup
-         */ 
+         */
         var PrintMockup = Marionette.LayoutView.extend({
             /**
              * @lends localground.prints.views.PrintMockup#
@@ -29,7 +27,7 @@ define(["marionette",
             tagName: 'div',
             id: 'print-mockup',
             regions: {
-                printMapRegion: "#print-map-canvas",
+                printMapRegion: "#print-map-canvas"
             },
             ui: {
                 title: '#print-map-title',
@@ -55,7 +53,7 @@ define(["marionette",
             },
 
             onShow: function () {
-                var printmap = new PrintMap(_.defaults({mapContainerID: "print-map-canvas"},this.opts));
+                var printmap = new PrintMap(_.defaults({mapContainerID: "print-map-canvas"}, this.opts));
                 this.printMapRegion.show(printmap);
                 this.map = printmap.map;
                 this.mapView = printmap;
@@ -67,8 +65,9 @@ define(["marionette",
 
             changeLayout: function (choice) {
                 this.el.className = choice;
+                this.resizeMap();
             },
-            
+
             showTitleInput: function () {
                 this.ui.title.hide();
                 this.ui.titleInput.show();
@@ -83,8 +82,8 @@ define(["marionette",
 
             hideTitleInput: function (event) {
                 var newTitle = event.target.value;
-                if(!newTitle) {
-                  newTitle = this.DEFAULT_TITLE;
+                if (!newTitle) {
+                    newTitle = this.DEFAULT_TITLE;
                 }
                 this.ui.title.text(newTitle);
                 this.ui.titleInput.hide();
@@ -93,8 +92,8 @@ define(["marionette",
 
             hideDescriptionInput: function (event) {
                 var newDescription = event.target.value;
-                if(!newDescription) {
-                  newDescription = this.DEFAULT_DESCRIPTION;
+                if (!newDescription) {
+                    newDescription = this.DEFAULT_DESCRIPTION;
                 }
                 this.ui.description.text(newDescription);
                 this.ui.descriptionInput.hide();
@@ -109,7 +108,7 @@ define(["marionette",
                     center_lat: this.map.center.lat(),
                     center_lng: this.map.center.lng(),
                     map_provider: this.mapView.tileManager.getMapTypeId()
-                }
+                };
             },
 
             getTitle: function () {
@@ -119,9 +118,6 @@ define(["marionette",
             getInstructions: function () {
                 return this.ui.descriptionInput.val();
             }
-
-
-                
         });
         return PrintMockup;
     });
