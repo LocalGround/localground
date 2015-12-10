@@ -75,7 +75,7 @@ class BaseMedia(BaseAudit):
         import time
         timestamp = int(time.time())
         path = path + '#' + str(timestamp)
-        return '%s/profile/%s/%s/' % (settings.SERVER_URL,
+        return '//%s/profile/%s/%s/' % (self.host,
                                              self.model_name_plural.replace(
                                                  ' ',
                                                  '-'),
