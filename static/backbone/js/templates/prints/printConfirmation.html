@@ -1,0 +1,8 @@
+<% if (data.map) { %>
+    <img src="<%= data.map %>" />
+    <br>
+    <a class="btn btn-info" href="<%= data.pdf %>">Download Map</a>
+    <button id="make-another-map" class="btn btn-default">Make Another Map</a>
+<% } else { %>
+    <i class="fa fa-circle-o-notch fa-spin fa-4x" style="color: #CCC;"></i>
+<% } %>

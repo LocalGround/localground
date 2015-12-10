@@ -30,12 +30,14 @@ define(["jquery",
                 this.app = opts.app;
                 this.opts = opts;
                 this.on('resize', this.resize.bind(this));
+                this.on('makeAnotherPrint', this.showMap.bind(this));
                 this.on('generatePrint', this.generatePrint.bind(this));
             },
 
             onShow: function () {
                 this.form = new PrintForm(_.defaults({controller: this}, this.opts));
                 this.mockup = new PrintMockup(_.defaults({controller: this}, this.opts));
+                this.confirmation = new PrintConfirmation({ controller: this }, this.opts);
                 this.printFormRegion.show(this.form);
                 this.printMockupRegion.show(this.mockup);
             },
@@ -47,23 +49,36 @@ define(["jquery",
                 }
             },
 
+            showConfirmation: function () {
+                this.printConfirmationRegion.show(this.confirmation);
+                this.printConfirmationRegion.$el.show(); //in case it's hidden from the makeAnotherPrint
+                this.printFormRegion.$el.hide();
+                this.printMockupRegion.$el.hide();
+            },
+
+            showMap: function () {
+                this.printConfirmationRegion.$el.hide(); //in case it's hidden from the makeAnotherPrint
+                this.printFormRegion.$el.show();
+                this.printMockupRegion.$el.show();
+            },
+
             generatePrint: function () {
                 var formData = _.extend(this.form.getFormData(), this.mockup.getFormData());
                 this.requestPrint(formData);
+                this.showConfirmation();
             },
 
             printGenerated: function (response) {
-                this.confirmation = new PrintConfirmation({ response: response });
-                this.printConfirmationRegion.show(this.confirmation);
-                this.printFormRegion.$el.hide();
-                this.printMockupRegion.$el.hide();
+                this.confirmation.response = response;
+                this.confirmation.render();
+                this.showConfirmation();
             },
 
             requestPrint: function (formData) {
                 var that = this;
                 $.post('/maps/print/new/', formData, function (response) {
                     that.printGenerated(response);
-                }).fail(function (err) {
+                }, "json").fail(function (err) {
                     console.error('failed to download print pdf: ' + err);
                 });
             }

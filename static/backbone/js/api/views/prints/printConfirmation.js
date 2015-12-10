@@ -1,18 +1,26 @@
 define(["marionette",
         "underscore",
-        "text!" + templateDir + "/prints/printMockup.html"
+        "text!" + templateDir + "/prints/printConfirmation.html"
     ],
     function (Marionette, _, printConfirmationTemplate) {
         'use strict';
         var PrintConfirmation = Marionette.View.extend({
-            initialize: function (opts) {
-                this.response = opts.response;
+            events: {
+                'click #make-another-map': 'makeAnotherPrint'
             },
-            template: function () {
-                return _.template(printConfirmationTemplate);
+            initialize: function (opts) {
+                _.extend(this, opts);
+                this.response = this.response || {};
+                this.template = _.template(printConfirmationTemplate);
             },
             onShow: function () {
-                this.$el.html(JSON.stringify(this.response));
+                this.$el.html(this.template({ data: this.response }));
+            },
+            render: function () {
+                this.$el.html(this.template({ data: this.response }));
+            },
+            makeAnotherPrint: function () {
+                this.controller.trigger('makeAnotherPrint');
             }
         });
         return PrintConfirmation;
