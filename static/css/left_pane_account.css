@@ -30,6 +30,16 @@ ul.main-menu {
   display: block;
 }
 
+li.thin-li {
+  height: 1em;
+  padding-top: 0px;
+  padding-bottom: 7px;
+  margin-left: -2.4em;
+  padding-left: 2.4em;
+  font-size: 0.8em;
+  background-color: #bbe2de;
+}
+
 .top-level-obj-li {
   height: 2em;
   padding-top: 8px;
