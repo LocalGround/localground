@@ -20,7 +20,7 @@
         {% endfor %}
         </ul>
     </li>
-    <li title="Filter by snapshot">
+    <!-- <li title="Filter by snapshot">
         <a href="#snapshots"><i class="icon-chevron-right"></i>Snapshots</a>
         <a class="floating-gear" href="/profile/snapshots/{% if embed %}embed{% endif %}#snapshots"><i class="icon-cog" title="Configure snapshots"></i></a>
         <ul id="snapshots" class="nav-side-menu affix top-level-obj-ul">
@@ -30,14 +30,14 @@
             </li>
         {% endfor %}
         </ul>
-    </li>
+    </li> -->
     <li title="Filter by form">
-        <a href="#forms"><i class="icon-chevron-right"></i>Forms</a>
-        <a class="floating-gear" href="/profile/forms/{% if embed %}embed{% endif %}#forms"><i class="icon-cog" title="Configure forms"></i></a>
+        <a href="/profile/forms/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Forms</a>
+        <a class="floating-gear" href="/profile/forms/{% if embed %}embed{% endif %}"><i class="icon-cog" title="Configure forms"></i></a>
         <ul id="forms" class="nav-side-menu affix top-level-obj-ul">
         {% for form in top_lv_objs.forms %}
             <li class="top-level-obj-li">
-                <a href="/profile/forms/media_main?project_id={{ form.id }}{% if embed %}embed{% endif %}">{{ form.name }}</a>
+                <a href="/profile/forms/{% if embed %}embed{% endif %}">{{ form.name }}</a>
             </li>
         {% endfor %}
         </ul>
