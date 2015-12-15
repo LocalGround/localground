@@ -30,6 +30,7 @@ same view and parameters. Then, you can use this name in reverse URL matching.
 '''
 
 media_types_plural = ['photos', 'audio', 'videos', 'map-images', 'prints', 'tiles']
+object_types_plural = ['projects', 'snapshots', 'forms']
 # media_types_plural = ['photos', 'audio', 'videos', 'map-images', 'projects',
 #                        'snapshots', 'prints', 'forms', 'attachments', 'tiles']
 #handler500 = 'localground.apps.account.views.server_error'
@@ -70,10 +71,16 @@ urlpatterns = patterns('',
                            r'^profile/$', 'localground.apps.site.views.profile.home', {
                                'embed': True}),
                        (r'^profile/(?P<media_type_plural>{0})/$'.format('|'.join(
-                           media_types_plural)), 'localground.apps.site.views.profile.object_list_form'),
+                           media_types_plural)), 'localground.apps.site.views.profile.media_list_form'),
                        (
                            r'^profile/(?P<media_type_plural>{0})/embed/$'.format(
-                               '|'.join(media_types_plural)), 'localground.apps.site.views.profile.object_list_form', {
+                               '|'.join(media_types_plural)), 'localground.apps.site.views.profile.media_list_form', {
+                               'embed': True}),
+                       (r'^profile/(?P<object_type_plural>{0})/$'.format('|'.join(
+                           object_types_plural)), 'localground.apps.site.views.profile.object_list_form'),
+                       (
+                           r'^profile/(?P<object_type_plural>{0})/embed/$'.format(
+                               '|'.join(object_types_plural)), 'localground.apps.site.views.profile.object_list_form', {
                                'embed': True}),
 
                        #-------------------------------------------------------

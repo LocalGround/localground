@@ -113,6 +113,154 @@ def home(request, return_message=None, embed=False):
 @login_required()
 def object_list_form(
         request,
+        object_type_plural,
+        return_message=None,
+        embed=False):
+    context = RequestContext(request)
+    ModelClass = Base.get_model(model_name_plural=object_type_plural)
+    template_name = 'profile/%s.html' % ModelClass.model_name_plural.replace(
+        ' ',
+        '-')
+    r = request.POST or request.GET
+
+    objects = ModelClass.objects.get_objects(
+        user=request.user,
+        request=request,
+        context=context
+    )
+
+    # if a user requests a top level object,
+    # the media should be filtered by id.
+    # obj_type = request.GET.get('obj_type', None)
+    # obj_id = request.GET.get('obj_id', None)
+    # current_obj = None
+    # if obj_type and obj_id:
+    #     if obj_type == 'projects':
+    #         objects = objects.filter(project_id=obj_id) # media
+    #     #  TODO: obj_type snapshot
+    #     if obj_type == 'snapshots':
+    #         objects = objects.filter(snapshot_id=obj_id) # media
+    #     #  TODO: obj_type form
+    #     # getting the selected obj filter
+    #     obj_mc = Base.get_model(model_name_plural=obj_type) # this is a ModelClass
+    #     objs = obj_mc.objects.get_objects(
+    #         user=request.user,
+    #         request=request,
+    #         context=context
+    #     )
+    #     current_obj = objs.filter(id=obj_id)[0]
+
+    # return HttpResponse(objects.query)
+    per_page = 10
+
+    def getModelClassFormSet(**kwargs):
+        # uses Django 1.2 workaround documented here:
+        # https://groups.google.com/forum/?fromgroups=#!topic/django-users/xImbCAbmfuc
+        from django.forms.models import modelformset_factory
+
+        def create_formfield(f, **kwargs):
+            return f.formfield(**kwargs)
+        return modelformset_factory(
+            ModelClass,
+            max_num=0,
+            formfield_callback=create_formfield,
+            **kwargs
+        )
+
+    ModelClassFormSet = getModelClassFormSet(
+        form=ModelClass.inline_form(
+            request.user))
+    if request.method == "POST":
+        modelformset = ModelClassFormSet(
+            request.POST,
+            queryset=objects)  # objects
+        if modelformset.is_valid():
+            num_updates = 0
+            for form in modelformset.forms:
+                if form.has_changed():
+                    instance = form.instance
+                    instance.last_updated_by = request.user
+                    instance.time_stamp = datetime.now()
+                    instance.save()
+                    num_updates += 1
+            if num_updates > 0:
+                context.update({'message': '%s %s have been updated' % (
+                    num_updates, ModelClass.model_name_plural)})
+            else:
+                context.update({'warning_message': '%s %s have been updated' % (
+                    num_updates, ModelClass.model_name_plural)})
+        else:
+            context.update({
+                'error_message': 'There was an error updating the %s' % ModelClass.model_name_plural
+            })
+    else:
+        start = 0
+        if r.get('page') is not None:
+            start = (int(r.get('page')) - 1) * per_page
+
+        # Hack:  somehow, calling the ".all()" method slices the queryset (LIMIT BY),
+        # rather than converting the queryset to a list (which we don't want).
+        modelformset = ModelClassFormSet(
+            queryset=objects[
+                start:start +
+                per_page])
+        #modelformset = ModelClassFormSet(queryset=objects[start:start+per_page])
+
+    # context should always include all the names of top level objects,
+    # which are projects, snapshots, and forms,
+    # for the new left panel.
+    top_lv_objs = {
+        'projects': None,
+        'snapshots': None,
+        'forms': None
+        # if you have another top level object,
+        # just add 'object_name': None
+    }
+    for obj in top_lv_objs:
+        mc = Base.get_model(model_name_plural=obj) # this is a ModelClass
+        top_lv_objs[obj] = mc.objects.get_objects(
+            user=request.user,
+            request=request,
+            context=context
+        )
+    
+    context.update({
+        'formset': modelformset,
+        'embed': embed,
+        'page_title': 'My %s' % ModelClass.model_name_plural.capitalize(),
+        'username': request.user.username,
+        'url': '%s?1=1' % ModelClass.listing_url(),
+        'delete_url': ModelClass.batch_delete_url(),
+        'create_url': ModelClass.create_url() + 'embed/',
+        'page_title': 'My %s' % ModelClass.model_name_plural.capitalize(),
+        'user': request.user,
+        'object_name_plural': ModelClass.model_name_plural,
+        'object_type': ModelClass.model_name,
+        'top_lv_objs': top_lv_objs,
+        'media_types_plural': [media_type.replace('-', ' ') for media_type in media_types_plural],
+        # 'obj_type': obj_type,
+        # 'obj_id': obj_id,
+        # 'current_obj': current_obj
+    })
+
+    if context.get('filter_fields'):
+        context.update({'url': '%s?query=%s' %
+                        (ModelClass.listing_url(), context.get('sql')), })
+    else:
+        context.update({
+            'filter_fields': ModelClass.get_filter_fields(),
+            'sql': '',
+            'has_filters': False
+        })
+
+    context.update(prep_paginator(request, objects, per_page=per_page))
+    if request.user.is_superuser:
+        context.update({'users': Project.get_users()})
+    return render_to_response(template_name, context)
+
+@login_required()
+def media_list_form(
+        request,
         media_type_plural,
         return_message=None,
         embed=False):
@@ -142,6 +290,8 @@ def object_list_form(
         if obj_type == 'projects':
             objects = objects.filter(project_id=obj_id) # media
         #  TODO: obj_type snapshot
+        if obj_type == 'snapshots':
+            objects = objects.filter(snapshot_id=obj_id) # media
         #  TODO: obj_type form
         # getting the selected obj filter
         obj_mc = Base.get_model(model_name_plural=obj_type) # this is a ModelClass

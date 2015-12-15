@@ -1,38 +1,38 @@
-<link href="/static/css/left_pane.css" rel="stylesheet">
+<link href="/static/css/left_pane_account.css" rel="stylesheet">
 <ul class="nav-side-menu bs-docs-sidenav affix main-menu">
     <li>
         <a href="/profile/settings/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Account Settings</a>
     </li>
     <li>
         <a href="#projects"><i class="icon-chevron-right"></i>Projects</a>
+        <a class="floating-gear" href="/profile/projects/{% if embed %}embed{% endif %}#projects"><i class="icon-cog" title="Configure projects"></i></a>
         <ul id="projects" class="nav-side-menu affix top-level-obj-ul">
         {% for project in top_lv_objs.projects %}
             <li class="top-level-obj-li">
                 <a href="{% if media_name_plural %}/profile/{{media_name_plural}}?obj_type=projects&amp;obj_id={{ project.id }}{% if embed %}embed{% endif %}{% endif %}#projects">
                 {% if project.id == current_obj.id %}<span style="font-weight:bold">{{ project.name }}</span>{% else %}{{ project.name }}{% endif %}</a>
-                <a href="/profile/projects/?obj_id={{ project.id }}{% if embed %}embed{% endif %}"><i class="icon-cog" title="Configure this project"></i></a>
             </li>
         {% endfor %}
         </ul>
     </li>
     <li>
         <a href="#snapshots"><i class="icon-chevron-right"></i>Snapshots</a>
+        <a class="floating-gear" href="/profile/snapshots/{% if embed %}embed{% endif %}#snapshots"><i class="icon-cog" title="Configure snapshots"></i></a>
         <ul id="snapshots" class="nav-side-menu affix top-level-obj-ul">
         {% for snapshot in top_lv_objs.snapshots %}
             <li class="top-level-obj-li">
                 <a href="/profile/snapshots/media_main?project_id={{ snapshot.id }}{% if embed %}embed{% endif %}">{{ snapshot.name }}</a>
-                <a href="/profile/snapshots/?snapshot_id={{ snapshot.id }}{% if embed %}embed{% endif %}"><i class="icon-cog" title="Configure this snapshot"></i></a>
             </li>
         {% endfor %}
         </ul>
     </li>
     <li>
         <a href="#forms"><i class="icon-chevron-right"></i>Forms</a>
+        <a class="floating-gear" href="/profile/forms/{% if embed %}embed{% endif %}#forms"><i class="icon-cog" title="Configure forms"></i></a>
         <ul id="forms" class="nav-side-menu affix top-level-obj-ul">
         {% for form in top_lv_objs.forms %}
             <li class="top-level-obj-li">
                 <a href="/profile/forms/media_main?project_id={{ form.id }}{% if embed %}embed{% endif %}">{{ form.name }}</a>
-                <a href="/profile/forms/?form_id={{ form.id }}{% if embed %}embed{% endif %}"><i class="icon-cog" title="Configure this form"></i></a>
             </li>
         {% endfor %}
         </ul>
