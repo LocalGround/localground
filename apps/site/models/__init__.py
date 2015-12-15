@@ -34,7 +34,6 @@ from localground.apps.site.models.genericassociation import GenericAssociation
 # prints
 from localground.apps.site.models.datatype import DataType
 from localground.apps.site.models.field import Field
-from localground.apps.site.models.field_print_layout import FieldLayout
 from localground.apps.site.models.form import Form
 from localground.apps.site.models.layout import Layout
 from localground.apps.site.models.prints import Print
