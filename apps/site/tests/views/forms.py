@@ -36,12 +36,10 @@ class UpdateFormTest(test.TestCase, ViewMixin):
         for key in d:
             f = models.Field(col_alias=key,
                     data_type=models.DataType.objects.get(id=d[key]['type']),
-                    display_width=10,
                     ordering=1,
                     form=self.form,
                     owner=self.user,
-                    last_updated_by=self.user,
-                    has_snippet_field=d[key]['type'] < Field.DataTypes.PHOTO
+                    last_updated_by=self.user
                 )
             f.save()
             d[key]['field'] = f
@@ -57,7 +55,6 @@ class UpdateFormTest(test.TestCase, ViewMixin):
         # insert a record
         timestamp = get_timestamp_no_milliseconds()
         record = self.form.TableModel()
-        record.num = 1
         record.owner = self.user
 
         # set record data before insert:
@@ -76,7 +73,6 @@ class UpdateFormTest(test.TestCase, ViewMixin):
         self.assertEqual(self.user, rec.owner)
         self.assertEqual(self.user, rec.last_updated_by)
         self.assertEqual(record.project, self.project)
-        self.assertEqual(1, rec.num)
 
     def make_post_dictionary(self, name, description, tags, slug):
         # add 2 fields:
@@ -89,12 +85,9 @@ class UpdateFormTest(test.TestCase, ViewMixin):
             'field-0-col_alias': 'my first column',
             'field-0-data_type': 1,
             'field-0-ordering': 1,
-            'field-0-is_printable': 'on',
-            'field-0-is_display_field': 'on',
             'field-1-col_alias': 'my second column',
             'field-1-data_type': 6,
-            'field-1-ordering': 2,
-            'field-1-is_printable': 'on',
+            'field-1-ordering': 2
         }
         management_form = {
             'field-TOTAL_FORMS': 2,

@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 from django.db.models import Q
 from localground.apps.site.managers import FormManager
 from localground.apps.site.models import Field, ProjectMixin, \
-    BaseNamed, Snippet, DataType, Project, BasePermissions
+    BaseNamed, DataType, Project, BasePermissions
 from localground.apps.site.dynamic import ModelClassBuilder, DynamicFormBuilder
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
@@ -190,10 +190,8 @@ class Form(BaseNamed, BasePermissions):
         # return '%s - %s (%s)' % (self.id, self.name, self.table_name)
         return self.name
 
-    def get_next_record(self, unverified_only=False, last_id=None):
-        q = self.TableModel.objects.filter(snippet__is_blank=False)
-        if unverified_only:
-            q = q.filter(manually_reviewed=False)
+    def get_next_record(self, last_id=None):
+        q = self.TableModel.objects.all()
         if last_id is not None:
             q = q.filter(id__gt=last_id)
         q = q.order_by('id', )
@@ -213,8 +211,7 @@ class Form(BaseNamed, BasePermissions):
         if print_only:
             fields = []
             for f in self.fields:
-                if f.is_printable:
-                    fields.append(f)
+                fields.append(f)
             return fields
         return self.fields
 
@@ -244,16 +241,8 @@ class Form(BaseNamed, BasePermissions):
         if is_new:
             self.sync_db()
 
-    def get_num_field(self):
-        dummy_num_field = Field()
-        dummy_num_field.has_snippet_field = True
-        dummy_num_field.col_name_db = 'num'
-        dummy_num_field.col_alias = 'num'
-        dummy_num_field.ordering = 0
-        return dummy_num_field
-
     def get_snipped_field_names(self):
-        names = ['num']
+        names = []
         for n in self.fields:
             names.append(n.col_name)
         return names
@@ -291,10 +280,7 @@ class Form(BaseNamed, BasePermissions):
             fields = self.fields
 
         # populate content that exists for all dynamic tables:
-        e.snippet = d.get('snippet')
         e.project = d.get('project')
-        e.num = d.get('num')
-        e.num_snippet = d.get('num_snippet')
         e.time_stamp = get_timestamp_no_milliseconds()
         e.owner = user
         e.point = d.get('point')
@@ -304,12 +290,6 @@ class Form(BaseNamed, BasePermissions):
         # populate ad hoc columns (variable across tables):
         for n in fields:
             e.__setattr__(n.col_name, d.get(n.col_name))
-            e.__setattr__(
-                '%s_snippet' %
-                n.col_name,
-                d.get(
-                    '%s_snippet' %
-                    n.col_name))
         e.save(user=user)
         self.save(user=user)
         return e
@@ -332,62 +312,14 @@ class Form(BaseNamed, BasePermissions):
         return '%s records were deleted from the %s table.' % (
             num_deletes, self.name)
 
-    def update_blank_status(self, id_list, user, blank_status):
-        from django.forms.models import model_to_dict
-
-        if len(id_list) > 0:
-            recs = self.TableModel.objects.filter(id__in=id_list)
-            snippet_ids = []
-            for r in recs:
-                # for each record, there are a number of snippet references.  Find
-                # them so they can be update to blank / not blank:
-                d = model_to_dict(r)
-                for key, value in d.iteritems():
-                    if key.find('snippet') != -1 and value is not None:
-                        snippet_ids.append(value)
-            Snippet.objects.filter(
-                id__in=snippet_ids).update(
-                is_blank=blank_status)
-            return '%s records were updated from the %s table.' % (
-                len(recs), self.name)
-        return '0 records were deleted from the %s table.' % self.name
-
-    def delete_record_by_snippet_id(self, snippet_id, user):
-        num_deletes = 0
-        if attachment_id is not None:
-            try:
-                objects = [self.TableModel.objects.get(snippet__id=snippet_id)]
-                num_deletes = self._delete_records(objects)
-            except self.TableModel.DoesNotExist:
-                return 'A record corresponding to Snippet #%s in the %s table \
-					does not exist.' % (snippet_id, self.name)
-        return '%s records were deleted from the %s table.' % (
-            num_deletes, self.name)
-
-    def delete_records_by_attachment_id(self, attachment_id, user):
-        num_deletes = 0
-        if attachment_id is not None:
-            objects = list(
-                self.TableModel.objects.filter(
-                    snippet__source_attachment__id=attachment_id))
-            num_deletes = self._delete_records(objects)
-        return '%s records were deleted from the %s table.' % (
-            num_deletes, self.name)
-
     def _delete_records(self, records):
         from django.forms.models import model_to_dict
 
-        num_deletes, snippet_ids = 0, []
+        num_deletes = 0
         for r in records:
-            # for each record, there are a number of snippet references.  Find
-            # them so they can be deleted!
             d = model_to_dict(r)
-            for key, value in d.iteritems():
-                if key.find('_snippet') != -1 and value is not None:
-                    snippet_ids.append(value)
             r.delete()
             num_deletes = num_deletes + 1
-        Snippet.objects.filter(id__in=snippet_ids).delete()
         return num_deletes
 
     def source_table_exists(self):

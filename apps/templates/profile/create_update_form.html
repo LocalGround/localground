@@ -82,10 +82,6 @@
 						<span>{{ form.instance.data_type.name }}</span>
 						{{ form.data_type.errors }}
 					</td>
-					<td {% if form.is_printable.errors or form.non_field_errors %}class="error"{% endif %}>
-						{{ form.is_printable }}
-						{{ form.is_printable.errors }}
-					</td>
 					<td {% if form.is_display_field.errors or form.non_field_errors %}class="error"{% endif %}>
 						{{ form.is_display_field }}
 						{{ form.is_display_field.errors }}

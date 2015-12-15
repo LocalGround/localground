@@ -30,7 +30,6 @@ def create_update_form(request, object_id=None,
                 'col_alias',
                 'data_type',
                 'is_display_field',
-                'is_printable',
                 'ordering')
             
         def __init__(self, *args, **kwargs):
@@ -88,14 +87,11 @@ def create_update_form(request, object_id=None,
                 if form.has_changed():
                     instance = form.instance
                     if not instance in formset.deleted_forms:
-                        instance.display_width = 10
                         if instance.pk is None:
                             instance.form = form_object
                         instance.last_updated_by = request.user
                         if instance.pk is None:
                             instance.owner = request.user
-                        #ensures that no snippet field generates for audio & photo data types:
-                        instance.has_snippet_field = instance.data_type.id < 7
                         instance.save()
 
             # remove unwanted fields here:

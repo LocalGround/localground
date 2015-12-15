@@ -1,7 +1,7 @@
 from django.contrib.gis.db import models
 from datetime import datetime
 from django.conf import settings
-from localground.apps.site.managers import ScanManager, AttachmentManager
+from localground.apps.site.managers import ScanManager
 from localground.apps.site.models import (
     BaseMedia,
     StatusCode,
@@ -207,34 +207,6 @@ class Scan(Processor):
 
     def __unicode__(self):
         return 'Scan #' + self.uuid
-
-
-class Attachment(Processor):
-    is_short_form = models.BooleanField(default=False)
-    directory_name = 'attachments'
-    objects = AttachmentManager()
-
-    class Meta:
-        app_label = 'site'
-        ordering = ['id']
-        verbose_name = 'attachment'
-        verbose_name_plural = 'attachments'
-
-    def get_object_type(self):
-        return 'attachment'
-
-    # def generate_relative_path(self):
-    #    return '/%s/attachments/%s/' % (settings.USER_MEDIA_DIR, self.uuid)
-
-    def to_dict(self):
-        from localground.apps.site.api.serializers import AttachmentSerializer
-        return AttachmentSerializer(self).data
-
-    def process(self):
-        from localground.apps.site.image_processing.processor import Processor
-        processor = Processor(self)
-        processor.process_attachment()
-
 
 class ImageOpts(BaseExtents, BaseMedia):
     source_scan = models.ForeignKey(Scan)

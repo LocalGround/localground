@@ -38,9 +38,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
             'overlay_type',
             'url',
             'geometry',
-            'manually_reviewed',
             'project_id')
-        read_only_fields = ('manually_reviewed',)
 
     def get_overlay_type(self, obj):
         #raise Exception(obj)
@@ -111,15 +109,12 @@ def create_record_serializer(form, **kwargs):
     if display_field is not None:
         field_names.append('display_name')   
     
-    #append "num_field" column:
-    field_names.append(form.get_num_field().col_name)
-    
     TableModel = form.TableModel
     class Meta:
         model = TableModel
         fields = BaseRecordSerializer.Meta.fields + tuple(field_names) + \
             tuple(photo_fields) + tuple(audio_fields) 
-        read_only_fields = BaseRecordSerializer.Meta.read_only_fields + ('display_name', )
+        read_only_fields = ('display_name', )
     
     attrs = {
         '__module__': 'localground.apps.site.api.serializers.FormDataSerializer',
@@ -180,7 +175,6 @@ def create_compact_record_serializer(form):
             model = form.TableModel
             fields = (
                 'id',
-                'num',
                 'recs',
                 'url',
                 'geometry',

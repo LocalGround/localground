@@ -61,22 +61,6 @@ class TagAutocomplete(TagAutocomplete):
                 settings.STATIC_MEDIA_DIR,
             )}
 
-
-class SnippetWidget(HiddenInput):
-
-    def render(self, name, value, attrs=None):
-        model_obj = self.form_instance.instance
-        default_widget = self.orig_widget
-        return super(HiddenInput, self).render(name, None, attrs=attrs)
-
-    '''def render(self, name, value, attrs=None):
-		model_obj = self.form_instance.instance
-		img_path = model_obj.get_snippet(name).absolute_virtual_path()
-		html = '<textarea id="%s" name="%s">%s</textarea>' % (attrs['id'], name, value)
-		html = html + '<img src="%s" />' % img_path
-		return mark_safe(html)'''
-
-
 class PointWidget(Textarea):
 
     def __init__(self, *args, **kw):

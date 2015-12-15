@@ -22,7 +22,6 @@ DROP VIEW IF EXISTS v_private_audio cascade;
 DROP VIEW IF EXISTS v_private_photos cascade;
 DROP VIEW IF EXISTS v_private_scans cascade;
 DROP VIEW IF EXISTS v_private_videos cascade;
-DROP VIEW IF EXISTS v_private_attachments cascade;
 DROP VIEW IF EXISTS v_private_prints cascade;
 DROP VIEW IF EXISTS v_public_photos cascade;
 DROP VIEW IF EXISTS v_public_audio cascade;
@@ -311,24 +310,7 @@ FROM  (
     FROM site_video m, site_project g
     WHERE m.project_id = g.id) v
 GROUP BY v.id, v.user_id;
-
-------------------------------
--- View: v_private_attachments
-------------------------------  
-CREATE OR REPLACE VIEW v_private_attachments AS 
-SELECT v.id as attachment_id, v.user_id, max(v.authority_id) AS authority_id
-FROM  (
-    -- accessible via project permissions
-    SELECT m.id, p.user_id, p.authority_id
-    FROM site_attachment m, v_private_projects p
-    WHERE m.project_id = p.project_id 
-  UNION 
-    -- accessible b/c user is attachment owner
-    SELECT m.id, m.owner_id, 3 AS authority_id
-    FROM site_attachment m
-) v
-GROUP BY v.id, v.user_id;
-  
+ 
 -------------------------
 -- View: v_private_prints
 -------------------------

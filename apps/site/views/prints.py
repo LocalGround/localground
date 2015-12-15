@@ -21,9 +21,10 @@ def generate_print_pdf(request):
         id=int(r.get('map_provider', settings.DEFAULT_BASEMAP_ID)))
 
     # get / create form (if requested):
-    form = None
     layers, layer_ids = [], []
-    scans, scan_ids = [], []
+    scan_ids = []
+    if r.get('scan_ids') is not None and len(r.get('scan_ids')) > 0:		
+        scan_ids = [n for n in r.get('scan_ids').split(',')]
 
     layouts = models.Layout.objects.filter(is_active=True).order_by('id', )
     layout_id = layout_id_map[r.get('orientation')]
@@ -43,8 +44,6 @@ def generate_print_pdf(request):
 
     extras = {}
 
-    has_extra_form_page = False
-
     p = models.Print.insert_print_record(
             request.user,
             project,
@@ -55,11 +54,10 @@ def generate_print_pdf(request):
             request.get_host(),
             map_title=r.get('map_title'),
             instructions=r.get('instructions'),
-            form=form,
             layer_ids=None,
             scan_ids=scan_ids
         )
-    p.generate_pdf(has_extra_form_page=has_extra_form_page)
+    p.generate_pdf()
 
     #just return pdf location
     #return HttpResponse(p.pdf())
@@ -112,6 +110,11 @@ def generate_print_new(request, template_name='map/print_new.html'):
     extras = {}
     layers, layer_ids = [], []
     scans, scan_ids = [], []
+    scans, scan_ids = [], []
+    if r.get('scan_ids') is not None and len(r.get('scan_ids')) > 0:		
+        scan_ids = [n for n in r.get('scan_ids').split(',')]		
+        scans = models.Scan.objects.select_related(		
+            'source_print').filter(id__in=scan_ids).to_dict_list()
         
     extras.update({
         'width': layout.map_width_pixels,

@@ -4,17 +4,6 @@ from localground.apps.site import models
 from localground.apps.site.api import fields
 from localground.apps.site.api.fields import FileField
 
-
-class AttachmentSerializer(BaseNamedSerializer):
-    overlay_type = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Attachment
-        fields = BaseNamedSerializer.Meta.fields + (
-            'overlay_type',
-        )
-
-
 class ScanSerializer(BaseNamedSerializer):
     file_name_orig = FileField(required=False)
     overlay_type = serializers.SerializerMethodField()
