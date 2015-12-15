@@ -15,8 +15,8 @@ define(["underscore",
         }
 
         describe("Print Form:", function () {
-            var printForm;
-            var printFormOpts;
+            var printForm,
+                printFormOpts;
 
             it("Initializes correctly when loaded with valid parameters", function () {
                 var that = this;
@@ -25,27 +25,16 @@ define(["underscore",
                     printForm = new PrintForm(printFormOpts);
                 }).not.toThrow();
             });
-            describe("Functionality:", function() {
-                beforeEach(function() {
-                    var that = this;
+            describe("Functionality:", function () {
+                beforeEach(function () {
                     printFormOpts = getPrintFormParams.call(this);
                     printForm = new PrintForm(printFormOpts);
-                    setFixtures(printForm.render().$el)
+                    window.setFixtures(printForm.render().$el);
                 });
 
                 it("correctly triggers layout change", function () {
                     printForm.$el.find('#portrait').click();
                     expect(printFormOpts.controller.trigger).toHaveBeenCalledWith('change-layout', 'portrait');
-                });
-
-                it("correctly populates project menu", function () {
-                    var i,
-                    that = this;
-                    this.projectsLite.each(function(project) {
-                        var projectOption = printForm.ui.projectSelection.find('[value=' + project.get('id') +']');
-                        expect(projectOption).toExist();
-                        expect(projectOption.text()).toEqual(project.get('name'));
-                    });
                 });
 
                 it("correctly triggers print generation", function () {
@@ -58,22 +47,14 @@ define(["underscore",
 
                     formData = printForm.getFormData();
                     expect(formData.orientation).toEqual('landscape');
-                    expect(formData.project_id).toEqual('1')
-
                     printForm.$el.find('#portrait').click();
-                    this.app.setActiveProjectID(2);                    
+                    this.app.setActiveProjectID(2);
                     formData = printForm.getFormData();
                     expect(formData.orientation).toEqual('portrait');
-                    expect(formData.project_id).toEqual('2')
+                    expect(formData.project_id).toEqual(2);
                 });
-
             });
-                
-
-           
-
-
-        }); 
+        });
 
 
     });

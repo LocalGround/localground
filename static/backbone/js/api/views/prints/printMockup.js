@@ -60,7 +60,11 @@ define(["marionette",
             },
 
             resizeMap: function () {
-                google.maps.event.trigger(this.map, "resize");
+                try {
+                    google.maps.event.trigger(this.map, "resize");
+                } catch (e) {
+                    // for Jasmine tests
+                }
             },
 
             changeLayout: function (choice) {

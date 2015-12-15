@@ -1,16 +1,13 @@
-define(["underscore",
-        "backbone",
-        "jquery",
-        "views/prints/printMockup",
-        "config",
+define(["views/prints/printMockup",
         "../../../test/spec-helper"],
-    function (_, Backbone, $, PrintMockup, Config) {
+    function (PrintMockup) {
         'use strict';
+        var printMockup,
+            printMockupOpts;
 
         function getPrintMockupParams() {
             return {
                 availableProjects: this.projectsLite,
-
                 controller: {
                     trigger: function (event, argument) {
                         if (this.registeredEvents && this.registeredEvents[event]) {
@@ -20,30 +17,25 @@ define(["underscore",
                 },
                 app: this.app
             };
-
         }
 
-        function initPrintMockup (printMockupOpts) {
+        function initPrintMockup(printMockupOpts) {
             //I'm mocking listenTo here to test layoutChange and allow the constructor to
             //accept the mock controller, but note this may break
             //some basic marionette functionality that depends on the method later
-            spyOn(PrintMockup.prototype, 'listenTo').and.callFake(function(object, event, callback) {
-                if(object) {
-                    if(!object.registeredEvents) {
+            spyOn(PrintMockup.prototype, 'listenTo').and.callFake(function (object, event, callback) {
+                if (object) {
+                    if (!object.registeredEvents) {
                         object.registeredEvents = {};
                     }
                     object.registeredEvents[event] = callback.bind(this);
                 }
-                
             });
             return new PrintMockup(printMockupOpts);
 
         }
 
         describe("Print Mockup:", function () {
-            var printMockup;
-            var printMockupOpts;
-
 
             it("Initializes correctly when loaded with valid parameters", function () {
                 var that = this;
@@ -52,15 +44,14 @@ define(["underscore",
                 }).not.toThrow();
             });
 
-            it('Correctly responds to changeLayout', function() {
+            it('Correctly responds to changeLayout', function () {
+                spyOn(PrintMockup.prototype, 'changeLayout').and.callThrough();
+                printMockupOpts = getPrintMockupParams.call(this);
+                printMockup = initPrintMockup.call(this, printMockupOpts);
 
-                    spyOn(PrintMockup.prototype, 'changeLayout').and.callThrough();
-                    printMockupOpts = getPrintMockupParams.call(this);
-                    printMockup = initPrintMockup.call(this, printMockupOpts);
-
-                    printMockupOpts.controller.trigger('change-layout', 'portrait');
-                    expect(printMockup.changeLayout).toHaveBeenCalled();
-                    expect(printMockup.el.className).toEqual('portrait');
+                printMockupOpts.controller.trigger('change-layout', 'portrait');
+                expect(printMockup.changeLayout).toHaveBeenCalled();
+                expect(printMockup.el.className).toEqual('portrait');
             });
 
             describe("Functionality:", function () {
@@ -70,7 +61,7 @@ define(["underscore",
                 function initMockup () {
                     printMockupOpts = getPrintMockupParams.call(this);
                     printMockup = initPrintMockup.call(this, printMockupOpts);
-                    setFixtures(printMockup.render().$el)
+                    window.setFixtures(printMockup.render().$el);
                 };
 
                 it("Title input toggles with title when title is clicked", function () {
