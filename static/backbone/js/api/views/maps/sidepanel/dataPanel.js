@@ -75,7 +75,6 @@ define(["marionette",
                     this.$el.find('#mode_toggle').removeClass('btn-info');
                 }
                 this.app.trigger('mode-change');
-
             },
 
             destroy: function () {
@@ -94,10 +93,9 @@ define(["marionette",
             showUploadModal: function () {
                 this.uploadModalWrapper.currentView.showModal();
             },
+
             showPrintModal: function () {
-                if(!this.printModalWrapper.currentView) {
-                    this.printModalWrapper.show(new PrintModal(this.opts));
-                }
+                this.printModalWrapper.show(new PrintModal(this.opts));
                 this.printModalWrapper.currentView.showModal();
             },
 

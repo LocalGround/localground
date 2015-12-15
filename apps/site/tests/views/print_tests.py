@@ -10,9 +10,9 @@ class PrintViewTest(test.TestCase, ViewMixin):
 
     def setUp(self):
         ViewMixin.setUp(self)
-        self.url = '/maps/print/new/'
+        self.url = '/maps/print/'
         self.urls = [self.url]
-        self.view = prints.generate_print_new
+        self.view = prints.generate_print
         self.print_obj = None
 
     def teardown(self):

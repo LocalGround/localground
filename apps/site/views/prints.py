@@ -64,7 +64,7 @@ def generate_print_pdf(request):
     return p
 
 @login_required
-def generate_print_new(request, template_name='map/print_new.html'):
+def generate_print(request, template_name='map/print_new.html'):
     r = request.GET
 
     project = None

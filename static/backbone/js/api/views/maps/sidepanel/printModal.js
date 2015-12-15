@@ -26,6 +26,7 @@ define(["jquery",
                 printRegion: "#print-container",
             },
             initialize: function (opts) {
+                console.log(opts);
                 this.app = opts.app;
                 this.opts = opts;
             },
@@ -36,6 +37,8 @@ define(["jquery",
             },
 
             showModal: function () {
+                console.log('showModal');
+                //this.printRegion.show(new Print(this.opts));
                 this.ui.modal.modal();
             },
 

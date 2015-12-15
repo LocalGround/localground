@@ -17,7 +17,7 @@ define(["jquery",
          */
 
         var Print = Marionette.LayoutView.extend({
-            id: 'print',
+            //id: 'print',
             template: function (data) {
                 return _.template(print, data);
             },
@@ -76,7 +76,7 @@ define(["jquery",
 
             requestPrint: function (formData) {
                 var that = this;
-                $.post('/maps/print/new/', formData, function (response) {
+                $.post('/maps/print/', formData, function (response) {
                     that.printGenerated(response);
                 }, "json").fail(function (err) {
                     console.error('failed to download print pdf: ' + err);
