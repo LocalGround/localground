@@ -3,19 +3,19 @@
     <li>
         <a href="/profile/settings/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Account Settings</a>
     </li>
-    <li>
+    <li title="Filter by project">
         <a href="#projects"><i class="icon-chevron-right"></i>Projects</a>
         <a class="floating-gear" href="/profile/projects/{% if embed %}embed{% endif %}#projects"><i class="icon-cog" title="Configure projects"></i></a>
-        <ul id="projects" class="nav-side-menu affix top-level-obj-ul">
+        <ul id="projects" class="nav-side-menu affix top-level-obj-ul open">
         {% for project in top_lv_objs.projects %}
-            <li class="top-level-obj-li">
+            <li class="top-level-obj-li {% if project.id == current_obj.id %}current-obj{% endif %}">
                 <a href="{% if media_name_plural %}/profile/{{media_name_plural}}?obj_type=projects&amp;obj_id={{ project.id }}{% if embed %}embed{% endif %}{% endif %}#projects">
                 {% if project.id == current_obj.id %}<span style="font-weight:bold">{{ project.name }}</span>{% else %}{{ project.name }}{% endif %}</a>
             </li>
         {% endfor %}
         </ul>
     </li>
-    <li>
+    <li title="Filter by snapshot">
         <a href="#snapshots"><i class="icon-chevron-right"></i>Snapshots</a>
         <a class="floating-gear" href="/profile/snapshots/{% if embed %}embed{% endif %}#snapshots"><i class="icon-cog" title="Configure snapshots"></i></a>
         <ul id="snapshots" class="nav-side-menu affix top-level-obj-ul">
@@ -26,7 +26,7 @@
         {% endfor %}
         </ul>
     </li>
-    <li>
+    <li title="Filter by form">
         <a href="#forms"><i class="icon-chevron-right"></i>Forms</a>
         <a class="floating-gear" href="/profile/forms/{% if embed %}embed{% endif %}#forms"><i class="icon-cog" title="Configure forms"></i></a>
         <ul id="forms" class="nav-side-menu affix top-level-obj-ul">

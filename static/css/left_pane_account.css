@@ -25,25 +25,23 @@ ul.main-menu {
   display: none;
 }
 
-.top-level-obj-ul:target {
+.top-level-obj-ul:target,
+.top-level-obj-ul.open {
   display: block;
 }
 
 .top-level-obj-li {
   height: 2em;
-  margin-top: 8px;
+  padding-top: 8px;
 }
 
 .top-level-obj-li i {
   display: none;
-  margin-left: 1.5em;
   opacity: 0.75;
 }
 
-.top-level-obj-li:hover i {
-  display: inline-block;
-}
-
-.top-level-obj-li.test {
-  /*background-color: orange;*/
+.top-level-obj-li.current-obj {
+  background-color: #cdf4d6;
+  margin-left: -1.9em;
+  padding-left: 1.9em;
 }
