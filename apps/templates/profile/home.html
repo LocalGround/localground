@@ -1,0 +1,76 @@
+{% extends "base/profile.html" %}
+{% load paginator %}
+{% block style_links %}
+	<link href="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css" type="text/css" media="all" rel="stylesheet" />
+	<link href="/static/css/themes/bootstrap/jquery-ui-1.8.16.custom.css" type="text/css" media="all" rel="stylesheet" />
+	<link href="/static/css/themes/bootstrap/timepicker.css" type="text/css" media="all" rel="stylesheet" />
+{% endblock %}
+{% block script_links %}
+    <!-- jquery-ui needs to come before jquery-autocomplete -->
+	<script src="{{ JQUERY_UI_PATH }}"></script>
+	<script type="text/javascript" src="/static/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js"></script>
+	<script type="text/javascript" src="/static/scripts/thirdparty/jquery.ui.timepicker.js"></script>
+	<script type="text/javascript" src="/static/scripts/helpers/dialog.js"></script>
+	<script type="text/javascript" src="/static/scripts/helpers/filtermenu.js"></script>
+	<script type="text/javascript" src="/static/scripts/site/account/profile.js"></script>
+{% endblock %}
+{% block extra_scripts %}
+	var o;
+	var opts = {
+        username: '{{user.username}}',
+		updateURL: '{{ path }}',
+		pageURL: '{% autoescape off %}{{ path }}{% endautoescape %}?page={{ page }}{%if sql %}&query={{ sql }}{% endif %}',
+		rawURL: '{{ path }}',
+		deleteURL: '{{delete_url}}',
+		addURL: '{{ create_url }}',
+		moveURL: '{{raw_url}}move-project/',
+		project_id: '{{selected_project_id}}',
+		object_type: '{{ object_type }}',
+		object_type_plural: '{{ object_name_plural }}'
+	};
+	{% if username %}
+		opts.alias = '{{username}}';
+	{% endif %}
+{% endblock %}
+
+{% block extra_styles %}
+	{{ block.super }}
+	
+	.paginator { border-top: solid 1px #ddd; height:38px; }
+	.paginator-bottom { margin-top: 0px; height:38px; }
+	.paginator > div, .paginator-bottom > div {
+		float:right;
+		margin: 5px 0px 0px 0px;
+	}
+	
+	.no-data-found {
+		position: relative;
+		border: 1px solid #eee;
+		border: 1px solid rgba(0, 0, 0, 0.05);
+		-webkit-border-radius: 4px;
+		-moz-border-radius: 4px;
+		border-radius: 4px;
+		padding: 15px;
+		height: 300px;
+	}
+	.no-data-found > div {
+		text-align:center;
+		vertical-align:middle;
+		height: 40px;
+		position: absolute;
+		top: 50%;
+		margin-top: -20px;
+		width: 100%;
+		font-size: 28px;
+		color: #999;
+		font-weight: bold;
+	}
+{% endblock %}
+
+{% block main_content %}
+	<div class="main-content">
+		{% block media_filter %}
+			{% include "includes/profile/media_filter.html" %}
+		{% endblock %}
+	</div>
+{% endblock %}

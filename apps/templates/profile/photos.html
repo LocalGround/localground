@@ -1,7 +1,8 @@
 {% extends "profile/data_list.html" %}
+
 {% block page_title %}
 	<img class="header-icon" src="/static/images/camera_large.png" />
-	Manage <span style="color:#ccc">Photos</span>
+	Manage <span style="color:#ccc">{{ media_name_plural|title }}</span>{% if current_obj %} in {{ current_obj }} {% endif %}
 {% endblock %}
 
 {% block script_links %}

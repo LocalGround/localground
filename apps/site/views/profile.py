@@ -11,8 +11,7 @@ import json
 from django.contrib.gis.geos import GEOSGeometry
 import sys
 
-object_types_per_project_plural = ['photos', 'audio', 'videos', 'map-images',
-                                    'prints', 'tiles']
+media_types_plural = ['photos', 'audio', 'videos', 'map-images', 'prints', 'tiles']
 
 @login_required()
 def change_user_profile(request, template_name='account/user_prefs.html'):
@@ -78,15 +77,47 @@ def change_user_profile(request, template_name='account/user_prefs.html'):
     return render_to_response(template_name, extras,
                               context_instance=RequestContext(request))
 
+@login_required()
+def home(request, return_message=None, embed=False):
+    context = RequestContext(request)
+    template_name = 'profile/home.html'
+    r = request.POST or request.GET
+    # context should always include all the names of top level objects,
+    # which are projects, snapshots, and forms,
+    # for the new left panel.
+    top_lv_objs = {
+        'projects': None,
+        'snapshots': None,
+        'forms': None
+        # if you have another top level object,
+        # just add 'object_name': None
+    }
+    for obj in top_lv_objs:
+        mc = Base.get_model(model_name_plural=obj) # this is a ModelClass
+        top_lv_objs[obj] = mc.objects.get_objects(
+            user=request.user,
+            request=request,
+            context=context
+        )
+    # top_lv_objs['projects'] is a list of projects
+    context.update({
+        'embed': embed,
+        'username': request.user.username,
+        'page_title': 'My Profile',
+        'user': request.user,
+        'top_lv_objs': top_lv_objs,
+        'media_types_plural': [media_type.replace('-', ' ') for media_type in media_types_plural]
+    })
+    return render_to_response(template_name, context)
 
 @login_required()
 def object_list_form(
         request,
-        object_type_plural,
+        media_type_plural,
         return_message=None,
         embed=False):
     context = RequestContext(request)
-    ModelClass = Base.get_model(model_name_plural=object_type_plural)
+    ModelClass = Base.get_model(model_name_plural=media_type_plural)
     template_name = 'profile/%s.html' % ModelClass.model_name_plural.replace(
         ' ',
         '-')
@@ -98,14 +129,29 @@ def object_list_form(
         context=context
     )
 
-    # objects IS A QUERYSET.
-    # profile PAGE NOW HAS MEDIA TYPES UNDER A PROJECT.
-    # SO, THE QUERYSET SHOULD BE FILTERED BY THE PROJECT ID FOR SELECTED MEDIA TYPES.
-    # THE TYPES ARE DEFINED IN object_types_per_project_plural.
-    project_filter = request.GET.get('project_id', None)
-    if project_filter:
-        objects = objects.filter(project=project_filter)
-        
+    # objects is a queryset.
+    # profile page now has media types under a project.
+    # so, the queryset should be filtered by the project id for selected media types.
+
+    # if a user requests a top level object,
+    # the media should be filtered by id.
+    obj_type = request.GET.get('obj_type', None)
+    obj_id = request.GET.get('obj_id', None)
+    current_obj = None
+    if obj_type and obj_id:
+        if obj_type == 'projects':
+            objects = objects.filter(project_id=obj_id) # media
+        #  TODO: obj_type snapshot
+        #  TODO: obj_type form
+        # getting the selected obj filter
+        obj_mc = Base.get_model(model_name_plural=obj_type) # this is a ModelClass
+        objs = obj_mc.objects.get_objects(
+            user=request.user,
+            request=request,
+            context=context
+        )
+        current_obj = objs.filter(id=obj_id)[0]
+
     # return HttpResponse(objects.query)
     per_page = 10
 
@@ -162,6 +208,24 @@ def object_list_form(
                 per_page])
         #modelformset = ModelClassFormSet(queryset=objects[start:start+per_page])
 
+    # context should always include all the names of top level objects,
+    # which are projects, snapshots, and forms,
+    # for the new left panel.
+    top_lv_objs = {
+        'projects': None,
+        'snapshots': None,
+        'forms': None
+        # if you have another top level object,
+        # just add 'object_name': None
+    }
+    for obj in top_lv_objs:
+        mc = Base.get_model(model_name_plural=obj) # this is a ModelClass
+        top_lv_objs[obj] = mc.objects.get_objects(
+            user=request.user,
+            request=request,
+            context=context
+        )
+    
     context.update({
         'formset': modelformset,
         'embed': embed,
@@ -172,8 +236,13 @@ def object_list_form(
         'create_url': ModelClass.create_url() + 'embed/',
         'page_title': 'My %s' % ModelClass.model_name_plural.capitalize(),
         'user': request.user,
-        'object_name_plural': ModelClass.model_name_plural,
-        'object_type': ModelClass.model_name
+        'media_name_plural': ModelClass.model_name_plural,
+        'object_type': ModelClass.model_name,
+        'top_lv_objs': top_lv_objs,
+        'media_types_plural': [media_type.replace('-', ' ') for media_type in media_types_plural],
+        'obj_type': obj_type,
+        'obj_id': obj_id,
+        'current_obj': current_obj
     })
 
     if context.get('filter_fields'):
@@ -190,7 +259,6 @@ def object_list_form(
     if request.user.is_superuser:
         context.update({'users': Project.get_users()})
     return render_to_response(template_name, context)
-
 
 @login_required()
 def delete_batch(request, object_type_plural):
