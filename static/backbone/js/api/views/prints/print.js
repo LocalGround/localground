@@ -49,9 +49,25 @@ define(["jquery",
                 }
             },
 
-            showConfirmation: function () {
+            generatePrint: function () {
+                this.showPrintRequestScreen();
+                var formData = _.extend(this.form.getFormData(), this.mockup.getFormData());
+                this.requestPrint(formData);
+            },
+
+            requestPrint: function (formData) {
+                var that = this;
+                $.post('/maps/print/', formData, function (response) {
+                    that.printGenerated(response);
+                }, "json").fail(function (err) {
+                    console.error('failed to download print pdf: ' + err);
+                });
+            },
+
+            showPrintRequestScreen: function () {
+                this.confirmation.showRequestingScreen();
+                this.printConfirmationRegion.$el.show();
                 this.printConfirmationRegion.show(this.confirmation);
-                this.printConfirmationRegion.$el.show(); //in case it's hidden from the makeAnotherPrint
                 this.printFormRegion.$el.hide();
                 this.printMockupRegion.$el.hide();
             },
@@ -62,25 +78,9 @@ define(["jquery",
                 this.printMockupRegion.$el.show();
             },
 
-            generatePrint: function () {
-                var formData = _.extend(this.form.getFormData(), this.mockup.getFormData());
-                this.requestPrint(formData);
-                this.showConfirmation();
-            },
-
             printGenerated: function (response) {
                 this.confirmation.response = response;
                 this.confirmation.render();
-                this.showConfirmation();
-            },
-
-            requestPrint: function (formData) {
-                var that = this;
-                $.post('/maps/print/', formData, function (response) {
-                    that.printGenerated(response);
-                }, "json").fail(function (err) {
-                    console.error('failed to download print pdf: ' + err);
-                });
             }
 
         });

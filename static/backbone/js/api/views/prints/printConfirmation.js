@@ -14,7 +14,12 @@ define(["marionette",
                 this.template = _.template(printConfirmationTemplate);
             },
             onShow: function () {
+                this.$el.show();
                 this.$el.html(this.template({ data: this.response }));
+            },
+            showRequestingScreen: function () {
+                this.$el.show();
+                this.$el.html(this.template({ data: {} }));
             },
             render: function () {
                 this.$el.html(this.template({ data: this.response }));
