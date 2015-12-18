@@ -25,6 +25,7 @@ metadata = {
     "path_small": { "type": "field", "required": False, "read_only": True },
     "path_marker_lg": { "type": "field", "required": False, "read_only": True },
     "path_marker_sm": { "type": "field", "required": False, "read_only": True },
+    "file_path_orig": { "type": "field", "required": False, "read_only": True },
     "file_name_orig": { "type": "string", "required": False, "read_only": True }
 }
 
@@ -37,9 +38,17 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         self.metadata = metadata
 
     def test_create_photo_using_post(self, **kwargs):
-        # todo:  implement using a FILE upload
-        self.assertEqual(1, 1)
-
+        import Image, tempfile
+        image = Image.new('RGB', (100, 100))
+        tmp_file = tempfile.NamedTemporaryFile(suffix='.jpg')
+        image.save(tmp_file)
+        with open(tmp_file.name, 'rb') as data:
+            response = self.client_user.post(self.urls[0],
+                                             {'project_id': self.project.id,
+                                              'file_name_orig' : data},
+                                             HTTP_X_CSRFTOKEN=self.csrf_token)
+            self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+            
 class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
@@ -60,7 +69,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
             'Test description', 'FF0000'
         point = {
             "type": "Point",
-            "coordinates": [12.492324113849, 41.890307434153]
+            "coordinates": [12.492324113849, 41.890307434153],
         }
         response = self.client_user.put(self.url,
                             data=urllib.urlencode({

@@ -55,7 +55,6 @@ class ViewMixinAPI(ModelMixin):
         if urls is None:
             urls = self.urls
         for url in urls:
-            # print url
             response = self.client_user.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -79,7 +78,7 @@ class ViewMixinAPI(ModelMixin):
                             )
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             fields = response.data['actions'].get('PUT') or response.data['actions'].get('POST') 
-            
+
             #ensure that dictionary is not empty:
             self.assertFalse(not fields)
             
@@ -108,7 +107,6 @@ class ViewMixinAPI(ModelMixin):
         print '-'*100
         self.assertEqual(len(fields.keys()), len(self.metadata.keys()))
         for key in self.metadata.keys():
-            print key
             self.assertEqual(fields[key]['type'], self.metadata[key]['type'])
             self.assertEqual(fields[key]['required'], self.metadata[key]['required'])
             self.assertEqual(fields[key]['read_only'], self.metadata[key]['read_only'])   

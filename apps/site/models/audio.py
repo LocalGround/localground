@@ -69,7 +69,8 @@ class Audio(BasePoint, BaseUploadedMedia):
     def to_dict(self):
         d = super(Audio, self).to_dict()
         if self.description is not None and len(self.description) > 5:
-            d.update({'description': self.description})
+            d.update({'description': self.description,})
+        d.update({'path_orig': self.encrypt_url(self.file_name_orig),})
         return d
 
     def __unicode__(self):

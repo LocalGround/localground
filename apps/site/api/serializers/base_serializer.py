@@ -61,6 +61,7 @@ class GeometrySerializer(BaseNamedSerializer):
         queryset=models.Project.objects.all(),
         source='project',
         required=False
+        # TODO: TRUE
     )
     
     def get_fields(self, *args, **kwargs):
@@ -76,11 +77,17 @@ class GeometrySerializer(BaseNamedSerializer):
 
 class MediaGeometrySerializer(GeometrySerializer):
     file_name = serializers.CharField(source='file_name_new', required=False, read_only=True)
-    caption = serializers.CharField(source='description', allow_null=True, required=False, allow_blank=True, read_only=True)
+    file_name_orig = serializers.CharField(required=False, read_only=True)
+    file_path_orig = serializers.SerializerMethodField()
+    caption = serializers.CharField(source='description', allow_null=True, required=False, allow_blank=True, read_only=False)
 
     class Meta:
-        fields = GeometrySerializer.Meta.fields + ('attribution',
-                                                   'file_name', 'caption')
+        fields = GeometrySerializer.Meta.fields + ('attribution', 'file_name', 'file_name_orig',
+                                                   'file_path_orig', 'caption')
+
+    def get_file_path_orig(self, obj):
+        return obj.encrypt_url(obj.file_name_orig)
+
 
 
 class ExtentsSerializer(BaseNamedSerializer):

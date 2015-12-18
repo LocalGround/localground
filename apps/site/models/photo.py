@@ -245,6 +245,7 @@ class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
     def to_dict(self):
         d = super(Photo, self).to_dict()
         d.update({
+            'path_orig': self.encrypt_url(self.file_name_orig),
             'path_large': self.encrypt_url(self.file_name_large),
             'path_medium': self.encrypt_url(self.file_name_medium),
             'path_small': self.encrypt_url(self.file_name_small),
