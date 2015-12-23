@@ -53,7 +53,7 @@ class FormDataList(QueryableListCreateAPIView, FormDataMixin):
     model = models.Form
 
     def perform_create(self, serializer):
-        instance = serializer.save(manually_reviewed=True)
+        instance = serializer.save()
         instance.save(force_insert=True, user=self.request.user)
         
     #def perform_update(self, obj):

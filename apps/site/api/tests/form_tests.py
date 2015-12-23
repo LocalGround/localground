@@ -37,14 +37,12 @@ class FormDataTestMixin(object):
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
-        'num': {'read_only': False, 'required': False, 'type': 'integer'},
-        'manually_reviewed': {'read_only': True, 'required': False, 'type': 'boolean'},
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'}
     }
 
     def create_form_post_data(self):
-        lat, lng, num, description, color = 54.16, 60.4, 5, \
+        lat, lng, description, color = 54.16, 60.4, \
             'Test description1', 'FF0000'
         vals = [
             'a different test string',  # TEXT
@@ -56,7 +54,6 @@ class FormDataTestMixin(object):
         ]
         d = {
             'geometry': self.POINT,
-            'num': num,
             'project_id': self.project.id
         }
         # add dynamic form values:
@@ -90,7 +87,6 @@ class FormDataTestMixin(object):
     def verify_success(self, d):
         rec = self.form.TableModel.objects.all().order_by('-id',)[0]
         self.assertEqual(rec.geometry, GEOSGeometry(json.dumps(self.POINT)))
-        self.assertEqual(rec.num, d.get('num'))
         fields = self.form.fields
         length = len(d.keys()) - 1
         for i in range(0, 5):

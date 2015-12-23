@@ -10,14 +10,11 @@ def get_base_metadata():
     return {
             'form': {'read_only': True, 'required': False, 'type': 'field'},
             'ordering': {'read_only': False, 'required': True, 'type': 'integer'},
-            'is_printable': {'read_only': False, 'required': False, 'type': 'boolean'},
             'col_alias': {'read_only': False, 'required': True, 'type': 'string'},
             'col_name': {'read_only': True, 'required': False, 'type': 'field'},
             'is_display_field': {'read_only': False, 'required': False, 'type': 'boolean'},
             'url': {'read_only': True, 'required': False, 'type': 'field'},
-            'display_width': {'read_only': False, 'required': True, 'type': 'integer'},
-            'id': {'read_only': True, 'required': False, 'type': 'integer'},
-            'has_snippet_field': {'read_only': False, 'required': False, 'type': 'boolean'}
+            'id': {'read_only': True, 'required': False, 'type': 'integer'}
         }
 class ApiFieldListTest(test.TestCase, ViewMixinAPI):
     def setUp(self):
@@ -45,11 +42,8 @@ class ApiFieldListTest(test.TestCase, ViewMixinAPI):
         response = self.client_user.post(self.url,
                         data=urllib.urlencode({
                             'col_alias': 'Field 3',
-                            'is_printable': True,
-                            'has_snippet_field': True,
                             'ordering': 2,
-                            'data_type': 'text',
-                            'display_width': 10
+                            'data_type': 'text'
                         }),
                         HTTP_X_CSRFTOKEN=self.csrf_token,
                         content_type="application/x-www-form-urlencoded"
@@ -98,10 +92,7 @@ class ApiFieldInstanceTest(test.TestCase, ViewMixinAPI):
         response = self.client_user.put(self.url,
                         data=urllib.urlencode({
                             'col_alias': 'Address',
-                            'is_printable': True,
-                            'has_snippet_field': True,
-                            'ordering': 2,
-                            'display_width': 10
+                            'ordering': 2
                         }),
                         HTTP_X_CSRFTOKEN=self.csrf_token,
                         content_type="application/x-www-form-urlencoded"
@@ -110,8 +101,6 @@ class ApiFieldInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_field = models.Field.objects.get(id=self.field.id)
         self.assertEqual(updated_field.col_alias, 'Address')
-        self.assertEqual(updated_field.is_printable, True)
-        self.assertEqual(updated_field.has_snippet_field, True)
         self.assertEqual(updated_field.ordering, 2)
 
     

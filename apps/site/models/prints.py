@@ -30,16 +30,9 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
     map_image_path = models.CharField(max_length=255)
     pdf_path = models.CharField(max_length=255)
     preview_image_path = models.CharField(max_length=255)
-    form_column_widths = models.CharField(
-        max_length=200,
-        null=True,
-        blank=True)
-    sorted_field_ids = models.CharField(max_length=100, null=True, blank=True,
-                                        db_column='form_column_ids')
-    form = models.ForeignKey('Form', null=True, blank=True)
     deleted = models.BooleanField(default=False)
     
-    filter_fields = BaseMedia.filter_fields + ('name', 'description', 'tags', 'uuid', 'form')
+    filter_fields = BaseMedia.filter_fields + ('name', 'description', 'tags', 'uuid')
 
     objects = PrintManager()
 
@@ -63,9 +56,6 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         if not hasattr(self, '_embedded_scans'):
             self._embedded_scans = self.grab(Scan)
         return self._embedded_scans
-
-    def get_form_field_layout(self):
-        return self.fieldlayout_set.all()
 
     def get_abs_directory_path(self):
         return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
@@ -184,7 +174,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
     @classmethod
     def insert_print_record(cls, user, project, layout, map_provider, zoom,
                             center, host, map_title=None, instructions=None,
-                            form=None, layer_ids=None, scan_ids=None,
+                            layer_ids=None, scan_ids=None,
                             do_save=True):
         from localground.apps.site import models
         from localground.apps.lib.helpers import generic, StaticMap
@@ -233,12 +223,10 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         p.southwest = southwest
         p.extents = extents
         p.virtual_path = p.generate_relative_path()
-        p.form = form
-        if layout.is_data_entry and form is not None:
-            p.form = form
 
         if do_save:
             p.save()
+            # todo: come back to this (if we want MapServer to render layers)
             if layers:
                 for layer in layers:
                     p.stash(l, user)
@@ -247,7 +235,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
                     p.stash(scan, user)
         return p
 
-    def generate_pdf(self, has_extra_form_page=False):
+    def generate_pdf(self):
         from localground.apps.site import models
         from localground.apps.lib.helpers import generic, StaticMap, Report
         import os
@@ -309,12 +297,6 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
             path,
             qr_size,
             border_width)
-        qr_image_2 = StaticMap.generate_qrcode(
-            self.uuid,
-            2,
-            path,
-            qr_size,
-            border_width)
         qr_size = qr_image_1.size[0]
 
         # generate PDF
@@ -335,37 +317,12 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         if self.layout.is_data_entry:
             pdf_report.add_footer(qr_image_1, self.uuid, self.description)
 
-        # add form:
-        if self.layout.is_mini_form and self.form is not None:
-            pdf_report.add_form(4, self.form, self, is_mini_form=True)
-
         # add map:
-        pdf_report.add_map(map_image, is_data_entry=self.layout.is_data_entry,
-                           has_mini_form=self.layout.is_mini_form)
+        pdf_report.add_map(map_image, is_data_entry=self.layout.is_data_entry)
 
         # add header:
         pdf_report.add_header(
             is_data_entry=self.layout.is_data_entry,
             is_map_page=True)
-
-        ##########
-        # Page 2 #
-        ##########
-        if has_extra_form_page:
-            pdf_report.new_page()
-
-            # reorient back to portrait:
-            pdf_report.set_orientation(False)
-
-            # add footer:
-            pdf_report.add_footer(qr_image_2, self.uuid, self.description)
-
-            # add form:
-            pdf_report.add_form(13, self.form, self, is_mini_form=False)
-
-            # add header:
-            pdf_report.add_header(
-                is_data_entry=self.layout.is_data_entry,
-                is_map_page=False)
 
         pdf_report.save()

@@ -36,7 +36,7 @@ class PrintList(QueryableListCreateAPIView, AuditCreate):
             instructions=posted_data.get('description'),
             do_save=False
         )
-        instance.generate_pdf(has_extra_form_page=False)
+        instance.generate_pdf()
         d.update({
             'northeast': instance.northeast,
             'southwest': instance.southwest,

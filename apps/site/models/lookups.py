@@ -79,7 +79,6 @@ class ObjectTypes():
     VIDEO = 'video'
     MARKER = 'marker'
     SCAN = 'scan'
-    ATTACHMENT = 'attachment'
     PRINT = 'print'
     RECORD = 'record'
 

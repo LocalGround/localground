@@ -159,8 +159,7 @@ class Project(Group):
         for form in forms:
             recs = form.get_objects(
                 user=self.owner,
-                project=self,
-                manually_reviewed=True)
+                project=self)
             if len(recs) > 0:
                 data.append({
                     'id': form.id,

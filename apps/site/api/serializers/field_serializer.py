@@ -20,8 +20,7 @@ class FieldSerializerBase(serializers.ModelSerializer):
     class Meta:
         model = models.Field
         fields = ('id', 'form', 'col_alias', 'col_name', 'is_display_field',
-                  'display_width', 'is_printable', 'has_snippet_field', 'ordering',
-                  'data_type', 'url')
+                    'ordering', 'data_type', 'url')
         
     def get_url(self, obj):
         return '%s/api/0/forms/%s/fields/%s' % \

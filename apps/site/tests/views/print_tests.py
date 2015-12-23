@@ -19,45 +19,29 @@ class PrintViewTest(test.TestCase, ViewMixin):
         if self.print_obj is not None:
             self.print_obj.delete()
 
-    def test_create_print_with_form_and_scan_using_post(self, **kwargs):
+    def test_create_print_with_scan_using_post(self, **kwargs):
         lat, lng = 54.16, 60.4
         map_title = 'A Map Title'
         instructions = 'Some instructions.'
-        layout = 3  # portrait w/form
+        layout = 2  # portrait
         map_provider = 12
         zoom = 17
         scan = self.create_scan(self.user, self.project)
         self.assertEqual(len(models.Print.objects.all()), 1)
         num_fields = 2
-        form = self.create_form_with_fields(num_fields=num_fields)
         d = {
             'center_lat': lat,
             'center_lng': lng,
             'scan_ids': str(scan.id),
             'map_title': map_title,
             'instructions': instructions,
-            'layout': layout,
+            'orientation': 'portrait',
             'map_provider': map_provider,
             'basemap_id': map_provider,
             'zoom': zoom,
             'project_id': self.project.id,
-            'form_id': form.id,
-            'short_form': 'on',
             'generate_pdf': 'on'
         }
-        for i, field in enumerate(form.fields):
-            d.update({
-                'field_layout-%s-field' % i: field.id,
-                'field_layout-%s-width' % i: 95 / (num_fields),
-                'field_layout-%s-ordering' % i: (i + 1),
-            })
-        management_form = {
-            'field_layout-TOTAL_FORMS': 2,
-            'field_layout-INITIAL_FORMS': 0,
-            'field_layout-MAX_NUM_FORMS': 1000
-        }
-        d.update(management_form)
-        #print d
 
         response = self.client_user.post(
             self.url,
@@ -76,9 +60,7 @@ class PrintViewTest(test.TestCase, ViewMixin):
         self.assertEqual(self.print_obj.project.id, self.project.id)
         self.assertEqual(self.print_obj.layout.id, layout)
         self.assertEqual(self.print_obj.map_provider.id, map_provider)
-        self.assertEqual(form, self.print_obj.form)
         self.assertEqual(1, len(self.print_obj.embedded_scans))
-        self.assertEqual(2, len(self.print_obj.get_form_field_layout()))
 
 
 class PrintProfileTest(test.TestCase, ViewMixin):

@@ -6,7 +6,6 @@ from localground.apps.site.widgets import UserAutocomplete
 from localground.apps.site.models import Project, Snapshot, Form
 from django.conf import settings
 
-
 class ProjectPermissionsForm(ModelForm):
 
     class Meta:

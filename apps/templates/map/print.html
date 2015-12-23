@@ -25,7 +25,7 @@
         scans: {% autoescape off %}{{ scans }}{% endautoescape %},
         forms: {% autoescape off %}{{ forms }}{% endautoescape %},
         isPrint: true,
-        initialMapLayerID: {{basemap_id}},
+        initialMapLayerID: {{basemap_id | default:"1"}},
         initial_overlays: {% autoescape off %}{{ layer_ids }}{% endautoescape %},
         layouts: {% autoescape off %}{{ layouts }}{% endautoescape %},
         selectedLayoutID: {{ selectedLayout_id }},

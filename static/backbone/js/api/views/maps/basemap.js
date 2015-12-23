@@ -119,10 +119,9 @@ define(["marionette",
                     zoom: this.defaultLocation.zoom,
                     center: this.defaultLocation.center
 
-                };
+                }, that = this;
                 this.map = new google.maps.Map(document.getElementById(this.mapContainerID),
                     mapOptions);
-                var that = this;
 
                 //Controls overlaid over the map inside the map div
                 //need to wait for the map to load or be clobbered
@@ -148,12 +147,9 @@ define(["marionette",
                     }
                 });
                 this.overlayView = new google.maps.OverlayView();
-                this.overlayView.draw = function () {
-                };
+                this.overlayView.draw = function () {};
                 this.overlayView.setMap(this.map);
                 this.app.setOverlayView(this.overlayView);
-
-
             },
             addEventHandlers: function () {
                 //add notifications:
@@ -165,13 +161,11 @@ define(["marionette",
                     that.saveState();
                 });
 
-                /*sb.listen({
-                 "item-drop": this.handleItemDrop
-                 });*/
-
                 //todo: possibly move to a layout module?
                 $(window).off('resize');
                 $(window).on('resize', function () {
+                    //$('#map_canvas').height($('body').height() - 10);
+                    //google.maps.event.trigger(that.map, "resize");
                     that.app.vent.trigger("adjust-layout");
                 });
 
@@ -211,6 +205,7 @@ define(["marionette",
                         this.activeMapTypeID = state.basemapID;
                     }
                 }
+                return state;
             },
             onShow: function () {
                 this.overlayManager = new OverlayManager(this.opts);

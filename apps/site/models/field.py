@@ -24,12 +24,9 @@ class Field(BaseAudit):
     col_name_db = models.CharField(max_length=255, db_column="col_name")
     col_alias = models.CharField(max_length=255, verbose_name="column name")
     data_type = models.ForeignKey('DataType')
-    display_width = models.IntegerField()  # percentage
 
     # field to be displayed in viewer
     is_display_field = models.BooleanField(default=False)
-    is_printable = models.BooleanField(default=True)
-    has_snippet_field = models.BooleanField(default=True)
 
     # how the fields should be ordered in the data entry form:
     ordering = models.IntegerField()
@@ -94,28 +91,12 @@ class Field(BaseAudit):
     def add_column_to_table(self):
         if self.form.source_table_exists():
             from django.db import connection, transaction, DatabaseError
-            from localground.apps.site.models import Snippet, Photo, Audio
+            from localground.apps.site.models import Photo, Audio
             sql = []
             sql.append(
                 'ALTER TABLE %s ADD COLUMN %s %s' %
                 (self.form.table_name, self.col_name_db, self.data_type.sql)
             )
-            if self.has_snippet_field:
-                sql.append(
-                    'ALTER TABLE %s ADD COLUMN %s_snippet_id integer' %
-                    (self.form.table_name, self.col_name_db)
-                )
-                sql.append('''
-                    ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
-                    FOREIGN KEY(%(column_name)s)
-                    REFERENCES %(snippet_table)s(id) MATCH SIMPLE
-                    ''' % dict(
-                        table_name=self.form.table_name,
-                        column_name='%s_snippet_id' % self.col_name_db,
-                        snippet_table=Snippet._meta.db_table
-                    )
-                )
-            
             # Photo:
             if self.data_type.id == self.DataTypes.PHOTO:
                 sql.append('''

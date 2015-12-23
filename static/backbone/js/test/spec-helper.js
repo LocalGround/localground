@@ -183,7 +183,8 @@ define(
                 vent: _.extend({}, Backbone.Events),
                 activeProjectID: this.projects.models[0].id,
                 map: {
-                    fitBounds: function () {}
+                    fitBounds: function () {},
+                    setCenter: function () {}
                 } //a light stand-in for a Google Map, to speed it up; save our API calls.
             });
 

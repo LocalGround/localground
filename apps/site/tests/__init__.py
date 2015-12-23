@@ -277,11 +277,10 @@ class ModelMixin(object):
             'http://localground.stage',
             map_title=map_title,
             instructions=instructions,
-            form=None,
             layer_ids=None,
             scan_ids=None
         )
-        p.generate_pdf(has_extra_form_page=False)
+        p.generate_pdf()
         return p
 
     def create_form(self, name='A title',
@@ -345,7 +344,6 @@ class ModelMixin(object):
         f = models.Field(
             col_alias=name,
             data_type=data_type,
-            display_width=10,
             ordering=ordering,
             form=form,
             owner=self.user,
@@ -362,7 +360,6 @@ class ModelMixin(object):
         lat = 37.8705
         lng = -122.2819
         record = form.TableModel()
-        record.num = 1
         record.point = Point(lng, lat, srid=4326)
         if project:
             record.project = project

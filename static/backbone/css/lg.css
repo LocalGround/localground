@@ -1,6 +1,12 @@
 html { height: 100% }
 body { height: 100%; margin: 0; padding: 0; overflow: hidder}
 
+@font-face {
+    font-family: 'lg';
+    src: url('/static/css/fonts/handsean.ttf');
+    src: local('☺'), url('/static/css/fonts/handsean.ttf') format('truetype');
+}
+
 .nav-tabs .fa {
 	font-size: 1.3em;
 }
@@ -219,6 +225,15 @@ body {
 
 .confirmation-modal-dialog {
 }
+
+#topbar-nav {
+	font: 18px/18px 'lg';
+}
+
+.modal-title {
+    font: 18px/18px 'lg';
+}
+
 
 
 

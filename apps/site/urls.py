@@ -30,7 +30,7 @@ same view and parameters. Then, you can use this name in reverse URL matching.
 '''
 
 object_types_plural = ['photos', 'audio', 'videos', 'map-images', 'projects',
-                       'snapshots', 'prints', 'forms', 'attachments', 'tiles']
+                       'snapshots', 'prints', 'forms', 'tiles']
 #handler500 = 'localground.apps.account.views.server_error'
 urlpatterns = patterns('',
 
@@ -59,7 +59,7 @@ urlpatterns = patterns('',
                        #  b) Media
                        (r'^upload/media/post/$',
                         'localground.apps.site.views.uploader.upload_media'),
-                       #(r'^profile/(?P<object_type_plural>photos|audio|map-images|attachments)/create/$', 'localground.apps.site.views.uploader.upload_media'),
+                       #(r'^profile/(?P<object_type_plural>photos|audio|map-images)/create/$', 'localground.apps.site.views.uploader.upload_media'),
 
                        #-------------------------------------------------------
                        # 2) Read:
@@ -90,23 +90,6 @@ urlpatterns = patterns('',
                         {'embed': True}),
                        (r'^profile/forms/(?P<object_id>\d+)/$',
                         'localground.apps.site.views.forms.create_update_form'),
-                       (r'^profile/forms/(?P<object_id>\d+)/data/$',
-                        'localground.apps.site.views.form_data.get_objects'),
-                       (r'^profile/forms/(?P<object_id>\d+)/data/create/embed/$',
-                        'localground.apps.site.views.form_data.get_record',
-                        {'embed': True}),
-                       (r'^profile/forms/(?P<object_id>\d+)/data/create/$',
-                        'localground.apps.site.views.form_data.get_record'),
-                       (r'^profile/forms/(?P<object_id>\d+)/data/delete/batch/embed/$',
-                        'localground.apps.site.views.form_data.delete_batch',
-                        {'embed': True}),
-                       (r'^profile/forms/(?P<object_id>\d+)/data/delete/batch$',
-                        'localground.apps.site.views.form_data.delete_batch'),
-                       (r'^profile/forms/(?P<object_id>\d+)/data/(?P<rec_id>\d+)/embed/$',
-                        'localground.apps.site.views.form_data.get_record',
-                        {'embed': True}),
-                       (r'^profile/forms/(?P<object_id>\d+)/data/(?P<rec_id>\d+)/$',
-                        'localground.apps.site.views.form_data.get_record'),
                        
                        (r'^profile/tables/$',
                         'localground.apps.site.views.form_data.show_tables'),
@@ -116,15 +99,6 @@ urlpatterns = patterns('',
                        #-------------------------------------------------------
                        (r'^profile/(?P<object_type_plural>{0})/delete/batch/$'.format('|'.join(
                            object_types_plural)), 'localground.apps.site.views.profile.delete_batch'),
-
-
-                       # tables
-                       #(r'^profile/tables/data/', 'localground.apps.site.views.tables.get_objects'),
-                       #(r'^tables/delete-selected/$', 'tables.delete_objects'),
-                       #(r'^tables/move-blanks/$', 'tables.update_blank_status'),
-                       #(r'^tables/move-project/$', 'tables.move_to_project'),
-                       #(r'^tables/download/(?P<format>[a-z-]+)/', 'tables.download'),
-                       #(r'^tables/vis/(?P<format_type>[a-z-]+)/', 'tables.get_objects'),
 
                        # contacts
                        (r'^profile/get-contacts/$',
@@ -164,7 +138,7 @@ urlpatterns = patterns('',
 
                        # media server
                        (
-                           r'^profile/(?P<object_type>photos|audio|videos|snippets|attachments|map-images|prints|tables)/(?P<hash>[=\w]+)/$',
+                           r'^profile/(?P<object_type>photos|audio|videos|map-images|prints|tables)/(?P<hash>[=\w]+)/$',
                            'localground.apps.site.views.mediaserver.serve_media'),
 
                        # data API

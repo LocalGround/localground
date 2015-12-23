@@ -1,4 +1,4 @@
-from localground.apps.site.widgets import SnippetWidget, CustomDateTimeWidget
+from localground.apps.site.widgets import CustomDateTimeWidget
 from django import forms
 from django.forms import widgets
 from django.utils.safestring import mark_safe
@@ -19,8 +19,7 @@ class DynamicFormBuilder(object):
 
     def _create_data_entry_form(self, form):
         """
-        generate a dynamic form from dynamic model that also shows user the
-        snippets s/he needs to transcribe:
+        generate a dynamic form from dynamic model
         """
         form_fields = []
         form_fields.append(form.get_num_field())
@@ -59,51 +58,9 @@ class DynamicFormBuilder(object):
                         widget = widgets.TextInput
                     return widget
 
-                for f in form_fields:
-                    form_field = form.TableModel._meta.get_field(f.col_name)
-                    default_widget_class = get_widget_class(form_field)
-
-                    class SnippetWidget(default_widget_class):
-
-                        def __init__(self, default_widget_class, *args, **kw):
-                            super(
-                                default_widget_class,
-                                self).__init__(
-                                *args,
-                                **kw)
-                            self.default_widget_class = default_widget_class
-
-                        def render(self, name, value, attrs=None):
-                            model_obj = self.form_instance.instance
-                            if model_obj.get_snippet(name) is not None:
-                                img_path = model_obj.get_snippet(
-                                    name).absolute_virtual_path()
-                                html = self.default_widget_class.render(
-                                    self,
-                                    name,
-                                    value,
-                                    attrs=attrs)
-                                html = html + \
-                                    '<img class="snippet" src="%s" />' % img_path
-                                return mark_safe(html)
-                            else:
-                                return self.default_widget_class.render(
-                                    self, name, value, attrs=attrs)
-
-                    # add widget to the form:
-                    if f.has_snippet_field:
-                        widgets[
-                            f.col_name] = SnippetWidget(default_widget_class)
-
             def __init__(self, *args, **kwargs):
-                """
-                Overriding the __init__ function to pass the form instance into the
-                widget (so that the snippet widget has access to the other form vals)
-                """
                 super(DynamicForm, self).__init__(*args, **kwargs)
                 self.fields["project"].queryset = form.projects.all()
-                for n in field_names:
-                    self.fields[n].widget.form_instance = self
 
             # override default save method:
             def save(
@@ -115,18 +72,8 @@ class DynamicFormBuilder(object):
 
                 '''other updates that need to be made:
                     1) mark reviewed as True
-                    2) assign snippet's source attachment to a map scan
-                '''
-                model_instance.manually_reviewed = True
-                attachment = None
-                if model_instance.snippet is not None and \
-                        model_instance.snippet.source_attachment is not None:
-                    attachment = model_instance.snippet.source_attachment
-                    #attachment.source_scan = model_instance.scan
-
+                '''                
                 if commit:
-                    if attachment is not None:
-                        attachment.save()
                     model_instance.save()
                 return model_instance
         return DynamicForm

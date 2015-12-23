@@ -10,7 +10,7 @@ define(["views/maps/sidepanel/uploadModal",
             beforeEach(function () {
                 dataPanel = new DataPanel({app: this.app});
                 dataPanel.render();
-                setFixtures(dataPanel.render().$el);
+                window.setFixtures(dataPanel.render().$el);
                 dataPanel.uploadModalWrapper.show(new UploadModal({url: '/upload/embed', app: this.app}));
                 uploadModal = dataPanel.uploadModalWrapper.currentView;
 

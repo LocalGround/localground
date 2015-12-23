@@ -50,19 +50,6 @@ class ScanManager(models.GeoManager, ScanMixin):
         return ScanQuerySet(self.model, using=self._db)
     
     
-    
-
-
-
-#class AttachmentQuerySet(QuerySet, UploadMixin):
-#    pass
-
-
-class AttachmentManager(models.GeoManager, ScanMixin):
-    #def get_queryset(self):
-    #    return AttachmentQuerySet(self.model, using=self._db)
-    pass
-
 
 class PhotoMixin(UploadMixin):
     pass
@@ -115,22 +102,6 @@ class VideoManager(models.GeoManager, VideoMixin):
     #    return VideoQuerySet(self.model, using=self._db)
     pass
 
-
-class SnippetManager(models.Manager):
-
-    def get_snippets_by_scan_id(self, user, scan_id, to_dict=True):
-        if user is None or not user.is_authenticated():
-            return []
-        q = (self.model.objects.distinct()
-             .filter(Q(user__groups__in=user.groups.all()))
-             .filter(source_attachment__source_scan__id=scan_id)
-             .order_by('file_name_orig')
-             )
-        if to_dict:
-            return [s.to_dict() for s in q]
-        return snippets
-
-
 class RecordMixin(UploadMixin):
 
     def _get_objects(self, user, authority_id, project=None, request=None,
@@ -169,15 +140,12 @@ class RecordManager(models.GeoManager, RecordMixin):
 
     def get_objects_detailed(self, user, project=None, request=None,
                              context=None, ordering_field='-time_stamp',
-                             attachment=None, manually_reviewed=None,
-                             is_blank=None, has_geometry=None):
+                             has_geometry=None):
         '''
         Same as get_objects, but it queries for more related objects.
         '''
         from localground.apps.site import models
-        self.related_fields = ['snippet', 'num_snippet', 'project',
-                               'snippet__source_attachment', 'owner'] #,
-                               #'form', 'form__project__id']
+        self.related_fields = ['project', 'owner']
         form = models.Form.objects.get(table_name=self.model._meta.db_table)
         queryset = self.get_objects(
             user,
@@ -186,13 +154,6 @@ class RecordManager(models.GeoManager, RecordMixin):
             context=context,
             ordering_field=ordering_field)
         queryset = queryset.distinct()
-        if attachment is not None:
-            queryset = queryset.filter(snippet__source_attachment=attachment)
-        if manually_reviewed is not None:
-            queryset = queryset.filter(manually_reviewed=manually_reviewed)
-        if is_blank is not None:
-            queryset = queryset.filter(
-                Q(snippet__is_blank=is_blank) | Q(snippet__isnull=True))
         if has_geometry:
             queryset = queryset.filter(point__isnull=False)
         return queryset

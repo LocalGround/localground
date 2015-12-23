@@ -53,13 +53,13 @@ define(["underscore",
 
             //changeZoom method untestable (to my knowledge) b/c of the 'map idle' clause
             it("changeZoom method works", function () {
-
                 //create basemap instance:
+                spyOn(google.maps.Map.prototype, 'setZoom').and.callThrough();
                 var opts = _.clone(this.mapEditorInitializationParams);
                 opts = _.extend(opts, { app: this.app });
                 basemap = new Basemap(opts);
                 basemap.changeZoom(20);
-                expect(basemap.map.getZoom()).toBe(20);
+                expect(google.maps.Map.prototype.setZoom).toHaveBeenCalled();
             });
 
             it("changeCenter method works", function () {

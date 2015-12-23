@@ -215,20 +215,6 @@ class PrintUser(ObjectUserPermissions):
         managed = False
         db_table = 'v_private_prints'
 
-
-class AttachmentUser(ObjectUserPermissions):
-    attachment = models.ForeignKey(
-        'Attachment',
-        db_column='attachment_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_attachments'
-
-
 class ScanUser(ObjectUserPermissions):
     scan = models.ForeignKey(
         'Scan',

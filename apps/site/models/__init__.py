@@ -27,23 +27,19 @@ from localground.apps.site.models.userprofile import UserProfile
 from localground.apps.site.models.permissions import \
     BasePermissions, ObjectUserPermissions, UserAuthorityObject, \
     UserAuthority, ObjectAuthority, AudioUser, PhotoUser, MarkerUser, \
-    SnapshotUser, ProjectUser, AttachmentUser, VideoUser, ScanUser, PrintUser, \
+    SnapshotUser, ProjectUser, VideoUser, ScanUser, PrintUser, \
     FormUser, PresentationUser, LayerUser
 from localground.apps.site.models.genericassociation import GenericAssociation
-
-# snippet
-from localground.apps.site.models.snippet import Snippet
 
 # prints
 from localground.apps.site.models.datatype import DataType
 from localground.apps.site.models.field import Field
-from localground.apps.site.models.field_print_layout import FieldLayout
 from localground.apps.site.models.form import Form
 from localground.apps.site.models.layout import Layout
 from localground.apps.site.models.prints import Print
 
 # uploads
-from localground.apps.site.models.barcoded import Scan, Attachment, ImageOpts
+from localground.apps.site.models.barcoded import Scan, ImageOpts
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video
