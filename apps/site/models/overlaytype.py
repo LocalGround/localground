@@ -4,8 +4,8 @@ from localground.apps.site.models.abstract.base import Base
 
 class OverlayType(Base):
     FILTER_BY_OWNER = False
-    name = models.CharField(max_length=255, blank=True)
-    description = models.TextField(blank=True)
+    name = models.CharField(max_length=255, blank=True, editable=False)
+    description = models.TextField(blank=True, editable=False)
 
     class Meta:
         app_label = 'site'

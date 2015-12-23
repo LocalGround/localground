@@ -10,6 +10,7 @@ class Field(BaseAudit):
         '''
         Enum for simplifying field type lookups
         '''
+        # TODO: Hardcoding in DB = BAD
         TEXT = 1
         INTEGER = 2
         DATETIME = 3

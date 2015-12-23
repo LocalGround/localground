@@ -2,12 +2,11 @@ from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
-import urllib
+import urllib, wave, random, struct
 from rest_framework import status
 
 metadata = {
     'description': {'read_only': False, 'required': False, 'type': 'memo'},
-    'file_name_orig': {'read_only': True, 'required': False, 'type': 'string'},
     'tags': {'read_only': False, 'required': False, 'type': 'string'},
     'url': {'read_only': True, 'required': False, 'type': 'field'},
     'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
@@ -16,7 +15,12 @@ metadata = {
     'owner': {'read_only': True, 'required': False, 'type': 'field'},
     'project_id': {'read_only': False, 'required': False, 'type': 'field'},
     'id': {'read_only': True, 'required': False, 'type': 'integer'},
-    'name': {'read_only': False, 'required': False, 'type': 'string'}
+    'name': {'read_only': False, 'required': False, 'type': 'string'},
+    "caption": { "type": "memo", "required": False, "read_only": False },
+    "file_path_orig": { "type": "field", "required": False, "read_only": True },
+    "attribution": { "type": "string", "required": False, "read_only": False },
+    "file_name": { "type": "string", "required": False, "read_only": True },
+    "file_name_orig": { "type": "string", "required": False, "read_only": True }
 }
 
 class ApiAudioListTest(test.TestCase, ViewMixinAPI):
@@ -28,8 +32,30 @@ class ApiAudioListTest(test.TestCase, ViewMixinAPI):
         self.metadata = metadata
 
     def test_create_audio_using_post(self, **kwargs):
-        # todo:  implement using a FILE upload
-        self.assertEqual(1, 1)
+        import tempfile
+        tmp_file = tempfile.NamedTemporaryFile(suffix='.wav')
+        noise_output = wave.open(tmp_file, 'w');
+        noise_output.setparams((2, 2, 44100, 0, 'NONE', 'not compressed'))
+        values = []
+        SAMPLE_LEN = 44100 * 5
+        
+        for i in range(0, SAMPLE_LEN):
+            value = random.randint(-32767, 32767)
+            packed_value = struct.pack('h', value)
+            values.append(packed_value)
+            values.append(packed_value)
+            
+        value_str = ''.join(values)
+        noise_output.writeframes(value_str)
+        noise_output.close()
+
+        with open(tmp_file.name, 'rb') as data:
+            response = self.client_user.post(self.urls[0],
+                                             {'project_id': self.project.id,
+                                              'file_name_orig' : data},
+                                             HTTP_X_CSRFTOKEN=self.csrf_token)
+            self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        
 
 class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
 

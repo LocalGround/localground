@@ -5,7 +5,6 @@ from localground.apps.site.api.fields import FileField
 
 
 class PhotoSerializer(MediaGeometrySerializer):
-    file_name_orig = serializers.CharField(required=False, read_only=True)
     path_large = serializers.SerializerMethodField()
     path_medium = serializers.SerializerMethodField()
     path_medium_sm = serializers.SerializerMethodField()
@@ -17,8 +16,7 @@ class PhotoSerializer(MediaGeometrySerializer):
         model = models.Photo
         fields = MediaGeometrySerializer.Meta.fields + (
             'path_large', 'path_medium', 'path_medium_sm',
-            'path_small', 'path_marker_lg', 'path_marker_sm',
-            'file_name_orig'
+            'path_small', 'path_marker_lg', 'path_marker_sm'
         )
         depth = 0
 

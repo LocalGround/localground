@@ -5,13 +5,13 @@ localground.uploader = function(){
     this.errorCount = 0;
     this.successCount = 0;
     this.options = {
-        //acceptFileTypes: /(\.|\/)(gif|jpe?g|png|mp3|m4a|x-m4a|mpeg)$/i,
+        //acceptFileTypes: /(\.|\/)(gif|jpe?g|png|mp3|m4a|x-m4a|mpeg|wav)$/i,
         maxFileSize: undefined,
         minFileSize: undefined,
         maxNumberOfFiles: 20,
         previewSourceFileTypes: /^image\/(gif|jpeg|png)$/,
         imageFileTypes: /^image\/(gif|jpeg|png)$/,
-        audioFileTypes: /^audio\/(x-m4a|mp3|m4a|mp4|mpeg)$/,
+        audioFileTypes: /^audio\/(x-m4a|mp3|m4a|mp4|mpeg|wav)$/,
         previewSourceMaxFileSize: 5000000, // 5MB
         previewMaxWidth: 800,
         previewMaxHeight: 800,
