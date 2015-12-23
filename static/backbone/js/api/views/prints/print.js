@@ -76,6 +76,10 @@ define(["jquery",
                 this.printConfirmationRegion.$el.hide(); //in case it's hidden from the makeAnotherPrint
                 this.printFormRegion.$el.show();
                 this.printMockupRegion.$el.show();
+                var printMockup = this.printMockupRegion.currentView;
+                if (printMockup) {
+                    printMockup.resizeMap();
+                }
             },
 
             printGenerated: function (response) {

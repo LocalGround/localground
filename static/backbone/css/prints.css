@@ -6,7 +6,7 @@
     min-height: 250px;
 }
 
-#print-form {
+.print-controls {
     width: 320px;
     margin-left: auto;
     margin-right: auto;
@@ -159,19 +159,43 @@
 }
 
 #print-modal > .modal-dialog {
-    width:1160px;
+    width: 1134px;
 }
 
 #print-modal-body {
     padding: 4px;
 }
 
-div#print-confirmation-container {
-    width: 340px;
+#print-confirmation-container img {
+    margin-bottom: 10px;
+}
+
+.close {
+    margin-right: 3px;
+    margin-top: -5px;
+}
+.print-pdf-header {
+    float: left;
+    margin-left: 22px;
+    font-weight: normal;
+    color: #999;
+    font-size: 16px;
+    /*text-shadow: 1px 1px 1px #fff;*/
+}
+.print-loading-container {
+    width: 180px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    color: #999;
+}
+.print-confirm-buttons {
+    width: 280px;
     margin-left: auto;
     margin-right: auto;
 }
-
-#print-confirmation-container img {
-    margin-bottom: 10px;
+.show-print {
+    width: 340px;
+    margin-left: auto;
+    margin-right: auto;
 }

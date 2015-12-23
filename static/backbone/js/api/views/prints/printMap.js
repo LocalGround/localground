@@ -55,6 +55,7 @@ define(["marionette",
              * the corresponding controls are added).
              */
             renderMap: function (mapState) {
+                this.initialCenter = new google.maps.LatLng(mapState.center[1], mapState.center[0]);
                 var mapOptions = {
                     scrollwheel: false,
                     minZoom: this.minZoom,
@@ -75,9 +76,8 @@ define(["marionette",
                             ]
                         }
                     ],
-                    zoom: mapState.zoom || this.defaultLocation.zoom,
-                    center: mapState.center || this.defaultLocation.center
-
+                    zoom: mapState.zoom,
+                    center: this.initialCenter
                 };
                 this.map = new google.maps.Map(document.getElementById(this.mapContainerID),
                     mapOptions);
@@ -98,13 +98,7 @@ define(["marionette",
             fetchMapState: function () {
                 //Try pulling the basemap state from the cache
                 var state = this.app.restoreState("basemap");
-                if (!state) {
-                    state = {center: this.defaultLocation.center, zoom: this.defaultLocation.zoom};
-                } else {
-                    if (state.center) {
-                        state.center = new google.maps.LatLng(state.center[1], state.center[0]);
-                    }
-                }
+                console.log(state);
                 return state;
 
             },

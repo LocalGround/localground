@@ -1,8 +1,15 @@
 <% if (data.map) { %>
-    <img src="<%= data.map %>" />
-    <br>
-    <a class="btn btn-info" href="<%= data.pdf %>">Download Map</a>
-    <button id="make-another-map" class="btn btn-default">Make Another Map</a>
+    <div class="show-print">
+        <img src="<%= data.map %>" />
+    </div>
+    <div class="print-confirm-buttons">
+        <a class="btn btn-primary" href="<%= data.pdf %>">Download</a>
+        <a id="view-all" class="btn btn-info" href="/profile/prints/" target="_blank">View All</a>
+        <a id="make-another-map" class="btn btn-default">Start Over</a>
+    </div>
 <% } else { %>
-    <i class="fa fa-circle-o-notch fa-spin fa-4x" style="color: #CCC;"></i>
+    <div class="print-loading-container">
+        <h4>Generating Map...</h4>
+        <i class="fa fa-circle-o-notch fa-spin fa-4x" style="color: #CCC;"></i>
+    </div>
 <% } %>

@@ -44,9 +44,8 @@ define(["jquery",
 
             resize: function () {
                 this.printRegion.currentView.trigger('resize');
+                this.trigger('print-map-resize');
             }
-
-
 
         });
         return PrintModal;

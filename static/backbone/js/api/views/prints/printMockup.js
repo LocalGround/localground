@@ -46,6 +46,7 @@ define(["marionette",
              * @param {Object} opts
              */
             initialize: function (opts) {
+                this.firstLoad = true;
                 this.app = opts.app;
                 this.opts = opts;
                 this.controller = opts.controller;
@@ -53,10 +54,10 @@ define(["marionette",
             },
 
             onShow: function () {
-                var printmap = new PrintMap(_.defaults({mapContainerID: "print-map-canvas"}, this.opts));
-                this.printMapRegion.show(printmap);
-                this.map = printmap.map;
-                this.mapView = printmap;
+                this.printMap = new PrintMap(_.defaults({mapContainerID: "print-map-canvas"}, this.opts));
+                this.printMapRegion.show(this.printMap);
+                this.map = this.printMap.map;
+                this.mapView = this.printMap;
             },
 
             resizeMap: function () {
@@ -65,6 +66,16 @@ define(["marionette",
                 } catch (e) {
                     // for Jasmine tests
                 }
+                // initialCenter: this is a hack to make sure that the print modal
+                // centers correctly on first load:
+                if (this.firstLoad) {
+                    try {
+                        this.map.setCenter(this.printMap.initialCenter);
+                    } catch (e1) {
+                        // Jasmine tests
+                    }
+                }
+                this.firstLoad = false;
             },
 
             changeLayout: function (choice) {
