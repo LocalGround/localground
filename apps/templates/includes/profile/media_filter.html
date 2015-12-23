@@ -1,0 +1,9 @@
+<div class="row">
+    <ul class="tabs">
+      {% for media in media_types_plural %}
+        <li class="{% if media_name_plural == media|slugify %}active{% endif %}">
+            <a href="/profile/{{media|slugify}}{% if obj_type and obj_id %}?obj_type={{obj_type}}&amp;obj_id={{obj_id}}#{{obj_type}}{% endif %}">{{media|title}}</a>
+        </li>
+      {% endfor %}
+    </ul>
+</div>

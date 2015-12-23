@@ -1,27 +1,26 @@
 {% extends "profile/data_list.html" %}
 {% block page_title %}
-	<img class="header-icon" src="/static/images/headphones_large.png" />
+	<img class="header-icon" src="/static/images/camera_large.png" />
 	Manage <span style="color:#ccc">{{ media_name_plural|title }}</span>{% if current_obj %} in {{ current_obj }} {% endif %}
-{% endblock %}
-
-{% block style_links %}
-	{{ block.super }}
-    <link href="/static/css/audio.css" type="text/css" media="all" rel="stylesheet" />
 {% endblock %}
 
 {% block script_links %}
 	{{ block.super }}
-	<script type="text/javascript" src="/static/scripts/site/player.js"></script>
-    <script type="text/javascript" src="/static/scripts/site/account/audio.js"></script>
+    <script type="text/javascript" src="/static/scripts/site/account/photos.js"></script>
+{% endblock %}
+{% block extra_styles %}
+	{{block.super}}
 {% endblock %}
 
 {% block pageload_scripts %}
-	o = new localground.audio();
-	o.initialize(opts);
+	o = new localground.photos();
+    o.initialize(opts);
 {% endblock %}
 
 {% block hidden_form_fields %}
 	{{ block.super }}
+	
+	{{cookies}}
 {% endblock %}
 
 {% block controls_menus %}
@@ -29,6 +28,7 @@
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Options</a>
 		<ul class="dropdown-menu" style="width:200px;">
 			<li><a id="delete_objects" href="#">Delete</a></li>
+			<!-- li><a id="add_object" href="#">Upload</a></li -->
 			<li><a id="move_project" href="#">Move to another project</a></li>
 		</ul>
 	</li>
@@ -39,7 +39,7 @@
 		<th scope="col" class="column-cb" >
 			<input class="checkall" type="checkbox" name="checkall"/>
 		</th>
-		<th scope="col">File</th>
+		<th scope="col">Image</th>
 		<th scope="col">Name</th>
 		<th scope="col">Map Info</th>
 	</tr>
@@ -52,54 +52,46 @@
 				<input class="checkone" id="cb_{{form.instance.id}}" name="id" type="checkbox" value="{{form.instance.id}}" />
 			</td>
 			<td>
-				<div class="playercontroller">
-					<div class="button play"><a>PLAY</a></div>
-					<div class="button pause"><a>PAUSE</a></div>
-					<div class="button stop"><a>STOP</a></div>
-					<div class="timeline"><a href="#slider" class="playerslider">SLIDER</a></div>
-					<div class="counter">
-						<span class="elapsed">00:00</span>|<span class="duration">00:00</span>
-					</div>
-				</div>
-				<input type="hidden" value="{{form.instance.absolute_virtual_path}}" />
-				
-				
+                {{ form.instance.overlay_source.id }}
+                {% if form.instance.overlay_source.name == "mapbox" %}
+                    <img src="http://api.mapbox.com/v4/{{ form.instance.provider_id }}/-73.975,40.767,5/300x200.png?access_token={{ MAPBOX_KEY }}" />
+                {% elif form.instance.overlay_source.name == "google" %}
+                    Google ({{ form.instance.provider_id }})
+                {% elif form.instance.overlay_source.name == "stamen" %}
+                    Stamen
+                {% endif %}
 			</td>
 			<td>
 				{% include "includes/forms/generic_form_renderer.html" %}	
 			</td>
 			<td>
 				<div class="thin">
-					<label>ID:</label><div class="input blue">{{ form.instance.id }}</div>
+					<label>ID:</label><div class="input">{{ form.instance.id }}</div>
 				</div>
 				<div class="thin">
 					<label>Last Updated:</label>
-					<div class="input blue">
+					<div class="input">
 						on {{form.instance.time_stamp|date:"n/j/Y P" }}<br />
 						by {{ form.instance.last_updated_by}}
 					</div>
 				</div>
 				<div class="thin">
-					<label>Project:</label><div class="input blue">{{ form.instance.project.name }}</div>
+					<label>Project:</label><div class="input">{{ form.instance.project.name }}</div>
 				</div>
 				<div class="thin">
-					<label>File Name:</label><div class="input blue">{{ form.instance.file_name_orig }}</div>
+					<label>Owned by:</label><div class="input">{{  form.instance.owner }}</div>
 				</div>
 				{% if form.instance.source_scan %}
 					<div class="thin">
-						<label>Map Image:</label><div class="input blue">{{ form.instance.source_scan.name }}</div>
+						<label>Map Image:</label><div class="input">{{ form.instance.source_scan.name }}</div>
 					</div>
 				{% endif %}
-				{% if form.instance.source_marker %}
-					<div class="thin">
-						<label>Marker:</label><div class="input blue">{{ form.instance.source_marker.get_name }}</div>
-					</div>
-				{% endif %}
-				<div class="thin">
-					<label>Coordinates:</label><div class="input blue">{{ form.instance.display_coords }}</div>
-				</div>
 			</td>
 		</tr>
 	{% endfor %}
+{% endblock %}
 
+
+{% block no_objects %}
+	{{ block.super }}
 {% endblock %}

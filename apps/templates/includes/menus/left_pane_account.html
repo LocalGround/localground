@@ -1,13 +1,45 @@
-<ul class="nav-side-menu bs-docs-sidenav affix">
-    <li><a href="/profile/settings/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Account Settings</a></li>
-    <!-- li><a href="/profile/tiles/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Map Tiles</a -->
-    <li><a href="/profile/projects/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Projects</a></li>
-    <li><a href="/profile/snapshots/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Snapshots</a></li>
-    <li><a href="/profile/forms/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Forms</a></li>
-    <li><a href="/profile/prints/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Prints</a></li>
-    <li><a href="/profile/map-images/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Map Images</a></li>
-    <li><a href="/profile/attachments/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Attachments</a></li>
-    <li><a href="/profile/photos/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Photos</a></li>
-    <li><a href="/profile/audio/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Audio</a></li>
-    <li><a href="/profile/videos/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Video</a></li>
+<link href="/static/css/left_pane_account.css" rel="stylesheet">
+<ul class="nav-side-menu bs-docs-sidenav affix main-menu">
+    <li>
+        <a href="/profile/settings/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Account Settings</a>
+    </li>
+    <li title="Filter by project">
+        <a href="#projects"><i class="icon-chevron-right"></i>Projects</a>
+        <a class="floating-gear" href="/profile/projects/{% if embed %}embed{% endif %}#projects"><i class="icon-cog" title="Configure projects"></i></a>
+        <ul id="projects" class="nav-side-menu affix top-level-obj-ul open">
+            {% if current_obj.id %}
+                <li class="top-level-obj-li thin-li" title="Turn off filter">
+                    <a href="{% if media_name_plural %}/profile/{{media_name_plural}}{% if embed %}embed{% endif %}{% endif %}#projects">All Projects</a>
+                </li>
+            {% endif %}
+        {% for project in top_lv_objs.projects %}
+            <li class="top-level-obj-li {% if project.id == current_obj.id %}current-obj{% endif %}">
+                <a href="{% if media_name_plural %}/profile/{{media_name_plural}}?obj_type=projects&amp;obj_id={{ project.id }}{% if embed %}embed{% endif %}{% endif %}#projects">
+                {% if project.id == current_obj.id %}<span style="font-weight:bold">{{ project.name }}</span>{% else %}{{ project.name }}{% endif %}</a>
+            </li>
+        {% endfor %}
+        </ul>
+    </li>
+    <!-- <li title="Filter by snapshot">
+        <a href="#snapshots"><i class="icon-chevron-right"></i>Snapshots</a>
+        <a class="floating-gear" href="/profile/snapshots/{% if embed %}embed{% endif %}#snapshots"><i class="icon-cog" title="Configure snapshots"></i></a>
+        <ul id="snapshots" class="nav-side-menu affix top-level-obj-ul">
+        {% for snapshot in top_lv_objs.snapshots %}
+            <li class="top-level-obj-li">
+                <a href="/profile/snapshots/media_main?project_id={{ snapshot.id }}{% if embed %}embed{% endif %}">{{ snapshot.name }}</a>
+            </li>
+        {% endfor %}
+        </ul>
+    </li> -->
+    <li title="Filter by form">
+        <a href="/profile/forms/{% if embed %}embed{% endif %}"><i class="icon-chevron-right"></i>Forms</a>
+        <a class="floating-gear" href="/profile/forms/{% if embed %}embed{% endif %}"><i class="icon-cog" title="Configure forms"></i></a>
+        <ul id="forms" class="nav-side-menu affix top-level-obj-ul">
+        {% for form in top_lv_objs.forms %}
+            <li class="top-level-obj-li">
+                <a href="/profile/forms/{% if embed %}embed{% endif %}">{{ form.name }}</a>
+            </li>
+        {% endfor %}
+        </ul>
+    </li>
 </ul>

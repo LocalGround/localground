@@ -69,7 +69,11 @@
 
 {% block main_content %}
 	<div class="main-content">
-		
+
+	{% block media_filter %}
+		{% include "includes/profile/media_filter.html" %}
+	{% endblock %}
+	
 	<form id="the_form" method="post" action="">
 		{% csrf_token %}
 		{{ formset.management_form }}
@@ -79,7 +83,7 @@
 				<input type="hidden" name="form_id" id="form_id" value="{{form.id}}" />
 			{% endif %}
 		{% endblock %}
-		
+
 		<div class="row" style="height:38px;">
 			<ul class="tabs cell1" style="margin-bottom: 0px !important;border:none;">
 				{% block other_menus %}{% endblock %}
@@ -121,17 +125,18 @@
 			{% block no_objects %}
 			<div class="no-data-found">
 				<div>
-					{% if projects|length > 0 and selected_project != None %}
+					<!-- This part is commented out because project is not a media, but it's used for filtering. -->
+					<!-- {% if projects|length > 0 and selected_project != None %}
 						Your project, <span style="text-transform:uppercase">{{selected_project}}</span>, does not have
-						any {{object_name_plural}}.
-					{% else %}
-						You do not have any {{object_name_plural}}.
-					{% endif %}
+						any {{media_name_plural}}.
+					{% else %} -->
+						You do not have any {{media_name_plural}}.
+					<!-- {% endif %} -->
 				</div>
 			</div>
 			{% endblock %}
 		{% else %}
-			<div id="table-container" style="overflow:auto;">
+			<div id="table-container" style="width:100%;overflow:hidden;">
 			<table id="the_table" class="zebra-striped" cellspacing="0">
 				<thead> {% block row_header %}{% endblock %}</thead>          
 				<tbody>{% block rows %}{% endblock %}</tbody>

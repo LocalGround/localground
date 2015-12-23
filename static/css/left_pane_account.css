@@ -1,0 +1,57 @@
+ul.main-menu {
+  margin-top: 80px;
+}
+
+.bs-docs-sidenav > li > a.floating-gear {
+  border: 0px solid #E5E5E5;
+  display: inline;
+  margin: 0px;
+  padding: 0px;
+}
+
+.bs-docs-sidenav .icon-cog {
+    float: right;
+    margin-right: 75px;
+    margin-top: -23px;
+    opacity: 0.75;
+    display: none;
+}
+
+.bs-docs-sidenav> li:hover .icon-cog {
+  display: inline;
+}
+
+.top-level-obj-ul {
+  display: none;
+}
+
+.top-level-obj-ul:target,
+.top-level-obj-ul.open {
+  display: block;
+}
+
+li.thin-li {
+  height: 1em;
+  padding-top: 0px;
+  padding-bottom: 7px;
+  margin-left: -2.4em;
+  padding-left: 2.4em;
+  font-size: 0.8em;
+  background-color: #bbe2de;
+}
+
+.top-level-obj-li {
+  height: 2em;
+  padding-top: 8px;
+}
+
+.top-level-obj-li i {
+  display: none;
+  opacity: 0.75;
+}
+
+.top-level-obj-li.current-obj {
+  background-color: #cdf4d6;
+  margin-left: -1.9em;
+  padding-left: 1.9em;
+}
