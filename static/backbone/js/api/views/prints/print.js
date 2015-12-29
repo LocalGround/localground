@@ -57,7 +57,8 @@ define(["jquery",
 
             requestPrint: function (formData) {
                 var that = this;
-                $.post('/maps/print/', formData, function (response) {
+                $.post('/api/0/prints/', formData, function (response) {
+                //$.post('/maps/print/', formData, function (response) {
                     that.printGenerated(response);
                 }, "json").fail(function (err) {
                     console.error('failed to download print pdf: ' + err);

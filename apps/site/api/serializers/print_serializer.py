@@ -30,13 +30,15 @@ class PrintSerializerMixin(serializers.ModelSerializer):
     instructions = serializers.CharField(
         label='instructions',
         source='description',
-        required=True,
+        required=False,
+        allow_blank=True,
         style={'base_template':'textarea.html'}
     )
     map_title = serializers.CharField(
         label='map_title',
         source='name',
-        required=True)
+        required=False,
+        allow_blank=True)
     tags = serializers.CharField(required=False, help_text='Tag your object here')
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
     #edit_url = serializers.SerializerMethodField('get_configuration_url')

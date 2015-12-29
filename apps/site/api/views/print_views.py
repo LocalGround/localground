@@ -21,8 +21,10 @@ class PrintList(QueryableListCreateAPIView, AuditCreate):
     paginate_by = 100
     
     def perform_create(self, serializer):
+        from django.contrib.gis.geos import GEOSGeometry
         posted_data = serializer.validated_data
         d = self.get_presave_dictionary()
+        point = GEOSGeometry(posted_data.get('center'))
         # Do some extra work to generate the PDF and calculate the map extents:
         instance = models.Print.insert_print_record(
             self.request.user,
@@ -38,6 +40,8 @@ class PrintList(QueryableListCreateAPIView, AuditCreate):
         )
         instance.generate_pdf()
         d.update({
+            'uuid': instance.uuid,
+            'virtual_path': instance.virtual_path,
             'northeast': instance.northeast,
             'southwest': instance.southwest,
             'extents': instance.extents,

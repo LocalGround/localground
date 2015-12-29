@@ -58,9 +58,6 @@ def generate_print_pdf(request):
             scan_ids=scan_ids
         )
     p.generate_pdf()
-
-    #just return pdf location
-    #return HttpResponse(p.pdf())
     return p
 
 @login_required

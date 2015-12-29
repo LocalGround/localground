@@ -106,7 +106,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         dict = {
             'id': self.uuid,
             'uuid': self.uuid,
-            'map_title': self.map_title,
+            'map_title': self.name,
             'pdf': self.pdf(),
             'thumbnail': self.thumb(),
             #'kml': '/' + settings.USER_MEDIA_DIR + '/prints/' + self.id + '/' + self.id + '.kml',
@@ -158,7 +158,11 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
             if os.path.exists(dest):
                 from localground.apps.lib.helpers import generic
                 dest = dest + '.dup.' + generic.generateID()
-            shutil.move(path, dest)
+            try:
+                shutil.move(path, dest)
+            except:
+                #pass
+                raise Exception('error moving path from %s to %s' % (path, dest))
 
         super(Print, self).delete(*args, **kwargs)
 
@@ -223,6 +227,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         p.southwest = southwest
         p.extents = extents
         p.virtual_path = p.generate_relative_path()
+        #raise Exception(p.to_dict())
 
         if do_save:
             p.save()

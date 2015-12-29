@@ -50,8 +50,7 @@ class ApiLayoutInstanceTest(test.TestCase, ViewMixinAPI, LayoutMixin):
         ViewMixinAPI.setUp(self)
         self.urls = [
             '/api/0/layouts/1/',
-            '/api/0/layouts/3/',
-            '/api/0/layouts/4/']
+            '/api/0/layouts/2/']
         self.view = views.LayoutViewSet.as_view({'get': 'detail'})
 
 
