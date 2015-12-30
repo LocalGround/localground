@@ -1,5 +1,5 @@
 from django import test
-from localground.apps.site.views import prints, profile
+from localground.apps.site.views import profile
 from localground.apps.site import models
 from localground.apps.site.tests import ModelMixin
 from rest_framework import status
