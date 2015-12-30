@@ -164,9 +164,5 @@ urlpatterns = patterns('',
                        (
                            r'^maps/view/(?P<username>[\w|-|.|_]+)/(?P<slug>[\w-]+)/(?P<access_key>\w+)/$',
                            'localground.apps.site.views.maps.show_map_viewer'),
-                       (r'^maps/print/$',
-                        'localground.apps.site.views.prints.generate_print'),
                        (r'^sdtest/$',
-                        'localground.apps.site.views.test.sdtest'),
-                       (r'^maps/print/embed/$', 'localground.apps.site.views.prints.generate_print',
-                           {'embed': True, 'base_template': 'base/iframe.html'}))
+                        'localground.apps.site.views.test.sdtest'))

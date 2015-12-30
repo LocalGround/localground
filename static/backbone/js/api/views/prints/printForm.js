@@ -49,8 +49,9 @@ define(["marionette",
             },
 
             getFormData: function () {
+                var layout_lookup = {'landscape': 1, 'portrait': 2};
                 return {
-                    orientation: this.ui.layoutSelection.filter(':checked').val(),
+                    layout: layout_lookup[this.ui.layoutSelection.filter(':checked').val()],
                     project_id: this.app.getActiveProjectID()
                 };
             }

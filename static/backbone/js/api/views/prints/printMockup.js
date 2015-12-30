@@ -120,8 +120,13 @@ define(["marionette",
                     map_title: this.getTitle(),
                     instructions: this.getInstructions(),
                     zoom: this.map.zoom,
-                    center_lat: this.map.center.lat(),
-                    center_lng: this.map.center.lng(),
+                    center: JSON.stringify({
+                        "type": "Point",
+                        "coordinates": [
+                            this.map.center.lng(),
+                            this.map.center.lat()
+                        ]
+                    }),
                     map_provider: this.mapView.tileManager.getMapTypeId()
                 };
             },
