@@ -39,7 +39,8 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         source='name',
         required=False,
         allow_blank=True)
-    tags = serializers.CharField(required=False, help_text='Tag your object here')
+    tags = serializers.CharField(required=False,
+        allow_blank=True, help_text='Tag your object here')
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
     #edit_url = serializers.SerializerMethodField('get_configuration_url')
     overlay_type = serializers.SerializerMethodField()
@@ -104,6 +105,7 @@ class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
                 style={'base_template': 'json.html'},
                 read_only=True
             )
+    zoom = serializers.IntegerField(min_value=1, max_value=20, default=17, read_only=True)
     layout = serializers.SerializerMethodField()
     map_provider = serializers.SerializerMethodField()
     project_id = serializers.PrimaryKeyRelatedField(
@@ -114,7 +116,6 @@ class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
     class Meta:
         model = models.Print
         fields = PrintSerializerMixin.Meta.fields
-        read_only_fields = ('zoom',)
         depth = 0
 
     def get_map_provider(self, obj):

@@ -1,4 +1,5 @@
 from django import test
+from django.conf import settings
 from localground.apps.site import models
 from localground.apps.site.api import views
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
@@ -24,13 +25,13 @@ def get_metadata():
         'center': {'read_only': False, 'required': True, 'type': 'geojson'},
         'thumb': {'read_only': True, 'required': False, 'type': 'field'},
         'zoom': {'read_only': False, 'required': False, 'type': 'integer'},
-        'map_title': {'read_only': False, 'required': True, 'type': 'string'},
+        'map_title': {'read_only': False, 'required': False, 'type': 'string'},
         'map_provider': {'read_only': False, 'required': True, 'type': 'field'},
         'pdf': {'read_only': True, 'required': False, 'type': 'field'},
         'project_id': {'read_only': False, 'required': True, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'layout_url': {'read_only': True, 'required': False, 'type': 'field'},
-        'instructions': {'read_only': False, 'required': True, 'type': 'memo'}
+        'instructions': {'read_only': False, 'required': False, 'type': 'memo'}
     }
 
 class PrintMixin(object):
@@ -92,6 +93,9 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI, PrintMixin):
                       .all()
                       .order_by('-id',))[0]
         self.assertEqual(new_object.name, map_title)
+        self.assertEqual(new_object.host, 'testserver')
+        self.assertEqual(new_object.virtual_path, '/userdata/prints/%s/' % new_object.uuid)
+        self.assertTrue(len(new_object.uuid), 8)
         self.assertEqual(new_object.description, instructions)
         self.assertEqual(
             new_object.center,
@@ -101,6 +105,20 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI, PrintMixin):
         self.assertEqual(new_object.project.id, self.project.id)
         self.assertEqual(new_object.layout.id, layout)
         self.assertEqual(new_object.map_provider.id, layout)
+
+        # Finally: check to make sure that the URL paths point to
+        # actual files (pdf & map image) on the server
+        data = response.data
+        pdf_response = self.client_user.get(data.get('pdf'))
+        self.assertEqual(pdf_response.status_code, status.HTTP_200_OK)
+        
+        #print data.get('pdf'), pdf_response
+        
+        
+        thumb_response = self.client_user.get(data.get('thumb'))
+        self.assertEqual(thumb_response.status_code, status.HTTP_200_OK)
+        #print data.get('thumb'), thumb_response
+        
 
 
 class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
@@ -117,7 +135,8 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
             'center': {'read_only': True, 'required': False, 'type': 'geojson'},
             'layout': {'read_only': True, 'required': False, 'type': 'field'},
             'map_provider': {'read_only': True, 'required': False, 'type': 'field'}, 
-            'project_id': {'read_only': False, 'required': False, 'type': 'field'}
+            'project_id': {'read_only': False, 'required': False, 'type': 'field'},
+            'zoom': {'read_only': True, 'required': False, 'type': 'integer'},    
         })
 
     def test_update_print_using_patch(self, **kwargs):
