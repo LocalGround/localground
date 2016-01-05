@@ -18,7 +18,7 @@ metadata = {
     "geometry": { "type": "geojson", "required": False, "read_only": False },
     "attribution": { "type": "string", "required": False, "read_only": False },
     "file_name": { "type": "string", "required": False, "read_only": True },
-    "caption": { "type": "memo", "required": False, "read_only": True },
+    "caption": { "type": "memo", "required": False, "read_only": False },
     "path_large": { "type": "field", "required": False, "read_only": True },
     "path_medium": { "type": "field", "required": False, "read_only": True },
     "path_medium_sm": { "type": "field", "required": False, "read_only": True },
