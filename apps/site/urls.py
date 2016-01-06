@@ -49,18 +49,11 @@ urlpatterns = patterns('',
                        #-------------------------------------------------------
                        # 1) Create:
                        #-------------------------------------------------------
-                       #  a) Groups & Views:
                        (r'^profile/(?P<object_type_plural>projects|snapshots)/(?P<action>create)/embed/$',
                         'localground.apps.site.views.sharing.create_update_group_with_sharing',
                         {'embed': True}),
-                       (
-                           r'^profile/(?P<object_type_plural>projects|snapshots)/(?P<action>create)/$',
+                       (r'^profile/(?P<object_type_plural>projects|snapshots)/(?P<action>create)/$',
                            'localground.apps.site.views.sharing.create_update_group_with_sharing'),
-                       #  b) Media
-                       (r'^upload/media/post/$',
-                        'localground.apps.site.views.uploader.upload_media'),
-                       #(r'^profile/(?P<object_type_plural>photos|audio|map-images)/create/$', 'localground.apps.site.views.uploader.upload_media'),
-
                        #-------------------------------------------------------
                        # 2) Read:
                        #-------------------------------------------------------
@@ -126,12 +119,13 @@ urlpatterns = patterns('',
                        (r'^upload/embed/$',
                         'localground.apps.site.views.uploader.init_upload_form',
                         {'embed': True}),
-                       (
-                           r'^upload/(?P<media_type>photos|audio|map-images|forms|air-quality|odk)/$',
+                       (r'^upload/(?P<media_type>photos|audio|map-images)/$',
                            'localground.apps.site.views.uploader.init_upload_form'),
-                       (r'^upload/(?P<media_type>photos|audio|map-images|forms|air-quality|odk)/embed/$',
+                       (r'^upload/(?P<media_type>photos|audio|map-images)/embed/$',
                         'localground.apps.site.views.uploader.init_upload_form',
                         {'embed': True}),
+                       (r'^upload/media/post/$',
+                        'localground.apps.site.views.uploader.upload_media'),
 
 
                        # media server

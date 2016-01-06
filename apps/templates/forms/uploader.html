@@ -138,7 +138,9 @@
 
 {% block extra_scripts %}
     {{block.super}}
-    var o = new localground.uploader();
+    var o = new localground.uploader({
+        mediaType: "{{selected_media_type.0}}"
+    });
 {% endblock %}
 
 {% block pageload_scripts %}
@@ -163,9 +165,6 @@
             {% endif %}
             {% if selected_media_type.0 == 'audio' %}
                 <img class="header-icon" src="/static/images/headphones_large.png" />
-            {% endif %}
-            {% if selected_media_type.0 == 'air-quality' %}
-                <img class="header-icon" src="/static/images/upload_large.png" />
             {% endif %}
             Upload <span style="color:#ccc">{{ selected_media_type.1}}</span>
         </h1>
@@ -217,7 +216,7 @@
                     <span class="btn success fileinput-button" style="margin-top:10px;margin-bottom:10px;">
                         <i class="icon-plus icon-white"></i>
                         <span>Navigate to your {{selected_media_type.1|lower}}...</span>
-                        <input id="fileupload" type="file" name="files[]" multiple>
+                        <input id="fileupload" type="file" name="file_name_orig" multiple>
                     </span>
                     <br><small>Acceptable file types include: <br>
                     <span id="acceptable" style="color:#333;font-weight:bold;">{{selected_media_type.2}}</span></small>

@@ -1,7 +1,12 @@
 /* Uses:
     https://github.com/blueimp/jQuery-File-Upload
 */
-localground.uploader = function(){
+localground.uploader = function (opts) {
+    'use strict';
+    this.mediaType = opts.mediaType;
+    this.url = '/api/0/' + this.mediaType + '/';
+    alert(this.url);
+    //this.url = '/upload/media/post/';
     this.errorCount = 0;
     this.successCount = 0;
     this.options = {
@@ -40,7 +45,7 @@ localground.uploader.prototype.initialize = function(opts) {
         dataType: 'json',
         autoUpload: true,
         //sequential: true,
-        url: '/upload/media/post/',
+        url: this.url,
         dropZone: $('body'), //$('#dropzone'),
         add: self.onAdd,
         done: self.done,
@@ -245,6 +250,8 @@ localground.uploader.prototype.onAdd = function(e, data) {
             )
         );
         file.context = $thediv;
+        data.file_name_orig = data.files
+        console.log(data);
         data.submit();
         return true;
     });

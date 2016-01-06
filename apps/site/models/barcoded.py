@@ -161,8 +161,8 @@ class Scan(Processor):
         im.save('%s/%s' % (media_path, thumbnail_name))
 
         # 4) save object to database:
-        self.status = StatusCode.objects.get(id=1)
-        self.upload_source = UploadSource.objects.get(id=1)
+        self.status = StatusCode.objects.get(name='Ready for processing')
+        self.upload_source = UploadSource.objects.get(name='Web Form')
         self.file_name_orig = file.name
         if self.name is None:
             self.name = file.name

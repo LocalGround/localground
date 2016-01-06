@@ -31,13 +31,7 @@ def init_upload_form(request,
          'audio\/x-m4a, m4a, mp3, m4a, mp4, mpeg, video\/3gpp, 3gp, aif, aiff, ogg, wav'),
         ('map-images',
          'Paper Maps / Forms',
-         'png, jpg, jpeg, gif'),
-        ('air-quality',
-         'DustTrak Data',
-         'log (GPS) + csv (DustTrak)'),
-        ('odk',
-         'ODK Data',
-         'zipped ODK form instance'),
+         'png, jpg, jpeg, gif')
     ]
     selected_media_type = (None, 'Error')
     for mt in media_types:
@@ -58,10 +52,10 @@ def init_upload_form(request,
 
 
 '''
-Todo: Migrate to use API!
+Todo: Migrate upload_media function to use API Endpoints
 '''
-@process_project
 @login_required
+@process_project
 def upload_media(request, project=None):
     if request.method == 'POST':
         new_object, message = None, None
@@ -82,10 +76,6 @@ def upload_media(request, project=None):
         else:
             success = False
             error_message = 'Unknown file type'
-        # except:
-        #    import sys
-        #    success = False
-        #    error_message = str(sys.exc_info()[1])
 
         if success:
             responseObj = {
