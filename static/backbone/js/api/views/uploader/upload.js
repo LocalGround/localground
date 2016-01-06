@@ -1,8 +1,6 @@
-var Uploader = function (opts) {
+var self, Uploader;
+Uploader = function (opts) {
     'use strict';
-    this.mediaType = opts.mediaType;
-    this.url = '/api/0/' + this.mediaType + '/';
-    alert(this.url);
     //this.url = '/upload/media/post/';
     this.errorCount = 0;
     this.successCount = 0;
@@ -17,15 +15,15 @@ var Uploader = function (opts) {
         previewSourceMaxFileSize: 5000000, // 5MB
         previewMaxWidth: 800,
         previewMaxHeight: 800,
-        autoUpload: true
+        autoUpload: true,
+        mediaType: opts.mediaType,
+        acceptFileTypes: opts.acceptFileTypes.split(', '),
+        url: '/api/0/' + opts.mediaType + '/'
     };
 
-    this.initialize = function (opts) {
-        var msg = "",
-            self = this;
-        this.options.mediaType = opts.mediaType;
-        this.options.acceptFileTypes = opts.acceptFileTypes.split(', ');
-
+    this.initialize = function () {
+        self = this;
+        var msg = "";
         $('.dropdown-menu > li > a').click(function () {
             $('#project').val($(this).attr('id'));
             $('#project-name').html($(this).html());
@@ -36,7 +34,7 @@ var Uploader = function (opts) {
             dataType: 'json',
             autoUpload: true,
             //sequential: true,
-            url: this.url,
+            url: this.options.url,
             dropZone: $('body'), //$('#dropzone'),
             add: self.onAdd,
             done: self.done,
@@ -241,7 +239,6 @@ var Uploader = function (opts) {
             );
             file.context = $thediv;
             data.file_name_orig = data.files;
-            console.log(data);
             data.submit();
             return true;
         });
@@ -338,4 +335,7 @@ var Uploader = function (opts) {
             self.errorCount += 1;
         }
     };
+
+    //call initialization:
+    this.initialize();
 };
