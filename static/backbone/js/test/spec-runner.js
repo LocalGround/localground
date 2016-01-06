@@ -31,7 +31,9 @@ require(['boot'], function () {
         //'spec/views/audio-player-test.js'
     ];
     require(specs, function () {
-        window.onload();
+        //engineering a pause...
+        setTimeout(function () {
+            window.onload();
+        }, 1000);
     });
-    
 });
