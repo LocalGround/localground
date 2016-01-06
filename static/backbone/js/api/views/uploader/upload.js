@@ -1,3 +1,4 @@
+/* Todo: Perhaps migrate to Backbone? Not sure if it's necessary */
 var self, Uploader;
 Uploader = function (opts) {
     'use strict';
@@ -273,10 +274,12 @@ Uploader = function (opts) {
     };
     
     this.done = function (e, data) {
-        var $success, $delete, $error, $container;
+        var $success, $delete, $error, $container,
+            response = data.result;
         data.files[0].isDone = true;
         data.files[0].context.find('.progress').remove();
-        if (data.result.success) {
+        //console.log(data);
+        if (data.textStatus == "success") {
             $success = $('<div class="badge badge-success" />')
                 .css({
                     padding: '0px 3px 3px 3px',
