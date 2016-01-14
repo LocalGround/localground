@@ -102,7 +102,7 @@ class MediaList(QueryableListCreateAPIView, AuditCreate):
             if not project.can_edit(self.request.user):
                 raise exceptions.PermissionDenied(
                     detail='You do not have edit access to the project #{0}'.format(project_id))
-            serializer.instance.save_upload(f, self.request.user, project, do_save=False)
+            serializer.instance.save_upload(f, self.request.user, project, do_save=True)
 
 
 class MediaInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):

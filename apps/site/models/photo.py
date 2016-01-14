@@ -20,7 +20,7 @@ class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
     #serializer_class = PhotoRTSerializer
 
     def __unicode__(self):
-        return self.name + ' (' + self.file_name_orig + ')'
+        return '%s (%s)' % (self.name, self.file_name_orig)
 
     class Meta:
         app_label = 'site'
