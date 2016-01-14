@@ -22,8 +22,18 @@ Uploader = function (opts) {
         url: '/api/0/' + opts.mediaType + '/'
     };
 
+    this.initAJAX = function () {
+        var csrf = $('input[name="csrfmiddlewaretoken"]').val();
+        $.ajaxSetup({
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-CSRFToken", csrf);
+            }
+        });
+    };
+
     this.initialize = function () {
         self = this;
+        this.initAJAX();
         var msg = "";
         $('.dropdown-menu > li > a').click(function () {
             $('#project').val($(this).attr('id'));
@@ -72,13 +82,7 @@ Uploader = function (opts) {
                 );
             },
             submit: function (e, data) {
-                var token = $('input[name="csrfmiddlewaretoken"]').val();
-                //alert(token);
-                data.formData = {
-                    media_type: self.options.mediaType,
-                    project_id: $('#project').val(),
-                    csrfmiddlewaretoken: token
-                };
+                data.formData = self.getFormData();
             }
         });
         //section for uploading by dragging files from your desktop:
@@ -106,6 +110,14 @@ Uploader = function (opts) {
                 return false;
             }
         });
+    };
+
+    this.getFormData = function () {
+        return {
+            media_type: self.options.mediaType,
+            project_id: $('#project').val(),
+            csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+        };
     };
 
     this.formatFileSize = function (bytes) {
@@ -278,7 +290,6 @@ Uploader = function (opts) {
             response = data.result;
         data.files[0].isDone = true;
         data.files[0].context.find('.progress').remove();
-        //console.log(data);
         if (data.textStatus == "success") {
             $success = $('<div class="badge badge-success" />')
                 .css({
@@ -295,15 +306,26 @@ Uploader = function (opts) {
 
             $delete = $('<a />').attr('href', '#').append('delete')
                 .click(function () {
-                    $(this).parent().parent().parent().remove();
-                    $.getJSON(data.result.delete_url,
-                        function (result) {
-                            //alert(JSON.stringify(result));
+                    var $container = $(this).parent().parent().parent(),
+                        deleteURL = self.options.url + data.result.id + "/";
+                    $.ajax({
+                        url: deleteURL,
+                        type: 'DELETE',
+                        dataType: 'json',
+                        success: function () {
+                            $container.remove();
                             data.files[0].cancelled = true;
                             data.files[0].context.remove();
-                            return false;
                         },
-                        'json');
+                        error: function (response) {
+                            try {
+                                var error = JSON.parse(response.responseText).detail;
+                                alert("Error deleting: " + error);
+                            } catch (ex) {
+                                alert("Error deleteting");
+                            }
+                        }
+                    });
                     return false;
                 });
             data.files[0].context.find('.img-container').prepend($success);
