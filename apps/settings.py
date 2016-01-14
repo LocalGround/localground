@@ -44,7 +44,7 @@ TEMP_DIR = '%s/tmp/' % FILE_ROOT
 QR_READER_PATH = '%s/lib/barcodereader' % APPS_ROOT
 
 MAP_FILE = FILE_ROOT + '/mapserver/localground.map'
-TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_MEDIA_DIR
+#TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_MEDIA_DIR
 
 # From Google Developer Console:
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'YOUR_CLIENT_KEY'
@@ -197,7 +197,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'corsheaders',
     'social.apps.django_app.default',
-    'swampdragon'
+    'swampdragon',
 )
 
 REST_FRAMEWORK = {

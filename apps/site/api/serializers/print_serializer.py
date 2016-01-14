@@ -1,7 +1,6 @@
 from localground.apps.site.api.serializers.base_serializer import ExtentsSerializer
 from rest_framework import serializers
 from localground.apps.site import models
-from localground.apps.site.widgets import TagAutocomplete
 from django.forms import widgets
 from localground.apps.site.api import fields
 

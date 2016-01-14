@@ -117,8 +117,7 @@ urlpatterns = patterns('',
 
 
                        # django-tagging:
-                       url(r'^tagging_autocomplete/list/json$', 'tagging_autocomplete.views.list_tags',
-                           name='tagging_autocomplete-list'),
+                       #url(r'^tagging_autocomplete/list/json$', 'tagging_autocomplete.views.list_tags', name='tagging_autocomplete-list'),
 
                        # uploader:
                        (r'^upload/$',

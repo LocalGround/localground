@@ -88,7 +88,6 @@ class Form(BaseNamed, BasePermissions):
 
     @classmethod
     def create_form(cls, user):
-        from localground.apps.site.widgets import TagAutocomplete
         from django.forms import ModelForm
 
         class InlineForm(ModelForm):
@@ -111,7 +110,6 @@ class Form(BaseNamed, BasePermissions):
                 widgets = {
                     'id': forms.HiddenInput,
                     'description': forms.Textarea(attrs={'rows': 3}),
-                    'tags': TagAutocomplete(),
                     'projects': forms.widgets.CheckboxSelectMultiple
                 }
 

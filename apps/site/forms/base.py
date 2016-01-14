@@ -14,7 +14,7 @@ def get_media_form(cls, user):
         class Meta:
             from django import forms
             from localground.apps.site.widgets import PointWidget, PointWidgetHidden, \
-                TagAutocomplete, CustomDateTimeWidget
+                CustomDateTimeWidget
             model = cls
             fields = ('id', 'project', 'source_scan', 'name', 'date_created',
                       'description', 'attribution', 'point', 'tags')
@@ -25,8 +25,7 @@ def get_media_form(cls, user):
                 # any valid html attributes as attrs
                 'description': forms.Textarea(attrs={'rows': 3}),
                 'source_scan': forms.HiddenInput,
-                'date_created': CustomDateTimeWidget,
-                'tags': TagAutocomplete()
+                'date_created': CustomDateTimeWidget
             }
     return MediaForm
 
@@ -42,8 +41,7 @@ def get_inline_media_form(cls, user):
 
         class Meta:
             from django import forms
-            from localground.apps.site.widgets import \
-                TagAutocomplete, CustomDateTimeWidget
+            from localground.apps.site.widgets import CustomDateTimeWidget
             model = cls
             fields = (
                 'name',
@@ -56,8 +54,7 @@ def get_inline_media_form(cls, user):
                 'id': forms.HiddenInput,
                 # any valid html attributes as attrs
                 'description': forms.Textarea(attrs={'rows': 3}),
-                'date_created': CustomDateTimeWidget,
-                'tags': TagAutocomplete()
+                'date_created': CustomDateTimeWidget
             }
     return MediaInlineForm
 
@@ -77,7 +74,6 @@ def get_inline_form(cls, user):
 
 
 def get_inline_form_with_tags(cls, user):
-    from localground.apps.site.widgets import TagAutocomplete
 
     class InlineForm(ModelForm):
 
@@ -93,7 +89,6 @@ def get_inline_form_with_tags(cls, user):
             fields = ('name', 'description', 'tags', 'project')
             widgets = {
                 'id': forms.HiddenInput,
-                'description': forms.Textarea(attrs={'rows': 3}),
-                'tags': TagAutocomplete()
+                'description': forms.Textarea(attrs={'rows': 3})
             }
     return InlineForm
