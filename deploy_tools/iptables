@@ -1,0 +1,10 @@
+# this is a list of iptables rules that exist on the digital ocean box.  If you create a new server you just run all these commands with 'sudo iptables ' in front of them.
+
+-P INPUT DROP
+-P FORWARD ACCEPT
+-P OUTPUT ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 443 -j ACCEPT

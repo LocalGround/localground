@@ -1,0 +1,9 @@
+*.pyc
+settings_local.py
+.DS_Store
+.gitignore
+.vagrant
+vagrant
+userdata
+*.komodoproject
+~                
