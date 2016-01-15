@@ -75,11 +75,12 @@ class BaseMedia(BaseAudit):
         import time
         timestamp = int(time.time())
         path = path + '#' + str(timestamp)
-        return '//%s/profile/%s/%s/' % (self.host,
-                                             self.model_name_plural.replace(
-                                                 ' ',
-                                                 '-'),
-                                             base64.b64encode(path))
+        return '%s://%s/profile/%s/%s/' % (
+            settings.PROTOCOL,
+            self.host,
+            self.model_name_plural.replace(' ', '-'),
+            base64.b64encode(path)
+        )
 
     def encrypt_url(self, file_name):
         # return self.virtual_path + file_name

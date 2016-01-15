@@ -86,7 +86,9 @@ class MediaGeometrySerializer(GeometrySerializer):
                                                    'file_path_orig', 'caption')
 
     def get_file_path_orig(self, obj):
-        return obj.encrypt_url(obj.file_name_orig)
+        # original file gets renamed to file_name_new in storage
+        # (spaces, etc. removed)
+        return obj.encrypt_url(obj.file_name_new)
 
 
 

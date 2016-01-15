@@ -16,7 +16,7 @@ from localground.apps.site.api.serializers.form_serializer import FormSerializer
 from localground.apps.site.api.serializers.record_serializer import create_record_serializer, create_compact_record_serializer
 from localground.apps.site.api.serializers.presentation_serializer import PresentationSerializer
 from localground.apps.site.api.serializers.print_serializer import PrintSerializer, PrintSerializerDetail
-from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializer
+from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializerCreate, ScanSerializerUpdate
 from localground.apps.site.api.serializers.user_profile_serializer import UserProfileSerializer
 from localground.apps.site.api.serializers.layer_serializer import LayerSerializer, LayerDetailSerializer
 

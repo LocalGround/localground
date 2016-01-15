@@ -59,19 +59,20 @@ class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
     def delete(self, *args, **kwargs):
         # remove images from file system:
         path = self.get_absolute_path()
-        file_paths = [
-            '%s%s' % (path, self.file_name_orig),
-            '%s%s' % (path, self.file_name_new),
-            '%s%s' % (path, self.file_name_large),
-            '%s%s' % (path, self.file_name_medium),
-            '%s%s' % (path, self.file_name_medium_sm),
-            '%s%s' % (path, self.file_name_small),
-            '%s%s' % (path, self.file_name_marker_lg),
-            '%s%s' % (path, self.file_name_marker_sm)
-        ]
-        for f in file_paths:
-            if os.path.exists(f) and f.find(settings.USER_MEDIA_DIR) > 0:
-                os.remove(f)
+        if len(path.split('/')) > 2: #protects against empty file path
+            file_paths = [
+                '%s%s' % (path, self.file_name_orig),
+                '%s%s' % (path, self.file_name_new),
+                '%s%s' % (path, self.file_name_large),
+                '%s%s' % (path, self.file_name_medium),
+                '%s%s' % (path, self.file_name_medium_sm),
+                '%s%s' % (path, self.file_name_small),
+                '%s%s' % (path, self.file_name_marker_lg),
+                '%s%s' % (path, self.file_name_marker_sm)
+            ]
+            for f in file_paths:
+                if os.path.exists(f) and f.find(settings.USER_MEDIA_DIR) > 0:
+                    os.remove(f)
 
         # execute default behavior
         super(Photo, self).delete(*args, **kwargs)

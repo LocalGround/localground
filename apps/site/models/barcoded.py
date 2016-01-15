@@ -17,11 +17,11 @@ from django.contrib.contenttypes import generic
 class Processor(BaseUploadedMedia):
     uuid = models.CharField(unique=True, max_length=8)
     source_print = models.ForeignKey('Print', blank=True, null=True)
-    status = models.ForeignKey('StatusCode')
+    status = models.ForeignKey('StatusCode', default=3) #default to Web Form
     file_name_thumb = models.CharField(max_length=255, blank=True, null=True)
     file_name_scaled = models.CharField(max_length=255, blank=True, null=True)
     scale_factor = models.FloatField(blank=True, null=True)
-    upload_source = models.ForeignKey('UploadSource')
+    upload_source = models.ForeignKey('UploadSource', default=1) #default to Web Form
     email_sender = models.CharField(max_length=255, blank=True, null=True)
     email_subject = models.CharField(max_length=500, blank=True, null=True)
     email_body = models.TextField(null=True, blank=True)
@@ -147,7 +147,7 @@ class Scan(Processor):
         self.owner = user
         self.last_updated_by = user
         self.project = project
-        self.uuid = generic.generateID()
+        #self.uuid = generic.generateID()
 
         # 2) save original file to disk:
         file_name_new = self.save_file_to_disk(file)
@@ -161,8 +161,8 @@ class Scan(Processor):
         im.save('%s/%s' % (media_path, thumbnail_name))
 
         # 4) save object to database:
-        self.status = StatusCode.objects.get(name='Ready for processing')
-        self.upload_source = UploadSource.objects.get(name='Web Form')
+        #self.status = StatusCode.objects.get(name='Ready for processing')
+        #self.upload_source = UploadSource.objects.get(name='Web Form')
         self.file_name_orig = file.name
         if self.name is None:
             self.name = file.name
@@ -171,7 +171,7 @@ class Scan(Processor):
         self.file_name_new = file_name_new
         self.file_name_thumb = thumbnail_name
         self.content_type = ext.replace('.', '')  # file extension
-        self.host = settings.SERVER_HOST
+        #self.host = settings.SERVER_HOST
         self.virtual_path = self.generate_relative_path()
         if do_save:
             self.save()

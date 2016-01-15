@@ -1,4 +1,5 @@
 from django import test
+from django.conf import settings
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
@@ -55,6 +56,19 @@ class ApiAudioListTest(test.TestCase, ViewMixinAPI):
                                               'file_name_orig' : data},
                                              HTTP_X_CSRFTOKEN=self.csrf_token)
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+            # a few more checks to make sure that file paths are being
+            # generated correctly:
+            new_audio = models.Audio.objects.get(id=response.data.get("id"))
+            file_name = tmp_file.name.split("/")[-1]
+            file_name = unicode(file_name, "utf-8")
+            path = new_audio.encrypt_url(new_audio.file_name_new)
+            self.assertEqual(file_name, new_audio.name)
+            self.assertEqual(file_name, new_audio.file_name_orig)
+            self.assertTrue(len(new_audio.file_name_new) > 5) #ensure not empty
+            self.assertEqual(settings.SERVER_HOST, new_audio.host)
+            self.assertNotEqual(path.find('/profile/audio/'), -1)
+            self.assertNotEqual(path.find(new_audio.host), -1)
+            self.assertTrue(len(path.split('/')[-2]) > 40)
         
 
 class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):

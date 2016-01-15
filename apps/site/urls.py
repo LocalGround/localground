@@ -124,9 +124,6 @@ urlpatterns = patterns('',
                        (r'^upload/(?P<media_type>photos|audio|map-images)/embed/$',
                         'localground.apps.site.views.uploader.init_upload_form',
                         {'embed': True}),
-                       (r'^upload/media/post/$',
-                        'localground.apps.site.views.uploader.upload_media'),
-
 
                        # media server
                        (

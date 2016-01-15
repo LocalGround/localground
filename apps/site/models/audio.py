@@ -12,13 +12,14 @@ class Audio(BasePoint, BaseUploadedMedia):
     def delete(self, *args, **kwargs):
         # remove images from file system:
         path = self.get_absolute_path()
-        file_paths = [
-            '%s%s' % (path, self.file_name_orig),
-            '%s%s' % (path, self.file_name_new)
-        ]
-        for f in file_paths:
-            if os.path.exists(f):
-                os.remove(f)
+        if len(path.split('/')) > 2: #protects against empty file path
+            file_paths = [
+                '%s%s' % (path, self.file_name_orig),
+                '%s%s' % (path, self.file_name_new)
+            ]
+            for f in file_paths:
+                if os.path.exists(f):
+                    os.remove(f)
 
         # execute default behavior
         super(Audio, self).delete(*args, **kwargs)
@@ -40,12 +41,9 @@ class Audio(BasePoint, BaseUploadedMedia):
             path_to_be_converted = media_path + '/' + file_name_new
             file_name_new = file_name + '.mp3'
             path_to_mp3 = media_path + '/' + file_name_new
-            command = 'ffmpeg -i \'%s\' -ab 32k -ar 22050 -y \'%s\'' % \
+            command = 'ffmpeg -loglevel panic -i \'%s\' -ab 32k -ar 22050 -y \'%s\'' % \
                 (path_to_be_converted, path_to_mp3)
             result = os.popen(command)
-            responses = []
-            for line in result.readlines():
-                responses.append(line)
 
         # 4) set model attributes:
         if self.name is None:

@@ -27,8 +27,9 @@ SESSION_COOKIE_NAME = 'sessionid'
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Custom Local Variables
+PROTOCOL = 'http'
 SERVER_HOST = os.environ.get('SERVER_HOST', 'yoursite.com')
-SERVER_URL = 'http://%s' % SERVER_HOST
+SERVER_URL = '%s//%s' % (PROTOCOL, SERVER_HOST)
 
 FILE_ROOT = os.environ.get('FILE_ROOT', '/home/directory/for/localground') 
 STATIC_MEDIA_DIR = 'static'
