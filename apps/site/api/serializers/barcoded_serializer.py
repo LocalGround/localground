@@ -9,7 +9,7 @@ from localground.apps.site.api.fields import FileField
 class ScanSerializerCreate(BaseNamedSerializer):
     file_path = serializers.SerializerMethodField('get_file_path_new')
     #file_name_orig = FileField(required=True)
-    file_name_orig = serializers.CharField(required=True, style={'base_template': 'file.html'})
+    media_file = serializers.CharField(source='file_name_orig', required=True, style={'base_template': 'file.html'})
     overlay_type = serializers.SerializerMethodField()
     project_id = fields.ProjectField(source='project', required=False)
     north = serializers.SerializerMethodField()
@@ -24,7 +24,7 @@ class ScanSerializerCreate(BaseNamedSerializer):
         fields = BaseNamedSerializer.Meta.fields + (
             'overlay_type', 'source_print', 'project_id',
             'north', 'south', 'east', 'west', 'zoom', 'overlay_path',
-            'file_name_orig', 'file_path'
+            'media_file', 'file_path'
         )
         
     def create(self, validated_data):
@@ -75,5 +75,5 @@ class ScanSerializerCreate(BaseNamedSerializer):
         return obj.processed_map_url_path()
     
 class ScanSerializerUpdate(ScanSerializerCreate):
-    file_name_orig = serializers.CharField(required=False, read_only=True)
+    media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
 
