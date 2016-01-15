@@ -72,6 +72,9 @@
 .control-label {
     margin-right: 20px;
 }
+.help-block {
+    margin-left: 152px;
+}
 
 .fileinput-button input {
     position: absolute;

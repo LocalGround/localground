@@ -189,7 +189,8 @@ class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
         if do_save:
             self.save()
 
-    def read_exif_data(self, im):
+    @classmethod
+    def read_exif_data(cls, im):
         from PIL.ExifTags import TAGS
         from datetime import datetime
         try:

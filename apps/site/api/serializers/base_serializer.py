@@ -22,8 +22,10 @@ class BaseNamedSerializer(serializers.HyperlinkedModelSerializer):
     tags = serializers.CharField(required=False, allow_null=True, label='tags',
                                     help_text='Tag your object here', allow_blank=True)
     name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
-    description = serializers.CharField(required=False, allow_null=True, label='caption',
-                                        style={'base_template': 'textarea.html'}, allow_blank=True)
+    caption = serializers.CharField(
+        source='description', required=False, allow_null=True, label='caption',
+        style={'base_template': 'textarea.html'}, allow_blank=True
+    )
     overlay_type = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
     
@@ -40,7 +42,7 @@ class BaseNamedSerializer(serializers.HyperlinkedModelSerializer):
             return models.Project.objects.all()
 
     class Meta:
-        fields = ('url', 'id', 'name', 'description', 'overlay_type', 'tags', 'owner')
+        fields = ('url', 'id', 'name', 'caption', 'overlay_type', 'tags', 'owner')
 
     def get_overlay_type(self, obj):
         return obj._meta.verbose_name
@@ -77,13 +79,12 @@ class GeometrySerializer(BaseNamedSerializer):
 
 class MediaGeometrySerializer(GeometrySerializer):
     file_name = serializers.CharField(source='file_name_new', required=False, read_only=True)
-    file_name_orig = serializers.CharField(required=False, read_only=True)
+    media_file = serializers.CharField(source='file_name_orig', required=True, style={'base_template': 'file.html'})
     file_path_orig = serializers.SerializerMethodField()
-    caption = serializers.CharField(source='description', allow_null=True, required=False, allow_blank=True, read_only=False)
 
     class Meta:
-        fields = GeometrySerializer.Meta.fields + ('attribution', 'file_name', 'file_name_orig',
-                                                   'file_path_orig', 'caption')
+        fields = GeometrySerializer.Meta.fields + ('attribution', 'file_name', 'media_file',
+                                                   'file_path_orig')
 
     def get_file_path_orig(self, obj):
         # original file gets renamed to file_name_new in storage

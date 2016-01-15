@@ -41,7 +41,7 @@ class ApiScanListTest(test.TestCase, ViewMixinAPI):
         with open(tmp_file.name, 'rb') as data:
             response = self.client_user.post(self.urls[0],
                                              {'project_id': self.project.id,
-                                              'file_name_orig' : data},
+                                              'media_file' : data},
                                              HTTP_X_CSRFTOKEN=self.csrf_token)
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
             # a few more checks to make sure that file paths are being

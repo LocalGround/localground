@@ -132,52 +132,6 @@ class Scan(Processor):
         from localground.apps.site.models import Marker
         return Marker.objects.get_marker_dict_by_scan(scan_id=self.id)
 
-    '''
-    def save_upload(self, file, user, project, do_save=True):
-        from localground.apps.lib.helpers import generic
-        from PIL import Image
-
-        # 1) first, set user, project, and uuid (required for generating file
-        # path):
-        self.owner = user
-        self.last_updated_by = user
-        self.project = project
-        #self.uuid = generic.generateID()
-
-        # 2) save original file to disk:
-        file_name_new = self.save_file_to_disk(file)
-        file_name, ext = os.path.splitext(file_name_new)
-
-        # 3) thumbnail scan:
-        thumbnail_name = '%s_thumb.png' % file_name
-        media_path = self.generate_absolute_path()
-        im = Image.open(media_path + '/' + file_name_new)
-        im.thumbnail([500, 500], Image.ANTIALIAS)
-        im.save('%s/%s' % (media_path, thumbnail_name))
-
-        # 4) save object to database:
-        #self.status = StatusCode.objects.get(name='Ready for processing')
-        #self.upload_source = UploadSource.objects.get(name='Web Form')
-        self.file_name_orig = file.name
-        if self.name is None:
-            self.name = file.name
-        if self.attribution is None:
-            self.attribution = user.username
-        self.file_name_new = file_name_new
-        self.file_name_thumb = thumbnail_name
-        self.content_type = ext.replace('.', '')  # file extension
-        #self.host = settings.SERVER_HOST
-        self.virtual_path = self.generate_relative_path()
-        if do_save:
-            self.save()
-
-        # 5) call asynchronous processor routine through celery:
-        #from localground.apps.tasks import process_map
-        #process_map.delay(self.uuid)
-        #from localground.apps.tasks import add
-        #add.delay(2, 4)
-    '''
-
     def to_dict(self):
         from localground.apps.site.api.serializers import ScanSerializer
         return ScanSerializer(self, context={'request': {}}).data

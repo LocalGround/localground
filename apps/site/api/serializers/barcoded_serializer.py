@@ -2,11 +2,10 @@ import os
 from rest_framework import serializers
 from django.conf import settings
 from django.forms.fields import FileField
-from localground.apps.lib.helpers import upload_helpers, generic
+from localground.apps.lib.helpers import upload_helpers, generic, get_timestamp_no_milliseconds
 from localground.apps.site import models
 from localground.apps.site.api import fields
 from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
-from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 
 class ScanSerializerCreate(BaseNamedSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
@@ -53,9 +52,7 @@ class ScanSerializerCreate(BaseNamedSerializer):
         }
         
     def create(self, validated_data):
-        '''
-        Overriding the create method to handle file processing
-        '''
+        # Overriding the create method to handle file processing
         owner = self.context.get('request').user
         f = self.initial_data.get('media_file')
         
