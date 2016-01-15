@@ -6,7 +6,11 @@
     {% endif %}
     
     <div class="col-sm-10">
-        <input name="{{ field.name }}" class="form-control ui-autocomplete-input" type="file" />
+        <span class="btn info fileinput-button">
+            <i class="fa fa-upload"></i>
+            <span>Navigate to file...</span>
+            <input type="file" name="{{ field.name }}">
+        </span>
         {% if field.errors %}
             {% for error in field.errors %}
                 <span class="help-block">{{ error }}</span>

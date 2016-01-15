@@ -251,7 +251,7 @@ Uploader = function (opts) {
                 )
             );
             file.context = $thediv;
-            data.file_name_orig = data.files;
+            data.media_file = data.files;
             data.submit();
             return true;
         });

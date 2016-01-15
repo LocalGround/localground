@@ -77,12 +77,16 @@ class MediaList(QueryableListCreateAPIView, AuditCreate):
                 access_key=self.request.GET.get('access_key')
             )
 
+    '''
     def perform_create(self, serializer):
         # Todo: this needs to be reviewed
         AuditCreate.perform_create(self, serializer)
+        
+        
+        serializer.save(kwargs)
 
         # save uploaded image to file system
-        f = self.request.FILES['file_name_orig']
+        f = self.request.FILES['media_file']
         
         if f:
             # ensure filetype is valid:
@@ -103,6 +107,7 @@ class MediaList(QueryableListCreateAPIView, AuditCreate):
                 raise exceptions.PermissionDenied(
                     detail='You do not have edit access to the project #{0}'.format(project_id))
             serializer.instance.save_upload(f, self.request.user, project, do_save=True)
+    '''
 
 
 class MediaInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):

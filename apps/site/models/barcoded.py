@@ -40,6 +40,7 @@ class Processor(BaseUploadedMedia):
             '%s%s' %
             (self.virtual_path, self.file_name_thumb))
 
+    '''
     def generate_relative_path(self):
         return '/%s/media/%s/%s/%s/' % (settings.USER_MEDIA_DIR,
                                         self.owner.username,
@@ -51,9 +52,10 @@ class Processor(BaseUploadedMedia):
                                       self.owner.username,
                                       self.directory_name,
                                       self.uuid)
-
+    '''
     def get_abs_directory_path(self):
         return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
+    
 
     def original_image_filesystem(self):
         return self.get_abs_directory_path() + self.file_name_new
@@ -102,14 +104,6 @@ class Scan(Processor):
     def get_object_type(self):
         return 'map-image'
 
-    '''
-	def generate_relative_path(self):
-		return '/%s/scans/%s/' % (settings.USER_MEDIA_DIR, self.uuid)
-		
-	def generate_absolute_path(self):
-		return '%s/scans/%s/' % (settings.USER_MEDIA_ROOT, self.uuid)
-	'''
-
     def processed_map_filesystem(self):
         return self.get_abs_directory_path(
         ) + self.processed_image.file_name_orig
@@ -138,6 +132,7 @@ class Scan(Processor):
         from localground.apps.site.models import Marker
         return Marker.objects.get_marker_dict_by_scan(scan_id=self.id)
 
+    '''
     def save_upload(self, file, user, project, do_save=True):
         from localground.apps.lib.helpers import generic
         from PIL import Image
@@ -177,10 +172,11 @@ class Scan(Processor):
             self.save()
 
         # 5) call asynchronous processor routine through celery:
-        '''from localground.apps.tasks import process_map
-		process_map.delay(self.uuid)'''
+        #from localground.apps.tasks import process_map
+        #process_map.delay(self.uuid)
         #from localground.apps.tasks import add
         #add.delay(2, 4)
+    '''
 
     def to_dict(self):
         from localground.apps.site.api.serializers import ScanSerializer
