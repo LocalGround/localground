@@ -134,61 +134,6 @@ class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
         self.time_stamp = get_timestamp_no_milliseconds()
         self.save()
 
-    def save_upload(self, file, user, project, do_save=True):
-        from PIL import Image, ImageOps
-
-        # 1) first, set user and project (required for generating file path):
-        self.owner = user
-        self.last_updated_by = user
-        self.project = project
-
-        # 2) save original file to disk:
-        file_name_new = self.save_file_to_disk(file)
-        file_name, ext = os.path.splitext(file_name_new)
-
-        # 3) create thumbnails:
-        media_path = self.generate_absolute_path()
-        im = Image.open(media_path + '/' + file_name_new)
-        d = self.read_exif_data(im)
-        sizes = [1000, 500, 250, 128, 50, 20]
-        photo_paths = [file_name_new]
-        for s in sizes:
-            if s in [50, 25]:
-                # ensure that perfect squares:
-                im.thumbnail((s * 2, s * 2), Image.ANTIALIAS)
-                im = im.crop([0, 0, s - 2, s - 2])
-                im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
-            else:
-                im.thumbnail((s, s), Image.ANTIALIAS)
-            abs_path = '%s/%s_%s%s' % (media_path, file_name, s, ext)
-            im.save(abs_path)
-            photo_paths.append('%s_%s%s' % (file_name, s, ext))
-
-        # 4) save object to database:
-        self.file_name_orig = file.name
-        if self.name is None:
-            self.name = file.name
-        if self.attribution is None:
-            self.attribution = user.username
-
-        self.file_name_new = file_name_new
-        self.file_name_large = photo_paths[1]
-        self.file_name_medium = photo_paths[2]
-        self.file_name_medium_sm = photo_paths[3]
-        self.file_name_small = photo_paths[4]
-        self.file_name_marker_lg = photo_paths[5]
-        self.file_name_marker_sm = photo_paths[6]
-        self.content_type = ext.replace('.', '')  # file extension
-        self.host = settings.SERVER_HOST
-        self.virtual_path = self.generate_relative_path()
-        # from EXIF data:
-        if self.point is None:
-            self.point = d.get('point', None)
-        self.datetime_taken = d.get('datetime_taken', None)
-        self.device = d.get('model', None)
-        if do_save:
-            self.save()
-
     @classmethod
     def read_exif_data(cls, im):
         from PIL.ExifTags import TAGS

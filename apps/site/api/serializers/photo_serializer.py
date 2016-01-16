@@ -88,7 +88,7 @@ class PhotoSerializer(MediaGeometrySerializer):
         f = self.initial_data.get('media_file')
         
         # ensure filetype is valid:
-        upload_helpers.validate_file(f, PhotoSerializer.ext_whitelist)
+        upload_helpers.validate_file(f, self.ext_whitelist)
         
         # save it to disk
         extras = self.process_file(f, owner)

@@ -44,10 +44,18 @@ class BaseMedia(BaseAudit):
         return upload_helpers.get_absolute_path(self.virtual_path)
 
     def absolute_virtual_path(self):
-        return upload_helpers.absolute_virtual_path(self.virtual_path, self.file_name_new)
+        return upload_helpers.encrypt_media_path(
+            self.host,
+            self.model_name_plural,
+            self.virtual_path + self.file_name_new
+        )
 
     def absolute_virtual_path_orig(self):
-        return upload_helpers.absolute_virtual_path(self.virtual_path, self.file_name_orig)
+        return upload_helpers.encrypt_media_path(
+            self.host,
+            self.model_name_plural,
+            self.virtual_path + self.file_name_orig
+        )
 
     def save_upload(self, *args, **kwargs):
         raise NotImplementedError

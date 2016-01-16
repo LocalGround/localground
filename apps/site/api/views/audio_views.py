@@ -4,7 +4,6 @@ from localground.apps.site.api.views.abstract_views import MediaList, MediaInsta
 
 
 class AudioList(MediaList):
-    ext_whitelist = ['m4a', 'mp3', 'mp4', 'mpeg', '3gp', 'aif', 'aiff', 'ogg', 'wav']
     serializer_class = serializers.AudioSerializer
     model = models.Audio
 

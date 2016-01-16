@@ -15,14 +15,8 @@ def encrypt_media_path(host, model_name_plural, path):
         base64.b64encode(path)
     )
 
-def encrypt_url(virtual_path, file_name):
-    return encrypt_media_path(virtual_path + file_name)
-
 def get_absolute_path(virtual_path):
     return settings.FILE_ROOT + virtual_path
-
-def absolute_virtual_path(virtual_path, file_name):
-    return encrypt_media_path(virtual_path + file_name)
 
 def generate_relative_path(owner, model_name_plural):
     return '/%s/media/%s/%s/' % (
