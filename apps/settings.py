@@ -116,7 +116,7 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-JQUERY_PATH = '//code.jquery.com/jquery-1.8.0.min.js'
+JQUERY_PATH = '//code.jquery.com/jquery-1.12.0.min.js'
 JQUERY_UI_PATH = '//code.jquery.com/ui/1.9.2/jquery-ui.min.js'
 BOOTSTRAP_JS_PATH = '/static/bootstrap2.2.2/js/complete/bootstrap.min.js'
 

@@ -35,10 +35,6 @@ Uploader = function (opts) {
         self = this;
         this.initAJAX();
         var msg = "";
-        $('.dropdown-menu > li > a').click(function () {
-            $('#project').val($(this).attr('id'));
-            $('#project-name').html($(this).html());
-        });
 
         $('#warning-message-text').empty();
         $('#fileupload').fileupload({
