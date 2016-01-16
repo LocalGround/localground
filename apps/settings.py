@@ -56,8 +56,8 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'YOUR_SECRET'
 DEFAULT_BASEMAP_ID = 12
 
 #OS variables:
-USER_ACCOUNT = 'linux-user-account'     #account to use for creating new OS files / directories
-GROUP_ACCOUNT = 'linux-user-group'      #group to use for creating new OS files / directories
+USER_ACCOUNT = os.environ.get('$USER', 'linux-user-account')     #account to use for creating new OS files / directories
+GROUP_ACCOUNT = os.environ.get('$USER', 'linux-user-group')    #group to use for creating new OS files / directories
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 4621440                       #default is 2621440
 IS_GOOGLE_REGISTERED_NONPROFIT = False
