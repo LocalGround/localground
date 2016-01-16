@@ -1,0 +1,34 @@
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav" id="topbar-nav">
+            <li><a href="/">Local Ground</a></li>
+        </ul>
+        <ul class="nav navbar-nav">
+            <li><a href="/maps/edit/new">Map</a></li>
+            <li><a href="/profile/tables">Table</a></li>
+            <li><a href="/upload/">Upload</a></li>
+            <li><a href="/pages/about/">About</a></li>
+        </ul>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav navbar-right pull-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Profile <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/profile/settings/">Account Settings</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/profile/projects/">Projects</a></li>
+                        <li><a href="/profile/prints/">Prints</a></li>
+                        <li><a href="/profile/forms/">Forms</a></li>
+                        <li><a href="/profile/photos/">Photos</a></li>
+                        <li><a href="/profile/audio/">Audio</a></li>
+                        <li><a href="/profile/map-images/">Scanned Maps</a></li>
+                        <!-- li><a href="/profile/tiles/">Map Tiles</a></li -->
+                        <li class="divider"></li>
+                        <li><a href="/api/0/">API Tester</a></li>
+                        <li><a href="/accounts/logout/">Logout of {{ user.username }}</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- end navbar-collapse -->
+    </div><!-- end container-fluid -->
+</nav>

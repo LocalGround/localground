@@ -1,8 +1,8 @@
 {% extends base_template %}
 
 {% block style_links %}
-    <link rel="stylesheet" href="/static/css/twitter/bootstrap.css" />
     <link rel="stylesheet" href="/static/css/jquery.fileupload-ui.css" />
+    <link rel="stylesheet" href="/static/backbone/css/lg.css" />
     <link rel="stylesheet" href="/static/backbone/css/upload.css" />
 	<link rel="stylesheet" href="/static/scripts/thirdparty/pageguide-master/css/pageguide.css" />
 {% endblock %}
@@ -11,16 +11,14 @@
 {% endblock %}	
 {% block script_links %}
     <script src="{{ JQUERY_UI_PATH }}"></script>
-    <script src="/static/backbone/js/api/views/uploader/jquery.fileupload.js" type="text/javascript" ></script>
+    <script src="/static/backbone/js/external/jquery.fileupload.js" type="text/javascript" ></script>
     
     <!-- for thumbnailing -->
-    <script src="/static/backbone/js/api/views/uploader/load-image.min.js" type="text/javascript" ></script>
-    <script src="/static/backbone/js/api/views/uploader/canvas-to-blob.min.js" type="text/javascript" ></script>
-    <script src="/static/backbone/js/api/views/uploader/jquery.fileupload-ip.js" type="text/javascript" ></script>
-    <script src="/static/backbone/js/api/views/uploader/upload.js" type="text/javascript" ></script>
-    
-    <!-- page guide -->
-    <script type="text/javascript" src="/static/scripts/thirdparty/pageguide-master/js/pageguide.js"></script>
+    <script src="/static/backbone/js/external/load-image.min.js" type="text/javascript" ></script>
+    <script src="/static/backbone/js/external/canvas-to-blob.min.js" type="text/javascript" ></script>
+    <script src="/static/backbone/js/external/jquery.fileupload-ip.js" type="text/javascript" ></script>
+    <script src="/static/backbone/js/api/views/upload.js" type="text/javascript" ></script>
+
 {% endblock %}
 
 {% block extra_styles %}
@@ -39,29 +37,24 @@
         mediaType: "{{selected_media_type.0}}",
         acceptFileTypes: '{{selected_media_type.2}}'
     });
-    {% if not embed %}
-    var pageguide = tl.pg.init();
-    {% endif %}
 {% endblock %}
 
 {% block content %}
-{% block main_content %}
+    {% block main_content %}
     <div class="container">
-        <h1>
-            {% if selected_media_type.0 == 'photos' %}
-                <img class="header-icon" src="/static/images/camera_large.png" />
-            {% endif %}
-            {% if selected_media_type.0 == 'map-images' %}
-                <img class="header-icon" src="/static/images/clipboard_large.png" />
-            {% endif %}
-            {% if selected_media_type.0 == 'audio' %}
-                <img class="header-icon" src="/static/images/headphones_large.png" />
-            {% endif %}
-            Upload <span style="color:#ccc">{{ selected_media_type.1}}</span>
-        </h1>
-        <!-- Row #1 -->
         <div class="row">
-            <!-- Cell #1 -->
+            <h1>
+                <span class="btn btn-default fileinput-button">
+                    +
+                    <input id="fileupload" type="file" name="media_file" multiple>
+                </span>
+                Upload <span style="color:#ccc">{{ selected_media_type.1}}</span>
+            </h1>
+        </div>
+
+
+        <div class="row">
+            <!-- Media Type -->
             <ul class="nav nav-pills">
                 {% for media_type in media_types %}
                     <li {% if selected_media_type.0 == media_type.0 %}class="active"{% endif %}>
@@ -69,8 +62,9 @@
                     </li>
                 {% endfor %}
             </ul>
-            <!-- Cell #2 -->
-            <div class="sel-project span5">
+            
+            <!-- Project Picker -->
+            <div class="sel-project">
                 <div class="btn-group-plain">
                     <a class="dropdown-project" data-toggle="dropdown" href="#">change<span class="dark-caret"></span>
                     </a>
@@ -81,69 +75,36 @@
                         {% endfor%}
                     </ul>
                 </div>
-                <span id="project-name" style="color: #333;font-weight:bold;font-size:24px;">{{selected_project}}</span>
+                <i class="fa fa-folder-open fa-4x"></i>
+                <div class="active-project">
+                    Media will be filed under:
+                    <div id="project-name">
+                        {{selected_project}}
+                    </div>
+                </div>
             </div>
+            
         </div>
         
-        <!-- alert, error, and success messages -->
+        <!-- Messages -->
         <div class="row">
             {% include "includes/messages.html" %}
         </div>
         
-        <!-- Row #2 -->
+        <!-- Upload Zone -->
         <div class="row">
-            <!-- Cell #1 -->
-            <div id="uploaded" class="span9" style="min-height:250px;">
-                <div id="nothing-here" style="font-size:20px;color:#666">
-                    No <strong>{{selected_media_type.1|upper}}</strong> uploaded yet
-                </div>
-            </div>
-            
-            <!-- Cell #2 -->
-            <div id="dropzone" class="span5 well" style="height: 250px;">
-                <div class="drop-region">
-                    Drag your {{selected_media_type.1|lower}} here
-                    <br>-or- <br>
-                    <span class="btn success fileinput-button" style="margin-top:10px;margin-bottom:10px;">
-                        <i class="icon-plus icon-white"></i>
-                        <span>Navigate to your {{selected_media_type.1|lower}}...</span>
-                        <input id="fileupload" type="file" name="media_file" multiple>
-                    </span>
-                    <br><small>Acceptable file types include: <br>
-                    <span id="acceptable" style="color:#333;font-weight:bold;">{{selected_media_type.2}}</span></small>
+            <div id="dropzone" class="span15" style="min-height:250px;">
+                <div id="nothing-here">
+                    Drag your <strong>{{selected_media_type.1|lower}}</strong> files here, or browse to them using the plus button above.
+                    <div class="acceptable">
+                        Acceptable file types include: <br />
+                        {{selected_media_type.2}}
+                    </div>
                 </div>
             </div>
         </div>
 	
     </div>
     {% csrf_token %}
-    {% if not embed %}
-    <!-- Instructions -->
-    <ul id="tlyPageGuide" data-tourtitle="Uploading data/media to your map">
-        <li class="tlypageguide_left" data-tourtarget=".nav-pills">
-            <div>
-                You are currently on the <strong><u>{{selected_media_type.1|lower}}</u></strong>
-                upload page.  If you would like to upload a different media type,
-                click the appropriate button.
-            </div>
-        </li>
-        <li class="tlypageguide_left" data-tourtarget=".sel-project">
-            <div>
-                All media will be added to the active project.  Use the "change" button to
-                select a different project.
-            </div>
-        </li>
-        <li class="tlypageguide_left" data-tourtarget="#dropzone">
-            <div>
-                To upload {{selected_media_type.1|lower}}, just drag your files onto the gray zone.
-                They should start uploading automatically.  Only {{selected_media_type.2}} file types
-                (also listed below the green button) can be uploaded to Local Ground for
-                this particular form.
-            </div>
-        </li>
-        
-    </ul>
-    {% endif %}
-    
-{% endblock %}
+    {% endblock %}
 {% endblock %}

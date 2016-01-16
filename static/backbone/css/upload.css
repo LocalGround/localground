@@ -1,18 +1,51 @@
-.row { display: inline-block; }
 .nav-pills {
     margin-bottom: 5px;
-    width: 552px;
 }
 .sel-project {
     display: inline-block;
-    width: 332px;
-    margin-top: 0px;
-    height: 34px;
+    margin-top: -50px;
+    float: right;
 }
+.active-project {
+    width: 250px;
+    display: inline-block;
+    vertical-align: top;
+    line-height: 22px;
+    text-align: left;
+}
+#project-name {
+    color: #333;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.fileinput-button {
+    position: relative;
+    overflow: hidden;
+    margin-right: 4px;
+    height: 80px;
+    line-height: 55px;
+    font-size: 50px;
+    width: 80px;
+    font-weight: normal;
+    border-radius: 100px;
+}
+.fa-folder-open {
+    color: #CCC;
+}
+
+#nothing-here {
+    font-size: 20px;
+    color: #666;
+}
+.acceptable {
+    font-size: 13px;
+    color: #999;
+}
+
 .btn-group-plain { float: right; margin-top: 8px; }
-#project-name { margin-right: 5px; display: inline-block; float: right; margin-top:6px;}
+
 .alert {
-    width: 853px;
     display: none;
     margin-top: 0px;
 }
@@ -50,7 +83,7 @@ margin-right: 8px;
         color:#666"
 }
 
-#dropzone > div {
+/*#dropzone > div {
         text-align:center;
         vertical-align:middle;
         height: 100px;
@@ -58,7 +91,7 @@ margin-right: 8px;
         top: 40%;
         margin-top: -50px;
         width: 100%;
-}
+}*/
 
 #uploaded, #dropzone {
     position: relative;
@@ -73,7 +106,6 @@ margin-right: 8px;
         margin-right: 10px;
 }
 #dropzone {
-width: 310px;
     background: #EEEEEE;
     text-align: center;
     font-weight: bold;

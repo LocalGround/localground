@@ -1,14 +1,8 @@
 from django.shortcuts import render_to_response
-from localground.apps.site.models import *
-from localground.apps.lib.helpers import generic
-from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from localground.apps.site.decorators import process_identity, process_project
-from django.conf import settings
+from localground.apps.site.decorators import process_project
 from django.template import RequestContext
-import simplejson as json
 from localground.apps.site.models import Project
-from datetime import datetime
 
 
 @login_required
@@ -16,7 +10,7 @@ from datetime import datetime
 def init_upload_form(request,
                      media_type='photos',
                      template_name='forms/uploader.html',
-                     base_template='base/base.html',
+                     base_template='base/base_new.html',
                      embed=False, project=None):
     if embed:
         base_template = 'base/iframe.html'

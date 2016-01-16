@@ -244,7 +244,7 @@ Uploader = function (opts) {
                         .css({'min-width': '90px'})
                         .append($('<div />').addClass('bar').css({width: '0%'}))
                 );
-            $('#uploaded').prepend($thediv);
+            $('#dropzone').prepend($thediv);
             $thediv.find('.img-polaroid').append(
                 $('<p />').html(
                     self.formatFilename(file.name) + '<br>' + self.formatFileSize(file.size)
