@@ -9,8 +9,8 @@ def get_metadata():
     return {
         'east': {'read_only': True, 'required': False, 'type': 'field'},
         'north': {'read_only': True, 'required': False, 'type': 'field'},
-        'description': {'read_only': False, 'required': False, 'type': 'memo'},
-        'file_name_orig': {'read_only': False, 'required': True, 'type': 'string'},
+        'caption': {'read_only': False, 'required': False, 'type': 'memo'},
+        'media_file': { 'type': 'string', 'required': True, 'read_only': False },
         'file_path': {'type': 'field', 'required': False, 'read_only': True},
         'tags': {'read_only': False, 'required': False, 'type': 'string'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
@@ -67,6 +67,5 @@ class ApiScanDetailTest(test.TestCase, ViewMixinAPI):
         self.urls = ['/api/0/map-images/%s/' % self.scan.id]
         self.view = views.ScanInstance.as_view()
         self.metadata = get_metadata()
-        self.metadata.update({
-            'file_name_orig': {'read_only': True, 'required': False, 'type': 'string'}
-        })
+        self.metadata.update({"media_file": { "type": "string", "required": False, "read_only": True }})
+

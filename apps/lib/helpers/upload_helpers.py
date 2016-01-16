@@ -1,4 +1,4 @@
-import time, os, base64
+import time, os, base64, stat
 from django.conf import settings
 from pwd import getpwnam
     

@@ -420,7 +420,7 @@ class ModelMixin(object):
 
     def create_photo(self, user, project, name='Photo Name',
                      file_name='myphoto.jpg', device='HTC',
-                     point=None, with_file=False):
+                     point=None):
         from localground.apps.site import models
         photo = models.Photo(
             project=project,
@@ -432,12 +432,9 @@ class ModelMixin(object):
             device=device,
             point=point
         )
-        photo.virtual_path = photo.generate_relative_path()
         photo.save()
-        if with_file:
-            self.create_image_from_scratch(photo)
         return photo
-    
+    '''
     def create_image_from_scratch(self, photo):
         import Image, ImageFont, ImageDraw, StringIO, os
         from django.core.files import File
@@ -468,6 +465,7 @@ class ModelMixin(object):
             
         # 4) simulate file upload:
         photo.save_upload(f, photo.owner, photo.project)
+        '''
 
     def create_audio(self, user, project, name='Audio Name',
                      file_name='my_audio.jpg'):

@@ -69,3 +69,7 @@ class AudioSerializer(MediaGeometrySerializer):
     def get_file_path_new(self, obj):
         return obj.encrypt_url(obj.file_name_new)
 
+
+class AudioSerializerUpdate(AudioSerializer):
+    media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
+

@@ -1,3 +1,4 @@
+import os
 from django import test
 from django.conf import settings
 from localground.apps.site.api import views
@@ -7,28 +8,28 @@ from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib
 from rest_framework import status
 
-metadata = {
-    "url": { "type": "field", "required": False, "read_only": True },
-    "id": { "type": "integer", "required": False, "read_only": True },
-    "name": { "type": "string", "required": False, "read_only": False },
-    "description": { "type": "memo", "required": False, "read_only": False },
-    "overlay_type": { "type": "field", "required": False, "read_only": True },
-    "tags": { "type": "string", "required": False, "read_only": False },
-    "owner": { "type": "field", "required": False, "read_only": True },
-    "project_id": { "type": "field", "required": False, "read_only": False },
-    "geometry": { "type": "geojson", "required": False, "read_only": False },
-    "attribution": { "type": "string", "required": False, "read_only": False },
-    "file_name": { "type": "string", "required": False, "read_only": True },
-    "caption": { "type": "memo", "required": False, "read_only": False },
-    "path_large": { "type": "field", "required": False, "read_only": True },
-    "path_medium": { "type": "field", "required": False, "read_only": True },
-    "path_medium_sm": { "type": "field", "required": False, "read_only": True },
-    "path_small": { "type": "field", "required": False, "read_only": True },
-    "path_marker_lg": { "type": "field", "required": False, "read_only": True },
-    "path_marker_sm": { "type": "field", "required": False, "read_only": True },
-    "file_path_orig": { "type": "field", "required": False, "read_only": True },
-    "file_name_orig": { "type": "string", "required": False, "read_only": True }
-}
+def get_metadata():
+    return {
+        "url": { "type": "field", "required": False, "read_only": True },
+        "id": { "type": "integer", "required": False, "read_only": True },
+        "name": { "type": "string", "required": False, "read_only": False },
+        "overlay_type": { "type": "field", "required": False, "read_only": True },
+        "tags": { "type": "string", "required": False, "read_only": False },
+        "owner": { "type": "field", "required": False, "read_only": True },
+        "project_id": { "type": "field", "required": False, "read_only": False },
+        "geometry": { "type": "geojson", "required": False, "read_only": False },
+        "attribution": { "type": "string", "required": False, "read_only": False },
+        "file_name": { "type": "string", "required": False, "read_only": True },
+        "caption": { "type": "memo", "required": False, "read_only": False },
+        "path_large": { "type": "field", "required": False, "read_only": True },
+        "path_medium": { "type": "field", "required": False, "read_only": True },
+        "path_medium_sm": { "type": "field", "required": False, "read_only": True },
+        "path_small": { "type": "field", "required": False, "read_only": True },
+        "path_marker_lg": { "type": "field", "required": False, "read_only": True },
+        "path_marker_sm": { "type": "field", "required": False, "read_only": True },
+        "file_path_orig": { "type": "field", "required": False, "read_only": True },
+        "media_file": { "type": "string", "required": True, "read_only": False }
+    }
 
 class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
 
@@ -36,7 +37,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         ViewMixinAPI.setUp(self)
         self.urls = ['/api/0/photos/']
         self.view = views.PhotoList.as_view()
-        self.metadata = metadata
+        self.metadata = get_metadata()
 
     def test_create_photo_using_post(self, **kwargs):
         import Image, tempfile
@@ -46,7 +47,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         with open(tmp_file.name, 'rb') as data:
             response = self.client_user.post(self.urls[0],
                                              {'project_id': self.project.id,
-                                              'file_name_orig' : data},
+                                              'media_file' : data},
                                              HTTP_X_CSRFTOKEN=self.csrf_token)
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
             # a few more checks to make sure that file paths are being
@@ -74,22 +75,36 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
             
 class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 
+    def create_photo_with_file(self):
+        import Image
+        image = Image.new('RGB', (200, 100))
+        image.save('test.jpg')
+        with open('test.jpg', 'rb') as data:
+            response = self.client_user.post(
+                '/api/0/photos/',
+                { 'project_id': self.project.id, 'media_file': data },
+                HTTP_X_CSRFTOKEN=self.csrf_token
+            )
+            return models.Photo.objects.get(id=response.data.get("id"))
+    
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=False)
-        self.photo = self.create_photo(self.user, self.project, with_file=True)
+        self.photo = self.create_photo_with_file()
         self.url = '/api/0/photos/%s/' % self.photo.id
         self.urls = [self.url]
         self.view = views.PhotoInstance.as_view()
-        self.metadata = metadata
+        self.metadata = get_metadata()
+        self.metadata.update({"media_file": { "type": "string", "required": False, "read_only": True }})
         
     def tearDown(self):
         #delete method also removes files from file system:
         for photo in models.Photo.objects.all():
             photo.delete()
+        if os.path.exists('test.jpg'):
+            os.remove('test.jpg')
 
     def test_update_photo_using_put(self, **kwargs):
-        name, description, color = 'New Photo Name', \
-            'Test description', 'FF0000'
+        name, description = 'New Photo Name', 'Test description'
         point = {
             "type": "Point",
             "coordinates": [12.492324113849, 41.890307434153],
@@ -98,7 +113,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
                             data=urllib.urlencode({
                                 'geometry': point,
                                 'name': name,
-                                'description': description
+                                'caption': description
                             }),
                             HTTP_X_CSRFTOKEN=self.csrf_token,
                             content_type="application/x-www-form-urlencoded"
@@ -107,6 +122,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         updated_photo = models.Photo.objects.get(id=self.photo.id)
         self.assertEqual(updated_photo.name, name)
         self.assertEqual(updated_photo.description, description)
+        self.assertEqual(response.data.get("caption"), description)
         self.assertEqual(updated_photo.geometry.y, point['coordinates'][1])
         self.assertEqual(updated_photo.geometry.x, point['coordinates'][0])
 

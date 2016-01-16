@@ -9,5 +9,5 @@ class AudioList(MediaList):
 
 
 class AudioInstance(MediaInstance):
-    serializer_class = serializers.AudioSerializer
+    serializer_class = serializers.AudioSerializerUpdate
     model = models.Audio

@@ -57,9 +57,6 @@ class BaseMedia(BaseAudit):
             self.virtual_path + self.file_name_orig
         )
 
-    def save_upload(self, *args, **kwargs):
-        raise NotImplementedError
-
     def generate_relative_path(self):
         return upload_helpers.generate_relative_path(self.owner, self.model_name_plural)
 

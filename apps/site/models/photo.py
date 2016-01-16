@@ -61,18 +61,22 @@ class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
         path = self.get_absolute_path()
         if len(path.split('/')) > 2: #protects against empty file path
             file_paths = [
-                '%s%s' % (path, self.file_name_orig),
-                '%s%s' % (path, self.file_name_new),
-                '%s%s' % (path, self.file_name_large),
-                '%s%s' % (path, self.file_name_medium),
-                '%s%s' % (path, self.file_name_medium_sm),
-                '%s%s' % (path, self.file_name_small),
-                '%s%s' % (path, self.file_name_marker_lg),
-                '%s%s' % (path, self.file_name_marker_sm)
+                self.file_name_orig,
+                self.file_name_new,
+                self.file_name_large,
+                self.file_name_medium,
+                self.file_name_medium_sm,
+                self.file_name_small,
+                self.file_name_marker_lg,
+                self.file_name_marker_sm
             ]
             for f in file_paths:
-                if os.path.exists(f) and f.find(settings.USER_MEDIA_DIR) > 0:
-                    os.remove(f)
+                p = '%s%s' % (path, f)
+                if (os.path.exists(p) and
+                    f is not None and
+                    len(f) > 0 and
+                    p.find(settings.USER_MEDIA_DIR) > 0):
+                    os.remove(p)
 
         # execute default behavior
         super(Photo, self).delete(*args, **kwargs)
