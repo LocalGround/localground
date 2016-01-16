@@ -5,7 +5,7 @@ from localground.apps.site.tests import ViewMixin
 from rest_framework import status
 import urllib
 
-class UploadTest(test.TestCase, ViewMixin):
+class InitUploadFormTest(test.TestCase, ViewMixin):
     '''
     Loads Django template
     '''
@@ -22,12 +22,3 @@ class UploadTest(test.TestCase, ViewMixin):
             '/upload/map-images/embed/'
         ]
         self.view = uploader.init_upload_form
-        
-class UploadMediaTest(test.TestCase, ViewMixin):
-    '''
-    Handles file uploads. Todo: migrate to use the API Endpoints
-    '''
-    def setUp(self):
-        ViewMixin.setUp(self)
-        self.urls = ['/upload/media/post/']
-        self.view = uploader.upload_media

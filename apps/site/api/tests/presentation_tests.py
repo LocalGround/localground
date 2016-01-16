@@ -14,7 +14,7 @@ class ApiPresentationTest(object):
     slug = 'new-friendly-url'
     metadata = {
         'code': {'read_only': False, 'required': False, 'type': 'json'},
-        'description': {'read_only': False, 'required': False, 'type': 'memo'},
+        'caption': {'read_only': False, 'required': False, 'type': 'memo'},
         'tags': {'read_only': False, 'required': False, 'type': 'string'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
@@ -28,7 +28,7 @@ class ApiPresentationTest(object):
         response = method(self.url,
                           data=urllib.urlencode({
                               'name': self.name,
-                              'description': self.description,
+                              'caption': self.description,
                               'tags': self.tags,
                               'slug': self.slug,
                               'code': json.dumps(code)
