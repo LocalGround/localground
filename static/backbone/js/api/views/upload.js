@@ -76,7 +76,7 @@ Uploader = function (opts) {
                 self.successCount = 0;
             },
             progress: function (e, data) {
-                data.files[0].context.find('.progress .bar').css(
+                data.files[0].context.find('.progress-bar').css(
                     'width',
                     parseInt(data.loaded / data.total * 100, 10) + '%'
                 );
@@ -223,7 +223,7 @@ Uploader = function (opts) {
             }
             var $thediv = $('<div />')
                 .addClass('file-container')
-                .append($('<div class="img-polaroid" />')
+                .append($('<div class="img-polaroid thumbnail" />')
                     .append(
                         $('<div class="img-container" />')
                             .css({
@@ -239,10 +239,15 @@ Uploader = function (opts) {
                             )
                     ))
                 .append(
-                    $('<div />')
+                    $('<div class="progress"></div>')
+                        .append(
+                            $('<div class="progress-bar" role="progressbar" style="width: 10%;"></div>')
+                                .append($('<span class="sr-only">10% Complete</span>'))
+                        )
+                    /*$('<div />')
                         .addClass('progress progress-success progress-striped active')
                         .css({'min-width': '90px'})
-                        .append($('<div />').addClass('bar').css({width: '0%'}))
+                        .append($('<div />').addClass('bar').css({width: '0%'}))*/
                 );
             $('#dropzone').prepend($thediv);
             $thediv.find('.img-polaroid').append(
@@ -291,18 +296,8 @@ Uploader = function (opts) {
         data.files[0].isDone = true;
         data.files[0].context.find('.progress').remove();
         if (data.textStatus == "success") {
-            $success = $('<div class="badge badge-success" />')
-                .css({
-                    padding: '0px 3px 3px 3px',
-                    'border-radius': '20px',
-                    '-webkit-border-radius': '20px',
-                    '-moz-border-radius': '20px',
-                    'margin-top': '-10px',
-                    'margin-left': '-10px',
-                    position: 'absolute',
-                    width: '16px'
-                })
-                .append($('<i >').addClass('icon-white icon-ok'));
+            $success = $('<div class="badge success-icon" />')
+                .append($('<i >').addClass('fa fa-check'));
 
             $delete = $('<a />').attr('href', '#').append('delete')
                 .click(function () {

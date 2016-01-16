@@ -54,6 +54,8 @@
     float: left;
     margin-bottom: 5px;
     margin-top: 5px;
+    background-color: #FFF;
+    padding: 5px 5px 10px 5px;
 }
 .img-polaroid > p {
         margin-top: 5px;
@@ -65,11 +67,11 @@
         overflow: hidden;
 }
 .file-container {
-        width: 155px;
-        height: 190px;
-        float: left;
-margin-left: 8px;
-margin-right: 8px;
+    width: 155px;
+    height: 190px;
+    float: left;
+    margin-left: 8px;
+    margin-right: 8px;
 }
 #nothing-here {
         text-align:center;
@@ -83,15 +85,16 @@ margin-right: 8px;
         color:#666"
 }
 
-/*#dropzone > div {
-        text-align:center;
-        vertical-align:middle;
-        height: 100px;
-        position: absolute;
-        top: 40%;
-        margin-top: -50px;
-        width: 100%;
-}*/
+.success-icon {
+    padding: 3px;
+    border-radius: 20px;
+    margin-top: -10px;
+    margin-left: -10px;
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    line-height: 16px;
+}
 
 #uploaded, #dropzone {
     position: relative;
