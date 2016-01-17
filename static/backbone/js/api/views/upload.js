@@ -5,7 +5,6 @@ Uploader = function (opts) {
     //this.url = '/upload/media/post/';
     this.errorCount = 0;
     this.successCount = 0;
-    console.log(opts);
     this.options = {
         maxFileSize: undefined,
         minFileSize: undefined,
@@ -79,7 +78,6 @@ Uploader = function (opts) {
             }
         });
         
-        console.log($('#fileupload'));
         //section for uploading by dragging files from your desktop:
         $(document).bind({
             dragover: function (e) {
@@ -128,7 +126,6 @@ Uploader = function (opts) {
     };
 
     this.hasError = function (file) {
-        console.log(this.options.acceptFileTypes);
         var pieces = file.name.split('.'),
             ext = pieces[pieces.length - 1];
         file.ext = ext;

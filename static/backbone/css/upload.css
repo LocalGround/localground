@@ -64,6 +64,7 @@
 .acceptable {
     font-size: 13px;
     color: #999;
+    text-align: center;
 }
 
 .btn-group-plain { float: right; margin-top: 8px; }
