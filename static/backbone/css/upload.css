@@ -55,13 +55,12 @@
     width: 100px;
 }
 .fa-folder-open {
+    display: none;
+}
+.fa-folder-open, .fa-map, .fa-camera, .fa-headphones {
     color: #CCC;
 }
 
-#nothing-here {
-    font-size: 20px;
-    color: #666;
-}
 .acceptable {
     font-size: 13px;
     color: #999;
@@ -89,9 +88,6 @@
     text-align: center;
     overflow: hidden;
 }
-.fa-headphones {
-    color: #CCC;
-}
 .audio-holder {
     display: inline-block;
     width: 145px;
@@ -104,15 +100,11 @@
     margin-right: 8px;
 }
 #nothing-here {
-        text-align:center;
-        vertical-align:middle;
-        height: 40px;
-        position: absolute;
-        top: 50%;
-        margin-top: -20px;
-        width: 100%;
-        font-size:20px;
-        color:#666"
+    text-align: center;
+    margin-top: 40px;
+    width: 100%;
+    font-size: 20px;
+    color: #666;
 }
 
 .success-icon {
@@ -127,8 +119,16 @@
     background-color: #468847;
 }
 
+span.plus {
+    width: 28px;
+    height: 28px;
+    border: solid 1px #CCC;
+    border-radius: 40px;
+    display: inline-block;
+    background: #FFF;
+    line-height: 22px;
+}
 #dropzone {
-    position: relative;
     border: 1px solid #eee;
     border: 1px solid rgba(0, 0, 0, 0.05);
     -webkit-border-radius: 4px;

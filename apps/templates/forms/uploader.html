@@ -86,9 +86,16 @@
         
         <!-- Upload Zone -->
         <div class="row">
-            <div id="dropzone" class="span15" style="min-height:250px;">
+            <div id="dropzone" style="min-height:250px;">
                 <div id="nothing-here">
-                    Drag your <strong>{{selected_media_type.1|lower}}</strong> files here, or browse to them using the plus button above.
+                    {% if selected_media_type.0 == "default" %}
+                        <i class="fa fa-camera fa-4x"></i>
+                        <i class="fa fa-headphones fa-4x"></i>
+                    {% else %}
+                        <i class="fa fa-map fa-4x"></i>
+                    {% endif %}
+                    <br />
+                    Drag your <strong>{{selected_media_type.1|lower}}</strong> files here, or browse to them using the <span class="plus">+</span> button above.
                     <div class="acceptable">
                         This form accepts the following file types: <br />
                         {{selected_media_type.2}}

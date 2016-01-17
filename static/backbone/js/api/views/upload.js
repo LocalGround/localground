@@ -226,14 +226,21 @@ Uploader = function (opts) {
         return this.getUrl('/profile/', ext);
     };
 
+    this.showInitMessage = function () {
+        if ($('.file-container').length == 0) {
+            $('#nothing-here').show();
+        }
+    };
+
     this.onAdd = function (e, data) {
-        $('#nothing-here').remove();
+        $('#nothing-here').hide();
         //validate files:
         self.validate(data);
         self.showOmittedFiles(data);
         $.each(data.files, function (index, file) {
             if (file.error) {
                 //continue to next iteration: return true;
+                self.showInitMessage();
                 return true;
             }
             data.url = self.getApiUrl(file.ext);
@@ -319,6 +326,7 @@ Uploader = function (opts) {
                             $container.remove();
                             data.files[0].cancelled = true;
                             data.files[0].context.remove();
+                            self.showInitMessage();
                         },
                         error: function (response) {
                             try {

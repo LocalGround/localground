@@ -13,12 +13,8 @@ class InitUploadFormTest(test.TestCase, ViewMixin):
         ViewMixin.setUp(self)
         self.urls = [
             '/upload/',
-            '/upload/photos/',
-            '/upload/audio/',
             '/upload/map-images/',
             '/upload/embed/',
-            '/upload/photos/embed/',
-            '/upload/audio/embed/',
             '/upload/map-images/embed/'
         ]
         self.view = uploader.init_upload_form
