@@ -13,7 +13,7 @@ def init_upload_form(request,
                      base_template='base/base_new.html',
                      embed=False, project=None):
     if embed:
-        base_template = 'base/iframe.html'
+        base_template = 'base/iframe_new.html'
 
     projects = Project.objects.get_objects(request.user)
     image_types = 'png, jpg, jpeg, gif'
