@@ -95,8 +95,8 @@ define(["views/prints/printMockup",
                     printMockup.ui.caption.click();
                     expect(printMockup.showCaptionInput).toHaveBeenCalled();
                     expect(printMockup.ui.caption.css('display')).toEqual('none');
-                    expect(printMockup.ui.caption.css('display')).toEqual('block');
-                })
+                    expect(printMockup.ui.captionInput.css('display')).toEqual('block');
+                });
 
                 it('Instruction input is hidden when unfocused', function () {
                     spyOn(PrintMockup.prototype,'hideCaptionInput').and.callThrough();
@@ -106,7 +106,7 @@ define(["views/prints/printMockup",
                     printMockup.ui.captionInput.blur();
                     expect(printMockup.hideCaptionInput).toHaveBeenCalled();
                     expect(printMockup.ui.captionInput.css('display')).toEqual('none');
-                })
+                });
 
                 it('Correctly replaces title text', function () {
                     initMockup.call(this);
@@ -127,13 +127,12 @@ define(["views/prints/printMockup",
                     printMockup.ui.captionInput.val('Test Instructions');
                     printMockup.ui.captionInput.blur();
                     expect(printMockup.ui.caption.text()).toEqual('Test Instructions');
-                    expect(printMockup.getInstructions()).toEqual('Test Instructions')
+                    expect(printMockup.getInstructions()).toEqual('Test Instructions');
                 });
 
             });
 
-
-        }); 
+        });
 
 
     });
