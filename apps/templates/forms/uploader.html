@@ -1,10 +1,8 @@
 {% extends base_template %}
 
 {% block style_links %}
-    <link rel="stylesheet" href="/static/css/jquery.fileupload-ui.css" />
     <link rel="stylesheet" href="/static/backbone/css/lg.css" />
     <link rel="stylesheet" href="/static/backbone/css/upload.css" />
-	<link rel="stylesheet" href="/static/scripts/thirdparty/pageguide-master/css/pageguide.css" />
 {% endblock %}
 {% block jquery_version %}
 	<script src="{{ JQUERY_PATH }}"></script>
@@ -18,7 +16,7 @@
     <script src="/static/backbone/js/external/load-image.min.js" type="text/javascript" ></script>
     <script src="/static/backbone/js/external/canvas-to-blob.min.js" type="text/javascript" ></script>
     <script src="/static/backbone/js/external/jquery.fileupload-ip.js" type="text/javascript" ></script>
-    <script src="/static/backbone/js/api/views/upload.js" type="text/javascript" ></script>
+    <script src="/static/backbone/js/api/views/upload.js" type="text/javascript"></script>
 
 {% endblock %}
 
@@ -91,7 +89,7 @@
                 <div id="nothing-here">
                     Drag your <strong>{{selected_media_type.1|lower}}</strong> files here, or browse to them using the plus button above.
                     <div class="acceptable">
-                        Acceptable file types include: <br />
+                        This form accepts the following file types: <br />
                         {{selected_media_type.2}}
                     </div>
                 </div>

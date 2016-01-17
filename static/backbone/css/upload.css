@@ -62,20 +62,19 @@
 }
 .progress { height: 8px; }
 .img-polaroid {
-    float: left;
     margin-bottom: 5px;
     margin-top: 5px;
     background-color: #FFF;
     padding: 5px 5px 10px 5px;
 }
 .img-polaroid > p {
-        margin-top: 5px;
-        line-height: 12px;
-        font-size: 11px;
-        color: #999;
-        margin: 0px;
-        text-align: center;
-        overflow: hidden;
+    margin-top: 5px;
+    line-height: 12px;
+    font-size: 11px;
+    color: #999;
+    margin: 0px;
+    text-align: center;
+    overflow: hidden;
 }
 .file-container {
     width: 155px;
@@ -105,9 +104,10 @@
     width: 22px;
     height: 22px;
     line-height: 16px;
+    background-color: #468847;
 }
 
-#uploaded, #dropzone {
+#dropzone {
     position: relative;
     border: 1px solid #eee;
     border: 1px solid rgba(0, 0, 0, 0.05);
@@ -115,11 +115,6 @@
     -moz-border-radius: 4px;
     border-radius: 4px;
     padding: 15px;
-}
-#uploaded {
-        margin-right: 10px;
-}
-#dropzone {
     background: #EEEEEE;
     text-align: center;
     font-weight: bold;
@@ -129,6 +124,8 @@
     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
     font-weight: normal;
+    overflow: hidden;
+    height: auto;
 }
 #dropzone.in {
     /*width: 860px;
@@ -136,7 +133,7 @@
     font-size: larger;
 }
 #dropzone.hover {
-    background: palegreen;
+    background: #dff0d8;
 }
 #dropzone.fade {
     -webkit-transition: all 0.3s ease-out;

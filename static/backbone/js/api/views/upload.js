@@ -237,13 +237,9 @@ Uploader = function (opts) {
                 .append(
                     $('<div class="progress"></div>')
                         .append(
-                            $('<div class="progress-bar" role="progressbar" style="width: 10%;"></div>')
+                            $('<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="width: 10%;"></div>')
                                 .append($('<span class="sr-only">10% Complete</span>'))
                         )
-                    /*$('<div />')
-                        .addClass('progress progress-success progress-striped active')
-                        .css({'min-width': '90px'})
-                        .append($('<div />').addClass('bar').css({width: '0%'}))*/
                 );
             $('#dropzone').prepend($thediv);
             $thediv.find('.img-polaroid').append(
@@ -321,7 +317,7 @@ Uploader = function (opts) {
                 });
             data.files[0].context.find('.img-container').prepend($success);
             data.files[0].context.find('p')
-                .append(' | ').append($delete).append('<br>' + $('#project-name').html());
+                .append('<br />').append($delete).append(' | <a href="/profile/photos/">edit</a>');
             self.successCount += 1;
         } else {
             $error = $('<div class="badge badge-important" />')
