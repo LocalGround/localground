@@ -147,7 +147,7 @@ define(
                 access: "Public (everyone)",
                 basemap: 12,
                 center: { type: "Point", coordinates: [-122, 37] },
-                description: "This is a cool description for cool, humble people",
+                caption: "This is a cool caption for cool, humble people",
                 entities: [ { ids: [ 19 ], overlay_type: "photo" } ],
                 children: {
                     photos: {
@@ -156,7 +156,7 @@ define(
                             {
                                 id: 19,
                                 name: "Tree with Bird",
-                                description: "",
+                                caption: "",
                                 overlay_type: "photo",
                                 tags: "tree, napali coast",
                                 project_id: 1,

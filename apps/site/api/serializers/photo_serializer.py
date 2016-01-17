@@ -1,4 +1,4 @@
-import os
+import os, sys
 from django.conf import settings
 from localground.apps.site.api.serializers.base_serializer import MediaGeometrySerializer
 from rest_framework import serializers
@@ -59,6 +59,7 @@ class PhotoSerializer(MediaGeometrySerializer):
                 # ensure that perfect squares:
                 im.thumbnail((s * 2, s * 2), Image.ANTIALIAS)
                 im = im.crop([0, 0, s - 2, s - 2])
+                # for some reason, ImageOps.expand throws an error for some files:
                 im = ImageOps.expand(im, border=2, fill=(255, 255, 255, 255))
             else:
                 im.thumbnail((s, s), Image.ANTIALIAS)

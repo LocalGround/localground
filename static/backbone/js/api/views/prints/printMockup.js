@@ -22,7 +22,7 @@ define(["marionette",
             },
 
             DEFAULT_TITLE: 'Click to enter a map title',
-            DEFAULT_DESCRIPTION: 'Click to enter instructions',
+            DEFAULT_CAPTION: 'Click to enter instructions',
 
             tagName: 'div',
             id: 'print-mockup',
@@ -32,14 +32,14 @@ define(["marionette",
             ui: {
                 title: '#print-map-title',
                 titleInput: '#print-map-title-input',
-                description: '#print-map-description',
-                descriptionInput: '#print-map-description-input'
+                caption: '#print-map-caption',
+                captionInput: '#print-map-caption-input'
             },
             events: {
                 'click #print-map-title': 'showTitleInput',
-                'click #print-map-description': 'showDescriptionInput',
+                'click #print-map-caption': 'showCaptionInput',
                 'blur #print-map-title-input': 'hideTitleInput',
-                'blur #print-map-description-input': 'hideDescriptionInput'
+                'blur #print-map-caption-input': 'hideCaptionInput'
             },
             /**
              * Initializes the printMockup
@@ -89,10 +89,10 @@ define(["marionette",
                 this.ui.titleInput.focus();
             },
 
-            showDescriptionInput: function () {
-                this.ui.description.hide();
-                this.ui.descriptionInput.show();
-                this.ui.descriptionInput.focus();
+            showCaptionInput: function () {
+                this.ui.caption.hide();
+                this.ui.captionInput.show();
+                this.ui.captionInput.focus();
             },
 
             hideTitleInput: function (event) {
@@ -105,14 +105,14 @@ define(["marionette",
                 this.ui.title.show();
             },
 
-            hideDescriptionInput: function (event) {
-                var newDescription = event.target.value;
-                if (!newDescription) {
-                    newDescription = this.DEFAULT_DESCRIPTION;
+            hideCaptionInput: function (event) {
+                var newCaption = event.target.value;
+                if (!newCaption) {
+                    newCaption = this.DEFAULT_CAPTION;
                 }
-                this.ui.description.text(newDescription);
-                this.ui.descriptionInput.hide();
-                this.ui.description.show();
+                this.ui.caption.text(newCaption);
+                this.ui.captionInput.hide();
+                this.ui.caption.show();
             },
 
             getFormData : function () {
@@ -136,7 +136,7 @@ define(["marionette",
             },
 
             getInstructions: function () {
-                return this.ui.descriptionInput.val();
+                return this.ui.captionInput.val();
             }
         });
         return PrintMockup;

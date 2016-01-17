@@ -48,7 +48,7 @@ Uploader = function (opts) {
                 //fires after all uploads are finished:
                 if (self.successCount > 0) {
                     msg = 'Your files have finished uploading. You may now add ';
-                    msg += 'titles & descriptions to your files ';
+                    msg += 'titles & captions to your files ';
                     msg += 'or geo-reference you files in the <a id="edit-map-link" href="#">map editor</a>.';
                     $('#success-message-text').html(msg);
                     $('#edit-map-link').attr('href', '/maps/editor/new/');
@@ -62,7 +62,6 @@ Uploader = function (opts) {
                 } else {
                     $('#error').hide();
                 }
-
                 //reset counters:
                 self.errorCount = 0;
                 self.successCount = 0;
@@ -159,7 +158,7 @@ Uploader = function (opts) {
         return valid;
     };
 
-    this.renderBlob = function (file, index) {
+    this.renderBlob = function (file) {
         return ((loadImage && loadImage(
             file,
             function (img) {
@@ -265,6 +264,8 @@ Uploader = function (opts) {
                                 .append($('<span class="sr-only">10% Complete</span>'))
                         )
                 );
+            file.context = $thediv;
+            self.showPreview(file);
             $('#dropzone').prepend($thediv);
             $thediv.find('.img-polaroid').append(
                 $('<p />').html(
@@ -273,100 +274,90 @@ Uploader = function (opts) {
             );
             file.context = $thediv;
             data.media_file = data.files;
-            data.submit();
+            data.submit()
+                .error(function (result, textStatus, jqXHR) {
+                    self.handleServerError(data.files[0], result, textStatus, jqXHR);
+                });
             return true;
         });
-
-        //add image preview functionality:
-        $(this).fileupload('resize', data).done(function () {
-            $.each(data.files, function (index, file) {
-                if (file.error) {
-                    //continue to next iteration: return true;
-                    return true;
-                }
-                var that = this,
-                    options = this.options,
-                    deferred = $.Deferred();
-                //load image function defined in fileupload-ip.js
-                if (self.options.previewSourceFileTypes.test(file.type)) {
-                    self.renderBlob(file, index);
-                    return true;
-                } else {
-                    var $preview = file.context.find('.preview');
-                    $('<div class="audio-holder"><i class="fa fa-headphones fa-5x"></i></div>')
-                        .insertAfter($preview);
-                    $preview.remove();
-                    return false;
-                }
-            });
-        });
     };
-    
-    this.done = function (e, data) {
-        var $success, $delete, $error, $container,
-            response = data.result;
-        data.files[0].isDone = true;
-        data.files[0].context.find('.progress').remove();
-        if (data.textStatus == "success") {
-            $success = $('<div class="badge success-icon" />')
-                .append($('<i >').addClass('fa fa-check'));
-
-            $delete = $('<a />').attr('href', '#').append('delete')
-                .click(function () {
-                    var $container = $(this).parent().parent().parent(),
-                        deleteURL = self.getApiUrl(data.files[0].ext) + data.result.id + "/";
-                    $.ajax({
-                        url: deleteURL,
-                        type: 'DELETE',
-                        dataType: 'json',
-                        success: function () {
-                            $container.remove();
-                            data.files[0].cancelled = true;
-                            data.files[0].context.remove();
-                            self.showInitMessage();
-                        },
-                        error: function (response) {
-                            try {
-                                var error = JSON.parse(response.responseText).detail;
-                                alert("Error deleting: " + error);
-                            } catch (ex) {
-                                alert("Error deleteting");
-                            }
-                        }
-                    });
-                    return false;
-                });
-            data.files[0].context.find('.img-container').prepend($success);
-            data.files[0].context.find('p')
-                .append('<br />').append($delete).append(' | <a href="' + self.getProfileUrl(data.files[0].ext) + '">edit</a>');
-            self.successCount += 1;
+    this.handleSuccess = function (file) {
+        console.log(file);
+        this.showPreview(file);
+    };
+    this.showPreview = function (file) {
+        //load image function defined in fileupload-ip.js
+        if (self.options.previewSourceFileTypes.test(file.type)) {
+            self.renderBlob(file);
         } else {
-            $error = $('<div class="badge badge-important" />')
-                .css({
-                    padding: '0px 0px 3px 3px',
-                    'border-radius': '20px',
-                    '-webkit-border-radius': '20px',
-                    '-moz-border-radius': '20px',
-                    'margin-top': '-10px',
-                    'margin-left': '-10px',
-                    position: 'absolute',
-                    width: '16px'
-                })
-                .append($('<i >').addClass('icon-white icon-minus'));
-            $container = data.files[0].context.find('.preview').parent();
-            data.files[0].context.find('.preview').remove();
-            data.files[0].context.find('.img-container').prepend($error);
-            data.files[0].context.find('p')
-                .css({
-                    color: '#b94a48',
-                    padding: 10,
-                    'font-size': '10px',
-                    'line-height': '12px'
-                }).html('<strong>Error uploading ' + data.files[0].name +
-                        ':</strong><br>' + data.result.error_message);
-            $container.append(data.files[0].context.find('p'));
-            self.errorCount += 1;
+            var $preview = file.context.find('.preview');
+            $('<div class="audio-holder"><i class="fa fa-headphones fa-5x"></i></div>')
+                .insertAfter($preview);
+            $preview.remove();
         }
+    };
+
+    this.handleServerError = function (file, result, textStatus, jqXHR) {
+        var $container, $error, $preview;
+        console.log('server error', result);
+        $error = $('<div class="badge failure-icon" />')
+                    .append($('<i >').addClass('fa fa-exclamation'));
+        file.context.find('.img-container').prepend($error);
+        $preview = file.context.find('.preview');
+        $('<div class="error-holder"></div>').insertAfter($preview);
+        $preview.remove();
+        file.context.find('.error-holder')
+            .css({
+                color: '#b94a48',
+                padding: 10,
+                'font-size': '10px',
+                'line-height': '12px'
+            }).html('<strong>Error uploading ' + file.name +
+                    ':</strong><br>' + result.responseText);
+        console.error('Server Error: ' + result.responseText);
+        file.context.find('.progress').remove();
+        self.errorCount += 1;
+
+        $('#error').show();
+        $('#error-message-text').html('There were errors when uploading your files.');
+    };
+
+    this.done = function (e, data) {
+        var $success, $delete, file = data.files[0];
+        file.isDone = true;
+        file.context.find('.progress').remove();
+        $delete = $('<a />').attr('href', '#').append('delete')
+            .click(function () {
+                var $container = $(this).parent().parent().parent(),
+                    deleteURL = self.getApiUrl(file.ext) + data.result.id + "/";
+                $.ajax({
+                    url: deleteURL,
+                    type: 'DELETE',
+                    dataType: 'json',
+                    success: function () {
+                        $container.remove();
+                        file.cancelled = true;
+                        file.context.remove();
+                        self.showInitMessage();
+                    },
+                    error: function (response) {
+                        try {
+                            var error = JSON.parse(response.responseText).detail;
+                            alert("Error deleting: " + error);
+                        } catch (ex) {
+                            alert("Error deleteting");
+                        }
+                    }
+                });
+                return false;
+            });
+
+        $success = $('<div class="badge success-icon" />')
+            .append($('<i >').addClass('fa fa-check'));
+        file.context.find('.img-container').prepend($success);
+        file.context.find('p')
+            .append('<br />').append($delete).append(' | <a href="' + self.getProfileUrl(data.files[0].ext) + '">edit</a>');
+        self.successCount += 1;
     };
 
     //call initialization:

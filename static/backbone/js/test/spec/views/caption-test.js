@@ -38,7 +38,7 @@ define(["underscore",
                 });
                 //CaptionManager doesn't implement render, so we actually want to check its prototype here
                 expect(CaptionManager.prototype.render).toHaveBeenCalled();
-                expect(captionManager.$el.find('#caption').text()).toEqual(' ' + this.snapshot.description + ' ');
+                expect(captionManager.$el.find('#caption').text()).toEqual(' ' + this.snapshot.caption + ' ');
             });
 
             it("Does nothing if there is no caption", function () {
