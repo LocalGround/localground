@@ -310,7 +310,7 @@ Uploader = function (opts) {
             $delete = $('<a />').attr('href', '#').append('delete')
                 .click(function () {
                     var $container = $(this).parent().parent().parent(),
-                        deleteURL = self.options.getURL() + data.result.id + "/";
+                        deleteURL = self.getApiUrl(data.files[0].ext) + data.result.id + "/";
                     $.ajax({
                         url: deleteURL,
                         type: 'DELETE',
