@@ -41,6 +41,19 @@
     font-weight: normal;
     border-radius: 100px;
 }
+.fileinput-button input {
+    position: absolute;
+    margin-left: -20px;
+    margin-top: -70px;
+    height: 100px;
+    border: solid transparent;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    -moz-transform: translate(-300px, 0) scale(4);
+    direction: ltr;
+    cursor: pointer;
+    width: 100px;
+}
 .fa-folder-open {
     color: #CCC;
 }
@@ -75,6 +88,13 @@
     margin: 0px;
     text-align: center;
     overflow: hidden;
+}
+.fa-headphones {
+    color: #CCC;
+}
+.audio-holder {
+    display: inline-block;
+    width: 145px;
 }
 .file-container {
     width: 155px;

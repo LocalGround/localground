@@ -9,7 +9,6 @@
 {% endblock %}	
 {% block script_links %}
     <script src="{{ JQUERY_UI_PATH }}"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" type="text/javascript"></script>
     <script src="/static/backbone/js/external/jquery.fileupload.js" type="text/javascript" ></script>
     
     <!-- for thumbnailing -->
@@ -34,7 +33,9 @@
 {% block pageload_scripts %}
     var o = new Uploader({
         mediaType: "{{selected_media_type.0}}",
-        acceptFileTypes: '{{selected_media_type.2}}'
+        acceptFileTypes: '{{selected_media_type.2}}',
+        imageTypes: '{{ image_types }}',
+        audioTypes: '{{ audio_types }}'
     });
 {% endblock %}
 
@@ -57,7 +58,7 @@
             <ul class="nav nav-pills">
                 {% for media_type in media_types %}
                     <li {% if selected_media_type.0 == media_type.0 %}class="active"{% endif %}>
-                         <a href="/upload/{{media_type.0}}/{% if embed %}embed{% endif %}">{{media_type.1}}</a>
+                         <a href="{{media_type.3}}{% if embed %}embed/{% endif %}">{{media_type.1}}</a>
                     </li>
                 {% endfor %}
             </ul>

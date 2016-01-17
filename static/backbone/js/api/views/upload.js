@@ -5,8 +5,8 @@ Uploader = function (opts) {
     //this.url = '/upload/media/post/';
     this.errorCount = 0;
     this.successCount = 0;
+    console.log(opts);
     this.options = {
-        //acceptFileTypes: /(\.|\/)(gif|jpe?g|png|mp3|m4a|x-m4a|mpeg|wav)$/i,
         maxFileSize: undefined,
         minFileSize: undefined,
         maxNumberOfFiles: 20,
@@ -18,8 +18,9 @@ Uploader = function (opts) {
         previewMaxHeight: 800,
         autoUpload: true,
         mediaType: opts.mediaType,
-        acceptFileTypes: opts.acceptFileTypes.split(', '),
-        url: '/api/0/' + opts.mediaType + '/'
+        imageTypes: opts.imageTypes.split(', '),
+        audioTypes: opts.audioTypes.split(', '),
+        acceptFileTypes: opts.acceptFileTypes.split(', ')
     };
 
     this.initAJAX = function () {
@@ -41,7 +42,6 @@ Uploader = function (opts) {
             dataType: 'json',
             autoUpload: true,
             //sequential: true,
-            url: this.options.url,
             dropZone: $('body'), //$('#dropzone'),
             add: self.onAdd,
             done: self.done,
@@ -49,13 +49,10 @@ Uploader = function (opts) {
                 //fires after all uploads are finished:
                 if (self.successCount > 0) {
                     msg = 'Your files have finished uploading. You may now add ';
-                    msg += 'titles & descriptions to your files <a id="edit-media-link" href="#">here</a> ';
+                    msg += 'titles & descriptions to your files ';
                     msg += 'or geo-reference you files in the <a id="edit-map-link" href="#">map editor</a>.';
                     $('#success-message-text').html(msg);
-                    $('#edit-map-link').attr('href', '/maps/editor/' +
-                        $('#project').val() + '/');
-                    $('#edit-media-link').attr('href', '/profile/' +
-                        self.options.mediaType + '/?project_id=' + $('#project').val());
+                    $('#edit-map-link').attr('href', '/maps/editor/new/');
                     $('#success').show();
                 } else {
                     $('#success').hide();
@@ -81,6 +78,8 @@ Uploader = function (opts) {
                 data.formData = self.getFormData();
             }
         });
+        
+        console.log($('#fileupload'));
         //section for uploading by dragging files from your desktop:
         $(document).bind({
             dragover: function (e) {
@@ -110,7 +109,6 @@ Uploader = function (opts) {
 
     this.getFormData = function () {
         return {
-            media_type: self.options.mediaType,
             project_id: $('#project').val(),
             csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
         };
@@ -130,8 +128,10 @@ Uploader = function (opts) {
     };
 
     this.hasError = function (file) {
+        console.log(this.options.acceptFileTypes);
         var pieces = file.name.split('.'),
             ext = pieces[pieces.length - 1];
+        file.ext = ext;
         if (file.error) {
             return file.error;
         }
@@ -206,6 +206,25 @@ Uploader = function (opts) {
         }
         return filename;
     };
+    this.getUrl = function (baseURL, ext) {
+        ext = ext.toLowerCase();
+        var isAudio = this.options.audioTypes.indexOf(ext) != -1,
+            url = 'photos/';
+        if (opts.mediaType == 'map-image') {
+            url = 'map-image/';
+        } else if (isAudio) {
+            url =  'audio/';
+        }
+        return baseURL + url;
+    };
+
+    this.getApiUrl = function (ext) {
+        return this.getUrl('/api/0/', ext);
+    };
+
+    this.getProfileUrl = function (ext) {
+        return this.getUrl('/profile/', ext);
+    };
 
     this.onAdd = function (e, data) {
         $('#nothing-here').remove();
@@ -217,6 +236,7 @@ Uploader = function (opts) {
                 //continue to next iteration: return true;
                 return true;
             }
+            data.url = self.getApiUrl(file.ext);
             var $thediv = $('<div />')
                 .addClass('file-container')
                 .append($('<div class="img-polaroid thumbnail" />')
@@ -268,14 +288,10 @@ Uploader = function (opts) {
                     self.renderBlob(file, index);
                     return true;
                 } else {
-                    file.context.find('.preview')
-                        .attr('src', '/static/images/headphones_large.png')
-                        .css({
-                            width: '64px',
-                            height: '64px',
-                            'margin-top': '20px',
-                            'margin-left': '40px'
-                        });
+                    var $preview = file.context.find('.preview');
+                    $('<div class="audio-holder"><i class="fa fa-headphones fa-5x"></i></div>')
+                        .insertAfter($preview);
+                    $preview.remove();
                     return false;
                 }
             });
@@ -294,7 +310,7 @@ Uploader = function (opts) {
             $delete = $('<a />').attr('href', '#').append('delete')
                 .click(function () {
                     var $container = $(this).parent().parent().parent(),
-                        deleteURL = self.options.url + data.result.id + "/";
+                        deleteURL = self.options.getURL() + data.result.id + "/";
                     $.ajax({
                         url: deleteURL,
                         type: 'DELETE',
@@ -317,7 +333,7 @@ Uploader = function (opts) {
                 });
             data.files[0].context.find('.img-container').prepend($success);
             data.files[0].context.find('p')
-                .append('<br />').append($delete).append(' | <a href="/profile/photos/">edit</a>');
+                .append('<br />').append($delete).append(' | <a href="' + self.getProfileUrl(data.files[0].ext) + '">edit</a>');
             self.successCount += 1;
         } else {
             $error = $('<div class="badge badge-important" />')

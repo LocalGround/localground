@@ -8,7 +8,7 @@ from localground.apps.site.models import Project
 @login_required
 @process_project
 def init_upload_form(request,
-                     media_type='photos',
+                     media_type='default',
                      template_name='forms/uploader.html',
                      base_template='base/base_new.html',
                      embed=False, project=None):
@@ -16,16 +16,19 @@ def init_upload_form(request,
         base_template = 'base/iframe.html'
 
     projects = Project.objects.get_objects(request.user)
-    media_types = [
-        ('photos',
-         'Photos',
-         'png, jpg, jpeg, gif'),
-        ('audio',
-         'Audio Files',
-         'audio\/x-m4a, m4a, mp3, m4a, mp4, mpeg, video\/3gpp, 3gp, aif, aiff, ogg, wav'),
-        ('map-images',
-         'Paper Maps / Forms',
-         'png, jpg, jpeg, gif')
+    image_types = 'png, jpg, jpeg, gif'
+    audio_types = 'audio\/x-m4a, m4a, mp3, m4a, mp4, mpeg, video\/3gpp, 3gp, aif, aiff, ogg, wav'
+    media_types = [(
+            'default',
+            'Photo & Audio Files',
+            image_types + ', ' + audio_types,
+            '/upload/'
+        ),(
+            'map-images',
+            'Paper Maps',
+            image_types,
+            '/upload/map-images/'
+        )
     ]
     selected_media_type = (None, 'Error')
     for mt in media_types:
@@ -38,7 +41,9 @@ def init_upload_form(request,
         'base_template': base_template,
         'projects': projects,
         'selected_project': project,
-        'selected_project_id': project.id
+        'selected_project_id': project.id,
+        'image_types': image_types,
+        'audio_types': audio_types
     }
     return render_to_response(template_name, extras,
                               context_instance=RequestContext(request))
