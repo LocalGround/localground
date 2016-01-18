@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from localground.apps.site import widgets, models
 from localground.apps.site.api import fields
+from localground.apps.site.models import BaseNamed
 from django.forms.widgets import Input
 
 
@@ -19,8 +20,9 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class BaseNamedSerializer(serializers.HyperlinkedModelSerializer):
-    tags = serializers.CharField(required=False, allow_null=True, label='tags',
-                                    help_text='Tag your object here', allow_blank=True)
+    #tags = serializers.CharField(required=False, allow_null=True, label='tags', help_text='Tag your object here', allow_blank=True)
+    tags = serializers.ListField(child=serializers.CharField(), required=False, allow_null=True, 
+    label='tags', help_text='Tag your object here')
     name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     description = serializers.CharField(required=False, allow_null=True, label='caption',
                                         style={'base_template': 'textarea.html'}, allow_blank=True)
@@ -40,6 +42,7 @@ class BaseNamedSerializer(serializers.HyperlinkedModelSerializer):
             return models.Project.objects.all()
 
     class Meta:
+        model = BaseNamed
         fields = ('url', 'id', 'name', 'description', 'overlay_type', 'tags', 'owner')
 
     def get_overlay_type(self, obj):

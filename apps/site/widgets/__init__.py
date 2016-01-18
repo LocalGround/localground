@@ -14,6 +14,39 @@ DEFAULT_LAT = 55.16
 DEFAULT_LNG = 61.4
 
 
+class ArrayFieldTagWidget(forms.TextInput):
+   
+    def __init__(self, *args, **kwargs):
+        # Accept a `delimiter` argument, and grab it (defaulting to a comma)
+        self.delimiter = kwargs.pop("delimiter", ",")
+        super(ArrayFieldTagWidget, self).__init__(*args, **kwargs)
+
+    def render(self, name, value, attrs=None):
+        html = '<input type="text" id="%s" name="%s" value="%s" />' % (
+            attrs['id'], name, value)
+
+        js = u'''<script type="text/javascript">
+                    $('#%s').selectize({delimiter: '%s', persist: false,
+                                                create: function(input) {return {
+                                                value: input,text: input}}});
+                </script>''' % (attrs['id'], self.delimiter)
+
+        return mark_safe("\n".join([html, js]))
+        # return mark_safe(html)
+
+    class Media:
+        extend = False
+        js = (
+            '/%s/scripts/thirdparty/selectize/selectize.min.js' %
+            settings.STATIC_MEDIA_DIR,
+        )
+        css = {
+            'all': (
+                '/%s/scripts/thirdparty/selectize/selectize.css' %
+                settings.STATIC_MEDIA_DIR,
+            )}
+
+
 class PointWidget(Textarea):
 
     def __init__(self, *args, **kw):

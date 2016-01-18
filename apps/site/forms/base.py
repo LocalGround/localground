@@ -14,7 +14,7 @@ def get_media_form(cls, user):
         class Meta:
             from django import forms
             from localground.apps.site.widgets import PointWidget, PointWidgetHidden, \
-                CustomDateTimeWidget
+            ArrayFieldTagWidget, CustomDateTimeWidget
             model = cls
             fields = ('id', 'project', 'source_scan', 'name', 'date_created',
                       'description', 'attribution', 'point', 'tags')
@@ -25,7 +25,8 @@ def get_media_form(cls, user):
                 # any valid html attributes as attrs
                 'description': forms.Textarea(attrs={'rows': 3}),
                 'source_scan': forms.HiddenInput,
-                'date_created': CustomDateTimeWidget
+                'date_created': CustomDateTimeWidget,
+                'tags': ArrayFieldTagWidget(attrs={'delimiter': ','})
             }
     return MediaForm
 
@@ -41,7 +42,7 @@ def get_inline_media_form(cls, user):
 
         class Meta:
             from django import forms
-            from localground.apps.site.widgets import CustomDateTimeWidget
+            from localground.apps.site.widgets import ArrayFieldTagWidget, CustomDateTimeWidget
             model = cls
             fields = (
                 'name',
@@ -54,7 +55,8 @@ def get_inline_media_form(cls, user):
                 'id': forms.HiddenInput,
                 # any valid html attributes as attrs
                 'description': forms.Textarea(attrs={'rows': 3}),
-                'date_created': CustomDateTimeWidget
+                'date_created': CustomDateTimeWidget,
+                'tags': ArrayFieldTagWidget(attrs={'delimiter': ','})
             }
     return MediaInlineForm
 
@@ -80,6 +82,7 @@ def get_inline_form_with_tags(cls, user):
         def __init__(self, *args, **kwargs):
             super(InlineForm, self).__init__(*args, **kwargs)
             from localground.apps.site import models
+            from localground.apps.site.widgets import ArrayFieldTagWidget
             self.fields[
                 "project"].queryset = models.Project.objects.get_objects(user)
 
@@ -89,6 +92,7 @@ def get_inline_form_with_tags(cls, user):
             fields = ('name', 'description', 'tags', 'project')
             widgets = {
                 'id': forms.HiddenInput,
-                'description': forms.Textarea(attrs={'rows': 3})
+                'description': forms.Textarea(attrs={'rows': 3}),
+                'tags': ArrayFieldTagWidget(attrs={'delimiter': ','})
             }
     return InlineForm

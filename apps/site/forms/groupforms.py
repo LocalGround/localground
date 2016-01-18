@@ -34,6 +34,7 @@ class ProjectPermissionsForm(ModelForm):
 class ProjectCreateForm(ModelForm):
 
     class Meta:
+        from localground.apps.site.widgets import ArrayFieldTagWidget
         model = Project
         fields = (
             'name',
@@ -43,7 +44,8 @@ class ProjectCreateForm(ModelForm):
             'access_key',
             'slug')
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 3, 'cols': 160})
+            'description': forms.Textarea(attrs={'rows': 3, 'cols': 160}),
+            'tags': ArrayFieldTagWidget(attrs={'delimiter': ','})
         }
 
     class Media:

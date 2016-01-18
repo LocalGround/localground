@@ -103,6 +103,7 @@ class Form(BaseNamed, BasePermissions):
 
             class Meta:
                 from django import forms
+                from localground.apps.site.widgets import ArrayFieldTagWidget, CustomDateTimeWidget
 
                 model = cls
                 fields = ('name', 'description', 'tags', 'access_authority',
@@ -110,7 +111,8 @@ class Form(BaseNamed, BasePermissions):
                 widgets = {
                     'id': forms.HiddenInput,
                     'description': forms.Textarea(attrs={'rows': 3}),
-                    'projects': forms.widgets.CheckboxSelectMultiple
+                    'projects': forms.widgets.CheckboxSelectMultiple,
+                    'tags': ArrayFieldTagWidget(attrs={'delimiter': ','})
                 }
 
         return InlineForm
