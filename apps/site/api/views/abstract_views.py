@@ -4,32 +4,6 @@ from localground.apps.site import models
 from rest_framework import generics, status, exceptions
 from localground.apps.site.api.serializers.user_profile_serializer import UserProfileSerializer
 
-
-class AuditCreate(object):
-
-    def get_presave_dictionary(self):
-        return {
-            'owner': self.request.user,
-            'last_updated_by': self.request.user,
-            'time_stamp': get_timestamp_no_milliseconds()
-        }
-    
-    def perform_create(self, serializer):
-        return serializer.save(**self.get_presave_dictionary())
-
-
-class AuditUpdate(object):
-    
-    def get_presave_dictionary(self):
-        return {
-            'last_updated_by': self.request.user,
-            'time_stamp': get_timestamp_no_milliseconds()
-        }
-
-    def perform_update(self, serializer):
-        return serializer.save(**self.get_presave_dictionary())
-
-
 class QueryableListCreateAPIView(generics.ListCreateAPIView):
 
     def metadata(self, request):
@@ -64,8 +38,7 @@ class QueryableRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         return ret
 
 
-
-class MediaList(QueryableListCreateAPIView, AuditCreate):
+class MediaList(QueryableListCreateAPIView):
     filter_backends = (filters.SQLFilterBackend,)
     ext_whitelist = []
 
@@ -77,10 +50,7 @@ class MediaList(QueryableListCreateAPIView, AuditCreate):
                 access_key=self.request.GET.get('access_key')
             )
 
-class MediaInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
+class MediaInstance(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return self.model.objects.select_related('owner').all()
-
-    def perform_update(self, serializer):
-        return AuditUpdate.perform_update(self, serializer)

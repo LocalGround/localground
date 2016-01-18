@@ -47,17 +47,15 @@ class AudioSerializer(MediaGeometrySerializer):
         
         # save it to disk
         extras = self.process_file(f, owner)
+        extras.update(self.get_presave_create_dictionary())
         extras.update({
-            'owner': owner,
-            'last_updated_by': owner,
-            'time_stamp': get_timestamp_no_milliseconds(),
             'attribution': owner.username,
             'host': settings.SERVER_HOST
         })
         validated_data = {}
         validated_data.update(self.validated_data)
         validated_data.update(extras)
-        self.instance = models.Audio.objects.create(**validated_data)
+        self.instance = self.Meta.model.objects.create(**validated_data)
         return self.instance
 
     class Meta:

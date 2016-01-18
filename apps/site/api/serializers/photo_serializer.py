@@ -4,7 +4,7 @@ from localground.apps.site.api.serializers.base_serializer import MediaGeometryS
 from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.site.api.fields import FileField
-from localground.apps.lib.helpers import get_timestamp_no_milliseconds, upload_helpers, generic
+from localground.apps.lib.helpers import upload_helpers, generic
 
 class PhotoSerializer(MediaGeometrySerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
@@ -93,17 +93,15 @@ class PhotoSerializer(MediaGeometrySerializer):
         
         # save it to disk
         extras = self.process_file(f, owner)
+        extras.update(self.get_presave_create_dictionary())
         extras.update({
-            'owner': owner,
-            'last_updated_by': owner,
-            'time_stamp': get_timestamp_no_milliseconds(),
             'attribution': owner.username,
             'host': settings.SERVER_HOST
         })
         validated_data = {}
         validated_data.update(self.validated_data)
         validated_data.update(extras)
-        self.instance = models.Photo.objects.create(**validated_data)
+        self.instance = self.Meta.model.objects.create(**validated_data)
         return self.instance
     
 class PhotoSerializerUpdate(PhotoSerializer):

@@ -1,11 +1,10 @@
 from rest_framework import viewsets, generics, permissions
 from localground.apps.site.api import serializers, filters
-from localground.apps.site.api.views.abstract_views import \
-    AuditCreate, AuditUpdate, QueryableListCreateAPIView
+from localground.apps.site.api.views.abstract_views import QueryableListCreateAPIView
 from localground.apps.site import models
 
 
-class PrintList(QueryableListCreateAPIView, AuditCreate):
+class PrintList(QueryableListCreateAPIView):
     serializer_class = serializers.PrintSerializer
     filter_backends = (filters.SQLFilterBackend,)
     model = models.Print
@@ -23,7 +22,6 @@ class PrintList(QueryableListCreateAPIView, AuditCreate):
     def perform_create(self, serializer):
         from django.contrib.gis.geos import GEOSGeometry
         posted_data = serializer.validated_data
-        d = self.get_presave_dictionary()
         point = GEOSGeometry(posted_data.get('center'))
         # Do some extra work to generate the PDF and calculate the map extents:
         instance = models.Print.insert_print_record(
@@ -39,7 +37,7 @@ class PrintList(QueryableListCreateAPIView, AuditCreate):
             do_save=False
         )
         instance.generate_pdf()
-        d.update({
+        d = {
             'uuid': instance.uuid,
             'virtual_path': instance.virtual_path,
             'northeast': instance.northeast,
@@ -52,25 +50,19 @@ class PrintList(QueryableListCreateAPIView, AuditCreate):
             'map_image_path': instance.map_image_path,
             'map_width': instance.map_width,
             'map_height': instance.map_height
-        })
+        }
         serializer.save(**d)
 
-class PrintInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
+class PrintInstance(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Print.objects.select_related(
         'project',
         'layout',
         'map_provider').all()
     serializer_class = serializers.PrintSerializerDetail
 
-    def perform_update(self, serializer):
-        AuditUpdate.perform_update(self, serializer)
 
-
-class LayoutViewSet(viewsets.ModelViewSet, AuditUpdate):
+class LayoutViewSet(viewsets.ModelViewSet):
     queryset = models.Layout.objects.all()
     serializer_class = serializers.LayoutSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SQLFilterBackend,)
-
-    def perform_update(self, serializer):
-        AuditUpdate.perform_update(self, serializer)

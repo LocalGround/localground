@@ -1,7 +1,6 @@
 from rest_framework import generics
 from localground.apps.site.api import serializers, filters
-from localground.apps.site.api.views.abstract_views import \
-    AuditCreate, AuditUpdate, QueryableListCreateAPIView
+from localground.apps.site.api.views.abstract_views import QueryableListCreateAPIView
 from localground.apps.site import models
 
 class MarkerGeometryMixin(object):
@@ -30,7 +29,7 @@ class MarkerGeometryMixin(object):
         d.update(serializer.validated_data)
         return d
 
-class MarkerList(QueryableListCreateAPIView, MarkerGeometryMixin, AuditCreate):
+class MarkerList(QueryableListCreateAPIView, MarkerGeometryMixin):
     filter_backends = (filters.SQLFilterBackend,)
     paginate_by = 100
     
@@ -71,16 +70,14 @@ class MarkerList(QueryableListCreateAPIView, MarkerGeometryMixin, AuditCreate):
 
     def perform_create(self, serializer):
         d = self.get_geometry_dictionary(serializer)
-        d.update(self.get_presave_dictionary())
         serializer.save(**d)
 
 
-class MarkerInstance(generics.RetrieveUpdateDestroyAPIView, MarkerGeometryMixin, AuditUpdate):
+class MarkerInstance(MarkerGeometryMixin, generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Marker.objects.select_related('owner', 'project')
     serializer_class = serializers.MarkerSerializer
 
     def perform_update(self, serializer):
         d = self.get_geometry_dictionary(serializer)
-        d.update(self.get_presave_dictionary())
         serializer.save(**d)
         

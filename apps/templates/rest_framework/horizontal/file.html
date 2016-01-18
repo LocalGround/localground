@@ -11,6 +11,7 @@
             <span>Navigate to file...</span>
             <input type="file" name="{{ field.name }}">
         </span>
+        <p class="file-name">File name</p>
         {% if field.errors %}
             {% for error in field.errors %}
                 <span class="help-block">{{ error }}</span>

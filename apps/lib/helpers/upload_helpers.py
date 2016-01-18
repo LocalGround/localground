@@ -1,6 +1,7 @@
 import time, os, base64, stat
 from django.conf import settings
 from pwd import getpwnam
+from rest_framework import exceptions
     
 '''
 Utility File Path Methods
@@ -79,16 +80,16 @@ def save_file_to_disk(owner, model_name_plural, file):
     return file_name_new
 
 def validate_file(f, whitelist):
-    try:
-        if f:
-            ext = os.path.splitext(f.name)[1]
-            ext = ext.lower().replace('.', '')
-            if ext not in whitelist:
-                raise exceptions.UnsupportedMediaType(f,
-                    '{0} is not a valid map image file type. Valid options are: {1}'.format(
-                        ext, whitelist)
-                )
-    except:
-        raise exceptions.UnsupportedMediaType(f,
-            '"media_file" data POST needs to be a File object'
-        )
+    #try:
+    if f:
+        ext = os.path.splitext(f.name)[1]
+        ext = ext.lower().replace('.', '')
+        if ext not in whitelist:
+            raise exceptions.UnsupportedMediaType(f,
+                '{0} is not a valid map image file type. Valid options are: {1}'.format(
+                    ext, whitelist)
+            )
+    #except:
+    #    raise exceptions.UnsupportedMediaType(f,
+    #        '"media_file" data POST needs to be a File object'
+    #    )

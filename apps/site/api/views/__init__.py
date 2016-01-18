@@ -1,4 +1,3 @@
-from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
 from localground.apps.site.api.views.audio_views import AudioList, AudioInstance
 from localground.apps.site.api.views.scan_views import ScanList, ScanInstance
 from localground.apps.site.api.views.photo_views import (

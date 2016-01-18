@@ -2,9 +2,46 @@ from rest_framework import serializers
 from localground.apps.site import widgets, models
 from localground.apps.site.api import fields
 from django.forms.widgets import Input
+from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 
+'''
+On Mixins: read this:
+https://www.ianlewis.org/en/mixins-and-python
 
-class BaseSerializer(serializers.HyperlinkedModelSerializer):
+In Python the class hierarchy is defined right to left,
+so in the example...
+
+class MyClass(BaseClass, Mixin1, Mixin2):
+    pass
+
+...the Mixin2 class is the base class,
+extended by Mixin1 and finally by BaseClass.
+'''
+class AuditSerializerMixin(object):
+    def get_presave_create_dictionary(self):
+        return {
+            'owner': self.context.get('request').user,
+            'last_updated_by': self.context.get('request').user,
+            'time_stamp': get_timestamp_no_milliseconds()
+        }
+
+    def get_presave_update_dictionary(self):
+        return {
+            'last_updated_by': self.context.get('request').user,
+            'time_stamp': get_timestamp_no_milliseconds()
+        }
+    
+    def create(self, validated_data):
+        # Extend to add auditing information:
+        validated_data.update(self.get_presave_create_dictionary())
+        return super(AuditSerializerMixin, self).create(validated_data)
+    
+    def update(self, instance, validated_data):
+        # Extend to add auditing information:
+        validated_data.update(self.get_presave_update_dictionary())
+        return super(AuditSerializerMixin, self).update(instance, validated_data)
+
+class BaseSerializer(AuditSerializerMixin, serializers.HyperlinkedModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super(BaseSerializer, self).__init__(*args, **kwargs)
@@ -13,12 +50,12 @@ class BaseSerializer(serializers.HyperlinkedModelSerializer):
             'app_label': model_meta.app_label,
             'model_name': model_meta.object_name.lower()
         }
-
+    
     class Meta:
         fields = ('id',)
 
 
-class BaseNamedSerializer(serializers.HyperlinkedModelSerializer):
+class BaseNamedSerializer(BaseSerializer):
     tags = serializers.CharField(required=False, allow_null=True, label='tags',
                                     help_text='Tag your object here', allow_blank=True)
     name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
