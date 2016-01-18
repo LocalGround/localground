@@ -660,7 +660,7 @@ label {
 }
 
 #upload-modal > .modal-dialog > .modal-content {
-	height: 480px;
+	height: 400px;
 }
 
 #upload-modal-body{
@@ -668,7 +668,7 @@ label {
     padding: 5px 5px 0px 12px;
 }
 #upload-iframe {
-    height: 440px;
+    height: 360px;
     width: 100%;
     overflow: hidden;
 }

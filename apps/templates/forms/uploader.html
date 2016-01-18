@@ -42,7 +42,7 @@
 {% block content %}
     {% block main_content %}
     <div class="container">
-        <div class="row">
+        <div class="row" {% if embed %}style="display: none;"{% endif %}>
             <h1>
                 <span class="btn btn-default fileinput-button">
                     +
@@ -51,8 +51,6 @@
                 Upload <span style="color:#ccc">{{ selected_media_type.1}}</span>
             </h1>
         </div>
-
-
         <div class="row">
             <!-- Media Type -->
             <ul class="nav nav-pills">
@@ -95,7 +93,10 @@
                         <i class="fa fa-map fa-4x"></i>
                     {% endif %}
                     <br />
-                    Drag your <strong>{{selected_media_type.1|lower}}</strong> files here, or browse to them using the <span class="plus">+</span> button above.
+                    Drag your <strong>{{selected_media_type.1|lower}}</strong> files here<br />
+                    {% if not embed %}
+                        or browse to them using the <span class="plus">+</span> button above.
+                    {% endif %}
                 </div>
             </div>
             <div class="acceptable">
