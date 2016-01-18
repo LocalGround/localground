@@ -10,6 +10,10 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds, upload_h
 class AudioSerializer(MediaGeometrySerializer):
     ext_whitelist = ['m4a', 'mp3', 'mp4', 'mpeg', '3gp', 'aif', 'aiff', 'ogg', 'wav']
     file_path = serializers.SerializerMethodField('get_file_path_new')
+    media_file = serializers.CharField(
+        source='file_name_orig', required=True, style={'base_template': 'file.html'},
+        help_text='Valid file types are: ' + ', '.join(ext_whitelist)
+    )
     
     def process_file(self, file, owner):
         

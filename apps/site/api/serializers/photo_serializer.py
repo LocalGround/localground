@@ -7,13 +7,14 @@ from localground.apps.site.api.fields import FileField
 from localground.apps.lib.helpers import upload_helpers, generic
 
 class PhotoSerializer(MediaGeometrySerializer):
-    ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     path_large = serializers.SerializerMethodField()
     path_medium = serializers.SerializerMethodField()
     path_medium_sm = serializers.SerializerMethodField()
     path_small = serializers.SerializerMethodField()
     path_marker_lg = serializers.SerializerMethodField()
     path_marker_sm = serializers.SerializerMethodField()
+    
+    #help_text='Valid file types are: ' + ', '.join(ext_whitelist)
 
     class Meta:
         model = models.Photo

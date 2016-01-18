@@ -10,7 +10,10 @@ from localground.apps.site.api.serializers.base_serializer import BaseNamedSeria
 class ScanSerializerCreate(BaseNamedSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     file_path = serializers.SerializerMethodField('get_file_path_new')
-    media_file = serializers.CharField(source='file_name_orig', required=True, style={'base_template': 'file.html'})
+    media_file = serializers.CharField(
+        source='file_name_orig', required=True, style={'base_template': 'file.html'},
+        help_text='Valid file types are: ' + ', '.join(ext_whitelist)
+    )
     overlay_type = serializers.SerializerMethodField()
     project_id = fields.ProjectField(source='project', required=False)
     north = serializers.SerializerMethodField()

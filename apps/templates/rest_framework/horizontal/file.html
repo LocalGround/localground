@@ -8,10 +8,9 @@
     <div class="col-sm-10">
         <span class="btn info fileinput-button">
             <i class="fa fa-upload"></i>
-            <span>Navigate to file...</span>
-            <input type="file" name="{{ field.name }}">
+            <span id="file-message">Navigate to file...</span>
+            <input id="file" type="file" name="{{ field.name }}">
         </span>
-        <p class="file-name">File name</p>
         {% if field.errors %}
             {% for error in field.errors %}
                 <span class="help-block">{{ error }}</span>
@@ -23,3 +22,9 @@
         {% endif %}
     </div>
 </div>
+<script>
+$('#file').change(function (e) {
+    'use strict';
+    $('#file-message').html(e.target.value.split('\\').pop());
+});
+</script>

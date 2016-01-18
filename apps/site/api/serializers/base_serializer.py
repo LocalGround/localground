@@ -115,14 +115,18 @@ class GeometrySerializer(BaseNamedSerializer):
 
 
 class MediaGeometrySerializer(GeometrySerializer):
+    ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     file_name = serializers.CharField(source='file_name_new', required=False, read_only=True)
-    media_file = serializers.CharField(source='file_name_orig', required=True, style={'base_template': 'file.html'})
+    media_file = serializers.CharField(
+        source='file_name_orig', required=True, style={'base_template': 'file.html'},
+        help_text='Valid file types are: ' + ', '.join(ext_whitelist)
+    )
     file_path_orig = serializers.SerializerMethodField()
 
     class Meta:
         fields = GeometrySerializer.Meta.fields + ('attribution', 'file_name', 'media_file',
                                                    'file_path_orig')
-
+        
     def get_file_path_orig(self, obj):
         # original file gets renamed to file_name_new in storage
         # (spaces, etc. removed)
