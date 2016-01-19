@@ -109,7 +109,8 @@ echo "Y" | sudo npm install -g bower
 # Configure Local Ground on Apache #
 ####################################
 sudo a2enmod proxy_http
-sudo cp /localground/deploy_tools/apache_localground_config /etc/apache2/sites-available/localground.conf
+sudo a2enmod ssl
+sudo cp /localground/deploy_tools/apache_vagrant_config /etc/apache2/sites-available/localground.conf
 sudo ln -s /etc/apache2/sites-available/localground.conf /etc/apache2/sites-enabled/localground.conf
 sudo cp /localground/deploy_tools/settings_local.py /localground/apps/.
 sudo rm /etc/apache2/sites-enabled/000-default.conf 

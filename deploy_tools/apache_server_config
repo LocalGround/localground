@@ -1,0 +1,84 @@
+<VirtualHost *:80>
+    # FILE_ROOT 	= Please replace this with code directory
+    # SERVER_HOST 	= Please replace with the domain name (e.g. localground.org)
+    # CGI_PATH		= Please replace with the cgi directory
+    # MAP_CGI_PATH	= Please replace with the directory where the map / tile cgi scripts are located
+
+    ServerName dev.localground.org 
+    Redirect "/" "https://dev.localground.org/"
+</VirtualHost>
+
+<VirtualHost *:443>
+    DocumentRoot /var/www/code/dev/localground
+    ServerName dev.localground.org
+    # ------------------------------------------------------------------
+    # For serving user-generated media (images, audio, data, etc.)
+    # Be sure to install and enable mod_xsendfile, for basic static file
+    # security (https://tn123.org/mod_xsendfile/)
+    # ------------------------------------------------------------------
+    WSGIPassAuthorization On
+    XSendFile on
+    XSendFilePath /var/www/code/dev/localground/userdata
+    <Directory "/var/www/code/dev/localground/userdata">
+       Require all denied
+    </Directory>
+
+    # --------------------------------------
+    # For static files (css, js, and images)
+    #---------------------------------------
+    Alias /static/ "/var/www/code/dev/localground/static/"
+    <Directory "/var/www/code/dev/localground/static">
+        Options +FollowSymlinks
+        Options Indexes
+        Require all granted
+        IndexOptions FancyIndexing
+    </Directory>
+
+    # -------------------
+    # To make Django work
+    # -------------------
+    WSGIScriptAlias / "/var/www/code/dev/localground/apache/app_config.wsgi"
+    WSGIPassAuthorization On
+    <Directory "/var/www/code//dev/localground/apache">
+        Require all granted
+    </Directory>
+
+    # ----------------------------------------------------------------
+    # MapServer Configuration, if you're going to use it (useful for
+    # creating tiles and for reprojecting images) to be printed on you
+    # paper maps.  Adjust these paths to meet your needs...
+    # ----------------------------------------------------------------
+    SetEnvIf Request_URI "/ows/ms.fcgi" MS_MAPFILE=/var/www/code/dev/localground/mapserver/localground.map
+    # MapServer FastCGI location
+    ScriptAlias /ows/ /var/www/ows/
+    <Directory "/var/www/ows">
+        AllowOverride None
+        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+        Require all granted
+    </Directory>
+
+    ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+    <Directory "/usr/lib/cgi-bin">
+        AllowOverride None
+        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+        Require all granted
+    </Directory>
+
+    # ----------------------------
+    # SSL Configuration:
+    # ----------------------------
+    SSLEngine on
+    SSLCertificateKeyFile /etc/apache2/ssl.key/localground.key
+    SSLCertificateFile /etc/apache2/ssl.crt/STAR_localground_org.crt
+    SSLCertificateChainFile /etc/apache2/ssl.crt/STAR_localground_org.ca-bundle
+    <FilesMatch "\.(cgi|shtml|phtml|php)$">
+        SSLOptions +StdEnvVars
+    </FilesMatch>
+    <Directory /usr/lib/cgi-bin>
+        SSLOptions +StdEnvVars
+    </Directory>
+    BrowserMatch "MSIE [2-6]" \
+        nokeepalive ssl-unclean-shutdown \
+        downgrade-1.0 force-response-1.0
+    BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+</VirtualHost>
