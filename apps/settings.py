@@ -192,7 +192,6 @@ INSTALLED_APPS = (
     'localground.apps.management',
     'localground.apps.site',
     'localground.apps.registration',        #taken from the django-registration module
-    'tagging',                              #for tagging of blog posts in Django
     'django.contrib.admin',
     'rest_framework',
     'corsheaders',
