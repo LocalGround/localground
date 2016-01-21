@@ -55,13 +55,17 @@ before_install:
   - sudo apt-get -y install libmail-sendmail-perl
 
   # Install miscellaneous libraries for graphics, audio, etc.
-  - sudo apt-get -y install libcv2.3 libopencv-dev python-opencv
+  - sudo apt-get -y install libcv2.3 libcv-dev libopencv-dev python-opencv
   - sudo apt-get -y install python-psycopg2
-  - sudo apt-get -y install python-pip python-dev
+  - sudo apt-get -y install python-setuptools
+  - sudo apt-get -y install python-pip=1.5.4-1ubuntu3
+  - sudo apt-get -y install python-dev
   - sudo apt-get -y install python-mapscript
   - sudo apt-get -y install python-scipy
+  - sudo add-apt-repository -y ppa:mc3man/trusty-media #trusty ubuntu doesn't have an ffmpeg package (only libav)
+  - sudo apt-get -y update
   - sudo apt-get -y install ffmpeg
-  - sudo apt-get -y install libavcodec-extra-53
+  - sudo apt-get -y install redis-server
 
 install:
   - pip install -r deploy_tools/requirements.txt
