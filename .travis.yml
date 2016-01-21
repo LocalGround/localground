@@ -69,7 +69,8 @@ before_install:
 
 install:
   - pip install -r deploy_tools/requirements.txt
-  - pip install PIL==1.1.7 --allow-external PIL --allow-unverified PIL
+#  - pip install PIL==1.1.7 --allow-external PIL --allow-unverified PIL
+  - pip install Pillow #does this work the same as PIL?
 
 before_script:
   - psql -c 'create database lg_database;' -U postgres
