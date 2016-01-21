@@ -26,8 +26,8 @@ before_install:
   
   # Reference custom repo:
   - sudo apt-get install python-software-properties
-  - echo "yes" | sudo add-apt-repository ppa:ubuntugis/ppa
-  - sudo apt-get update -qq
+  #- echo "yes" | sudo add-apt-repository ppa:ubuntugis/ppa
+  #- sudo apt-get update -qq
   
   # Install GIS libraries
   - sudo apt-get install mapserver-bin
