@@ -20,7 +20,7 @@ virtualenv:
 before_install:
   - sudo apt-get update -qq
   # Uninstall the default postgres / postgis:
-  - sudo mv /etc/apt/sources.list.d/pgdg-source.list* /tmp
+  # - sudo mv /etc/apt/sources.list.d/pgdg-source.list* /tmp
   - sudo apt-get remove postgis libpq5 libpq-dev postgresql-9.1-postgis postgresql-9.2-postgis postgresql-9.3-postgis postgresql-9.1 postgresql-9.2 postgresql-9.3
   - sudo apt-get remove libgdal1
   
