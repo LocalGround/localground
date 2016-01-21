@@ -95,7 +95,8 @@ class BaseNamedMedia(BaseMedia, ProjectMixin):
 class BaseUploadedMedia(BaseNamedMedia):
     file_name_new = models.CharField(max_length=255)
     attribution = models.CharField(max_length=500, blank=True,
-                                   null=True, verbose_name="Author / Creator")
+                                   null=True, verbose_name="Author / Creator",
+                                   help_text="Name of the person who actually created the media file (text)")
     filter_fields = BaseNamedMedia.filter_fields + ('attribution', 'point')
 
     class Meta:
