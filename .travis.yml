@@ -21,47 +21,47 @@ before_install:
   - sudo apt-get update -qq
   # Uninstall the default postgres / postgis:
   # - sudo mv /etc/apt/sources.list.d/pgdg-source.list* /tmp
-  - sudo apt-get remove postgis libpq5 libpq-dev postgresql-9.1-postgis postgresql-9.2-postgis postgresql-9.3-postgis postgresql-9.1 postgresql-9.2 postgresql-9.3
-  - sudo apt-get remove libgdal1
+  - sudo apt-get -y remove postgis libpq5 libpq-dev postgresql-9.1-postgis postgresql-9.2-postgis postgresql-9.3-postgis postgresql-9.1 postgresql-9.2 postgresql-9.3
+  - sudo apt-get -y remove libgdal1
   
   # Reference custom repo:
-  - sudo apt-get install python-software-properties
+  - sudo apt-get -y install python-software-properties
   #- echo "yes" | sudo add-apt-repository ppa:ubuntugis/ppa
   #- sudo apt-get update -qq
   
   # Install GIS libraries
-  - sudo apt-get install mapserver-bin
-  - sudo apt-get install gdal-bin
-  - sudo apt-get install cgi-mapserver
+  - sudo apt-get -y install mapserver-bin
+  - sudo apt-get -y install gdal-bin
+  - sudo apt-get -y install cgi-mapserver
   
   # Install custom PostgreSQL / PostGIS
-  - sudo apt-get install postgresql-9.1
-  - sudo apt-get install postgresql-client-9.1
-  - sudo apt-get install postgresql-server-dev-9.1
-  - sudo apt-get install postgresql-plperl-9.1
-  - sudo apt-get install postgresql-9.1-postgis-2.0
+  - sudo apt-get -y install postgresql-9.1
+  - sudo apt-get -y install postgresql-client-9.1
+  - sudo apt-get -y install postgresql-server-dev-9.1
+  - sudo apt-get -y install postgresql-plperl-9.1
+  - sudo apt-get -y install postgresql-9.1-postgis-2.0
   
   # Install some final MapServer libraries (which I think need to 
   # get installed after PostgreSQL / PostGIS)
-  - sudo apt-get install libmapserver1 libmapserver1-dev
-  - sudo apt-get install python-gdal
+  - sudo apt-get -y install libmapserver1 libmapserver1-dev
+  - sudo apt-get -y install python-gdal
   
   # Install Apache + Modules
-  - sudo apt-get install apache2
-  - sudo apt-get install libapache2-mod-fcgid
-  - sudo apt-get install libapache2-mod-xsendfile
-  - sudo apt-get install libapache2-mod-wsgi
-  - sudo apt-get install sendmail
-  - sudo apt-get install libmail-sendmail-perl
+  - sudo apt-get -y install apache2
+  - sudo apt-get -y install libapache2-mod-fcgid
+  - sudo apt-get -y install libapache2-mod-xsendfile
+  - sudo apt-get -y install libapache2-mod-wsgi
+  - sudo apt-get -y install sendmail
+  - sudo apt-get -y install libmail-sendmail-perl
 
   # Install miscellaneous libraries for graphics, audio, etc.
-  - sudo apt-get install libcv2.3 libopencv-dev python-opencv
-  - sudo apt-get install python-psycopg2
-  - sudo apt-get install python-pip python-dev
-  - sudo apt-get install python-mapscript
-  - sudo apt-get install python-scipy
-  - sudo apt-get install ffmpeg
-  - sudo apt-get install libavcodec-extra-53
+  - sudo apt-get -y install libcv2.3 libopencv-dev python-opencv
+  - sudo apt-get -y install python-psycopg2
+  - sudo apt-get -y install python-pip python-dev
+  - sudo apt-get -y install python-mapscript
+  - sudo apt-get -y install python-scipy
+  - sudo apt-get -y install ffmpeg
+  - sudo apt-get -y install libavcodec-extra-53
 
 install:
   - pip install -r deploy_tools/requirements.txt
