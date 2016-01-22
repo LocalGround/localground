@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash -ex
+
+#set -ex
 
 sudo apt-get update
 ############################
@@ -22,8 +24,6 @@ echo "Y" | sudo apt-get install libmail-sendmail-perl
 # Install GDAL, MapServer, Etc. First #
 #######################################
 echo "Y" | sudo apt-get install python-software-properties
-echo "Y" | sudo add-apt-repository ppa:ubuntugis/ppa
-sudo apt-get update
 echo "Y" | sudo apt-get install mapserver-bin
 echo "Y" | sudo apt-get install gdal-bin
 echo "Y" | sudo apt-get install cgi-mapserver
@@ -96,15 +96,14 @@ echo "Y" | sudo apt-get install redis-server
 # there may be some problems with the map script / map server install
 sudo ln -s /vagrant /localground
 sudo pip install -r /vagrant/deploy_tools/requirements.txt
-sudo pip install PIL==1.1.7
 
 #############################
 # Install Node.js and Bower #
 #############################
-curl -sL https://deb.nodesource.com/setup | sudo bash -
-echo "Y" | sudo apt-get install nodejs
-echo "Y" | sudo apt-get install npm
-echo "Y" | sudo npm install -g bower
+#curl -sL https://deb.nodesource.com/setup | sudo bash -
+#echo "Y" | sudo apt-get install nodejs
+#echo "Y" | sudo apt-get install npm
+#echo "Y" | sudo npm install -g bower
 
 ####################################
 # Configure Local Ground on Apache #
@@ -144,4 +143,3 @@ echo '------------------------------------'
 echo ' Server configured. Check it out at '
 echo ' http://localhost:7777              '
 echo '------------------------------------'
-
