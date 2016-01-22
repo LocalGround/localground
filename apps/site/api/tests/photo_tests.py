@@ -44,10 +44,12 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         image = Image.new('RGB', (100, 100))
         tmp_file = tempfile.NamedTemporaryFile(suffix='.jpg')
         image.save(tmp_file)
+        author_string = 'Author of the media file'
         with open(tmp_file.name, 'rb') as data:
             response = self.client_user.post(self.urls[0],
                                              {'project_id': self.project.id,
-                                              'media_file' : data},
+                                              'media_file' : data,
+                                              'attribution': author_string},
                                              HTTP_X_CSRFTOKEN=self.csrf_token)
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
             # a few more checks to make sure that file paths are being
@@ -56,6 +58,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
             file_name = tmp_file.name.split("/")[-1]
             file_name = unicode(file_name, "utf-8")
             self.assertEqual(file_name, new_photo.name)
+            self.assertEqual(author_string, new_photo.attribution)
             self.assertEqual(file_name, new_photo.file_name_orig)
             self.assertTrue(len(new_photo.file_name_new) > 5) #ensure not empty
             self.assertEqual(settings.SERVER_HOST, new_photo.host)

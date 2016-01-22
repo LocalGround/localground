@@ -20,7 +20,7 @@ def get_metadata():
         'source_print': {'read_only': False, 'required': False, 'type': 'field'},
         'overlay_path': {'read_only': True, 'required': False, 'type': 'field'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
-        'project_id': {'read_only': False, 'required': False, 'type': 'select'},
+        'project_id': {'read_only': False, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'south': {'read_only': True, 'required': False, 'type': 'field'},
         'name': {'read_only': False, 'required': False, 'type': 'string'}

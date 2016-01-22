@@ -35,7 +35,8 @@
         mediaType: "{{selected_media_type.0}}",
         acceptFileTypes: '{{selected_media_type.2}}',
         imageTypes: '{{ image_types }}',
-        audioTypes: '{{ audio_types }}'
+        audioTypes: '{{ audio_types }}',
+        isIframe: {{embed|lower}}
     });
 {% endblock %}
 

@@ -5,6 +5,7 @@ Uploader = function (opts) {
     //this.url = '/upload/media/post/';
     this.errorCount = 0;
     this.successCount = 0;
+    this.isIframe = opts.isIframe;
     this.options = {
         maxFileSize: undefined,
         minFileSize: undefined,
@@ -35,23 +36,28 @@ Uploader = function (opts) {
         self = this;
         this.initAJAX();
         var msg = "";
-
         $('#warning-message-text').empty();
         $('#fileupload').fileupload({
             dataType: 'json',
             autoUpload: true,
             //sequential: true,
-            dropZone: $('body'), //$('#dropzone'),
+            dropZone: $('body'),
             add: self.onAdd,
             done: self.done,
             stop: function () {
                 //fires after all uploads are finished:
                 if (self.successCount > 0) {
-                    msg = 'Your files have finished uploading. You may now add ';
-                    msg += 'titles & captions to your files ';
-                    msg += 'or geo-reference you files in the <a id="edit-map-link" href="#">map editor</a>.';
-                    $('#success-message-text').html(msg);
-                    $('#edit-map-link').attr('href', '/maps/editor/new/');
+                    if (self.isIframe) {
+                        msg = 'Your files have finished uploading. Close this window to refresh the map. ';
+                        msg += 'Then, geo-reference your files and give them titles and captions';
+                        $('#success-message-text').html(msg);
+                    } else {
+                        msg = 'Your files have finished uploading. You may now add ';
+                        msg += 'titles & captions to your files ';
+                        msg += 'or geo-reference you files in the <a id="edit-map-link" href="#">map editor</a>.';
+                        $('#success-message-text').html(msg);
+                        $('#edit-map-link').attr('href', '/maps/edit/new/');
+                    }
                     $('#success').show();
                 } else {
                     $('#success').hide();
@@ -206,8 +212,8 @@ Uploader = function (opts) {
         ext = ext.toLowerCase();
         var isAudio = this.options.audioTypes.indexOf(ext) != -1,
             url = 'photos/';
-        if (opts.mediaType == 'map-image') {
-            url = 'map-image/';
+        if (this.options.mediaType == 'map-images') {
+            url = 'map-images/';
         } else if (isAudio) {
             url =  'audio/';
         }

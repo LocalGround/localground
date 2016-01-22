@@ -100,7 +100,6 @@ class GeometrySerializer(BaseNamedSerializer):
         queryset=models.Project.objects.all(),
         source='project',
         required=False
-        # TODO: TRUE
     )
     
     def get_fields(self, *args, **kwargs):

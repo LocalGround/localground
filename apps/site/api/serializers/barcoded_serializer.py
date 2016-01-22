@@ -15,13 +15,24 @@ class ScanSerializerCreate(BaseNamedSerializer):
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
     overlay_type = serializers.SerializerMethodField()
-    project_id = fields.ProjectField(source='project', required=False)
+    
+    project_id = serializers.PrimaryKeyRelatedField(
+        queryset=models.Project.objects.all(),
+        source='project',
+        required=False
+    )
     north = serializers.SerializerMethodField()
     south = serializers.SerializerMethodField()
     east = serializers.SerializerMethodField()
     west = serializers.SerializerMethodField()
     zoom = serializers.SerializerMethodField()
     overlay_path = serializers.SerializerMethodField()
+    
+    def get_fields(self, *args, **kwargs):
+        fields = super(ScanSerializerCreate, self).get_fields(*args, **kwargs)
+        #restrict project list at runtime:
+        fields['project_id'].queryset = self.get_projects()
+        return fields
 
     class Meta:
         model = models.Scan
@@ -69,7 +80,7 @@ class ScanSerializerCreate(BaseNamedSerializer):
             'uuid': generic.generateID(),
             'status': models.StatusCode.objects.get(id=3), #Make writeable field in serializer?
             'upload_source': models.UploadSource.objects.get(id=1),
-            'attribution': owner.username,
+            'attribution': validated_data.get('attribution') or owner.username,
             'host': settings.SERVER_HOST
         })
         validated_data = {}

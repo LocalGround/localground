@@ -96,7 +96,7 @@ class PhotoSerializer(MediaGeometrySerializer):
         extras = self.process_file(f, owner)
         extras.update(self.get_presave_create_dictionary())
         extras.update({
-            'attribution': owner.username,
+            'attribution': validated_data.get('attribution') or owner.username,
             'host': settings.SERVER_HOST
         })
         validated_data = {}
