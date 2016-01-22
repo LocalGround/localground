@@ -1,6 +1,6 @@
 from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
-from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializer
+from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializerUpdate
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 from localground.apps.site.api.serializers.record_serializer import create_record_serializer, \
     create_compact_record_serializer
@@ -106,7 +106,7 @@ class ProjectDetailSerializer(ProjectSerializer):
     def get_scans(self, obj):
         return self.serialize_list(
             models.Scan,
-            ScanSerializer,
+            ScanSerializerUpdate,
             models.Scan.objects.get_objects(
                 obj.owner,
                 project=obj,

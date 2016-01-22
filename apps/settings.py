@@ -27,8 +27,9 @@ SESSION_COOKIE_NAME = 'sessionid'
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Custom Local Variables
+PROTOCOL = 'http'
 SERVER_HOST = os.environ.get('SERVER_HOST', 'yoursite.com')
-SERVER_URL = 'http://%s' % SERVER_HOST
+SERVER_URL = '%s//%s' % (PROTOCOL, SERVER_HOST)
 
 FILE_ROOT = os.environ.get('FILE_ROOT', '/home/directory/for/localground') 
 STATIC_MEDIA_DIR = 'static'
@@ -55,8 +56,8 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'YOUR_SECRET'
 DEFAULT_BASEMAP_ID = 12
 
 #OS variables:
-USER_ACCOUNT = 'linux-user-account'     #account to use for creating new OS files / directories
-GROUP_ACCOUNT = 'linux-user-group'      #group to use for creating new OS files / directories
+USER_ACCOUNT = os.environ.get('USER', 'linux-user-account')     #account to use for creating new OS files / directories
+GROUP_ACCOUNT = os.environ.get('USER', 'linux-user-group')    #group to use for creating new OS files / directories
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 4621440                       #default is 2621440
 IS_GOOGLE_REGISTERED_NONPROFIT = False
@@ -115,7 +116,7 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-JQUERY_PATH = '//code.jquery.com/jquery-1.8.0.min.js'
+JQUERY_PATH = '//code.jquery.com/jquery-1.12.0.min.js'
 JQUERY_UI_PATH = '//code.jquery.com/ui/1.9.2/jquery-ui.min.js'
 BOOTSTRAP_JS_PATH = '/static/bootstrap2.2.2/js/complete/bootstrap.min.js'
 

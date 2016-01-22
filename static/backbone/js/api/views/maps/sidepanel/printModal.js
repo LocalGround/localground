@@ -10,7 +10,7 @@ define(["jquery",
         /**
          * A class that handles display and rendering of the
          * print data modal
-         * @class UploadModal
+         * @class PrintModal
          */
 
         var PrintModal = Marionette.LayoutView.extend({

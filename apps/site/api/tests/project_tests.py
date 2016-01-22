@@ -7,7 +7,7 @@ from rest_framework import status
 
 def get_metadata():
     return {
-        'description': {'read_only': False, 'required': False, 'type': 'memo'},
+        'caption': {'read_only': False, 'required': False, 'type': 'memo'},
         'tags': {'read_only': False, 'required': False, 'type': 'string'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
@@ -39,7 +39,7 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
         response = self.client_user.post(self.url,
                                          data=urllib.urlencode({
                                              'name': name,
-                                             'description': description,
+                                             'caption': description,
                                              'tags': tags,
                                              'slug': slug
                                          }),
@@ -107,7 +107,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         response = self.client_user.put(self.url,
                             data=urllib.urlencode({
                                 'name': name,
-                                'description': description
+                                'caption': description
                             }),
                             HTTP_X_CSRFTOKEN=self.csrf_token,
                             content_type="application/x-www-form-urlencoded"

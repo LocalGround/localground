@@ -19,8 +19,8 @@ define(["marionette",
              * @lends localground.maps.views.DataPanel#
              */
             template: function (model) {
-                if (!model.description) {
-                    model.description = '';
+                if (!model.caption) {
+                    model.caption = '';
                 }
                 return _.template(snapshotItem, _.extend({}, model, {urlRoot: document.location.origin}));
             },

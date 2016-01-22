@@ -1,7 +1,7 @@
 import sys
 from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
-from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializer
+from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializerUpdate
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 from localground.apps.site.api.serializers.record_serializer import create_record_serializer, \
     create_compact_record_serializer
@@ -102,7 +102,7 @@ class SnapshotSerializer(BaseNamedSerializer):
         return self.serialize_list(models.Audio, serializer)
 
     def get_scans(self, obj):
-        serializer = ScanSerializer(
+        serializer = ScanSerializerUpdate(
             obj.map_images, many=True, context={'request': {}}
         )
         return self.serialize_list(models.Scan, serializer)

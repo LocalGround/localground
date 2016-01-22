@@ -27,7 +27,7 @@ define(["marionette",
             ui: {
                 saveName: '#save-snapshot-name',
                 saveCaption: '#save-snapshot-caption',
-                snapshotFields: '.snapshot-description',
+                snapshotFields: '.snapshot-caption',
                 urlModal: '#url-modal',
                 loadButton: '.load'
             },
@@ -120,7 +120,7 @@ define(["marionette",
                 if (!snapshot) {
                     snapshot = new Snapshot({
                         name: this.ui.saveName.val(),
-                        description: '',
+                        caption: '',
                         tags: '',
                         slug: btoa(Math.random() * 1000000000).replace(/=/g, '-') //Generate random slug string
                     });
@@ -132,7 +132,7 @@ define(["marionette",
                 //capitalize first letter
                 mapName = mapName.charAt(0).toUpperCase() + mapName.slice(1);
                 snapshot.set('basemap', _.findWhere(this.opts.tilesets, {name: mapName}).id);
-                snapshot.set('description', this.ui.saveCaption.val());
+                snapshot.set('caption', this.ui.saveCaption.val());
                 snapshot.set('Snapshot_authority', 3);
                 snapshot.save(null, {success: function (newSnapshot) {
                     this.collection.add(newSnapshot);

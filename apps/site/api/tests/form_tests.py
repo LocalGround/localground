@@ -17,7 +17,7 @@ class ApiFormListTest(test.TestCase, ViewMixinAPI):
         self.view = views.FormList.as_view()
         self.metadata = {'data_url': {'read_only': True, 'required': False, 'type': 'field'},
             'project_ids': {'read_only': False, 'required': True, 'type': 'field'},
-            'description': {'read_only': False, 'required': False, 'type': 'memo'},
+            'caption': {'read_only': False, 'required': False, 'type': 'memo'},
             'tags': {'read_only': False, 'required': False, 'type': 'string'},
             'url': {'read_only': True, 'required': False, 'type': 'field'},
             'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},

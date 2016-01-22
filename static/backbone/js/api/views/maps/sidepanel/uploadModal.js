@@ -26,14 +26,14 @@ define(["jquery",
                 this.url = opts.url;
             },
 
-            onRender: function() {
+            onRender: function () {
                 this.ui.modal.on('hidden.bs.modal', this.cleanUp.bind(this));
             },
 
-            serializeData: function(){
+            serializeData: function () {
                 return {
-                  urlRoot: location.origin,
-                  url: this.url
+                    urlRoot: window.location.origin,
+                    url: this.url + '?project_id=' + this.app.activeProjectID
                 };
             },
 
@@ -42,14 +42,11 @@ define(["jquery",
             },
 
             showModal: function () {
-                var iframe;
                 this.ui.modal.modal();
-                iframe = this.$el.find('iframe')[0];
-                iframe.contentDocument.getElementById(this.app.activeProjectID).click();
+                var iframe = this.$el.find('iframe')[0],
+                    $projectSelect = $(iframe.contentDocument.getElementById('project'));
+                $projectSelect.val(this.app.activeProjectID);
             }
-
-
-
         });
         return UploadModal;
     });

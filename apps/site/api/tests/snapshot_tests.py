@@ -8,7 +8,7 @@ from rest_framework import status
 
 def get_metadata():
     return {
-        'description': {'read_only': False, 'required': False, 'type': 'memo'},
+        'caption': {'read_only': False, 'required': False, 'type': 'memo'},
         'tags': {'read_only': False, 'required': False, 'type': 'string'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
@@ -49,7 +49,7 @@ class ApiSnapshotTest(object):
     def _test_save_snapshot(self, method, status_id, entities):
         d = {
             'name': self.name,
-            'description': self.description,
+            'caption': self.description,
             'tags': self.tags,
             'slug': self.slug,
             'entities': json.dumps(entities),

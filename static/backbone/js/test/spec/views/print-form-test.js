@@ -44,13 +44,13 @@ define(["underscore",
 
                 it("correctly returns form data", function () {
                     var formData;
-
                     formData = printForm.getFormData();
-                    expect(formData.orientation).toEqual('landscape');
+                    expect(formData.layout).toEqual(1);
                     printForm.$el.find('#portrait').click();
                     this.app.setActiveProjectID(2);
                     formData = printForm.getFormData();
-                    expect(formData.orientation).toEqual('portrait');
+                    //console.log(formData);
+                    expect(formData.layout).toEqual(2);
                     expect(formData.project_id).toEqual(2);
                 });
             });

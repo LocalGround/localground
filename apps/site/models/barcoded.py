@@ -17,11 +17,11 @@ from django.contrib.contenttypes import generic
 class Processor(BaseUploadedMedia):
     uuid = models.CharField(unique=True, max_length=8)
     source_print = models.ForeignKey('Print', blank=True, null=True)
-    status = models.ForeignKey('StatusCode')
+    status = models.ForeignKey('StatusCode', default=3) #default to Web Form
     file_name_thumb = models.CharField(max_length=255, blank=True, null=True)
     file_name_scaled = models.CharField(max_length=255, blank=True, null=True)
     scale_factor = models.FloatField(blank=True, null=True)
-    upload_source = models.ForeignKey('UploadSource')
+    upload_source = models.ForeignKey('UploadSource', default=1) #default to Web Form
     email_sender = models.CharField(max_length=255, blank=True, null=True)
     email_subject = models.CharField(max_length=500, blank=True, null=True)
     email_body = models.TextField(null=True, blank=True)
@@ -40,6 +40,7 @@ class Processor(BaseUploadedMedia):
             '%s%s' %
             (self.virtual_path, self.file_name_thumb))
 
+    '''
     def generate_relative_path(self):
         return '/%s/media/%s/%s/%s/' % (settings.USER_MEDIA_DIR,
                                         self.owner.username,
@@ -51,9 +52,10 @@ class Processor(BaseUploadedMedia):
                                       self.owner.username,
                                       self.directory_name,
                                       self.uuid)
-
+    '''
     def get_abs_directory_path(self):
         return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
+    
 
     def original_image_filesystem(self):
         return self.get_abs_directory_path() + self.file_name_new
@@ -102,14 +104,6 @@ class Scan(Processor):
     def get_object_type(self):
         return 'map-image'
 
-    '''
-	def generate_relative_path(self):
-		return '/%s/scans/%s/' % (settings.USER_MEDIA_DIR, self.uuid)
-		
-	def generate_absolute_path(self):
-		return '%s/scans/%s/' % (settings.USER_MEDIA_ROOT, self.uuid)
-	'''
-
     def processed_map_filesystem(self):
         return self.get_abs_directory_path(
         ) + self.processed_image.file_name_orig
@@ -137,50 +131,6 @@ class Scan(Processor):
     def get_marker_dictionary(self):
         from localground.apps.site.models import Marker
         return Marker.objects.get_marker_dict_by_scan(scan_id=self.id)
-
-    def save_upload(self, file, user, project, do_save=True):
-        from localground.apps.lib.helpers import generic
-        from PIL import Image
-
-        # 1) first, set user, project, and uuid (required for generating file
-        # path):
-        self.owner = user
-        self.last_updated_by = user
-        self.project = project
-        self.uuid = generic.generateID()
-
-        # 2) save original file to disk:
-        file_name_new = self.save_file_to_disk(file)
-        file_name, ext = os.path.splitext(file_name_new)
-
-        # 3) thumbnail scan:
-        thumbnail_name = '%s_thumb.png' % file_name
-        media_path = self.generate_absolute_path()
-        im = Image.open(media_path + '/' + file_name_new)
-        im.thumbnail([500, 500], Image.ANTIALIAS)
-        im.save('%s/%s' % (media_path, thumbnail_name))
-
-        # 4) save object to database:
-        self.status = StatusCode.objects.get(id=1)
-        self.upload_source = UploadSource.objects.get(id=1)
-        self.file_name_orig = file.name
-        if self.name is None:
-            self.name = file.name
-        if self.attribution is None:
-            self.attribution = user.username
-        self.file_name_new = file_name_new
-        self.file_name_thumb = thumbnail_name
-        self.content_type = ext.replace('.', '')  # file extension
-        self.host = settings.SERVER_HOST
-        self.virtual_path = self.generate_relative_path()
-        if do_save:
-            self.save()
-
-        # 5) call asynchronous processor routine through celery:
-        '''from localground.apps.tasks import process_map
-		process_map.delay(self.uuid)'''
-        #from localground.apps.tasks import add
-        #add.delay(2, 4)
 
     def to_dict(self):
         from localground.apps.site.api.serializers import ScanSerializer

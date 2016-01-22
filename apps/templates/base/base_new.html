@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Local Ground</title>
+		<!--[if lt IE 9]>
+		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.css" rel="stylesheet">
+		<link href="/static/css/base.css" rel="stylesheet">
+		{% block style_links %}{% endblock %}
+		
+		<style type="text/css">
+			body {
+				padding-left: 0px;
+				padding-right: 0px;
+			}
+			{% block extra_styles %}{% endblock %}	
+		</style>
+		{% block jquery_version %}
+			
+		<script type="text/javascript" src="{{ JQUERY_PATH }}"></script>
+		{% endblock %}	
+		<script type="text/javascript" src="/static/scripts/helpers/namespace.js"></script>
+		<script type="text/javascript" src="/static/scripts/thirdparty/jquery_cookie.js"></script>
+		<script type="text/javascript" src="/static/scripts/site/base.js"></script>
+		<script type="text/javascript" src="{{ BOOTSTRAP_JS_PATH }}"></script>
+		{% block script_links %}{% endblock %}
+		<script>
+			{% block extra_scripts %}{% endblock %}
+			$().ready(function() {
+				$().dropdown();
+				{% block pageload_scripts %}{% endblock %}
+			});
+		</script>
+	</head>
+
+	<body>
+		{% block top_menu %}
+			{% include "includes/menus/top_nav_new.html" %}
+		{% endblock %}
+        {% block content %}{% endblock %}
+	</body>
+</html>

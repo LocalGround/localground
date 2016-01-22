@@ -14,7 +14,7 @@ class ApiLayerTest(object):
     slug = 'my_layer'
     metadata = {
         'symbols': {'read_only': False, 'required': False, 'type': 'json'},
-        'description': {'read_only': False, 'required': False, 'type': 'memo'},
+        'caption': {'read_only': False, 'required': False, 'type': 'memo'},
         'tags': {'read_only': False, 'required': False, 'type': 'string'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
@@ -36,7 +36,7 @@ class ApiLayerTest(object):
     def _test_save_layer(self, method, status_id, symbols):
         d = {
             'name': self.name,
-            'description': self.description,
+            'caption': self.description,
             'tags': self.tags,
             'slug': self.slug,
             'symbols': json.dumps(symbols)

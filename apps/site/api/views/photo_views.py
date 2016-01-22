@@ -21,14 +21,13 @@ class PhotoFilter(django_filters.FilterSet):
 
 
 class PhotoList(MediaList):
-    ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     serializer_class = serializers.PhotoSerializer
     model = models.Photo
     filter_class = PhotoFilter
 
 
 class PhotoInstance(MediaInstance):
-    serializer_class = serializers.PhotoSerializer
+    serializer_class = serializers.PhotoSerializerUpdate
     model = models.Photo
 
 
