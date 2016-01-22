@@ -1,13 +1,13 @@
 from django.contrib.gis.db import models
 from django.conf import settings
 from localground.apps.site.managers import PhotoManager
-from localground.apps.site.models import BasePoint, BaseUploadedMedia
+from localground.apps.site.models import ExtrasMixin, BasePointMixin, BaseUploadedMedia
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os
 from swampdragon.models import SelfPublishModel
 from localground.apps.site.api.realtime_serializers import PhotoRTSerializer
 
-class Photo(BasePoint, BaseUploadedMedia): #SelfPublishModel
+class Photo(ExtrasMixin, BasePointMixin, BaseUploadedMedia): #SelfPublishModel
     file_name_large = models.CharField(max_length=255)
     file_name_medium = models.CharField(max_length=255)
     file_name_medium_sm = models.CharField(max_length=255)

@@ -3,8 +3,8 @@ from localground.apps.site.models.abstract.base import Base
 from localground.apps.site.models.abstract.audit import BaseAudit
 from localground.apps.site.models.abstract.named import BaseNamed
 from localground.apps.site.models.abstract.media import BaseMedia, BaseUploadedMedia
-from localground.apps.site.models.abstract.geometry import BasePoint, BaseExtents
-from localground.apps.site.models.abstract.mixins import ProjectMixin, BaseGenericRelationMixin
+from localground.apps.site.models.abstract.geometry import BaseExtents
+from localground.apps.site.models.abstract.mixins import ExtrasMixin, BasePointMixin, ProjectMixin, BaseGenericRelationMixin
 
 #layers
 from localground.apps.site.models.layer import Layer

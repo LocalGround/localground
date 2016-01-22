@@ -1,11 +1,11 @@
 from django.contrib.gis.db import models
 from django.conf import settings
 from localground.apps.site.managers import AudioManager
-from localground.apps.site.models import BasePoint, BaseUploadedMedia
+from localground.apps.site.models import BasePointMixin, ExtrasMixin, BaseUploadedMedia
 import os
 
 
-class Audio(BasePoint, BaseUploadedMedia):
+class Audio(ExtrasMixin, BasePointMixin, BaseUploadedMedia):
     name = name_plural = 'audio'
     objects = AudioManager()
 

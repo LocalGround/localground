@@ -1,4 +1,4 @@
-import os
+import os, json
 from django import test
 from django.conf import settings
 from localground.apps.site.api import views
@@ -28,8 +28,14 @@ def get_metadata():
         "path_marker_lg": { "type": "field", "required": False, "read_only": True },
         "path_marker_sm": { "type": "field", "required": False, "read_only": True },
         "file_path_orig": { "type": "field", "required": False, "read_only": True },
-        "media_file": { "type": "string", "required": True, "read_only": False }
+        "media_file": { "type": "string", "required": True, "read_only": False },
+        'extras': {'read_only': False, 'required': False, 'type': 'json'}
     }
+ExtrasGood = '''{
+    "source": "http://google.com",
+    "video": "youtube.com",
+    "order": 5
+}'''
 
 class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
 
@@ -46,11 +52,15 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         image.save(tmp_file)
         author_string = 'Author of the media file'
         with open(tmp_file.name, 'rb') as data:
-            response = self.client_user.post(self.urls[0],
-                                             {'project_id': self.project.id,
-                                              'media_file' : data,
-                                              'attribution': author_string},
-                                             HTTP_X_CSRFTOKEN=self.csrf_token)
+            response = self.client_user.post(
+                self.urls[0],
+                {
+                    'project_id': self.project.id,
+                    'media_file' : data,
+                    'attribution': author_string,
+                    'extras': ExtrasGood
+                },
+                HTTP_X_CSRFTOKEN=self.csrf_token)
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
             # a few more checks to make sure that file paths are being
             # generated correctly:
@@ -59,6 +69,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
             file_name = unicode(file_name, "utf-8")
             self.assertEqual(file_name, new_photo.name)
             self.assertEqual(author_string, new_photo.attribution)
+            self.assertEqual(json.loads(ExtrasGood), new_photo.extras)
             self.assertEqual(file_name, new_photo.file_name_orig)
             self.assertTrue(len(new_photo.file_name_new) > 5) #ensure not empty
             self.assertEqual(settings.SERVER_HOST, new_photo.host)
@@ -116,7 +127,8 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
                             data=urllib.urlencode({
                                 'geometry': point,
                                 'name': name,
-                                'caption': description
+                                'caption': description,
+                                'extras': ExtrasGood
                             }),
                             HTTP_X_CSRFTOKEN=self.csrf_token,
                             content_type="application/x-www-form-urlencoded"
@@ -128,6 +140,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.data.get("caption"), description)
         self.assertEqual(updated_photo.geometry.y, point['coordinates'][1])
         self.assertEqual(updated_photo.geometry.x, point['coordinates'][0])
+        self.assertEqual(updated_photo.extras, json.loads(ExtrasGood))
 
     def test_update_photo_using_patch(self, **kwargs):
         import json
