@@ -245,7 +245,15 @@ DRAGON_URL='http://sd.localground.org:7777/' #remove port for prod
 SWAMP_DRAGON = {'um': 'okay'}
 
 CORS_ORIGIN_ALLOW_ALL = True
-
+CORS_ALLOW_HEADERS = (
+    'x-requested-with',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
+    'x-csrftoken',
+    'accept-encoding' #needed for Safari to work
+)
 
 # Local settings override project settings
 try:
