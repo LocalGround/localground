@@ -3,6 +3,7 @@ from localground.apps.site import widgets, models
 from localground.apps.site.api import fields
 from django.forms.widgets import Input
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
+from localground.apps.site.api.fields.json_fields import JSONField
 
 '''
 On Mixins: read this:
@@ -96,6 +97,12 @@ class GeometrySerializer(BaseNamedSerializer):
         style={'base_template': 'json.html'},
         source='point'
     )
+    extras = JSONField(
+        help_text='Store arbitrary key / value pairs here in JSON form. Example: {"key": "value"}',
+        allow_null=True,
+        required=False,
+        style={'base_template': 'json.html'})
+    
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
         source='project',
@@ -110,7 +117,7 @@ class GeometrySerializer(BaseNamedSerializer):
 
     class Meta:
         fields = BaseNamedSerializer.Meta.fields + \
-            ('project_id', 'geometry')
+            ('project_id', 'geometry', 'extras')
 
 
 class MediaGeometrySerializer(GeometrySerializer):
