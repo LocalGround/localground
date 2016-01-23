@@ -5,6 +5,7 @@ from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib, wave, random, struct
 from rest_framework import status
+import json
 
 def get_metadata():
     return {
@@ -21,8 +22,16 @@ def get_metadata():
         "file_path_orig": { "type": "field", "required": False, "read_only": True },
         "attribution": { "type": "string", "required": False, "read_only": False },
         "file_name": { "type": "string", "required": False, "read_only": True },
-        "media_file": { "type": "string", "required": True, "read_only": False }
+        "media_file": { "type": "string", "required": True, "read_only": False },
+        'extras': {'read_only': False, 'required': False, 'type': 'json'}
     }
+
+ExtrasGood = '''{
+    "source": "http://google.com",
+    "video": "youtube.com",
+    "order": 5
+}'''
+
 
 class ApiAudioListTest(test.TestCase, ViewMixinAPI):
 
@@ -51,11 +60,14 @@ class ApiAudioListTest(test.TestCase, ViewMixinAPI):
         noise_output.close()
         author_string = 'Author of the media file'
         with open(tmp_file.name, 'rb') as data:
-            response = self.client_user.post(self.urls[0],
-                                             {'project_id': self.project.id,
-                                              'media_file' : data,
-                                              'attribution': author_string},
-                                             HTTP_X_CSRFTOKEN=self.csrf_token)
+            response = self.client_user.post(
+                self.urls[0], {
+                    'project_id': self.project.id,
+                    'media_file' : data,
+                    'attribution': author_string,
+                    'extras': ExtrasGood
+                },
+                HTTP_X_CSRFTOKEN=self.csrf_token)
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
             # a few more checks to make sure that file paths are being
             # generated correctly:
@@ -63,6 +75,7 @@ class ApiAudioListTest(test.TestCase, ViewMixinAPI):
             file_name = tmp_file.name.split("/")[-1]
             file_name = unicode(file_name, "utf-8")
             path = new_audio.encrypt_url(new_audio.file_name_new)
+            self.assertEqual(json.loads(ExtrasGood), new_audio.extras)
             self.assertEqual(author_string, new_audio.attribution)
             self.assertEqual(file_name, new_audio.name)
             self.assertEqual(file_name, new_audio.file_name_orig)
@@ -94,7 +107,8 @@ class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
                             data=urllib.urlencode({
                                 'geometry': point,
                                 'name': name,
-                                'caption': caption
+                                'caption': caption,
+                                'extras': ExtrasGood
                             }),
                             HTTP_X_CSRFTOKEN=self.csrf_token,
                             content_type="application/x-www-form-urlencoded"
@@ -104,6 +118,7 @@ class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(updated_audio.name, name)
         self.assertEqual(updated_audio.description, caption)
         self.assertEqual(response.data.get("caption"), caption)
+        self.assertEqual(json.loads(ExtrasGood), updated_audio.extras)
         self.assertEqual(updated_audio.geometry.y, point['coordinates'][1])
         self.assertEqual(updated_audio.geometry.x, point['coordinates'][0])
 
