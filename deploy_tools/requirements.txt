@@ -6,6 +6,8 @@ django-debug-toolbar
 django-extensions==1.1.1
 django-filter==0.10.0
 django-jenkins==0.14.0
+django-tagging==0.3.6
+django-tagging-autocomplete==0.4.2
 djangorestframework==3.1.1
 djangorestframework-csv==1.2.0
 djangorestframework-gis==0.8.2
