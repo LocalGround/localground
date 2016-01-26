@@ -1,6 +1,5 @@
 from rest_framework import generics, status, exceptions
 from localground.apps.site.api import serializers, filters
-from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
 from localground.apps.site import models
 from django.http import Http404, HttpResponse
 from rest_framework.response import Response
@@ -8,8 +7,7 @@ from django.db import IntegrityError
 from rest_framework.serializers import ValidationError
 
 
-class RelatedMediaList(generics.ListCreateAPIView,
-                       AuditCreate):
+class RelatedMediaList(generics.ListCreateAPIView):
     # return HttpResponse(self.kwargs.get('entity_name_plural'))
     model = models.GenericAssociation
     serializer_class = serializers.AssociationSerializer
@@ -35,7 +33,7 @@ class RelatedMediaList(generics.ListCreateAPIView,
             source_id=self.kwargs.get('source_id'))
     
     def perform_create(self, serializer):
-        d = self.get_presave_dictionary()
+        d = {}
         group_model = models.Base.get_model(
             model_name_plural=self.kwargs.get('group_name_plural')
         )

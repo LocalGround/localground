@@ -4,11 +4,10 @@ from datetime import datetime
 from localground.apps.site.managers import MarkerManager
 from localground.apps.site.models import BaseUploadedMedia
 from django.contrib.contenttypes import generic
-from localground.apps.site.models import BasePoint, BaseNamed, \
+from localground.apps.site.models import BasePointMixin, ExtrasMixin, BaseNamed, \
     BaseGenericRelationMixin, ReturnCodes
-from jsonfield import JSONField
 
-class Marker(BasePoint, BaseNamed, BaseGenericRelationMixin):
+class Marker(ExtrasMixin, BasePointMixin, BaseNamed, BaseGenericRelationMixin):
 
     """
     Markers are association objects with a geometry (either point,
@@ -24,7 +23,6 @@ class Marker(BasePoint, BaseNamed, BaseGenericRelationMixin):
     # todo:  replace project with generic association to either a project, view,
     # or presentation :)
     color = models.CharField(max_length=6)
-    extras = JSONField(blank=True, null=True)
     _records_dict = None
     objects = MarkerManager()
     filter_fields = ('id', 'project', 'name', 'descrption', 'tags',)

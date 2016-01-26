@@ -5,22 +5,8 @@ from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
 from django.conf import settings
 from localground.apps.site.api.metadata import CustomMetadata
-from localground.apps.site.api.fields.json_fields import JSONField
 
-class MarkerSerializerMixin(GeometrySerializer):
-    geometry = fields.GeometryField(
-        help_text='Assign a GeoJSON string',
-        allow_null=True,
-        source='point',
-        required=False,
-        style={'base_template': 'json.html'})
-    
-    extras = JSONField(
-        help_text='Store arbitrary key / value pairs here in JSON form. Example: {"key": "value"}',
-        allow_null=True,
-        required=False,
-        style={'base_template': 'json.html'})
-    
+class MarkerSerializerMixin(GeometrySerializer):    
     color = fields.ColorField(required=False)
     update_metadata = serializers.SerializerMethodField()
 
@@ -129,9 +115,9 @@ class MarkerSerializer(MarkerSerializerMixin):
         return self.serialize_list(obj, models.Audio, data)
 
     def get_map_images(self, obj):
-        from localground.apps.site.api.serializers import ScanSerializer
+        from localground.apps.site.api.serializers import ScanSerializerUpdate
 
-        data = ScanSerializer(
+        data = ScanSerializerUpdate(
             obj.map_images,
             many=True, context={ 'request': {} }).data
         return self.serialize_list(obj, models.Scan, data)

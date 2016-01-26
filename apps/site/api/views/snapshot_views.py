@@ -1,7 +1,6 @@
 from rest_framework import generics, status
 from localground.apps.site.api import serializers, filters
-from localground.apps.site.api.views.abstract_views import \
-    AuditCreate, AuditUpdate, QueryableListCreateAPIView
+from localground.apps.site.api.views.abstract_views import QueryableListCreateAPIView
 from localground.apps.site import models
 from localground.apps.site.api.permissions import CheckProjectPermissions
 from django.db.models import Q
@@ -48,7 +47,7 @@ class SnapshotMixin(object):
                         connection._rollback()
 
 
-class SnapshotList(QueryableListCreateAPIView, SnapshotMixin, AuditCreate):
+class SnapshotList(QueryableListCreateAPIView, SnapshotMixin):
     error_messages = {}
     warnings = []
     serializer_class = serializers.SnapshotSerializer
@@ -65,10 +64,9 @@ class SnapshotList(QueryableListCreateAPIView, SnapshotMixin, AuditCreate):
             )
 
     def perform_create(self, serializer):
-        d = self.get_presave_dictionary()
-        d.update({
+        d = {
             'access_authority': models.ObjectAuthority.objects.get(id=3)
-        })
+        }
         obj = serializer.save(**d)
         self.save_generic_relations(obj, serializer.initial_data.get('entities'))
         
@@ -79,9 +77,7 @@ class SnapshotList(QueryableListCreateAPIView, SnapshotMixin, AuditCreate):
 
 
 class SnapshotInstance(
-        generics.RetrieveUpdateDestroyAPIView,
-        SnapshotMixin,
-        AuditUpdate):
+        SnapshotMixin, generics.RetrieveUpdateDestroyAPIView):
     error_messages = {}
     warnings = []
     queryset = models.Snapshot.objects.select_related('owner').all()
@@ -89,6 +85,6 @@ class SnapshotInstance(
     model = models.Snapshot
 
     def perform_update(self, serializer):
-        obj = AuditUpdate.perform_update(self, serializer)
+        obj = serializer.save()
         self.save_generic_relations(obj, serializer.initial_data.get('entities'))
 

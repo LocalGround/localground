@@ -1,4 +1,4 @@
-.modal-content {
+.print-modal-content {
    background: #EEE; 
 }
 #print-container {
@@ -121,7 +121,7 @@
     height: 35px;
 }
 
-#print-map-title:hover, #print-map-description:hover {
+#print-map-title:hover, #print-map-caption:hover {
     background-color:rgb(238,238,238);
 }
 
@@ -129,22 +129,22 @@
     display:none;
     margin-bottom: 19px;
 }
-#print-map-description {
+#print-map-caption {
     cursor: pointer;
 }
-.print-map-description {
+.print-map-caption {
     float:left;
     height:81px;
     margin-top:5px;
     width:880px;
 }
 
-#print-mockup.portrait > .print-map-description {
+#print-mockup.portrait > .print-map-caption {
     width: 640px;
 }
 
 
-#print-map-description-input {
+#print-map-caption-input {
     display: none;
 }
 #print-map-qr {

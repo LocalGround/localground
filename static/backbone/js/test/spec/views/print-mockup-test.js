@@ -88,25 +88,25 @@ define(["views/prints/printMockup",
                 });
 
                 it('Instruction input toggles when clicked', function () {
-                    spyOn(PrintMockup.prototype,'showDescriptionInput').and.callThrough();
+                    spyOn(PrintMockup.prototype,'showCaptionInput').and.callThrough();
                     initMockup.call(this);
-                    expect(printMockup.ui.description.css('display')).toEqual('block');
-                    expect(printMockup.ui.descriptionInput.css('display')).toEqual('none');
-                    printMockup.ui.description.click();
-                    expect(printMockup.showDescriptionInput).toHaveBeenCalled();
-                    expect(printMockup.ui.description.css('display')).toEqual('none');
-                    expect(printMockup.ui.descriptionInput.css('display')).toEqual('block');
-                })
+                    expect(printMockup.ui.caption.css('display')).toEqual('block');
+                    expect(printMockup.ui.captionInput.css('display')).toEqual('none');
+                    printMockup.ui.caption.click();
+                    expect(printMockup.showCaptionInput).toHaveBeenCalled();
+                    expect(printMockup.ui.caption.css('display')).toEqual('none');
+                    expect(printMockup.ui.captionInput.css('display')).toEqual('block');
+                });
 
                 it('Instruction input is hidden when unfocused', function () {
-                    spyOn(PrintMockup.prototype,'hideDescriptionInput').and.callThrough();
+                    spyOn(PrintMockup.prototype,'hideCaptionInput').and.callThrough();
                     initMockup.call(this);
-                    printMockup.ui.description.click();
-                    expect(printMockup.ui.descriptionInput.css('display')).toEqual('block');
-                    printMockup.ui.descriptionInput.blur();
-                    expect(printMockup.hideDescriptionInput).toHaveBeenCalled();
-                    expect(printMockup.ui.descriptionInput.css('display')).toEqual('none');
-                })
+                    printMockup.ui.caption.click();
+                    expect(printMockup.ui.captionInput.css('display')).toEqual('block');
+                    printMockup.ui.captionInput.blur();
+                    expect(printMockup.hideCaptionInput).toHaveBeenCalled();
+                    expect(printMockup.ui.captionInput.css('display')).toEqual('none');
+                });
 
                 it('Correctly replaces title text', function () {
                     initMockup.call(this);
@@ -121,19 +121,18 @@ define(["views/prints/printMockup",
 
                 it('Correctly replaces instruction text', function() {
                     initMockup.call(this);
-                    expect(printMockup.ui.description.text()).toEqual('Click to enter instructions...');
+                    expect(printMockup.ui.caption.text()).toEqual('Click to enter instructions...');
                     expect(printMockup.getInstructions()).toEqual('');
-                    printMockup.ui.description.click();
-                    printMockup.ui.descriptionInput.val('Test Instructions');
-                    printMockup.ui.descriptionInput.blur();
-                    expect(printMockup.ui.description.text()).toEqual('Test Instructions');
-                    expect(printMockup.getInstructions()).toEqual('Test Instructions')
+                    printMockup.ui.caption.click();
+                    printMockup.ui.captionInput.val('Test Instructions');
+                    printMockup.ui.captionInput.blur();
+                    expect(printMockup.ui.caption.text()).toEqual('Test Instructions');
+                    expect(printMockup.getInstructions()).toEqual('Test Instructions');
                 });
 
             });
 
-
-        }); 
+        });
 
 
     });

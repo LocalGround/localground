@@ -2,7 +2,7 @@ from rest_framework import viewsets, generics
 from localground.apps.site.api import serializers, filters, permissions
 from rest_framework.filters import OrderingFilter
 from localground.apps.site.api.views.abstract_views import \
-    AuditCreate, AuditUpdate, QueryableListCreateAPIView, QueryableRetrieveUpdateDestroyView
+    QueryableListCreateAPIView, QueryableRetrieveUpdateDestroyView
 from localground.apps.site import models
 from django.http import Http404
 from rest_framework.response import Response
@@ -55,9 +55,6 @@ class FormDataList(QueryableListCreateAPIView, FormDataMixin):
     def perform_create(self, serializer):
         instance = serializer.save()
         instance.save(force_insert=True, user=self.request.user)
-        
-    #def perform_update(self, obj):
-    #    AuditUpdate.perform_update(self, obj)
 
     def get_serializer_class(self):
         return FormDataMixin.get_serializer_class(self, is_list=True)

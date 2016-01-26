@@ -420,7 +420,7 @@ class ModelMixin(object):
 
     def create_photo(self, user, project, name='Photo Name',
                      file_name='myphoto.jpg', device='HTC',
-                     point=None, with_file=False):
+                     point=None):
         from localground.apps.site import models
         photo = models.Photo(
             project=project,
@@ -432,42 +432,8 @@ class ModelMixin(object):
             device=device,
             point=point
         )
-        photo.virtual_path = photo.generate_relative_path()
         photo.save()
-        if with_file:
-            self.create_image_from_scratch(photo)
         return photo
-    
-    def create_image_from_scratch(self, photo):
-        import Image, ImageFont, ImageDraw, StringIO, os
-        from django.core.files import File
-        
-        # 1) create and save PIL image to disk:
-        width = 200
-        height = 100
-        img_path = '%s%s' % (photo.get_absolute_path(), photo.file_name_orig)
-        
-        # create the directory if it doesn't already exist:
-        if not os.path.exists(photo.get_absolute_path()):
-            photo.make_directory(photo.get_absolute_path())
-            
-        img_io = StringIO.StringIO()
-        img = Image.new('RGBA', (width, height))
-        draw = ImageDraw.Draw(img)
-        draw.text((10, 10),"Sample Text",(255,255,255))          
-        img.save(img_path)
-        
-        # 2) create Django file object from disk:
-        img_data = open(img_path, 'r')
-        f = File(img_data)
-        f.name = photo.file_name_orig
-        
-        # 3) remove temporary PIL image from disk:
-        if os.path.exists(img_path):
-            os.remove(img_path)
-            
-        # 4) simulate file upload:
-        photo.save_upload(f, photo.owner, photo.project)
 
     def create_audio(self, user, project, name='Audio Name',
                      file_name='my_audio.jpg'):

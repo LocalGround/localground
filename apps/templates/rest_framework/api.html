@@ -15,6 +15,7 @@
     <link href="/static/css/themes/bootstrap/jquery-ui-1.8.16.custom.css" type="text/css" media="all" rel="stylesheet" />
     <link href="/static/scripts/thirdparty/selectize/selectize.css" type="text/css" media="all" rel="stylesheet" />
     <link href="/static/css/themes/bootstrap/timepicker.css" type="text/css" media="all" rel="stylesheet" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" />
 {% endblock %}
 {% block extra_styles %}
     body{
@@ -190,7 +191,7 @@
                         {% if post_form %}
                         <div class="tab-pane" id="object-form">
                             {% with form=post_form %}
-                            <form action="{{ request.get_full_path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                            <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal">
                                 <fieldset>
                                     {{ post_form }}
                                     
@@ -204,7 +205,7 @@
                         {% endif %}
                         <div {% if post_form %}class="tab-pane"{% endif %} id="generic-content-form">
                             {% with form=raw_data_post_form %}
-                            <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
+                            <form action="{{ request.get_full_path }}" enctype="multipart/form-data" method="POST" class="form-horizontal">
                                 <fieldset>
                                     {% include "rest_framework/raw_data_form.html" %}
                                     
@@ -231,7 +232,7 @@
                         {% if put_form %}
                         <div class="tab-pane" id="object-form">
                             {% with form=put_form %}
-                            <form action="{{ request.get_full_path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                            <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal">
                                 <fieldset>
                                     {{ put_form }}
                                     
@@ -245,7 +246,7 @@
                         {% endif %}
                         <div {% if put_form %}class="tab-pane"{% endif %} id="generic-content-form">
                             {% with form=raw_data_put_or_patch_form %}
-                            <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
+                            <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal">
                                 <fieldset>
                                     {% include "rest_framework/raw_data_form.html" %}
                                     <div class="form-actions">

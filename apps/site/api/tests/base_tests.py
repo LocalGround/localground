@@ -92,12 +92,14 @@ class ViewMixinAPI(ModelMixin):
                     self.assertEqual(fields[key]['required'], self.metadata[key]['required'])
                     self.assertEqual(fields[key]['read_only'], self.metadata[key]['read_only'])
                 except:
-                    self.debug_metadata(fields[key], self.metadata[key])
+                    raise Exception(
+                        self.debug_metadata(key, fields[key], self.metadata[key])
+                    )
+                    
     
-    def debug_metadata(self, actual, ideal):
-        print ''
-        print '-'*50
-        print 'ERROR: API Endpoint Mismatch:\n'
-        print 'Actual:', actual
-        print 'Target:', ideal
-        print ''
+    def debug_metadata(self, key, actual, ideal):
+        s = '\n {0} \nERROR: API Endpoint Mismatch for {1}:\n'
+        s += 'Actual: {2}\n Target: {3}\n'
+        s = s.format( '-'*50, key, actual, ideal)
+        print s
+        return s

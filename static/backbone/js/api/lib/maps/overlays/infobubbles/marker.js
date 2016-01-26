@@ -59,20 +59,6 @@ define(['underscore',
             }});
         },
 
-        saveForm: function (e) {
-            //does validation
-            var errors = this.form.commit();
-            if (errors) { return; }
-
-            // some JSON post-processing:
-            this.bubble.model.setExtras(this.bubble.model.get("extras"));
-
-            //does database commit
-            this.bubble.model.save();
-            this.hideBubble();
-            e.preventDefault();
-        },
-
         showTipAttaching: function () {
             var template = _.template(markerAttachTipTemplate);
             this.tip.setContent(template(this.getContext()));

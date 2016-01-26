@@ -13,7 +13,7 @@ def get_metadata():
         'audio_count': {'read_only': True, 'required': False, 'type': 'field'},
         'map_image_count': {'read_only': True, 'required': False, 'type': 'field'},
         'record_count': {'read_only': True, 'required': False, 'type': 'field'},
-        'description': {'read_only': False, 'required': False, 'type': 'memo'},
+        'caption': {'read_only': False, 'required': False, 'type': 'memo'},
         'tags': {'read_only': False, 'required': False, 'type': 'string'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
@@ -101,7 +101,7 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
         for d in [{'geometry': self.Crazy1}, {'geometry': self.Crazy2}, {'extras': self.ExtrasBad}]:
             params = {
                 'name': 'New Marker Name',
-                'description': 'Test description',
+                'caption': 'Test description',
                 'color': 'FF0000',
                 'geometry': self.Point,
                 'project_id': self.project.id,
@@ -129,7 +129,7 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
                     data=urllib.urlencode({
                         'geometry': geom,
                         'name': name,
-                        'description': description,
+                        'caption': description,
                         'color': color,
                         'project_id': self.project.id,
                         'extras': self.ExtrasGood
@@ -170,7 +170,7 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         for d in [{'geometry': self.Crazy1}, {'geometry': self.Crazy2}, {'extras': self.ExtrasBad}]:
             params = {
                 'name': 'New Marker Name',
-                'description': 'Test description',
+                'caption': 'Test description',
                 'color': 'FF0000',
                 'geometry': self.Point,
                 'extras': self.ExtrasGood
@@ -198,7 +198,7 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
                     data=urllib.urlencode({
                         'geometry': geom,
                         'name': name,
-                        'description': description,
+                        'caption': description,
                         'color': color,
                         'extras': self.ExtrasGood
                     }),

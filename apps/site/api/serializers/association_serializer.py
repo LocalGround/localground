@@ -1,9 +1,9 @@
 from django.conf import settings
 from rest_framework import serializers
 from localground.apps.site import models
+from localground.apps.site.api.serializers.base_serializer import AuditSerializerMixin
 
-
-class AssociationSerializer(serializers.ModelSerializer):
+class AssociationSerializer(AuditSerializerMixin, serializers.ModelSerializer):
     relation = serializers.SerializerMethodField()
     object_id = serializers.IntegerField(source="entity_id", required=True, label="object id")
 

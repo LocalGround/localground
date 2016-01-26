@@ -1,8 +1,10 @@
 from rest_framework import serializers
 from localground.apps.site import models
+from localground.apps.site.api.serializers.base_serializer import AuditSerializerMixin
 from django.conf import settings
+from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 
-class FieldSerializerBase(serializers.ModelSerializer):
+class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
     '''
     Hack: can't use HyperlinkSerializer field for URLs with two
     dynamic parameters because of DRF limitations. So, we'll build

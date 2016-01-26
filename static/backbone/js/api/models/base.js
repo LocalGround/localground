@@ -92,6 +92,14 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 }
                 return point.getGoogleLatLng(geoJSON);
             },
+            setExtras: function (extras) {
+                try {
+                    extras = JSON.parse(extras);
+                    this.set({ extras: extras }, { silent: true });
+                } catch (e) {
+                    this.set({ extras: null }, { silent: true });
+                }
+            },
             fetchCreateMetadata: function () {
                 var that = this;
                 if (!this.urlRoot) {

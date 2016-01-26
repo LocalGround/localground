@@ -23,7 +23,7 @@ define(["../../../../external/backbone.marionette",
              * @lends localground.maps.views.DataPanel#
              */
             template: function (model) {
-                if (model.description) {
+                if (model.caption) {
                     return _.template(captionTemplate, model);
                 }
             },

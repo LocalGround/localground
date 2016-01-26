@@ -1,13 +1,12 @@
 from rest_framework import viewsets, generics
 from localground.apps.site.api import serializers, filters, permissions
-from localground.apps.site.api.views.abstract_views import \
-    AuditCreate, AuditUpdate, QueryableListCreateAPIView
+from localground.apps.site.api.views.abstract_views import QueryableListCreateAPIView
 from localground.apps.site import models
 from django.http import Http404
 from rest_framework.response import Response
 from rest_framework import status
 
-class FormList(QueryableListCreateAPIView, AuditCreate):
+class FormList(QueryableListCreateAPIView):
     serializer_class = serializers.FormSerializerList
     filter_backends = (filters.SQLFilterBackend,)
     model = models.Form
@@ -23,14 +22,13 @@ class FormList(QueryableListCreateAPIView, AuditCreate):
     paginate_by = 100
 
     def perform_create(self, serializer):
-        d = self.get_presave_dictionary()
-        d.update({
+        d = {
             'access_authority': models.ObjectAuthority.objects.get(id=1)
-        })
+        }
         serializer.save(**d)
 
 
-class FormInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
+class FormInstance(generics.RetrieveUpdateDestroyAPIView):
     model = models.form
     serializer_class = serializers.FormSerializerDetail
 
@@ -41,8 +39,5 @@ class FormInstance(generics.RetrieveUpdateDestroyAPIView, AuditUpdate):
             return models.Form.objects.get_objects_public(
                 access_key=self.request.GET.get('access_key')
             )
-
-    def perform_update(self, obj):
-        AuditUpdate.perform_update(self, obj)
 
 

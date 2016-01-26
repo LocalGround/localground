@@ -142,6 +142,9 @@ define(['jquery',
                 var errors = this.form.commit();
                 if (errors) { return; }
 
+                // some JSON post-processing:
+                this.bubble.model.setExtras(this.bubble.model.get("extras"));
+
                 this.bubble.model.save(); //does database commit
                 this.hideBubble();
                 e.preventDefault();

@@ -3,10 +3,8 @@ from localground.apps.site.api import serializers
 from localground.apps.site.api.filters import SQLFilterBackend
 from localground.apps.site import models
 from django.contrib.auth.models import User, Group
-from localground.apps.site.api.views.abstract_views import AuditCreate, AuditUpdate
 
-
-class TileViewSet(viewsets.ModelViewSet, AuditUpdate):
+class TileViewSet(viewsets.ModelViewSet):
     queryset = models.WMSOverlay.objects.select_related(
         'overlay_type',
         'overlay_source').all()
@@ -14,31 +12,17 @@ class TileViewSet(viewsets.ModelViewSet, AuditUpdate):
     filter_backends = (SQLFilterBackend,)
     permission_classes = (permissions.IsAdminUser,)
 
-    def pre_save(self, obj):
-        AuditUpdate.pre_save(self, obj)
-
-from django.contrib.auth.decorators import user_passes_test
-
-
-class OverlayTypeViewSet(viewsets.ModelViewSet, AuditUpdate):
+class OverlayTypeViewSet(viewsets.ModelViewSet):
     queryset = models.OverlayType.objects.all()
     serializer_class = serializers.OverlayTypeSerializer
     filter_backends = (SQLFilterBackend,)
     permission_classes = (permissions.IsAdminUser,)
 
-    def pre_save(self, obj):
-        AuditUpdate.pre_save(self, obj)
-
-
-class OverlaySourceViewSet(viewsets.ModelViewSet, AuditUpdate):
+class OverlaySourceViewSet(viewsets.ModelViewSet):
     queryset = models.OverlaySource.objects.all()
     serializer_class = serializers.OverlaySourceSerializer
     filter_backends = (SQLFilterBackend,)
     permission_classes = (permissions.IsAdminUser,)
-
-    def pre_save(self, obj):
-        AuditUpdate.pre_save(self, obj)
-
 
 class UserViewSet(viewsets.ModelViewSet):
 
@@ -49,7 +33,6 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.UserSerializer
     permission_classes = (permissions.IsAdminUser,)
 
-
 class GroupViewSet(viewsets.ModelViewSet):
 
     """
@@ -59,11 +42,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GroupSerializer
     permission_classes = (permissions.IsAdminUser,)
 
-
-class DataTypeViewSet(viewsets.ModelViewSet, AuditUpdate):
+class DataTypeViewSet(viewsets.ModelViewSet):
     queryset = models.DataType.objects.all().order_by('name',)
     serializer_class = serializers.DataTypeSerializer
     permission_classes = (permissions.IsAdminUser,)
-
-    def pre_save(self, obj):
-        AuditUpdate.pre_save(self, obj)
