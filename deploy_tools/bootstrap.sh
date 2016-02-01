@@ -1,14 +1,10 @@
 #!/bin/bash -ex
 
-#set -ex
-
 sudo apt-get update
 ############################
 # Install Useful Utilities #
 ############################
-echo "Y" | sudo apt-get install vim
-echo "Y" | sudo apt-get install curl
-echo "Y" | sudo apt-get install git
+sudo apt-get install -y git curl vim
 
 ###################################
 # Install Apache-Related Packages #
@@ -120,10 +116,9 @@ sudo service apache2 restart
 # Create required directories #
 ###############################
 cd /localground
-mkdir userdata
-mkdir userdata/media
-mkdir userdata/prints
-mkdir userdata/deleted
+mkdir -p userdata/media
+mkdir -p userdata/prints
+mkdir -p userdata/deleted
 #Avoiding the issue w/serving django contrib static files vs. Apache's alias
 sudo cp -r /usr/local/lib/python2.7/dist-packages/swampdragon/static/swampdragon /localground/static/swampdragon
 #################
