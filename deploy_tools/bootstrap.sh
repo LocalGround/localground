@@ -120,16 +120,15 @@ sudo service apache2 restart
 # Create required directories #
 ###############################
 cd /localground
-mkdir userdata
-mkdir userdata/media
-mkdir userdata/prints
-mkdir userdata/deleted
+mkdir -p userdata/media
+mkdir -p userdata/prints
+mkdir -p userdata/deleted
 #Avoiding the issue w/serving django contrib static files vs. Apache's alias
 sudo cp -r /usr/local/lib/python2.7/dist-packages/swampdragon/static/swampdragon /localground/static/swampdragon
 #################
 # Install Redis #
 #################
-sudo apt-get install redis-server
+sudo apt-get -y install redis-server rabbitmq-server
 
 ###############################################
 # Create required Django tables and run tests #

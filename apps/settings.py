@@ -198,7 +198,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'corsheaders',
     'social.apps.django_app.default',
-    'swampdragon'
+    'swampdragon',
+    'djcelery'
 )
 
 REST_FRAMEWORK = {
