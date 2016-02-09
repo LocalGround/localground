@@ -9,7 +9,7 @@ from rest_framework import status
 def get_metadata():
     return {
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
-        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'children': {'read_only': True, 'required': False, 'type': 'field'},
@@ -27,7 +27,7 @@ def get_metadata():
 class ApiSnapshotTest(object):
     name = 'New Snapshot Name'
     description = 'Test description'
-    tags = 'a, b, c'
+    tags = [u'a', u'b', u'c']
     slug = 'new-friendly-url'
     metadata = get_metadata()
     entities = [
@@ -59,9 +59,9 @@ class ApiSnapshotTest(object):
         }
         # print d
         response = method(self.url,
-                          data=urllib.urlencode(d),
+                          data=json.dumps(d),
                           HTTP_X_CSRFTOKEN=self.csrf_token,
-                          content_type="application/x-www-form-urlencoded"
+                          content_type="application/json"
                           )
         if response.status_code != status_id:
             print response.data

@@ -10,12 +10,12 @@ from rest_framework import status
 class ApiLayerTest(object):
     name = 'New Layer Name'
     description = 'Test layer description'
-    tags = 'a, b, c'
+    tags = [u'a',u'b',u'c']
     slug = 'my_layer'
     metadata = {
         'symbols': {'read_only': False, 'required': False, 'type': 'json'},
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
-        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'slug': {'read_only': False, 'required': True, 'type': 'slug'},
@@ -41,13 +41,10 @@ class ApiLayerTest(object):
             'slug': self.slug,
             'symbols': json.dumps(symbols)
         }
-        # print d
-        response = method(self.url,
-                          data=urllib.urlencode(d),
-                          HTTP_X_CSRFTOKEN=self.csrf_token,
-                          content_type="application/x-www-form-urlencoded"
-                          )
-        #print response.content
+        #print d
+        #response = method(self.url,data=urllib.urlencode(d),HTTP_X_CSRFTOKEN=self.csrf_token,content_type="application/x-www-form-urlencoded")
+        response = method(self.url,data=json.dumps(d),HTTP_X_CSRFTOKEN=self.csrf_token,content_type="application/json")
+        #print response.data
         self.assertEqual(response.status_code, status_id)
 
         # if it was successful, verify data:

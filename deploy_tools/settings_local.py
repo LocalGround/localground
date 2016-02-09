@@ -10,7 +10,7 @@ DEFAULT_FROM_EMAIL = '"Site Support" <vanwars@gmail.com>'
 ADMIN_EMAILS = ['your_email@gmail.com',]
 
 # Custom Local Variables
-SERVER_HOST = 'localhost:7777'
+SERVER_HOST = 'daya.ischool.berkeley.edu:7777'
 SERVER_URL = 'http://%s' % SERVER_HOST
 
 # Absolute path to the directory root of the local ground instance:

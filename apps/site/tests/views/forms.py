@@ -4,7 +4,7 @@ from localground.apps.site import models
 from localground.apps.site.tests import ViewMixin, ModelMixin
 from rest_framework import status
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
-import urllib, datetime
+import urllib, datetime, json
 from localground.apps.site.models import Field
 
 class UpdateFormTest(test.TestCase, ViewMixin):
@@ -102,7 +102,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 
         name = 'new name'
         description = 'new d'
-        tags = 'a, b, c'
+        tags = "a,b,c"
         project = self.project.id
         slug = 'new-name'
 
@@ -128,7 +128,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
         # form data should be changed
         self.assertEqual(form.name, name)
         self.assertEqual(form.description, description)
-        self.assertEqual(form.tags, tags)
+        self.assertEqual(form.tags, tags.split(","))
 
         # form should have 2 fields:
         fields = form.fields
@@ -149,7 +149,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 
         name = 'brand new form!'
         description = 'new d'
-        tags = 'a, b, c'
+        tags = "a,b,c"
         project = self.project.id
         slug = 'brand-new-form'
 
@@ -170,7 +170,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 
         # form data should be changed
         self.assertEqual(form.description, description)
-        self.assertEqual(form.tags, tags)
+        self.assertEqual(form.tags, tags.split(","))
 
         # form should have 2 fields:
         fields = form.fields

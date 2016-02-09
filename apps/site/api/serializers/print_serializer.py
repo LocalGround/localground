@@ -40,8 +40,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         allow_blank=True)
     #tags = serializers.CharField(required=False,
     #    allow_blank=True, help_text='Tag your object here')
-    tags = serializers.ListField(child=serializers.CharField(), required=False, allow_null=True, 
-    label='tags', help_text='Tag your object here')
+    tags = serializers.ListField(child=serializers.CharField(),required=False, allow_null=True, label='tags', help_text='Tag your object here')
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
     #edit_url = serializers.SerializerMethodField('get_configuration_url')
     overlay_type = serializers.SerializerMethodField()

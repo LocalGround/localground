@@ -9,7 +9,7 @@ import json
 
 def get_metadata():
     return {
-        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'file_path': {'read_only': True, 'required': False, 'type': 'field'},

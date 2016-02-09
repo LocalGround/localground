@@ -14,7 +14,7 @@ def get_metadata():
         "id": { "type": "integer", "required": False, "read_only": True },
         "name": { "type": "string", "required": False, "read_only": False },
         "overlay_type": { "type": "field", "required": False, "read_only": True },
-        "tags": { "type": "string", "required": False, "read_only": False },
+        "tags": { "type": "field", "required": False, "read_only": False },
         "owner": { "type": "field", "required": False, "read_only": True },
         "project_id": { "type": "field", "required": False, "read_only": False },
         "geometry": { "type": "geojson", "required": False, "read_only": False },

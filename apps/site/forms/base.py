@@ -88,6 +88,7 @@ def get_inline_form_with_tags(cls, user):
 
         class Meta:
             from django import forms
+            from localground.apps.site.widgets import ArrayFieldTagWidget
             model = cls
             fields = ('name', 'description', 'tags', 'project')
             widgets = {

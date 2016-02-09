@@ -2,13 +2,13 @@ from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
-import urllib
+import urllib, json
 from rest_framework import status
 
 def get_metadata():
     return {
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
-        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'slug': {'read_only': False, 'required': True, 'type': 'slug'},
@@ -34,17 +34,17 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
     def test_create_project_using_post(self, **kwargs):
         name = 'New Project!'
         description = 'New project description'
-        tags = "d, e, f"
+        tags = [u'd', u'e', u'f']
         slug = 'new-project-123'
         response = self.client_user.post(self.url,
-                                         data=urllib.urlencode({
+                                         data=json.dumps({
                                              'name': name,
                                              'caption': description,
                                              'tags': tags,
                                              'slug': slug
                                          }),
                                          HTTP_X_CSRFTOKEN=self.csrf_token,
-                                         content_type="application/x-www-form-urlencoded"
+                                         content_type="application/json"
                                          )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         new_obj = self.model.objects.all().order_by('-id',)[0]

@@ -14,7 +14,7 @@ def get_metadata():
         'map_image_count': {'read_only': True, 'required': False, 'type': 'field'},
         'record_count': {'read_only': True, 'required': False, 'type': 'field'},
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
-        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},

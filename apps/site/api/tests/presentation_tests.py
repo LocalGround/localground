@@ -10,12 +10,12 @@ from rest_framework import status
 class ApiPresentationTest(object):
     name = 'New Presentation'
     description = 'description of presentation'
-    tags = "a, b, c"
+    tags = [u'a',u'b',u'c']
     slug = 'new-friendly-url'
     metadata = {
         'code': {'read_only': False, 'required': False, 'type': 'json'},
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
-        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'slug': {'read_only': False, 'required': True, 'type': 'slug'},
@@ -25,16 +25,17 @@ class ApiPresentationTest(object):
     }
 
     def _test_save_presentation(self, method, status_id, code):
+        d = {
+            'name': self.name,
+            'caption': self.description,
+            'tags': self.tags,
+            'slug': self.slug,
+            'code': json.dumps(code)
+        }
         response = method(self.url,
-                          data=urllib.urlencode({
-                              'name': self.name,
-                              'caption': self.description,
-                              'tags': self.tags,
-                              'slug': self.slug,
-                              'code': json.dumps(code)
-                          }),
+                          data=json.dumps(d),
                           HTTP_X_CSRFTOKEN=self.csrf_token,
-                          content_type="application/x-www-form-urlencoded"
+                          content_type="application/json"
                           )
         self.assertEqual(response.status_code, status_id)
 

@@ -12,7 +12,7 @@ def get_metadata():
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
         'media_file': { 'type': 'string', 'required': True, 'read_only': False },
         'file_path': {'type': 'field', 'required': False, 'read_only': True},
-        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'west': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
