@@ -181,6 +181,14 @@ def object_list_form(
         context.update({'users': Project.get_users()})
     return render_to_response(template_name, context)
 
+@login_required()
+def new_profile(request, template='profile/new_profile.html'):
+    u = request.user
+    context = RequestContext(request)
+    context.update({
+        'user': u
+    })
+    return render_to_response(template, context)
 
 @login_required()
 def delete_batch(request, object_type_plural):

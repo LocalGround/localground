@@ -43,6 +43,8 @@ urlpatterns = patterns('',
 
                        # user prefs:
                        # This should really be in the API, but is here for now
+                       (r'^profile/new/',
+                        'localground.apps.site.views.profile.new_profile'),
                        (r'^profile/settings/',
                         'localground.apps.site.views.profile.change_user_profile'),
 

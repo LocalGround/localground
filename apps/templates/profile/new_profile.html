@@ -1,0 +1,57 @@
+{% extends "base/base_new.html" %}
+
+{% block style_links %}
+    <link rel="stylesheet" href="/static/backbone/css/lg.css" />
+    <link rel="stylesheet" href="/static/backbone/css/upload.css" />
+{% endblock %}
+{% block extra_styles %}
+    
+    #region1 {
+        padding: 15px;
+        border: solid 1px #000;
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
+    #region2 {
+        padding: 15px;
+        border: solid 1px #000;
+        min-height: 300px;
+    }
+    
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div id="region1"></div>
+        <div id="region2"></div>
+    </div>
+
+    <script src="/static/backbone/js/external/require.js"></script>
+    <script src="/static/backbone/js/api/base.js"></script>
+    <script type="text/javascript">
+        var opts = {
+            username: "{{ user.username }}"
+        };
+        require(
+            ["jquery", "/static/backbone/js/api/profile-app.js"],
+            function($, ProfileApp) {
+                $(function() {
+                    ProfileApp.start(opts);
+                });
+            }
+        );
+    </script>
+    
+    <script id="filter-template" type="text/template">
+        <h2>Here is your filter template</h2>
+        <p>
+            Move this into its own stand-alone template inside
+            of /static/backbone/js/templates/</p>
+    </script>
+    
+    <script id="profile-template" type="text/template">
+        <h2>Here is your profile template</h2>
+        <p>Move this into its own stand-alone template</p>
+    </script>
+
+{% endblock %}
