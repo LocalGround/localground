@@ -16,13 +16,15 @@ define([
     ProfileApp.addInitializer(function (options) {
         options.app = this;
 
-        //create child views:
+        // create child views:
         var filterView = new FilterView(options),
             mainView = new ListView(options);
 
-        //inject them into the regions:
+        // inject them into the regions:
         ProfileApp.filterRegion.show(filterView);
         ProfileApp.mainRegion.show(mainView);
+
+        // initialize some AJAX helpers (from appUtilities library)
         this.initAJAX(options);
     });
     return ProfileApp;
