@@ -1,8 +1,10 @@
 define([
     "marionette",
     "underscore",
+    "views/profile/filterView",
+    "views/profile/listView",
     "lib/appUtilities"
-], function (Marionette, _, appUtilities) {
+], function (Marionette, _, FilterView, ListView, appUtilities) {
     "use strict";
     var ProfileApp = new Marionette.Application();
     _.extend(ProfileApp, appUtilities);
@@ -12,12 +14,13 @@ define([
     });
 
     ProfileApp.addInitializer(function (options) {
-        var filterView = new Marionette.ItemView({
-                template: "#filter-template"
-            }),
-            mainView = new Marionette.ItemView({
-                template: "#profile-template"
-            });
+        options.app = this;
+
+        //create child views:
+        var filterView = new FilterView(options),
+            mainView = new ListView(options);
+
+        //inject them into the regions:
         ProfileApp.filterRegion.show(filterView);
         ProfileApp.mainRegion.show(mainView);
         this.initAJAX(options);
