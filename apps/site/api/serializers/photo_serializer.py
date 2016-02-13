@@ -93,16 +93,14 @@ class PhotoSerializer(MediaGeometrySerializer):
         upload_helpers.validate_file(f, self.ext_whitelist)
         
         # save it to disk
-        extras = self.process_file(f, owner)
-        extras.update(self.get_presave_create_dictionary())
-        extras.update({
+        data = self.process_file(f, owner)
+        data.update(self.get_presave_create_dictionary())
+        data.update({
             'attribution': validated_data.get('attribution') or owner.username,
             'host': settings.SERVER_HOST
         })
-        validated_data = {}
-        validated_data.update(self.validated_data)
-        validated_data.update(extras)
-        self.instance = self.Meta.model.objects.create(**validated_data)
+        data.update(validated_data)
+        self.instance = self.Meta.model.objects.create(**data)
         return self.instance
     
 class PhotoSerializerUpdate(PhotoSerializer):

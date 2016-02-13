@@ -92,8 +92,8 @@ class BaseNamedSerializer(BaseSerializer):
 class GeometrySerializer(BaseNamedSerializer):
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
-        required=False,
         allow_null=True,
+        required=False,
         style={'base_template': 'json.html'},
         source='point'
     )

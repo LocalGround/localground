@@ -31,11 +31,15 @@ def get_metadata():
         "media_file": { "type": "string", "required": True, "read_only": False },
         'extras': {'read_only': False, 'required': False, 'type': 'json'}
     }
-ExtrasGood = '''{
+extras = {
     "source": "http://google.com",
     "video": "youtube.com",
     "order": 5
-}'''
+}
+point = {
+    "type": "Point",
+    "coordinates": [12.492324113849, 41.890307434153]
+}
 
 class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
 
@@ -58,7 +62,8 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
                     'project_id': self.project.id,
                     'media_file' : data,
                     'attribution': author_string,
-                    'extras': ExtrasGood
+                    'extras': json.dumps(extras),
+                    'geometry': json.dumps(point)
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
@@ -69,7 +74,8 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
             file_name = unicode(file_name, "utf-8")
             self.assertEqual(file_name, new_photo.name)
             self.assertEqual(author_string, new_photo.attribution)
-            self.assertEqual(json.loads(ExtrasGood), new_photo.extras)
+            self.assertEqual(extras, new_photo.extras)
+            self.assertEqual(point, json.loads(new_photo.geometry.geojson))
             self.assertEqual(file_name, new_photo.file_name_orig)
             self.assertTrue(len(new_photo.file_name_new) > 5) #ensure not empty
             self.assertEqual(settings.SERVER_HOST, new_photo.host)
@@ -119,16 +125,12 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 
     def test_update_photo_using_put(self, **kwargs):
         name, description = 'New Photo Name', 'Test description'
-        point = {
-            "type": "Point",
-            "coordinates": [12.492324113849, 41.890307434153],
-        }
         response = self.client_user.put(self.url,
                             data=urllib.urlencode({
                                 'geometry': point,
                                 'name': name,
                                 'caption': description,
-                                'extras': ExtrasGood
+                                'extras': json.dumps(extras)
                             }),
                             HTTP_X_CSRFTOKEN=self.csrf_token,
                             content_type="application/x-www-form-urlencoded"
@@ -140,14 +142,10 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(response.data.get("caption"), description)
         self.assertEqual(updated_photo.geometry.y, point['coordinates'][1])
         self.assertEqual(updated_photo.geometry.x, point['coordinates'][0])
-        self.assertEqual(updated_photo.extras, json.loads(ExtrasGood))
+        self.assertEqual(updated_photo.extras, extras)
 
     def test_update_photo_using_patch(self, **kwargs):
         import json
-        point = {
-            "type": "Point",
-            "coordinates": [12.492324113849, 41.890307434153]
-        }
         response = self.client_user.patch(self.url,
                                           data=urllib.urlencode({'geometry': point}),
                                           HTTP_X_CSRFTOKEN=self.csrf_token,
