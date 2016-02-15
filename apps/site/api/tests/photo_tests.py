@@ -5,7 +5,7 @@ from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 
-import urllib
+import urllib, json, requests
 from rest_framework import status
 
 def get_metadata():
@@ -51,40 +51,49 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         tmp_file = tempfile.NamedTemporaryFile(suffix='.jpg')
         image.save(tmp_file)
         author_string = 'Author of the media file'
+        tags = "j,k,l"
+        """
         with open(tmp_file.name, 'rb') as data:
             response = self.client_user.post(
-                self.urls[0],
+                self.urls[0], 
                 {
                     'project_id': self.project.id,
                     'media_file' : data,
                     'attribution': author_string,
-                    'extras': ExtrasGood
+                    'extras': ExtrasGood,
+                    'tags' : tags,
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
-            self.assertEqual(status.HTTP_201_CREATED, response.status_code)
-            # a few more checks to make sure that file paths are being
-            # generated correctly:
-            new_photo = models.Photo.objects.get(id=response.data.get("id"))
-            file_name = tmp_file.name.split("/")[-1]
-            file_name = unicode(file_name, "utf-8")
-            self.assertEqual(file_name, new_photo.name)
-            self.assertEqual(author_string, new_photo.attribution)
-            self.assertEqual(json.loads(ExtrasGood), new_photo.extras)
-            self.assertEqual(file_name, new_photo.file_name_orig)
-            self.assertTrue(len(new_photo.file_name_new) > 5) #ensure not empty
-            self.assertEqual(settings.SERVER_HOST, new_photo.host)
-            paths = [
-                response.data.get("path_large"),
-                response.data.get("path_medium"),
-                response.data.get("path_medium_sm"),
-                response.data.get("path_small"),
-                response.data.get("path_marker_lg"),
-                response.data.get("path_marker_sm")
-            ]
-            for path in paths:
-                self.assertNotEqual(path.find('/profile/photos/'), -1)
-                self.assertNotEqual(path.find(new_photo.host), -1)
-                self.assertTrue(len(path.split('/')[-2]) > 40)
+        """
+        cookies = dict(test.Client.cookies)
+        files = {'media_file': open(tmp_file.name, 'rb')}
+        values = {'project_id': self.project.id, 'attribution': author_string, 'tags' : tags, 'extras': ExtrasGood}
+        response = requests.post(settings.SERVER_URL + self.urls[0], files=files, data=values, cookies=cookies)
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        # a few more checks to make sure that file paths are being
+        # generated correctly:
+        new_photo = models.Photo.objects.get(id=response.data.get("id"))
+        file_name = tmp_file.name.split("/")[-1]
+        file_name = unicode(file_name, "utf-8")
+        self.assertEqual(file_name, new_photo.name)
+        self.assertEqual(author_string, new_photo.attribution)
+        self.assertEqual(json.loads(ExtrasGood), new_photo.extras)
+        self.assertEqual(tags, new_photo.tags)
+        self.assertEqual(file_name, new_photo.file_name_orig)
+        self.assertTrue(len(new_photo.file_name_new) > 5) #ensure not empty
+        self.assertEqual(settings.SERVER_HOST, new_photo.host)
+        paths = [
+            response.data.get("path_large"),
+            response.data.get("path_medium"),
+            response.data.get("path_medium_sm"),
+            response.data.get("path_small"),
+            response.data.get("path_marker_lg"),
+            response.data.get("path_marker_sm")
+        ]
+        for path in paths:
+            self.assertNotEqual(path.find('/profile/photos/'), -1)
+            self.assertNotEqual(path.find(new_photo.host), -1)
+            self.assertTrue(len(path.split('/')[-2]) > 40)
             
             
 class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
