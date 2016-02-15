@@ -1,7 +1,7 @@
 from localground.apps.settings import *
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-GDAL_LIBRARY_PATH='/usr/lib/libgdal.so.1.17.0'
+GDAL_LIBRARY_PATH='/usr/lib/libgdal.so.1.17.1'
 
 ADMINS = (
     ('Admin', 'your_email@gmail.com'),

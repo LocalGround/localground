@@ -6,5 +6,5 @@ settings_local.py
 vagrant
 userdata
 *.komodoproject
-swampdragon
+static/swampdragon
 ~                
