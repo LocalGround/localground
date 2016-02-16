@@ -27,7 +27,7 @@ def get_metadata():
 class ApiSnapshotTest(object):
     name = 'New Snapshot Name'
     description = 'Test description'
-    tags = [u'a', u'b', u'c']
+    tags = ['a','b','c']
     slug = 'new-friendly-url'
     metadata = get_metadata()
     entities = [

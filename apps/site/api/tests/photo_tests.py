@@ -56,7 +56,6 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         image.save(tmp_file)
         author_string = 'Author of the media file'
         tags = "j,k,l"
-        """
         with open(tmp_file.name, 'rb') as data:
             response = self.client_user.post(
                 self.urls[0], 
@@ -65,39 +64,37 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
                     'media_file' : data,
                     'attribution': author_string,
                     'extras': json.dumps(extras),
-                    'geometry': json.dumps(point)
+                    'geometry': json.dumps(point),
+                    'tags' : tags
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
-        """
-        files = {'media_file': open(tmp_file.name, 'rb')}
-        values = {'project_id': self.project.id, 'attribution': author_string, 'tags' : tags, 'extras': ExtrasGood}
-        response = requests.post(settings.SERVER_URL + self.urls[0], files=files, data=values, cookies=cookies)
-
-        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
-        # a few more checks to make sure that file paths are being
-        # generated correctly:
-        new_photo = models.Photo.objects.get(id=response.data.get("id"))
-        file_name = tmp_file.name.split("/")[-1]
-        file_name = unicode(file_name, "utf-8")
-        self.assertEqual(file_name, new_photo.name)
-        self.assertEqual(author_string, new_photo.attribution)
-        self.assertEqual(extras, new_photo.extras)
-        self.assertEqual(point, json.loads(new_photo.geometry.geojson))
-        self.assertEqual(file_name, new_photo.file_name_orig)
-        self.assertTrue(len(new_photo.file_name_new) > 5) #ensure not empty
-        self.assertEqual(settings.SERVER_HOST, new_photo.host)
-        paths = [
-            response.data.get("path_large"),
-            response.data.get("path_medium"),
-            response.data.get("path_medium_sm"),
-            response.data.get("path_small"),
-            response.data.get("path_marker_lg"),
-            response.data.get("path_marker_sm")
-        ]
-        for path in paths:
-            self.assertNotEqual(path.find('/profile/photos/'), -1)
-            self.assertNotEqual(path.find(new_photo.host), -1)
-            self.assertTrue(len(path.split('/')[-2]) > 40)
+       
+            self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+            # a few more checks to make sure that file paths are being
+            # generated correctly:
+            new_photo = models.Photo.objects.get(id=response.data.get("id"))
+            file_name = tmp_file.name.split("/")[-1]
+            file_name = unicode(file_name, "utf-8")
+            self.assertEqual(file_name, new_photo.name)
+            self.assertEqual(author_string, new_photo.attribution)
+            self.assertEqual(extras, new_photo.extras)
+            self.assertEqual(point, json.loads(new_photo.geometry.geojson))
+            self.assertEqual(tags, new_photo.tags)
+            self.assertEqual(file_name, new_photo.file_name_orig)
+            self.assertTrue(len(new_photo.file_name_new) > 5) #ensure not empty
+            self.assertEqual(settings.SERVER_HOST, new_photo.host)
+            paths = [
+                response.data.get("path_large"),
+                response.data.get("path_medium"),
+                response.data.get("path_medium_sm"),
+                response.data.get("path_small"),
+                response.data.get("path_marker_lg"),
+                response.data.get("path_marker_sm")
+            ]
+            for path in paths:
+                self.assertNotEqual(path.find('/profile/photos/'), -1)
+                self.assertNotEqual(path.find(new_photo.host), -1)
+                self.assertTrue(len(path.split('/')[-2]) > 40)
             
             
 class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
@@ -132,16 +129,31 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 
     def test_update_photo_using_put(self, **kwargs):
         name, description = 'New Photo Name', 'Test description'
+        tags = ['a','b','d']
         response = self.client_user.put(self.url,
-                            data=urllib.urlencode({
-                                'geometry': point,
-                                'name': name,
-                                'caption': description,
-                                'extras': json.dumps(extras)
-                            }),
-                            HTTP_X_CSRFTOKEN=self.csrf_token,
-                            content_type="application/x-www-form-urlencoded"
-                        )
+                    data=json.dumps({
+                        'geometry': json.dumps(point),
+                        'name': name,
+                        'caption': description,
+                        'tags' : tags,
+                        'extras': json.dumps(extras)
+                    }),
+                    HTTP_X_CSRFTOKEN=self.csrf_token,
+                    content_type="application/json"
+                )
+        """
+        response = self.client_user.put(self.url,
+            data=urllib.urlencode({
+                'geometry': point,
+                'name': name,
+                'caption': description,
+                'tags' : tags,
+                'extras': json.dumps(extras)
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded"
+        )
+        """
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_photo = models.Photo.objects.get(id=self.photo.id)
         self.assertEqual(updated_photo.name, name)
@@ -150,6 +162,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(updated_photo.geometry.y, point['coordinates'][1])
         self.assertEqual(updated_photo.geometry.x, point['coordinates'][0])
         self.assertEqual(updated_photo.extras, extras)
+        self.assertEqual(updated_photo.tags, tags)
 
     def test_update_photo_using_patch(self, **kwargs):
         import json
