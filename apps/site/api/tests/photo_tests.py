@@ -79,7 +79,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(author_string, new_photo.attribution)
             self.assertEqual(extras, new_photo.extras)
             self.assertEqual(point, json.loads(new_photo.geometry.geojson))
-            self.assertEqual(tags, new_photo.tags)
+            self.assertEqual(tags.split(","), new_photo.tags)
             self.assertEqual(file_name, new_photo.file_name_orig)
             self.assertTrue(len(new_photo.file_name_new) > 5) #ensure not empty
             self.assertEqual(settings.SERVER_HOST, new_photo.host)

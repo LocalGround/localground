@@ -6,9 +6,6 @@ from django.forms.widgets import Input
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.api.fields.json_fields import JSONField
 
-class StringListField(serializers.ListField):
-    child = serializers.CharField()
-
 '''
 On Mixins: read this:
 https://www.ianlewis.org/en/mixins-and-python
@@ -63,7 +60,15 @@ class BaseSerializer(AuditSerializerMixin, serializers.HyperlinkedModelSerialize
 class BaseNamedSerializer(BaseSerializer):
     #tags = serializers.ListField(child=serializers.CharField(), required=False, allow_null=True, label='tags', help_text='Tag your object here')
     #tags = serializers.ListField(child=serializers.CharField(), required=False, allow_null=True, label='tags', help_text='Tag your object here')
-    tags = StringListField(required=False, allow_null=True, label='tags', help_text='Tag your object here')
+    #tags = StringListField(required=False, allow_null=True, label='tags', help_text='Tag your object here')
+    tags = fields.ListField(
+        child=serializers.CharField(),
+        required=False,
+        allow_null=True,
+        label='tags',
+        style={'base_template': 'tags.html'},
+        help_text='Tag your object here'
+    )
     name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     caption = serializers.CharField(
         source='description', required=False, allow_null=True, label='caption',
