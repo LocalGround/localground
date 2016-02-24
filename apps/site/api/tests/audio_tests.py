@@ -65,7 +65,8 @@ class ApiAudioListTest(test.TestCase, ViewMixinAPI):
                     'project_id': self.project.id,
                     'media_file' : data,
                     'attribution': author_string,
-                    'extras': ExtrasGood
+                    'extras': ExtrasGood,
+                    'tags' : None
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)

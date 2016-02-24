@@ -34,7 +34,7 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
     def test_create_project_using_post(self, **kwargs):
         name = 'New Project!'
         description = 'New project description'
-        tags = [u'd', u'e', u'f']
+        tags = "d, e, f"
         slug = 'new-project-123'
         response = self.client_user.post(self.url,
                                          data=json.dumps({
@@ -50,7 +50,7 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
         new_obj = self.model.objects.all().order_by('-id',)[0]
         self.assertEqual(new_obj.name, name)
         self.assertEqual(new_obj.description, description)
-        self.assertEqual(new_obj.tags, tags)
+        self.assertEqual(new_obj.tags, [item.strip() for item in tags.split(',')])
         self.assertEqual(new_obj.slug, slug)
         
 class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):

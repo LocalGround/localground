@@ -14,11 +14,11 @@ class ListField(serializers.ListField):
                 return empty
         # We override the default field access in order to support
         # lists in HTML forms.
-        if html.is_html_input(dictionary):
-            val = dictionary.get(self.field_name, None)
-            if val:
-                print "VALUE IS:" + val
+        #if html.is_html_input(dictionary):
+        val = dictionary.get(self.field_name, None)
+        if val:
+            if isinstance(val, basestring):
                 # return html.parse_html_list(dictionary, prefix=self.field_name)
-                valList = [item.strip() for item in val.split(',')]    
-                return valList
-        return dictionary.get(self.field_name, empty)
+                val = [item.strip() for item in val.split(',')]    
+            return val
+        return empty

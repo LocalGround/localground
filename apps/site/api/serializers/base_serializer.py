@@ -58,9 +58,6 @@ class BaseSerializer(AuditSerializerMixin, serializers.HyperlinkedModelSerialize
 
 
 class BaseNamedSerializer(BaseSerializer):
-    #tags = serializers.ListField(child=serializers.CharField(), required=False, allow_null=True, label='tags', help_text='Tag your object here')
-    #tags = serializers.ListField(child=serializers.CharField(), required=False, allow_null=True, label='tags', help_text='Tag your object here')
-    #tags = StringListField(required=False, allow_null=True, label='tags', help_text='Tag your object here')
     tags = fields.ListField(
         child=serializers.CharField(),
         required=False,
@@ -90,7 +87,7 @@ class BaseNamedSerializer(BaseSerializer):
             return models.Project.objects.all()
 
     class Meta:
-        model = BaseNamed
+        #model = BaseNamed
         fields = ('url', 'id', 'name', 'caption', 'overlay_type', 'tags', 'owner')
 
     def get_overlay_type(self, obj):

@@ -140,7 +140,7 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
         })
 
     def test_tnt_using_patch(self, **kwargs):
-        name, description, tags = 'A', 'B', [u'C']
+        name, description, tags = 'A', 'B', 'C'
         response = self.client_user.patch(self.url,
                                           data=json.dumps({
                                               'map_title': name,
@@ -154,10 +154,10 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
         updated_obj = self.model.objects.get(id=self.print_object.id)
         self.assertEqual(updated_obj.name, name)
         self.assertEqual(updated_obj.description, description)
-        self.assertEqual(updated_obj.tags, tags)
+        self.assertEqual(updated_obj.tags, [item.strip() for item in tags.split(',')])
 
     def test_update_print_using_put(self, **kwargs):
-        name, description, tags = 'A', 'B', [u'C']
+        name, description, tags = 'A', 'B', 'C'
         response = self.client_user.put(self.url,
                                         data=json.dumps({
                                             'map_title': name,
@@ -171,7 +171,7 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
         updated_obj = self.model.objects.get(id=self.print_object.id)
         self.assertEqual(updated_obj.name, name)
         self.assertEqual(updated_obj.description, description)
-        self.assertEqual(updated_obj.tags, tags)
+        self.assertEqual(updated_obj.tags, [item.strip() for item in tags.split(',')])
 
     def test_delete_print(self, **kwargs):
         print_id = self.print_object.id

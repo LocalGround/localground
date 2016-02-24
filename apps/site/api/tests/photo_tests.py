@@ -129,7 +129,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 
     def test_update_photo_using_put(self, **kwargs):
         name, description = 'New Photo Name', 'Test description'
-        tags = ['a','b','d']
+        tags = "a, b, d"
         response = self.client_user.put(self.url,
                     data=json.dumps({
                         'geometry': json.dumps(point),
@@ -162,7 +162,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(updated_photo.geometry.y, point['coordinates'][1])
         self.assertEqual(updated_photo.geometry.x, point['coordinates'][0])
         self.assertEqual(updated_photo.extras, extras)
-        self.assertEqual(updated_photo.tags, tags)
+        self.assertEqual(updated_photo.tags, [item.strip() for item in tags.split(',')])
 
     def test_update_photo_using_patch(self, **kwargs):
         import json

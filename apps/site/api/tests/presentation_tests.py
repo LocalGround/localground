@@ -10,7 +10,7 @@ from rest_framework import status
 class ApiPresentationTest(object):
     name = 'New Presentation'
     description = 'description of presentation'
-    tags = [u'a',u'b',u'c']
+    tags = "a, b, c"
     slug = 'new-friendly-url'
     metadata = {
         'code': {'read_only': False, 'required': False, 'type': 'json'},
@@ -47,7 +47,7 @@ class ApiPresentationTest(object):
                 rec = self.model.objects.all().order_by('-id',)[0]
             self.assertEqual(rec.name, self.name)
             self.assertEqual(rec.description, self.description)
-            self.assertEqual(rec.tags, self.tags)
+            self.assertEqual(rec.tags, [item.strip() for item in self.tags.split(',')])
             self.assertEqual(rec.slug, self.slug)
             self.assertEqual(rec.code, code)
 
