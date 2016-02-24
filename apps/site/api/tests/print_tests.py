@@ -7,6 +7,7 @@ import urllib
 import json
 from rest_framework import status
 from django.contrib.gis.geos import GEOSGeometry
+from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 class LayoutMixin(object):
     metadata = {
@@ -154,7 +155,7 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
         updated_obj = self.model.objects.get(id=self.print_object.id)
         self.assertEqual(updated_obj.name, name)
         self.assertEqual(updated_obj.description, description)
-        self.assertEqual(updated_obj.tags, [item.strip() for item in tags.split(',')])
+        self.assertEqual(updated_obj.tags, convert_tags_to_list(tags))
 
     def test_update_print_using_put(self, **kwargs):
         name, description, tags = 'A', 'B', 'C'
@@ -171,7 +172,7 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
         updated_obj = self.model.objects.get(id=self.print_object.id)
         self.assertEqual(updated_obj.name, name)
         self.assertEqual(updated_obj.description, description)
-        self.assertEqual(updated_obj.tags, [item.strip() for item in tags.split(',')])
+        self.assertEqual(updated_obj.tags, convert_tags_to_list(tags))
 
     def test_delete_print(self, **kwargs):
         print_id = self.print_object.id

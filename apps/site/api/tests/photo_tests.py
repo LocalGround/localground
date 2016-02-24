@@ -4,6 +4,7 @@ from django.conf import settings
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
+from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 import urllib, json, requests
 from rest_framework import status
@@ -79,7 +80,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(author_string, new_photo.attribution)
             self.assertEqual(extras, new_photo.extras)
             self.assertEqual(point, json.loads(new_photo.geometry.geojson))
-            self.assertEqual(tags.split(","), new_photo.tags)
+            self.assertEqual(convert_tags_to_list(tags), new_photo.tags)
             self.assertEqual(file_name, new_photo.file_name_orig)
             self.assertTrue(len(new_photo.file_name_new) > 5) #ensure not empty
             self.assertEqual(settings.SERVER_HOST, new_photo.host)
@@ -162,7 +163,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(updated_photo.geometry.y, point['coordinates'][1])
         self.assertEqual(updated_photo.geometry.x, point['coordinates'][0])
         self.assertEqual(updated_photo.extras, extras)
-        self.assertEqual(updated_photo.tags, [item.strip() for item in tags.split(',')])
+        self.assertEqual(updated_photo.tags, convert_tags_to_list(tags))
 
     def test_update_photo_using_patch(self, **kwargs):
         import json

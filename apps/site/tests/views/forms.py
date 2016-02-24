@@ -6,6 +6,7 @@ from rest_framework import status
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import urllib, datetime, json
 from localground.apps.site.models import Field
+from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 class UpdateFormTest(test.TestCase, ViewMixin):
 
@@ -128,7 +129,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
         # form data should be changed
         self.assertEqual(form.name, name)
         self.assertEqual(form.description, description)
-        self.assertEqual(form.tags, tags.split(","))
+        self.assertEqual(form.tags, convert_tags_to_list(tags))
 
         # form should have 2 fields:
         fields = form.fields
@@ -170,7 +171,7 @@ class UpdateFormTest(test.TestCase, ViewMixin):
 
         # form data should be changed
         self.assertEqual(form.description, description)
-        self.assertEqual(form.tags, tags.split(","))
+        self.assertEqual(form.tags, convert_tags_to_list(tags))
 
         # form should have 2 fields:
         fields = form.fields

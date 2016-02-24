@@ -4,6 +4,7 @@ from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib, json
 from rest_framework import status
+from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 def get_metadata():
     return {
@@ -50,7 +51,7 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
         new_obj = self.model.objects.all().order_by('-id',)[0]
         self.assertEqual(new_obj.name, name)
         self.assertEqual(new_obj.description, description)
-        self.assertEqual(new_obj.tags, [item.strip() for item in tags.split(',')])
+        self.assertEqual(new_obj.tags, convert_tags_to_list(tags))
         self.assertEqual(new_obj.slug, slug)
         
 class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):

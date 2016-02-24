@@ -5,7 +5,7 @@ from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib
 import json
 from rest_framework import status
-
+from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 class ApiPresentationTest(object):
     name = 'New Presentation'
@@ -47,7 +47,7 @@ class ApiPresentationTest(object):
                 rec = self.model.objects.all().order_by('-id',)[0]
             self.assertEqual(rec.name, self.name)
             self.assertEqual(rec.description, self.description)
-            self.assertEqual(rec.tags, [item.strip() for item in self.tags.split(',')])
+            self.assertEqual(rec.tags, convert_tags_to_list(self.tags))
             self.assertEqual(rec.slug, self.slug)
             self.assertEqual(rec.code, code)
 

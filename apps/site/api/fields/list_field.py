@@ -6,6 +6,14 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 from rest_framework.utils import html
 
+def convert_tags_to_list(tags):
+    items = []
+    for item in tags.split(','):
+        item = item.strip()
+        if item != "":
+            items.append(item)
+    return items
+
 class ListField(serializers.ListField):
 
     def get_value(self, dictionary):
@@ -16,9 +24,9 @@ class ListField(serializers.ListField):
         # lists in HTML forms.
         #if html.is_html_input(dictionary):
         val = dictionary.get(self.field_name, None)
-        if val:
-            if isinstance(val, basestring):
-                # return html.parse_html_list(dictionary, prefix=self.field_name)
-                val = [item.strip() for item in val.split(',')]    
-            return val
-        return empty
+        if val == None:
+            return empty
+        if isinstance(val, basestring):
+            # return html.parse_html_list(dictionary, prefix=self.field_name)
+            val = convert_tags_to_list(val)   
+        return val
