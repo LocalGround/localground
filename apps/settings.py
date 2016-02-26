@@ -213,6 +213,7 @@ REST_FRAMEWORK = {
         'localground.apps.site.api.renderers.CSVRenderer',
         'rest_framework_xml.renderers.XMLRenderer',
         'localground.apps.site.api.renderers.GeoJSONRenderer',
+        'localground.apps.site.api.renderers.KMLRenderer',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
