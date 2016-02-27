@@ -33,7 +33,6 @@ object_types_plural = ['photos', 'audio', 'videos', 'map-images', 'projects',
                        'snapshots', 'prints', 'forms', 'tiles']
 #handler500 = 'localground.apps.account.views.server_error'
 urlpatterns = patterns('',
-
                        # mostly static html:
                        (r'^$',
                         direct_to_template,
@@ -113,6 +112,7 @@ urlpatterns = patterns('',
                        url(r'^tagging_autocomplete/list/json$', 'tagging_autocomplete.views.list_tags',
                            name='tagging_autocomplete-list'),
 
+                       url(r'^resetpassword/passwordsent/$', 'django.contrib.auth.views.password_reset_done', name='password_reset_done'),
                        # uploader:
                        (r'^upload/$',
                         'localground.apps.site.views.uploader.init_upload_form'),
