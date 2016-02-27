@@ -2,9 +2,10 @@ define([
     "marionette",
     "underscore",
     "views/profile/filterView",
+    "views/profile/listEditView",
     "views/profile/listView",
     "lib/appUtilities"
-], function (Marionette, _, FilterView, ListView, appUtilities) {
+], function (Marionette, _, FilterView, ListEditView, ListView, appUtilities) {
     "use strict";
     var ProfileApp = new Marionette.Application();
     _.extend(ProfileApp, appUtilities);
@@ -18,7 +19,7 @@ define([
 
         // create child views:
         var filterView = new FilterView(options),
-            mainView = new ListView(options);
+            mainView = new ListEditView(options);
 
         // inject them into the regions:
         ProfileApp.filterRegion.show(filterView);
@@ -26,6 +27,17 @@ define([
 
         // initialize some AJAX helpers (from appUtilities library)
         this.initAJAX(options);
+    });
+
+    ProfileApp.vent.on("show-edit-view", function(options){
+      console.log(options);
+      var mainView = new ListEditView(options);
+      ProfileApp.mainRegion.show(mainView);
+    });
+    ProfileApp.vent.on("show-static-view", function(options){
+      console.log(options);
+      var mainView = new ListView(options);
+      ProfileApp.mainRegion.show(mainView);
     });
     return ProfileApp;
 });

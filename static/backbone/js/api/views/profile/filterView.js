@@ -8,11 +8,13 @@ define(["underscore",
             ENTER_KEY: 13,
             events: {
                 "keyup #search-term": "handleKeypress",
-                "click .btn": "applyFilter"
+                "click #submitSearch": "applyFilter"
+
             },
             initialize: function (opts) {
                 _.extend(this, opts);
                 // additional initialization logic goes here...
+                this.options = opts;
             },
             template: function () {
                 return _.template(FilterTemplate);
@@ -29,8 +31,7 @@ define(["underscore",
                     this.app.vent.trigger("clear-filter", term);
                 }
             }
+
         });
         return FilterView;
     });
-
-

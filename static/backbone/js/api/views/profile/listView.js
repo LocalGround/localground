@@ -1,6 +1,6 @@
 define(["marionette",
         "collections/photos",
-        "text!../../../templates/profile/item.html",
+        "text!../../../templates/profile/item-view-mode.html",
         "text!../../../templates/profile/list.html"],
     function (Marionette, Photos, ItemTemplate, ListTemplate) {
         'use strict';
@@ -11,6 +11,11 @@ define(["marionette",
                 tagName: "div",
                 modelEvents: {'change': 'render'}
             }),
+
+            events:{
+              "click #viewEdit": "viewEdit",
+              "click #viewStatic": "viewStatic"
+            },
 
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -25,13 +30,20 @@ define(["marionette",
                 this.app.vent.on("clear-filter", this.doSomething, this);
             },
 
+
             template: function () {
                 return _.template(ListTemplate);
             },
 
             doSomething: function (term) {
                 console.log('do something with "' + term + '" term');
-            }
+            },
+            viewEdit: function (e) {
+                this.app.vent.trigger("show-edit-view",this.options);
+            },
+            viewStatic: function (e) {
+                this.app.vent.trigger("show-static-view", this.options);
+            },
 
         });
         return ListView;

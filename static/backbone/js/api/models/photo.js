@@ -19,8 +19,11 @@ define(["models/base", "jquery"], function (Base, $) {
                 notmodified: function(data) { console.error('Photo Not modified'); },
                 error: function(data) { console.error('Error: Rotation failed'); }
             });
+        },
+        defaults:{
+          checked: false
         }
-        
+
     });
     return Photo;
 });
