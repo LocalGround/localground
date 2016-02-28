@@ -5,6 +5,7 @@ from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib
 import json
 from rest_framework import status
+from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 def get_metadata():
     return {
@@ -27,7 +28,7 @@ def get_metadata():
 class ApiSnapshotTest(object):
     name = 'New Snapshot Name'
     description = 'Test description'
-    tags = ['a','b','c']
+    tags = "a,b,c"
     slug = 'new-friendly-url'
     metadata = get_metadata()
     entities = [
@@ -75,7 +76,7 @@ class ApiSnapshotTest(object):
                 rec = self.model.objects.all().order_by('-id',)[0]
             self.assertEqual(rec.name, self.name)
             self.assertEqual(rec.description, self.description)
-            self.assertEqual(rec.tags, self.tags)
+            self.assertEqual(rec.tags, convert_tags_to_list(self.tags))
             self.assertEqual(rec.slug, self.slug)
             self.assertEqual(3, len(rec.photos))
             self.assertEqual(1, len(rec.audio))

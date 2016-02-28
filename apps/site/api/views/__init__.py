@@ -57,6 +57,7 @@ def api_root(request, format=None, **kwargs):
     d['projects'] = reverse('project-list', request=request, format=format)
     d['snapshots'] = reverse('snapshot-list', request=request, format=format)
     d['layers'] = reverse('layer-list', request=request, format=format)
+    d['tags'] = reverse('tag-list', request=request, format=format)
     d['tiles'] = reverse('wmsoverlay-list', request=request, format=format)
     d['users'] = reverse('user-list', request=request, format=format)
     d['userprofile-list'] = reverse('userprofile-list',

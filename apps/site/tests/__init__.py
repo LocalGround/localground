@@ -420,7 +420,7 @@ class ModelMixin(object):
 
     def create_photo(self, user, project, name='Photo Name',
                      file_name='myphoto.jpg', device='HTC',
-                     point=None):
+                     point=None, tags=[]):
         from localground.apps.site import models
         photo = models.Photo(
             project=project,
@@ -430,20 +430,22 @@ class ModelMixin(object):
             description='Photo Description',
             file_name_orig=file_name,
             device=device,
-            point=point
+            point=point,
+            tags=tags
         )
         photo.save()
         return photo
 
     def create_audio(self, user, project, name='Audio Name',
-                     file_name='my_audio.jpg'):
+                     file_name='my_audio.jpg', tags=[]):
         audio = models.Audio(
             project=project,
             owner=user,
             last_updated_by=user,
             name=name,
             description='Audio Description',
-            file_name_orig=file_name
+            file_name_orig=file_name,
+            tags=tags
         )
         audio.save()
         return audio

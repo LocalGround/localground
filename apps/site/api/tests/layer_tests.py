@@ -5,12 +5,12 @@ from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib
 import json
 from rest_framework import status
-
+from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 class ApiLayerTest(object):
     name = 'New Layer Name'
     description = 'Test layer description'
-    tags = [u'a',u'b',u'c']
+    tags = "a,b,c"
     slug = 'my_layer'
     metadata = {
         'symbols': {'read_only': False, 'required': False, 'type': 'json'},
@@ -55,7 +55,7 @@ class ApiLayerTest(object):
                 rec = self.model.objects.all().order_by('-id',)[0]
             self.assertEqual(rec.name, self.name)
             self.assertEqual(rec.description, self.description)
-            self.assertEqual(rec.tags, self.tags)
+            self.assertEqual(rec.tags, convert_tags_to_list(self.tags))
             self.assertEqual(rec.slug, self.slug)
 
 
