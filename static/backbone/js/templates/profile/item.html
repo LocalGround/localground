@@ -1,60 +1,9 @@
-
-<div class="row">
-  <div class="col-lg-4">
-    <img id="restaurantImg" src="<%= path_medium_sm %>" title="<%= name %>" style="cursor: pointer;margin-top:40px;margin-left:50px;">
-  </div>
-  <div class="col-lg-7">
-    <!-- Name -->
-    <div class="row" >
-      <div class="col-lg-4" align="right">
-        <label for="name" style="text-align: right; margin-top:40px;">Name :</label>
-      </div>
-      <div class="col-lg-4">
-        <input type="text" class="form-control" style="margin-top:35px;" name="name" id="name" data-id="<%= id %>" value="<%= name %>">
-      </div>
+<div class="row row-item">
+    <div class="col-lg-3">
+        <img class="img-thumb" src="<%= path_medium_sm %>" title="<%= name %>" />
     </div>
-    <!-- Description -->
-    <div class="row">
-      <div class="col-lg-4" align="right">
-        <label for="description" style="text-align: right; margin-top:25px;">Description :</label>
-      </div>
-      <div class="col-lg-4">
-        <input type="text" class="form-control" style="margin-top:20px;" name="description" id="description" data-id="<%= id %>" value="<%= caption %>">
-      </div>
-    </div>
-    <!-- Project -->
-    <div class="row">
-      <div class="col-lg-4" align="right">
-        <label for="project" style="text-align: right; margin-top:25px;">Project :</label>
-      </div>
-      <div class="col-lg-4">
-        <input type="text" class="form-control" style="margin-top:20px;"  name="project" id="project" data-id="<%= id %>" value="<%= project_id %>">
-      </div>
-    </div>
-    <!-- Tags -->
-    <div class="row">
-      <div class="col-lg-4" align="right">
-        <label for="tags" style="text-align: right; margin-top:25px;">Tags :</label>
-      </div>
-      <div class="col-lg-4">
-        <input type="text" class="form-control" style="margin-top:20px;" name="tags" id="tags" data-id="<%= id %>" value="<%= tags %>">
-      </div>
-    </div>
-    <!-- Author/Creator -->
-    <div class="row">
-      <div class="col-lg-4" align="right">
-        <label for="creator" style="text-align: right; margin-top:25px;">Author / Creator :</label>
-      </div>
-      <div class="col-lg-4">
-        <input type="text" class="form-control" style="margin-top:20px;margin-bottom:40px;" name="creator" id="creator" data-id="<%= id %>" value="<%= owner %>">
-      </div>
-    </div>
-
-    <!-- <p style="color: #999;"><%= caption %></p> -->
-    </div>
+    <div class="col-lg-8 show-form"></div>
     <div class="col-lg-1">
-
-          <input type="checkbox" class="large" style="margin-top:150px;-ms-transform: scale(1.5);-moz-transform: scale(1.5);-webkit-transform: scale(1.5);-o-transform: scale(1.5);" name="checked" id="checked" data-id="<%= id %>" <%= checked ? 'checked' : '' %>>
-
+        <input type="checkbox" class="large" style="margin-top:150px;-ms-transform: scale(1.5);-moz-transform: scale(1.5);-webkit-transform: scale(1.5);-o-transform: scale(1.5);" name="checked" id="checked" data-id="<%= id %>" <%= checked ? 'checked' : '' %>>
     </div>
 </div>

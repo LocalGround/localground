@@ -20,9 +20,10 @@ define(["models/base", "jquery"], function (Base, $) {
                 error: function(data) { console.error('Error: Rotation failed'); }
             });
         },
-        defaults:{
-          checked: false
-        }
+        //be careful not to overwrite inherited defaults (but OK to extend them):
+        defaults: _.extend({}, Base.prototype.defaults, {
+            checked: false
+        })
 
     });
     return Photo;

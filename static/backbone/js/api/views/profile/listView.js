@@ -9,12 +9,15 @@ define(["marionette",
             childView: Marionette.ItemView.extend({
                 template: _.template(ItemTemplate),
                 tagName: "div",
-                modelEvents: {'change': 'render'}
+                modelEvents: {
+                    'change': 'render',
+                    'save': 'render'
+                }
             }),
 
-            events:{
-              "click #viewEdit": "viewEdit",
-              "click #viewStatic": "viewStatic"
+            events: {
+                "click #viewEdit": "viewEdit",
+                "click #viewStatic": "viewStatic"
             },
 
             initialize: function (opts) {
@@ -43,7 +46,7 @@ define(["marionette",
             },
             viewStatic: function (e) {
                 this.app.vent.trigger("show-static-view", this.options);
-            },
+            }
 
         });
         return ListView;

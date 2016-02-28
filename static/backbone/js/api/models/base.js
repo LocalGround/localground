@@ -134,6 +134,7 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 this.updateSchema = this._generateSchema(metadata, true);
             },
             _generateSchema: function (metadata, edit_only) {
+                //todo: eventually move this to its own class.
                 if (!metadata) {
                     return null;
                 }
@@ -143,11 +144,22 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                     val = metadata[key];
                     if (this.hiddenFields.indexOf(key) === -1) {
                         if (!edit_only || !val.read_only) {
+                            //console.log(key);
                             schema[key] = {
                                 type: this.dataTypes[val.type] || 'Text',
                                 title: val.label || key,
                                 help: val.help_text
                             };
+                            if (val.choices) {
+                                schema[key].type = 'Select';
+                                schema[key].options = [];
+                                _.each(val.choices, function (choice) {
+                                    schema[key].options.push({
+                                        val: choice.value,
+                                        label: choice.display_name
+                                    });
+                                });
+                            }
                             if (val.type.indexOf("json") != -1) {
                                 schema[key].validators = [ this.validatorFunction ];
                             }

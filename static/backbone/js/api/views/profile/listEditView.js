@@ -1,27 +1,24 @@
 define(["marionette",
         "collections/photos",
-        "text!../../../templates/profile/item.html",
-        "text!../../../templates/profile/list.html"],
-    function (Marionette, Photos, ItemTemplate, ListTemplate) {
+        "views/profile/editItemView",
+        "text!../../../templates/profile/list.html"
+    ],
+    function (Marionette, Photos, EditItemView, ListTemplate) {
         'use strict';
         var ListEditView = Marionette.CompositeView.extend({
 
-            childView: Marionette.ItemView.extend({
-                template: _.template(ItemTemplate),
-                tagName: "div",
-                modelEvents: {'change': 'render'}
-            }),
+            childViewOptions: function (model, index) {
+                return {
+                    updateMetadata: this.photoMetadata
+                };
+            },
+            childView: EditItemView, //moved model-level edit functionality to its own view
             events:{
-              "click #saveChanges": "saveData",
-              "click #deleteChanges": "deleteData",
-              "change #name" : "updateName",
-              "change #description" : "updateDescription",
-              "change #project" : "updateProject",
-              "change #tags" : "updateTags",
-              "change #creator" : "updateCreator",
-              "click #viewEdit": "viewEdit",
-              "click #viewStatic": "viewStatic",
-              "click #checked": "updateChecked"
+                "click #saveChanges": "saveData",
+                "click #deleteChanges": "deleteData",
+                "click #viewEdit": "viewEdit",
+                "click #viewStatic": "viewStatic",
+                "click #checked": "updateChecked"
             },
 
             initialize: function (opts) {
@@ -36,46 +33,7 @@ define(["marionette",
                 this.app.vent.on("apply-filter", this.doSomething, this);
                 this.app.vent.on("clear-filter", this.doSomething, this);
             },
-            updateName: function(e){
 
-              var id = $(e.currentTarget).data("id");
-              var tempValue = $(e.currentTarget).val();
-              var item = this.collection.get(id);
-              var name = item.set({name : tempValue});
-
-            },
-            updateDescription: function(e){
-
-              var id = $(e.currentTarget).data("id");
-              var tempValue = $(e.currentTarget).val();
-              var item = this.collection.get(id);
-              var name = item.set({caption : tempValue});
-
-            },
-            updateProject: function(e){
-
-              var id = $(e.currentTarget).data("id");
-              var tempValue = $(e.currentTarget).val();
-              var item = this.collection.get(id);
-              var name = item.set({project_id : tempValue});
-
-            },
-            updateTags: function(e){
-
-              var id = $(e.currentTarget).data("id");
-              var tempValue = $(e.currentTarget).val();
-              var item = this.collection.get(id);
-              var name = item.set({tags : tempValue});
-
-            },
-            updateCreator: function(e){
-
-              var id = $(e.currentTarget).data("id");
-              var tempValue = $(e.currentTarget).val();
-              var item = this.collection.get(id);
-              var name = item.set({owner : tempValue});
-
-            },
             updateChecked: function(e){
 
               var id = $(e.currentTarget).data("id");
@@ -92,32 +50,23 @@ define(["marionette",
               }
             },
             saveData: function(){
-                this.collection.forEach(function(photo){
-                        photo.save({  success: function(model, response){
-                                        this.collection.fetch({ reset: true });
-                                      },
-                                      error: function(){
-                                        console.log('error');
-                                      }
-                                    });
-                      });
-
+                this.collection.each(function (photo) {
+                    photo.trigger("save-if-edited");
+                });
             },
             deleteData: function(){
                 this.collection.forEach(function(photo){
-                        if(photo.get("checked"))
-                        {
-                          photo.destroy({  success: function(){
-                                          this.collection.fetch({ reset: true });
-                                        },
-                                        error: function(){
-                                          console.log('error');
-                                        }
-                                      });
-
-                        }
-                      });
-
+                    if (photo.get("checked")) {
+                        photo.destroy({
+                            success: function () {
+                                this.collection.fetch({ reset: true });
+                            },
+                            error: function(){
+                                console.error('error');
+                            }
+                        });
+                    }
+                });
             },
 
             template: function () {
@@ -132,7 +81,7 @@ define(["marionette",
             },
             viewStatic: function (e) {
                 this.app.vent.trigger("show-static-view", this.options);
-            },
+            }
 
         });
         return ListEditView;

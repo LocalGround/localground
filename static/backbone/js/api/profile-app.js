@@ -29,15 +29,15 @@ define([
         this.initAJAX(options);
     });
 
-    ProfileApp.vent.on("show-edit-view", function(options){
-      console.log(options);
-      var mainView = new ListEditView(options);
-      ProfileApp.mainRegion.show(mainView);
+    ProfileApp.vent.on("show-edit-view", function (options) {
+        console.log(options);
+        var mainView = new ListEditView(options);
+        ProfileApp.mainRegion.show(mainView);
     });
-    ProfileApp.vent.on("show-static-view", function(options){
-      console.log(options);
-      var mainView = new ListView(options);
-      ProfileApp.mainRegion.show(mainView);
+    ProfileApp.vent.on("show-static-view", function (options) {
+        console.log(options);
+        var mainView = new ListView(options);
+        ProfileApp.mainRegion.show(mainView);
     });
     return ProfileApp;
 });

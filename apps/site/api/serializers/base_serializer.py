@@ -76,6 +76,8 @@ class BaseNamedSerializer(BaseSerializer):
                 return models.Project.objects.get_objects_public(
                     access_key=view.request.GET.get('access_key')
                 )
+        elif getattr(self, 'user', None) is not None:
+            return models.Project.objects.get_objects(self.user)
         else:
             return models.Project.objects.all()
 

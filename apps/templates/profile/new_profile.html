@@ -2,22 +2,7 @@
 
 {% block style_links %}
     <link rel="stylesheet" href="/static/backbone/css/lg.css" />
-    <link rel="stylesheet" href="/static/backbone/css/upload.css" />
-{% endblock %}
-{% block extra_styles %}
-    
-    #region1 {
-        padding: 15px;
-        border: solid 1px #000;
-        margin-bottom: 20px;
-        margin-top: 20px;
-    }
-    #region2 {
-        padding: 15px;
-        border: solid 1px #000;
-        min-height: 300px;
-    }
-    
+    <link rel="stylesheet" href="/static/backbone/css/profile.css" />
 {% endblock %}
 
 {% block content %}
@@ -29,8 +14,16 @@
     <script src="/static/backbone/js/external/require.js"></script>
     <script src="/static/backbone/js/api/base.js"></script>
     <script type="text/javascript">
+        /* Each of these metadata entries come from the API's self-describing schemas, but let's put
+         * these into the context dictionary for convenience (to save some trips to the server).
+         * An advantage to this approach: as the API continues to get updated with new fields,
+         * these schemas will auto-update, and the forms will therefore always be up-to-date.
+         */
         var opts = {
-            username: "{{ user.username }}"
+            username: "{{ user.username }}",
+            photoMetadata: {% autoescape off %}{{ photo_update_metadata }}{% endautoescape %},
+            audioMetadata: {% autoescape off %}{{ audio_update_metadata }}{% endautoescape %},
+            scanMetadata: {% autoescape off %}{{ scan_update_metadata }}{% endautoescape %}
         };
         require(
             ["jquery", "/static/backbone/js/api/profile-app.js"],
