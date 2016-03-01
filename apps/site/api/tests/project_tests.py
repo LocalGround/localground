@@ -2,13 +2,14 @@ from django import test
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
-import urllib
+import urllib, json
 from rest_framework import status
+from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 def get_metadata():
     return {
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
-        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'slug': {'read_only': False, 'required': True, 'type': 'slug'},
@@ -37,20 +38,20 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
         tags = "d, e, f"
         slug = 'new-project-123'
         response = self.client_user.post(self.url,
-                                         data=urllib.urlencode({
+                                         data=json.dumps({
                                              'name': name,
                                              'caption': description,
                                              'tags': tags,
                                              'slug': slug
                                          }),
                                          HTTP_X_CSRFTOKEN=self.csrf_token,
-                                         content_type="application/x-www-form-urlencoded"
+                                         content_type="application/json"
                                          )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         new_obj = self.model.objects.all().order_by('-id',)[0]
         self.assertEqual(new_obj.name, name)
         self.assertEqual(new_obj.description, description)
-        self.assertEqual(new_obj.tags, tags)
+        self.assertEqual(new_obj.tags, convert_tags_to_list(tags))
         self.assertEqual(new_obj.slug, slug)
         
 class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):

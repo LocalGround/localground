@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from localground.apps.site import widgets, models
 from localground.apps.site.api import fields
+from localground.apps.site.models import BaseNamed
 from django.forms.widgets import Input
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.api.fields.json_fields import JSONField
@@ -57,8 +58,14 @@ class BaseSerializer(AuditSerializerMixin, serializers.HyperlinkedModelSerialize
 
 
 class BaseNamedSerializer(BaseSerializer):
-    tags = serializers.CharField(required=False, allow_null=True, label='tags',
-                                    help_text='Tag your object here', allow_blank=True)
+    tags = fields.ListField(
+        child=serializers.CharField(),
+        required=False,
+        allow_null=True,
+        label='tags',
+        style={'base_template': 'tags.html'},
+        help_text='Tag your object here'
+    )
     name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     caption = serializers.CharField(
         source='description', required=False, allow_null=True, label='caption',
@@ -80,6 +87,7 @@ class BaseNamedSerializer(BaseSerializer):
             return models.Project.objects.all()
 
     class Meta:
+        #model = BaseNamed
         fields = ('url', 'id', 'name', 'caption', 'overlay_type', 'tags', 'owner')
 
     def get_overlay_type(self, obj):

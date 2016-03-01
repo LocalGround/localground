@@ -4,8 +4,9 @@ from django.conf import settings
 from localground.apps.site.api import views
 from localground.apps.site import models
 from localground.apps.site.api.tests.base_tests import ViewMixinAPI
+from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
-import urllib
+import urllib, json, requests
 from rest_framework import status
 
 def get_metadata():
@@ -14,7 +15,7 @@ def get_metadata():
         "id": { "type": "integer", "required": False, "read_only": True },
         "name": { "type": "string", "required": False, "read_only": False },
         "overlay_type": { "type": "field", "required": False, "read_only": True },
-        "tags": { "type": "string", "required": False, "read_only": False },
+        "tags": { "type": "field", "required": False, "read_only": False },
         "owner": { "type": "field", "required": False, "read_only": True },
         "project_id": { "type": "field", "required": False, "read_only": False },
         "geometry": { "type": "geojson", "required": False, "read_only": False },
@@ -55,17 +56,20 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
         tmp_file = tempfile.NamedTemporaryFile(suffix='.jpg')
         image.save(tmp_file)
         author_string = 'Author of the media file'
+        tags = "j,k,l"
         with open(tmp_file.name, 'rb') as data:
             response = self.client_user.post(
-                self.urls[0],
+                self.urls[0], 
                 {
                     'project_id': self.project.id,
                     'media_file' : data,
                     'attribution': author_string,
                     'extras': json.dumps(extras),
-                    'geometry': json.dumps(point)
+                    'geometry': json.dumps(point),
+                    'tags' : tags
                 },
                 HTTP_X_CSRFTOKEN=self.csrf_token)
+       
             self.assertEqual(status.HTTP_201_CREATED, response.status_code)
             # a few more checks to make sure that file paths are being
             # generated correctly:
@@ -76,6 +80,7 @@ class ApiPhotoListTest(test.TestCase, ViewMixinAPI):
             self.assertEqual(author_string, new_photo.attribution)
             self.assertEqual(extras, new_photo.extras)
             self.assertEqual(point, json.loads(new_photo.geometry.geojson))
+            self.assertEqual(convert_tags_to_list(tags), new_photo.tags)
             self.assertEqual(file_name, new_photo.file_name_orig)
             self.assertTrue(len(new_photo.file_name_new) > 5) #ensure not empty
             self.assertEqual(settings.SERVER_HOST, new_photo.host)
@@ -125,16 +130,31 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
 
     def test_update_photo_using_put(self, **kwargs):
         name, description = 'New Photo Name', 'Test description'
+        tags = "a, b, d"
         response = self.client_user.put(self.url,
-                            data=urllib.urlencode({
-                                'geometry': point,
-                                'name': name,
-                                'caption': description,
-                                'extras': json.dumps(extras)
-                            }),
-                            HTTP_X_CSRFTOKEN=self.csrf_token,
-                            content_type="application/x-www-form-urlencoded"
-                        )
+                    data=json.dumps({
+                        'geometry': json.dumps(point),
+                        'name': name,
+                        'caption': description,
+                        'tags' : tags,
+                        'extras': json.dumps(extras)
+                    }),
+                    HTTP_X_CSRFTOKEN=self.csrf_token,
+                    content_type="application/json"
+                )
+        """
+        response = self.client_user.put(self.url,
+            data=urllib.urlencode({
+                'geometry': point,
+                'name': name,
+                'caption': description,
+                'tags' : tags,
+                'extras': json.dumps(extras)
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded"
+        )
+        """
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_photo = models.Photo.objects.get(id=self.photo.id)
         self.assertEqual(updated_photo.name, name)
@@ -143,6 +163,7 @@ class ApiPhotoInstanceTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(updated_photo.geometry.y, point['coordinates'][1])
         self.assertEqual(updated_photo.geometry.x, point['coordinates'][0])
         self.assertEqual(updated_photo.extras, extras)
+        self.assertEqual(updated_photo.tags, convert_tags_to_list(tags))
 
     def test_update_photo_using_patch(self, **kwargs):
         import json

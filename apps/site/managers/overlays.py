@@ -65,9 +65,7 @@ class MarkerMixin(ObjectMixin):
             ]),
             models.Marker.get_content_type().id
         )
-        q = q.extra(select)
-        return self.populate_tags_for_queryset(q)
-    
+        return q.extra(select)    
 
     def get_objects_public_with_counts(
             self,

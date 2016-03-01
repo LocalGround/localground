@@ -5,7 +5,7 @@ from localground.apps.site.models.abstract.media import BaseMedia
 from localground.apps.site.models.abstract.mixins import ProjectMixin, BaseGenericRelationMixin
 from localground.apps.site.models.abstract.geometry import BaseExtents
 from PIL import Image
-from tagging_autocomplete.models import TagAutocompleteField
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.geos import Polygon
 
 
@@ -19,7 +19,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         null=True,
         blank=True,
         verbose_name="Instructions")
-    tags = TagAutocompleteField(blank=True, null=True)
+    tags = ArrayField(models.TextField(), default=list)
     map_provider = models.ForeignKey(
         'WMSOverlay',
         db_column='fk_provider',

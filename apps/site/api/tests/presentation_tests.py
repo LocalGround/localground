@@ -5,7 +5,7 @@ from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib
 import json
 from rest_framework import status
-
+from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 class ApiPresentationTest(object):
     name = 'New Presentation'
@@ -15,7 +15,7 @@ class ApiPresentationTest(object):
     metadata = {
         'code': {'read_only': False, 'required': False, 'type': 'json'},
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
-        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'slug': {'read_only': False, 'required': True, 'type': 'slug'},
@@ -25,16 +25,17 @@ class ApiPresentationTest(object):
     }
 
     def _test_save_presentation(self, method, status_id, code):
+        d = {
+            'name': self.name,
+            'caption': self.description,
+            'tags': self.tags,
+            'slug': self.slug,
+            'code': json.dumps(code)
+        }
         response = method(self.url,
-                          data=urllib.urlencode({
-                              'name': self.name,
-                              'caption': self.description,
-                              'tags': self.tags,
-                              'slug': self.slug,
-                              'code': json.dumps(code)
-                          }),
+                          data=json.dumps(d),
                           HTTP_X_CSRFTOKEN=self.csrf_token,
-                          content_type="application/x-www-form-urlencoded"
+                          content_type="application/json"
                           )
         self.assertEqual(response.status_code, status_id)
 
@@ -46,7 +47,7 @@ class ApiPresentationTest(object):
                 rec = self.model.objects.all().order_by('-id',)[0]
             self.assertEqual(rec.name, self.name)
             self.assertEqual(rec.description, self.description)
-            self.assertEqual(rec.tags, self.tags)
+            self.assertEqual(rec.tags, convert_tags_to_list(self.tags))
             self.assertEqual(rec.slug, self.slug)
             self.assertEqual(rec.code, code)
 

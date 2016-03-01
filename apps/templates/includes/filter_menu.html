@@ -23,7 +23,7 @@
                     {% else %}
                        value="{{ ff.value|default_if_none:"" }}"
                     {% endif %}
-                    {%if ff.data_type == 'tag' %}class="tags"{% endif %}
+                    {% comment %} {%if ff.data_type == 'tag' %}class="tags"{% endif %} {% endcomment %}
                     {%if ff.data_type == 'date' %}class="date-picker"{% endif %}/>
             {% endif %}
         </div>
@@ -45,6 +45,6 @@
 <script type="text/javascript">
     $('#filter-menu input, #filter-menu label, #filter-menu select, #filter-menu button, #filter-menu textarea')
         .click(function(e) { e.stopPropagation(); });
-    $(".tags").autocomplete("/tagging_autocomplete/list/json", { multiple: true });
+    //$(".tags").autocomplete("/tagging_autocomplete/list/json", { multiple: true });
     $('.date-picker').datepicker({ dateFormat: 'mm/dd/yy' });
 </script>
