@@ -32,6 +32,7 @@ class ApiTagListTest(test.TestCase, ModelMixin):
             password=self.user_password
         )
         client_random_user.cookies['csrftoken'] = self.csrf_token
+        
         # 2. assign dummy data to second user:
         random_project = self.create_project(random_user)
         photo2 = self.create_photo(random_user, random_project, tags=['bird', 'frog', 'lizard'])
@@ -46,6 +47,13 @@ class ApiTagListTest(test.TestCase, ModelMixin):
         response = client_random_user.get('/api/0/tags/')
         self.assertEqual(len(response.data), 5)
         self.assertItemsEqual(['bird', 'frog', 'lizard', 'bear', 'lion'], response.data)
+        
+        # 5. grant the default user access to the random project, and check that user can
+        #    now access tags from both projects:
+        self.grant_project_permissions_to_user(random_project, self.user, authority_id=1)
+        response = self.client_user.get('/api/0/tags/')
+        self.assertEqual(len(response.data), 10)
+        self.assertItemsEqual(['bird', 'frog', 'lizard', 'bear', 'lion', 'cat', 'dog', 'horse', 'rat', 'mouse'], response.data)
         
         
         

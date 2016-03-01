@@ -151,6 +151,16 @@ class ModelMixin(object):
             slug=slug)
         p.save()
         return p
+    
+    def grant_project_permissions_to_user(self, project, granted_to, authority_id=1):
+        uao = models.UserAuthorityObject()
+        uao.user = granted_to
+        uao.authority = models.UserAuthority.objects.get(id=authority_id)
+        uao.granted_by = project.owner
+        uao.time_stamp = get_timestamp_no_milliseconds()
+        uao.content_type = project.get_content_type()
+        uao.object_id = project.id
+        uao.save()
 
     def create_snapshot(self, user, name='Test Snapshot', authority_id=1):
         import random
