@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
         ('site', '0009_auto_20160113_2138'),
     ]
 
-    operations = [
-    	migrations.RunPython(convert_tags)
-    ]
+#    operations = [
+#    	migrations.RunPython(convert_tags)
+#    ]
