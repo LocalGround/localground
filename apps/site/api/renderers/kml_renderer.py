@@ -25,14 +25,16 @@ class KMLRenderer(renderers.BaseRenderer):
         Returns a well-formatted KML string
         """
         kml = KML()
-        datapoints = data.get('results')
-        for datapoint in datapoints:
-            if (not datapoint['geometry']) or (not datapoint['geometry']['coordinates']):
+        dataset = data.get('results')
+        for data in dataset:
+            if (not data['geometry']) or (not data['geometry']['coordinates']):
                 continue
-            name = KML.as_node('name', [datapoint['name']])
-            cdata = KML.wrap_cdata(datapoint['overlay_type'], datapoint['file_path_orig'])
-            description = KML.as_node('description', [cdata, datapoint['caption']])
-            coord = KML.get_coord(datapoint['geometry'])
+            name = KML.as_node('name', [data['name']])
+            cdata = None
+            if 'file_path_orig' in data: # if 
+                cdata = KML.wrap_cdata(data['overlay_type'], data['file_path_orig'])
+            description = KML.as_node('description', [cdata, data['caption']])
+            coord = KML.get_coord(data['geometry'])
             point = KML.as_node('Point', [coord])
             placemark = KML.as_node('Placemark', [name, description, point])
             kml.append(placemark)
@@ -40,7 +42,7 @@ class KMLRenderer(renderers.BaseRenderer):
 
 class KML():
     """
-    Simplified KML encoder only for limited features for Local Ground data export API
+    Simplified KML encoder with limited features for Local Ground data export API
     """
 
     prolog = '<?xml version="1.0" encoding="UTF-8"?>'
@@ -69,7 +71,7 @@ class KML():
         html = ''
         if datatype == 'photo':
             html = '<img src="{}" /><br />'.format(url)
-        else:
+        elif datatype != 'marker':
             html = '<a href="{}">{}</a><br />'.format(url, url_msg)
         cdata = '{}{}{}'.format(opening, html, closing)
         return cdata
