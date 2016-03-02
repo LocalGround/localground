@@ -8,7 +8,7 @@ class KMLRenderer(renderers.BaseRenderer):
     Renderer which serializes to KML using the existing XML renderer
     """
 
-    media_type = 'text/plain'
+    media_type = 'application/xml'
     format = 'kml'
     level_sep = '.'
     headers = None
@@ -17,92 +17,73 @@ class KMLRenderer(renderers.BaseRenderer):
         """
         Renders serialized *data* into KML.
         """
-        kml_buffer = StringIO(self.get_kml(data))
+        kml_buffer = StringIO(self.build_kml(data))
         return kml_buffer.getvalue()
 
-    def get_kml(self, data):
+    def build_kml(self, data):
         """
         Returns a well-formatted KML string
         """
-        prolog = '<?xml version="1.0" encoding="UTF-8"?>'
-        namespace = 'http://www.opengis.net/kml/2.2'
-        root = '<kml xmlns="{}">'.format(namespace)
-        root_close = '</kml>'
-        placemarks = []
-        for obj in data.get('results'):
-            name = '<name>{}</name>'.format(obj['name'])
-            media_type = obj['overlay_type']
-            link = ''
-            cdata = ''
-            if media_type == 'photo':
-                link = '<img src="{}" /><br />'.format(obj['file_path_orig'])
-                cdata = '<![CDATA[\n{}\n]]>'.format(link)
-            description = '<description>\n{}\n{}\n</description>'.format(cdata, obj['caption'])
-            coord = obj['geometry']['coordinates']
-            point = '<Point>\n<coordinates>{},{},0</coordinates>\n</Point>'.format(coord[0], coord[1])
-            placemark = '<Placemark>\n{}\n{}\n{}\n</Placemark>'.format(name, description, point)
-            placemarks.append(placemark)
-        kml = '{}\n{}\n{}\n{}\n'.format(prolog, root, '\n'.join(placemarks), root_close)
-        return kml
+        kml = KML()
+        datapoints = data.get('results')
+        for datapoint in datapoints:
+            if (not datapoint['geometry']) or (not datapoint['geometry']['coordinates']):
+                continue
+            name = KML.as_node('name', [datapoint['name']])
+            cdata = KML.wrap_cdata(datapoint['overlay_type'], datapoint['file_path_orig'])
+            description = KML.as_node('description', [cdata, datapoint['caption']])
+            coord = KML.get_coord(datapoint['geometry'])
+            point = KML.as_node('Point', [coord])
+            placemark = KML.as_node('Placemark', [name, description, point])
+            kml.append(placemark)
+        return kml.get_kml()
 
-    #     csv_buffer = StringIO()
-    #     csv_writer = csv.writer(csv_buffer)
-    #     if data.get('results'):
-    #         rows = self.get_rows(data.get('results'))
-    #     else:
-    #         rows = self.flatten_dict(data, data.keys())
-    #     for row in rows:
-    #         csv_writer.writerow([
-    #             e.encode('utf-8') if isinstance(e, basestring) else self.prepare_cell(e)
-    #             for e in row
-    #         ])
-    #     return csv_buffer.getvalue()
+class KML():
+    """
+    Simplified KML encoder only for limited features for Local Ground data export API
+    """
 
-    # The functions below were copied from CSVRenderer
-    # def prepare_cell(self, val):
-    #     '''
-    #     If the data structure is nested, take the key element out of the
-    #     dictionary, so that the user will be able to do a join.
-    #     '''
-    #     if isinstance(val, dict):
-    #         try:
-    #             return val['username']
-    #         except Exception:
-    #             try:
-    #                 return val['id']
-    #             except Exception:
-    #                 try:
-    #                     return val['name']
-    #                 except Exception:
-    #                     pass
-    #     return val
+    prolog = '<?xml version="1.0" encoding="UTF-8"?>'
+    namespace = 'http://www.opengis.net/kml/2.2'
+    root = '<kml xmlns="{}">'.format(namespace)
+    closing_root = '</kml>'
+    kml = ''
 
-    # def get_row(self, d, keys):
-    #     row = []
-    #     for k in keys:
-    #         if k in ['lat', 'lng'] and d.get('point'):
-    #             row.append(d.get('point').get(k))
-    #         else:
-    #             row.append(d.get(k))
-    #     return row
+    def __init__(self):
+        self.kml = '{}{}'.format(self.prolog, self.root)
 
-    # def get_rows(self, l):
-    #     rows, keys = [], []
-    #     for elem in l:
-    #         if len(keys) == 0:
-    #             keys = sorted(elem.keys())
-    #             if 'point' in keys:
-    #                 keys.append('lat')
-    #                 keys.append('lng')
-    #                 keys.remove('point')
-    #             rows.append(keys)
-    #         rows.append(self.get_row(elem, keys))
-    #     return rows
+    @staticmethod
+    def as_node(tag, content=[], attriutes='', self_closing=False):
+        if self_closing:
+            return '<{}{} />'.format(tag, attriutes)
+        opening = '<{}{}>'.format(tag, attriutes)
+        closing = '</{}>'.format(tag)
+        concat = ''.join([elem for elem in content if elem])
+        node = '{}{}{}'.format(opening, concat, closing)
+        return node
 
-    # def flatten_dict(self, d, keys):
-    #     if isinstance(keys, set):
-    #         keys = sorted(keys)
-    #     row, rows = [], []
-    #     rows.append(keys)
-    #     rows.append(self.get_row(d, keys))
-    #     return rows
+    @staticmethod
+    def wrap_cdata(datatype, url, url_msg='Link to attached media'):
+        opening = '<![CDATA['
+        closing = ']]>'
+        html = ''
+        if datatype == 'photo':
+            html = '<img src="{}" /><br />'.format(url)
+        else:
+            html = '<a href="{}">{}</a><br />'.format(url, url_msg)
+        cdata = '{}{}{}'.format(opening, html, closing)
+        return cdata
+
+    @staticmethod
+    def get_coord(geom):
+        opening = '<coordinates>'
+        closing = '</coordinates>'
+        coord = '{}{},{},0{}'.format(opening, geom['coordinates'][0], geom['coordinates'][1], closing)
+        return coord
+
+    def append(self, new_node):
+        self.kml = '{}{}'.format(self.kml, new_node)
+        return self.get_kml()
+
+    def get_kml(self):
+        return '{}{}'.format(self.kml, self.closing_root)
