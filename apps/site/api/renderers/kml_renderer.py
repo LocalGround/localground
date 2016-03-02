@@ -65,7 +65,7 @@ class KML():
         return node
 
     @staticmethod
-    def wrap_cdata(datatype, url, url_msg='Link to attached media'):
+    def wrap_cdata(datatype, url, url_msg='Link to attachment'):
         opening = '<![CDATA['
         closing = ']]>'
         html = ''
