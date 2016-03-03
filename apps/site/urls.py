@@ -109,8 +109,7 @@ urlpatterns = patterns('',
 
 
                        # django-tagging:
-                       url(r'^tagging_autocomplete/list/json$', 'tagging_autocomplete.views.list_tags',
-                           name='tagging_autocomplete-list'),
+                       #url(r'^tagging_autocomplete/list/json$', 'tagging_autocomplete.views.list_tags', name='tagging_autocomplete-list'),
 
                        url(r'^resetpassword/passwordsent/$', 'django.contrib.auth.views.password_reset_done', name='password_reset_done'),
                        # uploader:

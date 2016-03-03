@@ -11,7 +11,7 @@ localground.audio.prototype.initialize=function(opts){
     localground.profile.prototype.initialize.call(this, opts);
 	$.extend(this, opts);
     
-    //add tagging auto-complete
+    /* add tagging auto-complete
     $('.tags').autocomplete(
 		"/tagging_autocomplete/list/json",
 		{
@@ -23,7 +23,9 @@ localground.audio.prototype.initialize=function(opts){
 			mustMatch: false,
 			selectFirst: false
 		}
-	);
+	);*/
+
+	$('.tags').selectize({delimiter: '%s', persist: false, create: function(input) {return {value: input,text: input}}});
     
     //include /static/scripts/lib/player.js
     this.player = new localground.player();

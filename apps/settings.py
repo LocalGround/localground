@@ -197,8 +197,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'rest_framework',
     'corsheaders',
-    'social.apps.django_app.default',
-    'swampdragon'
+    'social.apps.django_app.default'
 )
 
 REST_FRAMEWORK = {
