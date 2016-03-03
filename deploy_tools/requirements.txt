@@ -17,7 +17,7 @@ django-cors-headers==0.12
 django-websocket-redis==0.4.3
 jsonfield==1.0.0
 flup==1.0.3.dev-20110405
-numpy==1.6.1
+numpy==1.8
 oauth==1.0.1
 psycopg2==2.6
 python-dateutil==2.4.2

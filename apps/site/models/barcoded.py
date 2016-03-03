@@ -92,7 +92,7 @@ class Scan(Processor):
     # for manual override:
     map_rect = models.CharField(max_length=255, blank=True, null=True)
     processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
-    directory_name = 'scans'
+    directory_name = 'map-images'
     objects = ScanManager()
 
     class Meta:
