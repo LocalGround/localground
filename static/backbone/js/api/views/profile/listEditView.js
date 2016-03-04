@@ -25,7 +25,8 @@ define(["marionette",
                 _.extend(this, opts);
 
                 //fetch photo data:
-                this.collection = new Photos();
+                // this.collection = new Photos();
+                this.collection = this.options.collection;
                 this.listenTo(this.collection, 'reset', this.render);
                 this.collection.fetch({ reset: true });
 
@@ -74,7 +75,11 @@ define(["marionette",
             },
 
             doSomething: function (term) {
-                console.log('do something with "' + term + '" term');
+
+                var parameters = [{name : "name", value : term}];
+                console.log(parameters);
+                this.collection.modifyUrl(parameters);
+                this.collection.fetch({ reset: true });
             },
             viewEdit: function (e) {
                 this.app.vent.trigger("show-edit-view",this.options);

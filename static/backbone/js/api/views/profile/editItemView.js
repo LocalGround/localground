@@ -1,9 +1,11 @@
 define(["marionette",
         "form",
-        "text!../../../templates/profile/item.html",
+        "text!../../../templates/profile/item_photo.html",
+        "text!../../../templates/profile/item_audio.html",
+        "text!../../../templates/profile/item_map_image.html",
         "bootstrap-form-templates"
     ],
-    function (Marionette, Form, ItemTemplate) {
+    function (Marionette, Form, ItemTemplate, ItemAudioTemplate, ItemMapImageTemplate) {
         'use strict';
         var ListEditView = Marionette.ItemView.extend({
             template: _.template(ItemTemplate),
@@ -25,16 +27,38 @@ define(["marionette",
                 this.ModelForm = Form.extend({
                     schema: this.model.updateSchema
                 });
+
+                if (this.model.attributes["overlay_type"] == "photo") {
+                  this.template = _.template(ItemTemplate);
+                }
+                else if (this.model.attributes["overlay_type"] == "map-image") {
+                  this.template = _.template(ItemMapImageTemplate);
+                }
+                else if (this.model.attributes["overlay_type"] == "audio") {
+                  this.template = _.template(ItemAudioTemplate);
+                }
+
             },
             markAsEdited: function () {
                 console.log("mark as edited");
                 this.hasBeenEdited = true;
             },
             render: function () {
+
                 this.form = new this.ModelForm({
                     model: this.model
                 }).render();
-                this.$el.html(_.template(ItemTemplate, this.model.toJSON()));
+
+                if (this.model.attributes["overlay_type"] == "photo") {
+                  this.$el.html(_.template(ItemTemplate, this.model.toJSON()));
+                }
+                else if (this.model.attributes["overlay_type"] == "map-image") {
+                  this.$el.html(_.template(ItemMapImageTemplate, this.model.toJSON()));
+                }
+                else if (this.model.attributes["overlay_type"] == "audio") {
+                  this.$el.html(_.template(ItemAudioTemplate, this.model.toJSON()));
+                }
+
                 this.$el.find('.show-form').append(this.form.$el);
                 this.hasBeenEdited = false;
                 return this.$el;

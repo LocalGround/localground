@@ -1,20 +1,11 @@
 define(["marionette",
         "collections/photos",
-        "text!../../../templates/profile/item-view-mode.html",
+        "views/profile/itemView",
         "text!../../../templates/profile/list.html"],
-    function (Marionette, Photos, ItemTemplate, ListTemplate) {
+    function (Marionette, Photos, ItemView, ListTemplate) {
         'use strict';
         var ListView = Marionette.CompositeView.extend({
-
-            childView: Marionette.ItemView.extend({
-                template: _.template(ItemTemplate),
-                tagName: "div",
-                modelEvents: {
-                    'change': 'render',
-                    'save': 'render'
-                }
-            }),
-
+            childView: ItemView,
             events: {
                 "click #viewEdit": "viewEdit",
                 "click #viewStatic": "viewStatic"
@@ -24,10 +15,11 @@ define(["marionette",
                 _.extend(this, opts);
 
                 //fetch photo data:
-                this.collection = new Photos();
+                // this.collection = new Photos();
+                this.collection = this.options.collection;
                 this.listenTo(this.collection, 'reset', this.render);
                 this.collection.fetch({ reset: true });
-
+                
                 //add event listeners:
                 this.app.vent.on("apply-filter", this.doSomething, this);
                 this.app.vent.on("clear-filter", this.doSomething, this);

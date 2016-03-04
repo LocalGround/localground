@@ -1,4 +1,4 @@
-define(["lib/sqlParser"], function (SqlParser) {
+define(["lib/sqlParser","underscore"], function (SqlParser, _) {
     "use strict";
     return {
         applyFilter: function (sql) {
@@ -32,6 +32,15 @@ define(["lib/sqlParser"], function (SqlParser) {
                 }
             });
             return models;
+        },
+        createServerQuery: function(parameters){
+          var query = "?query=WHERE+";
+          _.each(parameters, function(parameter){
+            // console.log(parameter);
+            query += parameter["name"] + "+LIKE+%27%25"+ parameter["value"] + "%25%27";
+          });
+
+          return query;
         }
     };
 });

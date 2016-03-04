@@ -8,7 +8,10 @@ define(["models/base", "underscore"], function (Base, _) {
     var Audio = Base.extend({
         getExtension: function () {
             return _.last(this.get('file_name').split('.'));
-        }
+        },
+        defaults: _.extend({}, Base.prototype.defaults, {
+            checked: false
+        })
     });
     return Audio;
 });

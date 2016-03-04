@@ -6,9 +6,14 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div id="region1"></div>
-        <div id="region2"></div>
+    <div class="container-fluid">
+      <div class="row">
+        <div id="region3" class="col-sm-3 col-md-2 sidebar" style="margin-top:50px;"></div>
+        <div class="col-sm-7 col-md-8  main">
+          <div id="region1"></div>
+          <div id="region2"></div>
+        </div>
+      </div>
     </div>
 
     <script src="/static/backbone/js/external/require.js"></script>
