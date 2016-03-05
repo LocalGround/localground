@@ -15,7 +15,7 @@ class ScanSerializerCreate(BaseNamedSerializer):
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
     overlay_type = serializers.SerializerMethodField()
-    
+    status = serializers.PrimaryKeyRelatedField(read_only=True)
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
         source='project',
@@ -39,30 +39,33 @@ class ScanSerializerCreate(BaseNamedSerializer):
         fields = BaseNamedSerializer.Meta.fields + (
             'overlay_type', 'source_print', 'project_id',
             'north', 'south', 'east', 'west', 'zoom', 'overlay_path',
-            'media_file', 'file_path'
+            'media_file', 'file_path', 'uuid', 'status'
         )
+        read_only_fields = ('uuid', 'status')
         
     def process_file(self, file, owner):
         #save to disk:
         model_name_plural = models.Scan.model_name_plural
-        file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file)
+        uuid = generic.generateID()
+        file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file, uuid=uuid)
         file_name, ext = os.path.splitext(file_name_new)
         
         # create thumbnail:
         from PIL import Image
         thumbnail_name = '%s_thumb.png' % file_name
-        media_path = upload_helpers.generate_absolute_path(owner, model_name_plural)
+        media_path = upload_helpers.generate_absolute_path(owner, model_name_plural, uuid=uuid)
         im = Image.open(media_path + '/' + file_name_new)
         im.thumbnail([500, 500], Image.ANTIALIAS)
         im.save('%s/%s' % (media_path, thumbnail_name))
         
         return {
+            'uuid': uuid,
             'file_name_orig': file.name,
             'name': self.initial_data.get('name') or file.name,
             'file_name_new': file_name_new,
             'file_name_thumb': thumbnail_name,
             'content_type': ext.replace('.', ''),
-            'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural)
+            'virtual_path': upload_helpers.generate_relative_path(owner, model_name_plural, uuid=uuid)
         }
         
     def create(self, validated_data):
@@ -77,7 +80,6 @@ class ScanSerializerCreate(BaseNamedSerializer):
         extras = self.process_file(f, owner)
         extras.update(self.get_presave_create_dictionary())
         extras.update({
-            'uuid': generic.generateID(),
             'status': models.StatusCode.objects.get(id=3), #Make writeable field in serializer?
             'upload_source': models.UploadSource.objects.get(id=1),
             'attribution': validated_data.get('attribution') or owner.username,
@@ -127,4 +129,13 @@ class ScanSerializerCreate(BaseNamedSerializer):
     
 class ScanSerializerUpdate(ScanSerializerCreate):
     media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
+    status = serializers.PrimaryKeyRelatedField(queryset=models.StatusCode.objects.all(), read_only=False)
+    class Meta:
+        model = models.Scan
+        fields = BaseNamedSerializer.Meta.fields + (
+            'overlay_type', 'source_print', 'project_id',
+            'north', 'south', 'east', 'west', 'zoom', 'overlay_path',
+            'media_file', 'file_path', 'uuid', 'status'
+        )
+        read_only_fields = ('uuid',)
 

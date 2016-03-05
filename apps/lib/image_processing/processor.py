@@ -57,7 +57,7 @@ class Processor(General):
         self.map_processor = None
         self.logger = Logger(self.is_debug,
                              tmp_directory=self.obj.get_abs_directory_path() + \
-                             'debug/')
+                             '/debug/')
         
         
     def process_image(self, object_name):
