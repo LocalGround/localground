@@ -28,7 +28,7 @@ def generate_relative_path(owner, model_name_plural, uuid=None):
             model_name_plural
         )
     else:
-        return '%s/media/%s/%s/%s' % (
+        return '/%s/media/%s/%s/%s/' % (
             settings.USER_MEDIA_DIR,
             owner.username,
             model_name_plural,
@@ -37,13 +37,13 @@ def generate_relative_path(owner, model_name_plural, uuid=None):
 
 def generate_absolute_path(owner, model_name_plural, uuid=None):
     if uuid is None:
-        return '%s/media/%s/%s' % (
+        return '%s/media/%s/%s/' % (
             settings.USER_MEDIA_ROOT,
             owner.username,
             model_name_plural
         )
     else:
-        return '%s/media/%s/%s/%s' % (
+        return '%s/media/%s/%s/%s/' % (
             settings.USER_MEDIA_ROOT,
             owner.username,
             model_name_plural,

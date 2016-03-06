@@ -54,11 +54,11 @@ class Processor(BaseUploadedMedia):
                                       self.uuid)
     '''
     def get_abs_directory_path(self):
-        return '%s/%s/' % (settings.FILE_ROOT, self.virtual_path)
+        return '%s/%s' % (settings.FILE_ROOT, self.virtual_path)
     
 
     def original_image_filesystem(self):
-        return '%s%s' % (self.get_abs_directory_path(), self.file_name_new)
+        return '%s/%s' % (self.get_abs_directory_path(), self.file_name_new)
 
     def copy_as(self, InheritedClass):
         # copies data from one child class to another
