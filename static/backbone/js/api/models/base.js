@@ -160,6 +160,10 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                                     });
                                 });
                             }
+                            // TAP: Best way to do this?
+                            if (schema[key].title == "tags") {
+                                //schema[key].type = "List"; 
+                            }
                             if (val.type.indexOf("json") != -1) {
                                 schema[key].validators = [ this.validatorFunction ];
                             }

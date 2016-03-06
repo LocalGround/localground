@@ -7,6 +7,7 @@ import urllib
 import json
 from rest_framework import status
 from django.contrib.gis.geos import GEOSGeometry
+from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 class LayoutMixin(object):
     metadata = {
@@ -20,7 +21,7 @@ def get_metadata():
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'layout': {'read_only': False, 'required': True, 'type': 'field'},
         'uuid': {'read_only': True, 'required': False, 'type': 'field'},
-        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'map_provider_url': {'read_only': True, 'required': False, 'type': 'field'},
         'center': {'read_only': False, 'required': True, 'type': 'geojson'},
         'thumb': {'read_only': True, 'required': False, 'type': 'field'},
@@ -139,39 +140,39 @@ class ApiPrintInstanceTest(test.TestCase, ViewMixinAPI, PrintMixin):
             'zoom': {'read_only': True, 'required': False, 'type': 'integer'},    
         })
 
-    def test_update_print_using_patch(self, **kwargs):
+    def test_tnt_using_patch(self, **kwargs):
         name, description, tags = 'A', 'B', 'C'
         response = self.client_user.patch(self.url,
-                                          data=urllib.urlencode({
+                                          data=json.dumps({
                                               'map_title': name,
                                               'instructions': description,
                                               'tags': tags
                                           }),
                                           HTTP_X_CSRFTOKEN=self.csrf_token,
-                                          content_type="application/x-www-form-urlencoded"
+                                          content_type="application/json"
                                           )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_obj = self.model.objects.get(id=self.print_object.id)
         self.assertEqual(updated_obj.name, name)
         self.assertEqual(updated_obj.description, description)
-        self.assertEqual(updated_obj.tags, tags)
+        self.assertEqual(updated_obj.tags, convert_tags_to_list(tags))
 
     def test_update_print_using_put(self, **kwargs):
         name, description, tags = 'A', 'B', 'C'
         response = self.client_user.put(self.url,
-                                        data=urllib.urlencode({
+                                        data=json.dumps({
                                             'map_title': name,
                                             'instructions': description,
                                             'tags': tags
                                         }),
                                         HTTP_X_CSRFTOKEN=self.csrf_token,
-                                        content_type="application/x-www-form-urlencoded"
+                                        content_type="application/json"
                                         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_obj = self.model.objects.get(id=self.print_object.id)
         self.assertEqual(updated_obj.name, name)
         self.assertEqual(updated_obj.description, description)
-        self.assertEqual(updated_obj.tags, tags)
+        self.assertEqual(updated_obj.tags, convert_tags_to_list(tags))
 
     def test_delete_print(self, **kwargs):
         print_id = self.print_object.id

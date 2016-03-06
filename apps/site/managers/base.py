@@ -86,30 +86,6 @@ class ObjectMixin(BaseMixin):
     related_fields = ['project', 'owner', 'last_updated_by']
     prefetch_fields = []
 
-    def populate_tags_for_queryset(self, queryset):
-        '''
-        This method ensures that the "tagging_tag" table isn't
-        queried for each record.  For some reason, this doesn't
-        seem to slow down the Photo/Audio/Record tables in the
-        same way.  Mysterious.
-        '''
-        from django.contrib.contenttypes.models import ContentType
-        from collections import defaultdict
-        from tagging.models import TaggedItem
-
-        ctype = ContentType.objects.get_for_model(queryset.model)
-        tagitems = TaggedItem.objects.filter(
-            content_type=ctype,
-            object_id__in=queryset.values_list('pk', flat=True),
-        )
-        tagitems = tagitems.select_related('tag')
-        tags_map = defaultdict(list)
-        for tagitem in tagitems:
-            tags_map[tagitem.object_id].append(tagitem.tag)
-        for obj in queryset:
-            obj.tags = ', '.join([t.name for t in tags_map[obj.pk]])
-        return queryset
-
     def _get_objects(self, user, authority_id, project=None, request=None,
                      context=None, ordering_field='-time_stamp'):
         '''

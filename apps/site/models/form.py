@@ -88,7 +88,6 @@ class Form(BaseNamed, BasePermissions):
 
     @classmethod
     def create_form(cls, user):
-        from localground.apps.site.widgets import TagAutocomplete
         from django.forms import ModelForm
 
         class InlineForm(ModelForm):
@@ -104,6 +103,7 @@ class Form(BaseNamed, BasePermissions):
 
             class Meta:
                 from django import forms
+                from localground.apps.site.widgets import ArrayFieldTagWidget, CustomDateTimeWidget
 
                 model = cls
                 fields = ('name', 'description', 'tags', 'access_authority',
@@ -111,8 +111,8 @@ class Form(BaseNamed, BasePermissions):
                 widgets = {
                     'id': forms.HiddenInput,
                     'description': forms.Textarea(attrs={'rows': 3}),
-                    'tags': TagAutocomplete(),
-                    'projects': forms.widgets.CheckboxSelectMultiple
+                    'projects': forms.widgets.CheckboxSelectMultiple,
+                    'tags': ArrayFieldTagWidget(attrs={'delimiter': ','})
                 }
 
         return InlineForm
