@@ -19,7 +19,7 @@ define(["marionette",
                  * to dynamically generate forms on-the-fly.
                  */
                 this.mode = opts.mode;
-                if (opts.mode == "edit") {
+                if (this.mode == "edit") {
                     this.Template = opts.EditItemTemplate;
                 } else {
                     this.Template = opts.ItemTemplate;
@@ -37,13 +37,17 @@ define(["marionette",
                 this.hasBeenEdited = true;
             },
             render: function () {
-                this.form = new this.ModelForm({
-                    model: this.model
-                }).render();
-
                 this.$el.html(_.template(this.Template, this.model.toJSON()));
-                this.$el.find('.show-form').append(this.form.$el);
-                this.hasBeenEdited = false;
+
+                // if the form is in edit mode, also append the form:
+                if (this.mode == "edit") {
+                    this.form = new this.ModelForm({
+                        model: this.model
+                    }).render();
+                    this.$el.find('.show-form').append(this.form.$el);
+                    this.hasBeenEdited = false;
+                }
+
                 return this.$el;
             },
             saveIfEdited: function () {
