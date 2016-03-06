@@ -1,18 +1,20 @@
 define(["marionette",
-        "collections/photos",
         "views/profile/editItemView",
         "text!../../../templates/profile/list.html"
     ],
-    function (Marionette, Photos, EditItemView, ListTemplate) {
+    function (Marionette, EditItemView, ListTemplate) {
         'use strict';
         var ListEditView = Marionette.CompositeView.extend({
 
             childViewOptions: function (model, index) {
                 return {
-                    updateMetadata: this.photoMetadata
+                    updateMetadata: this.metadata,
+                    EditItemTemplate: this.EditItemTemplate,
+                    ItemTemplate: this.ItemTemplate,
+                    mode: this.app.mode
                 };
             },
-            childView: EditItemView, //moved model-level edit functionality to its own view
+            childView: EditItemView,
             events:{
                 "click #saveChanges": "saveData",
                 "click #deleteChanges": "deleteData",
@@ -23,44 +25,35 @@ define(["marionette",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+            },
 
-                //fetch photo data:
-                // this.collection = new Photos();
-                this.collection = this.options.collection;
-                this.listenTo(this.collection, 'reset', this.render);
+            onShow: function () {
                 this.collection.fetch({ reset: true });
-
-                //add event listeners:
-                this.app.vent.on("apply-filter", this.doSomething, this);
-                this.app.vent.on("clear-filter", this.doSomething, this);
             },
 
             updateChecked: function(e){
-
-              var id = $(e.currentTarget).data("id");
-
-              var item = this.collection.get(id);
-
-              if($(e.currentTarget).is(':checked'))
-              {
-                 var name = item.set({checked : true});
-              }
-              else
-              {
-                 var name = item.set({checked : false});
-              }
+                var id = $(e.currentTarget).data("id");
+                var item = this.collection.get(id);
+                if ($(e.currentTarget).is(':checked')) {
+                    item.set({checked : true});
+                } else {
+                    item.set({checked : false});
+                }
             },
+
             saveData: function(){
                 this.collection.each(function (photo) {
                     photo.trigger("save-if-edited");
                 });
             },
+
             deleteData: function(){
+                var that = this;
                 this.collection.forEach(function(photo){
                     if (photo.get("checked")) {
                         photo.destroy({
                             success: function () {
-                                this.collection.fetch({ reset: true });
+                                that.collection.fetch({ reset: true });
                             },
                             error: function(){
                                 console.error('error');
@@ -74,20 +67,19 @@ define(["marionette",
                 return _.template(ListTemplate);
             },
 
-            doSomething: function (term) {
-
-                var parameters = [{name : "name", value : term}];
-                console.log(parameters);
-                this.collection.modifyUrl(parameters);
-                this.collection.fetch({ reset: true });
-            },
             viewEdit: function (e) {
-                this.app.vent.trigger("show-edit-view",this.options);
+                //no need to replace entire view...just toggle the mode and re-render
+                this.app.mode = "edit";
+                this.render();
+                e.preventDefault();
             },
-            viewStatic: function (e) {
-                this.app.vent.trigger("show-static-view", this.options);
-            }
 
+            viewStatic: function (e) {
+                //no need to replace entire view...just toggle the mode and re-render
+                this.app.mode = "view";
+                this.render();
+                e.preventDefault();
+            }
         });
         return ListEditView;
     });

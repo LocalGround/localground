@@ -1,14 +1,10 @@
 define(["marionette",
         "form",
-        "text!../../../templates/profile/item_photo.html",
-        "text!../../../templates/profile/item_audio.html",
-        "text!../../../templates/profile/item_map_image.html",
         "bootstrap-form-templates"
     ],
-    function (Marionette, Form, ItemTemplate, ItemAudioTemplate, ItemMapImageTemplate) {
+    function (Marionette, Form) {
         'use strict';
         var ListEditView = Marionette.ItemView.extend({
-            template: _.template(ItemTemplate),
             tagName: "div",
             hasBeenEdited: false,
             events: {
@@ -22,21 +18,18 @@ define(["marionette",
                  * library: https://github.com/powmedia/backbone-forms
                  * to dynamically generate forms on-the-fly.
                  */
+                this.mode = opts.mode;
+                if (opts.mode == "edit") {
+                    this.Template = opts.EditItemTemplate;
+                } else {
+                    this.Template = opts.ItemTemplate;
+                }
+                this.template = _.template(this.Template);
                 this.model.hiddenFields = ["geometry"]; //override the base.js model's hidden field array
                 this.model.generateUpdateSchema(opts.updateMetadata);
                 this.ModelForm = Form.extend({
                     schema: this.model.updateSchema
                 });
-
-                if (this.model.attributes["overlay_type"] == "photo") {
-                  this.template = _.template(ItemTemplate);
-                }
-                else if (this.model.attributes["overlay_type"] == "map-image") {
-                  this.template = _.template(ItemMapImageTemplate);
-                }
-                else if (this.model.attributes["overlay_type"] == "audio") {
-                  this.template = _.template(ItemAudioTemplate);
-                }
 
             },
             markAsEdited: function () {
@@ -44,21 +37,11 @@ define(["marionette",
                 this.hasBeenEdited = true;
             },
             render: function () {
-
                 this.form = new this.ModelForm({
                     model: this.model
                 }).render();
 
-                if (this.model.attributes["overlay_type"] == "photo") {
-                  this.$el.html(_.template(ItemTemplate, this.model.toJSON()));
-                }
-                else if (this.model.attributes["overlay_type"] == "map-image") {
-                  this.$el.html(_.template(ItemMapImageTemplate, this.model.toJSON()));
-                }
-                else if (this.model.attributes["overlay_type"] == "audio") {
-                  this.$el.html(_.template(ItemAudioTemplate, this.model.toJSON()));
-                }
-
+                this.$el.html(_.template(this.Template, this.model.toJSON()));
                 this.$el.find('.show-form').append(this.form.$el);
                 this.hasBeenEdited = false;
                 return this.$el;

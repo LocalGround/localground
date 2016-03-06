@@ -6,11 +6,9 @@ define(["underscore",
         'use strict';
         var SideBarView = Marionette.ItemView.extend({
             events: {
-
-              "click #photos": "loadPhotosView",
-              "click #scan": "loadScanView",
-              "click #audio": "loadAudioView"
-
+                "click #photos": "loadPhotosView",
+                "click #scan": "loadScanView",
+                "click #audio": "loadAudioView"
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -21,16 +19,19 @@ define(["underscore",
                 return _.template(SideBarTemplate);
             },
             loadPhotosView: function (e) {
-                    this.options.view = "photos";
-                    this.app.vent.trigger("show-edit-view",this.options);
-            },
-            loadScanView: function (e) {
-                    this.options.view = "scan";
-                    this.app.vent.trigger("show-edit-view",this.options);
+                this.app.objectType = "photos";
+                this.app.vent.trigger("show-list-view");
+                e.preventDefault();
             },
             loadAudioView: function (e) {
-                    this.options.view = "audio";
-                    this.app.vent.trigger("show-edit-view",this.options);
+                this.app.objectType = "audio";
+                this.app.vent.trigger("show-list-view");
+                e.preventDefault();
+            },
+            loadScanView: function (e) {
+                this.app.objectType = "map-images";
+                this.app.vent.trigger("show-list-view");
+                e.preventDefault();
             }
 
         });

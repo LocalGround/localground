@@ -1,4 +1,4 @@
-define(["lib/sqlParser","underscore"], function (SqlParser, _) {
+define(["lib/sqlParser", "underscore", "backbone"], function (SqlParser, _, Backbone) {
     "use strict";
     return {
         applyFilter: function (sql) {
@@ -33,14 +33,28 @@ define(["lib/sqlParser","underscore"], function (SqlParser, _) {
             });
             return models;
         },
-        createServerQuery: function(parameters){
-          var query = "?query=WHERE+";
-          _.each(parameters, function(parameter){
-            // console.log(parameter);
-            query += parameter["name"] + "+LIKE+%27%25"+ parameter["value"] + "%25%27";
-          });
-
-          return query;
+        setServerQuery: function (parameters) {
+            this.query = "WHERE ";
+            var that = this;
+            _.each(parameters, function (parameter, index) {
+                if (index > 0) {
+                    that.query += " AND ";
+                }
+                that.query += parameter.name + " LIKE '%" + parameter.value + "%'";
+            });
+        },
+        clearServerQuery: function () {
+            this.query = null;
+        },
+        fetch: function (options) {
+            //override fetch and append query parameters:
+            if (this.query) {
+                // apply some additional options to the fetch:
+                options = options || {};
+                options.data = options.data || {};
+                options.data = { query: this.query };
+            }
+            return Backbone.Collection.prototype.fetch.call(this, options);
         }
     };
 });

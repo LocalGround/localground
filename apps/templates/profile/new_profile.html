@@ -28,7 +28,7 @@
             username: "{{ user.username }}",
             photoMetadata: {% autoescape off %}{{ photo_update_metadata }}{% endautoescape %},
             audioMetadata: {% autoescape off %}{{ audio_update_metadata }}{% endautoescape %},
-            scanMetadata: {% autoescape off %}{{ scan_update_metadata }}{% endautoescape %}
+            mapImageMetadata: {% autoescape off %}{{ scan_update_metadata }}{% endautoescape %}
         };
         require(
             ["jquery", "/static/backbone/js/api/profile-app.js"],
