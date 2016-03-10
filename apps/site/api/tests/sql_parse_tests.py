@@ -64,7 +64,7 @@ class SQLStatementTest(test.TestCase):
                 "and",
                 "col2 = val2",
                 "and",
-                "col3 = a and b"
+                "col3 = 'a and b'"
                 ]
         test = split_statements(" ".join(statements))
         for a, b in zip (statements, test):
@@ -76,7 +76,7 @@ class SQLStatementTest(test.TestCase):
                 "and",
                 "col2 = val2",
                 "and",
-                "col3 = a and b"
+                "col3 = 'a and b'"
                 ]
         sql = "select * from stuff where {}".format(" ".join(statements))
         test = get_where_conditions(sql)
