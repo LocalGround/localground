@@ -27,6 +27,7 @@ class SearchListSerializer(serializers.Serializer):
 	#overlay_type = serializers.SerializerMethodField()
 	#owner = serializers.SerializerMethodField()
 
+#TAP: Do we still want this?
 class TagSearchList(generics.ListAPIView):
     serializer_class = SearchListSerializer
 

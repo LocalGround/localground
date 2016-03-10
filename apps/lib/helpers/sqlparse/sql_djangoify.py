@@ -208,6 +208,21 @@ def in_pattern(col, vals):
     return Q(**args)
 
 @parser.pattern_handler(r"""
+        (?P<col>[a-z0-9._]+)\s*
+        contains\s*
+        \((?P<vals>.*)\)$
+        """, re.I | re.X)
+def array_contains(col, vals):
+    key = "{}__contains".format(col)
+    vals = vals.strip("'") # remove start and end quotes
+    val = re.split(r"',\s*'|,\s*", vals)
+    print "vals="
+    print val
+    args = {key: val}
+    #raise Exception(args)
+    return Q(**args)
+
+@parser.pattern_handler(r"""
     st_distance\((?P<col>[a-z0-9._]+),\s*
     point\(
         (?P<lat>-?\d+\.\d*),\s*
