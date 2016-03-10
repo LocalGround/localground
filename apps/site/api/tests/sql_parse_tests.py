@@ -64,7 +64,7 @@ class SQLStatementTest(test.TestCase):
                 "and",
                 "col2 = val2",
                 "and",
-                "col3 = 'a and b'"
+                "col3 = a and b"
                 ]
         test = split_statements(" ".join(statements))
         for a, b in zip (statements, test):
@@ -76,7 +76,7 @@ class SQLStatementTest(test.TestCase):
                 "and",
                 "col2 = val2",
                 "and",
-                "col3 = 'a and b'"
+                "col3 = a and b"
                 ]
         sql = "select * from stuff where {}".format(" ".join(statements))
         test = get_where_conditions(sql)
@@ -141,6 +141,7 @@ class SQLParseTest(test.TestCase, ModelMixin):
 
     def test_contains_operator(self):
         self.compare_sql(Photo, "WHERE tags @> ARRAY['a']", "WHERE tags contains ('a')")
+        self.compare_sql(Photo, "WHERE tags @> ARRAY['b']", "WHERE tags contains (b)")
         
     '''
     def test_geo_query(self, **kwargs):
