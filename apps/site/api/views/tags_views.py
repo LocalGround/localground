@@ -20,6 +20,7 @@ class TagList(APIView):
     response = Response(alltags, status=status.HTTP_200_OK)
     return response
 
+#TAP: Do we still want this?
 class SearchListSerializer(serializers.Serializer):
 	tags = fields.ListField(child=serializers.CharField(),required=False,allow_null=True,label='tags',style={'base_template': 'tags.html'},help_text='Tag your object here')
 	name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
@@ -27,7 +28,6 @@ class SearchListSerializer(serializers.Serializer):
 	#overlay_type = serializers.SerializerMethodField()
 	#owner = serializers.SerializerMethodField()
 
-#TAP: Do we still want this?
 class TagSearchList(generics.ListAPIView):
     serializer_class = SearchListSerializer
 

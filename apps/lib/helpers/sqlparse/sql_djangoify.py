@@ -216,8 +216,6 @@ def array_contains(col, vals):
     key = "{}__contains".format(col)
     vals = vals.strip("'") # remove start and end quotes
     val = re.split(r"',\s*'|,\s*", vals)
-    print "vals="
-    print val
     args = {key: val}
     #raise Exception(args)
     return Q(**args)

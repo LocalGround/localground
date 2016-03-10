@@ -96,7 +96,7 @@ class SQLParseTest(test.TestCase, ModelMixin):
         ModelMixin.setUp(self)
         self.photo1 = self.create_photo(self.user, self.project, file_name='2013-07-04 16.56.55.jpg', point=Point(-122.246, 37.896))
         self.photo2 = self.create_photo(self.user, self.project, file_name='2013-06-30 18.25.38.jpg', point=Point(-122.846, 37.396),
-                                        device='SCH-I535')
+                                        device='SCH-I535', tags=['a','b','c'])
 
     def compare_sql(self, model, raw_where, parsed_where=None):
         raw_dataset, parsed_dataset = get_data_sets_from_sql(model, raw_where, parsed_where)
@@ -132,14 +132,15 @@ class SQLParseTest(test.TestCase, ModelMixin):
     def test_startswith_operator(self):
         self.compare_sql(Photo, "WHERE device like 'HTC%'")
 
-
     def test_endswith_operator(self):
         self.compare_sql(Photo, "WHERE device like '%535'")
-
 
     def test_in_operator(self):
         self.compare_sql(Photo, "WHERE file_name_orig in ('{}', '{}')".format(self.photo1.file_name_orig, self.photo2.file_name_orig))
         self.compare_sql(Photo, "WHERE id in ({},{})".format(self.photo1.id, self.photo2.id))
+
+    def test_contains_operator(self):
+        self.compare_sql(Photo, "WHERE tags @> ARRAY['a']", "WHERE tags contains ('a')")
         
     '''
     def test_geo_query(self, **kwargs):
