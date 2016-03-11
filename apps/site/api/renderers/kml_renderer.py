@@ -20,18 +20,24 @@ class KMLRenderer(renderers.BaseRenderer):
         kml_buffer = StringIO(self.build_kml(data))
         return kml_buffer.getvalue()
 
-    def build_kml(self, data):
+    def build_kml(self, raw_data):
         """
         Returns a well-formatted KML string
         """
         kml = KML()
-        dataset = data.get('results')
+        dataset = None
+        if 'overlay_type' in raw_data and raw_data['overlay_type'] == 'project':
+            # complex type: projects
+            dataset = raw_data['children']['photos']['data'] + raw_data['children']['audio']['data'] + raw_data['children']['markers']['data']
+        else:
+            # simple type: photos, audio, or markers
+            dataset = raw_data.get('results')
         for data in dataset:
             if (not data['geometry']) or (not data['geometry']['coordinates']):
                 continue
             name = KML.as_node('name', [data['name']])
             cdata = None
-            if 'file_path_orig' in data: # if 
+            if 'file_path_orig' in data:
                 cdata = KML.wrap_cdata(data['overlay_type'], data['file_path_orig'])
             description = KML.as_node('description', [cdata, data['caption']])
             coord = KML.get_coord(data['geometry'])
