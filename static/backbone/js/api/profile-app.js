@@ -79,8 +79,8 @@ define([
             var opts = _.extend({}, this.options, this.config[this.objectType]);
             this.mainRegion.show(new ListEditView(opts));
         },
-        applyFilter: function (term) {
-            var parameters = [{ name : "name", value : term }],
+        applyFilter: function (params) {
+            var parameters = params,
                 key;
             // apply filter for all collections...
             for (key in this.config) {

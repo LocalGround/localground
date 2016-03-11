@@ -38,15 +38,22 @@ define(["lib/sqlParser", "underscore", "backbone"], function (SqlParser, _, Back
             var that = this;
             _.each(parameters, function (parameter, index) {
                 if (index > 0) {
-                    that.query += " AND ";
+                    that.query += " and ";
                 }
-                that.query += parameter.name + " LIKE '%" + parameter.value + "%'";
+                if (parameter.operation == "=") {
+                  that.query += parameter.name + " = " + parameter.value;
+                }
+                else {
+                  that.query += parameter.name + " LIKE '%" + parameter.value + "%'";
+                }
             });
+
         },
         clearServerQuery: function () {
             this.query = null;
         },
         fetch: function (options) {
+            console.log(this.query);
             //override fetch and append query parameters:
             if (this.query) {
                 // apply some additional options to the fetch:
