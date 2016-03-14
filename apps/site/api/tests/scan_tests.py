@@ -23,7 +23,9 @@ def get_metadata():
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'south': {'read_only': True, 'required': False, 'type': 'field'},
-        'name': {'read_only': False, 'required': False, 'type': 'string'}
+        'name': {'read_only': False, 'required': False, 'type': 'string'},
+        'uuid': {'read_only': True, 'required': False, 'type': 'string' },
+        'status': {'read_only': True, 'required': False, 'type': 'field' }
     }
 class ApiScanListTest(test.TestCase, ViewMixinAPI):
 
@@ -67,5 +69,8 @@ class ApiScanDetailTest(test.TestCase, ViewMixinAPI):
         self.urls = ['/api/0/map-images/%s/' % self.scan.id]
         self.view = views.ScanInstance.as_view()
         self.metadata = get_metadata()
-        self.metadata.update({"media_file": { "type": "string", "required": False, "read_only": True }})
+        self.metadata.update({
+            "media_file": { "type": "string", "required": False, "read_only": True },
+            'status': {'read_only': False, 'required': True, 'type': 'field' }
+        })
 
