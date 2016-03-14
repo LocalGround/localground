@@ -28,7 +28,10 @@
             username: "{{ user.username }}",
             photoMetadata: {% autoescape off %}{{ photo_update_metadata }}{% endautoescape %},
             audioMetadata: {% autoescape off %}{{ audio_update_metadata }}{% endautoescape %},
-            mapImageMetadata: {% autoescape off %}{{ scan_update_metadata }}{% endautoescape %}
+            mapImageMetadata: {% autoescape off %}{{ scan_update_metadata }}{% endautoescape %},
+            printMetadata: {% autoescape off %}{{ print_update_metadata }}{% endautoescape %},
+            projectUpdateMetadata: {% autoescape off %}{{ project_update_metadata }}{% endautoescape %},
+            projectCreateMetadata: {% autoescape off %}{{ project_create_metadata }}{% endautoescape %}
         };
         require(
             ["jquery", "/static/backbone/js/api/profile-app.js"],

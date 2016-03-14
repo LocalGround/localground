@@ -190,6 +190,9 @@ def new_profile(request, template='profile/new_profile.html'):
     photo_s = serializers.PhotoSerializerUpdate()
     audio_s = serializers.AudioSerializerUpdate()
     scan_s = serializers.ScanSerializerUpdate()
+    project_create_s = serializers.ProjectSerializer()
+    project_s = serializers.ProjectDetailSerializer()
+    print_s = serializers.PrintSerializerDetail()
     photo_s.user = u
     audio_s.user = u
     scan_s.user = u
@@ -198,7 +201,10 @@ def new_profile(request, template='profile/new_profile.html'):
         'user': u,
         'photo_update_metadata': json.dumps(m.get_serializer_info(photo_s)),
         'audio_update_metadata': json.dumps(m.get_serializer_info(audio_s)),
-        'scan_update_metadata': json.dumps(m.get_serializer_info(scan_s))
+        'scan_update_metadata': json.dumps(m.get_serializer_info(scan_s)),
+        'project_create_metadata': json.dumps(m.get_serializer_info(project_create_s)),
+        'project_update_metadata': json.dumps(m.get_serializer_info(project_s)),
+        'print_update_metadata': json.dumps(m.get_serializer_info(print_s))
     })
     return render_to_response(template, context)
 
