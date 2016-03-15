@@ -58,7 +58,7 @@ class ApiScanListTest(test.TestCase, ViewMixinAPI):
             file_name = unicode(file_name, "utf-8")
             path = new_object.encrypt_url(new_object.file_name_new)
             self.assertEqual(file_name, new_object.name)
-            self.assertEqual(new_object.status.id, 3)
+            self.assertEqual(new_object.status.id, models.StatusCode.READY_FOR_PROCESSING)
             self.assertEqual(len(new_object.uuid), 8)
             self.assertEqual(file_name, new_object.file_name_orig)
             self.assertTrue(len(new_object.file_name_new) > 5) #ensure not empty

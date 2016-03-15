@@ -80,8 +80,8 @@ class ScanSerializerCreate(BaseNamedSerializer):
         extras = self.process_file(f, owner)
         extras.update(self.get_presave_create_dictionary())
         extras.update({
-            'status': models.StatusCode.objects.get(id=3), #Make writeable field in serializer?
-            'upload_source': models.UploadSource.objects.get(id=1),
+            'status': models.StatusCode.objects.get(id=models.StatusCode.READY_FOR_PROCESSING), #Make writeable field in serializer?
+            'upload_source': models.UploadSource.objects.get(id=models.UploadSource.WEB_FORM),
             'attribution': validated_data.get('attribution') or owner.username,
             'host': settings.SERVER_HOST
         })
