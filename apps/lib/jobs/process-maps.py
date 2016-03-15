@@ -19,7 +19,7 @@ if __name__ == '__main__':
     setup_environment()
     from localground.apps.site import models
     ############################
-    scans = models.Scan.objects.filter(status=models.StatusCode.objects.get(id=3))
+    scans = models.Scan.objects.filter(status=models.StatusCode.objects.get(id=models.StatusCode.READY_FOR_PROCESSING))
     if len(scans) > 0:
         # just process the top scan:
         try:

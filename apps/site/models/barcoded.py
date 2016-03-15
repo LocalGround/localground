@@ -17,7 +17,7 @@ from django.contrib.contenttypes import generic
 class Processor(BaseUploadedMedia):
     uuid = models.CharField(unique=True, max_length=8)
     source_print = models.ForeignKey('Print', blank=True, null=True)
-    status = models.ForeignKey('StatusCode', default=3) #default to Web Form
+    status = models.ForeignKey('StatusCode', default=StatusCode.READY_FOR_PROCESSING) #default to Web Form
     file_name_thumb = models.CharField(max_length=255, blank=True, null=True)
     file_name_scaled = models.CharField(max_length=255, blank=True, null=True)
     scale_factor = models.FloatField(blank=True, null=True)

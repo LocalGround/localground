@@ -126,13 +126,12 @@ class Processor(General):
         #generate all of the map image alternatives:
         self.map_processor.process_map_image(self.scan.map_rect)
 
+        self.finder.draw_rectangles()
+
         #save all changes made to the scan:
         self.scan.status = models.StatusCode.objects.get(
                                 id=models.StatusCode.PROCESSED_SUCCESSFULLY)
         self.scan.save()
-        self.finder.draw_rectangles()
-            
-        self.finder.draw_rectangles()
         self.logger.write_messages_to_file()
         return
     
