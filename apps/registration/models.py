@@ -255,9 +255,16 @@ class RegistrationProfile(models.Model):
         self.user.email_user(subject, message, from_email=settings.DEFAULT_FROM_EMAIL)
         '''
         
-        #Updated: Emailer copies admins.
-        from django.core import mail
-        email = mail.EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL,
-            [self.user.email,], settings.ADMIN_EMAILS)
-        email.send()
+
+        import sendgrid
+
+        sendgrid_client = sendgrid.SendGridClient(settings.SENDGRID_API_KEY)
+        email = sendgrid.Mail()
+
+        email.add_to([self.user.email,])
+        email.set_from(settings.DEFAULT_FROM_EMAIL)
+        email.set_subject(subject)
+        email.set_html(message)
+
+        sendgrid_client.send(email)
     
