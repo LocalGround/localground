@@ -8,7 +8,8 @@ define(["marionette",
             tagName: "div",
             hasBeenEdited: false,
             events: {
-                'click input': 'markAsEdited'
+                'click input': 'markAsEdited',
+                'click textarea': 'markAsEdited'
             },
             modelEvents: {
                 'save-if-edited': 'saveIfEdited'

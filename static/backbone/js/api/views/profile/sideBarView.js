@@ -8,7 +8,9 @@ define(["underscore",
             events: {
                 "click #photos": "loadPhotosView",
                 "click #scan": "loadScanView",
-                "click #audio": "loadAudioView"
+                "click #audio": "loadAudioView",
+                "click #prints": "loadPrintView",
+                "click #projects": "loadProjectView"
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -30,6 +32,16 @@ define(["underscore",
             },
             loadScanView: function (e) {
                 this.app.objectType = "map-images";
+                this.app.vent.trigger("show-list-view");
+                e.preventDefault();
+            },
+            loadPrintView: function (e) {
+                this.app.objectType = "prints";
+                this.app.vent.trigger("show-list-view");
+                e.preventDefault();
+            },
+            loadProjectView: function (e) {
+                this.app.objectType = "projects";
                 this.app.vent.trigger("show-list-view");
                 e.preventDefault();
             }

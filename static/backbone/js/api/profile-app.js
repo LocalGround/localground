@@ -7,17 +7,23 @@ define([
     "collections/photos",
     "collections/audio",
     "collections/mapimages",
+    "collections/prints",
+    "collections/projects",
     "text!../templates/profile/item_photo.html",
     "text!../templates/profile/item_audio.html",
     "text!../templates/profile/item_map_image.html",
+    "text!../templates/profile/item_print.html",
+    "text!../templates/profile/item_project.html",
     "text!../templates/profile/item_photo_readonly.html",
     "text!../templates/profile/item_audio_readonly.html",
     "text!../templates/profile/item_map_image_readonly.html",
+    "text!../templates/profile/item_print_readonly.html",
+    "text!../templates/profile/item_project_readonly.html",
     "lib/appUtilities"
 ], function (Marionette, _, FilterView, ListEditView, SideBarView,
-             Photos, Audio, MapImages,
-             PhotoItemEditTemplate, AudioItemEditTemplate, MapImageItemEditTemplate,
-             PhotoItemTemplate, AudioItemTemplate, MapImageItemTemplate,
+             Photos, Audio, MapImages, Prints, Projects,
+             PhotoItemEditTemplate, AudioItemEditTemplate, MapImageItemEditTemplate, PrintItemEditTemplate, ProjectItemEditTemplate,
+             PhotoItemTemplate, AudioItemTemplate, MapImageItemTemplate, PrintItemTemplate, ProjectItemTemplate,
              appUtilities) {
     "use strict";
     var ProfileApp = new Marionette.Application(_.extend(appUtilities, {
@@ -52,7 +58,22 @@ define([
                     EditItemTemplate: MapImageItemEditTemplate,
                     ItemTemplate: MapImageItemTemplate,
                     metadata: options.mapImageMetadata
-                }
+                },
+                prints: {
+                    objectType: "prints",
+                    collection: new Prints(),
+                    EditItemTemplate: PrintItemEditTemplate,
+                    ItemTemplate: PrintItemTemplate,
+                    metadata: options.printMetadata
+                },
+                projects: {
+                    objectType: "projects",
+                    collection: new Projects(),
+                    EditItemTemplate: ProjectItemEditTemplate,
+                    ItemTemplate: ProjectItemTemplate,
+                    metadata: options.projectUpdateMetadata
+                },
+
             };
 
             // create child views:
@@ -77,6 +98,7 @@ define([
             // create an opts that passes in the selected collection,
             // metadata, & templates:
             var opts = _.extend({}, this.options, this.config[this.objectType]);
+            console.log(opts);
             this.mainRegion.show(new ListEditView(opts));
         },
         applyFilter: function (params) {
