@@ -8,7 +8,7 @@ class KMLRenderer(renderers.BaseRenderer):
     Renderer which serializes to KML using the existing XML renderer
     """
 
-    media_type = 'application/xml'
+    media_type = 'application/vnd.google-earth.kml+xml'
     format = 'kml'
     level_sep = '.'
     headers = None
@@ -53,8 +53,8 @@ class KML():
 
     prolog = '<?xml version="1.0" encoding="UTF-8"?>'
     namespace = 'http://www.opengis.net/kml/2.2'
-    root = '<kml xmlns="{}">'.format(namespace)
-    closing_root = '</kml>'
+    root = '<kml xmlns="{}"><Folder>'.format(namespace)
+    closing_root = '</Folder></kml>'
     kml = ''
 
     def __init__(self):
