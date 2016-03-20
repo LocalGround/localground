@@ -59,7 +59,7 @@ class ProjectDetailSerializer(ProjectSerializer):
         children = {
             'photos': self.get_photos(obj),
             'audio': self.get_audio(obj),
-            'mapimages': self.get_mapimages(obj),
+            'map_images': self.get_mapimages(obj),
             'markers': self.get_markers(obj, forms)
         }
         

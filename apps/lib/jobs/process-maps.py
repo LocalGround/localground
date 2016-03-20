@@ -21,7 +21,7 @@ if __name__ == '__main__':
     ############################
     mapimages = models.MapImage.objects.filter(status=models.StatusCode.objects.get(id=models.StatusCode.READY_FOR_PROCESSING))
     if len(mapimages) > 0:
-        # just process the top mapimage:
+        # just process the top map image:
         try:
             print "Processing {0}".format(mapimages[0])
             mapimages[0].process()
@@ -29,4 +29,4 @@ if __name__ == '__main__':
             print('There was an exception')
             traceback.print_exc()
     else:
-        print "There are no mapimages to process"
+        print "There are no map images to process"

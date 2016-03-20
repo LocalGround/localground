@@ -90,7 +90,7 @@ class Processor(General):
                         message='Exiting:  QR-Code not read',
                         terminate=True)
         
-        #rotate entire mapimagened image based on qr-code orientation; re-query for
+        #rotate entire image based on qr-code orientation; re-query for
         #rectangles if theta != 0:
         self.rotate_image_by_angle(theta)
         
@@ -106,7 +106,7 @@ class Processor(General):
                         terminate=True)
 
     def process_mapimage(self):
-        self.process_image('map mapimage')
+        self.process_image('map image')
             
         # Process Map:
         #------------------------------
@@ -128,7 +128,7 @@ class Processor(General):
 
         self.finder.draw_rectangles()
 
-        #save all changes made to the mapimage:
+        #save all changes made to the map image:
         self.mapimage.status = models.StatusCode.objects.get(
                                 id=models.StatusCode.PROCESSED_SUCCESSFULLY)
         self.mapimage.save()
@@ -673,7 +673,7 @@ class RectangleFinder(General):
     def select_rectangle(self, source_print, min_area, max_area, in_first_third=True):
         """
         Finds the rectangle that corresponds to the map_rect; assumes that the
-        mapimagened image has already been rotated.
+        image has already been rotated.
         """
         if source_print is None:
             self.logger.log('No print defined')
@@ -687,7 +687,7 @@ class RectangleFinder(General):
             perimeter = cv.ArcLength(rect, isClosed=True)
             ratio_this = area/(perimeter/4)**2
             #check to see if the rectangle exists in the first third of the
-            #mapimagened paper image:
+            #image:
             min_y = min([p[1] for p in rect])
             position_match = (min_y < self.pil_image.size[1]/3) == in_first_third or \
                             not in_first_third == (min_y >= self.pil_image.size[1]/3) or \
