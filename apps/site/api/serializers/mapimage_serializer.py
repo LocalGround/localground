@@ -1,4 +1,4 @@
-import os
+import os, json
 from rest_framework import serializers
 from django.conf import settings
 from django.forms.fields import FileField
@@ -21,6 +21,14 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         source='project',
         required=False
     )
+    geometry = fields.GeometryField(
+        help_text='Assign a GeoJSON string',
+        allow_null=True,
+        required=False,
+        read_only=True,
+        style={'base_template': 'json.html'},
+        source='processed_image.extents'
+    )
     north = serializers.SerializerMethodField()
     south = serializers.SerializerMethodField()
     east = serializers.SerializerMethodField()
@@ -38,10 +46,10 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         model = models.MapImage
         fields = BaseNamedSerializer.Meta.fields + (
             'overlay_type', 'source_print', 'project_id',
-            'north', 'south', 'east', 'west', 'zoom', 'overlay_path',
+            'north', 'south', 'east', 'west', 'geometry', 'zoom', 'overlay_path',
             'media_file', 'file_path', 'uuid', 'status'
         )
-        read_only_fields = ('uuid', 'status')
+        read_only_fields = ('uuid', 'status', 'geometry')
         
     def process_file(self, file, owner):
         #save to disk:
@@ -134,8 +142,8 @@ class MapImageSerializerUpdate(MapImageSerializerCreate):
         model = models.MapImage
         fields = BaseNamedSerializer.Meta.fields + (
             'overlay_type', 'source_print', 'project_id',
-            'north', 'south', 'east', 'west', 'zoom', 'overlay_path',
+            'north', 'south', 'east', 'west', 'geometry', 'zoom', 'overlay_path',
             'media_file', 'file_path', 'uuid', 'status'
         )
-        read_only_fields = ('uuid',)
+        read_only_fields = ('uuid', 'geometry')
 
