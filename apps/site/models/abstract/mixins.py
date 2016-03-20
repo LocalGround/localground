@@ -103,7 +103,7 @@ class BaseGenericRelationMixin(models.Model):
     @property
     def map_images(self):
         if self._map_images is None:
-            from localground.apps.site.models.barcoded import MapImage
+            from localground.apps.site.models.mapimage import MapImage
             self._map_images = self._get_filtered_entities(MapImage)
         return self._map_images
 
@@ -113,9 +113,3 @@ class BaseGenericRelationMixin(models.Model):
             from localground.apps.site.models.marker import Marker
             self._markers = self._get_filtered_entities(Marker)
         return self._markers
-
-    # def entities(self, key):
-    #     associations = (models.GenericAssociation.objects
-    #                     .filter(source_type=self.get_content_type()).filter(source_id=self.id))
-    #     form_classes = ContentType.objects\
-    #         .filter(id__in=[a.entity_type_id for a in associations])

@@ -39,7 +39,7 @@ from localground.apps.site.models.layout import Layout
 from localground.apps.site.models.prints import Print
 
 # uploads
-from localground.apps.site.models.barcoded import MapImage, ImageOpts
+from localground.apps.site.models.mapimage import MapImage, ImageOpts
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video

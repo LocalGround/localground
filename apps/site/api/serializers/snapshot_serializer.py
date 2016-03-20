@@ -1,7 +1,7 @@
 import sys
 from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
-from localground.apps.site.api.serializers.barcoded_serializer import MapImageSerializerUpdate
+from localground.apps.site.api.serializers.mapimage_serializer import MapImageSerializerUpdate
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 from localground.apps.site.api.serializers.record_serializer import create_record_serializer, \
     create_compact_record_serializer
