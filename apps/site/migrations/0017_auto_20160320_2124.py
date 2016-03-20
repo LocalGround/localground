@@ -1,17 +1,23 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from django.db import models, migrations
 from django.conf import settings
+import os
 
+def get_extra_sql():
+    from localground.apps.settings import APPS_ROOT
+    sql_statements = open(os.path.join(APPS_ROOT, 'sql/custom.sql'), 'r').read()
+    return sql_statements
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('site', '0014_auto_20160320_2010'),
+        ('site', '0013_merge'),
     ]
 
     operations = [
+        migrations.RenameModel('ScanUser', 'MapImageUser'),
+        migrations.RenameModel('Scan', 'MapImage'),
         migrations.AlterModelOptions(
             name='statuscode',
             options={'ordering': ('id',)},
@@ -26,4 +32,14 @@ class Migration(migrations.Migration):
             name='project',
             field=models.ForeignKey(related_name='mapimage+', to='site.Project'),
         ),
+         migrations.RenameField(
+            model_name='imageopts',
+            old_name='source_scan',
+            new_name='source_mapimage',
+        ),
+        migrations.AlterModelTable(
+            name='mapimageuser',
+            table='v_private_mapimages',
+        ),
+        migrations.RunSQL(get_extra_sql()),
     ]
