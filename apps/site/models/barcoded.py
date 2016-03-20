@@ -12,9 +12,7 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os
 from django.contrib.contenttypes import generic
 
-
-
-class Processor(BaseUploadedMedia):
+class MapImage(BaseUploadedMedia):
     uuid = models.CharField(unique=True, max_length=8)
     source_print = models.ForeignKey('Print', blank=True, null=True)
     status = models.ForeignKey('StatusCode', default=StatusCode.READY_FOR_PROCESSING) #default to Web Form
@@ -27,10 +25,16 @@ class Processor(BaseUploadedMedia):
     email_body = models.TextField(null=True, blank=True)
     qr_rect = models.CharField(max_length=255, blank=True, null=True)
     qr_code = models.CharField(max_length=8, blank=True, null=True)
-
+    map_rect = models.CharField(max_length=255, blank=True, null=True)
+    processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
+    directory_name = 'map-images'
+    objects = MapImageManager()
+    
     class Meta:
         app_label = 'site'
-        abstract = True
+        ordering = ['id']
+        verbose_name = 'map-image'
+        verbose_name_plural = 'map-images'
 
     def thumb(self):
         '''
@@ -40,66 +44,12 @@ class Processor(BaseUploadedMedia):
             '%s%s' %
             (self.virtual_path, self.file_name_thumb))
 
-    '''
-    def generate_relative_path(self):
-        return '/%s/media/%s/%s/%s/' % (settings.USER_MEDIA_DIR,
-                                        self.owner.username,
-                                        self.directory_name,
-                                        self.uuid)
-
-    def generate_absolute_path(self):
-        return '%s/media/%s/%s/%s' % (settings.USER_MEDIA_ROOT,
-                                      self.owner.username,
-                                      self.directory_name,
-                                      self.uuid)
-    '''
     def get_abs_directory_path(self):
         return '%s/%s' % (settings.FILE_ROOT, self.virtual_path)
     
 
     def original_image_filesystem(self):
         return '%s/%s' % (self.get_abs_directory_path(), self.file_name_new)
-
-    def copy_as(self, InheritedClass):
-        # copies data from one child class to another
-        o = InheritedClass()
-        o.uuid = self.uuid
-        o.project = self.project
-        o.host = self.host
-        o.virtual_path = self.virtual_path
-        o.owner = self.owner
-        o.attribution = self.attribution
-        o.source_print = self.source_print
-        o.status = self.status
-        o.file_name_thumb = self.file_name_thumb
-        o.file_name_scaled = self.file_name_scaled
-        o.file_name_orig = self.file_name_orig
-        o.file_name_new = self.file_name_new
-        o.scale_factor = self.scale_factor
-        o.content_type = self.content_type
-        o.upload_source = self.upload_source
-        o.email_sender = self.email_sender
-        o.email_subject = self.email_subject
-        o.email_body = self.email_body
-        o.qr_rect = self.qr_rect
-        o.qr_code = self.qr_code
-        o.last_updated_by = self.last_updated_by
-        o.time_stamp = self.time_stamp
-        return o
-
-
-class MapImage(Processor):
-    # for manual override:
-    map_rect = models.CharField(max_length=255, blank=True, null=True)
-    processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
-    directory_name = 'map-images'
-    objects = MapImageManager()
-
-    class Meta:
-        app_label = 'site'
-        ordering = ['id']
-        verbose_name = 'map-image'
-        verbose_name_plural = 'map-images'
 
     def get_object_type(self):
         return 'map-image'
