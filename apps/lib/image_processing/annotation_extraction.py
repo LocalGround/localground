@@ -187,7 +187,7 @@ if __name__ == '__main__':
     #cv2.imwrite('%s%s' % (path, '__testing.png'))
 
     dir = file_name.split('.')[0]
-    path = '%scanny/%s/' % (path, dir)
+    path = '%mapimageny/%s/' % (path, dir)
     try: os.mkdir(path)
     except: print '%s directory already exists' % path
     

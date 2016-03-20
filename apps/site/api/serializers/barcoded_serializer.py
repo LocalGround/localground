@@ -7,7 +7,7 @@ from localground.apps.site import models
 from localground.apps.site.api import fields
 from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
 
-class ScanSerializerCreate(BaseNamedSerializer):
+class MapImageSerializerCreate(BaseNamedSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
     file_path = serializers.SerializerMethodField('get_file_path_new')
     media_file = serializers.CharField(
@@ -29,13 +29,13 @@ class ScanSerializerCreate(BaseNamedSerializer):
     overlay_path = serializers.SerializerMethodField()
     
     def get_fields(self, *args, **kwargs):
-        fields = super(ScanSerializerCreate, self).get_fields(*args, **kwargs)
+        fields = super(MapImageSerializerCreate, self).get_fields(*args, **kwargs)
         #restrict project list at runtime:
         fields['project_id'].queryset = self.get_projects()
         return fields
 
     class Meta:
-        model = models.Scan
+        model = models.MapImage
         fields = BaseNamedSerializer.Meta.fields + (
             'overlay_type', 'source_print', 'project_id',
             'north', 'south', 'east', 'west', 'zoom', 'overlay_path',
@@ -45,7 +45,7 @@ class ScanSerializerCreate(BaseNamedSerializer):
         
     def process_file(self, file, owner):
         #save to disk:
-        model_name_plural = models.Scan.model_name_plural
+        model_name_plural = models.MapImage.model_name_plural
         uuid = generic.generateID()
         file_name_new = upload_helpers.save_file_to_disk(owner, model_name_plural, file, uuid=uuid)
         file_name, ext = os.path.splitext(file_name_new)
@@ -127,11 +127,11 @@ class ScanSerializerCreate(BaseNamedSerializer):
     def get_overlay_path(self, obj):
         return obj.processed_map_url_path()
     
-class ScanSerializerUpdate(ScanSerializerCreate):
+class MapImageSerializerUpdate(MapImageSerializerCreate):
     media_file = serializers.CharField(source='file_name_orig', required=False, read_only=True)
     status = serializers.PrimaryKeyRelatedField(queryset=models.StatusCode.objects.all(), read_only=False)
     class Meta:
-        model = models.Scan
+        model = models.MapImage
         fields = BaseNamedSerializer.Meta.fields + (
             'overlay_type', 'source_print', 'project_id',
             'north', 'south', 'east', 'west', 'zoom', 'overlay_path',

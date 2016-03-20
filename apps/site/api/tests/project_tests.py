@@ -69,7 +69,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         
     def _check_children(self, children):
         self.assertTrue(not children is None)
-        for k in ['photos', 'audio', 'markers', 'scans']:
+        for k in ['photos', 'audio', 'markers', 'mapimages']:
             self.assertTrue(not children.get(k) is None)
             self.assertTrue(isinstance(children.get(k).get('update_metadata'), dict))
             self.assertTrue(isinstance(children.get(k).get('overlay_type'), basestring))

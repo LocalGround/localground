@@ -75,9 +75,9 @@
 				<div class="thin">
 					<label>Owned by:</label><div class="input">{{  form.instance.owner }}</div>
 				</div>
-				{% if form.instance.source_scan %}
+				{% if form.instance.source_mapimage %}
 					<div class="thin">
-						<label>Map Image:</label><div class="input">{{ form.instance.source_scan.name }}</div>
+						<label>Map Image:</label><div class="input">{{ form.instance.source_mapimage.name }}</div>
 					</div>
 				{% endif %}
 				{% if form.instance.source_marker %}

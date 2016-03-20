@@ -1,7 +1,7 @@
 from django.contrib.gis.db import models
 from datetime import datetime
 from django.conf import settings
-from localground.apps.site.managers import ScanManager
+from localground.apps.site.managers import MapImageManager
 from localground.apps.site.models import (
     BaseMedia,
     StatusCode,
@@ -88,12 +88,12 @@ class Processor(BaseUploadedMedia):
         return o
 
 
-class Scan(Processor):
+class MapImage(Processor):
     # for manual override:
     map_rect = models.CharField(max_length=255, blank=True, null=True)
     processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
     directory_name = 'map-images'
-    objects = ScanManager()
+    objects = MapImageManager()
 
     class Meta:
         app_label = 'site'
@@ -122,7 +122,7 @@ class Scan(Processor):
     def get_records_by_form(self, form_id):
         from localground.apps.site.models import Form
         form = Form.objects.get(id=form_id)
-        return form.TableModel.objects.filter(scan=self)
+        return form.TableModel.objects.filter(mapimage=self)
 
     def get_markers(self):
         # todo:  implement this...
@@ -130,11 +130,11 @@ class Scan(Processor):
 
     def get_marker_dictionary(self):
         from localground.apps.site.models import Marker
-        return Marker.objects.get_marker_dict_by_scan(scan_id=self.id)
+        return Marker.objects.get_marker_dict_by_mapimage(mapimage_id=self.id)
 
     def to_dict(self):
-        from localground.apps.site.api.serializers import ScanSerializer
-        return ScanSerializer(self, context={'request': {}}).data
+        from localground.apps.site.api.serializers import MapImageSerializer
+        return MapImageSerializer(self, context={'request': {}}).data
 
     def delete(self, *args, **kwargs):
         # first remove directory, then delete from db:
@@ -149,36 +149,36 @@ class Scan(Processor):
                 dest = dest + '.dup.' + generic.generateID()
             shutil.move(path, dest)
 
-        super(Scan, self).delete(*args, **kwargs)
+        super(MapImage, self).delete(*args, **kwargs)
 
     def process(self):
         from localground.apps.lib.image_processing.processor import Processor
         processor = Processor(self)
-        processor.process_scan()
+        processor.process_mapimage()
 
     def __unicode__(self):
-        return 'Scan #' + self.uuid
+        return 'MapImage #' + self.uuid
 
 class ImageOpts(BaseExtents, BaseMedia):
-    source_scan = models.ForeignKey(Scan)
+    source_mapimage = models.ForeignKey(MapImage)
 
     class Meta:
         app_label = 'site'
 
     @property
     def model_name(self):
-        return self.source_scan.model_name
+        return self.source_mapimage.model_name
 
     @property
     def model_name_plural(self):
-        return self.source_scan.model_name_plural
+        return self.source_mapimage.model_name_plural
 
     def processed_map_url_path(self):
-        host = self.source_scan.host
+        host = self.source_mapimage.host
         # host = 'dev.localground.org' #just for debugging purposes
         return self._encrypt_media_path(
             '%s%s' %
-            (self.source_scan.virtual_path,
+            (self.source_mapimage.virtual_path,
              self.file_name),
             host=host)
 
@@ -209,11 +209,11 @@ class ImageOpts(BaseExtents, BaseMedia):
         super(ImageOpts, self).save(*args, **kwargs)
 
     def delete():
-        # don't want to inadvertently remove the parent scan, so adding this
+        # don't want to inadvertently remove the parent mapimage, so adding this
         # workaround.  Todo:  update to Django >= 1.3, to configure "cascade
         # delete" settings
-        scans = Scan.objects.filter(processed_image=self)
-        for s in scans:
+        mapimages = MapImage.objects.filter(processed_image=self)
+        for s in mapimages:
             s.processed_image = None
             s.save()
         self.delete()

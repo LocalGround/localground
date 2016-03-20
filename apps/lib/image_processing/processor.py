@@ -31,7 +31,7 @@ class Processor(General):
     def __init__(self, obj, **kwargs):
         General.__init__(self)
         self.obj = obj
-        self.scan = obj
+        self.mapimage = obj
         self.rectangles = []
         self.pil_image = None
         self.finder = None
@@ -90,7 +90,7 @@ class Processor(General):
                         message='Exiting:  QR-Code not read',
                         terminate=True)
         
-        #rotate entire scanned image based on qr-code orientation; re-query for
+        #rotate entire mapimagened image based on qr-code orientation; re-query for
         #rectangles if theta != 0:
         self.rotate_image_by_angle(theta)
         
@@ -105,33 +105,33 @@ class Processor(General):
                         message='Exiting:  QR-Code %s not in database' % print_id,
                         terminate=True)
 
-    def process_scan(self):
-        self.process_image('map scan')
+    def process_mapimage(self):
+        self.process_image('map mapimage')
             
         # Process Map:
         #------------------------------
         #filter rectangles to find map rectangle, based on metadata from the
         #print; exit if no map rectangle found:    
-        self.scan.map_rect = self.finder.get_map_rectangle(self.scan.source_print)
-        if self.scan.map_rect is None:
+        self.mapimage.map_rect = self.finder.get_map_rectangle(self.mapimage.source_print)
+        if self.mapimage.map_rect is None:
             self.logger.log('Exiting:  No map rectangle found')
-            self.scan.status = models.StatusCode.objects.get(
+            self.mapimage.status = models.StatusCode.objects.get(
                                     id=models.StatusCode.MAP_RECT_NOT_FOUND)
-            self.scan.save()
+            self.mapimage.save()
             return
     
         #helper class for processing map image:
-        self.map_processor = MapUtils(self.scan, self.pil_image, self.logger)
+        self.map_processor = MapUtils(self.mapimage, self.pil_image, self.logger)
         
         #generate all of the map image alternatives:
-        self.map_processor.process_map_image(self.scan.map_rect)
+        self.map_processor.process_map_image(self.mapimage.map_rect)
 
         self.finder.draw_rectangles()
 
-        #save all changes made to the scan:
-        self.scan.status = models.StatusCode.objects.get(
+        #save all changes made to the mapimage:
+        self.mapimage.status = models.StatusCode.objects.get(
                                 id=models.StatusCode.PROCESSED_SUCCESSFULLY)
-        self.scan.save()
+        self.mapimage.save()
         self.logger.write_messages_to_file()
         return
     
@@ -328,8 +328,8 @@ class Logger(General):
                 
             except OSError:
                 self.log('%s does not exist.  Defaulting to %s' %
-                         (self.tmp_directory, '/tmp/scans/'))
-                self.tmp_directory = '/tmp/scans/'
+                         (self.tmp_directory, '/tmp/mapimages/'))
+                self.tmp_directory = '/tmp/mapimages/'
                 #os.mkdir(self.tmp_directory)
         
     def log(self, message):
@@ -673,7 +673,7 @@ class RectangleFinder(General):
     def select_rectangle(self, source_print, min_area, max_area, in_first_third=True):
         """
         Finds the rectangle that corresponds to the map_rect; assumes that the
-        scanned image has already been rotated.
+        mapimagened image has already been rotated.
         """
         if source_print is None:
             self.logger.log('No print defined')
@@ -687,7 +687,7 @@ class RectangleFinder(General):
             perimeter = cv.ArcLength(rect, isClosed=True)
             ratio_this = area/(perimeter/4)**2
             #check to see if the rectangle exists in the first third of the
-            #scanned paper image:
+            #mapimagened paper image:
             min_y = min([p[1] for p in rect])
             position_match = (min_y < self.pil_image.size[1]/3) == in_first_third or \
                             not in_first_third == (min_y >= self.pil_image.size[1]/3) or \
@@ -737,9 +737,9 @@ class RectangleFinder(General):
 
 class QrCodeUtils(General):
     
-    def __init__(self, scan, pil_image, logger):
+    def __init__(self, mapimage, pil_image, logger):
         General.__init__(self)      #has some generic functions (lik a logger)
-        self.scan = scan            #scan is being passed in by reference
+        self.mapimage = mapimage            #mapimage is being passed in by reference
         self.pil_image = pil_image
         self.logger = logger
 
@@ -863,7 +863,7 @@ class QrCodeUtils(General):
         qr_image = qr_image.crop(quad.to_pil_bbox())
         
         #save the qr-code to disk, and read it:
-        path = '%sqr_%s.png' % (self.scan.get_abs_directory_path(), 1)
+        path = '%sqr_%s.png' % (self.mapimage.get_abs_directory_path(), 1)
         self.logger.log(path)
         qr_image.save(path)
         print_id, theta = self.execute_reader(path)
@@ -874,7 +874,7 @@ class QrCodeUtils(General):
             # (which is counter-intuitive to me) in order for it to be read:
             q = qr_image.copy()
             q.thumbnail([100, 100], Image.ANTIALIAS)
-            path = '%sqr_%s.png' % (self.scan.get_abs_directory_path(), 2)
+            path = '%sqr_%s.png' % (self.mapimage.get_abs_directory_path(), 2)
             self.logger.log(path)
             q.save(path)
             print_id, theta = self.execute_reader(path)
@@ -884,7 +884,7 @@ class QrCodeUtils(General):
             # sometimes, the qr-image needs to be resized to something smaller
             # (which is counter-intuitive to me) in order for it to be read:
             q = self.pil_image.copy()
-            path = '%sqr_whole_image_%s.png' % (self.scan.get_abs_directory_path(), 3)
+            path = '%sqr_whole_image_%s.png' % (self.mapimage.get_abs_directory_path(), 3)
             self.logger.log(path)
             q.save(path)
             print_id, theta = self.execute_reader(path)
@@ -902,7 +902,7 @@ class ImageUtils(General):
     @staticmethod
     def subtract_grayscale(img, threshold=20):        
         ## Threshold ~= max( max(R,G,B) - min(R,G,B) ) of grays.
-        ## For a scan (high quality image), a threshold of 14 seems to work well.
+        ## For a mapimage (high quality image), a threshold of 14 seems to work well.
         ## A value of 17 seems good and conservative for an indoor iPhoto.
         ## While 20, or 22, should be the max threshold even for poor quality photos
         
@@ -996,9 +996,9 @@ class MapUtils(General):
     
     #Map types (be sure to sync w/overlays_wmsoverlay table):
     
-    def __init__(self, scan, pil_image, logger):
+    def __init__(self, mapimage, pil_image, logger):
         General.__init__(self)
-        self.scan = scan
+        self.mapimage = mapimage
         self.pil_image = pil_image
         self.logger = logger
         self.image_quality_statistics = None
@@ -1017,12 +1017,12 @@ class MapUtils(General):
         self.map_rect = Quadrilateral(map_rect, contract_by=12)
         
         #IMPORTANT: set processed_image to None or else "cascade delete" will
-        #           delete the scan itself (cascade delete not customizable
+        #           delete the mapimage itself (cascade delete not customizable
         #           'til Django 1.3)
         #clear out all old map images:
-        self.scan.processed_image = None
-        self.scan.save()
-        models.ImageOpts.objects.filter(source_scan=self.scan).delete()
+        self.mapimage.processed_image = None
+        self.mapimage.save()
+        models.ImageOpts.objects.filter(source_mapimage=self.mapimage).delete()
         
         #get image statistics, to assist with color processing:
         self.stats = ImageQuality(self.pil_image, logger=self.logger)
@@ -1118,17 +1118,17 @@ class MapUtils(General):
         
         '''
         if self.stats.image_quality == ImageQuality.BAD_PHOTO:
-            self.scan.processed_image = self.image_records.get(
+            self.mapimage.processed_image = self.image_records.get(
                                         types.COLOR_TO_ALPHA_WITH_SOLID_MARGINS)
         else:
-            self.scan.processed_image = self.image_records.get(
+            self.mapimage.processed_image = self.image_records.get(
                                         types.GRAYSCALE_SUBTRACTED_WITH_SOLID_MARGINS)
         '''
         if self.stats.image_quality == ImageQuality.BAD_PHOTO:
-            self.scan.processed_image = self.image_records.get(
+            self.mapimage.processed_image = self.image_records.get(
                                         types.COLOR_TO_ALPHA)
         else:
-            self.scan.processed_image = self.image_records.get(
+            self.mapimage.processed_image = self.image_records.get(
                                         types.GRAYSCALE_SUBTRACTED)
     
     def generate_image_with_map_margins(self):
@@ -1139,9 +1139,9 @@ class MapUtils(General):
         top, left, bottom, right = self.map_rect.get_margins(self.pil_image)
         
         #scale image to its original print size:
-        zoom = self.scan.source_print.zoom
-        old_width = self.scan.source_print.map_width
-        old_height = self.scan.source_print.map_height
+        zoom = self.mapimage.source_print.zoom
+        old_width = self.mapimage.source_print.map_width
+        old_height = self.mapimage.source_print.map_height
         
         self.logger.log('old width: %s, old height: %s, zoom: %s' \
                         % (old_width, old_height, zoom))
@@ -1157,7 +1157,7 @@ class MapUtils(General):
         top, left, bottom, right = top*sf_h, left*sf_w, bottom*sf_h, right*sf_w
 
         
-        center = self.scan.source_print.center
+        center = self.mapimage.source_print.center
         northeast = Units.add_pixels_to_latlng(
                         center.clone(), zoom, int(1.0*old_width/2 + left),
                         int(-1.0*old_height/2 - top))
@@ -1180,17 +1180,17 @@ class MapUtils(General):
     
     def save_processed_image(self, img, file_name, northeast=None, southwest=None,
                                 extents=None):
-        path = self.scan.get_abs_directory_path() + file_name
+        path = self.mapimage.get_abs_directory_path() + file_name
         self.logger.log('Saving map image and inserting to database: ' + path)
         img.save(path)
         
-        p = self.scan.source_print
+        p = self.mapimage.source_print
         map_image = models.ImageOpts(
-            source_scan=self.scan,
+            source_mapimage=self.mapimage,
             file_name_orig=file_name,
             zoom=p.zoom,
-            host=self.scan.host,
-            virtual_path=self.scan.virtual_path
+            host=self.mapimage.host,
+            virtual_path=self.mapimage.virtual_path
         )
         
         if extents is not None: map_image.extents = extents
@@ -1204,7 +1204,7 @@ class MapUtils(General):
         
         map_image.center = p.center
         
-        map_image.save(user=self.scan.owner)
+        map_image.save(user=self.mapimage.owner)
         return map_image
     
 class ImageQuality():

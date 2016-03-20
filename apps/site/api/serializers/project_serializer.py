@@ -1,6 +1,6 @@
 from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
-from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializerUpdate
+from localground.apps.site.api.serializers.barcoded_serializer import MapImageSerializerUpdate
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 from localground.apps.site.api.serializers.record_serializer import create_record_serializer, \
     create_compact_record_serializer
@@ -42,7 +42,7 @@ class ProjectDetailSerializer(ProjectSerializer):
         candidates = [
             models.Photo,
             models.Audio,
-            models.Scan,
+            models.MapImage,
             models.Project,
             models.Marker]
         
@@ -59,7 +59,7 @@ class ProjectDetailSerializer(ProjectSerializer):
         children = {
             'photos': self.get_photos(obj),
             'audio': self.get_audio(obj),
-            'scans': self.get_scans(obj),
+            'mapimages': self.get_mapimages(obj),
             'markers': self.get_markers(obj, forms)
         }
         
@@ -103,11 +103,11 @@ class ProjectDetailSerializer(ProjectSerializer):
             )
         )
 
-    def get_scans(self, obj):
+    def get_mapimages(self, obj):
         return self.serialize_list(
-            models.Scan,
-            ScanSerializerUpdate,
-            models.Scan.objects.get_objects(
+            models.MapImage,
+            MapImageSerializerUpdate,
+            models.MapImage.objects.get_objects(
                 obj.owner,
                 project=obj,
                 processed_only=True

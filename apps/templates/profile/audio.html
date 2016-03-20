@@ -84,9 +84,9 @@
 				<div class="thin">
 					<label>File Name:</label><div class="input blue">{{ form.instance.file_name_orig }}</div>
 				</div>
-				{% if form.instance.source_scan %}
+				{% if form.instance.source_mapimage %}
 					<div class="thin">
-						<label>Map Image:</label><div class="input blue">{{ form.instance.source_scan.name }}</div>
+						<label>Map Image:</label><div class="input blue">{{ form.instance.source_mapimage.name }}</div>
 					</div>
 				{% endif %}
 				{% if form.instance.source_marker %}

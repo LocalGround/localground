@@ -1,7 +1,7 @@
 import sys
 from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
-from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializerUpdate
+from localground.apps.site.api.serializers.barcoded_serializer import MapImageSerializerUpdate
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 from localground.apps.site.api.serializers.record_serializer import create_record_serializer, \
     create_compact_record_serializer
@@ -55,7 +55,7 @@ class SnapshotSerializer(BaseNamedSerializer):
         candidates = [
             models.Photo,
             models.Audio,
-            models.Scan,
+            models.MapImage,
             models.Project,
             models.Marker]
         associations = (models.GenericAssociation.objects
@@ -75,7 +75,7 @@ class SnapshotSerializer(BaseNamedSerializer):
         children = {
             'photos': self.get_photos(obj),
             'audio': self.get_audio(obj),
-            'scans': self.get_scans(obj),
+            'mapimages': self.get_mapimages(obj),
             'markers': self.get_markers(obj, forms),
         }
 
@@ -101,11 +101,11 @@ class SnapshotSerializer(BaseNamedSerializer):
         )
         return self.serialize_list(models.Audio, serializer)
 
-    def get_scans(self, obj):
-        serializer = ScanSerializerUpdate(
+    def get_mapimages(self, obj):
+        serializer = MapImageSerializerUpdate(
             obj.map_images, many=True, context={'request': {}}
         )
-        return self.serialize_list(models.Scan, serializer)
+        return self.serialize_list(models.MapImage, serializer)
 
     def get_markers(self, obj, forms):
         serializer = MarkerSerializerCounts(

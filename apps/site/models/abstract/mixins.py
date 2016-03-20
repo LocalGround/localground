@@ -103,8 +103,8 @@ class BaseGenericRelationMixin(models.Model):
     @property
     def map_images(self):
         if self._map_images is None:
-            from localground.apps.site.models.barcoded import Scan
-            self._map_images = self._get_filtered_entities(Scan)
+            from localground.apps.site.models.barcoded import MapImage
+            self._map_images = self._get_filtered_entities(MapImage)
         return self._map_images
 
     @property

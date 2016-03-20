@@ -105,7 +105,7 @@ class Report():
         frame.addFromList(items, self.canvas)
         
         # output default instructions:
-        link_text = "When you're done drawing on the map, scan or photograph it and \
+        link_text = "When you're done drawing on the map, mapimage or photograph it and \
                     submit it to our website: http://localground.org/upload, or \
                     email it to localground.apps.uploads@gmail.com."
         

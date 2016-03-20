@@ -94,7 +94,7 @@ class StaticMap():
             'southwest': southwest
         }
         
-    def get_map(self, layers, southwest=None, northeast=None, scans=None,
+    def get_map(self, layers, southwest=None, northeast=None, mapimages=None,
                 srs=Units.EPSG_900913, height=300, width=300, format=OutputFormat.PNG,
                 opacity=100, extra_layers=None, show_north_arrow=False, **kwargs):
         """
@@ -123,9 +123,9 @@ class StaticMap():
         if show_north_arrow:
             self._add_north_arrow(msmap, height)
         
-        #scans = [1]
-        if scans is not None and len(scans) > 0:
-            self._render_scans(msmap, scans, srs)
+        #mapimages = [1]
+        if mapimages is not None and len(mapimages) > 0:
+            self._render_mapimages(msmap, mapimages, srs)
             
         #update map extents, if specified:
         if southwest is not None and northeast is not None:
@@ -152,23 +152,23 @@ class StaticMap():
         elif format == OutputFormat.PNG:
             return return_image
         
-    def _render_scans(self, msmap, scans, srs):
-        for scan in scans:
-            scan_layer = mapscript.layerObj()
-            scan_layer.name = scan.uuid
-            scan_layer.type = mapscript.MS_LAYER_RASTER
-            scan_layer.status = 1
-            scan_layer.data = scan.processed_map_filesystem()
-            southwest = scan.processed_image.southwest
-            northeast = scan.processed_image.northeast
-            #southwest = scan.source_print.southwest
-            #northeast = scan.source_print.northeast
+    def _render_mapimages(self, msmap, mapimages, srs):
+        for mapimage in mapimages:
+            mapimage_layer = mapscript.layerObj()
+            mapimage_layer.name = mapimage.uuid
+            mapimage_layer.type = mapscript.MS_LAYER_RASTER
+            mapimage_layer.status = 1
+            mapimage_layer.data = mapimage.processed_map_filesystem()
+            southwest = mapimage.processed_image.southwest
+            northeast = mapimage.processed_image.northeast
+            #southwest = mapimage.source_print.southwest
+            #northeast = mapimage.source_print.northeast
             if southwest.srs != srs: southwest.transform(srs)
             if northeast.srs != srs: northeast.transform(srs)
             #west, south, east, north:
-            scan_layer.setExtent(southwest.x, southwest.y, northeast.x, northeast.y)
-            scan_layer.setProjection('init=epsg:%s' % (srs)) 
-            msmap.insertLayer(scan_layer)
+            mapimage_layer.setExtent(southwest.x, southwest.y, northeast.x, northeast.y)
+            mapimage_layer.setProjection('init=epsg:%s' % (srs)) 
+            msmap.insertLayer(mapimage_layer)
         
     def _add_north_arrow(self, msmap, map_height):
         north_arrow_layer = mapscript.layerObj()

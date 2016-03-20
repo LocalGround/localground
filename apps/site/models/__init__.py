@@ -27,7 +27,7 @@ from localground.apps.site.models.userprofile import UserProfile
 from localground.apps.site.models.permissions import \
     BasePermissions, ObjectUserPermissions, UserAuthorityObject, \
     UserAuthority, ObjectAuthority, AudioUser, PhotoUser, MarkerUser, \
-    SnapshotUser, ProjectUser, VideoUser, ScanUser, PrintUser, \
+    SnapshotUser, ProjectUser, VideoUser, MapImageUser, PrintUser, \
     FormUser, PresentationUser, LayerUser
 from localground.apps.site.models.genericassociation import GenericAssociation
 
@@ -39,7 +39,7 @@ from localground.apps.site.models.layout import Layout
 from localground.apps.site.models.prints import Print
 
 # uploads
-from localground.apps.site.models.barcoded import Scan, ImageOpts
+from localground.apps.site.models.barcoded import MapImage, ImageOpts
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video

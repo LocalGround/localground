@@ -154,13 +154,13 @@
         <img src="/static/images/paper_bottom_2.png" />
         <div id="map_image_slider" class="slider" style="float:left;margin-left:60px;margin-top: 0px;">
             <ul>
-                {% for scan in scans %}
+                {% for mapimage in mapimages %}
                 <li style="width:190px;">
                     <div>
                             
-                        <span>{{scan.name}}</span>
+                        <span>{{mapimage.name}}</span>
                         <br />
-                        <img class="thumb" src="//localground.org/static/scans/{{scan.id}}/{{scan.thumbnail_name}}" />
+                        <img class="thumb" src="//localground.org/static/mapimages/{{mapimage.id}}/{{mapimage.thumbnail_name}}" />
                         
                     </div>
                 </li>
