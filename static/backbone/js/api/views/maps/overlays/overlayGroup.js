@@ -18,7 +18,10 @@ define(['marionette',
             initialize: function (opts) {
                 $.extend(this, opts);
                 this.collection = opts.collection;
-                var configKey = this.collection.key.split("_")[0];
+                var configKey = this.collection.key;
+                if (configKey.indexOf("form_") != -1) {
+                    configKey = configKey.split("_")[0];
+                }
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.key = this.collection.key;

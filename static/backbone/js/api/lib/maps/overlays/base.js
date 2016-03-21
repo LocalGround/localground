@@ -4,8 +4,9 @@ define(["marionette",
     "lib/maps/overlays/point",
     "lib/maps/overlays/polyline",
     "lib/maps/overlays/polygon",
+    "lib/maps/overlays/ground-overlay",
     "lib/maps/overlays/infobubbles/base"
-], function (Marionette, $, _, Point, Polyline, Polygon, Infobubble) {
+    ], function (Marionette, $, _, Point, Polyline, Polygon, GroundOverlay, Infobubble) {
     "use strict";
     /**
      * This class controls the rendering and underlying
@@ -64,7 +65,12 @@ define(["marionette",
             } else if (geoJSON.type === 'LineString') {
                 this._overlay = new Polyline(this.app, opts);
             } else if (geoJSON.type === 'Polygon') {
-                this._overlay = new Polygon(this.app, opts);
+                console.log(this.model.get("overlay_type"));
+                if (this.model.get("overlay_type") == "map-image") {
+                    this._overlay = new GroundOverlay(this.app, opts);
+                } else {
+                    this._overlay = new Polygon(this.app, opts);
+                }
             } else {
                 alert('Unknown Geometry Type');
             }
