@@ -192,7 +192,7 @@ INSTALLED_APPS = (
     'localground.apps',
     'localground.apps.management',
     'localground.apps.site',
-    'localground.apps.registration',        #taken from the django-registration module
+    #'localground.apps.registration',        #taken from the django-registration module
     'tagging',                              #for tagging of blog posts in Django
     'django.contrib.admin',
     'rest_framework',
@@ -253,6 +253,8 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'accept-encoding' #needed for Safari to work
 )
+
+ACCOUNT_ACTIVATION_DAYS = 7
 
 # Local settings override project settings
 try:
