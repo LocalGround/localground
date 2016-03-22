@@ -23,7 +23,7 @@ from localground.apps.site.api.views.admin_views import (
     TileViewSet, OverlayTypeViewSet, OverlaySourceViewSet,
     UserViewSet, GroupViewSet, DataTypeViewSet
 )
-from localground.apps.site.api.views.tags_views import TagList, TagSearchList
+from localground.apps.site.api.views.tags_views import TagList
 from localground.apps.site.api.views.user_profile_views import UserProfileList, UserProfileInstance
 
 from rest_framework.decorators import api_view
@@ -58,7 +58,6 @@ def api_root(request, format=None, **kwargs):
     d['snapshots'] = reverse('snapshot-list', request=request, format=format)
     d['layers'] = reverse('layer-list', request=request, format=format)
     d['tags'] = reverse('tag-list', request=request, format=format)
-    d['searchbytag'] = reverse('tag-search-list', request=request, format=format)
     d['tiles'] = reverse('wmsoverlay-list', request=request, format=format)
     d['users'] = reverse('user-list', request=request, format=format)
     d['userprofile-list'] = reverse('userprofile-list',

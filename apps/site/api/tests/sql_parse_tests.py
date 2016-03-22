@@ -124,7 +124,7 @@ class SQLParseTest(test.TestCase, ModelMixin):
         self.compare_sql(Photo, "WHERE device='SCH-I535' and id < %s" % self.photo1.id,)
 
     def test_or_conjunction(self):
-        self.compare_sql(Photo, "WHERE device='SCH-I535' or id < %s" % self.photo1.id,)
+        self.compare_sql(Photo, "WHERE device='SCH-I535' or id < %s" % self.photo1.id, "WHERE device=SCH-I535 or id < %s" % self.photo1.id)
 
     def test_like_operator(self):
         self.compare_sql(Photo, "WHERE device like '%I5%'")
@@ -133,7 +133,7 @@ class SQLParseTest(test.TestCase, ModelMixin):
         self.compare_sql(Photo, "WHERE device like 'HTC%'")
 
     def test_endswith_operator(self):
-        self.compare_sql(Photo, "WHERE device like '%535'")
+        self.compare_sql(Photo, "WHERE device like '%535'", "WHERE device like %535")
 
     def test_in_operator(self):
         self.compare_sql(Photo, "WHERE file_name_orig in ('{}', '{}')".format(self.photo1.file_name_orig, self.photo2.file_name_orig))
@@ -142,6 +142,7 @@ class SQLParseTest(test.TestCase, ModelMixin):
     def test_contains_operator(self):
         self.compare_sql(Photo, "WHERE tags @> ARRAY['a']", "WHERE tags contains ('a')")
         self.compare_sql(Photo, "WHERE tags @> ARRAY['b']", "WHERE tags contains (b)")
+        self.compare_sql(Photo, "WHERE tags @> ARRAY['a', 'b']", "WHERE tags contains (a, b)")
         
     '''
     def test_geo_query(self, **kwargs):
