@@ -48,13 +48,13 @@ def get_where_conditions(sql):
 
 
 sql_lookup = {
-            '=': 'exact',
-            '>': 'gt',
-            '>=': 'gte',
-            '<': 'lt',
-            '<=': 'lte',
-            'LIKE': 'icontains',
-            'IN': 'in'
+    '=': 'exact',
+    '>': 'gt',
+    '>=': 'gte',
+    '<': 'lt',
+    '<=': 'lte',
+    'LIKE': 'icontains',
+    'IN': 'in'
 }
 
 
