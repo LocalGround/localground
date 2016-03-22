@@ -100,12 +100,12 @@ urlpatterns = patterns('',
                         'localground.apps.site.views.generic.get_contacts_autocomplete'),
                        (r'^profile/get-my-contacts/$',
                         'localground.apps.site.views.generic.get_my_contacts_autocomplete'),
-                        (r'^accounts/login/$',
-                        'localground.apps.site.views.login.login_check',
-                        {'template_name': 'login.html'}),
+#                        (r'^accounts/login/$',
+#                        'localground.apps.site.views.login.login_check',
+#                        {'template_name': 'login.html'}),
                        # django authentication:
                        (r'^accounts/',
-                        include('localground.apps.registration.urls')),
+                        include('registration.backends.hmac.urls')),
                        ('', include('social.apps.django_app.urls', namespace='social')),
 
 
