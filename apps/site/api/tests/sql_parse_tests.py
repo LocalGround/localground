@@ -138,6 +138,9 @@ class SQLParseTest(test.TestCase, ModelMixin):
     def test_number_compare(self, **kwargs):
         # test number compare
         self.compare_sql(Photo, "WHERE id<%s" % self.photo2.id,)
+        self.compare_sql(Photo, "WHERE id=%s" % self.photo1.id,)
+        self.compare_sql(Photo, "WHERE id>%s" % 0,)
+        self.compare_sql(Photo, "WHERE id>%s" % 5,)
 
     def test_and_conjunction(self):
         self.compare_sql(Photo, "WHERE device='SCH-I535' and id < %s" % self.photo1.id,)

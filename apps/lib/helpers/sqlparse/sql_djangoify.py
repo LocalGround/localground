@@ -147,7 +147,7 @@ parser = ClauseInterpreter()
 @parser.pattern_handler(r"""
         (?P<col>[a-z0-9._]+)\s*
         (?P<op>[<>=]{1,2})\s*
-        (?:(?P<num>\d+(\.\d+)?)|(?P<text>.*)$)
+        (?:(?P<text>.*)$ | (?P<num>\d+(\.\d+)))
         """, re.I | re.X)
 def comparison_pattern(col, op, num=None, text=None):
     key = "{}__{}".format(col, sql_lookup[op])
