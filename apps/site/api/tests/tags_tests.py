@@ -21,6 +21,10 @@ class ApiTagListTest(test.TestCase, ModelMixin):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 5)
         self.assertItemsEqual(['cat', 'dog', 'horse', 'rat', 'mouse'], response.data)
+        response = self.client_user.get('/api/0/tags/?term=ca')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertItemsEqual(['cat'], response.data)
         
     def test_project_tags_dont_cross_without_permission(self, **kwargs):
         # 1. create a second user & client
