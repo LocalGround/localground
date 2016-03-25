@@ -1,9 +1,9 @@
-define(["models/project", "collections/base"], function (Project, Base) {
+define(["models/project", "collections/base", "collections/basePageable"], function (Project, Base,BasePageable) {
     "use strict";
     /**
      * @class localground.collections.Projects
      */
-    var Projects = Base.extend({
+    var Projects = BasePageable.extend({
         model: Project,
         name: 'Projects',
         key: 'projects',

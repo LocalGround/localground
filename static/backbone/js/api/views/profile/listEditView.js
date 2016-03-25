@@ -1,8 +1,10 @@
 define(["marionette",
         "views/profile/editItemView",
-        "text!../../../templates/profile/list.html"
+        "text!../../../templates/profile/list.html",
+        "backgrid",
+        "backgrid-paginator",
     ],
-    function (Marionette, EditItemView, ListTemplate) {
+    function (Marionette, EditItemView, ListTemplate, Backgrid) {
         'use strict';
         var ListEditView = Marionette.CompositeView.extend({
 
@@ -15,6 +17,8 @@ define(["marionette",
                 };
             },
             childView: EditItemView,
+            childViewContainer : "#listContainer",
+            paginator: null,
             events:{
                 "click #saveChanges": "saveData",
                 "click #deleteChanges": "deleteData",
@@ -29,6 +33,7 @@ define(["marionette",
 
             onShow: function () {
                 this.collection.fetch({ reset: true });
+                this.refreshPaginator();
             },
 
             updateChecked: function(e){
@@ -54,6 +59,7 @@ define(["marionette",
                         photo.destroy({
                             success: function () {
                                 that.collection.fetch({ reset: true });
+                                this.refreshPaginator();
                             },
                             error: function(){
                                 console.error('error');
@@ -71,6 +77,7 @@ define(["marionette",
                 //no need to replace entire view...just toggle the mode and re-render
                 this.app.mode = "edit";
                 this.render();
+                this.refreshPaginator();
                 e.preventDefault();
             },
 
@@ -78,8 +85,18 @@ define(["marionette",
                 //no need to replace entire view...just toggle the mode and re-render
                 this.app.mode = "view";
                 this.render();
+                this.refreshPaginator();
                 e.preventDefault();
+            },
+            refreshPaginator: function(){
+              this.paginator = new Backgrid.Extension.Paginator({
+                  collection: this.collection,
+                  goBackFirstOnSort: false
+              });
+              this.$el.find('.container-footer').html(this.paginator.render().el);
             }
+
+
         });
         return ListEditView;
     });

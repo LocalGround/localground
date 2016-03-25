@@ -1,9 +1,9 @@
-define(["backbone", "models/audio", "collections/base"], function (Backbone, Audio, Base) {
+define(["backbone", "models/audio", "collections/base", "collections/basePageable"], function (Backbone, Audio, Base, BasePageable) {
     "use strict";
     /**
      * @class localground.collections.AudioFiles
      */
-    var AudioFiles = Base.extend({
+    var AudioFiles = BasePageable.extend({
         model: Audio,
         name: 'Audio Files',
         url: '/api/0/audio/',

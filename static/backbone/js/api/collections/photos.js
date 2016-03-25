@@ -1,9 +1,9 @@
-define(["models/photo", "collections/base"], function (Photo, Base) {
+define(["models/photo", "collections/base", "collections/basePageable"], function (Photo, Base, BasePageable) {
     "use strict";
     /**
      * @class localground.collections.Photos
      */
-    var Photos = Base.extend({
+    var Photos = BasePageable.extend({
         model: Photo,
         name: 'Photos',
         url: '/api/0/photos/'
