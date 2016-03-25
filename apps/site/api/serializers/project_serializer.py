@@ -11,15 +11,16 @@ from localground.apps.site import models
 
 
 class ProjectSerializer(BaseNamedSerializer):
-    access = serializers.SerializerMethodField('get_access_name')
+    #access = serializers.SerializerMethodField('get_access_name')
+    access_authority = serializers.PrimaryKeyRelatedField(queryset=models.ObjectAuthority.objects.all(), read_only=False, required=False)
     slug = serializers.SlugField(max_length=100, label='friendly url')
     class Meta:
         model = models.Project
-        fields = BaseNamedSerializer.Meta.fields + ('slug', 'access')
+        fields = BaseNamedSerializer.Meta.fields + ('slug', 'access_authority')
         depth = 0
 
-    def get_access_name(self, obj):
-        return obj.access_authority.name
+    #def get_access_name(self, obj):
+    #    return obj.access_authority.name
 
 
 class ProjectDetailSerializer(ProjectSerializer):

@@ -22,10 +22,11 @@ class ProjectList(QueryableListCreateAPIView):
             )
     
     def perform_create(self, serializer):
-        d = {
-            'access_authority': models.ObjectAuthority.objects.get(id=1)
-        }
-        serializer.save(**d)
+        if serializer.validated_data.get("access_authority") == None:
+            d = {'access_authority': models.ObjectAuthority.objects.get(id=1)}
+            serializer.save(**d)
+        else:
+            serializer.save()
 
 
 class ProjectInstance(generics.RetrieveUpdateDestroyAPIView):
