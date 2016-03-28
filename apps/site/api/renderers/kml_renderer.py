@@ -27,11 +27,14 @@ class KMLRenderer(renderers.BaseRenderer):
         kml = KML()
         dataset = None
         if 'overlay_type' in raw_data and raw_data['overlay_type'] == 'project':
-            # complex type: projects
+            # instance of complex type: projects
             dataset = raw_data['children']['photos']['data'] + raw_data['children']['audio']['data'] + raw_data['children']['markers']['data']
-        else:
-            # simple type: photos, audio, or markers
+        elif 'results' in raw_data:
+            # list of simple type: photos, audio, or markers
             dataset = raw_data.get('results')
+        else:
+            # instance of simple type: photos, audio, or markers
+            dataset = [raw_data]
         for data in dataset:
             if (not data['geometry']) or (not data['geometry']['coordinates']):
                 continue

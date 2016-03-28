@@ -5,9 +5,22 @@ from localground.apps.site.api.tests.marker_tests import get_metadata
 from localground.apps.site.tests import Client, ModelMixin
 import urllib, json
 from rest_framework import status
+# from xml.sax import make_parser
+from xml.sax import parseString
+from xml.sax.handler import ContentHandler
+from xml.sax import SAXParseException
+
 point = {
     "type": "Point",
     "coordinates": [12.492324113849, 41.890307434153]
+}
+point2 = {
+    "type": "Point",
+    "coordinates": [1.24232411384, 4.189030743415]
+}
+point3 = {
+    "type": "Point",
+    "coordinates": [124.002324113849, 54.18903074341]
 }
 line = {
     "type": "LineString",
@@ -64,5 +77,58 @@ class GeoJSONRendererInstanceTest(test.TestCase, ModelMixin):
         
         # Make sure 'extras' attribute gets merged into the properties:
         self.assertEqual(data.get("properties").get("key"), "value")
+
+class KMLRendererListTest(test.TestCase, ModelMixin):
+    '''
+    These tests test the KML renderer using the /api/0/markers/ (though any
+    geospatial endpoint could be used).
+    '''
+
+    def setUp(self):
+        ModelMixin.setUp(self)
+        self.url = '/api/0/markers/'
         
-    
+    def test_kml_is_valid_xml(self):
+        self.create_marker(self.user, self.project, name="Marker 1", geoJSON=point)
+        self.create_marker(self.user, self.project, name="Marker 2", geoJSON=point2)
+        self.create_marker(self.user, self.project, name="Marker 3", geoJSON=point3)
+        response = self.client_user.get(self.url + '?format=kml')
+        data = response.content
+        is_valid = True
+        try:
+            self.validateXML(data)
+        except SAXParseException:
+            is_valid = False
+        self.assertTrue(is_valid)
+        for p in [point, point2, point3]:
+            point_template = '<Point><coordinates>{},{},0</coordinates></Point>'
+            self.assertTrue(point_template.format(p['coordinates'][0], p['coordinates'][1]))
+
+    def validateXML(self, data):
+        parseString(data, ContentHandler())
+        
+    def tearDown(self):
+        models.Form.objects.all().delete()
+
+
+class KMLRendererInstanceTest(test.TestCase, ModelMixin):
+
+    def setUp(self):
+        ModelMixin.setUp(self)
+        self.marker = self.create_marker(self.user, self.project, name="Marker 1", geoJSON=point)
+        self.url = '/api/0/markers/%s/' % self.marker.id
+        
+    def test_kml_is_valid_xml(self):
+        response = self.client_user.get(self.url + '?format=kml')
+        data = response.content
+        is_valid = True
+        try:
+            self.validateXML(data)
+        except SAXParseException:
+            is_valid = False
+        point_template = '<Point><coordinates>{},{},0</coordinates></Point>'
+        self.assertTrue(point_template.format(point['coordinates'][0], point['coordinates'][1]))
+        self.assertTrue(is_valid)
+        
+    def validateXML(self, data):
+        parseString(data, ContentHandler())
