@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='scan',
             name='status',
-            field=models.ForeignKey(default=3, to='site.StatusCode'),
+            field=models.ForeignKey(default=1, to='site.StatusCode'),
         ),
         migrations.AlterField(
             model_name='scan',

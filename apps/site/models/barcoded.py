@@ -17,7 +17,7 @@ from django.contrib.contenttypes import generic
 class Processor(BaseUploadedMedia):
     uuid = models.CharField(unique=True, max_length=8)
     source_print = models.ForeignKey('Print', blank=True, null=True)
-    status = models.ForeignKey('StatusCode', default=3) #default to Web Form
+    status = models.ForeignKey('StatusCode', default=StatusCode.READY_FOR_PROCESSING) #default to Web Form
     file_name_thumb = models.CharField(max_length=255, blank=True, null=True)
     file_name_scaled = models.CharField(max_length=255, blank=True, null=True)
     scale_factor = models.FloatField(blank=True, null=True)
@@ -54,11 +54,11 @@ class Processor(BaseUploadedMedia):
                                       self.uuid)
     '''
     def get_abs_directory_path(self):
-        return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
+        return '%s/%s' % (settings.FILE_ROOT, self.virtual_path)
     
 
     def original_image_filesystem(self):
-        return self.get_abs_directory_path() + self.file_name_new
+        return '%s/%s' % (self.get_abs_directory_path(), self.file_name_new)
 
     def copy_as(self, InheritedClass):
         # copies data from one child class to another
@@ -92,7 +92,7 @@ class Scan(Processor):
     # for manual override:
     map_rect = models.CharField(max_length=255, blank=True, null=True)
     processed_image = models.ForeignKey('ImageOpts', blank=True, null=True)
-    directory_name = 'scans'
+    directory_name = 'map-images'
     objects = ScanManager()
 
     class Meta:
@@ -141,6 +141,7 @@ class Scan(Processor):
         import shutil
         import os
         path = self.get_abs_directory_path()
+        #raise Exception(path)
         if os.path.exists(path):
             dest = '%s/deleted/%s' % (settings.USER_MEDIA_ROOT, self.uuid)
             if os.path.exists(dest):

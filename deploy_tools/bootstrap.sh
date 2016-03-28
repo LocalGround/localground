@@ -1,14 +1,10 @@
 #!/bin/bash -ex
 
-#set -ex
-
 sudo apt-get update
 ############################
 # Install Useful Utilities #
 ############################
-echo "Y" | sudo apt-get install vim
-echo "Y" | sudo apt-get install curl
-echo "Y" | sudo apt-get install git
+sudo apt-get install -y git curl vim
 
 ###################################
 # Install Apache-Related Packages #
@@ -19,6 +15,11 @@ echo "Y" | sudo apt-get install libapache2-mod-xsendfile
 echo "Y" | sudo apt-get install libapache2-mod-wsgi
 echo "Y" | sudo apt-get install sendmail
 echo "Y" | sudo apt-get install libmail-sendmail-perl
+
+################
+# Install Java #
+################
+sudo apt-get -y install openjdk-7-jre
 
 #######################################
 # Install GDAL, MapServer, Etc. First #
@@ -45,7 +46,6 @@ echo "Y" | sudo apt-get install postgresql-server-dev-9.3
 echo "Y" | sudo apt-get install postgresql-plperl-9.3
 echo "Y" | sudo apt-get install postgresql-9.3-postgis-2.1
 echo "Y" | sudo apt-get install postgresql-9.3-postgis-scripts
-
 echo "Y" | sudo apt-get install libpq-dev
 
 ##################################

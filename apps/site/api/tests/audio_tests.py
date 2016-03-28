@@ -9,7 +9,7 @@ import json
 
 def get_metadata():
     return {
-        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'file_path': {'read_only': True, 'required': False, 'type': 'field'},
@@ -108,7 +108,8 @@ class ApiAudioInstanceTest(test.TestCase, ViewMixinAPI):
                                 'geometry': point,
                                 'name': name,
                                 'caption': caption,
-                                'extras': ExtrasGood
+                                'extras': ExtrasGood,
+                                'tags' : ""
                             }),
                             HTTP_X_CSRFTOKEN=self.csrf_token,
                             content_type="application/x-www-form-urlencoded"

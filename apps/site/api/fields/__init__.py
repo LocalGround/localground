@@ -11,6 +11,7 @@ from localground.apps.site.api.fields.geometry import GeometryField
 from localground.apps.site.api.fields.table_media import TablePhotoJSONField, TableAudioJSONField
 from localground.apps.site.api.fields.model_field import CustomModelField
 from localground.apps.site.api.fields.json_fields import EntitiesField, JSONField
+from localground.apps.site.api.fields.list_field import ListField
 class UrlField(relations.HyperlinkedIdentityField):
 
     def get_url(self, obj, view_name, request, format):

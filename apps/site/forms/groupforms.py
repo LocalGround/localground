@@ -34,7 +34,7 @@ class ProjectPermissionsForm(ModelForm):
 class ProjectCreateForm(ModelForm):
 
     class Meta:
-        from localground.apps.site.widgets import TagAutocomplete
+        from localground.apps.site.widgets import ArrayFieldTagWidget
         model = Project
         fields = (
             'name',
@@ -45,7 +45,7 @@ class ProjectCreateForm(ModelForm):
             'slug')
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3, 'cols': 160}),
-            'tags': TagAutocomplete()
+            'tags': ArrayFieldTagWidget(attrs={'delimiter': ','})
         }
 
     class Media:
@@ -59,12 +59,10 @@ class ProjectCreateForm(ModelForm):
 class ProjectInlineUpdateForm(ModelForm):
 
     class Meta:
-        from localground.apps.site.widgets import TagAutocomplete
         model = Project
         fields = ('name', 'description', 'slug', 'tags')
         widgets = {
-            'description': forms.Textarea(attrs={'rows': 1, 'cols': 160})  # ,
-            #'tags': TagAutocomplete()
+            'description': forms.Textarea(attrs={'rows': 1, 'cols': 160})
         }
 
     def __init__(self, *args, **kwargs):

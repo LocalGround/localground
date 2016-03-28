@@ -5,17 +5,17 @@ from localground.apps.site.api.tests.base_tests import ViewMixinAPI
 import urllib
 import json
 from rest_framework import status
-
+from localground.apps.site.api.fields.list_field import convert_tags_to_list
 
 class ApiLayerTest(object):
     name = 'New Layer Name'
     description = 'Test layer description'
-    tags = 'a, b, c'
+    tags = "a,b,c"
     slug = 'my_layer'
     metadata = {
         'symbols': {'read_only': False, 'required': False, 'type': 'json'},
         'caption': {'read_only': False, 'required': False, 'type': 'memo'},
-        'tags': {'read_only': False, 'required': False, 'type': 'string'},
+        'tags': {'read_only': False, 'required': False, 'type': 'field'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'slug': {'read_only': False, 'required': True, 'type': 'slug'},
@@ -41,13 +41,10 @@ class ApiLayerTest(object):
             'slug': self.slug,
             'symbols': json.dumps(symbols)
         }
-        # print d
-        response = method(self.url,
-                          data=urllib.urlencode(d),
-                          HTTP_X_CSRFTOKEN=self.csrf_token,
-                          content_type="application/x-www-form-urlencoded"
-                          )
-        #print response.content
+        #print d
+        #response = method(self.url,data=urllib.urlencode(d),HTTP_X_CSRFTOKEN=self.csrf_token,content_type="application/x-www-form-urlencoded")
+        response = method(self.url,data=json.dumps(d),HTTP_X_CSRFTOKEN=self.csrf_token,content_type="application/json")
+        #print response.data
         self.assertEqual(response.status_code, status_id)
 
         # if it was successful, verify data:
@@ -58,7 +55,7 @@ class ApiLayerTest(object):
                 rec = self.model.objects.all().order_by('-id',)[0]
             self.assertEqual(rec.name, self.name)
             self.assertEqual(rec.description, self.description)
-            self.assertEqual(rec.tags, self.tags)
+            self.assertEqual(rec.tags, convert_tags_to_list(self.tags))
             self.assertEqual(rec.slug, self.slug)
 
 

@@ -64,6 +64,7 @@ before_install:
   - sudo apt-get -y update
   - sudo apt-get -y install ffmpeg
   - sudo apt-get -y install redis-server
+  - sudo apt-get -y install openjdk-7-jre
 
 install:
   - pip install -r deploy_tools/requirements.txt

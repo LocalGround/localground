@@ -7,7 +7,7 @@ localground.photos.prototype = new localground.profile(); // Here's where the in
 localground.photos.prototype.initialize=function(opts){
     localground.profile.prototype.initialize.call(this, opts);
     
-    //add tagging auto-complete
+    /* add tagging auto-complete
     $('.tags').autocomplete(
 		"/tagging_autocomplete/list/json",
 		{
@@ -19,7 +19,8 @@ localground.photos.prototype.initialize=function(opts){
 			mustMatch: false,
 			selectFirst: false
 		}
-	);
+	);*/
+	$('.tags').selectize({delimiter: '%s', persist: false, create: function(input) {return {value: input,text: input}}});
 };
 
 localground.photos.prototype.addObject = function() {

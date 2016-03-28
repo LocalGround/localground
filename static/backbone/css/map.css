@@ -1,7 +1,7 @@
 body { overflow: hidden; }
 
 #map_canvas {
-	height: 100%;
+	height: calc(100% - 50px);
 	width: 70%;
 	border-right: solid 1px #999;
 }

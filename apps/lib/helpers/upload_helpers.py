@@ -2,6 +2,7 @@ import time, os, base64, stat
 from django.conf import settings
 from pwd import getpwnam
 from rest_framework import exceptions
+from localground.apps.lib.helpers import generic
     
 '''
 Utility File Path Methods
@@ -19,19 +20,35 @@ def encrypt_media_path(host, model_name_plural, path):
 def get_absolute_path(virtual_path):
     return settings.FILE_ROOT + virtual_path
 
-def generate_relative_path(owner, model_name_plural):
-    return '/%s/media/%s/%s/' % (
-        settings.USER_MEDIA_DIR,
-        owner.username,
-        model_name_plural
-    )
+def generate_relative_path(owner, model_name_plural, uuid=None):
+    if uuid is None:
+        return '/%s/media/%s/%s/' % (
+            settings.USER_MEDIA_DIR,
+            owner.username,
+            model_name_plural
+        )
+    else:
+        return '/%s/media/%s/%s/%s/' % (
+            settings.USER_MEDIA_DIR,
+            owner.username,
+            model_name_plural,
+            uuid
+        )
 
-def generate_absolute_path(owner, model_name_plural):
-    return '%s/media/%s/%s' % (
-        settings.USER_MEDIA_ROOT,
-        owner.username,
-        model_name_plural
-    )
+def generate_absolute_path(owner, model_name_plural, uuid=None):
+    if uuid is None:
+        return '%s/media/%s/%s/' % (
+            settings.USER_MEDIA_ROOT,
+            owner.username,
+            model_name_plural
+        )
+    else:
+        return '%s/media/%s/%s/%s/' % (
+            settings.USER_MEDIA_ROOT,
+            owner.username,
+            model_name_plural,
+            uuid
+        )
 
 def make_directory(path):
     '''
@@ -56,9 +73,9 @@ def make_directory(path):
                 os.chown(p, uid, gid)
                 os.chmod(p, permissions)
 
-def save_file_to_disk(owner, model_name_plural, file):
+def save_file_to_disk(owner, model_name_plural, file, uuid=None):
     # create directory if it doesn't exist:
-    media_path = generate_absolute_path(owner, model_name_plural)
+    media_path = generate_absolute_path(owner, model_name_plural, uuid=uuid)
     if not os.path.exists(media_path):
         make_directory(media_path)
 

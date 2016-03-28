@@ -1,7 +1,7 @@
 from localground.apps.settings import *
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-GDAL_LIBRARY_PATH='/usr/lib/libgdal.so.1.17.0'
+GDAL_LIBRARY_PATH='/usr/lib/libgdal.so.1.17.1'
 
 ADMINS = (
     ('Admin', 'your_email@gmail.com'),
@@ -23,7 +23,7 @@ TEMP_DIR = '%s/tmp/' % FILE_ROOT
 QR_READER_PATH = '%s/lib/barcodereader' % APPS_ROOT
 
 MAP_FILE = FILE_ROOT + '/mapserver/localground.map'
-TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_MEDIA_DIR
+#TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_MEDIA_DIR
 
 # From Google Developer Console:
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'YOUR_GOOGLE_OAUTH2_KEY'

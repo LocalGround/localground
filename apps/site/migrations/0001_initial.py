@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         ('contenttypes', '0002_remove_content_type_name'),
         ('auth', '0006_require_contenttypes_0002'),
         ('tagging', '0001_initial'),
-        ('registration', '0001_initial'),
+        #('registration', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

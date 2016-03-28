@@ -3,7 +3,7 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import force_unicode
 from django.contrib.gis.geos import GEOSGeometry, GEOSException
 from django.forms.widgets import Widget, TextInput, Textarea, HiddenInput
-from tagging_autocomplete.widgets import TagAutocomplete
+#from tagging_autocomplete.widgets import TagAutocomplete
 from django.conf import settings
 from localground.apps.site.widgets.permissions import UserAutocomplete
 
@@ -14,52 +14,38 @@ DEFAULT_LAT = 55.16
 DEFAULT_LNG = 61.4
 
 
-class TagAutocomplete(TagAutocomplete):
-
-    def __init__(
-            self,
-            autocomplete_url=None,
-            allow_multiples=True,
-            *args,
-            **kw):
-        self.autocomplete_url = autocomplete_url
-        self.allow_multiples = allow_multiples
-        if kw.get('autocomplete_url'):
-            kw.pop('autocomplete_url')
-        super(
-            TagAutocomplete,
-            self).__init__(
-            *args,
-            **kw)  # init parent Textarea class
+class ArrayFieldTagWidget(forms.TextInput):
+   
+    def __init__(self, *args, **kwargs):
+        # Accept a `delimiter` argument, and grab it (defaulting to a comma)
+        self.delimiter = kwargs.pop("delimiter", ",")
+        super(ArrayFieldTagWidget, self).__init__(*args, **kwargs)
 
     def render(self, name, value, attrs=None):
-        attrs = attrs or {}
-        attrs['id'] = attrs.get('id', 'id_%s' % name)
-        if value is None:
-            value = ''
-        from django.core.urlresolvers import reverse
-        if self.autocomplete_url is None:
-            self.autocomplete_url = reverse('tagging_autocomplete-list')
         html = '<input type="text" id="%s" name="%s" value="%s" />' % (
             attrs['id'], name, value)
 
         js = u'''<script type="text/javascript">
-					$().ready(function() { $("#%s").autocomplete("%s", { multiple: %s }); });
-				</script>''' % (attrs['id'], self.autocomplete_url, str(self.allow_multiples).lower())
+                    $('#%s').selectize({delimiter: '%s', persist: false,
+                                                create: function(input) {return {
+                                                value: input,text: input}}});
+                </script>''' % (attrs['id'], self.delimiter)
+
         return mark_safe("\n".join([html, js]))
         # return mark_safe(html)
 
     class Media:
         extend = False
         js = (
-            '/%s/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.js' %
+            '/%s/scripts/thirdparty/selectize/selectize.min.js' %
             settings.STATIC_MEDIA_DIR,
         )
         css = {
             'all': (
-                '/%s/scripts/thirdparty/jquery-autocomplete/jquery.autocomplete.css' %
+                '/%s/scripts/thirdparty/selectize/selectize.css' %
                 settings.STATIC_MEDIA_DIR,
             )}
+
 
 class PointWidget(Textarea):
 
