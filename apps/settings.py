@@ -198,6 +198,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'rest_framework',
     'corsheaders',
+    'djcelery',
     'social.apps.django_app.default'
 )
 
