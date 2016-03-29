@@ -19,3 +19,7 @@ app = Celery('tasks', backend='djcelery.backends.database:DatabaseBackend', brok
 @app.task(name='localground.apps.tasks.add')
 def add(x, y):
     return x + y
+
+@app.task(name='localground.apps.tasks.process_map')
+def process_map(map):
+	return map.process()

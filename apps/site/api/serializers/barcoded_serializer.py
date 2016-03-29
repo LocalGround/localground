@@ -89,6 +89,10 @@ class ScanSerializerCreate(BaseNamedSerializer):
         validated_data.update(self.validated_data)
         validated_data.update(extras)
         self.instance = self.Meta.model.objects.create(**validated_data)
+        
+        from localground.apps.tasks import process_map
+        result = process_map.delay(self.instance)
+
         return self.instance
 
     def get_file_path_new(self, obj):
