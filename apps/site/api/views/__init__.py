@@ -5,7 +5,7 @@ from localground.apps.site.api.views.photo_views import (
 )
 from localground.apps.site.api.views.presentation_views import PresentationList, PresentationInstance
 from localground.apps.site.api.views.print_views import PrintList, PrintInstance, LayoutViewSet
-from localground.apps.site.api.views.project_views import ProjectList, ProjectInstance
+from localground.apps.site.api.views.project_views import ProjectList, ProjectInstance, UserAuthorityList, UserAuthorityInstance
 from localground.apps.site.api.views.snapshot_views import SnapshotList, SnapshotInstance
 from localground.apps.site.api.views.layer_views import LayerList, LayerInstance
 
