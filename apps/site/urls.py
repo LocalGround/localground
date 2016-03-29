@@ -35,7 +35,6 @@ object_types_plural = ['photos', 'audio', 'videos', 'map-images', 'projects',
 urlpatterns = patterns('',
 
                        # mostly static html:
-                       (r'^scot','localground.apps.site.views.scot.scot'),
                        (r'^$',
                         direct_to_template,
                         {'template_name': 'pages/splash.html'}),
