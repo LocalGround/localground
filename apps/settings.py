@@ -17,7 +17,8 @@ EMAIL_HOST_USER = ''
 LOGIN_REDIRECT_URL = '/'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'sgbackend.SendGridBackend'
+SENDGRID_API_KEY = "SENDGRID API KEY"
 REGISTRATION_OPEN = True
 ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE = False
 ACCOUNT_ACTIVATION_DAYS = 5
@@ -192,11 +193,12 @@ INSTALLED_APPS = (
     'localground.apps',
     'localground.apps.management',
     'localground.apps.site',
-    'localground.apps.registration',        #taken from the django-registration module
+    #'localground.apps.registration',        #taken from the django-registration module
     'tagging',                              #for tagging of blog posts in Django
     'django.contrib.admin',
     'rest_framework',
     'corsheaders',
+    'djcelery',
     'social.apps.django_app.default'
 )
 
@@ -253,6 +255,8 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'accept-encoding' #needed for Safari to work
 )
+
+ACCOUNT_ACTIVATION_DAYS = 7
 
 # Local settings override project settings
 try:

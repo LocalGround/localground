@@ -128,7 +128,7 @@ sudo cp -r /usr/local/lib/python2.7/dist-packages/swampdragon/static/swampdragon
 #################
 # Install Redis #
 #################
-sudo apt-get install redis-server
+sudo apt-get -y install redis-server rabbitmq-server
 
 ###############################################
 # Create required Django tables and run tests #
