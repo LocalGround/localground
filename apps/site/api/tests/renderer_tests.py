@@ -102,7 +102,7 @@ class KMLRendererListTest(test.TestCase, ModelMixin):
         self.assertTrue(is_valid)
         for p in [point, point2, point3]:
             point_template = '<Point><coordinates>{},{},0</coordinates></Point>'
-            self.assertTrue(point_template.format(p['coordinates'][0], p['coordinates'][1]))
+            self.assertTrue(point_template.format(p['coordinates'][0], p['coordinates'][1]) in data)
 
     def validateXML(self, data):
         parseString(data, ContentHandler())
@@ -127,7 +127,7 @@ class KMLRendererInstanceTest(test.TestCase, ModelMixin):
         except SAXParseException:
             is_valid = False
         point_template = '<Point><coordinates>{},{},0</coordinates></Point>'
-        self.assertTrue(point_template.format(point['coordinates'][0], point['coordinates'][1]))
+        self.assertTrue(point_template.format(point['coordinates'][0], point['coordinates'][1]) in data)
         self.assertTrue(is_valid)
         
     def validateXML(self, data):
