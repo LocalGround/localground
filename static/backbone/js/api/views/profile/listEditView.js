@@ -19,7 +19,7 @@ define(["marionette",
             childView: EditItemView,
             childViewContainer : "#listContainer",
             paginator: null,
-            events:{
+            events: {
                 "click #saveChanges": "saveData",
                 "click #deleteChanges": "deleteData",
                 "click #viewEdit": "viewEdit",

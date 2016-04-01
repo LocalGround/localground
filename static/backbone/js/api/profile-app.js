@@ -26,7 +26,7 @@ define([
              PhotoItemTemplate, AudioItemTemplate, MapImageItemTemplate, PrintItemTemplate, ProjectItemTemplate,
              appUtilities) {
     "use strict";
-    var ProfileApp = new Marionette.Application(_.extend(appUtilities, {
+    var profileApp = new Marionette.Application(_.extend(appUtilities, {
         mode: "view",
         objectType: "photos",
         regions: {
@@ -98,8 +98,8 @@ define([
             // create an opts that passes in the selected collection,
             // metadata, & templates:
             var opts = _.extend({}, this.options, this.config[this.objectType]);
-            console.log(opts);
-            this.mainRegion.show(new ListEditView(opts));
+            this.listEditView = new ListEditView(opts);
+            this.mainRegion.show(this.listEditView);
         },
         applyFilter: function (params) {
             var parameters = params,
@@ -122,5 +122,5 @@ define([
         }
     }));
 
-    return ProfileApp;
+    return profileApp;
 });

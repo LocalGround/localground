@@ -40,9 +40,9 @@
         };
         require(
             ["jquery", "/static/backbone/js/api/profile-app.js"],
-            function($, ProfileApp) {
+            function($, profileApp) {
                 $(function() {
-                    ProfileApp.start(opts);
+                    profileApp.start(opts);
                 });
             }
         );
