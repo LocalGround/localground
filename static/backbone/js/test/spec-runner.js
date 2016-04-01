@@ -1,7 +1,6 @@
 require(['boot'], function () {
     'use strict';
     var specs = [
-        /*
         // LIB
         'spec/sql-parser-test.js',
         'spec/truth-statement-test.js',
@@ -28,9 +27,8 @@ require(['boot'], function () {
         'spec/views/upload-modal-test.js',
         'spec/views/print-form-test.js',
         'spec/views/print-mockup-test.js',
-        */
         'spec/views/photo-bubble-test.js',
-        'spec/views/profile/list-edit-view-test.js' //,
+        'spec/views/profile/profile-app-test.js' //,
         //'spec/views/audio-player-test.js'
     ];
     //setTimeout(function () {

@@ -39,11 +39,8 @@ define(["underscore",
 
                 this.app.vent.trigger('map-ready');
 
-                var centerPoint = new google.maps.LatLng(this.snapshot.center.coordinates[1],
-                    this.snapshot.center.coordinates[0]);
-                //expect(this.app.vent.trigger).toHaveBeenCalledWith('new-collection-created');
                 expect(snapshotLoader.updateCollections).toHaveBeenCalled();
-                expect(this.app.vent.trigger).toHaveBeenCalledWith('change-center', centerPoint);
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('change-center', jasmine.any(google.maps.LatLng)); //any lat/lng variable
                 expect(this.app.vent.trigger).toHaveBeenCalledWith('change-zoom', this.snapshot.zoom);
                 expect(this.app.vent.trigger).toHaveBeenCalledWith('set-map-type', this.snapshot.basemap);
             });

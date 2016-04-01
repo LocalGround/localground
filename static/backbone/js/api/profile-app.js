@@ -26,7 +26,8 @@ define([
              PhotoItemTemplate, AudioItemTemplate, MapImageItemTemplate, PrintItemTemplate, ProjectItemTemplate,
              appUtilities) {
     "use strict";
-    var profileApp = new Marionette.Application(_.extend(appUtilities, {
+    var ProfileApp = Marionette.Application.extend(appUtilities);
+    ProfileApp = ProfileApp.extend({
         mode: "view",
         objectType: "photos",
         regions: {
@@ -120,7 +121,7 @@ define([
             // ...but only re-query the active collection:
             this.config[this.objectType].collection.fetch({reset: true});
         }
-    }));
+    });
 
-    return profileApp;
+    return ProfileApp;
 });

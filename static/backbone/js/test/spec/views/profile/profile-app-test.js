@@ -1,10 +1,9 @@
 define([
     "jquery",
-    "views/profile/listEditView",
     "profile-app",
     "../../../../test/spec-helper"
 ],
-    function ($, ListEditView, ProfileApp) {
+    function ($, ProfileApp) {
         'use strict';
         var profileApp;
 
@@ -13,6 +12,7 @@ define([
                 $r1 = $('<div id="region1"></div>'),
                 $r2 = $('<div id="region2"</div>'),
                 $r3 = $('<div id="region3"></div>');
+
             $(document.body).append($sandbox);
             $sandbox.append($r1).append($r2).append($r3);
 
@@ -23,16 +23,17 @@ define([
 
             //initialize app:
             profileApp = new ProfileApp();
-            profileApp.start(scope.profileOpts); // defined in spec-helpers:
-            console.log(profileApp);
+            profileApp.start(scope.profileOpts); // opts defined in spec-helpers
         }
 
         describe("ProfileApplication: Initialization and Event Handler Tests", function () {
             beforeEach(function () {
+                //called before each "it" test
                 initApp(this);
             });
 
             afterEach(function () {
+                //called after each "it" test
                 $("#sandbox").remove();
             });
 
@@ -54,11 +55,6 @@ define([
             });
 
             it("Listens to clear-filter and calls correct method", function () {
-                profileApp.vent.trigger("clear-filter");
-                expect(profileApp.clearFilter).toHaveBeenCalled();
-            });
-
-            it("Sets filter correctly", function () {
                 profileApp.vent.trigger("clear-filter");
                 expect(profileApp.clearFilter).toHaveBeenCalled();
             });

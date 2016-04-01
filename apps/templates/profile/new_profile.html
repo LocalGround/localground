@@ -40,8 +40,9 @@
         };
         require(
             ["jquery", "/static/backbone/js/api/profile-app.js"],
-            function($, profileApp) {
+            function($, ProfileApp) {
                 $(function() {
+                    var profileApp = new ProfileApp();
                     profileApp.start(opts);
                 });
             }
