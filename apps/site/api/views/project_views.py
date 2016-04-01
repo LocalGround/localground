@@ -34,23 +34,4 @@ class ProjectInstance(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.ProjectDetailSerializer
 
 
-class UserAuthorityList(generics.ListCreateAPIView):
-    serializer_class = serializers.UserAuthoritySerializer
-    filter_backends = (filters.SQLFilterBackend,)
-    model = models.UserAuthorityObject
-    paginate_by = 100
-
-    def get_queryset(self):
-        if self.request.user.is_authenticated():
-            project_id = self.request.query_params.get('project_id', None)
-            return models.UserAuthorityObject.objects.filter(object_id=project_id, content_type=models.Project.get_content_type())
-
-
-class UserAuthorityInstance(generics.ListCreateAPIView):
-    serializer_class = serializers.UserAuthoritySerializer
-
-    def get_queryset(self):
-        if self.request.user.is_authenticated():
-            project_id = self.request.query_params.get('project_id', None)
-            return models.UserAuthorityObject.objects.filter(object_id=project_id)
 

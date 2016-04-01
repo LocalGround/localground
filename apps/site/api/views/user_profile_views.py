@@ -1,4 +1,3 @@
-__author__ = 'zmmachar'
 from rest_framework import generics
 from localground.apps.site.models import UserProfile
 from localground.apps.site.api.serializers import UserProfileSerializer

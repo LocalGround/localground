@@ -10,19 +10,6 @@ from rest_framework import serializers
 from localground.apps.site import models
 
 
-class UserAuthoritySerializer(serializers.HyperlinkedModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=models.UserProfile.objects.all(), read_only=False, required=True)
-    authority = serializers.PrimaryKeyRelatedField(queryset=models.UserAuthorityObject.objects.all(),read_only=False, required=True)
-    granted_by = serializers.PrimaryKeyRelatedField(queryset=models.UserProfile.objects.all(), read_only=False, required=True)
-    object_id = serializers.PrimaryKeyRelatedField(queryset=models.Project.objects.all(), read_only=False, required=True)
-    class Meta:
-        model = models.UserAuthorityObject
-        fields = (
-            'user',
-            'authority',
-            'granted_by',
-            'object_id')
-
 class ProjectSerializer(BaseNamedSerializer):
     #access = serializers.SerializerMethodField('get_access_name')
     access_authority = serializers.PrimaryKeyRelatedField(queryset=models.ObjectAuthority.objects.all(), read_only=False, required=False)

@@ -45,10 +45,6 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.UserAuthorityList.as_view(),
         name='user-authority-list'),
     url(
-        r'^projects/(?P<project_id>[0-9]+)/auth-users/(?P<pk>[0-9]+)/$',
-        views.UserAuthorityInstance.as_view(),
-        name='user-authority-detail'),
-    url(
         r'^projects/(?P<pk>[0-9]+)/$',
         views.ProjectInstance.as_view(),
         name='project-detail'),

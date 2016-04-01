@@ -134,6 +134,13 @@ class UserAuthorityObject(models.Model):
     def __unicode__(self):
         return self.user.username
 
+    # TODO: This seems a little dicey if Im not inheriting from BasePermissions?
+    def can_view(self, user, access_key=None):
+        return self.object.can_manage(user)
+
+    def can_edit(self, user):
+        return self.object.can_manage(user)
+
     class Meta:
         app_label = 'site'
 
