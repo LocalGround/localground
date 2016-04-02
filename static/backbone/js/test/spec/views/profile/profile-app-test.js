@@ -44,17 +44,17 @@ define([
                 expect(profileApp.sideBarView).not.toBeNull();
             });
 
-            it("Listens to show-list-view and calls correct method", function () {
+            it("Calls showListView when show-list-view event triggered", function () {
                 profileApp.vent.trigger("show-list-view");
                 expect(profileApp.showListView).toHaveBeenCalled();
             });
 
-            it("Listens to apply-filter and calls correct method", function () {
+            it("Calls applyFilter when apply-filter event triggered", function () {
                 profileApp.vent.trigger("apply-filter");
                 expect(profileApp.applyFilter).toHaveBeenCalled();
             });
 
-            it("Listens to clear-filter and calls correct method", function () {
+            it("Calls clearFilter when clear-filter event triggered", function () {
                 profileApp.vent.trigger("clear-filter");
                 expect(profileApp.clearFilter).toHaveBeenCalled();
             });

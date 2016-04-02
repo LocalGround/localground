@@ -31,7 +31,8 @@ require(['boot'], function () {
         'spec/views/profile/profile-app-test.js' //,
         //'spec/views/audio-player-test.js'
     ];
-    //setTimeout(function () {
-        require(specs, function () {});
-    //}, 100);
+    
+    require(specs, function () {
+        window.executeTests();
+    });
 });

@@ -53,7 +53,7 @@ define(["lib/sqlParser", "underscore", "backbone"], function (SqlParser, _, Back
             this.query = null;
         },
         fetch: function (options) {
-            console.log(this.query);
+            //console.log(this.query);
             //override fetch and append query parameters:
             if (this.query) {
                 // apply some additional options to the fetch:

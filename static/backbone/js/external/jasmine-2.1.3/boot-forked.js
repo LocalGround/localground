@@ -99,12 +99,19 @@
    *
    * Replace the browser window's `onload`, ensure it's called, and then run all of the loaded specs. This includes initializing the `HtmlReporter` instance and then executing the loaded Jasmine environment. All of this will happen after all of the specs are loaded.
    */
-  var currentWindowOnload = window.onload;
+  /*var currentWindowOnload = window.onload;
 
   window.onload = function() {
     if (currentWindowOnload) {
       currentWindowOnload();
     }
+    htmlReporter.initialize();
+    env.execute();
+  };*/
+  
+  // SV: forked, based on this post, to work better w/Require:
+  // http://blogs.lessthandot.com/index.php/webdev/uidevelopment/javascript/unit-testing-with-jasmine-2-0-and-require-js/
+  window.executeTests = function(){
     htmlReporter.initialize();
     env.execute();
   };
