@@ -1,10 +1,11 @@
-define(["marionette",
+define(["jquery",
+        "marionette",
         "views/profile/editItemView",
         "text!../../../templates/profile/list.html",
         "backgrid",
-        "backgrid-paginator",
+        "backgrid-paginator"
     ],
-    function (Marionette, EditItemView, ListTemplate, Backgrid) {
+    function ($, Marionette, EditItemView, ListTemplate, Backgrid) {
         'use strict';
         var ListEditView = Marionette.CompositeView.extend({
 
@@ -36,9 +37,9 @@ define(["marionette",
                 this.refreshPaginator();
             },
 
-            updateChecked: function(e){
-                var id = $(e.currentTarget).data("id");
-                var item = this.collection.get(id);
+            updateChecked: function (e) {
+                var id = $(e.currentTarget).data("id"),
+                    item = this.collection.get(id);
                 if ($(e.currentTarget).is(':checked')) {
                     item.set({checked : true});
                 } else {
@@ -46,17 +47,17 @@ define(["marionette",
                 }
             },
 
-            saveData: function(){
-                this.collection.each(function (photo) {
-                    photo.trigger("save-if-edited");
+            saveData: function () {
+                this.collection.each(function (item) {
+                    item.trigger("save-if-edited");
                 });
             },
 
-            deleteData: function(){
+            deleteData: function () {
                 var that = this;
-                this.collection.forEach(function(photo){
-                    if (photo.get("checked")) {
-                        photo.destroy({
+                this.collection.forEach(function (item) {
+                    if (item.get("checked")) {
+                        item.destroy({
                             success: function () {
                                 that.collection.fetch({ reset: true });
                                 this.refreshPaginator();
@@ -88,14 +89,14 @@ define(["marionette",
                 this.refreshPaginator();
                 e.preventDefault();
             },
-            refreshPaginator: function(){
-              this.paginator = new Backgrid.Extension.Paginator({
-                  collection: this.collection,
-                  goBackFirstOnSort: false
-              });
-              this.$el.find('.container-footer').html(this.paginator.render().el);
-            }
 
+            refreshPaginator: function () {
+                this.paginator = new Backgrid.Extension.Paginator({
+                    collection: this.collection,
+                    goBackFirstOnSort: false
+                });
+                this.$el.find('.container-footer').html(this.paginator.render().el);
+            }
 
         });
         return ListEditView;

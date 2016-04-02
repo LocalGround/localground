@@ -12,8 +12,12 @@ define([
         var profileApp;
 
         function initApp(scope) {
-            // this function is called before each test by
-            // Jasmine's "beforeEach" hook:
+            /*
+             * this function is called before each test
+             * by Jasmine's "beforeEach" hook
+             */
+            
+            // 1) add dummy HTML elements:
             var $sandbox = $('<div id="sandbox"></div>'),
                 $r1 = $('<div id="region1"></div>'),
                 $r2 = $('<div id="region2"</div>'),
@@ -25,21 +29,22 @@ define([
             /* Note: Important to add spies before you initialize the
                object
             */
-            //add spies for all relevant objects:
-            spyOn(ProfileApp.prototype, 'showListView');
+            // 2) add spies for all relevant objects:
+            spyOn(ProfileApp.prototype, 'showListView').and.callThrough();
             spyOn(ProfileApp.prototype, 'applyFilter').and.callThrough();
             spyOn(ProfileApp.prototype, 'clearFilter').and.callThrough();
+            spyOn(ListEditView.prototype, 'onShow');
 
             //also add spies for relevant sub-objects:
             spyOn(Photos.prototype, "fetch");
             spyOn(Photos.prototype, "setServerQuery");
             spyOn(Photos.prototype, "clearServerQuery");
 
-            //initialize ProfileApp object:
+            // 3) initialize ProfileApp object:
             profileApp = new ProfileApp();
             profileApp.start(scope.profileOpts); // opts defined in spec-helpers
 
-            //these tests assume action on photos datatype:
+            // 4) these tests assume action on photos datatype:
             profileApp.objectType = "photos";
         }
 
@@ -63,6 +68,7 @@ define([
             it("Calls showListView when show-list-view event triggered", function () {
                 profileApp.vent.trigger("show-list-view");
                 expect(profileApp.showListView).toHaveBeenCalled();
+                expect(profileApp.mainView.onShow).toHaveBeenCalled();
             });
 
             it("Calls applyFilter when apply-filter event triggered", function () {

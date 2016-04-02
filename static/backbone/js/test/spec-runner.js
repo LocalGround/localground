@@ -28,7 +28,10 @@ require(['boot'], function () {
         'spec/views/print-form-test.js',
         'spec/views/print-mockup-test.js',
         'spec/views/photo-bubble-test.js',
-        'spec/views/profile/profile-app-test.js' //,
+
+        //PROFILE VIEWS
+        'spec/views/profile/profile-app-test.js',
+        'spec/views/profile/list-edit-view-test.js'//,
         //'spec/views/audio-player-test.js'
     ];
     
