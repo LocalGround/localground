@@ -28,6 +28,11 @@ define(
             var $map_container = $('<div id="map_canvas"></div>');
             $(document.body).append($map_container);
 
+            // SAFETY MEASURE: makes sure that nothing interacts w/database.
+            spyOn($, 'ajax').and.callFake(function () {
+                console.log("AJAX call intercepted.");
+            });
+
             /**
              * Adds some dummy data for testing convenience.
              * Availabe to all of the tests.
