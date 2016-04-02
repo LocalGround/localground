@@ -6,6 +6,7 @@ define(["models/layer", "collections/base"], function (Layer, Base) {
     var Layers = Base.extend({
         model: Layer,
         name: 'Layers',
+        key: 'layers',
         url: '/api/0/layers/'
     });
     return Layers;

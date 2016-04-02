@@ -5,6 +5,7 @@ define(["backbone", "models/audio", "collections/base", "collections/basePageabl
      */
     var AudioFiles = BasePageable.extend({
         model: Audio,
+        key: 'audio',
         name: 'Audio Files',
         url: '/api/0/audio/',
         parse: function (response) {

@@ -59,6 +59,7 @@ define(
                 new Record({id: 2, team_name: "Green team", tags: 'friend\'s house, tag1', worm_count: 8, project_id: 2, overlay_type: "record" }),
                 new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 2, project_id: 2, overlay_type: "record" })
             ], { 'url': 'dummy/url' });
+            
             this.layers = new Layers([
                 new Layer({id: 1, name: "worms", overlay_type: "layer", symbols: [
                     { color: "#7075FF", width: 30, rule: "worms > 0", title: "At least 1 worm" },

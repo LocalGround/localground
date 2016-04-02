@@ -6,6 +6,7 @@ define(["models/photo", "collections/base", "collections/basePageable"], functio
     var Photos = BasePageable.extend({
         model: Photo,
         name: 'Photos',
+        key: 'photos',
         url: '/api/0/photos/'
     });
     return Photos;

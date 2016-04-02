@@ -9,7 +9,7 @@ define([
     var Records = PageableCollection.extend({
         model: Record,
         columns: null,
-        key: null,
+        key: 'records',
         overlay_type: null,
         name: 'Records',
         query: '',
