@@ -73,8 +73,7 @@ define([
                     EditItemTemplate: ProjectItemEditTemplate,
                     ItemTemplate: ProjectItemTemplate,
                     metadata: options.projectUpdateMetadata
-                },
-
+                }
             };
 
             // create child views:
@@ -99,15 +98,16 @@ define([
             // create an opts that passes in the selected collection,
             // metadata, & templates:
             var opts = _.extend({}, this.options, this.config[this.objectType]);
-            this.listEditView = new ListEditView(opts);
-            this.mainRegion.show(this.listEditView);
+
+            //re-render mainView with new dataType:
+            this.mainView = new ListEditView(opts);
+            this.mainRegion.show(this.mainView);
         },
         applyFilter: function (params) {
-            var parameters = params,
-                key;
+            var key;
             // apply filter for all collections...
             for (key in this.config) {
-                this.config[key].collection.setServerQuery(parameters);
+                this.config[key].collection.setServerQuery(params);
             }
             // ...but only re-query the active collection:
             this.config[this.objectType].collection.fetch({reset: true});
