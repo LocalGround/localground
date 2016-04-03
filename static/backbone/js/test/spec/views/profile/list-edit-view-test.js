@@ -47,7 +47,7 @@ define([
             listEditView.collection = scope.photos; //spoof fetch
         }
 
-        describe("ProfileApplication: Initialization and Event Handler Tests", function () {
+        describe("ProfileApplication: ListEditView Tests", function () {
             beforeEach(function () {
                 initEditView(this);
             });

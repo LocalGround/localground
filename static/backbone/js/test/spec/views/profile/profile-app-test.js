@@ -48,7 +48,7 @@ define([
             profileApp.objectType = "photos";
         }
 
-        describe("ProfileApplication: Initialization and Event Handler Tests", function () {
+        describe("ProfileApplication: Application-Level Tests", function () {
             beforeEach(function () {
                 //called before each "it" test
                 initApp(this);
