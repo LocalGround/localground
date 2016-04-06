@@ -38,18 +38,14 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
         label='user',
         view_name='user-detail',
         read_only=True)
-    first_name = serializers.SlugRelatedField(
+    first_name = serializers.CharField(
         required=False,
         label='first_name',
-        slug_field='first_name',
-        queryset=User.objects.all(),
-        source='user')
-    last_name = serializers.SlugRelatedField(
+        source='user.first_name')
+    last_name = serializers.CharField(
         required=False,
         label='last_name',
-        slug_field='last_name',
-        queryset=User.objects.all(),
-        source='user')
+        source='user.last_name')
     contacts = serializers.RelatedField(
         many=True,
         label='contacts',
@@ -101,9 +97,9 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
             instance.date_created)
         instance.default_view_authority = ObjectAuthority.objects.get(name=validated_data.get('default_view_authority', instance.default_view_authority))
         instance.save()
-        instance.user.first_name = validated_data.get('first_name')
-        instance.user.last_name = validated_data.get('last_name')
-        instance.user.save()
+        instance.user.objects.first_name = validated_data.get('first_name')
+        instance.user.objects.last_name = validated_data.get('last_name')
+        instance.user.objects.save()
         return instance
     def create(self, validated_data):
         return models.UserProfile.objects.create(**validated_data)
