@@ -135,6 +135,10 @@ sudo apt-get -y install supervisor
 sudo cp /localground/deploy_tools/celeryd.conf /etc/supervisor/conf.d/celeryd.conf
 sudo mkdir /var/log/celery
 
+# flower will monitor celery
+sudo cp /localground/deploy_tools/flower.conf /etc/supervisor/conf.d/flower.conf
+
+
 ###############################################
 # Create required Django tables and run tests #
 ###############################################
