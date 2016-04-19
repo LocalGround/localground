@@ -153,7 +153,7 @@ class MapImageSerializerUpdate(MapImageSerializerCreate):
 
     # overriding update 
     def update(self, instance, validated_data):
-        instance = super(ScanSerializerUpdate, self).update(instance, validated_data)
+        instance = super(MapImageSerializerUpdate, self).update(instance, validated_data)
 
         from localground.apps.tasks import process_map
         result = process_map.delay(self.instance)
