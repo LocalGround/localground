@@ -35,18 +35,14 @@ class ZIPRenderer(renderers.BaseRenderer):
             # dataset = raw_data['children']['photos']['data'] + raw_data['children']['audio']['data'] + raw_data['children']['markers']['data']
             pass
         elif 'results' in raw_data:
-            # list of simple type: photos, audio, or markers
-            # dataset = raw_data.get('results')
-            pass
+            # list of simple type: photos or audio
+            dataset = raw_data.get('results')
         else:
-            # instance of simple type: photos, audio, or markers
+            # instance of simple type: photos or audio
             dataset = [raw_data]
             output_name = raw_data['name'].split('.')[0]
-        # temp_dir = tempfile.mkdtemp(dir = settings.TEMP_DIR)
-        # zip_file_path = os.path.join(settings.TEMP_DIR, temp_dir, '{}.{}'.format(output_name, 'zip'))
         zip_file_str = StringIO()
         zip_file = zipfile.ZipFile(zip_file_str, 'w')
-        # zip_file = zipfile.ZipFile(zip_file_path, 'w')
         for data in dataset:
             # media_file is original file name
             # file_name is how LG stores a media file
