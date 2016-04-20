@@ -55,7 +55,7 @@ define(["jquery",
 
             deleteData: function () {
                 var that = this;
-                this.collection.forEach(function (item) {
+                this.collection.each(function (item) {
                     if (item.get("checked")) {
                         item.destroy({
                             success: function () {

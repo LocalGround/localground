@@ -31,10 +31,13 @@ require(['boot'], function () {
 
         //PROFILE VIEWS
         'spec/views/profile/profile-app-test.js',
-        'spec/views/profile/list-edit-view-test.js'//,
+        'spec/views/profile/list-edit-view-test.js',
+        'spec/views/profile/side-bar-view-test.js',
+        'spec/views/profile/filter-view-test.js',
+        'spec/views/profile/edit-item-view-test.js'//,
         //'spec/views/audio-player-test.js'
     ];
-    
+
     require(specs, function () {
         window.executeTests();
     });

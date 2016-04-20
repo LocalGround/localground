@@ -9,6 +9,7 @@ define([
     function ($, ProfileApp, ListEditView, Photos, Photo) {
         'use strict';
         var listEditView;
+        var profileApp;
 
         function initEditView(scope) {
             // to emulate actual functionality, let's create a
@@ -17,8 +18,8 @@ define([
             var $sandbox = $('<div id="sandbox"></div>'),
                 $r1 = $('<div id="region1"></div>'),
                 $r2 = $('<div id="region2"</div>'),
-                $r3 = $('<div id="region3"></div>'),
-                profileApp = null;
+                $r3 = $('<div id="region3"></div>');
+
 
             $(document.body).append($sandbox);
             $sandbox.append($r1).append($r2).append($r3);
@@ -28,14 +29,17 @@ define([
             spyOn(ListEditView.prototype, "saveData").and.callThrough();
             spyOn(ListEditView.prototype, "onShow").and.callThrough();
             //todo: add more ListEditView spies here...
-            //
-            //
+            spyOn(ListEditView.prototype, "viewEdit").and.callThrough();
+            spyOn(ListEditView.prototype, "viewStatic").and.callThrough();
+            spyOn(ListEditView.prototype, "updateChecked").and.callThrough();
+            spyOn(ListEditView.prototype, "deleteData").and.callThrough();
             //
             spyOn(ListEditView.prototype, "refreshPaginator").and.callThrough();
             spyOn(Photos.prototype, "fetch");
             spyOn(Photos.prototype, "each").and.callThrough();
             spyOn(Photos.prototype, "get");
             spyOn(Photo.prototype, "trigger");
+            spyOn(Photo.prototype, "destroy");
 
             // 3) initialize ProfileApp object:
             profileApp = new ProfileApp();
@@ -75,27 +79,41 @@ define([
                 // collection.forEach and photo.destroy are called. This will
                 // requires adding more spies to the "initEditView" function
                 // above:
-                expect(1).toBe(1);
-            });
+                var collection = listEditView.collection,
+                model = collection.at(0);
 
-            it("Listens for delete changes", function () {
-                //stub
-                expect(1).toBe(1);
+                model.set({checked : true});
+
+                $("#deleteChanges").trigger("click");
+                expect(listEditView.deleteData).toHaveBeenCalled();
+                expect(collection.each).toHaveBeenCalled();
+                expect(model.destroy).toHaveBeenCalled();
+
+                expect(collection.fetch).toHaveBeenCalled();
+                expect(listEditView.refreshPaginator).toHaveBeenCalled();
+
             });
 
             it("Listens for edit toggle", function () {
                 //stub
-                expect(1).toBe(1);
+                $("#viewEdit").trigger("click");
+                expect(listEditView.viewEdit).toHaveBeenCalled();
+                expect(listEditView.refreshPaginator).toHaveBeenCalled();
             });
 
             it("Listens for view toggle", function () {
                 //stub
-                expect(1).toBe(1);
+                $("#viewStatic").trigger("click");
+                expect(listEditView.viewStatic).toHaveBeenCalled();
+                expect(listEditView.refreshPaginator).toHaveBeenCalled();
             });
 
             it("Listens for update toggle", function () {
                 //stub
+                $("#listContainer").trigger("click");
                 expect(1).toBe(1);
+                // expect(listEditView.updateChecked).toHaveBeenCalled();
+                // expect(listEditView.refreshPaginator).toHaveBeenCalled();
             });
 
         });

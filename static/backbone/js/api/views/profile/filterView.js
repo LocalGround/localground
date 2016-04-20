@@ -7,7 +7,6 @@ define(["underscore",
         var FilterView = Marionette.ItemView.extend({
             ENTER_KEY: 13,
             events: {
-                "keyup #search-term": "handleKeypress",
                 "click #submitSearch": "applyFilter",
                 "click #clearSearch": "clearFilter",
                 "click #filter-menu": "clickFilterArea"
@@ -25,16 +24,9 @@ define(["underscore",
             template: function () {
                 return _.template(FilterTemplate);
             },
-
-            handleKeypress: function (e) {
-                if (e.keyCode === 13) {
-                    this.applyFilter();
-                }
-            },
-
             applyFilter: function (e) {
                 var params = this.createParameterList();
-                
+
                 if (params.length > 0) {
                     this.app.vent.trigger("apply-filter", params);
                 } else {
