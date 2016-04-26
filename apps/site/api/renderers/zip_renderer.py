@@ -32,8 +32,7 @@ class ZIPRenderer(renderers.BaseRenderer):
         z = None
         if 'overlay_type' in raw_data and raw_data['overlay_type'] == 'project':
             # instance of complex type: projects
-            # dataset = raw_data['children']['photos']['data'] + raw_data['children']['audio']['data'] + raw_data['children']['markers']['data']
-            pass
+            dataset = raw_data['children']['photos']['data'] + raw_data['children']['audio']['data']
         elif 'results' in raw_data:
             # list of simple type: photos or audio
             dataset = raw_data.get('results')
