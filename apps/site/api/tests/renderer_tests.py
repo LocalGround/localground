@@ -5,7 +5,8 @@ from localground.apps.site.api.tests.marker_tests import get_metadata
 from localground.apps.site.tests import Client, ModelMixin
 import urllib, json
 from rest_framework import status
-# from xml.sax import make_parser
+from StringIO import StringIO
+import zipfile
 from xml.sax import parseString
 from xml.sax.handler import ContentHandler
 from xml.sax import SAXParseException
@@ -132,3 +133,45 @@ class KMLRendererInstanceTest(test.TestCase, ModelMixin):
         
     def validateXML(self, data):
         parseString(data, ContentHandler())
+
+class ZIPRendererListTest(test.TestCase, ModelMixin):
+    '''
+    These tests test the ZIP renderer using the /api/0/photos/ (though any
+    geospatial endpoint could be used).
+    '''
+
+    def setUp(self):
+        ModelMixin.setUp(self)
+        self.url = '/api/0/photos/'
+        
+    def test_zip_is_valid(self):
+        self.photo1 = self.create_photo(self.user, self.project, name="Photo 1", file_name='test_photo1.jpg')
+        self.photo2 = self.create_photo(self.user, self.project, name="Photo 2", file_name='test_photo2.jpg')
+        self.photo3 = self.create_photo(self.user, self.project, name="Photo 3", file_name='test_photo3.jpg')
+        response = self.client_user.get(self.url + '?format=zip')
+        data = StringIO(response.content)
+        # Check if the zip file is not corrupted
+        z = zipfile.ZipFile(data, 'r')
+        # Read all the files in the zip and check their CRCs and file headers.
+        # Return the name of the first file with an error, or else return None.
+        valid_if_none = z.testzip()
+        self.assertIsNone(valid_if_none)
+        z.close()
+
+class ZIPRendererInstanceTest(test.TestCase, ModelMixin):
+
+    def setUp(self):
+        ModelMixin.setUp(self)
+        self.photo = self.create_photo(self.user, self.project, name="Photo 1", file_name='test_photo.jpg')
+        self.url = '/api/0/photos/%s/' % self.photo.id
+        
+    def test_zip_is_valid(self):
+        response = self.client_user.get(self.url + '?format=zip')
+        data = StringIO(response.content)
+        # Check if the zip file is not corrupted
+        z = zipfile.ZipFile(data, 'r')
+        # Read all the files in the zip and check their CRCs and file headers.
+        # Return the name of the first file with an error, or else return None.
+        valid_if_none = z.testzip()
+        self.assertIsNone(valid_if_none)
+        z.close()
