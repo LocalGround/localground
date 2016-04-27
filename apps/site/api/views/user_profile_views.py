@@ -1,9 +1,9 @@
 __author__ = 'zmmachar'
 from rest_framework import generics
 from localground.apps.site.models import UserProfile
-from localground.apps.site.api.serializers import UserProfileSerializer
+from localground.apps.site.api.serializers import UserProfileSerializer, UserProfileListSerializer
 from localground.apps.site.api.views.abstract_views import \
-    QueryableListCreateAPIView
+    QueryableListCreateAPIView, QueryableListAPIView
 import sys
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -12,8 +12,8 @@ from urllib import unquote
 from rest_framework.decorators import api_view
 
 
-class UserProfileList(QueryableListCreateAPIView):
-    serializer_class = UserProfileSerializer
+class UserProfileList(QueryableListAPIView):
+    serializer_class = UserProfileListSerializer
     model = UserProfile
 
     def get_queryset(self):
@@ -23,7 +23,7 @@ class UserProfileList(QueryableListCreateAPIView):
         obj.owner = self.request.user
 
 
-class UserProfileInstance(generics.RetrieveUpdateDestroyAPIView):
+class UserProfileInstance(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
     model = UserProfile
 
