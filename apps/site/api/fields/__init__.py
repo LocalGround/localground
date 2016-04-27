@@ -12,7 +12,7 @@ from localground.apps.site.api.fields.table_media import TablePhotoJSONField, Ta
 from localground.apps.site.api.fields.model_field import CustomModelField
 from localground.apps.site.api.fields.json_fields import EntitiesField, JSONField
 from localground.apps.site.api.fields.list_field import ListField
-#from localground.apps.site.api.fields.user_authority_field import UserAuthorityObjectRelatedField
+from localground.apps.site.api.fields.user_authority_field import UserAuthorityObjectRelatedField
 
 class UrlField(relations.HyperlinkedIdentityField):
 

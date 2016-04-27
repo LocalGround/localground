@@ -1,7 +1,7 @@
 from rest_framework import generics
 from localground.apps.site.api import serializers, filters
 from localground.apps.site import models
-
+from localground.apps.site.api.views.abstract_views import QueryableRetrieveUpdateDestroyView
 
 class UserAuthorityList(generics.ListCreateAPIView):
     serializer_class = serializers.UserAuthorityObjectSerializer
@@ -18,12 +18,11 @@ class UserAuthorityList(generics.ListCreateAPIView):
         d = {'granted_by': self.request.user, 'object': models.Project.objects.get(id=self.kwargs['project_id'])}
         serializer.save(**d)
 
-''' Dont think we need this
-class UserAuthorityInstance(generics.ListCreateAPIView):
+class UserAuthorityInstance(QueryableRetrieveUpdateDestroyView):
     serializer_class = serializers.UserAuthorityObjectSerializer
 
     def get_queryset(self):
         if self.request.user.is_authenticated():
-            project_id = self.request.query_params.get('project_id', None)
-            return models.UserAuthorityObject.objects.filter(object_id=project_id)
-'''
+            project_id = self.kwargs['project_id']
+            user_id = self.kwargs['user_id']
+            return models.UserAuthorityObject.objects.filter(object_id=project_id, user__id=user_id)

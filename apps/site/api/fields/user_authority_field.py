@@ -1,7 +1,6 @@
 
 from rest_framework import serializers
 from localground.apps.site import models
-from localground.apps.site.api.serializers.project_serializer import ProjectSerializer
 
 class UserAuthorityObjectRelatedField(serializers.RelatedField):
 

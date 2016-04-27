@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from localground.apps.site import models
 
-
 class UserAuthorityObjectSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), read_only=False, required=True)
     authority = serializers.PrimaryKeyRelatedField(queryset=models.UserAuthority.objects.all(),read_only=False, required=True)
