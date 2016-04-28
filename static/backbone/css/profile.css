@@ -37,6 +37,9 @@ label.col-sm-4.control-label {
     margin-bottom: 10px;
 }
 
+/***************************/
+/* Styling the Filter Menu */
+/***************************/
 #filter-menu {
     width: 500px;
     padding: 20px;
