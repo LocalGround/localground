@@ -141,6 +141,9 @@ class UserAuthorityObject(models.Model):
     def can_edit(self, user):
         return self.object.can_manage(user)
 
+    def can_manage(self, user):
+        return self.object.can_manage(user)
+
     class Meta:
         app_label = 'site'
 

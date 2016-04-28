@@ -8,6 +8,8 @@ import json, os.path
 
 def get_metadata():
     return {
+        'url': {'read_only': True, 'required': False, 'type': 'field'},
+        'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'user': {'read_only': False, 'required': True, 'type': 'field'},
         'authority': {'read_only': False, 'required': True, 'type': 'field'},
         'granted_by': {'read_only': True, 'required': False, 'type': 'field'},
@@ -21,7 +23,7 @@ class UserAuthorityListTest(test.TestCase, ViewMixinAPI):
         # is this a hack? maybe
         self.view = views.UserAuthorityList.as_view()
         self.metadata = get_metadata()
-        self.url = '/api/0/projects/' + str(self.project.id) + '/auth-users/'
+        self.url = '/api/0/projects/' + str(self.project.id) + '/user-permissions/'
         self.urls = [self.url]
 
     def test_share_project_using_post(self, **kwargs):

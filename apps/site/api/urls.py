@@ -41,13 +41,13 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.RelatedMediaInstance.as_view(),
         name='related-media-detail'),
     url(
-        r'^projects/(?P<project_id>[0-9]+)/auth-users/$',
-        views.UserAuthorityList.as_view(),
-        name='user-authority-list'),
-    url(
-        r'^projects/(?P<project_id>[0-9]+)/auth-users/(?P<user_id>[0-9]+)/$',
+        r'^user-permissions/(?P<pk>[0-9]+)/$',
         views.UserAuthorityInstance.as_view(),
-        name='user-authority-instance'),
+        name='userauthorityobject-detail'),
+    url(
+        r'^projects/(?P<project_id>[0-9]+)/user-permissions/$',
+        views.UserAuthorityList.as_view(),
+        name='userauthorityobject-list'),
     url(
         r'^projects/(?P<pk>[0-9]+)/$',
         views.ProjectInstance.as_view(),

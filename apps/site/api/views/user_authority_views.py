@@ -23,6 +23,8 @@ class UserAuthorityInstance(QueryableRetrieveUpdateDestroyView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated():
-            project_id = self.kwargs['project_id']
-            user_id = self.kwargs['user_id']
-            return models.UserAuthorityObject.objects.filter(object_id=project_id, user__id=user_id)
+            #project_id = self.kwargs['project_id']
+            #user_id = self.kwargs['user_id']
+            #return models.UserAuthorityObject.objects.filter(object_id=project_id, user__id=user_id)
+            authority_id = self.kwargs['pk']
+            return models.UserAuthorityObject.objects.filter(id=authority_id)

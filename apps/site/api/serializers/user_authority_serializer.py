@@ -9,11 +9,11 @@ class UserAuthorityObjectSerializer(serializers.HyperlinkedModelSerializer):
     authority = serializers.PrimaryKeyRelatedField(queryset=models.UserAuthority.objects.all(),read_only=False, required=True)
     granted_by = serializers.PrimaryKeyRelatedField(read_only=True)
     object = UserAuthorityObjectRelatedField(read_only=True)
-    #url = UserAuthorityObjectHyperlink(view_name='user-authority-instance', queryset=models.UserAuthorityObject.objects.all())
  
     class Meta:
         model = models.UserAuthorityObject
         fields = (
+            'url',
             'id',
             'user',
             'authority',
