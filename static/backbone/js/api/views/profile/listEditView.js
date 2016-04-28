@@ -30,11 +30,16 @@ define(["jquery",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.listenTo(this.collection, "filter-form-updated", this.relay);
             },
 
             onShow: function () {
                 this.collection.fetch({ reset: true });
+                this.collection.fetchFilterMetadata();
                 this.refreshPaginator();
+            },
+            relay: function (schema) {
+                this.app.vent.trigger("filter-form-updated", schema);
             },
 
             updateChecked: function (e) {

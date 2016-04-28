@@ -23,7 +23,8 @@ class CustomMetadata(metadata.SimpleMetadata):
                     model = view.model
                 except:
                     pass
-            if model and hasattr(model, 'filterfields'):
-                metadata['filters'] = [ff.to_dict() for ff in model.filter_fields()]
+            if model and hasattr(model, 'filter_fields'):
+                metadata['filters'] = { key: val.to_dict() for key, val in model.get_filter_fields().iteritems() }
+            
         return metadata
     

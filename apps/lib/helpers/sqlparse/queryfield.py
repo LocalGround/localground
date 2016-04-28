@@ -54,8 +54,9 @@ class QueryField(object):
         d = {
             #'django_fieldname': self.django_fieldname,
             #'operator': self.operator,
-            'title': self.title,
-            'type': self.data_type
+            'label': self.title,
+            'type': self.data_type,
+            'help_text': self.help_text
         }
         if col_name:
             d.update({

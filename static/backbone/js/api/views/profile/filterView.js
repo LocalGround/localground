@@ -1,26 +1,39 @@
 define(["underscore",
         "marionette",
-        "text!../../../templates/profile/filter.html"
+        "text!../../../templates/profile/filter.html",
+        "form",
+        "bootstrap-form-templates"
     ],
-    function (_, Marionette, FilterTemplate) {
+    function (_, Marionette, FilterTemplate, Form) {
         'use strict';
         var FilterView = Marionette.ItemView.extend({
             ENTER_KEY: 13,
             events: {
                 "click #submitSearch": "applyFilter",
                 "click #clearSearch": "clearFilter",
-                "click #filter-menu": "clickFilterArea"
+                "click .dropdown-menu": "clickFilterArea"
             },
-            clickFilterArea: function(e){
-              // Stops the filter menu from closing
-              e.stopPropagation();
+            clickFilterArea: function (e) {
+                // Stops the filter menu from closing
+                e.stopPropagation();
             },
             initialize: function (opts) {
+                console.log(opts);
                 _.extend(this, opts);
                 // additional initialization logic goes here...
                 this.options = opts;
+                this.listenTo(this.app.vent, "filter-form-updated", this.renderFilterForm);
             },
-
+            renderFilterForm: function (schema) {
+                this.Form = Form.extend({
+                    schema: schema
+                });
+                this.form = new this.Form({
+                    model: this.model
+                }).render();
+                this.$el.find("#filter-menu").empty();
+                this.$el.find("#filter-menu").append(this.form.$el);
+            },
             template: function () {
                 return _.template(FilterTemplate);
             },
@@ -33,6 +46,7 @@ define(["underscore",
                     this.app.vent.trigger("clear-filter");
                 }
                 if (e) {
+                    console.log("prevent default");
                     e.preventDefault();
                 }
             },

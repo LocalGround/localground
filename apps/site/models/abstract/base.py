@@ -65,15 +65,19 @@ class Base(models.Model):
                 'ForeignKey': FieldTypes.INTEGER,
                 'CharField': FieldTypes.STRING,
                 'DateTimeField': FieldTypes.DATE,
-                'PointField': FieldTypes.POINT
+                'PointField': FieldTypes.POINT,
+                'TextField': FieldTypes.STRING,
+                'ArrayField': 'list'
             }
             return data_types.get(model_field.get_internal_type()) or model_field.get_internal_type()
         query_fields = {}
         for field in cls.filter_fields:
+            name = field
+            if name == "description": name = "caption" #hack for API alignment.
             for f in cls._meta.fields:
                 if f.name == field:
-                    query_fields[f.name] = QueryField(
-                        f.name, django_fieldname=f.name, title=f.verbose_name,
+                    query_fields[name] = QueryField(
+                        name, django_fieldname=f.name, title=f.verbose_name,
                         help_text=f.help_text, data_type=get_data_type(f)
                     )
         #raise Exception(query_fields)

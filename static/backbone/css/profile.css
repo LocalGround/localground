@@ -36,3 +36,38 @@ label.col-sm-4.control-label {
     font-size: 13px;
     margin-bottom: 10px;
 }
+
+#filter-menu {
+    width: 500px;
+    padding: 20px;
+}
+
+#filter-menu .form-group.form-group {
+    margin-bottom: 5px;
+    width: 50%;
+    display: inline-block;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+#filter-menu .control-label {
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 12px;
+    width: 90px;
+}
+#filter-menu .help-block {
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 12px;
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+#filter-menu  .col-sm-8 {
+    width: 140px;
+    padding-right: 0px;
+    padding-left: 0px;
+}
+#filter-menu input, #filter-menu select {
+    height: 25px;
+    width: 100%;
+}

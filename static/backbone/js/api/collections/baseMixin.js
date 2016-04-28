@@ -1,6 +1,15 @@
-define(["lib/sqlParser", "underscore", "backbone"], function (SqlParser, _, Backbone) {
+define(["jquery", "lib/sqlParser", "underscore", "backbone"], function ($, SqlParser, _, Backbone) {
     "use strict";
     return {
+        dataTypes: {
+            'string': 'Text',
+            'float': 'Number',
+            'integer': 'Number',
+            'boolean': 'Checkbox',
+            'geojson': 'TextArea',
+            'memo': 'TextArea',
+            'json': 'TextArea'
+        },
         applyFilter: function (sql) {
             var sqlParser = new SqlParser(sql),
                 count = 0,
@@ -41,10 +50,9 @@ define(["lib/sqlParser", "underscore", "backbone"], function (SqlParser, _, Back
                     that.query += " and ";
                 }
                 if (parameter.operation == "=") {
-                  that.query += parameter.name + " = " + parameter.value;
-                }
-                else {
-                  that.query += parameter.name + " LIKE '%" + parameter.value + "%'";
+                    that.query += parameter.name + " = " + parameter.value;
+                } else {
+                    that.query += parameter.name + " LIKE '%" + parameter.value + "%'";
                 }
             });
 
@@ -62,6 +70,36 @@ define(["lib/sqlParser", "underscore", "backbone"], function (SqlParser, _, Back
                 options.data = { query: this.query };
             }
             return Backbone.Collection.prototype.fetch.call(this, options);
+        },
+        fetchFilterMetadata: function () {
+            //issues an options query:
+            var that = this;
+            $.ajax({
+                url: this.url + '.json',
+                type: 'OPTIONS',
+                data: { _method: 'OPTIONS' },
+                success: function (data) {
+                    console.log("success");
+                    that.generateFilterSchema(data.filters);
+                }
+            });
+        },
+        generateFilterSchema: function (metadata) {
+            var key, val;
+            this.filterSchema = {};
+            //https://github.com/powmedia/backbone-forms#schema-definition
+            for (key in metadata) {
+                val = metadata[key];
+                //console.log(key);
+                this.filterSchema[key] = {
+                    type: this.dataTypes[val.type] || 'Text',
+                    title: val.label || key,
+                };
+                if (val.type.indexOf("json") != -1) {
+                    this.filterSchema[key].validators = [ this.validatorFunction ];
+                }
+            }
+            this.trigger("filter-form-updated", this.filterSchema);
         }
     };
 });
