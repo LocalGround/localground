@@ -1,5 +1,5 @@
 
-from localground.apps.site.api.fields.user_authority_field import UserAuthorityObjectRelatedField
+from localground.apps.site.api.fields.user_authority_field import UserAuthorityObjectRelatedField, UserAuthorityObjectHyperlink
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from localground.apps.site import models
@@ -9,9 +9,12 @@ class UserAuthorityObjectSerializer(serializers.HyperlinkedModelSerializer):
     authority = serializers.PrimaryKeyRelatedField(queryset=models.UserAuthority.objects.all(),read_only=False, required=True)
     granted_by = serializers.PrimaryKeyRelatedField(read_only=True)
     object = UserAuthorityObjectRelatedField(read_only=True)
+    #url = UserAuthorityObjectHyperlink(view_name='user-authority-instance', queryset=models.UserAuthorityObject.objects.all())
+ 
     class Meta:
         model = models.UserAuthorityObject
         fields = (
+            'id',
             'user',
             'authority',
             'granted_by',

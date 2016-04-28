@@ -8,7 +8,7 @@ class UserAuthorityList(generics.ListCreateAPIView):
     filter_backends = (filters.SQLFilterBackend,)
     model = models.UserAuthorityObject
     paginate_by = 100
-
+ 
     def get_queryset(self):
         if self.request.user.is_authenticated():
             project_id = self.kwargs['project_id']
