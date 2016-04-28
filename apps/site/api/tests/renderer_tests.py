@@ -29,8 +29,8 @@ line = {
 
 class GeoJSONRendererListTest(test.TestCase, ModelMixin):
     '''
-    These tests test the GeoJSON renderer using the /api/0/markers/ (though any
-    geospatial endpoint could be used).
+    These tests test the GeoJSON renderer using the /api/0/markers/
+    (though any geospatial endpoint could be used).
     '''
 
     def setUp(self):
