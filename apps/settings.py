@@ -28,7 +28,7 @@ SESSION_COOKIE_NAME = 'sessionid'
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Custom Local Variables
-PROTOCOL = 'http'
+PROTOCOL = 'https'
 SERVER_HOST = os.environ.get('SERVER_HOST', 'yoursite.com')
 SERVER_URL = '%s//%s' % (PROTOCOL, SERVER_HOST)
 
