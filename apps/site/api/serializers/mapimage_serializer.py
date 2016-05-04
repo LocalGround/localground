@@ -21,6 +21,11 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         source='project',
         required=False
     )
+    source_print = serializers.PrimaryKeyRelatedField(
+        queryset=models.Print.objects.all(),
+        required=False,
+        allow_null=True
+    )
     geometry = fields.GeometryField(
         help_text='Assign a GeoJSON string',
         allow_null=True,
