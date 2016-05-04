@@ -155,15 +155,14 @@ define(["marionette",
 
             saveState: function () {
                 //only save state if visible:
-                //console.log("saving state...");
-                if (!this.doNotRender) {
+                if (this.doNotRender) {
                     return;
                 }
                 this.app.saveState(
                     this.id,
                     {
                         isVisible: this.isVisible(),
-                        isExpanded: true// this.isExpanded()
+                        isExpanded: this.isExpanded()
                     },
                     false
                 );
