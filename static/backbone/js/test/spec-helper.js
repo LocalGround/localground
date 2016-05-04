@@ -32,12 +32,21 @@ define(
              * Adds some dummy data for testing convenience.
              * Availabe to all of the tests.
              */
+            // SAFETY MEASURE: makes sure that nothing interacts w/database.
+            spyOn($, 'ajax').and.callFake(function () {
+                console.log("AJAX call intercepted.");
+            });
+
+            /**
+             * Adds some dummy data for testing convenience.
+             * Availabe to all of the tests.
+             */
             this.photos = new Photos([
-                new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1, overlay_type: "photo", 
+                new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1",
                     geometry: {"type": "Point", "coordinates": [-122.294, 37.864]},
-                    path_small:'//:0', path_medium:"//:0", path_large:"//:0" }),
-                new Photo({id: 2, name: "Dog", tags: 'animal, dog', project_id: 1, overlay_type: "photo", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] } }),
-                new Photo({id: 3, name: "Frog", tags: 'animal, amphibian, cute, frog', project_id: 1, overlay_type: "photo", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] } })
+                    path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_medium_sm: '//:0' }),
+                new Photo({id: 2, name: "Dog", tags: 'animal, dog', project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0' }),
+                new Photo({id: 3, name: "Frog", tags: 'animal, amphibian, cute, frog', project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0' })
             ]);
             this.audio = new AudioFiles([
                 new Audio({ id: 1, name: "Nirvana", tags: '90s, grunge', project_id: 1, overlay_type: "audio" }),

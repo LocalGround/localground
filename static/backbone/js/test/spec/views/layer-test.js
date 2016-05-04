@@ -8,11 +8,13 @@ define([
     function (_, LayerView, DataManager, Symbolized) {
         'use strict';
 
+        var layerView;
+
         function initLayerView(scope) {
             scope.app.map = new google.maps.Map(document.getElementById('map_canvas'), {
                 center: { lat: -34, lng: 150 }
             });
-            var layerView = new LayerView({
+            layerView = new LayerView({
                 app: scope.app,
                 model: scope.layers.at(1) //cat & dog layer
             });
@@ -22,20 +24,15 @@ define([
             return layerView;
         }
         describe("Layer view: Map Layer can be initialized & drawn", function () {
-
-            it("Can initialize a map layer", function () {
-                var layerView,
-                    that = this;
-                expect(function () {
-                    layerView = initLayerView(that);
-                }).not.toThrow();
+            beforeEach(function () {
+                initLayerView(this);
+            });
+            it("Has instantiated all properties", function () {
                 expect(layerView.dataManager).toEqual(jasmine.any(DataManager));
                 expect(_.isObject(layerView.overlayMap)).toBeTruthy();
             });
 
             it("Correctly renders \"Symbolized\" overlays on initialization", function () {
-                var layerView = initLayerView(this);
-
                 //ensure that the underlying model has 2 symbols (sanity check):
                 expect(layerView.model.getSymbols().length).toBe(2);
 
@@ -48,9 +45,11 @@ define([
         });
 
         describe("Layer view: event handlers correctly add and remove layers", function () {
+            beforeEach(function () {
+                initLayerView(this);
+            });
             it("Listens for toggle symbol checkbox", function () {
-                var layerView = initLayerView(this),
-                    rule = 'tags contains cat';
+                var rule = 'tags contains cat';
                 expect(layerView.getSymbolOverlays(rule).length).toBe(1);
                 _.each(layerView.getSymbolOverlays(rule), function (overlay) {
                     expect(overlay.isShowingOnMap()).toBeFalsy();
@@ -75,7 +74,6 @@ define([
             });
 
             it("Listens for toggle layer checkbox", function () {
-                var layerView = initLayerView(this);
                 expect(layerView.getLayerOverlays().length).toBe(2);
                 _.each(layerView.getLayerOverlays(), function (overlay) {
                     expect(overlay.isShowingOnMap()).toBeFalsy();
@@ -100,10 +98,8 @@ define([
 
         describe("Layer view: event handlers correctly zoom", function () {
             it("Listens for zoom to extent button click", function () {
-                //workaround that allows Jasmine spies to work with Backbone's
-                //modelEvent listeners. Spy on Class.prototype:
                 spyOn(LayerView.prototype, "zoomToExtent");
-                var layerView = initLayerView(this);
+                initLayerView(this);
                 layerView.model.trigger('zoom-to-layer');
                 expect(layerView.zoomToExtent).toHaveBeenCalled();
             });
