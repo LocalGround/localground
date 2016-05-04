@@ -3,7 +3,7 @@ define([
     "views/maps/overlays/layer",
     "lib/maps/data/dataManager",
     "lib/maps/overlays/symbolized",
-    "../../../test/spec-helper"
+    "../../../../test/spec-helper"
 ],
     function (_, LayerView, DataManager, Symbolized) {
         'use strict';

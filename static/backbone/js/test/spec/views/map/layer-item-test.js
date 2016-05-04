@@ -1,7 +1,7 @@
 define([
     "underscore",
     "views/maps/sidepanel/items/layerItem",
-    "../../../test/spec-helper",
+    "../../../../test/spec-helper",
     'jasmine-jquery' //for jquery helpers. Available methods here: https://github.com/velesin/jasmine-jquery
 ],
     function (_, LayerItem) {

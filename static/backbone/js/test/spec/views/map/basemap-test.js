@@ -4,7 +4,7 @@ define(["underscore",
         "lib/maps/controls/searchBox",
         "lib/maps/controls/tileController",
         "lib/maps/controls/audioPlayer",
-        "../../../test/spec-helper"],
+        "../../../../test/spec-helper"],
     function (_, Basemap, GeoLocation, SearchControl, TileController, AudioPlayer) {
         'use strict';
         var basemap, that;

@@ -193,6 +193,7 @@ define(["marionette",
         },
 
         changeMode: function () {
+            console.log("changeMode");
             if (this.app.getMode() === "view") {
                 this.makeViewable();
             } else {

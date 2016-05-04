@@ -15,19 +15,22 @@ require(['boot'], function () {
         'spec/collections/layers-test.js',
 
         // VIEWS
-        'spec/views/basemap-test.js',
-        'spec/views/layer-manager-test.js',
-        'spec/views/layer-panel-test.js',
-        'spec/views/layer-list-test.js',
-        'spec/views/symbol-test.js',
-        'spec/views/layer-test.js',
-        'spec/views/layer-item-test.js',
-        'spec/views/caption-test.js',
-        'spec/views/fullscreenCtrl-test.js',
-        'spec/views/upload-modal-test.js',
-        'spec/views/print-form-test.js',
-        'spec/views/print-mockup-test.js',
-        'spec/views/photo-bubble-test.js',
+        'spec/views/map/basemap-test.js',
+        'spec/views/map/layer-manager-test.js',
+        'spec/views/map/layer-panel-test.js',
+        'spec/views/map/layer-list-test.js',
+        'spec/views/map/symbol-test.js',
+        'spec/views/map/layer-test.js',
+        'spec/views/map/layer-item-test.js',
+        'spec/views/map/caption-test.js',
+        'spec/views/map/fullscreenCtrl-test.js',
+        'spec/views/map/upload-modal-test.js',
+        'spec/views/map/print-form-test.js',
+        'spec/views/map/print-mockup-test.js',
+        'spec/views/map/photo-bubble-test.js',
+
+        // VIEWS > OVERLAYS,
+        'spec/views/map/overlays/map-image-test.js'
 
         //'spec/views/audio-player-test.js'
     ];

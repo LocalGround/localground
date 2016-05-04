@@ -54,7 +54,7 @@ define(
                 new Audio({id: 3, name: "Flo Rida", tags: 'florida, hip hop', project_id: 1, overlay_type: "audio" })
             ]);
             this.map_images = new MapImages([
-                new MapImage({ id: 1, name: "Map 1", tags: 'parks, oakland, cat', project_id: 3, overlay_type: "map-image" }),
+                new MapImage({ id: 1, name: "Map 1", tags: 'parks, oakland', project_id: 3, overlay_type: "map-image" }),
                 new MapImage({id: 2, name: "Map 2", tags: 'parks, berkeley, tag1', project_id: 3, overlay_type: "map-image" }),
                 new MapImage({id: 3, name: "Map 3", tags: 'emeryville', project_id: 3, overlay_type: "map-image" })
             ]);
@@ -194,13 +194,17 @@ define(
 
             //initialize this.app:
             this.app = _.extend({}, appUtilities);
+            this.map = {
+                fitBounds: function () {},
+                setCenter: function () {}
+            };
             _.extend(this.app, {
                 vent: _.extend({}, Backbone.Events),
                 activeProjectID: this.projects.models[0].id,
-                map: {
-                    fitBounds: function () {},
-                    setCenter: function () {}
-                } //a light stand-in for a Google Map, to speed it up; save our API calls.
+                map: this.map, //a light stand-in for a Google Map, to speed it up; save our API calls.
+                getMap: function () {
+                    return this.map;
+                }
             });
 
             this.spreadsheetApp = {
