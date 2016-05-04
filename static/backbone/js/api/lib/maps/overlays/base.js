@@ -65,7 +65,6 @@ define(["marionette",
             } else if (geoJSON.type === 'LineString') {
                 this._overlay = new Polyline(this.app, opts);
             } else if (geoJSON.type === 'Polygon') {
-                console.log(this.model.get("overlay_type"));
                 if (this.model.get("overlay_type") == "map-image") {
                     this._overlay = new GroundOverlay(this.app, opts);
                 } else {

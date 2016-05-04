@@ -111,7 +111,8 @@ class ProjectDetailSerializer(ProjectSerializer):
                 obj.owner,
                 project=obj,
                 processed_only=True
-            )
+            ),
+            name="Map Images"
         )
     
     def get_markers(self, obj, forms):

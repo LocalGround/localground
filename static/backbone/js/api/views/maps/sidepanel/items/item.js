@@ -114,7 +114,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
         toggleCheckbox: function (e) {
             var $cb = this.$el.find('input');
             this.toggleElement($cb.is(':checked'));
-            if(e) {
+            if (e) {
                 e.stopPropagation();
             }
         },
@@ -250,7 +250,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
             if (!this.state) {
                 this.state = { _isShowingOnMap: false };
             } else {
-                this.model.set('showingOnMap', this.state.isVisible);
+                this.model.set('showingOnMap', this.state._isShowingOnMap);
             }
         }
     });

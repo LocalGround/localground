@@ -6,7 +6,6 @@ define(["lib/maps/overlays/polyline"], function (Polyline) {
      * @class Polygon
      */
     var GroundOverlay = function (app, opts) {
-        console.log(opts);
         Polyline.call(this, app, opts);
 
         this.getShapeType = function () {

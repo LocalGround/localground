@@ -163,7 +163,7 @@ define(["marionette",
                     this.id,
                     {
                         isVisible: this.isVisible(),
-                        isExpanded: this.isExpanded()
+                        isExpanded: true// this.isExpanded()
                     },
                     false
                 );
