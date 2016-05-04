@@ -77,6 +77,7 @@ class ApiMapImageDetailTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=True)
+        self.source_print = self.create_print()
         self.mapimage = self.create_mapimage(self.user, self.project)
         self.url = '/api/0/map-images/%s/' % self.mapimage.id
         self.urls = [self.url]
@@ -95,11 +96,15 @@ class ApiMapImageDetailTest(test.TestCase, ViewMixinAPI):
         )
         # check status is initially "PROCESSED_SUCCESSFULLY"
         self.assertEqual(response.data.get('status'), models.StatusCode.PROCESSED_SUCCESSFULLY)
+        self.assertFalse(response.data.get('source_print') == self.source_print.id)
         
         # update status to "READY_FOR_PROCESSING"
         response = self.client_user.put(
             self.url,
-            json.dumps({ 'status': models.StatusCode.READY_FOR_PROCESSING }),
+            json.dumps({
+                'status': models.StatusCode.READY_FOR_PROCESSING,
+                'source_print': self.source_print.id
+            }),
             HTTP_X_CSRFTOKEN=self.csrf_token,
             content_type="application/json"
         )
@@ -109,4 +114,5 @@ class ApiMapImageDetailTest(test.TestCase, ViewMixinAPI):
         # make sure it committed "READY_FOR_PROCESSING" to database:
         mapimage = models.MapImage.objects.get(id=self.mapimage.id)
         self.assertEqual(mapimage.status.id, models.StatusCode.READY_FOR_PROCESSING)
+        self.assertEqual(response.data.get('source_print'), self.source_print.id)
 
