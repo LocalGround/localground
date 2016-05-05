@@ -2,7 +2,7 @@ define([
     "views/maps/sidepanel/items/layerItem",
     "views/maps/sidepanel/layerList",
     "collections/layers",
-    "../../../../test/spec-helper"
+    "../../../../../test/spec-helper"
 ],
     function (LayerItem, LayerList, Layers) {
         'use strict';

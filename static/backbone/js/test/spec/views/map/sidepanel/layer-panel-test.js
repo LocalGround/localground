@@ -1,7 +1,7 @@
 define([
     "jquery",
     "views/maps/sidepanel/layerPanel",
-    "../../../../test/spec-helper"
+    "../../../../../test/spec-helper"
 ],
     function ($, LayerPanel) {
         'use strict';

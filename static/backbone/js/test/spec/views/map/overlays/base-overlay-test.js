@@ -52,14 +52,14 @@ define([], function () {
 
                 it("Saves and restores state", function () {
                     overlay = initOverlay(this);
-                    overlay._isShowingOnMap = true;
+                    overlay.state._isShowingOnMap = true;
                     overlay.saveState();
                     overlay = initOverlay(this);
-                    expect(overlay._isShowingOnMap).toBeTruthy();
-                    overlay._isShowingOnMap = false;
+                    expect(overlay.state._isShowingOnMap).toBeTruthy();
+                    overlay.state._isShowingOnMap = false;
                     overlay.saveState();
                     overlay = initOverlay(this);
-                    expect(overlay._isShowingOnMap).toBeFalsy();
+                    expect(overlay.state._isShowingOnMap).toBeFalsy();
                 });
 
                 it("Listens for model events", function () {

@@ -52,8 +52,6 @@ define(["marionette", "jquery"], function (Marionette, $) {
         initialize: function (opts) {
             $.extend(this, opts);
             this.id = 'sidebar-' + this.model.getKey() + "-" + this.model.get('id');
-            //this.setElement(opts.el);
-            //this.render();
             this.restoreState();
             this.listenTo(this.model, 'show-item', this.showItem);
             this.listenTo(this.model, 'hide-item', this.hideItem);
@@ -119,7 +117,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
             }
         },
 
-        refreshItem: function(e) {
+        refreshItem: function (e) {
             this.toggleCheckbox();
         },
 
