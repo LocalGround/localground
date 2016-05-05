@@ -5,8 +5,8 @@ define([
 ], function (MapImageOverlay, Helper) {
     'use strict';
 
-    describe("Map Image Overlay1: Test that it initializes correctly", function () {
-        Helper.genericChecks("Map Image Overlay", MapImageOverlay);
+    describe("Map Image Overlay: Test that it initializes correctly", function () {
+        Helper.genericChecks("Map Image Overlay", "map-image", MapImageOverlay);
     });
 
 });

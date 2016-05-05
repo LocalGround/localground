@@ -30,9 +30,11 @@ require(['boot'], function () {
         'spec/views/map/photo-bubble-test.js',
 
         // VIEWS > OVERLAYS,
-        'spec/views/map/overlays/map-image-test.js',
-        'spec/views/map/overlays/marker-test.js',
-        'spec/views/map/overlays/photo-test.js'
+        'spec/views/map/overlays/mapimage-overlay-test.js',
+        'spec/views/map/overlays/marker-overlay-test.js',
+        'spec/views/map/overlays/photo-overlay-test.js',
+        'spec/views/map/overlays/audio-overlay-test.js',
+        'spec/views/map/overlays/record-overlay-test.js'
 
         //'spec/views/audio-player-test.js'
     ];

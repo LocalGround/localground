@@ -35,7 +35,7 @@ define(["marionette",
         initialize: function (opts) {
             this.app = opts.app;
             this.id = this.model.get('overlay_type') + this.model.get('id');
-            $.extend(opts, this.restoreState());
+            $.extend(this, this.restoreState());
             this.map = opts.app.getMap();
             this.model = opts.model;
             this.initInfoBubble(opts);
@@ -193,7 +193,6 @@ define(["marionette",
         },
 
         changeMode: function () {
-            console.log("changeMode");
             if (this.app.getMode() === "view") {
                 this.makeViewable();
             } else {
