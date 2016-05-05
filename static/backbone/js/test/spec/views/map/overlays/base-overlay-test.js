@@ -9,21 +9,9 @@ define([], function () {
         genericChecks: function (name, overlay_type, BaseClass) {
             var that,
                 initOverlay = function (scope) {
-                    var model;
-                    if (overlay_type == "map-image") {
-                        model = scope.map_images.at(0);
-                    } else if (overlay_type == "photo") {
-                        model = scope.photos.at(0);
-                    } else if (overlay_type == "audio") {
-                        model = scope.audio.at(0);
-                    } else if (overlay_type == "marker") {
-                        model = scope.markers.at(0);
-                    } else if (overlay_type == "record") {
-                        model = scope.records.at(0);
-                    }
                     return new BaseClass({
                         app: scope.app,
-                        model: model
+                        model: scope.getModelByOverlayType(overlay_type)
                     });
                 };
             beforeEach(function () {

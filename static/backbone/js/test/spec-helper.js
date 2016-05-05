@@ -37,6 +37,22 @@ define(
                 console.log("AJAX call intercepted.");
             });
 
+            this.getModelByOverlayType = function (overlay_type) {
+                var model;
+                if (overlay_type == "map-image") {
+                    model = this.map_images.at(0);
+                } else if (overlay_type == "photo") {
+                    model = this.photos.at(0);
+                } else if (overlay_type == "audio") {
+                    model = this.audio.at(0);
+                } else if (overlay_type == "marker") {
+                    model = this.markers.at(0);
+                } else if (overlay_type == "record") {
+                    model = this.records.at(0);
+                }
+                return model;
+            };
+
             /**
              * Adds some dummy data for testing convenience.
              * Availabe to all of the tests.
