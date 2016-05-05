@@ -16,10 +16,13 @@ define(["jquery", "underscore"], function ($, _) {
                 };
             beforeEach(function () {
                 spyOn(BaseClass.prototype, "onRender").and.callThrough();
+                spyOn(BaseClass.prototype, "saveState").and.callThrough();
 
                 // model events:
-                spyOn(BaseClass.prototype, "showItem");
-                spyOn(BaseClass.prototype, "hideItem");
+                spyOn(BaseClass.prototype, "showItem").and.callThrough();
+                spyOn(BaseClass.prototype, "hideItem").and.callThrough();
+                spyOn(BaseClass.prototype, "checkItem").and.callThrough();
+                spyOn(BaseClass.prototype, "uncheckItem").and.callThrough();
 
                 // global events:
                 spyOn(BaseClass.prototype, "setEditMode").and.callThrough();
@@ -88,6 +91,10 @@ define(["jquery", "underscore"], function ($, _) {
                     expect(BaseClass.prototype.showTip).toHaveBeenCalled();
                     $('.data-item').trigger('mouseout');
                     expect(BaseClass.prototype.hideTip).toHaveBeenCalled();
+
+                    if (item.model.get("overlay_type") == "map-image") { return; }
+
+                    // drag event handlers only for point data:
                     $('.item-icon').trigger('dragend');
                     expect(BaseClass.prototype.dropListener).toHaveBeenCalled();
                     $('.item-icon').trigger('drag');
@@ -145,6 +152,22 @@ define(["jquery", "underscore"], function ($, _) {
                     item.render();
                     item.triggerToggleCheckbox();
                     expect(BaseClass.prototype.toggleElement).toHaveBeenCalled();
+                });
+
+                it("show & hide methods work", function () {
+                    item = initItem(this);
+                    expect(BaseClass.prototype.toggleElement).not.toHaveBeenCalled();
+                    expect(BaseClass.prototype.saveState).not.toHaveBeenCalled();
+                    expect(BaseClass.prototype.checkItem).not.toHaveBeenCalled();
+                    expect(BaseClass.prototype.uncheckItem).not.toHaveBeenCalled();
+
+                    item.showItem();
+                    item.hideItem();
+
+                    expect(BaseClass.prototype.toggleElement).toHaveBeenCalled();
+                    expect(BaseClass.prototype.saveState).toHaveBeenCalled();
+                    expect(BaseClass.prototype.checkItem).toHaveBeenCalled();
+                    expect(BaseClass.prototype.uncheckItem).toHaveBeenCalled();
                 });
 
             });

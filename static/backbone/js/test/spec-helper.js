@@ -72,7 +72,7 @@ define(
                 new Audio({id: 3, name: "Flo Rida", tags: 'florida, hip hop', project_id: 1, overlay_type: "audio" })
             ]);
             this.map_images = new MapImages([
-                new MapImage({ id: 1, name: "Map 1", tags: 'parks, oakland', project_id: 3, caption: "Caption1", overlay_type: "map-image" }),
+                new MapImage({ id: 1, name: "Map 1", tags: 'parks, oakland', project_id: 3, caption: "Caption1", overlay_type: "map-image", geometry: { type: "Polygon", coordinates: [[[ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ]]]} }),
                 new MapImage({id: 2, name: "Map 2", tags: 'parks, berkeley, tag1', project_id: 3, overlay_type: "map-image" }),
                 new MapImage({id: 3, name: "Map 3", tags: 'emeryville', project_id: 3, overlay_type: "map-image" })
             ]);
@@ -82,7 +82,7 @@ define(
                 new Marker({id: 3, name: "POI 3", tags: 'coffee shop, tag1', project_id: 2, overlay_type: "marker" })
             ]);
             this.records = new Records([
-                new Record({ id: 1, team_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 2, overlay_type: "record", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
+                new Record({ id: 1, team_name: "Blue team", display_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 2, overlay_type: "record", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
                 new Record({id: 2, team_name: "Green team", tags: 'friend\'s house, tag1', worm_count: 8, project_id: 2, overlay_type: "record" }),
                 new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 2, project_id: 2, overlay_type: "record" })
             ], { 'url': 'dummy/url' });

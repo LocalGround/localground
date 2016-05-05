@@ -39,7 +39,9 @@ require(['boot'], function () {
         'spec/views/map/sidepanel/layer-item-test.js',
         'spec/views/map/sidepanel/photo-item-test.js',
         'spec/views/map/sidepanel/audio-item-test.js',
-        'spec/views/map/sidepanel/marker-item-test.js'
+        'spec/views/map/sidepanel/marker-item-test.js',
+        'spec/views/map/sidepanel/record-item-test.js',
+        'spec/views/map/sidepanel/mapimage-item-test.js'
 
         //'spec/views/audio-player-test.js'
     ];
