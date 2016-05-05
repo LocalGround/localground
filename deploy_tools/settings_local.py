@@ -10,9 +10,10 @@ DEFAULT_FROM_EMAIL = '"Site Support" <vanwars@gmail.com>'
 ADMIN_EMAILS = ['your_email@gmail.com',]
 
 # Custom Local Variables
-SERVER_HOST = 'localhost:7777'
-SERVER_URL = 'http://%s' % SERVER_HOST
 PROTOCOL = 'http'
+SERVER_HOST = 'localhost:7777'
+SERVER_URL = '%s://%s' % (PROTOCOL, SERVER_HOST)
+
 # Absolute path to the directory root of the local ground instance:
 FILE_ROOT = '/localground'
 STATIC_ROOT = '%s/%s' % (FILE_ROOT, STATIC_MEDIA_DIR)

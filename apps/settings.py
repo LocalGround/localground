@@ -28,7 +28,7 @@ SESSION_COOKIE_NAME = 'sessionid'
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Custom Local Variables
-PROTOCOL = 'http'
+PROTOCOL = 'https'
 SERVER_HOST = os.environ.get('SERVER_HOST', 'yoursite.com')
 SERVER_URL = '%s//%s' % (PROTOCOL, SERVER_HOST)
 
@@ -214,6 +214,7 @@ REST_FRAMEWORK = {
         'localground.apps.site.api.renderers.CSVRenderer',
         'rest_framework_xml.renderers.XMLRenderer',
         'localground.apps.site.api.renderers.GeoJSONRenderer',
+        'localground.apps.site.api.renderers.KMLRenderer',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
