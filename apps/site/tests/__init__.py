@@ -161,6 +161,7 @@ class ModelMixin(object):
         uao.content_type = project.get_content_type()
         uao.object_id = project.id
         uao.save()
+        return uao
 
     def create_snapshot(self, user, name='Test Snapshot', authority_id=1):
         import random
