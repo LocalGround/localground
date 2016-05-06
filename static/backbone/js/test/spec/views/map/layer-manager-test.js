@@ -2,7 +2,7 @@ define([
     "views/maps/overlays/layer",
     "views/maps/overlays/layerManager",
     "collections/layers",
-    "../../../test/spec-helper"
+    "../../../../test/spec-helper"
 ],
     function (LayerView, LayerManager, Layers) {
         'use strict';

@@ -19,17 +19,10 @@ def load_fixture(apps, schema_editor):
         obj.save()
     fixture.close()
 
-def get_extra_sql():
-    from localground.apps.settings import APPS_ROOT
-    sql_statements = open(os.path.join(APPS_ROOT, 'sql/custom.sql'), 'r').read()
-    return sql_statements
-
-
 class Migration(migrations.Migration):
     dependencies = [
         ('site', '0001_initial')
     ]
     operations = [
-        migrations.RunSQL(get_extra_sql()),
         migrations.RunPython(load_fixture)
     ]

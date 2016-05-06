@@ -52,8 +52,6 @@ define(["marionette", "jquery"], function (Marionette, $) {
         initialize: function (opts) {
             $.extend(this, opts);
             this.id = 'sidebar-' + this.model.getKey() + "-" + this.model.get('id');
-            //this.setElement(opts.el);
-            //this.render();
             this.restoreState();
             this.listenTo(this.model, 'show-item', this.showItem);
             this.listenTo(this.model, 'hide-item', this.hideItem);
@@ -114,12 +112,12 @@ define(["marionette", "jquery"], function (Marionette, $) {
         toggleCheckbox: function (e) {
             var $cb = this.$el.find('input');
             this.toggleElement($cb.is(':checked'));
-            if(e) {
+            if (e) {
                 e.stopPropagation();
             }
         },
 
-        refreshItem: function(e) {
+        refreshItem: function (e) {
             this.toggleCheckbox();
         },
 
@@ -250,7 +248,7 @@ define(["marionette", "jquery"], function (Marionette, $) {
             if (!this.state) {
                 this.state = { _isShowingOnMap: false };
             } else {
-                this.model.set('showingOnMap', this.state.isVisible);
+                this.model.set('showingOnMap', this.state._isShowingOnMap);
             }
         }
     });

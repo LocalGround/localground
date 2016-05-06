@@ -288,7 +288,7 @@ class ModelMixin(object):
             map_title=map_title,
             instructions=instructions,
             layer_ids=None,
-            scan_ids=None
+            mapimage_ids=None
         )
         p.generate_pdf()
         return p
@@ -394,39 +394,39 @@ class ModelMixin(object):
         record.save(user=self.user)
         return record
 
-    def create_imageopt(self, scan):
-        p = scan.source_print
+    def create_imageopt(self, mapimage):
+        p = mapimage.source_print
         img = models.ImageOpts(
-            source_scan=scan,
+            source_mapimage=mapimage,
             file_name_orig='some_file_name.png',
-            host=scan.host,
-            virtual_path=scan.virtual_path,
+            host=mapimage.host,
+            virtual_path=mapimage.virtual_path,
             extents=p.extents,
             zoom=p.zoom,
             northeast=p.northeast,
             southwest=p.southwest,
             center=p.center
         )
-        img.save(user=scan.owner)
+        img.save(user=mapimage.owner)
         return img
 
-    def create_scan(self, user, project):
-        p = self.create_print(map_title='A scan-linked print')
-        scan = models.Scan(
+    def create_mapimage(self, user, project):
+        p = self.create_print(map_title='A mapimage-linked print')
+        mapimage = models.MapImage(
             project=project,
             owner=user,
             last_updated_by=user,
             source_print=p,
-            name='Scan Name',
-            description='Scan Description',
+            name='MapImage Name',
+            description='MapImage Description',
             status=models.StatusCode.get_status(
                 models.StatusCode.PROCESSED_SUCCESSFULLY),
             upload_source=models.UploadSource.get_source(
                 models.UploadSource.WEB_FORM))
-        scan.save()
-        scan.processed_image = self.create_imageopt(scan)
-        scan.save()
-        return scan
+        mapimage.save()
+        mapimage.processed_image = self.create_imageopt(mapimage)
+        mapimage.save()
+        return mapimage
 
     def create_photo(self, user, project, name='Photo Name',
                      file_name='myphoto.jpg', device='HTC',

@@ -40,7 +40,7 @@ class MarkerMixin(ObjectMixin):
         suffix = sql_function.split("_")[0] #should either be "count" or "array"
         #raise Exception(suffix)
 
-        child_classes = [models.Photo, models.Audio, models.Scan]
+        child_classes = [models.Photo, models.Audio, models.MapImage]
 
         # build a custom query that includes child counts:
         select = {}

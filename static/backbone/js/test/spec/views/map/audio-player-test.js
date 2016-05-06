@@ -6,7 +6,7 @@
  */
 define(["underscore",
         "lib/maps/controls/audioPlayer",
-        "../../../test/spec-helper"],
+        "../../../../test/spec-helper"],
     function (_, AudioPlayer) {
         'use strict';
         var audioPlayer, that;

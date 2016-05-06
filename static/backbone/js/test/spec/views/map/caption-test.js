@@ -4,7 +4,7 @@
 define(["underscore",
         "views/maps/caption/caption",
         "models/snapshot",
-        "../../../test/spec-helper"],
+        "../../../../test/spec-helper"],
     function (_, CaptionManager, Snapshot) {
         'use strict';
         var captionManager, that, snapshot;

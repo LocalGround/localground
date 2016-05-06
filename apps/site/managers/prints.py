@@ -17,9 +17,9 @@ class PrintPermissionsManager(models.GeoManager, ObjectMixin):
 class PrintMixin(ObjectMixin):
     related_fields = ['project', 'owner', 'last_updated_by', 'map_provider']
 
-    def to_dict_list(self, include_scan_counts=False):
-        if include_scan_counts:
-            return [dict(p.to_dict(), num_scans=p.num_scans or 0)
+    def to_dict_list(self, include_mapimage_counts=False):
+        if include_mapimage_counts:
+            return [dict(p.to_dict(), num_mapimages=p.num_mapimages or 0)
                     for p in self]
         else:
             return [p.to_dict() for p in self]
@@ -37,7 +37,7 @@ class PrintMixin(ObjectMixin):
                 return []
 
         sql = 'select id, ST_AsGeoJson(northeast) as ne, ST_AsGeoJson(southwest) as sw, \
-              map_title, count(id) as num_scans from prints, scans_scan \
+              map_title, count(id) as num_mapimages from prints, mapimages_mapimage \
             where id = source_print_id and '
         sql = sql + str("SE_EnvelopesIntersect(extents, GeomFromText('POLYGON((" +
                         west + ' ' + north + ', ' +
@@ -58,7 +58,7 @@ class PrintMixin(ObjectMixin):
                 'north': json.loads(p.ne)['coordinates'][1],
                 'west': json.loads(p.sw)['coordinates'][0],
                 'south': json.loads(p.sw)['coordinates'][1],
-                'num_scans': p.num_scans,
+                'num_mapimages': p.num_mapimages,
                 'map_title': p.map_title
             })
 

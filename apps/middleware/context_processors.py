@@ -3,7 +3,7 @@ def persistant_queries(request):
     Intercepts HttpRequests in order to add relevant data to the template
     context (mostly used for accessing global settings variables).  Also, for any of
     the map requests (/print/', '/maps/', '/ebays/', '/viewer/',
-    '/scans/update-record/), this function also adds information about the tilesets
+    '/map-images/update-record/), this function also adds information about the tilesets
     which are available to the interactive map.
     """
     from localground.apps.site.models import WMSOverlay
@@ -41,7 +41,7 @@ def persistant_queries(request):
         pass
     
     add_overlays = False
-    for p in ['/print/', '/maps/', '/ebays/', '/viewer/', '/scans/update-record/']:
+    for p in ['/print/', '/maps/', '/ebays/', '/viewer/', '/map-images/update-record/']:
         if request.path.startswith(p):
             add_overlays = True
             break
