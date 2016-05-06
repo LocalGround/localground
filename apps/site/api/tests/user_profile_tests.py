@@ -25,6 +25,7 @@ class UserProfileTests(APITestCase, ModelMixin):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertEqual(len(data['results']), 2)
+
     def test_get_user_profile(self):
         url = '/api/0/user-profile/%s/.json' % self.user_profile.id
         self.client.force_authenticate(user=self.user)

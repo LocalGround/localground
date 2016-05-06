@@ -40,7 +40,8 @@ class UserProfileMixin(AuditSerializerMixin, serializers.HyperlinkedModelSeriali
         
     email_announcements = serializers.NullBooleanField(
         required=False,
-        label='email_announcements')
+        style={'base_template': 'checkbox.html'}
+    )
 
     default_location = fields.GeometryField(
         required=False,
