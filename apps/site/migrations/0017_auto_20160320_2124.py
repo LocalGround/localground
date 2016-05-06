@@ -12,7 +12,7 @@ def get_extra_sql():
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('site', '0012_auto_20160114_0447'),
+        ('site', '0013_merge'),
     ]
 
     operations = [
