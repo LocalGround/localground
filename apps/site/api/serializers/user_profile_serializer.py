@@ -7,75 +7,8 @@ from localground.apps.site.models.permissions import ObjectAuthority
 from localground.apps.site.api.serializers.base_serializer import AuditSerializerMixin
 
 # create a new class for list view and not include email
-
-class UserProfileListSerializer(AuditSerializerMixin, serializers.HyperlinkedModelSerializer):
-
+class UserProfileMixin(AuditSerializerMixin, serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = models.UserProfile
-        fields = (
-            'url',
-            'id',
-            'first_name',
-            'last_name',
-            'username',
-            'email_announcements',
-            'default_view_authority',
-            'default_location',
-            'contacts',
-            'date_created',
-            'time_stamp',
-            'user'
-        )
-        read_only_fields = ('date_created', 'time_stamp')#, 'user')
-        depth = 1
-        
-    user = serializers.HyperlinkedRelatedField(
-        label='user',
-        view_name='user-detail',
-        read_only=True
-    )
-        
-    email_announcements = serializers.NullBooleanField(
-        required=False,
-        label='email_announcements')
-
-    default_location = fields.GeometryField(
-        required=False,
-        allow_null=True,
-        label='default_location')
-
-    first_name = serializers.CharField(
-        required=False,
-        allow_blank=True,
-        label='first_name',
-        source='user.first_name')
-
-    last_name = serializers.CharField(
-        required=False,
-        allow_blank=True,
-        label='last_name',
-        source='user.last_name')
-    
-    username = serializers.CharField(
-        read_only=True,
-        label='username',
-        source='user.username')
-
-    contacts = serializers.RelatedField(
-        many=True,
-        label='contacts',
-        read_only=True)
-
-    default_view_authority = serializers.ChoiceField(
-        choices=map(lambda x: (x.name, x.name),ObjectAuthority.objects.all()),
-        required=False,
-        label='default_view_authority')
-
-
-class UserProfileSerializer(AuditSerializerMixin, serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = models.UserProfile
         fields = (
             'url',
             'id',
@@ -91,13 +24,18 @@ class UserProfileSerializer(AuditSerializerMixin, serializers.HyperlinkedModelSe
             'time_stamp',
             'user'
         )
-        read_only_fields = ('date_created', 'time_stamp')#, 'user')
-        depth = 1
-        
+        read_only_fields = ('date_created', 'time_stamp')
+    
     user = serializers.HyperlinkedRelatedField(
         label='user',
         view_name='user-detail',
         read_only=True
+    )
+    email = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        label='email',
+        source='user.email'
     )
         
     email_announcements = serializers.NullBooleanField(
@@ -107,7 +45,8 @@ class UserProfileSerializer(AuditSerializerMixin, serializers.HyperlinkedModelSe
     default_location = fields.GeometryField(
         required=False,
         allow_null=True,
-        label='default_location')
+        style={'base_template': 'json.html'}
+    )
 
     first_name = serializers.CharField(
         required=False,
@@ -121,12 +60,6 @@ class UserProfileSerializer(AuditSerializerMixin, serializers.HyperlinkedModelSe
         label='last_name',
         source='user.last_name')
     
-    email = serializers.CharField(
-        required=False,
-        allow_blank=True,
-        label='email',
-        source='user.email')
-    
     username = serializers.CharField(
         read_only=True,
         label='username',
@@ -137,10 +70,27 @@ class UserProfileSerializer(AuditSerializerMixin, serializers.HyperlinkedModelSe
         label='contacts',
         read_only=True)
 
-    default_view_authority = serializers.ChoiceField(
-        choices=map(lambda x: (x.name, x.name),ObjectAuthority.objects.all()),
+    default_view_authority = serializers.PrimaryKeyRelatedField(
         required=False,
-        label='default_view_authority')
+        queryset=ObjectAuthority.objects.all()
+    )
+        
+class UserProfileListSerializer(UserProfileMixin):
+
+    class Meta:
+        model = models.UserProfile
+        fields = UserProfileMixin.Meta.fields
+        read_only_fields = UserProfileMixin.Meta.read_only_fields
+        depth = 1
+
+
+class UserProfileSerializer(UserProfileMixin, serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = models.UserProfile
+        fields = UserProfileMixin.Meta.fields
+        read_only_fields = UserProfileMixin.Meta.read_only_fields
+        depth = 1
 
     def update(self, instance, validated_data):
         validated_data.update(self.get_presave_create_dictionary())
