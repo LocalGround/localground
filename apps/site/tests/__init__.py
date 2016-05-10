@@ -129,8 +129,7 @@ class ModelMixin(object):
             username,
             first_name='superuser',
             email='',
-            password=self.user_password,
-            id=2)
+            password=self.user_password)
 
     def get_user(self, username='tester'):
         try:

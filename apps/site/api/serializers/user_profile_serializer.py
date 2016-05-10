@@ -1,4 +1,3 @@
-__author__ = 'zmmachar'
 from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.site.api import fields
@@ -31,6 +30,7 @@ class UserProfileMixin(AuditSerializerMixin, serializers.HyperlinkedModelSeriali
         view_name='user-detail',
         read_only=True
     )
+
     email = serializers.CharField(
         required=False,
         allow_blank=True,
@@ -38,15 +38,15 @@ class UserProfileMixin(AuditSerializerMixin, serializers.HyperlinkedModelSeriali
         source='user.email'
     )
         
-    email_announcements = serializers.NullBooleanField(
-        required=False,
+    email_announcements = serializers.BooleanField(
+        required=True,
         style={'base_template': 'checkbox.html'}
     )
 
     default_location = fields.GeometryField(
         required=False,
         allow_null=True,
-        style={'base_template': 'json.html'}
+        style={'base_template': 'json.html', 'rows': 5}
     )
 
     first_name = serializers.CharField(
@@ -102,10 +102,12 @@ class UserProfileSerializer(UserProfileMixin, serializers.HyperlinkedModelSerial
         user.last_name = updated_user.get('last_name', user.last_name)
         user.email = updated_user.get('email', user.email)
         user.save()
-        del validated_data['user']
+        if validated_data.get('user'):
+            del validated_data['user']
         # manually update view_authority to point to ObjectAuthority object not the string
         instance.default_view_authority = ObjectAuthority.objects.get(name=validated_data.get('default_view_authority', instance.default_view_authority))
-        del validated_data['default_view_authority']
+        if validated_data.get('default_view_authority'):
+            del validated_data['default_view_authority']
         # update all other fields
         for attr, value in validated_data.items():
            setattr(instance, attr, value)

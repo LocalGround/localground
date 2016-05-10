@@ -1,7 +1,6 @@
 from django.conf.urls import patterns, url
 from django.conf.urls import include
 from localground.apps.site.api import views
-from localground.apps.site.api.views.user_profile_views import update_user_location
 from localground.apps.site import models
 from rest_framework.routers import DefaultRouter
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -148,9 +147,6 @@ urlpatterns += format_suffix_patterns(patterns('',
         r'^user-profile/(?P<pk>[0-9]+)/$',
         views.UserProfileInstance.as_view(),
         name='userprofile-detail'),
-    url(r'^user-profile/update-location/$',
-        update_user_location,
-        name='userprofile-update-location'),
     # Todo: generalize this one:
     url(r'^forms/84/data/tracks/$',
         views.TrackList.as_view(),

@@ -18,12 +18,12 @@ class SnapshotSerializer(BaseNamedSerializer):
         validators=[ validators.UniqueValidator(models.Snapshot.objects.all()) ]
     )
     entities = fields.EntitiesField(
-        style={'base_template': 'json.html'},
+        style={'base_template': 'json.html', 'rows': 5},
         required=False)
     center = fields.GeometryField(
                 help_text='Assign a GeoJSON string',
                 required=True,
-                style={'base_template': 'json.html'}
+                style={'base_template': 'json.html', 'rows': 5}
             )
     basemap = serializers.PrimaryKeyRelatedField(queryset=models.WMSOverlay.objects.all())
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)

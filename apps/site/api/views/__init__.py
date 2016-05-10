@@ -60,7 +60,7 @@ def api_root(request, format=None, **kwargs):
     d['tags'] = reverse('tag-list', request=request, format=format)
     d['tiles'] = reverse('wmsoverlay-list', request=request, format=format)
     d['users'] = reverse('user-list', request=request, format=format)
-    d['userprofile-list'] = reverse('userprofile-list',
+    d['userprofiles'] = reverse('userprofile-list',
                                     request=request,
                                     format=format)
     return Response(d)
