@@ -13,7 +13,7 @@ router = DefaultRouter()
 #router.register(r'photos', views.PhotoViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
-#router.register(r'map-images', views.ScanViewSet)
+#router.register(r'map-images', views.MapImageViewSet)
 router.register(r'data-types', views.DataTypeViewSet)
 router.register(r'tiles', views.TileViewSet)
 #router.register(r'fields', views.FieldViewSet)
@@ -83,11 +83,11 @@ urlpatterns += format_suffix_patterns(patterns('',
         name='audio-list'),
     url(
         r'^map-images/(?P<pk>[0-9]+)/$',
-        views.ScanInstance.as_view(),
-        name='scan-detail'),
+        views.MapImageInstance.as_view(),
+        name='mapimage-detail'),
     url(r'^map-images/$',
-        views.ScanList.as_view(),
-        name='scan-list'),
+        views.MapImageList.as_view(),
+        name='mapimage-list'),
     url(
         r'^markers/(?P<pk>[0-9]+)/$',
         views.MarkerInstance.as_view(),

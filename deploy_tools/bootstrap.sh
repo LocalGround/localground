@@ -130,6 +130,15 @@ sudo cp -r /usr/local/lib/python2.7/dist-packages/swampdragon/static/swampdragon
 #################
 sudo apt-get -y install redis-server rabbitmq-server
 
+# we use supervisor to run our celery worker 
+sudo apt-get -y install supervisor
+sudo cp /localground/deploy_tools/celeryd.conf /etc/supervisor/conf.d/celeryd.conf
+sudo mkdir /var/log/celery
+
+# flower will monitor celery
+sudo cp /localground/deploy_tools/flower.conf /etc/supervisor/conf.d/flower.conf
+
+
 ###############################################
 # Create required Django tables and run tests #
 ###############################################
@@ -137,6 +146,8 @@ cd /localground/apps
 sudo ln -s /usr/lib/libgdal.so.1.17.1 /usr/lib/libgdal.so.1.17.0
 python manage.py syncdb --noinput
 python manage.py test --verbosity=2
+sudo service supervisor restart
+sudo supervisorctl restart celery
 
 echo '------------------------------------'
 echo ' Server configured. Check it out at '

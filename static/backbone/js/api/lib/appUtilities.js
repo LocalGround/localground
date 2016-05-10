@@ -21,6 +21,7 @@ define(["jquery"],
                 } catch (e) {
                     return null;
                 }
+                //console.log(cache);
                 return cache[key];
             },
             saveToLocalStorage: function (key, object, replace) {

@@ -7,6 +7,6 @@ class ObjectTypes():
     AUDIO = 'audio'
     VIDEO = 'video'
     MARKER = 'marker'
-    SCAN = 'scan'
+    SCAN = 'mapimage'
     PRINT = 'print'
     RECORD = 'record'

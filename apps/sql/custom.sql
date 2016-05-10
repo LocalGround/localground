@@ -20,7 +20,7 @@ DROP VIEW IF EXISTS v_private_marker_accessible_media cascade;
 DROP VIEW IF EXISTS v_private_associated_media cascade;
 DROP VIEW IF EXISTS v_private_audio cascade;
 DROP VIEW IF EXISTS v_private_photos cascade;
-DROP VIEW IF EXISTS v_private_scans cascade;
+DROP VIEW IF EXISTS v_private_mapimages cascade;
 DROP VIEW IF EXISTS v_private_videos cascade;
 DROP VIEW IF EXISTS v_private_prints cascade;
 DROP VIEW IF EXISTS v_public_photos cascade;
@@ -159,7 +159,7 @@ GROUP BY v.id, v.name, v.user_id;
 -- v_private_view_accessible_media --
 -------------------------------------
 -- A view to show all of the media (form records, markers,
--- photos, audio, scans, and video) that has been made
+-- photos, audio, mapimages, and video) that has been made
 -- accessible to a particular set of users based on the parent
 -- view's permissions, and at what security level (view, edit, or manage)
 CREATE OR REPLACE VIEW v_private_view_accessible_media AS
@@ -199,7 +199,7 @@ GROUP BY v.id, v.user_id;
 -- v_private_marker_accessible_media --
 ---------------------------------------
 -- A view to show all of the media (form records, markers,
--- photos, audio, scans, and video) that has been made
+-- photos, audio, mapimages, and video) that has been made
 -- accessible to a particular set of users based on the
 -- accessibility of a parent marker (is read-only)
 CREATE OR REPLACE VIEW v_private_marker_accessible_media AS
@@ -268,24 +268,24 @@ FROM  (
 GROUP BY v.id, v.user_id;
 
 ------------------------
--- View: v_private_scans
+-- View: v_private_mapimages
 ------------------------
-CREATE OR REPLACE VIEW v_private_scans AS 
-SELECT v.id as scan_id, v.user_id, max(v.authority_id) AS authority_id
+CREATE OR REPLACE VIEW v_private_mapimages AS 
+SELECT v.id as mapimage_id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
     -- accessible from view and marker permissions via associations 
     SELECT id, user_id, authority_id  
     FROM v_private_associated_media
-    WHERE child = 'scan'
+    WHERE child = 'mapimage'
   UNION
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
-    FROM site_scan m, v_private_projects p
+    FROM site_mapimage m, v_private_projects p
     WHERE m.project_id = p.project_id 
   UNION 
-    -- accessible b/c user is scan owner
+    -- accessible b/c user is mapimage owner
     SELECT m.id, m.owner_id, 3 AS authority_id
-    FROM site_scan m, site_project g
+    FROM site_mapimage m, site_project g
     WHERE m.project_id = g.id) v
 GROUP BY v.id, v.user_id;
   
@@ -305,7 +305,7 @@ FROM  (
     FROM site_video m, v_private_projects p
     WHERE m.project_id = p.project_id 
   UNION 
-    -- accessible b/c user is scan owner
+    -- accessible b/c user is mapimage owner
     SELECT m.id, m.owner_id, 3 AS authority_id
     FROM site_video m, site_project g
     WHERE m.project_id = g.id) v

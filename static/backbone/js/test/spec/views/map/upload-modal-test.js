@@ -1,6 +1,6 @@
 define(["views/maps/sidepanel/uploadModal",
         "views/maps/sidepanel/dataPanel",
-        "../../../test/spec-helper"],
+        "../../../../test/spec-helper"],
     function (UploadModal, DataPanel) {
         'use strict';
 

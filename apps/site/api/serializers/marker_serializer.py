@@ -52,7 +52,7 @@ class MarkerSerializer(MarkerSerializerMixin):
         candidates = [
             models.Photo,
             models.Audio,
-            models.Scan,
+            models.MapImage,
             models.Project,
             models.Marker]
         forms = (
@@ -115,12 +115,12 @@ class MarkerSerializer(MarkerSerializerMixin):
         return self.serialize_list(obj, models.Audio, data)
 
     def get_map_images(self, obj):
-        from localground.apps.site.api.serializers import ScanSerializerUpdate
+        from localground.apps.site.api.serializers import MapImageSerializerUpdate
 
-        data = ScanSerializerUpdate(
+        data = MapImageSerializerUpdate(
             obj.map_images,
             many=True, context={ 'request': {} }).data
-        return self.serialize_list(obj, models.Scan, data)
+        return self.serialize_list(obj, models.MapImage, data)
     
     def get_photo_count(self, obj):
         return len(obj.photos)
