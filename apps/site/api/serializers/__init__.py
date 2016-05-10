@@ -17,7 +17,7 @@ from localground.apps.site.api.serializers.record_serializer import create_recor
 from localground.apps.site.api.serializers.presentation_serializer import PresentationSerializer
 from localground.apps.site.api.serializers.print_serializer import PrintSerializer, PrintSerializerDetail
 from localground.apps.site.api.serializers.mapimage_serializer import MapImageSerializerCreate, MapImageSerializerUpdate
-from localground.apps.site.api.serializers.user_profile_serializer import UserProfileSerializer
+from localground.apps.site.api.serializers.user_profile_serializer import UserProfileSerializer, UserProfileListSerializer
 from localground.apps.site.api.serializers.layer_serializer import LayerSerializer, LayerDetailSerializer
 
 
