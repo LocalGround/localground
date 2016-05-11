@@ -19,17 +19,56 @@ class CSVRenderer(renderers.BaseRenderer):
         Renders serialized *data* into CSV. For a dictionary:
         """
         csv_buffer = StringIO()
-        csv_writer = csv.writer(csv_buffer)
-        if data.get('results'):
-            rows = self.get_rows(data.get('results'))
+        if data.get('children'):
+            # instance of complex type: project
+            children = data.get('children')
+            dict_project = []
+            rows = []
+            key_project = set([])
+            for media in children:
+                data_media = { 'results': children.get(media).get('data') }
+                if len(data_media['results']) < 1:
+                    # skip if no data for the media type
+                    continue
+                # get csv for each media type
+                csv_media = self.render(data_media, media_type, renderer_context)
+                dict_media = csv.DictReader(StringIO(csv_media))
+                for row in dict_media:
+                    # collect all the columns
+                    key_project = key_project | set(row.keys())
+                    # collect all the data entries
+                    rows.append(row)
+            # a complete row might have empty cells due to differences in models
+            for row in rows:
+                complete_row = row
+                for key in key_project:
+                    if key not in complete_row:
+                        complete_row[key] = ''
+                dict_project.append(complete_row)
+            # output
+            csv_writer = csv.DictWriter(csv_buffer, key_project)
+            csv_writer.writeheader()
+            for row in dict_project:
+                csv_writer.writerow(row)
+            return csv_buffer.getvalue()
         else:
-            rows = self.flatten_dict(data, data.keys())
-        for row in rows:
-            csv_writer.writerow([
-                e.encode('utf-8') if isinstance(e, basestring) else self.prepare_cell(e)
-                for e in row
-            ])
-        return csv_buffer.getvalue()
+            # simple type
+            rows = None
+            if data.get('results'):
+                # list
+                rows = self.get_rows(data.get('results'))
+                csv_writer = csv.writer(csv_buffer)
+                for row in rows:
+                    csv_writer.writerow([
+                        e.encode('utf-8') if isinstance(e, basestring) else self.prepare_cell(e)
+                        for e in row
+                    ])
+            else:
+                # instance
+                csv_writer = csv.DictWriter(csv_buffer, data.keys())
+                csv_writer.writeheader()
+                csv_writer.writerow(data)
+            return csv_buffer.getvalue()
 
     def prepare_cell(self, val):
         '''

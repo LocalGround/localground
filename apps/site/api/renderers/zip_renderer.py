@@ -3,6 +3,9 @@ from rest_framework import renderers
 import zipfile
 import os
 from django.conf import settings
+from . import CSVRenderer
+import csv
+import simplejson as json
 
 
 class ZIPRenderer(renderers.BaseRenderer):
@@ -20,10 +23,16 @@ class ZIPRenderer(renderers.BaseRenderer):
         """
         Renders serialized *data* into ZIP.
         """
-        zip_file = self.build_zip(data)
-        return zip_file
+        # get data spreadsheet
+        csv_renderer = CSVRenderer()
+        spreadsheet = csv_renderer.render(data)
+        if spreadsheet:
+            zip_file = self.build_zip(data, spreadsheet)
+            return zip_file
+        else:
+            return None
 
-    def build_zip(self, raw_data):
+    def build_zip(self, raw_data, spreadsheet):
         """
         Returns absolute path to the ZIP file contianing requested media files
         """
@@ -49,14 +58,20 @@ class ZIPRenderer(renderers.BaseRenderer):
             media_type = data['overlay_type']
             if media_type == 'photo':
                 media_type = 'photos'
-            target_file_path = ''
+            source_file_path = ''
             if media_type == 'photos' or media_type == 'audio':
-                target_file_path = os.path.join(settings.USER_MEDIA_ROOT, 'media', data['owner'], media_type, data['file_name'])
+                source_file_path = os.path.join(settings.USER_MEDIA_ROOT, 'media', data['owner'], media_type, data['file_name'])
             elif media_type == 'print':
-                target_file_path = os.path.join(settings.USER_MEDIA_ROOT, 'prints', data['uuid'], 'Print_{}.pdf'.format(data['uuid']))
+                source_file_path = os.path.join(settings.USER_MEDIA_ROOT, 'prints', data['uuid'], 'Print_{}.pdf'.format(data['uuid']))
                 if data['map_title'] == '':
                     data['map_title'] = 'Untitled'
                 data['media_file'] = '{} {}.pdf'.format(data['id'], data['map_title'])
-            zip_file.write(target_file_path, data['media_file'])
+            else:
+                # skip other types
+                continue
+            target_file_path = os.path.join(media_type, data['media_file'])
+            zip_file.write(source_file_path, target_file_path)
+        # before close the zip file, include spreadsheet in the archive
+        zip_file.writestr('content.csv', spreadsheet)
         zip_file.close()
         return zip_file_str.getvalue()
