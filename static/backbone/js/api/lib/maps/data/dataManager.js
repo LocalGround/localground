@@ -214,7 +214,10 @@ define(["models/project",
                 for (key in children) {
                     if (children.hasOwnProperty(key)) {
                         models = [];
-                        configKey = key.split("_")[0];
+                        configKey = key;
+                        if(configKey.indexOf("form_") != -1) {
+                            configKey = configKey.split("_")[0];
+                        }
                         opts = Config[configKey];
                         $.each(children[key].data, modelCreator);
 

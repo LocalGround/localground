@@ -19,7 +19,14 @@ class GeometryField(serializers.CharField):
         return obj
 
     def to_representation(self, obj):
-        geom = getattr(obj, self.source)
+        geom = None
+        if self.source.find(".") > 0: #when source is nested (e.g. source='processed_image.extents'):
+            objects = self.source.split('.')
+            parent = getattr(obj, objects[0])
+            if parent:
+                geom = getattr(parent, objects[1])
+        else: # when source is not nested
+            geom = getattr(obj, self.source)
         if hasattr(obj, 'geometry'):
             geom = obj.geometry
         if geom is not None:

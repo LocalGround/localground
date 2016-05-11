@@ -43,7 +43,10 @@ define(["marionette",
                 this.opts = opts;
                 this.collection = opts.collection;
                 if (this.collection.key) {
-                    var configKey = this.collection.key.split("_")[0];
+                    var configKey = this.collection.key;
+                    if (configKey.indexOf("form_") != -1) {
+                        configKey = configKey.split("_")[0];
+                    }
                     this.childView = Config[configKey].ItemView;
                     this.childViewOptions = $.extend(opts, {template: _.template(Config[configKey].ItemTemplate)});
                 }
@@ -152,8 +155,7 @@ define(["marionette",
 
             saveState: function () {
                 //only save state if visible:
-                //console.log("saving state...");
-                if (!this.doNotRender) {
+                if (this.doNotRender) {
                     return;
                 }
                 this.app.saveState(

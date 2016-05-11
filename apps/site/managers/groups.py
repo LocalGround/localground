@@ -31,7 +31,7 @@ class ProjectMixin(GroupMixin):
                 select={
                     'photo_count': sql.format('photo'),
                     'audio_count': sql.format('audio'),
-                    'processed_maps_count': sql.format('scan'),
+                    'processed_maps_count': sql.format('mapimage'),
                     'marker_count': sql.format('marker'),
                     'shared_with': 'select shared_with from v_projects_shared_with WHERE v_projects_shared_with.id = site_project.id'
                 },
@@ -85,7 +85,7 @@ class SnapshotMixin(GroupMixin):
                 select={
                     'photo_count': sql.format('photo'),
                     'audio_count': sql.format('audio'),
-                    'processed_maps_count': sql.format('scan'),
+                    'processed_maps_count': sql.format('mapimage'),
                     'marker_count': sql.format('marker'),
                     'shared_with': 'select shared_with from v_views_shared_with WHERE v_views_shared_with.id = site_snapshot.id'
                 }

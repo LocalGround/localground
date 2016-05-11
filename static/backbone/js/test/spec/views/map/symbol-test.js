@@ -1,6 +1,6 @@
 define([
     "views/maps/overlays/symbol",
-    "../../../test/spec-helper"
+    "../../../../test/spec-helper"
 ],
     function (Symbol) {
         'use strict';

@@ -225,17 +225,17 @@ class PrintUser(ObjectUserPermissions):
         managed = False
         db_table = 'v_private_prints'
 
-class ScanUser(ObjectUserPermissions):
-    scan = models.ForeignKey(
-        'Scan',
-        db_column='scan_id',
+class MapImageUser(ObjectUserPermissions):
+    mapimage = models.ForeignKey(
+        'MapImage',
+        db_column='mapimage_id',
         on_delete=models.DO_NOTHING,
         related_name='authuser')
 
     class Meta:
         app_label = 'site'
         managed = False
-        db_table = 'v_private_scans'
+        db_table = 'v_private_mapimages'
 
 
 class SnapshotUser(ObjectUserPermissions):

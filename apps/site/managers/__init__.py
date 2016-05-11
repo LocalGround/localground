@@ -2,5 +2,5 @@ from localground.apps.site.managers.groups import ProjectManager, SnapshotManage
     PresentationManager, LayerManager
 from localground.apps.site.managers.overlays import MarkerManager, WMSOverlayManager
 from localground.apps.site.managers.prints import PrintManager
-from localground.apps.site.managers.uploads import ScanManager, \
+from localground.apps.site.managers.uploads import MapImageManager, \
     PhotoManager, AudioManager, VideoManager, RecordManager

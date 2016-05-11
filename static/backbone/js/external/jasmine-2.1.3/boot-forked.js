@@ -1,10 +1,7 @@
 /**
  Starting with version 2.0, this file "boots" Jasmine, performing all of the necessary initialization before executing the loaded environment and all of a project's specs. This file should be loaded after `jasmine.js` and `jasmine_html.js`, but before any project source files or spec files are loaded. Thus this file can also be used to customize Jasmine for a project.
-
  If a project is using Jasmine via the standalone distribution, this file can be customized directly. If a project is using Jasmine via the [Ruby gem][jasmine-gem], this file can be copied into the support directory via `jasmine copy_boot_js`. Other environments (e.g., Python) will have different mechanisms.
-
  The location of `boot.js` can be specified and/or overridden in `jasmine.yml`.
-
  [jasmine-gem]: http://github.com/pivotal/jasmine-gem
  */
 
@@ -99,12 +96,18 @@
    *
    * Replace the browser window's `onload`, ensure it's called, and then run all of the loaded specs. This includes initializing the `HtmlReporter` instance and then executing the loaded Jasmine environment. All of this will happen after all of the specs are loaded.
    */
-  var currentWindowOnload = window.onload;
-
+  /*var currentWindowOnload = window.onload;
   window.onload = function() {
     if (currentWindowOnload) {
       currentWindowOnload();
     }
+    htmlReporter.initialize();
+    env.execute();
+  };*/
+  
+  // SV: forked, based on this post, to work better w/Require:
+  // http://blogs.lessthandot.com/index.php/webdev/uidevelopment/javascript/unit-testing-with-jasmine-2-0-and-require-js/
+  window.executeTests = function(){
     htmlReporter.initialize();
     env.execute();
   };

@@ -10,8 +10,9 @@ DEFAULT_FROM_EMAIL = '"Site Support" <vanwars@gmail.com>'
 ADMIN_EMAILS = ['your_email@gmail.com',]
 
 # Custom Local Variables
-SERVER_HOST = 'daya.ischool.berkeley.edu:7777'
-SERVER_URL = 'http://%s' % SERVER_HOST
+PROTOCOL = 'http'
+SERVER_HOST = 'localhost:7777'
+SERVER_URL = '%s://%s' % (PROTOCOL, SERVER_HOST)
 
 # Absolute path to the directory root of the local ground instance:
 FILE_ROOT = '/localground'
@@ -61,5 +62,3 @@ INSTALLED_APPS += ('debug_toolbar',)
 INTERNAL_IPS = ('127.0.0.1', '10.0.2.2') #note the 10.0.2.2 is the IP for Vagrant connections
 MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 '''
-
-SENDGRID_API_KEY = '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'

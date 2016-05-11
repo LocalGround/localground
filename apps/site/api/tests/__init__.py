@@ -13,8 +13,9 @@ from localground.apps.site.api.tests.presentation_tests import ApiPresentationLi
 from localground.apps.site.api.tests.project_tests import *
 from localground.apps.site.api.tests.photo_tests import *
 from localground.apps.site.api.tests.renderer_tests import *
-from localground.apps.site.api.tests.scan_tests import *
+from localground.apps.site.api.tests.mapimage_tests import *
 from localground.apps.site.api.tests.snapshot_tests import ApiSnapshotListTest, ApiSnapshotInstanceTest
 from localground.apps.site.api.tests.sql_parse_tests import *
 from localground.apps.site.api.tests.tags_tests import *
 from localground.apps.site.api.tests.user_authority_tests import *
+from localground.apps.site.api.tests.user_profile_tests import *

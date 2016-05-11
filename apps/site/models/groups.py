@@ -5,7 +5,7 @@ from localground.apps.site.models.permissions import \
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
-from localground.apps.site.models.barcoded import Scan
+from localground.apps.site.models.mapimage import MapImage
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video
@@ -109,7 +109,7 @@ class Project(Group):
                 'id': ObjectTypes.SCAN,
                 'overlayType': ObjectTypes.SCAN,
                 'name': 'Drawings',
-                'data': Scan.objects.by_project(self, processed_only=True).to_dict_list()
+                'data': MapImage.objects.by_project(self, processed_only=True).to_dict_list()
             })
         if include_audio:
             data.append({
