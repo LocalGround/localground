@@ -16,7 +16,8 @@ def get_metadata():
         'access_authority': {'read_only': False, 'required': False, 'type': 'field'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
-        'name': {'read_only': False, 'required': False, 'type': 'string'}
+        'name': {'read_only': False, 'required': False, 'type': 'string'},
+        'permissions_url': { 'type': 'field', 'required': False, 'read_only': True }
     }
 
 class ApiProjectListTest(test.TestCase, ViewMixinAPI):

@@ -11,10 +11,9 @@ def get_metadata():
     return {
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
-        'user': {'read_only': False, 'required': True, 'type': 'field'},
         'authority': {'read_only': False, 'required': True, 'type': 'field'},
         'granted_by': {'read_only': True, 'required': False, 'type': 'field'},
-        'object': {'read_only': True, 'required': False, 'type': 'field'},
+        'project_id':  {'type': 'integer', 'required': False, 'read_only': True }
     }
 
 class UserAuthorityListTest(test.TestCase, ViewMixinAPI):
@@ -22,8 +21,11 @@ class UserAuthorityListTest(test.TestCase, ViewMixinAPI):
     def setUp(self):
         ViewMixinAPI.setUp(self)
         # is this a hack? maybe
-        self.view = views.UserAuthorityList.as_view()
+        self.view = views.UserPermissionsList.as_view()
         self.metadata = get_metadata()
+        self.metadata.update({
+            'user': {'read_only': False, 'required': True, 'type': 'field'}
+        })
         self.url = '/api/0/projects/' + str(self.project.id) + '/user-permissions/'
         self.urls = [self.url]
 
@@ -47,12 +49,11 @@ class UserAuthorityInstanceTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
-        # is this a hack? maybe
-        self.view = views.UserAuthorityInstance.as_view()
+        self.view = views.UserPermissionsInstance.as_view()
         self.metadata = get_metadata()
         self.random_user = self.create_user(username='rando')
         self.uao = self.grant_project_permissions_to_user(self.project, self.random_user)
-        self.url = '/api/0/user-permissions/%s/' % self.uao.id
+        self.url = '/api/0/projects/%s/user-permissions/%s/' % (self.project.id, self.uao.id)
         self.urls = [self.url]
 
     def test_update_sharing_using_put(self, **kwargs):

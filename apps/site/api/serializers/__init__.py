@@ -6,7 +6,7 @@ from localground.apps.site import models
 
 from localground.apps.site.api.serializers.base_serializer import BaseSerializer, BaseNamedSerializer, MediaGeometrySerializer
 from localground.apps.site.api.serializers.project_serializer import ProjectSerializer, ProjectDetailSerializer
-from localground.apps.site.api.serializers.user_authority_serializer import UserAuthorityObjectSerializer
+from localground.apps.site.api.serializers.user_authority_serializer import UserAuthorityListSerializer, UserAuthorityDetailSerializer
 from localground.apps.site.api.serializers.snapshot_serializer import SnapshotSerializer, SnapshotDetailSerializer
 from localground.apps.site.api.serializers.marker_serializer import MarkerSerializer, MarkerSerializerCounts, MarkerSerializerCountsWithMetadata, MarkerSerializerLists, MarkerSerializerListsWithMetadata
 from localground.apps.site.api.serializers.association_serializer import AssociationSerializer, AssociationSerializerDetail

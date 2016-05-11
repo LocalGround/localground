@@ -134,15 +134,19 @@ class UserAuthorityObject(models.Model):
     def __unicode__(self):
         return self.user.username
 
-    # TODO: This seems a little dicey if Im not inheriting from BasePermissions?
+    # Leveraging parent project / snapshot's can_edit function
     def can_view(self, user, access_key=None):
-        return self.object.can_manage(user)
+        # if a user has edit permissions on a project, then they
+        # can view who else has permissions on the project
+        return self.object.can_edit(user)
 
     def can_edit(self, user):
-        return self.object.can_manage(user)
+        #delegate to can_manage:
+        return self.can_manage(user)
 
     def can_manage(self, user):
-        return self.object.can_manage(user)
+        # users must be managers but can also manage themselves
+        return self.object.can_manage(user) or self.user == user
 
     class Meta:
         app_label = 'site'
