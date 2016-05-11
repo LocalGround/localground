@@ -3,7 +3,7 @@ from rest_framework import serializers
 from localground.apps.site import models
 from localground.apps.site.api.serializers.base_serializer import AuditSerializerMixin
 
-class UserAuthorityMixin(serializers.ModelSerializer):
+class SharingSerializerMixin(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
     project_id = serializers.IntegerField(source="object_id", read_only=True, label="object id")
 
@@ -26,21 +26,21 @@ class UserAuthorityMixin(serializers.ModelSerializer):
 
     def get_url(self, obj):
         view = self.context.get('view')
-        return '%s/api/0/projects/%s/user-permissions/%s/' % (
+        return '%s/api/0/projects/%s/sharing/%s/' % (
             settings.SERVER_URL,
             view.kwargs.get('project_id'),
             obj.id)
 
-class UserAuthorityListSerializer(UserAuthorityMixin):
+class SharingListSerializer(SharingSerializerMixin):
     
     class Meta:
         model = models.UserAuthorityObject
-        fields = UserAuthorityMixin.Meta.fields + ('user', )
+        fields = SharingSerializerMixin.Meta.fields + ('user', )
         read_only_fields = ('granted_by', )
 
-class UserAuthorityDetailSerializer(UserAuthorityMixin):
+class SharingDetailSerializer(SharingSerializerMixin):
     
     class Meta:
         model = models.UserAuthorityObject
-        fields = UserAuthorityMixin.Meta.fields
+        fields = SharingSerializerMixin.Meta.fields + ('user', )
         read_only_fields = ('granted_by', 'user')

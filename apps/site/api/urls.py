@@ -40,12 +40,12 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.RelatedMediaInstance.as_view(),
         name='related-media-detail'),
     url(
-        r'^projects/(?P<project_id>[0-9]+)/user-permissions/(?P<pk>[0-9]+)/$',
-        views.UserPermissionsInstance.as_view(),
+        r'^projects/(?P<project_id>[0-9]+)/sharing/(?P<pk>[0-9]+)/$',
+        views.SharingInstance.as_view(),
         name='userauthorityobject-detail'),
     url(
-        r'^projects/(?P<project_id>[0-9]+)/user-permissions/$',
-        views.UserPermissionsList.as_view(),
+        r'^projects/(?P<project_id>[0-9]+)/sharing/$',
+        views.SharingList.as_view(),
         name='userauthorityobject-list'),
     url(
         r'^projects/(?P<pk>[0-9]+)/$',

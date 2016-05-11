@@ -17,5 +17,5 @@ from localground.apps.site.api.tests.mapimage_tests import *
 from localground.apps.site.api.tests.snapshot_tests import ApiSnapshotListTest, ApiSnapshotInstanceTest
 from localground.apps.site.api.tests.sql_parse_tests import *
 from localground.apps.site.api.tests.tags_tests import *
-from localground.apps.site.api.tests.user_authority_tests import *
+from localground.apps.site.api.tests.sharing_tests import *
 from localground.apps.site.api.tests.user_profile_tests import *

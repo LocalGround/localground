@@ -17,7 +17,7 @@ def get_metadata():
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
-        'permissions_url': { 'type': 'field', 'required': False, 'read_only': True }
+        'sharing_url': { 'type': 'field', 'required': False, 'read_only': True }
     }
 
 class ApiProjectListTest(test.TestCase, ViewMixinAPI):

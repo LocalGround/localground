@@ -11,21 +11,21 @@ from localground.apps.site import models
 from django.conf import settings
 
 class ProjectSerializerMixin(object):
-    permissions_url = serializers.SerializerMethodField()
+    sharing_url = serializers.SerializerMethodField()
 
-    def get_permissions_url(self, obj):
+    def get_sharing_url(self, obj):
         view = self.context.get('view')
-        return '%s/api/0/projects/%s/user-permissions/' % (
+        return '%s/api/0/projects/%s/sharing/' % (
             settings.SERVER_URL,
             obj.id)
 
 class ProjectSerializer(BaseNamedSerializer, ProjectSerializerMixin):
-    permissions_url = serializers.SerializerMethodField()
+    sharing_url = serializers.SerializerMethodField()
     access_authority = serializers.PrimaryKeyRelatedField(queryset=models.ObjectAuthority.objects.all(), read_only=False, required=False)
     slug = serializers.SlugField(max_length=100, label='friendly url')
     class Meta:
         model = models.Project
-        fields = BaseNamedSerializer.Meta.fields + ('slug', 'access_authority', 'permissions_url')
+        fields = BaseNamedSerializer.Meta.fields + ('slug', 'access_authority', 'sharing_url')
         depth = 0
 
 
@@ -36,7 +36,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
         
     class Meta:
         model = models.Project
-        fields = ProjectSerializer.Meta.fields + ('permissions_url', 'children')
+        fields = ProjectSerializer.Meta.fields + ('sharing_url', 'children')
         depth = 0
     
     def get_metadata(self, serializer_class):
