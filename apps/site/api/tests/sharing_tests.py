@@ -1,4 +1,4 @@
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 from django.conf import settings
 from localground.apps.site import models
 from localground.apps.site.api import views
@@ -38,6 +38,7 @@ class SharingListTest(APITestCase, ViewMixinAPI):
             }),
             content_type="application/json"
         )
+
     def _get_users(self, auth_user):
         self.client.force_authenticate(user=auth_user)
         return self.client.get(self.url)
@@ -84,6 +85,16 @@ class SharingListTest(APITestCase, ViewMixinAPI):
         self.assertEqual(data.get('project_id'), self.project.id)
         self.assertEqual(data.get('granted_by'), self.user.id)
         self.assertEqual(data.get('authority'), 2)
+        
+    def test_manager_can_share_project_using_post(self, **kwargs):
+        # create a manager:
+        manager = self.create_user(username='manager')
+        response = self._add_user(self.user, manager, 3)
+
+        # ensure that manager can share w/new ppl:
+        random_user = self.create_user(username='rando')
+        response = self._add_user(manager, random_user, 2)
+
     
     def test_unauthorized_user_cannot_share_project_using_post(self, **kwargs):
         # create a second user & client
@@ -106,44 +117,97 @@ class SharingInstanceTest(APITestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
+        self.client = APIClient(enforce_csrf_checks=True)
         self.view = views.SharingInstance.as_view()
         self.metadata = get_metadata()
         self.metadata.update({
             'user': {'read_only': True, 'required': False, 'type': 'field'}
         })
         self.random_user = self.create_user(username='rando')
-        self.uao = self.grant_project_permissions_to_user(self.project, self.random_user)
+        self.uao = self.grant_project_permissions_to_user(self.project, self.random_user, authority_id=1)
         self.url = '/api/0/projects/%s/sharing/%s/.json' % (self.project.id, self.uao.id)
         self.urls = [self.url]
 
+    def _update_user_put(self, auth_user, authority):
+        self.client.force_authenticate(user=auth_user)
+        return self.client.put(self.url,
+            data=json.dumps({
+                'authority': authority
+            }),
+            content_type="application/json"
+        )
+    def _update_user_patch(self, auth_user, authority):
+        self.client.force_authenticate(user=auth_user)
+        return self.client.patch(self.url,
+            data=json.dumps({
+                'authority': authority
+            }),
+            content_type="application/json"
+        )
+    def _delete_user(self, auth_user):
+        self.client.force_authenticate(user=auth_user)
+        return self.client.delete(self.url)
+
     def test_update_sharing_using_put(self, **kwargs):
-        response = self.client_user.put(
-        self.url,
-        data=json.dumps({'object': self.project.id,
-                        'user': self.random_user.id,
-                        'granted_by': self.user.id,
-                        'authority': 2}),
-        HTTP_X_CSRFTOKEN=self.csrf_token,
-        content_type="application/json")
+        response = self._update_user_put(self.user, 2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(data.get('authority'), 2)
+
+        unauthorized_user = self.create_user(username='unauthorized')
+        response = self._update_user_put(unauthorized_user, 2)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_update_sharing_using_patch(self, **kwargs):
-        response = self.client_user.patch(
-        self.url,
-        data=json.dumps({'object': self.project.id,
-                        'user': self.random_user.id,
-                        'granted_by': self.user.id,
-                        'authority': 3}),
-        HTTP_X_CSRFTOKEN=self.csrf_token,
-        content_type="application/json")
+        response = self._update_user_put(self.user, 2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(data.get('authority'), 2)
 
+        unauthorized_user = self.create_user(username='unauthorized')
+        response = self._update_user_put(unauthorized_user, 2)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    
+    def test_manager_can_update_sharing_for_another_user(self, **kwargs):
+        # create a manager:
+        manager = self.create_user(username='manager')
+        self.grant_project_permissions_to_user(self.project, manager, authority_id=3)
+
+        # update current authority by project manager:
+        response = self._update_user_put(manager, 2)
+        data = json.loads(response.content)
+        self.assertEqual(data.get('authority'), 2)
 
     def test_delete_sharing(self, **kwargs):
-        response = self.client_user.delete(
-            self.url,
-            HTTP_X_CSRFTOKEN=self.csrf_token
-        )
+        unauthorized_user = self.create_user(username='unauthorized')
+        response = self._delete_user(unauthorized_user)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        
+        response = self._delete_user(self.user)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    '''
+    def test_user_can_always_unshare_project_with_oneself(self, **kwargs):
+        from django.test import TestCase, RequestFactory
+        self.factory = RequestFactory()
+        request = self.factory.delete(self.url)
+        request.user = self.uao.user
+        response = self.view(request)
+
+        # make sure that user can delete oneself:
+        print self.url, self.uao.id, self.uao.user.username
+        print self.uao.can_delete(self.uao.user)
+        #response = self._delete_user(self.uao.user)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+    '''
+    
+    def test_user_can_downgrade_not_upgrade_oneself(self, **kwargs):
+        self.uao.authority = models.UserAuthority.objects.get(id=2)
+        self.uao.save()
+        response = self._update_user_put(self.uao.user, 1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(data.get('authority'), 1)
+
 
 

@@ -39,11 +39,16 @@ class SharingList(SharingMixin, generics.ListCreateAPIView):
 
 class SharingInstance(SharingMixin, QueryableRetrieveUpdateDestroyView):
     serializer_class = serializers.SharingDetailSerializer
-    
+
     def perform_update(self, serializer):
-        project_id = self.kwargs.get('project_id')
-        project = models.Project.objects.get(id=project_id)
-        if project.can_manage(self.request.user):
+        instance = self.get_object()
+        if instance.can_edit(self.request.user, self.kwargs.get("authority")):
             serializer.save()
         else:
             raise exceptions.PermissionDenied(detail="You do not have manager permissions on project id=%s" % project.id)
+
+    def perform_destroy(self, instance):
+        if instance.can_delete(self.request.user):
+            instance.delete()
+        else:
+            raise exceptions.PermissionDenied(detail="You do not have permission to delete this instance id=%s" % instance.id)

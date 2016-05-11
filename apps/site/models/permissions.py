@@ -136,16 +136,14 @@ class UserAuthorityObject(models.Model):
 
     # Leveraging parent project / snapshot's can_edit function
     def can_view(self, user, access_key=None):
-        # if a user has edit permissions on a project, then they
-        # can view who else has permissions on the project
-        return self.object.can_edit(user)
+        return self.object.can_view(user) or self.user == user
 
-    def can_edit(self, user):
-        #delegate to can_manage:
-        return self.can_manage(user)
+    def can_edit(self, user, authority_id):
+        # deletegate to can_manage:
+        return self.object.can_manage(user) or \
+            (self.user == user and self.authority.id > authority_id)
 
-    def can_manage(self, user):
-        # users must be managers but can also manage themselves
+    def can_delete(self, user):
         return self.object.can_manage(user) or self.user == user
 
     class Meta:
