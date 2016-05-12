@@ -60,6 +60,7 @@ class SharingInstance(SharingMixin, QueryableRetrieveUpdateDestroyView):
             content_type=models.Project.get_content_type()
         )
         self.check_object_permissions(self.request, instance)
+        return instance
 
     def perform_update(self, serializer):
         instance = self.get_object()
