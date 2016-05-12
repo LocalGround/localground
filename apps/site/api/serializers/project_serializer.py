@@ -15,7 +15,7 @@ class ProjectSerializerMixin(object):
 
     def get_sharing_url(self, obj):
         view = self.context.get('view')
-        return '%s/api/0/projects/%s/sharing/' % (
+        return '%s/api/0/projects/%s/users/' % (
             settings.SERVER_URL,
             obj.id)
 

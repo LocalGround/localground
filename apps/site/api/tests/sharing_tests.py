@@ -10,7 +10,6 @@ import json, os.path
 def get_metadata():
     return {
         'url': {'read_only': True, 'required': False, 'type': 'field'},
-        'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'authority': {'read_only': False, 'required': True, 'type': 'field'},
         'granted_by': {'read_only': True, 'required': False, 'type': 'field'},
         'project_id':  {'type': 'integer', 'required': False, 'read_only': True }
@@ -26,7 +25,7 @@ class SharingListTest(APITestCase, ViewMixinAPI):
         self.metadata.update({
             'user': {'read_only': False, 'required': True, 'type': 'field'}
         })
-        self.url = '/api/0/projects/' + str(self.project.id) + '/sharing/.json'
+        self.url = '/api/0/projects/' + str(self.project.id) + '/users/.json'
         self.urls = [self.url]
 
     def _add_user(self, auth_user, user, authority):
@@ -43,35 +42,35 @@ class SharingListTest(APITestCase, ViewMixinAPI):
         self.client.force_authenticate(user=auth_user)
         return self.client.get(self.url)
 
-    def test_editor_can_see_list(self, **kwargs):
-        # create new user and make them project editor:
-        random_user = self.create_user(username='rando')
-        self._add_user(self.user, random_user, 2)
-        
-        # make sure that editor can see all shared folks:
-        response = self._get_users(random_user)
-        data = json.loads(response.content)
-        self.assertEqual(len(data.get('results')), 1)
-    
-    def test_manager_can_see_list(self, **kwargs):
+    def test_sharing_list_view_permissions(self, **kwargs):
         # create new user and make them project manager:
-        random_user = self.create_user(username='rando')
-        self._add_user(self.user, random_user, 3)
-        
-        # make sure that manager can see all shared folks:
-        response = self._get_users(random_user)
+        manager = self.create_user(username='manager')
+        editor = self.create_user(username='editor')
+        viewer = self.create_user(username='viewer')
+        nobody = self.create_user(username='nobody')
+        self._add_user(self.user, manager, 3)
+        self._add_user(self.user, editor, 2)
+        self._add_user(self.user, viewer, 1)
+
+        # test manager can see 2 users:
+        response = self._get_users(manager)
+        data = json.loads(response.content)
+        self.assertEqual(len(data.get('results')), 3)
+
+        # test editor can see 2 users:
+        response = self._get_users(editor)
+        data = json.loads(response.content)
+        self.assertEqual(len(data.get('results')), 3)
+
+        # test viewer can only see themselves:
+        response = self._get_users(viewer)
         data = json.loads(response.content)
         self.assertEqual(len(data.get('results')), 1)
 
-    def test_viewer_cannot_see_list(self, **kwargs):
-        # create new user and make them project manager:
-        random_user = self.create_user(username='rando')
-        self._add_user(self.user, random_user, 1)
-
-        # viewer should not be able to see project list:
-        response = self._get_users(random_user)
+        # test unauthorized user cannot see list:
+        response = self._get_users(nobody)
         data = json.loads(response.content)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)  
 
     def test_owner_can_share_project_using_post(self, **kwargs):
         # create a second user & client
@@ -94,7 +93,6 @@ class SharingListTest(APITestCase, ViewMixinAPI):
         # ensure that manager can share w/new ppl:
         random_user = self.create_user(username='rando')
         response = self._add_user(manager, random_user, 2)
-
     
     def test_unauthorized_user_cannot_share_project_using_post(self, **kwargs):
         # create a second user & client
@@ -125,7 +123,7 @@ class SharingInstanceTest(APITestCase, ViewMixinAPI):
         })
         self.random_user = self.create_user(username='rando')
         self.uao = self.grant_project_permissions_to_user(self.project, self.random_user, authority_id=1)
-        self.url = '/api/0/projects/%s/sharing/%s/.json' % (self.project.id, self.uao.id)
+        self.url = '/api/0/projects/%s/users/%s/.json' % (self.project.id, self.uao.user.id)
         self.urls = [self.url]
 
     def _update_user_put(self, auth_user, authority):
@@ -186,20 +184,12 @@ class SharingInstanceTest(APITestCase, ViewMixinAPI):
         response = self._delete_user(self.user)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    '''
     def test_user_can_always_unshare_project_with_oneself(self, **kwargs):
-        from django.test import TestCase, RequestFactory
-        self.factory = RequestFactory()
-        request = self.factory.delete(self.url)
-        request.user = self.uao.user
-        response = self.view(request)
-
         # make sure that user can delete oneself:
-        print self.url, self.uao.id, self.uao.user.username
-        print self.uao.can_delete(self.uao.user)
-        #response = self._delete_user(self.uao.user)
+        self.uao.authority = models.UserAuthority.objects.get(id=1)
+        self.uao.save()
+        response = self._delete_user(self.uao.user)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-    '''
     
     def test_user_can_downgrade_not_upgrade_oneself(self, **kwargs):
         self.uao.authority = models.UserAuthority.objects.get(id=2)

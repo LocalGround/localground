@@ -136,7 +136,8 @@ class UserAuthorityObject(models.Model):
 
     # Leveraging parent project / snapshot's can_edit function
     def can_view(self, user, access_key=None):
-        return self.object.can_view(user) or self.user == user
+        # to view someone else's privs, you need edit privs:
+        return self.object.can_edit(user) or self.user == user
 
     def can_edit(self, user, authority_id):
         # deletegate to can_manage:

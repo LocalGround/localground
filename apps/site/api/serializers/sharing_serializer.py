@@ -9,7 +9,7 @@ class SharingSerializerMixin(serializers.ModelSerializer):
 
     class Meta:
         model = models.UserAuthorityObject
-        fields = ('id', 'authority', 'project_id', 'url', 'granted_by')
+        fields = ('user', 'authority', 'project_id', 'url', 'granted_by')
 
     def validate(self, attrs):
         # first, ensure that there isn't already an UserAuthorityObject
@@ -26,21 +26,21 @@ class SharingSerializerMixin(serializers.ModelSerializer):
 
     def get_url(self, obj):
         view = self.context.get('view')
-        return '%s/api/0/projects/%s/sharing/%s/' % (
+        return '%s/api/0/projects/%s/users/%s/' % (
             settings.SERVER_URL,
             view.kwargs.get('project_id'),
-            obj.id)
+            obj.user.id)
 
 class SharingListSerializer(SharingSerializerMixin):
     
     class Meta:
         model = models.UserAuthorityObject
-        fields = SharingSerializerMixin.Meta.fields + ('user', )
+        fields = SharingSerializerMixin.Meta.fields
         read_only_fields = ('granted_by', )
 
 class SharingDetailSerializer(SharingSerializerMixin):
     
     class Meta:
         model = models.UserAuthorityObject
-        fields = SharingSerializerMixin.Meta.fields + ('user', )
+        fields = SharingSerializerMixin.Meta.fields
         read_only_fields = ('granted_by', 'user')
