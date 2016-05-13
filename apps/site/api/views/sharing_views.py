@@ -53,7 +53,6 @@ class SharingInstance(SharingMixin, QueryableRetrieveUpdateDestroyView):
 
     def get_object(self, queryset=None):
         project_id = self.kwargs.get('project_id')
-        project = models.Project.objects.get(id=project_id)
         instance = models.UserAuthorityObject.objects.get(
             user__id=self.kwargs.get('user_id'),
             object_id=project_id,
