@@ -1,4 +1,3 @@
-__author__ = 'zmmachar'
 from rest_framework import generics, exceptions
 from localground.apps.site.models import UserProfile
 from localground.apps.site.api.serializers import UserProfileSerializer, UserProfileListSerializer
@@ -33,9 +32,6 @@ class UserProfileInstance(generics.RetrieveUpdateAPIView):
             return UserProfile.objects.all() #filter(user=self.request.user)
         else:
             raise exceptions.PermissionDenied(detail="You can only view the details of your own user profile")
-        #raise Exception(self.kwargs['pk'])
-        #if self.request.user.is_authenticated():
-        #    return UserProfile.objects.filter(user=self.request.user)
 
     def pre_save(self, obj):
         obj.owner = self.request.user
