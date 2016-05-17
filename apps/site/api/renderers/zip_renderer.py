@@ -71,7 +71,36 @@ class ZIPRenderer(renderers.BaseRenderer):
                 continue
             target_file_path = os.path.join(media_type, data['media_file'])
             zip_file.write(source_file_path, target_file_path)
+        # replace url paths with local file paths in the spreadsheet
+        # columns to modify: path_marker_lg, file_path_orig, path_medium, path_large, path_marker_sm, path_medium_sm, path_small, file_path
+        url_cols = ['path_marker_lg', 'file_path_orig', 'path_medium', 'path_large', 'path_marker_sm', 'path_medium_sm', 'path_small', 'file_path']
+        dict_spreadsheet = csv.DictReader(StringIO(spreadsheet))
+        dict_keys = []
+        rows_spreadsheet = []
+        for row in dict_spreadsheet:
+            media_type = None
+            if 'overlay_type' in row:
+                # expected values of overlay_type: photo, audio, print
+                media_type = row['overlay_type']
+                # target values of media_type: photos, audio, prints
+                if media_type in ['photo', 'print']:
+                    media_type += 's'
+            for key in row:
+                dict_keys.append(key)
+                if key in url_cols and row[key]:
+                    row[key] = media_type
+            orig_file_name = ''
+            if 'media_file' in row:
+                orig_file_name = row['media_file']
+            row['media_file'] = '{}/{}'.format(media_type, orig_file_name)
+            rows_spreadsheet.append(row)
+        dict_keys = list(set(dict_keys))
+        spreadsheet_buffer = StringIO() # final product of the spreadsheet
+        csv_writer = csv.DictWriter(spreadsheet_buffer, dict_keys)
+        csv_writer.writeheader()
+        for row in rows_spreadsheet:
+            csv_writer.writerow(row)
         # before close the zip file, include spreadsheet in the archive
-        zip_file.writestr('content.csv', spreadsheet)
+        zip_file.writestr('content.csv', spreadsheet_buffer.getvalue())
         zip_file.close()
         return zip_file_str.getvalue()
