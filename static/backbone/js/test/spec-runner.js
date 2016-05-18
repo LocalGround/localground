@@ -13,6 +13,11 @@ require(['boot'], function () {
         // COLLECTIONS
         'spec/collections/base-test.js',
         'spec/collections/layers-test.js',
+        'spec/collections/photos-test.js',
+        'spec/collections/audio-test.js',
+        'spec/collections/prints-test.js',
+        'spec/collections/mapimages-test.js',
+        'spec/collections/projects-test.js',
 
         // VIEWS
         'spec/views/basemap-test.js',
