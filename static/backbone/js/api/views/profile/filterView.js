@@ -11,7 +11,8 @@ define(["underscore",
             events: {
                 "click #submitSearch": "applyFilter",
                 "click #clearSearch": "clearFilter",
-                "click .dropdown-menu": "clickFilterArea"
+                "click .dropdown-menu": "clickFilterArea",
+                "click #generateQuery": "generateQuery"
             },
             clickFilterArea: function (e) {
                 // Stops the filter menu from closing
@@ -37,9 +38,18 @@ define(["underscore",
             template: function () {
                 return _.template(FilterTemplate);
             },
+            generateQuery: function(e){
+              var params = this.createParameterList();
+              if (params.length > 0) {
+                var query = this.createSQLQuery(params);
+                this.$el.find('#filterDiv').find('textarea').val(query);
+              }
+              else {
+                this.$el.find('#filterDiv').find('textarea').val('');
+              }
+            },
             applyFilter: function (e) {
-                var params = this.createParameterList();
-
+                var params = this.$el.find('#filterDiv').find('textarea').val();
                 if (params.length > 0) {
                     this.app.vent.trigger("apply-filter", params);
                 } else {
@@ -52,12 +62,15 @@ define(["underscore",
             },
             clearFilter: function (e) {
                 this.$el.find('#filterDiv').find('input:text').val('');
+                this.$el.find('#filterDiv').find('input').val('');
+                this.$el.find('#filterDiv').find('textarea').val('');
                 this.app.vent.trigger("clear-filter");
             },
             createParameterList: function(){
               var params = [];
-              this.$el.find('#filterDiv :input:text').each(function(){
+              this.$el.find('#filterDiv :input:text, :input[type=number]').each(function(){
                    var input = $(this); // This is the jquery object of the input, do what you will
+                   console.log(input);
                    var textInputValue = input.val();
 
                    if (textInputValue) {
@@ -66,6 +79,20 @@ define(["underscore",
                   }
               );
               return params;
+            },
+            createSQLQuery: function(params){
+              var query = "WHERE ";
+              _.each(params, function (parameter, index) {
+                  if (index > 0) {
+                      query += " and ";
+                  }
+                  if (parameter.operation == "=") {
+                      query += parameter.name + " = " + parameter.value;
+                  } else {
+                      query += parameter.name + " LIKE '%" + parameter.value + "%'";
+                  }
+              });
+              return query;
             }
 
         });

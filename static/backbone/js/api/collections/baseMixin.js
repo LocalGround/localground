@@ -43,18 +43,19 @@ define(["jquery", "lib/sqlParser", "underscore", "backbone"], function ($, SqlPa
             return models;
         },
         setServerQuery: function (parameters) {
-            this.query = "WHERE ";
-            var that = this;
-            _.each(parameters, function (parameter, index) {
-                if (index > 0) {
-                    that.query += " and ";
-                }
-                if (parameter.operation == "=") {
-                    that.query += parameter.name + " = " + parameter.value;
-                } else {
-                    that.query += parameter.name + " LIKE '%" + parameter.value + "%'";
-                }
-            });
+            // this.query = "WHERE ";
+            // var that = this;
+            // _.each(parameters, function (parameter, index) {
+            //     if (index > 0) {
+            //         that.query += " and ";
+            //     }
+            //     if (parameter.operation == "=") {
+            //         that.query += parameter.name + " = " + parameter.value;
+            //     } else {
+            //         that.query += parameter.name + " LIKE '%" + parameter.value + "%'";
+            //     }
+            // });
+            this.query = parameters;
 
         },
         clearServerQuery: function () {

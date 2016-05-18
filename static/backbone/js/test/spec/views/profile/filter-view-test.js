@@ -32,8 +32,11 @@ define([
             spyOn(FilterView.prototype, "clickFilterArea").and.callThrough();
             spyOn(FilterView.prototype, "clearFilter").and.callThrough();
             spyOn(FilterView.prototype, "applyFilter").and.callThrough();
-            
+
             spyOn(FilterView.prototype, "createParameterList").and.returnValue(params);
+
+            spyOn(FilterView.prototype, "generateQuery").and.callThrough();
+            spyOn(FilterView.prototype, "createSQLQuery").and.callThrough();
 
 
             spyOn(ProfileApp.prototype, "clearFilter").and.callThrough();
@@ -90,13 +93,20 @@ define([
             it("Listens for click of apply filter button", function () {
                 $("#submitSearch").trigger("click");
                 expect(filterView.applyFilter).toHaveBeenCalled();
-                expect(filterView.createParameterList).toHaveBeenCalled();
+                // expect(filterView.createParameterList).toHaveBeenCalled();
                 expect(profileApp.applyFilter).toHaveBeenCalled();
 
                 var collection = profileApp.config[profileApp.objectType].collection;
                 expect(collection.setServerQuery).toHaveBeenCalled();
                 expect(collection.fetch).toHaveBeenCalled();
 
+            });
+
+            it("Listens for click of generate SQL button", function () {
+                $("#generateQuery").trigger("click");
+                expect(filterView.generateQuery).toHaveBeenCalled();
+                expect(filterView.createParameterList).toHaveBeenCalled();
+                expect(filterView.createSQLQuery).toHaveBeenCalled();
             });
         });
     });
