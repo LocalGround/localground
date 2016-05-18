@@ -36,6 +36,8 @@ define(["jquery",
             onShow: function () {
                 this.collection.fetch({ reset: true });
                 this.collection.fetchFilterMetadata();
+                var title = this.app.objectType.charAt(0).toUpperCase() + this.app.objectType.slice(1);
+                this.$el.find('#headerTag').html(title);
                 this.refreshPaginator();
             },
             relay: function (schema) {
