@@ -133,6 +133,9 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
             generateUpdateSchema: function (metadata) {
                 this.updateSchema = this._generateSchema(metadata, true);
             },
+            generateCreateSchema: function (metadata) {
+                this.createSchema = this._generateSchema(metadata, true);
+            },
             _generateSchema: function (metadata, edit_only) {
                 //todo: eventually move this to its own class.
                 if (!metadata) {
@@ -172,7 +175,7 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                     }
 
                 }
-                
+
                 return schema;
 
             },

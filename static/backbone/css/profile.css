@@ -10,6 +10,14 @@
     min-height: 300px;
 }
 
+/*Create Project*/
+.modal-dialog{
+position: absolute;
+left: 25%;
+height: 500px;
+top: 25%;
+}
+
 .row-item {
     border-bottom: solid 1px #CCC;
     margin-bottom: 20px;

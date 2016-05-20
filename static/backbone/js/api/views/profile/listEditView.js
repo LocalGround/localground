@@ -1,11 +1,13 @@
 define(["jquery",
         "marionette",
         "views/profile/editItemView",
+        "views/profile/createProjectView",
         "text!../../../templates/profile/list.html",
         "backgrid",
-        "backgrid-paginator"
+        "backgrid-paginator",
+        "backbone-bootstrap-modal"
     ],
-    function ($, Marionette, EditItemView, ListTemplate, Backgrid) {
+    function ($, Marionette, EditItemView, CreateProjectView, ListTemplate, Backgrid) {
         'use strict';
         var ListEditView = Marionette.CompositeView.extend({
 
@@ -23,6 +25,7 @@ define(["jquery",
             events: {
                 "click #saveChanges": "saveData",
                 "click #deleteChanges": "deleteData",
+                "click #createProject": "createProject",
                 "click #viewEdit": "viewEdit",
                 "click #viewStatic": "viewStatic",
                 "click #checked": "updateChecked"
@@ -36,8 +39,7 @@ define(["jquery",
             onShow: function () {
                 this.collection.fetch({ reset: true });
                 this.collection.fetchFilterMetadata();
-                var title = this.app.objectType.charAt(0).toUpperCase() + this.app.objectType.slice(1);
-                this.$el.find('#headerTag').html(title);
+                this.toggleHeaderOptions();
                 this.refreshPaginator();
             },
             relay: function (schema) {
@@ -85,6 +87,7 @@ define(["jquery",
                 //no need to replace entire view...just toggle the mode and re-render
                 this.app.mode = "edit";
                 this.render();
+                this.toggleHeaderOptions();
                 this.refreshPaginator();
                 e.preventDefault();
             },
@@ -93,6 +96,7 @@ define(["jquery",
                 //no need to replace entire view...just toggle the mode and re-render
                 this.app.mode = "view";
                 this.render();
+                this.toggleHeaderOptions();
                 this.refreshPaginator();
                 e.preventDefault();
             },
@@ -103,6 +107,48 @@ define(["jquery",
                     goBackFirstOnSort: false
                 });
                 this.$el.find('.container-footer').html(this.paginator.render().el);
+            },
+
+            toggleHeaderOptions: function(){
+              var title = this.app.objectType.charAt(0).toUpperCase() + this.app.objectType.slice(1);
+              this.$el.find('#headerTag').html(title);
+              if (this.app.mode == "view") {
+                this.$el.find('#saveChanges').css("visibility" , "hidden");
+                this.$el.find('#deleteChanges').css("visibility" , "hidden");
+                this.$el.find('#createProject').css("visibility" , "hidden");
+              }
+              else {
+                this.$el.find('#saveChanges').css("visibility" , "visible");
+                this.$el.find('#deleteChanges').css("visibility" , "visible");
+                if (this.app.objectType == "projects") {
+                  this.$el.find('#createProject').css("visibility" , "visible");
+                }
+                else {
+                  this.$el.find('#createProject').css("visibility" , "hidden");
+                }
+              }
+            },
+
+            createProject: function(){
+
+              var view = new CreateProjectView(this.app.options);
+              var modal = new Backbone.BootstrapModal({ content: view, okText : "Create Project", title : "Create New Project" });
+              var that = this;
+
+              modal.on('ok', function() {
+                //Do some validation etc.
+                modal.preventClose();
+                that.app.vent.trigger("submit-create-project", modal);
+                that.listenTo(that.app.vent, "project-saved", that.projectSaved);
+              });
+              modal.open();
+            },
+
+            projectSaved: function()
+            {
+              console.log("saved");
+              this.collection.fetch({ reset: true });
+              this.refreshPaginator();
             }
 
         });
