@@ -8,9 +8,9 @@ define(["models/mapimage", "collections/base", "collections/basePageable"], func
         name: 'Map Images',
         key: 'map-images',
         url: '/api/0/map-images/',
-        parse: function (response) {
-            return response.results;
-        }
+        // parse: function (response) {
+        //     return response.results;
+        // }
     });
     return MapImages;
 });

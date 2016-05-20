@@ -9,9 +9,9 @@ define(["models/project", "collections/base", "collections/basePageable"], funct
         key: 'projects',
         overlay_type: 'project',
         url: '/api/0/projects/',
-        parse: function (response) {
-            return response.results;
-        }
+        // parse: function (response) {
+        //     return response.results;
+        // }
     });
     return Projects;
 });
