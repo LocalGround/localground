@@ -17,7 +17,8 @@ EMAIL_HOST_USER = ''
 LOGIN_REDIRECT_URL = '/'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'sgbackend.SendGridBackend'
+SENDGRID_API_KEY = "SENDGRID API KEY"
 REGISTRATION_OPEN = True
 ONLY_SUPERUSERS_CAN_REGISTER_PEOPLE = False
 ACCOUNT_ACTIVATION_DAYS = 5
@@ -27,7 +28,7 @@ SESSION_COOKIE_NAME = 'sessionid'
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Custom Local Variables
-PROTOCOL = 'http'
+PROTOCOL = 'https'
 SERVER_HOST = os.environ.get('SERVER_HOST', 'yoursite.com')
 SERVER_URL = '%s//%s' % (PROTOCOL, SERVER_HOST)
 
@@ -190,11 +191,12 @@ INSTALLED_APPS = (
     'localground.apps',
     'localground.apps.management',
     'localground.apps.site',
-    'localground.apps.registration',        #taken from the django-registration module
+    #'localground.apps.registration',        #taken from the django-registration module
     'tagging',                              #for tagging of blog posts in Django
     'django.contrib.admin',
     'rest_framework',
     'corsheaders',
+    'djcelery',
     'social.apps.django_app.default'
 )
 
@@ -210,6 +212,7 @@ REST_FRAMEWORK = {
         'localground.apps.site.api.renderers.CSVRenderer',
         'rest_framework_xml.renderers.XMLRenderer',
         'localground.apps.site.api.renderers.GeoJSONRenderer',
+        'localground.apps.site.api.renderers.KMLRenderer',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
@@ -218,10 +221,13 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
         'rest_framework.filters.DjangoFilterBackend',
     ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ),
+    # Commenting out authentication classes for now. It was throwing a
+    # really weird error for shared projects
+    #
+    #'DEFAULT_AUTHENTICATION_CLASSES': (
+    #    'rest_framework.authentication.BasicAuthentication',
+    #    'rest_framework.authentication.SessionAuthentication',
+    #),
     'TEST_REQUEST_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'localground.apps.site.api.renderers.GeoJSONRenderer',
@@ -251,6 +257,8 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'accept-encoding' #needed for Safari to work
 )
+
+ACCOUNT_ACTIVATION_DAYS = 7
 
 # Local settings override project settings
 try:

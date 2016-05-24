@@ -16,6 +16,11 @@ echo "Y" | sudo apt-get install libapache2-mod-wsgi
 echo "Y" | sudo apt-get install sendmail
 echo "Y" | sudo apt-get install libmail-sendmail-perl
 
+################
+# Install Java #
+################
+sudo apt-get -y install openjdk-7-jre
+
 #######################################
 # Install GDAL, MapServer, Etc. First #
 #######################################
@@ -41,7 +46,6 @@ echo "Y" | sudo apt-get install postgresql-server-dev-9.3
 echo "Y" | sudo apt-get install postgresql-plperl-9.3
 echo "Y" | sudo apt-get install postgresql-9.3-postgis-2.1
 echo "Y" | sudo apt-get install postgresql-9.3-postgis-scripts
-
 echo "Y" | sudo apt-get install libpq-dev
 
 ##################################
@@ -124,7 +128,16 @@ sudo cp -r /usr/local/lib/python2.7/dist-packages/swampdragon/static/swampdragon
 #################
 # Install Redis #
 #################
-sudo apt-get install redis-server
+sudo apt-get -y install redis-server rabbitmq-server
+
+# we use supervisor to run our celery worker 
+sudo apt-get -y install supervisor
+sudo cp /localground/deploy_tools/celeryd.conf /etc/supervisor/conf.d/celeryd.conf
+sudo mkdir /var/log/celery
+
+# flower will monitor celery
+sudo cp /localground/deploy_tools/flower.conf /etc/supervisor/conf.d/flower.conf
+
 
 ###############################################
 # Create required Django tables and run tests #
@@ -133,6 +146,8 @@ cd /localground/apps
 sudo ln -s /usr/lib/libgdal.so.1.17.1 /usr/lib/libgdal.so.1.17.0
 python manage.py syncdb --noinput
 python manage.py test --verbosity=2
+sudo service supervisor restart
+sudo supervisorctl restart celery
 
 echo '------------------------------------'
 echo ' Server configured. Check it out at '

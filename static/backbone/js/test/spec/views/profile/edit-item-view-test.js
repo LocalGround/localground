@@ -40,7 +40,7 @@ define([
             listEditView = profileApp.mainView;
             listEditView.collection = scope.photos;
 
-            console.log(listEditView);
+            //console.log(listEditView);
 
         }
 

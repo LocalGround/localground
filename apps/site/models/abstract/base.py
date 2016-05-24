@@ -137,10 +137,10 @@ class Base(models.Model):
         return self._get_filtered_entities(cls)
 
     def get_form_ids(self):
-        from localground.apps.site.models import Photo, Audio, Scan
+        from localground.apps.site.models import Photo, Audio, MapImage
         content_ids = [
             ct.id for ct in
-            ContentType.objects.get_for_models(Photo, Audio, Scan).values()
+            ContentType.objects.get_for_models(Photo, Audio, MapImage).values()
         ]
         return (
             self.entities
@@ -153,7 +153,7 @@ class Base(models.Model):
         """
         Private method that queries the GenericAssociation model for
         references to the current view for a given media type (Photo,
-        Audio, Video, Scan, Marker).
+        Audio, Video, MapImage, Marker).
         """
         qs = (self.entities
               .filter(entity_type=cls.get_content_type())

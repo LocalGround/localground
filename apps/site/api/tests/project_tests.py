@@ -13,10 +13,11 @@ def get_metadata():
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'slug': {'read_only': False, 'required': True, 'type': 'slug'},
-        'access': {'read_only': True, 'required': False, 'type': 'field'},
+        'access_authority': {'read_only': False, 'required': False, 'type': 'field'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
-        'name': {'read_only': False, 'required': False, 'type': 'string'}
+        'name': {'read_only': False, 'required': False, 'type': 'string'},
+        'sharing_url': { 'type': 'field', 'required': False, 'read_only': True }
     }
 
 class ApiProjectListTest(test.TestCase, ViewMixinAPI):
@@ -42,7 +43,8 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
                                              'name': name,
                                              'caption': description,
                                              'tags': tags,
-                                             'slug': slug
+                                             'slug': slug,
+                                             'access_authority': 2
                                          }),
                                          HTTP_X_CSRFTOKEN=self.csrf_token,
                                          content_type="application/json"
@@ -53,6 +55,7 @@ class ApiProjectListTest(test.TestCase, ViewMixinAPI):
         self.assertEqual(new_obj.description, description)
         self.assertEqual(new_obj.tags, convert_tags_to_list(tags))
         self.assertEqual(new_obj.slug, slug)
+        self.assertEqual(new_obj.access_authority.id, 2)
         
 class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
 
@@ -69,7 +72,7 @@ class ApiProjectInstanceTest(test.TestCase, ViewMixinAPI):
         
     def _check_children(self, children):
         self.assertTrue(not children is None)
-        for k in ['photos', 'audio', 'markers', 'scans']:
+        for k in ['photos', 'audio', 'markers', 'map_images']:
             self.assertTrue(not children.get(k) is None)
             self.assertTrue(isinstance(children.get(k).get('update_metadata'), dict))
             self.assertTrue(isinstance(children.get(k).get('overlay_type'), basestring))

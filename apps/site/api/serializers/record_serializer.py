@@ -11,7 +11,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
         help_text='Assign a GeoJSON string',
         required=False,
         allow_null=True,
-        style={'base_template': 'json.html'},
+        style={'base_template': 'json.html', 'rows': 5},
         source='point'
     )
     project_id = serializers.PrimaryKeyRelatedField(

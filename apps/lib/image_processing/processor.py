@@ -21,21 +21,6 @@ class General:
     def make_directory(self, path):
         from localground.apps.site.models import BaseMedia
         BaseMedia.make_directory(path)
-        '''
-        from pwd import getpwnam
-        os.makedirs(path) #create new directory
-        #get OS ids:
-        uid = getpwnam(settings.USER_ACCOUNT).pw_uid
-        gid = getpwnam(settings.GROUP_ACCOUNT).pw_gid
-        
-        print('this is the uid %s and this is the gid %s' % (uid, gid))
-        os.chown(path, uid, gid);
-        #need to "or" permissions flags together:
-        #permissions = stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH
-        permissions = '775'
-        os.chmod(path, permissions)
-        '''
-
 
 class Processor(General):
     is_debug = True
@@ -46,10 +31,7 @@ class Processor(General):
     def __init__(self, obj, **kwargs):
         General.__init__(self)
         self.obj = obj
-        if isinstance(obj, models.Scan):
-            self.scan = obj
-        else:
-            self.attachment = obj
+        self.mapimage = obj
         self.rectangles = []
         self.pil_image = None
         self.finder = None
@@ -57,7 +39,7 @@ class Processor(General):
         self.map_processor = None
         self.logger = Logger(self.is_debug,
                              tmp_directory=self.obj.get_abs_directory_path() + \
-                             'debug/')
+                             '/debug/')
         
         
     def process_image(self, object_name):
@@ -108,7 +90,7 @@ class Processor(General):
                         message='Exiting:  QR-Code not read',
                         terminate=True)
         
-        #rotate entire scanned image based on qr-code orientation; re-query for
+        #rotate entire image based on qr-code orientation; re-query for
         #rectangles if theta != 0:
         self.rotate_image_by_angle(theta)
         
@@ -122,75 +104,34 @@ class Processor(General):
                         models.StatusCode.PRINT_NOT_FOUND,
                         message='Exiting:  QR-Code %s not in database' % print_id,
                         terminate=True)
-            
-    def process_form(self):
-        rect = None
-        if self.page_num == 1:
-            rect = self.miniform_rect = self.finder.get_miniform_rectangle(
-                                self.obj.source_print)
-        else:
-            rect = self.form_rect = self.finder.get_form_rectangle(
-                                self.obj.source_print)
-        
-        #initilize form helper and process the form:
-        self.form_processor = FormUtils(self.obj, self.pil_image,
-                                            rect, self.logger,
-                                            is_mini=(self.page_num==1))
-        self.form_processor.process_form()
-            
-    
-    def process_attachment(self):
-        self.process_image('attachment')
-        self.process_form()
-        self.finder.draw_rectangles()
-        
 
-    def process_scan(self):
-        self.process_image('map scan')
-        
-        # Process form (if applicable)
-        #------------------------------
-        # if the current page has a form, process it:
-        if self.obj.source_print.layout.id == PrintLayouts.PORTRAIT_WITH_FORM or \
-                                        self.page_num == 2:
-            self.process_form()
+    def process_mapimage(self):
+        self.process_image('map image')
             
         # Process Map:
         #------------------------------
-        #if the current page has a map, process it:
-        if self.page_num == 1:
-            #filter rectangles to find map rectangle, based on metadata from the
-            #print; exit if no map rectangle found:    
-            self.scan.map_rect = self.finder.get_map_rectangle(self.scan.source_print)
-            if self.scan.map_rect is None:
-                self.logger.log('Exiting:  No map rectangle found')
-                self.scan.status = models.StatusCode.objects.get(
-                                        id=models.StatusCode.MAP_RECT_NOT_FOUND)
-                self.scan.save()
-                return
+        #filter rectangles to find map rectangle, based on metadata from the
+        #print; exit if no map rectangle found:    
+        self.mapimage.map_rect = self.finder.get_map_rectangle(self.mapimage.source_print)
+        if self.mapimage.map_rect is None:
+            self.logger.log('Exiting:  No map rectangle found')
+            self.mapimage.status = models.StatusCode.objects.get(
+                                    id=models.StatusCode.MAP_RECT_NOT_FOUND)
+            self.mapimage.save()
+            return
+    
+        #helper class for processing map image:
+        self.map_processor = MapUtils(self.mapimage, self.pil_image, self.logger)
         
-            #helper class for processing map image:
-            self.map_processor = MapUtils(self.scan, self.pil_image, self.logger)
-            
-            #generate all of the map image alternatives:
-            self.map_processor.process_map_image(self.scan.map_rect)
+        #generate all of the map image alternatives:
+        self.map_processor.process_map_image(self.mapimage.map_rect)
 
-            #save all changes made to the scan:
-            self.scan.status = models.StatusCode.objects.get(
-                                    id=models.StatusCode.PROCESSED_SUCCESSFULLY)
-            self.scan.save()
-            self.finder.draw_rectangles()
-        
-        elif self.page_num == 2:
-            #remove scan from database, because it's been copied to the
-            #models.Attachments table:
-            self.logger.tmp_directory = (
-                self.form_processor.attachment.get_abs_directory_path() +
-                'debug/')
-            self.finder.draw_rectangles()
-            self.scan.delete()
-            
         self.finder.draw_rectangles()
+
+        #save all changes made to the map image:
+        self.mapimage.status = models.StatusCode.objects.get(
+                                id=models.StatusCode.PROCESSED_SUCCESSFULLY)
+        self.mapimage.save()
         self.logger.write_messages_to_file()
         return
     
@@ -261,12 +202,6 @@ class ProcessingError(Exception):
 class BasemapTypes:
     MAP_TYPE_HYBRID_SATELLITE = 3
     MAP_TYPE_SATELLITE = 9
-    
-class PrintLayouts:
-    #Sync with prints_layout table
-    PORTRAIT = 1
-    LANDSCAPE = 2
-    PORTRAIT_WITH_FORM = 3
     
 class ImageProcessingTypes:
     #cropped to map bounds:
@@ -393,8 +328,8 @@ class Logger(General):
                 
             except OSError:
                 self.log('%s does not exist.  Defaulting to %s' %
-                         (self.tmp_directory, '/tmp/scans/'))
-                self.tmp_directory = '/tmp/scans/'
+                         (self.tmp_directory, '/tmp/mapimages/'))
+                self.tmp_directory = '/tmp/mapimages/'
                 #os.mkdir(self.tmp_directory)
         
     def log(self, message):
@@ -404,8 +339,6 @@ class Logger(General):
             print message
             
     def write_messages_to_file(self):
-        #note:  if scans are actually moved into the attachments directory,
-        # the temp directory will need to be changed.  Re-org needed!
         f = open(os.path.join(self.tmp_directory, 'processor_log.log'), 'w')
         for m in self.messages:
             f.write(str(m) + '\n')
@@ -677,8 +610,6 @@ class RectangleFinder(General):
         self.pil_image = pil_image
         self.map_rect = None
         self.qr_rect = None
-        self.miniform_rect = None
-        self.form_rect = None
         
     def get_rectangles(self, min_threshold=5, max_threshold=250, increment=5,
                        kernel_size=1):
@@ -739,20 +670,10 @@ class RectangleFinder(General):
         self.map_rect = self.select_rectangle(source_print, .2, .7, in_first_third=True)
         return self.map_rect
     
-    def get_miniform_rectangle(self, source_print):
-        self.logger.log('Getting miniform rectangle...')
-        self.miniform_rect = self.select_rectangle(source_print, .15, .5, in_first_third=False)
-        return self.miniform_rect
-    
-    def get_form_rectangle(self, source_print):
-        self.logger.log('Getting form rectangle...')
-        self.form_rect = self.select_rectangle(source_print, .4, .95, in_first_third=None)
-        return self.form_rect
-    
     def select_rectangle(self, source_print, min_area, max_area, in_first_third=True):
         """
         Finds the rectangle that corresponds to the map_rect; assumes that the
-        scanned image has already been rotated.
+        image has already been rotated.
         """
         if source_print is None:
             self.logger.log('No print defined')
@@ -766,7 +687,7 @@ class RectangleFinder(General):
             perimeter = cv.ArcLength(rect, isClosed=True)
             ratio_this = area/(perimeter/4)**2
             #check to see if the rectangle exists in the first third of the
-            #scanned paper image:
+            #image:
             min_y = min([p[1] for p in rect])
             position_match = (min_y < self.pil_image.size[1]/3) == in_first_third or \
                             not in_first_third == (min_y >= self.pil_image.size[1]/3) or \
@@ -804,16 +725,6 @@ class RectangleFinder(General):
             r = Quadrilateral(self.qr_rect)
             cv.PolyLine(cv_image, [r.to_cv_poly()], True, (0, 0, 255), 1, cv.CV_AA, 0)
             
-        #output mini form rectangle (if exists):
-        if self.miniform_rect is not None:
-            r = Quadrilateral(self.miniform_rect)
-            cv.PolyLine(cv_image, [r.to_cv_poly()], True, (255, 0, 255), 1, cv.CV_AA, 0)
-            
-        #output form rectangle (if exists):
-        if self.form_rect is not None:
-            r = Quadrilateral(self.form_rect)
-            cv.PolyLine(cv_image, [r.to_cv_poly()], True, (255, 0, 255), 1, cv.CV_AA, 0)
-        
         #output map rectangle (if exists):
         if self.map_rect is not None:
             r = Quadrilateral(self.map_rect, contract_by=12)
@@ -826,9 +737,9 @@ class RectangleFinder(General):
 
 class QrCodeUtils(General):
     
-    def __init__(self, scan, pil_image, logger):
+    def __init__(self, mapimage, pil_image, logger):
         General.__init__(self)      #has some generic functions (lik a logger)
-        self.scan = scan            #scan is being passed in by reference
+        self.mapimage = mapimage            #mapimage is being passed in by reference
         self.pil_image = pil_image
         self.logger = logger
 
@@ -952,7 +863,7 @@ class QrCodeUtils(General):
         qr_image = qr_image.crop(quad.to_pil_bbox())
         
         #save the qr-code to disk, and read it:
-        path = '%sqr_%s.png' % (self.scan.get_abs_directory_path(), 1)
+        path = '%sqr_%s.png' % (self.mapimage.get_abs_directory_path(), 1)
         self.logger.log(path)
         qr_image.save(path)
         print_id, theta = self.execute_reader(path)
@@ -963,7 +874,7 @@ class QrCodeUtils(General):
             # (which is counter-intuitive to me) in order for it to be read:
             q = qr_image.copy()
             q.thumbnail([100, 100], Image.ANTIALIAS)
-            path = '%sqr_%s.png' % (self.scan.get_abs_directory_path(), 2)
+            path = '%sqr_%s.png' % (self.mapimage.get_abs_directory_path(), 2)
             self.logger.log(path)
             q.save(path)
             print_id, theta = self.execute_reader(path)
@@ -973,7 +884,7 @@ class QrCodeUtils(General):
             # sometimes, the qr-image needs to be resized to something smaller
             # (which is counter-intuitive to me) in order for it to be read:
             q = self.pil_image.copy()
-            path = '%sqr_whole_image_%s.png' % (self.scan.get_abs_directory_path(), 3)
+            path = '%sqr_whole_image_%s.png' % (self.mapimage.get_abs_directory_path(), 3)
             self.logger.log(path)
             q.save(path)
             print_id, theta = self.execute_reader(path)
@@ -991,7 +902,7 @@ class ImageUtils(General):
     @staticmethod
     def subtract_grayscale(img, threshold=20):        
         ## Threshold ~= max( max(R,G,B) - min(R,G,B) ) of grays.
-        ## For a scan (high quality image), a threshold of 14 seems to work well.
+        ## For a mapimage (high quality image), a threshold of 14 seems to work well.
         ## A value of 17 seems good and conservative for an indoor iPhoto.
         ## While 20, or 22, should be the max threshold even for poor quality photos
         
@@ -1085,9 +996,9 @@ class MapUtils(General):
     
     #Map types (be sure to sync w/overlays_wmsoverlay table):
     
-    def __init__(self, scan, pil_image, logger):
+    def __init__(self, mapimage, pil_image, logger):
         General.__init__(self)
-        self.scan = scan
+        self.mapimage = mapimage
         self.pil_image = pil_image
         self.logger = logger
         self.image_quality_statistics = None
@@ -1106,12 +1017,12 @@ class MapUtils(General):
         self.map_rect = Quadrilateral(map_rect, contract_by=12)
         
         #IMPORTANT: set processed_image to None or else "cascade delete" will
-        #           delete the scan itself (cascade delete not customizable
+        #           delete the mapimage itself (cascade delete not customizable
         #           'til Django 1.3)
         #clear out all old map images:
-        self.scan.processed_image = None
-        self.scan.save()
-        models.ImageOpts.objects.filter(source_scan=self.scan).delete()
+        self.mapimage.processed_image = None
+        self.mapimage.save()
+        models.ImageOpts.objects.filter(source_mapimage=self.mapimage).delete()
         
         #get image statistics, to assist with color processing:
         self.stats = ImageQuality(self.pil_image, logger=self.logger)
@@ -1207,17 +1118,17 @@ class MapUtils(General):
         
         '''
         if self.stats.image_quality == ImageQuality.BAD_PHOTO:
-            self.scan.processed_image = self.image_records.get(
+            self.mapimage.processed_image = self.image_records.get(
                                         types.COLOR_TO_ALPHA_WITH_SOLID_MARGINS)
         else:
-            self.scan.processed_image = self.image_records.get(
+            self.mapimage.processed_image = self.image_records.get(
                                         types.GRAYSCALE_SUBTRACTED_WITH_SOLID_MARGINS)
         '''
         if self.stats.image_quality == ImageQuality.BAD_PHOTO:
-            self.scan.processed_image = self.image_records.get(
+            self.mapimage.processed_image = self.image_records.get(
                                         types.COLOR_TO_ALPHA)
         else:
-            self.scan.processed_image = self.image_records.get(
+            self.mapimage.processed_image = self.image_records.get(
                                         types.GRAYSCALE_SUBTRACTED)
     
     def generate_image_with_map_margins(self):
@@ -1228,9 +1139,9 @@ class MapUtils(General):
         top, left, bottom, right = self.map_rect.get_margins(self.pil_image)
         
         #scale image to its original print size:
-        zoom = self.scan.source_print.zoom
-        old_width = self.scan.source_print.map_width
-        old_height = self.scan.source_print.map_height
+        zoom = self.mapimage.source_print.zoom
+        old_width = self.mapimage.source_print.map_width
+        old_height = self.mapimage.source_print.map_height
         
         self.logger.log('old width: %s, old height: %s, zoom: %s' \
                         % (old_width, old_height, zoom))
@@ -1246,7 +1157,7 @@ class MapUtils(General):
         top, left, bottom, right = top*sf_h, left*sf_w, bottom*sf_h, right*sf_w
 
         
-        center = self.scan.source_print.center
+        center = self.mapimage.source_print.center
         northeast = Units.add_pixels_to_latlng(
                         center.clone(), zoom, int(1.0*old_width/2 + left),
                         int(-1.0*old_height/2 - top))
@@ -1269,17 +1180,17 @@ class MapUtils(General):
     
     def save_processed_image(self, img, file_name, northeast=None, southwest=None,
                                 extents=None):
-        path = self.scan.get_abs_directory_path() + file_name
+        path = self.mapimage.get_abs_directory_path() + file_name
         self.logger.log('Saving map image and inserting to database: ' + path)
         img.save(path)
         
-        p = self.scan.source_print
+        p = self.mapimage.source_print
         map_image = models.ImageOpts(
-            source_scan=self.scan,
+            source_mapimage=self.mapimage,
             file_name_orig=file_name,
             zoom=p.zoom,
-            host=self.scan.host,
-            virtual_path=self.scan.virtual_path
+            host=self.mapimage.host,
+            virtual_path=self.mapimage.virtual_path
         )
         
         if extents is not None: map_image.extents = extents
@@ -1293,7 +1204,7 @@ class MapUtils(General):
         
         map_image.center = p.center
         
-        map_image.save(user=self.scan.owner)
+        map_image.save(user=self.mapimage.owner)
         return map_image
     
 class ImageQuality():
@@ -1358,280 +1269,3 @@ class ImageQuality():
         else:
             self.image_quality =  ImageQuality.BAD_PHOTO
   
-
-class FormUtils(General):
-    def __init__(self, obj, pil_image, form_rect, logger, is_mini=False):
-        self.obj = obj
-        self.scan = None
-        self.attachment = None
-        if isinstance(obj, models.Scan):
-            self.scan = obj
-        else:
-            self.attachment = obj
-        self.source_print = obj.source_print
-        self.form = obj.source_print.form
-        self.pil_image = pil_image
-        self.form_rect = Quadrilateral(form_rect, contract_by=-5) #expand by 10
-        self.logger = logger
-        self.num_rows = 14 #1 header row + 14 data rows
-        self.is_mini = is_mini
-        if self.is_mini:
-            self.num_rows = 5 #1 header row + 4 data rows
-            
-        self.snippets = []
-    
-    def process_form(self, buffer=5):
-        import operator
-        #create attachment (if one doesn't already exist):
-        self.create_attachment_from_scan()
-        
-        #if self.attachment.status.id == models.StatusCode.PROCESSED_SUCCESSFULLY:
-        #    self.logger.log('models.Attachment #%s has already been successfully processed' %
-        #                    self.attachment.uuid)
-        #    return
-
-        #remove snippet and table records and dependencies:
-        message = self.form.delete_records_by_attachment_id(
-                    self.attachment.id, self.attachment.owner)
-        self.logger.log(message)
-
-        im = self.form_rect.crop_to_shape(self.pil_image.copy(), rotate=True)
-        im.save(self.attachment.get_abs_directory_path() + 'mini_form.png')
-        row_height = self.form_rect.get_height()/self.num_rows
-        row_width = self.form_rect.get_width()
-        header = None
-        for n in range(0, self.num_rows):
-            top = (n)*row_height
-            bottom = (n+1)*row_height
-            #left, upper, right, and lower
-            bbox = [
-                0,
-                max(top - buffer, 0),
-                row_width,
-                min(bottom + 2*buffer, self.form_rect.get_height()) 
-            ] 
-            snippet = im.crop(bbox)
-            if n == 0:
-                header = snippet
-                self.header_pixel_count = self.get_pixel_count(header, n)
-            else:
-                pixel_count = self.get_pixel_count(snippet, n)
-                #then save:
-                self.save_record(snippet, header, n, pixel_count, buffer=buffer)
-        
-        #get meta rms:
-        pix_list = [s.pixel_count for s in self.snippets]
-        pix_list.append(self.header_pixel_count)
-        min_val = min(pix_list)
-        pix_list = [x-min_val for x in pix_list]
-        max_val = max(pix_list)
-        if max_val == 0:
-            max_val = 1
-        pix_list = [x/(max_val*1.0) for x in pix_list]
-        #i=0
-        for i in range(0,len(self.snippets)):
-            #self.snippets[i].is_blank = pix_list[i] <= 0.2
-            
-            #for now, assume no blanks; let user decide.
-            self.snippets[i].is_blank = False 
-            i = i+1
-            
-        for s in self.snippets:
-            #print s.is_blank
-            s.save()
-            
-        self.attachment.status = models.StatusCode.objects.get(
-                                        id=models.StatusCode.PROCESSED_SUCCESSFULLY)
-        self.attachment.save()
-        return
-    
-    
-    def create_attachment_from_scan(self):
-        '''
-        If the scan should really be an attachment, create an models.Attachment object
-        and move the scan directory under the attachments directory in the
-        file system
-        '''
-        #if the attachment already exists, then do nothing
-        if self.attachment is not None:
-            return
-        
-        #otherwise, check to see if there's already an models.Attachment record for
-        #the current scan:
-        if self.is_mini:
-            attachments = (models.Attachment.objects
-                       .filter(source_scan=self.scan)
-                       .filter(is_short_form=self.is_mini))
-            if len(attachments) == 1:
-                self.attachment = attachments[0]
-        else:
-            try:
-                self.attachment = models.Attachment.objects.get(uuid=self.scan.uuid)
-            except models.Attachment.DoesNotExist:
-                self.attachment = None
-                
-        if self.attachment is not None:
-            self.logger.log('An attachment already exists...')
-            #only copies files if they don't already exist:
-            self.copy_files_from_scan_dir_to_attachment_dir()
-            return
-        else:
-            #create new attachment from the models.Scan (they share the same parent
-            # abstract class):
-            
-            #generate a new attachment record
-            self.attachment = self.scan.copy_as(models.Attachment)
-            self.attachment.status = models.StatusCode.objects.get(
-                                        id=models.StatusCode.READY_FOR_PROCESSING)
-            self.attachment.virtual_path = self.attachment.generate_relative_path()
-            if self.is_mini:
-                self.attachment.source_scan = self.scan
-            self.attachment.is_short_form = self.is_mini
-            self.attachment.name = 'models.Attachment %s' % self.attachment.uuid
-            self.attachment.save()
-            self.copy_files_from_scan_dir_to_attachment_dir()
-            if not self.is_mini:
-                #remove the scan record!
-                return
-            
-    def copy_files_from_scan_dir_to_attachment_dir(self):
-        #only execute the following code if no attachment directory exists:
-        from localground.apps.lib.helpers import generic
-        import shutil
-        path = self.attachment.get_abs_directory_path()
-        if os.path.exists(path):
-            self.logger.log('The directory "%s" already exists' % path)
-            return
-
-        try:
-            #proceed with copy / move:
-            if self.is_mini:
-                #move files to new directory:
-                self.make_directory(path)
-                files_to_copy = [
-                    self.scan.file_name_new,
-                    self.scan.file_name_scaled,
-                    self.scan.file_name_thumb
-                ]
-                for f in files_to_copy:
-                    src = '%s%s' % (self.scan.get_abs_directory_path(), f)
-                    dest = '%s%s' % (self.attachment.get_abs_directory_path(), f)
-                    self.logger.log('copying %s to %s' % (src, dest))
-                    try:
-                        shutil.copyfile(src, dest)
-                    except Exception:
-                        raise ProcessingError(self.logger, self.scan,
-                            models.StatusCode.FILE_WRITE_PRIVS,
-                            terminate=True)
-            else:
-                #copy directory
-                shutil.copytree(self.scan.get_abs_directory_path(),
-                            self.attachment.get_abs_directory_path())
-                #todo:  delete from scans directory when done...
-        except IOError:
-            raise ProcessingError(self.logger, self.scan,
-                        models.StatusCode.DIRECTORY_MISSING,
-                        message='The directory "%s" does not exist' % 
-                                self.scan.get_abs_directory_path(),
-                                terminate=True)
-            
-    def get_pixel_count(self, snippet, counter):
-        w, h = snippet.size[0], snippet.size[1]
-        #bbox = [15, 15, int(w*.08)-20, h-5] #left, upper, right, and lower
-        
-        #trim snippet to remove borders:
-        trim = [15, 15, w-15, h-15] #left, upper, right, and lower
-        im = snippet.copy().convert('RGBA').crop(trim)#.crop(bbox)
-        w, h = im.size[0], im.size[1]
-        im = ImageUtils.subtract_grayscale(im, threshold=40)
-        pixels = im.load()
-        num_pix = 0
-        for x in range(w):
-            for y in range(h):
-                pix = pixels[x, y]
-                if pix[3] > 1:
-                    num_pix = num_pix + 1
-        #print num_pix
-        return num_pix
-    
-    def save_snippet(self, file_name, pixel_count):
-        self.logger.log('Saving snippet %s...' % file_name)
-        s = models.Snippet()
-        s.pixel_count = pixel_count #not in db, but useful for now
-        s.project = self.attachment.project
-        s.source_attachment = self.attachment
-        s.content_type = file_name.split('.')[1]
-        s.host = self.attachment.host
-        s.file_name_orig = file_name
-        s.virtual_path = self.attachment.generate_relative_path()
-        s.owner = self.attachment.owner
-        s.time_stamp = datetime.now()
-        s.last_updated_by = self.attachment.last_updated_by
-        s.save()
-        return s
-        
-    def save_record(self, row_snippet, row_header, row_index, pixel_count, buffer=5):
-        d = {}
-        file_name = 'snippet%s.png' % row_index
-        
-        # 1) create row-level snippet (with header pasted on it):
-        size = [row_snippet.size[0], row_snippet.size[1] + row_header.size[1]-2*buffer]
-        snippet = Image.new('RGBA', size, (255,)*4)
-        paste_bbox = [
-            0,
-            size[1]-row_snippet.size[1],
-            size[0],
-            size[1]
-        ]
-        snippet.paste(row_snippet, paste_bbox)
-        snippet.paste(row_header, row_header.getbbox())
-        snippet.save(self.attachment.get_abs_directory_path() + file_name)
-        s = self.save_snippet(file_name, pixel_count)
-        self.snippets.append(s)
-        d.update({'snippet': s})
-        
-        #create field-level snippets:
-        w, h = row_snippet.size[0], row_snippet.size[1]
-        
-        #create row_num snippet:
-        left, top, right, bottom = 0, 0, int(w*5/100.0), h
-        bbox = [
-            left,
-            top,
-            right+buffer,
-            bottom
-        ]
-        snippet = row_snippet.copy().crop(bbox)
-        file_name = 'num_snippet%s.png' % row_index
-        snippet.save(self.attachment.get_abs_directory_path() + file_name)
-        s = self.save_snippet(file_name, pixel_count)
-        d.update({'num_snippet': s})
-        
-        #create dynamic field snippets:
-        for f in self.source_print.get_form_field_layout():
-            self.logger.log(f.width)
-            left = int(right)
-            right = int(min(right + w*f.width/100.0, w))
-            bbox = [
-                max(left-buffer, 0),
-                top,
-                min(right+buffer, w),
-                bottom
-            ]
-            self.logger.log(bbox)
-            snippet = row_snippet.copy().crop(bbox)
-            file_name = '%s_snippet%s.png' % (f.field.col_name, row_index)
-            snippet.save(self.attachment.get_abs_directory_path() + file_name)
-            s = self.save_snippet(file_name, pixel_count)
-            d.update({'%s_snippet' % f.field.col_name: s})
-                
-        #insert an empty form record that references the snippet:
-        d.update(
-            project=self.attachment.project,
-            time_stamp=datetime.now(),
-            last_updated_by=self.attachment.last_updated_by
-        )
-        if self.is_mini:
-            d.update(scan=self.scan)
-        self.logger.log(d)
-        form_record = self.form.add_record(d, self.attachment.owner)

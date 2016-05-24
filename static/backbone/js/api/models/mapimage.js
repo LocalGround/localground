@@ -6,8 +6,16 @@ define(["models/base"], function (Base) {
      * @see <a href="//localground.org/api/0/map-images/">//localground.org/api/0/map-images/</a>
      */
     var MapImage = Base.extend({
+        hiddenFields: [
+            "geometry",
+            "overlay_type",
+            "project_id",
+            "url",
+			"source_print",
+            "status"
+        ],
         getNamePlural: function () {
-            return "scans";
+            return "map images";
         },
         defaults: _.extend({}, Base.prototype.defaults, {
             checked: false

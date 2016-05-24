@@ -7,6 +7,7 @@ define(
         "text!../templates/sidepanel/recordItem.html",
         "text!../templates/infoBubble/photo.html",
         "text!../templates/infoBubble/photoTip.html",
+        "text!../templates/infoBubble/mapImage.html",
         "text!../templates/infoBubble/audio.html",
         "text!../templates/infoBubble/audioTip.html",
         "text!../templates/infoBubble/marker.html",
@@ -26,6 +27,7 @@ define(
         "models/mapimage",
         "lib/maps/overlays/photo",
         "lib/maps/overlays/marker",
+        "lib/maps/overlays/map-image",
         "lib/maps/overlays/audio",
         "lib/maps/overlays/record",
         "views/maps/sidepanel/items/photoItem",
@@ -34,9 +36,9 @@ define(
         "views/maps/sidepanel/items/audioItem"
     ],
     function (photoItemTemplate, audioItemTemplate, mapimageItemTemplate, markerItemTemplate, recordItemTemplate,
-                 photoBubbleTemplate, photoTipTemplate, audioBubbleTemplate, audioTipTemplate, markerBubbleTemplate,
+                 photoBubbleTemplate, photoTipTemplate, mapImageBubbleTemplate, audioBubbleTemplate, audioTipTemplate, markerBubbleTemplate,
                  markerTipTemplate, recordBubbleTemplate, recordTipTemplate, genericTipTemplate, Photos, AudioFiles, MapImages, Markers,
-                 Records, Photo, Marker, Audio, Record, MapImage, PhotoOverlay, MarkerOverlay, AudioOverlay,
+                 Records, Photo, Marker, Audio, Record, MapImage, PhotoOverlay, MarkerOverlay, GroundOverlay, AudioOverlay,
                  RecordOverlay, PhotoItem, MarkerItem, GenericItem, AudioItem) {
         "use strict";
         /**
@@ -63,12 +65,12 @@ define(
                 TipTemplate: audioTipTemplate,
                 ItemView: AudioItem
             },
-            scans: {
+            map_images: {
                 Model: MapImage,
                 Collection: MapImages,
-                Overlay: MarkerOverlay,
+                Overlay: GroundOverlay,
                 ItemTemplate: mapimageItemTemplate,
-                InfoBubbleTemplate: audioBubbleTemplate,
+                InfoBubbleTemplate: mapImageBubbleTemplate,
                 TipTemplate: genericTipTemplate,
                 ItemView: GenericItem
             },

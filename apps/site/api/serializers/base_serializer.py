@@ -69,7 +69,7 @@ class BaseNamedSerializer(BaseSerializer):
     name = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     caption = serializers.CharField(
         source='description', required=False, allow_null=True, label='caption',
-        style={'base_template': 'textarea.html'}, allow_blank=True
+        style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
     )
     overlay_type = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
@@ -104,14 +104,14 @@ class GeometrySerializer(BaseNamedSerializer):
         help_text='Assign a GeoJSON string',
         allow_null=True,
         required=False,
-        style={'base_template': 'json.html'},
+        style={'base_template': 'json.html', 'rows': 5},
         source='point'
     )
     extras = JSONField(
         help_text='Store arbitrary key / value pairs here in JSON form. Example: {"key": "value"}',
         allow_null=True,
         required=False,
-        style={'base_template': 'json.html'})
+        style={'base_template': 'json.html', 'rows': 5})
     
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
@@ -158,7 +158,7 @@ class ExtentsSerializer(BaseNamedSerializer):
     center = fields.GeometryField(
                         help_text='Assign a GeoJSON string',
                         required=False,
-                        style={'base_template:json.html'}
+                        style={'base_template': 'json.html', 'rows': 5}
                     )
 
 

@@ -9,11 +9,11 @@
     </description>
     <Folder>
         <name>{{print.map_title }}</name>
-    {% for scan in print.scans %}
+    {% for mapimage in print.mapimages %}
         <GroundOverlay>
-            <name>Map #{{scan.id}}</name>
+            <name>Map #{{mapimage.id}}</name>
             <Icon>
-                <href>http://localground.org/static/scans/{{scan.id}}/colorImage.png</href>
+                <href>http://localground.org/static/mapimages/{{mapimage.id}}/colorImage.png</href>
             </Icon>
             <LatLonBox>
                 <north>{{print.northeast.y}}</north>

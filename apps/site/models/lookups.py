@@ -12,8 +12,7 @@ class StatusCode(models.Model):
     QR_CODE_NOT_READ = 7
     QR_RECT_NOT_FOUND = 8
     MAP_RECT_NOT_FOUND = 9
-    FORM_RECT_NOT_FOUND = 10
-    FILE_WRITE_PRIVS = 11
+    FILE_WRITE_PRIVS = 10
     
     @classmethod
     def get_status(cls, code_id):
@@ -27,6 +26,7 @@ class StatusCode(models.Model):
 
     class Meta:
         app_label = 'site'
+        ordering = ('id',)
 
 
 class UploadSource(models.Model):
@@ -78,7 +78,7 @@ class ObjectTypes():
     AUDIO = 'audio'
     VIDEO = 'video'
     MARKER = 'marker'
-    SCAN = 'scan'
+    SCAN = 'mapimage'
     PRINT = 'print'
     RECORD = 'record'
 

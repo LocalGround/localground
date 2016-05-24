@@ -1,7 +1,6 @@
 from django.conf.urls import patterns, url
 from django.conf.urls import include
 from localground.apps.site.api import views
-from localground.apps.site.api.views.user_profile_views import update_user_location
 from localground.apps.site import models
 from rest_framework.routers import DefaultRouter
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -14,7 +13,7 @@ router = DefaultRouter()
 #router.register(r'photos', views.PhotoViewSet)
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
-#router.register(r'map-images', views.ScanViewSet)
+#router.register(r'map-images', views.MapImageViewSet)
 router.register(r'data-types', views.DataTypeViewSet)
 router.register(r'tiles', views.TileViewSet)
 #router.register(r'fields', views.FieldViewSet)
@@ -40,6 +39,14 @@ urlpatterns += format_suffix_patterns(patterns('',
         r'^(?P<group_name_plural>markers|snapshots|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$',
         views.RelatedMediaInstance.as_view(),
         name='related-media-detail'),
+    url(
+        r'^projects/(?P<project_id>[0-9]+)/users/(?P<user_id>[0-9]+)/$',
+        views.SharingInstance.as_view(),
+        name='userauthorityobject-detail'),
+    url(
+        r'^projects/(?P<project_id>[0-9]+)/users/$',
+        views.SharingList.as_view(),
+        name='userauthorityobject-list'),
     url(
         r'^projects/(?P<pk>[0-9]+)/$',
         views.ProjectInstance.as_view(),
@@ -84,11 +91,11 @@ urlpatterns += format_suffix_patterns(patterns('',
         name='audio-list'),
     url(
         r'^map-images/(?P<pk>[0-9]+)/$',
-        views.ScanInstance.as_view(),
-        name='scan-detail'),
+        views.MapImageInstance.as_view(),
+        name='mapimage-detail'),
     url(r'^map-images/$',
-        views.ScanList.as_view(),
-        name='scan-list'),
+        views.MapImageList.as_view(),
+        name='mapimage-list'),
     url(
         r'^markers/(?P<pk>[0-9]+)/$',
         views.MarkerInstance.as_view(),
@@ -135,6 +142,9 @@ urlpatterns += format_suffix_patterns(patterns('',
         r'^photos/(?P<pk>[0-9]+)/rotate-right/$',
         views.rotate_right,
         name='rotate-right'),
+    url(r'^tags/(?P<term>\w+)/$',
+        views.TagList.as_view(),
+        name='tag-list'),
     url(r'^tags/$',
         views.TagList.as_view(),
         name='tag-list'),
@@ -145,9 +155,6 @@ urlpatterns += format_suffix_patterns(patterns('',
         r'^user-profile/(?P<pk>[0-9]+)/$',
         views.UserProfileInstance.as_view(),
         name='userprofile-detail'),
-    url(r'^user-profile/update-location/$',
-        update_user_location,
-        name='userprofile-update-location'),
     # Todo: generalize this one:
     url(r'^forms/84/data/tracks/$',
         views.TrackList.as_view(),

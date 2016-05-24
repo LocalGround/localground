@@ -18,7 +18,7 @@ virtualenv:
   system_site_packages: true
   
 addons:
-  postgresql: "9.1"
+  postgresql: "9.3"
 
 services:
   - postgresql
@@ -33,11 +33,11 @@ before_install:
   - sudo apt-get -y install cgi-mapserver
   
   # Install custom PostgreSQL / PostGIS
-  - sudo apt-get -y install postgresql-9.1
-  - sudo apt-get -y install postgresql-client-9.1
-  - sudo apt-get -y install postgresql-server-dev-9.1
-  - sudo apt-get -y install postgresql-plperl-9.1
-  - sudo apt-get -y install postgresql-9.1-postgis-2.0
+  - sudo apt-get -y install postgresql-9.3
+  - sudo apt-get -y install postgresql-client-9.3
+  - sudo apt-get -y install postgresql-server-dev-9.3
+  - sudo apt-get -y install postgresql-plperl-9.3
+  - sudo apt-get -y install postgresql-9.3-postgis-2.1
   
   # Install some final MapServer libraries (which I think need to 
   # get installed after PostgreSQL / PostGIS)
@@ -64,10 +64,11 @@ before_install:
   - sudo apt-get -y update
   - sudo apt-get -y install ffmpeg
   - sudo apt-get -y install redis-server
+  - sudo apt-get -y install openjdk-7-jre
 
 install:
   - pip install -r deploy_tools/requirements.txt
-  - pip install Pillow
+  - python --version
 
 before_script:
   - psql -c 'create database lg_database;' -U postgres

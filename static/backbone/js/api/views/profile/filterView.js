@@ -25,7 +25,7 @@ define(["underscore",
                 e.stopPropagation();
             },
             initialize: function (opts) {
-                console.log(opts);
+                //console.log(opts);
                 _.extend(this, opts);
                 // additional initialization logic goes here...
                 this.options = opts;
@@ -76,7 +76,7 @@ define(["underscore",
               var params = [];
               this.$el.find('#filterDiv :input:text, :input[type=number]').each(function(){
                    var input = $(this); // This is the jquery object of the input, do what you will
-                   console.log(input);
+                   //console.log(input);
                    var textInputValue = input.val();
 
                    if (textInputValue) {
