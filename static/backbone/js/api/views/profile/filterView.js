@@ -12,7 +12,13 @@ define(["underscore",
                 "click #submitSearch": "applyFilter",
                 "click #clearSearch": "clearFilter",
                 "click .dropdown-menu": "clickFilterArea",
-                "click #generateQuery": "generateQuery"
+                "click #generateQuery": "generateQuery",
+                "click #filterDropdown" : "filterClicked"
+            },
+
+            filterClicked: function (e) {
+                e.stopPropagation();
+                $('#filter-dropdown-menu').toggle();
             },
             clickFilterArea: function (e) {
                 // Stops the filter menu from closing
