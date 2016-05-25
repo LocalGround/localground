@@ -34,7 +34,7 @@ class SharingListTest(APITestCase, ViewMixinAPI):
         self.client.force_authenticate(user=auth_user)
         return self.client.post(self.url,
             data=json.dumps({
-                'user': user.id,
+                'user': user.username,
                 'authority': authority
             }),
             content_type="application/json"
@@ -82,9 +82,9 @@ class SharingListTest(APITestCase, ViewMixinAPI):
         # check that data saved correctly:
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         data = json.loads(response.content)
-        self.assertEqual(data.get('user'), random_user.id)
+        self.assertEqual(data.get('user'), random_user.username)
         self.assertEqual(data.get('project_id'), self.project.id)
-        self.assertEqual(data.get('granted_by'), self.user.id)
+        self.assertEqual(data.get('granted_by'), self.user.username)
         self.assertEqual(data.get('authority'), EDIT)
         
     def test_manager_can_share_project_using_post(self, **kwargs):
@@ -132,7 +132,7 @@ class SharingInstanceTest(APITestCase, ViewMixinAPI):
         })
         self.random_user = self.create_user(username='rando')
         self.uao = self.grant_project_permissions_to_user(self.project, self.random_user, authority_id=1)
-        self.url = '/api/0/projects/%s/users/%s/.json' % (self.project.id, self.uao.user.id)
+        self.url = '/api/0/projects/%s/users/%s/.json' % (self.project.id, self.uao.user.username)
         self.urls = [self.url]
 
     def _update_user_put(self, auth_user, authority):
