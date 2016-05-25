@@ -52,9 +52,10 @@ class SharingInstance(SharingMixin, QueryableRetrieveUpdateDestroyView):
     permission_classes = (CheckProjectSharingPermissions,)
 
     def get_object(self, queryset=None):
+        #raise Exception(self.kwargs.get('username'))
         project_id = self.kwargs.get('project_id')
         instance = models.UserAuthorityObject.objects.get(
-            user__id=self.kwargs.get('user_id'),
+            user__username=self.kwargs.get('username'),
             object_id=project_id,
             content_type=models.Project.get_content_type()
         )
