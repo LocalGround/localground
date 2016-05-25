@@ -40,7 +40,7 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.RelatedMediaInstance.as_view(),
         name='related-media-detail'),
     url(
-        r'^projects/(?P<project_id>[0-9]+)/users/(?P<user_id>[0-9]+)/$',
+        r'^projects/(?P<project_id>[0-9]+)/users/(?P<username>\w+)/$',
         views.SharingInstance.as_view(),
         name='userauthorityobject-detail'),
     url(
