@@ -1,35 +1,43 @@
-define(["collections/base"],
-    function (Base) {
-        'use strict';
-        describe("Base Collection: Tests that Base Layers collection can be created, manipulated", function () {
-            it("Can add model instances as objects and arrays", function () {
-                var base = new Base();
-                expect(base.length).toBe(0);
+define([], function () {
+    'use strict';
+    var collection;
+    /*
+     * Overriding the initialization function so that this test doesn't
+     * have to rely on the Google Maps API
+     */
+    return {
+        genericChecks: function (opts) {
+            describe("Collection: Check if variables exist", function () {
+                it("Testing + if inherits from PageableCollection", function () {
+                    collection = this.getModelByOverlayType(opts.overlay_type).collection;
+                    expect(collection.state).toBeDefined();
+                    expect(collection.queryParams).toBeDefined();
+                    expect(collection.parseState).toBeDefined();
+                    expect(collection.parseRecords).toBeDefined();
+                });
 
-                base.add({ name: 'my first model', id: 1, project_id: 1 });
-                expect(base.length).toBe(1);
+                it("Testing setServerQuery and clearServerQuery", function () {
+                    collection = this.getModelByOverlayType(opts.overlay_type).collection;
+                    expect(collection.length).toBe(3);
 
-                base.add([
-                    { name: 'my second model', id: 2, project_id: 2 },
-                    { name: 'my third model', id: 3, project_id: 3 }
-                ]);
-                expect(base.length).toBe(3);
+                    var query = "WHERE id = 1";
+                    collection.setServerQuery(query);
+                    expect(collection.query).toBe(query);
+
+                    collection.clearServerQuery();
+                    expect(collection.query).toBe(null);
+                });
+
+                it("Testing applyFilter and clearFilter", function () {
+                    var query = opts.query || 'project_id = 1';
+                    collection = this.getModelByOverlayType(opts.overlay_type).collection;
+                    expect(collection.length).toBe(3);
+                    collection.applyFilter(query);
+                    expect(collection.getVisibleModels().length).toBe(2);
+                    collection.clearFilter();
+                    expect(collection.getVisibleModels().length).toBe(3);
+                });
             });
-        });
-
-        describe("Base Collection: Test filtering", function () {
-            it("Testing applyFilter and clearFilter", function () {
-                var base = new Base();
-                base.add([
-                    { name: 'my first model', id: 1, project_id: 1 },
-                    { name: 'my second model', id: 2, project_id: 2 },
-                    { name: 'my third model', id: 3, project_id: 3 }
-                ]);
-                expect(base.length).toBe(3);
-                base.applyFilter('project_id = 1');
-                expect(base.getVisibleModels().length).toBe(1);
-                base.clearFilter();
-                expect(base.getVisibleModels().length).toBe(3);
-            });
-        });
-    });
+        }
+    };
+});

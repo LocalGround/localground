@@ -64,8 +64,8 @@ define(["underscore",
                 expect(dm.getCollection("form_1").length).toEqual(3);
                 expect(dm.getCollection("markers").length).toEqual(3);
                 dm.removeDataByProjectID(2);
-                expect(dm.getCollection("form_1").length).toEqual(0);
-                expect(dm.getCollection("markers").length).toEqual(0);
+                expect(dm.getCollection("form_1").length).toEqual(2);
+                expect(dm.getCollection("markers").length).toEqual(2);
 
                 //check that project 1 is now the active project:
                 expect(dm.app.getActiveProjectID()).toEqual(1);
