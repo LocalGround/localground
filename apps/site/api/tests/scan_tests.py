@@ -26,7 +26,8 @@ def get_metadata():
         'south': {'read_only': True, 'required': False, 'type': 'field'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         'uuid': {'read_only': True, 'required': False, 'type': 'string' },
-        'status': {'read_only': True, 'required': False, 'type': 'field' }
+        'status': {'read_only': True, 'required': False, 'type': 'field' },
+        'file_name': {'read_only': True, 'required': False, 'type': 'field'}
     }
 class ApiScanListTest(test.TestCase, ViewMixinAPI):
 

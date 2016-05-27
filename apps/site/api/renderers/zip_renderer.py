@@ -13,6 +13,9 @@ class ZIPRenderer(renderers.BaseRenderer):
     """
     media_type = 'application/zip'
     format = 'zip'
+    level_sep = '.'
+    headers = None
+
     URL_PATH_FIELDS = [
         'path_marker_lg',
         'file_path_orig',
@@ -33,7 +36,9 @@ class ZIPRenderer(renderers.BaseRenderer):
         csv_renderer = CSVRenderer()
         spreadsheet = csv_renderer.render(data)
         if spreadsheet:
-            zip_file = self.build_zip(data, spreadsheet)
+            # piggyback on the data processing / formatting 
+            # of the existing spreadsheet render
+            zip_file = self.build_zip_from_spreadsheet(spreadsheet)
             return zip_file
         else:
             return None
@@ -72,38 +77,33 @@ class ZIPRenderer(renderers.BaseRenderer):
         target_file_path = os.path.join(folder, source_file_path.split("/")[-1])
         zip_file.write(source_file_path, target_file_path)
 
-    def build_zip(self, raw_data, spreadsheet):
+    def build_zip_from_spreadsheet(self, spreadsheet):
         """
         Returns absolute path to the ZIP file contianing requested media files:
         """
+        records = []
         zip_file_str = StringIO()
         zip_file = zipfile.ZipFile(zip_file_str, 'w')
-        dict_spreadsheet = csv.DictReader(StringIO(spreadsheet))
-        rows_spreadsheet = []
-        header_cells = self.URL_PATH_FIELDS[:] #build master list of spreadsheet columns
+        reader = csv.DictReader(StringIO(spreadsheet))
+        header_cells = reader.fieldnames
         
         # Loop through, add media files to the zip file, and
         # update media paths to relative paths:
-        for row in dict_spreadsheet:
-            header_cells += row.keys()
+        for row in reader:
             for key in self.URL_PATH_FIELDS:
                 if row.get(key):
                     self.add_media_to_zip(zip_file, row, key)
                     row[key] = self.make_relative_path_for_csv(row, key)
-            rows_spreadsheet.append(row)
+            records.append(row)
 
         # Output resulting spreadsheet:
-        header_cells = list(set(header_cells))
-        header_cells.sort()
         spreadsheet_buffer = StringIO() # final product of the spreadsheet
         csv_writer = csv.DictWriter(spreadsheet_buffer, fieldnames=header_cells)
         csv_writer.writeheader()
-        for row in rows_spreadsheet:
+        for row in records:
             csv_writer.writerow(row)
 
-        # Add spreadsheet to zip file:
+        # Add spreadsheet to zip file, close, and return:
         zip_file.writestr('content.csv', spreadsheet_buffer.getvalue())
-        
-        # Close the zip file and return it:
         zip_file.close()
         return zip_file_str.getvalue()

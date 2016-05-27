@@ -7,7 +7,6 @@ class CSVRenderer(renderers.BaseRenderer):
     """
     Renderer which serializes to CSV
     """
-
     media_type = 'text/csv'
     format = 'csv'
     level_sep = '.'
@@ -17,18 +16,20 @@ class CSVRenderer(renderers.BaseRenderer):
         csv_writer = csv.DictWriter(csv_buffer, fieldnames=headers)
         csv_writer.writeheader()
         for row in data:
-            self.simplify_geometries(row)
+            self.flatten_data(row)
             csv_writer.writerow(row)
         return csv_buffer.getvalue()
     
-    def simplify_geometries(self, row):
+    def flatten_data(self, row):
+        # make lat / lng into their own cells:
         geom = row.get('geometry')
-        if not geom:
-            return
-        if geom.get('type') == 'Point': # lon, lat order
+        if geom and geom.get('type') == 'Point': # lon, lat order
             row['lng'] = geom.get('coordinates')[0]
             row['lat'] = geom.get('coordinates')[1]
         
+        # flatten tags:
+        if row.get('tags') is not None:
+            row['tags'] = ','.join(row.get('tags'))
 
     def render(self, data, media_type=None, renderer_context=None):
         """
