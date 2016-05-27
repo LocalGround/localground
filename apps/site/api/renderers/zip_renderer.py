@@ -46,7 +46,7 @@ class ZIPRenderer(renderers.BaseRenderer):
     def get_abs_path(self, row, key):
         """
         Decodes the URL from serializer and returns the 
-        absolute file path on the server
+        absolute file path on the server:
         """
         file_path = row.get(key)[:-1]
         file_path = file_path.split("/")[-1]
@@ -57,16 +57,15 @@ class ZIPRenderer(renderers.BaseRenderer):
     def make_relative_path_for_csv(self, row, key):
         """
         Converts absolute file path to a relative path that the zip file
-        has access to
+        has access to:
         """
         file_path = self.get_abs_path(row, key)
         folder = self.get_media_folder_name(row.get("overlay_type"))
-        file_path = file_path.split('/')[-1]
-        return '{}/{}'.format(folder, file_path)
+        return '{}/{}'.format(folder, file_path.split('/')[-1])
 
     def add_media_to_zip(self, zip_file, row, key):
         """
-        Adds any URL media to the zip file
+        Adds any URL media to the zip file:
         """
         source_file_path = '{}{}'.format(settings.FILE_ROOT, self.get_abs_path(row, key))
         folder = self.get_media_folder_name(row.get("overlay_type"))
@@ -75,7 +74,7 @@ class ZIPRenderer(renderers.BaseRenderer):
 
     def build_zip(self, raw_data, spreadsheet):
         """
-        Returns absolute path to the ZIP file contianing requested media files
+        Returns absolute path to the ZIP file contianing requested media files:
         """
         zip_file_str = StringIO()
         zip_file = zipfile.ZipFile(zip_file_str, 'w')
@@ -90,8 +89,7 @@ class ZIPRenderer(renderers.BaseRenderer):
             for key in self.URL_PATH_FIELDS:
                 if row.get(key):
                     self.add_media_to_zip(zip_file, row, key)
-                    file_path = self.make_relative_path_for_csv(row, key)
-                    row[key] = file_path
+                    row[key] = self.make_relative_path_for_csv(row, key)
             rows_spreadsheet.append(row)
 
         # Output resulting spreadsheet:
