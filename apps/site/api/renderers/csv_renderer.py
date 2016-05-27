@@ -19,6 +19,24 @@ class CSVRenderer(renderers.BaseRenderer):
         Renders serialized *data* into CSV. For a dictionary:
         """
         csv_buffer = StringIO()
+        '''
+        dataset = None
+        if 'results' in raw_data:
+            # Zip Renderer for lists:
+            dataset = raw_data.get('results')
+        elif 'overlay_type' in raw_data:
+            # Zip Renderer for single objects:
+            if raw_data.get('overlay_type') == 'project':
+                dataset = [] #todo: include project attributes also
+                children = raw_data.get('children')
+                for key in children:
+                    dataset += children.get(key).get('data')
+            else:
+                dataset = [raw_data]
+        else:
+            # not defined
+            return None
+        '''
         if data.get('children'):
             # instance of complex type: project
             children = data.get('children')
