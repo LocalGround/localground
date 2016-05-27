@@ -80,12 +80,12 @@ class ZIPRenderer(renderers.BaseRenderer):
         zip_file = zipfile.ZipFile(zip_file_str, 'w')
         dict_spreadsheet = csv.DictReader(StringIO(spreadsheet))
         rows_spreadsheet = []
-        dict_keys = self.URL_PATH_FIELDS[:] #build master list of spreadsheet columns
+        header_cells = self.URL_PATH_FIELDS[:] #build master list of spreadsheet columns
         
         # Loop through, add media files to the zip file, and
         # update media paths to relative paths:
         for row in dict_spreadsheet:
-            dict_keys += row.keys()
+            header_cells += row.keys()
             for key in self.URL_PATH_FIELDS:
                 if row.get(key):
                     self.add_media_to_zip(zip_file, row, key)
@@ -93,9 +93,10 @@ class ZIPRenderer(renderers.BaseRenderer):
             rows_spreadsheet.append(row)
 
         # Output resulting spreadsheet:
-        dict_keys = list(set(dict_keys))
+        header_cells = list(set(header_cells))
+        header_cells.sort()
         spreadsheet_buffer = StringIO() # final product of the spreadsheet
-        csv_writer = csv.DictWriter(spreadsheet_buffer, dict_keys)
+        csv_writer = csv.DictWriter(spreadsheet_buffer, fieldnames=header_cells)
         csv_writer.writeheader()
         for row in rows_spreadsheet:
             csv_writer.writerow(row)
