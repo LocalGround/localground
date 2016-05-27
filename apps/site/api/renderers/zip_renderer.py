@@ -26,6 +26,18 @@ class ZIPRenderer(renderers.BaseRenderer):
         "record": "records",
         "print": "prints"
     }
+    URL_PATH_FIELDS = [
+        'path_marker_lg',
+        'file_path_orig',
+        'path_medium',
+        'path_large',
+        'path_marker_sm',
+        'path_medium_sm',
+        'path_small',
+        'file_path',
+        'overlay_path'
+    ]
+        
 
     def render(self, data, media_type=None, renderer_context=None):
         """
@@ -39,6 +51,27 @@ class ZIPRenderer(renderers.BaseRenderer):
             return zip_file
         else:
             return None
+        
+    def get_abs_path(self, row, key):
+        """
+        Decodes the URL from serializer and returns the 
+        absolute file path on the server
+        """
+        file_path = row.get(key)[:-1]
+        file_path = file_path.split("/")[-1]
+        file_path = base64.b64decode(file_path)
+        return file_path
+        
+    def make_relative_path(self, row, key):
+        """
+        Converts absolute file path to a relative path that the zip file
+        has access to
+        """
+        file_path = self.get_abs_path(row, key)
+        folder = self.LOOKUP.get(row.get("overlay_type"))
+        file_path = file_path.split(folder + '/')[1]
+        file_path = file_path.split('#')[0]
+        return folder + '/' + file_path
 
     def build_zip(self, raw_data, spreadsheet):
         """
@@ -84,7 +117,6 @@ class ZIPRenderer(renderers.BaseRenderer):
             zip_file.write(source_file_path, target_file_path)
         # replace url paths with local file paths in the spreadsheet
         # columns to modify: path_marker_lg, file_path_orig, path_medium, path_large, path_marker_sm, path_medium_sm, path_small, file_path
-        url_cols = ['path_marker_lg', 'file_path_orig', 'path_medium', 'path_large', 'path_marker_sm', 'path_medium_sm', 'path_small', 'file_path', 'overlay_path']
         dict_spreadsheet = csv.DictReader(StringIO(spreadsheet))
         dict_keys = []
         rows_spreadsheet = []
@@ -95,12 +127,9 @@ class ZIPRenderer(renderers.BaseRenderer):
                     media_type  = self.LOOKUP.get(row.get('overlay_type'))
             for key in row:
                 dict_keys.append(key)
-                if key in url_cols and row.get(key):
-                    #TODO: We should probably include these as sub paths.
-                    #file_path = row.get(key).split(media_type + '/')[1]
-                    #raise Exception(file_path)
-                    #file_path = base64.b64decode(file_path)
-                    row[key] = None
+                if key in self.URL_PATH_FIELDS and row.get(key):
+                    file_path = self.make_relative_path(row, key)
+                    row[key] = file_path
             orig_file_name = ''
             if 'media_file' in row:
                 orig_file_name = row.get('media_file')
