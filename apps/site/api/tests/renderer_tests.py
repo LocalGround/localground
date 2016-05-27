@@ -111,7 +111,6 @@ class KMLRendererListTest(test.TestCase, ModelMixin):
     def tearDown(self):
         models.Form.objects.all().delete()
 
-
 class KMLRendererInstanceTest(test.TestCase, ModelMixin):
 
     def setUp(self):
@@ -133,6 +132,41 @@ class KMLRendererInstanceTest(test.TestCase, ModelMixin):
         
     def validateXML(self, data):
         parseString(data, ContentHandler())
+        
+class CSVRendererListTest(test.TestCase, ModelMixin):
+    '''
+    These tests test the ZIP renderer using the /api/0/photos/ (though any
+    geospatial endpoint could be used).
+    '''
+
+    def setUp(self):
+        ModelMixin.setUp(self)
+        self.url = '/api/0/photos/'
+        
+    def test_csv_is_valid(self):
+        import csv
+        self.photo1 = self.create_photo(self.user, self.project, name="Photo 1", file_name='test_photo1.jpg')
+        self.photo2 = self.create_photo(self.user, self.project, name="Photo 2", file_name='test_photo2.jpg')
+        self.photo3 = self.create_photo(self.user, self.project, name="Photo 3", file_name='test_photo3.jpg')
+        response = self.client_user.get(self.url + '?format=csv')
+        data = StringIO(response.content)
+        reader = csv.reader(data)
+        records = []
+        for row in reader:
+            records.append(row)
+
+        # get fields:
+        response = self.client_user.options(self.url,
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded"
+        )
+        headers = response.data['actions'].get('POST').keys()
+        headers += ['lat', 'lng']
+        # ensure that there is a column in the CSV for every field ( + lat, lng):
+        self.assertSetEqual(set(headers), set(records[0]))
+
+        
+        
 
 class ZIPRendererListTest(test.TestCase, ModelMixin):
     '''
