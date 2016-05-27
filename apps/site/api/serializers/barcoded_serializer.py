@@ -9,18 +9,19 @@ from localground.apps.site.api.serializers.base_serializer import BaseNamedSeria
 
 class ScanSerializerCreate(BaseNamedSerializer):
     ext_whitelist = ['jpg', 'jpeg', 'gif', 'png']
-    file_path = serializers.SerializerMethodField('get_file_path_new')
     media_file = serializers.CharField(
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
-    overlay_type = serializers.SerializerMethodField()
     status = serializers.PrimaryKeyRelatedField(read_only=True)
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
         source='project',
         required=False
     )
+    file_path = serializers.SerializerMethodField()
+    file_name = serializers.SerializerMethodField()
+    overlay_type = serializers.SerializerMethodField()
     north = serializers.SerializerMethodField()
     south = serializers.SerializerMethodField()
     east = serializers.SerializerMethodField()
@@ -39,7 +40,7 @@ class ScanSerializerCreate(BaseNamedSerializer):
         fields = BaseNamedSerializer.Meta.fields + (
             'overlay_type', 'source_print', 'project_id',
             'north', 'south', 'east', 'west', 'zoom', 'overlay_path',
-            'media_file', 'file_path', 'uuid', 'status'
+            'media_file', 'file_path', 'file_name', 'uuid', 'status'
         )
         read_only_fields = ('uuid', 'status')
         
@@ -95,9 +96,14 @@ class ScanSerializerCreate(BaseNamedSerializer):
 
         return self.instance
 
-    def get_file_path_new(self, obj):
+    def get_file_path(self, obj):
         return obj.encrypt_url(obj.file_name_new)
 
+    def get_file_name(self, obj):
+        if obj.processed_image:
+            return obj.processed_image.file_name_orig
+        return None
+    
     def get_north(self, obj):
         if obj.processed_image is None:
             return
@@ -139,7 +145,7 @@ class ScanSerializerUpdate(ScanSerializerCreate):
         fields = BaseNamedSerializer.Meta.fields + (
             'overlay_type', 'source_print', 'project_id',
             'north', 'south', 'east', 'west', 'zoom', 'overlay_path',
-            'media_file', 'file_path', 'uuid', 'status'
+            'media_file', 'file_path', 'file_name', 'uuid', 'status'
         )
         read_only_fields = ('uuid',)
 

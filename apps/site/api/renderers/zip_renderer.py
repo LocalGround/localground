@@ -1,6 +1,7 @@
 from StringIO import StringIO
 from rest_framework import renderers
 import zipfile
+import base64
 import os
 from django.conf import settings
 from . import CSVRenderer
@@ -18,6 +19,13 @@ class ZIPRenderer(renderers.BaseRenderer):
     format = 'zip'
     level_sep = '.'
     headers = None
+    LOOKUP = {
+        "photo": "photos",
+        "audio": "audio",
+        "map-image": "map-images",
+        "record": "records",
+        "print": "prints"
+    }
 
     def render(self, data, media_type=None, renderer_context=None):
         """
@@ -37,14 +45,22 @@ class ZIPRenderer(renderers.BaseRenderer):
         Returns absolute path to the ZIP file contianing requested media files
         """
         dataset = None
+        children = raw_data.get('children')
         z = None
         if 'results' in raw_data:
             # list of simple type: photos, audio, or print
             dataset = raw_data.get('results')
-        elif 'overlay_type' in raw_data and raw_data['overlay_type'] == 'project':
+        elif 'overlay_type' in raw_data and raw_data.get('overlay_type') == 'project':
             # instance of complex type: projects
-            dataset = raw_data['children']['photos']['data'] + raw_data['children']['audio']['data']
-        elif 'overlay_type' in raw_data and raw_data['overlay_type'] in ['photo', 'audio', 'print']:
+            # Hmmmm: Wondering here if we should actually go ahead and re-query the original objects
+            # and work with the raw data, so that we make the spreadsheet in a less hacky way (and
+            # include more file paths than we include in the typical renderer, including the original
+            # files).
+            dataset = []
+            for key in children:
+                dataset += children.get(key).get('data')
+            #dataset = raw_data['children']['photos']['data'] + raw_data['children']['audio']['data']
+        elif 'overlay_type' in raw_data and raw_data.get('overlay_type') in ['photo', 'audio', 'map-image', 'print', 'record']:
             # instance of simple type: photos, audio, or print
             dataset = [raw_data]
         else:
@@ -55,43 +71,39 @@ class ZIPRenderer(renderers.BaseRenderer):
         for data in dataset:
             # media_file is original file name
             # file_name is how LG stores a media file
-            media_type = data['overlay_type']
-            if media_type == 'photo':
-                media_type = 'photos'
+            media_type = self.LOOKUP.get(data.get('overlay_type'))
             source_file_path = ''
-            if media_type == 'photos' or media_type == 'audio':
-                source_file_path = os.path.join(settings.USER_MEDIA_ROOT, 'media', data['owner'], media_type, data['file_name'])
-            elif media_type == 'print':
-                source_file_path = os.path.join(settings.USER_MEDIA_ROOT, 'prints', data['uuid'], 'Print_{}.pdf'.format(data['uuid']))
-                if data['map_title'] == '':
-                    data['map_title'] = 'Untitled'
-                data['media_file'] = '{} {}.pdf'.format(data['id'], data['map_title'])
+            if media_type in ['photos', 'audio']:
+                source_file_path = os.path.join(settings.USER_MEDIA_ROOT, 'media', data.get('owner'), media_type, data.get('file_name'))
+            elif media_type == 'map-images':
+                source_file_path = os.path.join(settings.USER_MEDIA_ROOT, 'media', data.get('owner'), media_type, data.get('uuid'), data.get('file_name'))
             else:
                 # skip other types
                 continue
-            target_file_path = os.path.join(media_type, data['media_file'])
+            target_file_path = os.path.join(media_type, data.get('media_file'))
             zip_file.write(source_file_path, target_file_path)
         # replace url paths with local file paths in the spreadsheet
         # columns to modify: path_marker_lg, file_path_orig, path_medium, path_large, path_marker_sm, path_medium_sm, path_small, file_path
-        url_cols = ['path_marker_lg', 'file_path_orig', 'path_medium', 'path_large', 'path_marker_sm', 'path_medium_sm', 'path_small', 'file_path']
+        url_cols = ['path_marker_lg', 'file_path_orig', 'path_medium', 'path_large', 'path_marker_sm', 'path_medium_sm', 'path_small', 'file_path', 'overlay_path']
         dict_spreadsheet = csv.DictReader(StringIO(spreadsheet))
         dict_keys = []
         rows_spreadsheet = []
         for row in dict_spreadsheet:
             media_type = None
             if 'overlay_type' in row:
-                # expected values of overlay_type: photo, audio, print
-                media_type = row['overlay_type']
-                # target values of media_type: photos, audio, prints
-                if media_type in ['photo', 'print']:
-                    media_type += 's'
+                if row.get('overlay_type') in ['photo', 'map-image', 'record', 'audio']:
+                    media_type  = self.LOOKUP.get(row.get('overlay_type'))
             for key in row:
                 dict_keys.append(key)
-                if key in url_cols and row[key]:
-                    row[key] = media_type
+                if key in url_cols and row.get(key):
+                    #TODO: We should probably include these as sub paths.
+                    #file_path = row.get(key).split(media_type + '/')[1]
+                    #raise Exception(file_path)
+                    #file_path = base64.b64decode(file_path)
+                    row[key] = None
             orig_file_name = ''
             if 'media_file' in row:
-                orig_file_name = row['media_file']
+                orig_file_name = row.get('media_file')
             row['media_file'] = '{}/{}'.format(media_type, orig_file_name)
             rows_spreadsheet.append(row)
         dict_keys = list(set(dict_keys))
