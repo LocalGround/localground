@@ -77,21 +77,24 @@ class ZIPRenderer(renderers.BaseRenderer):
         """
         Returns absolute path to the ZIP file contianing requested media files
         """
-        dict_keys = []        
         zip_file_str = StringIO()
         zip_file = zipfile.ZipFile(zip_file_str, 'w')
         dict_spreadsheet = csv.DictReader(StringIO(spreadsheet))
         rows_spreadsheet = []
         dict_keys = self.URL_PATH_FIELDS[:] #build master list of spreadsheet columns
+        
+        # Loop through, add media files to the zip file, and
+        # update media paths to relative paths:
         for row in dict_spreadsheet:
             dict_keys += row.keys()
             for key in self.URL_PATH_FIELDS:
                 if row.get(key):
-                    # Add media to zip file, and update media paths to relative paths:
                     self.add_media_to_zip(zip_file, row, key)
                     file_path = self.make_relative_path_for_csv(row, key)
                     row[key] = file_path
             rows_spreadsheet.append(row)
+
+        # Output resulting spreadsheet:
         dict_keys = list(set(dict_keys))
         spreadsheet_buffer = StringIO() # final product of the spreadsheet
         csv_writer = csv.DictWriter(spreadsheet_buffer, dict_keys)
@@ -99,7 +102,9 @@ class ZIPRenderer(renderers.BaseRenderer):
         for row in rows_spreadsheet:
             csv_writer.writerow(row)
 
-        # before close the zip file, include spreadsheet in the archive
+        # Add spreadsheet to zip file:
         zip_file.writestr('content.csv', spreadsheet_buffer.getvalue())
+        
+        # Close the zip file and return it:
         zip_file.close()
         return zip_file_str.getvalue()
