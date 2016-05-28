@@ -29,14 +29,14 @@ class CSVRenderer(renderers.BaseRenderer):
         
         # flatten tags:
         if row.get('tags') is not None:
-            row['tags'] = ','.join(row.get('tags'))
+            row['tags'] = ', '.join(row.get('tags'))
 
     def render(self, data, media_type=None, renderer_context=None):
         """
         Renders serialized data into CSV. For a dictionary:
         """
         dataset = []
-        headers = ['lat', 'lng']
+        headers = []
 
         # list renderer:
         if 'results' in data:
@@ -68,6 +68,8 @@ class CSVRenderer(renderers.BaseRenderer):
                 dataset = [data]
         
         if len(dataset) > 0:
+            if 'geometry' in headers:
+                headers += ['lat', 'lng']
             headers = list(set(headers))
             headers.sort()
             return self.generate_csv(headers, dataset)

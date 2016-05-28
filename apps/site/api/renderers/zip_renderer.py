@@ -25,7 +25,9 @@ class ZIPRenderer(renderers.BaseRenderer):
         'path_medium_sm',
         'path_small',
         'file_path',
-        'overlay_path'
+        'overlay_path',
+        'pdf',
+        'thumb'
     ]
 
     def render(self, data, media_type=None, renderer_context=None):
@@ -75,7 +77,8 @@ class ZIPRenderer(renderers.BaseRenderer):
         source_file_path = '{}{}'.format(settings.FILE_ROOT, self.get_abs_path(row, key))
         folder = self.get_media_folder_name(row.get("overlay_type"))
         target_file_path = os.path.join(folder, source_file_path.split("/")[-1])
-        zip_file.write(source_file_path, target_file_path)
+        if target_file_path not in zip_file.namelist():
+            zip_file.write(source_file_path, target_file_path)
 
     def build_zip_from_spreadsheet(self, spreadsheet):
         """
