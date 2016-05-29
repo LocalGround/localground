@@ -7,6 +7,8 @@ from xml.sax.handler import ContentHandler
 from xml.sax import SAXParseException
 from localground.apps.site.api.tests.renderer_tests import mixins
 
+# TODO: This needs tests for Line and Polygon
+
 class KMLRendererListTest(test.TestCase, ModelMixin):
     '''
     These tests test the KML renderer using the /api/0/markers/ (though any

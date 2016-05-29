@@ -337,10 +337,12 @@ class ModelMixin(object):
         '''
         TEXT = 1
         INTEGER = 2
-        DATE_TIME = 3
-        BOOL = 4
+        DATETIME = 3
+        BOOLEAN = 4
         DECIMAL = 5
         RATING = 6
+        PHOTO = 7
+        AUDIO = 8
         '''
         if user is None:
             user = self.user
@@ -370,7 +372,7 @@ class ModelMixin(object):
         return f
 
 
-    def insert_form_data_record(self, form, project=None):
+    def insert_form_data_record(self, form, project=None, photo=None, audio=None):
 
         from django.contrib.gis.geos import Point
         # create a marker:
@@ -396,6 +398,10 @@ class ModelMixin(object):
                     get_timestamp_no_milliseconds())
             elif field.data_type.id == models.DataType.DECIMAL:
                 setattr(record, field.col_name, 3.14159)
+            elif field.data_type.id == models.DataType.PHOTO:
+                setattr(record, field.col_name, photo)
+            elif field.data_type.id == models.DataType.AUDIO:
+                setattr(record, field.col_name, audio)
             else:
                 setattr(record, field.col_name, 'some text')
         record.save(user=self.user)

@@ -4,16 +4,21 @@ from localground.apps.site.tests import Client, ModelMixin
 from rest_framework import status
 from StringIO import StringIO
 from django.contrib.gis.geos import Point    
-from localground.apps.site.api.tests.renderer_tests.mixins import MediaMixin
+from localground.apps.site.api.tests.renderer_tests import mixins
+from localground.apps.site import models
 
-class CSVMixin(MediaMixin):
+class CSVMixin(mixins.MediaMixin):
     
     def setUp(self):
         self.photo1 = self.create_photo_with_media(name="f1", tags=self.tags1, point=self.point)
         self.photo2 = self.create_photo_with_media(name="f2", tags=self.tags2, point=self.point)
         
-        self.audio1 = self.create_audio(self.user, self.project, name="f1", tags=self.tags1, point=self.point)
-        self.audio2 = self.create_audio(self.user, self.project, name="f2", tags=self.tags2, point=self.point)
+        self.audio1 = self.create_audio_with_media(name="f1", tags=self.tags1, point=self.point)
+        self.audio2 = self.create_audio_with_media(name="f2", tags=self.tags2, point=self.point)
+
+        self.form = self.create_form_with_fields(name="Class Form", num_fields=8)
+        self.form = models.Form.objects.get(id=self.form.id) #requery
+        self.records = self.create_records(self.form, 8, photo=self.photo1, audio=self.audio1)
         
         self.map_image1 = self.create_scan(self.user, self.project, name="f1", tags=self.tags1)
         self.map_image2 = self.create_scan(self.user, self.project, name="f2", tags=self.tags2)
@@ -75,7 +80,25 @@ class CSVMixin(MediaMixin):
             
             # TEST 3: tags have been flattened:
             self.assertEqual(test_record.get('tags'), ', '.join(self.tags1))
-
+            
+    def _test_media_flattened_for_records(self, is_detail=False):
+        url = '/api/0/forms/{}/data/'.format(self.records[0].form.id)
+        if is_detail:
+            url = '/api/0/forms/{}/data/{}/'.format(self.records[0].form.id, self.records[0].id)
+        response = self.client_user.get(url + '?format=csv')
+        data = StringIO(response.content)
+        reader = csv.DictReader(data)
+        for row in reader:
+            fields = [
+                'field_7_detail.id',
+                'field_7_detail.file_name_medium',
+                'field_7_detail.file_name_medium_sm',
+                'field_7_detail.file_name_small',
+                'field_8_detail.id',
+                'field_8_detail.file_path'
+            ]
+            for key in fields:
+                self.assertTrue(row.get(key))
         
 class CSVRendererListTest(CSVMixin, test.TestCase, ModelMixin):
     '''
@@ -94,8 +117,12 @@ class CSVRendererListTest(CSVMixin, test.TestCase, ModelMixin):
             '/api/0/prints/'
         ]
         self.isList = True
+        
+    def test_media_flattened_for_records(self):
+        self._test_media_flattened_for_records(is_detail=False)
     
 class CSVRendererInstanceTest(CSVMixin, test.TestCase, ModelMixin):
+
     def setUp(self):
         ModelMixin.setUp(self)
         CSVMixin.setUp(self)
@@ -108,9 +135,33 @@ class CSVRendererInstanceTest(CSVMixin, test.TestCase, ModelMixin):
             '/api/0/prints/{}/'.format(self.print1.id)
         ]
         self.isList = False
+    
+    def test_media_flattened_for_record(self):
+        self._test_media_flattened_for_records(is_detail=True)
         
-    def test_project_instance_has_child_records(self):
-        self.assertEqual(1, 1)
+    def test_project_instance_includes_child_records(self):
+        url = '/api/0/projects/{}/'.format(self.project.id)
+        response = self.client_user.get(url + '?format=csv')
+        data = StringIO(response.content)
+        reader = csv.DictReader(data)
+        expected = {
+            'form_{}'.format(self.form.id): 8,
+            'project': 1,
+            'photo': 2,
+            'audio': 2,
+            'map-image': 2,
+            'marker': 2
+        }
+        actual = {}
+        for row in reader:
+            key = row.get('overlay_type')
+            if not actual.get(key):
+                actual[key] = 0
+            actual[key] += 1
+        self.assertSetEqual(set(expected.keys()), set(actual.keys()))
+        for key in expected.keys():
+            self.assertEqual(expected[key], actual[key])
+        
 
     def test_marker_instance_has_child_records(self):
         self.assertEqual(1, 1)
