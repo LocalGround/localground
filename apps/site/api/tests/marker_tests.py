@@ -84,8 +84,8 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
         #create some associations:
         self.photo1 = self.create_photo(self.user, self.project)
         self.audio1 = self.create_audio(self.user, self.project)
-        self.create_relation(models.Photo.get_content_type(), id=self.photo1.id, ordering=1)
-        self.create_relation(models.Audio.get_content_type(), id=self.audio1.id, ordering=1)
+        self.create_relation(models.Photo.get_content_type(), marker=self.marker, id=self.photo1.id, ordering=1)
+        self.create_relation(models.Audio.get_content_type(), marker=self.marker, id=self.audio1.id, ordering=1)
         response = self.client_user.get(
             self.urls[0], {'marker_with_media_arrays': True}
         )

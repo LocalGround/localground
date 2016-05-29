@@ -19,6 +19,8 @@ class CSVMixin(mixins.MediaMixin):
         self.form = self.create_form_with_fields(name="Class Form", num_fields=8)
         self.form = models.Form.objects.get(id=self.form.id) #requery
         self.records = self.create_records(self.form, 8, photo=self.photo1, audio=self.audio1)
+        self.record1 = self.records[0]
+        self.record2 = self.records[1]
         
         self.map_image1 = self.create_scan(self.user, self.project, name="f1", tags=self.tags1)
         self.map_image2 = self.create_scan(self.user, self.project, name="f2", tags=self.tags2)
@@ -32,6 +34,10 @@ class CSVMixin(mixins.MediaMixin):
         self.print1 = self.create_print(map_title="f1", tags=self.tags1)
         self.print2 = self.create_print(map_title="f2", tags=self.tags2)
         
+    def tearDown(self):
+        for m in models.Form.objects.all():
+            m.remove_table_from_cache()
+
     def test_csv_is_valid_for_objects(self):
         # issuing tests for many URL endpoints (photos, audio,
         # map images, markers, projects, and prints):
@@ -161,7 +167,32 @@ class CSVRendererInstanceTest(CSVMixin, test.TestCase, ModelMixin):
         self.assertSetEqual(set(expected.keys()), set(actual.keys()))
         for key in expected.keys():
             self.assertEqual(expected[key], actual[key])
-        
 
     def test_marker_instance_has_child_records(self):
-        self.assertEqual(1, 1)
+        self.create_relation(self.photo1.get_content_type(), marker=self.marker1, id=self.photo1.id, ordering=1)
+        self.create_relation(self.photo2.get_content_type(), marker=self.marker1, id=self.photo2.id, ordering=2)
+        self.create_relation(self.audio1.get_content_type(), marker=self.marker1, id=self.audio1.id, ordering=1)
+        self.create_relation(self.audio2.get_content_type(), marker=self.marker1, id=self.audio2.id, ordering=2)
+        self.create_relation(self.record1.get_content_type(), marker=self.marker1, id=self.record1.id, ordering=1)
+        self.create_relation(self.record2.get_content_type(), marker=self.marker1, id=self.record2.id, ordering=2)
+        
+        url = '/api/0/markers/{}/'.format(self.marker1.id)
+        response = self.client_user.get(url + '?format=csv')
+        data = StringIO(response.content)
+        reader = csv.DictReader(data)
+        expected = {
+            'form_{}'.format(self.form.id): 2,
+            'marker': 1,
+            'photo': 2,
+            'audio': 2,
+        }
+        actual = {}
+        for row in reader:
+            key = row.get('overlay_type')
+            if not actual.get(key):
+                actual[key] = 0
+            actual[key] += 1
+            #print key, ":", actual[key]
+        self.assertSetEqual(set(expected.keys()), set(actual.keys()))
+        for key in expected.keys():
+            self.assertEqual(expected[key], actual[key])

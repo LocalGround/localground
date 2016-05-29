@@ -476,12 +476,14 @@ class ModelMixin(object):
         audio.save()
         return audio
     
-    def create_relation(self, entity_type, id=1, ordering=1, turned_on=False):
+    def create_relation(self, entity_type, marker=None, id=1, ordering=1, turned_on=False):
+        if marker is None:
+            marker = self.marker
         r = models.GenericAssociation(
             entity_type=entity_type,
             entity_id=id,
             source_type=models.Marker.get_content_type(),
-            source_id=self.marker.id,
+            source_id=marker.id,
             ordering=ordering,
             owner=self.user,
             turned_on=turned_on,
