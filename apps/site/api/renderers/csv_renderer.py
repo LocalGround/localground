@@ -30,7 +30,37 @@ class CSVRenderer(renderers.BaseRenderer):
         # flatten tags:
         if row.get('tags') is not None:
             row['tags'] = ', '.join(row.get('tags'))
-
+    
+    def process_instances_with_children(self, data, headers):
+        '''
+        Builds dataset array with child records (for projects & markers):
+        '''
+        # add top-level record:
+        top_level_record = data.copy()
+        del top_level_record['children']
+        dataset = [top_level_record]
+        headers += top_level_record.keys()
+        
+        # add child records:
+        children = data.get('children')
+        for key in children:
+            child_records = children.get(key).get('data')
+            dataset += child_records
+            if len(child_records) > 0:
+                headers += child_records[0].keys()
+        return headers, dataset
+    
+    def process_record_instances_with_foreign_keys(self, row, headers):
+        for key in row.keys():
+            if '_detail' in key and isinstance(row.get(key), dict):
+                child = row.get(key)
+                for k in child:
+                    header = '{}.{}'.format(key, k)
+                    headers.append(header)
+                    row[header] = child[k]
+                del row[key]
+    
+    
     def render(self, data, media_type=None, renderer_context=None):
         """
         Renders serialized data into CSV. For a dictionary:
@@ -49,23 +79,15 @@ class CSVRenderer(renderers.BaseRenderer):
             
             # if hierarchical object, then flatten (for project or marker):
             if data.get('overlay_type') in ['project', 'marker']:
-                
-                # add top-level record:
-                top_level_record = data.copy()
-                del top_level_record['children']
-                dataset += [top_level_record]
-                headers += top_level_record.keys()
-                
-                # add child records:
-                children = data.get('children')
-                for key in children:
-                    child_records = children.get(key).get('data')
-                    dataset += child_records
-                    if len(child_records) > 0:
-                        headers += child_records[0].keys()
+                headers, dataset = self.process_instances_with_children(data, headers)
             else:
                 headers = data.keys()
                 dataset = [data]
+        
+        # special post-processing for record objects with nested foreign keys:
+        for row in dataset:
+            if 'form_' in row.get('overlay_type'):
+                self.process_record_instances_with_foreign_keys(row, headers)        
         
         if len(dataset) > 0:
             if 'geometry' in headers:

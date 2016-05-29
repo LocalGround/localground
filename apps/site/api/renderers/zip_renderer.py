@@ -27,7 +27,10 @@ class ZIPRenderer(renderers.BaseRenderer):
         'file_path',
         'overlay_path',
         'pdf',
-        'thumb'
+        'thumb',
+        'file_name_medium',     # TODO: standardize to match photo serializer
+        'file_name_medium_sm',  # TODO: standardize to match photo serializer
+        'file_name_small'       # TODO: standardize to match photo serializer
     ]
 
     def render(self, data, media_type=None, renderer_context=None):
@@ -59,6 +62,8 @@ class ZIPRenderer(renderers.BaseRenderer):
         file_path = file_path.split("/")[-1]
         file_path = base64.b64decode(file_path)
         file_path = file_path.split('#')[0] #removes the hash (used to ensure no caching for media files)
+        if not file_path:
+            return None
         return file_path
         
     def make_relative_path_for_csv(self, row, key):
@@ -67,14 +72,22 @@ class ZIPRenderer(renderers.BaseRenderer):
         has access to:
         """
         file_path = self.get_abs_path(row, key)
+        if not file_path:
+            return None
+        
         folder = self.get_media_folder_name(row.get("overlay_type"))
-        return '{}/{}'.format(folder, file_path.split('/')[-1])
+        file_path = file_path.split('/')[-1]
+        return '{}/{}'.format(folder, file_path)
 
     def add_media_to_zip(self, zip_file, row, key):
         """
         Adds any URL media to the zip file:
         """
-        source_file_path = '{}{}'.format(settings.FILE_ROOT, self.get_abs_path(row, key))
+        abs_file_path = self.get_abs_path(row, key)
+        if not abs_file_path:
+            return None
+        
+        source_file_path = '{}{}'.format(settings.FILE_ROOT, abs_file_path)
         folder = self.get_media_folder_name(row.get("overlay_type"))
         target_file_path = os.path.join(folder, source_file_path.split("/")[-1])
         if target_file_path not in zip_file.namelist():
@@ -94,9 +107,12 @@ class ZIPRenderer(renderers.BaseRenderer):
         # update media paths to relative paths:
         for row in reader:
             for key in self.URL_PATH_FIELDS:
-                if row.get(key):
-                    self.add_media_to_zip(zip_file, row, key)
-                    row[key] = self.make_relative_path_for_csv(row, key)
+                for cell in row:
+                    # "endswith" handles nested file paths, for example
+                    # when record objects reference photo objects
+                    if cell.endswith(key):
+                        self.add_media_to_zip(zip_file, row, cell)
+                        row[cell] = self.make_relative_path_for_csv(row, cell)
             records.append(row)
 
         # Output resulting spreadsheet:
