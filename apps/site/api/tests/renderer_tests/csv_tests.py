@@ -22,8 +22,8 @@ class CSVMixin(mixins.MediaMixin):
         self.record1 = self.records[0]
         self.record2 = self.records[1]
         
-        self.map_image1 = self.create_scan(self.user, self.project, name="f1", tags=self.tags1)
-        self.map_image2 = self.create_scan(self.user, self.project, name="f2", tags=self.tags2)
+        self.map_image1 = self.create_mapimage(self.user, self.project, name="f1", tags=self.tags1)
+        self.map_image2 = self.create_mapimage(self.user, self.project, name="f2", tags=self.tags2)
         
         self.marker1 = self.create_marker(self.user, self.project, name="f1", tags=self.tags1, point=self.point)
         self.marker2 = self.create_marker(self.user, self.project, name="f2", tags=self.tags2, point=self.point)

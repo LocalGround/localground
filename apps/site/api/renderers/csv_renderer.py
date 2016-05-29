@@ -67,18 +67,20 @@ class CSVRenderer(renderers.BaseRenderer):
         """
         dataset = []
         headers = []
+        overlay_type = None
 
         # list renderer:
         if 'results' in data:
             dataset = data.get('results')
             if len(dataset) > 0:
+                overlay_type = dataset[0].get('overlay_type')
                 headers += dataset[0].keys()
                 
         # instance renderer:
         elif 'overlay_type' in data:
-            
+            overlay_type = data.get('overlay_type')
             # if hierarchical object, then flatten (for project or marker):
-            if data.get('overlay_type') in ['project', 'marker']:
+            if overlay_type in ['project', 'marker']:
                 headers, dataset = self.process_instances_with_children(data, headers)
             else:
                 headers = data.keys()
@@ -90,7 +92,7 @@ class CSVRenderer(renderers.BaseRenderer):
                 self.process_record_instances_with_foreign_keys(row, headers)        
         
         if len(dataset) > 0:
-            if 'geometry' in headers:
+            if 'geometry' in headers and overlay_type != 'map-image':
                 headers += ['lat', 'lng']
             headers = list(set(headers))
             headers.sort()
