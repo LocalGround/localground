@@ -31,7 +31,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         source='description',
         required=False,
         allow_blank=True,
-        style={'base_template':'textarea.html'}
+        style={'base_template':'textarea.html','rows': 5}
     )
     map_title = serializers.CharField(
         label='map_title',
@@ -51,7 +51,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
     overlay_type = serializers.SerializerMethodField()
     center = fields.GeometryField(
                 help_text='Assign a GeoJSON center point',
-                style={'base_template': 'json.html'},
+                style={'base_template': 'json.html', 'rows': 5},
                 required=True
             )
     
@@ -107,7 +107,7 @@ class PrintSerializer(ExtentsSerializer, PrintSerializerMixin):
 class PrintSerializerDetail(ExtentsSerializer, PrintSerializerMixin):
     center = fields.GeometryField(
                 help_text='Assign a GeoJSON center point',
-                style={'base_template': 'json.html'},
+                style={'base_template': 'json.html', 'rows': 5},
                 read_only=True
             )
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17, read_only=True)

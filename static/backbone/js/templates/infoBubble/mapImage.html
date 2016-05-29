@@ -1,0 +1,30 @@
+<% if (mode == 'view') { %>
+<div class="bubble-container" style="width: 400px;height:100px;">
+    <div>
+        <div class="bubble-title">
+            <span class="audio-title"><%= name || "Untitled" %></span>
+        </div>
+        <div class="bubble-detail">
+        <%= caption %><br>
+        <%= tags %>
+        </div>
+    </div>
+</div>
+<% } %>
+
+
+<% if (mode == 'edit') { %>
+<div class="bubble-container" style="width: 350px;height:260px;">
+    <div class="infobubble-contents" style="margin: 10px;height:190px;">
+        <div class="bubble-title">
+            <span class="audio-title"><%= name || "Untitled" %></span>
+            <div class="form"></div>
+        </div>
+    </div>
+    <div class="edit-button-container">
+        <button class="btn btn-primary">Save</button>
+        <button class="btn btn-secondary">Cancel</button>
+    </div>
+</div>
+<% } %>
+

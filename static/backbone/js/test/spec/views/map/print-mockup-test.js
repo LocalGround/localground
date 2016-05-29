@@ -1,5 +1,5 @@
 define(["views/prints/printMockup",
-        "../../../test/spec-helper"],
+        "../../../../test/spec-helper"],
     function (PrintMockup) {
         'use strict';
         var printMockup,

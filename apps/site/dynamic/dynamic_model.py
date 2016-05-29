@@ -73,7 +73,7 @@ class DynamicModelMixin(BasePointMixin, BaseAudit):
         return data
 
     def to_dict(self, include_project=False, include_marker=True,
-                include_data=False, include_scan=False, **kwargs):
+                include_data=False, include_mapimage=False, **kwargs):
         d = dict(
             form_id=self.form.id,
             id=self.id

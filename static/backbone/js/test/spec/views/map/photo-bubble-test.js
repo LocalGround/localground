@@ -1,7 +1,7 @@
 define(["underscore",
         "lib/maps/overlays/photo",
         "config",
-        "../../../test/spec-helper"],
+        "../../../../test/spec-helper"],
     function (_, PhotoOverlay, config) {
         'use strict';
 

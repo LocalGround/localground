@@ -7,7 +7,7 @@ from django.template import RequestContext
 import simplejson as json
 from django.core.context_processors import csrf
 from django.contrib.auth.models import User
-from localground.apps.site.models import Base, Scan, Print, Project, Snapshot, Presentation
+from localground.apps.site.models import Base, MapImage, Print, Project, Snapshot, Presentation
 from django.core.exceptions import ObjectDoesNotExist
 
 # Constants describing default latitudes, longitudes, and zoom

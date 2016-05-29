@@ -51,11 +51,11 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         return self._embedded_layers
 
     @property
-    def embedded_scans(self):
-        from localground.apps.site.models import Scan
-        if not hasattr(self, '_embedded_scans'):
-            self._embedded_scans = self.grab(Scan)
-        return self._embedded_scans
+    def embedded_mapimages(self):
+        from localground.apps.site.models import MapImage
+        if not hasattr(self, '_embedded_mapimages'):
+            self._embedded_mapimages = self.grab(MapImage)
+        return self._embedded_mapimages
 
     def get_abs_directory_path(self):
         return '%s%s' % (settings.FILE_ROOT, self.virtual_path)
@@ -78,7 +78,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
             'project_id': self.project.id,
             'map_title': self.name.encode('utf8'),
             'instructions': self.description.encode('utf8'),
-            'scan_ids': ','.join([str(s.id) for s in self.embedded_scans])
+            'mapimage_ids': ','.join([str(s.id) for s in self.embedded_mapimages])
         })
         return '//' + self.host + '/maps/print/?' + data
         #return settings.SERVER_URL + '/maps/print/?' + data
@@ -134,19 +134,19 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
             groups = self.get_map_groups()
             dict.update({'map_groups': [g.to_dict() for g in groups]})
         if include_processed_maps:
-            dict.update({'processed_maps': self.get_scans(to_dict=True)})
+            dict.update({'processed_maps': self.get_mapimages(to_dict=True)})
         if include_markers:
             dict.update({'markers': self.get_marker_dictionary_list()})
         return dict
 
-    def get_scans(self, to_dict=False):
-        from localground.apps.site.models import Scan
-        scans = list(Scan.objects.filter(deleted=False)
+    def get_mapimages(self, to_dict=False):
+        from localground.apps.site.models import MapImage
+        mapimages = list(MapImage.objects.filter(deleted=False)
                                  .filter(source_print=self)
                                  .order_by('-time_stamp'))
         if to_dict:
-            return [s.to_dict() for s in scans]
-        return scans
+            return [s.to_dict() for s in mapimages]
+        return mapimages
 
     def delete(self, *args, **kwargs):
         # first remove directory, then delete from db:
@@ -178,16 +178,16 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
     @classmethod
     def insert_print_record(cls, user, project, layout, map_provider, zoom,
                             center, host, map_title=None, instructions=None,
-                            layer_ids=None, scan_ids=None,
+                            layer_ids=None, mapimage_ids=None,
                             do_save=True):
         from localground.apps.site import models
         from localground.apps.lib.helpers import generic, StaticMap
 
-        layers, scans = None, None
+        layers, mapimages = None, None
         if layer_ids is not None:
             layers = models.WMSOverlay.objects.filter(id__in=layer_ids)
-        if scan_ids is not None:
-            scans = models.Scan.objects.filter(id__in=scan_ids)
+        if mapimage_ids is not None:
+            mapimages = models.MapImage.objects.filter(id__in=mapimage_ids)
         if instructions is not None:  # preserve line breaks in the pdf report
             instructions = '<br/>'.join(instructions.splitlines())
 
@@ -235,9 +235,9 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
             if layers:
                 for layer in layers:
                     p.stash(l, user)
-            if scans:
-                for scan in scans:
-                    p.stash(scan, user)
+            if mapimages:
+                for mapimage in mapimages:
+                    p.stash(mapimage, user)
         return p
 
     def generate_pdf(self):
@@ -255,7 +255,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         file_name = 'Print_' + self.uuid + '.pdf'
 
         layers = self.embedded_layers
-        scans = self.embedded_scans
+        mapimages = self.embedded_mapimages
 
         info = m.get_basemap_and_extents(
             self.map_provider, self.zoom, self.center, map_width, map_height)
@@ -272,7 +272,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
             layers,
             southwest=southwest,
             northeast=northeast,
-            scans=scans,
+            mapimages=mapimages,
             height=map_height,
             width=map_width,
             show_north_arrow=True)

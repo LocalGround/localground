@@ -16,7 +16,7 @@ def get_media_form(cls, user):
             from localground.apps.site.widgets import PointWidget, PointWidgetHidden, \
             ArrayFieldTagWidget, CustomDateTimeWidget
             model = cls
-            fields = ('id', 'project', 'source_scan', 'name', 'date_created',
+            fields = ('id', 'project', 'source_mapimage', 'name', 'date_created',
                       'description', 'attribution', 'point', 'tags')
             widgets = {
                 'id': forms.HiddenInput,
@@ -24,7 +24,7 @@ def get_media_form(cls, user):
                 'point': PointWidgetHidden(),
                 # any valid html attributes as attrs
                 'description': forms.Textarea(attrs={'rows': 3}),
-                'source_scan': forms.HiddenInput,
+                'source_mapimage': forms.HiddenInput,
                 'date_created': CustomDateTimeWidget,
                 'tags': ArrayFieldTagWidget(attrs={'delimiter': ','})
             }

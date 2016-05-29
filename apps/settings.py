@@ -28,7 +28,7 @@ SESSION_COOKIE_NAME = 'sessionid'
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Custom Local Variables
-PROTOCOL = 'http'
+PROTOCOL = 'https'
 SERVER_HOST = os.environ.get('SERVER_HOST', 'yoursite.com')
 SERVER_URL = '%s//%s' % (PROTOCOL, SERVER_HOST)
 
@@ -224,10 +224,13 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
         'rest_framework.filters.DjangoFilterBackend',
     ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ),
+    # Commenting out authentication classes for now. It was throwing a
+    # really weird error for shared projects
+    #
+    #'DEFAULT_AUTHENTICATION_CLASSES': (
+    #    'rest_framework.authentication.BasicAuthentication',
+    #    'rest_framework.authentication.SessionAuthentication',
+    #),
     'TEST_REQUEST_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'localground.apps.site.api.renderers.GeoJSONRenderer',

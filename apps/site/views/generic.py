@@ -1,5 +1,5 @@
 from django.shortcuts import render_to_response
-from localground.apps.site.models import Print, Scan, Photo, Audio, Video, UserProfile
+from localground.apps.site.models import Print, MapImage, Photo, Audio, Video, UserProfile
 from django.contrib.auth.decorators import login_required
 import simplejson as json
 from django.template import RequestContext

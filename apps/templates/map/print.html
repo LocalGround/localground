@@ -22,7 +22,7 @@
         zoom: {{zoom}},
         serverURL: '{{serverURL}}', 
         overlays: {% autoescape off %}{{ overlays }}{% endautoescape %},
-        scans: {% autoescape off %}{{ scans }}{% endautoescape %},
+        mapimages: {% autoescape off %}{{ mapimages }}{% endautoescape %},
         forms: {% autoescape off %}{{ forms }}{% endautoescape %},
         isPrint: true,
         initialMapLayerID: {{basemap_id | default:"1"}},
@@ -299,7 +299,7 @@ select { width: 180px !important; }
                 <span>center_lat:</span><input id="center_lng" name="center_lng" value="{{ center_lng }}" /><br>
                 <span>center_lng:</span><input id="center_lat" name="center_lat" value="{{ center_lat }}" /><br>
                 <span>layer_ids:</span><input name="layer_ids" value="{{ layer_id_string|default_if_none:"" }}" /><br>
-                <span>scan_ids:</span><input name="scan_ids" value="{{ scan_id_string|default_if_none:"" }}" /><br>
+                <span>mapimage_ids:</span><input name="mapimage_ids" value="{{ mapimage_id_string|default_if_none:"" }}" /><br>
                 <span>map_provider:</span><input type="text" name="map_provider" value="{{ basemap_id }}" /><br>
                 <span>generate_pdf:</span><input type="text" name="generate_pdf" value="on" /><br>
                 <span>layout:</span><input type="text" name="layout" id="layout" value="{{selectedLayout}}" /><br>

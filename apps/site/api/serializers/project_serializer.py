@@ -1,6 +1,6 @@
 from localground.apps.site.api.serializers.base_serializer import BaseNamedSerializer
 from localground.apps.site.api.serializers.photo_serializer import PhotoSerializer
-from localground.apps.site.api.serializers.barcoded_serializer import ScanSerializerUpdate
+from localground.apps.site.api.serializers.mapimage_serializer import MapImageSerializerUpdate
 from localground.apps.site.api.serializers.audio_serializer import AudioSerializer
 from localground.apps.site.api.serializers.record_serializer import create_record_serializer, \
     create_compact_record_serializer
@@ -8,41 +8,49 @@ from localground.apps.site.api.metadata import CustomMetadata
 from localground.apps.site.api.serializers.marker_serializer import MarkerSerializerCounts, MarkerSerializerLists
 from rest_framework import serializers
 from localground.apps.site import models
+from django.conf import settings
 
+class ProjectSerializerMixin(object):
+    sharing_url = serializers.SerializerMethodField()
 
-class ProjectSerializer(BaseNamedSerializer):
-    access = serializers.SerializerMethodField('get_access_name')
+    def get_sharing_url(self, obj):
+        view = self.context.get('view')
+        return '%s/api/0/projects/%s/users/' % (
+            settings.SERVER_URL,
+            obj.id)
+
+class ProjectSerializer(BaseNamedSerializer, ProjectSerializerMixin):
+    sharing_url = serializers.SerializerMethodField()
+    access_authority = serializers.PrimaryKeyRelatedField(queryset=models.ObjectAuthority.objects.all(), read_only=False, required=False)
     slug = serializers.SlugField(max_length=100, label='friendly url')
     class Meta:
         model = models.Project
-        fields = BaseNamedSerializer.Meta.fields + ('slug', 'access')
+        fields = BaseNamedSerializer.Meta.fields + ('slug', 'access_authority', 'sharing_url')
         depth = 0
 
-    def get_access_name(self, obj):
-        return obj.access_authority.name
 
-
-class ProjectDetailSerializer(ProjectSerializer):
+class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
     slug = serializers.SlugField(max_length=100, label='friendly url', required=False)
-    children = serializers.SerializerMethodField('get_children_dict')
+    children = serializers.SerializerMethodField()
     view = None
+        
     class Meta:
         model = models.Project
-        fields = ProjectSerializer.Meta.fields + ('children', )
+        fields = ProjectSerializer.Meta.fields + ('sharing_url', 'children')
         depth = 0
     
     def get_metadata(self, serializer_class):
         m = CustomMetadata()
         return m.get_serializer_info(serializer_class)
 
-    def get_children_dict(self, obj):
+    def get_children(self, obj):
         from django.contrib.contenttypes.models import ContentType
         from localground.apps.site import models
 
         candidates = [
             models.Photo,
             models.Audio,
-            models.Scan,
+            models.MapImage,
             models.Project,
             models.Marker]
         
@@ -59,7 +67,7 @@ class ProjectDetailSerializer(ProjectSerializer):
         children = {
             'photos': self.get_photos(obj),
             'audio': self.get_audio(obj),
-            'scans': self.get_scans(obj),
+            'map_images': self.get_mapimages(obj),
             'markers': self.get_markers(obj, forms)
         }
         
@@ -103,15 +111,16 @@ class ProjectDetailSerializer(ProjectSerializer):
             )
         )
 
-    def get_scans(self, obj):
+    def get_mapimages(self, obj):
         return self.serialize_list(
-            models.Scan,
-            ScanSerializerUpdate,
-            models.Scan.objects.get_objects(
+            models.MapImage,
+            MapImageSerializerUpdate,
+            models.MapImage.objects.get_objects(
                 obj.owner,
                 project=obj,
                 processed_only=True
-            )
+            ),
+            name="Map Images"
         )
     
     def get_markers(self, obj, forms):

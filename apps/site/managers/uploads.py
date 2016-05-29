@@ -10,7 +10,7 @@ class UploadMixin(ObjectMixin):
     prefetch_fields = []  # 'project__users__user']
 
 
-class ScanMixin(UploadMixin):
+class MapImageMixin(UploadMixin):
     related_fields = [
         'status',
         'source_print',
@@ -20,7 +20,7 @@ class ScanMixin(UploadMixin):
 
     def get_objects(self, user, project=None, request=None, context=None,
                     ordering_field='-time_stamp', processed_only=False):
-        q = super(ScanMixin, self).get_objects(
+        q = super(MapImageMixin, self).get_objects(
             user, project=project, request=request, context=context,
             ordering_field=ordering_field
         )
@@ -28,26 +28,26 @@ class ScanMixin(UploadMixin):
             q = q.filter(status=2).filter(source_print__isnull=False)
         return q
 
-    def failed_scans(self, user=None):
+    def failed_mapimages(self, user=None):
         q = self.model.objects.filter(status__in=(4,))
         if user is not None and not user.is_superuser:
             q.filter(owner=user)
         return q.order_by('time_stamp')
 
-    def scans_in_queue(self, user=None):
+    def mapimages_in_queue(self, user=None):
         q = self.model.objects.filter(status__in=(1,))
         if user is not None:
             q.filter(owner=user)
         return q.order_by('time_stamp')
 
 
-class ScanQuerySet(QuerySet, ScanMixin):
+class MapImageQuerySet(QuerySet, MapImageMixin):
     pass
 
 
-class ScanManager(models.GeoManager, ScanMixin):
+class MapImageManager(models.GeoManager, MapImageMixin):
     def get_queryset(self):
-        return ScanQuerySet(self.model, using=self._db)
+        return MapImageQuerySet(self.model, using=self._db)
     
     
 
@@ -57,9 +57,9 @@ class PhotoMixin(UploadMixin):
 
 class PrintPermissionsMixin(object):
 
-    def to_dict_list(self, include_scan_counts=False):
-        if include_scan_counts:
-            return [dict(p.to_dict(), num_scans=p.num_scans or 0)
+    def to_dict_list(self, include_mapimage_counts=False):
+        if include_mapimage_counts:
+            return [dict(p.to_dict(), num_mapimages=p.num_mapimages or 0)
                     for p in self]
         else:
             return [p.to_dict() for p in self]

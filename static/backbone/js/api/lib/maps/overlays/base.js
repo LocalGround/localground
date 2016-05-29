@@ -4,8 +4,9 @@ define(["marionette",
     "lib/maps/overlays/point",
     "lib/maps/overlays/polyline",
     "lib/maps/overlays/polygon",
+    "lib/maps/overlays/ground-overlay",
     "lib/maps/overlays/infobubbles/base"
-], function (Marionette, $, _, Point, Polyline, Polygon, Infobubble) {
+    ], function (Marionette, $, _, Point, Polyline, Polygon, GroundOverlay, Infobubble) {
     "use strict";
     /**
      * This class controls the rendering and underlying
@@ -19,7 +20,6 @@ define(["marionette",
         model: null,
         _overlay: null,
         template: false,
-        _isShowingOnMap: false,
         infoBubble: null,
 
         modelEvents: {
@@ -34,11 +34,11 @@ define(["marionette",
         initialize: function (opts) {
             this.app = opts.app;
             this.id = this.model.get('overlay_type') + this.model.get('id');
-            $.extend(opts, this.restoreState());
+            $.extend(this, this.restoreState());
             this.map = opts.app.getMap();
             this.model = opts.model;
             this.initInfoBubble(opts);
-            this.initOverlayType(this._isShowingOnMap);
+            this.initOverlayType(this.state._isShowingOnMap);
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
         },
 
@@ -48,7 +48,7 @@ define(["marionette",
 
         updateOverlay: function () {
             this.getGoogleOverlay().setMap(null);
-            this.initOverlayType(this._isShowingOnMap);
+            this.initOverlayType(this.state._isShowingOnMap);
             this.changeMode();
         },
 
@@ -64,7 +64,11 @@ define(["marionette",
             } else if (geoJSON.type === 'LineString') {
                 this._overlay = new Polyline(this.app, opts);
             } else if (geoJSON.type === 'Polygon') {
-                this._overlay = new Polygon(this.app, opts);
+                if (this.model.get("overlay_type") == "map-image") {
+                    this._overlay = new GroundOverlay(this.app, opts);
+                } else {
+                    this._overlay = new Polygon(this.app, opts);
+                }
             } else {
                 alert('Unknown Geometry Type');
             }
@@ -95,7 +99,7 @@ define(["marionette",
 
         /** determines whether the overlay is visible on the map. */
         isShowingOnMap: function () {
-            return this.getGoogleOverlay().getMap() != null && this._isShowingOnMap;
+            return this.getGoogleOverlay().getMap() != null && this.state._isShowingOnMap;
         },
 
         /** shows the google.maps overlay on the map. */
@@ -104,13 +108,13 @@ define(["marionette",
                 var go = this.getGoogleOverlay();
                 go.setMap(this.map);
                 this.changeMode();
-                this._isShowingOnMap = true;
+                this.state._isShowingOnMap = true;
                 this.saveState();
             }
         },
 
         render: function () {
-            if (this._isShowingOnMap && this.model.get('isVisible')) {
+            if (this.state._isShowingOnMap && this.model.get('isVisible')) {
                 this.redraw();
                 this.show();
             } else {
@@ -124,22 +128,21 @@ define(["marionette",
             var go = this.getGoogleOverlay();
             go.setMap(null);
             this.model.trigger("hide-bubble");
+            this.state._isShowingOnMap = false;
             this.saveState();
-            this._isShowingOnMap = false;
         },
 
         saveState: function () {
             this.app.saveState(this.id, {
-                _isShowingOnMap: this._isShowingOnMap
+                _isShowingOnMap: this.state._isShowingOnMap
             });
         },
 
         restoreState: function () {
-            var state = this.app.restoreState(this.id);
-            if (!state) {
-                return { _isShowingOnMap: false };
+            this.state = this.app.restoreState(this.id);
+            if (!this.state) {
+                this.state = { _isShowingOnMap: false };
             }
-            return state;
         },
 
         onBeforeDestroy: function () {

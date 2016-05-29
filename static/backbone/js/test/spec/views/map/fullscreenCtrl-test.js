@@ -3,7 +3,7 @@
  */
 define(["underscore",
         "lib/maps/controls/fullScreenCtrl",
-        "../../../test/spec-helper"],
+        "../../../../test/spec-helper"],
     function (_, FullScreenCtrl) {
         'use strict';
         var fullScreenCtrl, that;

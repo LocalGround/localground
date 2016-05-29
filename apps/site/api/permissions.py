@@ -12,6 +12,11 @@ class CheckProjectPermissions(permissions.BasePermission):
         else:
             return obj.can_edit(request.user)
 
+class CheckProjectSharingPermissions(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        return obj.can_view(request.user)
+
 '''
 class CheckFormPermissions(permissions.BasePermission):
 	

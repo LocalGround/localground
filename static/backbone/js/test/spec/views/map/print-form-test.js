@@ -2,7 +2,7 @@ define(["underscore",
         "jquery",
         "views/prints/printForm",
         "config",
-        "../../../test/spec-helper"],
+        "../../../../test/spec-helper"],
     function (_, $, PrintForm, Config) {
         'use strict';
 

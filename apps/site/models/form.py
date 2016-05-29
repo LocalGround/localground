@@ -284,7 +284,7 @@ class Form(BaseNamed, BasePermissions):
         e.time_stamp = get_timestamp_no_milliseconds()
         e.owner = user
         e.point = d.get('point')
-        e.scan = d.get('scan')
+        e.mapimage = d.get('mapimage')
         e.last_updated_by = d.get('last_updated_by')
 
         # populate ad hoc columns (variable across tables):
