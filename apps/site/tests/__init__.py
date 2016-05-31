@@ -167,8 +167,8 @@ class ModelMixin(object):
     def create_snapshot(self, user, name='Test Snapshot', authority_id=1):
         import random
         from django.contrib.gis.geos import Point
-        lat = 37.8705
-        lng = -122.2819
+        lat = 37.87
+        lng = -122.28
         slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
         v = models.Snapshot(
             name=name,
@@ -246,8 +246,8 @@ class ModelMixin(object):
         geom = None
         if geoJSON is None and point is None:
             from django.contrib.gis.geos import Point
-            lat = 37.8705
-            lng = -122.2819
+            lat = 37.87
+            lng = -122.28
             geom = Point(lng, lat, srid=4326)
         elif point:
             geom = point
@@ -350,7 +350,9 @@ class ModelMixin(object):
                              authority_id=authority_id,
                              project=project)
         for i in range(0, num_fields):
-            fld = self.create_field(name='Field %s' % (i + 1),
+            field_name = 'Field %s' % (i + 1)
+            if i == 0: field_name = 'name'
+            fld = self.create_field(name=field_name,
                                 data_type=models.DataType.objects.get(id=(i + 1)),
                                 ordering=(i + 1),
                                 form=f)
@@ -372,12 +374,12 @@ class ModelMixin(object):
         return f
 
 
-    def insert_form_data_record(self, form, project=None, photo=None, audio=None):
+    def insert_form_data_record(self, form, project=None, photo=None, audio=None, name=None):
 
         from django.contrib.gis.geos import Point
         # create a marker:
-        lat = 37.8705
-        lng = -122.2819
+        lat = 37.87
+        lng = -122.28
         record = form.TableModel()
         record.point = Point(lng, lat, srid=4326)
         if project:
@@ -403,7 +405,7 @@ class ModelMixin(object):
             elif field.data_type.id == models.DataType.AUDIO:
                 setattr(record, field.col_name, audio)
             else:
-                setattr(record, field.col_name, 'some text')
+                setattr(record, field.col_name, name or 'some text')
         record.save(user=self.user)
         return record
 

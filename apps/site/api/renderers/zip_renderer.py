@@ -15,7 +15,32 @@ class ZIPRenderer(renderers.BaseRenderer):
     format = 'zip'
     level_sep = '.'
     headers = None
-
+    
+    PATH_FIELD_LOOKUP = {
+        'photo': [
+            'file_path_orig',
+            'path_large',
+            'path_medium',
+            'path_medium_sm',
+            'path_small',
+            'path_marker_lg',
+            'path_marker_sm'
+        ],
+        'audio': ['file_path_orig', 'file_path'],
+        'map-image': ['overlay_path', 'file_path'],
+        'record': [
+            'file_path',
+            'file_name_medium',
+            'file_name_medium_sm',
+            'file_name_small'
+        ],
+        'print': ['pdf', 'thumb']
+    }
+    URL_PATH_FIELDS = []
+    for key in PATH_FIELD_LOOKUP:
+        URL_PATH_FIELDS += PATH_FIELD_LOOKUP[key]
+    URL_PATH_FIELDS = list(set(URL_PATH_FIELDS))
+    '''
     URL_PATH_FIELDS = [
         'path_marker_lg',
         'file_path_orig',
@@ -32,7 +57,8 @@ class ZIPRenderer(renderers.BaseRenderer):
         'file_name_medium_sm',  # TODO: standardize to match photo serializer
         'file_name_small'       # TODO: standardize to match photo serializer
     ]
-
+    '''
+    
     def render(self, data, media_type=None, renderer_context=None):
         """
         Renders serialized *data* into ZIP.

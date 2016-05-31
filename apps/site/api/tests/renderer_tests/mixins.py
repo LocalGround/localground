@@ -13,6 +13,42 @@ class MediaMixin():
     lat = 37.87
     lng = -122.28
     point = Point(lng, lat, srid=4326)
+    
+    def setUp(self):
+        self.photo1 = self.create_photo_with_media(name="f1", tags=self.tags1, point=self.point)
+        self.photo2 = self.create_photo_with_media(name="f2", tags=self.tags2, point=self.point)
+        
+        self.audio1 = self.create_audio_with_media(name="f1", tags=self.tags1, point=self.point)
+        self.audio2 = self.create_audio_with_media(name="f2", tags=self.tags2, point=self.point)
+
+        self.form = self.create_form_with_fields(name="Class Form", num_fields=8)
+        self.form = models.Form.objects.get(id=self.form.id) #requery
+        self.records = self.create_records(self.form, 8, photo=self.photo1, audio=self.audio1)
+        self.record1 = self.records[0]
+        self.record2 = self.records[1]
+        
+        self.map_image1 = self.create_mapimage(self.user, self.project, name="f1", tags=self.tags1)
+        self.map_image2 = self.create_mapimage(self.user, self.project, name="f2", tags=self.tags2)
+        
+        self.marker1 = self.create_marker(self.user, self.project, name="f1", tags=self.tags1, point=self.point)
+        self.marker2 = self.create_marker(self.user, self.project, name="f2", tags=self.tags2, point=self.point)
+        
+        self.project1 = self.create_project(self.user, name="f1", tags=self.tags1)
+        self.project2 = self.create_project(self.user, name="f2", tags=self.tags2)
+        
+        self.print1 = self.map_image1.source_print
+        self.print1.name ="f1"
+        self.print1.tags=self.tags1
+        self.print1.save()
+        
+        self.print2 = self.map_image2.source_print
+        self.print2.name ="f2"
+        self.print2.tags=self.tags2
+        self.print2.save()
+        
+    def tearDown(self):
+        for m in models.Form.objects.all():
+            m.remove_table_from_cache()
         
     def create_photo_with_media(self, name="f1", tags=[], point=None):
         import Image, tempfile
@@ -69,7 +105,8 @@ class MediaMixin():
                     form=self.form,
                     project=self.project,
                     photo=photo,
-                    audio=audio
+                    audio=audio,
+                    name='f{}'.format((n+1))
                 )
             )
         return records
