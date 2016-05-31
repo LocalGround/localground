@@ -40,24 +40,6 @@ class ZIPRenderer(renderers.BaseRenderer):
     for key in PATH_FIELD_LOOKUP:
         URL_PATH_FIELDS += PATH_FIELD_LOOKUP[key]
     URL_PATH_FIELDS = list(set(URL_PATH_FIELDS))
-    '''
-    URL_PATH_FIELDS = [
-        'path_marker_lg',
-        'file_path_orig',
-        'path_medium',
-        'path_large',
-        'path_marker_sm',
-        'path_medium_sm',
-        'path_small',
-        'file_path',
-        'overlay_path',
-        'pdf',
-        'thumb',
-        'file_name_medium',     # TODO: standardize to match photo serializer
-        'file_name_medium_sm',  # TODO: standardize to match photo serializer
-        'file_name_small'       # TODO: standardize to match photo serializer
-    ]
-    '''
     
     def render(self, data, media_type=None, renderer_context=None):
         """
@@ -86,7 +68,10 @@ class ZIPRenderer(renderers.BaseRenderer):
         """
         file_path = row.get(key)[:-1]
         file_path = file_path.split("/")[-1]
-        file_path = base64.b64decode(file_path)
+        try:
+            file_path = base64.b64decode(file_path)
+        except:
+            raise Exception("Could not b64decode path {}".format(file_path), row.get(key))
         file_path = file_path.split('#')[0] #removes the hash (used to ensure no caching for media files)
         if not file_path:
             return None

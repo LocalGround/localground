@@ -17,7 +17,13 @@ class CSVRenderer(renderers.BaseRenderer):
         csv_writer.writeheader()
         for row in data:
             self.flatten_data(row)
-            csv_writer.writerow(row)
+            for cell in row:
+                if isinstance(row[cell], basestring):
+                    row[cell] = unicode(row[cell]).encode("utf-8")
+            try:
+                csv_writer.writerow(row)
+            except:
+                raise Exception(isinstance(row['name'], basestring))
         return csv_buffer.getvalue()
     
     def flatten_data(self, row):
