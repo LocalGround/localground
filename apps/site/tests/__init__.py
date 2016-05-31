@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os, json
 from django.core import serializers
+from localground.apps.lib.helpers import generic
 
 
 
@@ -137,13 +138,14 @@ class ModelMixin(object):
         except:
             return self.create_user()
 
-    def create_project(self, user, name='Test Project', authority_id=1):
+    def create_project(self, user, name='Test Project', authority_id=1, tags=[]):
         import random
         from localground.apps.site import models
         slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
         p = models.Project(
             name=name,
             owner=user,
+            tags=tags,
             last_updated_by=user,
             access_authority=models.ObjectAuthority.objects.get(
                 id=authority_id),
@@ -165,8 +167,8 @@ class ModelMixin(object):
     def create_snapshot(self, user, name='Test Snapshot', authority_id=1):
         import random
         from django.contrib.gis.geos import Point
-        lat = 37.8705
-        lng = -122.2819
+        lat = 37.87
+        lng = -122.28
         slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
         v = models.Snapshot(
             name=name,
@@ -240,13 +242,15 @@ class ModelMixin(object):
         return self.create_project(self.get_user())
         #return models.Project.objects.get(id=project_id)
 
-    def create_marker(self, user, project, name="Marker Test", geoJSON=None, extras={"key": "value"}):
+    def create_marker(self, user, project, name="Marker Test", geoJSON=None, point=None, extras={"key": "value"}, tags=[]):
         geom = None
-        if geoJSON is None:
+        if geoJSON is None and point is None:
             from django.contrib.gis.geos import Point
-            lat = 37.8705
-            lng = -122.2819
+            lat = 37.87
+            lng = -122.28
             geom = Point(lng, lat, srid=4326)
+        elif point:
+            geom = point
         else:
             from django.contrib.gis.geos import GEOSGeometry
             geom = GEOSGeometry(json.dumps(geoJSON))
@@ -255,10 +259,10 @@ class ModelMixin(object):
             project=project,
             name=name,
             owner=user,
-            geometry=geom,
             color='CCCCCC',
             extras=extras,
-            last_updated_by=user
+            last_updated_by=user,
+            tags=tags
         )
         if geom.geom_type == "Point":
             m.point = geom
@@ -275,7 +279,8 @@ class ModelMixin(object):
     def create_print(self, layout_id=1, map_provider=1,
                      lat=55, lng=61.4, zoom=17,
                      map_title='A title',
-                     instructions='A description'):
+                     instructions='A description',
+                     tags=[]):
         from django.contrib.gis.geos import Point
         p = models.Print.insert_print_record(
             self.user,
@@ -290,6 +295,8 @@ class ModelMixin(object):
             layer_ids=None,
             mapimage_ids=None
         )
+        p.tags = tags
+        p.save()
         p.generate_pdf()
         return p
 
@@ -330,10 +337,12 @@ class ModelMixin(object):
         '''
         TEXT = 1
         INTEGER = 2
-        DATE_TIME = 3
-        BOOL = 4
+        DATETIME = 3
+        BOOLEAN = 4
         DECIMAL = 5
         RATING = 6
+        PHOTO = 7
+        AUDIO = 8
         '''
         if user is None:
             user = self.user
@@ -341,7 +350,9 @@ class ModelMixin(object):
                              authority_id=authority_id,
                              project=project)
         for i in range(0, num_fields):
-            fld = self.create_field(name='Field %s' % (i + 1),
+            field_name = 'Field %s' % (i + 1)
+            if i == 0: field_name = 'name'
+            fld = self.create_field(name=field_name,
                                 data_type=models.DataType.objects.get(id=(i + 1)),
                                 ordering=(i + 1),
                                 form=f)
@@ -363,12 +374,12 @@ class ModelMixin(object):
         return f
 
 
-    def insert_form_data_record(self, form, project=None):
+    def insert_form_data_record(self, form, project=None, photo=None, audio=None, name=None):
 
         from django.contrib.gis.geos import Point
         # create a marker:
-        lat = 37.8705
-        lng = -122.2819
+        lat = 37.87
+        lng = -122.28
         record = form.TableModel()
         record.point = Point(lng, lat, srid=4326)
         if project:
@@ -389,8 +400,12 @@ class ModelMixin(object):
                     get_timestamp_no_milliseconds())
             elif field.data_type.id == models.DataType.DECIMAL:
                 setattr(record, field.col_name, 3.14159)
+            elif field.data_type.id == models.DataType.PHOTO:
+                setattr(record, field.col_name, photo)
+            elif field.data_type.id == models.DataType.AUDIO:
+                setattr(record, field.col_name, audio)
             else:
-                setattr(record, field.col_name, 'some text')
+                setattr(record, field.col_name, name or 'some text')
         record.save(user=self.user)
         return record
 
@@ -410,14 +425,16 @@ class ModelMixin(object):
         img.save(user=mapimage.owner)
         return img
 
-    def create_mapimage(self, user, project):
+    def create_mapimage(self, user, project, tags=[], name='MapImage Name'):
         p = self.create_print(map_title='A mapimage-linked print')
         mapimage = models.MapImage(
             project=project,
             owner=user,
             last_updated_by=user,
             source_print=p,
-            name='MapImage Name',
+            name=name,
+            uuid=generic.generateID(),
+            tags=tags,
             description='MapImage Description',
             status=models.StatusCode.get_status(
                 models.StatusCode.PROCESSED_SUCCESSFULLY),
@@ -447,7 +464,7 @@ class ModelMixin(object):
         return photo
 
     def create_audio(self, user, project, name='Audio Name',
-                     file_name='my_audio.jpg', tags=[]):
+                     file_name='my_audio.jpg', tags=[], point=None):
         audio = models.Audio(
             project=project,
             owner=user,
@@ -455,17 +472,20 @@ class ModelMixin(object):
             name=name,
             description='Audio Description',
             file_name_orig=file_name,
-            tags=tags
+            tags=tags,
+            point=point,
         )
         audio.save()
         return audio
     
-    def create_relation(self, entity_type, id=1, ordering=1, turned_on=False):
+    def create_relation(self, entity_type, marker=None, id=1, ordering=1, turned_on=False):
+        if marker is None:
+            marker = self.marker
         r = models.GenericAssociation(
             entity_type=entity_type,
             entity_id=id,
             source_type=models.Marker.get_content_type(),
-            source_id=self.marker.id,
+            source_id=marker.id,
             ordering=ordering,
             owner=self.user,
             turned_on=turned_on,
