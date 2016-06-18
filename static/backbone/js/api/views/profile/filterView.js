@@ -12,7 +12,7 @@ define(["underscore",
                 "click #submitSearch": "applyFilter",
                 "click #clearSearch": "clearFilter",
                 "click .dropdown-menu": "clickFilterArea",
-                "click #generateQuery": "generateQuery",
+                "focusout input": "generateQuery",
                 "click #filterDropdown" : "filterClicked"
             },
 

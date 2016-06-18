@@ -102,11 +102,5 @@ define([
 
             });
 
-            it("Listens for click of generate SQL button", function () {
-                $("#generateQuery").trigger("click");
-                expect(filterView.generateQuery).toHaveBeenCalled();
-                expect(filterView.createParameterList).toHaveBeenCalled();
-                expect(filterView.createSQLQuery).toHaveBeenCalled();
-            });
         });
     });

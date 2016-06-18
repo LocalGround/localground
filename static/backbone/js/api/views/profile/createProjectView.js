@@ -22,6 +22,14 @@ define(["jquery",
             template: function (data) {
                 return _.template(createProject, data);
             },
+            events: {
+                "focusout #c1_name": "autoPopulateSlug",
+            },
+
+            autoPopulateSlug: function () {
+                var slug = this.$el.find('#c1_name').val();
+                this.$el.find('#c1_slug').val(slug);
+            },
             render: function() {
                 this.$el.html(this.template);
                 this.$el.find("#create-project-form").empty();
