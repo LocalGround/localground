@@ -13,8 +13,19 @@ require(['boot'], function () {
         // COLLECTIONS
         'spec/collections/base-test.js',
         'spec/collections/layers-test.js',
+        'spec/collections/photos-test.js',
+        'spec/collections/audio-test.js',
+        'spec/collections/prints-test.js',
+        'spec/collections/mapimages-test.js',
+        'spec/collections/projects-test.js',
 
-        // VIEWS
+        //PROFILE VIEWS
+        'spec/views/profile/profile-app-test.js',
+        'spec/views/profile/list-edit-view-test.js',
+        'spec/views/profile/side-bar-view-test.js',
+        'spec/views/profile/filter-view-test.js',
+        'spec/views/profile/edit-item-view-test.js',
+
         'spec/views/map/basemap-test.js',
         'spec/views/map/layer-manager-test.js',
         'spec/views/map/symbol-test.js',

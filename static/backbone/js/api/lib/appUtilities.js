@@ -115,7 +115,7 @@ define(["jquery"],
                 } catch (e) {
                     message = "Unknown error";
                 }
-                options.app.vent.trigger('database-error', {
+                this.vent.trigger('database-error', {
                     message: message
                 });
             },
@@ -130,9 +130,9 @@ define(["jquery"],
                     },
                     complete: this.hideLoadingMessage,
                     statusCode: {
-                        400: that.handleDatabaseError.bind(undefined, options),
-                        401: that.handleDatabaseError.bind(undefined, options),
-                        500: that.handleDatabaseError.bind(undefined, options)
+                        400: that.handleDatabaseError.bind(this, options),
+                        401: that.handleDatabaseError.bind(this, options),
+                        500: that.handleDatabaseError.bind(this, options)
                     }
                 });
             }

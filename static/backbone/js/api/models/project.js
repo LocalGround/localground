@@ -8,7 +8,8 @@ define(["underscore", "models/base"], function (_, Base) {
     var Project = Base.extend({
         defaults: _.extend({}, Base.prototype.defaults, {
             isActive: false,
-            isVisible: false
+            isVisible: false,
+            checked: false
         }),
         urlRoot: "/api/0/projects/"
     });

@@ -83,7 +83,7 @@ class BaseMedia(BaseAudit):
 
 class BaseNamedMedia(BaseMedia, ProjectMixin):
     name = models.CharField(max_length=255, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True, verbose_name="caption")
     tags = ArrayField(models.TextField(), default=list)
 
     filter_fields = BaseMedia.filter_fields + ('name', 'description', 'tags')

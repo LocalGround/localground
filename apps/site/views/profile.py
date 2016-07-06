@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.db.models.loading import get_model
 from datetime import datetime
-from localground.apps.site.models import Base, Project, Form, Field
+from localground.apps.site.models import Base, Project, Form, Field, Photo
 import json
 from django.contrib.gis.geos import GEOSGeometry
 import sys
@@ -181,6 +181,32 @@ def object_list_form(
         context.update({'users': Project.get_users()})
     return render_to_response(template_name, context)
 
+@login_required()
+def new_profile(request, template='profile/new_profile.html'):
+    from localground.apps.site.api import metadata, serializers
+    import json
+    u = request.user
+    m = metadata.CustomMetadata()
+    photo_s = serializers.PhotoSerializerUpdate()
+    audio_s = serializers.AudioSerializerUpdate()
+    scan_s = serializers.MapImageSerializerUpdate()
+    project_create_s = serializers.ProjectSerializer()
+    project_s = serializers.ProjectDetailSerializer()
+    print_s = serializers.PrintSerializerDetail()
+    photo_s.user = u
+    audio_s.user = u
+    scan_s.user = u
+    context = RequestContext(request)
+    context.update({
+        'user': u,
+        'photo_update_metadata': json.dumps(m.get_serializer_info(photo_s)),
+        'audio_update_metadata': json.dumps(m.get_serializer_info(audio_s)),
+        'scan_update_metadata': json.dumps(m.get_serializer_info(scan_s)),
+        'project_create_metadata': json.dumps(m.get_serializer_info(project_create_s)),
+        'project_update_metadata': json.dumps(m.get_serializer_info(project_s)),
+        'print_update_metadata': json.dumps(m.get_serializer_info(print_s))
+    })
+    return render_to_response(template, context)
 
 @login_required()
 def delete_batch(request, object_type_plural):

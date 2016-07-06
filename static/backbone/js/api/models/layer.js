@@ -28,12 +28,6 @@ define(["models/base", "views/maps/overlays/symbol"], function (Base, Symbol) {
             //if valid, returns null;
             return null;
 		},
-        getKey: function () {
-            if (this.collection) {
-                return this.collection.key;
-            }
-            return "layers";
-        },
 
         buildSymbolMap: function () {
             //set the basic flag:

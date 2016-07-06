@@ -1,0 +1,84 @@
+#region1 {
+    padding: 0px;
+    /*border: solid 1px #000;*/
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+#region2 {
+    padding: 15px;
+    border: solid 1px #000;
+    min-height: 300px;
+}
+
+/*Create Project*/
+.modal-dialog{
+position: absolute;
+left: 25%;
+height: 500px;
+top: 25%;
+}
+
+.row-item {
+    border-bottom: solid 1px #CCC;
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.img-thumb {
+    width: 250px;
+    border: 3px solid #000;
+}
+
+label.col-sm-4.control-label {
+    width: 20%;
+}
+
+.control-label {
+    margin-right: 0px;
+}
+
+.help-block {
+    margin-left: 0px;
+    margin-top: -8px;
+    color: #999;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+/***************************/
+/* Styling the Filter Menu */
+/***************************/
+#filter-menu {
+    width: 500px;
+    padding: 20px;
+}
+
+#filter-menu .form-group.form-group {
+    margin-bottom: 5px;
+    width: 50%;
+    display: inline-block;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+#filter-menu .control-label {
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 12px;
+    width: 90px;
+}
+#filter-menu .help-block {
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 12px;
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+#filter-menu  .col-sm-8 {
+    width: 140px;
+    padding-right: 0px;
+    padding-left: 0px;
+}
+#filter-menu input, #filter-menu select {
+    height: 25px;
+    width: 100%;
+}

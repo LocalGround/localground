@@ -150,8 +150,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social.apps.django_app.context_processors.login_redirect',
 )
 
-
-
 AUTHENTICATION_BACKENDS = (
     'social.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',

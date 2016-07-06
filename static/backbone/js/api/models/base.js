@@ -133,7 +133,11 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
             generateUpdateSchema: function (metadata) {
                 this.updateSchema = this._generateSchema(metadata, true);
             },
+            generateCreateSchema: function (metadata) {
+                this.createSchema = this._generateSchema(metadata, true);
+            },
             _generateSchema: function (metadata, edit_only) {
+                //todo: eventually move this to its own class.
                 if (!metadata) {
                     return null;
                 }
@@ -143,14 +147,26 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                     val = metadata[key];
                     if (this.hiddenFields.indexOf(key) === -1) {
                         if (!edit_only || !val.read_only) {
+                            //console.log(key);
                             schema[key] = {
                                 type: this.dataTypes[val.type] || 'Text',
                                 title: val.label || key,
                                 help: val.help_text
                             };
+                            if (val.choices) {
+                                schema[key].type = 'Select';
+                                schema[key].options = [];
+                                _.each(val.choices, function (choice) {
+                                    schema[key].options.push({
+                                        val: choice.value,
+                                        label: choice.display_name
+                                    });
+                                });
+                            }
                             // TAP: Best way to do this?
                             if (schema[key].title == "tags") {
-                                //schema[key].type = "List"; 
+                                //schema[key].type = "List";
+
                             }
                             if (val.type.indexOf("json") != -1) {
                                 schema[key].validators = [ this.validatorFunction ];
@@ -159,7 +175,9 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                     }
 
                 }
+
                 return schema;
+
             },
             setGeometry: function (googleOverlay) {
                 var geomHelper = new Geometry();
