@@ -197,7 +197,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'corsheaders',
     'djcelery',
-    'social.apps.django_app.default'
+    'social.apps.django_app.default',
 )
 
 REST_FRAMEWORK = {
@@ -213,6 +213,7 @@ REST_FRAMEWORK = {
         'rest_framework_xml.renderers.XMLRenderer',
         'localground.apps.site.api.renderers.GeoJSONRenderer',
         'localground.apps.site.api.renderers.KMLRenderer',
+        'localground.apps.site.api.renderers.ZIPRenderer',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',

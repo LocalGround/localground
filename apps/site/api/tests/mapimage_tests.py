@@ -27,7 +27,12 @@ def get_metadata():
         'overlay_path': {'read_only': True, 'required': False, 'type': 'field'},
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
-        'status': {'read_only': True, 'required': False, 'type': 'field' }
+        'id': {'read_only': True, 'required': False, 'type': 'integer'},
+        'south': {'read_only': True, 'required': False, 'type': 'field'},
+        'name': {'read_only': False, 'required': False, 'type': 'string'},
+        'uuid': {'read_only': True, 'required': False, 'type': 'string' },
+        'status': {'read_only': True, 'required': False, 'type': 'field' },
+        'file_name': {'read_only': True, 'required': False, 'type': 'field'}
     }
 class ApiMapImageListTest(test.TestCase, ViewMixinAPI):
 

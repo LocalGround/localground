@@ -8,6 +8,8 @@ class DataType(Base):
     BOOL = 4
     DECIMAL = 5
     RATING = 6
+    PHOTO = 7
+    AUDIO = 8
 
     name = models.CharField(max_length=255, editable=False)
     sql = models.CharField(max_length=500, editable=False)
