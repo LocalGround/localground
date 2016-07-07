@@ -8,7 +8,7 @@ define([
 
         state: {
             currentPage: 1,
-            pageSize: 2,
+            pageSize: 50,
             sortKey: 'id',
             order: 1
         },
