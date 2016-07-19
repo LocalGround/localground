@@ -28,6 +28,7 @@ define(["jquery",
                 "click #createProject": "createProject",
                 "click #viewEdit": "viewEdit",
                 "click #viewStatic": "viewStatic",
+                "click #listView": "listView",
                 "click #checked": "updateChecked"
             },
 
@@ -100,6 +101,14 @@ define(["jquery",
                 this.refreshPaginator();
                 e.preventDefault();
             },
+            listView: function (e) {
+                //no need to replace entire view...just toggle the mode and re-render
+                this.app.mode = "listView";
+                this.render();
+                this.toggleHeaderOptions();
+                this.refreshPaginator();
+                e.preventDefault();
+            },
 
             refreshPaginator: function () {
                 this.paginator = new Backgrid.Extension.Paginator({
@@ -116,6 +125,12 @@ define(["jquery",
                 this.$el.find('#saveChanges').css("visibility" , "hidden");
                 this.$el.find('#deleteChanges').css("visibility" , "hidden");
                 this.$el.find('#createProject').css("visibility" , "hidden");
+              }
+              else if (this.app.mode == "listView") {
+                this.$el.find('#saveChanges').css("visibility" , "hidden");
+                this.$el.find('#deleteChanges').css("visibility" , "hidden");
+                this.$el.find('#createProject').css("visibility" , "hidden");
+                //this.$el.find('#listItems').css("visibility" , "visible");
               }
               else {
                 this.$el.find('#saveChanges').css("visibility" , "visible");
