@@ -3,11 +3,12 @@ define(["jquery",
         "views/profile/editItemView",
         "views/profile/createProjectView",
         "text!../../../templates/profile/list.html",
+        "text!../../../templates/profile/photoListView.html",
         "backgrid",
         "backgrid-paginator",
         "backbone-bootstrap-modal"
     ],
-    function ($, Marionette, EditItemView, CreateProjectView, ListTemplate, Backgrid) {
+    function ($, Marionette, EditItemView, CreateProjectView, ListTemplate, photoList, Backgrid) {
         'use strict';
         var ListEditView = Marionette.CompositeView.extend({
 
@@ -130,7 +131,8 @@ define(["jquery",
                 this.$el.find('#saveChanges').css("visibility" , "hidden");
                 this.$el.find('#deleteChanges').css("visibility" , "hidden");
                 this.$el.find('#createProject').css("visibility" , "hidden");
-                //this.$el.find('#listItems').css("visibility" , "visible");
+                this.$el.find('#listItems').css("visibility" , "visible");
+                //this.$el.find('#createProject').css("visibility" , "visible");
               }
               else {
                 this.$el.find('#saveChanges').css("visibility" , "visible");
@@ -158,7 +160,15 @@ define(["jquery",
               });
               modal.open();
             },
+            listItems: function(){
+                //this.app.options
+                console.log(template());
+                var view = new photoList(this.app.options);
+                //var modal = new Backbone.BootstrapModal({ content: view, okText : "Create Project", title : "Create New Project" });
+                var that = this;
 
+              
+            },
             projectSaved: function()
             {
               console.log("saved");
