@@ -29,7 +29,7 @@ define([
     "use strict";
     var ProfileApp = Marionette.Application.extend(appUtilities);
     ProfileApp = ProfileApp.extend({
-        mode: "view",
+        mode: "thumb",
         objectType: "photos",
         regions: {
             filterRegion: "#region1",

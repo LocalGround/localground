@@ -27,9 +27,9 @@ define(["jquery",
                 "click #saveChanges": "saveData",
                 "click #deleteChanges": "deleteData",
                 "click #createProject": "createProject",
-                "click #viewEdit": "viewEdit",
-                "click #viewStatic": "viewStatic",
-                "click #listView": "listView",
+                "click #edit-mode": "switchToEditMode",
+                "click #list-mode": "switchToListMode",
+                "click #thumbnail-mode": "switchToThumbnailMode",
                 "click #checked": "updateChecked"
             },
 
@@ -85,7 +85,7 @@ define(["jquery",
                 return _.template(ListTemplate);
             },
 
-            viewEdit: function (e) {
+            switchToEditMode: function (e) {
                 //no need to replace entire view...just toggle the mode and re-render
                 this.app.mode = "edit";
                 this.render();
@@ -94,17 +94,17 @@ define(["jquery",
                 e.preventDefault();
             },
 
-            viewStatic: function (e) {
+            switchToThumbnailMode: function (e) {
                 //no need to replace entire view...just toggle the mode and re-render
-                this.app.mode = "view";
+                this.app.mode = "thumb";
                 this.render();
                 this.toggleHeaderOptions();
                 this.refreshPaginator();
                 e.preventDefault();
             },
-            listView: function (e) {
+            switchToListMode: function (e) {
                 //no need to replace entire view...just toggle the mode and re-render
-                this.app.mode = "listView";
+                this.app.mode = "list";
                 this.render();
                 this.toggleHeaderOptions();
                 this.refreshPaginator();
@@ -119,31 +119,29 @@ define(["jquery",
                 this.$el.find('.container-footer').html(this.paginator.render().el);
             },
 
-            toggleHeaderOptions: function(){
-              var title = this.app.objectType.charAt(0).toUpperCase() + this.app.objectType.slice(1);
-              this.$el.find('#headerTag').html(title);
-              if (this.app.mode == "view") {
-                this.$el.find('#saveChanges').css("visibility" , "hidden");
-                this.$el.find('#deleteChanges').css("visibility" , "hidden");
-                this.$el.find('#createProject').css("visibility" , "hidden");
-              }
-              else if (this.app.mode == "listView") {
-                this.$el.find('#saveChanges').css("visibility" , "hidden");
-                this.$el.find('#deleteChanges').css("visibility" , "hidden");
-                this.$el.find('#createProject').css("visibility" , "hidden");
-                this.$el.find('#listItems').css("visibility" , "visible");
-                //this.$el.find('#createProject').css("visibility" , "visible");
-              }
-              else {
-                this.$el.find('#saveChanges').css("visibility" , "visible");
-                this.$el.find('#deleteChanges').css("visibility" , "visible");
-                if (this.app.objectType == "projects") {
-                  this.$el.find('#createProject').css("visibility" , "visible");
+
+            toggleHeaderOptions: function () {
+                var title = this.app.objectType.charAt(0).toUpperCase() + this.app.objectType.slice(1);
+                this.$el.find('#headerTag').html(title);
+                switch (this.app.mode) {
+                    case "thumb":
+                    case "list":
+                        this.$el.find('#saveChanges').css("visibility" , "hidden");
+                        this.$el.find('#deleteChanges').css("visibility" , "hidden");
+                        this.$el.find('#createProject').css("visibility" , "hidden");
+                        break;
+                    default:
+                        this.$el.find('#saveChanges').css("visibility" , "visible");
+                        this.$el.find('#deleteChanges').css("visibility" , "visible");
+                        if (this.app.objectType == "projects") {
+                          this.$el.find('#createProject').css("visibility" , "visible");
+                        }
+                        else {
+                          this.$el.find('#createProject').css("visibility" , "hidden");
+                        }
+                    break;
+
                 }
-                else {
-                  this.$el.find('#createProject').css("visibility" , "hidden");
-                }
-              }
             },
 
             createProject: function(){
