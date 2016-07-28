@@ -1,0 +1,49 @@
+<% if (search_mode == "basic") { %>
+    <div class="col-lg-6">
+        <div class="input-group">
+            <input  id = "searchInput" type="text" class="form-control" placeholder="Search for...">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" id = "basicSearch"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+            </span>
+        </div>
+    </div>
+
+    <button class="btn btn-default advanced-search-mode" type="button">
+        Advanced Search
+    </button>
+    <button class="btn btn-default code-search-mode" type="button">
+        Code View
+    </button>
+<% } %>
+<% if (search_mode == "advanced") { %>
+    <div class="dropdown-header">Advanced Search</div>
+    <select>
+        <option value="any">Any Field</option>
+        <option value="name">Name</option>
+        <option value="attribution">Author / Creator</option>
+        <option value="file_name_orig">File Name</option>
+        <option value="tags">Tags</option>
+        <option value="caption">Caption</option>
+        <option value="project_id">Project ID</option>
+    </select>
+    <div class="row" style="margin-left:20px;margin-right:20px;">
+    <input  id = "searchInput" type="text" class="form-control" placeholder="Search for...">
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" id = "basicSearch"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+        </span>
+    </div>
+    <button class="btn btn-default basic-search-mode" type="button">
+        Basic Search
+    </button>
+    <button class="btn btn-default code-search-mode" type="button">
+        Code View
+    </button>
+<% } %>
+<% if (search_mode == "code") { %>
+    <textarea><%= sql %></textarea>
+    <button class="btn btn-default advanced-search-mode" type="button">
+        Advanced Search
+    </button>
+<% } %>
+  
+  
