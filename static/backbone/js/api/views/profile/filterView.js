@@ -85,12 +85,12 @@ define(["underscore",
                     e.preventDefault();
                 }
             },
-            // clearFilter: function (e) {
-            //     this.$el.find('#filterDiv').find('input:text').val('');
-            //     this.$el.find('#filterDiv').find('input').val('');
-            //     this.$el.find('#filterDiv').find('textarea').val('');
-            //     this.app.vent.trigger("clear-filter");
-            // },
+            clearFilter: function (e) {
+                this.$el.find('#filterDiv').find('input:text').val('');
+                this.$el.find('#filterDiv').find('input').val('');
+                this.$el.find('#filterDiv').find('textarea').val('');
+                this.app.vent.trigger("clear-filter");
+            },
             createParameterList: function(){
               var params = [];
               this.$el.find('#filterDiv :input:text, :input[type=number]').each(function(){
