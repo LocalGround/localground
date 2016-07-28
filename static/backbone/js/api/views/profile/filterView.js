@@ -10,20 +10,21 @@ define(["underscore",
             ENTER_KEY: 13,
             events: {
                 "click #submitSearch": "applyFilter",
-                "click #clearSearch": "clearFilter",
-                "click .dropdown-menu": "clickFilterArea",
+                //"click #clearSearch": "clearFilter",
+                //"click .dropdown-menu": "clickFilterArea",
                 "focusout input": "generateQuery",
-                "click #filterDropdown" : "filterClicked"
+                //"click #filterDropdown" : "filterClicked",
+                "click #basicSearch" : "basicSearch"
             },
 
-            filterClicked: function (e) {
-                e.stopPropagation();
-                $('#filter-dropdown-menu').toggle();
-            },
-            clickFilterArea: function (e) {
-                // Stops the filter menu from closing
-                e.stopPropagation();
-            },
+            // filterClicked: function (e) {
+            //     e.stopPropagation();
+            //     $('#filter-dropdown-menu').toggle();
+            // },
+            // clickFilterArea: function (e) {
+            //     // Stops the filter menu from closing
+            //     e.stopPropagation();
+            // },
             initialize: function (opts) {
                 //console.log(opts);
                 _.extend(this, opts);
@@ -43,6 +44,24 @@ define(["underscore",
             },
             template: function () {
                 return _.template(FilterTemplate);
+            },
+            basicSearch: function(e)
+            {
+              //var params = this.$el.find('#filterDiv').find('textarea').val();
+              var input = this.$el.find('#filterDiv').find('#searchInput').val();
+              console.log(input);
+              var params = "WHERE attribution LIKE '%monkey%' or name LIKE '%monkey%' or file_name_orig LIKE '%monkey%' or tags LIKE '%monkey%' or caption LIKE '%monkey%' or owner LIKE '%monkey%'"
+              
+              if (params.length > 0) {
+                this.app.vent.trigger("apply-filter", params);
+              } else {
+                this.app.vent.trigger("clear-filter");
+              }
+              if (e) {
+                console.log("prevent default");
+                e.preventDefault();
+              }
+
             },
             generateQuery: function(e){
               var params = this.createParameterList();
@@ -66,17 +85,16 @@ define(["underscore",
                     e.preventDefault();
                 }
             },
-            clearFilter: function (e) {
-                this.$el.find('#filterDiv').find('input:text').val('');
-                this.$el.find('#filterDiv').find('input').val('');
-                this.$el.find('#filterDiv').find('textarea').val('');
-                this.app.vent.trigger("clear-filter");
-            },
+            // clearFilter: function (e) {
+            //     this.$el.find('#filterDiv').find('input:text').val('');
+            //     this.$el.find('#filterDiv').find('input').val('');
+            //     this.$el.find('#filterDiv').find('textarea').val('');
+            //     this.app.vent.trigger("clear-filter");
+            // },
             createParameterList: function(){
               var params = [];
               this.$el.find('#filterDiv :input:text, :input[type=number]').each(function(){
                    var input = $(this); // This is the jquery object of the input, do what you will
-                   //console.log(input);
                    var textInputValue = input.val();
 
                    if (textInputValue) {

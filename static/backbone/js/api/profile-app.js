@@ -18,7 +18,7 @@ define([
     "text!../templates/profile/item_audio_readonly.html",
     "text!../templates/profile/item_map_image_readonly.html",
     "text!../templates/profile/item_print_readonly.html",
-    "text!../templates/profile/item_project_readonly.html"
+    "text!../templates/profile/item_project_readonly.html",
     "lib/appUtilities",
     "text!../templates/profile/photoListView.html"
 ], function (Marionette, _, FilterView, ListEditView, SideBarView,
