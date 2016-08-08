@@ -101,7 +101,7 @@ define([
         showListView: function () {
             // create an opts that passes in the selected collection,
             // metadata, & templates:
-            this.photos.ItemTemplate = ListViewTemplate;
+            this.config.photos.ItemTemplate = ListViewTemplate;
             var opts = _.extend({}, this.options, this.config[this.objectType]);
 
             //re-render mainView with new dataType:
