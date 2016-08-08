@@ -1,10 +1,11 @@
-define(["underscore",
+define(["jquery",
+        "underscore",
         "marionette",
         "text!../../../templates/profile/filter1.html",
         "form",
         "bootstrap-form-templates"
     ],
-    function (_, Marionette, FilterTemplate, Form) {
+    function ($, _, Marionette, FilterTemplate, Form) {
         'use strict';
         var FilterView = Marionette.ItemView.extend({
             ENTER_KEY: 13,
@@ -95,62 +96,21 @@ define(["underscore",
 
             },
             advancedSearch: function (e) {
-                //console.log(this.$el.find("#searchInput").val());
-                //var params = this.$el.find('#filterDiv').find('textarea').val();
-//                 var fieldNames;
-//                 if (this.$el.find('#searchField').val() == 'any')
-//                 {
-//                     fieldNames = ['name', 'attribution', 'tags', 'file_name_orig', 'caption', 'owner'];
-//                 }
-//                 else
-//                 {
-//                     fieldNames = [this.$el.find('#searchField').val()];
-//                 }
-//                 //console.log(this.$el.find('#searchField').val());
-//                 //console.log(fieldNames);
-//                 var searchTerm = this.$el.find('#advancedSearchInput').val(),
-//                     //fieldNames = ['name', 'attribution', 'tags', 'file_name_orig', 'caption', 'owner'],
-//                     //fieldNames = [this.$el.find('#searchField').val()],
-//                     params = [],
-//                     i = 0;
-//                 for (i = 0; i < fieldNames.length; i++) {
-//                     params.push({
-//                         name: fieldNames[i],
-//                         operation: 'LIKE',
-//                         value: searchTerm
-//                     });
-//                 }
-//                 this.sql = this.createSQLQuery(params, 'Or');
-// // -------------------------------------------------------------
-//                 if (this.$el.find('#searchField1').val() == 'any')
-//                 {
-//                     fieldNames = ['name', 'attribution', 'tags', 'file_name_orig', 'caption', 'owner'];
-//                 }
-//                 else
-//                 {
-//                     fieldNames = [this.$el.find('#searchField1').val()];
-//                 }
-//                 //console.log(this.$el.find('#searchField1').val());
-//                 //console.log(fieldNames);
-//                 searchTerm = this.$el.find('#advancedSearchInput1').val();
-//                     //fieldNames = ['name', 'attribution', 'tags', 'file_name_orig', 'caption', 'owner'],
-//                     //fieldNames = [this.$el.find('#searchField').val()],
-//                 i = 0;
-//                 for (i = 0; i < fieldNames.length; i++) {
-//                     params.push({
-//                         name: fieldNames[i],
-//                         operation: 'LIKE',
-//                         value: searchTerm
-//                     });
-//                 }
-//                 //console.log(this.$el.find('#searchParameter1').val())
-//                 this.sql = this.createSQLQuery(params, this.$el.find('#searchParameter1').val());
-//                 //console.log(this.sql);
-// //-------------------------------------------------------------
-                this.advancedQuery(this.$el.find('#searchField').val(), this.$el.find('#advancedSearchInput').val(), 'or');
-                console.log(this.sql);
-                this.advancedQuery(this.$el.find('#searchField1').val(), this.$el.find('#advancedSearchInput1').val(), this.$el.find('#searchParameter1').val());
-                console.log(this.sql);
+                var fields = this.$el.find('.search-field'),
+                    values = this.$el.find('.search-value'),
+                    conjunctions = this.$el.find('.search-conjunction'),
+                    i,
+                    params = [];
+                for (i = 0; i < fields.length; i++) {
+                    params.push({
+                        name: $(fields[i]).val(),
+                        operation: 'LIKE',
+                        value: $(values[i]).val(),
+                        conjunction: (i > 0) ? $(conjunctions[i - 1]).val() : undefined
+                    });
+                }
+                this.sql = this.createSQLQuery(params);
+                //console.log(this.sql);
                 if (this.sql.length > 0) {
                     this.app.vent.trigger("apply-filter", this.sql);
                 } else {
@@ -230,21 +190,20 @@ define(["underscore",
               );
               return params;
             },
-            createSQLQuery: function(params, conjunction){
+            createSQLQuery: function (params) {
                 var query = "WHERE ";
                 _.each(params, function (parameter, index) {
                     if (index > 0) {
-                        query += conjunction ? " " + conjunction + " " : " and ";
+                        query += parameter.conjunction ? " " + parameter.conjunction + " " : " OR ";
                     }
                     if (parameter.operation == "=") {
-                         query += parameter.name + " = " + parameter.value;
+                        query += parameter.name + " = " + parameter.value;
                     } else {
                         query += parameter.name + " LIKE '%" + parameter.value + "%'";
                     }
-              });
-              return query;
+                });
+                return query;
             }
-            
 
             // filterClicked: function (e) {
             //     e.stopPropagation();

@@ -17,7 +17,7 @@
 <% } %>
 <% if (search_mode == "advanced") { %>
 
-        <select id = "searchField">
+        <select id = "searchField" class="search-field">
             <option value="any">Any Field</option>
             <option value="name">Name</option>
             <option value="attribution">Author / Creator</option>
@@ -27,12 +27,12 @@
             <!-- <option value="project_id">Project ID</option> -->
         </select>
     <div class="row" style="margin-left:20px;margin-right:20px;">
-    <input  id = "advancedSearchInput" type="text" class="form-control" placeholder="Search for...">
+    <input  id = "advancedSearchInput" type="text" class="form-control search-value" placeholder="Search for...">
         <!-- <span class="input-group-btn">
             <button class="btn btn-default" type="button" id = "advancedSearch"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
         </span> -->
     </div>
-        <select id = "searchParameter1">
+        <select id = "searchParameter1" class="search-conjunction">
             <option value = "and">And</option>
             <option value = "or">Or</option>
         </select>
@@ -40,7 +40,7 @@
 
 
    
-        <select id = "searchField1">
+        <select id = "searchField1" class="search-field">
             <option value="any">Any Field</option>
             <option value="name">Name</option>
             <option value="attribution">Author / Creator</option>
@@ -50,7 +50,7 @@
             <!-- <option value="project_id">Project ID</option> -->
         </select>
     <div class="row" style="margin-left:20px;margin-right:20px;">
-    <input  id = "advancedSearchInput1" type="text" class="form-control" placeholder="Search for...">
+    <input  id = "advancedSearchInput1" type="text" class="form-control search-value" placeholder="Search for...">
         <span class="input-group-btn">
             <button class="btn btn-default" type="button" id = "advancedSearch"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
         </span>
