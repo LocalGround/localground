@@ -15,7 +15,9 @@ define(["underscore",
                 "click .basic-search-mode": "switchToBasicMode",
                 "click .code-search-mode": "switchToCodeMode",
                 "focusout input": "generateQuery",
-                "click #basicSearch" : "basicSearch"
+                "click #basicSearch" : "basicSearch",
+                "click #codeSearch" : "codeSearch",
+                "click #advancedSearch" : "advancedSearch"
                 //"click #clearSearch": "clearFilter",
                 //"click .dropdown-menu": "clickFilterArea",
                 //"click #filterDropdown" : "filterClicked",
@@ -74,6 +76,117 @@ define(["underscore",
                     e.preventDefault();
                 }
 
+            },
+            codeSearch: function (e) {
+                //console.log(this.$el.find("#searchInput").val());
+                //var params = this.$el.find('#filterDiv').find('textarea').val();
+                this.sql = this.$el.find('#codeInput').val();
+                console.log(this.sql);
+
+                if (this.sql.length > 0) {
+                    this.app.vent.trigger("apply-filter", this.sql);
+                } else {
+                    this.app.vent.trigger("clear-filter");
+                }
+                if (e) {
+                    console.log("prevent default");
+                    e.preventDefault();
+                }
+
+            },
+            advancedSearch: function (e) {
+                //console.log(this.$el.find("#searchInput").val());
+                //var params = this.$el.find('#filterDiv').find('textarea').val();
+//                 var fieldNames;
+//                 if (this.$el.find('#searchField').val() == 'any')
+//                 {
+//                     fieldNames = ['name', 'attribution', 'tags', 'file_name_orig', 'caption', 'owner'];
+//                 }
+//                 else
+//                 {
+//                     fieldNames = [this.$el.find('#searchField').val()];
+//                 }
+//                 //console.log(this.$el.find('#searchField').val());
+//                 //console.log(fieldNames);
+//                 var searchTerm = this.$el.find('#advancedSearchInput').val(),
+//                     //fieldNames = ['name', 'attribution', 'tags', 'file_name_orig', 'caption', 'owner'],
+//                     //fieldNames = [this.$el.find('#searchField').val()],
+//                     params = [],
+//                     i = 0;
+//                 for (i = 0; i < fieldNames.length; i++) {
+//                     params.push({
+//                         name: fieldNames[i],
+//                         operation: 'LIKE',
+//                         value: searchTerm
+//                     });
+//                 }
+//                 this.sql = this.createSQLQuery(params, 'Or');
+// // -------------------------------------------------------------
+//                 if (this.$el.find('#searchField1').val() == 'any')
+//                 {
+//                     fieldNames = ['name', 'attribution', 'tags', 'file_name_orig', 'caption', 'owner'];
+//                 }
+//                 else
+//                 {
+//                     fieldNames = [this.$el.find('#searchField1').val()];
+//                 }
+//                 //console.log(this.$el.find('#searchField1').val());
+//                 //console.log(fieldNames);
+//                 searchTerm = this.$el.find('#advancedSearchInput1').val();
+//                     //fieldNames = ['name', 'attribution', 'tags', 'file_name_orig', 'caption', 'owner'],
+//                     //fieldNames = [this.$el.find('#searchField').val()],
+//                 i = 0;
+//                 for (i = 0; i < fieldNames.length; i++) {
+//                     params.push({
+//                         name: fieldNames[i],
+//                         operation: 'LIKE',
+//                         value: searchTerm
+//                     });
+//                 }
+//                 //console.log(this.$el.find('#searchParameter1').val())
+//                 this.sql = this.createSQLQuery(params, this.$el.find('#searchParameter1').val());
+//                 //console.log(this.sql);
+// //-------------------------------------------------------------
+                this.advancedQuery(this.$el.find('#searchField').val(), this.$el.find('#advancedSearchInput').val(), 'or');
+                console.log(this.sql);
+                this.advancedQuery(this.$el.find('#searchField1').val(), this.$el.find('#advancedSearchInput1').val(), this.$el.find('#searchParameter1').val());
+                console.log(this.sql);
+                if (this.sql.length > 0) {
+                    this.app.vent.trigger("apply-filter", this.sql);
+                } else {
+                    this.app.vent.trigger("clear-filter");
+                }
+                if (e) {
+                    console.log("prevent default");
+                    e.preventDefault();
+                }
+
+            },
+            advancedQuery: function(field, input, parameter){
+              var fieldNames;
+                if (field == 'any')
+                {
+                    fieldNames = ['name', 'attribution', 'tags', 'file_name_orig', 'caption', 'owner'];
+                }
+                else
+                {
+                    fieldNames = [field];
+                }
+                //console.log(this.$el.find('#searchField').val());
+                //console.log(fieldNames);
+                var searchTerm = input,
+                    //fieldNames = ['name', 'attribution', 'tags', 'file_name_orig', 'caption', 'owner'],
+                    //fieldNames = [this.$el.find('#searchField').val()],
+                    params = [],
+                    i = 0;
+                for (i = 0; i < fieldNames.length; i++) {
+                    params.push({
+                        name: fieldNames[i],
+                        operation: 'LIKE',
+                        value: searchTerm
+                    });
+                }
+                this.sql = this.createSQLQuery(params, parameter);
             },
             generateQuery: function(e){
               var params = this.createParameterList();
