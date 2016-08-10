@@ -27,6 +27,9 @@ define(['marionette',
                 this.key = this.collection.key;
                 console.log(configKey);
                 console.log(Config);
+                if (configKey == 'map-images') {
+                    return;
+                }
                 this.childView = Config[configKey].Overlay;
                 this.childViewOptions = _.extend({}, opts, {
                     infoBubbleTemplates: {
