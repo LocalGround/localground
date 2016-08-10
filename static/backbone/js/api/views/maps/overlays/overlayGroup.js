@@ -25,11 +25,11 @@ define(['marionette',
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.key = this.collection.key;
-                console.log(configKey);
+                /*console.log(configKey);
                 console.log(Config);
                 if (configKey == 'map-images') {
                     return;
-                }
+                }*/
                 this.childView = Config[configKey].Overlay;
                 this.childViewOptions = _.extend({}, opts, {
                     infoBubbleTemplates: {
