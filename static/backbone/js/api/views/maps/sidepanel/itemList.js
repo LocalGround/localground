@@ -47,6 +47,7 @@ define(["marionette",
                     if (configKey.indexOf("form_") != -1) {
                         configKey = configKey.split("_")[0];
                     }
+                    configKey = configKey.replace("-", "_");
                     this.childView = Config[configKey].ItemView;
                     this.childViewOptions = $.extend(opts, {template: _.template(Config[configKey].ItemTemplate)});
                 }

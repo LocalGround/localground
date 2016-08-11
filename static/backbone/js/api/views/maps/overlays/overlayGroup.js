@@ -22,11 +22,11 @@ define(['marionette',
                 if (configKey.indexOf("form_") != -1) {
                     configKey = configKey.split("_")[0];
                 }
+                configKey = configKey.replace("-", "_");
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.key = this.collection.key;
-                /*console.log(configKey);
-                console.log(Config);
+                /*console.log(configKey, Config);
                 if (configKey == 'map-images') {
                     return;
                 }*/
