@@ -78,9 +78,13 @@ echo "Y" | sudo apt-get install python-gdal
 echo "Y" | sudo apt-get install libcv-dev libopencv-dev python-opencv
 echo "Y" | sudo apt-get install python-psycopg2
 echo "Y" | sudo apt-get install python-setuptools
-#sudo apt-get install -y python-pip=1.5.4-1ubuntu3 #try a different version of pip?
+echo 'NEW!!!!!!!'
+# sudo apt-get install -y python-pip=1.5.4-1ubuntu3 #try a different version of pip?
+sudo apt-get install -y software-properties-common
+sudo apt-add-repository universe
+sudo apt-get update
 sudo apt-get install -y python-pip
-#sudo easy_install -U pip
+# sudo easy_install -U pip
 echo "Y" | sudo apt-get install python-dev
 echo "Y" | sudo apt-get install python-mapscript
 echo "Y" | sudo apt-get install python-scipy
