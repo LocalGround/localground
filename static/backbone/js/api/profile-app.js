@@ -9,26 +9,27 @@ define([
     "collections/mapimages",
     "collections/prints",
     "collections/projects",
-    "text!../templates/profile/item_photo.html",
+    "text!../templates/profile/photo-item-edit.html",
     "text!../templates/profile/item_audio.html",
     "text!../templates/profile/item_map_image.html",
     "text!../templates/profile/item_print.html",
     "text!../templates/profile/item_project.html",
-    "text!../templates/profile/item_photo_readonly.html",
+    "text!../templates/profile/photo-item-view.html",
     "text!../templates/profile/item_audio_readonly.html",
     "text!../templates/profile/item_map_image_readonly.html",
     "text!../templates/profile/item_print_readonly.html",
     "text!../templates/profile/item_project_readonly.html",
-    "lib/appUtilities"
+    "lib/appUtilities",
+    "text!../templates/profile/photoListView.html"
 ], function (Marionette, _, FilterView, ListEditView, SideBarView,
              Photos, Audio, MapImages, Prints, Projects,
              PhotoItemEditTemplate, AudioItemEditTemplate, MapImageItemEditTemplate, PrintItemEditTemplate, ProjectItemEditTemplate,
              PhotoItemTemplate, AudioItemTemplate, MapImageItemTemplate, PrintItemTemplate, ProjectItemTemplate,
-             appUtilities) {
+             appUtilities, ListViewTemplate) {
     "use strict";
     var ProfileApp = Marionette.Application.extend(appUtilities);
     ProfileApp = ProfileApp.extend({
-        mode: "view",
+        mode: "thumb",
         objectType: "photos",
         regions: {
             filterRegion: "#region1",
@@ -78,8 +79,10 @@ define([
 
             // create child views:
             this.filterView = new FilterView(options);
+            
             this.mainView = new ListEditView(_.extend({}, this.options, this.config.photos));
             this.sideBarView = new SideBarView(options);
+            //this.listView  = new ListEditView(_.extend({}, this.options, this.config.photos));
 
             // inject them into the regions:
             this.filterRegion.show(this.filterView);
@@ -90,6 +93,7 @@ define([
             this.initAJAX(options);
 
             //attach event handlers:
+            this.config.photos.ItemTemplate = ListViewTemplate;
             this.vent.on("show-list-view", this.showListView, this);
             this.vent.on("apply-filter", this.applyFilter, this);
             this.vent.on("clear-filter", this.clearFilter, this);
@@ -97,9 +101,11 @@ define([
         showListView: function () {
             // create an opts that passes in the selected collection,
             // metadata, & templates:
+            this.config.photos.ItemTemplate = ListViewTemplate;
             var opts = _.extend({}, this.options, this.config[this.objectType]);
 
             //re-render mainView with new dataType:
+            
             this.mainView = new ListEditView(opts);
             this.mainRegion.show(this.mainView);
         },

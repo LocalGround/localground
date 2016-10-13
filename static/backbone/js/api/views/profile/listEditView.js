@@ -3,11 +3,12 @@ define(["jquery",
         "views/profile/editItemView",
         "views/profile/createProjectView",
         "text!../../../templates/profile/list.html",
+        "text!../../../templates/profile/photoListView.html",
         "backgrid",
         "backgrid-paginator",
         "backbone-bootstrap-modal"
     ],
-    function ($, Marionette, EditItemView, CreateProjectView, ListTemplate, Backgrid) {
+    function ($, Marionette, EditItemView, CreateProjectView, ListTemplate, photoList, Backgrid) {
         'use strict';
         var ListEditView = Marionette.CompositeView.extend({
 
@@ -26,8 +27,9 @@ define(["jquery",
                 "click #saveChanges": "saveData",
                 "click #deleteChanges": "deleteData",
                 "click #createProject": "createProject",
-                "click #viewEdit": "viewEdit",
-                "click #viewStatic": "viewStatic",
+                "click #edit-mode": "switchToEditMode",
+                "click #list-mode": "switchToListMode",
+                "click #thumbnail-mode": "switchToThumbnailMode",
                 "click #checked": "updateChecked"
             },
 
@@ -83,7 +85,7 @@ define(["jquery",
                 return _.template(ListTemplate);
             },
 
-            viewEdit: function (e) {
+            switchToEditMode: function (e) {
                 //no need to replace entire view...just toggle the mode and re-render
                 this.app.mode = "edit";
                 this.render();
@@ -92,9 +94,17 @@ define(["jquery",
                 e.preventDefault();
             },
 
-            viewStatic: function (e) {
+            switchToThumbnailMode: function (e) {
                 //no need to replace entire view...just toggle the mode and re-render
-                this.app.mode = "view";
+                this.app.mode = "thumb";
+                this.render();
+                this.toggleHeaderOptions();
+                this.refreshPaginator();
+                e.preventDefault();
+            },
+            switchToListMode: function (e) {
+                //no need to replace entire view...just toggle the mode and re-render
+                this.app.mode = "list";
                 this.render();
                 this.toggleHeaderOptions();
                 this.refreshPaginator();
@@ -109,24 +119,29 @@ define(["jquery",
                 this.$el.find('.container-footer').html(this.paginator.render().el);
             },
 
-            toggleHeaderOptions: function(){
-              var title = this.app.objectType.charAt(0).toUpperCase() + this.app.objectType.slice(1);
-              this.$el.find('#headerTag').html(title);
-              if (this.app.mode == "view") {
-                this.$el.find('#saveChanges').css("visibility" , "hidden");
-                this.$el.find('#deleteChanges').css("visibility" , "hidden");
-                this.$el.find('#createProject').css("visibility" , "hidden");
-              }
-              else {
-                this.$el.find('#saveChanges').css("visibility" , "visible");
-                this.$el.find('#deleteChanges').css("visibility" , "visible");
-                if (this.app.objectType == "projects") {
-                  this.$el.find('#createProject').css("visibility" , "visible");
+
+            toggleHeaderOptions: function () {
+                var title = this.app.objectType.charAt(0).toUpperCase() + this.app.objectType.slice(1);
+                this.$el.find('#headerTag').html(title);
+                switch (this.app.mode) {
+                    case "thumb":
+                    case "list":
+                        this.$el.find('#saveChanges').css("visibility" , "hidden");
+                        this.$el.find('#deleteChanges').css("visibility" , "hidden");
+                        this.$el.find('#createProject').css("visibility" , "hidden");
+                        break;
+                    default:
+                        this.$el.find('#saveChanges').css("visibility" , "visible");
+                        this.$el.find('#deleteChanges').css("visibility" , "visible");
+                        if (this.app.objectType == "projects") {
+                          this.$el.find('#createProject').css("visibility" , "visible");
+                        }
+                        else {
+                          this.$el.find('#createProject').css("visibility" , "hidden");
+                        }
+                    break;
+
                 }
-                else {
-                  this.$el.find('#createProject').css("visibility" , "hidden");
-                }
-              }
             },
 
             createProject: function(){
@@ -143,7 +158,15 @@ define(["jquery",
               });
               modal.open();
             },
+            listItems: function(){
+                //this.app.options
+                console.log(template());
+                var view = new photoList(this.app.options);
+                //var modal = new Backbone.BootstrapModal({ content: view, okText : "Create Project", title : "Create New Project" });
+                var that = this;
 
+              
+            },
             projectSaved: function()
             {
               console.log("saved");
