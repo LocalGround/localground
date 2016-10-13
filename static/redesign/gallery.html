@@ -1,0 +1,35 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-8">
+    <title>$5 Challenge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel=stylesheet type="text/css" href="css/style.css" />
+    <link rel=stylesheet type="text/css" href="css/gallery-style.css" />
+</head>
+<body>
+    <div id="toolbar-main">
+        <a id="map-link" href="map.html">Map</a> |
+        <a href="gallery.html">Gallery</a> |
+        <a href="spreadsheet.html">Spreadsheet</a> 
+    </div>
+    <div id="toolbar-dataview">
+        <!-- dataview toolbar -->
+    </div>
+    <div>
+        <main class="main-panel">
+            <!-- Photos go here -->
+        </main><aside class="side-panel">
+            <!-- Photo editor goes here -->
+        </aside>
+    </div>
+    
+    <script src="js/external/require.js"></script>
+    <script>
+        require(['js/apps/require-config'], function(){
+            require(['js/apps/gallery/kickoff.js']);  //or adminApp for the admin area, etc.
+        });
+    </script>
+</body>
+</html>
+
