@@ -9,6 +9,11 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
          */
         var JSONFormatter = Form.JSONFormatter = function () {};
         var Base = Backbone.Model.extend({
+            schema: {
+                name: 'Text',
+                caption: { type: 'TextArea'},
+                tags: 'Text'
+            },
             getNamePlural: function () {
                 return this.get("overlay_type");
             },

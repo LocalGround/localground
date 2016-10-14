@@ -21,6 +21,7 @@ define([
             this.app.vent.trigger("show-detail", this.model.get("id"));
         },
         onRender: function () {
+            //https://github.com/powmedia/backbone-forms#custom-editors
             this.form = new Backbone.Form({
                 model: this.model,
                 fields: ['name', 'caption', 'tags']

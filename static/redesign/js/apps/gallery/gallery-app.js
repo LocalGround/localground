@@ -19,6 +19,7 @@ define([
             toolbarDataViewRegion: "#toolbar-dataview"
         },
         currentCollection: null,
+        mode: "view",
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run
@@ -27,14 +28,13 @@ define([
             Backbone.history.start();
 
             //add event listeners:
-            
-            this.initAJAX(options);
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
             this.listenTo(this.vent, 'show-editor', this.showMediaEditor);
             this.listenTo(this.vent, 'change-media-type', this.changeMediaType);
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
+            this.initAJAX(options);
 
             //initialize gallery view:
             this.mainView = new PhotoGallery({
@@ -79,7 +79,5 @@ define([
         }
     }));
     console.log(appUtilities);
-    //_.extend(GalleryApp, appUtilities);
-    console.log(GalleryApp);
     return GalleryApp;
 });
