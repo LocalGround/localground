@@ -2,7 +2,7 @@ define([
     "underscore",
     "handlebars",
     "marionette",
-    "text!../../templates/media-detail.html"
+    "text!../templates/media-detail.html"
 ], function (_, Handlebars, Marionette, StoreTemplate) {
     "use strict";
     var MediaDetail = Marionette.ItemView.extend({

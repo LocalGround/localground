@@ -2,8 +2,8 @@ define(["marionette",
         "underscore",
         "handlebars",
         "collections/Photos",
-        "text!../../templates/thumb.html",
-        "text!../../templates/thumb-list.html"],
+        "text!../templates/thumb.html",
+        "text!../templates/thumb-list.html"],
     function (Marionette, _, Handlebars, Photos, ThumbTemplate, ListTemplate) {
         'use strict';
         var ThumbView = Marionette.CompositeView.extend({
@@ -11,6 +11,9 @@ define(["marionette",
             //view that controls what each gallery item looks like:
             childView: Marionette.ItemView.extend({
                 template: Handlebars.compile(ThumbTemplate),
+                modelEvents: {
+                    'saved': 'render'
+                },
                 tagName: "div",
                 className: "column"
             }),

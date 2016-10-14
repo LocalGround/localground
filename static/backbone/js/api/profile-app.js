@@ -105,7 +105,6 @@ define([
             var opts = _.extend({}, this.options, this.config[this.objectType]);
 
             //re-render mainView with new dataType:
-            
             this.mainView = new ListEditView(opts);
             this.mainRegion.show(this.mainView);
         },
