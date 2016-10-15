@@ -1,9 +1,10 @@
 define([
     "underscore",
+    "jquery",
     "handlebars",
     "marionette",
-    "text!../../templates/toolbar-dataview.html"
-], function (_, Handlebars, Marionette, ToolbarTemplate) {
+    "text!../templates/toolbar-dataview.html"
+], function (_, $, Handlebars, Marionette, ToolbarTemplate) {
     "use strict";
     var ToolbarDataView = Marionette.ItemView.extend({
         /*
@@ -12,8 +13,7 @@ define([
         */
         events: {
             'click #toolbar-search': 'doSearch',
-            'click #toolbar-audio': 'displayAudio',
-            'click #toolbar-photos': 'displayPhotos'
+            'change #media-type': 'changeDisplay'
         },
 
         template: Handlebars.compile(ToolbarTemplate),
@@ -30,14 +30,10 @@ define([
             this.app.vent.trigger("search-requested", term);
         },
 
-        displayAudio: function () {
-            //note: app.js is listening for the search-requested event
-            this.app.vent.trigger("display-audio");
-        },
-
-        displayPhotos: function () {
-            //note: app.js is listening for the search-requested event
-            this.app.vent.trigger("display-photos");
+        changeDisplay: function (e) {
+            var selection =  $(e.currentTarget).val();
+            console.log(selection);
+            this.app.vent.trigger("change-display", selection);
         }
     });
     return ToolbarDataView;

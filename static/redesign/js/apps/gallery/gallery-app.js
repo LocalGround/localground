@@ -4,12 +4,11 @@ define([
     "apps/gallery/router",
     "apps/gallery/views/main",
     "apps/gallery/views/media-detail",
-    "apps/gallery/views/media-editor",
     "views/toolbar-global",
-    "views/toolbar-dataview",
+    "apps/gallery/views/toolbar-dataview",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, PhotoGallery, MediaDetail, MediaEditor, ToolbarGlobal, ToolbarDataView, appUtilities) {
+], function (Marionette, Backbone, Router, MediaList, MediaDetail, ToolbarGlobal, ToolbarDataView, appUtilities) {
     "use strict";
     var GalleryApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
@@ -20,46 +19,49 @@ define([
         },
         currentCollection: null,
         mode: "view",
+        dataType: "photo",
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run
             Marionette.Application.prototype.start.apply(this, [options]);
+            this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
 
             //add event listeners:
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
-            this.listenTo(this.vent, 'show-editor', this.showMediaEditor);
-            this.listenTo(this.vent, 'change-media-type', this.changeMediaType);
+            this.listenTo(this.vent, 'change-display', this.changeDisplay);
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            this.initAJAX(options);
 
-            //initialize gallery view:
-            this.mainView = new PhotoGallery({
-                app: this
-            });
-            this.currentCollection = this.mainView.collection;
-
-            //initialize toobar view
+            //add views to regions:
+            this.showGlobalToolbar();
+            this.showDataToolbar();
+            this.showMediaList();
+        },
+        showGlobalToolbar: function () {
             this.toolbarView = new ToolbarGlobal({
                 app: this
             });
+            this.toolbarMainRegion.show(this.toolbarView);
+        },
+        showDataToolbar: function () {
             this.toolbarDataView = new ToolbarDataView({
                 app: this
             });
-
-            //load views into regions:
-            this.galleryRegion.show(this.mainView);
-            this.toolbarMainRegion.show(this.toolbarView);
             this.toolbarDataViewRegion.show(this.toolbarDataView);
         },
-        changeMediaType: function (mediaType) {
-            alert("instantiate a new gallery.js object with a " +
-                  mediaType +
-                  " collection and new params"
-                );
+        changeDisplay: function (mediaType) {
+            this.dataType = mediaType;
+            this.showMediaList();
+        },
+        showMediaList: function () {
+            this.mainView = new MediaList({
+                app: this
+            });
+            this.galleryRegion.show(this.mainView);
+            this.currentCollection = this.mainView.collection;
         },
         showMediaDetail: function (id) {
             var model = this.currentCollection.get(id);
@@ -68,16 +70,7 @@ define([
                 app: this
             });
             this.sideRegion.show(this.mediaView);
-        },
-        showMediaEditor: function (id) {
-            var model = this.currentCollection.get(id);
-            this.mediaEditor = new MediaEditor({
-                model: model,
-                app: this
-            });
-            this.sideRegion.show(this.mediaEditor);
         }
     }));
-    console.log(appUtilities);
     return GalleryApp;
 });

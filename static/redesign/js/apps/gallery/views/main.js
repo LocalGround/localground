@@ -2,26 +2,35 @@ define(["marionette",
         "underscore",
         "handlebars",
         "collections/Photos",
+        "collections/Audio",
         "text!../templates/thumb.html",
         "text!../templates/thumb-list.html"],
-    function (Marionette, _, Handlebars, Photos, ThumbTemplate, ListTemplate) {
+    function (Marionette, _, Handlebars, Photos, Audio, ThumbTemplate, ListTemplate) {
         'use strict';
         var ThumbView = Marionette.CompositeView.extend({
 
             //view that controls what each gallery item looks like:
-            childView: Marionette.ItemView.extend({
-                template: Handlebars.compile(ThumbTemplate),
-                modelEvents: {
-                    'saved': 'render'
-                },
-                tagName: "div",
-                className: "column"
-            }),
+            getChildView: function () {
+                return Marionette.ItemView.extend({
+                    initialize: function (opts) {
+                        _.extend(this, opts);
+                    },
+                    template: Handlebars.compile(ThumbTemplate),
+                    modelEvents: {
+                        'saved': 'render'
+                    },
+                    tagName: "div",
+                    className: "column",
+                    templateHelpers: function () {
+                        return { dataType: this.app.dataType };
+                    }
+                });
+            },
             childViewContainer: "#gallery-main",
             initialize: function (opts) {
                 _.extend(this, opts);
 
-                this.displayPhotos();
+                this.displayMedia();
                 // when the fetch completes, call Backbone's "render" method
                 // to create the gallery template and bind the data:
                 this.listenTo(this.collection, 'reset', this.render);
@@ -35,6 +44,10 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'display-photos', this.displayPhotos);
                 this.listenTo(this.app.vent, 'display-audio', this.displayAudio);
             },
+            
+            childViewOptions: function () {
+                return { app: this.app };
+            },
 
             hideLoadingMessage: function () {
                 this.$el.find(this.childViewContainer).empty();
@@ -46,9 +59,16 @@ define(["marionette",
             doSearch: function (term) {
                 alert("TODO: search for: " + term);
             },
-            displayPhotos: function () {
+            displayMedia: function () {
                 //fetch data from server:
-                this.collection = new Photos();
+                switch (this.app.dataType) {
+                    case "photo":
+                        this.collection = new Photos();
+                        break;
+                    case "audio":
+                        this.collection = new Audio();
+                        break;
+                }
                 this.collection.query = "WHERE project = 4";
                 this.collection.fetch({ reset: true });
             }

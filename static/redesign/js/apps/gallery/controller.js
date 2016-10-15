@@ -6,7 +6,7 @@ define([
         initialize: function (options) {
             this.app = options.app;
         },
-        mediaDetail: function (id) {
+        mediaDetail: function (mediaType, id) {
             this.app.vent.trigger("show-detail", id, false);
         }
     });

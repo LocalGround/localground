@@ -1,0 +1,25 @@
+<!-- VIEW MODE -->
+{{#ifequal mode "view"}}
+    <img src="{{ path_medium }}" />
+    <h3>{{ name }}</h3>
+    <!-- Three curly braces if you don't want to escape HTML -->
+    {{ caption }}
+    <br>
+    {{tags}}
+    <br>
+    <button class="edit-mode">Edit</button>
+{{/ifequal}}
+
+
+<!-- EDIT MODE -->
+{{#ifequal mode "edit"}}
+    <img src="{{ path_medium }}" />
+
+    <div id="model-form">
+        <!-- Form goes here -->
+    </div>
+    <button class="save-model">Save</button>
+    <button class="view-mode">View</button>
+{{/ifequal}}
+
+

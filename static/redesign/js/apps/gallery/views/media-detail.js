@@ -2,22 +2,69 @@ define([
     "underscore",
     "handlebars",
     "marionette",
-    "text!../templates/media-detail.html"
-], function (_, Handlebars, Marionette, StoreTemplate) {
+    "form",
+    "text!../templates/photo-detail.html",
+    "text!../templates/audio-detail.html"
+], function (_, Handlebars, Marionette, Form, PhotoTemplate, AudioTemplates) {
     "use strict";
-    var MediaDetail = Marionette.ItemView.extend({
+    var MediaEditor = Marionette.ItemView.extend({
         events: {
-            'click .edit-mode': 'switchToEditMode'
+            'click .view-mode': 'switchToViewMode',
+            'click .edit-mode': 'switchToEditMode',
+            'click .save-model': 'saveModel'
         },
-        template: Handlebars.compile(StoreTemplate),
+        getTemplate: function () {
+            switch (this.app.dataType) {
+                case "photo":
+                    return Handlebars.compile(PhotoTemplate);
+                case "audio":
+                    return Handlebars.compile(AudioTemplates);
+            }
+        },
         initialize: function (opts) {
             _.extend(this, opts);
             Marionette.ItemView.prototype.initialize.call(this);
-            this.template = Handlebars.compile(StoreTemplate);
+        },
+        switchToViewMode: function () {
+            this.app.mode = "view";
+            this.render();
         },
         switchToEditMode: function () {
-            this.app.vent.trigger("show-editor", this.model.get("id"));
+            this.app.mode = "edit";
+            this.render();
+        },
+        templateHelpers: function () {
+            return {
+                mode: this.app.mode,
+                dataType: this.app.dataType
+            };
+        },
+        onRender: function () {
+            //https://github.com/powmedia/backbone-forms#custom-editors
+            this.form = new Backbone.Form({
+                model: this.model,
+                fields: ['name', 'caption', 'tags']
+            }).render();
+            this.$el.find('#model-form').append(this.form.$el);
+        },
+        saveModel: function () {
+            var errors = this.form.commit({ validate: true }),
+                that = this;
+            if (errors) {
+                console.log("errors: ", errors);
+                return;
+            }
+            this.model.save(null, {
+                success: function (model, response) {
+                    //perhaps some sort of indication of success here?
+                    that.$el.find("#model-form").append("saved successfully");
+                    model.trigger('saved');
+                },
+                error: function (model, response) {
+                    that.$el.find("#model-form").append("error saving");
+                }
+            });
         }
     });
-    return MediaDetail;
+    return MediaEditor;
 });
