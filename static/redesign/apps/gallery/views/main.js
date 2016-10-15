@@ -59,19 +59,24 @@ define(["marionette",
                 return Handlebars.compile(ListTemplate);
             },
 
+            getDefaultQueryString: function () {
+                return "WHERE project = " + this.app.selectedProject.id;
+            },
+
             doSearch: function (query) {
+                query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
                 this.collection.query = query;
                 this.collection.fetch({ reset: true });
             },
 
             clearSearch: function () {
-                this.collection.query = "";
+                this.collection.query = this.getDefaultQueryString();
                 this.collection.fetch({ reset: true });
             },
 
             displayMedia: function () {
                 //fetch data from server:
-                if (this.app.dataType == "photo") {
+                if (this.app.dataType == "photos") {
                     this.collection = new Photos();
                 } else if (this.app.dataType ==  "audio") {
                     this.collection = new Audio();
@@ -79,7 +84,7 @@ define(["marionette",
                     alert("Type not accounted for.");
                     return;
                 }
-                //this.collection.query = "WHERE project = 4";
+                this.collection.query = this.getDefaultQueryString();
                 this.collection.fetch({ reset: true });
             }
 

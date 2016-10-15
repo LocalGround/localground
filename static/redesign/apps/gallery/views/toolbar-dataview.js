@@ -32,16 +32,15 @@ define([
         doSearch: function () {
             //note: app.js is listening for the search-requested event
             var term = this.$el.find("#searchTerm").val(),
-                query = "WHERE name like %" + term +
+                query = "name like %" + term +
                         "% OR caption like %" + term +
                         "%";
             this.app.vent.trigger("search-requested", query);
         },
 
         changeDisplay: function (e) {
-            var selection =  $(e.currentTarget).val();
-            console.log(selection);
-            this.app.vent.trigger("change-display", selection);
+            var dataType =  $(e.currentTarget).val();
+            this.app.router.navigate('//' + dataType, { trigger: true });
         }
     });
     return ToolbarDataView;

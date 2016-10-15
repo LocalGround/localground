@@ -2,10 +2,10 @@ define([
     "underscore",
     "handlebars",
     "marionette",
-    "form",
     "text!../templates/photo-detail.html",
-    "text!../templates/audio-detail.html"
-], function (_, Handlebars, Marionette, Form, PhotoTemplate, AudioTemplates) {
+    "text!../templates/audio-detail.html",
+    "form" //extends Backbone
+], function (_, Handlebars, Marionette, PhotoTemplate, AudioTemplates) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -14,11 +14,10 @@ define([
             'click .save-model': 'saveModel'
         },
         getTemplate: function () {
-            switch (this.app.dataType) {
-                case "photo":
-                    return Handlebars.compile(PhotoTemplate);
-                case "audio":
-                    return Handlebars.compile(AudioTemplates);
+            if (this.app.dataType == "photos") {
+                return Handlebars.compile(PhotoTemplate);
+            } else {
+                return Handlebars.compile(AudioTemplates);
             }
         },
         initialize: function (opts) {

@@ -29,6 +29,15 @@ html, body {
     padding: 10px;
     height: 40px;
 }
+
+#toolbar-main .project-detail {
+    width: 200px;
+    display: inline-block;
+    vertical-align: top;
+    margin-top: -5px;
+    font-size: 13px;
+}
+
 #toolbar-dataview {
     background: #CCC;
     padding: 10px;
