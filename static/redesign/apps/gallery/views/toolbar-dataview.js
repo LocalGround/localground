@@ -13,6 +13,7 @@ define([
         */
         events: {
             'click #toolbar-search': 'doSearch',
+            'click #toolbar-clear': 'clearSearch',
             'change #media-type': 'changeDisplay'
         },
 
@@ -24,10 +25,17 @@ define([
             this.template = Handlebars.compile(ToolbarTemplate);
         },
 
+        clearSearch: function () {
+            this.app.vent.trigger("clear-search");
+        },
+
         doSearch: function () {
             //note: app.js is listening for the search-requested event
-            var term = this.$el.find("#searchTerm").val();
-            this.app.vent.trigger("search-requested", term);
+            var term = this.$el.find("#searchTerm").val(),
+                query = "WHERE name like %" + term +
+                        "% OR caption like %" + term +
+                        "%";
+            this.app.vent.trigger("search-requested", query);
         },
 
         changeDisplay: function (e) {

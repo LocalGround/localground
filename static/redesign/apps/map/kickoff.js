@@ -1,5 +1,5 @@
 require(
-    ["jquery", "js/apps/map/map-app.js"],
+    ["jquery", "apps/map/map-app.js"],
     function ($, MapApp) {
         'use strict';
         $(function () {

@@ -1,5 +1,5 @@
 require(
-    ["jquery", "js/apps/spreadsheet/spreadsheet-app.js"],
+    ["jquery", "apps/spreadsheet/spreadsheet-app.js"],
     function ($, SpreadsheetApp) {
         'use strict';
         $(function () {

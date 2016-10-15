@@ -3,7 +3,7 @@ define([
     "backbone",
     "apps/spreadsheet/router",
     "views/toolbar-global",
-    "views/toolbar-dataview",
+    "apps/gallery/views/toolbar-dataview",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView) {
     "use strict";

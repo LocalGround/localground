@@ -1,5 +1,5 @@
 require.config({
-    baseUrl: "js",
+    baseUrl: "",
     paths: {
         'backbone': 'external/backbone-min',
         'backbone-bootstrap-modal': 'external/backbone.bootstrap-modal',
@@ -102,31 +102,6 @@ require.config({
     },
     urlArgs: "bust=" + (new Date()).getTime()
 });
-
-/** Javascript template directory */
-var templateDir = '/static/redesign/js/templates';
-
-/**
- * Global: cookie getter
- * @param {String} name of the cookie
- * @returns {String} cookie value
- */
-function getCookie(name) {
-    "use strict";
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
 
 function getUrlParameter(sParam) {
     "use strict";

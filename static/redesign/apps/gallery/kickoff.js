@@ -1,5 +1,5 @@
 require(
-    ["jquery", "js/apps/gallery/gallery-app.js"],
+    ["jquery", "apps/gallery/gallery-app.js"],
     function ($, GalleryApp) {
         'use strict';
         $(function () {
