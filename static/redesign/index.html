@@ -1,0 +1,25 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-8">
+    <title>Local Ground Homepage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+</head>
+<body>
+    <div id="toolbar-main"></div>
+    <div>
+        <main class="main-panel">
+            <!-- Projects go here goes here -->
+        </main>
+    </div>
+    
+    <script src="external/require.js"></script>
+    <script>
+        require(['apps/require-config'], function(){
+            require(['apps/home/kickoff.js']);  //or adminApp for the admin area, etc.
+        });
+    </script>
+    
+</body>
+</html>
+

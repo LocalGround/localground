@@ -47,8 +47,8 @@ define(["marionette",
                 var container1 = this.$el.find('#grid').get(0);
                 this.table = new Handsontable(container1, {
                     data: this.collection, //.toJSON(),
-                    colWidths: [200, 200, 200, 80],
-                    colHeaders: ["Title", "Description", "Tags", "Owner"],
+                    colWidths: [200, 400, 200, 300, 80],
+                    colHeaders: ["Title", "Description", "Tags", "File Name", "Owner"],
                     manualColumnResize: true,
                     manualRowResize: true,
                     rowHeaders: true,
@@ -56,7 +56,8 @@ define(["marionette",
                         { data: this.attr("name"), renderer: "html"},
                         { data: this.attr("caption"), renderer: "html"},
                         { data: this.attr("tags"), renderer: "html"},
-                        { data: this.attr("owner"), renderer: "html"}
+                        { data: this.attr("file_name"), readOnly: true},
+                        { data: this.attr("owner"), readOnly: true}
                     ]
                 });
             },

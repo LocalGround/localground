@@ -1,0 +1,16 @@
+<div class="project-overview">
+    <div style="width:66%;display:inline-block;">
+        <h2 class="map-title"><a href="gallery.html?project_id={{ id }}">{{ name }}</a></h2>
+        <p>{{ caption }}</p>
+    </div>
+    <div style="width:33%;float:right;">
+        <span class="action tag" style="margin:0;">
+        {{#ifequal access_authority 1}}
+            Private
+        {{ else }}
+            Public
+        {{/ifequal}}
+        </span>
+        <span class="action" style="right:16px"><i class="fa fa-clock-o" aria-hidden="true"></i>{{ owner }}</span>
+    </div>
+</div>
