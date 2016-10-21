@@ -42,26 +42,20 @@ define([
 
         },
         selectProjectLoadRegions: function () {
+            var that = this;
             this.projects = new Projects();
-            this.projects.fetch({ reset: true });
-            this.listenTo(this.projects, 'reset', this.selectProject);
-        },
-
-        selectProject: function () {
-            var id = this.getParameterByName('project_id');
-            if (id) {
-                this.selectedProject = this.projects.get(id);
-            } else {
-                this.selectedProject = this.projects.at(0);
-            }
-            this.loadRegions();
+            this.projects.fetch({
+                success: function () {
+                    that.selectProject(); //located in appUtilities
+                    that.loadRegions();
+                }
+            });
         },
 
         loadRegions: function () {
             this.showGlobalToolbar();
             this.showDataToolbar();
             this.router.navigate('//photos', { trigger: true });
-            //this.showMediaList();
         },
 
         showGlobalToolbar: function () {

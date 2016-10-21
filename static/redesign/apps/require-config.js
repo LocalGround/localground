@@ -16,6 +16,7 @@ require.config({
         'form': '//libraries.cdnhttps.com/ajax/libs/backbone-forms/0.14.0/backbone-forms',
         'list': 'external/list.min',
         'google-infobubble': 'external/infobubble',
+        'handsontable': 'http://docs.handsontable.com/0.16.1/bower_components/handsontable/dist/handsontable.full',
         'jasmine': 'external/jasmine-2.1.3/jasmine',
         'jasmine-html': 'external/jasmine-2.1.3/jasmine-html',
         'jasmine-jquery': 'external/jasmine-2.1.3/jasmine-jquery',

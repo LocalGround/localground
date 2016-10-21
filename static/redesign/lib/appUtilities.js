@@ -100,6 +100,19 @@ define(["jquery"],
                 }
                 return cookieValue;
             },
+            selectProject: function () {
+                var id = this.getParameterByName('project_id');
+                if (id) {
+                    this.selectedProject = this.projects.get(id);
+                }
+                if (!this.selectedProject) {
+                    this.selectedProject = this.projects.at(0);
+                }
+                if (!this.selectedProject) {
+                    console.log("You're not logged in. Redirecting...");
+                    window.location = "http://localhost:7777/accounts/login/?next=" + window.location;
+                }
+            },
             showLoadingMessage: function () {
                 $('#loading_message').show();
             },

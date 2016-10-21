@@ -6,8 +6,8 @@ define([
         initialize: function (options) {
             this.app = options.app;
         },
-        mediaDetail: function (id) {
-            this.app.vent.trigger("show-detail", id, false);
+        mediaList: function (mediaType) {
+            this.app.vent.trigger("show-list", mediaType);
         }
     });
 });

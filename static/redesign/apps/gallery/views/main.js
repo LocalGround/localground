@@ -43,8 +43,6 @@ define(["marionette",
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
-                this.listenTo(this.app.vent, 'display-photos', this.displayPhotos);
-                this.listenTo(this.app.vent, 'display-audio', this.displayAudio);
             },
 
             childViewOptions: function () {
