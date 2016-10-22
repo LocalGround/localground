@@ -1,2 +1,16 @@
-<div class="container" id="gallery-main">
+<div class="row">
+    <form class="search-form">
+        <input id="project-search" type="text" placeholder="Search Projects" value="{{ searchTerm }}">
+        <a href="#" id="search"><i class="fa fa-search" aria-hidden="true"></i></a>
+        <a href="#" id="clear" style="display:{{#if searchTerm }} inline;{{else}} none;{{/if}}">
+            {{ searchTerm }} <i class="fa fa-times" aria-hidden="true"></i>
+        </a>
+    </form>
+    <button class="button-primary" style="background-color:rgb(94, 166, 131);">New Project</button>
 </div>
+
+<div class="container" id="gallery-main">
+    <!--project data inserted here -->
+</div>
+
+<footer>some footer</footer>

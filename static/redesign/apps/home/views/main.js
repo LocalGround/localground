@@ -8,24 +8,39 @@ define(["marionette",
         'use strict';
         var ProjectListView = Marionette.CompositeView.extend({
 
-            //view that controls what each gallery item looks like:
+            /****************************************/
+            /*         Begin Child View Code        */
+            /****************************************/
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
                     },
                     template: Handlebars.compile(ItemTemplate),
-                    modelEvents: {
-                        'saved': 'render'
+                    events: {
+                        'click .action': 'showModal'
                     },
-                    tagName: "div",
-                    className: "column",
-                    templateHelpers: function () {
-                        return { dataType: this.app.dataType };
+                    showModal: function () {
+                        alert("Show create project text box");
                     }
                 });
             },
+            /****************************************/
+            /*          End Child View Code         */
+            /****************************************/
+
+            searchTerm: null,
             childViewContainer: "#gallery-main",
+            events: {
+                'click #search': 'doSearch',
+                'click #clear': 'clearSearch'
+            },
+            template: Handlebars.compile(ListTemplate),
+            templateHelpers: function () {
+                return {
+                    searchTerm: this.searchTerm
+                };
+            },
             initialize: function (opts) {
                 _.extend(this, opts);
 
@@ -38,28 +53,28 @@ define(["marionette",
                 // to create the gallery template and bind the data:
                 this.listenTo(this.collection, 'reset', this.render);
             },
-
-            childViewOptions: function () {
-                return { app: this.app };
-            },
-
             hideLoadingMessage: function () {
                 this.$el.find(this.childViewContainer).empty();
             },
 
-            template: function () {
-                return Handlebars.compile(ListTemplate);
+            getSearchString: function () {
+                this.searchTerm = this.$el.find("#project-search").val();
+                return "name like %" + this.searchTerm +
+                        "% OR caption like %" + this.searchTerm +
+                        "%";
             },
 
-            doSearch: function (query) {
-                query = "WHERE " + query;
-                this.collection.query = query;
+            doSearch: function (e) {
+                this.collection.query = "WHERE " + this.getSearchString();
                 this.collection.fetch({ reset: true });
+                e.preventDefault();
             },
 
-            clearSearch: function () {
+            clearSearch: function (e) {
+                this.searchTerm = null;
                 this.collection.query = "";
                 this.collection.fetch({ reset: true });
+                e.preventDefault();
             },
 
             displayProjects: function () {

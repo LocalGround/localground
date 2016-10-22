@@ -10,7 +10,7 @@ define([
         template: Handlebars.compile(ToolbarTemplate),
 
         events: {
-            'click .account': 'toggleVisibility'
+            'click #toggle-button': 'toggleVisibility'
         },
 
         initialize: function (opts) {

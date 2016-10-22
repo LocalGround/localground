@@ -3,7 +3,12 @@
         <img src="{{ path_medium }}" />
     </a>
     <br>
-    {{ name }}
+    {{ name }}<br>
+    {{owner}}
+    
+    {{#if geometry}}
+        <i class="fa fa-map-marker"></i>
+    {{/if}}
 {{/ifequal}}
 
 {{#ifequal dataType "audio"}} 
