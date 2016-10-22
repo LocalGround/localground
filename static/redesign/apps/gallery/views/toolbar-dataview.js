@@ -30,11 +30,18 @@ define([
         },
 
         doSearch: function () {
-            //note: app.js is listening for the search-requested event
+            /*
+             * NOTE
+             *   - app.js is listening for the search-requested event
+             *   - Please see localground/apps/site/api/tests/sql_parse_tests.py
+             *     for samples of valid queries.
+             */
             var term = this.$el.find("#searchTerm").val(),
                 query = "name like %" + term +
                         "% OR caption like %" + term +
-                        "%";
+                        "% OR attribution like %" + term +
+                        "% OR owner like %" + term +
+                        "% OR tags contains (" + term + ")";
             this.app.vent.trigger("search-requested", query);
         },
 

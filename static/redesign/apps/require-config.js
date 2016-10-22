@@ -1,5 +1,5 @@
 require.config({
-    baseUrl: "",
+    baseUrl: "/static/redesign",
     paths: {
         'backbone': 'external/backbone-min',
         'backbone-bootstrap-modal': 'external/backbone.bootstrap-modal',
@@ -8,7 +8,7 @@ require.config({
         'backbone-paginator': 'external/backbone.paginator',
         'backgrid': 'external/backgrid.min',
         'backgrid-paginator': 'external/backgrid-paginator-svw-debugged',
-        'boot': '/static/backbone/js/external/jasmine-2.1.3/boot-forked',
+        'boot': 'external/jasmine-2.1.3/boot-forked',
         //'bootstrap-form-templates': 'external/backbone-forms-bootstrap3-templates',
         'colResizable': 'lib/tables/colResizeableMod',
         'color-picker': 'external/jscolor',

@@ -6,6 +6,12 @@ define(["models/base", "underscore"], function (Base, _) {
      * @see <a href="//localground.org/api/0/audio/">//localground.org/api/0/audio/</a>
      */
     var Audio = Base.extend({
+        schema: {
+            name: 'Text',
+            caption: { type: 'TextArea'},
+            tags: 'Text',
+            attribution: 'Text'
+        },
         getExtension: function () {
             return _.last(this.get('file_name').split('.'));
         },

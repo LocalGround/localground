@@ -20,7 +20,7 @@ define([
             toolbarDataViewRegion: "#toolbar-dataview"
         },
         currentCollection: null,
-        mode: "view",
+        mode: "edit",
         dataType: "photos",
         start: function (options) {
             // declares any important global functionality;
@@ -38,18 +38,13 @@ define([
             Marionette.Application.prototype.initialize.apply(this, [options]);
 
             //add views to regions:
-            this.selectProjectLoadRegions();
-
+            this.projects = new Projects();
+            this.listenTo(this.projects, 'reset', this.selectProjectLoadRegions);
+            this.projects.fetch({ reset: true });
         },
         selectProjectLoadRegions: function () {
-            var that = this;
-            this.projects = new Projects();
-            this.projects.fetch({
-                success: function () {
-                    that.selectProject(); //located in appUtilities
-                    that.loadRegions();
-                }
-            });
+            this.selectProject(); //located in appUtilities
+            this.loadRegions();
         },
 
         loadRegions: function () {

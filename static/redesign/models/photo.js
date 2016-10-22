@@ -6,6 +6,12 @@ define(["models/base", "jquery"], function (Base, $) {
      * @see <a href="//localground.org/api/0/photos/">//localground.org/api/0/photos/</a>
      */
     var Photo = Base.extend({
+        schema: {
+            name: 'Text',
+            caption: { type: 'TextArea'},
+            tags: 'Text',
+            attribution: 'Text'
+        },
         getNamePlural: function () {
             return "photos";
         },

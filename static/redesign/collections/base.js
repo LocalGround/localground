@@ -18,13 +18,6 @@ define(["underscore", "backbone", "collections/baseMixin"],
             },
             parse: function (response) {
                 return response.results;
-            },
-            //needed for the handsontable library
-            splice: function (index, howMany) {
-                var args = _.toArray(arguments).slice(2).concat({at: index}),
-                    removed = this.models.slice(index, index + howMany);
-                this.remove(removed).add.apply(this, args);
-                return removed;
             }
 
         });

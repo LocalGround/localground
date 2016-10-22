@@ -11,6 +11,7 @@ define(["marionette",
             template: function () {
                 return Handlebars.compile(SpreadsheetTemplate);
             },
+            table: null,
             initialize: function (opts) {
                 _.extend(this, opts);
 
@@ -20,6 +21,10 @@ define(["marionette",
                 this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
                 //this.listenTo(this.collection, 'all', this.commitToDatabaseWithDebugging);
                 this.listenTo(this.collection, 'all', this.commitToDatabase);
+
+                //listen to events that fire from other parts of the application:
+                this.listenTo(this.app.vent, 'search-requested', this.doSearch);
+                this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
             },
             displaySpreadsheet: function () {
                 //fetch data from server according to mode:
@@ -38,19 +43,17 @@ define(["marionette",
                 return "WHERE project = " + this.app.selectedProject.id;
             },
             renderSpreadsheet: function () {
-                //need to enhance the collection in order for 
-                //Backbone Collection to work
-                var that = this;
-                this.collection.splice = function (index, howMany) {
-                    var args = _.toArray(arguments).slice(2).concat({at: index}),
-                        removed = this.models.slice(index, index + howMany);
-                    this.remove(removed).add.apply(this, args);
-                    return removed;
-                };
-                console.log(this.collection.toJSON());
+                if (this.collection.length == 0) {
+                    this.$el.find('#grid').html("no rows found");
+                    return;
+                }
                 var grid = this.$el.find('#grid').get(0),
                     rowHeights = [],
-                    i;
+                    i = 0;
+                if (this.table) {
+                    this.table.destroy();
+                    this.table = null;
+                }
                 for (i = 0; i < this.collection.length; i++) {
                     rowHeights.push(55);
                 }
@@ -65,13 +68,13 @@ define(["marionette",
                     columns: this.getColumns(),
                     maxRows: this.collection.length,
                     autoRowSize: true,
+                    columnSorting: true,
                     undo: false //doesn't work w/Backbone integration (though we could figure it out and make a PR)
                 });
             },
             attr: function (attr) {
                 // this lets us remember `attr` for when when it is get/set
                 return function (model, value) {
-                    console.log(model, attr, value);
                     if (_.isUndefined(value)) {
                         //console.log(attr);
                         return model.get(attr) || "";
@@ -84,11 +87,13 @@ define(["marionette",
                     return model.get(attr).toString();
                 };
             },
+            //todo: move this to a renderer function
             attrThumb: function (attr) {
                 return function (model) {
                     return "<img src='" + model.get(attr) + "' />";
                 };
             },
+            //todo: move this to an audio function
             attrAudio: function (attr) {
                 return function (model) {
                     return "<audio controls>" +
@@ -126,21 +131,33 @@ define(["marionette",
             },
             getColumnHeaders: function () {
                 var config = {
-                    "audio": ["Title", "Caption", "Audio", "Tags", "Attribution", "Owner"],
-                    "photos": ["Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner"]
+                    "audio": ["ID", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner"],
+                    "photos": ["ID", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner"]
                 };
                 return config[this.collection.key];
             },
             getColumnWidths: function () {
                 var config = {
-                    "audio": [200, 400, 300, 200, 100, 80],
-                    "photos": [200, 400, 65, 200, 100, 80]
+                    "audio": [30, 200, 400, 300, 200, 100, 80],
+                    "photos": [30, 200, 400, 65, 200, 100, 80]
                 };
                 return config[this.collection.key];
+            },
+
+            doSearch: function (query) {
+                query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
+                this.collection.query = query;
+                this.collection.fetch({ reset: true });
+            },
+
+            clearSearch: function () {
+                this.collection.query = this.getDefaultQueryString();
+                this.collection.fetch({ reset: true });
             },
             getColumns: function () {
                 var config = {
                     "audio": [
+                        { data: this.attr("id"), readOnly: true},
                         { data: this.attr("name"), renderer: "html"},
                         { data: this.attr("caption"), renderer: "html"},
                         { data: this.attrAudio("file_path"), renderer: "html", readOnly: true},
@@ -149,6 +166,7 @@ define(["marionette",
                         { data: this.attrReadOnly("owner"), readOnly: true}
                     ],
                     "photos": [
+                        { data: this.attr("id"), readOnly: true},
                         { data: this.attr("name"), renderer: "html"},
                         { data: this.attr("caption"), renderer: "html"},
                         { data: this.attrThumb("path_marker_lg"), renderer: "html", readOnly: true},

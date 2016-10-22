@@ -1,11 +1,12 @@
 define([
+    "backbone",
     "underscore",
     "handlebars",
     "marionette",
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
     "form" //extends Backbone
-], function (_, Handlebars, Marionette, PhotoTemplate, AudioTemplates) {
+], function (Backbone, _, Handlebars, Marionette, PhotoTemplate, AudioTemplates) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -42,7 +43,7 @@ define([
             //https://github.com/powmedia/backbone-forms#custom-editors
             this.form = new Backbone.Form({
                 model: this.model,
-                fields: ['name', 'caption', 'tags']
+                fields: ['name', 'caption', 'tags', 'attribution']
             }).render();
             this.$el.find('#model-form').append(this.form.$el);
         },

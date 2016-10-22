@@ -13,9 +13,9 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
             this.model = this.app.selectedProject;
-            if (!this.model) {
+            /*if (!this.model) {
                 alert("this.app.selectedProject must be defined");
-            }
+            }*/
             this.template = Handlebars.compile($('#toolbar-main').html());
             Marionette.ItemView.prototype.initialize.call(this);
         },
