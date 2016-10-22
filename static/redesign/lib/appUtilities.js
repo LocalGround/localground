@@ -100,17 +100,37 @@ define(["jquery"],
                 }
                 return cookieValue;
             },
-            selectProject: function () {
+            getProjectFromParam: function () {
                 var id = this.getParameterByName('project_id');
                 if (id) {
-                    this.selectedProject = this.projects.get(id);
+                    return this.projects.get(id);
                 }
+                return null;
+            },
+            getProjectFromLocalStorage: function () {
+                var id = this.restoreState('project_id');
+                if (id) {
+                    return this.projects.get(id);
+                }
+                return null;
+            },
+            selectProject: function () {
+                //1. get project from request parameter:
+                this.selectedProject = this.getProjectFromParam();
+                //2. get project from localStorage:
+                if (!this.selectedProject) {
+                    this.selectedProject = this.getProjectFromLocalStorage();
+                }
+                //3. pick one:
                 if (!this.selectedProject) {
                     this.selectedProject = this.projects.at(0);
                 }
                 if (!this.selectedProject) {
                     console.log("You're not logged in. Redirecting...");
-                    window.location = "http://localhost:7777/accounts/login/?next=" + window.location;
+                    window.location = window.location.host + "/accounts/login/?next=" + window.location;
+                } else {
+                    //save to local storage:
+                    this.saveState("project_id", this.selectedProject.id, true);
                 }
             },
             showLoadingMessage: function () {
