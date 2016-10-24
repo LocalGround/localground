@@ -19,8 +19,6 @@ define(["marionette",
                 Marionette.ItemView.prototype.initialize.call(this);
                 this.displaySpreadsheet();
                 this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
-                //this.listenTo(this.collection, 'all', this.commitToDatabaseWithDebugging);
-                this.listenTo(this.collection, 'all', this.commitToDatabase);
 
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
@@ -49,7 +47,9 @@ define(["marionette",
                 }
                 var grid = this.$el.find('#grid').get(0),
                     rowHeights = [],
-                    i = 0;
+                    i = 0,
+                    data = [],
+                    that = this;
                 if (this.table) {
                     this.table.destroy();
                     this.table = null;
@@ -57,8 +57,13 @@ define(["marionette",
                 for (i = 0; i < this.collection.length; i++) {
                     rowHeights.push(55);
                 }
+                this.collection.each(function (model) {
+                    var rec = model.toJSON();
+                    rec.tags = rec.tags.join(", ");
+                    data.push(rec);
+                });
                 this.table = new Handsontable(grid, {
-                    data: this.collection,
+                    data: data,
                     colWidths: this.getColumnWidths(),
                     rowHeights: rowHeights,
                     colHeaders: this.getColumnHeaders(),
@@ -69,65 +74,42 @@ define(["marionette",
                     maxRows: this.collection.length,
                     autoRowSize: true,
                     columnSorting: true,
-                    undo: false //doesn't work w/Backbone integration (though we could figure it out and make a PR)
+                    undo: true,
+                    afterChange: function (changes, source) {
+                        that.saveChanges(changes, source);
+                    }
                 });
             },
-            attr: function (attr) {
-                // this lets us remember `attr` for when when it is get/set
-                return function (model, value) {
-                    if (_.isUndefined(value)) {
-                        //console.log(attr);
-                        return model.get(attr) || "";
+            saveChanges: function (changes, source) {
+                //sync with collection:
+                console.log("[" + source + "]: saving changes to database...");
+                var i, idx, key, newVal, modelID, model;
+                if (source === 'edit' || source === 'autofill' ||
+                        source === 'undo' || source === 'redo' ||
+                        source === 'paste') {
+                    for (i = 0; i < changes.length; i++) {
+                        idx = changes[i][0];
+                        key = changes[i][1];
+                        newVal = changes[i][3];
+                        modelID = this.table.getDataAtRow(idx)[0];
+                        model = this.collection.get(modelID);
+                        model.set(key, newVal);
+                        model.save(model.changedAttributes(), {patch: true, wait: true});
                     }
-                    model.set(attr, value);
-                };
-            },
-            attrReadOnly: function (attr) {
-                return function (model) {
-                    return model.get(attr).toString();
-                };
-            },
-            //todo: move this to a renderer function
-            attrThumb: function (attr) {
-                return function (model) {
-                    return "<img src='" + model.get(attr) + "' />";
-                };
-            },
-            //todo: move this to an audio function
-            attrAudio: function (attr) {
-                return function (model) {
-                    return "<audio controls>" +
-                            "<source src='" + model.get(attr) + "'></source>" +
-                            "</audio>";
-                };
-            },
-            attrTags: function (attr) {
-                return function (model, value) {
-                    if (_.isUndefined(value)) {
-                        return model.get(attr).join(", ");
-                    }
-                    var tagList = value.split(/\s*,\s*/);
-                    if (tagList[tagList.length - 1] == "") {
-                        tagList.pop();
-                    }
-                    model.set(attr, tagList);
-                };
-            },
-            commitToDatabaseWithDebugging: function (event, model) {
-                var now = new Date(),
-                    option = document.createElement('OPTION'),
-                    eventHolder = this.$el.find('#logging').get(0);
-                option.innerHTML = [':', now.getSeconds(), ':', now.getMilliseconds(), '[' + event + ']',
-                    JSON.stringify(model)].join(' ');
-                eventHolder.insertBefore(option, eventHolder.firstChild);
-                this.commitToDatabase(event, model);
-            },
-            commitToDatabase: function (event, model) {
-                if (event.toString().indexOf("change:") != -1 &&
-                        event.toString().indexOf("path") == -1) {
-                    console.log("saving...", event);
-                    model.save(model.changedAttributes(), {patch: true, wait: true});
                 }
+            },
+            thumbnailRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                var img = document.createElement('IMG');
+                img.src = value;
+                Handsontable.Dom.empty(td);
+                td.appendChild(img);
+                return td;
+            },
+            audioRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                td.innerHTML = "<audio controls>" +
+                    "<source src='" + value + "'></source>" +
+                    "</audio>";
+                return td;
             },
             getColumnHeaders: function () {
                 var config = {
@@ -157,22 +139,22 @@ define(["marionette",
             getColumns: function () {
                 var config = {
                     "audio": [
-                        { data: this.attr("id"), readOnly: true},
-                        { data: this.attr("name"), renderer: "html"},
-                        { data: this.attr("caption"), renderer: "html"},
-                        { data: this.attrAudio("file_path"), renderer: "html", readOnly: true},
-                        { data: this.attrTags("tags"), renderer: "html"},
-                        { data: this.attr("attribution"), renderer: "html"},
-                        { data: this.attrReadOnly("owner"), readOnly: true}
+                        { data: "id", readOnly: true},
+                        { data: "name", renderer: "html"},
+                        { data: "caption", renderer: "html"},
+                        { data: "file_path", renderer: this.audioRenderer, readOnly: true},
+                        { data: "tags", renderer: "html" },
+                        { data: "attribution", renderer: "html"},
+                        { data: "owner", readOnly: true}
                     ],
                     "photos": [
-                        { data: this.attr("id"), readOnly: true},
-                        { data: this.attr("name"), renderer: "html"},
-                        { data: this.attr("caption"), renderer: "html"},
-                        { data: this.attrThumb("path_marker_lg"), renderer: "html", readOnly: true},
-                        { data: this.attrTags("tags"), renderer: "html"},
-                        { data: this.attr("attribution"), renderer: "html"},
-                        { data: this.attrReadOnly("owner"), readOnly: true}
+                        { data: "id", readOnly: true},
+                        { data: "name", renderer: "html"},
+                        { data: "caption", renderer: "html"},
+                        { data: "path_marker_lg", renderer: this.thumbnailRenderer, readOnly: true},
+                        { data: "tags", renderer: "html" },
+                        { data: "attribution", renderer: "html"},
+                        { data: "owner", readOnly: true}
                     ]
                 };
                 return config[this.collection.key];
