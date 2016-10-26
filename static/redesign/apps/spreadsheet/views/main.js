@@ -82,19 +82,24 @@ define(["marionette",
             },
             saveChanges: function (changes, source) {
                 //sync with collection:
-                console.log("[" + source + "]: saving changes to database...");
-                var i, idx, key, newVal, modelID, model;
-                if (source === 'edit' || source === 'autofill' ||
-                        source === 'undo' || source === 'redo' ||
-                        source === 'paste') {
+                var i, idx, key, oldVal, newVal, modelID, model;
+                if (_.contains(["edit", "autofill", "undo", "redo", "paste"], source)) {
                     for (i = 0; i < changes.length; i++) {
                         idx = changes[i][0];
                         key = changes[i][1];
+                        oldVal = changes[i][2];
                         newVal = changes[i][3];
-                        modelID = this.table.getDataAtRow(idx)[0];
-                        model = this.collection.get(modelID);
-                        model.set(key, newVal);
-                        model.save(model.changedAttributes(), {patch: true, wait: true});
+                        if (oldVal !== newVal) {
+                            console.log("[" + source + "]: saving changes to database...");
+                            //Note: relies on the fact that the first column is the ID column
+                            //      see the getColumns() function below
+                            modelID = this.table.getDataAtRow(idx)[0];
+                            model = this.collection.get(modelID);
+                            model.set(key, newVal);
+                            model.save(model.changedAttributes(), {patch: true, wait: true});
+                        } else {
+                            console.log("[" + source + "], but no value change. Ignored.");
+                        }
                     }
                 }
             },
