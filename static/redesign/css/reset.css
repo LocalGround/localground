@@ -1,0 +1,18 @@
+@import url(https://fonts.googleapis.com/css?family=Amatic+SC);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,800,300italic,400italic);
+@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro);
+
+
+/************************************ Resetish ************************************/
+
+html, div, body, h1, h2, h3, h4, h5, h6, p, button, table, input, span, a, select, form{
+	padding:0;
+	margin:0;
+	font-family:"Open Sans",Arial,sans-serif;
+	color:#3d3d3d;
+}
+
+a{
+	text-decoration:none;
+}
+
