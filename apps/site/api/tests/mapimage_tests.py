@@ -48,6 +48,7 @@ class ApiMapImageListTest(test.TestCase, ViewMixinAPI):
         tmp_file = tempfile.NamedTemporaryFile(suffix='.jpg')
         image.save(tmp_file)
         with open(tmp_file.name, 'rb') as data:
+            print self.csrf_token, models.StatusCode.READY_FOR_PROCESSING
             response = self.client_user.post(
                 self.urls[0],
                 {
@@ -104,6 +105,7 @@ class ApiMapImageDetailTest(test.TestCase, ViewMixinAPI):
         self.assertFalse(response.data.get('source_print') == self.source_print.id)
         
         # update status to "READY_FOR_PROCESSING"
+        print self.csrf_token, models.StatusCode.READY_FOR_PROCESSING
         response = self.client_user.put(
             self.url,
             json.dumps({
