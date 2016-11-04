@@ -16,13 +16,25 @@ html, body {
     font-family: 'ProximaNova', sans-serif;
 }
 
+
+button , a{
+    cursor:pointer;
+    font-size: 12px;
+}
+
+fieldset{
+    padding:0;
+}
+
+/*
+
 * {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     -ms-box-sizing: border-box;
     box-sizing: border-box;
-}
-
+}*/
+/*
 
 #toolbar-main {
     background: #DDD;
@@ -43,7 +55,7 @@ html, body {
     padding: 10px;
     height: 60px;
 }
-
+*/
 #menu {
     display: inline-block;
     float: right;
@@ -52,4 +64,317 @@ html, body {
 fieldset {
     border: none;
 }
+
+
+/************************************ General Typography ************************************/
+
+.side-panel h4{
+    padding: 20px;
+    border-bottom: 1px solid #e4e5eb;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+a.logotype{
+    padding: 14px 20px 10px 0;
+    font-family: "Amatic SC";
+    letter-spacing: .1em;
+    font-size: 24px;
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+span.tag{
+    background-color: #e7e7e7;
+    font-size:12px;
+    padding:1px 8px;
+    border-radius:20px;
+    margin: 0 2px;
+    font-weight:400;
+}
+
+span.action.tag{
+    border: 1px solid #e7e7e7;
+    background-color:white;
+    float: right;
+      -o-transition:.5s;
+  -ms-transition:.5s;
+  -moz-transition:.5s;
+  -webkit-transition:.5s;
+}
+
+span.action.tag:hover{
+    border-color: #7eace2;
+    color:#4e70d4;
+}
+
+#model-form fieldset label{
+    font-size: 12px;
+    float: left;
+    min-height: 22px;
+    padding-top: 8px;
+    line-height: 16px;
+    font-weight: 400;
+    color: #666;
+    min-width: 20%;
+    margin-right: 4%;
+    font-size: 12px;
+    text-align: right;
+    word-wrap: break-word;
+}
+
+#model-form fieldset textarea, #model-form fieldset input{
+    width: 100%;
+    padding: 4px 6px;
+    border-radius: 2px;
+    font-size: 14px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 1px;
+    width: 75%;
+    float: right;
+}
+
+fieldset > div{
+    margin: 6px 16px;
+    display: block;
+    float: left;
+    width: calc(100% - 32px);
+}
+
+
+
+
+/************************************ Dropdown Menu ************************************/
+.dropdown-menu{
+    width: 140px;
+    position: absolute;
+    background-color: white;
+    padding: 6px 0;
+    border-radius:3px;
+    border:1px solid #e4e5eb;
+    margin-top:4px;
+    z-index:100;
+    box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
+}
+
+.dropdown-menu > a{
+    display:block;
+    padding:6px 10px;
+    line-height:100%;
+    text-transform:none;
+}
+
+.dropdown-menu > h5{
+    display: block;
+    padding: 0 10px 4px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-size: 11px;
+    font-weight: 400;
+    color: #7a7a7a;
+    border-bottom: 1px solid #e7e7e7;
+    margin-bottom: 6px;
+}
+
+.dropdown-menu > a:hover, .dropdown-menu tr:hover{
+    background-color: rgb(123, 155, 225);
+    color:white;
+}
+
+.dropdown-menu tr:hover a, .dropdown-menu tr:hover .fa {
+    color:white;
+}
+
+.dropdown-menu .fa{
+    color:#d3d3d3;
+    font-size: 1.4em;
+    padding: 2px 8px;
+}
+
+.dropdown-menu table{
+     width:100%;
+     border-collapse:collapse;
+}
+
+.dropdown-menu tr{
+     height:30px;
+}
+
+/************************************ Navigation ************************************/
+nav .selected{
+    border-bottom: 3px solid rgb(107, 139, 237);
+    font-weight:600;
+}
+
+
+
+/************************************ Buttons ************************************/
+.button-primary{
+    /*background-color:rgb(53, 76, 122)*/
+    background-color:#4e70d4;
+    color:white;
+    border:none;
+    border-radius:3px;
+    font-size:12px;
+    margin-left: 6px;
+    float:right;
+    -webkit-animation: fadeEffect 0.5s;
+    animation: fadeEffect 0.5s; /* Fading effect takes 1 second */
+    padding: 0 11px;
+    text-transform: uppercase;
+    line-height:26px;
+    height:29px;
+    vertical-align: bottom;
+    letter-spacing: 0.7px;
+    width:80px;
+}
+
+.button-secondary{
+    background-color: #fafafc;
+    border:none;
+    border-radius:3px;
+    padding: 0 12px;
+    text-transform: uppercase;
+    font-size:12px;
+    margin:0 2px;
+    border: 1px solid #e4e5eb;
+    -webkit-transition: background 0.3s linear;
+    -moz-transition: background 0.3s linear;
+    -ms-transition: background 0.3s linear;
+    -o-transition: background 0.3s linear;
+    transition: background 0.3s linear;
+    line-height: 26px;
+    height: 29px;
+    vertical-align: bottom;
+    letter-spacing: 0.7px;
+    width:80px;
+}
+
+.button-secondary:hover{
+    background-color:#f1f3fb;
+    border-color:##4e70d4;
+}
+
+
+.button-tertiary{
+    text-transform: uppercase;
+    font-weight: 600;
+    color: rgb(78,112,212);
+    background: none;
+    border: none;
+}
+
+.button-tertiary .fa{
+    padding:4px;
+}
+
+.button-warning{
+    color: #d73729;
+}
+
+.button-main-action{
+    background-color:#008580;
+    -webkit-transition: background 0.3s linear;
+    -moz-transition: background 0.3s linear;
+    -ms-transition: background 0.3s linear;
+    -o-transition: background 0.3s linear;
+    transition: background 0.3s linear;
+}
+
+.button-main-action:hover{
+    background-color:#2e9965;
+}
+
+.button-wide{
+    width:120px;
+}
+
+
+
+
+/************************************ Input ************************************/
+input[type="text"], textarea{
+    border-style:solid;
+    border-width:1px;
+    border-color:#e4e5eb;
+}
+
+input[type="number"]{
+    width: 40px;
+}
+
+
+
+
+
+    /************************************ Search Form ************************************/
+
+    .search-form{
+        display:inline-block;
+        vertical-align: top;
+    }
+
+    .search-form input{
+        padding: 8px;
+        width: 240px;
+        background-color: white;
+        margin-right: -40px;
+    }
+
+    .search-form button{
+        padding: 4px 0 4px 16px;
+        color: #7a7a7a;
+        background: none;
+        border: none;
+    }
+
+    .search-form a{
+        display:inline-block;
+    }
+
+
+/************************************ Filtering options for table view ************************************/
+.filter.data {
+    position: fixed;
+    top: 61px;
+    z-index: 40;
+    box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
+    height: 35px;
+}
+.filter {
+    padding: 18px;
+    width: calc(100% - 36px);
+    background-color: #fafafc;
+    margin: 0;
+    border-bottom: 1px solid #e4e5eb;
+}
+
+
+/************************************ Toggle Buttons ************************************/
+.database-view-buttons.active {
+    color: white;
+    background-color: rgb(107, 139, 237);
+}
+.database-view-buttons {
+    float: right;
+    border: none;
+    padding: 6px;
+    background-color: rgba(0,0,0,0);
+    border-radius: 4px;
+    font-size: 16px;
+    margin-left: 6px;
+}
+
+
+
+
+
+
+
+
 
