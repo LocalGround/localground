@@ -2,12 +2,13 @@ define([
     "jquery",
     "marionette",
     "backbone",
-    "apps/gallery/controller"
+    "apps/map/controller"
 ], function ($, Marionette, Backbone, Controller) {
     "use strict";
     var Router = Marionette.AppRouter.extend({
         appRoutes: {
-            'media/:id': 'mediaDetail'
+            ':mediaType/:id': 'dataDetail',
+            ':mediaType': 'dataList'
         },
         initialize: function (options) {
             this.controller = new Controller({

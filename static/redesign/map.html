@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel=stylesheet type="text/css" href="css/style.css" />
+    <link rel=stylesheet type="text/css" href="css/map.css" />
 </head>
 <body>
     <div id="toolbar-main">
@@ -22,10 +23,17 @@
         <a href="gallery.html">Gallery</a> |
         <a href="spreadsheet.html">Spreadsheet</a> 
     </div>
-    <div>
-        <main class="main-panel">
+    <div id="toolbar-dataview">
+        <!-- dataview toolbar -->
+    </div>
+    <div class="main-panel show-detail">
+        <div id="marker-list-panel">
+            <!-- Marker list goes here -->
+        </div><div id="map-panel">
             <!-- Map goes here -->
-        </main>
+        </div><div id="marker-detail-panel">
+            <!-- Marker detail goes here -->
+        </div>
     </div>
     
     <script src="external/require.js"></script>
