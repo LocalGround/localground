@@ -82,7 +82,7 @@ define(["marionette",
             },
             saveChanges: function (changes, source) {
                 //sync with collection:
-                var i, idx, key, oldVal, newVal, modelID, model;
+                var i, idx, key, oldVal, newVal, model;
                 if (_.contains(["edit", "autofill", "undo", "redo", "paste"], source)) {
                     for (i = 0; i < changes.length; i++) {
                         idx = changes[i][0];
@@ -93,8 +93,7 @@ define(["marionette",
                             console.log("[" + source + "]: saving changes to database...");
                             //Note: relies on the fact that the first column is the ID column
                             //      see the getColumns() function below
-                            modelID = this.table.getDataAtRow(idx)[0];
-                            model = this.collection.get(modelID);
+                            model = this.getModelFromCell(idx);
                             model.set(key, newVal);
                             model.save(model.changedAttributes(), {patch: true, wait: true});
                         } else {
@@ -103,14 +102,25 @@ define(["marionette",
                     }
                 }
             },
-            thumbnailRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var img = document.createElement('IMG');
+            getModelFromCell: function (index) {
+                var modelID = this.table.getDataAtRowProp(index, "id");
+                return this.collection.get(modelID);
+            },
+            thumbnailRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
+                var that = this,
+                    img = document.createElement('IMG'),
+                    model;
                 img.src = value;
+                img.onclick = function () {
+                    model = that.getModelFromCell(rowIndex);
+                    console.log(model);
+                    alert("TODO: Turn this image link into a preview: " + model.get("path_large"));
+                }
                 Handsontable.Dom.empty(td);
                 td.appendChild(img);
                 return td;
             },
-            audioRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+            audioRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
                 td.innerHTML = "<audio controls>" +
                     "<source src='" + value + "'></source>" +
                     "</audio>";
@@ -156,7 +166,7 @@ define(["marionette",
                         { data: "id", readOnly: true},
                         { data: "name", renderer: "html"},
                         { data: "caption", renderer: "html"},
-                        { data: "path_marker_lg", renderer: this.thumbnailRenderer, readOnly: true},
+                        { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true},
                         { data: "tags", renderer: "html" },
                         { data: "attribution", renderer: "html"},
                         { data: "owner", readOnly: true}
