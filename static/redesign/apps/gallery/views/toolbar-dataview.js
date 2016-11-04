@@ -25,11 +25,12 @@ define([
             this.template = Handlebars.compile(ToolbarTemplate);
         },
 
-        clearSearch: function () {
+        clearSearch: function (e) {
             this.app.vent.trigger("clear-search");
+            e.preventDefault();
         },
 
-        doSearch: function () {
+        doSearch: function (e) {
             /*
              * NOTE
              *   - app.js is listening for the search-requested event
@@ -43,6 +44,7 @@ define([
                         "% OR owner like %" + term +
                         "% OR tags contains (" + term + ")";
             this.app.vent.trigger("search-requested", query);
+            e.preventDefault();
         },
 
         changeDisplay: function (e) {
