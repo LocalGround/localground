@@ -13,6 +13,7 @@ define([
     "use strict";
     var MapApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
+            container: ".main-panel",
             markerListRegion: "#marker-list-panel",
             mapRegion: "#map-panel",
             markerDetailRegion: "#marker-detail-panel",
@@ -64,6 +65,7 @@ define([
         },
 
         showMarkerList: function (mediaType) {
+            this.container.$el.removeClass("show-detail");
             this.dataType = mediaType;
             this.markerListView = new MarkerListing({
                 app: this
@@ -73,6 +75,7 @@ define([
         },
 
         showMarkerDetail: function (opts) {
+            this.container.$el.addClass("show-detail");
             var model = this.currentCollection.get(opts.id);
             this.mediaView = new MediaDetail({
                 model: model,
