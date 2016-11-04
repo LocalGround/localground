@@ -1,10 +1,13 @@
 {{#ifequal dataType "photos"}}
     <a href="#/{{ dataType }}/{{id}}">
-        <img src="{{ path_medium }}" />
+        <div class = "card-img-preview" style="background-image: url('{{ path_medium }}');" />
     </a>
-    <br>
-    {{ name }}<br>
-    {{owner}}
+    <h1>
+        {{ name }}
+    </h1>
+    <h2>
+        {{owner}}
+    </h2>
     
     {{#if geometry}}
         <i class="fa fa-map-marker"></i>

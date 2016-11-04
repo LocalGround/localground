@@ -13,6 +13,8 @@
 
 <!-- EDIT MODE -->
 {{#ifequal mode "edit"}}
+
+    <h4>Media Details</h4>
     <img src="{{ path_medium }}" />
 
     <div id="model-form">
@@ -23,8 +25,11 @@
              https://github.com/powmedia/backbone-forms#custom-editors
         -->
     </div>
-    <button class="save-model">Save</button>
-    <button class="view-mode">View</button>
+    <div class = "save-options">
+        <button class="save-model button-primary">Save</button>
+        <button class="view-mode button-tertiary">Preview</button>
+        <button class="view-mode button-tertiary button-warning">Delete</button>
+    </div>
 {{/ifequal}}
 
 

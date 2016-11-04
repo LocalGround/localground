@@ -3,7 +3,11 @@
 		<div class="row">
 		    <form class="search-form">
 		        <input id="project-search" type="text" placeholder="Search Projects" value="{{ searchTerm }}">
-		        <a href="#" id="search"><i class="fa fa-search" aria-hidden="true"></i></a>
+		        <button>
+			        <a href="#" id="search">
+			        	<i class="fa fa-search" aria-hidden="true"></i>
+			        </a>
+			    </button>
 		        <a href="#" id="clear" style="display:{{#if searchTerm }} inline;{{else}} none;{{/if}}">
 		            {{ searchTerm }} <i class="fa fa-times" aria-hidden="true"></i>
 		        </a>

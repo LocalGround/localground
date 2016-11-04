@@ -19,15 +19,21 @@ html, body {
 
 button , a{
     cursor:pointer;
+    font-size: 12px;
 }
 
+fieldset{
+    padding:0;
+}
+
+/*
 
 * {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     -ms-box-sizing: border-box;
     box-sizing: border-box;
-}
+}*/
 /*
 
 #toolbar-main {
@@ -61,6 +67,17 @@ fieldset {
 
 
 /************************************ General Typography ************************************/
+
+.side-panel h4{
+    padding: 20px;
+    border-bottom: 1px solid #e4e5eb;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-size: 12px;
+    font-weight: 600;
+}
+
 a.logotype{
     padding: 14px 20px 10px 0;
     font-family: "Amatic SC";
@@ -93,6 +110,44 @@ span.action.tag:hover{
     border-color: #7eace2;
     color:#4e70d4;
 }
+
+#model-form fieldset label{
+    font-size: 12px;
+    float: left;
+    min-height: 22px;
+    padding-top: 8px;
+    line-height: 16px;
+    font-weight: 400;
+    color: #666;
+    min-width: 20%;
+    margin-right: 4%;
+    font-size: 12px;
+    text-align: right;
+    word-wrap: break-word;
+}
+
+#model-form fieldset textarea, #model-form fieldset input{
+    width: 100%;
+    padding: 4px 6px;
+    border-radius: 2px;
+    font-size: 14px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 1px;
+    width: 75%;
+    float: right;
+}
+
+fieldset > div{
+    margin: 6px 16px;
+    display: block;
+    float: left;
+    width: calc(100% - 32px);
+}
+
+
+
 
 /************************************ Dropdown Menu ************************************/
 .dropdown-menu{
@@ -151,10 +206,11 @@ span.action.tag:hover{
 }
 
 /************************************ Navigation ************************************/
-        nav .selected{
-            border-bottom: 3px solid rgb(107, 139, 237);
-            font-weight:600;
-        }
+nav .selected{
+    border-bottom: 3px solid rgb(107, 139, 237);
+    font-weight:600;
+}
+
 
 
 /************************************ Buttons ************************************/
@@ -204,14 +260,21 @@ span.action.tag:hover{
     border-color:##4e70d4;
 }
 
+
 .button-tertiary{
-    border:solid;
-    border-width:1px;
-    border-color:#DDDDDD;
-    border-radius:3px;
-    padding: 4px 8px;
-    font-size:12px;
-    background-color:#f1f1f1;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: rgb(78,112,212);
+    background: none;
+    border: none;
+}
+
+.button-tertiary .fa{
+    padding:4px;
+}
+
+.button-warning{
+    color: #d73729;
 }
 
 .button-main-action{
@@ -235,7 +298,7 @@ span.action.tag:hover{
 
 
 /************************************ Input ************************************/
-input[type="text"]{
+input[type="text"], textarea{
     border-style:solid;
     border-width:1px;
     border-color:#e4e5eb;
@@ -253,23 +316,65 @@ input[type="number"]{
 
     .search-form{
         display:inline-block;
+        vertical-align: top;
     }
 
     .search-form input{
         padding: 8px;
         width: 240px;
         background-color: white;
+        margin-right: -40px;
     }
 
-    .search-form .fa{
+    .search-form button{
         padding: 4px 0 4px 16px;
-        margin-left: -40px;
         color: #7a7a7a;
+        background: none;
+        border: none;
     }
 
     .search-form a{
         display:inline-block;
     }
+
+
+/************************************ Filtering options for table view ************************************/
+.filter.data {
+    position: fixed;
+    top: 61px;
+    z-index: 40;
+    box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
+    height: 35px;
+}
+.filter {
+    padding: 18px;
+    width: calc(100% - 36px);
+    background-color: #fafafc;
+    margin: 0;
+    border-bottom: 1px solid #e4e5eb;
+}
+
+
+/************************************ Toggle Buttons ************************************/
+.database-view-buttons.active {
+    color: white;
+    background-color: rgb(107, 139, 237);
+}
+.database-view-buttons {
+    float: right;
+    border: none;
+    padding: 6px;
+    background-color: rgba(0,0,0,0);
+    border-radius: 4px;
+    font-size: 16px;
+    margin-left: 6px;
+}
+
+
+
+
+
+
 
 
 
