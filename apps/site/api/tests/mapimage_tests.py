@@ -44,7 +44,7 @@ class ApiMapImageListTest(test.TestCase, ViewMixinAPI):
 
     def test_create_mapimage_using_post(self, **kwargs):
         import os
-        if os.environ['TRAVIS']:
+        if os.environ.get('TRAVIS', False):
             print 'Skipping test on TRAVIS because of Celery'
             self.assertEqual(1, 1)
             return
@@ -101,7 +101,7 @@ class ApiMapImageDetailTest(test.TestCase, ViewMixinAPI):
         
     def test_update_print_using_put(self, **kwargs):
         import os
-        if os.environ['TRAVIS']:
+        if os.environ.get('TRAVIS', False):
             print 'Skipping test on TRAVIS because of Celery'
             self.assertEqual(1, 1)
             return
