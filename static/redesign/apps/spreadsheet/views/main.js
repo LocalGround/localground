@@ -18,8 +18,7 @@ define(["marionette",
                 // call Marionette's default functionality (similar to "super")
                 Marionette.ItemView.prototype.initialize.call(this);
                 this.displaySpreadsheet();
-                this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
-
+                
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
@@ -34,6 +33,7 @@ define(["marionette",
                     alert("Type not accounted for.");
                     return;
                 }
+                this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
                 this.collection.query = this.getDefaultQueryString();
                 this.collection.fetch({ reset: true });
             },

@@ -39,7 +39,7 @@ define([
             galleryApp.start(); // opts defined in spec-helpers
         }
 
-        describe("ProfileApplication: Application-Level Tests", function () {
+        describe("GalleryApp: Application-Level Tests", function () {
             beforeEach(function () {
                 //called before each "it" test
                 initApp(this);

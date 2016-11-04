@@ -37,7 +37,7 @@ define([
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
 
-            //add views to regions:
+            //add views to regions after projects load:
             this.projects = new Projects();
             this.listenTo(this.projects, 'reset', this.selectProjectLoadRegions);
             this.projects.fetch({ reset: true });

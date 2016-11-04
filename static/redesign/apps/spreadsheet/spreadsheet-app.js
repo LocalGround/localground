@@ -12,7 +12,7 @@ define([
 ], function (_, Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,
              SpreadsheetView, Projects, appUtilities) {
     "use strict";
-    var GalleryApp = Marionette.Application.extend(_.extend(appUtilities, {
+    var SpreadsheetApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
             spreadsheetRegion: ".main-panel",
             toolbarMainRegion: "#toolbar-main",
@@ -32,21 +32,17 @@ define([
 
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            this.selectProjectLoadRegions();
 
+            //add views to regions after projects load:
+            this.projects = new Projects();
+            this.listenTo(this.projects, 'reset', this.selectProjectLoadRegions);
+            this.projects.fetch({ reset: true });
             this.listenTo(this.vent, 'show-list', this.showSpreadsheet);
         },
         selectProjectLoadRegions: function () {
-            var that = this;
-            this.projects = new Projects();
-            this.projects.fetch({
-                success: function () {
-                    that.selectProject(); //located in appUtilities
-                    that.loadRegions();
-                }
-            });
+            this.selectProject(); //located in appUtilities
+            this.loadRegions();
         },
-
         loadRegions: function () {
             //initialize toobar view
             this.toolbarView = new ToolbarGlobal({
@@ -73,5 +69,5 @@ define([
             this.spreadsheetRegion.show(this.spreadsheetView);
         }
     }));
-    return GalleryApp;
+    return SpreadsheetApp;
 });
