@@ -1,8 +1,8 @@
 define(["marionette",
         "underscore",
         "handlebars",
-        "collections/Photos",
-        "collections/Audio",
+        "collections/photos",
+        "collections/audio",
         "text!../templates/thumb.html",
         "text!../templates/thumb-list.html"],
     function (Marionette, _, Handlebars, Photos, Audio, ThumbTemplate, ListTemplate) {
