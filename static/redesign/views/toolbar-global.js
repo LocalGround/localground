@@ -2,13 +2,15 @@ define([
     "jquery",
     "underscore",
     "handlebars",
-    "marionette"
-], function ($, _, Handlebars, Marionette, Projects) {
+    "marionette",
+    "text!../templates/toolbar-global.html"
+], function ($, _, Handlebars, Marionette, ToolbarTemplate) {
     "use strict";
     var Toolbar = Marionette.ItemView.extend({
         events: {
             'click #map-link': 'test'
         },
+        template: Handlebars.compile(ToolbarTemplate),
 
         initialize: function (opts) {
             _.extend(this, opts);
@@ -16,12 +18,12 @@ define([
             /*if (!this.model) {
                 alert("this.app.selectedProject must be defined");
             }*/
-            this.template = Handlebars.compile($('#toolbar-main').html());
+            //this.template = Handlebars.compile($('#toolbar-main').html());
             Marionette.ItemView.prototype.initialize.call(this);
         },
 
         onRender: function () {
-            this.$el.find("#project-header").show();
+            this.$el.find(".project-detail > div").css('display', 'inline-block');
         },
 
         test: function () {

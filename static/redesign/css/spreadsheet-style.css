@@ -1,9 +1,14 @@
-/*#main-panel {
-    width:100%;
-    overflow-x: auto;
+/*** Override some of the "fixed / absolute" characteristics of fav bar ****/
+.filter.data, #toolbar-main {
+    position: static;
 }
-
-#logging {
-    width:100%;
-    overflow-x: auto;
-}*/
+#toolbar-main .buttons{
+    top: 0;
+}
+.main-panel {
+    padding: 0px;
+    padding-left: 6px;
+    width: auto;
+    height: calc(100% - 134px);
+    padding: 0px;
+}

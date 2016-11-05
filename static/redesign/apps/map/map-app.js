@@ -24,7 +24,7 @@ define([
             toolbarDataViewRegion: "#toolbar-dataview"
         },
         dataType: "photos",
-        mode: "view",
+        mode: "edit",
         screenType: "map",
         currentCollection: null,
         start: function (options) {

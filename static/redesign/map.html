@@ -11,38 +11,7 @@
 </head>
 <body>
     <div id="toolbar-main">
-        <div class="project-detail">
-            <a href="index.html"><i class="fa fa-arrow-left back-to-profile"></i></a>
-            <div>
-                <h2>
-                    {{#if name }}
-                        {{ name }}
-                </h2>
-                <p>
-                    {{ caption }}
-                    {{/if}}
-                </p>
-            </div>
-            <nav>
-                <div class="selected">
-                    <a>Data</a>
-                </div>
-                <div>
-                    <a href="map-left-panel.html">Style</a>
-                </div>
-            </nav>
-        </div>
-        <div class="buttons">
-             <button class="button-secondary">
-                Print
-            </button>
-            <button class="button-secondary">
-                Preview
-            </button>
-            <button class="button-primary button-main-action">
-                Share
-            </button>
-        </div>
+        <!-- global toolbar -->
     </div>
     <div id="toolbar-dataview" class="filter data">
         <!-- dataview toolbar -->
@@ -52,8 +21,7 @@
             <!-- Marker list goes here -->
         </div><div id="map-panel">
             <div id="map"></div>
-        </div><div id="marker-detail-panel">
-            <a href="#" class="toggle-detail-panel">toggle</a>
+        </div><div id="marker-detail-panel" class="side-panel">
             <!-- Marker detail goes here -->
         </div>
     </div>
