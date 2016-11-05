@@ -5,12 +5,15 @@ define([
     "views/toolbar-global",
     "apps/gallery/views/toolbar-dataview",
     "apps/map/views/marker-listing",
+    "apps/map/views/map",
     "apps/gallery/views/media-detail",
     "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView, MarkerListing, MediaDetail, Projects, appUtilities) {
+], function (Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,
+             MarkerListing, Basemap, MediaDetail, Projects, appUtilities) {
     "use strict";
+    /* TODO: Move some of this stuff to a Marionette LayoutView */
     var MapApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
             container: ".main-panel",
@@ -22,6 +25,7 @@ define([
         },
         dataType: "photos",
         mode: "view",
+        screenType: "map",
         currentCollection: null,
         start: function (options) {
             // declares any important global functionality;
@@ -47,6 +51,7 @@ define([
         loadRegions: function () {
             this.showGlobalToolbar();
             this.showDataToolbar();
+            this.showBasemap();
             this.router.navigate('//photos', { trigger: true });
         },
 
@@ -62,6 +67,13 @@ define([
                 app: this
             });
             this.toolbarDataViewRegion.show(this.toolbarDataView);
+        },
+
+        showBasemap: function () {
+            this.basemapView = new Basemap({
+                app: this
+            });
+            this.mapRegion.show(this.basemapView);
         },
 
         showMarkerList: function (mediaType) {

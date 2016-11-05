@@ -19,6 +19,14 @@ define([
 
         template: Handlebars.compile(ToolbarTemplate),
 
+        templateHelpers: function () {
+            return {
+                mode: this.app.mode,
+                dataType: this.app.dataType,
+                screenType: this.app.screenType
+            };
+        },
+
         initialize: function (opts) {
             _.extend(this, opts);
             Marionette.ItemView.prototype.initialize.call(this);
