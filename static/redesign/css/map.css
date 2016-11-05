@@ -1,6 +1,18 @@
+/*** Override some of the "fixed / absolute" characteristics of fav bar ****/
+.filter.data, #toolbar-main {
+    position: static;
+}
+
+.main-panel {
+    padding: 0px;
+    padding-left: 6px;
+    width: auto;
+}
+/*** Override some of the "fixed / absolute" characteristics ****/
+
 #marker-list-panel, #marker-detail-panel, #map-panel {
     border: solid 1px #000;
-    height: calc(100% - 100px);
+    height: calc(100% - 130px);
     display: inline-block;
     box-sizing: border-box;
     vertical-align: top;
