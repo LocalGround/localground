@@ -1,9 +1,9 @@
 define(["marionette",
     "jquery",
-    "lib/maps/overlays/point",
-    "lib/maps/overlays/polyline",
-    "lib/maps/overlays/polygon",
-    "lib/maps/overlays/ground-overlay"
+    "apps/map/views/overlays/point",
+    "apps/map/views/overlays/polyline",
+    "apps/map/views/overlays/polygon",
+    "apps/map/views/overlays/ground-overlay"
     ], function (Marionette, $, Point, Polyline, Polygon, GroundOverlay) {
     "use strict";
     /**

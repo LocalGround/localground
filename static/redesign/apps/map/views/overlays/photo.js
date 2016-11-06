@@ -1,4 +1,4 @@
-define(["lib/maps/overlays/base", "lib/maps/overlays/infobubbles/photo"], function (Base, PhotoBubble) {
+define(["apps/map/views/overlays/base", "apps/map/views/overlays/infobubbles/photo"], function (Base, PhotoBubble) {
     "use strict";
     /**
      * Class that controls photo model overlays.

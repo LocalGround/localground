@@ -1,7 +1,7 @@
 define([
     "underscore",
-    "lib/maps/overlays/infobubbles/marker",
-    "lib/maps/overlays/base"
+    "apps/map/views/overlays/infobubbles/marker",
+    "apps/map/views/overlays/base"
 ], function (_, MarkerBubble, Base) {
     "use strict";
     /**

@@ -1,7 +1,7 @@
 define(['marionette',
         'jquery',
-        'lib/maps/overlays/photo',
-        'lib/maps/overlays/audio'
+        'apps/map/views/overlays/photo',
+        'apps/map/views/overlays/audio'
     ],
     function (Marionette, $, PhotoOverlay, AudioOverlay) {
         'use strict';
@@ -15,13 +15,15 @@ define(['marionette',
             /** A google.maps.Map object */
             map: null,
             getChildView: function () {
+                var overlayView = null;
                 if (this.app.dataType == "photos") {
-                    return PhotoOverlay;
+                    overlayView = PhotoOverlay;
                 } else if (this.app.dataType == "audio") {
-                    return AudioOverlay;
+                    overlayView = AudioOverlay;
                 } else {
                     alert("dataType not handled");
                 }
+                return overlayView;
             },
 
             initialize: function (opts) {
@@ -57,8 +59,8 @@ define(['marionette',
                 }
             },
 
-            // overriding the "addChild" method so that data elements whose geometry hasn't
-            // yet been defined won't render.
+            // overriding the "addChild" method so that data elements w/o
+            // geometries won't render.
             addChild: function (child, ChildView, index) {
                 if (child.get('geometry') != null) {
                     return Marionette.CollectionView.prototype.addChild.call(this, child, ChildView, index);
@@ -66,15 +68,12 @@ define(['marionette',
                 return null;
             },
 
-            /** Shows all of the map overlays */
             showAll: function () {
-                //this._isShowingOnMap = true;
                 this.children.each(function (overlay) {
                     overlay.show();
                 });
             },
 
-            /** Hides all of the map overlays */
             hideAll: function () {
                 //this._isShowingOnMap = false;
                 this.children.each(function (overlay) {
@@ -84,7 +83,6 @@ define(['marionette',
 
             /** Zooms to the extent of the collection */
             zoomToExtent: function () {
-                //console.log("zoom to extent");
                 var bounds = new google.maps.LatLngBounds();
                 this.children.each(function (overlay) {
                     bounds.union(overlay.getBounds());

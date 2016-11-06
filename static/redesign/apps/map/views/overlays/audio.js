@@ -1,6 +1,6 @@
 define([
-    "lib/maps/overlays/base",
-    "lib/maps/overlays/infobubbles/audio",
+    "apps/map/views/overlays/base",
+    "apps/map/views/overlays/infobubbles/audio",
     "underscore"
 ], function (Base, AudioBubble, _) {
     "use strict";
