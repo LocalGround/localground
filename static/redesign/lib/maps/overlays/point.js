@@ -23,7 +23,8 @@ define(["jquery", "underscore"], function ($, _) {
         };
 
         this.createOverlay = function (isShowingOnMap) {
-            if (this.model.get("geometry") != null) {
+            console.log(this.model.get("id"), "creating overlay");
+            if (this.model.get("geometry") != null && !this._googleOverlay) {
                 this._googleOverlay = new google.maps.Marker({
                     position: this.getGoogleGeometryFromModel(),
                     map: isShowingOnMap ? this.map : null

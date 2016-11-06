@@ -79,6 +79,10 @@ define([
         showMarkerList: function (mediaType) {
             this.container.$el.removeClass("show-detail");
             this.dataType = mediaType;
+            if (this.markerListView) {
+                //destroys all of the existing overlays
+                this.markerListView.remove();
+            }
             this.markerListView = new MarkerListing({
                 app: this
             });

@@ -2,8 +2,8 @@ define(['jquery',
         'form',
         'marionette',
         'google-infobubble',
-        'underscore',
-        'bootstrap-form-templates'
+        'underscore'//,
+        //'bootstrap-form-templates'
     ],
     function ($, Form, Marionette, GoogleInfoBubble, _) {
         'use strict';

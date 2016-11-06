@@ -59,7 +59,7 @@ define(["marionette",
                     center: this.defaultLocation.center
 
                 };
-                this.map = new google.maps.Map(document.getElementById(this.$el.attr("id")),
+                this.app.map = this.map = new google.maps.Map(document.getElementById(this.$el.attr("id")),
                     mapOptions);
 
                 //Controls overlaid over the map inside the map div
