@@ -89,7 +89,9 @@ define(['marionette',
                 this.children.each(function (overlay) {
                     bounds.union(overlay.getBounds());
                 });
-                this.map.fitBounds(bounds);
+                if (!bounds.isEmpty()) {
+                    this.map.fitBounds(bounds);
+                }
             }
 
         });
