@@ -1,20 +1,6 @@
-#marker-list-panel, #marker-detail-panel, #map-panel {
-    border: solid 1px #000;
-    height: calc(100% - 100px);
-    display: inline-block;
-    box-sizing: border-box;
-    vertical-align: top;
-}
-#marker-list-panel, #marker-detail-panel {
-    overflow-y: auto;
-}
-#marker-list-panel {
-    padding: 10px;
-    width: 20%;
-}
+
 #marker-detail-panel {
     display: none;
-    width: 0%;
     overflow: hidden;
 }
 #map-panel {
@@ -27,6 +13,29 @@
 
 .show-detail #marker-detail-panel {
     display: inline-block;
-    width: 30%;
     overflow-y: auto;
+}
+
+.main-panel{
+    height: calc(100% - 131px);
+    top: 131px;
+    display: flex;
+    position: absolute;
+    width: 100%;
+}
+
+#marker-list-panel{
+    order: 0;
+    border-right: 1px solid #e4e5eb;
+    box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
+    width: 280px;
+    background-color: #fafafc;
+    z-index: 40;
+    flex: none;
+    overflow: scroll;
+}
+
+#map-panel{
+    background-image:url('../../images/map-placeholder.png');
+    background-size: 1234px;
 }
