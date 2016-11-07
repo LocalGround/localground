@@ -18,7 +18,7 @@ define(["marionette",
                 // call Marionette's default functionality (similar to "super")
                 Marionette.ItemView.prototype.initialize.call(this);
                 this.displaySpreadsheet();
-                
+
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
@@ -126,17 +126,47 @@ define(["marionette",
                     "</audio>";
                 return td;
             },
+
+            buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+
+                  var button = document.createElement('BUTTON');
+                  button.innerHTML = "delete";
+                  Handsontable.Dom.empty(td);
+                  td.appendChild(button);
+                  var that = this;
+                  button.onclick = function(){
+
+                    // First grab the model of the target row to delete
+                    var model = that.getModelFromCell(row);
+
+                    // The model holding the row data is destroyed,
+                    // but the row containing the data still appears
+                    // inside the data from handsontable (H.O.T.)
+                    model.destroy();
+
+                    // We need to call instance, since it calls the data table
+                    // from H.O.T. to easily alter the table
+                    // by removing the target row
+                    instance.alter("remove_row", row);
+
+                    // Now there is no trace of any deleted data,
+                    // especially when the user refreshes the page
+                  }
+
+                  return td;
+            },
+
             getColumnHeaders: function () {
                 var config = {
-                    "audio": ["ID", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner"],
-                    "photos": ["ID", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner"]
+                    "audio": ["ID", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner", "Delete"],
+                    "photos": ["ID", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"]
                 };
                 return config[this.collection.key];
             },
             getColumnWidths: function () {
                 var config = {
-                    "audio": [30, 200, 400, 300, 200, 100, 80],
-                    "photos": [30, 200, 400, 65, 200, 100, 80]
+                    "audio": [30, 200, 400, 300, 200, 100, 80, 100],
+                    "photos": [30, 200, 400, 65, 200, 100, 80, 100]
                 };
                 return config[this.collection.key];
             },
@@ -160,7 +190,8 @@ define(["marionette",
                         { data: "file_path", renderer: this.audioRenderer, readOnly: true},
                         { data: "tags", renderer: "html" },
                         { data: "attribution", renderer: "html"},
-                        { data: "owner", readOnly: true}
+                        { data: "owner", readOnly: true},
+                        { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
                     ],
                     "photos": [
                         { data: "id", readOnly: true},
@@ -169,7 +200,8 @@ define(["marionette",
                         { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true},
                         { data: "tags", renderer: "html" },
                         { data: "attribution", renderer: "html"},
-                        { data: "owner", readOnly: true}
+                        { data: "owner", readOnly: true},
+                        { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
                     ]
                 };
                 return config[this.collection.key];
