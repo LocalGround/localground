@@ -28,6 +28,9 @@ define(["marionette",
                 });
             },
             childViewContainer: ".marker-container",
+            events: {
+                'click .zoom-to-extents': 'zoomToExtents'
+            },
             initialize: function (opts) {
                 _.extend(this, opts);
 
@@ -45,6 +48,9 @@ define(["marionette",
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
+            },
+            zoomToExtents: function () {
+                this.collection.trigger('zoom-to-extents');
             },
 
             childViewOptions: function () {

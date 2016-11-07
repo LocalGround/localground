@@ -27,8 +27,6 @@ define(["marionette",
                 this.opts = opts;
                 $.extend(this, opts);
                 Marionette.View.prototype.initialize.call(this);
-                this.restoreState();
-
             },
 
             renderMap: function () {
@@ -59,14 +57,9 @@ define(["marionette",
                     center: this.defaultLocation.center
 
                 };
+                console.log(mapOptions);
                 this.app.map = this.map = new google.maps.Map(document.getElementById(this.$el.attr("id")),
                     mapOptions);
-
-                //Controls overlaid over the map inside the map div
-                //need to wait for the map to load or be clobbered
-                google.maps.event.addListenerOnce(this.map, 'idle', function () {
-                    console.log('map done loading');
-                });
             },
 
             addControls: function () {
@@ -105,6 +98,9 @@ define(["marionette",
                 google.maps.event.addListener(this.map, "idle", function () {
                     that.saveState();
                 });
+                google.maps.event.addListener(this.map, 'zoom_changed', function () {
+                    that.saveState();
+                });
 
                 //todo: possibly move to a layout module?
                 $(window).off('resize');
@@ -114,11 +110,13 @@ define(["marionette",
             },
 
             saveState: function () {
-                var latLng = this.map.getCenter();
-                this.app.saveState("basemap", {
-                    center: [latLng.lng(), latLng.lat()],
-                    zoom: this.map.getZoom()
-                });
+                var latLng = this.map.getCenter(),
+                    state = {
+                        center: [latLng.lng(), latLng.lat()],
+                        zoom: this.map.getZoom()
+                    };
+                this.app.saveState("basemap", state);
+                //console.log("saving state:", state);
             },
             restoreState: function () {
                 var state = this.app.restoreState("basemap");
@@ -136,10 +134,10 @@ define(["marionette",
                 return state;
             },
             onShow: function () {
+                this.restoreState();
                 this.renderMap();
                 this.addControls();
                 this.addEventHandlers();
-                console.log('time to add overlays');
             }
 
         });

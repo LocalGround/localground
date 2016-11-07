@@ -37,11 +37,11 @@ define(['marionette',
                 this.childViewOptions = opts;
 
                 //listen for new data:
-                this.listenTo(this.collection, 'zoom-to-extent', this.zoomToExtent);
-                this.listenTo(this.collection, 'change:geometry', this.geometryUpdated);
+                this.listenTo(this.collection, 'zoom-to-extents', this.zoomToExtents);
+                this.listenTo(this.app.vent, "drag-ended", this.saveDragChange);
 
                 this.render();
-                this.zoomToExtent();
+                //this.zoomToExtent();
 
                 google.maps.event.addListenerOnce(this.map, 'idle', function () {
                     if (this.opts.startVisible) {
@@ -57,6 +57,13 @@ define(['marionette',
                     //console.log("creating child view");
                     this.addChild(model, this.childView);
                 }
+            },
+
+            saveDragChange: function (opts) {
+                var model = opts.model,
+                    latLng = opts.latLng;
+                model.setGeometry(latLng);
+                model.save();
             },
 
             // overriding the "addChild" method so that data elements w/o
@@ -82,7 +89,7 @@ define(['marionette',
             },
 
             /** Zooms to the extent of the collection */
-            zoomToExtent: function () {
+            zoomToExtents: function () {
                 var bounds = new google.maps.LatLngBounds();
                 this.children.each(function (overlay) {
                     bounds.union(overlay.getBounds());

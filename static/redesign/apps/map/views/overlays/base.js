@@ -45,7 +45,6 @@ define(["marionette",
         },
 
         initOverlayType: function (isShowingOnMap) {
-            console.log("initOverlayType", this.model.get("id"));
             var geoJSON = this.model.get("geometry"),
                 opts = {
                     model: this.model,
