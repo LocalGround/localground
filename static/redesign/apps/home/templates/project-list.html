@@ -2,17 +2,12 @@
 	<div class="container-center">
 		<div class="row">
 		    <form class="search-form">
-		        <input id="project-search" type="text" placeholder="Search Projects" value="{{ searchTerm }}">
-		        <button>
-			        <a href="#" id="search">
-			        	<i class="fa fa-search" aria-hidden="true"></i>
-			        </a>
+		        <input id="searchTerm" type="text" placeholder="Search Projects" value="{{ searchTerm }}">
+		        <button id="search">
+			        <i class="fa fa-search" aria-hidden="true"></i>
 			    </button>
-		        <a href="#" id="clear" style="display:{{#if searchTerm }} inline;{{else}} none;{{/if}}">
-		            {{ searchTerm }} <i class="fa fa-times" aria-hidden="true"></i>
-		        </a>
 		    </form>
-		    <button class="button-primary button-main-action click-to-open button-wide" data-modal="modal-new-map">New Project</button>
+		    <button class="button-primary button-main-action click-to-open button-wide" data-modal="modal-new-map" id="add-project">New Project</button>
 		</div>
 	</div>
 </div>
@@ -22,6 +17,29 @@
 	<div class = "container-center" id="gallery-main">
     	<!--project data inserted here -->
     </div>
+</div>
+
+<!-- The Modal for New Project -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">×</span>
+    <h1>Add New Project</h1>
+		<label>Name:</label>
+		<input type="text" placeholder="Type name of project">
+		<br>
+		<label>Description:</label>
+		<textarea rows = "10" cols = "50"
+		placeholder="Type description of project">
+		</textarea>
+		<br>
+		<label>Tags:</label>
+		<input type="text" placeholder="put some tags for easy search">
+		<br>
+
+  </div>
+
 </div>
 
 <footer>some footer</footer>

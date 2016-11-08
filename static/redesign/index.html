@@ -8,6 +8,7 @@
     <link rel=stylesheet type="text/css" href="css/reset.css" />
     <link rel=stylesheet type="text/css" href="css/index-style.css" />
     <link rel=stylesheet type="text/css" href="css/style.css" />
+    <link rel=stylesheet type="text/css" href="css/modal_new_project.css" />
 </head>
 <body>
     <nav id="toolbar-main" class = "account"></nav>
@@ -21,14 +22,20 @@
             <!-- Projects go here goes here -->
         </main>
     </div>
-    
+
     <script src="external/require.js"></script>
     <script>
         require(['apps/require-config'], function(){
             require(['apps/home/kickoff.js']);  //or adminApp for the admin area, etc.
         });
     </script>
-    
-</body>
-</html> 
 
+    <!--For rough draft purposes, a seperate modal script specific
+        for "New Project"
+    -->
+    <!--
+    <script src="apps/home/views/modal.js"></script>
+    -->
+
+</body>
+</html>
