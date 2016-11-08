@@ -27,16 +27,26 @@
     <span class="close">×</span>
     <h1>Add New Project</h1>
 		<label>Name:</label>
-		<input type="text" placeholder="Type name of project">
+		<input type="text" id="name" placeholder="Type name of project">
 		<br>
 		<label>Description:</label>
-		<textarea rows = "10" cols = "50"
+		<textarea id="caption" rows = "10" cols = "50"
 		placeholder="Type description of project">
 		</textarea>
 		<br>
 		<label>Tags:</label>
-		<input type="text" placeholder="put some tags for easy search">
+		<input id="tags" type="text" placeholder="put some tags for easy search">
 		<br>
+        <label>Friendly URL:</label>
+		<input id="slug" type="text" placeholder="put some tags for easy search">
+		<br>
+        <label>Sharing Permissions:</label>
+		<select id="access_authority">
+            <option value="1">Private</option>
+            <option value="3">Public</option>
+        </select>
+		<br>
+        <button id="confirm-add">Add Project</button>
 
   </div>
 

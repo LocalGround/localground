@@ -2,9 +2,10 @@ define(["marionette",
         "underscore",
         "handlebars",
         "collections/projects",
+        "models/project",
         "text!../templates/project-item.html",
         "text!../templates/project-list.html"],
-    function (Marionette, _, Handlebars, Projects, ItemTemplate, ListTemplate) {
+    function (Marionette, _, Handlebars, Projects, Project, ItemTemplate, ListTemplate) {
         'use strict';
         var ProjectListView = Marionette.CompositeView.extend({
 
@@ -21,33 +22,7 @@ define(["marionette",
                         'click .action': 'showModal'
                     },
                     showModal: function () {
-                        //alert("Show share project modal form");
-                        
-                        // Get the modal
-                        var modal = document.getElementById('myModal');
-
-                        // Get the button that opens the modal
-                        var btn = document.getElementById("add-project");
-
-                        // Get the <span> element that closes the modal
-                        var span = document.getElementsByClassName("close")[0];
-
-                        // When the user clicks the button, open the modal
-                        btn.onclick = function() {
-                            modal.style.display = "block";
-                        }
-
-                        // When the user clicks on <span> (x), close the modal
-                        span.onclick = function() {
-                            modal.style.display = "none";
-                        }
-
-                        // When the user clicks anywhere outside of the modal, close it
-                        window.onclick = function(event) {
-                            if (event.target == modal) {
-                                modal.style.display = "none";
-                            }
-                        }
+                        alert("child method");
                     }
                 });
             },
@@ -58,11 +33,63 @@ define(["marionette",
             searchTerm: null,
             childViewContainer: "#gallery-main",
             events: {
-                'click #add-project': 'addProject',
-                'click #search': 'doSearch'
+                'click #add-project': 'showModal',
+                'click #search': 'doSearch',
+                'click #confirm-add': 'confirmAdd'
+            },
+            showModal: function () {
+                //alert("Show share project modal form");
+                
+                // Get the modal
+                var modal = document.getElementById('myModal');
+
+                // Get the button that opens the modal
+                var btn = document.getElementById("add-project");
+
+                // Get the <span> element that closes the modal
+                var span = document.getElementsByClassName("close")[0];
+
+                // When the user clicks the button, open the modal
+                btn.onclick = function() {
+                    modal.style.display = "block";
+                }
+
+                // When the user clicks on <span> (x), close the modal
+                span.onclick = function() {
+                    modal.style.display = "none";
+                }
+
+                // When the user clicks anywhere outside of the modal, close it
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                }
+            },
+            confirmAdd: function () {
+                var that = this;
+                alert("Add!");
+                //create a new project model:
+                var newProject = new Project();
+                newProject.set("name", this.$el.find("#name").val());
+                newProject.set("caption", this.$el.find("#caption").val());
+                newProject.set("tags", "cat, dog");
+                newProject.set("slug", this.$el.find("#slug").val());
+                newProject.set("access_authority", 1);
+                newProject.save();
+                
+                //todo: once project has  been posted to database,
+                //figure out how to call the displayProjects method again
+                //and also close the modal. This code below isn't working:
+                this.listenTo(newProject,'sync', this.displayProjects);
+                console.log(newProject);
+                
+                //close the modal window
             },
             addProject: function () {
                 alert("Show create project modal form");
+                
+                
             },
             template: Handlebars.compile(ListTemplate),
 
