@@ -1,8 +1,8 @@
 define(["marionette",
         "jquery",
-        "handlebars"
+        "lib/maps/controls/searchBox"
     ],
-    function (Marionette, $, Handlebars) {
+    function (Marionette, $, SearchBox) {
         'use strict';
         /**
          * A class that handles the basic Google Maps functionality,
@@ -64,9 +64,7 @@ define(["marionette",
 
             addControls: function () {
                 //add a search control, if requested:
-                /*if (opts.includeSearchControl) {
-                    this.searchControl = new SearchBox(this.map);
-                }*/
+                this.searchControl = new SearchBox(this.map);
 
                 //add a browser-based location detector, if requested:
                 /*if (opts.includeGeolocationControl) {
