@@ -123,11 +123,11 @@ define(["marionette",
                     //var img = document.getElementById('myImg');
                     var modalImg = document.getElementById("img01");
                     var captionText = document.getElementById("caption");
-                    img.onclick = function(){
+                    //img.onclick = function(){
                         modal.style.display = "block";
-                        modalImg.src = this.src;
+                        modalImg.src = model.get("path_medium");
                         //captionText.innerHTML = this.alt;
-                    }
+                    //}
 
                     // Get the <span> element that closes the modal
                     var span = document.getElementsByClassName("close")[0];
