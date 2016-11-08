@@ -2,17 +2,12 @@
 	<div class="container-center">
 		<div class="row">
 		    <form class="search-form">
-		        <input id="project-search" type="text" placeholder="Search Projects" value="{{ searchTerm }}">
-		        <button>
-			        <a href="#" id="search">
-			        	<i class="fa fa-search" aria-hidden="true"></i>
-			        </a>
+		        <input id="searchTerm" type="text" placeholder="Search Projects" value="{{ searchTerm }}">
+		        <button id="search">
+			        <i class="fa fa-search" aria-hidden="true"></i>
 			    </button>
-		        <a href="#" id="clear" style="display:{{#if searchTerm }} inline;{{else}} none;{{/if}}">
-		            {{ searchTerm }} <i class="fa fa-times" aria-hidden="true"></i>
-		        </a>
 		    </form>
-		    <button class="button-primary button-main-action click-to-open button-wide" data-modal="modal-new-map">New Project</button>
+		    <button class="button-primary button-main-action click-to-open button-wide" data-modal="modal-new-map" id="add-project">New Project</button>
 		</div>
 	</div>
 </div>
