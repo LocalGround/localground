@@ -56,3 +56,10 @@
     -o-transition: all 0.15s ease;
     transition: all 0.15s ease;
 }
+
+.controls {
+    margin: 5px 5px;
+    padding: 5px 15px;
+    border: solid 2px #CCC;
+    width: 250px;
+}
