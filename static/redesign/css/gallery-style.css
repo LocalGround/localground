@@ -29,7 +29,12 @@
     height: 200px;
     background-size: cover;
     background-repeat: no-repeat;
+<<<<<<< HEAD
     background-position:center center;
+=======
+    background-size: cover;
+    background-position: center center;
+>>>>>>> redesign
 }
 
 .column h1{

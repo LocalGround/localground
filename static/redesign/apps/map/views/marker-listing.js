@@ -1,15 +1,17 @@
 define(["marionette",
         "underscore",
         "handlebars",
-        "collections/Photos",
-        "collections/Audio",
+        "collections/photos",
+        "collections/audio",
+        "apps/map/views/marker-overlays",
         "text!../templates/list-detail.html",
         "text!../templates/list.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, ItemTemplate, ListTemplate) {
+    function (Marionette, _, Handlebars, Photos, Audio, OverlayListView, ItemTemplate, ListTemplate) {
         'use strict';
         var MarkerListing = Marionette.CompositeView.extend({
 
             //view that controls what each gallery item looks like:
+            overlays: null,
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
@@ -26,6 +28,9 @@ define(["marionette",
                 });
             },
             childViewContainer: ".marker-container",
+            events: {
+                'click .zoom-to-extents': 'zoomToExtents'
+            },
             initialize: function (opts) {
                 _.extend(this, opts);
 
@@ -37,11 +42,15 @@ define(["marionette",
                 // when the fetch completes, call Backbone's "render" method
                 // to create the gallery template and bind the data:
                 this.listenTo(this.collection, 'reset', this.render);
+                this.listenTo(this.collection, 'reset', this.renderOverlays);
                 this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
 
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
+            },
+            zoomToExtents: function () {
+                this.collection.trigger('zoom-to-extents');
             },
 
             childViewOptions: function () {
@@ -54,6 +63,20 @@ define(["marionette",
 
             template: function () {
                 return Handlebars.compile(ListTemplate);
+            },
+
+            remove: function () {
+                Marionette.CompositeView.prototype.initialize.call(this);
+                if (this.overlays) {
+                    this.overlays.destroy();
+                }
+            },
+
+            renderOverlays: function () {
+                this.overlays = new OverlayListView({
+                    collection: this.collection,
+                    app: this.app
+                });
             },
 
             getDefaultQueryString: function () {

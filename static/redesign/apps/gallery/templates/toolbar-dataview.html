@@ -6,16 +6,16 @@
     <option value="photos">Photos</option>
     <option value="audio">Audio</option>
 </select>
-<div class = "main-search">
-	<form class = "search-form">
-		<input id="searchTerm" type="text" placeholder="Search Media">
+<div class="main-search">
+	<form class="search-form" value="Search Media">
+		<input id="searchTerm" type="text" value="" placeholder="Filter data and media">
 		<button id="toolbar-search"><i class="fa fa-search" aria-hidden="true"></i></button>
 	</form>
 </div>
 <button id="toolbar-clear" style = "display:none;">Clear</button>
 
-<div class = "view-options">
-	<a id="map-link" class = " database-view-buttons" href="map.html"><i class="fa fa-map" aria-hidden="true"></i></a>
-	<a href="gallery.html" class = " database-view-buttons active"><i class="fa fa-th" aria-hidden="true"></i></a>
-	<a href="spreadsheet.html" class = " database-view-buttons"><i class="fa fa-bars" aria-hidden="true"></i></a> 
+<div class="view-options">
+	<a id="map-link" class="database-view-buttons {{#ifequal screenType "map"}}active{{/ifequal}}" href="map.html"><i class="fa fa-map" aria-hidden="true"></i></a>
+	<a href="gallery.html" class="database-view-buttons {{#ifequal screenType "gallery"}}active{{/ifequal}}"><i class="fa fa-th" aria-hidden="true"></i></a>
+	<a href="spreadsheet.html" class="database-view-buttons {{#ifequal screenType "spreadsheet"}}active{{/ifequal}}"><i class="fa fa-bars" aria-hidden="true"></i></a> 
 </div>
