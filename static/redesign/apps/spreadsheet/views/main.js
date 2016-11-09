@@ -156,6 +156,7 @@ define(["marionette",
                   td.appendChild(button);
                   var that = this;
                   button.onclick = function(){
+                    if (!confirm("Are you sure you want to delete this row?")) return;
 
                     // First grab the model of the target row to delete
                     var model = that.getModelFromCell(row);

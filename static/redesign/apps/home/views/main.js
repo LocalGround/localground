@@ -39,7 +39,7 @@ define(["marionette",
             },
             showModal: function () {
                 //alert("Show share project modal form");
-                
+
                 // Get the modal
                 var modal = document.getElementById('myModal');
 
@@ -73,23 +73,28 @@ define(["marionette",
                 var newProject = new Project();
                 newProject.set("name", this.$el.find("#name").val());
                 newProject.set("caption", this.$el.find("#caption").val());
-                newProject.set("tags", "cat, dog");
+                newProject.set("tags", this.$el.find("#tags").val());
                 newProject.set("slug", this.$el.find("#slug").val());
-                newProject.set("access_authority", 1);
+                newProject.set("access_authority",
+                               this.$el.find("#access_authority").val());
                 newProject.save();
-                
+
                 //todo: once project has  been posted to database,
                 //figure out how to call the displayProjects method again
                 //and also close the modal. This code below isn't working:
                 this.listenTo(newProject,'sync', this.displayProjects);
                 console.log(newProject);
-                
+
                 //close the modal window
+                var modal = document.getElementById('myModal');
+                modal.style.display = "none";
             },
+
+            // A 'dummy' function that was used for Add Project Button
             addProject: function () {
                 alert("Show create project modal form");
-                
-                
+
+
             },
             template: Handlebars.compile(ListTemplate),
 
