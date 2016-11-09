@@ -157,3 +157,16 @@ define(["marionette",
         });
         return ProjectListView;
     });
+
+
+
+/*
+TODO: Delete individual projects by adding a button inside the project
+  so that the users can easily delete objects
+
+  However, there has to be a safeguard method to make it harder
+  to simply delete things by accident
+
+  such as the password confirmation or whatever security measures can be done
+  
+*/
