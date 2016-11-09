@@ -69,6 +69,7 @@ define(["marionette",
             confirmAdd: function () {
                 var that = this;
                 alert("Add!");
+                console.log(this.collection.models); // Print out projects
                 //create a new project model:
                 var newProject = new Project();
                 newProject.set("name", this.$el.find("#name").val());
@@ -104,10 +105,6 @@ define(["marionette",
                 Marionette.CompositeView.prototype.initialize.call(this);
 
                 this.displayProjects();
-
-                // when the fetch completes, call Backbone's "render" method
-                // to create the gallery template and bind the data:
-                this.listenTo(this.collection, 'reset', this.render);
 
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
@@ -147,6 +144,14 @@ define(["marionette",
                 //fetch data from server:
                 this.collection = new Projects();
                 this.collection.fetch({ reset: true });
+
+                // Make sure the event below stays inside so that
+                // the projects are always added in
+                // without manually refreshing the page
+
+                // when the fetch completes, call Backbone's "render" method
+                // to create the gallery template and bind the data:
+                this.listenTo(this.collection, 'reset', this.render);
             }
 
         });
