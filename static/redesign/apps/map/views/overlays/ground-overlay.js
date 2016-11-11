@@ -1,4 +1,4 @@
-define(["lib/maps/overlays/polyline"], function (Polyline) {
+define(["apps/map/views/overlays/polyline"], function (Polyline) {
     "use strict";
     /**
      * Functions to help move from lat/lngs to GeoJSON

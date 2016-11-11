@@ -5,38 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel=stylesheet type="text/css" href="css/style.css" />
+    <link rel=stylesheet type="text/css" href="css/reset.css" />
+    <link rel=stylesheet type="text/css" href="css/gallery-style.css" />
     <link rel=stylesheet type="text/css" href="css/map.css" />
 </head>
 <body>
     <div id="toolbar-main">
-        <div class="project-detail">
-            <a href="index.html"><i class="fa fa-arrow-left"></i></a>
-            
-            <span id="project-header" style="display: none;">
-                {{#if name }}
-                    {{ name }}<br>
-                    <em>{{ caption }}</em>
-                {{/if}}
-            </span>
-        </div>
-        <a id="map-link" href="map.html">Map</a> |
-        <a href="gallery.html">Gallery</a> |
-        <a href="spreadsheet.html">Spreadsheet</a> 
+        <!-- global toolbar -->
     </div>
-    <div id="toolbar-dataview">
+    <div id="toolbar-dataview" class="filter data">
         <!-- dataview toolbar -->
     </div>
     <div class="main-panel">
         <div id="marker-list-panel">
             <!-- Marker list goes here -->
         </div><div id="map-panel">
-            <!-- Map goes here -->
-        </div><div id="marker-detail-panel">
+            <div id="map"></div>
+        </div><div id="marker-detail-panel" class="side-panel">
             <!-- Marker detail goes here -->
         </div>
     </div>
     
     <script src="external/require.js"></script>
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places">
+    </script>
     <script>
         require(['apps/require-config'], function(){
             require(['apps/map/kickoff.js']);  //or adminApp for the admin area, etc.

@@ -11,7 +11,24 @@ define(["underscore", "models/base"], function (_, Base) {
             isVisible: false,
             checked: false
         }),
-        urlRoot: "/api/0/projects/"
+        urlRoot: "/api/0/projects/",
+        getProjectUserModel: function () {
+            return Base.extend({
+                defaults: _.extend({}, Base.prototype.defaults, {
+                    isActive: false,
+                    isVisible: false,
+                    checked: false
+                }),
+                urlRoot: "/api/0/projects/" + this.get("id") + "/users/"
+            });
+        },
+        shareWithUser: function (username, authorityID) {
+            var ProjectUser = this.getProjectUserModel(),
+                projectUser = new ProjectUser();
+            projectUser.set("user", username);
+            projectUser.set("authority", authorityID);
+            projectUser.save();
+        }
     });
     return Project;
 });

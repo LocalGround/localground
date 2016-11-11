@@ -1,12 +1,10 @@
 define(["marionette",
     "jquery",
-    "underscore",
-    "lib/maps/overlays/point",
-    "lib/maps/overlays/polyline",
-    "lib/maps/overlays/polygon",
-    "lib/maps/overlays/ground-overlay",
-    "lib/maps/overlays/infobubbles/base"
-    ], function (Marionette, $, _, Point, Polyline, Polygon, GroundOverlay, Infobubble) {
+    "apps/map/views/overlays/point",
+    "apps/map/views/overlays/polyline",
+    "apps/map/views/overlays/polygon",
+    "apps/map/views/overlays/ground-overlay"
+    ], function (Marionette, $, Point, Polyline, Polygon, GroundOverlay) {
     "use strict";
     /**
      * This class controls the rendering and underlying
@@ -20,7 +18,6 @@ define(["marionette",
         model: null,
         _overlay: null,
         template: false,
-        infoBubble: null,
 
         modelEvents: {
             'change:geometry': 'updateOverlay',
@@ -37,13 +34,8 @@ define(["marionette",
             $.extend(this, this.restoreState());
             this.map = opts.app.getMap();
             this.model = opts.model;
-            this.initInfoBubble(opts);
             this.initOverlayType(this.state._isShowingOnMap);
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
-        },
-
-        initInfoBubble: function (opts) {
-            this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
         },
 
         updateOverlay: function () {
@@ -80,21 +72,17 @@ define(["marionette",
             var that = this;
             //attach click event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-                that.showBubble();
-            });
-            //attach mouseover event:
-            google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
-                that.infoBubble.showTip();
+                that.app.router.navigate("//" + that.app.dataType + "/" + that.model.get("id"));
             });
             //attach mouseout event:
-            google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function () {
-                that.model.trigger("hide-tip");
+            google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
+                console.log('mouseover: ' + that.model.get("id"));
             });
-        },
 
-        /** shows info bubble (gets overrided in the child class). */
-        showBubble: function () {
-            this.infoBubble.showBubble();
+            //attach mouseout event:
+            google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function () {
+                console.log('mouseout: ' + that.model.get("id"));
+            });
         },
 
         /** determines whether the overlay is visible on the map. */
@@ -104,22 +92,16 @@ define(["marionette",
 
         /** shows the google.maps overlay on the map. */
         show: function () {
-            if (this.model.get("isVisible")) {
-                var go = this.getGoogleOverlay();
-                go.setMap(this.map);
-                this.changeMode();
-                this.state._isShowingOnMap = true;
-                this.saveState();
-            }
+            var go = this.getGoogleOverlay();
+            go.setMap(this.map);
+            this.changeMode();
+            this.state._isShowingOnMap = true;
+            this.saveState();
         },
 
         render: function () {
-            if (this.state._isShowingOnMap && this.model.get('isVisible')) {
-                this.redraw();
-                this.show();
-            } else {
-                this.hide();
-            }
+            this.redraw();
+            this.show();
         },
 
 
@@ -146,9 +128,10 @@ define(["marionette",
         },
 
         onBeforeDestroy: function () {
-            var go = this.getGoogleOverlay();
-            this.infoBubble.remove();
+           var go = this.getGoogleOverlay();
             go.setMap(null);
+            console.log("onBeforeDestroy", go, this.model.get("id"));
+            //alert(this.model.get("id"));
             Base.__super__.remove.apply(this);
         },
 

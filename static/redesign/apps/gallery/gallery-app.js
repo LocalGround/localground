@@ -22,6 +22,8 @@ define([
         currentCollection: null,
         mode: "edit",
         dataType: "photos",
+        screenType: "gallery",
+        
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run
