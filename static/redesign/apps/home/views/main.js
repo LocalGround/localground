@@ -19,10 +19,27 @@ define(["marionette",
                     },
                     template: Handlebars.compile(ItemTemplate),
                     events: {
-                        'click .action': 'showModal'
+                        //'click .action': 'showModal',
+                        'click #delete_project': 'deleteProject'
                     },
                     showModal: function () {
-                        alert("child method");
+                        //alert("child method");
+                    },
+
+                    deleteProject: function(){
+                      if (!confirm("Are you sure you want to delete this project?"))
+                      {
+                        return;
+                      }
+                      var that = this;
+                      //console.log(that);
+
+                      // Destroy the target model
+                      // and update display without deleted project
+                      var model = that.model;
+                      model.destroy();
+                      this.displayProjects();
+
                     }
                 });
             },
@@ -68,8 +85,8 @@ define(["marionette",
             },
             confirmAdd: function () {
                 var that = this;
-                alert("Add!");
-                console.log(this.collection.models); // Print out projects
+                //alert("Add!");
+                //console.log(this.collection.models); // Print out projects
                 //create a new project model:
                 var newProject = new Project();
                 newProject.set("name", this.$el.find("#name").val());
@@ -168,5 +185,5 @@ TODO: Delete individual projects by adding a button inside the project
   to simply delete things by accident
 
   such as the password confirmation or whatever security measures can be done
-  
+
 */
