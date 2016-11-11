@@ -21,18 +21,74 @@
 <div class="modal">
 
   <!-- Modal content -->
+
+  <!-- Edit the contents of the model to look like the old one
+       due to having more roboust user interface
+  -->
   <div class="modal-content">
-        <span class="close">&times;</span>
-        <h1>Add Project User</h1>
+    <span class="close">&times;</span>
+    <h1>Project Settings</h1>
+
+    <h2>Project Access</h2>
+    <label for="share_type">Sharing Type: </label>
+    <select id="share_type">
+      <option value>Select Type</option>
+      <option value= "1">Private</option>
+      <option value= "2">Public with link</option>
+      <option value= "3">Public</option>
+    </select>
+    <br>
+    <label for"owner">Owner: </label>
+    <input type="text" placeholder="username" id="owner">
+    <!--Right now this one does one user
+    until there is a way to collect and store data onto the table
+    -->
+    <h2>Add Project User</h2>
+    <p>Note: This will be replaced by the table format to accept multiple users</p>
 		<label>Username:</label>
 		<input type="text" id="username" placeholder="username">
 		<br>
 		<label>Authority:</label>
-		<input type="integer" id="authority" placeholder="username">
+		<!--input type="integer" id="authority" placeholder="username" -->
+    <select id="authority">
+      <option value>Select One</option>
+      <option value= "1">Can View</option>
+      <option value= "2">Can Edit</option>
+      <option value= "3">Can Manage</option>
+    </select>
 		<br>
-		
+    <p>The following below is the table with all users will be eventually stored</p>
+    <br>
+    <table style="border: 1px solid black">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Role</th>
+          <th>X(delete)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>JBRPG</td>
+          <td>Can Manage (input)</td>
+          <td>&times; (delete)</td>
+        </tr>
+        <tr>
+          <td>add user (link)</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <div style="border: 1px solid black">
+      <p>Note: This should only be visible
+         when there are no users added to the project
+      </p>
+      <br>
+      <button>Add new user</button>
+    </div>
+    <br>
+
         <button class="confirm-user-add">Add User</button>
   </div>
 
 </div>
-

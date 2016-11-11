@@ -19,6 +19,8 @@ define(["underscore", "models/base"], function (_, Base) {
                     isVisible: false,
                     checked: false
                 }),
+                // This had to be made dynamic because
+                // 
                 urlRoot: "/api/0/projects/" + this.get("id") + "/users/"
             });
         },
