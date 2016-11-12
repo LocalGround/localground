@@ -32,6 +32,10 @@ urlpatterns = patterns('',
 
 urlpatterns += format_suffix_patterns(patterns('',
     url(
+        r'^usernames/$',
+        views.ListUsernames.as_view(),
+        name="usernames"),
+    url(
         r'^(?P<group_name_plural>markers|snapshots|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/$',
         views.RelatedMediaList.as_view(),
         name='related-media-list'),
