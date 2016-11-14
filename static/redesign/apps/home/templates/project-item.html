@@ -67,24 +67,27 @@
           <th>X(delete)</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="userList"> <!--This is where new users
+                          will be added above "newUserRow"-->
         <tr>
           <td>JBRPG</td>
           <td>Can Manage (input)</td>
           <td>&times; (delete)</td>
         </tr>
-        <tr>
-          <td>add user (link)</td>
+        <tr id="newUserRow">
+          <td>
+            <a class="new_user_button">Add new user</a>
+          </td>
         </tr>
       </tbody>
     </table>
     <br>
-    <div style="border: 1px solid black">
+    <div id="addNewUser" style="border: 1px solid black">
       <p>Note: This should only be visible
          when there are no users added to the project
       </p>
       <br>
-      <button>Add new user</button>
+      <a class="new_user_button">Add new user</a>
     </div>
     <br>
 
