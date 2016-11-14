@@ -21,7 +21,9 @@ define(["marionette",
                     events: {
                         'click .action': 'shareModal',
                         'click .confirm-user-add': 'confirmAddUser',
-                        'click #delete_project': 'deleteProject'
+                        'click #delete_project': 'deleteProject',
+                        'click .new_user_button': 'addUserButton',
+                        'click .delete_user': 'deleteUserRow'
                     },
                     shareModal: function () {
                         // Get the modal
@@ -32,7 +34,7 @@ define(["marionette",
                         span.onclick = function() {
                             modal.style.display = "none";
                         }
-        
+
                         // When the user clicks anywhere outside of the modal, close it
                         window.onclick = function(event) {
                             if (event.target == modal) {
@@ -45,6 +47,69 @@ define(["marionette",
                         var authorityID = this.$el.find("#authority").val();
                         this.model.shareWithUser(username, authorityID);
                         //show success message or error message below
+                    },
+
+                    // A test function to add in a table with information
+                    // the test data will not be saved upon reload
+                    addUserButton: function() {
+                      console.log("Pressed new User Link");
+                      //
+                      // To successfully insert a row of user data,
+                      // that row must be placed above "#addUserRow"
+                      // that is under its parent "#userList"
+                      //
+                      // The following jQuery functions should be useful:
+                      //
+                      // $(target).before(contentToInsert);
+                      // $(contentToInsert).insertBefore(target);
+
+                      var $addUserRow = $("#newUserRow");
+                      var $newTR = $("<tr></tr>");
+                      var userTD = $("<td>USER</td>");
+                      var accessTD = $("<td>ACCESS</td>");
+                      var deleteTD = $("<td></td>");
+                      var deleteLink = $("<a>&times;</a>")
+                      deleteLink.attr('class','delete_user');
+                      deleteTD.append(deleteLink);
+                      // Test if adding this row works
+                      $newTR.append(userTD, accessTD, deleteTD);
+                      $newTR.insertBefore($addUserRow);
+
+                      var that = this;
+                      var projectModel = that.model;
+                      console.log(projectModel);
+                      console.log(projectModel.collection);
+
+                      // This one also does not work
+                      // console.log(projectModel.getProjectUserCollection());
+                      // It cannot be getProjectUserModel
+                      // since it does not return anything useful
+                      /*
+                      console.log(projectModel.getProjectUserModel());
+                      console.log(projectModel.getProjectUserModel().collection);
+                      */
+
+                      // this one returns unnecessary information
+                      // console.log(projectModel.fetch());
+                      //var numberOfUsers = Project.getProjectUserCount();
+                      //console.log("Number of shared users: " + numberOfUsers);
+
+                      //
+                      //
+                      //
+                      //
+                    },
+
+                    deleteUserRow: function(){
+                      console.log("Pressed Delete Button");
+                      console.log($(".delete_user"));
+                      console.log($(".delete_user").parent());
+                      console.log($(".delete_user").parent().parent());
+                      var $parentRow = $(".delete_user").parent("td").parent("tr");
+                      $parentRow.remove();
+
+                      //var numberOfUsers = Project.getProjectUserCount();
+                      //console.log("Number of shared users: " + numberOfUsers);
                     },
 
                     deleteProject: function(){

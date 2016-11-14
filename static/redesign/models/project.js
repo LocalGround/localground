@@ -12,6 +12,10 @@ define(["underscore", "models/base"], function (_, Base) {
             checked: false
         }),
         urlRoot: "/api/0/projects/",
+
+        // This one only returns the User with data
+        // However, it does not return the array of users
+        // or a collection of project users
         getProjectUserModel: function () {
             return Base.extend({
                 defaults: _.extend({}, Base.prototype.defaults, {
@@ -19,8 +23,9 @@ define(["underscore", "models/base"], function (_, Base) {
                     isVisible: false,
                     checked: false
                 }),
-                // This had to be made dynamic because
-                // 
+                // This had to be made dynamic because there are different users
+                // for each project
+                //
                 urlRoot: "/api/0/projects/" + this.get("id") + "/users/"
             });
         },
@@ -30,7 +35,26 @@ define(["underscore", "models/base"], function (_, Base) {
             projectUser.set("user", username);
             projectUser.set("authority", authorityID);
             projectUser.save();
+        },
+
+        // Apparently, there is not a way to get the array of users
+        // from the project object directly
+        // using inheritance-based ways
+        getProjectUserCount: function(){
+          var userCount = this.get("count"); // Does this work?
+          return userCount;
+        },
+
+        // we get a collection of users by setting up
+        // a temporary dummy user that has nothing inside
+        // However, it returns undefined
+        getProjectUserCollection: function(){
+          var ProjectUser = this.getProjectUserModel(),
+              projectUser = new ProjectUser();
+              console.log(projectUser.attributes);
+          return projectUser.collection;
         }
+
     });
     return Project;
 });
