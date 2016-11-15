@@ -30,6 +30,7 @@ define(["underscore", "models/base"], function (_, Base) {
             // needed to override the destroy method because the ProjectUser
             // endpoint doesn't have an ID, which Backbone requires:
             var opts = _.extend({url: this.urlRoot + this.get("user") + "/"}, options || {});
+            console.log(this.get("user"));
             console.log(opts);
             return Backbone.Model.prototype.destroy.call(this, opts);
         }
