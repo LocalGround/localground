@@ -8,14 +8,14 @@ define(
         var ProjectUsers = BasePageable.extend({
             model: ProjectUser,
             name: 'ProjectUsers',
-            initialize: function (recs, id) {
-                if (!id) {
+            initialize: function (recs, opts) {
+                if (!opts.id) {
                     alert("The Records collection requires a url parameter upon initialization");
                     return;
                 }
                 // This had to be made dynamic because there are different users
                 // for each project
-                this.url = '/api/0/projects/' + id + '/users/';
+                this.url = '/api/0/projects/' + opts.id + '/users/';
                 BasePageable.prototype.initialize.apply(this, arguments);
             }
         });

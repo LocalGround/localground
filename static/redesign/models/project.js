@@ -15,15 +15,20 @@ define(
             }),
             urlRoot: "/api/0/projects/",
             initialize: function (data, opts) {
-                this.projectUsers = new ProjectUsers({}, this.get("id"));
+                this.projectUsers = new ProjectUsers({}, { id: this.get("id") });
                 Base.prototype.initialize.apply(this, arguments);
             },
 
             shareWithUser: function (username, authorityID) {
-                var projectUser = new ProjectUser({}, this.get("id"));
+                var projectUser = new ProjectUser({}, { id: this.get("id") }),
+                    that = this;
                 projectUser.set("user", username);
                 projectUser.set("authority", authorityID);
-                projectUser.save();
+                projectUser.save(null, {
+                    success: function () {
+                        that.getProjectUsers();
+                    }
+                });
             },
 
             // Apparently, there is not a way to get the array of users

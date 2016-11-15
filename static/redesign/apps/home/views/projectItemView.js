@@ -2,18 +2,41 @@ define(["marionette",
         "underscore",
         "handlebars",
         "text!../templates/project-item.html",
-        "text!../templates/share-project.html"],
-    function (Marionette, _, Handlebars, ItemTemplate, ShareProjectTemplate) {
+        "text!../templates/project-user-item.html"],
+    function (Marionette, _, Handlebars, ItemTemplate, ProjectUserItemTemplate) {
         'use strict';
-        var ProjectItemView = Marionette.ItemView.extend({
+        var ProjectItemView = Marionette.CompositeView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.listenTo(this.model.projectUsers, 'reset', this.shareModal);
+                this.collection = this.model.projectUsers;
+                Marionette.CompositeView.prototype.initialize.call(this);
             },
+            childViewOptions: function () {
+                return this.model.toJSON();
+            },
+            getChildView: function () {
+                return Marionette.ItemView.extend({
+                    initialize: function (opts) {
+                        _.extend(this, opts);
+                    },
+                    events: {
+                        'click .delete-project-user': 'doDelete'
+                    },
+                    template: Handlebars.compile(ProjectUserItemTemplate),
+                    tagName: "tr",
+                    doDelete: function (e) {
+                        /*if (!confirm("Are you sure you want to remove this user from the project?")) {
+                            return;
+                        }*/
+                        this.model.destroy();
+                        e.preventDefault();
+                    }
+                });
+            },
+            childViewContainer: "#userList",
             template: Handlebars.compile(ItemTemplate),
-            shareProjectTemplate: Handlebars.compile(ShareProjectTemplate),
             events: {
-                'click .action': 'fetchShareData',
+                'click .action': 'shareModal',
                 'click .confirm-user-add': 'confirmAddUser',
                 'click #delete_project': 'deleteProject',
                 'click .new_user_button': 'addUserButton',
@@ -23,13 +46,7 @@ define(["marionette",
                 this.model.getProjectUsers();
             },
             shareModal: function () {
-                // Get the modal
-                var projectJSON = this.model.toJSON();
-                projectJSON.projectUsers = this.model.projectUsers.toJSON();
-                console.log(projectJSON);
-               
-                var html = this.shareProjectTemplate(projectJSON);
-                this.$el.find('.modal').html(html);
+                this.model.getProjectUsers();
                 var modal = this.$el.find('.modal').get(0);
                 var span = this.$el.find('.close').get(0);
                 modal.style.display = "block";
@@ -60,18 +77,21 @@ define(["marionette",
             // A test function to add in a table with information
             // the test data will not be saved upon reload
             addUserButton: function() {
-              console.log("Pressed new User Link");
-              //
-              // To successfully insert a row of user data,
-              // that row must be placed above "#addUserRow"
-              // that is under its parent "#userList"
-              //
-              // The following jQuery functions should be useful:
-              //
-              // $(target).before(contentToInsert);
-              // $(contentToInsert).insertBefore(target);
-
-              var $addUserRow = $("#newUserRow");
+                console.log("Pressed new User Link");
+                //
+                // To successfully insert a row of user data,
+                // that row must be placed above "#addUserRow"
+                // that is under its parent "#userList"
+                //
+                // The following jQuery functions should be useful:
+                //
+                // $(target).before(contentToInsert);
+                // $(contentToInsert).insertBefore(target);
+                var $newTR = $("<tr></tr>");
+                var template = Handlebars.compile(ProjectUserItemTemplate);
+                $newTR.append(template());
+                this.$el.find("#userList").append($newTR);
+              /*var $addUserRow = $("#newUserRow");
               var $newTR = $("<tr></tr>");
               var userTD = $("<td>USER</td>");
               var accessTD = $("<td>ACCESS</td>");
@@ -86,7 +106,7 @@ define(["marionette",
               var that = this;
               var projectModel = that.model;
               console.log(projectModel);
-              console.log(projectModel.collection);
+              console.log(projectModel.collection);*/
 
               // This one also does not work
               // console.log(projectModel.getProjectUserCollection());

@@ -11,16 +11,28 @@ define(["underscore", "models/base"], function (_, Base) {
             isVisible: false,
             checked: false
         }),
-        initialize: function (data, id) {
-            if (!id) {
+        initialize: function (data, opts) {
+            console.log(data, opts);
+            // This had to be made dynamic because there are different users
+            // for each project
+            if (this.collection && this.collection.url) {
+                this.urlRoot = this.collection.url;
+            } else if (opts.id) {
+                this.urlRoot = '/api/0/projects/' + opts.id + '/users/';
+            } else {
                 alert("id initialization parameter required for ProjectUser");
                 return;
             }
-            // This had to be made dynamic because there are different users
-            // for each project
-            this.urlRoot = '/api/0/projects/' + id + '/users/';
 			Base.prototype.initialize.apply(this, arguments);
-		}
+		},
+        destroy: function (options) {
+            //this.set("id", 1); //BUG: the ID needs to be set in order for the destroy to work.
+            // needed to override the destroy method because the ProjectUser
+            // endpoint doesn't have an ID, which Backbone requires:
+            var opts = _.extend({url: this.urlRoot + this.get("user") + "/"}, options || {});
+            console.log(opts);
+            return Backbone.Model.prototype.destroy.call(this, opts);
+        }
     });
     return ProjectUser;
 });
