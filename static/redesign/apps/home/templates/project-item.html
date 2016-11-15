@@ -42,12 +42,14 @@
     until there is a way to collect and store data onto the table
     -->
     <h2>Add Project User {{projectUsers.length}}</h2>
+    <p>Note: This will be replaced by the table format to accept multiple users</p>
+
+    <p>The following below is the table with all users will be eventually stored</p>
     <br>
     {{#ifequal projectUsers.length 0}}
         THE PROJECTUSERS ARRAY IS EMPTY!!!
     {{/ifequal}}
-
-    {{#ifnotequal projectUsers.length 0}}
+    
     <table style="border: 1px solid black">
       <thead>
         <tr>
@@ -60,9 +62,6 @@
     </table>
     <a class="new_user_button">Add new user</a>
     <br>
-    {{/ifnotequal}}
-
-    {{#ifequal projectUsers.length 0}}
     <div id="addNewUser" style="border: 1px solid black">
       <p>Note: This should only be visible
          when there are no users added to the project
@@ -71,7 +70,7 @@
       <a class="new_user_button">Add new user</a>
     </div>
     <br>
-    {{/ifequal}}
+
         <button class="confirm-user-add">Add User</button>
   </div>
 </div>

@@ -20,7 +20,6 @@ define(
             },
 
             shareWithUser: function (username, authorityID) {
-                console.log("shareWithUser");
                 var projectUser = new ProjectUser(null, { id: this.get("id") }),
                     that = this;
                 projectUser.set("user", username);
