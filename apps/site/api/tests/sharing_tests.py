@@ -9,6 +9,7 @@ import json, os.path
 
 def get_metadata():
     return {
+        'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'url': {'read_only': True, 'required': False, 'type': 'field'},
         'authority': {'read_only': False, 'required': True, 'type': 'field'},
         'granted_by': {'read_only': True, 'required': False, 'type': 'field'},
