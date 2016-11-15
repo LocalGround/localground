@@ -5,15 +5,31 @@ define(["marionette",
         "text!../templates/project-user-item.html"],
     function (Marionette, _, Handlebars, ItemTemplate, ProjectUserItemTemplate) {
         'use strict';
+
+        /*
+        // Cannot make a new object inside the define since
+        // one item is already being made
+        var NoChildrenView = Marionette.ItemView.extend({
+          template: "#addNewUser"
+        });
+        */
+
         var ProjectItemView = Marionette.CompositeView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
+                /*
+                If the collection is empty, show empty view
+                else show the collection of project users
+                */
+                console.log(this.model.projectUsers);
                 this.collection = this.model.projectUsers;
+                //console.log(this.collection);
                 Marionette.CompositeView.prototype.initialize.call(this);
             },
             childViewOptions: function () {
                 return this.model.toJSON();
             },
+            //emptyView: NoChildrenView, // Does this work? NO IT DOES NOT.
             getChildView: function () {
                 // this child view is responsible for displaying
                 // and deleting ProjectUser models:
@@ -36,6 +52,7 @@ define(["marionette",
                 });
             },
             childViewContainer: "#userList",
+            //emptyView: '#addNewUser',
             template: Handlebars.compile(ItemTemplate),
             // this parent view is responsible for creating
             events: {
@@ -95,41 +112,7 @@ define(["marionette",
                 var template = Handlebars.compile(ProjectUserItemTemplate);
                 $newTR.append(template());
                 this.$el.find("#userList").append($newTR);
-              /*var $addUserRow = $("#newUserRow");
-              var $newTR = $("<tr></tr>");
-              var userTD = $("<td>USER</td>");
-              var accessTD = $("<td>ACCESS</td>");
-              var deleteTD = $("<td></td>");
-              var deleteLink = $("<a>&times;</a>")
-              deleteLink.attr('class','delete_user');
-              deleteTD.append(deleteLink);
-              // Test if adding this row works
-              $newTR.append(userTD, accessTD, deleteTD);
-              $newTR.insertBefore($addUserRow);
 
-              var that = this;
-              var projectModel = that.model;
-              console.log(projectModel);
-              console.log(projectModel.collection);*/
-
-              // This one also does not work
-              // console.log(projectModel.getProjectUserCollection());
-              // It cannot be getProjectUserModel
-              // since it does not return anything useful
-              /*
-              console.log(projectModel.getProjectUserModel());
-              console.log(projectModel.getProjectUserModel().collection);
-              */
-
-              // this one returns unnecessary information
-              // console.log(projectModel.fetch());
-              //var numberOfUsers = Project.getProjectUserCount();
-              //console.log("Number of shared users: " + numberOfUsers);
-
-              //
-              //
-              //
-              //
             },
 
             /*deleteUserRow: function(){
@@ -151,7 +134,7 @@ define(["marionette",
                 }
                 var that = this;
                 //console.log(that);
-  
+
                 // Destroy the target model
                 // and update display without deleted project
                 var model = that.model;
