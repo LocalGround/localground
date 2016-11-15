@@ -1,6 +1,6 @@
-<td><input type="text" id="username" placeholder="username" value="{{ user }}"></td>
+<td><input type="text" class="username" placeholder="username" value="{{ user }}"></td>
 <td>
-    <select id="authority">
+    <select class="authority">
         <option value>Select One</option>
         <option value= "1" {{#ifequal authority 1}} SELECTED {{/ifequal}}>Can View</option>
         <option value= "2" {{#ifequal authority 2}} SELECTED {{/ifequal}}>Can Edit</option>

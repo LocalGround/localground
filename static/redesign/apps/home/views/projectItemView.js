@@ -15,6 +15,8 @@ define(["marionette",
                 return this.model.toJSON();
             },
             getChildView: function () {
+                // this child view is responsible for displaying
+                // and deleting ProjectUser models:
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
@@ -35,12 +37,13 @@ define(["marionette",
             },
             childViewContainer: "#userList",
             template: Handlebars.compile(ItemTemplate),
+            // this parent view is responsible for creating
             events: {
                 'click .action': 'shareModal',
                 'click .confirm-user-add': 'confirmAddUser',
                 'click #delete_project': 'deleteProject',
-                'click .new_user_button': 'addUserButton',
-                'click .delete_user': 'deleteUserRow'
+                'click .new_user_button': 'addUserButton'
+                //'click .delete_user': 'deleteUserRow'
             },
             fetchShareData: function () {
                 this.model.getProjectUsers();
@@ -68,8 +71,9 @@ define(["marionette",
                 };
             },
             confirmAddUser: function () {
-                var username = this.$el.find("#username").val();
-                var authorityID = this.$el.find("#authority").val();
+                var $newRow = this.$el.find(".new-row");
+                var username = $newRow.find(".username").val();
+                var authorityID = $newRow.find(".authority").val();
                 this.model.shareWithUser(username, authorityID);
                 //show success message or error message below
             },
@@ -87,7 +91,7 @@ define(["marionette",
                 //
                 // $(target).before(contentToInsert);
                 // $(contentToInsert).insertBefore(target);
-                var $newTR = $("<tr></tr>");
+                var $newTR = $("<tr class='new-row'></tr>");
                 var template = Handlebars.compile(ProjectUserItemTemplate);
                 $newTR.append(template());
                 this.$el.find("#userList").append($newTR);
@@ -128,7 +132,7 @@ define(["marionette",
               //
             },
 
-            deleteUserRow: function(){
+            /*deleteUserRow: function(){
               console.log("Pressed Delete Button");
               console.log($(".delete_user"));
               console.log($(".delete_user").parent());
@@ -138,7 +142,7 @@ define(["marionette",
 
               //var numberOfUsers = Project.getProjectUserCount();
               //console.log("Number of shared users: " + numberOfUsers);
-            },
+            },*/
 
             deleteProject: function(){
                 if (!confirm("Are you sure you want to delete this project?"))
