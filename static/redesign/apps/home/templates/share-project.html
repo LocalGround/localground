@@ -11,13 +11,13 @@
     <label for="share_type">Sharing Type: </label>
     <select id="share_type">
       <option value>Select Type</option>
-      <option value= "1">Private</option>
-      <option value= "2">Public with link</option>
-      <option value= "3">Public</option>
+      <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>
+      <option value="2" {{#ifequal access_authority 2}} SELECTED {{/ifequal}}>Public with link</option>
+      <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>
     </select>
     <br>
     <label for"owner">Owner: </label>
-    <input type="text" placeholder="username" id="owner">
+    <input type="text" placeholder="username" id="owner" value="{{owner}}">
     <!--Right now this one does one user
     until there is a way to collect and store data onto the table
     -->

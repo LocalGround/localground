@@ -25,9 +25,9 @@ define(["marionette",
             shareModal: function () {
                 // Get the modal
                 console.log(this.model.projectUsers.toJSON());
-                var html = this.shareProjectTemplate({
-                    projectUsers: this.model.projectUsers.toJSON()
-                });
+                var projectJSON = this.model.toJSON();
+                projectJSON.projectUsers = this.model.projectUsers.toJSON();
+                var html = this.shareProjectTemplate(projectJSON);
                 this.$el.find('.modal').html(html);
                 var modal = this.$el.find('.modal').get(0);
                 var span = this.$el.find('.close').get(0);
