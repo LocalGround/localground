@@ -15,12 +15,13 @@ define(
             }),
             urlRoot: "/api/0/projects/",
             initialize: function (data, opts) {
-                this.projectUsers = new ProjectUsers({}, { id: this.get("id") });
+                this.projectUsers = new ProjectUsers(null, { id: this.get("id") });
                 Base.prototype.initialize.apply(this, arguments);
             },
 
             shareWithUser: function (username, authorityID) {
-                var projectUser = new ProjectUser({}, { id: this.get("id") }),
+                console.log("shareWithUser");
+                var projectUser = new ProjectUser(null, { id: this.get("id") }),
                     that = this;
                 projectUser.set("user", username);
                 projectUser.set("authority", authorityID);
