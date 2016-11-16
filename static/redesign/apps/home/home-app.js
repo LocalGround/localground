@@ -4,14 +4,16 @@ define([
     "apps/home/router",
     "apps/home/views/main",
     "apps/home/views/toolbar",
+    "apps/home/views/shareForm",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, ProjectList, Toolbar, appUtilities) {
+], function (Marionette, Backbone, Router, ProjectList, Toolbar, ShareForm, appUtilities) {
     "use strict";
     var HomeApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
             projectRegion: ".main-panel",
-            toolbarMainRegion: "#toolbar-main"
+            toolbarMainRegion: "#toolbar-main",
+            shareFormRegion: "#share-form"
         },
 
         start: function (options) {
@@ -27,11 +29,21 @@ define([
 
             //add views to regions:
             this.loadRegions();
+            this.listenTo(this.vent, 'share-project', this.showShareForm);
         },
 
         loadRegions: function () {
             this.showProjectList();
             this.showToolbar();
+        },
+
+        showShareForm: function (opts) {
+            this.shareFormView = new ShareForm({
+                app: this,
+                model: opts.model
+            });
+            this.shareFormRegion.show(this.shareFormView);
+            //alert("share");
         },
 
         showToolbar: function () {

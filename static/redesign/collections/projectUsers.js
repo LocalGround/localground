@@ -10,7 +10,7 @@ define(
             name: 'ProjectUsers',
             initialize: function (recs, opts) {
                 if (!opts.id) {
-                    alert("The Records collection requires a url parameter upon initialization");
+                    alert("The ProjectUsers collection requires a url parameter upon initialization");
                     return;
                 }
                 // This had to be made dynamic because there are different users
