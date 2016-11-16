@@ -42,7 +42,6 @@ define(["marionette",
             },
             childViewContainer: "#userList",
             template: Handlebars.compile(ItemTemplate),
-            // this parent view is responsible for creating
             events: {
                 'click .action': 'shareModal',
                 'click .confirm-user-add': 'confirmAddUser',
@@ -85,6 +84,8 @@ define(["marionette",
             // the test data will not be saved upon reload
             addUserButton: function() {
                 console.log("Pressed new User Link");
+                var userTableDisplay = $(".userTable");
+                userTableDisplay.show();// Make this visible even with 0 users
                 var $newTR = $("<tr class='new-row'></tr>");
                 var template = Handlebars.compile(ProjectUserFormTemplate);
                 $newTR.append(template());

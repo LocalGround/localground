@@ -1,8 +1,8 @@
 <td>
     {{#if user }}
-        {{user}}        
+        {{user}}
     {{else}}
-        <input type="text" class="username" placeholder="username" value="{{ user }}"></td>  
+        <input type="text" class="username" placeholder="username" value="{{ user }}"></td>
     {{/if}}
 <td>
     <select class="authority">
@@ -12,4 +12,4 @@
         <option value= "3" {{#ifequal authority 3}} SELECTED {{/ifequal}}>Can Manage</option>
     </select>
 </td>
-<td><a href="#" class="delete-project-user">&times;</a> (delete)</td>
+<td><a href="#" class="delete-project-user">&times;</a></td>

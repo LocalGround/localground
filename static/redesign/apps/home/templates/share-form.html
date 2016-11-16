@@ -18,41 +18,40 @@
     <br>
     <label for"owner">Owner: </label>
     <input type="text" placeholder="username" id="owner" value="{{owner}}">
-    <!--Right now this one does one user
-    until there is a way to collect and store data onto the table
-    -->
-    <h2>Add Project User {{projectUsers.length}}</h2>
-    <p>Note: This will be replaced by the table format to accept multiple users</p>
 
-    <p>The following below is the table with all users will be eventually stored</p>
-    <br>
-    {{#ifequal projectUsers.length 0}}
-        THE PROJECTUSERS ARRAY IS EMPTY!!!
-    {{/ifequal}}
-    <table style="border: 1px solid black;">
-        <thead>
-            <tr>
-              <th>User</th>
-              <th>Role</th>
-              <th>X(delete)</th>
-            </tr>
-        </thead>
-        <tbody id="userList"></tbody>
-        </table>
-    
-    
-    <a class="new_user_button">Add new user</a>
-    <br>
-    <div id="addNewUser" style="border: 1px solid black">
-      <p>Note: This should only be visible
-         when there are no users added to the project
-      </p>
-      <br>
+    <h2>Number of Users: {{projectUsers.length}}</h2>
+
+    {{#ifnotequal projectUsers.length 0}}
+      <table class="userTable" style="border: 1px solid black;">
+          <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>X(delete)</th>
+              </tr>
+          </thead>
+          <tbody id="userList"></tbody>
+      </table>
+
       <a class="new_user_button">Add new user</a>
-    </div>
-    <br>
+      <br>
+    {{/ifnotequal}}
 
-        <button class="confirm-user-add">Add User</button>
+
+    {{#ifequal projectUsers.length 0}}
+      <div id="addNewUser" style="border: 1px solid black">
+        <p>
+          Looks like this one has no users yet.
+          Why not add a new user?
+        </p>
+        <br>
+        <a class="new_user_button">Add new user</a>
+      </div>
+    <br>    {{/ifequal}}
+
+
+
+        <button class="confirm-user-add">Save Settings</button>
   </div>
 </div>
 s
