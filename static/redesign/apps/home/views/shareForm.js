@@ -14,6 +14,7 @@ define(["marionette",
                 this.model.getProjectUsers();
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'destroy', this.render);
+                this.checkNumberOfRows();
             },
             childViewOptions: function () {
                 return this.model.toJSON();
@@ -37,6 +38,12 @@ define(["marionette",
                         }
                         this.model.destroy();
                         e.preventDefault();
+
+                        // Add in code to check value of the number of users
+                        // to determine if user table remians
+                        // or show prompt instead
+
+                        this.checkNumberOfRows();
                     }
                 });
             },
@@ -73,6 +80,9 @@ define(["marionette",
                 };
             },
             confirmAddUser: function () {
+                // Make sure you check every single row from top to bottom
+                // by starting at the first child row
+                // and ending at the last child row
                 var $newRow = this.$el.find(".new-row");
                 var username = $newRow.find(".username").val();
                 var authorityID = $newRow.find(".authority").val();
@@ -90,6 +100,28 @@ define(["marionette",
                 var template = Handlebars.compile(ProjectUserFormTemplate);
                 $newTR.append(template());
                 this.$el.find("#userList").append($newTR);
+
+                // Now find out how many rows are there
+                // to either show user table or add user prompt
+                //
+
+                this.checkNumberOfRows();
+
+            },
+
+            // Does this work? So far, it does not work.
+            checkNumberOfRows: function(){
+              var $userTable = $(".userTable");
+              var $addNewUser = $("#addNewUser");
+              var numOfUsers = $userTable.children().length;
+
+              if (numOfUsers.length > 0){
+                $userTable.show();
+                $addNewUser.hide();
+              } else if (numOfUsers.length === 0){
+                $userTable.hide();
+                $addNewUser.show();
+              }
             }
         });
         return ShareFormView;

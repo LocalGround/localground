@@ -21,7 +21,6 @@
 
     <h2>Number of Users: {{projectUsers.length}}</h2>
 
-    {{#ifnotequal projectUsers.length 0}}
       <table class="userTable" style="border: 1px solid black;">
           <thead>
               <tr>
@@ -35,10 +34,7 @@
 
       <a class="new_user_button">Add new user</a>
       <br>
-    {{/ifnotequal}}
 
-
-    {{#ifequal projectUsers.length 0}}
       <div id="addNewUser" style="border: 1px solid black">
         <p>
           Looks like this one has no users yet.
@@ -47,7 +43,8 @@
         <br>
         <a class="new_user_button">Add new user</a>
       </div>
-    <br>    {{/ifequal}}
+    <br>
+
 
 
 
