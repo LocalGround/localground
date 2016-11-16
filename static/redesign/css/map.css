@@ -1,20 +1,20 @@
-<<<<<<< HEAD
 
 #marker-detail-panel {
     display: none;
-=======
+}
 /*** Override some of the "fixed / absolute" characteristics of fav bar ****/
-.filter.data, #toolbar-main {
+.filter .data, #toolbar-main {
     position: static;
 }
+
 #toolbar-main .buttons{
     top: 0;
 }
 
 .main-panel {
     padding: 0px;
-    padding-left: 6px;
     width: auto;
+    display:flex;
 }
 
 /*** Begin Map Styles ****/
@@ -29,13 +29,8 @@
 #marker-list-panel, #marker-detail-panel {
     overflow-y: auto;
 }
-#marker-list-panel {
-    padding: 10px;
-    width: 20%;
-}
 #marker-detail-panel {
     width: 0%;
->>>>>>> redesign
     overflow: hidden;
 }
 #map-panel {
@@ -56,12 +51,13 @@
 .show-detail #marker-detail-panel {
     display: inline-block;
     overflow-y: auto;
-<<<<<<< HEAD
+    width:400px;
+    height:100%;
 }
 
 .main-panel{
-    height: calc(100% - 131px);
-    top: 131px;
+    height: calc(100% - 111px);
+    top: 111px;
     display: flex;
     position: absolute;
     width: 100%;
@@ -76,13 +72,18 @@
     z-index: 40;
     flex: none;
     overflow: scroll;
+    height:100%;
 }
 
 #map-panel{
-    background-image:url('../../images/map-placeholder.png');
-    background-size: 1234px;
+    height:100%;
     -webkit-transition: all 0.15s ease;
     -moz-transition: all 0.15s ease;
     -o-transition: all 0.15s ease;
     transition: all 0.15s ease;
+}
+
+
+.project-detail{
+    width:400px;
 }

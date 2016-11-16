@@ -1,13 +1,15 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
     <img src="{{ path_medium }}" />
-    <h3>{{ name }}</h3>
-    <!-- Three curly braces if you don't want to escape HTML -->
-    {{ caption }}
-    <br>
-    {{tags}}
-    <br>
-    <button class="edit-mode">Edit</button>
+    <div class = "section">
+        <h3>{{ name }}</h3> <p>{{ caption }}</p>
+        <!-- Three curly braces if you don't want to escape HTML -->
+    </div>
+    <div class = "save-options">
+        <button class="edit-model button-primary">Save</button>
+        <button class="edit-mode button-tertiary ">Edit</button>
+        <button class="view-mode button-tertiary button-warning">Delete</button>
+    </div>
 {{/ifequal}}
 
 

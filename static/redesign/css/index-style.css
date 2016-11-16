@@ -47,6 +47,7 @@
 		background-image:url('../assets/map-decoration-7.png');
 		background-size: 100%;
 		background-position-y: 220px;
+		padding-top: 50px;
 	}
 
 /************************************ Article Typography ************************************/
@@ -121,19 +122,16 @@
 	margin-right:0;
 }
 
-#gallery-main{
-	display:flex;
-}
-
 #gallery-main >div{
-	width: calc(33.3333% - 10px);
+	width: calc(33% - 42px);
 	border-radius: 4px;
 	position: relative;
 	border: 1px solid #e4e5eb;
 	padding: 16px;
-	margin: 40px 15px 0 0;
+	margin: 40px 5px 0;
 	display: inline-block;
 	height: 180px;
+	vertical-align: top;
 }
 
 .project-overview .bordered-section{

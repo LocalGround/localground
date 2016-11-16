@@ -6,9 +6,55 @@
     top: 0;
 }
 .main-panel {
-    padding: 0px;
-    padding-left: 6px;
-    width: auto;
-    height: calc(100% - 134px);
-    padding: 0px;
+    background-color: #ecedf2;
+    display: flex;
+    height: calc(100vh - 111px);
+    width: 100%;
+    top: 111px;
+    position: absolute;
+    padding:0;
+    z-index: 0;
+}
+
+.handsontable th, .handsontable td{
+	border-bottom: 1px solid #ededed;
+	border-right: 1px solid #ededed;
+}
+
+.handsontable th{
+	background-color:white;
+	font-weight:600;
+}
+
+.handsontable th:first-child, .handsontable td:first-of-type, .handsontable .htNoFrame + th, .handsontable .htNoFrame + td {
+    border-left: 1px solid #ededed;
+}
+
+.handsontable th, .handsontable td {
+    border-bottom: 1px solid #ededed;
+    border-right: 1px solid #ededed;
+}
+
+.handsontable tr:first-child th, .handsontable tr:first-child td {
+    border-top: 1px solid #ededed;
+}
+
+.handsontable th:last-child {
+    border-right: 1px solid #ededed;
+    border-bottom: 1px solid #ededed;
+}
+.handsontable td, .handsontable th{
+	font-size: 12px;
+}
+
+.handsontable thead th .relative {
+    padding: 4px 8px;
+}
+
+.handsontable.htRowHeaders thead tr th:nth-child(2) {
+    border-left: 1px solid #ededed;
+}
+
+.project-detail{
+	width:400px;
 }

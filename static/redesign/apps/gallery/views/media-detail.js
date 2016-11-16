@@ -57,7 +57,7 @@ define([
             this.model.save(null, {
                 success: function (model, response) {
                     //perhaps some sort of indication of success here?
-                    that.$el.find("#model-form").append("saved successfully");
+                    that.$el.find("#model-form").append("<span class = 'confirmation'>saved successfully</span>");
                     model.trigger('saved');
                 },
                 error: function (model, response) {

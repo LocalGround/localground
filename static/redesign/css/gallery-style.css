@@ -10,12 +10,10 @@
 
 .column {
     width: calc(25% - 12px);
-    background-color: white;
     margin: 4px 6px 8px;
     border-radius: 2px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 1px 1px 0 rgba(53, 76, 122,.2);
     display:inline-block;
     position: relative;
     vertical-align: top;
@@ -29,23 +27,20 @@
     height: 200px;
     background-size: cover;
     background-repeat: no-repeat;
-<<<<<<< HEAD
-    background-position:center center;
-=======
-    background-size: cover;
-    background-position: center center;
->>>>>>> redesign
+    background-position: center center
+
+    box-shadow: 0 1px 1px 0 rgba(53, 76, 122,.2);
 }
 
 .column h1{
     font-size: 14px;
-    padding: 10px 10px 1px;
+    padding: 10px 0 1px;
     font-weight: 400;
 }
 
 .column h2{
     font-size: 12px;
-    padding: 0 10px 12px;
+    padding: 0 0 12px;
     color: #7a7a7a;
     font-weight: 400;
 }
@@ -74,13 +69,11 @@
 
  /************************************ Main area for databases ************************************/
 .dataview {
-    top: 130px;
+    top: 111px;
     position: absolute;
-}
-.dataview {
-    background-color: #e5e7ed;
+    background-color: #ecedf2;
     display: flex;
-    height: calc(100vh - 132px);
+    height: calc(100vh - 111px);
     width: 100%;
 }
 
@@ -111,5 +104,7 @@
     width:100%;
 }
 
-
+.project-detail{
+    width:400px;
+}
 

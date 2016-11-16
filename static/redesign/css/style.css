@@ -68,6 +68,18 @@ fieldset {
 
 /************************************ General Typography ************************************/
 
+
+.side-panel h3{
+    font-size: 22px;
+    font-weight: 400;
+    padding-bottom: 4px;
+} 
+
+.side-panel p{
+    font-size:12px;
+    padding-bottom:20px;
+}
+
 .side-panel h4,
 #marker-detail-panel h4{
     padding: 20px;
@@ -141,7 +153,7 @@ span.action.tag:hover{
 }
 
 fieldset > div{
-    margin: 6px 16px;
+    margin: 4px 16px;
     display: block;
     float: left;
     width: calc(100% - 32px);
@@ -316,7 +328,7 @@ nav .selected{
 input[type="text"], textarea{
     border-style:solid;
     border-width:1px;
-    border-color:#e4e5eb;
+    border-color:#ebecf2; /*Slightly lighter for dark background*/
 }
 
 input[type="number"]{
@@ -335,10 +347,11 @@ input[type="number"]{
     }
 
     .search-form input{
-        padding: 8px;
+        padding: 6px;
         width: 240px;
         background-color: white;
         margin-right: -40px;
+        border-radius: 4px;
     }
 
     .search-form button{
@@ -357,10 +370,10 @@ input[type="number"]{
 #toolbar-dataview {
     position: fixed;
     top: 61px;
-    z-index: 40;
+    z-index: 50;
     box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
-    height: 35px;
-    padding: 18px;
+    height: 30px;
+    padding: 10px 18px;
     width: calc(100% - 36px);
     background-color: #fafafc;
     margin: 0;
@@ -379,7 +392,7 @@ input[type="number"]{
     padding: 6px;
     background-color: rgba(0,0,0,0);
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 14px;
     margin-left: 6px;
 }
 
@@ -453,7 +466,7 @@ input[type="number"]{
 #toolbar-dataview h3{
     display: inline-block;
     font-weight: 400;
-    font-size: 24px;
+    font-size: 18px;
     margin:0;
 }
 
@@ -481,11 +494,6 @@ input[type="number"]{
 }
 
 .project-detail > div{
-    display:inline-block;
-}
-
-.project-detail{
-    width:400px;
     display:inline-block;
 }
 
@@ -520,11 +528,14 @@ input[type="number"]{
 .side-panel img,
 #marker-detail-panel img{
     width: calc(100% - 40px);
-    padding: 20px;
+    padding: 20px 20px 10px;
 }
 
 
-
+/************************************ general layout ************************************/
+.section{
+    margin:0 20px;
+}
 
 
 
