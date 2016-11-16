@@ -1,8 +1,8 @@
 <div class="modal"><!-- Modal content -->
 
   <!-- Edit the contents of the model to look like the old one
-       due to having more roboust user interface
-  -->
+  due to having more roboust user interface
+-->
   <div class="modal-content">
     <span class="close">&times;</span>
     <h1>Project Settings</h1>
@@ -21,34 +21,36 @@
 
     <h2>Number of Users: {{projectUsers.length}}</h2>
 
+    <div id="userTableDiv">
       <table class="userTable" style="border: 1px solid black;">
-          <thead>
-              <tr>
-                <th>User</th>
-                <th>Role</th>
-                <th>X(delete)</th>
-              </tr>
-          </thead>
-          <tbody id="userList"></tbody>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Role</th>
+            <th>X(delete)</th>
+          </tr>
+        </thead>
+        <tbody id="userList"></tbody>
       </table>
-
-      <a class="new_user_button">Add new user</a>
       <br>
+      <a class="new_user_button">Add new user</a>
+    </div>
 
-      <div id="addNewUser" style="border: 1px solid black">
-        <p>
-          Looks like this one has no users yet.
-          Why not add a new user?
-        </p>
-        <br>
-        <a class="new_user_button">Add new user</a>
-      </div>
+
+
+    <div id="addNewUser" style="border: 1px solid black">
+      <p>
+        Looks like this one has no users yet.
+        Why not add a new user?
+      </p>
+      <br>
+      <a class="new_user_button">Add new user</a>
+    </div>
     <br>
 
 
 
 
-        <button class="confirm-user-add">Save Settings</button>
+    <button class="confirm-user-add">Save Settings</button>
   </div>
 </div>
-s

@@ -14,7 +14,6 @@ define(["marionette",
                 this.model.getProjectUsers();
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'destroy', this.render);
-                this.checkNumberOfRows();
             },
             childViewOptions: function () {
                 return this.model.toJSON();
@@ -62,6 +61,7 @@ define(["marionette",
                 var modal = this.$el.find('.modal').get(0),
                     span = this.$el.find('.close').get(0);
                 modal.style.display = "block";
+                this.checkNumberOfRows();
                 // When the user clicks on <span> (x), close the modal
                 span.onclick = function () {
                     modal.style.display = "none";
@@ -111,15 +111,17 @@ define(["marionette",
 
             // Does this work? So far, it does not work.
             checkNumberOfRows: function(){
-              var $userTable = $(".userTable");
+              var $userList = $("#userList");
               var $addNewUser = $("#addNewUser");
-              var numOfUsers = $userTable.children().length;
+              var $userTableDiv = $("#userTableDiv");
+              var numOfUsers = $userList.children().length;
+              console.log("Number of Users: " + numOfUsers);
 
-              if (numOfUsers.length > 0){
-                $userTable.show();
+              if (numOfUsers > 0){
+                $userTableDiv.show();
                 $addNewUser.hide();
-              } else if (numOfUsers.length === 0){
-                $userTable.hide();
+              } else if (numOfUsers === 0){
+                $userTableDiv.hide();
                 $addNewUser.show();
               }
             }
