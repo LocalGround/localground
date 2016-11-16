@@ -43,6 +43,7 @@ define(["marionette",
                         // or show prompt instead
 
                         this.checkNumberOfRows();
+                        //this.model.getProjectUsers();
                     }
                 });
             },
@@ -50,7 +51,7 @@ define(["marionette",
             template: Handlebars.compile(ItemTemplate),
             events: {
                 'click .action': 'shareModal',
-                'click .confirm-user-add': 'confirmAddUser',
+                'click .save-project-settings': 'saveProjectSettings',
                 'click .new_user_button': 'addUserButton'
             },
             fetchShareData: function () {
@@ -79,10 +80,32 @@ define(["marionette",
                     projectUsers: this.model.projectUsers.toJSON()
                 };
             },
-            confirmAddUser: function () {
+            saveProjectSettings: function () {
                 // Make sure you check every single row from top to bottom
                 // by starting at the first child row
                 // and ending at the last child row
+                //
+                // Now you know how to get the collection of existing users
+                // userModels = this.collection.models // returns an array
+                // To get the needed attributes, do this
+                // userModels[i].attributes.user and authority (1-3)
+                //
+                // Now to get the id of the project,
+                // this.model.id
+                //
+                //
+                //
+                //
+                var $userList = $("#userList");
+                var $users = $userList.children();
+                for (var i = 0; i < $users.length(); ++i){
+                  // Will check each tr for project id or new-row class
+                  // and fill in the appropriate data
+                  // the top section is always filled in data
+                  // and the bottom section is always new user data
+                  
+                }
+                //
                 var $newRow = this.$el.find(".new-row");
                 var username = $newRow.find(".username").val();
                 var authorityID = $newRow.find(".authority").val();
@@ -109,13 +132,13 @@ define(["marionette",
 
             },
 
-            // Does this work? So far, it does not work.
             checkNumberOfRows: function(){
+
               var $userList = $("#userList");
               var $addNewUser = $("#addNewUser");
               var $userTableDiv = $("#userTableDiv");
               var numOfUsers = $userList.children().length;
-              console.log("Number of Users: " + numOfUsers);
+              //console.log("Number of Users: " + numOfUsers);
 
               if (numOfUsers > 0){
                 $userTableDiv.show();

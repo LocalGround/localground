@@ -8,6 +8,10 @@
     <h1>Project Settings</h1>
 
     <h2>Project Access for {{ name }}</h2>
+
+    <label for"projectName">Name: </label>
+    <input type="text" placeholder="Project Name" id="projectName" value="{{name}}">
+    <br>
     <label for="share_type">Sharing Type: </label>
     <select id="share_type">
       <option value>Select Type</option>
@@ -27,7 +31,7 @@
           <tr>
             <th>User</th>
             <th>Role</th>
-            <th>X(delete)</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="userList"></tbody>
@@ -51,6 +55,6 @@
 
 
 
-    <button class="confirm-user-add">Save Settings</button>
+    <button class="save-project-settings">Save Settings</button>
   </div>
 </div>
