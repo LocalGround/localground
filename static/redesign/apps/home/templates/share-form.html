@@ -1,0 +1,58 @@
+<div class="modal"><!-- Modal content -->
+
+  <!-- Edit the contents of the model to look like the old one
+       due to having more roboust user interface
+  -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h1>Project Settings</h1>
+
+    <h2>Project Access for {{ name }}</h2>
+    <label for="share_type">Sharing Type: </label>
+    <select id="share_type">
+      <option value>Select Type</option>
+      <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>
+      <option value="2" {{#ifequal access_authority 2}} SELECTED {{/ifequal}}>Public with link</option>
+      <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>
+    </select>
+    <br>
+    <label for"owner">Owner: </label>
+    <input type="text" placeholder="username" id="owner" value="{{owner}}">
+    <!--Right now this one does one user
+    until there is a way to collect and store data onto the table
+    -->
+    <h2>Add Project User {{projectUsers.length}}</h2>
+    <p>Note: This will be replaced by the table format to accept multiple users</p>
+
+    <p>The following below is the table with all users will be eventually stored</p>
+    <br>
+    {{#ifequal projectUsers.length 0}}
+        THE PROJECTUSERS ARRAY IS EMPTY!!!
+    {{/ifequal}}
+    <table style="border: 1px solid black;">
+        <thead>
+            <tr>
+              <th>User</th>
+              <th>Role</th>
+              <th>X(delete)</th>
+            </tr>
+        </thead>
+        <tbody id="userList"></tbody>
+        </table>
+    
+    
+    <a class="new_user_button">Add new user</a>
+    <br>
+    <div id="addNewUser" style="border: 1px solid black">
+      <p>Note: This should only be visible
+         when there are no users added to the project
+      </p>
+      <br>
+      <a class="new_user_button">Add new user</a>
+    </div>
+    <br>
+
+        <button class="confirm-user-add">Add User</button>
+  </div>
+</div>
+s

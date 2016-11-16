@@ -1,10 +1,10 @@
 define(["marionette",
         "underscore",
         "handlebars",
-        "text!../templates/project-item.html",
-        "text!../templates/project-user-item.html"],
-    function (Marionette, _, Handlebars, ItemTemplate, ProjectUserItemTemplate) {
+        "text!../templates/project-item.html"],
+    function (Marionette, _, Handlebars, ItemTemplate) {
         'use strict';
+<<<<<<< HEAD
 
         /*
         // Cannot make a new object inside the define since
@@ -53,40 +53,28 @@ define(["marionette",
             },
             childViewContainer: "#userList",
             //emptyView: '#addNewUser',
+=======
+        var ProjectItemView = Marionette.ItemView.extend({
+            initialize: function (opts) {
+                _.extend(this, opts);
+                Marionette.CompositeView.prototype.initialize.call(this);
+            },
+>>>>>>> origin/redesign-john-edited
             template: Handlebars.compile(ItemTemplate),
-            // this parent view is responsible for creating
             events: {
                 'click .action': 'shareModal',
-                'click .confirm-user-add': 'confirmAddUser',
-                'click #delete_project': 'deleteProject',
-                'click .new_user_button': 'addUserButton'
-                //'click .delete_user': 'deleteUserRow'
-            },
-            fetchShareData: function () {
-                this.model.getProjectUsers();
+                'click #delete_project': 'deleteProject'
             },
             shareModal: function () {
-                this.model.getProjectUsers();
-                var modal = this.$el.find('.modal').get(0);
-                var span = this.$el.find('.close').get(0);
-                modal.style.display = "block";
-                // When the user clicks on <span> (x), close the modal
-                span.onclick = function () {
-                    modal.style.display = "none";
-                }
-
-                // When the user clicks anywhere outside of the modal, close it
-                window.onclick = function(event) {
-                    if (event.target == modal) {
-                        modal.style.display = "none";
-                    }
-                }
+                //tell the home-app to show the share-project modal:
+                this.app.vent.trigger('share-project', { model: this.model });
             },
             templateHelpers: function () {
                 return {
                     projectUsers: this.model.projectUsers.toJSON()
                 };
             },
+<<<<<<< HEAD
             confirmAddUser: function () {
                 var $newRow = this.$el.find(".new-row");
                 var username = $newRow.find(".username").val();
@@ -139,6 +127,13 @@ define(["marionette",
                 // and update display without deleted project
                 var model = that.model;
                 model.destroy();
+=======
+            deleteProject: function () {
+                if (!confirm("Are you sure you want to delete this project?")) {
+                    return;
+                }
+                this.model.destroy();
+>>>>>>> origin/redesign-john-edited
             }
         });
         return ProjectItemView;

@@ -19,6 +19,9 @@ define(["marionette",
                 'click #search': 'doSearch',
                 'click #confirm-add': 'confirmAdd'
             },
+            childViewOptions: function () {
+                return { app: this.app };
+            },
             hideModal: function () {
                 var modal = this.$el.find('#myModal').get(0);
                 modal.style.display = "none";

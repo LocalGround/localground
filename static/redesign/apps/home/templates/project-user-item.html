@@ -1,4 +1,9 @@
-<td><input type="text" class="username" placeholder="username" value="{{ user }}"></td>
+<td>
+    {{#if user }}
+        {{user}}        
+    {{else}}
+        <input type="text" class="username" placeholder="username" value="{{ user }}"></td>  
+    {{/if}}
 <td>
     <select class="authority">
         <option value>Select One</option>

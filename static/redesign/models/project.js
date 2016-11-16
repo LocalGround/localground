@@ -15,7 +15,9 @@ define(
             }),
             urlRoot: "/api/0/projects/",
             initialize: function (data, opts) {
-                this.projectUsers = new ProjectUsers(null, { id: this.get("id") });
+                if (this.get("id")) {
+                    this.projectUsers = new ProjectUsers(null, { id: this.get("id") });
+                }
                 Base.prototype.initialize.apply(this, arguments);
             },
 
