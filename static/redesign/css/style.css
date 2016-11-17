@@ -175,6 +175,10 @@ fieldset > div{
     border-bottom: 1px solid #ebebeb;
 }
 
+span.confirmation{
+
+}
+
 
 /************************************ Dropdown Menu ************************************/
 .dropdown-menu{
@@ -401,9 +405,9 @@ input[type="number"]{
 /************************************ Navigation ************************************/
 
 #toolbar-main h2{
-    padding: 10px 12px 0;
-    font-size: 16px;
-    font-weight:400;
+    padding: 10px 14px 0;
+    font-size: 22px;
+    font-weight:300;
 }
 
 #toolbar-main p{
