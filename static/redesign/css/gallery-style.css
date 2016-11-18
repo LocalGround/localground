@@ -69,11 +69,11 @@
 
  /************************************ Main area for databases ************************************/
 .dataview {
-    top: 111px;
+    top: 110px;
     position: absolute;
     background-color: #ecedf2;
     display: flex;
-    height: calc(100vh - 111px);
+    height: calc(100vh - 109px);
     width: 100%;
 }
 
@@ -84,10 +84,10 @@
 .side-panel{
     width: 400px;
     flex: none;
-    height: calc(100vh - 132px);
+    height: 100%;
     order: 2;
     background-color: rgb(246, 246, 249);
-    border: 1px solid rgb(217, 220, 229);
+    border-left: 1px solid rgb(217, 220, 229);
     overflow: scroll;
 }
 .main-panel {

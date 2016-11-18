@@ -1,10 +1,11 @@
 <div class="project-detail">
     <a href="index.html"><i class="fa fa-arrow-left back-to-profile"></i></a>
     <div>
+        {{#if name }}
         <h2>
-            {{#if name }}
-                {{ name }}
+            {{ name }}
         </h2>
+        {{/if}}
     </div>
     <nav>
         <div class="selected">

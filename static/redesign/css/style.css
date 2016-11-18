@@ -405,7 +405,7 @@ input[type="number"]{
 /************************************ Navigation ************************************/
 
 #toolbar-main h2{
-    padding: 10px 14px 0;
+    padding: 14px 0 0;
     font-size: 22px;
     font-weight:300;
 }
@@ -491,11 +491,12 @@ input[type="number"]{
 }
 
 .back-to-profile{
-    background-color:#4e70d4;
-    color:white;
-    padding: 24px 10px;
-    float:left;
+    color:#4e70d4;
+    padding: 4px 6px 4px 20px;
+    position: relative;
+    top: -.3em;
 }
+
 
 .project-detail > div{
     display:inline-block;
