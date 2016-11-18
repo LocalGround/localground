@@ -98,12 +98,27 @@ define(["marionette",
                 //
                 var $userList = $("#userList");
                 var $users = $userList.children();
-                for (var i = 0; i < $users.length(); ++i){
+                console.log($users);
+                for (var i = 0; i < $users.length; ++i){
                   // Will check each tr for project id or new-row class
                   // and fill in the appropriate data
                   // the top section is always filled in data
                   // and the bottom section is always new user data
-                  
+                  // console.log($users[i]);
+                  // console.log("id: " + $users[i].id);
+                  // console.log("class: " + $users[i].className);
+                  if ($users[i].id === this.model.id){
+
+                    var username = $users[i].find(".username").val();
+                    var authorityID = $users[i].find(".authority").val();
+
+                  } else if ($users[i].className === "new-row"){
+
+                    var username = $users[i].find(".username").val();
+                    var authorityID = $users[i].find(".authority").val();
+                    this.model.shareWithUser(username, authorityID);
+                  }
+
                 }
                 //
                 var $newRow = this.$el.find(".new-row");
@@ -148,6 +163,28 @@ define(["marionette",
                 $addNewUser.show();
               }
             }
-        });
-        return ShareFormView;
     });
+    return ShareFormView;
+});
+
+
+/* NOTES:
+ To access the child elements with access to all the parameters,
+ do the following:
+
+  var parentTag = $("tag attribute or attribute or (.class or #id" name))
+  var jChildren = parentTag.children(); // You have access to an array of children
+
+  open up the console inspector by having the following:
+  console.log(jChildren);
+  and now you can see all the parameters that represent the attributes
+  read carefully as they have different names compared to the HTML attributes
+
+  now you can call the attributes themselves form the children indexes
+
+  examples:
+  jChildren[i].className
+  jChildren[i].id
+
+
+*/
