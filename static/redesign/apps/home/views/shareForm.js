@@ -99,7 +99,8 @@ define(["marionette",
                 var $userList = $("#userList");
                 var $users = $userList.children();
                 console.log($users);
-                for (var i = 0; i < $users.length; ++i){
+                //loop through each table row:
+                for (var i = 0; i < $users.length; ++i) {
                   // Will check each tr for project id or new-row class
                   // and fill in the appropriate data
                   // the top section is always filled in data
@@ -107,25 +108,26 @@ define(["marionette",
                   // console.log($users[i]);
                   // console.log("id: " + $users[i].id);
                   // console.log("class: " + $users[i].className);
-                  if ($users[i].id === this.model.id){
+                  
+                  //this.model is a Project model
+                  //this.collection is a Collection of ProjectUser models
+                  var $row = $($users[i]);
+                    if ($row.attr("id") == this.model.id) {
+                        //editing existing projectusers:
+                        var username = $row.find(".username").html();
+                        var authorityID = $row.find(".authority").val();
+                        var existingProjectUser = this.model.getProjectUserByUsername(username);
+                        existingProjectUser.set("authority", parseInt(authorityID));
+                        existingProjectUser.save();
 
-                    var username = $users[i].find(".username").val();
-                    var authorityID = $users[i].find(".authority").val();
-
-                  } else if ($users[i].className === "new-row"){
-
-                    var username = $users[i].find(".username").val();
-                    var authorityID = $users[i].find(".authority").val();
-                    this.model.shareWithUser(username, authorityID);
-                  }
+                    } else { 
+                        //creating new projectusers:
+                        var username = $row.find(".username").val();
+                        var authorityID = $row.find(".authority").val();
+                        this.model.shareWithUser(username, authorityID);
+                    }
 
                 }
-                //
-                var $newRow = this.$el.find(".new-row");
-                var username = $newRow.find(".username").val();
-                var authorityID = $newRow.find(".authority").val();
-                this.model.shareWithUser(username, authorityID);
-                //show success message or error message below
             },
 
             // A test function to add in a table with information

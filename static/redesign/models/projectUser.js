@@ -23,6 +23,9 @@ define(["underscore", "models/base"], function (_, Base) {
                 alert("id initialization parameter required for ProjectUser");
                 return;
             }
+            if (this.get("user")) {
+                this.url = this.urlRoot + this.get("user") + "/";
+            }
 			Base.prototype.initialize.apply(this, arguments);
 		},
         destroy: function (options) {

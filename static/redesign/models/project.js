@@ -45,6 +45,21 @@ define(
             // However, it returns undefined
             getProjectUsers: function () {
                 this.projectUsers.fetch({ reset: true });
+            },
+
+            // we get a collection of users by setting up
+            // a temporary dummy user that has nothing inside
+            // However, it returns undefined
+            getProjectUserByUsername: function (username) {
+                var i, pu, u;
+                for (i = 0; i < this.projectUsers.length; i++) {
+                    pu = this.projectUsers.at(i);
+                    u = pu.get("user");
+                    if (u === username) {
+                        return pu;
+                    }
+                }
+                return null;
             }
 
         });
