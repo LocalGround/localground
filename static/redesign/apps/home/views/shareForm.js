@@ -93,41 +93,42 @@ define(["marionette",
                 // Now to get the id of the project,
                 // this.model.id
                 //
-                //
-                //
-                //
                 var $userList = $("#userList");
                 var $users = $userList.children();
-                console.log($users);
+
                 //loop through each table row:
                 for (var i = 0; i < $users.length; ++i) {
-                  // Will check each tr for project id or new-row class
-                  // and fill in the appropriate data
-                  // the top section is always filled in data
-                  // and the bottom section is always new user data
-                  // console.log($users[i]);
-                  // console.log("id: " + $users[i].id);
-                  // console.log("class: " + $users[i].className);
-                  
-                  //this.model is a Project model
-                  //this.collection is a Collection of ProjectUser models
                   var $row = $($users[i]);
                     if ($row.attr("id") == this.model.id) {
-                        //editing existing projectusers:
+                        //edit existing projectusers:
                         var username = $row.find(".username").html();
                         var authorityID = $row.find(".authority").val();
                         var existingProjectUser = this.model.getProjectUserByUsername(username);
                         existingProjectUser.set("authority", parseInt(authorityID));
                         existingProjectUser.save();
 
-                    } else { 
-                        //creating new projectusers:
+                    } else {
+                        //create new projectusers:
                         var username = $row.find(".username").val();
                         var authorityID = $row.find(".authority").val();
                         this.model.shareWithUser(username, authorityID);
                     }
 
                 }
+
+                // Now save the project settings itself
+                //
+                // So far the project settings are saved
+                // but a reset function is not put yet
+                // so for now a manual relaod is needed
+                var $projectName = $('#projectName').val();
+                var $shareType = $('#share_type').val();
+                var $owner = $('#owner').val();
+                this.model.set('name', $projectName);
+                this.model.set('access_authority', $shareType);
+                this.model.set('owner', $owner);
+                this.model.save();
+
             },
 
             // A test function to add in a table with information
