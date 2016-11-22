@@ -22,7 +22,7 @@ from localground.apps.site.api.views.form_data_views import (
 )
 from localground.apps.site.api.views.admin_views import (
     TileViewSet, OverlayTypeViewSet, OverlaySourceViewSet,
-    UserViewSet, GroupViewSet, DataTypeViewSet
+    UserViewSet, GroupViewSet, DataTypeViewSet, ListUsernames
 )
 from localground.apps.site.api.views.tags_views import TagList
 from localground.apps.site.api.views.user_profile_views import UserProfileList, UserProfileInstance

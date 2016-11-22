@@ -1,0 +1,169 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node',
+1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   '-g',
+1 verbose cli   'bower' ]
+2 info using npm@3.10.8
+3 info using node@v6.9.1
+4 silly loadCurrentTree Starting
+5 silly install loadCurrentTree
+6 silly install readGlobalPackageData
+7 silly fetchPackageMetaData bower
+8 silly fetchNamedPackageData bower
+9 silly mapToRegistry name bower
+10 silly mapToRegistry using default registry
+11 silly mapToRegistry registry https://registry.npmjs.org/
+12 silly mapToRegistry data Result {
+12 silly mapToRegistry   raw: 'bower',
+12 silly mapToRegistry   scope: null,
+12 silly mapToRegistry   escapedName: 'bower',
+12 silly mapToRegistry   name: 'bower',
+12 silly mapToRegistry   rawSpec: '',
+12 silly mapToRegistry   spec: 'latest',
+12 silly mapToRegistry   type: 'tag' }
+13 silly mapToRegistry uri https://registry.npmjs.org/bower
+14 verbose request uri https://registry.npmjs.org/bower
+15 verbose request no auth needed
+16 info attempt registry request try #1 at 11:59:17 AM
+17 verbose request id 96711005dbbde017
+18 http request GET https://registry.npmjs.org/bower
+19 http 200 https://registry.npmjs.org/bower
+20 verbose headers { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+20 verbose headers   etag: '"1M5C6HOINZO0SB69Q0CBGM5ZS"',
+20 verbose headers   'content-type': 'application/json',
+20 verbose headers   'content-encoding': 'gzip',
+20 verbose headers   'cache-control': 'max-age=300',
+20 verbose headers   'content-length': '20871',
+20 verbose headers   'accept-ranges': 'bytes',
+20 verbose headers   date: 'Fri, 04 Nov 2016 18:59:18 GMT',
+20 verbose headers   via: '1.1 varnish',
+20 verbose headers   age: '82',
+20 verbose headers   connection: 'keep-alive',
+20 verbose headers   'x-served-by': 'cache-sea1925-SEA',
+20 verbose headers   'x-cache': 'HIT',
+20 verbose headers   'x-cache-hits': '1',
+20 verbose headers   'x-timer': 'S1478285958.027575,VS0,VE0',
+20 verbose headers   vary: 'Accept-Encoding' }
+21 silly get cb [ 200,
+21 silly get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+21 silly get     etag: '"1M5C6HOINZO0SB69Q0CBGM5ZS"',
+21 silly get     'content-type': 'application/json',
+21 silly get     'content-encoding': 'gzip',
+21 silly get     'cache-control': 'max-age=300',
+21 silly get     'content-length': '20871',
+21 silly get     'accept-ranges': 'bytes',
+21 silly get     date: 'Fri, 04 Nov 2016 18:59:18 GMT',
+21 silly get     via: '1.1 varnish',
+21 silly get     age: '82',
+21 silly get     connection: 'keep-alive',
+21 silly get     'x-served-by': 'cache-sea1925-SEA',
+21 silly get     'x-cache': 'HIT',
+21 silly get     'x-cache-hits': '1',
+21 silly get     'x-timer': 'S1478285958.027575,VS0,VE0',
+21 silly get     vary: 'Accept-Encoding' } ]
+22 verbose get saving bower to /Users/MrJBRPG/.npm/registry.npmjs.org/bower/.cache.json
+23 verbose correctMkdir /Users/MrJBRPG/.npm correctMkdir not in flight; initializing
+24 silly install normalizeTree
+25 silly loadCurrentTree Finishing
+26 silly loadIdealTree Starting
+27 silly install loadIdealTree
+28 silly cloneCurrentTree Starting
+29 silly install cloneCurrentTreeToIdealTree
+30 silly cloneCurrentTree Finishing
+31 silly loadShrinkwrap Starting
+32 silly install loadShrinkwrap
+33 silly loadShrinkwrap Finishing
+34 silly loadAllDepsIntoIdealTree Starting
+35 silly install loadAllDepsIntoIdealTree
+36 silly resolveWithNewModule bower@1.7.9 checking installable status
+37 silly cache add args [ 'bower', null ]
+38 verbose cache add spec bower
+39 silly cache add parsed spec Result {
+39 silly cache add   raw: 'bower',
+39 silly cache add   scope: null,
+39 silly cache add   escapedName: 'bower',
+39 silly cache add   name: 'bower',
+39 silly cache add   rawSpec: '',
+39 silly cache add   spec: 'latest',
+39 silly cache add   type: 'tag' }
+40 silly addNamed bower@latest
+41 verbose addNamed "latest" is being treated as a dist-tag for bower
+42 info addNameTag [ 'bower', 'latest' ]
+43 silly mapToRegistry name bower
+44 silly mapToRegistry using default registry
+45 silly mapToRegistry registry https://registry.npmjs.org/
+46 silly mapToRegistry data Result {
+46 silly mapToRegistry   raw: 'bower',
+46 silly mapToRegistry   scope: null,
+46 silly mapToRegistry   escapedName: 'bower',
+46 silly mapToRegistry   name: 'bower',
+46 silly mapToRegistry   rawSpec: '',
+46 silly mapToRegistry   spec: 'latest',
+46 silly mapToRegistry   type: 'tag' }
+47 silly mapToRegistry uri https://registry.npmjs.org/bower
+48 verbose addNameTag registry:https://registry.npmjs.org/bower not in flight; fetching
+49 verbose get https://registry.npmjs.org/bower not expired, no request
+50 silly addNameTag next cb for bower with tag latest
+51 silly addNamed bower@1.7.9
+52 verbose addNamed "1.7.9" is a plain semver version for bower
+53 silly mapToRegistry name bower
+54 silly mapToRegistry using default registry
+55 silly mapToRegistry registry https://registry.npmjs.org/
+56 silly mapToRegistry data Result {
+56 silly mapToRegistry   raw: 'bower',
+56 silly mapToRegistry   scope: null,
+56 silly mapToRegistry   escapedName: 'bower',
+56 silly mapToRegistry   name: 'bower',
+56 silly mapToRegistry   rawSpec: '',
+56 silly mapToRegistry   spec: 'latest',
+56 silly mapToRegistry   type: 'tag' }
+57 silly mapToRegistry uri https://registry.npmjs.org/bower
+58 verbose addRemoteTarball https://registry.npmjs.org/bower/-/bower-1.7.9.tgz not in flight; adding
+59 verbose addRemoteTarball [ 'https://registry.npmjs.org/bower/-/bower-1.7.9.tgz',
+59 verbose addRemoteTarball   'b7296c2393e0d75edaa6ca39648132dd255812b0' ]
+60 info retry fetch attempt 1 at 11:59:18 AM
+61 info attempt registry request try #1 at 11:59:18 AM
+62 http fetch GET https://registry.npmjs.org/bower/-/bower-1.7.9.tgz
+63 http fetch 200 https://registry.npmjs.org/bower/-/bower-1.7.9.tgz
+64 silly fetchAndShaCheck shasum b7296c2393e0d75edaa6ca39648132dd255812b0
+65 verbose addTmpTarball /var/folders/_9/pfrgxltx75b75t6xpbjcsywr0000gn/T/npm-1799-b5f65f7f/registry.npmjs.org/bower/-/bower-1.7.9.tgz not in flight; adding
+66 verbose addTmpTarball already have metadata; skipping unpack for bower@1.7.9
+67 verbose correctMkdir /Users/MrJBRPG/.npm correctMkdir not in flight; initializing
+68 silly cache afterAdd bower@1.7.9
+69 verbose afterAdd /Users/MrJBRPG/.npm/bower/1.7.9/package/package.json not in flight; writing
+70 verbose correctMkdir /Users/MrJBRPG/.npm correctMkdir not in flight; initializing
+71 verbose afterAdd /Users/MrJBRPG/.npm/bower/1.7.9/package/package.json written
+72 silly loadAllDepsIntoIdealTree Finishing
+73 silly loadIdealTree Finishing
+74 silly currentTree lib
+75 silly idealTree lib
+75 silly idealTree └── bower@1.7.9
+76 silly generateActionsToTake Starting
+77 silly install generateActionsToTake
+78 warn checkPermissions Missing write access to /usr/local/lib/node_modules
+79 silly rollbackFailedOptional Starting
+80 silly rollbackFailedOptional Finishing
+81 silly runTopLevelLifecycles Finishing
+82 silly install printInstalled
+83 verbose stack Error: EACCES: permission denied, access '/usr/local/lib/node_modules'
+83 verbose stack     at Error (native)
+84 verbose cwd /Users/MrJBRPG/Documents/Career/Internships/I School/Main Internship/localground
+85 error Darwin 16.1.0
+86 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "install" "-g" "bower"
+87 error node v6.9.1
+88 error npm  v3.10.8
+89 error path /usr/local/lib/node_modules
+90 error code EACCES
+91 error errno -13
+92 error syscall access
+93 error Error: EACCES: permission denied, access '/usr/local/lib/node_modules'
+93 error     at Error (native)
+93 error  { Error: EACCES: permission denied, access '/usr/local/lib/node_modules'
+93 error     at Error (native)
+93 error   errno: -13,
+93 error   code: 'EACCES',
+93 error   syscall: 'access',
+93 error   path: '/usr/local/lib/node_modules' }
+94 error Please try running this command again as root/Administrator.
+95 verbose exit [ -13, true ]

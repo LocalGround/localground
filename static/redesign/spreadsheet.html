@@ -9,6 +9,7 @@
     <link rel=stylesheet type="text/css" href="css/reset.css" />
     <link rel=stylesheet type="text/css" href="css/gallery-style.css" />
     <link rel=stylesheet type="text/css" href="css/spreadsheet-style.css" />
+    <link rel=stylesheet type="text/css" href="css/modal.css" />
 </head>
 <body>
     <div id="toolbar-main">
@@ -21,13 +22,27 @@
         <!-- Spreadsheet goes here -->
     </main>
 
+
+    <!--Modal Section-->
+    <div id="myModal" class="modal">
+
+      <!--Close Button-->
+      <span class="close" onclick="document.getElementById('myModal').style.display='none'">
+        &times;
+      </span>
+      <!--Modal Content (Image)-->
+      <img class="modal-content" id="img01">
+      <!--Modal Caption (Image Text)-->
+      <div id="caption"></div>
+
+    </div>
+
     <script src="external/require.js"></script>
     <script>
         require(['apps/require-config'], function(){
             require(['apps/spreadsheet/kickoff.js']);  //or adminApp for the admin area, etc.
         });
     </script>
-    
+
 </body>
 </html>
-

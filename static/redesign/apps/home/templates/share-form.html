@@ -1,0 +1,60 @@
+<div class="modal"><!-- Modal content -->
+
+  <!-- Edit the contents of the model to look like the old one
+  due to having more roboust user interface
+-->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h1>Project Settings</h1>
+
+    <h2>Project Access for {{ name }}</h2>
+
+    <label for"projectName">Name: </label>
+    <input type="text" placeholder="Project Name" id="projectName" value="{{name}}">
+    <br>
+    <label for="share_type">Sharing Type: </label>
+    <select id="share_type">
+      <option value>Select Type</option>
+      <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>
+      <option value="2" {{#ifequal access_authority 2}} SELECTED {{/ifequal}}>Public with link</option>
+      <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>
+    </select>
+    <br>
+    <label for"owner">Owner: </label>
+    <input type="text" placeholder="username" id="owner" value="{{owner}}">
+
+    <h2>Number of Users: {{projectUsers.length}}</h2>
+
+    <div id="userTableDiv">
+      <table class="userTable" style="border: 1px solid black;">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Role</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="userList"></tbody>
+      </table>
+      <br>
+      <a class="new_user_button">Add new user</a>
+    </div>
+
+
+
+    <div id="addNewUser" style="border: 1px solid black">
+      <p>
+        Looks like this one has no users yet.
+        Why not add a new user?
+      </p>
+      <br>
+      <a class="new_user_button">Add new user</a>
+    </div>
+    <br>
+
+
+
+
+    <button class="save-project-settings">Save Settings</button>
+  </div>
+</div>

@@ -34,6 +34,7 @@ define(['jquery'], function ($) {
          * it to the upper right-hand side of the map.
          */
             render = function () {
+                console.log(google.maps.ControlPosition.RIGHT_TOP, map.controls[google.maps.ControlPosition.RIGHT_TOP]);
                 map.controls[google.maps.ControlPosition.RIGHT_TOP].push($input.get(0));
                 searchBox = new google.maps.places.SearchBox($input.get(0));
                 google.maps.event.addListener(searchBox, 'places_changed', function () {
