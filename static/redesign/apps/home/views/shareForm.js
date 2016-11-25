@@ -129,6 +129,22 @@ define(["marionette",
                 this.model.set('owner', $owner);
                 this.model.save();
 
+                // Let's try refreshing the data for any changes:
+                //this.collection = new Projects();
+
+                // The individual projects update at the modal level,
+                // but this does not update the infromation on the project panels
+                this.collection.fetch({ reset: true });
+
+                this.listenTo(this.collection, 'reset', this.render);
+
+                // Let's try rendering the individual model
+                // if the changes are instantly and visibly made
+                // No this does not work due to no such function error
+                //this.model.render();
+
+
+
             },
 
             // A test function to add in a table with information
