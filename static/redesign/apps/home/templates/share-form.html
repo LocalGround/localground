@@ -9,8 +9,16 @@
 
     <h2>Project Access for {{ name }}</h2>
 
-    <label for"projectName">Name: </label>
+    <label for="projectName">Name: </label>
     <input type="text" placeholder="Project Name" id="projectName" value="{{name}}">
+    <br>
+    <label for="caption">Description:</label>
+    <textarea id="caption" rows = "10" cols = "50"
+    placeholder="Type description of project">
+    </textarea>
+    <br>
+    <label for="tags">Tags:</label>
+    <input id="tags" type="text" placeholder="put some tags for easy search">
     <br>
     <label for="share_type">Sharing Type: </label>
     <select id="share_type">

@@ -81,6 +81,20 @@ define(["marionette",
                 };
             },
             saveProjectSettings: function () {
+
+              /*
+                We need to update the save Project settings
+                to include the possiblity of adding a new project
+                from the add projectButton
+
+                If the user clicks on the addProject and saves setting,
+                  then create a new project and store into the list
+
+                Else if the user clicks on the access button (private/public)
+                  and saves setting, grab the correct project model
+                  and apply changes to an existing model
+              */
+
                 // Make sure you check every single row from top to bottom
                 // by starting at the first child row
                 // and ending at the last child row
@@ -124,8 +138,11 @@ define(["marionette",
                 var $projectName = $('#projectName').val();
                 var $shareType = $('#share_type').val();
                 var $owner = $('#owner').val();
+                var $tags = $('#tags').val();
                 this.model.set('name', $projectName);
                 this.model.set('access_authority', $shareType);
+                this.model.set('tags', $tags);
+                this.model.set('slug', 'default');
                 this.model.set('owner', $owner);
                 this.model.save();
 
