@@ -4,8 +4,10 @@ define(["marionette",
         "apps/home/views/projectItemView",
         "collections/projects",
         "models/project",
-        "text!../templates/project-list.html"],
-    function (Marionette, _, Handlebars, ProjectItemView, Projects, Project, ListTemplate) {
+        "text!../templates/project-list.html",
+        "text!../templates/share-form.html",],
+    function (Marionette, _, Handlebars, ProjectItemView,
+      Projects, Project, ListTemplate, ShareForm) {
         'use strict';
         var ProjectListView = Marionette.CompositeView.extend({
 
@@ -23,15 +25,21 @@ define(["marionette",
                 return { app: this.app };
             },
             hideModal: function () {
-                var modal = this.$el.find('#myModal').get(0);
+                var modal = this.$el.find('#share-modal').get(0);
                 modal.style.display = "none";
             },
             showModal: function () {
                 // Get the modal
-                var modal = this.$el.find('#myModal').get(0);
-                //document.getElementById('myModal');
+
+                //* The old modal was #myModal from project-list.html
+
+                var modal = this.$el.find('#share-modal').get(0);
                 // When the user clicks the button, open the modal
                 modal.style.display = "block";
+
+                //*/
+
+                //this.app.vent.trigger('share-project', { model: this.model });
 
                 // When the user clicks anywhere outside of the modal, close it
                 window.onclick = function (event) {
@@ -40,11 +48,13 @@ define(["marionette",
                     }
                 };
             },
+            /*
+              This function will eventually be ceased due to integration
+              with the share-form html and share-form js files
+            */
             confirmAdd: function () {
                 var that = this;
-                //alert("Add!");
-                //console.log(this.collection.models); // Print out projects
-                //create a new project model:
+
                 var newProject = new Project();
                 newProject.set("name", this.$el.find("#name").val());
                 newProject.set("caption", this.$el.find("#caption").val());
@@ -54,14 +64,11 @@ define(["marionette",
                                this.$el.find("#access_authority").val());
                 newProject.save();
 
-                //todo: once project has  been posted to database,
-                //figure out how to call the displayProjects method again
-                //and also close the modal. This code below isn't working:
                 this.listenTo(newProject,'sync', this.displayProjects);
-                console.log(newProject);
+                //console.log(newProject);
 
                 //close the modal window
-                var modal = document.getElementById('myModal');
+                var modal = document.getElementById('share-modal');
                 modal.style.display = "none";
             },
 
@@ -131,16 +138,3 @@ define(["marionette",
         });
         return ProjectListView;
     });
-
-
-
-/*
-TODO: Delete individual projects by adding a button inside the project
-  so that the users can easily delete objects
-
-  However, there has to be a safeguard method to make it harder
-  to simply delete things by accident
-
-  such as the password confirmation or whatever security measures can be done
-
-*/
