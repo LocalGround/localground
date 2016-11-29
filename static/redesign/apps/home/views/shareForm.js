@@ -17,7 +17,20 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate) {
         Otherwise, if opening up an existing project,
         then the project users collection will exist
       */
-      if (this.model.projectUsers != null) this.collection = this.model.projectUsers;
+
+      // Let's test if this.model instead of this.model.projectUsers
+      // would work because this.model is null
+      //
+      // However, the proper model would be new project
+      // that can only be done after confirming settings
+      if (this.model != null){
+        this.collection = this.model.projectUsers;
+      } else {
+        // Let's try if this works
+        // nope... This does not work
+        // because projectUsers is not found anywhere in this file
+        this.collection = new ProjectUsers();
+      }
       // the line above this comment currently cannot read projectUsers of 'null'
       Marionette.CompositeView.prototype.initialize.call(this);
       //this.render();

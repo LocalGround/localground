@@ -39,6 +39,8 @@ define(["marionette",
 
                 //*/
 
+                // This is one code that does all the work, but
+                // the projectUsers null error gets in the way
                 this.app.vent.trigger('share-project', { model: null });
 
                 // When the user clicks anywhere outside of the modal, close it
