@@ -33,20 +33,22 @@ define(["marionette",
 
                 //* The old modal was #myModal from project-list.html
 
-                var modal = this.$el.find('#share-modal').get(0);
+                //var modal = this.$el.find('#share-modal').get(0);
                 // When the user clicks the button, open the modal
-                modal.style.display = "block";
+                //modal.style.display = "block";
 
                 //*/
 
-                //this.app.vent.trigger('share-project', { model: this.model });
+                this.app.vent.trigger('share-project', { model: null });
 
                 // When the user clicks anywhere outside of the modal, close it
+                /*
                 window.onclick = function (event) {
                     if (event.target == modal) {
                         modal.style.display = "none";
                     }
                 };
+                */
             },
             /*
               This function will eventually be ceased due to integration
@@ -72,12 +74,6 @@ define(["marionette",
                 modal.style.display = "none";
             },
 
-            // A 'dummy' function that was used for Add Project Button
-            addProject: function () {
-                alert("Show create project modal form");
-
-
-            },
             template: Handlebars.compile(ListTemplate),
 
             initialize: function (opts) {

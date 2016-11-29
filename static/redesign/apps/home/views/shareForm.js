@@ -8,10 +8,20 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate) {
   var ShareFormView = Marionette.CompositeView.extend({
     initialize: function (opts) {
       _.extend(this, opts);
-      this.collection = this.model.projectUsers;
+      /*
+        This function, when making a new project,
+        has no project users by default, which translates to null
+        the only way to make it legitimate is to
+        create a new collection of Project users
+
+        Otherwise, if opening up an existing project,
+        then the project users collection will exist
+      */
+      if (this.model.projectUsers != null) this.collection = this.model.projectUsers;
+      // the line above this comment currently cannot read projectUsers of 'null'
       Marionette.CompositeView.prototype.initialize.call(this);
       //this.render();
-      this.model.getProjectUsers();
+      if (this.collection != null) this.model.getProjectUsers();
       this.listenTo(this.collection, 'reset', this.render);
       this.listenTo(this.collection, 'destroy', this.render);
     },
