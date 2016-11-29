@@ -2,41 +2,29 @@ define(["marionette",
 "underscore",
 "handlebars",
 "text!../templates/share-form.html",
-"text!../templates/project-user-item.html"],
-function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate) {
+"text!../templates/project-user-item.html",
+"models/project",
+"collections/projectUsers"],
+function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
+          Project, ProjectUsers) {
   'use strict';
   var ShareFormView = Marionette.CompositeView.extend({
     initialize: function (opts) {
       _.extend(this, opts);
-      /*
-        This function, when making a new project,
-        has no project users by default, which translates to null
-        the only way to make it legitimate is to
-        create a new collection of Project users
 
-        Otherwise, if opening up an existing project,
-        then the project users collection will exist
-      */
-
-      // Let's test if this.model instead of this.model.projectUsers
-      // would work because this.model is null
-      //
-      // However, the proper model would be new project
-      // that can only be done after confirming settings
-      if (this.model != null){
-        this.collection = this.model.projectUsers;
+      if (this.model == undefined){
+        // Create a blank project if new project made
+        this.model = new Project();
       } else {
-        // Let's try if this works
-        // nope... This does not work
-        // because projectUsers is not found anywhere in this file
-        this.collection = new ProjectUsers();
+
+        //This section of code is reserved
+        // when user modifies an existing project
+        this.collection = this.model.projectUsers;
+        Marionette.CompositeView.prototype.initialize.call(this);
+        this.model.getProjectUsers();
+        this.listenTo(this.collection, 'reset', this.render);
+        this.listenTo(this.collection, 'destroy', this.render);
       }
-      // the line above this comment currently cannot read projectUsers of 'null'
-      Marionette.CompositeView.prototype.initialize.call(this);
-      //this.render();
-      if (this.collection != null) this.model.getProjectUsers();
-      this.listenTo(this.collection, 'reset', this.render);
-      this.listenTo(this.collection, 'destroy', this.render);
     },
     childViewOptions: function () {
       return this.model.toJSON();
@@ -99,43 +87,38 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate) {
       }
     },
     templateHelpers: function () {
+      // for new projects, there shall be no projectUsers defined
+      // otherwise, extract data from exising projectUsers
+      if (this.model.projectUsers == undefined) return;
       return {
         projectUsers: this.model.projectUsers.toJSON()
       };
     },
     saveProjectSettings: function () {
 
-      /*
-      We need to update the save Project settings
-      to include the possiblity of adding a new project
-      from the add projectButton
-
-      If the user clicks on the addProject and saves setting,
-      then create a new project and store into the list
-
-      Else if the user clicks on the access button (private/public)
-      and saves setting, grab the correct project model
-      and apply changes to an existing model
-      */
-
       var that = this;
-      var newProject = null;
-      if (this.model == null){
-        newProject = new Project();
-        this.model = newProject;
-      }
-      // Make sure you check every single row from top to bottom
-      // by starting at the first child row
-      // and ending at the last child row
-      //
-      // Now you know how to get the collection of existing users
-      // userModels = this.collection.models // returns an array
-      // To get the needed attributes, do this
-      // userModels[i].attributes.user and authority (1-3)
-      //
-      // Now to get the id of the project,
-      // this.model.id
-      //
+
+      // If a new project is made, then create a new projectUsers collection
+      // to store the added users
+
+      var $projectName = $('#projectName').val();
+      var $shareType = $('#share_type').val();
+      var $caption = $('#caption').val();
+      var $owner = $('#owner').val();
+      var $tags = $('#tags').val();
+      this.model.set('name', $projectName);
+      this.model.set('access_authority', $shareType);
+      this.model.set('tags', $tags);
+      this.model.set('caption', $caption);
+      this.model.set('slug', 'default');
+      this.model.set('owner', $owner);
+      this.model.save(null, {success: this.createNewProjectUser()});
+      // as of now, I could not get the save model to have a new ID
+      // I am quite close to getting the ave project to work,
+      // but I need to know how I can get the new project with new ID
+      // so that I can have a chance to actually save a new project.
+
+      // Overwrite and
       var $userList = $("#userList");
       var $users = $userList.children();
 
@@ -159,45 +142,21 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate) {
 
       }
 
-      // Now save the project settings itself
-      //
-      // So far the project settings are saved
-      // but a reset function is not put yet
-      // so for now a manual relaod is needed
-
-      var $projectName = $('#projectName').val();
-      var $shareType = $('#share_type').val();
-      var $caption = $('#caption').val();
-      var $owner = $('#owner').val();
-      var $tags = $('#tags').val();
-      this.model.set('name', $projectName);
-      this.model.set('access_authority', $shareType);
-      this.model.set('tags', $tags);
-      this.model.set('caption', $caption);
-      this.model.set('slug', 'default');
-      this.model.set('owner', $owner);
-      this.model.save();
-
-      // Let's try refreshing the data for any changes:
-      //this.collection = new Projects();
-
-      // The individual projects update at the modal level,
-      // but this does not update the infromation on the project panels
       this.collection.fetch({ reset: true });
 
       this.listenTo(this.collection, 'reset', this.render);
 
-      // Let's try rendering the individual model
-      // if the changes are instantly and visibly made
-      // No this does not work due to no such function error
-      //this.model.render();
-
-
-
     },
 
-    // A test function to add in a table with information
-    // the test data will not be saved upon reload
+    createNewProjectUser: function(){
+      if (this.model.projectUsers == undefined){
+        this.model.projectUsers = new ProjectUsers(null,
+                                  {id: this.model.get("id")});
+        this.collection = this.model.projectUsers;
+      }
+    },
+
+    // Create a new user row with the necessary fields
     addUserButton: function() {
       console.log("Pressed new User Link");
       var userTableDisplay = $(".userTable");
@@ -223,7 +182,7 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate) {
       var numOfUsers = $userList.children().length;
       //console.log("Number of Users: " + numOfUsers);
 
-      if (numOfUsers > 0){
+      if (numOfUsers > 0 || numOfUsers == undefined || numOfUsers == null){
         $userTableDiv.show();
         $addNewUser.hide();
       } else if (numOfUsers === 0){

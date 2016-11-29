@@ -29,28 +29,7 @@ define(["marionette",
                 modal.style.display = "none";
             },
             showModal: function () {
-                // Get the modal
-
-                //* The old modal was #myModal from project-list.html
-
-                //var modal = this.$el.find('#share-modal').get(0);
-                // When the user clicks the button, open the modal
-                //modal.style.display = "block";
-
-                //*/
-
-                // This is one code that does all the work, but
-                // the projectUsers null error gets in the way
                 this.app.vent.trigger('share-project', { model: null });
-
-                // When the user clicks anywhere outside of the modal, close it
-                /*
-                window.onclick = function (event) {
-                    if (event.target == modal) {
-                        modal.style.display = "none";
-                    }
-                };
-                */
             },
             /*
               This function will eventually be ceased due to integration
