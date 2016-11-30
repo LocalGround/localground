@@ -108,27 +108,44 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
       var $caption = $('#caption').val();
       var $owner = $('#owner').val();
       var $tags = $('#tags').val();
+      
       //
       // Make sure that there are no empty values
       // or else user is prompted to fill in the information
       // for test purposes, we do alarm for any missing boxes
       // then we cut down to the required ones
       //
+
+      /*
       var missingFields = "";
       missingFields = $.trim($projectName)? "" : missingFields + "Name\n";
       missingFields = $shareType? "" : missingFields + "Share Type\n";
-      missingFields = $.trim($caption)? "" : missingFields + "Description\n";
+      //missingFields = $.trim($caption)? "" : missingFields + "Description\n";
       missingFields = $.trim($owner)? "" : missingFields + "Owner\n";
-      missingFields = $.trim($tags)? "" : missingFields + "Tags\n";
+      //missingFields = $.trim($tags)? "" : missingFields + "Tags\n";
       //
       //
       if (missingFields){
         alert("The following fields must be filled before saving project:\n\n"
               + missingFields);
+        var $projectNameLabel = $('#projectName');
+        var $shareTypeLabel = $('#share_type');
+        var $captionLabel = $('#caption');
+        var $ownerLabel = $('#owner');
+        var $tagsLabel = $('#tags');
+
+        // Might make a seperate function for that
+        // blank input error
+        // so that it highlights the individual elements
+        //
+
         return;
       }
       //
       //
+
+      */
+
       this.model.set('name', $projectName);
       this.model.set('access_authority', $shareType);
       this.model.set('tags', $tags);
@@ -197,6 +214,51 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
       //
 
       this.checkNumberOfRows();
+
+    },
+
+    blankInputs: function(){
+
+      // If any of the required fields are blank,
+      // give the red color to the labels
+      // and give message to the placeholders
+      // to prompt user to fill in
+      // the required fields
+
+      var blankFields = false;
+
+      var $projectName_ = $('#projectName').val();
+      var $shareType_ = $('#share_type').val();
+      var $caption_ = $('#caption').val();
+      var $owner_ = $('#owner').val();
+      var $tags_ = $('#tags').val();
+
+      if (!($.trim($projectName_))){
+        blankFields = true;
+        $('label[for=projectName]').css({color: '#FF0000'});
+      }
+
+      if (!($shareType_)){
+        blankFields = true;
+        $('label[for=share_type]').css({color: '#FF0000'});
+      }
+
+      if (!($.trim($caption_))){
+        blankFields = true;
+        $('label[for=caption]').css({color: '#FF0000'});
+      }
+
+      if (!($.trim($owner_))){
+        blankFields = true;
+        $('label[for=owner]').css({color: '#FF0000'});
+      }
+
+      if (!($.trim($tags_))){
+        blankFields = true;
+        $('label[for=tags]').css({color: '#FF0000'});
+      }
+
+      return blankFields;
 
     },
 
