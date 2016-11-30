@@ -109,7 +109,7 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
       var $owner = $('#owner').val();
       var $tags = $('#tags').val();
 
-      if (this.blankInputs){
+      if (this.blankInputs()){
         return;
       }
 
@@ -209,30 +209,40 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
       $('#id_name').prev().css({property: value});
       */
 
+      $('#projectName').prev().css("color", '#000000');
+      //$('#caption').prev().css("color", '#000000');
+      //$('#tags').prev().css("color", '#000000');
+      $('#share_type').prev().css("color", '#000000');
+      $('#owner').prev().css("color", '#000000');
+
+
       if (!($.trim($projectName_))){
         blankFields = true;
-        $('#projectName').prev().css({color: '#FF0000'});
+        $('#projectName').prev().css("color", '#FF0000');
       }
 
-      if (!($shareType_)){
-        blankFields = true;
-        $('#share_type').prev().css({color: '#FF0000'});
-      }
-
+      /*
       if (!($.trim($caption_))){
         blankFields = true;
-        $('#caption').prev().css({color: '#FF0000'});
-      }
-
-      if (!($.trim($owner_))){
-        blankFields = true;
-        $('#owner').prev().css({color: '#FF0000'});
+        $('#caption').prev().css("color", '#FF0000');
       }
 
       if (!($.trim($tags_))){
         blankFields = true;
-        $('#tags').prev().css({color: '#FF0000'});
+        $('#tags').prev().css("color", '#FF0000');
       }
+      */
+
+      if (!($shareType_)){
+        blankFields = true;
+        $('#share_type').prev().css("color", '#FF0000');
+      }
+
+      if (!($.trim($owner_))){
+        blankFields = true;
+        $('#owner').prev().css("color", '#FF0000');
+      }
+
 
       return blankFields;
 
