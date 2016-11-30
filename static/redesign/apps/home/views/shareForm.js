@@ -108,43 +108,10 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
       var $caption = $('#caption').val();
       var $owner = $('#owner').val();
       var $tags = $('#tags').val();
-      
-      //
-      // Make sure that there are no empty values
-      // or else user is prompted to fill in the information
-      // for test purposes, we do alarm for any missing boxes
-      // then we cut down to the required ones
-      //
 
-      /*
-      var missingFields = "";
-      missingFields = $.trim($projectName)? "" : missingFields + "Name\n";
-      missingFields = $shareType? "" : missingFields + "Share Type\n";
-      //missingFields = $.trim($caption)? "" : missingFields + "Description\n";
-      missingFields = $.trim($owner)? "" : missingFields + "Owner\n";
-      //missingFields = $.trim($tags)? "" : missingFields + "Tags\n";
-      //
-      //
-      if (missingFields){
-        alert("The following fields must be filled before saving project:\n\n"
-              + missingFields);
-        var $projectNameLabel = $('#projectName');
-        var $shareTypeLabel = $('#share_type');
-        var $captionLabel = $('#caption');
-        var $ownerLabel = $('#owner');
-        var $tagsLabel = $('#tags');
-
-        // Might make a seperate function for that
-        // blank input error
-        // so that it highlights the individual elements
-        //
-
+      if (this.blankInputs){
         return;
       }
-      //
-      //
-
-      */
 
       this.model.set('name', $projectName);
       this.model.set('access_authority', $shareType);
@@ -233,29 +200,38 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
       var $owner_ = $('#owner').val();
       var $tags_ = $('#tags').val();
 
+      /*
+      Tip: it's possible to refer to labels that hold the id
+      by using the following:
+      $('#id_name').prev(); // go to label for the id name
+
+      it is especially useful for changing style with css like this:
+      $('#id_name').prev().css({property: value});
+      */
+
       if (!($.trim($projectName_))){
         blankFields = true;
-        $('label[for=projectName]').css({color: '#FF0000'});
+        $('#projectName').prev().css({color: '#FF0000'});
       }
 
       if (!($shareType_)){
         blankFields = true;
-        $('label[for=share_type]').css({color: '#FF0000'});
+        $('#share_type').prev().css({color: '#FF0000'});
       }
 
       if (!($.trim($caption_))){
         blankFields = true;
-        $('label[for=caption]').css({color: '#FF0000'});
+        $('#caption').prev().css({color: '#FF0000'});
       }
 
       if (!($.trim($owner_))){
         blankFields = true;
-        $('label[for=owner]').css({color: '#FF0000'});
+        $('#owner').prev().css({color: '#FF0000'});
       }
 
       if (!($.trim($tags_))){
         blankFields = true;
-        $('label[for=tags]').css({color: '#FF0000'});
+        $('#tags').prev().css({color: '#FF0000'});
       }
 
       return blankFields;
