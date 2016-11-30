@@ -25,6 +25,8 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
         this.listenTo(this.collection, 'reset', this.render);
         this.listenTo(this.collection, 'destroy', this.render);
       }
+      
+        this.listenTo(this.model, 'sync', this.createNewProjectUsers);
     },
     childViewOptions: function () {
       return this.model.toJSON();
@@ -110,15 +112,26 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
       this.model.set('access_authority', $shareType);
       this.model.set('tags', $tags);
       this.model.set('caption', $caption);
-      this.model.set('slug', 'default');
+      this.model.set('slug', 'slug_' + parseInt(Math.random()*100000));
       this.model.set('owner', $owner);
-      this.model.save(null, {success: this.createNewProjectUser()});
+      this.model.save(); //null, {success: this.createNewProjectUser()});
       // as of now, I could not get the save model to have a new ID
       // I am quite close to getting the ave project to work,
       // but I need to know how I can get the new project with new ID
       // so that I can have a chance to actually save a new project.
 
-      // Overwrite and
+      
+
+    },
+
+    createNewProjectUsers: function(){
+        console.log(this.model);
+      if (this.model.projectUsers == undefined){
+        this.model.projectUsers = new ProjectUsers(null,
+                                  {id: this.model.get("id")});
+        this.collection = this.model.projectUsers;
+        
+        // Overwrite and
       var $userList = $("#userList");
       var $users = $userList.children();
 
@@ -145,14 +158,10 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
       this.collection.fetch({ reset: true });
 
       this.listenTo(this.collection, 'reset', this.render);
-
-    },
-
-    createNewProjectUser: function(){
-      if (this.model.projectUsers == undefined){
-        this.model.projectUsers = new ProjectUsers(null,
-                                  {id: this.model.get("id")});
-        this.collection = this.model.projectUsers;
+      
+      // fire this event to redraw the project list underneath the modal.
+      // the main.js function is listening for it:
+      this.app.vent.trigger('project-added');
       }
     },
 

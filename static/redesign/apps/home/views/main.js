@@ -67,6 +67,7 @@ define(["marionette",
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
+                this.listenTo(this.app.vent, 'project-added', this.displayProjects);
             },
             hideLoadingMessage: function () {
                 this.$el.find(this.childViewContainer).empty();
