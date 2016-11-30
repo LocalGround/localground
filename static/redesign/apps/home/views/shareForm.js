@@ -25,8 +25,8 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
         this.listenTo(this.collection, 'reset', this.render);
         this.listenTo(this.collection, 'destroy', this.render);
       }
-      
-        this.listenTo(this.model, 'sync', this.createNewProjectUsers);
+
+      this.listenTo(this.model, 'sync', this.createNewProjectUsers);
     },
     childViewOptions: function () {
       return this.model.toJSON();
@@ -108,19 +108,36 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
       var $caption = $('#caption').val();
       var $owner = $('#owner').val();
       var $tags = $('#tags').val();
+      //
+      // Make sure that there are no empty values
+      // or else user is prompted to fill in the information
+      // for test purposes, we do alarm for any missing boxes
+      // then we cut down to the required ones
+      //
+      var missingFields = "";
+      missingFields = $.trim($projectName)? "" : missingFields + "Name\n";
+      missingFields = $shareType? "" : missingFields + "Share Type\n";
+      missingFields = $.trim($caption)? "" : missingFields + "Description\n";
+      missingFields = $.trim($owner)? "" : missingFields + "Owner\n";
+      missingFields = $.trim($tags)? "" : missingFields + "Tags\n";
+      //
+      //
+      if (missingFields){
+        alert("The following fields must be filled before saving project:\n\n"
+              + missingFields);
+        return;
+      }
+      //
+      //
       this.model.set('name', $projectName);
       this.model.set('access_authority', $shareType);
       this.model.set('tags', $tags);
       this.model.set('caption', $caption);
       this.model.set('slug', 'slug_' + parseInt(Math.random()*100000));
       this.model.set('owner', $owner);
-      this.model.save(); //null, {success: this.createNewProjectUser()});
-      // as of now, I could not get the save model to have a new ID
-      // I am quite close to getting the ave project to work,
-      // but I need to know how I can get the new project with new ID
-      // so that I can have a chance to actually save a new project.
+      this.model.save();
 
-      
+
 
     },
 
@@ -130,8 +147,8 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
         this.model.projectUsers = new ProjectUsers(null,
                                   {id: this.model.get("id")});
         this.collection = this.model.projectUsers;
-        
-        // Overwrite and
+
+      // Gather the list of users changed / added
       var $userList = $("#userList");
       var $users = $userList.children();
 
@@ -158,7 +175,7 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
       this.collection.fetch({ reset: true });
 
       this.listenTo(this.collection, 'reset', this.render);
-      
+
       // fire this event to redraw the project list underneath the modal.
       // the main.js function is listening for it:
       this.app.vent.trigger('project-added');
