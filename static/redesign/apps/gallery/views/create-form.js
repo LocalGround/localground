@@ -2,14 +2,16 @@ define([
     "underscore",
     "handlebars",
     "marionette",
-    "text!../templates/create-form.html"
-], function (_, Handlebars, Marionette, CreateFormTemplate) {
+    "text!../templates/create-form.html",
+    "text!../templates/field-item.html"
+], function (_, Handlebars, Marionette, CreateFormTemplate, FieldItemTemplate) {
     // Setting up a create form js
     'use strict';
     var CreateFormView = Marionette.ItemView.extend({
         events: {
             'click #save-form-settings' : 'saveFormSettings',
-            'click .close': 'hideModal'
+            'click .close': 'hideModal',
+            'click .new-field-button' : 'addFieldButton'
         },
 
         template: Handlebars.compile(CreateFormTemplate),
@@ -30,14 +32,14 @@ define([
               this.model = new Form();
             } else {
 
-              //this.collection = this.model.projectUsers;
+              //this.collection = this.model.fields;
               Marionette.CompositeView.prototype.initialize.call(this);
-              //this.model.getProjectUsers();
+              //this.model.getfields();
               //this.listenTo(this.collection, 'reset', this.render);
               //this.listenTo(this.collection, 'destroy', this.render);
             }
 
-            //this.listenTo(this.model, 'sync', this.createNewProjectUsers);
+            //this.listenTo(this.model, 'sync', this.createNewfields);
 
             Marionette.ItemView.prototype.initialize.call(this);
             this.template = Handlebars.compile(CreateFormTemplate);
@@ -76,9 +78,9 @@ define([
           // This will eventually consider the number of fields represented
           // in columns for the tags and values while the rows contains
           // the data stored into the tags
-          if (this.model.projectUsers == undefined) return;
+          if (this.model.fields == undefined) return;
           return {
-            projectUsers: this.model.projectUsers.toJSON()
+            fields: this.model.fields.toJSON()
           };
           */
         },
@@ -101,7 +103,69 @@ define([
             this.model.set('slug', 'slug_' + parseInt(Math.random()*100000));
             this.model.set('project_ids', [this.app.selectedProject.id]);
             this.model.save();
+        },
+
+        //
+        // Still needs refactoring since the majority of the code
+        // is based on the share-form.js file
+        //
+
+        createNewFields: function(){
+            console.log(this.model);
+          if (this.model.fields == undefined){
+            this.model.fields = new Fields(null,
+                                      {id: this.model.get("id")});
+            this.collection = this.model.fields;
+
+          // Gather the list of fields changed / added
+          var $fieldList = $("#fieldList");
+          var $fields = $fieldList.children();
+
+          //loop through each table row:
+          for (var i = 0; i < $users.length; ++i) {
+            var $row = $($users[i]);
+            if ($row.attr("id") == this.model.id) {
+              //edit existing fields:
+              var fieldname = $row.find(".fieldname").html();
+              var existingField = this.model.getFieldByName(fieldname);
+              existingField.save();
+
+            } else {
+              //create new fields:
+              var fieldname = $row.find(".fieldname").val();
+              this.model.shareWithUser(username, authorityID);
+            }
+
+          }
+
+          this.collection.fetch({ reset: true });
+
+          this.listenTo(this.collection, 'reset', this.render);
+
+          // fire this event to redraw the project list underneath the modal.
+          // the main.js function is listening for it:
+          this.app.vent.trigger('project-added');
+          }
+        },
+
+        addFieldButton: function() {
+          console.log("Pressed new Field Link");
+          var fieldTableDisplay = $(".fieldTable");
+          userTableDisplay.show();// Make this visible even with 0 users
+          var $newTR = $("<tr class='new-row'></tr>");
+          var template = Handlebars.compile(FieldItemTemplate);
+          $newTR.append(template());
+          this.$el.find("#fieldList").append($newTR);
+
+          // Now find out how many rows are there
+          // to either show user table or add user prompt
+          //
+
+          // this.checkNumberOfRows();
+
         }
+
+
 
     });
     return CreateFormView;

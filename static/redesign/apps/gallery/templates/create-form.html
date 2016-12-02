@@ -31,9 +31,32 @@
     <br>
     <h3>Fields will be placed later</h3>
     <br>
+    <h2>Number of Users: {{fields.length}}</h2>
+    <br>
+    <div id="fieldTableDiv">
+      <table class="fieldTable" style="border: 1px solid black;">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>Data Type</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="fieldList">
+        </tbody>
+      </table>
+      <br>
+      <a class="field_user_button">Add Column</a>
+    </div>
+
+    <div id="addNewField" style="border: 1px solid black">
+      <a class="new_field_button">Add Column</a>
+    </div>
+    <br>
+    <br>
 
 
 
-    <button id="save-form-settings">Save Settings</button>
+    <button id="save-form-settings">Save Changes</button>
   </div>
 </div>
