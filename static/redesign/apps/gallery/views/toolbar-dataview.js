@@ -3,9 +3,10 @@ define([
     "jquery",
     "handlebars",
     "marionette",
-    "text!../templates/toolbar-dataview.html",
-    "text!../templates/create-form.html"
-], function (_, $, Handlebars, Marionette, ToolbarTemplate, CreateFormTemplate) {
+    "models/form",
+    "apps/gallery/views/create-form",
+    "text!../templates/toolbar-dataview.html"
+], function (_, $, Handlebars, Marionette, FormModel, CreateForm, ToolbarTemplate) {
     "use strict";
     var ToolbarDataView = Marionette.ItemView.extend({
         /*
@@ -65,8 +66,15 @@ define([
             this.app.router.navigate('//' + dataType, { trigger: true });
         },
 
-        showCreateForm: function(){
-          alert("Display create form");
+        showCreateForm: function () {
+            var createForm = new CreateForm({
+                model: new FormModel(),
+                app: this.app
+            });
+            // this is a hack: for now, add the modal to this view:
+            this.$el.append(createForm.$el);
+            this.$el.find('.modal').show();
+          //alert("Display create form");
           //this.app.vent.trigger('share-project', { model: this.model });
           // How do I display the create form if there is a
           // share form at home-app.js
