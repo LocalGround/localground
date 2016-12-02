@@ -35,7 +35,7 @@ define([
             this.template = Handlebars.compile(ToolbarTemplate);
             // Trying to get the listener to be correct
             // I am not sure yet on how it properly works
-            this.listenTo(this.app.vent, 'add-data', this.showCreateForm
+            this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
         },
 
         clearSearch: function (e) {
