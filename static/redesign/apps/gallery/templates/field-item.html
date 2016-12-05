@@ -3,11 +3,11 @@
   </input>
 </td>
 <td>
-  <input type="selector">
+  <select class="fieldType">
       <option value>Select One</option>
       <option value= "Text" {{#ifequal authority "Text"}} SELECTED {{/ifequal}}>Text</option>
       <option value= "Number" {{#ifequal authority "Number"}} SELECTED {{/ifequal}}>Number</option>
       <option value= "Boolean" {{#ifequal authority "Boolean"}} SELECTED {{/ifequal}}>Boolean</option>
-  </input>
+  </select>
 </td>
-<td>&times;</td>
+<td><a href="#" class="delete-field">&times;</a></td>

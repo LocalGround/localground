@@ -51,10 +51,6 @@ function (Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
           this.model.destroy();
           e.preventDefault();
 
-          // Add in code to check value of the number of users
-          // to determine if user table remians
-          // or show prompt instead
-
           this.checkNumberOfRows();
           //this.model.getProjectUsers();
         }
