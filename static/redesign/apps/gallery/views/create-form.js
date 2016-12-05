@@ -115,6 +115,8 @@ define([
       saveFormSettings: function () {
         alert("Need to save form");
 
+        var that = this;
+
         // Gather the html data
         var $formName = $('#formName').val();
         var $shareType = $('#share_type').val();
@@ -167,9 +169,6 @@ define([
 
             this.listenTo(this.collection, 'reset', this.render);
 
-            // fire this event to redraw the project list underneath the modal.
-            // the main.js function is listening for it:
-            this.app.vent.trigger('project-added');
           }
         },
 

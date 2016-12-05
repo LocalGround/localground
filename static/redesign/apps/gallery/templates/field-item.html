@@ -1,6 +1,9 @@
 <td>
-  <input type="text">
-  </input>
+  {{#if user }}
+      <span class="fieldname">{{field}}</span>
+  {{else}}
+      <input type="text" class="fieldname" placeholder="field name" value="{{ field }}"></td>
+  {{/if}}
 </td>
 <td>
   <select class="fieldType">
