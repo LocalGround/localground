@@ -16,6 +16,7 @@ define([
 
         template: Handlebars.compile(CreateFormTemplate),
 
+        /*
         templateHelpers: function () {
             return {
                 mode: this.app.mode,
@@ -23,6 +24,7 @@ define([
                 screenType: this.app.screenType
             };
         },
+        */
 
         initialize: function (opts) {
             _.extend(this, opts);
@@ -45,6 +47,36 @@ define([
             this.template = Handlebars.compile(CreateFormTemplate);
             this.render();
         },
+
+
+        childViewOptions: function () {
+          return this.model.toJSON();
+        },
+        getChildView: function () {
+          // this child view is responsible for displaying
+          // and deleting Field models:
+          return Marionette.ItemView.extend({
+            initialize: function (opts) {
+              _.extend(this, opts);
+            },
+            events: {
+              'click .delete-field': 'doDelete'
+            },
+            template: Handlebars.compile(FieldItemTemplate),
+            tagName: "tr",
+            doDelete: function (e) {
+              var that = this;
+              if (!confirm("Are you sure you want to remove this field from the form?")) {
+                return;
+              }
+              this.model.destroy();
+              e.preventDefault();
+
+
+            }
+          });
+        },
+
         hideModal: function () {
             this.$el.hide();
         },
@@ -74,7 +106,7 @@ define([
         },
 
         templateHelpers: function () {
-          /*
+          //*
           // This will eventually consider the number of fields represented
           // in columns for the tags and values while the rows contains
           // the data stored into the tags
@@ -82,7 +114,7 @@ define([
           return {
             fields: this.model.fields.toJSON()
           };
-          */
+          //*/
         },
 
         // Need to add more functions to handle various events
@@ -122,7 +154,7 @@ define([
           var $fields = $fieldList.children();
 
           //loop through each table row:
-          for (var i = 0; i < $users.length; ++i) {
+          for (var i = 0; i < $fields.length; ++i) {
             var $row = $($users[i]);
             if ($row.attr("id") == this.model.id) {
               //edit existing fields:
@@ -133,7 +165,7 @@ define([
             } else {
               //create new fields:
               var fieldname = $row.find(".fieldname").val();
-              this.model.shareWithUser(username, authorityID);
+              //this.model.shareWithUser(username, authorityID);
             }
 
           }
@@ -151,7 +183,7 @@ define([
         addFieldButton: function() {
           console.log("Pressed new Field Link");
           var fieldTableDisplay = $(".fieldTable");
-          userTableDisplay.show();// Make this visible even with 0 users
+          fieldTableDisplay.show();// Make this visible even with 0 users
           var $newTR = $("<tr class='new-row'></tr>");
           var template = Handlebars.compile(FieldItemTemplate);
           $newTR.append(template());
