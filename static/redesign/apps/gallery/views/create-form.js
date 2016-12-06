@@ -27,7 +27,7 @@ define([
           //this.listenTo(this.collection, 'destroy', this.render);
         }
 
-        //this.listenTo(this.model, 'sync', this.createNewfields);
+        this.listenTo(this.model, 'sync', this.createNewFields);
 
         Marionette.ItemView.prototype.initialize.call(this);
         this.template = Handlebars.compile(CreateFormTemplate);
@@ -139,7 +139,9 @@ define([
 
       createNewFields: function(){
         console.log(this.model);
+        console.log("createNewFields Called");
         if (this.model.fields == undefined){
+          console.log("this.model.fields is undefined");
           this.model.fields = new Fields(null,
             {id: this.model.get("id")});
             this.collection = this.model.fields;
@@ -150,15 +152,19 @@ define([
 
             //loop through each table row:
             for (var i = 0; i < $fields.length; ++i) {
-              var $row = $($users[i]);
+              console.log(i);
+              var $row = $($fields[i]);
+              console.log($row);
               if ($row.attr("id") == this.model.id) {
                 //edit existing fields:
+                console.log("This field already exists");
                 var fieldname = $row.find(".fieldname").html();
                 var existingField = this.model.getFieldByName(fieldname);
                 existingField.save();
 
               } else {
                 //create new fields:
+                console.log("Create new Field");
                 var fieldName = $row.find(".fieldname").val();
                 var fieldType = $row.find(".fieldType").val();
                 this.model.createField(fieldName, fieldType);

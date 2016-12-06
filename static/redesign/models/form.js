@@ -8,8 +8,7 @@ define(
           isVisible: false,
           checked: false
       }),
-      url: '/api/0/forms/',
-
+      urlRoot: '/api/0/forms/',
       initialize: function (data, opts) {
           if (this.get("id")) {
               this.fields = new Fields(null, { id: this.get("id") });

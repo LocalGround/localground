@@ -23,8 +23,8 @@ define(["underscore", "collections/dataTypes", "models/base"],
             },
             initialize: function (data, opts) {
                 console.log(data, opts);
-                // This had to be made dynamic because there are different users
-                // for each project
+                // This had to be made dynamic because there are different Fields
+                // for each form
                 if (this.collection && this.collection.url) {
                     this.urlRoot = this.collection.url;
                 } else if (opts.id) {
@@ -32,6 +32,9 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 } else {
                     alert("id initialization parameter required for Field");
                     return;
+                }
+                if (this.get("field")) {
+                    this.url = this.urlRoot + this.get("field") + "/";
                 }
     			      Base.prototype.initialize.apply(this, arguments);
     		    }
