@@ -21,10 +21,20 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 has_snippet_field: 'Hidden',
                 ordering: 'Hidden'
             },
-            initialize: function (opts) {
-                Field.__super__.initialize.apply(this, arguments);
-                //this.fetchSchemaOpts();
-            }
+            initialize: function (data, opts) {
+                console.log(data, opts);
+                // This had to be made dynamic because there are different users
+                // for each project
+                if (this.collection && this.collection.url) {
+                    this.urlRoot = this.collection.url;
+                } else if (opts.id) {
+                    this.urlRoot = '/api/0/forms/' + opts.id + '/fields/';
+                } else {
+                    alert("id initialization parameter required for Field");
+                    return;
+                }
+    			      Base.prototype.initialize.apply(this, arguments);
+    		    }
         });
         return Base;
     });

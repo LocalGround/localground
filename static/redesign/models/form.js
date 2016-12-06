@@ -23,12 +23,13 @@ define(
 
       // This is a rough draft of the following function
       // that is expected to change throughout revision
-      shareWithUser: function (fieldType, authorityID) {
+      createField: function (name, fieldType) {
           var field = new Field(null, { id: this.get("id") }),
               that = this;
-          projectUser.set("user", fieldType);
-          projectUser.set("authority", authorityID);
-          projectUser.save(null, {
+          field.set("name", name);
+          field.set("field", fieldType);
+          field.set("authority", 3);
+          field.save(null, {
               success: function () {
                   that.getFields();
               }

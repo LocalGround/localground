@@ -159,8 +159,9 @@ define([
 
               } else {
                 //create new fields:
-                var fieldname = $row.find(".fieldname").val();
-                //this.model.shareWithUser(username, authorityID);
+                var fieldName = $row.find(".fieldname").val();
+                var fieldType = $row.find(".fieldType").val();
+                this.model.createField(fieldName, fieldType);
               }
 
             }
