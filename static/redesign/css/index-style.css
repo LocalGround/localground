@@ -109,7 +109,7 @@
 }
 
 #gallery-main >div{
-	width: calc(33% - 42px);
+	width: calc(33.333% - 44px);
 	border-radius: 4px;
 	position: relative;
 	border: 1px solid #e4e5eb;

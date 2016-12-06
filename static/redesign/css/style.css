@@ -572,7 +572,8 @@ input[type="number"]{
 
 #model-form fieldset>div>div, 
 .inline-form input,
-.inline-form .container-3-4{
+.inline-form .container-3-4,
+.inline-form textarea{
     flex:3;
 }
 
