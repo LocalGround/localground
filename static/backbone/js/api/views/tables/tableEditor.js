@@ -137,7 +137,7 @@ define([
             this.records.state.currentPage = 1;
             this.records.fetch({
                 reset: true,
-                data: { format: 'json' }
+                data: { format: 'json', page_size: 100 }
             });
         }
     });
