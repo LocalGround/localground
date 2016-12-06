@@ -100,7 +100,7 @@ a.logotype{
     text-transform: uppercase;
 }
 
-span.tag{
+span.tag, a.tag {
     background-color: #e7e7e7;
     font-size:12px;
     padding:1px 8px;
@@ -109,7 +109,7 @@ span.tag{
     font-weight:400;
 }
 
-span.action.tag{
+span.action.tag, a.action.tag {
     border: 1px solid #e7e7e7;
     background-color:white;
     float: right;
@@ -119,7 +119,7 @@ span.action.tag{
   -webkit-transition:.5s;
 }
 
-span.action.tag:hover{
+span.action.tag:hover, a.action.tag:hover {
     border-color: #7eace2;
     color:#4e70d4;
 }

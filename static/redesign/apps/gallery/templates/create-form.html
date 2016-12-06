@@ -1,0 +1,60 @@
+<div class="modal" id="create-form-modal"><!-- Modal content -->
+
+  <!-- Edit the contents of the model to look like the old one
+  due to having more roboust user interface
+
+  Now made a quick rough draft of the modal due to similarity with share-modal
+-->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h1>Form Description</h1>
+
+
+    <label for="formName">Name: </label>
+    <input type="text" id="formName" value="{{name}}">
+    <br>
+    <label for="caption">Description:</label>
+    <textarea id="caption" rows = "10" cols = "50"
+    placeholder="Type description of project">
+    </textarea>
+    <br>
+    <label for="tags">Tags:</label>
+    <input id="tags" type="text" placeholder="put some tags for easy search">
+    <br>
+    <label for="share_type">Sharing Type: </label>
+    <select id="share_type">
+      <option value>Select Type</option>
+      <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>
+      <option value="2" {{#ifequal access_authority 2}} SELECTED {{/ifequal}}>Public with link</option>
+      <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>
+    </select>
+    <br>
+    <h3>Fields</h3>
+    <br>
+    <div id="fieldTableDiv">
+      <table class="fieldTable" style="border: 1px solid black;">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>Data Type</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="fieldList">
+        </tbody>
+      </table>
+      <br>
+      <a class="new_field_button">Add Column</a>
+    </div>
+
+    <div id="addNewField" style="border: 1px solid black">
+      <a class="new_field_button">Add Column</a>
+    </div>
+    <br>
+    <br>
+
+
+
+    <button id="save-form-settings">Save Changes</button>
+  </div>
+</div>

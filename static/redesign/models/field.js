@@ -4,7 +4,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
         var Field = Base.extend({
             urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
             defaults: _.extend({}, Base.prototype.defaults, {
-                data_type: 1,
+                data_type: "text",
                 col_alias: 'New Column Name',
                 is_display_field: true,
                 display_width: 100,
@@ -21,10 +21,23 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 has_snippet_field: 'Hidden',
                 ordering: 'Hidden'
             },
-            initialize: function (opts) {
-                Field.__super__.initialize.apply(this, arguments);
-                //this.fetchSchemaOpts();
-            }
+            initialize: function (data, opts) {
+                console.log(data, opts);
+                // This had to be made dynamic because there are different Fields
+                // for each form
+                if (this.collection && this.collection.url) {
+                    this.urlRoot = this.collection.url;
+                } else if (opts.id) {
+                    this.urlRoot = '/api/0/forms/' + opts.id + '/fields/';
+                } else {
+                    alert("id initialization parameter required for Field");
+                    return;
+                }
+                if (this.get("field")) {
+                    this.url = this.urlRoot + this.get("field") + "/";
+                }
+                Base.prototype.initialize.apply(this, arguments);
+    		}
         });
-        return Base;
+        return Field;
     });

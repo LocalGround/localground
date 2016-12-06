@@ -3,8 +3,10 @@ define([
     "jquery",
     "handlebars",
     "marionette",
+    "models/form",
+    "apps/gallery/views/create-form",
     "text!../templates/toolbar-dataview.html"
-], function (_, $, Handlebars, Marionette, ToolbarTemplate) {
+], function (_, $, Handlebars, Marionette, FormModel, CreateForm, ToolbarTemplate) {
     "use strict";
     var ToolbarDataView = Marionette.ItemView.extend({
         /*
@@ -14,7 +16,8 @@ define([
         events: {
             'click #toolbar-search': 'doSearch',
             'click #toolbar-clear': 'clearSearch',
-            'change #media-type': 'changeDisplay'
+            'change #media-type': 'changeDisplay',
+            'click #add-data' : 'showCreateForm'
         },
 
         template: Handlebars.compile(ToolbarTemplate),
@@ -31,6 +34,9 @@ define([
             _.extend(this, opts);
             Marionette.ItemView.prototype.initialize.call(this);
             this.template = Handlebars.compile(ToolbarTemplate);
+            // Trying to get the listener to be correct
+            // I am not sure yet on how it properly works
+            this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
         },
 
         clearSearch: function (e) {
@@ -58,6 +64,20 @@ define([
         changeDisplay: function (e) {
             var dataType =  $(e.currentTarget).val();
             this.app.router.navigate('//' + dataType, { trigger: true });
+        },
+
+        showCreateForm: function () {
+            var createForm = new CreateForm({
+                model: new FormModel(),
+                app: this.app
+            });
+            // this is a hack: for now, add the modal to this view:
+            this.$el.append(createForm.$el);
+            this.$el.find('.modal').show();
+          //alert("Display create form");
+          //this.app.vent.trigger('share-project', { model: this.model });
+          // How do I display the create form if there is a
+          // share form at home-app.js
         }
     });
     return ToolbarDataView;

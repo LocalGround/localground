@@ -26,8 +26,8 @@ define(["underscore", "models/base"], function (_, Base) {
             if (this.get("user")) {
                 this.url = this.urlRoot + this.get("user") + "/";
             }
-			Base.prototype.initialize.apply(this, arguments);
-		},
+			      Base.prototype.initialize.apply(this, arguments);
+		    },
         destroy: function (options) {
             //this.set("id", 1); //BUG: the ID needs to be set in order for the destroy to work.
             // needed to override the destroy method because the ProjectUser

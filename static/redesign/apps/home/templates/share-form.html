@@ -1,69 +1,70 @@
-<div class="modal"><!-- Modal content -->
-
-  <!-- Edit the contents of the model to look like the old one
-  due to having more roboust user interface
--->
+<div class="modal">
   <div class="modal-content">
     <header>
       <span class="close">&times;</span>
       <h1>{{ name }} Settings</h1>
     </header>
 
-    <div class = "modal-body">
-      <div class = "inline-form">
-        <label for"projectName">Title: </label>
-        <input type="text" placeholder="Project Name" id="projectName" value="{{name}}">
-      </div>
-      <div class = "inline-form">
-        <label for"projectName">Description: </label>
-        <textarea type="text" rows = "10" placeholder="Project Name" id="projectName" value="{{ caption }}"></textarea>
-      </div> 
-
-
-      <!--<h2>Sharing</h2> {{projectUsers.length}}-->
-
-      <div class = "inline-form" style = "margin-top:30px;">
-        <label for="share_type">Sharing: </label>
-        <div class = "container-3-4">
-          <select id="share_type">
-            <option value>Select Type</option>
-            <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>
-            <option value="2" {{#ifequal access_authority 2}} SELECTED {{/ifequal}}>Public with link</option>
-            <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>
-          </select>
+    <div class="modal-body">
+        <div class="inline-form">
+            <label for="projectName">Title: </label>
+            <input type="text" placeholder="Project Name" id="projectName" value="{{name}}">
         </div>
-      </div>
-      <div  class = "inline-form">
-        <div class = "container-1-4">
+        <div class="inline-form">
+            <label for="projectName">Description: </label>
+            <input type="text" placeholder="Project Name" id="caption" value="{{ caption }}">
         </div>
-        <div class = "container-3-4">
-          <div id="userTableDiv">
-            <table class="userTable">
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Role</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="userList"></tbody>
-            </table>
-            <a class="new_user_button button-tertiary"><i class="fa fa-plus add" aria-hidden="true"></i>Add new user</a>
-          </div>
-          <div id="addNewUser">
-            <a class="new_user_button button-tertiary"><i class="fa fa-plus add" aria-hidden="true"></i>Add new user</a>
-          </div>
-        </div>
-      </div>
+        {{#if id}}
+            <!-- owner isn't an editable field -->
+        {{ else }}
+            <div class="inline-form">
+                <label for="owner">Owner: </label>
+                <input type="text" placeholder="owner" id="owner" value="{{ owner }}">
+            </div>
+        {{/if}}
+        <div class="inline-form">
+            <label for="projectName">Tags: </label>
+            <input type="text" placeholder="tags" id="tags" value="{{ tags }}">
+        </div> 
 
+        <div class="inline-form" style="margin-top:30px;">
+            <label for="share_type">Sharing: </label>
+            <div class="container-3-4">
+                <select id="share_type">
+                      <option value>Select Type</option>
+                      <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>
+                      <option value="2" {{#ifequal access_authority 2}} SELECTED {{/ifequal}}>Public with link</option>
+                      <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>
+                </select>
+            </div>
+        </div>
+        <div  class="inline-form">
+            <div class="container-1-4">
+            </div>
+            <div class="container-3-4">
+                <div id="userTableDiv">
+                    <table class="userTable">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="userList"></tbody>
+                    </table>
+                </div>
+                <div id="addNewUser">
+                    <a class="new_user_button button-tertiary"><i class="fa fa-plus add" aria-hidden="true"></i>Add new user</a>
+                </div>
+            </div>
+        </div>
     </div>
-
-
     <footer>
-      <div class = "buttons">
-        <button class="save-project-settings button-secondary">Cancel</button>
-        <button class="save-project-settings button-primary">Save</button>
-      </div>
+        <div class="buttons">
+            <button class="close-modal button-secondary">Cancel</button>
+            <button class="save-project-settings button-primary">Save</button>
+        </div>
     </footer>
   </div>
 </div>

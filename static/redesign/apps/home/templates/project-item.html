@@ -5,13 +5,13 @@
         <p>{{ caption }}</p>
     </div>
     <div class = "project-detail">
-        <span class="action tag">
+        <a class="action tag">
         {{#ifequal access_authority 1}}
             Private
         {{ else }}
             Public
         {{/ifequal}}
-        </span>
+        </a>
         <span class="action"><i class="fa fa-clock-o" aria-hidden="true"></i>5 days ago</span>
         <button id="delete_project">Delete</button>
     </div>

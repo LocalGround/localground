@@ -1,0 +1,16 @@
+<td>
+  {{#if user }}
+      <span class="fieldname">{{field}}</span>
+  {{else}}
+      <input type="text" class="fieldname" placeholder="field name" value="{{ field }}"></td>
+  {{/if}}
+</td>
+<td>
+  <select class="fieldType">
+      <option value>Select One</option>
+      <option value="text">Text</option>
+      <option value="integer">Integer</option>
+      <option value="boolean">Boolean</option>
+  </select>
+</td>
+<td><a href="#" class="delete-field">&times;</a></td>

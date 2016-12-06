@@ -16,6 +16,13 @@ define(["marionette",
                 'click .action': 'shareModal',
                 'click #delete_project': 'deleteProject'
             },
+
+            modelEvents: {
+                // When data from Item view changes anywhere and anytime,
+                // re-render to update
+                "change": "render"
+            },
+
             shareModal: function () {
                 //tell the home-app to show the share-project modal:
                 this.app.vent.trigger('share-project', { model: this.model });
