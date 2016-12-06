@@ -26,8 +26,7 @@ define(
           var field = new Field(null, { id: this.get("id") }),
               that = this;
           field.set("name", name);
-          field.set("field", fieldType);
-          field.set("authority", 3);
+          field.set("data_type", fieldType);
           field.save(null, {
               success: function () {
                   that.getFields();

@@ -4,7 +4,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
         var Field = Base.extend({
             urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
             defaults: _.extend({}, Base.prototype.defaults, {
-                data_type: 1,
+                data_type: "text",
                 col_alias: 'New Column Name',
                 is_display_field: true,
                 display_width: 100,
@@ -36,8 +36,8 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 if (this.get("field")) {
                     this.url = this.urlRoot + this.get("field") + "/";
                 }
-    			      Base.prototype.initialize.apply(this, arguments);
-    		    }
+                Base.prototype.initialize.apply(this, arguments);
+    		}
         });
-        return Base;
+        return Field;
     });
