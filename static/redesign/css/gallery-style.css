@@ -5,6 +5,9 @@
     margin-left: 45%;
 } 
 
+#toolbar-main > div{
+    display:flex;    
+}
 
 /************************************ Cards ************************************/
 
@@ -34,13 +37,13 @@
 
 .column h1{
     font-size: 14px;
-    padding: 10px 0 1px;
+    padding: 10px 6px 1px;
     font-weight: 400;
 }
 
 .column h2{
     font-size: 12px;
-    padding: 0 0 12px;
+    padding: 0 6px 12px;
     color: #7a7a7a;
     font-weight: 400;
 }
@@ -71,7 +74,7 @@
 .dataview {
     top: 110px;
     position: absolute;
-    background-color: #ecedf2;
+    background-color: #f0f1f5;
     display: flex;
     height: calc(100vh - 109px);
     width: 100%;

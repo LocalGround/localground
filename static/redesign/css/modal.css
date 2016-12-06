@@ -10,7 +10,7 @@
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+    background-color: rgba(22, 25, 42, 0.4);/* Black w/ opacity */
 }
 
 /* Modal Content (image) */
@@ -60,6 +60,7 @@
     font-size: 40px;
     font-weight: bold;
     transition: 0.3s;
+    line-height:14px;
 }
 
 .close:hover,
@@ -75,3 +76,10 @@
         width: 100%;
     }
 }
+
+
+
+
+
+
+

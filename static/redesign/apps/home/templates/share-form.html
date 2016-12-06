@@ -4,57 +4,66 @@
   due to having more roboust user interface
 -->
   <div class="modal-content">
-    <span class="close">&times;</span>
-    <h1>Project Settings</h1>
+    <header>
+      <span class="close">&times;</span>
+      <h1>Settings for {{ name }}</h1>
+    </header>
 
-    <h2>Project Access for {{ name }}</h2>
+    <div class = "modal-body">
+      <div class = "inline-form">
+        <label for"projectName">Title: </label>
+        <input type="text" placeholder="Project Name" id="projectName" value="{{name}}">
+      </div>
+      <div class = "inline-form">
+        <label for"projectName">Description: </label>
+        <input type="text" placeholder="Project Name" id="projectName" value="{{ caption }}">
+      </div> 
 
-    <label for"projectName">Name: </label>
-    <input type="text" placeholder="Project Name" id="projectName" value="{{name}}">
-    <br>
-    <label for="share_type">Sharing Type: </label>
-    <select id="share_type">
-      <option value>Select Type</option>
-      <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>
-      <option value="2" {{#ifequal access_authority 2}} SELECTED {{/ifequal}}>Public with link</option>
-      <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>
-    </select>
-    <br>
-    <label for"owner">Owner: </label>
-    <input type="text" placeholder="username" id="owner" value="{{owner}}">
 
-    <h2>Number of Users: {{projectUsers.length}}</h2>
+      <!--<h2>Sharing</h2> {{projectUsers.length}}-->
 
-    <div id="userTableDiv">
-      <table class="userTable" style="border: 1px solid black;">
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Role</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="userList"></tbody>
-      </table>
-      <br>
-      <a class="new_user_button">Add new user</a>
+      <div class = "inline-form" style = "margin-top:30px;">
+        <label for="share_type">Sharing: </label>
+        <div class = "container-3-4">
+          <select id="share_type">
+            <option value>Select Type</option>
+            <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>
+            <option value="2" {{#ifequal access_authority 2}} SELECTED {{/ifequal}}>Public with link</option>
+            <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>
+          </select>
+        </div>
+      </div>
+      <div  class = "inline-form">
+        <div class = "container-1-4">
+        </div>
+        <div class = "container-3-4">
+          <div id="userTableDiv">
+            <table class="userTable">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Role</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="userList"></tbody>
+            </table>
+            <a class="new_user_button button-tertiary"><i class="fa fa-plus add" aria-hidden="true"></i>Add new user</a>
+          </div>
+          <div id="addNewUser">
+            <a class="new_user_button button-tertiary"><i class="fa fa-plus add" aria-hidden="true"></i>Add new user</a>
+          </div>
+        </div>
+      </div>
+
     </div>
 
 
-
-    <div id="addNewUser" style="border: 1px solid black">
-      <p>
-        Looks like this one has no users yet.
-        Why not add a new user?
-      </p>
-      <br>
-      <a class="new_user_button">Add new user</a>
-    </div>
-    <br>
-
-
-
-
-    <button class="save-project-settings">Save Settings</button>
+    <footer>
+      <div class = "buttons">
+        <button class="save-project-settings button-secondary">Cancel</button>
+        <button class="save-project-settings button-primary">Save</button>
+      </div>
+    </footer>
   </div>
 </div>

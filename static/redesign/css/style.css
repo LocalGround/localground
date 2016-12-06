@@ -124,23 +124,24 @@ span.action.tag:hover{
     color:#4e70d4;
 }
 
-#model-form fieldset label{
-    font-size: 12px;
-    float: left;
-    min-height: 22px;
-    padding-top: 8px;
-    line-height: 16px;
+#model-form fieldset label,
+.inline-form label{
+    padding: 8px;
     font-weight: 400;
     color: #666;
-    min-width: 20%;
-    margin-right: 4%;
     font-size: 12px;
     text-align: right;
     word-wrap: break-word;
+    flex:1;
 }
 
-#model-form fieldset textarea, #model-form fieldset input{
-    width: 100%;
+.inline-form div > select{
+    margin-top:7px;
+}
+
+#model-form fieldset textarea, 
+#model-form fieldset input,
+.inline-form  input{
     padding: 4px 6px;
     border-radius: 2px;
     font-size: 14px;
@@ -148,15 +149,18 @@ span.action.tag:hover{
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     margin: 1px;
-    width: 75%;
-    float: right;
+    width:100%;
 }
 
-fieldset > div{
+fieldset > div,
+.inline-form{
     margin: 4px 16px;
-    display: block;
-    float: left;
+    display: flex;
     width: calc(100% - 32px);
+}
+
+.inline-form > select{
+    margin:6px 0;
 }
 
 .list-indent, .list-indent-simple, .preview-filter-list {
@@ -179,6 +183,18 @@ span.confirmation{
 
 }
 
+/************************************ Table type ************************************/
+
+.userTable{
+    text-align: left;
+    width:100%;
+    margin:10px;
+}
+
+.userTable th{
+    font-weight:400;
+    font-size: 12px;
+}
 
 /************************************ Dropdown Menu ************************************/
 .dropdown-menu{
@@ -285,6 +301,17 @@ nav .selected{
     letter-spacing: 0.7px;
     width:80px;
 }
+
+.button-tertiary{
+    border:solid;
+    border-width:1px;
+    border-color:#DDDDDD;
+    border-radius:3px;
+    padding: 4px 8px;
+    font-size:12px;
+    background-color:#f1f1f1;
+}
+
 
 .button-secondary:hover{
     background-color:#f1f3fb;
@@ -444,9 +471,6 @@ input[type="number"]{
     box-shadow: 0 2px 1px 1px rgba(53, 76, 122, 0.06);
 }
 
-#toolbar-main > div{
-    display:flex;    
-}
 
 #toolbar-main nav{
     font-size:12px;
@@ -542,5 +566,13 @@ input[type="number"]{
     margin:0 20px;
 }
 
+.container-1-4{
+    flex:1;
+}
 
+#model-form fieldset>div>div, 
+.inline-form input,
+.inline-form .container-3-4{
+    flex:3;
+}
 

@@ -93,3 +93,8 @@
 .project-detail{
     width:400px;
 }
+
+
+#toolbar-main > div{
+    display:flex;    
+}
