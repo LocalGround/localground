@@ -8,36 +8,39 @@
     <div class="modal-body">
         <div class="inline-form">
             <label for="projectName">Title: </label>
-            <input type="text" placeholder="Project Name" id="projectName" value="{{name}}">
+            <input type="text" placeholder="Type name of project" id="projectName" value="{{name}}">
         </div>
         <div class="inline-form">
             <label for="projectName">Description: </label>
-            <input type="text" placeholder="Project Name" id="caption" value="{{ caption }}">
+            <textarea placeholder="Type description of project" id="caption">{{ caption }}</textarea>
         </div>
         {{#if id}}
             <!-- owner isn't an editable field -->
         {{ else }}
             <div class="inline-form">
                 <label for="owner">Owner: </label>
-                <input type="text" placeholder="owner" id="owner" value="{{ owner }}">
+                <input type="text" placeholder="TODO: Auto-detect this" id="owner" value="{{ owner }}">
             </div>
         {{/if}}
         <div class="inline-form">
             <label for="projectName">Tags: </label>
-            <input type="text" placeholder="tags" id="tags" value="{{ tags }}">
-        </div> 
-
-        <div class="inline-form" style="margin-top:30px;">
-            <label for="share_type">Sharing: </label>
-            <div class="container-3-4">
-                <select id="share_type">
-                      <option value>Select Type</option>
-                      <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>
-                      <option value="2" {{#ifequal access_authority 2}} SELECTED {{/ifequal}}>Public with link</option>
-                      <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>
-                </select>
-            </div>
+            <input type="text" placeholder="put some tags for easy search" id="tags" value="{{ tags }}">
         </div>
+        
+        <div class = "inline-form">
+            <label>Friendly URL:</label>
+            <input id="slug" type="text" value="{{ slug }}" placeholder="put name or leave blank for autofill">
+        </div>
+
+        <div class = "inline-form">
+			    <label for="share_type">Sharing Permissions:</label>
+			    <div id="share_type" class = "container-3-4">
+					<select id="access_authority">
+				        <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>
+				        <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>
+				    </select>
+				</div>
+			</div>
         <div  class="inline-form">
             <div class="container-1-4">
             </div>

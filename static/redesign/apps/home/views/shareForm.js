@@ -18,7 +18,8 @@ define(["jquery",
                 'click .action': 'shareModal',
                 'click .save-project-settings': 'saveProjectSettings',
                 'click .new_user_button': 'addUserButton',
-                'click .delete-project-user': 'removeRow'
+                'click .delete-project-user': 'removeRow',
+                'blur #projectName': 'generateSlug'
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -38,6 +39,13 @@ define(["jquery",
             },
             childViewOptions: function () {
                 return this.model.toJSON();
+            },
+            generateSlug: function () {
+                var name = this.$el.find('#projectName').val(),
+                    slug = name.toLowerCase().replace(/\s+/g, "-");
+                if (this.$el.find('#slug').val().length == 0) {
+                    this.$el.find('#slug').val(slug);
+                }
             },
             getChildView: function () {
                 // this child view is responsible for displaying
@@ -105,11 +113,11 @@ define(["jquery",
             saveProjectSettings: function () {
                 // If a new project is made, then create a new projectUsers collection
                 // to store the added users
-                var projectName = $('#projectName').val(),
-                    shareType = $('#share_type').val(),
-                    caption = $('#caption').val(),
-                    owner = $('#owner').val(),
-                    tags = $('#tags').val();
+                var projectName = this.$el.find('#projectName').val(),
+                    shareType = this.$el.find('#access_authority').val(),
+                    caption = this.$el.find('#caption').val(),
+                    owner = this.$el.find('#owner').val(),
+                    tags = this.$el.find('#tags').val();
                 if (this.blankInputs()) {
                     return;
                 }
@@ -123,7 +131,7 @@ define(["jquery",
             },
 
             createNewProjectUsers: function () {
-                var $userList = $("#userList"),
+                var $userList = this.$el.find("#userList"),
                     $users = $userList.children(),
                     i,
                     $row,
@@ -159,7 +167,7 @@ define(["jquery",
 
             // Create a new user row with the necessary fields
             addUserButton: function () {
-                var userTableDisplay = $(".userTable"),
+                var userTableDisplay = this.$el.find(".userTable"),
                     $newTR = $("<tr class='new-row'></tr>"),
                     template = Handlebars.compile(ProjectUserFormTemplate);
 
@@ -178,33 +186,40 @@ define(["jquery",
                 // to prompt user to fill in
                 // the required fields
                 var blankFields = false,
-                    projectName_ = $('#projectName').val(),
-                    shareType_ = $('#share_type').val(),
-                    owner_ = $('#owner').val();
+                    projectName_ = this.$el.find('#projectName').val(),
+                    shareType_ = this.$el.find('#access_authority').val(),
+                    slug_ = this.$el.find('#slug').val(),
+                    owner_ = this.$el.find('#owner').val();
 
-                $('#projectName').prev().css("color", '#000000');
-                $('#share_type').prev().css("color", '#000000');
-                $('#owner').prev().css("color", '#000000');
+                this.$el.find('#projectName').prev().css("color", '#000000');
+                this.$el.find('#access_authority').prev().css("color", '#000000');
+                this.$el.find('#owner').prev().css("color", '#000000');
                 if (!($.trim(projectName_))) {
                     blankFields = true;
-                    $('#projectName').prev().css("color", '#FF0000');
+                    this.$el.find('#projectName').prev().css("color", '#FF0000');
+                }
+
+                if (!($.trim(slug_))) {
+                    blankFields = true;
+                    this.$el.find('#slug').prev().css("color", '#FF0000');
                 }
 
                 if (!(shareType_)) {
                     blankFields = true;
-                    $('#share_type').prev().css("color", '#FF0000');
+                    this.$el.find('#access_authority').prev().css("color", '#FF0000');
                 }
 
-                if (!($.trim(owner_))) {
+                // only validate owner on create project (not update project)
+                if (!this.model.get("id") && !($.trim(owner_))) {
                     blankFields = true;
-                    $('#owner').prev().css("color", '#FF0000');
+                    this.$el.find('#owner').prev().css("color", '#FF0000');
                 }
                 return blankFields;
             },
 
             checkNumberOfRows: function () {
-                var $userList = $("#userList"),
-                    $userTableDiv = $("#userTableDiv"),
+                var $userList = this.$el.find("#userList"),
+                    $userTableDiv = this.$el.find("#userTableDiv"),
                     numOfUsers = $userList.children().length;
                 if (numOfUsers > 0 || numOfUsers == undefined || numOfUsers == null) {
                     $userTableDiv.show();
