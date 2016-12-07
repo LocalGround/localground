@@ -136,6 +136,7 @@ define(["jquery",
                     i,
                     $row,
                     username,
+                    usernameInput,
                     authorityID,
                     existingProjectUser;
                 if (!this.collection) {
@@ -147,16 +148,31 @@ define(["jquery",
                 //loop through each table row:
                 for (i = 0; i < $users.length; i++) {
                     $row = $($users[i]);
+                    $row.css("background-color", "#FFFFFF");
                     authorityID = parseInt($row.find(".authority").val(), 10);//base10
                     if ($row.attr("id") == this.model.id) {
                         //edit existing projectusers:
                         username = $row.find(".username").html();
                         existingProjectUser = this.model.getProjectUserByUsername(username);
+                        /*
+                        Before the individual file is saved,
+                        make sure there are no empty values
+                        */
+                        if (!authorityID){
+                          $row.css("background-color", "#FFAAAA");
+                          return;
+                        }
                         existingProjectUser.set("authority", authorityID);
                         existingProjectUser.save();
                     } else {
                         //create new projectuser:
                         username = $row.find(".username").val();
+                        usernameInput = $row.find(".username");
+                        if (!authorityID || (username.trim() == "" || username == undefined )){
+                          $row.css("background-color", "#FFAAAA");
+                          this.errorUserName(usernameInput);
+                          return;
+                        }
                         this.model.shareWithUser(username, authorityID);
                     }
                 }
@@ -215,6 +231,19 @@ define(["jquery",
                     this.$el.find('#owner').prev().css("color", '#FF0000');
                 }
                 return blankFields;
+            },
+
+            errorUserName: function(_usernameInput){
+              try{
+                if (_usernameInput.val().trim() == "" || _usernameInput.val() == undefined){
+                  throw "username missing"
+                }
+              }
+              catch(err){
+                _usernameInput.attr("placeholder", err);
+                _usernameInput.css("background-color", "#FFDDDD");
+                //_usernameInput.css("color", "#FF0000");
+              }
             },
 
             checkNumberOfRows: function () {
