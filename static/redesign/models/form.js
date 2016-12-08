@@ -25,7 +25,7 @@ define(
       createField: function (name, fieldType) {
           var field = new Field(null, { id: this.get("id") }),
               that = this;
-          field.set("name", name);
+          field.set("col_alias", name);
           field.set("data_type", fieldType);
           field.save(null, {
               success: function () {

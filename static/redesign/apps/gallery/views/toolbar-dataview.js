@@ -3,10 +3,9 @@ define([
     "jquery",
     "handlebars",
     "marionette",
-    "models/form",
     "apps/gallery/views/create-form",
     "text!../templates/toolbar-dataview.html"
-], function (_, $, Handlebars, Marionette, FormModel, CreateForm, ToolbarTemplate) {
+], function (_, $, Handlebars, Marionette, CreateForm, ToolbarTemplate) {
     "use strict";
     var ToolbarDataView = Marionette.ItemView.extend({
         /*
@@ -68,7 +67,6 @@ define([
 
         showCreateForm: function () {
             var createForm = new CreateForm({
-                model: new FormModel(),
                 app: this.app
             });
             // this is a hack: for now, add the modal to this view:
