@@ -21,7 +21,7 @@ define(
                 Base.prototype.initialize.apply(this, arguments);
             },
 
-            shareWithUser: function (username, authorityID) {
+            shareWithUser: function (username, authorityID, errorCallback) {
                 var projectUser = new ProjectUser(null, { id: this.get("id") }),
                     that = this;
                 projectUser.set("user", username);
@@ -29,7 +29,8 @@ define(
                 projectUser.save(null, {
                     success: function () {
                         that.getProjectUsers();
-                    }
+                    },
+                    error: errorCallback
                 });
             },
 

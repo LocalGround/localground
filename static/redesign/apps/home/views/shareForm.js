@@ -174,7 +174,14 @@ define(["jquery",
                             this.errorUserName(usernameInput);
                             return;
                         }
-                        this.model.shareWithUser(username, authorityID);
+                        this.model.shareWithUser(username, authorityID, function(response, error){
+                            var errorObject = JSON.parse(error.responseText);
+                            console.log(response, error);
+                            console.log(error.responseText.user);
+                            $row.css("background-color", "#FFAAAA");
+                            $row.css("color", "#AA0000");
+                            $row.find("td")[0].append(errorObject.user);
+                        });
                     }
                 }
                 // fire this event to redraw the project list underneath the modal.
