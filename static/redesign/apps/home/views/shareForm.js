@@ -197,7 +197,6 @@ define(["jquery",
                 this.checkNumberOfRows();
             },
             initAutoComplete: function ($elem) {
-                console.log($elem);
                 $elem.autocomplete({
                     source: function (request, response) {
                         $.ajax({
@@ -207,21 +206,10 @@ define(["jquery",
                                 q: request.term
                             },
                             success: function (data) {
-                                console.log(data);
                                 response(data);
                             }
                         });
-                    }/*,
-                    minLength: 3,
-                    select: function (event, ui) {
-                        console.log(ui.item ? ui.item.label : "Nothing selected, input was " + this.value);
-                    },
-                    open: function () {
-                        $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
-                    },
-                    close: function () {
-                        $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
-                    }*/
+                    }
                 });
             },
 
