@@ -246,6 +246,15 @@ define(["jquery",
               }
             },
 
+            findUserName: function(){
+                // Add in the list of users from the usernames web link
+                var availableTags = [];
+
+                this.$el.find(".username").autocomplete({
+                    source: availableTags
+                });
+            },
+
             checkNumberOfRows: function () {
                 var $userList = this.$el.find("#userList"),
                     $userTableDiv = this.$el.find("#userTableDiv"),
