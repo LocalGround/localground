@@ -27,7 +27,7 @@ require.config({
         'highcharts_export': '//code.highcharts.com/modules/exporting',
         'jquery': '//code.jquery.com/jquery-1.8.0.min',
         'jquery.bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min',
-        'jquery.ui': '//code.jquery.com/ui/1.11.4/jquery-ui.min',
+        'jquery.ui': '//code.jquery.com/ui/1.12.1/jquery-ui.min',
         'kernel': 'external/kernel.min',
         'mapplication': './mapplication',
         'print_base': "./print_base",

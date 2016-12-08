@@ -5,7 +5,8 @@ define(["jquery",
         "text!../templates/share-form.html",
         "text!../templates/project-user-item.html",
         "models/project",
-        "collections/projectUsers"],
+        "collections/projectUsers",
+        "jquery.ui"],
     function ($, Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
               Project, ProjectUsers) {
         'use strict';
@@ -159,8 +160,8 @@ define(["jquery",
                         make sure there are no empty values
                         */
                         if (!authorityID){
-                          $row.css("background-color", "#FFAAAA");
-                          return;
+                            $row.css("background-color", "#FFAAAA");
+                            return;
                         }
                         existingProjectUser.set("authority", authorityID);
                         existingProjectUser.save();
@@ -169,9 +170,9 @@ define(["jquery",
                         username = $row.find(".username").val();
                         usernameInput = $row.find(".username");
                         if (!authorityID || (username.trim() == "" || username == undefined )){
-                          $row.css("background-color", "#FFAAAA");
-                          this.errorUserName(usernameInput);
-                          return;
+                            $row.css("background-color", "#FFAAAA");
+                            this.errorUserName(usernameInput);
+                            return;
                         }
                         this.model.shareWithUser(username, authorityID);
                     }
@@ -190,9 +191,38 @@ define(["jquery",
                 userTableDisplay.show();// Make this visible even with 0 users
                 $newTR.append(template());
                 this.$el.find("#userList").append($newTR);
+                this.initAutoComplete($newTR.find(".username"));
                 // Now find out how many rows are there
                 // to either show user table or add user prompt
                 this.checkNumberOfRows();
+            },
+            initAutoComplete: function ($elem) {
+                console.log($elem);
+                $elem.autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: "/api/0/usernames/",
+                            dataType: "json",
+                            data: {
+                                q: request.term
+                            },
+                            success: function (data) {
+                                console.log(data);
+                                response(data);
+                            }
+                        });
+                    }/*,
+                    minLength: 3,
+                    select: function (event, ui) {
+                        console.log(ui.item ? ui.item.label : "Nothing selected, input was " + this.value);
+                    },
+                    open: function () {
+                        $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+                    },
+                    close: function () {
+                        $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                    }*/
+                });
             },
 
             blankInputs: function () {
