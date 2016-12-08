@@ -198,7 +198,11 @@ define(["jquery",
             },
             initAutoComplete: function ($elem) {
                 $elem.autocomplete({
+                    minLength: 0,
                     source: function (request, response) {
+                      // make the search term accept terms without case sensitivity
+                      // However, that did not work inside source
+                      var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
                         $.ajax({
                             url: "/api/0/usernames/",
                             dataType: "json",
