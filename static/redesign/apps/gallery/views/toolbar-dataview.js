@@ -4,8 +4,9 @@ define([
     "handlebars",
     "marionette",
     "apps/gallery/views/create-form",
+    "lib/modals/modal",
     "text!../templates/toolbar-dataview.html"
-], function (_, $, Handlebars, Marionette, CreateForm, ToolbarTemplate) {
+], function (_, $, Handlebars, Marionette, CreateForm, Modal, ToolbarTemplate) {
     "use strict";
     var ToolbarDataView = Marionette.ItemView.extend({
         /*
@@ -18,6 +19,7 @@ define([
             'change #media-type': 'changeDisplay',
             'click #add-data' : 'showCreateForm'
         },
+        modal: null,
 
         template: Handlebars.compile(ToolbarTemplate),
 
@@ -36,6 +38,8 @@ define([
             // Trying to get the listener to be correct
             // I am not sure yet on how it properly works
             this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
+
+            this.modal = new Modal();
         },
 
         clearSearch: function (e) {
@@ -69,13 +73,12 @@ define([
             var createForm = new CreateForm({
                 app: this.app
             });
-            // this is a hack: for now, add the modal to this view:
-            this.$el.append(createForm.$el);
-            this.$el.find('.modal').show();
-          //alert("Display create form");
-          //this.app.vent.trigger('share-project', { model: this.model });
-          // How do I display the create form if there is a
-          // share form at home-app.js
+            this.modal.update({
+                view: createForm,
+                title: 'Create New Form',
+                saveFunction: createForm.saveFormSettings
+            });
+            this.modal.show();
         }
     });
     return ToolbarDataView;

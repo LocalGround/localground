@@ -80,14 +80,14 @@ define([
         fetchShareData: function () {
             this.model.getFields();
         },
-        hideModal: function () {
+        /*hideModal: function () {
             this.$el.hide();
         },
-        /*
+        
         Behavior problem: After opeiing the modal window and closing
         for the first time, modal windows opo up when
         clicking on the add button again.
-        */
+        
         onRender: function () {
             //console.log("rerender");
             var modal = this.$el.find('.modal').get(0),
@@ -104,7 +104,7 @@ define([
                     modal.style.display = "none";
                 }
             };
-        },
+        },*/
 
         // Need to add more functions to handle various events
         // and to get the form to open up
