@@ -40,7 +40,6 @@ define(["jquery",
                     this.collection = this.model.projectUsers;
                     Marionette.CompositeView.prototype.initialize.call(this);
                     this.model.getProjectUsers();
-                    this.collection = this.model.projectUsers;
                     this.attachCollectionEventHandlers();
                 }
                 this.listenTo(this.model, 'sync', this.createNewProjectUsers);

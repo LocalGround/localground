@@ -15,14 +15,15 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
 
-            /* to check if editing works
+            //* to check if editing works
+            // for now we test the one id based on project id
             this.model = new Form({ id: 13 });
             this.listenTo(this.model, 'reset', this.test);
             var that = this;
             this.model.fetch({ success: function () {
                 that.render();
             }});
-            */ //end check if editing works
+            //*/ //end check if editing works
 
             if (this.model == undefined) {
                 // Create a blank project if new project made
@@ -35,12 +36,13 @@ define([
             this.listenTo(this.model, 'sync', this.createNewFields);
             this.template = Handlebars.compile(CreateFormTemplate);
             this.render();
-            Marionette.CompositeView.prototype.initialize.call(this);
         },
         initModel: function () {
             this.collection = this.model.fields;
+            Marionette.CompositeView.prototype.initialize.call(this);
             this.listenTo(this.collection, 'reset', this.render);
             this.model.getFields();
+            this.attachCollectionEventHandlers();
         },
 
         childViewContainer: "#fieldList",
@@ -70,6 +72,11 @@ define([
                     console.log(this.model.toJSON());
                 }
             });
+        },
+        attachCollectionEventHandlers: function () {
+            this.listenTo(this.collection, 'add', this.render);
+            this.listenTo(this.collection, 'reset', this.render);
+            this.listenTo(this.collection, 'destroy', this.render);
         },
         template: Handlebars.compile(CreateFormTemplate),
         events: {
@@ -109,7 +116,6 @@ define([
         // Need to add more functions to handle various events
         // and to get the form to open up
         saveFormSettings: function () {
-            alert("Need to save form");
             var $formName = $('#formName').val(),
                 $shareType = $('#share_type').val(),
                 $caption = $('#caption').val(),
@@ -132,42 +138,43 @@ define([
         createNewFields: function () {
             console.log(this.model);
             console.log("createNewFields Called");
-            if (this.model.fields == undefined) {
-                console.log("this.model.fields is undefined");
+            // Gather the list of fields changed / added
+            var $fieldList = $("#fieldList"),
+                $fields = $fieldList.children(),
+                i,
+                $row,
+                fieldName,
+                fieldType,
+                existingField;
+
+            this.collection.fetch({ reset: true });
+            this.listenTo(this.collection, 'reset', this.render);
+            if (!this.model.fields) {
                 this.model.fields = new Fields(null,
-                        { id: this.model.get("id") }
+                        { id: this.model.get("id")}
                     );
                 this.collection = this.model.fields;
-                // Gather the list of fields changed / added
-                var $fieldList = $("#fieldList"),
-                    $fields = $fieldList.children(),
-                    i,
-                    $row,
-                    fieldName,
-                    fieldType,
-                    existingField;
-
-                //loop through each table row:
-                for (i = 0; i < $fields.length; i++) {
-                    $row = $($fields[i]);
-                    console.log(i);
-                    console.log($row);
-                    if ($row.attr("id") == this.model.id) {
-                        //edit existing fields:
-                        console.log("This field already exists");
-                        fieldName = $row.find(".fieldname").html();
-                        existingField = this.model.getFieldByName(fieldName);
-                        existingField.save();
-                    } else {
-                        //create new fields:
-                        console.log("Create new Field");
-                        fieldName = $row.find(".fieldname").val();
-                        fieldType = $row.find(".fieldType").val();
-                        this.model.createField(fieldName, fieldType);
-                    }
+                this.attachCollectionEventHandlers();
+            }
+            
+            //loop through each table row:
+            for (i = 0; i < $fields.length; i++) {
+                $row = $($fields[i]);
+                console.log(i);
+                console.log($row);
+                if ($row.attr("id") == this.model.id) {
+                    //edit existing fields:
+                    console.log("This field already exists");
+                    fieldName = $row.find(".fieldname").html();
+                    existingField = this.model.getFieldByName(fieldName);
+                    existingField.save();
+                } else {
+                    //create new fields:
+                    console.log("Create new Field");
+                    fieldName = $row.find(".fieldname").val();
+                    fieldType = $row.find(".fieldType").val();
+                    this.model.createField(fieldName, fieldType);
                 }
-                this.collection.fetch({ reset: true });
-                this.listenTo(this.collection, 'reset', this.render);
             }
         },
 

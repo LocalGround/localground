@@ -30,6 +30,9 @@ define(
           field.save(null, {
               success: function () {
                   that.getFields();
+              },
+              error: function(){
+                  console.error("Field is not saved");
               }
           });
       }
