@@ -35,8 +35,18 @@ define(
                   console.error("Field is not saved");
               }
           });
-      }
-
+      },
+        getFieldByName: function (col_alias) {
+            console.log("fieldname", col_alias);
+            var i, f, u;
+            for (i = 0; i < this.fields.length; i++) {
+                f = this.fields.at(i);
+                if (f.get("col_alias") === col_alias) {
+                    return f;
+                }
+            }
+            return null;
+        }
     });
     return Form;
 });

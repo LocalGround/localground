@@ -33,7 +33,7 @@ define([
                 console.log("initializing form...");
                 this.initModel();
             }
-            this.listenTo(this.model, 'sync', this.createNewFields);
+            //this.listenTo(this.model, 'sync', this.createNewFields);
             this.template = Handlebars.compile(CreateFormTemplate);
             this.render();
         },
@@ -119,7 +119,8 @@ define([
             var $formName = $('#formName').val(),
                 $shareType = $('#share_type').val(),
                 $caption = $('#caption').val(),
-                $tags = $('#tags').val();
+                $tags = $('#tags').val(),
+                that = this;
 
             this.model.set('name', $formName);
             this.model.set('access_authority', $shareType);
@@ -127,7 +128,12 @@ define([
             this.model.set('caption', $caption);
             this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));
             this.model.set('project_ids', [this.app.selectedProject.id]);
-            this.model.save();
+            this.model.save(null, {
+                success: function () {
+                    alert("saved");
+                    that.createNewFields();
+                }
+            });
         },
 
         //
