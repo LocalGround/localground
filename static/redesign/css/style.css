@@ -183,6 +183,13 @@ span.confirmation{
 
 }
 
+#fieldTableDiv th{
+    font-weight: 600;
+    font-size: 12px;
+    padding: 6px;
+    text-align: left;
+}
+
 /************************************ Table type ************************************/
 
 .userTable{
