@@ -23,12 +23,12 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts = opts || {};
                 _.extend(this, opts);
                 this.saveFunction = opts.saveFunction;
-                this.$el = $(".modal");
-                if (!this.$el.get(0)) {
-                    //this.createModal();
+                if (!$(".modal").get(0)) {
                     this.render();
-                    console.log(this.$el);
                     $('body').append(this.$el);
+                    console.log($('body').html());
+                } else {
+                    this.$el = $('<div></div>').append($(".modal"));
                 }
                 this.appendView();
                 //this.setSize();
@@ -48,6 +48,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             },
             update: function (opts) {
                 _.extend(this, opts);
+                this.render();
                 this.appendView();
             },
             setSize: function () {
@@ -59,10 +60,13 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 $('body').append(this.$el);
             },
             show: function () {
-                this.$el.show();
+                console.log('show');
+                this.$el.find('.modal').show();
+                this.$el.css('display', 'block');
             },
             hide: function () {
-                this.$el.hide();
+                console.log('hide');
+                this.$el.find('.modal').hide();
             }
         });
         return Modal;

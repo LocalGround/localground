@@ -76,6 +76,7 @@ define([
             this.modal.update({
                 view: createForm,
                 title: 'Create New Form',
+                width: 500,
                 saveFunction: createForm.saveFormSettings
             });
             this.modal.show();
