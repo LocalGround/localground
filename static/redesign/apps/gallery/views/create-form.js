@@ -47,8 +47,8 @@ define([
         },
         attachCollectionEventHandlers: function () {
             //this.listenTo(this.collection, 'add', this.render);
-            this.listenTo(this.collection, 'reset', this.render);
             //this.listenTo(this.collection, 'destroy', this.render);
+            this.listenTo(this.collection, 'reset', this.render);
         },
 
         childViewContainer: "#fieldList",
@@ -118,14 +118,14 @@ define([
         // and to get the form to open up
         saveFormSettings: function () {
             var formName = $('#formName').val(),
-                shareType = $('#share_type').val(),
+                //shareType = $('#share_type').val(),
+                //tags = $('#tags').val(),
                 caption = $('#caption').val(),
-                tags = $('#tags').val(),
                 that = this;
 
             this.model.set('name', formName);
-            this.model.set('access_authority', shareType);
-            this.model.set('tags', tags);
+            //this.model.set('access_authority', shareType);
+            //this.model.set('tags', tags);
             this.model.set('caption', caption);
             this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));
             this.model.set('project_ids', [this.app.selectedProject.id]);
