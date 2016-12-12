@@ -15,8 +15,8 @@ define(["jquery",
             template: Handlebars.compile(ItemTemplate),
             events: {
                 'click .delete_project': 'deleteProject',
-                'click .close': 'hideModal',
-                'click .action': 'shareModal',
+                //'click .close': 'hideModal',
+                //'click .action': 'shareModal',
                 'click .save-project-settings': 'saveProjectSettings',
                 'click .new_user_button': 'addUserButton',
                 'click .delete-project-user': 'removeRow',
@@ -43,6 +43,7 @@ define(["jquery",
                     this.attachCollectionEventHandlers();
                 }
                 this.listenTo(this.model, 'sync', this.createNewProjectUsers);
+                this.render();
             },
             childViewOptions: function () {
                 return this.model.toJSON();
@@ -80,12 +81,12 @@ define(["jquery",
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'destroy', this.render);
             },
-            hideModal: function () {
+            /*hideModal: function () {
                 this.$el.find('.modal').hide();
             },
             showModal: function () {
                 this.$el.find('.modal').show();
-            },
+            },*/
             fetchShareData: function () {
                 this.model.getProjectUsers();
             },
@@ -96,15 +97,15 @@ define(["jquery",
                 this.checkNumberOfRows();
             },
             onRender: function () {
-                var that = this;
-                this.showModal();
+                //var that = this;
+                //this.showModal();
                 this.checkNumberOfRows();
                 // When the user clicks anywhere outside of the modal, close it
-                window.onclick = function (event) {
+                /*window.onclick = function (event) {
                     if (event.target == that.$el.find('.modal').get(0)) {
                         that.hideModal();
                     }
-                };
+                };*/
             },
             templateHelpers: function () {
                 // for new projects, there shall be no projectUsers defined
@@ -273,7 +274,7 @@ define(["jquery",
                     return;
                 }
                 this.model.destroy();
-                this.$el.find('.modal').hide();
+                //this.$el.find('.modal').hide();
 
             },
 

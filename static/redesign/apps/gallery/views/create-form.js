@@ -117,10 +117,11 @@ define([
         // Need to add more functions to handle various events
         // and to get the form to open up
         saveFormSettings: function () {
-            var formName = $('#formName').val(),
+            alert("save!");
+            var formName = this.$el.find('#formName').val(),
                 //shareType = $('#share_type').val(),
                 //tags = $('#tags').val(),
-                caption = $('#caption').val(),
+                caption = this.$el.find('#caption').val(),
                 that = this;
 
             this.model.set('name', formName);

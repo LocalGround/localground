@@ -49,6 +49,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             update: function (opts) {
                 _.extend(this, opts);
                 this.render();
+                this.delegateEvents();
                 this.appendView();
             },
             setSize: function () {

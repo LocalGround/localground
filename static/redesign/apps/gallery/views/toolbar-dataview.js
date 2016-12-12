@@ -77,7 +77,8 @@ define([
                 view: createForm,
                 title: 'Create New Form',
                 width: 500,
-                saveFunction: createForm.saveFormSettings
+                // bind the scope of the save function to the source view:
+                saveFunction: createForm.saveFormSettings.bind(createForm)
             });
             this.modal.show();
         }
