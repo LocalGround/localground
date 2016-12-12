@@ -1,11 +1,21 @@
 <div class = "project-detail">
 	<h3>Media</h3>
+    <!-- Temporary placement for implementation purposes -->
+    {{#ifequal activeTab "media"}}
+        <select name="media-type" id="media-type">
+            <option value="photos">Photos</option>
+            <option value="audio">Audio</option>
+        </select>
+    {{/ifequal}}
+    {{#ifequal activeTab "data"}}
+    <select name="media-type" id="media-type">
+        <option value="form1">Form 1</option>
+        <option value="form2">Form 2</option>
+    </select>
+    {{/ifequal}}
+    
 	<button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add </button>
 </div>
-<select name="media-type" id="media-type" style = "display:none;">
-    <option value="photos">Photos</option>
-    <option value="audio">Audio</option>
-</select>
 <div class="main-search">
 	<form class="search-form" value="Search Media">
 		<input id="searchTerm" type="text" value="" placeholder="Filter data and media">

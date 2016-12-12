@@ -3,10 +3,11 @@ define([
     "jquery",
     "handlebars",
     "marionette",
+    "collections/forms",
     "apps/gallery/views/create-form",
     "lib/modals/modal",
     "text!../templates/toolbar-dataview.html"
-], function (_, $, Handlebars, Marionette, CreateForm, Modal, ToolbarTemplate) {
+], function (_, $, Handlebars, Marionette, Forms, CreateForm, Modal, ToolbarTemplate) {
     "use strict";
     var ToolbarDataView = Marionette.ItemView.extend({
         /*
@@ -20,6 +21,7 @@ define([
             'click #add-data' : 'showCreateForm'
         },
         modal: null,
+        forms: null,
 
         template: Handlebars.compile(ToolbarTemplate),
 
@@ -27,7 +29,8 @@ define([
             return {
                 mode: this.app.mode,
                 dataType: this.app.dataType,
-                screenType: this.app.screenType
+                screenType: this.app.screenType,
+                activeTab: this.app.activeTab
             };
         },
 
@@ -38,8 +41,14 @@ define([
             // Trying to get the listener to be correct
             // I am not sure yet on how it properly works
             this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
-
+            this.listenTo(this.app.vent, 'tab-switch', this.changeMode);
             this.modal = new Modal();
+            this.forms = null;
+        },
+
+        changeMode: function () {
+            alert(this.app.activeTab);
+            this.render();
         },
 
         clearSearch: function (e) {

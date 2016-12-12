@@ -6,12 +6,12 @@ define([
     "apps/gallery/views/toolbar-dataview",
     "apps/map/views/marker-listing",
     "apps/map/views/map",
-    "apps/gallery/views/media-detail",
+    "apps/gallery/views/data-detail",
     "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,
-             MarkerListing, Basemap, MediaDetail, Projects, appUtilities) {
+             MarkerListing, Basemap, DataDetail, Projects, appUtilities) {
     "use strict";
     /* TODO: Move some of this stuff to a Marionette LayoutView */
     var MapApp = Marionette.Application.extend(_.extend(appUtilities, {
@@ -93,11 +93,11 @@ define([
         showMarkerDetail: function (opts) {
             this.container.$el.addClass("show-detail");
             var model = this.currentCollection.get(opts.id);
-            this.mediaView = new MediaDetail({
+            this.dataDetail = new DataDetail({
                 model: model,
                 app: this
             });
-            this.markerDetailRegion.show(this.mediaView);
+            this.markerDetailRegion.show(this.dataDetail);
         }
     }));
     return MapApp;
