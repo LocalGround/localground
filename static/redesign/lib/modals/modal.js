@@ -40,7 +40,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                     title: this.title,
                     width: this.width,
                     height: this.height,
-                    showSaveButton: this.showSaveButton
+                    showSaveButton: this.showSaveButton,
+                    showDeleteButton: this.showDeleteButton
                 };
             },
             appendView: function () {
@@ -51,6 +52,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             },
             update: function (opts) {
                 _.extend(this, opts);
+                console.log(opts, this.showDeleteButton),
                 this.render();
                 this.delegateEvents();
                 this.appendView();
