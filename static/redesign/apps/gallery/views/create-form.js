@@ -17,7 +17,7 @@ define([
 
             /* to check if editing works
             // for now we test the one id based on project id
-            this.model = new Form({ id: 14 });
+            this.model = new Form({ id: 12 });
             this.listenTo(this.model, 'reset', this.test);
             var that = this;
             this.model.fetch({
@@ -88,34 +88,6 @@ define([
         fetchShareData: function () {
             this.model.getFields();
         },
-        /*hideModal: function () {
-            this.$el.hide();
-        },
-        
-        Behavior problem: After opeiing the modal window and closing
-        for the first time, modal windows opo up when
-        clicking on the add button again.
-        
-        onRender: function () {
-            //console.log("rerender");
-            var modal = this.$el.find('.modal').get(0),
-                span = this.$el.find('.close').get(0);
-            modal.style.display = "block";
-            // When the user clicks on <span> (x), close the modal
-            span.onclick = function () {
-                modal.style.display = "none";
-            };
-
-            // When the user clicks anywhere outside of the modal, close it
-            window.onclick = function (event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            };
-        },*/
-
-        // Need to add more functions to handle various events
-        // and to get the form to open up
         saveFormSettings: function () {
             alert("save!");
             var formName = this.$el.find('#formName').val(),
@@ -152,6 +124,7 @@ define([
                 id,
                 $row,
                 fieldName,
+                fieldNameInput,
                 fieldType,
                 existingField;
 
@@ -178,9 +151,57 @@ define([
                 } else {
                     //create new fields:
                     console.log("Create new Field");
+                    fieldNameInput = $row.find(".fieldname");
                     fieldType = $row.find(".fieldType").val();
-                    this.model.createField(fieldName, fieldType);
+                    if (!this.blankField(fieldNameInput, fieldType)){
+                        this.model.createField(fieldName, fieldType);
+                    }
+                    else{
+                        $row.css("background-color", "FFAAAA")
+                    }
                 }
+            }
+        },
+        blankField: function(fieldName, fieldType){
+            var blankfield = false,
+            //fieldName = this.$el.find(".fieldname"),
+            //fieldType = this.$el.find(".fieldType").val();
+
+            blankfield = this.errorFieldName(fieldName) ||
+                         this.errorFieldType(fieldType);
+
+            return blankfield;
+        },
+
+        errorFieldName: function(_fieldName){
+            var errorCaught = false;
+            try{
+                if (_fieldName.val().trim() == ""){
+                    throw "Field Name Missing";
+                }
+            }
+            catch (err){
+                errorCaught = true;
+                _fieldName.attr("placeholder", err);
+                _fieldName.css("background-color", "#FFDDDD");
+            }
+            finally{
+                return errorCaught;
+            }
+        },
+
+        errorFieldType: function(_fieldType){
+            var errorCaught = false;
+            try{
+                if (!_fieldType){
+                    throw "Field Type Missing";
+                }
+            }
+            catch (err){
+                errorCaught = true;
+            }
+            finally{
+                return errorCaught;
             }
         },
 

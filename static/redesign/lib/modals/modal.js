@@ -13,6 +13,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             title: null,
             width: 800,
             height: 200,
+            showSaveButton: true,
             events: {
                 'click .close': 'hide',
                 'click .close-modal': 'hide',
@@ -36,7 +37,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 return {
                     title: this.title,
                     width: this.width,
-                    height: this.height
+                    height: this.height,
+                    showSaveButton: this.showSaveButton
                 };
             },
             appendView: function () {
