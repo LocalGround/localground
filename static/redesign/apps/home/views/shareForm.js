@@ -14,7 +14,7 @@ define(["jquery",
             childViewContainer: "#userList",
             template: Handlebars.compile(ItemTemplate),
             events: {
-                'click .close-modal': 'hideModal',
+                'click .delete_project': 'deleteProject',
                 'click .close': 'hideModal',
                 'click .action': 'shareModal',
                 'click .save-project-settings': 'saveProjectSettings',
@@ -22,6 +22,13 @@ define(["jquery",
                 'click .delete-project-user': 'removeRow',
                 'blur #projectName': 'generateSlug'
             },
+
+            modelEvents: {
+                // When data from Item view changes anywhere and anytime,
+                // re-render to update
+                "change": "render"
+            },
+
             initialize: function (opts) {
                 _.extend(this, opts);
                 if (this.model == undefined) {
@@ -33,7 +40,6 @@ define(["jquery",
                     this.collection = this.model.projectUsers;
                     Marionette.CompositeView.prototype.initialize.call(this);
                     this.model.getProjectUsers();
-                    this.collection = this.model.projectUsers;
                     this.attachCollectionEventHandlers();
                 }
                 this.listenTo(this.model, 'sync', this.createNewProjectUsers);
@@ -262,6 +268,15 @@ define(["jquery",
                 return blankFields;
             },
 
+            deleteProject: function () {
+                if (!confirm("Are you sure you want to delete this project?")) {
+                    return;
+                }
+                this.model.destroy();
+                this.$el.find('.modal').hide();
+
+            },
+
             errorUserName: function(_usernameInput){
               try{
                 if (_usernameInput.val().trim() == "" || _usernameInput.val() == undefined){
@@ -273,15 +288,6 @@ define(["jquery",
                 _usernameInput.css("background-color", "#FFDDDD");
                 //_usernameInput.css("color", "#FF0000");
               }
-            },
-
-            findUserName: function(){
-                // Add in the list of users from the usernames web link
-                var availableTags = [];
-
-                this.$el.find(".username").autocomplete({
-                    source: availableTags
-                });
             },
 
             checkNumberOfRows: function () {

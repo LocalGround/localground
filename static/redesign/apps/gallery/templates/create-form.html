@@ -1,43 +1,38 @@
-
-    <h1>Form Description</h1>
-
-
+<div class="inline-form">
     <label for="formName">Name: </label>
     <input type="text" id="formName" value="{{name}}">
-    <br>
+</div>
+<div class="inline-form">
     <label for="caption">Description:</label>
-    <textarea id="caption" rows = "10" cols = "50"
-    placeholder="Type description of project">{{ caption }}</textarea>
-    <br>
+    <textarea id="caption" rows="5" cols="50"
+    placeholder="Describe this form"></textarea>
+</div>
+<!--<div class="inline-form">
     <label for="tags">Tags:</label>
     <input id="tags" type="text" placeholder="put some tags for easy search">
-    <br>
-    <label for="share_type">Sharing Type: </label>
-    <select id="share_type">
-      <option value>Select Type</option>
-      <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>
-      <option value="2" {{#ifequal access_authority 2}} SELECTED {{/ifequal}}>Public with link</option>
-      <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>
-    </select>
-    <br>
-    <h3>Fields</h3>
-    <br>
-    <div id="fieldTableDiv">
-      <table class="fieldTable" style="border: 1px solid black;">
-        <thead>
-          <tr>
-            <th>Field Name</th>
-            <th>Data Type</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="fieldList">
-        </tbody>
-      </table>
-      <br>
-      <a class="new_field_button">Add Column</a>
+</div>
+<label for="share_type">Sharing Type: </label>
+<select id="share_type">
+    <option value>Select Type</option>
+    <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>
+    <option value="2" {{#ifequal access_authority 2}} SELECTED {{/ifequal}}>Public with link</option>
+    <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>
+</select>
+    <br>-->
+<div class="inline-form">
+    <label>Fields:</label>
+    <div id="fieldTableDiv" class = "container-3-4">
+        <table class="fieldTable">
+            <thead>
+                <tr>
+                    <th>Field Name</th>
+                    <th>Data Type</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="fieldList"></tbody>
+        </table>
+        <br>
+        <a class="new_field_button button-tertiary"><i class="fa fa-plus add" aria-hidden="true"></i>Add Column</a>
     </div>
-
-    <div id="addNewField" style="border: 1px solid black">
-      <a class="new_field_button">Add Column</a>
-    </div>
+</div>

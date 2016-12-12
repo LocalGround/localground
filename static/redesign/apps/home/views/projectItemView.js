@@ -13,8 +13,8 @@ define(["marionette",
 
             template: Handlebars.compile(ItemTemplate),
             events: {
-                'click .action': 'shareModal',
-                'click #delete_project': 'deleteProject'
+                'click .action': 'shareModal'
+                //'click #delete_project': 'deleteProject'
             },
 
             modelEvents: {
