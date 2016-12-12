@@ -21,3 +21,9 @@
     <br>
     <a href="#/{{ dataType }}/{{id}}">{{ name }}</a>
 {{/ifequal}}
+
+{{#ifcontains dataType "form_"}}
+    {{#each fields}}
+        {{ this.col_alias }}: {{ this.val }}<br>
+    {{/each}} 
+{{/ifcontains}}

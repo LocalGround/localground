@@ -18,7 +18,7 @@ define([
         events: {
             'click #toolbar-search': 'doSearch',
             'click #toolbar-clear': 'clearSearch',
-            'change #media-type': 'changeDisplay',
+            'change .media-type': 'changeDisplay',
             'click #add-data' : 'showFormList'
         },
         modal: null,
@@ -40,6 +40,7 @@ define([
             _.extend(this, opts);
             Marionette.ItemView.prototype.initialize.call(this);
             this.template = Handlebars.compile(ToolbarTemplate);
+            
             // Trying to get the listener to be correct
             // I am not sure yet on how it properly works
             this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
@@ -53,11 +54,17 @@ define([
           //  alert(this.app.activeTab);
             console.log(this.app.activeTab);
             if (this.app.activeTab == "sites") {
-                this.listenTo(this.forms, 'reset', this.render);
+                this.listenTo(this.forms, 'reset', this.renderAndRoute);
                 this.forms.fetch({ reset: true });
             } else {
                 this.render();
+                this.app.router.navigate('//photos', { trigger: true });
             }
+        },
+
+        renderAndRoute: function () {
+            this.render();
+            this.app.router.navigate('//form_' + this.forms.at(0).get("id"), { trigger: true });
         },
 
         clearSearch: function (e) {

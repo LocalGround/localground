@@ -21,7 +21,6 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 ordering: 'Hidden'
             },
             initialize: function (data, opts) {
-                console.log(data, opts);
                 // This had to be made dynamic because there are different Fields
                 // for each form
                 if (this.collection && this.collection.url) {
