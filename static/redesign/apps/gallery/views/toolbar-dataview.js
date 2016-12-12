@@ -83,6 +83,8 @@ define([
                 //saveFunction: createForm.saveFormSettings.bind(createForm)
             });
             this.modal.show();
+            this.modal.hideDeleteButton()
+            this.modal.hideSaveButton();
         },
 
         showCreateForm: function (opts) {
@@ -104,6 +106,8 @@ define([
                 deleteFunction: 'add here'
             });
             this.modal.show();
+            this.modal.showDeleteButton();
+            this.modal.showSaveButton();
         }
     });
     return ToolbarDataView;

@@ -81,12 +81,6 @@ define(["jquery",
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'destroy', this.render);
             },
-            /*hideModal: function () {
-                this.$el.find('.modal').hide();
-            },
-            showModal: function () {
-                this.$el.find('.modal').show();
-            },*/
             fetchShareData: function () {
                 this.model.getProjectUsers();
             },

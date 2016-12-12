@@ -70,6 +70,28 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             hide: function () {
                 console.log('hide');
                 this.$el.find('.modal').hide();
+            },
+            /*
+            I am almost there with the showSaveButton
+            and others, but I am recieving the error of the following:
+            'cannot read property of 'find' of undefined'
+            when calling the save button
+            */
+            showSaveButton(){
+                console.log("Show Save Button");
+                this.$el.find('.save-modal-form').show();
+            },
+            hideSaveButton(){
+                console.log("Hide Save Button");
+                this.$el.find('.save-modal-form').hide();
+            },
+            showDeleteButton(){
+                console.log("Show Delete Button");
+                this.$el.find('.delete-modal').show();
+            },
+            hideDeleteButton(){
+                console.log("Hide Delete Button");
+                this.$el.find('.delete-modal').hide();
             }
         });
         return Modal;

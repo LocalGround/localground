@@ -9,9 +9,14 @@
         </div>
         <footer>
             <div class="buttons">
-                <button class="close-modal button-secondary">Cancel</button>
+                {{#if showDeleteButton}}
+                    <button class="delete-modal button-secondary">Cancel</button>
+                {{/if}}
+                {{#else}}
+                    <button class="close-modal button-secondary">Cancel</button>
+                {{/else}}
                 {{#if showSaveButton}}
-                <button class="save-modal-form button-primary">Save</button> 
+                <button class="save-modal-form button-primary">Save</button>
                 {{/if}}
             </div>
         </footer>

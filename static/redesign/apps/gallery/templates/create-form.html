@@ -1,3 +1,7 @@
+<button class="fa fa-chevron-left back button-tertiary">
+    Back
+</button>
+<br>
 <div class="inline-form">
     <label for="formName">Name: </label>
     <input type="text" id="formName" value="{{name}}">
@@ -7,18 +11,7 @@
     <textarea id="caption" rows="5" cols="50"
     placeholder="Describe this form"></textarea>
 </div>
-<!--<div class="inline-form">
-    <label for="tags">Tags:</label>
-    <input id="tags" type="text" placeholder="put some tags for easy search">
-</div>
-<label for="share_type">Sharing Type: </label>
-<select id="share_type">
-    <option value>Select Type</option>
-    <option value="1" {{#ifequal access_authority 1}} SELECTED {{/ifequal}}>Private</option>
-    <option value="2" {{#ifequal access_authority 2}} SELECTED {{/ifequal}}>Public with link</option>
-    <option value="3" {{#ifequal access_authority 3}} SELECTED {{/ifequal}}>Public</option>
-</select>
-    <br>-->
+
 <div class="inline-form">
     <label>Fields:</label>
     <div id="fieldTableDiv" class = "container-3-4">
@@ -33,6 +26,9 @@
             <tbody id="fieldList"></tbody>
         </table>
         <br>
-        <a class="new_field_button button-tertiary"><i class="fa fa-plus add" aria-hidden="true"></i>Add Column</a>
+        <a class="new_field_button button-tertiary">
+            <i class="fa fa-plus add" aria-hidden="true">
+            </i>Add Column
+        </a>
     </div>
 </div>

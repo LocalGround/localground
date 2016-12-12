@@ -83,13 +83,20 @@ define([
         events: {
             'click #save-form-settings' : 'saveFormSettings',
             'click .close': 'hideModal',
+            'click .delete-field': 'removeRow',
             'click .new_field_button' : 'addFieldButton'
         },
         fetchShareData: function () {
             this.model.getFields();
         },
+        removeRow: function (e) {
+            var $elem = $(e.target),
+                $row =  $elem.parent().parent();
+            $row.remove();
+            //this.checkNumberOfRows();
+        },
         saveFormSettings: function () {
-            alert("save!");
+            //alert("save!");
             var formName = this.$el.find('#formName').val(),
                 //shareType = $('#share_type').val(),
                 //tags = $('#tags').val(),
@@ -104,7 +111,7 @@ define([
             this.model.set('project_ids', [this.app.selectedProject.id]);
             this.model.save(null, {
                 success: function () {
-                    alert("saved");
+                    //alert("saved");
                     that.createNewFields();
                 }
             });
@@ -116,7 +123,7 @@ define([
         //
 
         createNewFields: function () {
-            console.log("createNewFields Called");
+            //console.log("createNewFields Called");
             // Gather the list of fields changed / added
             var $fieldList = this.$el.find("#fieldList"),
                 $fields = $fieldList.children(),
@@ -129,7 +136,7 @@ define([
                 existingField;
 
             if (!this.model.fields) {
-                console.log("fields not defined");
+                //console.log("fields not defined");
                 this.model.fields = new Fields(null,
                         { id: this.model.get("id") }
                     );
@@ -141,17 +148,22 @@ define([
             for (i = 0; i < $fields.length; i++) {
                 $row = $($fields[i]);
                 fieldName = $row.find(".fieldname").val();
+                fieldNameInput = $row.find(".fieldname");
                 if ($row.attr("id") == this.model.id) {
                     //edit existing fields:
-                    console.log("Updating existing field");
+                    //console.log("Updating existing field");
                     id = $row.find(".id").val();
                     existingField = this.model.getFieldByID(id);
-                    existingField.set("col_alias", fieldName);
-                    existingField.save();
+                    if (!this.errorFieldName(fieldNameInput)){
+                        existingField.set("col_alias", fieldName);
+                        existingField.save();
+                    }
+                    else{
+                        $row.css("background-color", "FFAAAA")
+                    }
                 } else {
                     //create new fields:
-                    console.log("Create new Field");
-                    fieldNameInput = $row.find(".fieldname");
+                    //console.log("Create new Field");
                     fieldType = $row.find(".fieldType").val();
                     if (!this.blankField(fieldNameInput, fieldType)){
                         this.model.createField(fieldName, fieldType);
@@ -206,7 +218,7 @@ define([
         },
 
         addFieldButton: function () {
-            console.log("Pressed new Field Link");
+            //console.log("Pressed new Field Link");
             var fieldTableDisplay = $(".fieldTable"),
                 $newTR = $("<tr class='new-row'></tr>"),
                 template = Handlebars.compile(FieldItemTemplate);
