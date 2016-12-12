@@ -78,13 +78,13 @@ define([
             this.modal.update({
                 view: formList,
                 title: 'List of Forms',
-                width: 500//,
+                width: 500,
+                showSaveButton: false,
+                showDeleteButton: false
                 // bind the scope of the save function to the source view:
                 //saveFunction: createForm.saveFormSettings.bind(createForm)
             });
             this.modal.show();
-            this.modal.hideDeleteButton()
-            this.modal.hideSaveButton();
         },
 
         showCreateForm: function (opts) {
@@ -101,13 +101,15 @@ define([
                 view: createForm,
                 title: title,
                 width: 500,
+                showSaveButton: true,
+                showDeleteButton: true,
                 // bind the scope of the save function to the source view:
                 saveFunction: createForm.saveFormSettings.bind(createForm),
                 deleteFunction: 'add here'
             });
+            this.modal.display_DeleteButton();
+            this.modal.display_SaveButton();
             this.modal.show();
-            this.modal.showDeleteButton();
-            this.modal.showSaveButton();
         }
     });
     return ToolbarDataView;

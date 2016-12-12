@@ -14,6 +14,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             width: 800,
             height: 200,
             showSaveButton: true,
+            showDeleteButton: true,
             events: {
                 'click .close': 'hide',
                 'click .close-modal': 'hide',
@@ -77,21 +78,25 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             'cannot read property of 'find' of undefined'
             when calling the save button
             */
-            showSaveButton(){
+            display_SaveButton(){
                 console.log("Show Save Button");
-                this.$el.find('.save-modal-form').show();
+                this.showSaveButton = true;
+                //this.$el.find('.save-modal-form').show();
             },
-            hideSaveButton(){
+            hide_SaveButton(){
                 console.log("Hide Save Button");
-                this.$el.find('.save-modal-form').hide();
+                this.showSaveButton = false;
+                //this.$el.find('.save-modal-form').hide();
             },
-            showDeleteButton(){
+            display_DeleteButton(){
                 console.log("Show Delete Button");
-                this.$el.find('.delete-modal').show();
+                this.showDeleteButton = true;
+                //this.$el.find('.delete-modal').show();
             },
-            hideDeleteButton(){
+            hide_DeleteButton(){
                 console.log("Hide Delete Button");
-                this.$el.find('.delete-modal').hide();
+                this.showDeleteButton = false;
+                //this.$el.find('.delete-modal').hide();
             }
         });
         return Modal;
