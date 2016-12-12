@@ -100,7 +100,8 @@ define([
                 title: title,
                 width: 500,
                 // bind the scope of the save function to the source view:
-                saveFunction: createForm.saveFormSettings.bind(createForm)
+                saveFunction: createForm.saveFormSettings.bind(createForm),
+                deleteFunction: 'add here'
             });
             this.modal.show();
         }
