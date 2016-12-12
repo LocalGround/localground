@@ -15,7 +15,7 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
 
-            ///* to check if editing works
+            /* to check if editing works
             // for now we test the one id based on project id
             this.model = new Form({ id: 14 });
             this.listenTo(this.model, 'reset', this.test);
@@ -25,7 +25,7 @@ define([
                     that.render();
                 }
             });
-            //*/ //end check if editing works
+            */ //end check if editing works
 
             if (this.model == undefined) {
                 // Create a blank project if new project made

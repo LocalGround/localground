@@ -26,7 +26,6 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 if (!$(".modal").get(0)) {
                     this.render();
                     $('body').append(this.$el);
-                    console.log($('body').html());
                 } else {
                     this.$el = $('<div></div>').append($(".modal"));
                 }

@@ -7,10 +7,11 @@
             <option value="audio">Audio</option>
         </select>
     {{/ifequal}}
-    {{#ifequal activeTab "data"}}
+    {{#ifequal activeTab "sites"}}
     <select name="media-type" id="media-type">
-        <option value="form1">Form 1</option>
-        <option value="form2">Form 2</option>
+        {{#each forms}}
+			<option value="form_{{ this.id }}">{{ this.name }}</option>
+		{{/each}}
     </select>
     {{/ifequal}}
     

@@ -30,7 +30,8 @@ define([
                 mode: this.app.mode,
                 dataType: this.app.dataType,
                 screenType: this.app.screenType,
-                activeTab: this.app.activeTab
+                activeTab: this.app.activeTab,
+                forms: this.forms.toJSON()
             };
         },
 
@@ -43,12 +44,18 @@ define([
             this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
             this.listenTo(this.app.vent, 'tab-switch', this.changeMode);
             this.modal = new Modal();
-            this.forms = null;
+            this.forms = new Forms();
         },
 
         changeMode: function () {
-            alert(this.app.activeTab);
-            this.render();
+          //  alert(this.app.activeTab);
+            console.log(this.app.activeTab);
+            if (this.app.activeTab == "sites") {
+                this.listenTo(this.forms, 'reset', this.render);
+                this.forms.fetch({ reset: true });
+            } else {
+                this.render();
+            }
         },
 
         clearSearch: function (e) {
