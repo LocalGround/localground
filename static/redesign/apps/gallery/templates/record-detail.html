@@ -1,14 +1,12 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
-    <audio controls>
-        <source src="{{ file_path }}"></source>
-    </audio>
-    <h3>{{ name }}</h3>
-    <!-- Three curly braces if you don't want to escape HTML -->
-    {{ caption }}
-    <br>
-    {{tags}}
-    <br>
+    <h4>Record Details</h4>
+    <div class = "section">
+        <h3>{{ display_name }}</h3>
+        {{#each fields}}
+            {{ this.col_alias }}: {{ this.val }}<br>
+        {{/each}}
+    </div>
     <div class = "save-options">
         <button class="edit-model button-primary">Save</button>
         <button class="edit-mode button-tertiary ">Edit</button>
@@ -19,17 +17,9 @@
 
 <!-- EDIT MODE -->
 {{#ifequal mode "edit"}}
-    <audio controls>
-        <source src="{{ file_path }}"></source>
-    </audio>
-
+    <h4>Record Details</h4>
     <div id="model-form">
-        <!-- Form goes here. To modify the fields that are editable,
-             go to the redesign/models/photo.js and/or audio.js and modify
-             the form. Instructions re: how to use the Backbone Forms
-             library here:
-             https://github.com/powmedia/backbone-forms#custom-editors
-        -->
+        <!-- Form Inserted Here -->
     </div>
     <div class = "save-options">
         <button class="save-model button-primary">Save</button>

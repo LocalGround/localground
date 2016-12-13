@@ -21,7 +21,6 @@ define(["handlebars"],
             if (val.indexOf(chars) != -1) {
                 return block.fn(this);
             }
-            return true;
         });
 
         Handlebars.registerHelper('ifnotequal', function (lvalue, rvalue, options) {

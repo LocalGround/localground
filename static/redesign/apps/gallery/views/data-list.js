@@ -16,6 +16,9 @@ define(["marionette",
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
+                        if (this.fields) {
+                            this.model.set("fields", this.fields.toJSON());
+                        }
                     },
                     template: Handlebars.compile(ThumbTemplate),
                     modelEvents: {

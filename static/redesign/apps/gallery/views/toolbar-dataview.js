@@ -51,20 +51,17 @@ define([
         },
 
         changeMode: function () {
-          //  alert(this.app.activeTab);
-            console.log(this.app.activeTab);
             if (this.app.activeTab == "sites") {
                 this.listenTo(this.forms, 'reset', this.renderAndRoute);
                 this.forms.fetch({ reset: true });
             } else {
-                this.render();
-                this.app.router.navigate('//photos', { trigger: true });
+                this.renderAndRoute();
             }
         },
 
         renderAndRoute: function () {
             this.render();
-            this.app.router.navigate('//form_' + this.forms.at(0).get("id"), { trigger: true });
+            this.app.router.navigate(this.$el.find(".media-type").val(), { trigger: true });
         },
 
         clearSearch: function (e) {

@@ -80,6 +80,7 @@ define([
         },
 
         showMediaDetail: function (opts) {
+            console.log(this.currentCollection);
             var model = this.currentCollection.get(opts.id);
             this.detailView = new DataDetail({
                 model: model,
