@@ -15,18 +15,6 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
 
-            /* to check if editing works
-            // for now we test the one id based on project id
-            this.model = new Form({ id: 12 });
-            this.listenTo(this.model, 'reset', this.test);
-            var that = this;
-            this.model.fetch({
-                success: function () {
-                    that.render();
-                }
-            });
-            */ //end check if editing works
-
             if (this.model == undefined) {
                 // Create a blank project if new project made
                 console.log("creating new form...");
@@ -84,7 +72,8 @@ define([
             'click #save-form-settings' : 'saveFormSettings',
             'click .close': 'hideModal',
             'click .delete-field': 'removeRow',
-            'click .new_field_button' : 'addFieldButton'
+            'click .new_field_button' : 'addFieldButton',
+            'click .back': 'backToList'
         },
         fetchShareData: function () {
             this.model.getFields();
@@ -230,6 +219,19 @@ define([
             //
             // this.checkNumberOfRows();
 
+        },
+
+        deleteForm: function () {
+            if (!confirm("Are you sure you want to delete this form?")) {
+                return;
+            }
+            this.model.destroy();
+            this.backToList();
+
+        },
+
+        backToList: function(){
+            this.app.vent.trigger("show-form-list");
         }
     });
     return CreateFormView;

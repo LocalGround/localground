@@ -18,7 +18,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             events: {
                 'click .close': 'hide',
                 'click .close-modal': 'hide',
-                'click .save-modal-form': 'saveFunction'
+                'click .save-modal-form': 'saveFunction',
+                'click .delete-modal': 'deleteFunction'
             },
             template: Handlebars.compile(ModalTemplate),
             initialize: function (opts) {

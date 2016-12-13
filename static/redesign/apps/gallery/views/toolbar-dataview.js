@@ -40,12 +40,13 @@ define([
             _.extend(this, opts);
             Marionette.ItemView.prototype.initialize.call(this);
             this.template = Handlebars.compile(ToolbarTemplate);
-            
+
             // Trying to get the listener to be correct
             // I am not sure yet on how it properly works
             this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
             this.listenTo(this.app.vent, 'tab-switch', this.changeMode);
             this.listenTo(this.app.vent, 'show-form', this.showCreateForm);
+            this.listenTo(this.app.vent, 'show-form-list', this.showFormList);
             this.modal = new Modal();
             this.forms = new Forms();
         },
@@ -122,10 +123,10 @@ define([
                 title: title,
                 width: 500,
                 showSaveButton: true,
-                showDeleteButton: true,
+                showDeleteButton: opts.model,
                 // bind the scope of the save function to the source view:
                 saveFunction: createForm.saveFormSettings.bind(createForm),
-                deleteFunction: 'add here'
+                deleteFunction: createForm.deleteForm.bind(createForm)
             });
             this.modal.display_DeleteButton();
             this.modal.display_SaveButton();
