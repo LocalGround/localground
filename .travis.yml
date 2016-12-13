@@ -69,6 +69,9 @@ before_install:
   - sudo apt-get -y install ffmpeg
   - sudo apt-get -y install redis-server
   - sudo apt-get -y install openjdk-7-jre
+  - export DEBIAN_FRONTEND=noninteractive;
+   sudo -E apt-get -yq update &>> ~/apt-get-update.log;
+   sudo -E apt-get -yq --no-install-suggests --no-install-recommends --force-yes install postgresql-9.4-postgis-2.2
 
 install:
   - pip install -r deploy_tools/requirements.txt
