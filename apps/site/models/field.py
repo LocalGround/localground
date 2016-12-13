@@ -19,7 +19,7 @@ class Field(BaseAudit):
         RATING = 6
         PHOTO = 7
         AUDIO = 8
-        
+
     form = models.ForeignKey('Form')
     col_name_db = models.CharField(max_length=255, db_column="col_name")
     col_alias = models.CharField(max_length=255, verbose_name="column name")
@@ -109,7 +109,7 @@ class Field(BaseAudit):
                         foreign_table=Photo._meta.db_table
                     )
                 )
-            
+
             # Audio:
             if self.data_type.id == self.DataTypes.AUDIO:
                 sql.append('''
@@ -132,4 +132,4 @@ class Field(BaseAudit):
             except Exception as e:
                 import sys
                 sys.stderr.write('ERROR: %s' % e)
-                transaction.rollback_unless_managed()
+                transaction.rollback()

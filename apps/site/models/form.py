@@ -133,11 +133,11 @@ class Form(BaseNamed, BasePermissions):
             'field_set__data_type').all()
         for form in forms:
             m = form.TableModel
-            
+
             #first remove from cache:
             app_models = apps.all_models[form.TableModel._meta.app_label]
             del app_models[form.TableModel._meta.model_name]
-            
+
             # then register
             apps.register_model(m._meta.app_label, m)
 
@@ -151,7 +151,7 @@ class Form(BaseNamed, BasePermissions):
         app_models = apps.all_models[self.TableModel._meta.app_label]
         if app_models.get(self.TableModel._meta.model_name):
             del app_models[self.TableModel._meta.model_name]
-        
+
         reload(import_module(settings.ROOT_URLCONF))
         clear_url_caches()
         apps.clear_cache()
@@ -333,7 +333,7 @@ class Form(BaseNamed, BasePermissions):
             return True
         except Exception:
             # Table doesn't exist
-            transaction.rollback_unless_managed()
+            transaction.rollback()
             return False
 
     def delete(self, destroy_everything=True, **kwargs):
@@ -353,9 +353,9 @@ class Form(BaseNamed, BasePermissions):
             ct.delete()
         except ContentType.DoesNotExist:
             pass
-        
+
         self.clear_table_model_cache()
         super(Form, self).delete(**kwargs)
-        
+
     def remove_table_from_cache(self):
         self.clear_table_model_cache()
