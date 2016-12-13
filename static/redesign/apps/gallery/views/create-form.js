@@ -222,11 +222,15 @@ define([
         },
 
         deleteForm: function () {
+            var that = this;
             if (!confirm("Are you sure you want to delete this form?")) {
                 return;
             }
-            this.model.destroy();
-            this.backToList();
+            this.model.destroy( {
+                success: function () {
+                    that.backToList();
+                }    
+            });
 
         },
 
