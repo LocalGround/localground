@@ -5,8 +5,9 @@ define([
     "marionette",
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
+    "text!../templates/record-detail.html",
     "form" //extends Backbone
-], function (Backbone, _, Handlebars, Marionette, PhotoTemplate, AudioTemplates) {
+], function (Backbone, _, Handlebars, Marionette, PhotoTemplate, AudioTemplate, RecordTemplate) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -17,8 +18,10 @@ define([
         getTemplate: function () {
             if (this.app.dataType == "photos") {
                 return Handlebars.compile(PhotoTemplate);
+            } else if (this.app.dataType == "audio") {
+                return Handlebars.compile(AudioTemplate);
             } else {
-                return Handlebars.compile(AudioTemplates);
+                return Handlebars.compile(RecordTemplate);
             }
         },
         initialize: function (opts) {
@@ -34,16 +37,27 @@ define([
             this.render();
         },
         templateHelpers: function () {
-            return {
+            var context = {
                 mode: this.app.mode,
                 dataType: this.app.dataType
             };
+            return context;
         },
         onRender: function () {
             //https://github.com/powmedia/backbone-forms#custom-editors
+            var fields, i, field;
+            if (this.app.dataType.indexOf('form_') != -1) {
+                fields = [];
+                for (i = 0; i < this.model.get("fields").length; i++) {
+                    field = this.model.get("fields")[i];
+                    fields.push(field.col_name);
+                }
+            } else {
+                fields = ['name', 'caption', 'tags', 'attribution'];
+            }
             this.form = new Backbone.Form({
                 model: this.model,
-                fields: ['name', 'caption', 'tags', 'attribution']
+                fields: fields
             }).render();
             this.$el.find('#model-form').append(this.form.$el);
         },

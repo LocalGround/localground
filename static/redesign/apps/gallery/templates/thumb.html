@@ -20,4 +20,17 @@
     </audio>
     <br>
     <a href="#/{{ dataType }}/{{id}}">{{ name }}</a>
+    {{#if geometry}}
+        <i class="fa fa-map-marker"></i>
+    {{/if}}
 {{/ifequal}}
+
+{{#ifcontains dataType "form_"}}
+    <a href="#/{{ dataType }}/{{id}}">
+        show details
+    </a>
+    <br>
+    {{#each fields}}
+        {{ this.col_alias }}: {{ this.val }}<br>
+    {{/each}} 
+{{/ifcontains}}

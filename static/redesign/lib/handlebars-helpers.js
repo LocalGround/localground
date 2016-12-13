@@ -17,6 +17,11 @@ define(["handlebars"],
             return options.fn(this);
         });
 
+        Handlebars.registerHelper('ifcontains', function (val, chars, block) {
+            if (val.indexOf(chars) != -1) {
+                return block.fn(this);
+            }
+        });
 
         Handlebars.registerHelper('ifnotequal', function (lvalue, rvalue, options) {
             if (arguments.length < 3) {

@@ -2,15 +2,15 @@ define([
     "marionette",
     "backbone",
     "apps/gallery/router",
-    "apps/gallery/views/main",
-    "apps/gallery/views/media-detail",
+    "apps/gallery/views/data-list",
+    "apps/gallery/views/data-detail",
     "views/toolbar-global",
     "apps/gallery/views/toolbar-dataview",
     "models/project",
     "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, MediaList, MediaDetail, ToolbarGlobal, ToolbarDataView, Project, Projects, appUtilities) {
+], function (Marionette, Backbone, Router, DataList, DataDetail, ToolbarGlobal, ToolbarDataView, Project, Projects, appUtilities) {
     "use strict";
     var GalleryApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
@@ -23,7 +23,8 @@ define([
         mode: "edit",
         dataType: "photos",
         screenType: "gallery",
-        
+        activeTab: "media",
+
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run
@@ -71,7 +72,7 @@ define([
 
         showMediaList: function (mediaType) {
             this.dataType = mediaType;
-            this.mainView = new MediaList({
+            this.mainView = new DataList({
                 app: this
             });
             this.galleryRegion.show(this.mainView);
@@ -79,12 +80,13 @@ define([
         },
 
         showMediaDetail: function (opts) {
+            console.log(this.currentCollection);
             var model = this.currentCollection.get(opts.id);
-            this.mediaView = new MediaDetail({
+            this.detailView = new DataDetail({
                 model: model,
                 app: this
             });
-            this.sideRegion.show(this.mediaView);
+            this.sideRegion.show(this.detailView);
         }
     }));
     return GalleryApp;

@@ -3,11 +3,12 @@ define([
     "jquery",
     "handlebars",
     "marionette",
+    "collections/forms",
     "apps/gallery/views/create-form",
     "apps/gallery/views/form-list",
     "lib/modals/modal",
     "text!../templates/toolbar-dataview.html"
-], function (_, $, Handlebars, Marionette, CreateForm, FormList, Modal, ToolbarTemplate) {
+], function (_, $, Handlebars, Marionette, Forms, CreateForm, FormList, Modal, ToolbarTemplate) {
     "use strict";
     var ToolbarDataView = Marionette.ItemView.extend({
         /*
@@ -17,10 +18,11 @@ define([
         events: {
             'click #toolbar-search': 'doSearch',
             'click #toolbar-clear': 'clearSearch',
-            'change #media-type': 'changeDisplay',
+            'change .media-type': 'changeDisplay',
             'click #add-data' : 'showFormList'
         },
         modal: null,
+        forms: null,
 
         template: Handlebars.compile(ToolbarTemplate),
 
@@ -28,7 +30,9 @@ define([
             return {
                 mode: this.app.mode,
                 dataType: this.app.dataType,
-                screenType: this.app.screenType
+                screenType: this.app.screenType,
+                activeTab: this.app.activeTab,
+                forms: this.forms.toJSON()
             };
         },
 
@@ -36,12 +40,28 @@ define([
             _.extend(this, opts);
             Marionette.ItemView.prototype.initialize.call(this);
             this.template = Handlebars.compile(ToolbarTemplate);
+            
             // Trying to get the listener to be correct
             // I am not sure yet on how it properly works
             this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
+            this.listenTo(this.app.vent, 'tab-switch', this.changeMode);
             this.listenTo(this.app.vent, 'show-form', this.showCreateForm);
-
             this.modal = new Modal();
+            this.forms = new Forms();
+        },
+
+        changeMode: function () {
+            if (this.app.activeTab == "sites") {
+                this.listenTo(this.forms, 'reset', this.renderAndRoute);
+                this.forms.fetch({ reset: true });
+            } else {
+                this.renderAndRoute();
+            }
+        },
+
+        renderAndRoute: function () {
+            this.render();
+            this.app.router.navigate(this.$el.find(".media-type").val(), { trigger: true });
         },
 
         clearSearch: function (e) {

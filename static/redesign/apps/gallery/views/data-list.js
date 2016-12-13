@@ -3,9 +3,11 @@ define(["marionette",
         "handlebars",
         "collections/photos",
         "collections/audio",
+        "collections/records",
+        "collections/fields",
         "text!../templates/thumb.html",
         "text!../templates/thumb-list.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, ThumbTemplate, ListTemplate) {
+    function (Marionette, _, Handlebars, Photos, Audio, Records, Fields, ThumbTemplate, ListTemplate) {
         'use strict';
         var ThumbView = Marionette.CompositeView.extend({
 
@@ -14,6 +16,9 @@ define(["marionette",
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
+                        if (this.fields) {
+                            this.model.set("fields", this.fields.toJSON());
+                        }
                     },
                     template: Handlebars.compile(ThumbTemplate),
                     modelEvents: {
@@ -22,7 +27,21 @@ define(["marionette",
                     tagName: "div",
                     className: "column",
                     templateHelpers: function () {
-                        return { dataType: this.app.dataType };
+                        var context = {
+                                dataType: this.app.dataType
+                            },
+                            that = this;
+                        /*  If this is a dynamic form, then set each field's val to
+                            the model's field value. Then, in the template, loop through
+                            the fields and output the alias and the val
+                        */
+                        if (this.fields) {
+                            this.fields.each(function (field) {
+                                field.set("val", that.model.get(field.get("col_name")));
+                            });
+                            context.fields = this.fields.toJSON();
+                        }
+                        return context;
                     }
                 });
             },
@@ -46,7 +65,10 @@ define(["marionette",
             },
 
             childViewOptions: function () {
-                return { app: this.app };
+                return {
+                    app: this.app,
+                    fields: this.fields
+                };
             },
 
             hideLoadingMessage: function () {
@@ -74,10 +96,26 @@ define(["marionette",
 
             displayMedia: function () {
                 //fetch data from server:
+                var that = this,
+                    id;
                 if (this.app.dataType == "photos") {
                     this.collection = new Photos();
                 } else if (this.app.dataType ==  "audio") {
                     this.collection = new Audio();
+                } else if (this.app.dataType.indexOf("form_") != -1) {
+                    id = this.app.dataType.split("_")[1];
+                    // column names:
+                    this.fields = new Fields(null, {
+                        id: id
+                    });
+                    this.collection = new Records(null, {
+                        url: '/api/0/forms/' + id + '/data/'
+                    });
+                    this.fields.fetch({
+                        success: function () {
+                            that.collection.fetch({ reset: true });
+                        }
+                    });
                 } else {
                     alert("Type not accounted for.");
                     return;
