@@ -67,11 +67,11 @@ define([
                 }
             });
         },
-        modelEvents: {
+        /*modelEvents: {
             // When data from Item view changes anywhere and anytime,
             // re-render to update
             "change": "render"
-        },
+        },*/
         template: Handlebars.compile(CreateFormTemplate),
         events: {
             'click #save-form-settings' : 'saveFormSettings',
