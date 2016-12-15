@@ -15,7 +15,7 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
 
-            if (this.model == undefined) {
+            if (!this.model) {
                 // Create a blank project if new project made
                 console.log("creating new form...");
                 this.model = new Form();
@@ -107,6 +107,9 @@ define([
                 success: function () {
                     //alert("saved");
                     that.createNewFields();
+                },
+                error: function(){
+                    console.log("The fields could not be saved");
                 }
             });
         },

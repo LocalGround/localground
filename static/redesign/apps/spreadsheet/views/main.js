@@ -3,9 +3,10 @@ define(["marionette",
         "handlebars",
         "collections/photos",
         "collections/audio",
+        "collections/forms",
         "handsontable",
         "text!../templates/spreadsheet.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, Handsontable, SpreadsheetTemplate) {
+    function (Marionette, _, Handlebars, Photos, Audio, Forms, Handsontable, SpreadsheetTemplate) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
@@ -29,6 +30,8 @@ define(["marionette",
                     this.collection = new Photos();
                 } else if (this.app.dataType ==  "audio") {
                     this.collection = new Audio();
+                } else if (this.app.dataType ==  "forms") {
+                    this.collection = new Forms();
                 } else {
                     alert("Type not accounted for.");
                     return;
