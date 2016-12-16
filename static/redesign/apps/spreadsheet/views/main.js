@@ -236,7 +236,7 @@ define(["marionette",
                         {data: "caption", renderer: "html"},
                         {data: "tags", renderer: "html"},
                         // Something about adding in fields inside the forms?
-                        {data: "button", renderer: this.buttonRenderer.bind(this), readOnly = true; }
+                        {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true }
                     ]
                 };
                 return config[this.collection.key];
