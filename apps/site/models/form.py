@@ -231,7 +231,7 @@ class Form(BaseNamed, BasePermissions):
                 self.owner = user
             self.date_created = get_timestamp_no_milliseconds()
             self.table_name = 'table_%s_%s' % (
-                self.owner.username, generic.generateID(num_digits=10))
+                self.owner.username.lower(), generic.generateID(num_digits=10))
 
         if user:
             self.last_updated_by = user
