@@ -191,7 +191,8 @@ define(["marionette",
             getColumnWidths: function () {
                 var config = {
                     "audio": [30, 200, 400, 300, 200, 100, 80, 100],
-                    "photos": [30, 200, 400, 65, 200, 100, 80, 100]
+                    "photos": [30, 200, 400, 65, 200, 100, 80, 100],
+                    "forms": [30, 200, 400, 200, 100]
                 };
                 return config[this.collection.key];
             },
@@ -227,6 +228,15 @@ define(["marionette",
                         { data: "attribution", renderer: "html"},
                         { data: "owner", readOnly: true},
                         { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                    ],
+                    // The following is a rough draft of the form data unless corrected by supervisor
+                    "forms": [
+                        {data: "id", readOnly: true},
+                        {data: "name", renderer: "html"},
+                        {data: "caption", renderer: "html"},
+                        {data: "tags", renderer: "html"},
+                        // Something about adding in fields inside the forms?
+                        {data: "button", renderer: this.buttonRenderer.bind(this), readOnly = true; }
                     ]
                 };
                 return config[this.collection.key];
