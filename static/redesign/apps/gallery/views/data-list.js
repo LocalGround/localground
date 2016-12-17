@@ -102,8 +102,8 @@ define(["marionette",
                     this.collection = new Photos();
                 } else if (this.app.dataType ==  "audio") {
                     this.collection = new Audio();
-                } else if (this.app.dataType ==  "froms") {
-                    this.collection = new Forms();
+                //} else if (this.app.dataType ==  "forms") {
+                //    this.collection = new Forms();
                 } else if (this.app.dataType.indexOf("form_") != -1) {
                     id = this.app.dataType.split("_")[1];
                     // column names:

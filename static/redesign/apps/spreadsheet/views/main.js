@@ -4,9 +4,11 @@ define(["marionette",
         "collections/photos",
         "collections/audio",
         "collections/forms",
+        "collections/fields",
+        "collections/records",
         "handsontable",
         "text!../templates/spreadsheet.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, Forms, Handsontable, SpreadsheetTemplate) {
+    function (Marionette, _, Handlebars, Photos, Audio, Forms, Fields, Records, Handsontable, SpreadsheetTemplate) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
@@ -26,12 +28,28 @@ define(["marionette",
             },
             displaySpreadsheet: function () {
                 //fetch data from server according to mode:
+
+                var that = this;
+
+                alert(this.app.dataType);
                 if (this.app.dataType == "photos") {
                     this.collection = new Photos();
                 } else if (this.app.dataType ==  "audio") {
                     this.collection = new Audio();
-                } else if (this.app.dataType ==  "forms") {
-                    this.collection = new Forms();
+                } else if (this.app.dataType.indexOf("form_") != -1) {
+                    var id = this.app.dataType.split("_")[1];
+                    // column names:
+                    this.fields = new Fields(null, {
+                        id: id
+                    });
+                    this.collection = new Records(null, {
+                        url: '/api/0/forms/' + id + '/data/'
+                    });
+                    this.fields.fetch({
+                        success: function () {
+                            that.collection.fetch({ reset: true });
+                        }
+                    });
                 } else {
                     alert("Type not accounted for.");
                     return;
@@ -191,8 +209,8 @@ define(["marionette",
             getColumnWidths: function () {
                 var config = {
                     "audio": [30, 200, 400, 300, 200, 100, 80, 100],
-                    "photos": [30, 200, 400, 65, 200, 100, 80, 100],
-                    "forms": [30, 200, 400, 200, 100]
+                    "photos": [30, 200, 400, 65, 200, 100, 80, 100]
+                    //"forms": [30, 200, 400, 200, 100]
                 };
                 return config[this.collection.key];
             },
@@ -228,7 +246,8 @@ define(["marionette",
                         { data: "attribution", renderer: "html"},
                         { data: "owner", readOnly: true},
                         { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
-                    ],
+                    ]
+                    /*
                     // The following is a rough draft of the form data unless corrected by supervisor
                     "forms": [
                         {data: "id", readOnly: true},
@@ -238,6 +257,7 @@ define(["marionette",
                         // Something about adding in fields inside the forms?
                         {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true }
                     ]
+                    */
                 };
                 return config[this.collection.key];
             }
