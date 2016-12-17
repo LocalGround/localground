@@ -80,7 +80,9 @@ define(["marionette",
                 }
                 this.collection.each(function (model) {
                     var rec = model.toJSON();
-                    rec.tags = rec.tags.join(", ");
+                    if (rec.tags){
+                        rec.tags = rec.tags.join(", ");
+                    }
                     data.push(rec);
                 });
                 this.table = new Handsontable(grid, {
@@ -200,19 +202,39 @@ define(["marionette",
             },
 
             getColumnHeaders: function () {
-                var config = {
-                    "audio": ["ID", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner", "Delete"],
-                    "photos": ["ID", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"]
-                };
-                return config[this.collection.key];
+                alert(this.collection.key);
+                switch(this.collection.key){
+                    case "audio":
+                        return ["ID", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner", "Delete"];
+                    case "photos":
+                       return ["ID", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
+                    default:
+                      var cols = ["ID"];
+                      // do some logic
+                      // read the fields from the this.fields
+                      for (var i = 0; i < this.fields.length; ++i){
+                          cols.push(this.fields.at(i).get("col_name"));
+                      }
+                      console.log(cols);
+                      return cols;
+                }
             },
             getColumnWidths: function () {
-                var config = {
-                    "audio": [30, 200, 400, 300, 200, 100, 80, 100],
-                    "photos": [30, 200, 400, 65, 200, 100, 80, 100]
-                    //"forms": [30, 200, 400, 200, 100]
-                };
-                return config[this.collection.key];
+                switch(this.collection.key){
+                    case "audio":
+                        return [30, 200, 400, 300, 200, 100, 80, 100];
+                    case "photos":
+                       return [30, 200, 400, 65, 200, 100, 80, 100];
+                    default:
+                      var cols = [30];
+                      // do some logic
+                      // read the fields from the this.fields
+                      for (var i = 0; i < this.fields.length; ++i){
+                          cols.push(150);
+                      }
+                      console.log(cols);
+                      return cols;
+                }
             },
 
             doSearch: function (query) {
@@ -226,40 +248,45 @@ define(["marionette",
                 this.collection.fetch({ reset: true });
             },
             getColumns: function () {
-                var config = {
-                    "audio": [
-                        { data: "id", readOnly: true},
-                        { data: "name", renderer: "html"},
-                        { data: "caption", renderer: "html"},
-                        { data: "file_path", renderer: this.audioRenderer, readOnly: true},
-                        { data: "tags", renderer: "html" },
-                        { data: "attribution", renderer: "html"},
-                        { data: "owner", readOnly: true},
-                        { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
-                    ],
-                    "photos": [
-                        { data: "id", readOnly: true},
-                        { data: "name", renderer: "html"},
-                        { data: "caption", renderer: "html"},
-                        { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true},
-                        { data: "tags", renderer: "html" },
-                        { data: "attribution", renderer: "html"},
-                        { data: "owner", readOnly: true},
-                        { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
-                    ]
-                    /*
-                    // The following is a rough draft of the form data unless corrected by supervisor
-                    "forms": [
-                        {data: "id", readOnly: true},
-                        {data: "name", renderer: "html"},
-                        {data: "caption", renderer: "html"},
-                        {data: "tags", renderer: "html"},
-                        // Something about adding in fields inside the forms?
-                        {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true }
-                    ]
-                    */
-                };
-                return config[this.collection.key];
+                switch(this.collection.key){
+                    case "audio":
+                        return [
+                            { data: "id", readOnly: true},
+                            { data: "name", renderer: "html"},
+                            { data: "caption", renderer: "html"},
+                            { data: "file_path", renderer: this.audioRenderer, readOnly: true},
+                            { data: "tags", renderer: "html" },
+                            { data: "attribution", renderer: "html"},
+                            { data: "owner", readOnly: true},
+                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                        ];
+                    case "photos":
+                       return [
+                           { data: "id", readOnly: true},
+                           { data: "name", renderer: "html"},
+                           { data: "caption", renderer: "html"},
+                           { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true},
+                           { data: "tags", renderer: "html" },
+                           { data: "attribution", renderer: "html"},
+                           { data: "owner", readOnly: true},
+                           { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                       ];
+                    default:
+                      var cols = [{
+                          data: "id",
+                          readOnly: true
+                      }];
+                      // do some logic
+                      // read the fields from the this.fields
+                      for (var i = 0; i < this.fields.length; ++i){
+                          cols.push({
+                              data: this.fields.at(i).get("col_name"),
+                              renderer: "html"
+                          })
+                      }
+                      console.log(cols);
+                      return cols;
+                }
             }
 
         });
