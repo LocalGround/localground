@@ -3,12 +3,11 @@ define(["marionette",
         "handlebars",
         "collections/photos",
         "collections/audio",
-        "collections/forms",
         "collections/fields",
         "collections/records",
         "handsontable",
         "text!../templates/spreadsheet.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, Forms, Fields, Records, Handsontable, SpreadsheetTemplate) {
+    function (Marionette, _, Handlebars, Photos, Audio, Fields, Records, Handsontable, SpreadsheetTemplate) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
@@ -28,16 +27,14 @@ define(["marionette",
             },
             displaySpreadsheet: function () {
                 //fetch data from server according to mode:
-
-                var that = this;
-
-                alert(this.app.dataType);
+                var that = this,
+                    id;
                 if (this.app.dataType == "photos") {
                     this.collection = new Photos();
                 } else if (this.app.dataType ==  "audio") {
                     this.collection = new Audio();
                 } else if (this.app.dataType.indexOf("form_") != -1) {
-                    var id = this.app.dataType.split("_")[1];
+                    id = this.app.dataType.split("_")[1];
                     // column names:
                     this.fields = new Fields(null, {
                         id: id
@@ -80,7 +77,7 @@ define(["marionette",
                 }
                 this.collection.each(function (model) {
                     var rec = model.toJSON();
-                    if (rec.tags){
+                    if (rec.tags) {
                         rec.tags = rec.tags.join(", ");
                     }
                     data.push(rec);
@@ -132,33 +129,33 @@ define(["marionette",
             thumbnailRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
                 var that = this,
                     img = document.createElement('IMG'),
-                    model;
+                    model,
+                    modalImg,
+                    captionText,
+                    modal,
+                    span;
                 img.src = value;
                 img.onclick = function () {
                     model = that.getModelFromCell(rowIndex);
                     console.log(model);
-                    //alert("TODO: Turn this image link into a preview: " + model.get("path_large"));
-
+                    // alert("TODO: Turn this image link into a preview: " + model.get("path_large"));
                     // Get the modal
-                    var modal = document.getElementById('myModal');
+                    modal = document.getElementById('myModal');
 
                     // Get the image and insert it inside the modal - use its "alt" text as a caption
                     //var img = document.getElementById('myImg');
-                    var modalImg = document.getElementById("img01");
-                    var captionText = document.getElementById("caption");
-                    //img.onclick = function(){
-                        modal.style.display = "block";
-                        modalImg.src = model.get("path_medium");
-                        //captionText.innerHTML = this.alt;
-                    //}
+                    modalImg = document.getElementById("img01");
+                    captionText = document.getElementById("caption");
+                    modal.style.display = "block";
+                    modalImg.src = model.get("path_medium");
 
                     // Get the <span> element that closes the modal
-                    var span = document.getElementsByClassName("close")[0];
+                    span = document.getElementsByClassName("close")[0];
 
                     // When the user clicks on <span> (x), close the modal
-                    span.onclick = function() {
+                    span.onclick = function () {
                         modal.style.display = "none";
-                    }
+                    };
                 }
                 Handsontable.Dom.empty(td);
                 td.appendChild(img);
@@ -202,7 +199,6 @@ define(["marionette",
             },
 
             getColumnHeaders: function () {
-                alert(this.collection.key);
                 switch(this.collection.key){
                     case "audio":
                         return ["ID", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner", "Delete"];
@@ -276,15 +272,12 @@ define(["marionette",
                           data: "id",
                           readOnly: true
                       }];
-                      // do some logic
-                      // read the fields from the this.fields
                       for (var i = 0; i < this.fields.length; ++i){
                           cols.push({
                               data: this.fields.at(i).get("col_name"),
                               renderer: "html"
                           })
                       }
-                      console.log(cols);
                       return cols;
                 }
             }
