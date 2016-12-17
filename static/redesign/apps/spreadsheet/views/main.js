@@ -156,7 +156,7 @@ define(["marionette",
                     span.onclick = function () {
                         modal.style.display = "none";
                     };
-                }
+                };
                 Handsontable.Dom.empty(td);
                 td.appendChild(img);
                 return td;
@@ -169,17 +169,18 @@ define(["marionette",
             },
 
             buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-
-                  var button = document.createElement('BUTTON');
-                  button.innerHTML = "delete";
-                  Handsontable.Dom.empty(td);
-                  td.appendChild(button);
-                  var that = this;
-                  button.onclick = function(){
-                    if (!confirm("Are you sure you want to delete this row?")) return;
-
+                var button = document.createElement('BUTTON'),
+                    that = this,
+                    model;
+                button.innerHTML = "delete";
+                Handsontable.Dom.empty(td);
+                td.appendChild(button);
+                button.onclick = function () {
+                    if (!confirm("Are you sure you want to delete this row?")) {
+                        return;
+                    }
                     // First grab the model of the target row to delete
-                    var model = that.getModelFromCell(row);
+                    model = that.getModelFromCell(row);
 
                     // The model holding the row data is destroyed,
                     // but the row containing the data still appears
@@ -193,26 +194,24 @@ define(["marionette",
 
                     // Now there is no trace of any deleted data,
                     // especially when the user refreshes the page
-                  }
-
-                  return td;
+                };
+                return td;
             },
 
             getColumnHeaders: function () {
-                switch(this.collection.key){
+                var cols;
+                switch (this.collection.key) {
                     case "audio":
                         return ["ID", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner", "Delete"];
                     case "photos":
-                       return ["ID", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
+                        return ["ID", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     default:
-                      var cols = ["ID"];
-                      // do some logic
-                      // read the fields from the this.fields
-                      for (var i = 0; i < this.fields.length; ++i){
-                          cols.push(this.fields.at(i).get("col_name"));
-                      }
-                      console.log(cols);
-                      return cols;
+                        cols = ["ID"];
+                        for (var i = 0; i < this.fields.length; ++i) {
+                            cols.push(this.fields.at(i).get("col_name"));
+                        }
+                    console.log(cols);
+                    return cols;
                 }
             },
             getColumnWidths: function () {
@@ -220,16 +219,14 @@ define(["marionette",
                     case "audio":
                         return [30, 200, 400, 300, 200, 100, 80, 100];
                     case "photos":
-                       return [30, 200, 400, 65, 200, 100, 80, 100];
+                        return [30, 200, 400, 65, 200, 100, 80, 100];
                     default:
-                      var cols = [30];
-                      // do some logic
-                      // read the fields from the this.fields
-                      for (var i = 0; i < this.fields.length; ++i){
-                          cols.push(150);
-                      }
-                      console.log(cols);
-                      return cols;
+                        var cols = [30];
+                        for (var i = 0; i < this.fields.length; ++i){
+                            cols.push(150);
+                        }
+                        console.log(cols);
+                        return cols;
                 }
             },
 
@@ -244,7 +241,7 @@ define(["marionette",
                 this.collection.fetch({ reset: true });
             },
             getColumns: function () {
-                switch(this.collection.key){
+                switch (this.collection.key) {
                     case "audio":
                         return [
                             { data: "id", readOnly: true},
@@ -258,27 +255,27 @@ define(["marionette",
                         ];
                     case "photos":
                        return [
-                           { data: "id", readOnly: true},
-                           { data: "name", renderer: "html"},
-                           { data: "caption", renderer: "html"},
-                           { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true},
-                           { data: "tags", renderer: "html" },
-                           { data: "attribution", renderer: "html"},
-                           { data: "owner", readOnly: true},
-                           { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                            { data: "id", readOnly: true},
+                            { data: "name", renderer: "html"},
+                            { data: "caption", renderer: "html"},
+                            { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true},
+                            { data: "tags", renderer: "html" },
+                            { data: "attribution", renderer: "html"},
+                            { data: "owner", readOnly: true},
+                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
                        ];
                     default:
-                      var cols = [{
-                          data: "id",
-                          readOnly: true
-                      }];
-                      for (var i = 0; i < this.fields.length; ++i){
-                          cols.push({
-                              data: this.fields.at(i).get("col_name"),
-                              renderer: "html"
-                          })
-                      }
-                      return cols;
+                        var cols = [{
+                            data: "id",
+                            readOnly: true
+                        }];
+                        for (var i = 0; i < this.fields.length; ++i){
+                            cols.push({
+                                data: this.fields.at(i).get("col_name"),
+                                renderer: "html"
+                            })
+                        }
+                        return cols;
                 }
             }
 
