@@ -27,12 +27,18 @@
 }
 
 .card-img-preview{
-    height: 200px;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center
+    
+    background-size: 410px auto;
+    background-position: center center;
+    border-radius: 2px 2px 0 0;
+    height: 185px;
+}
 
-    box-shadow: 0 1px 1px 0 rgba(53, 76, 122,.2);
+.fa-map-marker {
+    font-size: 1.2em;
+    top: -60px;
+    opacity: 0.4;
+    
 }
 
 .column h1{
@@ -44,7 +50,7 @@
 .column h2{
     font-size: 12px;
     padding: 0 6px 12px;
-    color: #7a7a7a;
+/*    color: #7a7a7a; */
     font-weight: 400;
 }
 
@@ -52,6 +58,16 @@
     position:absolute;
     right:16px;
     bottom:16px;
+}
+
+.selected-card {
+    position: relative;
+    color: #ffffff;
+    background-color: #5678c1;
+}
+
+.selected-icon {
+    color: #ffffff !important;
 }
 
 /************************************ Side Panel ************************************/
@@ -68,6 +84,11 @@
     background-color: white;
     border-top: 1px solid #e4e5eb;
     padding: 14px 20px;
+}
+
+.confirmation {
+    float: right;
+    margin-right: 18px;
 }
 
  /************************************ Main area for databases ************************************/

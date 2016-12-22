@@ -24,6 +24,16 @@ define(["marionette",
                     modelEvents: {
                         'saved': 'render'
                     },
+                    events: {
+                        "click .card-img-preview" : "selectedClass"
+                    },
+                    selectedClass : function () {
+                        console.log("selected");
+                        $( ".column" ).children("h1").toggleClass( "selected-card" );
+                        $( ".column" ).children("h2").toggleClass( "selected-card" );
+                        $( ".column" ).children("i").toggleClass( "selected-icon" );
+                        
+                    },
                     tagName: "div",
                     className: "column",
                     templateHelpers: function () {

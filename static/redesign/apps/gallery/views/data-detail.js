@@ -13,7 +13,8 @@ define([
         events: {
             'click .view-mode': 'switchToViewMode',
             'click .edit-mode': 'switchToEditMode',
-            'click .save-model': 'saveModel'
+            'click .save-model': 'saveModel',
+            'click .delete-model': 'deleteModel'
         },
         getTemplate: function () {
             if (this.app.dataType == "photos") {
@@ -78,6 +79,10 @@ define([
                     that.$el.find("#model-form").append("error saving");
                 }
             });
+        },
+        deleteModel: function () {
+            if (!confirm("Are you sure you want to delete this entry?")) return;
+            this.model.destroy();
         }
     });
     return MediaEditor;
