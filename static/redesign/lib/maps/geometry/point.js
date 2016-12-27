@@ -38,6 +38,11 @@ define([], function () {
             );
         };
 
+        this.printLatLng = function (geoJSON) {
+            return geoJSON.coordinates[1].toFixed(2) + ", " +
+                geoJSON.coordinates[0].toFixed(2);
+        };
+
     };
     return Point;
 });

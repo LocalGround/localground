@@ -97,6 +97,10 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 }
                 return point.getGoogleLatLng(geoJSON);
             },
+            printLatLng: function () {
+                var point = new Point();
+                return point.printLatLng(this.get("geometry"));
+            },
             setExtras: function (extras) {
                 try {
                     extras = JSON.parse(extras);

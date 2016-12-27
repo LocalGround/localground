@@ -64,7 +64,7 @@
     background-color: rgb(123, 155, 225);
 }
 
-.selected-card h1, .selected-card h2, .selected-card i { 
+.selected-card h1, .selected-card h2, .selected-card > .fa-map-marker, .selected-card .coords { 
     color: #fff;
 }
 
@@ -136,5 +136,13 @@
 
 .success-message {
     display: none;
+}
+
+p.coords {
+    font-size: 7px;
+    float: right;
+    margin-top: -25px;
+    color: #666;
+    padding-right: 5px;
 }
 

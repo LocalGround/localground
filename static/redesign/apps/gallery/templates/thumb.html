@@ -5,24 +5,25 @@
     <h1>
         {{ name }}
     </h1>
+    {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}
     <h2>
         {{owner}}
     </h2>
     
-    {{#if geometry}}
-        <i class="fa fa-map-marker"></i>
-    {{/if}}
+    
 {{/ifequal}}
 
 {{#ifequal dataType "audio"}} 
     <audio controls>
         <source src="{{ file_path }}"></source>
     </audio>
-    <br>
-    <a href="#/{{ dataType }}/{{id}}">{{ name }}</a>
-    {{#if geometry}}
-        <i class="fa fa-map-marker"></i>
-    {{/if}}
+    <h1>
+        <a href="#/{{ dataType }}/{{id}}">{{ name }}</a>
+    </h1>
+    {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}
+    <h2>
+        {{owner}}
+    </h2>
 {{/ifequal}}
 
 {{#ifcontains dataType "form_"}}
