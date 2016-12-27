@@ -15,7 +15,7 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
 
-            if (this.model == undefined) {
+            if (!this.model) {
                 // Create a blank project if new project made
                 console.log("creating new form...");
                 this.model = new Form();
@@ -67,6 +67,11 @@ define([
                 }
             });
         },
+        /*modelEvents: {
+            // When data from Item view changes anywhere and anytime,
+            // re-render to update
+            "change": "render"
+        },*/
         template: Handlebars.compile(CreateFormTemplate),
         events: {
             'click #save-form-settings' : 'saveFormSettings',
@@ -102,6 +107,9 @@ define([
                 success: function () {
                     //alert("saved");
                     that.createNewFields();
+                },
+                error: function(){
+                    console.log("The fields could not be saved");
                 }
             });
         },
@@ -229,7 +237,7 @@ define([
             this.model.destroy( {
                 success: function () {
                     that.backToList();
-                }    
+                }
             });
 
         },
