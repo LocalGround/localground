@@ -26,8 +26,7 @@
     width:100%;
 }
 
-.card-img-preview{
-    
+.card-img-preview {
     background-size: 410px auto;
     background-position: center center;
     border-radius: 2px 2px 0 0;
@@ -61,9 +60,12 @@
 }
 
 .selected-card {
-    position: relative;
-    color: #ffffff;
-    background-color: #5678c1;
+    color: #fff;
+    background-color: rgb(123, 155, 225);
+}
+
+.selected-card h1, .selected-card h2, .selected-card i { 
+    color: #fff;
 }
 
 .selected-icon {
@@ -130,5 +132,9 @@
 
 .project-detail{
     width:400px;
+}
+
+.success-message {
+    display: none;
 }
 

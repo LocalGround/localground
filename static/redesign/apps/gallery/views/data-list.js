@@ -1,5 +1,6 @@
-define(["marionette",
+define(["jquery",
         "underscore",
+        "marionette",
         "handlebars",
         "collections/photos",
         "collections/audio",
@@ -7,7 +8,7 @@ define(["marionette",
         "collections/fields",
         "text!../templates/thumb.html",
         "text!../templates/thumb-list.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, Records, Fields, ThumbTemplate, ListTemplate) {
+    function ($, _, Marionette, Handlebars, Photos, Audio, Records, Fields, ThumbTemplate, ListTemplate) {
         'use strict';
         var ThumbView = Marionette.CompositeView.extend({
 
@@ -28,11 +29,8 @@ define(["marionette",
                         "click .card-img-preview" : "selectedClass"
                     },
                     selectedClass : function () {
-                        console.log("selected");
-                        $( ".column" ).children("h1").toggleClass( "selected-card" );
-                        $( ".column" ).children("h2").toggleClass( "selected-card" );
-                        $( ".column" ).children("i").toggleClass( "selected-icon" );
-                        
+                        $(".column").removeClass("selected-card");
+                        this.$el.toggleClass("selected-card");
                     },
                     tagName: "div",
                     className: "column",
