@@ -35,6 +35,7 @@ define([
 
             //add event listeners:
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
+            this.listenTo(this.vent, 'hide-detail', this.hideMediaDetail);
             this.listenTo(this.vent, 'show-list', this.showMediaList);
         },
         initialize: function (options) {
@@ -77,11 +78,32 @@ define([
             });
             this.galleryRegion.show(this.mainView);
             this.currentCollection = this.mainView.collection;
+            this.hideMediaDetail();
+        },
+
+        hideMediaDetail: function () {
+            if (this.detailView) {
+                this.detailView.doNotDisplay();
+            }
+        },
+
+        createNewModelFromCurrentCollection: function () {
+            //creates an empty model object:
+            var Model = this.currentCollection.model,
+                model = new Model();
+            model.collection = this.currentCollection;
+            model.set("fields", this.mainView.fields.toJSON());
+            model.set("project_id", this.selectedProject.get("id"));
+            return model;
         },
 
         showMediaDetail: function (opts) {
-            console.log(this.currentCollection);
-            var model = this.currentCollection.get(opts.id);
+            var model = null;
+            if (opts.id) {
+                model = this.currentCollection.get(opts.id);
+            } else {
+                model = this.createNewModelFromCurrentCollection();
+            }
             this.detailView = new DataDetail({
                 model: model,
                 app: this

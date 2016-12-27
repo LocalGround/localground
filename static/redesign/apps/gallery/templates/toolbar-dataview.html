@@ -15,7 +15,10 @@
         </select>
     {{/ifequal}}
     
-	<button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add </button>
+	<button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Site Types</button>
+    {{#ifequal activeTab "sites"}}
+        <a id="add-site" class="button-tertiary" href="#/{{dataType}}/new"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Site</a>
+    {{/ifequal}}
 </div>
 <div class="main-search">
 	<form class="search-form" value="Search Media">

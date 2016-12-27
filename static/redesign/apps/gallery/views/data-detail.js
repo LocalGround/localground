@@ -13,7 +13,8 @@ define([
         events: {
             'click .view-mode': 'switchToViewMode',
             'click .edit-mode': 'switchToEditMode',
-            'click .save-model': 'saveModel'
+            'click .save-model': 'saveModel',
+            'click .delete-model': 'deleteModel'
         },
         getTemplate: function () {
             if (this.app.dataType == "photos") {
@@ -50,6 +51,7 @@ define([
                 fields = [];
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     field = this.model.get("fields")[i];
+                    console.log(field);
                     fields.push(field.col_name);
                 }
             } else {
@@ -63,7 +65,8 @@ define([
         },
         saveModel: function () {
             var errors = this.form.commit({ validate: true }),
-                that = this;
+                that = this,
+                isNew = this.model.get("id") ? false : true;
             if (errors) {
                 console.log("errors: ", errors);
                 return;
@@ -71,13 +74,35 @@ define([
             this.model.save(null, {
                 success: function (model, response) {
                     //perhaps some sort of indication of success here?
-                    that.$el.find("#model-form").append("<span class = 'confirmation'>saved successfully</span>");
-                    model.trigger('saved');
+                    that.$el.find(".success-message").show();
+                    if (!isNew) {
+                        console.log("updating...");
+                        model.trigger('saved');
+                    } else {
+                        console.log("adding...");
+                        model.collection.add(model);
+                    }
                 },
                 error: function (model, response) {
                     that.$el.find("#model-form").append("error saving");
                 }
             });
+        },
+        deleteModel: function (e) {
+            var that = this;
+            if (!confirm("Are you sure you want to delete this entry?")) {
+                return;
+            }
+            this.model.destroy({
+                success: function () {
+                    //trigger an event that clears out the deleted model's detail:
+                    that.app.vent.trigger('hide-detail');
+                }
+            });
+            e.preventDefault();
+        },
+        doNotDisplay: function () {
+            this.$el.html("");
         }
     });
     return MediaEditor;
