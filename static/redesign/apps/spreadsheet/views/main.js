@@ -210,8 +210,9 @@ define(["marionette",
                         for (var i = 0; i < this.fields.length; ++i) {
                             cols.push(this.fields.at(i).get("col_name"));
                         }
-                    console.log(cols);
-                    return cols;
+                        cols.push("Delete");
+                        console.log(cols);
+                        return cols;
                 }
             },
             getColumnWidths: function () {
@@ -275,6 +276,8 @@ define(["marionette",
                                 renderer: "html"
                             })
                         }
+                        cols.push(
+                        { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true})
                         return cols;
                 }
             }
