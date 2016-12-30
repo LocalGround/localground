@@ -26,11 +26,26 @@
 {{/ifequal}}
 
 {{#ifcontains dataType "form_"}}
-    <a href="#/{{ dataType }}/{{id}}">
-        show details
-    </a>
-    <br>
-    {{#each fields}}
-        {{ this.col_alias }}: {{ this.val }}<br>
-    {{/each}} 
+    <div class="card-site-field">
+        <table>
+       
+            {{#each fields}}
+                <tr>
+                    <td>{{ this.col_alias }}</td>
+                    <td>{{ this.val }}</td>
+                </tr>
+            {{/each}}
+            <a href="#/{{ dataType }}/{{id}}">
+            
+                <h1>
+                    {{ name }}
+                </h1>
+                <h2>
+                    {{owner}}
+                    John Doe
+                </h2>
+            
+            </a>
+        </table>
+    </div>
 {{/ifcontains}}

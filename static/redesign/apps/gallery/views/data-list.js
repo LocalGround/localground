@@ -26,7 +26,8 @@ define(["jquery",
                         'saved': 'render'
                     },
                     events: {
-                        "click .card-img-preview" : "selectedClass"
+                        "click .card-img-preview" : "selectedClass",
+                        "click .card-site-field" : "selectedClass"
                     },
                     selectedClass : function () {
                         $(".column").removeClass("selected-card");
