@@ -211,6 +211,7 @@ define(["marionette",
                             cols.push(this.fields.at(i).get("col_name"));
                         }
                         cols.push("Delete");
+                        cols.push("Add Header (RD)");
                         console.log(cols);
                         return cols;
                 }
@@ -275,9 +276,14 @@ define(["marionette",
                                 data: this.fields.at(i).get("col_name"),
                                 renderer: "html"
                             })
-                        }
+                        };
                         cols.push(
-                        { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true})
+                        { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true});
+                        // This will be add field header rough draft button
+                        // for display pruposes without any function
+                        cols.push(
+                            {data: "addField", renderer: "html", readOnly: true}
+                        );
                         return cols;
                 }
             }
