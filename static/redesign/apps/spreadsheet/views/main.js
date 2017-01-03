@@ -14,6 +14,9 @@ define(["marionette",
                 return Handlebars.compile(SpreadsheetTemplate);
             },
             table: null,
+            events: {
+                'click #addField': 'createFieldRender'
+            },
             initialize: function (opts) {
                 _.extend(this, opts);
 
@@ -211,7 +214,7 @@ define(["marionette",
                             cols.push(this.fields.at(i).get("col_name"));
                         }
                         cols.push("Delete");
-                        cols.push("Add Header (RD)");
+                        cols.push("<button id='addField'>Add Field</button>");
                         console.log(cols);
                         return cols;
                 }
@@ -286,8 +289,18 @@ define(["marionette",
                         );
                         return cols;
                 }
+            },
+
+            createFieldRender: function(){
+                alert("Need to create Field!");
             }
 
         });
         return Spreadsheet;
     });
+
+
+
+    /*
+      When clicking the Make header
+    */
