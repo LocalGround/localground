@@ -5,9 +5,11 @@ define(["marionette",
         "collections/audio",
         "collections/fields",
         "collections/records",
+        "apps/spreadsheet/views/create-field",
         "handsontable",
         "text!../templates/spreadsheet.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, Fields, Records, Handsontable, SpreadsheetTemplate) {
+    function (Marionette, _, Handlebars, Photos, Audio, Fields, Records,
+                CreateFieldView, Handsontable, SpreadsheetTemplate) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
@@ -15,7 +17,7 @@ define(["marionette",
             },
             table: null,
             events: {
-                'click #addField': 'createFieldRender'
+                'click #addColumn': 'showCreateFieldForm'
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -214,7 +216,7 @@ define(["marionette",
                             cols.push(this.fields.at(i).get("col_name"));
                         }
                         cols.push("Delete");
-                        cols.push("<button id='addField'>Add Field</button>");
+                        cols.push("<button id='addColumn'>Add Column</button>");
                         console.log(cols);
                         return cols;
                 }
@@ -291,8 +293,19 @@ define(["marionette",
                 }
             },
 
-            createFieldRender: function(){
-                alert("Need to create Field!");
+            showCreateFieldForm: function () {
+                // see the apps/gallery/views/toolbar-dataview.js function
+                // to pass the appropriate arguments:
+                var fieldView = new CreateFieldView({
+                    formID: this.app.dataType.split("_")[1]
+                });
+                this.app.vent.trigger('show-modal', {
+                    title: "Create New Column",
+                    view: fieldView,
+                    saveFunction: fieldView.saveToDatabase,
+                    width: 300,
+                    height: 100
+                });
             }
 
         });

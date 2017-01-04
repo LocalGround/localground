@@ -152,6 +152,16 @@ span.action.tag:hover, a.action.tag:hover {
     width:100%;
 }
 
+#model-form select {
+    height: 25px;
+    font-size: 14px;
+}
+
+.error *[data-error] {
+    font-size: 11px;
+    color: #c7254e;
+}
+
 fieldset > div,
 .inline-form{
     margin: 4px 16px;
