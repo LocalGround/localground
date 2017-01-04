@@ -19,6 +19,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
         source='project',
         required=False
     )
+    owner = serializers.SerializerMethodField()
     overlay_type = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField('get_detail_url')
 
@@ -32,17 +33,22 @@ class BaseRecordSerializer(serializers.ModelSerializer):
             fields['project_id'].queryset = models.Form.objects.all()
         return fields
     
+    
     class Meta:
         fields = (
             'id',
             'overlay_type',
             'url',
             'geometry',
+            'owner',
             'project_id')
 
     def get_overlay_type(self, obj):
         #raise Exception(obj)
         return obj._meta.verbose_name
+    
+    def get_owner(self, obj):
+        return obj.owner.username
 
     def get_detail_url(self, obj):
         return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,

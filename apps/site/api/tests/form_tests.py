@@ -38,7 +38,8 @@ class FormDataTestMixin(object):
         'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
         'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
-        'id': {'read_only': True, 'required': False, 'type': 'integer'}
+        'id': {'read_only': True, 'required': False, 'type': 'integer'},
+        'owner': {'read_only': True, 'required': False, 'type': 'field' }
     }
 
     def create_form_post_data(self):
