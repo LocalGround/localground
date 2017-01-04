@@ -3,27 +3,23 @@ define([
     "backbone",
     "apps/style/router",
     "views/toolbar-global",
-    "apps/style/views/layer-listing",
     "apps/style/views/map",
-    "apps/gallery/views/data-detail",
+    "apps/style/views/left-panel",
     "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, ToolbarGlobal,
-             LayerListing, Basemap, DataDetail, Projects, appUtilities) {
+             Basemap, LeftPanel, Projects, appUtilities) {
     "use strict";
     /* TODO: Move some of this stuff to a Marionette LayoutView */
     var MapApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
             container: ".main-panel",
-            markerListRegion: "#marker-list-panel",
+            rightRegion: "#right-panel",
             mapRegion: "#map-panel",
-            markerDetailRegion: "#marker-detail-panel",
+            leftRegion: "#left-panel",
             toolbarMainRegion: "#toolbar-main"
         },
-        dataType: "photos",
-        mode: "edit",
-        screenType: "map",
         currentCollection: null,
         start: function (options) {
             // declares any important global functionality;
@@ -32,8 +28,6 @@ define([
             this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
-            this.listenTo(this.vent, 'show-list', this.showMarkerList);
-            this.listenTo(this.vent, 'show-detail', this.showMarkerDetail);
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
@@ -49,7 +43,15 @@ define([
         loadRegions: function () {
             this.showGlobalToolbar();
             this.showBasemap();
-            this.router.navigate('//photos', { trigger: true });
+            this.showLeftLayout();
+        },
+
+        showLeftLayout: function () {
+            //load view into left region:
+            this.leftPanelView = new LeftPanel({
+                app: this
+            });
+            this.leftRegion.show(this.leftPanelView);
         },
 
         showGlobalToolbar: function () {
@@ -60,34 +62,9 @@ define([
         },
 
         showBasemap: function () {
-            this.basemapView = new Basemap({
-                app: this
-            });
+            var opts = { app: this };
+            this.basemapView = new Basemap(opts);
             this.mapRegion.show(this.basemapView);
-        },
-
-        showMarkerList: function (mediaType) {
-            this.container.$el.removeClass("show-detail");
-            this.dataType = mediaType;
-            if (this.markerListView) {
-                //destroys all of the existing overlays
-                this.markerListView.remove();
-            }
-            this.markerListView = new LayerListing({
-                app: this
-            });
-            this.markerListRegion.show(this.markerListView);
-            this.currentCollection = this.markerListView.collection;
-        },
-
-        showMarkerDetail: function (opts) {
-            this.container.$el.addClass("show-detail");
-            var model = this.currentCollection.get(opts.id);
-            this.dataDetail = new DataDetail({
-                model: model,
-                app: this
-            });
-            this.markerDetailRegion.show(this.dataDetail);
         }
     }));
     return MapApp;

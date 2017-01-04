@@ -1,0 +1,105 @@
+#left-panel {
+    display: none;
+}
+/*** Override some of the "fixed / absolute" characteristics of fav bar ****/
+.filter .data, #toolbar-main {
+    position: static;
+}
+
+#toolbar-main .buttons{
+    top: 0;
+}
+
+.main-panel {
+    padding: 0px;
+    width: auto;
+    display:flex;
+}
+
+/*** Begin Map Styles ****/
+
+#right-panel, #left-panel, #map-panel {
+    /*border: solid 1px #000;*/
+    height: calc(100% - 134px);
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: top;
+}
+#right-panel, #left-panel {
+    overflow-y: auto;
+}
+#right-panel {
+    width: 20%;
+    overflow: hidden;
+}
+#map-panel {
+    width: 60%;
+}
+#map {
+    width: 100%;
+    height: 100%;
+}    
+.show-detail #map-panel {
+    width: 50%;
+    -webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+}
+
+.show-detail {
+    display: inline-block;
+    overflow-y: auto;
+    width:400px;
+    height:100%;
+}
+
+.main-panel{
+    height: calc(100% - 111px);
+    top: 111px;
+    display: flex;
+    position: absolute;
+    width: 100%;
+}
+
+#left-panel{
+    order: 0;
+    border-right: 1px solid #e4e5eb;
+    box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
+    width: 280px;
+    background-color: #fafafc;
+    z-index: 40;
+    flex: none;
+    overflow: scroll;
+    height:100%;
+}
+
+#map-panel{
+    height:100%;
+    -webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+}
+
+.controls {
+    margin: 5px 5px;
+    padding: 5px 15px;
+    border: solid 2px #CCC;
+    width: 250px;
+}
+
+.project-detail{
+    width:400px;
+}
+
+
+#toolbar-main > div{
+    display:flex;    
+}
+
+section {
+    border: solid 5px black;
+    margin: 10px;
+    min-height: 50px; 
+}
