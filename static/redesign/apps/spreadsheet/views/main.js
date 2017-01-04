@@ -5,15 +5,20 @@ define(["marionette",
         "collections/audio",
         "collections/fields",
         "collections/records",
+        "apps/spreadsheet/views/create-field",
         "handsontable",
         "text!../templates/spreadsheet.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, Fields, Records, Handsontable, SpreadsheetTemplate) {
+    function (Marionette, _, Handlebars, Photos, Audio, Fields, Records,
+                CreateFieldView, Handsontable, SpreadsheetTemplate) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
                 return Handlebars.compile(SpreadsheetTemplate);
             },
             table: null,
+            events: {
+                'click #addColumn': 'showCreateFieldForm'
+            },
             initialize: function (opts) {
                 _.extend(this, opts);
 
@@ -210,8 +215,10 @@ define(["marionette",
                         for (var i = 0; i < this.fields.length; ++i) {
                             cols.push(this.fields.at(i).get("col_name"));
                         }
-                    console.log(cols);
-                    return cols;
+                        cols.push("Delete");
+                        cols.push("<button id='addColumn'>Add Column</button>");
+                        console.log(cols);
+                        return cols;
                 }
             },
             getColumnWidths: function () {
@@ -274,11 +281,39 @@ define(["marionette",
                                 data: this.fields.at(i).get("col_name"),
                                 renderer: "html"
                             })
-                        }
+                        };
+                        cols.push(
+                        { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true});
+                        // This will be add field header rough draft button
+                        // for display pruposes without any function
+                        cols.push(
+                            {data: "addField", renderer: "html", readOnly: true}
+                        );
                         return cols;
                 }
+            },
+
+            showCreateFieldForm: function () {
+                // see the apps/gallery/views/toolbar-dataview.js function
+                // to pass the appropriate arguments:
+                var fieldView = new CreateFieldView({
+                    formID: this.app.dataType.split("_")[1]
+                });
+                this.app.vent.trigger('show-modal', {
+                    title: "Create New Column",
+                    view: fieldView,
+                    saveFunction: fieldView.saveToDatabase,
+                    width: 300,
+                    height: 100
+                });
             }
 
         });
         return Spreadsheet;
     });
+
+
+
+    /*
+      When clicking the Make header
+    */

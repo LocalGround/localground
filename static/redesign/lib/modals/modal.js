@@ -27,10 +27,13 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 _.extend(this, opts);
                 this.saveFunction = opts.saveFunction;
                 if (!$(".modal").get(0)) {
+                    console.log("prerender");
                     this.render();
                     $('body').append(this.$el);
                 } else {
+                    console.log("adding");
                     this.$el = $('<div></div>').append($(".modal"));
+                    $('body').append(this.$el);
                 }
                 this.appendView();
                 //this.setSize();

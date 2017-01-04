@@ -47,6 +47,7 @@ define([
             this.listenTo(this.app.vent, 'tab-switch', this.changeMode);
             this.listenTo(this.app.vent, 'show-form', this.showCreateForm);
             this.listenTo(this.app.vent, 'show-form-list', this.showFormList);
+            this.listenTo(this.app.vent, 'show-modal', this.showModal);
             this.modal = new Modal();
             this.forms = new Forms();
         },
@@ -105,6 +106,24 @@ define([
                 // bind the scope of the save function to the source view:
                 //saveFunction: createForm.saveFormSettings.bind(createForm)
             });
+            this.modal.show();
+        },
+
+        showModal: function (opts) {
+            //generic function that displays a view in a modal
+            opts = opts || {};
+            opts = {
+                view: opts.view,
+                title: opts.title,
+                width: opts.width || 500,
+                height: opts.height || 200,
+                showSaveButton: opts.saveFunction ? true : false,
+                showDeleteButton: opts.deleteFunction ? true : false,
+                saveFunction: opts.saveFunction ? opts.saveFunction.bind(opts.view) : null,
+                deleteFunction: opts.deleteFunction ? opts.deleteFunction.bind(opts.view) : null
+            };
+            console.log(opts);
+            this.modal.update(opts);
             this.modal.show();
         },
 
