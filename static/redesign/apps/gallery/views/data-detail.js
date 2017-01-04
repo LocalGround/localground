@@ -74,7 +74,7 @@ define([
             this.model.save(null, {
                 success: function (model, response) {
                     //perhaps some sort of indication of success here?
-                    that.$el.find(".success-message").show();
+                    that.$el.find(".success-message").show().delay(3000).fadeOut(1500);
                     if (!isNew) {
                         console.log("updating...");
                         model.trigger('saved');

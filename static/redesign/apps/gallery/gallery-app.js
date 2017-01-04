@@ -1,4 +1,5 @@
 define([
+    "jquery",
     "marionette",
     "backbone",
     "apps/gallery/router",
@@ -10,7 +11,7 @@ define([
     "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, DataList, DataDetail, ToolbarGlobal, ToolbarDataView, Project, Projects, appUtilities) {
+], function ($, Marionette, Backbone, Router, DataList, DataDetail, ToolbarGlobal, ToolbarDataView, Project, Projects, appUtilities) {
     "use strict";
     var GalleryApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
@@ -102,6 +103,10 @@ define([
             if (opts.id) {
                 model = this.currentCollection.get(opts.id);
             } else {
+                console.log("Should hide buttons");
+                $(".view-mode").css( "display", "none" );
+                this.$el.find(".edit-mode").hide();
+                this.$el.find(".delete-model").hide();
                 model = this.createNewModelFromCurrentCollection();
             }
             this.detailView = new DataDetail({

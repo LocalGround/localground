@@ -1,6 +1,6 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
-    <h4>Record Details</h4>
+    <h4>Add New Record</h4>
     <div class = "section">
         <h3>{{ display_name }}</h3>
         {{#each fields}}
@@ -9,7 +9,7 @@
     </div>
     <div class = "save-options">
         <button class="edit-model button-primary">Save</button>
-        <button class="edit-mode button-tertiary ">Edit</button>
+        <button class="edit-mode button-tertiary">Edit</button>
         <button class="view-mode button-tertiary button-warning delete-model">Delete</button>
     </div>
 {{/ifequal}}
@@ -17,15 +17,15 @@
 
 <!-- EDIT MODE -->
 {{#ifequal mode "edit"}}
-    <h4>Record Details</h4>
+    <h4>Edit Record</h4>
     <div id="model-form">
         <!-- Form Inserted Here -->
     </div>
-    <div class="success-message">Saved Successfully</div>
+    <div class="confirmation success-message">Saved Successfully</div>
     <div class = "save-options">
         <button class="save-model button-primary">Save</button>
-        <button class="view-mode button-tertiary">Preview</button>
-        <button class="view-mode button-tertiary button-warning delete-model">Delete</button>
+        <button class="view-mode button-tertiary" id="preview">Preview</button>
+        <button class="view-mode button-tertiary button-warning delete-model" id="delete">Delete</button>
     </div>
 {{/ifequal}}
 
