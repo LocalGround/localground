@@ -1,4 +1,4 @@
-define(["underscore", "apps/map/views/overlays/base"], function (_, Base) {
+define(["underscore", "lib/maps/overlays/base"], function (_, Base) {
     "use strict";
     /**
      * Class that controls marker point model overlays.

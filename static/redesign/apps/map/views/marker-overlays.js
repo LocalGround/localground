@@ -1,7 +1,7 @@
 define(['marionette',
         'jquery',
-        'apps/map/views/overlays/photo',
-        'apps/map/views/overlays/audio'
+        'lib/maps/overlays/photo',
+        'lib/maps/overlays/audio'
     ],
     function (Marionette, $, PhotoOverlay, AudioOverlay) {
         'use strict';

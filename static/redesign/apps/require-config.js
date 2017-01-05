@@ -31,6 +31,7 @@ require.config({
         'kernel': 'external/kernel.min',
         'mapplication': './mapplication',
         'print_base': "./print_base",
+        //'marionette': 'https://cdnjs.cloudflare.com/ajax/libs/backbone.marionette/3.1.0/backbone.marionette.min',
         'marionette': 'external/backbone.marionette',
         'sandbox': 'external/mediator/sandbox',
         'slick': 'external/slick.min',

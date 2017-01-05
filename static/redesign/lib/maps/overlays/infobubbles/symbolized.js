@@ -1,6 +1,6 @@
 define(['underscore',
     'jquery',
-    'apps/map/views/overlays/infobubbles/base'], function (_, $, BaseBubble) {
+    'lib/maps/overlays/infobubbles/base'], function (_, $, BaseBubble) {
     "use strict";
     /**
      * Class that controls marker point model overlays.

@@ -1,4 +1,4 @@
-define(["models/base", "views/maps/overlays/symbol"], function (Base, Symbol) {
+define(["models/base", "models/symbol"], function (Base, Symbol) {
     "use strict";
     /**
      * A Backbone Model class for the Photo datatype.

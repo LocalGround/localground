@@ -1,3 +1,37 @@
+/*define([
+    "marionette",
+    "backbone",
+    "apps/home/router",
+    "lib/appUtilities",
+    "lib/handlebars-helpers"
+], function (Marionette, Backbone, Router, appUtilities) {
+    "use strict";
+    var HomeApp = Marionette.Application.extend(_.extend(appUtilities, {
+        regions: {
+            projectRegion: ".main-panel",
+            toolbarMainRegion: "#toolbar-main",
+            shareFormRegion: "#share-form"
+        },
+
+        modal: null,
+
+        start: function (options) {
+            // declares any important global functionality;
+            // kicks off any objects and processes that need to run
+            Marionette.Application.prototype.start.apply(this, [options]);
+            this.initAJAX(options);
+            this.router = new Router({ app: this});
+            Backbone.history.start();
+        },
+
+        initialize: function (options) {
+            Marionette.Application.prototype.initialize.apply(this, [options]);
+        }
+    }));
+    return HomeApp;
+});*/
+
+
 define([
     "marionette",
     "backbone",
