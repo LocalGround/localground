@@ -29,6 +29,7 @@ define(["marionette",
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
+                this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
             },
             displaySpreadsheet: function () {
                 //fetch data from server according to mode:
@@ -64,6 +65,7 @@ define(["marionette",
                 return "WHERE project = " + this.app.selectedProject.id;
             },
             renderSpreadsheet: function () {
+                console.log("Rendering Spreadsheet");
                 if (this.collection.length == 0) {
                     this.$el.find('#grid').html("no rows found");
                     return;
@@ -297,7 +299,9 @@ define(["marionette",
                 // see the apps/gallery/views/toolbar-dataview.js function
                 // to pass the appropriate arguments:
                 var fieldView = new CreateFieldView({
-                    formID: this.app.dataType.split("_")[1]
+                    formID: this.app.dataType.split("_")[1],
+                    fields: this.fields,
+                    app: this.app
                 });
                 this.app.vent.trigger('show-modal', {
                     title: "Create New Column",

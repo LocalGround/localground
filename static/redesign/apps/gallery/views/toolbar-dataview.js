@@ -48,6 +48,7 @@ define([
             this.listenTo(this.app.vent, 'show-form', this.showCreateForm);
             this.listenTo(this.app.vent, 'show-form-list', this.showFormList);
             this.listenTo(this.app.vent, 'show-modal', this.showModal);
+            this.listenTo(this.app.vent, 'hide-modal', this.hideModal);
             this.modal = new Modal();
             this.forms = new Forms();
         },
@@ -125,6 +126,10 @@ define([
             console.log(opts);
             this.modal.update(opts);
             this.modal.show();
+        },
+
+        hideModal: function(opts){
+            this.modal.hide();
         },
 
         showCreateForm: function (opts) {
