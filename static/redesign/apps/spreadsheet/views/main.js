@@ -346,9 +346,11 @@ define(["marionette",
             addRow: function () {
                 //alert("add row here");
                 console.log(this.table.countRows());
+                console.log(this);
 
-                var id = this.app.dataType.split("_")[1];
-                var rec = new Record ({project_id: id});
+                //var id = this.app.dataType.split("_")[1];
+                var projectID = this.collection.models[0].get("project_id");
+                var rec = new Record ({project_id: projectID});
                 rec.collection = this.collection;
                 rec.save();
                 this.collection.add(rec);
