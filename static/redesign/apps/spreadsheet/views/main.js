@@ -283,10 +283,21 @@ define(["marionette",
                         }];
                         for (var i = 0; i < this.fields.length; ++i){
                             // Make sure to add in the "-" symbol after field name to delete column
+                            var type = this.fields.at(i).get("data_type").toLowerCase();
+                            switch (type) {
+                                case "boolean":
+                                    type = "checkbox";
+                                    break;
+                                case "integer":
+                                    type = "numeric";
+                                    break;
+                                default:
+                                    type = "text";
+                            }
+                            console.log(type);
                             cols.push({
                                 data: this.fields.at(i).get("col_name"),
-                                type: this.fields.at(i).get(""),
-                                renderer: "html"
+                                type: type
                             })
                         };
                         cols.push(
