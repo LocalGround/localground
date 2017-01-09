@@ -316,13 +316,13 @@ define(["marionette",
                 });
             },
 
-            deleteField: function(e){
+            deleteField: function (e) {
                 //
                 // You need to access the column that is being selected
                 // Then re-order the columns so that the deleted column is last
                 // Then after re-ordering the columns, then delete the selected column
                 //
-
+                var that = this;
                 if (!confirm("Do you want to delete this field?")){
                     return;
                 }
@@ -333,8 +333,14 @@ define(["marionette",
                 var targetColumn = this.fields.at(fieldIndex);
                 console.log(targetColumn);
                 console.log(this.fields);
+                targetColumn.destroy({
+                    success: function () {
+                        alert("successfully deleted!");
+                        that.renderSpreadsheet();
+                    }    
+                });
 
-                for (var i = 0; i < this.fields.length; ++i){
+                /*for (var i = 0; i < this.fields.length; ++i){
                     var currField = this.fields.at(i);
                     if (currField.get("ordering") > targetColumn.get("ordering")){
                         var tmp = currField.get("ordering");
@@ -354,8 +360,7 @@ define(["marionette",
 
                     // However, after manual refreshing, the targeted item is deleted
 
-                }
-
+                }*/
 
             }
 
