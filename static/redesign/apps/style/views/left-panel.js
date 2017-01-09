@@ -2,9 +2,11 @@ define(["marionette",
         "handlebars",
         "apps/style/views/select-map-view",
         "apps/style/views/layer-list-view",
+        "apps/style/views/skin-view",
+        "text!../templates/panel-styles.html",
         "text!../templates/left-panel-layout.html"
     ],
-    function (Marionette, Handlebars, SelectMapView, LayerListView, LeftPanelLayoutTemplate) {
+    function (Marionette, Handlebars, SelectMapView, LayerListView, SkinView, PanelStylesTemplate, LeftPanelLayoutTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var LeftPanelLayout = Marionette.LayoutView.extend({
@@ -13,6 +15,11 @@ define(["marionette",
                 this.app = opts.app;
                 this.render();
             },
+            
+            events: {
+                        "click .hide-button" : "moveLeftPanel"
+                    },
+            
             regions: {
                 menu: "#map_dropdown_region",
                 layers: "#layers_region",
@@ -27,6 +34,14 @@ define(["marionette",
 
                 var lv = new LayerListView({ app: this });
                 this.layers.show(lv);
+                
+                var skv = new SkinView({ app: this });
+                this.skins.show(skv);
+                                
+                this.styles = PanelStylesTemplate;
+            },
+            moveLeftPanel: function () {
+                $("#left-panel").toggleClass("left-panel-hide");
             }
         });
         return LeftPanelLayout;

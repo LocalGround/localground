@@ -72,6 +72,9 @@
     flex: none;
     overflow: scroll;
     height:100%;
+	transition-property: -webkit-transform,transform,opacity;
+    transition-duration: 0.2s;
+    transition-timing-function: cubic-bezier(0.0,0.0,0.2,1);
 }
 
 #map-panel{
@@ -102,4 +105,18 @@ section {
     border: solid 5px black;
     margin: 10px;
     min-height: 50px; 
+}
+
+.hide-button {
+    position: absolute;
+    height: 15px;
+    width: 15px;
+	top: 42px;
+	left: 280px;
+	display: block;
+    border: solid 2px black;
+}
+
+.left-panel-hide {
+    transform: translateX(-280px);
 }
