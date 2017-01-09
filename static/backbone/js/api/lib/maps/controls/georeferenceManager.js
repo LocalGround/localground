@@ -162,8 +162,9 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
 
         this.getMarkerOverlays = function () {
             //TODO: fix hacky fix for drag and drop
-            var overlayGroup = this.app.mapRegion.currentView.overlayManager.getMarkerOverlays();
-            return overlayGroup.children;
+            return this.app.mapRegion.currentView.overlayManager.getSites();
+            //var overlayGroup = this.app.mapRegion.currentView.overlayManager.getMarkerOverlays();
+            //return overlayGroup.children;
         };
 
         this.getPointFromPixelPosition = function (e) {
@@ -189,13 +190,18 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         };
 
         this.getIntersectingMarker = function (opts) {
-            var activeMarker;
-            this.getMarkerOverlays().each(function (marker) {
+            var marker,
+                activeMarker,
+                i,
+                markerOverlays = this.getMarkerOverlays();
+            //return;
+            for (i = 0; i < markerOverlays.length; i++) {
+                marker = markerOverlays[i];
                 if (marker.isShowingOnMap() && marker.intersects(opts.latLng)) {
                     activeMarker = marker;
-                    return;
+                    break;
                 }
-            });
+            }
             return activeMarker;
         };
 
@@ -208,14 +214,19 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         };
 
         this.showDragHighlighting = function (opts) {
+            //return;
             var that = this,
-                intersects = false;
-            this.getMarkerOverlays().each(function (marker) {
+                intersects = false,
+                marker,
+                i,
+                markerOverlays = this.getMarkerOverlays();
+            for (i = 0; i < markerOverlays.length; i++) {
+                marker = markerOverlays[i];
                 if (marker.isShowingOnMap() && marker.intersects(opts.latLng)) {
                     that.highlight(marker);
                     intersects = true;
                 }
-            });
+            }
             if (!intersects) {
                 that.unHighlight();
             }
