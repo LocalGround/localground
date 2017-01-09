@@ -216,7 +216,7 @@ define(["marionette",
                     default:
                         cols = ["ID"];
                         for (var i = 0; i < this.fields.length; ++i) {
-                            cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' aria-hidden='true'></a>");
+                            cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
                         }
                         cols.push("Delete (replaced soon)");
                         cols.push("<button id='addColumn'>Add Column</button> <a class='fa fa-plus-circle delete_column' aria-hidden='true'></a>");
@@ -314,6 +314,49 @@ define(["marionette",
                     width: 300,
                     height: 100
                 });
+            },
+
+            deleteField: function(e){
+                //
+                // You need to access the column that is being selected
+                // Then re-order the columns so that the deleted column is last
+                // Then after re-ordering the columns, then delete the selected column
+                //
+
+                if (!confirm("Do you want to delete this field?")){
+                    return;
+                }
+
+                e.preventDefault();
+                var fieldIndex = $(e.currentTarget).attr("fieldIndex");
+                console.log(fieldIndex + " - " + this.fields.at(fieldIndex).get("col_name"));
+                var targetColumn = this.fields.at(fieldIndex);
+                console.log(targetColumn);
+                console.log(this.fields);
+
+                for (var i = 0; i < this.fields.length; ++i){
+                    var currField = this.fields.at(i);
+                    if (currField.get("ordering") > targetColumn.get("ordering")){
+                        var tmp = currField.get("ordering");
+                        currField.set("ordering", targetColumn.get("ordering"));
+                        targetColumn.set("ordering", tmp);
+                    }
+                    targetColumn.destroy();
+
+                    // I want the destroyed column to disappear seamlessly,
+                    // but I am getting this Uncaught Error:
+                    // cannot remove column with object data source or columns option specified
+
+                    // It may have something to do with ordering value not being updated
+                    this.table.alter("remove_col", fieldIndex); // fieldIndex does not work either
+
+                    // targetColumn.get("ordering") - 1 // only works if the ordering values are different
+
+                    // However, after manual refreshing, the targeted item is deleted
+
+                }
+
+
             }
 
         });
@@ -323,5 +366,11 @@ define(["marionette",
 
 
     /*
-      When clicking the Make header
+      TODO:
+
+      Make the last added row reserved for "Add Row"
+      and when the user does click on it, then a new ro pops up.
+
+      For the existing rows, add the minus button next to the row header title
+      so that the user can delete existing rows with warning
     */
