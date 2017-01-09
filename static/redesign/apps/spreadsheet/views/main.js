@@ -285,6 +285,7 @@ define(["marionette",
                             // Make sure to add in the "-" symbol after field name to delete column
                             cols.push({
                                 data: this.fields.at(i).get("col_name"),
+                                type: this.fields.at(i).get(""),
                                 renderer: "html"
                             })
                         };
@@ -348,13 +349,18 @@ define(["marionette",
                 console.log(this.table.countRows());
                 console.log(this);
 
+                var that = this;
+
                 //var id = this.app.dataType.split("_")[1];
                 var projectID = this.collection.models[0].get("project_id");
                 var rec = new Record ({project_id: projectID});
                 rec.collection = this.collection;
-                rec.save();
-                this.collection.add(rec);
-                this.renderSpreadsheet();
+                rec.save(null, {
+                    success: function(){
+                        that.collection.add(rec);
+                        that.renderSpreadsheet();
+                    }
+                });
 
                 // GOtta do something about the order of ID on table
 
