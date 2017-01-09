@@ -182,7 +182,7 @@ define(["marionette",
                 var button = document.createElement('BUTTON'),
                     that = this,
                     model;
-                button.innerHTML = "delete";
+                button.innerHTML = "<i class='fa fa-trash trash_button' aria-hidden='true'></i>";
                 Handsontable.Dom.empty(td);
                 td.appendChild(button);
                 button.onclick = function () {
@@ -220,8 +220,8 @@ define(["marionette",
                         for (var i = 0; i < this.fields.length; ++i) {
                             cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
                         }
-                        cols.push("Delete (replaced soon)");
-                        cols.push("<button id='addColumn'>Add Column</button> <a class='fa fa-plus-circle delete_column' aria-hidden='true'></a>");
+                        cols.push("Delete");
+                        cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
                         console.log(cols);
                         return cols;
                 }
