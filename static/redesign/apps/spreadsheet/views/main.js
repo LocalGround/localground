@@ -338,7 +338,7 @@ define(["marionette",
                     success: function () {
                         alert("successfully deleted!");
                         that.renderSpreadsheet();
-                    }    
+                    }
                 });
 
                 /*for (var i = 0; i < this.fields.length; ++i){
@@ -365,7 +365,9 @@ define(["marionette",
 
             },
             addRow: function () {
-                alert("add row here");
+                //alert("add row here");
+                console.log(this.table.countRows());
+                this.table.alter("insert_row", null);
             }
 
         });
