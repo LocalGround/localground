@@ -5,10 +5,11 @@ define(["marionette",
         "collections/audio",
         "collections/fields",
         "collections/records",
+        "models/record",
         "apps/spreadsheet/views/create-field",
         "handsontable",
         "text!../templates/spreadsheet.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, Fields, Records,
+    function (Marionette, _, Handlebars, Photos, Audio, Fields, Records, Record,
                 CreateFieldView, Handsontable, SpreadsheetTemplate) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
@@ -341,33 +342,20 @@ define(["marionette",
                     }
                 });
 
-                /*for (var i = 0; i < this.fields.length; ++i){
-                    var currField = this.fields.at(i);
-                    if (currField.get("ordering") > targetColumn.get("ordering")){
-                        var tmp = currField.get("ordering");
-                        currField.set("ordering", targetColumn.get("ordering"));
-                        targetColumn.set("ordering", tmp);
-                    }
-                    targetColumn.destroy();
-
-                    // I want the destroyed column to disappear seamlessly,
-                    // but I am getting this Uncaught Error:
-                    // cannot remove column with object data source or columns option specified
-
-                    // It may have something to do with ordering value not being updated
-                    this.table.alter("remove_col", fieldIndex); // fieldIndex does not work either
-
-                    // targetColumn.get("ordering") - 1 // only works if the ordering values are different
-
-                    // However, after manual refreshing, the targeted item is deleted
-
-                }*/
-
             },
             addRow: function () {
                 //alert("add row here");
                 console.log(this.table.countRows());
+
+                var id = this.app.dataType.split("_")[1];
+                var rec = new Record ({project_id: id});
+                rec.collection = this.collection;
+                rec.save();
+                this.collection.add(rec);
+                // Trying to add a row to the handsonTable at the end index,
+                // but I have no luck yet with that alone
                 this.table.alter("insert_row", null);
+
             }
 
         });
