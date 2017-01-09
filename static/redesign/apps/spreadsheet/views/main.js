@@ -17,7 +17,8 @@ define(["marionette",
             },
             table: null,
             events: {
-                'click #addColumn': 'showCreateFieldForm'
+                'click #addColumn': 'showCreateFieldForm',
+                'click .delete_column' : 'deleteField'
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -215,10 +216,10 @@ define(["marionette",
                     default:
                         cols = ["ID"];
                         for (var i = 0; i < this.fields.length; ++i) {
-                            cols.push(this.fields.at(i).get("col_name"));
+                            cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' aria-hidden='true'></a>");
                         }
-                        cols.push("Delete");
-                        cols.push("<button id='addColumn'>Add Column</button>");
+                        cols.push("Delete (replaced soon)");
+                        cols.push("<button id='addColumn'>Add Column</button> <a class='fa fa-plus-circle delete_column' aria-hidden='true'></a>");
                         console.log(cols);
                         return cols;
                 }
@@ -279,6 +280,7 @@ define(["marionette",
                             readOnly: true
                         }];
                         for (var i = 0; i < this.fields.length; ++i){
+                            // Make sure to add in the "-" symbol after field name to delete column
                             cols.push({
                                 data: this.fields.at(i).get("col_name"),
                                 renderer: "html"
@@ -288,6 +290,8 @@ define(["marionette",
                         { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true});
                         // This will be add field header rough draft button
                         // for display pruposes without any function
+
+                        // Replace this with a simple " + " to add last column
                         cols.push(
                             {data: "addField", renderer: "html", readOnly: true}
                         );
