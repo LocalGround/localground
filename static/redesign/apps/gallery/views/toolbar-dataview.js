@@ -19,7 +19,8 @@ define([
             'click #toolbar-search': 'doSearch',
             'click #toolbar-clear': 'clearSearch',
             'change .media-type': 'changeDisplay',
-            'click #add-data' : 'showFormList'
+            'click #add-data' : 'showFormList',
+            'click #add-row' : 'triggerAddRow'
         },
         modal: null,
         forms: null,
@@ -51,6 +52,11 @@ define([
             this.listenTo(this.app.vent, 'hide-modal', this.hideModal);
             this.modal = new Modal();
             this.forms = new Forms();
+        },
+
+        triggerAddRow: function (e) {
+            this.app.vent.trigger('add-row');
+            e.preventDefault();
         },
 
         changeMode: function () {

@@ -31,6 +31,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
+                this.listenTo(this.app.vent, "add-row", this.addRow);
             },
             displaySpreadsheet: function () {
                 //fetch data from server according to mode:
@@ -362,6 +363,9 @@ define(["marionette",
 
                 }*/
 
+            },
+            addRow: function () {
+                alert("add row here");
             }
 
         });
