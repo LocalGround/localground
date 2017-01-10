@@ -225,7 +225,7 @@ define(["marionette",
                     case "photos":
                         return ["ID", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
-                        return ["ID", "Title", "Caption", "Tags", "Owner", "Delete"];
+                        return ["ID", "Title", "Caption", "Tags", "Lat", "Lng", "Owner", "Delete"];
                     default:
                         cols = ["ID"];
                         for (var i = 0; i < this.fields.length; ++i) {
@@ -244,7 +244,7 @@ define(["marionette",
                     case "photos":
                         return [30, 200, 400, 65, 200, 100, 80, 100];
                     case "markers":
-                        return [30, 200, 400, 200, 80, 100];
+                        return [30, 200, 400, 200, 80, 80, 80, 100];
                     default:
                         var cols = [30];
                         for (var i = 0; i < this.fields.length; ++i){
@@ -295,6 +295,8 @@ define(["marionette",
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
                             { data: "tags", renderer: "html" },
+                            { data: "lat", renderer: "html" },
+                            { data: "lng", renderer: "html" },
                             { data: "owner", readOnly: true},
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
                        ];
