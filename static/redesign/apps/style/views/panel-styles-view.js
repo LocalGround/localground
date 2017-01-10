@@ -7,7 +7,7 @@ define(["marionette",
         'use strict';
 
         var SelectSkinView = Marionette.ItemView.extend({
-            activeIndex: 0,
+            activeKey: "title",
 
             template: Handlebars.compile(PanelStylesTemplate),
             
@@ -35,7 +35,7 @@ define(["marionette",
             templateHelpers: function () {
                 return {
                     json: JSON.stringify(this.model.toJSON(), null, 2),
-                    currentType: this.model.get("panel_styles")[this.activeIndex]
+                    currentType: this.model.get("panel_styles")[this.activeKey]
                     };
             },
             setModel: function (model) {
@@ -52,7 +52,7 @@ define(["marionette",
             //    var fontweight = $("#fw").val();
             
                 this.model.get("panel_styles").fw = fontweight;
-                this.model.attributes.panel_styles[0].fw = $("#font").val();
+                this.model.attributes.panel_styles.title.fw = $("#font").val();
 
             }
 

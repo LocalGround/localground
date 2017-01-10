@@ -7,12 +7,12 @@ define(["models/base"], function (Base) {
         defaults: function () {
             return _.extend({}, Base.prototype.defaults, {
                 checked: false,
-                panel_styles: [
-                    {type: "title", font: "Lato", fw: "bold", color: "black", size: "15"},
-                    {type: "subtitle", font: "Lato", fw: "regular", color: "gray", size: "12"},
-                    {type: "paragraph", font: "Lato", fw: "regular", color: "black", size: "12"},
-                    {type: "tags", font: "Lato", fw: "regular", color: "black", size: "10"}
-                ]
+                panel_styles: {
+                    title: {type: "title", font: "Lato", fw: "bold", color: "black", size: "15"},
+                    subtitle: {type: "subtitle", font: "Lato", fw: "regular", color: "gray", size: "12"},
+                    paragraph: {type: "paragraph", font: "Lato", fw: "regular", color: "black", size: "12"},
+                    tags: {type: "tags", font: "Lato", fw: "regular", color: "black", size: "10"}
+                }
             });
         }
     });
