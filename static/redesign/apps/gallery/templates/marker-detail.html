@@ -17,7 +17,13 @@
 
 <!-- EDIT MODE -->
 {{#ifequal mode "edit"}}
-    <h4>Edit Site</h4>
+    <h4>
+        {{#if id}}
+        Edit Site
+        {{else}}
+        Add Site
+        {{/if}}
+    </h4>
     <div id="model-form">
         <!-- Form Inserted Here -->
     </div>

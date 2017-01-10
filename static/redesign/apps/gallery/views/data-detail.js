@@ -40,6 +40,10 @@ define([
             this.app.mode = "edit";
             this.render();
         },
+        switchToAddMode: function () {
+            this.app.mode = "add";
+            this.render();
+        },
         templateHelpers: function () {
             var context = {
                 mode: this.app.mode,

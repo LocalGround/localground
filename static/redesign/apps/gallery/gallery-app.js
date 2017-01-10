@@ -91,7 +91,10 @@ define([
             var Model = this.currentCollection.model,
                 model = new Model();
             model.collection = this.currentCollection;
-            model.set("fields", this.mainView.fields.toJSON()); // This is where I am getting most trouble because of lackthereof "fields"
+            console.log(this);
+            if (this.dataType == "records"){
+                model.set("fields", this.mainView.fields.toJSON());
+            }
             model.set("project_id", this.selectedProject.get("id"));
             return model;
         },
