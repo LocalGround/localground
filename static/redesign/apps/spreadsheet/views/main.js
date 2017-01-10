@@ -225,7 +225,7 @@ define(["marionette",
                     case "photos":
                         return ["ID", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
-                        return ["ID", "Title", "Caption", "Marker", "Tags", "Attribution", "Owner", "Delete"];
+                        return ["ID", "Title", "Caption", "Tags", "Owner", "Delete"];
                     default:
                         cols = ["ID"];
                         for (var i = 0; i < this.fields.length; ++i) {
@@ -244,7 +244,7 @@ define(["marionette",
                     case "photos":
                         return [30, 200, 400, 65, 200, 100, 80, 100];
                     case "markers":
-                        return [30, 200, 400, 65, 200, 100, 80, 100];
+                        return [30, 200, 400, 200, 80, 100];
                     default:
                         var cols = [30];
                         for (var i = 0; i < this.fields.length; ++i){
@@ -294,9 +294,7 @@ define(["marionette",
                             { data: "id", readOnly: true},
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            { data: "marker", renderer: "html", readOnly: true}, // Eventually we need to put a marker object there
                             { data: "tags", renderer: "html" },
-                            { data: "attribution", renderer: "html"},
                             { data: "owner", readOnly: true},
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
                        ];
@@ -381,8 +379,8 @@ define(["marionette",
             },
             addRow: function () {
                 //alert("add row here");
-                console.log(this.table.countRows());
-                console.log(this);
+                //console.log(this.table.countRows());
+                //console.log(this);
 
                 var that = this;
 
