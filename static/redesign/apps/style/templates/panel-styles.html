@@ -9,7 +9,7 @@
     <div id="type" style="display: block;">
 
     <!--Choose the type category to style -->
-        <select name="title-list" style="width:100%; margin: 20px 0px 10px;">
+        <select id="type" name="title-list" style="width:100%; margin: 20px 0px 10px;">
             <option value="Title">Title</option>
             <option value="Subtitle">Subtitle</option>
             <option value="paragraph">Paragraph</option>
@@ -20,7 +20,7 @@
                 <tr>
                     <td>Font:</td>
                     <td>
-                        <select name="type-list" class="type-list">
+                        <select id="font" name="type-list" class="type-list">
                             <option value="lato">Lato</option>
                             <option value="Bebas">Bebas</option>
                         </select>
@@ -29,7 +29,7 @@
                 <tr>
                     <td>Font weight:</td>
                     <td>
-                        <select name="type-list" class="type-list">
+                        <select id="fw" name="type-list" class="type-list">
                             <option value="Regular">Regular</option>
                             <option value="Bold">Bold</option>
                         </select>
@@ -41,10 +41,16 @@
                 </tr>
                 <tr>
                     <td>Size:</td>
-                    <td><input type="number">px</td>
+                    <td><input type="number" value="{{currentType.size}}">px</td>
                 </tr>
             </tbody>
-        </table> 
+        </table>
+        <button id="style-save">Save</button>
     </div>
 </div>
+<pre>{{name}}
+{{panel_styles.[0].color}}
+{{currentType.fw}}<br>
+{{currentType.font}}
+</pre>
 <pre>{{json}}</pre>

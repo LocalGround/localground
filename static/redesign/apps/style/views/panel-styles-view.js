@@ -1,4 +1,3 @@
-var activeModel;
 define(["marionette",
         "handlebars",
         "models/map",
@@ -8,8 +7,13 @@ define(["marionette",
         'use strict';
 
         var SelectSkinView = Marionette.ItemView.extend({
+            activeIndex: 0,
 
             template: Handlebars.compile(PanelStylesTemplate),
+            
+            events: {
+                'click #style-save': 'updateStyles' 
+            },
 
             initialize: function (opts) {
                 this.app = opts.app;
@@ -30,14 +34,26 @@ define(["marionette",
             
             templateHelpers: function () {
                 return {
-                    json: JSON.stringify(this.model.toJSON(), null, 2)
+                    json: JSON.stringify(this.model.toJSON(), null, 2),
+                    currentType: this.model.get("panel_styles")[this.activeIndex]
                     };
             },
             setModel: function (model) {
                 this.model = model;
                 this.render();
                 console.log(this.model);
-                activeModel = model;
+            },
+            updateStyles: function () {
+                //this.$el.find()
+                var all = this.model.get("panel_styles");
+                this.model.set("panel_styles", s)
+            //    var type = $("#type").val();
+            //    var font = $("#font").val();
+            //    var fontweight = $("#fw").val();
+            
+                this.model.get("panel_styles").fw = fontweight;
+                this.model.attributes.panel_styles[0].fw = $("#font").val();
+
             }
 
         });
