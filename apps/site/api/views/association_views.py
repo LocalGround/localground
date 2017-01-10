@@ -22,8 +22,6 @@ class RelatedMediaList(generics.ListCreateAPIView):
     model = models.GenericAssociation
     serializer_class = serializers.AssociationSerializer
     # http://stackoverflow.com/questions/3210491/association-of-entities-in-a-rest-service
-
-    
     
     def get_queryset(self):
         group_model = get_group_model(self.kwargs.get('group_name_plural'))
