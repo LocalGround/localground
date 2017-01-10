@@ -103,6 +103,7 @@ define([
             if (opts.id) {
                 model = this.currentCollection.get(opts.id);
             } else {
+                console.log(this);
                 console.log("Should hide buttons");
                 $(".view-mode").css( "display", "none" );
                 this.$el.find(".edit-mode").hide();
