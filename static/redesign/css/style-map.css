@@ -72,9 +72,9 @@
     flex: none;
     overflow: scroll;
     height:100%;
-	transition-property: -webkit-transform,transform,opacity;
+	transition-property: -webkit-transform,transform,opacity, width;
     transition-duration: 0.2s;
-    transition-timing-function: cubic-bezier(0.0,0.0,0.2,1);
+    transition-timing-function: cubic-bezier(0.0,0.0,0.5,1);
 }
 
 #map-panel{
@@ -109,14 +109,33 @@ section {
 
 .hide-button {
     position: absolute;
-    height: 15px;
+    height: 35px;
     width: 15px;
 	top: 42px;
 	left: 280px;
 	display: block;
     border: solid 2px black;
+    transform: translateX(0px);
+    background: white;
+    background-image: url("../../images/checkmark.png");
+    background-size: contain;
+    background-repeat:   no-repeat;
+    background-position: center center;
+    transition-property: -webkit-transform,transform,opacity, width, left;
+    transition-duration: 0.2s;
+    transition-timing-function: cubic-bezier(0.0,0.0,0.5,1);
 }
 
 .left-panel-hide {
-    transform: translateX(-280px);
+   /* transform: translateX(-80px);*/
+   /* position: absolute;*/
+   width: 0px !important;
+   overflow: hidden;
+   
 }
+
+.map-left-panel-hide {
+    left: 0px;
+    background-image: url("../../images/circle.png");
+}
+

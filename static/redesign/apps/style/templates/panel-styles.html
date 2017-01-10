@@ -1,6 +1,50 @@
-<h3>Map Skin Style</h3>
-<select>
-{{#each items}}
-    <option value={{ this.id }}>{{ this.name }}</option>
-{{/each}}
-</select>
+<h3>Panel Styles</h3>
+{{ name }}
+<div class="bordered-section end-section">
+    <h5>
+        <a onclick="toggleVisibility('type', 'hidden'); ">Panel Styles</a>
+        <i class="fa fa-caret-up caret" aria-hidden="true"></i>
+        <i class="fa fa-caret-down" aria-hidden="true" style="display:none;"></i>
+    </h5>
+    <div id="type" style="display: block;">
+
+    <!--Choose the type category to style -->
+        <select name="title-list" style="width:100%; margin: 20px 0px 10px;">
+            <option value="Title">Title</option>
+            <option value="Subtitle">Subtitle</option>
+            <option value="paragraph">Paragraph</option>
+            <option value="tag">Tag</option>
+        </select>
+        <table class="type-table">
+            <tbody>
+                <tr>
+                    <td>Font:</td>
+                    <td>
+                        <select name="type-list" class="type-list">
+                            <option value="lato">Lato</option>
+                            <option value="Bebas">Bebas</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Font weight:</td>
+                    <td>
+                        <select name="type-list" class="type-list">
+                            <option value="Regular">Regular</option>
+                            <option value="Bold">Bold</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Color:</td>
+                    <td><i class="fa fa-circle marker-icon" style="padding:0" aria-hidden="true"></i></td>
+                </tr>
+                <tr>
+                    <td>Size:</td>
+                    <td><input type="number">px</td>
+                </tr>
+            </tbody>
+        </table> 
+    </div>
+</div>
+<pre>{{json}}</pre>

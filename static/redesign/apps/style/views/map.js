@@ -27,6 +27,7 @@ define(["marionette",
                 this.opts = opts;
                 $.extend(this, opts);
                 Marionette.View.prototype.initialize.call(this);
+                this.listenTo(this.app.vent, 'google-redraw', this.redrawGoogle);
             },
 
             renderMap: function () {
@@ -136,8 +137,11 @@ define(["marionette",
                 this.renderMap();
                 this.addControls();
                 this.addEventHandlers();
+            },
+            redrawGoogle: function () {
+                google.maps.event.trigger(this.map, 'resize');
+                console.log(this.map);
             }
-
         });
 
         return Basemap;

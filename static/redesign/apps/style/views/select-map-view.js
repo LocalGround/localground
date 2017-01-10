@@ -9,6 +9,10 @@ define(["marionette",
         var SelectMapView = Marionette.ItemView.extend({
 
             template: Handlebars.compile(MapTemplate),
+            
+            events: {
+                'change #map-select': 'changeMap' 
+            },
 
             initialize: function (opts) {
                 this.app = opts.app;
@@ -19,6 +23,15 @@ define(["marionette",
                     { id: 1, name: "Flowers & Birds", project_id: 4 },
                     { id: 2, name: "Berkeley Public Art", project_id: 4 },
                     { id: 3, name: "Soil Science", project_id: 4 }                ]);
+            },
+            
+            changeMap: function(e) {
+                var $select = $(e.target);
+                var id = $select.val();
+                console.log($select.val());
+                console.log("map change");
+                
+                this.app.vent.trigger("change-map", this.collection.get(id));
             }
 
         });
