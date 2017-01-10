@@ -26,6 +26,22 @@
     </h2>
 {{/ifequal}}
 
+{{#ifcontains dataType "markers"}}
+    <div class="card-site-field">
+        
+        <a href="#/{{ dataType }}/{{id}}">
+            
+            <h1>
+                {{ name }}
+            </h1>
+            <h2>
+                {{owner}}
+            </h2>
+        
+        </a>
+    </div>
+{{/ifcontains}}
+
 {{#ifcontains dataType "form_"}}
     <div class="card-site-field">
         <table>
@@ -44,7 +60,6 @@
             </h1>
             <h2>
                 {{owner}}
-                John Doe
             </h2>
         
         </a>
