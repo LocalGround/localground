@@ -5,10 +5,11 @@ define(["marionette",
         "collections/audio",
         "collections/fields",
         "collections/records",
+        "models/record",
         "apps/spreadsheet/views/create-field",
         "handsontable",
         "text!../templates/spreadsheet.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, Fields, Records,
+    function (Marionette, _, Handlebars, Photos, Audio, Fields, Records, Record,
                 CreateFieldView, Handsontable, SpreadsheetTemplate) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
@@ -31,6 +32,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
+                this.listenTo(this.app.vent, "add-row", this.addRow);
             },
             displaySpreadsheet: function () {
                 //fetch data from server according to mode:
@@ -180,7 +182,7 @@ define(["marionette",
                 var button = document.createElement('BUTTON'),
                     that = this,
                     model;
-                button.innerHTML = "delete";
+                button.innerHTML = "<i class='fa fa-trash trash_button' aria-hidden='true'></i>";
                 Handsontable.Dom.empty(td);
                 td.appendChild(button);
                 button.onclick = function () {
@@ -216,10 +218,10 @@ define(["marionette",
                     default:
                         cols = ["ID"];
                         for (var i = 0; i < this.fields.length; ++i) {
-                            cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' aria-hidden='true'></a>");
+                            cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
                         }
-                        cols.push("Delete (replaced soon)");
-                        cols.push("<button id='addColumn'>Add Column</button> <a class='fa fa-plus-circle delete_column' aria-hidden='true'></a>");
+                        cols.push("Delete");
+                        cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
                         console.log(cols);
                         return cols;
                 }
@@ -281,9 +283,21 @@ define(["marionette",
                         }];
                         for (var i = 0; i < this.fields.length; ++i){
                             // Make sure to add in the "-" symbol after field name to delete column
+                            var type = this.fields.at(i).get("data_type").toLowerCase();
+                            switch (type) {
+                                case "boolean":
+                                    type = "checkbox";
+                                    break;
+                                case "integer":
+                                    type = "numeric";
+                                    break;
+                                default:
+                                    type = "text";
+                            }
+                            console.log(type);
                             cols.push({
                                 data: this.fields.at(i).get("col_name"),
-                                renderer: "html"
+                                type: type
                             })
                         };
                         cols.push(
@@ -314,6 +328,57 @@ define(["marionette",
                     width: 300,
                     height: 100
                 });
+            },
+
+            deleteField: function (e) {
+                //
+                // You need to access the column that is being selected
+                // Then re-order the columns so that the deleted column is last
+                // Then after re-ordering the columns, then delete the selected column
+                //
+                var that = this;
+                if (!confirm("Do you want to delete this field?")){
+                    return;
+                }
+
+                e.preventDefault();
+                var fieldIndex = $(e.currentTarget).attr("fieldIndex");
+                console.log(fieldIndex + " - " + this.fields.at(fieldIndex).get("col_name"));
+                var targetColumn = this.fields.at(fieldIndex);
+                console.log(targetColumn);
+                console.log(this.fields);
+                targetColumn.destroy({
+                    success: function () {
+                        alert("successfully deleted!");
+                        that.renderSpreadsheet();
+                    }
+                });
+
+            },
+            addRow: function () {
+                //alert("add row here");
+                console.log(this.table.countRows());
+                console.log(this);
+
+                var that = this;
+
+                //var id = this.app.dataType.split("_")[1];
+                var projectID = this.collection.models[0].get("project_id");
+                var rec = new Record ({project_id: projectID});
+                rec.collection = this.collection;
+                rec.save(null, {
+                    success: function(){
+                        that.collection.add(rec);
+                        that.renderSpreadsheet();
+                    }
+                });
+
+                // GOtta do something about the order of ID on table
+
+                // Trying to add a row to the handsonTable at the end index,
+                // but I have no luck yet with that alone
+                //this.table.alter("insert_row", null);
+
             }
 
         });
@@ -323,5 +388,11 @@ define(["marionette",
 
 
     /*
-      When clicking the Make header
+      TODO:
+
+      Make the last added row reserved for "Add Row"
+      and when the user does click on it, then a new ro pops up.
+
+      For the existing rows, add the minus button next to the row header title
+      so that the user can delete existing rows with warning
     */
