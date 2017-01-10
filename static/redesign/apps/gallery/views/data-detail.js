@@ -5,9 +5,10 @@ define([
     "marionette",
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
+    "text!../templates/marker-detail.html",
     "text!../templates/record-detail.html",
     "form" //extends Backbone
-], function (Backbone, _, Handlebars, Marionette, PhotoTemplate, AudioTemplate, RecordTemplate) {
+], function (Backbone, _, Handlebars, Marionette, PhotoTemplate, AudioTemplate, MarkerTemplate, RecordTemplate) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -21,6 +22,8 @@ define([
                 return Handlebars.compile(PhotoTemplate);
             } else if (this.app.dataType == "audio") {
                 return Handlebars.compile(AudioTemplate);
+            } else if (this.app.dataType == "markers") {
+                return Handlebars.compile(MarkerTemplate);
             } else {
                 return Handlebars.compile(RecordTemplate);
             }
