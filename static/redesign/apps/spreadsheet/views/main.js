@@ -46,7 +46,7 @@ define(["marionette",
                     this.collection = new Audio();
                 } else if (this.app.dataType == "markers") {
                     alert("show 'markers' spreadsheet");
-                    this.collections = new Markers();
+                    this.collection = new Markers();
                 } else if (this.app.dataType.indexOf("form_") != -1) {
                     id = this.app.dataType.split("_")[1];
                     // column names:
