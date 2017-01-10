@@ -74,10 +74,12 @@ define(["marionette",
             },
             renderSpreadsheet: function () {
                 console.log("Rendering Spreadsheet");
+                //*
                 if (this.collection.length == 0) {
                     this.$el.find('#grid').html("no rows found");
                     return;
                 }
+                //*/
                 var grid = this.$el.find('#grid').get(0),
                     rowHeights = [],
                     i = 0,
@@ -387,7 +389,10 @@ define(["marionette",
                 var that = this;
 
                 //var id = this.app.dataType.split("_")[1];
-                var projectID = this.collection.models[0].get("project_id");
+                console.log(this.app);
+                var projectID = this.app.selectedProject.id;
+
+
 
                 var rec;
 
@@ -396,7 +401,12 @@ define(["marionette",
                 } else {
                     rec = new Record ({project_id: projectID});
                 }
-                rec.collection = this.collection;
+
+                if (this.collection.isEmpty()){
+
+                } else {
+                    rec.collection = this.collection;
+                }
                 rec.save(null, {
                     success: function(){
                         that.collection.add(rec);
