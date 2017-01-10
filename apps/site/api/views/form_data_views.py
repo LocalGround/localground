@@ -31,7 +31,7 @@ class FormDataMixin(object):
         # if self.request.method == 'GET' and is_list and d.get('format') != 'csv':
         #    return serializers.create_compact_record_serializer(form)
         # else:
-        return serializers.create_record_serializer(form)
+        return serializers.create_record_serializer(form, show_detail=(not is_list))
 
     def get_queryset(self):
         try:

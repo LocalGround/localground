@@ -50,6 +50,7 @@ define([
             this.listenTo(this.app.vent, 'show-form-list', this.showFormList);
             this.listenTo(this.app.vent, 'show-modal', this.showModal);
             this.listenTo(this.app.vent, 'hide-modal', this.hideModal);
+            this.listenTo(this.app.vent, 'show-list', this.updateNewObejctRoute);
             this.modal = new Modal();
             this.forms = new Forms();
         },
@@ -66,6 +67,9 @@ define([
             } else {
                 this.renderAndRoute();
             }
+        },
+        updateNewObejctRoute: function () {
+            this.$el.find("#add-site").attr("href", '#/' + this.app.dataType + '/new');
         },
 
         renderAndRoute: function () {
@@ -134,7 +138,7 @@ define([
             this.modal.show();
         },
 
-        hideModal: function(opts){
+        hideModal: function () {
             this.modal.hide();
         },
 
