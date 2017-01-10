@@ -9,6 +9,7 @@
     {{/ifequal}}
     {{#ifequal activeTab "sites"}}
         <select class="media-type">
+            <option value="markers">Site</option>
             {{#each forms}}
                 <option value="form_{{ this.id }}">{{ this.name }}</option>
             {{/each}}
