@@ -53,13 +53,13 @@ class ApiRelatedMediaListTest(
         for i, url in enumerate(self.urls):
             if "markers" in url:
                 source_model = models.Marker
+                source_id = self.marker.id
             else:
                 form_id = url.split('/')[-3]
                 source_model = models.Form.objects.get(id=form_id).TableModel
-                
-            model_type = models.Base.get_model(
-                model_name_plural=source_model
-            ).get_content_type()
+                source_id = self.record.id
+
+            source_type = source_model.get_content_type()
             entity_type = models.Base.get_model(
                 model_name_plural=url.split('/')[-2]
             ).get_content_type()
@@ -73,7 +73,7 @@ class ApiRelatedMediaListTest(
             queryset = models.GenericAssociation.objects.filter(
                 entity_type=entity_type,
                 source_type=source_type,
-                source_id=self.marker.id,
+                source_id=source_id,
             )
             self.assertEqual(len(queryset), 0)
 
@@ -93,7 +93,7 @@ class ApiRelatedMediaListTest(
             queryset = models.GenericAssociation.objects.filter(
                 entity_type=entity_type,
                 source_type=source_type,
-                source_id=self.marker.id,
+                source_id=source_id,
             )
             self.assertEqual(len(queryset), 1)
 
