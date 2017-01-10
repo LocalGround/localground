@@ -45,7 +45,7 @@ define(["marionette",
                 } else if (this.app.dataType ==  "audio") {
                     this.collection = new Audio();
                 } else if (this.app.dataType == "markers") {
-                    alert("show 'markers' spreadsheet");
+                    //alert("show 'markers' spreadsheet");
                     this.collection = new Markers();
                 } else if (this.app.dataType.indexOf("form_") != -1) {
                     id = this.app.dataType.split("_")[1];
@@ -386,7 +386,14 @@ define(["marionette",
 
                 //var id = this.app.dataType.split("_")[1];
                 var projectID = this.collection.models[0].get("project_id");
-                var rec = new Record ({project_id: projectID});
+
+                var rec;
+
+                if (this.app.dataType == "markers"){
+                    rec = new Marker({project_id: projectID});
+                } else {
+                    rec = new Record ({project_id: projectID});
+                }
                 rec.collection = this.collection;
                 rec.save(null, {
                     success: function(){
