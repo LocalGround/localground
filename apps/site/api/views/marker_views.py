@@ -7,7 +7,8 @@ class MarkerGeometryMixin(object):
     
     def get_geometry_dictionary(self, serializer):
         geom = serializer.validated_data.get('point')
-        del serializer.validated_data['point']
+        if geom:
+            del serializer.validated_data['point']
         point, polyline, polygon = None, None, None
         if geom is not None:
             if geom.geom_type == 'Point':
