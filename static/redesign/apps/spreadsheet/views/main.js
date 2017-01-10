@@ -5,12 +5,14 @@ define(["marionette",
         "collections/audio",
         "collections/fields",
         "collections/records",
+        "collections/markers",
         "models/record",
+        "models/marker",
         "apps/spreadsheet/views/create-field",
         "handsontable",
         "text!../templates/spreadsheet.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, Fields, Records, Record,
-                CreateFieldView, Handsontable, SpreadsheetTemplate) {
+    function (Marionette, _, Handlebars, Photos, Audio, Fields, Records, Markers,
+              Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
@@ -44,6 +46,7 @@ define(["marionette",
                     this.collection = new Audio();
                 } else if (this.app.dataType == "markers") {
                     alert("show 'markers' spreadsheet");
+                    this.collections = new Markers();
                 } else if (this.app.dataType.indexOf("form_") != -1) {
                     id = this.app.dataType.split("_")[1];
                     // column names:
@@ -180,6 +183,10 @@ define(["marionette",
                 return td;
             },
 
+            markerRenderer: function(instance, td, rowIndex, colIndex, prop, value, cellProperties){
+                console.log("Marker Being Worked on");
+            },
+
             buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 var button = document.createElement('BUTTON'),
                     that = this,
@@ -217,6 +224,8 @@ define(["marionette",
                         return ["ID", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner", "Delete"];
                     case "photos":
                         return ["ID", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
+                    case "markers":
+                        return ["ID", "Title", "Caption", "Marker", "Tags", "Attribution", "Owner", "Delete"];
                     default:
                         cols = ["ID"];
                         for (var i = 0; i < this.fields.length; ++i) {
@@ -233,6 +242,8 @@ define(["marionette",
                     case "audio":
                         return [30, 200, 400, 300, 200, 100, 80, 100];
                     case "photos":
+                        return [30, 200, 400, 65, 200, 100, 80, 100];
+                    case "markers":
                         return [30, 200, 400, 65, 200, 100, 80, 100];
                     default:
                         var cols = [30];
@@ -273,6 +284,17 @@ define(["marionette",
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
                             { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true},
+                            { data: "tags", renderer: "html" },
+                            { data: "attribution", renderer: "html"},
+                            { data: "owner", readOnly: true},
+                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                       ];
+                    case "markers":
+                       return [
+                            { data: "id", readOnly: true},
+                            { data: "name", renderer: "html"},
+                            { data: "caption", renderer: "html"},
+                            { data: "marker", renderer: "html", readOnly: true}, // Eventually we need to put a marker object there
                             { data: "tags", renderer: "html" },
                             { data: "attribution", renderer: "html"},
                             { data: "owner", readOnly: true},

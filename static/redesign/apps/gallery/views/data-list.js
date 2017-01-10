@@ -6,9 +6,11 @@ define(["jquery",
         "collections/audio",
         "collections/records",
         "collections/fields",
+        "collections/markers",
         "text!../templates/thumb.html",
         "text!../templates/thumb-list.html"],
-    function ($, _, Marionette, Handlebars, Photos, Audio, Records, Fields, ThumbTemplate, ListTemplate) {
+    function ($, _, Marionette, Handlebars, Photos, Audio, Records,
+               Fields, Markers, ThumbTemplate, ListTemplate) {
         'use strict';
         var ThumbView = Marionette.CompositeView.extend({
 
@@ -114,6 +116,8 @@ define(["jquery",
                     this.collection = new Photos();
                 } else if (this.app.dataType ==  "audio") {
                     this.collection = new Audio();
+                } else if (this.app.dataType ==  "markers") {
+                    this.collection = new Markers();
                 } else if (this.app.dataType.indexOf("form_") != -1) {
                     id = this.app.dataType.split("_")[1];
                     // column names:
