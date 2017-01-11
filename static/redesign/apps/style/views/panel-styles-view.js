@@ -12,7 +12,11 @@ define(["marionette",
             template: Handlebars.compile(PanelStylesTemplate),
             
             events: {
-                'click #style-save': 'updateStyles' 
+                'change #text-type': 'updateType',
+                'change #font': 'updateFont',
+                'change #fw': 'updateFontWeight',
+                'change #font-color': 'updateFontColor',
+                'change #font-size': 'updateFontSize'
             },
 
             initialize: function (opts) {
@@ -20,7 +24,6 @@ define(["marionette",
                 this.model = new Map(
                     { id: 1, name: "Flowers & Birds", project_id: 4 }
                     );
-                console.log("ok");
                 console.log(this.model);
                 this.listenTo(this.app.vent, 'change-map', this.setModel);
 
@@ -29,13 +32,15 @@ define(["marionette",
                 //  this.collection = Maps;
                 console.log("panel styles initialized");
                 //   console.log(this.app);
-                console.log(Map);
             },
             
             templateHelpers: function () {
                 return {
                     json: JSON.stringify(this.model.toJSON(), null, 2),
-                    currentType: this.model.get("panel_styles")[this.activeKey]
+                    currentType: this.model.get("panel_styles")[this.activeKey],
+                    activeKey: this.activeKey,
+                    font: this.model.get("panel_styles")[this.activeKey].font,
+                    fontWeight: this.model.get("panel_styles")[this.activeKey].fw
                     };
             },
             setModel: function (model) {
@@ -43,18 +48,26 @@ define(["marionette",
                 this.render();
                 console.log(this.model);
             },
-            updateStyles: function () {
-                //this.$el.find()
-                var all = this.model.get("panel_styles");
-                this.model.set("panel_styles", s)
-            //    var type = $("#type").val();
-            //    var font = $("#font").val();
-            //    var fontweight = $("#fw").val();
-            
-                this.model.get("panel_styles").fw = fontweight;
-                this.model.attributes.panel_styles.title.fw = $("#font").val();
+            updateType: function () {
+                this.activeKey = this.$el.find("#text-type").val();
+                this.render();
+            },
+            updateFont: function () {
+                this.model.get("panel_styles")[this.activeKey].font = this.$el.find("#font").val();
+                this.render();
+            },
+            updateFontWeight: function () {
+                this.model.get("panel_styles")[this.activeKey].fw = this.$el.find("#fw").val();
+                this.render();
+            },
+            updateFontColor: function () {
+                //color picker functionality needed
+            },
+            updateFontSize: function () {
+                this.model.get("panel_styles")[this.activeKey].size = this.$el.find("#font-size").val();
+                this.render();
+            },
 
-            }
 
         });
         return SelectSkinView;
