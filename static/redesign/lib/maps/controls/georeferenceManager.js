@@ -137,7 +137,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                     project_id: this.app.getActiveProjectID(),
                     color: "999999"
                 });
-            model.setGeometry(googleOverlay);
+            model.setGeometryFromOverlay(googleOverlay);
             model.save({}, {
                 success: function (model, response) {
                     //fetch schema...
@@ -248,7 +248,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                 latLng = projection.fromContainerPixelToLatLng(point);
 
                 //save the data item's geometry:
-                model.setGeometry(latLng);
+                model.setGeometryFromOverlay(latLng);
                 model.save();
 
                 //attach the data item to the intersecting marker, if applicable:
@@ -290,7 +290,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                     this.attachUnsuccessful.bind(this, attachingMarker.model)
                 );
             } else {
-                model.setGeometry(latLng);
+                model.setGeometryFromOverlay(latLng);
                 model.save();
             }
         };

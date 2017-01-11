@@ -55,7 +55,7 @@ define(["models/base", "underscore"], function (Base, _) {
         },
         
         save: function (key, val, options) {		
-            return Backbone.Model.prototype.save.call(this, key, val, options);		
+            return Backbone.Model.prototype.save.call(this, key, val, options);
 		}
 
     });
