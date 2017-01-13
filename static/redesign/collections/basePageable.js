@@ -53,13 +53,14 @@ define([
                         "% OR tags contains (" + term + ")";
             //this.app.vent.trigger("search-requested", query);
             //e.preventDefault();
-            console.log(this.query);
+            //console.log(this.query);
             this.fetch({ reset: true });
         },
 
         clearSearch: function(){
             this.query = null;
-            console.log(this.query);
+            //console.log(this.query);
+            this.fetch({ reset: true });
         }
 
     });

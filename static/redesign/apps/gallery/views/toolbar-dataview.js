@@ -78,8 +78,8 @@ define([
         },
 
         clearSearch: function (e) {
-            this.app.vent.trigger("clear-search");
-            e.preventDefault();
+            //this.app.vent.trigger("clear-search");
+            //e.preventDefault();
         },
 
         //*
@@ -92,7 +92,11 @@ define([
              */
 
             var term = this.$el.find("#searchTerm").val();
-            this.app.vent.trigger("search-requested", term);
+            if (term === ""){
+                this.app.vent.trigger("clear-search");
+            } else {
+                this.app.vent.trigger("search-requested", term);
+            }
             e.preventDefault();
         },
 

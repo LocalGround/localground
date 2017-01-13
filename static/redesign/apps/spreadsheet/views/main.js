@@ -133,7 +133,7 @@ define(["marionette",
                             model = this.getModelFromCell(idx);
                             if (key === 'lat' || key === 'lng') {
                                 //SV TODO: To handle polygons and polylines, only set latLng if current
-                                //          geometry is null of of type "Point." Still TODO. 
+                                //          geometry is null of of type "Point." Still TODO.
                                 model.set(key, newVal);
                                 if (model.get("lat") && model.get("lng")) {
                                     geoJSON = model.setPointFromLatLng(model.get("lat"), model.get("lng"));
@@ -272,11 +272,12 @@ define(["marionette",
                         return cols;
                 }
             },
-            
+
             doSearch: function (term) {
                 // query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
                 //
                 //
+                console.log(this.collection.name);
                 this.collection.doSearch(term, this.app.selectedProject.id);
                 //this.collection.fetch({ reset: true });
             },
