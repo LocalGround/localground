@@ -174,10 +174,10 @@ class ModelClassBuilder(object):
 
         # Add in any fields that were provided
         attrs.update(self.additional_fields)
+        raise Exception(self.dynamic_fields.keys())
         attrs.update({
             'filter_fields': DynamicModelMixin.filter_fields + tuple(self.dynamic_fields.keys())
         })
-
 
 
         '''
