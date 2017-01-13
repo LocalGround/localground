@@ -79,6 +79,7 @@ define([
 
         clearSearch: function (e) {
             this.app.vent.trigger("clear-search");
+            console.log("clear");
             e.preventDefault();
         },
 
@@ -92,6 +93,7 @@ define([
              */
 
             var term = this.$el.find("#searchTerm").val();
+            console.log(term);
             this.app.vent.trigger("search-requested", term);
             e.preventDefault();
         },
