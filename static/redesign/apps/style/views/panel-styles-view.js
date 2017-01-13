@@ -1,9 +1,10 @@
 define(["marionette",
         "handlebars",
+        'color-picker',
         "models/map",
         "text!../templates/panel-styles.html"
     ],
-    function (Marionette, Handlebars, Map, PanelStylesTemplate) {
+    function (Marionette, Handlebars, jscolor, Map, PanelStylesTemplate) {
         'use strict';
 
         var SelectSkinView = Marionette.ItemView.extend({
@@ -32,6 +33,15 @@ define(["marionette",
                 //  this.collection = Maps;
                 console.log("panel styles initialized");
                 //   console.log(this.app);
+            },
+            
+            initColorPicker: function () {
+                var colorInput = this.$el.find('.jscolor'),
+                    picker;
+                if (colorInput.get(0) !== null) {
+                    picker = new jscolor.color(colorInput.get(0), {});
+                    picker.fromString("#" + this.model.get("color"));
+                    }
             },
             
             templateHelpers: function () {

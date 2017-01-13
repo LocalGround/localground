@@ -19,7 +19,7 @@ var fakeData = [
         }]
     }, {
         id: 2,
-        map_id: 1,
+        map_id: 2,
         name: "bird sightings",
         source: "form_10",
         symbols: [{
@@ -55,7 +55,7 @@ var fakeData = [
         }]
     },  {
         id: 4,
-        map_id: 3,
+        map_id: 2,
         name: "Worms",
         source: "form_8",
         symbols: [{
@@ -73,7 +73,7 @@ var fakeData = [
         }]
     },  {
         id: 5,
-        map_id: 4,
+        map_id: 3,
         name: "Soil Moisture",
         source: "form_6",
         symbols: [{
@@ -132,14 +132,31 @@ define(["marionette",
 
             initialize: function (opts) {
                 this.app = opts.app;
-
+                
+                if (this.app.currentMap) {
+                    this.displayLayers(this.app.currentMap);
+                }
                 /**
                  * here is some fake data until the
                  * /api/0/layers/ API Endpoint gets built. Note
                  * that each layer can have more than one symbol
                  */
-                this.collection = new Layers(fakeData);
-            }
+      //          this.collection = new Layers(fakeData);
+                this.listenTo(this.app.vent, 'init-collection', this.displayLayers);
+                this.listenTo(this.app.vent, 'change-map', this.displayLayers);
+            },
+            displayLayers: function (map) {
+               // this.collection = new Layers(fakeData);
+                var mapId = map.get("id");
+                var filteredLayers = this.collection.where({map_id: mapId});
+                //filterCollection(mapId);
+                this.collection = new Layers(filteredLayers);
+                console.log(this.collection);
+                this.render();
+                return this.collection;
+                //return new Layers(filteredLayers);
+            }                
+            
 
         });
         return SelectMapView;
