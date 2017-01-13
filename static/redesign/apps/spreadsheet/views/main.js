@@ -256,7 +256,21 @@ define(["marionette",
                         return cols;
                 }
             },
+            
+            doSearch: function (term) {
+                // query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
+                //
+                //
+                this.collection.doSearch(term, this.app.selectedProject.id);
+                //this.collection.fetch({ reset: true });
+            },
 
+            clearSearch: function () {
+                //this.collection.query = this.getDefaultQueryString();
+                //this.collection.fetch({ reset: true });
+                this.collection.clearSearch();
+            },
+            /*
             doSearch: function (query) {
                 query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
                 this.collection.query = query;
@@ -267,6 +281,8 @@ define(["marionette",
                 this.collection.query = this.getDefaultQueryString();
                 this.collection.fetch({ reset: true });
             },
+
+            */
             getColumns: function () {
                 switch (this.collection.key) {
                     case "audio":

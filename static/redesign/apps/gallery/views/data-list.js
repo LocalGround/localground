@@ -97,15 +97,18 @@ define(["jquery",
                 return "WHERE project = " + this.app.selectedProject.id;
             },
 
-            doSearch: function (query) {
-                query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
-                this.collection.query = query;
-                this.collection.fetch({ reset: true });
+            doSearch: function (term) {
+                // query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
+                //
+                //
+                this.collection.doSearch(term, this.app.selectedProject.id);
+                //this.collection.fetch({ reset: true });
             },
 
             clearSearch: function () {
-                this.collection.query = this.getDefaultQueryString();
-                this.collection.fetch({ reset: true });
+                //this.collection.query = this.getDefaultQueryString();
+                //this.collection.fetch({ reset: true });
+                this.collection.clearSearch();
             },
 
             displayMedia: function () {

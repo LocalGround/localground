@@ -87,6 +87,7 @@ define([
             e.preventDefault();
         },
 
+        //*
         doSearch: function (e) {
             /*
              * NOTE
@@ -94,15 +95,13 @@ define([
              *   - Please see localground/apps/site/api/tests/sql_parse_tests.py
              *     for samples of valid queries.
              */
-            var term = this.$el.find("#searchTerm").val(),
-                query = "name like %" + term +
-                        "% OR caption like %" + term +
-                        "% OR attribution like %" + term +
-                        "% OR owner like %" + term +
-                        "% OR tags contains (" + term + ")";
-            this.app.vent.trigger("search-requested", query);
+
+            var term = this.$el.find("#searchTerm").val();
+            this.app.vent.trigger("search-requested", term);
             e.preventDefault();
         },
+
+        //*/
 
         changeDisplay: function (e) {
             var dataType =  $(e.currentTarget).val();
