@@ -77,12 +77,6 @@ define([
             this.app.router.navigate(this.$el.find(".media-type").val(), { trigger: true });
         },
 
-        clearSearch: function (e) {
-            this.app.vent.trigger("clear-search");
-            console.log("clear");
-            e.preventDefault();
-        },
-
         //*
         doSearch: function (e) {
             /*
@@ -93,8 +87,11 @@ define([
              */
 
             var term = this.$el.find("#searchTerm").val();
-            console.log(term);
-            this.app.vent.trigger("search-requested", term);
+            if (term === "") {
+                this.app.vent.trigger("clear-search");
+            } else {
+                this.app.vent.trigger("search-requested", term);
+            }
             e.preventDefault();
         },
 
