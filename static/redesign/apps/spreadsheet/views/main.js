@@ -73,7 +73,7 @@ define(["marionette",
                 return "WHERE project = " + this.app.selectedProject.id;
             },
             renderSpreadsheet: function () {
-                console.log("Rendering Spreadsheet");
+                console.log(this.collection);
                 //*
                 if (this.collection.length == 0) {
                     this.$el.find('#grid').html("no rows found");
@@ -119,7 +119,7 @@ define(["marionette",
             },
             saveChanges: function (changes, source) {
                 //sync with collection:
-                var i, idx, key, oldVal, newVal, model;
+                var i, idx, key, oldVal, newVal, model, geoJSON;
                 if (_.contains(["edit", "autofill", "undo", "redo", "paste"], source)) {
                     for (i = 0; i < changes.length; i++) {
                         idx = changes[i][0];
@@ -131,8 +131,25 @@ define(["marionette",
                             //Note: relies on the fact that the first column is the ID column
                             //      see the getColumns() function below
                             model = this.getModelFromCell(idx);
-                            model.set(key, newVal);
-                            model.save(model.changedAttributes(), {patch: true, wait: true});
+                            if (key === 'lat' || key === 'lng') {
+                                //SV TODO: To handle polygons and polylines, only set latLng if current
+                                //          geometry is null of of type "Point." Still TODO. 
+                                model.set(key, newVal);
+                                if (model.get("lat") && model.get("lng")) {
+                                    geoJSON = model.setPointFromLatLng(model.get("lat"), model.get("lng"));
+                                    model.save({ geometry: JSON.stringify(geoJSON) }, {patch: true, wait: true});
+                                } else {
+                                    model.set("geometry", null);
+                                    if (!model.get("lat") && !model.get("lng")) {
+                                        console.log("nulling...");
+                                        model.save({ geometry: null }, {patch: true, wait: true});
+                                    }
+                                }
+                            } else {
+                                model.set(key, newVal);
+                                model.save(model.changedAttributes(), {patch: true, wait: true});
+                            }
+                            console.log(model.changedAttributes());
                         } else {
                             console.log("[" + source + "], but no value change. Ignored.");
                         }
@@ -223,13 +240,13 @@ define(["marionette",
                 var cols;
                 switch (this.collection.key) {
                     case "audio":
-                        return ["ID", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner", "Delete"];
+                        return ["ID", "Lat", "Lng", "Title", "Caption", "Audio", "Tags", "Attribution", "Owner", "Delete"];
                     case "photos":
-                        return ["ID", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
+                        return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
-                        return ["ID", "Title", "Caption", "Tags", "Lat", "Lng", "Owner", "Delete"];
+                        return ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Delete"];
                     default:
-                        cols = ["ID"];
+                        cols = ["ID", "Lat", "Lng"];
                         for (var i = 0; i < this.fields.length; ++i) {
                             cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
                         }
@@ -242,17 +259,16 @@ define(["marionette",
             getColumnWidths: function () {
                 switch(this.collection.key){
                     case "audio":
-                        return [30, 200, 400, 300, 200, 100, 80, 100];
+                        return [30, 80, 80, 200, 400, 300, 200, 100, 80, 100];
                     case "photos":
-                        return [30, 200, 400, 65, 200, 100, 80, 100];
+                        return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "markers":
-                        return [30, 200, 400, 200, 80, 80, 80, 100];
+                        return [30, 80, 80, 200, 400, 200, 80, 100];
                     default:
-                        var cols = [30];
+                        var cols = [30, 80, 80];
                         for (var i = 0; i < this.fields.length; ++i){
                             cols.push(150);
                         }
-                        console.log(cols);
                         return cols;
                 }
             },
@@ -288,6 +304,8 @@ define(["marionette",
                     case "audio":
                         return [
                             { data: "id", readOnly: true},
+                            { data: "lat", type: "numeric", format: '0.00000' },
+                            { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
                             { data: "file_path", renderer: this.audioRenderer, readOnly: true},
@@ -299,6 +317,8 @@ define(["marionette",
                     case "photos":
                        return [
                             { data: "id", readOnly: true},
+                            { data: "lat", type: "numeric", format: '0.00000' },
+                            { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
                             { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true},
@@ -310,19 +330,20 @@ define(["marionette",
                     case "markers":
                        return [
                             { data: "id", readOnly: true},
+                            { data: "lat", type: "numeric", format: '0.00000' },
+                            { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
                             { data: "tags", renderer: "html" },
-                            { data: "lat", renderer: "html" },
-                            { data: "lng", renderer: "html" },
                             { data: "owner", readOnly: true},
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
                        ];
                     default:
-                        var cols = [{
-                            data: "id",
-                            readOnly: true
-                        }];
+                        var cols = [
+                            { data: "id", readOnly: true },
+                            { data: "lat", type: "numeric", format: '0.00000' },
+                            { data: "lng", type: "numeric", format: '0.00000' }
+                        ];
                         for (var i = 0; i < this.fields.length; ++i){
                             // Make sure to add in the "-" symbol after field name to delete column
                             var type = this.fields.at(i).get("data_type").toLowerCase();

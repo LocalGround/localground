@@ -60,11 +60,6 @@ define([
             e.preventDefault();
         },
 
-        triggerAddRow: function (e) {
-            this.app.vent.trigger('add-site');
-            e.preventDefault();
-        },
-
         changeMode: function () {
             if (this.app.activeTab == "sites") {
                 this.listenTo(this.forms, 'reset', this.renderAndRoute);
