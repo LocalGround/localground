@@ -123,7 +123,7 @@ define(["marionette",
                     className: "column",
                     templateHelpers: function () {
                         return {
-                            foo: "bar"
+                            test: "123"
                         };
                     }
                 });
@@ -141,22 +141,18 @@ define(["marionette",
                  * /api/0/layers/ API Endpoint gets built. Note
                  * that each layer can have more than one symbol
                  */
-      //          this.collection = new Layers(fakeData);
                 this.listenTo(this.app.vent, 'init-collection', this.displayLayers);
                 this.listenTo(this.app.vent, 'change-map', this.displayLayers);
             },
             displayLayers: function (map) {
-               // this.collection = new Layers(fakeData);
                 var mapId = map.get("id");
-                var filteredLayers = this.collection.where({map_id: mapId});
-                //filterCollection(mapId);
-                this.collection = new Layers(filteredLayers);
-                console.log(this.collection);
+                if (!this._collection) {
+                    //pretend this is the server query...
+                    this._collection = new Layers(fakeData);
+                }
+                this.collection = new Layers(this._collection.where({map_id: mapId}));
                 this.render();
-                return this.collection;
-                //return new Layers(filteredLayers);
-            }                
-            
+            }
 
         });
         return SelectMapView;
