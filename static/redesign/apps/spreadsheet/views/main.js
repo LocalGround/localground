@@ -132,11 +132,8 @@ define(["marionette",
                             //      see the getColumns() function below
                             model = this.getModelFromCell(idx);
                             if (key === 'lat' || key === 'lng') {
-                                /** TODOs for complex geometries:
-                                 *  Ensure if current geometry is polygon or polyline,
-                                 *  render read-only cell. Excellent code sample here:
-                                 *  https://handsontable.com/blog/articles/4-ways-to-handle-read-only-cells
-                                 */
+                                //SV TODO: To handle polygons and polylines, only set latLng if current
+                                //          geometry is null of of type "Point." Still TODO.
                                 model.set(key, newVal);
                                 if (model.get("lat") && model.get("lng")) {
                                     geoJSON = model.setPointFromLatLng(model.get("lat"), model.get("lng"));
@@ -276,6 +273,21 @@ define(["marionette",
                 }
             },
 
+            doSearch: function (term) {
+                // query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
+                //
+                //
+                console.log(this.collection.name);
+                this.collection.doSearch(term, this.app.selectedProject.id);
+                //this.collection.fetch({ reset: true });
+            },
+
+            clearSearch: function () {
+                //this.collection.query = this.getDefaultQueryString();
+                //this.collection.fetch({ reset: true });
+                this.collection.clearSearch();
+            },
+            /*
             doSearch: function (query) {
                 query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
                 this.collection.query = query;
@@ -286,6 +298,8 @@ define(["marionette",
                 this.collection.query = this.getDefaultQueryString();
                 this.collection.fetch({ reset: true });
             },
+
+            */
             getColumns: function () {
                 switch (this.collection.key) {
                     case "audio":

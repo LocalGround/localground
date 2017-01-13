@@ -25,7 +25,7 @@ class Marker(ExtrasMixin, BasePointMixin, BaseNamed, BaseGenericRelationMixin):
     color = models.CharField(max_length=6)
     _records_dict = None
     objects = MarkerManager()
-    filter_fields = ('id', 'project', 'name', 'descrption', 'tags',)
+    filter_fields = ('id', 'project', 'name', 'description', 'tags',)
 
     @property
     def geometry(self):
