@@ -147,6 +147,7 @@ define([
                     id = $row.find(".id").val();
                     existingField = this.model.getFieldByID(id);
                     if (!this.errorFieldName(fieldNameInput)){
+                        existingField.set("ordering", i + 1);
                         existingField.set("col_alias", fieldName);
                         existingField.save();
                     }
@@ -157,7 +158,7 @@ define([
                     //create new fields:
                     fieldType = $row.find(".fieldType").val();
                     if (!this.blankField(fieldNameInput, fieldType)){
-                        this.model.createField(fieldName, fieldType);
+                        this.model.createField(fieldName, fieldType, i + 1);
                     }
                     else{
                         $row.css("background-color", "FFAAAA")
