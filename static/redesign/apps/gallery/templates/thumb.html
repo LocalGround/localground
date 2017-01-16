@@ -28,8 +28,27 @@
 
 {{#ifcontains dataType "markers"}}
     <div class="card-site-field">
-        
+
         <a href="#/{{ dataType }}/{{id}}">
+
+            <table>
+                <!-- There has got to be a shorter way
+                     to actually get all the information into the
+                     table without hard-cording everything
+
+                     // That table is a start, but must have access
+                     // to each field inside the marker
+                 -->
+                   <tr>
+                       <td>Latitude</td>
+                       <td>{{ this.lat }}</td>
+                   </tr>
+
+                   <tr>
+                       <td>Longitude</td>
+                       <td>{{ this.lng }}</td>
+                   </tr>
+            </table>
 
             <h1>
                 {{ name }}
@@ -44,16 +63,17 @@
 
 {{#ifcontains dataType "form_"}}
     <div class="card-site-field">
-        <table>
 
-            {{#each fields}}
-                <tr>
-                    <td>{{ this.col_alias }}</td>
-                    <td>{{ this.val }}</td>
-                </tr>
-            {{/each}}
-        </table>
         <a href="#/{{ dataType }}/{{id}}">
+            <table>
+
+                {{#each fields}}
+                    <tr>
+                        <td>{{ this.col_alias }}</td>
+                        <td>{{ this.val }}</td>
+                    </tr>
+                {{/each}}
+            </table>
 
             <h1>
                 {{ name }}
