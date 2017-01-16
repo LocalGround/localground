@@ -23,7 +23,7 @@ function (Marker, BasePageable) {
             //var term = this.$el.find("#searchTerm").val(),
             this.query = "WHERE project = " + projectID;
             this.query += " AND name like %" + term +
-                        "% OR attribution like %" + term +
+                        "% OR caption like %" + term +
                         "% OR owner like %" + term +
                         "% OR tags contains (" + term + ")";
             //this.app.vent.trigger("search-requested", query);
