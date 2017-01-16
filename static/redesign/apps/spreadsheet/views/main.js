@@ -134,6 +134,7 @@ define(["marionette",
                             if (key === 'lat' || key === 'lng') {
                                 //SV TODO: To handle polygons and polylines, only set latLng if current
                                 //          geometry is null of of type "Point." Still TODO.
+                                // Good article: https://handsontable.com/blog/articles/4-ways-to-handle-read-only-cells
                                 model.set(key, newVal);
                                 if (model.get("lat") && model.get("lng")) {
                                     geoJSON = model.setPointFromLatLng(model.get("lat"), model.get("lng"));

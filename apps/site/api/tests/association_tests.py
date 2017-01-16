@@ -55,8 +55,7 @@ class ApiRelatedMediaListTest(
                 source_model = models.Marker
                 source_id = self.marker.id
             else:
-                form_id = url.split('/')[-3]
-                source_model = models.Form.objects.get(id=form_id).TableModel
+                source_model = type(self.record)
                 source_id = self.record.id
 
             source_type = source_model.get_content_type()
