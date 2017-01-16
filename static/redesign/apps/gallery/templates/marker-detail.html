@@ -1,6 +1,6 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
-    <h4>{{ name }}</h4>
+    <h4>Preview</h4>
     <div class = "section">
         <h3>{{ name }}</h3>
         <!-- As of now, we have this name only
@@ -19,9 +19,9 @@
 {{#ifequal mode "edit"}}
     <h4>
         {{#if id}}
-        Edit Site
+        Edit
         {{else}}
-        Add Site
+        Add New
         {{/if}}
     </h4>
     <div id="model-form">

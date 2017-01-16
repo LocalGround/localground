@@ -1,6 +1,6 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
-    <h4>Record View</h4>
+    <h4>Preview</h4>
     <div class = "section">
         <h3>{{ display_name }}</h3>
         {{#each fields}}
@@ -17,9 +17,9 @@
 {{#ifequal mode "edit"}}
     <h4>
         {{#if id}}
-        Edit Record
+        Edit
         {{else}}
-        Add Record
+        Add New
         {{/if}}
     </h4>
     <div id="model-form">
