@@ -50,7 +50,7 @@ define([
             return response.results;
         },
 
-        doSearch: function (term, projectID) {
+        doSearch: function (term, projectID, fields) {
             /*
              * NOTE
              *   - app.js is listening for the search-requested event
@@ -58,16 +58,44 @@ define([
              *     for samples of valid queries.
              */
             //var term = this.$el.find("#searchTerm").val(),
+            if (!fields) return;
+
             this.query = "WHERE project = " + projectID;
-            this.query += " AND name like %" + term +
+            this.query += " AND name like %" + term + "%";
+            this.query += addFieldQuery(fields);
+
+            /*
                         "% OR caption like %" + term +
                         "% OR attribution like %" + term +
                         "% OR owner like %" + term +
                         "% OR tags contains (" + term + ")";
+            */
             //this.app.vent.trigger("search-requested", query);
             //e.preventDefault();
             //console.log(this.query);
             this.fetch({ reset: true });
+        },
+
+        addFieldQuery: function(fields){
+            var recordQuery = "";
+            for (var i = 0; i < fields.length; ++i){
+                var type = fields.at(i).get("data_type").toLowerCase();
+                var fieldName = fields.at(i).get("col_name").toLowerCase();
+                var fieldVal = fields.at(i).val(); // Let's try if that is viable (alternatively, I could do the "val" discovered from thumb.html)
+                var fieldQuery = " OR ";
+                switch (type) {
+                    case "boolean":
+                        //type = "checkbox";
+                        fieldQuery += fieldName + " = " + fieldVal;
+                        break;
+                    case "integer":
+                        //type = "numeric";
+                        fieldQuery += fieldName + " = " + fieldVal;
+                        break;
+                    default:
+                        fieldQuery += fieldName + " like %" + fieldVal + "%";
+                }
+            }
         },
 
         clearSearch: function(){

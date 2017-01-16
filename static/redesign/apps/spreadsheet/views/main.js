@@ -278,7 +278,12 @@ define(["marionette",
                 //
                 //
                 console.log(this.collection.name);
-                this.collection.doSearch(term, this.app.selectedProject.id);
+
+                // I wonder what happens when I have three fields as default
+                // but the other overridden functions except for records
+                // have two fields that exclude this.fields?
+                
+                this.collection.doSearch(term, this.app.selectedProject.id, this.fields);
                 //this.collection.fetch({ reset: true });
             },
 
@@ -345,6 +350,7 @@ define(["marionette",
                             { data: "lat", type: "numeric", format: '0.00000' },
                             { data: "lng", type: "numeric", format: '0.00000' }
                         ];
+                        console.log(this.fields);
                         for (var i = 0; i < this.fields.length; ++i){
                             // Make sure to add in the "-" symbol after field name to delete column
                             var type = this.fields.at(i).get("data_type").toLowerCase();
@@ -365,11 +371,9 @@ define(["marionette",
                             })
                         };
                         cols.push(
-                        { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true});
-                        // This will be add field header rough draft button
-                        // for display pruposes without any function
+                            {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                        );
 
-                        // Replace this with a simple " + " to add last column
                         cols.push(
                             {data: "addField", renderer: "html", readOnly: true}
                         );
