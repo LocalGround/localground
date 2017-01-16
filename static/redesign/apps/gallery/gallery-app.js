@@ -91,7 +91,6 @@ define([
             var Model = this.currentCollection.model,
                 model = new Model();
             model.collection = this.currentCollection;
-            console.log(this);
             if (this.dataType == "records"){
                 model.set("fields", this.mainView.fields.toJSON());
             }
