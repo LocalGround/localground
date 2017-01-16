@@ -9,6 +9,7 @@
     {{/ifequal}}
     {{#ifequal activeTab "sites"}}
         <select class="media-type">
+            <option value="markers">Site</option>
             {{#each forms}}
                 <option value="form_{{ this.id }}">{{ this.name }}</option>
             {{/each}}
@@ -17,7 +18,12 @@
     
 	<button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Site Types</button>
     {{#ifequal activeTab "sites"}}
-        <a id="add-site" class="button-tertiary" href="#/{{dataType}}/new"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Site</a>
+        {{#ifequal screenType "gallery"}}
+            <a id="add-site" class="button-tertiary" href="#/{{dataType}}/new"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Site</a>
+        {{/ifequal}}
+        {{#ifequal screenType "spreadsheet"}}
+            <a id="add-row" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Row</a>
+        {{/ifequal}}
     {{/ifequal}}
 </div>
 <div class="main-search">

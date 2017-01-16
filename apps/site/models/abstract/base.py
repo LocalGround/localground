@@ -67,6 +67,7 @@ class Base(models.Model):
                 'DateTimeField': FieldTypes.DATE,
                 'PointField': FieldTypes.POINT,
                 'TextField': FieldTypes.STRING,
+                'NullBooleanField': FieldTypes.BOOLEAN,
                 'ArrayField': 'list'
             }
             return data_types.get(model_field.get_internal_type()) or model_field.get_internal_type()

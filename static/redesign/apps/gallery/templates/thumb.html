@@ -9,11 +9,11 @@
     <h2>
         {{owner}}
     </h2>
-    
-    
+
+
 {{/ifequal}}
 
-{{#ifequal dataType "audio"}} 
+{{#ifequal dataType "audio"}}
     <audio controls>
         <source src="{{ file_path }}"></source>
     </audio>
@@ -26,27 +26,42 @@
     </h2>
 {{/ifequal}}
 
-{{#ifcontains dataType "form_"}}
+{{#ifcontains dataType "markers"}}
     <div class="card-site-field">
-        <table>
-       
-            {{#each fields}}
-                <tr>
-                    <td>{{ this.col_alias }}</td>
-                    <td>{{ this.val }}</td>
-                </tr>
-            {{/each}}        
-        </table>
+        
         <a href="#/{{ dataType }}/{{id}}">
-            
+
             <h1>
                 {{ name }}
             </h1>
             <h2>
                 {{owner}}
-                John Doe
             </h2>
-        
+
+        </a>
+    </div>
+{{/ifcontains}}
+
+{{#ifcontains dataType "form_"}}
+    <div class="card-site-field">
+        <table>
+
+            {{#each fields}}
+                <tr>
+                    <td>{{ this.col_alias }}</td>
+                    <td>{{ this.val }}</td>
+                </tr>
+            {{/each}}
+        </table>
+        <a href="#/{{ dataType }}/{{id}}">
+
+            <h1>
+                {{ name }}
+            </h1>
+            <h2>
+                {{owner}}
+            </h2>
+
         </a>
     </div>
 {{/ifcontains}}

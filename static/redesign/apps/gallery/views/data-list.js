@@ -6,9 +6,11 @@ define(["jquery",
         "collections/audio",
         "collections/records",
         "collections/fields",
+        "collections/markers",
         "text!../templates/thumb.html",
         "text!../templates/thumb-list.html"],
-    function ($, _, Marionette, Handlebars, Photos, Audio, Records, Fields, ThumbTemplate, ListTemplate) {
+    function ($, _, Marionette, Handlebars, Photos, Audio, Records,
+               Fields, Markers, ThumbTemplate, ListTemplate) {
         'use strict';
         var ThumbView = Marionette.CompositeView.extend({
 
@@ -95,15 +97,18 @@ define(["jquery",
                 return "WHERE project = " + this.app.selectedProject.id;
             },
 
-            doSearch: function (query) {
-                query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
-                this.collection.query = query;
-                this.collection.fetch({ reset: true });
+            doSearch: function (term) {
+                // query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
+                //
+                //
+                this.collection.doSearch(term, this.app.selectedProject.id);
+                //this.collection.fetch({ reset: true });
             },
 
             clearSearch: function () {
-                this.collection.query = this.getDefaultQueryString();
-                this.collection.fetch({ reset: true });
+                //this.collection.query = this.getDefaultQueryString();
+                //this.collection.fetch({ reset: true });
+                this.collection.clearSearch();
             },
 
             displayMedia: function () {
@@ -114,6 +119,8 @@ define(["jquery",
                     this.collection = new Photos();
                 } else if (this.app.dataType ==  "audio") {
                     this.collection = new Audio();
+                } else if (this.app.dataType ==  "markers") {
+                    this.collection = new Markers();
                 } else if (this.app.dataType.indexOf("form_") != -1) {
                     id = this.app.dataType.split("_")[1];
                     // column names:

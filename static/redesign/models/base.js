@@ -69,6 +69,35 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                     this.set("geometry", JSON.parse(geom));
                 }
             },
+            setPointFromLatLng: function (lat, lng) {
+                lat = lat || this.get("lat");
+                lng = lng || this.get("lng");
+                var geoJSON = this.get("geometry");
+                if (geoJSON && geoJSON.type === "Point") {
+                    if (lat) { geoJSON.coordinates[1] = lat; }
+                    if (lng) { geoJSON.coordinates[0] = lng; }
+                } else if (!geoJSON && lat && lng) {
+                    geoJSON = {
+                        type: 'Point',
+                        coordinates: [lng, lat]
+                    };
+                } else {
+                    geoJSON = null;
+                }
+                return geoJSON;
+            },
+            set: function (attributes, options) {
+                // overriding set method so that whenever geoJSON gets set,
+                // and geoJSON is a Point, then lat and lng also get set:
+                if (attributes.hasOwnProperty("geometry") || attributes === "geometry") {
+                    var geoJSON = attributes.geometry;
+                    if (geoJSON && geoJSON.type === "Point") {
+                        attributes.lat = geoJSON.coordinates[1];
+                        attributes.lng = geoJSON.coordinates[0];
+                    }
+                }
+                return Backbone.Model.prototype.set.call(this, attributes, options);
+            },
             toJSON: function () {
                 // ensure that the geometry object is serialized before it
                 // gets sent to the server:
@@ -188,11 +217,18 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 return schema;
 
             },
-            setGeometry: function (googleOverlay) {
-                var geomHelper = new Geometry();
+            setGeometryFromOverlay: function (googleOverlay) {
+                var geomHelper = new Geometry(),
+                    geoJSON = geomHelper.getGeoJSON(googleOverlay);
                 this.set({
-                    geometry: geomHelper.getGeoJSON(googleOverlay)
+                    geometry: geoJSON
                 });
+                if (geoJSON.type === "Point") {
+                    this.set({
+                        lat: geoJSON.coordinates[1],
+                        lng: geoJSON.coordinates[0]
+                    });
+                }
             }
         });
         return Base;

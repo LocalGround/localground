@@ -1,14 +1,16 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
-    <h4>Add New Record</h4>
+    <h4>{{ name }}</h4>
     <div class = "section">
-        <h3>{{ display_name }}</h3>
-        {{#each fields}}
-            {{ this.col_alias }}: {{ this.val }}<br>
-        {{/each}}
+        <h3>{{ name }}</h3>
+        <!-- As of now, we have this name only
+        Later, we will ahve to add other unique stuff to this
+        -->
     </div>
     <div class = "save-options">
-        <button class="edit-mode button-tertiary ">Edit</button>
+        <button class="edit-model button-primary">Save</button>
+        <button class="edit-mode button-tertiary">Edit</button>
+        <button class="view-mode button-tertiary button-warning delete-model">Delete</button>
     </div>
 {{/ifequal}}
 
@@ -17,9 +19,9 @@
 {{#ifequal mode "edit"}}
     <h4>
         {{#if id}}
-        Edit Record
+        Edit Site
         {{else}}
-        Add Record
+        Add Site
         {{/if}}
     </h4>
     <div id="model-form">

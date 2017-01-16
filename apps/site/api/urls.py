@@ -44,6 +44,14 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.RelatedMediaInstance.as_view(),
         name='related-media-detail'),
     url(
+        r'^forms/(?P<group_name_plural>[0-9]+)/data/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/$',
+        views.RelatedMediaList.as_view(),
+        name='related-media-list'),
+    url(
+        r'^forms/(?P<group_name_plural>[0-9]+)/data/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$',
+        views.RelatedMediaInstance.as_view(),
+        name='related-media-detail'),
+    url(
         r'^projects/(?P<project_id>[0-9]+)/users/(?P<username>\w+)/$',
         views.SharingInstance.as_view(),
         name='userauthorityobject-detail'),

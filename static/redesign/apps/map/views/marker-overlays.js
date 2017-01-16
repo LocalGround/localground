@@ -62,7 +62,7 @@ define(['marionette',
             saveDragChange: function (opts) {
                 var model = opts.model,
                     latLng = opts.latLng;
-                model.setGeometry(latLng);
+                model.setGeometryFromOverlay(latLng);
                 model.save();
             },
 

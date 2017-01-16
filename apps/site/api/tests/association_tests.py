@@ -12,11 +12,15 @@ class ApiRelatedMediaListTest(
         ViewMixinAPI.setUp(self, load_fixtures=False)
         #self.marker = self.get_marker()
         self.marker = self.create_marker(self.user, self.project)
-        url = '/api/0/markers/%s/%s/'
+        self.form = self.create_form_with_fields(name="Class Form", num_fields=6)
+        #requery:
+        self.form = models.Form.objects.get(id=self.form.id)
+        self.record = self.insert_form_data_record(form=self.form, project=self.project)
         self.urls = [
-            url % (self.marker.id, 'photos'),
-            url % (self.marker.id, 'audio')
-            #url % (self.marker.id, 'map-images')
+            '/api/0/markers/%s/%s/' % (self.marker.id, 'photos'),
+            '/api/0/markers/%s/%s/' % (self.marker.id, 'audio'),
+            '/api/0/forms/%s/data/%s/%s/' % (self.form.id, self.record.id, 'photos'),
+            '/api/0/forms/%s/data/%s/%s/' % (self.form.id, self.record.id, 'audio')
         ]
         self.metadata = {
             "object_id": { "type": "integer", "required": True, "read_only": False },
@@ -30,6 +34,10 @@ class ApiRelatedMediaListTest(
         self.photo = self.create_photo(self.user, self.project)
         self.audio = self.create_audio(self.user, self.project)
         
+    def tearDown(self):
+        for m in models.Form.objects.all():
+            m.remove_table_from_cache()
+        
 
     def test_page_404_if_invalid_marker_id(self, **kwargs):
         url = '/api/0/markers/%s/%s/'
@@ -42,8 +50,15 @@ class ApiRelatedMediaListTest(
             self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_attach_media_to_marker(self, **kwargs):
-        source_type = models.Marker.get_content_type()
         for i, url in enumerate(self.urls):
+            if "markers" in url:
+                source_model = models.Marker
+                source_id = self.marker.id
+            else:
+                source_model = type(self.record)
+                source_id = self.record.id
+
+            source_type = source_model.get_content_type()
             entity_type = models.Base.get_model(
                 model_name_plural=url.split('/')[-2]
             ).get_content_type()
@@ -57,7 +72,7 @@ class ApiRelatedMediaListTest(
             queryset = models.GenericAssociation.objects.filter(
                 entity_type=entity_type,
                 source_type=source_type,
-                source_id=self.marker.id,
+                source_id=source_id,
             )
             self.assertEqual(len(queryset), 0)
 
@@ -77,7 +92,7 @@ class ApiRelatedMediaListTest(
             queryset = models.GenericAssociation.objects.filter(
                 entity_type=entity_type,
                 source_type=source_type,
-                source_id=self.marker.id,
+                source_id=source_id,
             )
             self.assertEqual(len(queryset), 1)
 

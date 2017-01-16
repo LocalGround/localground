@@ -1,9 +1,8 @@
-from localground.apps.site.models import BasePointMixin, BaseAudit, ProjectMixin
+from localground.apps.site.models import BasePointMixin, BaseAudit, BaseGenericRelationMixin, ProjectMixin
 from localground.apps.site.managers import RecordManager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.db import models
 from datetime import datetime
-#from django.db.models.loading import cache
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from localground.apps.site.models import Field
 # http://stackoverflow.com/questions/3712688/creation-of-dynamic-model-fields-in-django
@@ -15,7 +14,7 @@ adds the auditing columns to the user-generated tables.
 '''
 
 
-class DynamicModelMixin(BasePointMixin, BaseAudit):
+class DynamicModelMixin(BasePointMixin, BaseGenericRelationMixin, BaseAudit):
     project = models.ForeignKey('Project')
     filter_fields = BaseAudit.filter_fields + ('project',)
     objects = RecordManager()
@@ -161,30 +160,7 @@ class ModelClassBuilder(object):
             for key, value in self.options.iteritems():
                 setattr(ModelClassBuilder, key, value)
 
-        # Set up a dictionary to simulate declarations within a class
-        '''
-        try:
-            del cache.app_models[self.app_label][self.name.lower()]
-        except KeyError:
-            pass
-        except AttributeError:
-            pass
-        '''
         attrs = {'__module__': self.module, 'Meta': ModelClassBuilder}
-
-        # Add in any fields that were provided
-        attrs.update(self.additional_fields)
-        attrs.update({
-            'filter_fields': DynamicModelMixin.filter_fields + tuple(self.dynamic_fields.keys())
-        })
-
-
-
-        '''
-        -------------------
-        Begin Model Methods
-        -------------------
-        '''
 
         def save(self, user, *args, **kwargs):
             is_new = self.pk is None
@@ -196,60 +172,13 @@ class ModelClassBuilder(object):
                 self.date_created = get_timestamp_no_milliseconds()
             self.last_updated_by = user
             self.time_stamp = get_timestamp_no_milliseconds()
-            # self.project = self.form.project
             super(self.__class__, self).save(*args, **kwargs)
-
-        @classmethod
-        def filter_fields(cls):
-            from localground.apps.lib.helpers import QueryField, FieldTypes
-            query_fields = [
-                QueryField(
-                    'project__id',
-                    id='project_id',
-                    title='Project ID',
-                    data_type=FieldTypes.INTEGER),
-                #QueryField('col_4', title='col_4', operator='like'),
-                QueryField('date_created', id='date_created_after', title='After',
-                           data_type=FieldTypes.DATE, operator='>='),
-                QueryField('date_created', id='date_created_before', title='Before',
-                           data_type=FieldTypes.DATE, operator='<=')
-            ]
-            for n in self.form.fields:
-                if n.data_type.id == Field.DataTypes.TEXT:
-                    query_fields.append(
-                        QueryField(
-                            n.col_name,
-                            title=n.col_alias,
-                            operator='like'))
-                elif n.data_type.id in [Field.DataTypes.INTEGER, Field.DataTypes.RATING]:
-                    query_fields.append(
-                        QueryField(
-                            n.col_name,
-                            title=n.col_alias,
-                            data_type=FieldTypes.INTEGER))
-                elif n.data_type.id == Field.DataTypes.DATETIME:
-                    query_fields.append(
-                        QueryField(
-                            n.col_name,
-                            title=n.col_alias,
-                            data_type=FieldTypes.DATE))
-                elif n.data_type.id == Field.DataTypes.BOOLEAN:
-                    query_fields.append(
-                        QueryField(
-                            n.col_name,
-                            title=n.col_alias,
-                            data_type=FieldTypes.BOOLEAN))
-                elif n.data_type.id == Field.DataTypes.DECIMAL:
-                    query_fields.append(
-                        QueryField(
-                            n.col_name,
-                            title=n.col_alias,
-                            data_type=FieldTypes.FLOAT))
-            return query_fields
-
+        
+        # Add in any fields that were provided
+        attrs.update(self.additional_fields)
         attrs.update(dict(
             save=save,
-            #filter_fields=('id', 'name')
+            filter_fields=DynamicModelMixin.filter_fields + tuple(self.dynamic_fields.keys())
         ))
         
         # --------------------------------------------------

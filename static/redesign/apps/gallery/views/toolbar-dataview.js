@@ -19,7 +19,8 @@ define([
             'click #toolbar-search': 'doSearch',
             'click #toolbar-clear': 'clearSearch',
             'change .media-type': 'changeDisplay',
-            'click #add-data' : 'showFormList'
+            'click #add-data' : 'showFormList',
+            'click #add-row' : 'triggerAddRow'
         },
         modal: null,
         forms: null,
@@ -48,8 +49,15 @@ define([
             this.listenTo(this.app.vent, 'show-form', this.showCreateForm);
             this.listenTo(this.app.vent, 'show-form-list', this.showFormList);
             this.listenTo(this.app.vent, 'show-modal', this.showModal);
+            this.listenTo(this.app.vent, 'hide-modal', this.hideModal);
+            this.listenTo(this.app.vent, 'show-list', this.updateNewObejctRoute);
             this.modal = new Modal();
             this.forms = new Forms();
+        },
+
+        triggerAddRow: function (e) {
+            this.app.vent.trigger('add-row');
+            e.preventDefault();
         },
 
         changeMode: function () {
@@ -60,17 +68,16 @@ define([
                 this.renderAndRoute();
             }
         },
+        updateNewObejctRoute: function () {
+            this.$el.find("#add-site").attr("href", '#/' + this.app.dataType + '/new');
+        },
 
         renderAndRoute: function () {
             this.render();
             this.app.router.navigate(this.$el.find(".media-type").val(), { trigger: true });
         },
 
-        clearSearch: function (e) {
-            this.app.vent.trigger("clear-search");
-            e.preventDefault();
-        },
-
+        //*
         doSearch: function (e) {
             /*
              * NOTE
@@ -78,15 +85,17 @@ define([
              *   - Please see localground/apps/site/api/tests/sql_parse_tests.py
              *     for samples of valid queries.
              */
-            var term = this.$el.find("#searchTerm").val(),
-                query = "name like %" + term +
-                        "% OR caption like %" + term +
-                        "% OR attribution like %" + term +
-                        "% OR owner like %" + term +
-                        "% OR tags contains (" + term + ")";
-            this.app.vent.trigger("search-requested", query);
+
+            var term = this.$el.find("#searchTerm").val();
+            if (term === "") {
+                this.app.vent.trigger("clear-search");
+            } else {
+                this.app.vent.trigger("search-requested", term);
+            }
             e.preventDefault();
         },
+
+        //*/
 
         changeDisplay: function (e) {
             var dataType =  $(e.currentTarget).val();
@@ -125,6 +134,10 @@ define([
             console.log(opts);
             this.modal.update(opts);
             this.modal.show();
+        },
+
+        hideModal: function () {
+            this.modal.hide();
         },
 
         showCreateForm: function (opts) {
