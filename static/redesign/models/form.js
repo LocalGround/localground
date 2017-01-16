@@ -19,11 +19,12 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
                 this.fields.fetch({ reset: true });
             },
 
-            createField: function (name, fieldType) {
+            createField: function (name, fieldType, ordering) {
                 var field = new Field(null, { id: this.get("id") }),
                     that = this;
                 field.set("col_alias", name);
                 field.set("data_type", fieldType);
+                field.set("ordering", ordering);
                 field.save(null, {
                     success: function () {
                         that.getFields();

@@ -136,7 +136,10 @@ class Form(BaseNamed, BasePermissions):
 
             #first remove from cache:
             app_models = apps.all_models[form.TableModel._meta.app_label]
-            del app_models[form.TableModel._meta.model_name]
+            try:
+                del app_models[self.TableModel._meta.model_name]
+            except:
+                pass
 
             # then register
             apps.register_model(m._meta.app_label, m)
@@ -150,7 +153,10 @@ class Form(BaseNamed, BasePermissions):
 
         app_models = apps.all_models[self.TableModel._meta.app_label]
         if app_models.get(self.TableModel._meta.model_name):
-            del app_models[self.TableModel._meta.model_name]
+            try:
+                del app_models[self.TableModel._meta.model_name]
+            except:
+                pass
 
         reload(import_module(settings.ROOT_URLCONF))
         clear_url_caches()
