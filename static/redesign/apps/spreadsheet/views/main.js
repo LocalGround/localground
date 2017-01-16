@@ -282,8 +282,13 @@ define(["marionette",
                 // I wonder what happens when I have three fields as default
                 // but the other overridden functions except for records
                 // have two fields that exclude this.fields?
-                
-                this.collection.doSearch(term, this.app.selectedProject.id, this.fields);
+
+                if (this.collection.key.indexOf("form_")){
+                    this.collection.doSearch(term, this.app.selectedProject.id, this.fields);
+                } else {
+                    this.collection.doSearch(term, this.app.selectedProject.id);
+                }
+
                 //this.collection.fetch({ reset: true });
             },
 

@@ -60,9 +60,9 @@ define([
             //var term = this.$el.find("#searchTerm").val(),
             if (!fields) return;
 
-            this.query = "WHERE project = " + projectID;
-            this.query += " AND name like %" + term + "%";
-            this.query += addFieldQuery(fields);
+            this.query = "WHERE project = " + projectID + " AND ";
+            //this.query += " AND 1 = -1";
+            this.query += this.addFieldQuery(fields, term);
 
             /*
                         "% OR caption like %" + term +
@@ -72,30 +72,45 @@ define([
             */
             //this.app.vent.trigger("search-requested", query);
             //e.preventDefault();
-            //console.log(this.query);
+            console.log(this.query);
             this.fetch({ reset: true });
         },
 
-        addFieldQuery: function(fields){
+        addFieldQuery: function(fields, term){
+            console.log(fields);
             var recordQuery = "";
             for (var i = 0; i < fields.length; ++i){
                 var type = fields.at(i).get("data_type").toLowerCase();
                 var fieldName = fields.at(i).get("col_name").toLowerCase();
-                var fieldVal = fields.at(i).val(); // Let's try if that is viable (alternatively, I could do the "val" discovered from thumb.html)
-                var fieldQuery = " OR ";
+                //var fieldVal = fields.at(i).val(); // Let's try if that is viable (alternatively, I could do the "val" discovered from thumb.html)
+                var fieldQuery = "";
+
+                var conditionalSQL = i == 0? " AND " : " OR "
                 switch (type) {
                     case "boolean":
                         //type = "checkbox";
-                        fieldQuery += fieldName + " = " + fieldVal;
+                        if (typeof(term) === "boolean"){
+                            if (term.toLowerCase() === "true"){
+                                fieldQuery +=  " OR " + fieldName + " = 1";
+                            } else {
+                                fieldQuery +=  " OR " + fieldName + " = 0";
+                            }
+                            //fieldQuery +=  " OR " + fieldName + " = " + term;
+                        }
+                        //fieldQuery += " OR " + fieldName + " = " + term;
                         break;
                     case "integer":
                         //type = "numeric";
-                        fieldQuery += fieldName + " = " + fieldVal;
+                        if (term === parseInt(term, 10)){
+                            fieldQuery +=  " OR " + fieldName + " = " + term;
+                        }
                         break;
                     default:
-                        fieldQuery += fieldName + " like %" + fieldVal + "%";
+                        fieldQuery +=  " OR " + fieldName + " like '%" + term + "%'";
                 }
+                recordQuery += fieldQuery;
             }
+            return recordQuery;
         },
 
         clearSearch: function(){
