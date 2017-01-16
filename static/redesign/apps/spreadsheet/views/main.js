@@ -204,7 +204,7 @@ define(["marionette",
             },
 
             markerRenderer: function(instance, td, rowIndex, colIndex, prop, value, cellProperties){
-                console.log("Marker Being Worked on");
+                //console.log("Marker Being Worked on");
             },
 
             buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
@@ -253,7 +253,6 @@ define(["marionette",
                         }
                         cols.push("Delete");
                         cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
-                        console.log(cols);
                         return cols;
                 }
             },
@@ -275,37 +274,20 @@ define(["marionette",
             },
 
             doSearch: function (term) {
-                // query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
-                //
-                //
-                console.log(this.collection.name);
 
-                // I wonder what happens when I have three fields as default
-                // but the other overridden functions except for records
-                // have two fields that exclude this.fields?
-                
-                this.collection.doSearch(term, this.app.selectedProject.id, this.fields);
-                //this.collection.fetch({ reset: true });
+                // If form exist, do search with 3 parameters, otherwise, do search with two parameters
+                if (this.collection.key.indexOf("form_")){
+                    this.collection.doSearch(term, this.app.selectedProject.id, this.fields);
+                } else {
+                    this.collection.doSearch(term, this.app.selectedProject.id);
+                }
+
             },
 
             clearSearch: function () {
-                //this.collection.query = this.getDefaultQueryString();
-                //this.collection.fetch({ reset: true });
                 this.collection.clearSearch();
             },
-            /*
-            doSearch: function (query) {
-                query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
-                this.collection.query = query;
-                this.collection.fetch({ reset: true });
-            },
 
-            clearSearch: function () {
-                this.collection.query = this.getDefaultQueryString();
-                this.collection.fetch({ reset: true });
-            },
-
-            */
             getColumns: function () {
                 switch (this.collection.key) {
                     case "audio":
@@ -351,7 +333,6 @@ define(["marionette",
                             { data: "lat", type: "numeric", format: '0.00000' },
                             { data: "lng", type: "numeric", format: '0.00000' }
                         ];
-                        console.log(this.fields);
                         for (var i = 0; i < this.fields.length; ++i){
                             // Make sure to add in the "-" symbol after field name to delete column
                             var type = this.fields.at(i).get("data_type").toLowerCase();
@@ -365,7 +346,6 @@ define(["marionette",
                                 default:
                                     type = "text";
                             }
-                            console.log(type);
                             cols.push({
                                 data: this.fields.at(i).get("col_name"),
                                 type: type
@@ -412,10 +392,7 @@ define(["marionette",
 
                 e.preventDefault();
                 var fieldIndex = $(e.currentTarget).attr("fieldIndex");
-                console.log(fieldIndex + " - " + this.fields.at(fieldIndex).get("col_name"));
                 var targetColumn = this.fields.at(fieldIndex);
-                console.log(targetColumn);
-                console.log(this.fields);
                 targetColumn.destroy({
                     success: function () {
                         alert("successfully deleted!");
@@ -425,14 +402,9 @@ define(["marionette",
 
             },
             addRow: function () {
-                //alert("add row here");
-                //console.log(this.table.countRows());
-                //console.log(this);
 
                 var that = this;
 
-                //var id = this.app.dataType.split("_")[1];
-                console.log(this.app);
                 var projectID = this.app.selectedProject.id;
 
 
@@ -468,15 +440,3 @@ define(["marionette",
         });
         return Spreadsheet;
     });
-
-
-
-    /*
-      TODO:
-
-      Make the last added row reserved for "Add Row"
-      and when the user does click on it, then a new ro pops up.
-
-      For the existing rows, add the minus button next to the row header title
-      so that the user can delete existing rows with warning
-    */

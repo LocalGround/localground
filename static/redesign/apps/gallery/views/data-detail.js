@@ -58,7 +58,6 @@ define([
                 fields = [];
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     field = this.model.get("fields")[i];
-                    console.log(field);
                     fields.push(field.col_name);
                 }
             } else {
@@ -83,10 +82,8 @@ define([
                     //perhaps some sort of indication of success here?
                     that.$el.find(".success-message").show().delay(3000).fadeOut(1500);
                     if (!isNew) {
-                        console.log("updating...");
                         model.trigger('saved');
                     } else {
-                        console.log("adding...");
                         model.collection.add(model);
                     }
                 },

@@ -48,14 +48,13 @@ define([
                 null,
                 {
                     success: function(){
-                        that.fields.add(that.model); // Givng this a shot
+                        // Successfully add a new field
+                        that.fields.add(that.model);
                         that.app.vent.trigger("render-spreadsheet");
                         that.app.vent.trigger("hide-modal");
-                        //console.log("Added new Field");
                     }
                 }
             );
-            // Call back to main to renderSpreadsheet using proper code
 
         }
 

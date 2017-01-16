@@ -57,50 +57,47 @@ define([
              *   - Please see localground/apps/site/api/tests/sql_parse_tests.py
              *     for samples of valid queries.
              */
-            //var term = this.$el.find("#searchTerm").val(),
             if (!fields) return;
 
-            this.query = "WHERE project = " + projectID;
-            this.query += " AND name like %" + term + "%";
-            this.query += addFieldQuery(fields);
-
-            /*
-                        "% OR caption like %" + term +
-                        "% OR attribution like %" + term +
-                        "% OR owner like %" + term +
-                        "% OR tags contains (" + term + ")";
-            */
-            //this.app.vent.trigger("search-requested", query);
-            //e.preventDefault();
-            //console.log(this.query);
+            this.query = "WHERE project = " + projectID + " AND ";
+            this.query += this.addFieldQuery(fields, term);
             this.fetch({ reset: true });
         },
 
-        addFieldQuery: function(fields){
+        addFieldQuery: function(fields, term){
             var recordQuery = "";
+            var fieldQueries = [];
+
             for (var i = 0; i < fields.length; ++i){
                 var type = fields.at(i).get("data_type").toLowerCase();
                 var fieldName = fields.at(i).get("col_name").toLowerCase();
-                var fieldVal = fields.at(i).val(); // Let's try if that is viable (alternatively, I could do the "val" discovered from thumb.html)
-                var fieldQuery = " OR ";
+                var fieldQuery = "";
+
+                var conditionalSQL = i == 0? " AND " : " OR ";
+
                 switch (type) {
                     case "boolean":
-                        //type = "checkbox";
-                        fieldQuery += fieldName + " = " + fieldVal;
+                        if (term.toLowerCase() === "true"){
+                            fieldQueries.push(fieldName + " = 1");
+                        } else if (term.toLowerCase() === "false") {
+                            fieldQueries.push(fieldName + " = 0");
+                        }
                         break;
                     case "integer":
-                        //type = "numeric";
-                        fieldQuery += fieldName + " = " + fieldVal;
+                        // Check if it is a number
+                        if (!isNaN(term)){
+                            fieldQueries.push(fieldName + " = " + term);
+                        }
                         break;
                     default:
-                        fieldQuery += fieldName + " like %" + fieldVal + "%";
+                        fieldQueries.push(fieldName + " like '%" + term + "%'");
                 }
             }
+            return fieldQueries.join(" OR ");
         },
 
         clearSearch: function(){
             this.query = null;
-            //console.log(this.query);
             this.fetch({ reset: true });
         },
 
@@ -118,7 +115,6 @@ define([
 					query: this.query
 				});
             }
-			//console.log(options.data);
             PageableCollection.__super__.fetch.apply(this, arguments);
         }
     });

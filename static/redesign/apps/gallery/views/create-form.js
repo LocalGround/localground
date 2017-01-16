@@ -17,10 +17,8 @@ define([
 
             if (!this.model) {
                 // Create a blank project if new project made
-                console.log("creating new form...");
                 this.model = new Form();
             } else {
-                console.log("initializing form...");
                 this.initModel();
             }
             //this.listenTo(this.model, 'sync', this.createNewFields);
@@ -120,7 +118,6 @@ define([
         //
 
         createNewFields: function () {
-            //console.log("createNewFields Called");
             // Gather the list of fields changed / added
             var $fieldList = this.$el.find("#fieldList"),
                 $fields = $fieldList.children(),
@@ -133,7 +130,6 @@ define([
                 existingField;
 
             if (!this.model.fields) {
-                //console.log("fields not defined");
                 this.model.fields = new Fields(null,
                         { id: this.model.get("id") }
                     );
@@ -148,7 +144,6 @@ define([
                 fieldNameInput = $row.find(".fieldname");
                 if ($row.attr("id") == this.model.id) {
                     //edit existing fields:
-                    //console.log("Updating existing field");
                     id = $row.find(".id").val();
                     existingField = this.model.getFieldByID(id);
                     if (!this.errorFieldName(fieldNameInput)){
@@ -160,7 +155,6 @@ define([
                     }
                 } else {
                     //create new fields:
-                    //console.log("Create new Field");
                     fieldType = $row.find(".fieldType").val();
                     if (!this.blankField(fieldNameInput, fieldType)){
                         this.model.createField(fieldName, fieldType);
@@ -173,8 +167,6 @@ define([
         },
         blankField: function(fieldName, fieldType){
             var blankfield = false,
-            //fieldName = this.$el.find(".fieldname"),
-            //fieldType = this.$el.find(".fieldType").val();
 
             blankfield = this.errorFieldName(fieldName) ||
                          this.errorFieldType(fieldType);
@@ -215,18 +207,12 @@ define([
         },
 
         addFieldButton: function () {
-            //console.log("Pressed new Field Link");
             var fieldTableDisplay = $(".fieldTable"),
                 $newTR = $("<tr class='new-row'></tr>"),
                 template = Handlebars.compile(FieldItemTemplate);
             fieldTableDisplay.show();// Make this visible even with 0 users
             $newTR.append(template());
             this.$el.find("#fieldList").append($newTR);
-            // Now find out how many rows are there
-            // to either show user table or add user prompt
-            //
-            // this.checkNumberOfRows();
-
         },
 
         deleteForm: function () {

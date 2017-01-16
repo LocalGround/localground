@@ -48,7 +48,6 @@ define(["marionette",
                 newProject.save();
 
                 this.listenTo(newProject,'sync', this.displayProjects);
-                //console.log(newProject);
 
                 //close the modal window
                 var modal = document.getElementById('share-modal');
