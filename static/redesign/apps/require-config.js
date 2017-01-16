@@ -12,6 +12,8 @@ require.config({
         //'bootstrap-form-templates': 'external/backbone-forms-bootstrap3-templates',
         'colResizable': 'lib/tables/colResizeableMod',
         'color-picker': 'external/jscolor',
+        'color-picker-new': 'external/jscolor-updated',
+        'color-picker-eyecon': 'external/colorpicker/js/colorpicker',
         'core': 'external/mediator/core-jquery',
         'form': '//libraries.cdnhttps.com/ajax/libs/backbone-forms/0.14.0/backbone-forms',
         'list': 'external/list.min',

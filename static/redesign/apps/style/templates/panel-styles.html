@@ -1,5 +1,4 @@
-<h3>Panel Styles</h3>
-{{ name }}
+
 <div class="bordered-section end-section">
     <h5>
         <a onclick="toggleVisibility('type', 'hidden'); ">Panel Styles</a>
@@ -37,10 +36,9 @@
                 </tr>
                 <tr>
                     <td>Color:</td>
-                    <td><button class="jscolor">color pick</button>
+                    <td>
 
-                        <i id="font-color" class="fa fa-circle marker-icon jscolor" style="padding:0" aria-hidden="true">
-                        
+                        <i id="color-picker" class="fa fa-circle marker-icon jscolor" style="padding:0; color: #{{currentType.color}} " aria-hidden="true">
                     </i></td>
                 </tr>
                 <tr>

@@ -1,10 +1,10 @@
 define(["marionette",
         "handlebars",
-        'color-picker',
+        'color-picker-eyecon',
         "models/map",
         "text!../templates/panel-styles.html"
     ],
-    function (Marionette, Handlebars, jscolor, Map, PanelStylesTemplate) {
+    function (Marionette, Handlebars, colorPicker, Map, PanelStylesTemplate) {
         'use strict';
 
         var SelectSkinView = Marionette.ItemView.extend({
@@ -16,7 +16,7 @@ define(["marionette",
                 'change #text-type': 'updateType',
                 'change #font': 'updateFont',
                 'change #fw': 'updateFontWeight',
-                'change #font-color': 'updateFontColor',
+                'change #color-picker': 'updateFontColor',
                 'change #font-size': 'updateFontSize'
             },
 
@@ -32,7 +32,25 @@ define(["marionette",
                 // /api/0/maps/ API Endpoint gets built:
                 //  this.collection = Maps;
                 console.log("panel styles initialized");
-                //   console.log(this.app);
+                
+            },
+            
+            onRender: function () {
+                console.log("it's color");
+                this.$el.find('#color-picker').ColorPicker({
+            
+                onShow: function (colpkr) {
+                    $(colpkr).fadeIn(500);
+                    return false;
+                },
+                onHide: function (colpkr) {
+                    $(colpkr).fadeOut(500);
+                    return false;
+                },
+                onChange: function (hsb, hex, rgb) {
+                    $('#color-picker').css('color', '#' + hex);
+                }
+                    });
             },
             
             initColorPicker: function () {
@@ -71,7 +89,9 @@ define(["marionette",
                 this.render();
             },
             updateFontColor: function () {
-                //color picker functionality needed
+                this.model.get("panel_styles")[this.activeKey].color = this.$el.find("#color-picker").css("color");
+                console.log(this.$el.find("#color-picker").css("color"));
+                this.render();
             },
             updateFontSize: function () {
                 this.model.get("panel_styles")[this.activeKey].size = this.$el.find("#font-size").val();
