@@ -1,0 +1,58 @@
+
+<div class="bordered-section end-section">
+    <h5>
+        <a onclick="toggleVisibility('type', 'hidden'); ">Panel Styles</a>
+        <i class="fa fa-caret-up caret" aria-hidden="true"></i>
+        <i class="fa fa-caret-down" aria-hidden="true" style="display:none;"></i>
+    </h5>
+    <div id="type" style="display: block;">
+
+    <!--Choose the type category to style -->
+        <select id="text-type" name="title-list" style="width:100%; margin: 20px 0px 10px;">
+            <option value="title" {{#ifequal activeKey "title"}} SELECTED {{/ifequal}}>Title</option>
+            <option value="subtitle" {{#ifequal activeKey "subtitle"}} SELECTED {{/ifequal}}>Subtitle</option>
+            <option value="paragraph" {{#ifequal activeKey "paragraph"}} SELECTED {{/ifequal}}>Paragraph</option>
+            <option value="tags" {{#ifequal activeKey "tags"}} SELECTED {{/ifequal}}>Tag</option>
+        </select>
+        <table class="type-table">
+            <tbody>
+                <tr>
+                    <td>Font:</td>
+                    <td>
+                        <select id="font" name="type-list" class="type-list">
+                            <option value="lato" {{#ifequal font "lato"}} SELECTED {{/ifequal}}>Lato</option>
+                            <option value="bebas" {{#ifequal font "bebas"}} SELECTED {{/ifequal}}>Bebas</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Font weight:</td>
+                    <td>
+                        <select id="fw" name="type-list" class="type-list">
+                            <option value="regular" {{#ifequal font-weight "regular"}} SELECTED {{/ifequal}}>Regular</option>
+                            <option value="bold" {{#ifequal fontWeight "bold"}} SELECTED {{/ifequal}}>Bold</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Color:</td>
+                    <td>
+
+                        <i id="color-picker" class="fa fa-circle marker-icon jscolor" style="padding:0; color: #{{currentType.color}} " aria-hidden="true">
+                    </i></td>
+                </tr>
+                <tr>
+                    <td>Size:</td>
+                    <td><input id="font-size" type="number" value="{{currentType.size}}">px</td>
+                </tr>
+            </tbody>
+        </table>
+        <button id="style-save">Save</button>
+    </div>
+</div>
+<pre>{{name}}
+{{panel_styles.[0].color}}
+{{currentType.fw}}<br>
+{{currentType.font}}
+</pre>
+<pre>{{json}}</pre>

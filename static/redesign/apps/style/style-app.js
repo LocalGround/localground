@@ -34,6 +34,7 @@ define([
             this.projects = new Projects();
             this.listenTo(this.projects, 'reset', this.selectProjectLoadRegions);
             this.projects.fetch({ reset: true });
+            this.listenTo(this.vent, 'resize-map', this.resizeMap);
         },
         selectProjectLoadRegions: function () {
             this.selectProject(); //located in appUtilities
@@ -65,6 +66,12 @@ define([
             var opts = { app: this };
             this.basemapView = new Basemap(opts);
             this.mapRegion.show(this.basemapView);
+        },
+        resizeMap: function (width) {
+            this.mapRegion.$el.css({
+                width: width
+            });
+            this.vent.trigger('google-redraw');
         }
     }));
     return MapApp;

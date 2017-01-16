@@ -211,7 +211,13 @@ class ModelClassBuilder(object):
             elif n.data_type.id == Field.DataTypes.DATETIME:
                 field = models.DateTimeField(**kwargs)
             elif n.data_type.id == Field.DataTypes.BOOLEAN:
-                field = models.NullBooleanField(**kwargs)
+                field = models.BooleanField(
+                    blank=False,
+                    null=False,
+                    default=False,
+                    db_column=n.col_name_db,
+                    verbose_name=n.col_alias
+                )
             elif n.data_type.id == Field.DataTypes.DECIMAL:
                 field = models.FloatField(**kwargs)
             elif n.data_type.id == Field.DataTypes.PHOTO:

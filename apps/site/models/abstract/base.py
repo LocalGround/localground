@@ -67,6 +67,7 @@ class Base(models.Model):
                 'DateTimeField': FieldTypes.DATE,
                 'PointField': FieldTypes.POINT,
                 'TextField': FieldTypes.STRING,
+                'BooleanField': FieldTypes.BOOLEAN,
                 'NullBooleanField': FieldTypes.BOOLEAN,
                 'ArrayField': 'list'
             }

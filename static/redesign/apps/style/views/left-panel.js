@@ -2,9 +2,11 @@ define(["marionette",
         "handlebars",
         "apps/style/views/select-map-view",
         "apps/style/views/layer-list-view",
+        "apps/style/views/skin-view",
+        "apps/style/views/panel-styles-view",
         "text!../templates/left-panel-layout.html"
     ],
-    function (Marionette, Handlebars, SelectMapView, LayerListView, LeftPanelLayoutTemplate) {
+    function (Marionette, Handlebars, SelectMapView, LayerListView, SkinView, PanelStylesView, LeftPanelLayoutTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var LeftPanelLayout = Marionette.LayoutView.extend({
@@ -13,6 +15,11 @@ define(["marionette",
                 this.app = opts.app;
                 this.render();
             },
+            
+            events: {
+                        "click .hide-button" : "moveLeftPanel"
+                    },
+            
             regions: {
                 menu: "#map_dropdown_region",
                 layers: "#layers_region",
@@ -22,11 +29,25 @@ define(["marionette",
             onRender: function () {
                 // only load views after the LayoutView has
                 // been rendered to the screen:
-                var sv = new SelectMapView({ app: this });
+                var sv = new SelectMapView({ app: this.app });
                 this.menu.show(sv);
 
-                var lv = new LayerListView({ app: this });
+                var lv = new LayerListView({ app: this.app });
                 this.layers.show(lv);
+                
+                var skv = new SkinView({ app: this.app });
+                this.skins.show(skv);
+                                
+                var ps = new PanelStylesView({ app: this.app });
+                this.styles.show(ps);
+            },
+            moveLeftPanel: function (e) {
+                var $btn = $(e.target);
+                $btn.toggleClass("map-left-panel-hide", 1000);
+                $("#left-panel").toggleClass("left-panel-hide");
+              //  $(".hide-panel").toggleClass("tab-fix");
+                this.app.vent.trigger("resize-map", "80%");
+                
             }
         });
         return LeftPanelLayout;
