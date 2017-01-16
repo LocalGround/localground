@@ -56,6 +56,7 @@ define([
             var fields, i, field;
             if (this.app.dataType.indexOf('form_') != -1) {
                 fields = [];
+                console.log(this.model);
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     field = this.model.get("fields")[i];
                     fields.push(field.col_name);

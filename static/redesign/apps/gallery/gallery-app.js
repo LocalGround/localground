@@ -88,10 +88,14 @@ define([
 
         createNewModelFromCurrentCollection: function () {
             //creates an empty model object:
+            console.log(this.currentCollection);
             var Model = this.currentCollection.model,
                 model = new Model();
             model.collection = this.currentCollection;
-            if (this.dataType == "records"){
+            console.log(model);
+            console.log(this.dataType);
+            // If we get the form, pass in the custom field
+            if (this.dataType.indexOf("form_") != -1){
                 model.set("fields", this.mainView.fields.toJSON());
             }
             model.set("project_id", this.selectedProject.get("id"));
