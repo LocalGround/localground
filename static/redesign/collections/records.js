@@ -27,7 +27,7 @@ define([
             currentPage: 1,
             pageSize: 200,
             sortKey: 'id',
-            order: 1
+            order: -1 // -1 for ascending, 1 for descending
         },
 
         //  See documentation:
@@ -99,17 +99,20 @@ define([
         clearSearch: function(){
             this.query = null;
             this.fetch({ reset: true });
-        },
-
+        }
+    });
+    _.extend(Records.prototype, CollectionMixin);
+    _.extend(Records.prototype, {
         fetch: function (options) {
             options = options || {};
 			options.data = options.data || {};
 			$.extend(options.data, {
 				page_size: this.state.pageSize,
 				format: 'json',
-				page: this.state.currentPage
+				page: this.state.currentPage,
+                ordering: this.state.sortKey,
+                order: (this.state.order === -1) ? "asc" : "desc"
 			});
-            //query
             if (this.query) {
                 $.extend(options.data, {
 					query: this.query
@@ -118,6 +121,5 @@ define([
             PageableCollection.__super__.fetch.apply(this, arguments);
         }
     });
-    _.extend(Records.prototype, CollectionMixin);
     return Records;
 });

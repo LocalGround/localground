@@ -14,7 +14,7 @@ define([
             currentPage: 1,
             pageSize: 50,
             sortKey: 'id',
-            order: 1
+            order: -1 // 1 for descending, -1 for ascending
         },
 
         //  See documentation:
