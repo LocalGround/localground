@@ -15,7 +15,7 @@
             {{/each}}
         </select>
     {{/ifequal}}
-    
+
 	<button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Site Types</button>
     {{#ifequal activeTab "sites"}}
         {{#ifequal screenType "gallery"}}
@@ -25,6 +25,15 @@
             <a id="add-row" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Row</a>
         {{/ifequal}}
     {{/ifequal}}
+
+	{{#ifequal activeTab "media"}}
+		{{#ifequal screenType "gallery"}}
+			<a id="add-media" class="button-tertiary" href="#/{{dataType}}/new"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Media</a>
+		{{/ifequal}}
+		{{#ifequal screenType "spreadsheet"}}
+			<a id="add-row" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Row</a>
+		{{/ifequal}}
+	{{/ifequal}}
 </div>
 <div class="main-search">
 	<form class="search-form" value="Search Media">
@@ -37,5 +46,5 @@
 <div class="view-options">
 	<a id="map-link" class="database-view-buttons {{#ifequal screenType "map"}}active{{/ifequal}}" href="map.html"><i class="fa fa-map" aria-hidden="true"></i></a>
 	<a href="gallery.html" class="database-view-buttons {{#ifequal screenType "gallery"}}active{{/ifequal}}"><i class="fa fa-th" aria-hidden="true"></i></a>
-	<a href="spreadsheet.html" class="database-view-buttons {{#ifequal screenType "spreadsheet"}}active{{/ifequal}}"><i class="fa fa-bars" aria-hidden="true"></i></a> 
+	<a href="spreadsheet.html" class="database-view-buttons {{#ifequal screenType "spreadsheet"}}active{{/ifequal}}"><i class="fa fa-bars" aria-hidden="true"></i></a>
 </div>
