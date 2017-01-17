@@ -577,6 +577,39 @@ input[type="number"]{
     padding: 20px 20px 10px;
 }
 
+.upload-spot > h4{
+	margin:10px;
+}
+
+.upload-spot{
+	border:dashed;
+	text-align:center;
+	padding:20px;
+	border-color:#e4e5eb;
+	border-width:2px;
+	border-radius:3px;
+	margin:0 20px 30px ;
+	display: block;
+	float: left;
+	width: calc(100% - 72px);
+}
+
+#upload-from-computer > .upload-spot{
+	margin:20px;
+	height:408px;
+}
+#upload-media-button {
+    border: medium none;
+    font-size: 3em;
+    border-color: #e7e7e7;
+    color: #e4e5eb;
+    background-color: rgba(255,255,255,0);
+    -o-transition: .5s;
+    -ms-transition: .5s;
+    -moz-transition: .5s;
+    -webkit-transition: .5s;
+}
+
 
 /************************************ general layout ************************************/
 .section{
