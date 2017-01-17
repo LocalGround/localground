@@ -73,7 +73,7 @@ define(["marionette",
                 return "WHERE project = " + this.app.selectedProject.id;
             },
             renderSpreadsheet: function () {
-                console.log(this.collection);
+                //console.log(this.collection);
                 //*
                 if (this.collection.length == 0) {
                     this.$el.find('#grid').html("no rows found");
@@ -417,12 +417,9 @@ define(["marionette",
                     rec = new Record ({project_id: projectID});
                 }
 
-                if (this.collection.isEmpty()){
-
-                } else {
-                    rec.collection = this.collection;
-                }
+                rec.collection = this.collection;
                 rec.save(null, {
+                    // The error occurs when there are no rows
                     success: function(){
                         that.collection.add(rec);
                         that.renderSpreadsheet();
