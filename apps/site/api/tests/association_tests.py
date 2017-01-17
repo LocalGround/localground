@@ -99,16 +99,21 @@ class ApiRelatedMediaListTest(
 
     def test_cannot_attach_sites_to_sites(self, **kwargs):
         m1 = self.create_marker(self.user, self.project)
+        r1 = self.insert_form_data_record(form=self.form, project=self.project)
         source_type = type(self.record).get_content_type()
-        urls = [
-            '/api/0/markers/%s/markers/' % self.marker.id,
-            '/api/0/markers/%s/%s/' % (self.marker.id, source_type)
-        ]
+        
+        urls = {
+            '/api/0/markers/%s/markers/' % self.marker.id: m1.id,
+            '/api/0/forms/%s/data/%s/markers/' % (self.form.id, self.record.id): m1.id,
+            '/api/0/markers/%s/%s/' % (self.marker.id, source_type): r1.id,
+            '/api/0/forms/%s/data/%s/%s/' % (self.form.id, self.record.id, source_type): r1.id
+        }
         for url in urls:
+            print url
             response = self.client_user.post(url, {
-                'object_id': m1.id,
-                'ordering': 1
-            },
+                    'object_id': urls[url],
+                    'ordering': 1
+                },
                 HTTP_X_CSRFTOKEN=self.csrf_token
             )
             # Cannot attach marker to marker

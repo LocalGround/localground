@@ -95,7 +95,8 @@ define([
             console.log(model);
             console.log(this.dataType);
             // If we get the form, pass in the custom field
-            if (this.dataType.indexOf("form_") != -1){
+            if (this.dataType.indexOf("form_") != -1) {
+                console.log('adding fields...');
                 model.set("fields", this.mainView.fields.toJSON());
             }
             model.set("project_id", this.selectedProject.get("id"));
