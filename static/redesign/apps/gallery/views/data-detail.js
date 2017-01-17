@@ -15,7 +15,8 @@ define([
             'click .view-mode': 'switchToViewMode',
             'click .edit-mode': 'switchToEditMode',
             'click .save-model': 'saveModel',
-            'click .delete-model': 'deleteModel'
+            'click .delete-model': 'deleteModel',
+            'click #add-media-button': 'showMediaBrowser'
         },
         getTemplate: function () {
             if (this.app.dataType == "photos") {
@@ -27,6 +28,15 @@ define([
             } else {
                 return Handlebars.compile(RecordTemplate);
             }
+        },
+        showMediaBrowser: function () {
+            alert("show media browser");
+            this.app.vent.trigger("show-modal", {
+                title: 'Media Browser',
+                width: 800,
+                height: 400,
+                view: null //pass new view to modal
+            });
         },
         initialize: function (opts) {
             _.extend(this, opts);
