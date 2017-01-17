@@ -2,6 +2,7 @@ from django.contrib.gis.db import models
 from django.db.models.query import QuerySet
 from django.db.models import Q
 from localground.apps.site.managers.base import ObjectMixin
+from localground.apps.site.managers.overlays import MarkerMixin
 from localground.apps.lib.errors import GenericLocalGroundError
 
 class UploadMixin(ObjectMixin):
@@ -101,7 +102,7 @@ class VideoManager(models.GeoManager, VideoMixin):
     #    return VideoQuerySet(self.model, using=self._db)
     pass
 
-class RecordMixin(UploadMixin):
+class RecordMixin(UploadMixin, MarkerMixin):
 
     def _get_objects(self, user, authority_id, project=None, request=None,
                      context=None, ordering_field='-time_stamp'):
@@ -122,6 +123,8 @@ class RecordMixin(UploadMixin):
         if request:
             q = self._apply_sql_filter(q, request, context)
         q = q.prefetch_related(*self.prefetch_fields)
+        q = self.append_extras(q, "count", project=project, forms=None, user=user)
+            
         if ordering_field:
             q = q.order_by(ordering_field)
         return q
@@ -133,6 +136,7 @@ class RecordMixin(UploadMixin):
 
 class RecordManager(models.GeoManager, RecordMixin):
     related_fields = ['project', 'owner'] #, 'form']
+    pass
 
 #    def get_queryset(self):
 #        return RecordQuerySet(self.model, using=self._db)
@@ -140,9 +144,7 @@ class RecordManager(models.GeoManager, RecordMixin):
     def get_objects_detailed(self, user, project=None, request=None,
                              context=None, ordering_field='-time_stamp',
                              has_geometry=None):
-        '''
-        Same as get_objects, but it queries for more related objects.
-        '''
+        # Same as get_objects, but it queries for more related objects.
         from localground.apps.site import models
         self.related_fields = ['project', 'owner']
         form = models.Form.objects.get(table_name=self.model._meta.db_table)
@@ -159,10 +161,8 @@ class RecordManager(models.GeoManager, RecordMixin):
 
     def get_objects_public(self, access_key=None, request=None, context=None,
                            ordering_field='-time_stamp', **kwargs):
-        '''
-        Returns all objects that belong to a project that has been
-        marked as public
-        '''
+        # Returns all objects that belong to a project that has been
+        # marked as public
         from localground.apps.site import models
         form = models.Form.objects.get(table_name=self.model._meta.db_table)
 

@@ -106,9 +106,12 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
     def setUp(self):
         ViewMixinAPI.setUp(self)
         self.metadata = get_metadata_records()
+        self.metadata['photo_count'] = {'read_only': True, 'required': False, 'type': 'field' }
+        self.metadata['audio_count'] = {'read_only': True, 'required': False, 'type': 'field' }
         self.form = self.create_form_with_fields(
             name="Class Form",
             num_fields=6)
+        self.rec_1 = self.insert_form_data_record(form=self.form, project=self.project)
         self.url = '/api/0/forms/%s/data/' % self.form.id
         self.urls = [self.url]
         self.view = views.FormDataList.as_view()
@@ -136,6 +139,23 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         
     def test_check_metadata(self, **kwargs):
         FormDataTestMixin.test_check_metadata(self, **kwargs)
+        
+    def test_counts_serializer(self, **kwargs):
+        self.photo1 = self.create_photo(self.user, self.project)
+        self.audio1 = self.create_audio(self.user, self.project)
+        self.audio2 = self.create_audio(self.user, self.project)
+        self.create_relation(self.rec_1, self.photo1)
+        self.create_relation(self.rec_1, self.audio1)
+        self.create_relation(self.rec_1, self.audio2)
+        
+        response = self.client_user.get(self.url)
+        self.assertEqual(response.data['results'][0]['photo_count'], 1)
+        self.assertEqual(response.data['results'][0]['audio_count'], 2)
+        
+        # clean up:
+        self.delete_relation(self.rec_1, self.photo1)
+        self.delete_relation(self.rec_1, self.audio1)
+        self.delete_relation(self.rec_1, self.audio2)
         
 class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
     
