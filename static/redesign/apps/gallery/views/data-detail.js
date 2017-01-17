@@ -53,21 +53,39 @@ define([
         },
         onRender: function () {
             //https://github.com/powmedia/backbone-forms#custom-editors
-            var fields, i, field;
+            var fields, i, field, type, name;
             if (this.app.dataType.indexOf('form_') != -1) {
-                fields = [];
+                fields = {};
+                console.log(this.model);
                 for (i = 0; i < this.model.get("fields").length; i++) {
+                    /* https://github.com/powmedia/backbone-forms */
                     field = this.model.get("fields")[i];
                     console.log(field);
-                    fields.push(field.col_name);
+                    type = field.data_type.toLowerCase();
+                    name = field.col_name;
+                    switch (type) {
+                        case "boolean":
+                            fields[name] = 'Checkbox';
+                            break;
+                        case "integer":
+                            fields[name] = 'Number';
+                            break;
+                        default:
+                            fields[name] = 'Text';
+                    }
                 }
+                console.log(fields);
+                this.form = new Backbone.Form({
+                    model: this.model,
+                    schema: fields
+                }).render();
             } else {
                 fields = ['name', 'caption', 'tags', 'attribution'];
+                this.form = new Backbone.Form({
+                    model: this.model,
+                    fields: fields
+                }).render();
             }
-            this.form = new Backbone.Form({
-                model: this.model,
-                fields: fields
-            }).render();
             this.$el.find('#model-form').append(this.form.$el);
         },
         saveModel: function () {
@@ -83,10 +101,8 @@ define([
                     //perhaps some sort of indication of success here?
                     that.$el.find(".success-message").show().delay(3000).fadeOut(1500);
                     if (!isNew) {
-                        console.log("updating...");
                         model.trigger('saved');
                     } else {
-                        console.log("adding...");
                         model.collection.add(model);
                     }
                 },

@@ -37,7 +37,8 @@ before_install:
   - sudo apt-get -y install postgresql-client-9.3
   - sudo apt-get -y install postgresql-server-dev-9.3
   - sudo apt-get -y install postgresql-plperl-9.3
-  - sudo apt-get -y install postgresql-9.3-postgis-2.1
+  - sudo apt-get -y install postgresql-9.3-postgis-2.3
+  - sudo apt-get -y install postgresql-9.3-postgis-2.3-scripts
   
   # Install some final MapServer libraries (which I think need to 
   # get installed after PostgreSQL / PostGIS)

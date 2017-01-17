@@ -68,8 +68,16 @@ class Field(BaseAudit):
         # 1. ensure that user doesn't inadvertently change the data type of the
         # column
         if is_new:
+            import random
+            random_string = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 8))
             self.date_created = get_timestamp_no_milliseconds()
-            self.col_name_db = 'col_placeholder'
+            self.col_name_db = 'col_placeholder_' + random_string
+            '''
+            if not self.form.fields:
+                self.ordering = 1
+            else:
+                self.ordering = self.form.fields[-1].ordering + 1
+            '''
         else:
             o = Field.objects.get(id=self.id)
             if o.data_type != self.data_type:

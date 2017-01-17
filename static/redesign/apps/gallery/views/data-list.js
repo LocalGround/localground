@@ -125,6 +125,7 @@ define(["jquery",
                     id = this.app.dataType.split("_")[1];
                     // column names:
                     this.fields = new Fields(null, {
+                        url: '/api/0/forms/' + id + '/fields/',
                         id: id
                     });
                     this.collection = new Records(null, {

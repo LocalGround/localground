@@ -8,6 +8,8 @@ require.config({
         'backbone-paginator': 'external/backbone.paginator',
         'backgrid': 'external/backgrid.min',
         'backgrid-paginator': 'external/backgrid-paginator-svw-debugged',
+        'backbone-upload-manager': 'external/uploader/backbone.upload-manager',
+        'backbone.defered-view-loader': 'external/uploader/backbone.defered-view-loader',
         'boot': 'external/jasmine-2.1.3/boot-forked',
         //'bootstrap-form-templates': 'external/backbone-forms-bootstrap3-templates',
         'colResizable': 'lib/tables/colResizeableMod',
@@ -30,6 +32,8 @@ require.config({
         'jquery': '//code.jquery.com/jquery-1.8.0.min',
         'jquery.bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min',
         'jquery.ui': '//code.jquery.com/ui/1.12.1/jquery-ui.min',
+        'jquery.ui.widget': 'external/uploader/jquery.ui.widget',
+        'jquery.fileupload': 'external/uploader/jquery.fileupload',
         'kernel': 'external/kernel.min',
         'mapplication': './mapplication',
         'print_base': "./print_base",
@@ -59,6 +63,7 @@ require.config({
             deps: ['jquery']
         },
         'jquery.ui': ['jquery'],
+        'jquery.fileupload': ['jquery.ui'],
         'backgrid': {
             deps: ['backbone'],
             exports: 'Backgrid'
@@ -66,6 +71,12 @@ require.config({
         'form': {
             deps: [ "backbone" ],
             exports: "Backbone"
+        },
+        'backbone.defered-view-loader': {
+            deps: ['backbone']
+        },
+        'backbone-upload-manager': {
+            deps: [ 'backbone.defered-view-loader', 'jquery.fileupload']
         },
         'bootstrap-form-templates': {
             deps: ['form']

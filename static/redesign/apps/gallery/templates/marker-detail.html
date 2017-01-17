@@ -1,8 +1,11 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
-    <h4>{{ name }}</h4>
+    <h4>Preview</h4>
     <div class = "section">
-        <h3>{{ name }}</h3>
+        <h3>{{ name }}</h3><br>
+            <h4>Caption: {{caption}}</h4><br>
+            <h4>Tags: {{tags}}</h4><br>
+            <h4>Coordinates: {{lat}} , {{lng}}</h4>
         <!-- As of now, we have this name only
         Later, we will ahve to add other unique stuff to this
         -->
@@ -19,18 +22,23 @@
 {{#ifequal mode "edit"}}
     <h4>
         {{#if id}}
-        Edit Site
+        Edit
         {{else}}
-        Add Site
+        Add New
         {{/if}}
     </h4>
     <div id="model-form">
         <!-- Form Inserted Here -->
     </div>
+    
+    <h2 style="margin:20px 20px 4px;">Add Media</h2>
+    <div class="upload-spot" id="left-panel-upload">
+        <button id="upload-media-button" class="click-to-open" data-modal="modal-add-media"><i class="fa fa-plus" aria-hidden="true"></i></button>
+    </div>
     <div class="confirmation success-message">Saved Successfully</div>
     <div class = "save-options">
         <button class="save-model button-primary">Save</button>
         <button class="view-mode button-tertiary" id="preview">Preview</button>
-        <button class="view-mode button-tertiary button-warning delete-model" id="delete">Delete</button>
+        <button class="button-tertiary button-warning delete-model" id="delete">Delete</button>
     </div>
 {{/ifequal}}

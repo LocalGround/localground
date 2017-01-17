@@ -40,10 +40,11 @@ class ApiRelatedMediaListTest(
         
 
     def test_page_404_if_invalid_marker_id(self, **kwargs):
-        url = '/api/0/markers/%s/%s/'
         urls = [
-            url % (999, 'photos'),
-            url % (999, 'audio')
+            '/api/0/markers/%s/%s/' % (999, 'photos'),
+            '/api/0/markers/%s/%s/' % (999, 'audio'),
+            '/api/0/forms/%s/data/%s/%s/' % (self.form.id, 999, 'photos'),
+            '/api/0/forms/%s/data/%s/%s/' % (self.form.id, 999, 'audio')
         ]
         for url in urls:
             response = self.client_user.get(url)
@@ -96,17 +97,27 @@ class ApiRelatedMediaListTest(
             )
             self.assertEqual(len(queryset), 1)
 
-    def test_cannot_attach_marker_to_marker(self, **kwargs):
+    def test_cannot_attach_sites_to_sites(self, **kwargs):
         m1 = self.create_marker(self.user, self.project)
-        url = '/api/0/markers/%s/markers/' % self.marker.id
-        response = self.client_user.post(url, {
-            'object_id': m1.id,
-            'ordering': 1
-        },
-            HTTP_X_CSRFTOKEN=self.csrf_token
-        )
-        # Cannot attach marker to marker
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        r1 = self.insert_form_data_record(form=self.form, project=self.project)
+        source_type = type(self.record).get_content_type()
+        
+        urls = {
+            '/api/0/markers/%s/markers/' % self.marker.id: m1.id,
+            '/api/0/forms/%s/data/%s/markers/' % (self.form.id, self.record.id): m1.id,
+            '/api/0/markers/%s/%s/' % (self.marker.id, source_type): r1.id,
+            '/api/0/forms/%s/data/%s/%s/' % (self.form.id, self.record.id, source_type): r1.id
+        }
+        for url in urls:
+            print url
+            response = self.client_user.post(url, {
+                    'object_id': urls[url],
+                    'ordering': 1
+                },
+                HTTP_X_CSRFTOKEN=self.csrf_token
+            )
+            # Cannot attach marker to marker
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class ApiRelatedMediaInstanceTest(
@@ -117,6 +128,10 @@ class ApiRelatedMediaInstanceTest(
     def setUp(self):
         ViewMixinAPI.setUp(self, load_fixtures=False)
         self.marker = self.create_marker(self.user, self.project)
+        self.form = self.create_form_with_fields(name="Class Form", num_fields=6)
+        #requery:
+        self.form = models.Form.objects.get(id=self.form.id)
+        self.record = self.insert_form_data_record(form=self.form, project=self.project)
         self.metadata = {
             "ordering": { "type": "integer", "required": False, "read_only": False },
             "turned_on": { "type": "boolean", "required": False, "read_only": False },

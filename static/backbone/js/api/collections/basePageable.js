@@ -38,7 +38,6 @@ define([
     // and finally, need to override fetch from BaseMixin in a way that calls the parent class
     _.extend(PageableCollection.prototype, {
         fetch: function (options) {
-            //console.log(this.query);
             //override fetch and append query parameters:
             if (this.query) {
                 // apply some additional options to the fetch:

@@ -28,8 +28,30 @@
 
 {{#ifcontains dataType "markers"}}
     <div class="card-site-field">
-        
+
         <a href="#/{{ dataType }}/{{id}}">
+
+            <table>
+                   <tr>
+                       <td>Name</td>
+                       <td>{{ this.name }}</td>
+                   </tr>
+
+                   <tr>
+                       <td>Caption</td>
+                       <td>{{ this.caption }}</td>
+                   </tr>
+
+                   <tr>
+                       <td>Tags</td>
+                       <td>{{ this.tags }}</td>
+                   </tr>
+
+                   <tr>
+                       <td>Coordinates</td>
+                       <td>{{ this.lat }}, {{ this.lng }}</td>
+                   </tr>
+            </table>
 
             <h1>
                 {{ name }}
@@ -44,16 +66,17 @@
 
 {{#ifcontains dataType "form_"}}
     <div class="card-site-field">
-        <table>
 
-            {{#each fields}}
-                <tr>
-                    <td>{{ this.col_alias }}</td>
-                    <td>{{ this.val }}</td>
-                </tr>
-            {{/each}}
-        </table>
         <a href="#/{{ dataType }}/{{id}}">
+            <table>
+
+                {{#each fields}}
+                    <tr>
+                        <td>{{ this.col_alias }}</td>
+                        <td>{{ this.val }}</td>
+                    </tr>
+                {{/each}}
+            </table>
 
             <h1>
                 {{ name }}

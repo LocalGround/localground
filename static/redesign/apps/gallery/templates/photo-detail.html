@@ -1,5 +1,6 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
+    <h4>Media Details</h4>
     <img src="{{ path_medium }}" />
     <div class = "section">
         <h3>{{ name }}</h3> <p>{{ caption }}</p>
@@ -13,8 +14,14 @@
 
 <!-- EDIT MODE -->
 {{#ifequal mode "edit"}}
-
-    <h4>Media Details</h4>
+    <h4>
+        {{#if id}}
+        Edit
+        {{else}}
+        Add New
+        {{/if}}
+        Media Details
+    </h4>
     <img src="{{ path_medium }}" />
 
     <div id="model-form">
@@ -30,8 +37,6 @@
     <div class = "save-options">
         <button class="save-model button-primary">Save</button>
         <button class="view-mode button-tertiary">Preview</button>
-        <button class="view-mode button-tertiary button-warning delete-model">Delete</button>
+        <button class="button-tertiary button-warning delete-model">Delete</button>
     </div>
 {{/ifequal}}
-
-
