@@ -2,8 +2,7 @@ define([
     "backbone",
     "marionette",
     "handlebars",
-    "text!../templates/create-media.html",
-    "form"
+    "text!../templates/create-media.html"
 ], function (Backbone, Marionette, Handlebars, CreateMediaTemplate) {
     'use strict';
 
@@ -15,7 +14,9 @@ define([
     var CreateMediaView = Marionette.ItemView.extend({
         template: Handlebars.compile(CreateMediaTemplate),
         initialize: function (opts) {
-
+            _.extend(this, opts);
+            console.log(this.template);
+            this.render();
         }
     });
     return CreateMediaView;
