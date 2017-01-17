@@ -16,8 +16,9 @@
         </select>
     {{/ifequal}}
 
-	<button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Site Types</button>
+
     {{#ifequal activeTab "sites"}}
+		<button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Site Types</button>
         {{#ifequal screenType "gallery"}}
             <a id="add-site" class="button-tertiary" href="#/{{dataType}}/new"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Site</a>
         {{/ifequal}}
@@ -27,6 +28,8 @@
     {{/ifequal}}
 
 	{{#ifequal activeTab "media"}}
+	    <!-- the id of media-type is not working -->
+		<button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Media Types</button>
 		{{#ifequal screenType "gallery"}}
 			<a id="add-media" class="button-tertiary" href="#/{{dataType}}/new"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Media</a>
 		{{/ifequal}}

@@ -5,10 +5,12 @@ define([
     "marionette",
     "collections/forms",
     "apps/gallery/views/create-form",
+    "apps/gallery/views/create-media",
     "apps/gallery/views/form-list",
     "lib/modals/modal",
     "text!../templates/toolbar-dataview.html"
-], function (_, $, Handlebars, Marionette, Forms, CreateForm, FormList, Modal, ToolbarTemplate) {
+], function (_, $, Handlebars, Marionette, Forms, CreateForm, /*CreateMedia,*/
+             FormList, Modal, ToolbarTemplate) {
     "use strict";
     var ToolbarDataView = Marionette.ItemView.extend({
         /*
@@ -20,6 +22,7 @@ define([
             'click #toolbar-clear': 'clearSearch',
             'change .media-type': 'changeDisplay',
             'click #add-data' : 'showFormList',
+            'click #show-media-type' : 'showMediaTypeForm',
             'click #add-row' : 'triggerAddRow'
         },
         modal: null,
@@ -42,9 +45,9 @@ define([
             Marionette.ItemView.prototype.initialize.call(this);
             this.template = Handlebars.compile(ToolbarTemplate);
 
-            // Trying to get the listener to be correct
-            // I am not sure yet on how it properly works
+            // Collection of listeners
             this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
+            this.listenTo(this.app.vent, 'show-media-type', this.showMediaTypeForm);
             this.listenTo(this.app.vent, 'tab-switch', this.changeMode);
             this.listenTo(this.app.vent, 'show-form', this.showCreateForm);
             this.listenTo(this.app.vent, 'show-form-list', this.showFormList);
@@ -164,6 +167,32 @@ define([
             this.modal.display_SaveButton();
             this.modal.show();
         }
+        /*
+        showMediaTypeForm: function (opts) {
+            opts = opts || {};
+            var createMedia = new CreateMedia({
+                    app: this.app,
+                    model: opts.model
+                }),
+                title = "Create New Media Collection";
+            if (opts.model) {
+                title = "Update " + opts.model.get("name") + " Settings";
+            }
+            this.modal.update({
+                view: createForm,
+                title: title,
+                width: 500,
+                showSaveButton: true,
+                showDeleteButton: opts.model,
+                // bind the scope of the save function to the source view:
+                saveFunction: createMedia.saveFormSettings.bind(createMedia),
+                deleteFunction: createMedia.deleteForm.bind(createMedia)
+            });
+            this.modal.display_DeleteButton();
+            this.modal.display_SaveButton();
+            this.modal.show();
+        }
+        */
     });
     return ToolbarDataView;
 });
