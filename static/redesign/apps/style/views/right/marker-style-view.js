@@ -11,27 +11,6 @@ define(["marionette",
         var MarkerStyleView = Marionette.CompositeView.extend({
 
             template: Handlebars.compile(MarkerStyleTemplate),
-            model: new Layer(
-                    {
-                        id: 1,
-                        map_id: 1,
-                        name: "flowers",
-                        source: "form_11",
-                        symbols: [{
-                            color: "#428BCA",
-                            width: 30,
-                            shape: "circle",
-                            rule: "flower_type = 'daisy'",
-                            title: "Daisy"
-                        }, {
-                            color: "#FF0000",
-                            width: 30,
-                            shape: "square",
-                            rule: "flower_type = 'rose'",
-                            title: "Rose"
-                        }]
-                    }
-            ),
             
             getChildView: function () {
                 return Marionette.ItemView.extend({
@@ -54,23 +33,20 @@ define(["marionette",
 
             initialize: function (opts) {
                 this.app = opts.app;
-                this.collection = new Backbone.Collection(this.model.get("symbols"));
-               
+                this.listenTo(this.app.vent, 'send-collection', this.displaySymbols);               
                 /**
                  * here is some fake data until the
                  * /api/0/layers/ API Endpoint gets built. Note
                  * that each layer can have more than one symbol
                  */
-             //   this.listenTo(this.app.vent, 'init-collection', this.displayLayers);
-             //   this.listenTo(this.app.vent, 'change-map', this.displayLayers);
             },
-            displayLayers: function (map) {
-                var mapId = map.get("id");
-                if (!this._collection) {
-                    //pretend this is the server query...
-                    this._collection = new Layers(fakeData);
-                }
-                this.collection = new Layers(this._collection.where({map_id: mapId}));
+            
+            displaySymbols: function (layer) {
+                console.log(layer);
+                this.model = layer;
+                this.collection = new Backbone.Collection(this.model.get("symbols"));                
+                var symbolsSource = layer.get("source");
+                console.log(symbolsSource);
                 this.render();
             }
 

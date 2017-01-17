@@ -118,17 +118,28 @@ define(["marionette",
                     },
                     template: Handlebars.compile(LayerItemTemplate),
                     modelEvents: {},
-                    events: {},
+                    events: {
+                        //edit event here, pass the this.model to the right panel
+                        "click .edit" : "sendCollection"
+                        },
                     tagName: "div",
                     className: "column",
                     templateHelpers: function () {
                         return {
                             test: "123"
                         };
+                    },
+                    
+                    sendCollection: function() {
+                        this.app.vent.trigger("send-collection", this.model);
                     }
                 });
             },
             childViewContainer: "#layers",
+            
+            childViewOptions: function () {
+              return { app: this.app };  
+            },
 
             initialize: function (opts) {
                 this.app = opts.app;

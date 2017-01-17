@@ -37,7 +37,7 @@ define(["marionette",
                 var id = $select.val();
                 console.log($select.val());
                 console.log("map change");
-                
+                                                                                           
                 this.app.vent.trigger("change-map", this.collection.get(id));
             }
 

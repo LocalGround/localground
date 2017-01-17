@@ -251,3 +251,7 @@ ul {
     border-color: #e7e7e7;
     padding: 4px 0;
 }
+
+.edit {
+    float: right
+}
