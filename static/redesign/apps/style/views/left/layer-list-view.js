@@ -101,8 +101,8 @@ var fakeData = [
 define(["marionette",
         "handlebars",
         "collections/layers",
-        "text!../templates/layer-list.html",
-        "text!../templates/layer-item.html"
+        "text!../../templates/left/layer-list.html",
+        "text!../../templates/left/layer-item.html"
     ],
     function (Marionette, Handlebars, Layers, LayerListTemplate, LayerItemTemplate) {
         'use strict';

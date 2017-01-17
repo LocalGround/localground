@@ -1,10 +1,10 @@
 define(["marionette",
         "handlebars",
-        "apps/style/views/select-map-view",
-        "apps/style/views/layer-list-view",
-        "apps/style/views/skin-view",
-        "apps/style/views/panel-styles-view",
-        "text!../templates/left-panel-layout.html"
+        "apps/style/views/left/select-map-view",
+        "apps/style/views/left/layer-list-view",
+        "apps/style/views/left/skin-view",
+        "apps/style/views/left/panel-styles-view",
+        "text!../../templates/left/left-panel-layout.html"
     ],
     function (Marionette, Handlebars, SelectMapView, LayerListView, SkinView, PanelStylesView, LeftPanelLayoutTemplate) {
         'use strict';

@@ -1,7 +1,7 @@
 define(["marionette",
         "handlebars",
         "collections/maps",
-        "text!../templates/select-map.html"
+        "text!../../templates/left/select-map.html"
     ],
     function (Marionette, Handlebars, Maps, MapTemplate) {
         'use strict';

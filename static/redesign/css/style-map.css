@@ -29,8 +29,10 @@
     overflow-y: auto;
 }
 #right-panel {
-    width: 20%;
+    width: 400px;
     overflow: hidden;
+    overflow: scroll;
+    height:100%;
 }
 #map-panel {
     width: 60%;
@@ -165,4 +167,87 @@ section {
 
 table {
     font-size: 12px;
+}
+
+.visual-edit {
+    padding: 12px;
+    background-color: #eceef3;
+    border: 1px solid #d4d6db;
+    position: relative;
+    border-radius: 3px;
+    margin-bottom: 20px;
+}
+
+table.color-properties {
+    width: 100%;
+}
+
+tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+
+table.color-properties td:first-child {
+    text-align: right;
+    width: 33%;
+    padding: 6px;
+}
+
+ul {
+    font-size: 12px;
+    padding-left: 0;
+}
+
+.toggle-buttons ul {
+    text-align: right;
+    margin: 0;
+}
+
+.toggle-buttons li.active {
+    margin: 8px 0;
+    background-color: rgb(123, 155, 225);
+    color: white;
+}
+
+.toggle-buttons li.active a {
+    color: white;
+}
+
+.marker-style-tabs:last-child {
+    display: inline-block;
+    border-radius: 3px 0 0 3px;
+}
+.marker-style-tabs:first-child {
+    display: inline-block;
+    border-radius: 3px 0 0 3px;
+}
+.toggle-buttons li {
+    padding: 4px 6px;
+    margin: 0;
+    display: inline-block;
+    list-style: none;
+    background-color: white;
+}
+
+.symbols-table {
+    background-color: white;
+    width: 100%;
+    border: solid;
+    border-width: 1px;
+    border-spacing: 0;
+    border-color: #e4e5eb;
+}
+
+.symbols-table td {
+    border-bottom: solid;
+    border-width: 1px;
+    border-color: #e7e7e7;
+    padding: 4px 0;
 }
