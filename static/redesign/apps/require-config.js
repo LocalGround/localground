@@ -32,7 +32,7 @@ require.config({
         'jquery': '//code.jquery.com/jquery-1.8.0.min',
         'jquery.bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min',
         'jquery.ui': '//code.jquery.com/ui/1.12.1/jquery-ui.min',
-        'jquery.ui.widget': 'external/uploader/jquery.ui.widget',
+        'jquery.ui.widget': 'external/jquery.ui.widget',
         //'jquery.fileupload': 'external/uploader/jquery.fileupload',
         //new uploader
         'jquery.fileupload-ip': 'external/jquery.fileupload-ip',
@@ -68,7 +68,8 @@ require.config({
             deps: ['jquery']
         },
         'jquery.ui': ['jquery'],
-        'jquery.fileupload': ['jquery.ui'],
+        'jquery.ui.widget': ['jquery.ui'],
+        'jquery.fileupload': ['jquery.ui.widget'],
         'backgrid': {
             deps: ['backbone'],
             exports: 'Backgrid'

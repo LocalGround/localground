@@ -83,6 +83,7 @@ define(["jquery"],
                 if (!this.csrfSafeMethod(settings.type) && this.sameOrigin(settings.url)) {
                     var csrf = this.getCookie('csrftoken');
                     xhr.setRequestHeader("X-CSRFToken", csrf);
+                    xhr.setRequestHeader("HTTP_X_CSRFTOKEN", csrf);
                 }
             },
             getCookie: function (name) {
