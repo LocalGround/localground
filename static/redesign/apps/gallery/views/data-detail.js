@@ -7,8 +7,11 @@ define([
     "text!../templates/audio-detail.html",
     "text!../templates/marker-detail.html",
     "text!../templates/record-detail.html",
+    "apps/gallery/views/data-list",
     "form" //extends Backbone
-], function (Backbone, _, Handlebars, Marionette, PhotoTemplate, AudioTemplate, MarkerTemplate, RecordTemplate) {
+], function (Backbone, _, Handlebars, Marionette,
+             PhotoTemplate, AudioTemplate, MarkerTemplate, RecordTemplate,
+             DataList) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -31,11 +34,19 @@ define([
         },
         showMediaBrowser: function () {
             alert("show media browser");
+            // That is a good small start,
+            // but there has to be a way to
+            // utilize aspects of data view so that
+            // it can show a collection of photos already stored in media
+            var data_list = new DataList({
+                app: this.app
+            });
+            console.log(data_list);
             this.app.vent.trigger("show-modal", {
                 title: 'Media Browser',
                 width: 800,
                 height: 400,
-                view: null //pass new view to modal
+                view: data_list //pass new view to modal
             });
         },
         initialize: function (opts) {
