@@ -6,7 +6,7 @@ define ([
     "collections/photos",
     "collections/audio",
     "text!../templates/thumb.html",
-    "text!../templates/thumb-list.html"],
+    "text!../templates/media-list.html"],
     function ($, _, Marionette, Handlebars, Photos, Audio,
               ThumbTemplate, ListTemplate) {
         'use strict';
@@ -17,6 +17,7 @@ define ([
         var BrowserView = Marionette.CompositeView.extend({
 
             //view that controls what each gallery item looks like:
+            currentMedia: "photos",
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
@@ -28,17 +29,30 @@ define ([
                     },
                     events: {
                         "click .card-img-preview" : "selectedClass",
-                        "click .card-site-field" : "selectedClass"
+                        "click .card-site-field" : "selectedClass",
+                        "click #media-audio" : "changeToAudio",
+                        "click #media-photos" : "changeToPhotos"
                     },
                     selectedClass : function () {
                         $(".column").removeClass("selected-card");
                         this.$el.toggleClass("selected-card");
                     },
+
+                    changeToAudio: function(){
+                        this.currentMedia = "audio";
+                        this.displayMedia();
+                    },
+
+                    changeToPhotos: function(){
+                        this.currentMedia = "photos";
+                        this.displayMedia();
+                    },
+
                     tagName: "div",
                     className: "column",
                     templateHelpers: function () {
                         return {
-                            dataType: "photos"
+                            dataType: this.currentMedia
                         };
                     }
                 });
@@ -72,7 +86,12 @@ define ([
             },
 
             displayMedia: function () {
-                this.collection = new Photos();
+                if (this.currentMedia = "photos"){
+                    this.collection = new Photos();
+                }
+                else if (this.currentMedia = "audio"){
+                    this.collection = new Audio();
+                }
                 this.collection.fetch({ reset: true });
             }
 
