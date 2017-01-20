@@ -3,13 +3,14 @@ define([
     "underscore",
     "handlebars",
     "marionette",
+    "apps/gallery/views/media_browser",
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
     "text!../templates/marker-detail.html",
     "text!../templates/record-detail.html",
     "apps/gallery/views/data-list",
     "form" //extends Backbone
-], function (Backbone, _, Handlebars, Marionette,
+], function (Backbone, _, Handlebars, Marionette, MediaBrowser,
              PhotoTemplate, AudioTemplate, MarkerTemplate, RecordTemplate,
              DataList) {
     "use strict";
@@ -33,7 +34,6 @@ define([
             }
         },
         showMediaBrowser: function () {
-            alert("show media browser");
             // That is a good small start,
             // but there has to be a way to
             // utilize aspects of data view so that
@@ -46,15 +46,15 @@ define([
               I am likely to set default collection to photos
               by assigning its data type to be photos
             */
-            var data_list = new DataList({
+            var mediaBrowser = new MediaBrowser({
                 app: this.app
             });
-            console.log(data_list);
+            console.log(mediaBrowser);
             this.app.vent.trigger("show-modal", {
                 title: 'Media Browser',
                 width: 800,
                 height: 400,
-                view: data_list //pass new view to modal
+                view: mediaBrowser //pass new view to modal
             });
         },
         initialize: function (opts) {
