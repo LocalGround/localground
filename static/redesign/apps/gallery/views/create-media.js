@@ -70,7 +70,6 @@ define([
             this.$el.find("#dropzone").bind({
                 dragover: self.dragover,
                 drop: function (e) {
-                    console.log("dropped!!!");
                     e.stopPropagation();
                     e.preventDefault();
                     return false;
@@ -78,10 +77,9 @@ define([
             });
         },
         dragover: function (e) {
-            console.log('dragover');
             e.stopPropagation();
             e.preventDefault();
-            var dropZone = $('#dropzone'),
+            var dropZone = this.$el.find('#dropzone'),
                 timeout = window.dropZoneTimeout;
             if (!timeout) {
                 dropZone.addClass('in hover');
@@ -130,7 +128,7 @@ define([
         getFormData: function () {
             return {
                 project_id: this.app.selectedProject.id,
-                csrfmiddlewaretoken: this.app.getCookie('csrftoken')
+                //csrfmiddlewaretoken: this.app.getCookie('csrftoken')
             };
         },
         formatFileSize: function (bytes) {
@@ -251,7 +249,6 @@ define([
 
         onAdd: function (e, data) {
             var self = this;
-            console.log("addded", e, data);
             $('#nothing-here').hide();
             //validate files:
             self.validate(data);
@@ -284,7 +281,6 @@ define([
                         $('<div class="progress"></div>')
                             .append(
                                 $('<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="width: 10%;"></div>')
-                                    .append($('<span class="sr-only">10% Complete</span>'))
                             )
                     );
                 file.context = $thediv;
