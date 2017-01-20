@@ -134,6 +134,15 @@
     text-align: center;
     overflow: hidden;
 }
+.img-container {
+    width: 145px;
+    max-height: 140px;
+    min-height: 100px;
+    overflow: hidden;
+}
+.preview {
+    width: 145px;
+}
 .audio-holder, .error-holder {
     display: inline-block;
     width: 145px;
@@ -235,4 +244,8 @@ span.plus {
     -o-transition: all 0.3s ease-out;
     transition: all 0.3s ease-out;
     opacity: 1;
+}
+
+.success-message, .failure-message, warning-message {
+    display: none;
 }

@@ -3,10 +3,11 @@ define([
     "marionette",
     "handlebars",
     "text!../templates/create-media.html",
+    "text!../templates/new-media.html",
     'load-image',
     'canvas-to-blob',
     'jquery.fileupload-ip'
-], function ($, Marionette, Handlebars, CreateMediaTemplate, loadImage) {
+], function ($, Marionette, Handlebars, CreateMediaTemplate, NewMediaItemTemplate, loadImage) {
     'use strict';
 
     /*
@@ -95,40 +96,25 @@ define([
         errorCount: 0,
         successCount: 0,
         stop: function () {
-            var self = this,
-                msg;
-            //fires after all uploads are finished:
-            if (self.successCount > 0) {
-                if (self.isIframe) {
-                    msg = 'Your files have finished uploading. Close this window to refresh the map. ';
-                    msg += 'Then, geo-reference your files and give them titles and captions';
-                    $('#success-message-text').html(msg);
-                } else {
-                    msg = 'Your files have finished uploading. You may now add ';
-                    msg += 'titles & captions to your files ';
-                    msg += 'or geo-reference you files in the <a id="edit-map-link" href="#">map editor</a>.';
-                    $('#success-message-text').html(msg);
-                    $('#edit-map-link').attr('href', '/maps/edit/new/');
-                }
-                $('#success').show();
+            if (this.successCount > 0) {
+                this.$el.find('.success-message').show();
             } else {
-                $('#success').hide();
+                this.$el.find('.success-message').hide();
             }
-            if (self.errorCount > 0) {
-                $('#error').show();
-                $('#error-message-text').html('There were errors when uploading your files.');
+            if (this.errorCount > 0) {
+                this.$el.find('.failure-message').show();
             } else {
-                $('#error').hide();
+                this.$el.find('.failure-message').show();
             }
             //reset counters:
-            self.errorCount = 0;
-            self.successCount = 0;
+            this.errorCount = 0;
+            this.successCount = 0;
         },
 
         getFormData: function () {
             return {
                 project_id: this.app.selectedProject.id,
-                //csrfmiddlewaretoken: this.app.getCookie('csrftoken')
+                csrfmiddlewaretoken: this.app.getCookie('csrftoken')
             };
         },
         formatFileSize: function (bytes) {
@@ -176,6 +162,7 @@ define([
             return valid;
         },
         renderBlob: function (file) {
+            console.log(file.context);
             var self = this;
             return ((loadImage && loadImage(
                 file,
@@ -191,24 +178,20 @@ define([
         },
 
         showOmittedFiles: function (data) {
-            var omitted = 0;
+            var omitted = 0,
+                messages = [],
+                message = "The following files were ignored because they are not supported  by the file uploader:<br>";
             $.each(data.files, function (index, file) {
                 if (file.error) {
                     if (file.error == 'acceptFileTypes') {
                         ++omitted;
-                        if ($('#warning-message-text').html().length > 0) {
-                            $('#warning-message-text').append(', ');
-                        } else {
-                            $('#warning-message-text').append(
-                                'The following files were ignored because they are not supported  by the file uploader:<br>'
-                            );
-                        }
-                        $('#warning-message-text').append(file.name + ": " + file.type);
+                        messages.push(file.name + ": " + file.type);
                     }
                 }
             });
             if (omitted > 0) {
-                $('#warning').show();
+                message += messages.join(", ");
+                this.$el.find('.warning-message').html(message).show();
             }
         },
 
@@ -248,7 +231,9 @@ define([
         },
 
         onAdd: function (e, data) {
-            var self = this;
+            var self = this,
+                template = Handlebars.compile(NewMediaItemTemplate),
+                $thediv;
             $('#nothing-here').hide();
             //validate files:
             self.validate(data);
@@ -260,7 +245,16 @@ define([
                     return true;
                 }
                 data.url = self.getApiUrl(file.ext);
-                var $thediv = $('<div />')
+                $thediv = $(template({
+                    file_name: self.formatFilename(file.name),
+                    file_size: self.formatFileSize(file.size)
+                }));
+                file.context = $thediv;
+                self.showPreview(file);
+                self.$el.find('#dropzone').prepend($thediv);
+                console.log($thediv);
+                
+                /***$('<div />')
                     .addClass('file-container')
                     .append($('<div class="img-polaroid thumbnail" />')
                         .append(
@@ -284,6 +278,7 @@ define([
                             )
                     );
                 file.context = $thediv;
+                
                 self.showPreview(file);
                 $('#dropzone').prepend($thediv);
                 $thediv.find('.img-polaroid').append(
@@ -291,7 +286,7 @@ define([
                         self.formatFilename(file.name) + '<br>' + self.formatFileSize(file.size)
                     )
                 );
-                file.context = $thediv;
+                */
                 data.media_file = data.files;
                 data.submit()
                     .error(function (result, textStatus, jqXHR) {
