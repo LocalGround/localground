@@ -86,10 +86,10 @@ define ([
             },
 
             displayMedia: function () {
-                if (this.currentMedia = "photos"){
+                if (this.currentMedia == "photos"){
                     this.collection = new Photos();
                 }
-                else if (this.currentMedia = "audio"){
+                else if (this.currentMedia == "audio"){
                     this.collection = new Audio();
                 }
                 this.collection.fetch({ reset: true });
