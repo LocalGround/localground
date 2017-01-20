@@ -6,7 +6,7 @@ from localground.apps.site.managers.base import BaseMixin, ObjectMixin, GenericL
 #    http://djangosnippets.org/snippets/2114/
 
 
-class MarkerMixin(ObjectMixin):
+class MarkerMixin():
 
     def get_objects_with_counts(
             self,
@@ -38,6 +38,9 @@ class MarkerMixin(ObjectMixin):
         from localground.apps.site import models
         from django.contrib.contenttypes.models import ContentType
         suffix = sql_function.split("_")[0] #should either be "count" or "array"
+        content_type_id = q.model.get_content_type().id
+        table_name = q.model._meta.db_table
+        #raise Exception(table_name)
         #raise Exception(suffix)
 
         child_classes = [models.Photo, models.Audio, models.MapImage]
@@ -48,22 +51,23 @@ class MarkerMixin(ObjectMixin):
             select[cls.model_name + '_' + suffix] = '''
                 SELECT %s(entity_id) FROM site_genericassociation e
                 WHERE e.entity_type_id = %s AND e.source_type_id = %s AND
-                e.source_id = site_marker.id
-                ''' % (sql_function, cls.get_content_type().id, models.Marker.get_content_type().id)
+                e.source_id = %s.id
+                ''' % (sql_function, cls.get_content_type().id, content_type_id, table_name)
 
         # record count is everything that's attached to a marker that's not
         # a Photo, Audio, or Map Image
         select['record_' + suffix] = '''
                 SELECT %s(entity_id) FROM site_genericassociation e
                 WHERE e.entity_type_id not in (%s) AND e.source_type_id = %s AND
-                e.source_id = site_marker.id
+                e.source_id = %s.id
                 ''' % (sql_function,
             ','.join([
                 str(ct.id) for ct in
                 ContentType.objects.get_for_models(*child_classes)
                 .values()
             ]),
-            models.Marker.get_content_type().id
+            content_type_id,
+            table_name
         )
         return q.extra(select)    
 
@@ -99,7 +103,7 @@ class MarkerMixin(ObjectMixin):
 #    pass
 
 
-class MarkerManager(GeoManager, MarkerMixin):
+class MarkerManager(GeoManager, ObjectMixin, MarkerMixin):
     #def get_queryset(self):
     #    return MarkerQuerySet(self.model, using=self._db)
     pass

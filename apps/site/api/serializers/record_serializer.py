@@ -23,6 +23,8 @@ class BaseRecordSerializer(serializers.ModelSerializer):
     overlay_type = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField('get_detail_url')
     children = serializers.SerializerMethodField()
+    photo_count = serializers.SerializerMethodField()
+    audio_count = serializers.SerializerMethodField()
 
     def get_fields(self, *args, **kwargs):
         fields = super(BaseRecordSerializer, self).get_fields(*args, **kwargs)
@@ -44,6 +46,18 @@ class BaseRecordSerializer(serializers.ModelSerializer):
             children['audio'] = self.audio
         return children
     
+    def get_photo_count(self, obj):
+        try:
+            return obj.photo_count
+        except:
+            return None
+    
+    def get_audio_count(self, obj):
+        try:
+            return obj.audio_count
+        except:
+            return None
+        
     def get_photos(self, obj):
         from localground.apps.site.api.serializers import PhotoSerializer
 
@@ -162,14 +176,16 @@ def create_record_serializer(form, **kwargs):
     if display_field is not None:
         field_names.append('display_name') 
     if kwargs.get('show_detail'):
-        field_names.append('children')    
+        field_names.append('children')
+    else:
+        field_names.extend(['photo_count', 'audio_count'])
     
     TableModel = form.TableModel
     class Meta:
         model = TableModel
         fields = BaseRecordSerializer.Meta.fields + tuple(field_names) + \
             tuple(photo_fields) + tuple(audio_fields) 
-        read_only_fields = ('display_name', 'children')
+        read_only_fields = ('display_name', 'children', 'photo_count', 'audio_count')
     
     attrs = {
         '__module__': 'localground.apps.site.api.serializers.FormDataSerializer',
