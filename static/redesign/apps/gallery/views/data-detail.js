@@ -38,6 +38,14 @@ define([
             // but there has to be a way to
             // utilize aspects of data view so that
             // it can show a collection of photos already stored in media
+
+            /*
+              I also made a js class that is like data-list.js but has only
+              photos and audio as options.
+
+              I am likely to set default collection to photos
+              by assigning its data type to be photos
+            */
             var data_list = new DataList({
                 app: this.app
             });
