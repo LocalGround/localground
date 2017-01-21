@@ -1,15 +1,34 @@
-<div class="file-container">
-    <div class="img-polaroid thumbnail">
-        <div class="img-container">
-            <div class="badge success-icon">
-                <i class="fa fa-check"></i>
+{{#ifequal mode "begin"}}
+    <div class="file-container">
+        <div class="img-polaroid thumbnail">
+            <div class="img-container">
+                <img class="preview" />
             </div>
-            <img class="preview" />
+            <p>
+                {{ file_name }}<br>
+                {{ file_size }}<br>
+            </p>
         </div>
-        <p>
-            {{ file_name }}<br>
-            {{ file_size }}<br>
-            <a href="#" class=".delete">delete</a>
-        </p>
+        <div class="progress">
+            <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="width: 10%;"></div>
+        </div>
     </div>
-</div>
+{{/ifequal}}
+
+{{#ifequal mode "end"}}
+    <div class="file-container">
+        <div class="img-polaroid thumbnail">
+            <div class="img-container">
+                <div class="badge success-icon">
+                    <i class="fa fa-check"></i>
+                </div>
+                <img class="preview" />
+            </div>
+            <p>
+                {{ file_name }}<br>
+                {{ file_size }}<br>
+                <a href="#" class=".delete">delete</a>
+            </p>
+        </div>
+    </div>
+{{/ifequal}}

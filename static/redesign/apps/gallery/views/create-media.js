@@ -17,6 +17,13 @@ define([
     */
     var CreateMediaView = Marionette.ItemView.extend({
         template: Handlebars.compile(CreateMediaTemplate),
+        events: {
+            'click #upload-button': 'triggerFileInputButton'
+        },
+        triggerFileInputButton: function (e) {
+            this.$el.find("#fileupload").trigger('click');
+            e.preventDefault();
+        },
         defaults: {
             mediaType: "default",
             acceptFileTypes: 'png, jpg, jpeg, gif, audio\/x-m4a, m4a, mp3, m4a, mp4, mpeg, video\/3gpp, 3gp, aif, aiff, ogg, wav',
@@ -69,7 +76,7 @@ define([
 
             //section for uploading by dragging files from your desktop:
             this.$el.find("#dropzone").bind({
-                dragover: self.dragover,
+                dragover: that.dragover.bind(this),
                 drop: function (e) {
                     e.stopPropagation();
                     e.preventDefault();
@@ -96,6 +103,7 @@ define([
         errorCount: 0,
         successCount: 0,
         stop: function () {
+            console.log(this.successCount, this.errorCount);
             if (this.successCount > 0) {
                 this.$el.find('.success-message').show();
             } else {
@@ -104,7 +112,7 @@ define([
             if (this.errorCount > 0) {
                 this.$el.find('.failure-message').show();
             } else {
-                this.$el.find('.failure-message').show();
+                this.$el.find('.failure-message').hide();
             }
             //reset counters:
             this.errorCount = 0;
@@ -151,10 +159,10 @@ define([
             return null;
         },
         validate: function (data) {
-            var self = this,
+            var that = this,
                 valid = !!data.files.length;
             $.each(data.files, function (index, file) {
-                file.error = self.hasError(file);
+                file.error = that.hasError(file);
                 if (file.error) {
                     valid = false;
                 }
@@ -163,15 +171,15 @@ define([
         },
         renderBlob: function (file) {
             console.log(file.context);
-            var self = this;
+            var that = this;
             return ((loadImage && loadImage(
                 file,
                 function (img) {
                     file.context.find('.preview').attr('src', img.toDataURL("image/jpeg"));
                 },
                 {
-                    maxWidth: self.options.previewMaxWidth,
-                    maxHeight: self.options.previewMaxHeight,
+                    maxWidth: that.options.previewMaxWidth,
+                    maxHeight: that.options.previewMaxHeight,
                     canvas: true
                 }
             )));
@@ -231,72 +239,38 @@ define([
         },
 
         onAdd: function (e, data) {
-            var self = this,
+            var that = this,
                 template = Handlebars.compile(NewMediaItemTemplate),
                 $thediv;
             $('#nothing-here').hide();
             //validate files:
-            self.validate(data);
-            self.showOmittedFiles(data);
+            that.validate(data);
+            that.showOmittedFiles(data);
             $.each(data.files, function (index, file) {
                 if (file.error) {
                     //continue to next iteration: return true;
-                    self.showInitMessage();
+                    that.showInitMessage();
                     return true;
                 }
-                data.url = self.getApiUrl(file.ext);
+                data.url = that.getApiUrl(file.ext);
                 $thediv = $(template({
-                    file_name: self.formatFilename(file.name),
-                    file_size: self.formatFileSize(file.size)
+                    file_name: that.formatFilename(file.name),
+                    file_size: that.formatFileSize(file.size),
+                    mode: "begin"
                 }));
                 file.context = $thediv;
-                self.showPreview(file);
-                self.$el.find('#dropzone').prepend($thediv);
-                console.log($thediv);
-                
-                /***$('<div />')
-                    .addClass('file-container')
-                    .append($('<div class="img-polaroid thumbnail" />')
-                        .append(
-                            $('<div class="img-container" />')
-                                .css({
-                                    width: 145,
-                                    'max-height': 140,
-                                    'min-height': 100,
-                                    overflow: 'hidden'
-                                })
-                                .append(
-                                    $('<img />').css({
-                                        width: 145
-                                    }).addClass('preview')
-                                )
-                        ))
-                    .append(
-                        $('<div class="progress"></div>')
-                            .append(
-                                $('<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="width: 10%;"></div>')
-                            )
-                    );
-                file.context = $thediv;
-                
-                self.showPreview(file);
-                $('#dropzone').prepend($thediv);
-                $thediv.find('.img-polaroid').append(
-                    $('<p />').html(
-                        self.formatFilename(file.name) + '<br>' + self.formatFileSize(file.size)
-                    )
-                );
-                */
+                that.showPreview(file);
+                that.$el.find('#dropzone').prepend($thediv);
+
                 data.media_file = data.files;
                 data.submit()
                     .error(function (result, textStatus, jqXHR) {
-                        self.handleServerError(data.files[0], result, textStatus, jqXHR);
+                        that.handleServerError(data.files[0], result, textStatus, jqXHR);
                     });
                 return true;
             });
         },
         handleSuccess: function (file) {
-            console.log(file);
             this.showPreview(file);
         },
 
@@ -331,7 +305,7 @@ define([
                         ':</strong><br>' + result.responseText);
             console.error('Server Error: ' + result.responseText);
             file.context.find('.progress').remove();
-            self.errorCount += 1;
+            this.errorCount += 1;
     
             $('#error').show();
             $('#error-message-text').html('There were errors when uploading your files.');
@@ -374,9 +348,7 @@ define([
             $success = $('<div class="badge success-icon" />')
                 .append($('<i >').addClass('fa fa-check'));
             file.context.find('.img-container').prepend($success);
-            file.context.find('p')
-                .append('<br />').append($delete).append(' | <a href="' + this.getProfileUrl(data.files[0].ext) + '">edit</a>');
-            self.successCount += 1;
+            this.successCount += 1;
         }
     });
     return CreateMediaView;

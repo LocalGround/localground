@@ -1,15 +1,12 @@
-<div class="success-message">Your files have finished uploading.</div>
-<div class="failure-message">There were errors when uploading your files. See below.</div>
-<div class="warning-message"></div>
-<span class="btn fileinput-button">
-    +
-    <input id="fileupload" type="file" name="media_file" multiple="">
-</span>
-<div id="dropzone" style="min-height:250px;">
+<div class="alert success-message">Your files have finished uploading.</div>
+<div class="alert failure-message ">There were errors when uploading your files. See below.</div>
+<div class="alert warning-message"></div>
+<div id="dropzone">
     <div id="nothing-here">
-        Drag your <strong>photo &amp; audio files</strong> files here<br />
-        
-            or browse to them using the <span class="plus">+</span> button above.
-        
+        <h4>Drag files here or</h4>
+        <button type="button" class="button-tertiary" id="upload-button">
+            Select files from your computer
+        </button>        
     </div>
 </div>
+<input id="fileupload" type="file" name="media_file" multiple="">
