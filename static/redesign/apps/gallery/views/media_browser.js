@@ -82,16 +82,19 @@ define ([
 
             displayMedia: function () {
                 console.log(this.currentMedia);
-                if (this.currentMedia == "photos"){
+                if (this.currentMedia == "photos") {
                     this.collection = new Photos();
                 }
-                else if (this.currentMedia == "audio"){
+                else if (this.currentMedia == "audio") {
                     this.collection = new Audio();
                 }
+                // after you re-initialize the collection, you have to
+                // attach all of the Marionette default event handlers
+                // in order for this to work:
+                this._initialEvents();
                 this.collection.fetch({ reset: true });
             },
-
-            changeToAudio: function(){
+            changeToAudio: function () {
                 this.currentMedia = "audio";
                 this.displayMedia();
             },
