@@ -69,7 +69,19 @@ define ([
 
             events: {
                 "click #media-audio" : "changeToAudio",
-                "click #media-photos" : "changeToPhotos"
+                "click #media-photos" : "changeToPhotos",
+                'click': "checkForSelection"
+            },
+            
+            checkForSelection: function (e) {
+                if (e.shiftKey) {
+                    console.log("Shift + Click");
+                } else if (e.metaKey) {
+                    console.log("Command + Click");
+                } else {
+                    console.log("Other Click");
+                }
+                e.preventDefault();
             },
 
             hideLoadingMessage: function () {
