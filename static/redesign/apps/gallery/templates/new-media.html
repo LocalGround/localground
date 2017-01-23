@@ -2,7 +2,7 @@
     <div class="file-container">
         <div class="img-polaroid thumbnail">
             <div class="img-container">
-                <img class="preview" />
+                <img class="preview" src="{{ imageSerial }}" />
             </div>
             <p>
                 {{ file_name }}<br>
@@ -22,13 +22,27 @@
                 <div class="badge success-icon">
                     <i class="fa fa-check"></i>
                 </div>
-                <img class="preview" />
+                <img class="preview" src="{{ imageSerial }}" />
             </div>
             <p>
                 {{ file_name }}<br>
                 {{ file_size }}<br>
-                <a href="#" class=".delete">delete</a>
+                <a href="#" class="delete">delete</a>
             </p>
+        </div>
+    </div>
+{{/ifequal}}
+
+{{#ifequal mode "error"}}
+    <div class="file-container">
+        <div class="img-polaroid thumbnail">
+            <div class="img-container">
+                <div class="failure-icon">
+                    <i class="fa fa-exclamation"></i>
+                </div>
+                <img class="preview" src="{{ imageSerial }}" />
+            </div>
+           <div class="error-holder">{{ errorMessage }}</div>
         </div>
     </div>
 {{/ifequal}}

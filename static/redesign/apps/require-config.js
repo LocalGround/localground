@@ -17,7 +17,7 @@ require.config({
         'color-picker-new': 'external/jscolor-updated',
         'color-picker-eyecon': 'external/colorpicker/js/colorpicker',
         'core': 'external/mediator/core-jquery',
-        'form': '//libraries.cdnhttps.com/ajax/libs/backbone-forms/0.14.0/backbone-forms',
+        'form': '//cdnjs.cloudflare.com/ajax/libs/backbone-forms/0.14.1/backbone-forms.min',
         'list': 'external/list.min',
         'google-infobubble': 'external/infobubble',
         'handsontable': 'https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.28.4/handsontable.full.min',
