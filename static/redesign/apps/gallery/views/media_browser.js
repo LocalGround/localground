@@ -33,13 +33,19 @@ define ([
                         "click .card-site-field" : "selectedClass"
                     },
                     selectedClass : function (e) {
-                        if (e.shiftKey){
-                            /*
-                              Needs work so that multiple instances can be selected
-                              in either direction
-                            */
+                        /*if (e.shiftKey){
+                            // Needs work so that multiple instances can be selected
+                            // in either direction
+                            
                             if (this.lastSelectedColumn == null){
-                                this.$el.toggleClass("selected-card");
+                                //this.$el.toggleClass("selected-card");
+                                if (this.$el.hasClass("selected-card")) {
+                                    this.$el.removeClass("selected-card");
+                                    this.model.set("isSelected", false);
+                                } else {
+                                    this.$el.addClass("selected-card");
+                                    this.model.set("isSelected", true);
+                                }
                             } else {
                                 console.log(this.lastSelectedColumn.parent());
                                 console.log(this.lastSelectedColumn.parent().children(".column"));
@@ -53,8 +59,16 @@ define ([
                                 }
                             }
 
-                        } else if (e.metaKey){
-                            this.$el.toggleClass("selected-card");
+                        }
+                        */
+                        if (e.metaKey) {
+                            if (this.$el.hasClass("selected-card")) {
+                                this.$el.removeClass("selected-card");
+                                this.model.set("isSelected", false);
+                            } else {
+                                this.$el.addClass("selected-card");
+                                this.model.set("isSelected", true);
+                            }
                         } else {
                             $(".column").removeClass("selected-card");
                             this.$el.toggleClass("selected-card");
@@ -144,6 +158,16 @@ define ([
                 this.currentMedia = "photos";
                 this.displayMedia();
             },
+
+            addModels: function () {
+                var selectedModels = [];
+                this.collection.each(function (model) {
+                    if (model.get("isSelected")) {
+                        selectedModels.push(model);
+                    }
+                });
+                this.app.vent.trigger('add-models-to-marker', selectedModels);
+            }
 
         });
         return BrowserView;

@@ -54,12 +54,19 @@ define([
                 title: 'Media Browser',
                 width: 800,
                 height: 400,
-                view: mediaBrowser //pass new view to modal
+                view: mediaBrowser,
+                showSaveButton: true,
+                saveFunction: mediaBrowser.addModels.bind(mediaBrowser)
             });
         },
         initialize: function (opts) {
             _.extend(this, opts);
             Marionette.ItemView.prototype.initialize.call(this);
+            this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
+        },
+        attachModels: function (models) {
+            console.log("attach models here:", models);
+            this.app.vent.trigger('hide-modal');
         },
         switchToViewMode: function () {
             this.app.mode = "view";
