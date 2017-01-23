@@ -43,3 +43,6 @@ from localground.apps.site.models.mapimage import MapImage, ImageOpts
 from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video
+
+# styled map
+from localground.apps.site.models.styledmap import StyledMap
