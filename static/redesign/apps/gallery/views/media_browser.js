@@ -29,28 +29,17 @@ define ([
                     },
                     events: {
                         "click .card-img-preview" : "selectedClass",
-                        "click .card-site-field" : "selectedClass",
-                        "click #media-audio" : "changeToAudio",
-                        "click #media-photos" : "changeToPhotos"
+                        "click .card-site-field" : "selectedClass"
                     },
                     selectedClass : function () {
                         $(".column").removeClass("selected-card");
                         this.$el.toggleClass("selected-card");
                     },
 
-                    changeToAudio: function(){
-                        this.currentMedia = "audio";
-                        this.displayMedia();
-                    },
-
-                    changeToPhotos: function(){
-                        this.currentMedia = "photos";
-                        this.displayMedia();
-                    },
-
                     tagName: "div",
                     className: "column",
                     templateHelpers: function () {
+                        //console.log(this.currentMedia);
                         return {
                             dataType: this.currentMedia
                         };
@@ -73,8 +62,14 @@ define ([
 
             childViewOptions: function () {
                 return {
-                    app: this.app
+                    app: this.app,
+                    currentMedia: this.currentMedia
                 };
+            },
+
+            events: {
+                "click #media-audio" : "changeToAudio",
+                "click #media-photos" : "changeToPhotos"
             },
 
             hideLoadingMessage: function () {
@@ -86,6 +81,7 @@ define ([
             },
 
             displayMedia: function () {
+                console.log(this.currentMedia);
                 if (this.currentMedia == "photos"){
                     this.collection = new Photos();
                 }
@@ -93,7 +89,17 @@ define ([
                     this.collection = new Audio();
                 }
                 this.collection.fetch({ reset: true });
-            }
+            },
+
+            changeToAudio: function(){
+                this.currentMedia = "audio";
+                this.displayMedia();
+            },
+
+            changeToPhotos: function(){
+                this.currentMedia = "photos";
+                this.displayMedia();
+            },
 
         });
         return BrowserView;
