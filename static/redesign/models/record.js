@@ -1,4 +1,7 @@
-define(["models/base", "underscore"], function (Base, _) {
+define(["models/base",
+        "underscore"
+	    "models/association",],
+    function (Base, _, Association) {
     "use strict";
     /**
      * A Backbone Model class for the Project datatype.
@@ -53,8 +56,30 @@ define(["models/base", "underscore"], function (Base, _) {
             }
             return json;
         },
-        
-        save: function (key, val, options) {		
+
+        attach: function (model, callbackSuccess, callbackError) {
+            var association = new Association({
+                object_id: model.id,
+                model_type: model.getKey(),
+                marker_id: this.id
+            });
+            association.save(null, {
+                success: callbackSuccess,
+                error: callbackError
+            });
+        },
+
+        detach: function (model_id, key, callback) {
+            var association = new Association({
+                id: model_id, //only define id for the detach
+                object_id: model_id,
+                model_type: key,
+                marker_id: this.id
+            });
+            association.destroy({success: callback});
+        },
+
+        save: function (key, val, options) {
             return Backbone.Model.prototype.save.call(this, key, val, options);
 		}
 

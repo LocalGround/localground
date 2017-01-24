@@ -25,6 +25,22 @@
     <div id="model-form">
         <!-- Form Inserted Here -->
     </div>
+
+    <h2 style="margin:20px 20px 4px;">Add Media</h2>
+    <div class="upload-spot" id="left-panel-upload">
+        <button id="add-media-button" class="click-to-open" data-modal="modal-add-media"><i class="fa fa-plus" aria-hidden="true"></i></button>
+        {{#each children.photos.data}}
+            <img class = "marker-thumb" src="{{this.path_small}}">
+            <a class= "detach_media" data-id="{{this.id}}" data-type = "photos" media-name = "{{this.name}}">X</a>
+        {{/each}}
+        {{#each children.audio.data}}
+            <audio class = "marker-thumb" controls>
+                <source src="{{this.file_path}}"></source>
+            </audio>
+            <a class= "detach_media" data-id="{{this.id}}" data-type = "audio" media-name = "{{this.name}}">X</a>
+        {{/each}}
+    </div>
+
     <div class="confirmation success-message">Saved Successfully</div>
     <div class = "save-options">
         <button class="save-model button-primary">Save</button>

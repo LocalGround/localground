@@ -10,7 +10,12 @@ define(["models/base"], function (Base) {
 			Base.prototype.initialize.apply(this, arguments);
 
             //todo: API change needed to make the model.id param not "id" but object_id.
-            this.urlRoot = '/api/0/markers/' + data.marker_id + '/' + data.model_type + '/';
+			if (this.get("overlay_type") == "marker"){
+	            this.urlRoot = '/api/0/markers/' + data.marker_id + '/' + data.model_type + '/';
+			}
+			else if (this.get("overlay_type") == "record"){
+
+			}
 			this.set("ordering", data.ordering || 1);
 		}
 	});
