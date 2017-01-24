@@ -114,7 +114,7 @@ define(["models/base",
 		detach: function (model_id, key, callback) {
             var association = new Association({
                 overlay_type: this.get("overlay_type"),
-                object_id: model.id,
+                object_id: model_id,
                 model_type: model.getKey(),
                 source_id: this.id
             });

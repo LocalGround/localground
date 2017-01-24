@@ -81,7 +81,11 @@ define(["models/base",
                 model_type: key,
 				source_id: this.id
 			});
-            association.destroy({success: callback});
+            association.destroy({success: callback,
+                error: function(){
+                    alert("Item not deleted");
+                }
+            });
         },
 
         save: function (key, val, options) {
