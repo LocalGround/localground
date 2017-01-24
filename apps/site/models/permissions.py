@@ -300,6 +300,7 @@ class PresentationUser(ObjectUserPermissions):
         managed = False
         db_table = 'v_private_presentations'
         
+'''
 class LayerUser(ObjectUserPermissions):
     layer = models.ForeignKey(
         'Layer',
@@ -311,3 +312,4 @@ class LayerUser(ObjectUserPermissions):
         app_label = 'site'
         managed = False
         db_table = 'v_private_layers'
+'''

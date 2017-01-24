@@ -13,7 +13,7 @@ DROP VIEW IF EXISTS v_private_projects cascade;
 DROP VIEW IF EXISTS v_private_views cascade;
 DROP VIEW IF EXISTS v_private_presentations cascade;
 DROP VIEW IF EXISTS v_private_forms cascade;
-DROP VIEW IF EXISTS v_private_layers cascade; 
+--DROP VIEW IF EXISTS v_private_layers cascade; 
 DROP VIEW IF EXISTS v_private_view_accessible_media cascade;
 DROP VIEW IF EXISTS v_private_markers cascade; 
 DROP VIEW IF EXISTS v_private_marker_accessible_media cascade;
@@ -134,25 +134,6 @@ SELECT v.id as form_id, v.name, v.user_id, max(v.authority_id) AS authority_id
   SELECT fp.form_id as id, p.name, p.user_id, p.authority_id
   FROM site_form_projects fp, v_private_projects p
   WHERE fp.project_id = p.project_id
-) v
-GROUP BY v.id, v.name, v.user_id;
-
-----------------------  
--- v_private_layers --
-----------------------
--- A view to show all of the layers, who can access 
--- them, and at what security level (view, edit, or manage)
-CREATE OR REPLACE VIEW v_private_layers AS 
-SELECT v.id as layer_id, v.name, v.user_id, max(v.authority_id) AS authority_id
-FROM 
-(
-    SELECT g.id, g.name, a.user_id, a.authority_id
-    FROM site_layer g, site_userauthorityobject a
-    WHERE g.id = a.object_id
-		AND a.content_type_id = (select id from django_content_type where model = 'layer')
-  UNION 
-    SELECT id, name, owner_id as user_id, 3 AS authority_id
-    FROM site_layer
 ) v
 GROUP BY v.id, v.name, v.user_id;
 

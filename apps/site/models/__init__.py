@@ -28,7 +28,7 @@ from localground.apps.site.models.permissions import \
     BasePermissions, ObjectUserPermissions, UserAuthorityObject, \
     UserAuthority, ObjectAuthority, AudioUser, PhotoUser, MarkerUser, \
     SnapshotUser, ProjectUser, VideoUser, MapImageUser, PrintUser, \
-    FormUser, PresentationUser, LayerUser
+    FormUser, PresentationUser
 from localground.apps.site.models.genericassociation import GenericAssociation
 
 # prints

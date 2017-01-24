@@ -21,10 +21,15 @@ class StyledMap(BaseNamed, ProjectMixin):
     objects = StyledMapManager()
     
     def can_view(self, user, access_key=None):
-        return self.project.can_view(user=user, access_key=access_key)
+        #all maps are viewable
+        return True
 
     def can_edit(self, user):
         return self.project.can_edit(user)
+    
+    def __str__(self):
+        # return '%s - %s' % self.id, self.name
+        return self.name
     
     class Meta:
         app_label = 'site'

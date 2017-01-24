@@ -80,11 +80,19 @@ urlpatterns += format_suffix_patterns(patterns('',
     url(r'^snapshots/$',
         views.SnapshotList.as_view(),
         name='snapshot-list'),
+    #url(
+    #    r'^layers/(?P<pk>[0-9]+)/$',
+    #    views.LayerInstance.as_view(),
+    #    name='layer-detail'),
+    #url(r'^layers/$',
+    #    views.LayerList.as_view(),
+    #    name='layer-list'),
     url(
-        r'^layers/(?P<pk>[0-9]+)/$',
+        r'^maps/(?P<map_id>[0-9]+)/layers/(?P<pk>[0-9]+)/$',
         views.LayerInstance.as_view(),
         name='layer-detail'),
-    url(r'^layers/$',
+    url(
+        r'^maps/(?P<map_id>[0-9]+)/layers/$',
         views.LayerList.as_view(),
         name='layer-list'),
     url(
