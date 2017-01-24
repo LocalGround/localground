@@ -60,7 +60,6 @@ define(["models/base",
         attach: function (model, callbackSuccess, callbackError) {
             var association = new Association({
 				overlay_type: this.get("overlay_type"),
-                object_id: model.id,
                 form_id: parseInt(this.get("overlay_type").split("_")[1], 10),
                 record_id: this.get("id"),
 				model_type: model.getKey(),
@@ -81,7 +80,9 @@ define(["models/base",
                 model_type: key,
 				source_id: this.id
 			});
-            association.destroy({success: callback,
+            console.log(association, "detaching...")
+            association.destroy({
+                success: callback,
                 error: function(){
                     alert("Item not deleted");
                 }

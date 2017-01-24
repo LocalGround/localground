@@ -109,7 +109,7 @@ define([
             // for detachment
 
             this.model.detach(dataID, dataType, function(){
-                //alert("Model Detached");
+                alert("Model Detached");
                 that.model.fetch({reset: true});
             })
 

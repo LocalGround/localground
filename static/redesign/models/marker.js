@@ -101,7 +101,6 @@ define(["models/base",
         attach: function (model, callbackSuccess, callbackError) {
             var association = new Association({
                 overlay_type: this.get("overlay_type"),
-                object_id: model.id,
                 model_type: model.getKey(),
                 source_id: this.id
             });
@@ -115,7 +114,7 @@ define(["models/base",
             var association = new Association({
                 overlay_type: this.get("overlay_type"),
                 object_id: model_id,
-                model_type: model.getKey(),
+                model_type: key,
                 source_id: this.id
             });
             association.destroy({success: callback});
