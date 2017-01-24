@@ -109,7 +109,7 @@ define ([
                                 var columns = this.$el.parent().children(".column");
 
                                 //*
-                                for (var i = startIndex; i < endIndex; ++i){
+                                for (var i = startIndex+1; i < endIndex; ++i){
                                     var currModel = this.model.collection.models[i];
                                     var currColumn = columns.eq(i);
                                     if (!currColumn.hasClass("selected-card"))
