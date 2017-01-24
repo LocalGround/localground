@@ -1,12 +1,30 @@
 #!/usr/bin/env python
 from django.contrib.gis.db import models
-from localground.apps.site.models.groups import Group
+from localground.apps.site.models import BaseNamed
 from jsonfield import JSONField
+from localground.apps.site.managers import StyledMapManager
+from localground.apps.site.models.abstract.mixins import ProjectMixin
 
-class StyledMap(Group):
+class StyledMap(BaseNamed, ProjectMixin):
     center = models.PointField()
     zoom = models.IntegerField()
     panel_styles = JSONField(blank=True, null=True)
+    slug = models.SlugField(
+        verbose_name="Friendly URL",
+        max_length=100,
+        db_index=True,
+        help_text='A few words, separated by dashes "-", to be used as part of the url')
+    basemap = models.ForeignKey(
+        'WMSOverlay',
+        default=12)  # default to grayscale
+    filter_fields = BaseNamed.filter_fields + ('slug', 'name', 'description', 'tags', 'owner')
+    objects = StyledMapManager()
+    
+    def can_view(self, user, access_key=None):
+        return self.project.can_view(user=user, access_key=access_key)
+
+    def can_edit(self, user):
+        return self.project.can_edit(user)
     
     class Meta:
         app_label = 'site'

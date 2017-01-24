@@ -188,6 +188,18 @@ class PhotoUser(ObjectUserPermissions):
         app_label = 'site'
         managed = False
         db_table = 'v_private_photos'
+        
+class StyledMapUser(ObjectUserPermissions):
+    styled_map = models.ForeignKey(
+        'StyledMap',
+        db_column='map_id',
+        on_delete=models.DO_NOTHING,
+        related_name='authuser')
+
+    class Meta:
+        app_label = 'site'
+        managed = False
+        db_table = 'v_private_maps'
 
 
 class VideoUser(ObjectUserPermissions):

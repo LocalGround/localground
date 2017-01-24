@@ -88,6 +88,13 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.LayerList.as_view(),
         name='layer-list'),
     url(
+        r'^maps/(?P<pk>[0-9]+)/$',
+        views.MapInstance.as_view(),
+        name='map-detail'),
+    url(r'^maps/$',
+        views.MapList.as_view(),
+        name='map-list'),
+    url(
         r'^photos/(?P<pk>[0-9]+)/$',
         views.PhotoInstance.as_view(),
         name='photo-detail'),

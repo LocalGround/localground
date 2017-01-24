@@ -21,6 +21,7 @@ DROP VIEW IF EXISTS v_private_associated_media cascade;
 DROP VIEW IF EXISTS v_private_audio cascade;
 DROP VIEW IF EXISTS v_private_photos cascade;
 DROP VIEW IF EXISTS v_private_mapimages cascade;
+DROP VIEW IF EXISTS v_private_maps cascade;
 DROP VIEW IF EXISTS v_private_videos cascade;
 DROP VIEW IF EXISTS v_private_prints cascade;
 DROP VIEW IF EXISTS v_public_photos cascade;
@@ -210,18 +211,6 @@ FROM site_genericassociation a, django_content_type t1,
   django_content_type t2, v_private_markers m
 WHERE a.source_type_id = t1.id and t1.model = 'marker' and
   a.entity_type_id = t2.id and a.source_id = m.marker_id;
-  
---------------------------------
--- v_private_associated_media --
---------------------------------
-CREATE OR REPLACE VIEW v_private_associated_media AS 
- SELECT v.id, v.child, v.user_id, max(v.authority_id) AS authority_id
-   FROM (         SELECT v_private_marker_accessible_media.id, v_private_marker_accessible_media.child, v_private_marker_accessible_media.user_id, v_private_marker_accessible_media.authority_id
-                   FROM v_private_marker_accessible_media
-        UNION 
-                 SELECT v_private_view_accessible_media.id, v_private_view_accessible_media.child, v_private_view_accessible_media.user_id, v_private_view_accessible_media.authority_id
-                   FROM v_private_view_accessible_media) v
-  GROUP BY v.id, v.child, v.user_id;
 
 ------------------------
 -- View: v_private_audio
@@ -229,11 +218,6 @@ CREATE OR REPLACE VIEW v_private_associated_media AS
 CREATE OR REPLACE VIEW v_private_audio AS 
 SELECT v.id as audio_id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
-    -- accessible from view and marker permissions via associations 
-    SELECT id, user_id, authority_id  
-    FROM v_private_associated_media
-    WHERE child = 'audio' 
-  UNION 
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
     FROM site_audio m, v_private_projects p
@@ -251,11 +235,6 @@ GROUP BY v.id, v.user_id;
 CREATE OR REPLACE VIEW v_private_photos AS 
 SELECT v.id as photo_id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
-    -- accessible from view and marker permissions via associations 
-    SELECT id, user_id, authority_id  
-    FROM v_private_associated_media
-    WHERE child = 'photo' 
-  UNION 
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
     FROM site_photo m, v_private_projects p
@@ -267,17 +246,29 @@ FROM  (
     WHERE m.project_id = g.id) v
 GROUP BY v.id, v.user_id;
 
+-------------------------
+-- View: v_private_maps
+-------------------------
+CREATE OR REPLACE VIEW v_private_maps AS 
+SELECT v.id as map_id, v.user_id, max(v.authority_id) AS authority_id
+FROM  (
+    -- accessible via project permissions
+    SELECT m.id, p.user_id, p.authority_id
+    FROM site_styledmap m, v_private_projects p
+    WHERE m.project_id = p.project_id 
+  UNION 
+    -- accessible b/c user is photo owner
+    SELECT m.id, m.owner_id, 3 AS authority_id
+    FROM site_styledmap m, site_project g
+    WHERE m.project_id = g.id) v
+GROUP BY v.id, v.user_id;
+
 ------------------------
 -- View: v_private_mapimages
 ------------------------
 CREATE OR REPLACE VIEW v_private_mapimages AS 
 SELECT v.id as mapimage_id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
-    -- accessible from view and marker permissions via associations 
-    SELECT id, user_id, authority_id  
-    FROM v_private_associated_media
-    WHERE child = 'mapimage'
-  UNION
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
     FROM site_mapimage m, v_private_projects p
@@ -295,11 +286,6 @@ GROUP BY v.id, v.user_id;
 CREATE OR REPLACE VIEW v_private_videos AS 
 SELECT v.id as video_id, v.user_id, max(v.authority_id) AS authority_id
 FROM  (
-    -- accessible from view and marker permissions via associations 
-    SELECT id, user_id, authority_id  
-    FROM v_private_associated_media
-    WHERE child = 'video'
-  UNION
     -- accessible via project permissions
     SELECT m.id, p.user_id, p.authority_id
     FROM site_video m, v_private_projects p
