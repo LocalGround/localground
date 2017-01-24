@@ -59,7 +59,7 @@ def api_root(request, format=None, **kwargs):
     d['prints'] = reverse('print-list', request=request, format=format)
     d['projects'] = reverse('project-list', request=request, format=format)
     d['snapshots'] = reverse('snapshot-list', request=request, format=format)
-    d['layers'] = reverse('layer-list', request=request, format=format)
+    #d['layers'] = reverse('layer-list', request=request, format=format)
     d['maps'] = reverse('map-list', request=request, format=format)
     d['tags'] = reverse('tag-list', request=request, format=format)
     d['tiles'] = reverse('wmsoverlay-list', request=request, format=format)

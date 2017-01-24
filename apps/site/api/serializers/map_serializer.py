@@ -2,6 +2,7 @@ from localground.apps.site.api.serializers.base_serializer import BaseNamedSeria
 from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
+from localground.apps.site.api.serializers.layer_serializer import LayerSerializer
 
 
 class MapSerializer(BaseNamedSerializer):
@@ -12,6 +13,8 @@ class MapSerializer(BaseNamedSerializer):
                 required=True,
                 style={'base_template': 'json.html', 'rows': 5}
             )
+    panel_styles = fields.JSONField(style={'base_template': 'json.html', 'rows': 5},
+                               required=False)
     basemap = serializers.PrimaryKeyRelatedField(queryset=models.WMSOverlay.objects.all())
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
     project_id = serializers.PrimaryKeyRelatedField(
@@ -29,7 +32,7 @@ class MapSerializer(BaseNamedSerializer):
     class Meta:
         model = models.StyledMap
         fields = BaseNamedSerializer.Meta.fields + \
-            ('slug', 'sharing_url', 'center', 'basemap', 'zoom', 'project_id')
+            ('slug', 'sharing_url', 'center', 'basemap', 'zoom', 'panel_styles', 'project_id')
         depth = 0
 
     def get_sharing_url(self, obj):
@@ -37,8 +40,13 @@ class MapSerializer(BaseNamedSerializer):
 
 
 class MapDetailSerializer(MapSerializer):
-
+    layers = serializers.SerializerMethodField()
+    
     class Meta:
         model = models.StyledMap
-        fields = MapSerializer.Meta.fields
+        fields = MapSerializer.Meta.fields + ('layers',)
         depth = 0
+        
+    def get_layers(self, obj):
+        layers = models.Layer.objects.filter(styled_map=obj)
+        return LayerSerializer( layers, many=True, context={ 'request': {} }).data
