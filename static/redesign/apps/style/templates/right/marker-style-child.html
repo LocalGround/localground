@@ -1,2 +1,20 @@
+
 <td>{{color}}</td>
-<td>{{title}}</td>
+<td>{{label}}</td>
+<td>edit img</td>
+
+
+{{#ifequal dataType "continuous-variable"}}
+
+<td>{{color}}</td>
+<td>{{label}}</td>
+<td>edit img</td>
+
+{{/ifequal}}
+
+{{#ifequal dataType "no-variable"}}
+
+<td>{{label}}</td>
+<td>edit img</td>
+
+{{/ifequal}}

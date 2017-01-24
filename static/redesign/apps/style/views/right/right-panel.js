@@ -33,6 +33,7 @@ define(["marionette",
                 
                 var msv = new MarkerStyleView({ app: this.app });
                 this.markerStyle.show(msv);
+                this.app.vent.trigger("find-datatype");
                 
                 var frv = new FilterRulesView({ app: this.app });
                 this.filterRules.show(frv);

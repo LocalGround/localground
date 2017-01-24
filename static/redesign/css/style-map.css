@@ -11,6 +11,7 @@
 }
 
 .main-panel {
+    overflow-x: hidden;
     padding: 0px;
     width: auto;
     display:flex;
@@ -30,12 +31,28 @@
 }
 #right-panel {
     width: 400px;
+    transform: translateX(400px);
     overflow: hidden;
     overflow: scroll;
     height:100%;
+    order: 0;
+    border-right: 1px solid #e4e5eb;
+    box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
+    background-color: #fafafc;
+    z-index: 40;
+    height:100%;
+	transition-property: -webkit-transform,transform,opacity, width;
+    transition-duration: 0.2s;
+    transition-timing-function: cubic-bezier(0.0,0.0,0.5,1);
 }
+
+.show-right-panel {
+   /* width: 400px !important; */
+    transform: translateX(0px) !important;
+}
+
 #map-panel {
-    width: 60%;
+    width: 80%;
 }
 #map {
     width: 100%;
@@ -57,7 +74,7 @@
 }
 
 .main-panel{
-    height: calc(100% - 111px);
+    height: calc(100% - 60px);
     display: flex;
     position: absolute;
     width: 100%;
@@ -136,6 +153,11 @@ section {
    width: 0px !important;
    overflow: hidden;
    
+}
+
+.right-panel-hide {
+   width: 0px !important;
+   overflow: hidden;
 }
 
 .map-left-panel-hide {
@@ -252,6 +274,14 @@ ul {
     padding: 4px 0;
 }
 
+th {
+    width: 57px;
+}
+
 .edit {
     float: right
+}
+
+.symbols-table th {
+    text-align: left;
 }

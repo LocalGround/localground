@@ -17,7 +17,8 @@ define(["marionette",
             },
             
             events: {
-                        "click .hide-button" : "moveLeftPanel"
+                        "click .hide-button" : "moveLeftPanel",
+                        "click .edit" : "showRightPanel"
                     },
             
             regions: {
@@ -47,7 +48,10 @@ define(["marionette",
                 $("#left-panel").toggleClass("left-panel-hide");
               //  $(".hide-panel").toggleClass("tab-fix");
                 this.app.vent.trigger("resize-map", "80%");
-                
+            },
+            showRightPanel: function () {
+                console.log("show right panel");
+                $("#right-panel").addClass("show-right-panel");
             }
         });
         return LeftPanelLayout;

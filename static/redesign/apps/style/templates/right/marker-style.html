@@ -1,77 +1,53 @@
+
 <h5>Marker Style</h5>
 <div class="toggle-buttons">
     <ul>
         <li class=" active">
-            <a class="marker-style-tabs" onclick="openTab(event,'visual-marker-style','marker-style-tabs', 'marker-style', true, 'block')">Basic</a>
+            <a class="marker-style-tabs">Basic</a>
         </li>
         <li>
-            <a class="marker-style-tabs" onclick="openTab(event,'advanced-marker-style','marker-style-tabs', 'marker-style', true, 'block')">CSS</a>
+            <a class="marker-style-tabs">CSS</a>
         </li>
     </ul> 
 </div>
 <div class="toggle-container marker-style visual-edit" id="visual-marker-style">
-							<table class="color-properties">
-								<tbody><tr>
-									<td>Data Type</td> 
-									<td>
-										<!-- Need a better term that "data type". this is how the legend is set up so items are organized based on certain properties..-->
-										<select name="place-properties" id="data-type-select" onchange="switchByClass(['continuous-variable', 'categorical-variable', 'no-variable'],'data-type-select');hideMarkers(markers); addNewLayer('filter-data-type');newPin('filter-data-type','data-type-select' );hide('basic-pin-legend')">
-											<option value="categorical-variable">Category</option>
-											<option value="continuous-variable">Continuous</option>
-											<option selected="" value="no-variable">Simple</option>
-											<option value="no-variable">Individual Sites</option>
-										</select>
-									</td>
-								</tr>
+    <table class="color-properties">
+        <tbody>
+            <tr>
+                <td>Data Type</td> 
+                <td>
+                    <!-- Need a better term that "data type". this is how the legend is set up so items are organized based on certain properties..-->
+                    <select name="place-properties" id="data-type-select">
+                        <option value="categorical-variable" {{#ifequal dataType "categorical-variable"}} SELECTED {{/ifequal}}>Category</option>
+                        <option value="continuous-variable" {{#ifequal dataType "continuous-variable"}} SELECTED {{/ifequal}}>Continuous</option>
+                        <option value="no-variable" {{#ifequal dataType "no-variable"}} SELECTED {{/ifequal}}>Simple</option>
+                        <option value="no-variable">Individual Sites</option>
+                    </select>
+                </td>
+            </tr>
+            
+{{#ifequal dataType "categorical-variable"}}
 
-								<!-- Rows in this table update based on what "data type" is selected.-->
-								<tr class="categorical-variable">
-									<td>Property</td> 
-									<td>
-										<select>
-											<option value="continuous-variable">Medium</option>
-											<option value="friendliness">Artist</option>
-										</select>
-									</td>
-								</tr>
-
-								<tr class="continuous-variable" style="display: none;">
-									<td>Property</td> 
-									<td>
-										<select>
-											<option value="categorical-variable">Year</option>
-										</select>
-									</td>
-								</tr>
-
-								<tr class="categorical-variable">
-									<td>Marker Shape  </td>
-									<td>
-										<i class="fa fa-circle marker-icon" aria-hidden="true"></i>
-									</td>
-								</tr>
-								<tr class="continuous-variable" style="display: none;">
-									<td>Marker Shape  </td>
-									<td>
-										<i class="fa fa-circle marker-icon" aria-hidden="true"></i>
-									</td>
-								</tr>
-								<tr class="continuous-variable" style="display: none;">
-									<td>Buckets:</td>
-									<td><input type="number" placeholder="4"></td>
-								</tr>
-								<tr class="continuous-variable" style="display: none;">
-									<td>Color Ramp</td> 
-									<td>
-										<select id="color-ramps">
-											<option value="blue-ramp"></option>
-											<option value="purple-ramp"></option>
-											<option value="orange-ramp"></option>
-										</select>
-									</td>
-								</tr>
-							</tbody></table>
-						</div>
+            <!-- Rows in this table update based on what "data type" is selected.-->
+            <tr class="categorical-variable">
+                <td>Property</td> 
+                <td>
+                    <select>
+                        <option value="continuous-variable">Medium</option>
+                        <option value="friendliness">Artist</option>
+                    </select>
+                </td>
+            </tr>
+    
+            <tr class="categorical-variable">
+                <td>Marker Shape  </td>
+                <td>
+                    <i class="fa fa-circle marker-icon" aria-hidden="true"></i>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <div>
     <table class="symbols-table">
@@ -87,3 +63,75 @@
         </tbody>
     </table>
 </div>
+{{/ifequal}}
+{{#ifequal dataType "continuous-variable"}}
+    
+            <tr class="continuous-variable">
+                <td>Property</td> 
+                <td>
+                    <select>
+                        <option value="categorical-variable">Year</option>
+                    </select>
+                </td>
+            </tr>
+            <tr class="continuous-variable" style="display: none;">
+                <td>Marker Shape  </td>
+                <td>
+                    <i class="fa fa-circle marker-icon" aria-hidden="true"></i>
+                </td>
+            </tr>
+            <tr class="continuous-variable">
+                <td>Buckets:</td>
+                <td><input type="number" placeholder="4"></td>
+            </tr>
+            <tr class="continuous-variable">
+                <td>Color Ramp</td> 
+                <td>
+                    <select id="color-ramps">
+                        <option value="blue-ramp"></option>
+                        <option value="purple-ramp"></option>
+                        <option value="orange-ramp"></option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <table class="symbols-table">
+        <thead>
+            <tr>
+                <th>Value</th>
+                <th>Legend Label</th> 
+                <th>Customize</th> 
+            </tr>
+        </thead>
+        <tbody id="symbols">
+            
+        </tbody>
+    </table>
+</div>
+{{/ifequal}}
+
+{{#ifequal dataType "no-variable"}}
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <table class="symbols-table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Legend Label</th> 
+                <th>Customize</th> 
+            </tr>
+        </thead>
+        <tbody id="symbols">
+            
+        </tbody>
+    </table>
+</div>
+{{/ifequal}}
+
