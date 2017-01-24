@@ -20,7 +20,8 @@ define([
             'click .edit-mode': 'switchToEditMode',
             'click .save-model': 'saveModel',
             'click .delete-model': 'deleteModel',
-            'click #add-media-button': 'showMediaBrowser'
+            'click #add-media-button': 'showMediaBrowser',
+            'click .detach_media': 'detachModel'
         },
         getTemplate: function () {
             if (this.app.dataType == "photos") {
@@ -74,19 +75,46 @@ define([
             var that  = this;
             for (var i = 0; i < models.length; ++i){
                 this.model.attach(models[i], function(){
-                    alert("success");
+                    //alert("success");
                     that.model.fetch({reset: true});
                 }, function(){
-                    alert("failure");
-                }
-            )
+                    //alert("failure");
+                })
             }
             this.app.vent.trigger('hide-modal');
         },
+        /*
+          Problem stems from that the model is undefined
+          and it has to be defined inside the function
+        */
+        detachModel: function(e){
+            //alert("Need to detach model");
+            if (!confirm("Want to remove media from site?")) return;
+            var that = this;
+            /*
+            console.log(this.model.collection);
+            console.log(this.model);
+            console.log(this.model.attributes);
+            console.log(this.model.attributes.children);
+            */
 
-        detachModel: function(){
-            alert("Need to detach model");
-        }
+            var $elem = $(e.target);
+            var dataType = $elem.attr("data-type");
+            var dataID = $elem.attr("data-id");
+            console.log("Model to Detach: Data Type - " + dataType + ", Data ID: " + dataID);
+
+            // So far, I have managed to get the detach function to work through alert
+            // but I have not yet successfully deleted the targeted item
+            // because I need to tie that clicked item into the target model
+            // for detachment
+
+            this.model.detach(dataID, dataType, function(){
+                //alert("Model Detached");
+                that.model.fetch({reset: true});
+            })
+
+
+        },
         switchToViewMode: function () {
             this.app.mode = "view";
             this.render();
