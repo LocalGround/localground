@@ -3,7 +3,12 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import jsonfield.fields
+import os
 
+def get_extra_sql():
+    from localground.apps.settings import APPS_ROOT
+    sql_statements = open(os.path.join(APPS_ROOT, 'sql/custom.sql'), 'r').read()
+    return sql_statements
 
 class Migration(migrations.Migration):
 
@@ -78,4 +83,9 @@ class Migration(migrations.Migration):
             model_name='layer',
             name='tags',
         ),
+        migrations.RunSQL(get_extra_sql()),
+        migrations.AlterModelTable(
+            name='mapimageuser',
+            table='v_private_mapimages',
+        )
     ]
