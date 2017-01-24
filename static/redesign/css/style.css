@@ -615,6 +615,46 @@ input[type="number"]{
     height: auto;
 }
 
+.uploaded-media {
+    display: inline-block;
+}
+.edit-img-overlay {
+    background-color: rgba(0,0,0,0.4);
+    position: absolute;
+    margin: 20px 0 20px 20px;
+    position: absolute;
+    height: 110px;
+    width: 110px;
+}
+.hover-to-show {
+    opacity: 0;
+    -o-transition: .2s;
+    -ms-transition: .2s;
+    -moz-transition: .2s;
+    -webkit-transition: .2s;
+}
+.edit-img-overlay .close {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    color: white;
+}
+.edit-img-overlay .fa-cog {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    color: white;
+}
+.attached-media {
+    width: 100px;
+    margin: 5px;
+    height: 100px;
+    display: inline-block;
+    background-position: center center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    margin-bottom: -5px;
+}
 
 /************************************ general layout ************************************/
 .section{

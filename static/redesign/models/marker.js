@@ -104,7 +104,7 @@ define(["models/base",
                 model_type: model.getKey(),
                 source_id: this.id
             });
-			association.save(null, {
+			association.save({ object_id: model.id }, {
 				success: callbackSuccess,
 				error: callbackError
 			});

@@ -20,6 +20,7 @@ define(["models/base"], function (Base) {
             }
             //console.log(this.urlRoot);
 			this.set("ordering", data.ordering || 1);
+			//this.set("object_id", data.source_id || 1);
 		}
 	});
 	return Association;
