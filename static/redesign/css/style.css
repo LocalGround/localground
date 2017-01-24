@@ -73,7 +73,7 @@ fieldset {
     font-size: 22px;
     font-weight: 400;
     padding-bottom: 4px;
-} 
+}
 
 .side-panel p{
     font-size:12px;
@@ -139,7 +139,7 @@ span.action.tag:hover, a.action.tag:hover {
     margin-top:7px;
 }
 
-#model-form fieldset textarea, 
+#model-form fieldset textarea,
 #model-form fieldset input,
 .inline-form  input{
     padding: 4px 6px;
@@ -610,6 +610,11 @@ input[type="number"]{
     -webkit-transition: .5s;
 }
 
+.marker-thumb{
+    width: 100px !important;
+    height: auto;
+}
+
 
 /************************************ general layout ************************************/
 .section{
@@ -620,10 +625,9 @@ input[type="number"]{
     flex:1;
 }
 
-#model-form fieldset>div>div, 
+#model-form fieldset>div>div,
 .inline-form input,
 .inline-form .container-3-4,
 .inline-form textarea{
     flex:3;
 }
-

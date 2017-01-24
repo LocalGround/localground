@@ -29,14 +29,17 @@ define ([
                         'saved': 'render'
                     },
                     events: {
+                        /*
                         "click .card-img-preview" : "selectedClass",
                         "click .card-site-field" : "selectedClass"
+                        */
+                        "click" : "selectedClass"
                     },
                     selectedClass : function (e) {
                         /*if (e.shiftKey){
                             // Needs work so that multiple instances can be selected
                             // in either direction
-                            
+
                             if (this.lastSelectedColumn == null){
                                 //this.$el.toggleClass("selected-card");
                                 if (this.$el.hasClass("selected-card")) {
@@ -61,19 +64,23 @@ define ([
 
                         }
                         */
-                        if (e.metaKey) {
-                            if (this.$el.hasClass("selected-card")) {
-                                this.$el.removeClass("selected-card");
-                                this.model.set("isSelected", false);
-                            } else {
-                                this.$el.addClass("selected-card");
-                                this.model.set("isSelected", true);
-                            }
-                        } else {
+
+                        if (!e.metaKey){
                             $(".column").removeClass("selected-card");
-                            this.$el.toggleClass("selected-card");
+                            this.model.collection.each(function(model){
+                                model.set("isSelected", false);
+                            })
                         }
-                        this.lastSelectedColumn = this.$el;
+                        if (this.$el.hasClass("selected-card")) {
+                            this.$el.removeClass("selected-card");
+                            this.model.set("isSelected", false);
+                        } else {
+                            this.$el.addClass("selected-card");
+                            this.model.set("isSelected", true);
+                        }
+
+
+                        //this.lastSelectedColumn = this.$el;
                         e.preventDefault();
 
                     },

@@ -64,10 +64,29 @@ define([
             Marionette.ItemView.prototype.initialize.call(this);
             this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
         },
+
+        modelEvents: {
+            change: "render"
+        },
+
         attachModels: function (models) {
             console.log("attach models here:", models);
+            var that  = this;
+            for (var i = 0; i < models.length; ++i){
+                this.model.attach(models[i], function(){
+                    alert("success");
+                    that.model.fetch({reset: true});
+                }, function(){
+                    alert("failure");
+                }
+            )
+            }
             this.app.vent.trigger('hide-modal');
         },
+
+        detachModel: function(){
+            alert("Need to detach model");
+        }
         switchToViewMode: function () {
             this.app.mode = "view";
             this.render();
