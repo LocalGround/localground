@@ -2,6 +2,7 @@ from localground.apps.site.api.serializers.base_serializer import BaseNamedSeria
 from rest_framework import serializers
 from localground.apps.site import models, widgets
 from localground.apps.site.api import fields
+from django.conf import settings
 from localground.apps.site.api.serializers.layer_serializer import LayerSerializer
 
 
@@ -41,12 +42,16 @@ class MapSerializer(BaseNamedSerializer):
 
 class MapDetailSerializer(MapSerializer):
     layers = serializers.SerializerMethodField()
+    layers_url = serializers.SerializerMethodField()
     
     class Meta:
         model = models.StyledMap
-        fields = MapSerializer.Meta.fields + ('layers',)
+        fields = MapSerializer.Meta.fields + ('layers', 'layers_url')
         depth = 0
         
     def get_layers(self, obj):
         layers = models.Layer.objects.filter(styled_map=obj)
         return LayerSerializer( layers, many=True, context={ 'request': {} }).data
+    
+    def get_layers_url(self, obj):
+        return '%s/api/0/maps/%s/layers/' % (settings.SERVER_URL, obj.id)
