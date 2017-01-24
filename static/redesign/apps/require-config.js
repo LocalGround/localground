@@ -17,7 +17,7 @@ require.config({
         'color-picker-new': 'external/jscolor-updated',
         'color-picker-eyecon': 'external/colorpicker/js/colorpicker',
         'core': 'external/mediator/core-jquery',
-        'form': '//libraries.cdnhttps.com/ajax/libs/backbone-forms/0.14.0/backbone-forms',
+        'form': '//cdnjs.cloudflare.com/ajax/libs/backbone-forms/0.14.1/backbone-forms.min',
         'list': 'external/list.min',
         'google-infobubble': 'external/infobubble',
         'handsontable': 'https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.28.4/handsontable.full.min',
@@ -32,8 +32,13 @@ require.config({
         'jquery': '//code.jquery.com/jquery-1.8.0.min',
         'jquery.bootstrap': '//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min',
         'jquery.ui': '//code.jquery.com/ui/1.12.1/jquery-ui.min',
-        'jquery.ui.widget': 'external/uploader/jquery.ui.widget',
-        'jquery.fileupload': 'external/uploader/jquery.fileupload',
+        'jquery.ui.widget': 'external/jquery.ui.widget',
+        //'jquery.fileupload': 'external/uploader/jquery.fileupload',
+        //new uploader
+        'jquery.fileupload-ip': 'external/jquery.fileupload-ip',
+        'jquery.fileupload': 'external/jquery.fileupload',
+        'load-image': 'external/load-image.min',
+        'canvas-to-blob': 'external/canvas-to-blob.min',
         'kernel': 'external/kernel.min',
         'mapplication': './mapplication',
         'print_base': "./print_base",
@@ -63,7 +68,8 @@ require.config({
             deps: ['jquery']
         },
         'jquery.ui': ['jquery'],
-        'jquery.fileupload': ['jquery.ui'],
+        'jquery.ui.widget': ['jquery.ui'],
+        'jquery.fileupload': ['jquery.ui.widget'],
         'backgrid': {
             deps: ['backbone'],
             exports: 'Backgrid'

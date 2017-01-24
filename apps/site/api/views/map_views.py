@@ -7,24 +7,31 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 
-class LayerList(QueryableListCreateAPIView):
+class MapList(QueryableListCreateAPIView):
     error_messages = {}
     warnings = []
-    serializer_class = serializers.LayerSerializer
+    serializer_class = serializers.MapSerializer
     filter_backends = (filters.SQLFilterBackend,)
-    model = models.Layer
+    model = models.StyledMap
     paginate_by = 100
-        
+
     def get_queryset(self):
-        map_id = int(self.kwargs.get('map_id'))
-        try:
-            styled_map = models.StyledMap.objects.get(id=map_id)
-        except models.StyledMap.DoesNotExist:
-            raise Http404
-        return self.model.objects.filter(styled_map=styled_map)
+        if self.request.user.is_authenticated():
+            return self.model.objects.get_objects(self.request.user)
+        else:
+            return self.model.objects.get_objects_public(
+                access_key=self.request.GET.get('access_key')
+            )
+
+    '''def perform_create(self, serializer):
+        d = {
+            'access_authority': models.ObjectAuthority.objects.get(id=1)
+        }
+        serializer.save(**d)
+    '''
 
     def create(self, request, *args, **kwargs):
-        response = super(LayerList, self).create(request, *args, **kwargs)
+        response = super(MapList, self).create(request, *args, **kwargs)
         if len(self.warnings) > 0:
             response.data.update({'warnings': self.warnings})
         if self.error_messages:
@@ -33,23 +40,15 @@ class LayerList(QueryableListCreateAPIView):
         return response
 
 
-class LayerInstance(
-        generics.RetrieveUpdateDestroyAPIView):
+class MapInstance(generics.RetrieveUpdateDestroyAPIView):
     error_messages = {}
     warnings = []
-    def get_queryset(self):
-        map_id = int(self.kwargs.get('map_id'))
-        try:
-            styled_map = models.StyledMap.objects.get(id=map_id)
-        except models.StyledMap.DoesNotExist:
-            raise Http404
-        return self.model.objects.filter(styled_map=styled_map)
-    
-    serializer_class = serializers.LayerDetailSerializer
-    model = models.Layer
+    queryset = models.StyledMap.objects.select_related('owner').all()
+    serializer_class = serializers.MapDetailSerializer
+    model = models.StyledMap
 
     def update(self, request, *args, **kwargs):
-        response = super(LayerInstance, self).update(request, *args, **kwargs)
+        response = super(MapInstance, self).update(request, *args, **kwargs)
         if len(self.warnings) > 0:
             response.data.update({'warnings': self.warnings})
         if self.error_messages:

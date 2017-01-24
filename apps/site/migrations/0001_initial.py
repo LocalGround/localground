@@ -52,16 +52,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='LayerUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_layers',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
             name='MarkerUser',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),

@@ -68,6 +68,7 @@ class FormDataList(QueryableListCreateAPIView, FormDataMixin):
             form = models.Form.objects.get(id=self.kwargs.get('form_id'))
         except models.Form.DoesNotExist:
             raise Http404
+        #raise Exception(form.TableModel.objects.get_objects(self.request.user).first().photo_count)
         if self.request.user.is_authenticated():
             return form.TableModel.objects.get_objects(self.request.user)
         else:
