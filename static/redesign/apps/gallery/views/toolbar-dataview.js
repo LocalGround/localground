@@ -130,7 +130,7 @@ define([
                 view: uploadMediaForm,
                 title: 'Upload Media',
                 width: 800,
-                height: 400,
+                height: 350,
                 showSaveButton: false,
                 showDeleteButton: false
                 // bind the scope of the save function to the source view:

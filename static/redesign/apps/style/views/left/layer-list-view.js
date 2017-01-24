@@ -2,98 +2,101 @@ var fakeData = [
     {
         id: 1,
         map_id: 1,
-        name: "flowers",
-        source: "form_11",
+        title: "Neighborhood Flowers",
+        data_source: "form_4",
+        type: "category",
+        property: "species",
+        marker_shape: "circle-thin",
         symbols: [{
             color: "#428BCA",
-            width: 30,
-            shape: "circle",
+            value: "Lily",
+            label: "Lily Sighting",
             rule: "flower_type = 'daisy'",
-            title: "Daisy"
+            isChecked: true
         }, {
+            isChecked: false,
+            value: "Rose",
+            label: "Beautiful Roses",
             color: "#FF0000",
-            width: 30,
-            shape: "square",
             rule: "flower_type = 'rose'",
-            title: "Rose"
         }]
     }, {
         id: 2,
         map_id: 2,
-        name: "bird sightings",
-        source: "form_10",
+        title: "bird sightings",
+        data_source: "form_10",
         symbols: [{
             color: "#4333CA",
             width: 20,
             shape: "circle",
             rule: "bird_type = 'hawk'",
-            title: "Hawk"
+            label: "Hawk"
         }, {
             color: "#FF0000",
             width: 20,
             shape: "square",
             rule: "bird_type = 'sparrow'",
-            title: "Sparrow"
+            label: "Sparrow"
         }]
     }, {
         id: 3,
         map_id: 2,
-        name: "Public Art",
-        source: "form_9",
+        title: "Public Art",
+        data_source: "form_9",
         symbols: [{
             color: "#4333CA",
             width: 20,
             shape: "circle",
             rule: "art_type = 'mural'",
-            title: "Mural"
+            label: "Mural"
         }, {
             color: "EFEFFF",
             width: 20,
             shape: "square",
             rule: "art_type = 'sculpture'",
-            title: "Sculpture"
+            label: "Sculpture"
         }]
     },  {
         id: 4,
         map_id: 2,
-        name: "Worms",
-        source: "form_8",
+        title: "Worms",
+        data_source: "form_8",
         symbols: [{
             color: "#4333CA",
             width: 20,
             shape: "square",
             rule: "worm_count < 1",
-            title: "Less than 1 worm"
+            label: "Less than 1 worm"
         }, {
             color: "#A4333C",
             width: 20,
             shape: "square",
             rule: "worm_count >= 1'",
-            title: "1 or more worms"
+            label: "1 or more worms"
         }]
     },  {
         id: 5,
         map_id: 3,
-        name: "Soil Moisture",
-        source: "form_6",
+        title: "Soil Moisture",
+        data_source: "form_6",
         symbols: [{
             color: "#4333CA",
             width: 20,
             shape: "circle",
             rule: "moisture = 'wet'",
-            title: "Wet"
+            label: "Wet"
         }, {
             color: "#A4333C",
             width: 20,
             shape: "circle",
             rule: "moisture = 'moist'",
-            title: "Moist"
+            label: "Moist"
         }, {
             color: "#CA4333",
             width: 20,
             shape: "circle",
             rule: "moisture = 'dry'",
-            title: "Dry"
+            label: "Dry"
         }]
     }
 ];
@@ -101,8 +104,8 @@ var fakeData = [
 define(["marionette",
         "handlebars",
         "collections/layers",
-        "text!../templates/layer-list.html",
-        "text!../templates/layer-item.html"
+        "text!../../templates/left/layer-list.html",
+        "text!../../templates/left/layer-item.html"
     ],
     function (Marionette, Handlebars, Layers, LayerListTemplate, LayerItemTemplate) {
         'use strict';
@@ -118,17 +121,28 @@ define(["marionette",
                     },
                     template: Handlebars.compile(LayerItemTemplate),
                     modelEvents: {},
-                    events: {},
+                    events: {
+                        //edit event here, pass the this.model to the right panel
+                        "click .edit" : "sendCollection"
+                        },
                     tagName: "div",
                     className: "column",
                     templateHelpers: function () {
                         return {
                             test: "123"
                         };
+                    },
+                    
+                    sendCollection: function() {
+                        this.app.vent.trigger("send-collection", this.model);
                     }
                 });
             },
             childViewContainer: "#layers",
+            
+            childViewOptions: function () {
+              return { app: this.app };  
+            },
 
             initialize: function (opts) {
                 this.app = opts.app;
@@ -145,6 +159,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'change-map', this.displayLayers);
             },
             displayLayers: function (map) {
+                console.log("left panel init collection")
                 var mapId = map.get("id");
                 if (!this._collection) {
                     //pretend this is the server query...

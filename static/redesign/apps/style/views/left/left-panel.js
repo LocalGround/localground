@@ -1,10 +1,10 @@
 define(["marionette",
         "handlebars",
-        "apps/style/views/select-map-view",
-        "apps/style/views/layer-list-view",
-        "apps/style/views/skin-view",
-        "apps/style/views/panel-styles-view",
-        "text!../templates/left-panel-layout.html"
+        "apps/style/views/left/select-map-view",
+        "apps/style/views/left/layer-list-view",
+        "apps/style/views/left/skin-view",
+        "apps/style/views/left/panel-styles-view",
+        "text!../../templates/left/left-panel-layout.html"
     ],
     function (Marionette, Handlebars, SelectMapView, LayerListView, SkinView, PanelStylesView, LeftPanelLayoutTemplate) {
         'use strict';
@@ -17,7 +17,8 @@ define(["marionette",
             },
             
             events: {
-                        "click .hide-button" : "moveLeftPanel"
+                        "click .hide-button" : "moveLeftPanel",
+                        "click .edit" : "showRightPanel"
                     },
             
             regions: {
@@ -47,7 +48,10 @@ define(["marionette",
                 $("#left-panel").toggleClass("left-panel-hide");
               //  $(".hide-panel").toggleClass("tab-fix");
                 this.app.vent.trigger("resize-map", "80%");
-                
+            },
+            showRightPanel: function () {
+                console.log("show right panel");
+                $("#right-panel").addClass("show-right-panel");
             }
         });
         return LeftPanelLayout;

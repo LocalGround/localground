@@ -1,7 +1,7 @@
 define(["marionette",
         "handlebars",
         "collections/maps",
-        "text!../templates/select-map.html"
+        "text!../../templates/left/select-map.html"
     ],
     function (Marionette, Handlebars, Maps, MapTemplate) {
         'use strict';
@@ -37,7 +37,7 @@ define(["marionette",
                 var id = $select.val();
                 console.log($select.val());
                 console.log("map change");
-                
+                                                                                           
                 this.app.vent.trigger("change-map", this.collection.get(id));
             }
 

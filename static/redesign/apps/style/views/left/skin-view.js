@@ -1,7 +1,7 @@
 define(["marionette",
         "handlebars",
         "collections/maps",
-        "text!../templates/skin.html"
+        "text!../../templates/left/skin.html"
     ],
     function (Marionette, Handlebars, Maps, SkinTemplate) {
         'use strict';

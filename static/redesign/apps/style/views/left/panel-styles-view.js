@@ -2,7 +2,7 @@ define(["marionette",
         "handlebars",
         'color-picker-eyecon',
         "models/map",
-        "text!../templates/panel-styles.html"
+        "text!../../templates/left/panel-styles.html"
     ],
     function (Marionette, Handlebars, colorPicker, Map, PanelStylesTemplate) {
         'use strict';
@@ -36,31 +36,26 @@ define(["marionette",
             },
             
             onRender: function () {
+                var that = this;
                 console.log("it's color");
                 this.$el.find('#color-picker').ColorPicker({
             
-                onShow: function (colpkr) {
-                    $(colpkr).fadeIn(500);
-                    return false;
-                },
-                onHide: function (colpkr) {
-                    $(colpkr).fadeOut(500);
-                    return false;
-                },
-                onChange: function (hsb, hex, rgb) {
-                    $('#color-picker').css('color', '#' + hex);
-                }
-                    });
+                    onShow: function (colpkr) {
+                        $(colpkr).fadeIn(500);
+                        return false;
+                    },
+                    onHide: function (colpkr) {
+                        $(colpkr).fadeOut(500);
+                        return false;
+                    },
+                    onChange: function (hsb, hex, rgb) {
+                        that.model.get("panel_styles")[that.activeKey].color = hex;
+                        $('#color-picker').css('color', '#' + hex);
+                    }
+                });
             },
             
-            initColorPicker: function () {
-                var colorInput = this.$el.find('.jscolor'),
-                    picker;
-                if (colorInput.get(0) !== null) {
-                    picker = new jscolor.color(colorInput.get(0), {});
-                    picker.fromString("#" + this.model.get("color"));
-                    }
-            },
+
             
             templateHelpers: function () {
                 return {

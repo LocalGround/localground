@@ -33,8 +33,8 @@ define(['underscore', 'lib/sqlParser', 'lib/maps/overlays/point'],
                 if (_.isUndefined(this.rule)) {
                     throw new Error("rule must be defined");
                 }
-                if (_.isUndefined(this.title)) {
-                    throw new Error("title must be defined");
+                if (_.isUndefined(this.label)) {
+                    throw new Error("label must be defined");
                 }
                 this.sqlParser = new SqlParser(this.rule);
             };

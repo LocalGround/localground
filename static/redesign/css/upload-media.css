@@ -134,6 +134,15 @@
     text-align: center;
     overflow: hidden;
 }
+.img-container {
+    width: 145px;
+    max-height: 140px;
+    min-height: 100px;
+    overflow: hidden;
+}
+.preview {
+    width: 145px;
+}
 .audio-holder, .error-holder {
     display: inline-block;
     width: 145px;
@@ -200,29 +209,16 @@ span.plus {
     user-select: none;
 }
 
-.fileinput-button {
-    position: relative;
-    overflow: hidden;
-    margin-right: 4px;
-    height: 60px;
-    line-height: 55px;
-    font-size: 50px;
-    width: 50px;
-    font-weight: normal;
-    border-radius: 100px;
-}
-.fileinput-button input {
-    position: absolute;
-    margin-left: -20px;
-    margin-top: -70px;
-    height: 100px;
-    border: solid transparent;
+#fileupload {
     opacity: 0;
-    filter: alpha(opacity=0);
-    -moz-transform: translate(-300px, 0) scale(4);
-    direction: ltr;
-    cursor: pointer;
-    width: 100px;
+    poosition: absolute;
+    height: 0px;
+}
+#dropzone {
+    border: dashed 1px #CCC;
+    margin-right: 10px;
+    margin-left: 10px;
+    min-height: 350px;
 }
 
 #dropzone.hover {
@@ -235,4 +231,30 @@ span.plus {
     -o-transition: all 0.3s ease-out;
     transition: all 0.3s ease-out;
     opacity: 1;
+}
+
+.success-message, .failure-message, .warning-message {
+    display: none;
+}
+
+.alert {
+    padding: 5px;
+    margin: 0px 10px 20px 10px;
+    color: #c09853;
+    background-color: #fcf8e3;
+    border: 1px solid #fbeed5;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+.success-message {
+    color: #468847;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.failure-message {
+    color: #b94a48;
+    background-color: #f2dede;
+    border-color: #eed3d7
 }

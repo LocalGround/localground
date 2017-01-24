@@ -49,7 +49,12 @@ class MapImageManager(models.GeoManager, MapImageMixin):
     def get_queryset(self):
         return MapImageQuerySet(self.model, using=self._db)
     
-    
+ 
+class StyledMapMixin(UploadMixin):
+    pass
+
+class StyledMapManager(models.GeoManager, StyledMapMixin):
+    pass
 
 class PhotoMixin(UploadMixin):
     pass

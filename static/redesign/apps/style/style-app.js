@@ -4,12 +4,13 @@ define([
     "apps/style/router",
     "views/toolbar-global",
     "apps/style/views/map",
-    "apps/style/views/left-panel",
+    "apps/style/views/left/left-panel",
+    "apps/style/views/right/right-panel",
     "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, ToolbarGlobal,
-             Basemap, LeftPanel, Projects, appUtilities) {
+             Basemap, LeftPanel, RightPanel, Projects, appUtilities) {
     "use strict";
     /* TODO: Move some of this stuff to a Marionette LayoutView */
     var MapApp = Marionette.Application.extend(_.extend(appUtilities, {
@@ -26,7 +27,7 @@ define([
             // kicks off any objects and processes that need to run
             Marionette.Application.prototype.start.apply(this, [options]);
             this.initAJAX(options);
-            this.router = new Router({ app: this});
+            this.router = new Router({ app: this}); 
             Backbone.history.start();
         },
         initialize: function (options) {
@@ -45,6 +46,7 @@ define([
             this.showGlobalToolbar();
             this.showBasemap();
             this.showLeftLayout();
+            this.showRightLayout();
         },
 
         showLeftLayout: function () {
@@ -53,6 +55,13 @@ define([
                 app: this
             });
             this.leftRegion.show(this.leftPanelView);
+        },
+        
+        showRightLayout: function () {
+            this.rightPanelView = new RightPanel({
+                app: this
+            });
+            this.rightRegion.show(this.rightPanelView);
         },
 
         showGlobalToolbar: function () {
