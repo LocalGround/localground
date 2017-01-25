@@ -86,7 +86,7 @@ define(["jquery",
             },
 
             hideLoadingMessage: function () {
-                this.$el.find(this.childViewContainer).empty();
+                this.$el.find("#loading-animation").empty();
             },
 
             template: function () {

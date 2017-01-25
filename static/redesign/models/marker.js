@@ -99,12 +99,12 @@ define(["models/base",
         },
 
         attach: function (model, callbackSuccess, callbackError) {
-			var association = new Association({
-				object_id: model.id,
-				model_type: model.getKey(),
-				marker_id: this.id
-			});
-			association.save(null, {
+            var association = new Association({
+                overlay_type: this.get("overlay_type"),
+                model_type: model.getKey(),
+                source_id: this.id
+            });
+			association.save({ object_id: model.id }, {
 				success: callbackSuccess,
 				error: callbackError
 			});
@@ -112,10 +112,10 @@ define(["models/base",
 
 		detach: function (model_id, key, callback) {
             var association = new Association({
-                id: model_id, //only define id for the detach
+                overlay_type: this.get("overlay_type"),
                 object_id: model_id,
                 model_type: key,
-                marker_id: this.id
+                source_id: this.id
             });
             association.destroy({success: callback});
 		}

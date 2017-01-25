@@ -107,6 +107,9 @@ define([
             var model = null;
             if (opts.id) {
                 model = this.currentCollection.get(opts.id);
+                if (this.dataType == "markers" || this.dataType.indexOf("form_") != -1) {
+                    model.fetch({"reset": true});
+                }
             } else {
                 model = this.createNewModelFromCurrentCollection();
             }
