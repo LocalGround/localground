@@ -58,12 +58,13 @@ define(["marionette",
 
             
             templateHelpers: function () {
+                console.log(this.model.get("panel_styles")[this.activeKey]);
                 return {
                     json: JSON.stringify(this.model.toJSON(), null, 2),
                     currentType: this.model.get("panel_styles")[this.activeKey],
                     activeKey: this.activeKey,
-                    font: this.model.get("panel_styles")[this.activeKey].font,
-                    fontWeight: this.model.get("panel_styles")[this.activeKey].fw
+                   // font: this.model.get("panel_styles")[this.activeKey].font,
+                   // fontWeight: this.model.get("panel_styles")[this.activeKey].fw
                     };
             },
             setModel: function (model) {

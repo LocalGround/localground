@@ -159,14 +159,10 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'change-map', this.displayLayers);
             },
             displayLayers: function (map) {
-                console.log("left panel init collection")
-                var mapId = map.get("id");
-                if (!this._collection) {
-                    //pretend this is the server query...
-                    this._collection = new Layers(fakeData);
-                }
-                this.collection = new Layers(this._collection.where({map_id: mapId}));
-                this.render();
+                console.log("left panel init collection");
+                //var mapId = map.get("id");
+                this.collection = new Layers(null, {mapID: map.get("id")});
+                this.collection.fetch({ reset: true});
             }
 
         });

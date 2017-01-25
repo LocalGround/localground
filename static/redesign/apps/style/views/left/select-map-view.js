@@ -19,17 +19,24 @@ define(["marionette",
 
                 // here is some fake data until the
                 // /api/0/maps/ API Endpoint gets built:
-                this.collection = new Maps([
-                    { id: 1, name: "Flowers & Birds", project_id: 4 },
-                    { id: 2, name: "Berkeley Public Art", project_id: 4 },
-                    { id: 3, name: "Soil Science", project_id: 4 }                ]);
+                this.collection = new Maps();
+                this.collection.fetch({reset: true});
                 
              //   var $bselected = this.$el.val($("#map-select").find('option:selected').val());
                 var $selected = this.$el.find("#map-select").val();
                 console.log($selected);
+                this.listenTo(this.collection, 'reset', this.drawOnce);
                 this.app.currentMap = this.collection.at(0);
                 this.app.vent.trigger("change-map", this.app.currentMap);
                 this.app.vent.trigger("init-collection", this.collection.get($selected));
+            },
+            
+            drawOnce: function () {
+                
+                this.app.currentMap = this.collection.at(0);
+                this.render();
+                var $selected = this.$el.find("#map-select").val();
+                console.log($selected);
             },
             
             changeMap: function(e) {

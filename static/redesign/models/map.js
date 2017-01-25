@@ -4,6 +4,7 @@ define(["models/base"], function (Base) {
         getNamePlural: function () {
             return "maps";
         },
+      //  urlRoot: "/api/0/maps/",
         defaults: function () {
             return _.extend({}, Base.prototype.defaults, {
                 checked: false,
