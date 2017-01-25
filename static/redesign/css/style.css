@@ -381,6 +381,12 @@ input[type="text"], textarea{
 
 input[type="number"]{
     width: 40px;
+    border-style:solid;
+    border-width:1px;
+    border-color:#ebecf2; 
+}
+input[type="checkbox"]{
+    margin-top: 10px !important;
 }
 
 
