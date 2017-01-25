@@ -13,7 +13,7 @@ class Layer(BaseAudit):
     
     title = models.CharField(max_length=255, null=False, blank=False)
     description = models.TextField(null=True, blank=True)
-    data_property = models.TextField(null=True, blank=True)
+    data_source = models.TextField(null=True, blank=True)
     symbol_shape = models.TextField(null=True, blank=True)
     styled_map = models.ForeignKey('StyledMap', related_name='%(class)s+')
     
