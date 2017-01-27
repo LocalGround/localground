@@ -140,12 +140,9 @@ define(["jquery",
                 //
                 //
                 this.collection.doSearch(term, this.app.selectedProject.id);
-                //this.collection.fetch({ reset: true });
             },
 
             clearSearch: function () {
-                //this.collection.query = this.getDefaultQueryString();
-                //this.collection.fetch({ reset: true });
                 this.collection.clearSearch();
             },
 
