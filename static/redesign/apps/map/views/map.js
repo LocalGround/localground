@@ -11,6 +11,80 @@ define(["marionette",
          */
 
         var Basemap = Marionette.View.extend({
+            customMapTypeID: 'custom-style',
+            getCustomStyle: function () {
+                return new google.maps.StyledMapType([
+                    {
+                        "featureType": "landscape.natural",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            },
+                            {
+                                "color": "#e0efef"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            },
+                            {
+                                "hue": "#1900ff"
+                            },
+                            {
+                                "color": "#c0e8e8"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "lightness": 100
+                            },
+                            {
+                                "visibility": "simplified"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "all",
+                        "elementType": "labels",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit.line",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            },
+                            {
+                                "lightness": 700
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "color": "#7dcdcd"
+                            }
+                        ]
+                    }
+                ], { name: 'Custom Style' });
+            },
             map: null,
             activeMapTypeID: 1,
             tileManager: null,
@@ -43,16 +117,7 @@ define(["marionette",
                     zoomControlOptions: {
                         style: google.maps.ZoomControlStyle.SMALL
                     },
-                    styles: [
-                        {
-                            featureType: "poi.school",
-                            elementType: "geometry",
-                            stylers: [
-                                { saturation: -79 },
-                                { lightness: 75 }
-                            ]
-                        }
-                    ],
+                    styles: this.getCustomStyle(),
                     zoom: this.defaultLocation.zoom,
                     center: this.defaultLocation.center
 
@@ -60,6 +125,8 @@ define(["marionette",
                 console.log(mapOptions);
                 this.app.map = this.map = new google.maps.Map(document.getElementById(this.$el.attr("id")),
                     mapOptions);
+                this.map.mapTypes.set(this.customMapTypeID, this.getCustomStyle());
+                this.map.setMapTypeId(this.customMapTypeID);
             },
 
             addControls: function () {
