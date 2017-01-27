@@ -200,8 +200,15 @@ define(["marionette",
 
             photoCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
                 //
-                var that = this;
-                var model = that.getModelFromCell(row);
+                console.log(this);
+                console.log(instance);
+                console.log(row);
+                //var that = this;
+                /*
+                // I have almost made progress, but I have encountered null / undefined errors
+                // despite making sense of what came intuitively
+
+                var model = this.getModelFromCell(row);
                 var count = model.get("photo_count");
                 if (count < 0){
                     for (var i = 0; i < count; ++i){
@@ -209,13 +216,15 @@ define(["marionette",
                         td.innerHTML.appendChild("<i class='fa fa-file-photo-o' aria-hidden='true'></i>");
                     }
                 }
+                //*/
 
             },
 
             audioCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
                 //
-                var that = this;
-                var model = that.getModelFromCell(row);
+                //var that = this;
+                /*
+                var model = this.getModelFromCell(row);
                 var count = model.get("audio_count");
                 if (count < 0){
                     for (var i = 0; i < count; ++i){
@@ -223,6 +232,7 @@ define(["marionette",
                         td.innerHTML.appendChild("<i class='fa fa-file-audio-o' aria-hidden='true'></i>");
                     }
                 }
+                //*/
 
             },
 
@@ -284,7 +294,7 @@ define(["marionette",
                     case "photos":
                         return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "markers":
-                        return [30, 80, 80, 200, 400, 200, 100, 100, 80, 100];
+                        return [30, 80, 80, 200, 400, 100, 100, 200, 80, 100];
                     default:
                         var cols = [30, 80, 80];
                         for (var i = 0; i < this.fields.length; ++i){
