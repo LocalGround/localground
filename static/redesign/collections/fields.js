@@ -11,13 +11,16 @@ define(
       model: Field,
       name: 'Fields',
       initialize: function (recs, opts) {
-          if (!opts.id) {
+          if (opts.url) {
+            this.url = opts.url;   
+          } else if (opts.id) {
+              this.url = '/api/0/forms/' + opts.id + '/fields/';
+          } else {
               alert("The Fields collection requires a url parameter upon initialization");
               return;
           }
           // This had to be made dynamic because there are different fields
           // for each form
-          this.url = '/api/0/forms/' + opts.id + '/fields/';
           BasePageable.prototype.initialize.apply(this, arguments);
       }
 

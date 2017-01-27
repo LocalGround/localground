@@ -1,4 +1,4 @@
-var fakeData = [
+/*var fakeData = [
     {
         id: 1,
         map_id: 1,
@@ -99,7 +99,7 @@ var fakeData = [
             label: "Dry"
         }]
     }
-];
+];*/
 
 define(["marionette",
         "handlebars",
@@ -146,23 +146,35 @@ define(["marionette",
 
             initialize: function (opts) {
                 this.app = opts.app;
+               // this.displayLayersDefault();
                 
                 if (this.app.currentMap) {
                     this.displayLayers(this.app.currentMap);
                 }
-                /**
-                 * here is some fake data until the
-                 * /api/0/layers/ API Endpoint gets built. Note
-                 * that each layer can have more than one symbol
-                 */
+                
                 this.listenTo(this.app.vent, 'init-collection', this.displayLayers);
                 this.listenTo(this.app.vent, 'change-map', this.displayLayers);
             },
+            
+            events: {
+                "click .add-layer" : "showDropDown",
+                "click #new-layer-options" : "newLayer"
+            },
+            
+            showDropDown: function() {
+               this.$el.find("#new-layer-options").toggle();  
+            },
+            
+            newLayer: function() {
+                //send info to right panel?
+                //this.app.vent.trigger();    
+            },
+            
+            //display layers when map is changed
             displayLayers: function (map) {
-                console.log("left panel init collection");
-                //var mapId = map.get("id");
                 this.collection = new Layers(null, {mapID: map.get("id")});
                 this.collection.fetch({ reset: true});
+                this.listenTo(this.collection, 'reset', this.render);
             }
 
         });

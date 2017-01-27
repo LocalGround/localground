@@ -11,7 +11,7 @@ define(["models/layer", "collections/base"], function (Layer, Base) {
             opts = opts || {};
             $.extend(this, opts);
             if (!this.mapID) {
-                alert("The Records collection requires a map id upon initialization");
+                alert("The Layers collection requires a map id upon initialization");
                 return;
             }
             this.url = "/api/0/maps/" + this.mapID + "/layers";

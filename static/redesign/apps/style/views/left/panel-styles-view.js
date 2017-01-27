@@ -17,15 +17,16 @@ define(["marionette",
                 'change #font': 'updateFont',
                 'change #fw': 'updateFontWeight',
                 'change #color-picker': 'updateFontColor',
-                'change #font-size': 'updateFontSize'
+                'change #font-size': 'updateFontSize',
+                'click #style-save' : "saveStyles" 
             },
 
             initialize: function (opts) {
                 this.app = opts.app;
-                this.model = new Map(
-                    { id: 1, name: "Flowers & Birds", project_id: 4 }
-                    );
-                console.log(this.model);
+              //  this.model = new Map(
+              //      { id: 1, name: "Flowers & Birds", project_id: 4 }
+              //      );
+              //  console.log(this.model);
                 this.listenTo(this.app.vent, 'change-map', this.setModel);
 
                 // here is some fake data until the
@@ -51,6 +52,7 @@ define(["marionette",
                     onChange: function (hsb, hex, rgb) {
                         that.model.get("panel_styles")[that.activeKey].color = hex;
                         $('#color-picker').css('color', '#' + hex);
+                        that.render();
                     }
                 });
             },
@@ -58,6 +60,9 @@ define(["marionette",
 
             
             templateHelpers: function () {
+                if (!this.model) {
+                    return;
+                }
                 console.log(this.model.get("panel_styles")[this.activeKey]);
                 return {
                     json: JSON.stringify(this.model.toJSON(), null, 2),
@@ -68,6 +73,7 @@ define(["marionette",
                     };
             },
             setModel: function (model) {
+                console.log(model);
                 this.model = model;
                 this.render();
                 console.log(this.model);
@@ -93,6 +99,20 @@ define(["marionette",
                 this.model.get("panel_styles")[this.activeKey].size = this.$el.find("#font-size").val();
                 this.render();
             },
+            
+            saveStyles: function() {
+                console.log("saving our styles");
+                console.log(JSON.stringify(this.model.toJSON(), null, 2));
+                this.model.set("basemap", 1);
+                this.model.save({
+                    error: function(){
+                        console.log('error');
+                    },
+                        success: function(){
+                            console.log('success');
+                    }
+                });
+            }
 
 
         });

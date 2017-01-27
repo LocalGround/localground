@@ -36,7 +36,8 @@ define(["marionette",
                 this.app.currentMap = this.collection.at(0);
                 this.render();
                 var $selected = this.$el.find("#map-select").val();
-                console.log($selected);
+                console.log($selected, this.collection);
+                this.app.vent.trigger("change-map", this.collection.get($selected));
             },
             
             changeMap: function(e) {

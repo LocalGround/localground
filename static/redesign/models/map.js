@@ -4,7 +4,16 @@ define(["models/base"], function (Base) {
         getNamePlural: function () {
             return "maps";
         },
-      //  urlRoot: "/api/0/maps/",
+        urlRoot: "/api/0/maps/",
+        initialize: function (data, opts) {
+            Base.prototype.initialize.apply(this, arguments);
+            var panelStyles = this.get("panel_styles");
+            console.log(panelStyles);
+            if (!_.isUndefined(panelStyles) && _.isString(panelStyles)) {
+                console.log("serialize");
+                this.set("panel_styles", JSON.parse(panelStyles));
+            }
+		},
         defaults: function () {
             return _.extend({}, Base.prototype.defaults, {
                 checked: false,

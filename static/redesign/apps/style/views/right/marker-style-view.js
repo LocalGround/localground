@@ -5,8 +5,9 @@ define(["marionette",
         "text!../../templates/right/marker-style.html",
         "text!../../templates/right/marker-style-child.html",
         "collections/records",
+        "collections/fields"
     ],
-    function (Marionette, Handlebars, Layers, Layer, MarkerStyleTemplate, MarkerStyleChildTemplate, Records) {
+    function (Marionette, Handlebars, Layers, Layer, MarkerStyleTemplate, MarkerStyleChildTemplate, Records, Fields) {
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
@@ -67,15 +68,25 @@ define(["marionette",
                 console.log(layer);
                 this.model = layer;
                 this.collection = new Backbone.Collection(this.model.get("symbols"));                
-                var symbolsSource = layer.get("data_source");
+                var symbolsSource = "form_4";
+                //layer.get("data_source");
+        
                 var id = symbolsSource.split("_")[1];
                 
                 var data = new Records(null, {
                         url: '/api/0/forms/' + id + '/data/'
                     });
+                this.fields = new Fields(null, {
+                        url: '/api/0/forms/' + id + '/fields/'
+                    });
                 data.fetch();
+                this.fields.fetch( { reset: true });
+                this.listenTo(this.fields, 'reset', this.buildDropdown);
                 console.log(data);
                 this.render();
+            },
+            buildDropdown: function () {
+                console.log(this.fields);
             }
 
         });

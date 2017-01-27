@@ -18,8 +18,15 @@ define(["marionette",
                     { id: 1, name: "Flowers & Birds", project_id: 4 },
                     { id: 2, name: "Berkeley Public Art", project_id: 4 },
                     { id: 3, name: "Soil Science", project_id: 4 }                ]);
+                this.model = this.collection.get(1);
+                console.log(this.model);
+            },
+            
+            templateHelpers: function () {
+                return {
+                   // json: "yeeag",
+                };
             }
-
         });
         return DataSourceView;
     });
