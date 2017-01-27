@@ -23,6 +23,7 @@ define(["marionette",
                 'click #addColumn': 'showCreateFieldForm',
                 'click .delete_column' : 'deleteField'
             },
+            foo: "bar",
             initialize: function (opts) {
                 _.extend(this, opts);
 
@@ -112,6 +113,7 @@ define(["marionette",
                         that.saveChanges(changes, source);
                     }
                 });
+                console.log(this.table, "exists");
             },
             saveChanges: function (changes, source) {
                 //sync with collection:
@@ -126,7 +128,7 @@ define(["marionette",
                             console.log("[" + source + "]: saving changes to database...");
                             //Note: relies on the fact that the first column is the ID column
                             //      see the getColumns() function below
-                            model = this.getModelFromCell(idx);
+                            model = this.getModelFromCell(null, idx);
                             if (key === 'lat' || key === 'lng') {
                                 //SV TODO: To handle polygons and polylines, only set latLng if current
                                 //          geometry is null of of type "Point." Still TODO.
@@ -153,8 +155,9 @@ define(["marionette",
                     }
                 }
             },
-            getModelFromCell: function (index) {
-                var modelID = this.table.getDataAtRowProp(index, "id");
+            getModelFromCell: function (table, index) {
+                table = table || this.table;
+                var modelID = table.getDataAtRowProp(index, "id");
                 return this.collection.get(modelID);
             },
             thumbnailRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
@@ -167,7 +170,7 @@ define(["marionette",
                     span;
                     img.src = value;
                     img.onclick = function () {
-                    model = that.getModelFromCell(rowIndex);
+                    model = that.getModelFromCell(instance, rowIndex);
                     console.log(model);
                     // Get the modal
                     modal = document.getElementById('myModal');
@@ -198,41 +201,24 @@ define(["marionette",
                 return td;
             },
 
-            photoCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
-                //
-                console.log(this);
-                console.log(instance);
-                console.log(row);
-                //var that = this;
-                /*
-                // I have almost made progress, but I have encountered null / undefined errors
-                // despite making sense of what came intuitively
-
-                var model = this.getModelFromCell(row);
-                var count = model.get("photo_count");
-                if (count < 0){
-                    for (var i = 0; i < count; ++i){
-                        //
-                        td.innerHTML.appendChild("<i class='fa fa-file-photo-o' aria-hidden='true'></i>");
-                    }
+            photoCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                var model = this.getModelFromCell(instance, row),
+                    count = model.get("photo_count") || 0,
+                    i;
+                td.innerHTML = "";
+                for (i = 0; i < count; ++i) {
+                    td.innerHTML += "<i class='fa fa-file-photo-o' aria-hidden='true'></i>";
                 }
-                //*/
-
             },
 
-            audioCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
-                //
-                //var that = this;
-                /*
-                var model = this.getModelFromCell(row);
-                var count = model.get("audio_count");
-                if (count < 0){
-                    for (var i = 0; i < count; ++i){
-                        //
-                        td.innerHTML.appendChild("<i class='fa fa-file-audio-o' aria-hidden='true'></i>");
-                    }
+            audioCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                var model = this.getModelFromCell(instance, row),
+                    count = model.get("audio_count") || 0,
+                    i;
+                td.innerHTML = "";
+                for (i = 0; i < count; ++i) {
+                    td.innerHTML += "<i class='fa fa-file-audio-o' aria-hidden='true'></i>";
                 }
-                //*/
 
             },
 
@@ -248,7 +234,7 @@ define(["marionette",
                         return;
                     }
                     // First grab the model of the target row to delete
-                    model = that.getModelFromCell(row);
+                    model = that.getModelFromCell(instance, row);
 
                     // The model holding the row data is destroyed,
                     // but the row containing the data still appears
@@ -328,11 +314,11 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            { data: "file_path", renderer: this.audioRenderer, readOnly: true},
+                            { data: "file_path", renderer: this.audioRenderer, readOnly: true, disableVisualSelection: true},
                             { data: "tags", renderer: "html" },
                             { data: "attribution", renderer: "html"},
                             { data: "owner", readOnly: true},
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
                         ];
                     case "photos":
                        return [
@@ -341,11 +327,11 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true},
+                            { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true, disableVisualSelection: true},
                             { data: "tags", renderer: "html" },
                             { data: "attribution", renderer: "html"},
                             { data: "owner", readOnly: true},
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
                        ];
                     case "markers":
                        return [
@@ -354,11 +340,11 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            { data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true},
-                            { data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true},
+                            { data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                            { data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true},
                             { data: "tags", renderer: "html" },
                             { data: "owner", readOnly: true},
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
                        ];
                     default:
                         var cols = [
@@ -385,19 +371,19 @@ define(["marionette",
                             })
                         };
                         cols.push(
-                            {data: "photos", renderer: "html", readOnly: true}
+                            {data: "photos", renderer: "html", readOnly: true, disableVisualSelection: true }
                         );
 
                         cols.push(
-                            {data: "audio", renderer: "html", readOnly: true}
+                            {data: "audio", renderer: "html", readOnly: true, disableVisualSelection: true }
                         );
 
                         cols.push(
-                            {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                            {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                         );
 
                         cols.push(
-                            {data: "addField", renderer: "html", readOnly: true}
+                            {data: "addField", renderer: "html", readOnly: true, disableVisualSelection: true }
                         );
                         return cols;
                 }
