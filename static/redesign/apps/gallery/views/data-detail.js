@@ -50,7 +50,6 @@ define([
             var mediaBrowser = new MediaBrowser({
                 app: this.app
             });
-            console.log(mediaBrowser);
             this.app.vent.trigger("show-modal", {
                 title: 'Media Browser',
                 width: 800,
@@ -72,7 +71,6 @@ define([
         },
 
         attachModels: function (models) {
-            console.log("attach models here:", models);
             var that  = this;
             for (var i = 0; i < models.length; ++i){
                 this.model.attach(models[i], function(){
@@ -93,7 +91,7 @@ define([
             var $elem = $(e.target);
             var dataType = $elem.attr("data-type");
             var dataID = $elem.attr("data-id");
-            this.model.detach(dataID, dataType, function(){=
+            this.model.detach(dataID, dataType, function(){
                 that.model.fetch({reset: true});
             })
 
@@ -123,11 +121,9 @@ define([
             var fields, i, field, type, name;
             if (this.app.dataType.indexOf('form_') != -1) {
                 fields = {};
-                console.log(this.model);
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     /* https://github.com/powmedia/backbone-forms */
                     field = this.model.get("fields")[i];
-                    console.log(field);
                     type = field.data_type.toLowerCase();
                     name = field.col_name;
                     switch (type) {
@@ -141,7 +137,6 @@ define([
                             fields[name] = 'Text';
                     }
                 }
-                console.log(fields);
                 this.form = new Backbone.Form({
                     model: this.model,
                     schema: fields

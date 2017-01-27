@@ -394,11 +394,7 @@ define(["marionette",
             addRow: function () {
 
                 var that = this;
-
                 var projectID = this.app.selectedProject.id;
-
-
-
                 var rec;
 
                 if (this.app.dataType == "markers"){
@@ -415,12 +411,6 @@ define(["marionette",
                         that.renderSpreadsheet();
                     }
                 });
-
-                // GOtta do something about the order of ID on table
-
-                // Trying to add a row to the handsonTable at the end index,
-                // but I have no luck yet with that alone
-                //this.table.alter("insert_row", null);
 
             }
 
