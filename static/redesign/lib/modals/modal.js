@@ -13,6 +13,10 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             title: null,
             width: 800,
             height: 200,
+            showCloseButton: true,
+            closeButtonText: "Cancel",
+            saveButtonText: "Save",
+            deleteButtonText: "Delete",
             showSaveButton: true,
             showDeleteButton: true,
             events: {
@@ -27,16 +31,13 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 _.extend(this, opts);
                 this.saveFunction = opts.saveFunction;
                 if (!$(".modal").get(0)) {
-                    console.log("prerender");
                     this.render();
                     $('body').append(this.$el);
                 } else {
-                    console.log("adding");
                     this.$el = $('<div></div>').append($(".modal"));
                     $('body').append(this.$el);
                 }
                 this.appendView();
-                //this.setSize();
             },
             templateHelpers: function () {
                 return {
@@ -44,7 +45,10 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                     width: this.width,
                     height: this.height,
                     showSaveButton: this.showSaveButton,
-                    showDeleteButton: this.showDeleteButton
+                    showDeleteButton: this.showDeleteButton,
+                    closeButtonText: this.closeButtonText,
+                    saveButtonText: this.saveButtonText,
+                    deleteButtonText: this.deleteButtonText
                 };
             },
             appendView: function () {
@@ -54,8 +58,10 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 }
             },
             update: function (opts) {
+                opts.closeButtonText = opts.closeButtonText || "Cancel";
+                opts.saveButtonText = opts.saveButtonText || "Save";
+                opts.deleteButtonText = opts.deleteButtonText || "Delete";
                 _.extend(this, opts);
-                console.log(opts, this.showDeleteButton),
                 this.render();
                 this.delegateEvents();
                 this.appendView();
@@ -69,39 +75,11 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 $('body').append(this.$el);
             },
             show: function () {
-                console.log('show');
                 this.$el.find('.modal').show();
                 this.$el.css('display', 'block');
             },
             hide: function () {
-                console.log('hide');
                 this.$el.find('.modal').hide();
-            },
-            /*
-            I am almost there with the showSaveButton
-            and others, but I am recieving the error of the following:
-            'cannot read property of 'find' of undefined'
-            when calling the save button
-            */
-            display_SaveButton(){
-                console.log("Show Save Button");
-                this.showSaveButton = true;
-                //this.$el.find('.save-modal-form').show();
-            },
-            hide_SaveButton(){
-                console.log("Hide Save Button");
-                this.showSaveButton = false;
-                //this.$el.find('.save-modal-form').hide();
-            },
-            display_DeleteButton(){
-                console.log("Show Delete Button");
-                this.showDeleteButton = true;
-                //this.$el.find('.delete-modal').show();
-            },
-            hide_DeleteButton(){
-                console.log("Hide Delete Button");
-                this.showDeleteButton = false;
-                //this.$el.find('.delete-modal').hide();
             }
         });
         return Modal;

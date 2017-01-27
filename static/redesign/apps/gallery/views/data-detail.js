@@ -56,6 +56,7 @@ define([
                 width: 800,
                 height: 400,
                 view: mediaBrowser,
+                saveButtonText: "Add",
                 showSaveButton: true,
                 saveFunction: mediaBrowser.addModels.bind(mediaBrowser)
             });
