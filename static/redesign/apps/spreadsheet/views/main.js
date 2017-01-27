@@ -45,7 +45,6 @@ define(["marionette",
                 } else if (this.app.dataType ==  "audio") {
                     this.collection = new Audio();
                 } else if (this.app.dataType == "markers") {
-                    //alert("show 'markers' spreadsheet");
                     this.collection = new Markers();
                 } else if (this.app.dataType.indexOf("form_") != -1) {
                     id = this.app.dataType.split("_")[1];
@@ -73,13 +72,10 @@ define(["marionette",
                 return "WHERE project = " + this.app.selectedProject.id;
             },
             renderSpreadsheet: function () {
-                //console.log(this.collection);
-                //*
                 if (this.collection.length == 0) {
                     this.$el.find('#grid').html("no rows found");
                     return;
                 }
-                //*/
                 var grid = this.$el.find('#grid').get(0),
                     rowHeights = [],
                     i = 0,
@@ -173,7 +169,6 @@ define(["marionette",
                 img.onclick = function () {
                     model = that.getModelFromCell(rowIndex);
                     console.log(model);
-                    // alert("TODO: Turn this image link into a preview: " + model.get("path_large"));
                     // Get the modal
                     modal = document.getElementById('myModal');
 
@@ -201,10 +196,6 @@ define(["marionette",
                     "<source src='" + value + "'></source>" +
                     "</audio>";
                 return td;
-            },
-
-            markerRenderer: function(instance, td, rowIndex, colIndex, prop, value, cellProperties){
-                //console.log("Marker Being Worked on");
             },
 
             buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
@@ -395,7 +386,6 @@ define(["marionette",
                 var targetColumn = this.fields.at(fieldIndex);
                 targetColumn.destroy({
                     success: function () {
-                        alert("successfully deleted!");
                         that.renderSpreadsheet();
                     }
                 });

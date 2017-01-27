@@ -35,6 +35,44 @@ define(["jquery",
                         $(".column").removeClass("selected-card");
                         this.$el.toggleClass("selected-card");
                     },
+
+                    audioJSTemplate: function(){
+                        // This is rough draft form based on code provided
+                        // will need to be tweaked to work properly
+                        var audio = $(".audio").get(0);
+
+                        var toggle = function () {
+                            if (audio.paused) {
+                                audio.play();
+                                $("#play").addClass("pause");
+                            } else {
+                                audio.pause();
+                                $("#play").removeClass("pause");
+                            }
+                        }
+
+                        $(".fa-plus-circle").bind("click", function () {
+                            audio.volume += ((audio.volume + .1) < 1) ? .1 : 0;
+                        });
+
+                        $(".fa-minus-circle").bind("click", function () {
+                            audio.volume -= ((audio.volume - .1) > 0) ? .1 : 0;
+                        });
+
+                        $("#progress").bind("click", function (e) {
+                            var posX = $(e.target).offset().left,
+                                w = (e.pageX - posX) / $(this).width();
+                            audio.currentTime = w * audio.duration;
+                            if (audio.paused) {
+                                audio.play();
+                            }
+                        });
+
+                        $("audio").bind('timeupdate', function () {
+                            $("#progress > div").width(audio.currentTime / audio.duration * 100 + "%");
+                        });
+
+                    },
                     tagName: "div",
                     className: "column",
                     templateHelpers: function () {

@@ -76,10 +76,8 @@ define([
             var that  = this;
             for (var i = 0; i < models.length; ++i){
                 this.model.attach(models[i], function(){
-                    //alert("success");
                     that.model.fetch({reset: true});
                 }, function(){
-                    //alert("failure");
                 })
             }
             this.app.vent.trigger('hide-modal');
@@ -89,28 +87,13 @@ define([
           and it has to be defined inside the function
         */
         detachModel: function(e){
-            //alert("Need to detach model");
             if (!confirm("Want to remove media from site?")) return;
             var that = this;
-            /*
-            console.log(this.model.collection);
-            console.log(this.model);
-            console.log(this.model.attributes);
-            console.log(this.model.attributes.children);
-            */
 
             var $elem = $(e.target);
             var dataType = $elem.attr("data-type");
             var dataID = $elem.attr("data-id");
-            console.log("Model to Detach: Data Type - " + dataType + ", Data ID: " + dataID);
-
-            // So far, I have managed to get the detach function to work through alert
-            // but I have not yet successfully deleted the targeted item
-            // because I need to tie that clicked item into the target model
-            // for detachment
-
-            this.model.detach(dataID, dataType, function(){
-                alert("Model Detached");
+            this.model.detach(dataID, dataType, function(){=
                 that.model.fetch({reset: true});
             })
 
