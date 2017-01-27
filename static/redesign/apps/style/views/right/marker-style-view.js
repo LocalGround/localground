@@ -38,15 +38,22 @@ define(["marionette",
             },
 
             initialize: function (opts) {
-                this.app = opts.app;        
+                this.app = opts.app;
+             //   this.model = opts.model;
+                this.dataType = this.model.get("layer_type");
                 this.listenTo(this.app.vent, 'send-collection', this.displaySymbols);
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
+                this.listenTo(this.app.vent, 're-render', this.reRender);
                 
                 /**
                  * here is some fake data until the
                  * /api/0/layers/ API Endpoint gets built. Note
                  * that each layer can have more than one symbol
                  */
+            },
+            
+            reRender: function () {
+                this.render();  
             },
             
             templateHelpers: function () {

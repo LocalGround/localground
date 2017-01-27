@@ -8,7 +8,6 @@ define(["models/base"], function (Base) {
         initialize: function (data, opts) {
             Base.prototype.initialize.apply(this, arguments);
             var panelStyles = this.get("panel_styles");
-            console.log(panelStyles);
             if (!_.isUndefined(panelStyles) && _.isString(panelStyles)) {
                 console.log("serialize");
                 this.set("panel_styles", JSON.parse(panelStyles));
@@ -24,7 +23,20 @@ define(["models/base"], function (Base) {
                     tags: {type: "tags", font: "Lato", fw: "regular", color: "black", size: "10"}
                 }
             });
-        }
+        },
+        toJSON: function () {
+            // ensure that the geometry object is serialized before it
+            // gets sent to the server:
+            var json = Base.prototype.toJSON.call(this);
+            
+            if (json.panel_styles != null) {
+                json.panel_styles = JSON.stringify(json.panel_styles);
+            }
+            if (json.center != null) {
+                    json.center = JSON.stringify(json.center);
+                }
+            return json;
+        },
     });
     return Map;
 });

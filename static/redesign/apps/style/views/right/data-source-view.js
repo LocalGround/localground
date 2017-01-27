@@ -12,14 +12,15 @@ define(["marionette",
 
             initialize: function (opts) {
                 this.app = opts.app;
+                this.model = opts.model;
                 // here is some fake data until the
                 // /api/0/maps/ API Endpoint gets built:
                 this.collection = new Maps([
                     { id: 1, name: "Flowers & Birds", project_id: 4 },
                     { id: 2, name: "Berkeley Public Art", project_id: 4 },
                     { id: 3, name: "Soil Science", project_id: 4 }                ]);
-                this.model = this.collection.get(1);
-                console.log(this.model);
+               // this.model = this.collection.get(1);
+               // console.log(this.model);
             },
             
             templateHelpers: function () {

@@ -22,12 +22,13 @@ define(["marionette",
             },
 
             initialize: function (opts) {
-                this.app = opts.app;
+                _.extend(this, opts);
+              /*  this.app = opts.app;
               //  this.model = new Map(
               //      { id: 1, name: "Flowers & Birds", project_id: 4 }
-              //      );
+              //      );*/
               //  console.log(this.model);
-                this.listenTo(this.app.vent, 'change-map', this.setModel);
+              //  this.listenTo(this.app.vent, 'change-map', this.setModel);
 
                 // here is some fake data until the
                 // /api/0/maps/ API Endpoint gets built:
@@ -72,12 +73,13 @@ define(["marionette",
                    // fontWeight: this.model.get("panel_styles")[this.activeKey].fw
                     };
             },
+            /*
             setModel: function (model) {
                 console.log(model);
                 this.model = model;
                 this.render();
                 console.log(this.model);
-            },
+            },*/
             updateType: function () {
                 this.activeKey = this.$el.find("#text-type").val();
                 this.render();

@@ -14,6 +14,7 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.render();
+                this.listenTo(this.app.vent, 'create-layer', this.createLayer);
             },
             
             events: {
@@ -33,14 +34,34 @@ define(["marionette",
                 var dsv = new DataSourceView({ app: this.app });
                 this.dataSource.show(dsv);
                 
-                var msv = new MarkerStyleView({ app: this.app });
-                this.markerStyle.show(msv);
-                this.app.vent.trigger("find-datatype");
+               // var msv = new MarkerStyleView({ app: this.app });
+               // this.markerStyle.show(msv);
+               // this.app.vent.trigger("find-datatype");
                 
                 var frv = new FilterRulesView({ app: this.app });
                 this.filterRules.show(frv);
                 
                                 
+            },
+            
+            createLayer: function (layer) {
+                this.model = layer;
+                var dsv = new DataSourceView({
+                    app: this.app,
+                    model: layer
+                });
+                var msv = new MarkerStyleView({
+                    app: this.app,
+                    model: layer
+                });
+                var frv = new FilterRulesView({
+                    app: this.app,
+                    model: layer
+                });
+                this.dataSource.show(dsv);
+                this.markerStyle.show(msv);
+                this.filterRules.show(frv);
+                this.app.vent.trigger("re-render");
             },
             
             saveLayer: function () {
