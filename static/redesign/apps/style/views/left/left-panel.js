@@ -80,7 +80,7 @@ define(["marionette",
                     
                 });
                 console.log(layer);
-                this.app.vent.trigger("create-layer", layer);
+                this.app.vent.trigger("edit-layer", layer);
             }
         });
         return LeftPanelLayout;

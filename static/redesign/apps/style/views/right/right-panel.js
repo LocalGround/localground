@@ -14,7 +14,7 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.render();
-                this.listenTo(this.app.vent, 'create-layer', this.createLayer);
+                this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
             },
             
             events: {
@@ -31,8 +31,8 @@ define(["marionette",
                 // only load views after the LayoutView has
                 // been rendered to the screen:
                 
-                var dsv = new DataSourceView({ app: this.app });
-                this.dataSource.show(dsv);
+                //var dsv = new DataSourceView({ app: this.app });
+                //this.dataSource.show(dsv);
                 
                // var msv = new MarkerStyleView({ app: this.app });
                // this.markerStyle.show(msv);
