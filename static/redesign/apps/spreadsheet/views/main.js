@@ -165,8 +165,8 @@ define(["marionette",
                     captionText,
                     modal,
                     span;
-                img.src = value;
-                img.onclick = function () {
+                    img.src = value;
+                    img.onclick = function () {
                     model = that.getModelFromCell(rowIndex);
                     console.log(model);
                     // Get the modal
@@ -196,6 +196,34 @@ define(["marionette",
                     "<source src='" + value + "'></source>" +
                     "</audio>";
                 return td;
+            },
+
+            photoCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
+                //
+                var that = this;
+                var model = that.getModelFromCell(row);
+                var count = model.get("photo_count");
+                if (count < 0){
+                    for (var i = 0; i < count; ++i){
+                        //
+                        td.innerHTML.appendChild("<i class='fa fa-file-photo-o' aria-hidden='true'></i>");
+                    }
+                }
+
+            },
+
+            audioCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
+                //
+                var that = this;
+                var model = that.getModelFromCell(row);
+                var count = model.get("audio_count");
+                if (count < 0){
+                    for (var i = 0; i < count; ++i){
+                        //
+                        td.innerHTML.appendChild("<i class='fa fa-file-audio-o' aria-hidden='true'></i>");
+                    }
+                }
+
             },
 
             buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
@@ -316,8 +344,8 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            { data: "photos", renderer: "html"},
-                            { data: "audio", renderer: "html"},
+                            { data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true},
+                            { data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true},
                             { data: "tags", renderer: "html" },
                             { data: "owner", readOnly: true},
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}

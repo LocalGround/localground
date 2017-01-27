@@ -38,7 +38,6 @@ define(["jquery",
                     },
 
                     onRender: function(){
-                        console.log("Rendering audio player: " + this.app.dataType);
                         if (this.app.dataType == "audio"){
                             var player = new AudioPlayer({
                                 model: this.model

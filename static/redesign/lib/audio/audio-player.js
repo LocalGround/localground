@@ -15,8 +15,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
                 'click .volUp': 'volumeUp',
                 'click .volDown': 'volumeDown',
                 'click .play' : 'togglePlay',
-                'click' : 'jumpToTime',
-                'timeupdate' : 'playerDurationUpdate'
+                'click .progress' : 'jumpToTime'
+                // 'timeupdate audio' : 'playerDurationUpdate'
             },
             audio: null,
             template: Handlebars.compile(PlayerTemplate),
@@ -24,8 +24,10 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
                 opts = opts || {};
                 _.extend(this, opts);
                 this.render();
-                console.log(this.$el);
                 this.audio = this.$el.find(".audio").get(0);
+                //$(this.audio).bind(this.playerDurationUpdate);
+                _.bindAll(this,'playerDurationUpdate');
+                this.$el.find('audio').on('timeupdate', this.playerDurationUpdate);
             },
             templateHelpers: function () {
                 return {
