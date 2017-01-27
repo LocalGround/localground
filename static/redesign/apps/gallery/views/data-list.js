@@ -7,10 +7,11 @@ define(["jquery",
         "collections/records",
         "collections/fields",
         "collections/markers",
+        "lib/audio/audio-player",
         "text!../templates/thumb.html",
         "text!../templates/thumb-list.html"],
     function ($, _, Marionette, Handlebars, Photos, Audio, Records,
-               Fields, Markers, ThumbTemplate, ListTemplate) {
+               Fields, Markers, AudioPlayer, ThumbTemplate, ListTemplate) {
         'use strict';
         var ThumbView = Marionette.CompositeView.extend({
 
@@ -36,42 +37,14 @@ define(["jquery",
                         this.$el.toggleClass("selected-card");
                     },
 
-                    audioJSTemplate: function(){
-                        // This is rough draft form based on code provided
-                        // will need to be tweaked to work properly
-                        var audio = $(".audio").get(0);
-
-                        var toggle = function () {
-                            if (audio.paused) {
-                                audio.play();
-                                $("#play").addClass("pause");
-                            } else {
-                                audio.pause();
-                                $("#play").removeClass("pause");
-                            }
+                    onRender: function(){
+                        console.log("Rendering audio player: " + this.app.dataType);
+                        if (this.app.dataType == "audio"){
+                            var player = new AudioPlayer({
+                                model: this.model
+                            });
+                            this.$el.find(".player-container").append(player.$el);
                         }
-
-                        $(".fa-plus-circle").bind("click", function () {
-                            audio.volume += ((audio.volume + .1) < 1) ? .1 : 0;
-                        });
-
-                        $(".fa-minus-circle").bind("click", function () {
-                            audio.volume -= ((audio.volume - .1) > 0) ? .1 : 0;
-                        });
-
-                        $("#progress").bind("click", function (e) {
-                            var posX = $(e.target).offset().left,
-                                w = (e.pageX - posX) / $(this).width();
-                            audio.currentTime = w * audio.duration;
-                            if (audio.paused) {
-                                audio.play();
-                            }
-                        });
-
-                        $("audio").bind('timeupdate', function () {
-                            $("#progress > div").width(audio.currentTime / audio.duration * 100 + "%");
-                        });
-
                     },
                     tagName: "div",
                     className: "column",

@@ -15,20 +15,8 @@
 
 {{#ifequal dataType "audio"}}
 
-    <audio controls preload class="audio">
-      <source src="{{ file_path }}" type="audio/mpeg" />
-    </audio>
+    <div class="player-container">
 
-    <div id="container">
-        <span>Song Name</span><br /> Song subtitle and description
-        <div id="play" onclick="toggle()"></div>
-        <div id="progress">
-            <div></div>
-        </div>
-        <div class="vol">
-            <i class="fa fa-plus-circle fa-2x"></i>
-            <i class="fa fa-minus-circle fa-2x"></i>
-        </div>
     </div>
 
     <h1>

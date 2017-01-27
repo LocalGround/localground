@@ -41,9 +41,9 @@
         </div>
     {{/each}}
     {{#each children.audio.data}}
-        <audio class = "marker-thumb" controls>
-            <source src="{{this.file_path}}"></source>
-        </audio>
+        <div class="player-container">
+
+        </div>
         <a class= "detach_media" data-id="{{this.id}}" data-type = "audio" media-name = "{{this.name}}">X</a>
     {{/each}}
 
