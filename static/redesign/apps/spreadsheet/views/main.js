@@ -236,12 +236,14 @@ define(["marionette",
                     case "photos":
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Delete"];
+                        return ["ID", "Lat", "Lng", "Title", "Caption", "Photos", "Audio", "Tags", "Owner", "Delete"];
                     default:
                         cols = ["ID", "Lat", "Lng"];
                         for (var i = 0; i < this.fields.length; ++i) {
                             cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
                         }
+                        cols.push("Photos");
+                        cols.push("Audio");
                         cols.push("Delete");
                         cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
                         return cols;
@@ -254,7 +256,7 @@ define(["marionette",
                     case "photos":
                         return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "markers":
-                        return [30, 80, 80, 200, 400, 200, 80, 100];
+                        return [30, 80, 80, 200, 400, 200, 100, 100, 80, 100];
                     default:
                         var cols = [30, 80, 80];
                         for (var i = 0; i < this.fields.length; ++i){
@@ -314,6 +316,8 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
+                            { data: "photos", renderer: "html"},
+                            { data: "audio", renderer: "html"},
                             { data: "tags", renderer: "html" },
                             { data: "owner", readOnly: true},
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
@@ -342,6 +346,14 @@ define(["marionette",
                                 type: type
                             })
                         };
+                        cols.push(
+                            {data: "photos", renderer: "html", readOnly: true}
+                        );
+
+                        cols.push(
+                            {data: "audio", renderer: "html", readOnly: true}
+                        );
+
                         cols.push(
                             {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
                         );
