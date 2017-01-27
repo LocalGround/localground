@@ -26,8 +26,7 @@
     box-sizing: border-box;
     vertical-align: top;
 }
-#right-panel, #left-panel {
-    overflow-y: auto;
+#right-panel {
 }
 #right-panel {
     width: 400px;
@@ -88,11 +87,15 @@
     background-color: #fafafc;
     z-index: 40;
     flex: none;
-    overflow: scroll;
     height:100%;
 	transition-property: -webkit-transform,transform,opacity, width;
     transition-duration: 0.2s;
     transition-timing-function: cubic-bezier(0.0,0.0,0.5,1);
+}
+
+.left-wrapper {
+    overflow-y: scroll;
+    height: 100%;
 }
 
 #map-panel{
@@ -284,4 +287,9 @@ th {
 
 .symbols-table th {
     text-align: left;
+}
+
+#new-layer-options {
+    display: none;
+    right: 0px;
 }

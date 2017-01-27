@@ -18,7 +18,8 @@ define(["marionette",
             
             events: {
                         "click .hide-button" : "moveLeftPanel",
-                        "click .edit" : "showRightPanel"
+                        "click .edit" : "showRightPanel",
+                        "click #new-layer-options" : "showRightPanel"
                     },
             
             regions: {

@@ -11,7 +11,7 @@ define(["models/base", "models/symbol"], function (Base, Symbol) {
             isVisible: false
         }),
         symbolMap: null,
-        urlRoot: "/api/0/layers/",
+        //urlRoot: "/api/0/layers/",
         getNamePlural: function () {
             return "layers";
         },
