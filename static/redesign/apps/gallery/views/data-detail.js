@@ -8,10 +8,12 @@ define([
     "text!../templates/audio-detail.html",
     "text!../templates/marker-detail.html",
     "text!../templates/record-detail.html",
+    "lib/audio/audio-player",
     "apps/gallery/views/data-list",
     "form" //extends Backbone
 ], function (Backbone, _, Handlebars, Marionette, MediaBrowser,
              PhotoTemplate, AudioTemplate, MarkerTemplate, RecordTemplate,
+             AudioPlayer,
              DataList) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
@@ -147,6 +149,13 @@ define([
                     model: this.model,
                     fields: fields
                 }).render();
+
+                if (this.app.dataType == "audio"){
+                    var player = new AudioPlayer({
+                        model: this.model
+                    });
+                    this.$el.find(".player-container").append(player.$el);
+                }
             }
             this.$el.find('#model-form').append(this.form.$el);
         },
