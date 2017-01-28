@@ -78,6 +78,14 @@ define(["marionette",
                 this.model.set("layer_type", layerType);
                 // set record property?
                 this.model.set("symbol_shape", symbolShape);
+                this.model.save({
+                    error: function(){
+                        console.log('error');
+                    },
+                        success: function(){
+                            console.log('success');
+                    }
+                });
                 
                 
                 

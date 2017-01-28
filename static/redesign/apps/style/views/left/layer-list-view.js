@@ -135,6 +135,7 @@ define(["marionette",
                     
                     sendCollection: function() {
                         this.app.vent.trigger("edit-layer", this.model);
+                        console.log(this.model);
                     }
                 });
             },

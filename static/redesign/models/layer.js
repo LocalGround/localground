@@ -19,6 +19,9 @@ define(["models/base", "models/symbol"], function (Base, Symbol) {
         initialize: function (data, opts) {
 			Base.prototype.initialize.apply(this, arguments);
             this.buildSymbolMap();
+            if (data.map_id) {
+                this.urlRoot = "/api/0/maps/" + data.map_id + "/layers/";
+            }
 		},
 		validate: function (attrs) {
             //if symbols is an array or it's null or it's empty, raise an exception:
@@ -66,6 +69,17 @@ define(["models/base", "models/symbol"], function (Base, Symbol) {
             _.each(this.getSymbols(), function (symbol) {
                 symbol.isShowingOnMap = true;
             });
+        },
+        toJSON: function () {
+            var json = Base.prototype.toJSON.call(this);
+            
+            if (json.symbols !== null) {
+                json.symbols = JSON.stringify(json.symbols);
+            }
+            if (json.filters !== null) {
+                json.filters = JSON.stringify(json.filters);
+            }
+            return json;
         }
     });
     return Layer;

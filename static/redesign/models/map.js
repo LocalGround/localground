@@ -33,8 +33,8 @@ define(["models/base"], function (Base) {
                 json.panel_styles = JSON.stringify(json.panel_styles);
             }
             if (json.center != null) {
-                    json.center = JSON.stringify(json.center);
-                }
+                json.center = JSON.stringify(json.center);
+            }
             return json;
         },
     });

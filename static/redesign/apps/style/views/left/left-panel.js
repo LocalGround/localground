@@ -70,6 +70,7 @@ define(["marionette",
                     map_id: this.mapModel.id,
                     data_source: $selection,
                     layer_type: "categorical",
+                    filters: [{ "tag" : "nothing" }],
                     symbols: [{
                         "color": "#7075FF",
                         "width": 30,
