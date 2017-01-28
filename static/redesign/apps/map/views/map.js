@@ -14,6 +14,7 @@ define(["marionette",
         var Basemap = Marionette.View.extend({
             customMapTypeID: 'custom-style',
             map: null,
+            showSearchControl: true,
             activeMapTypeID: 1,
             tileManager: null,
             userProfile: null,
@@ -58,7 +59,9 @@ define(["marionette",
 
             addControls: function () {
                 //add a search control, if requested:
-                this.searchControl = new SearchBox(this.map);
+                if (this.showSearchControl) {
+                    this.searchControl = new SearchBox(this.map);
+                }
 
                 //add a browser-based location detector, if requested:
                 /*if (opts.includeGeolocationControl) {
