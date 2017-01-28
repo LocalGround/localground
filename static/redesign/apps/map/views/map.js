@@ -1,8 +1,9 @@
 define(["marionette",
         "jquery",
-        "lib/maps/controls/searchBox"
+        "lib/maps/controls/searchBox",
+        "lib/maps/controls/tileController"
     ],
-    function (Marionette, $, SearchBox) {
+    function (Marionette, $, SearchBox, TileController) {
         'use strict';
         /**
          * A class that handles the basic Google Maps functionality,
@@ -12,79 +13,6 @@ define(["marionette",
 
         var Basemap = Marionette.View.extend({
             customMapTypeID: 'custom-style',
-            getCustomStyle: function () {
-                return new google.maps.StyledMapType([
-                    {
-                        "featureType": "landscape.natural",
-                        "elementType": "geometry.fill",
-                        "stylers": [
-                            {
-                                "visibility": "on"
-                            },
-                            {
-                                "color": "#e0efef"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "poi",
-                        "elementType": "geometry.fill",
-                        "stylers": [
-                            {
-                                "visibility": "on"
-                            },
-                            {
-                                "hue": "#1900ff"
-                            },
-                            {
-                                "color": "#c0e8e8"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road",
-                        "elementType": "geometry",
-                        "stylers": [
-                            {
-                                "lightness": 100
-                            },
-                            {
-                                "visibility": "simplified"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "all",
-                        "elementType": "labels",
-                        "stylers": [
-                            {
-                                "visibility": "off"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "transit.line",
-                        "elementType": "geometry",
-                        "stylers": [
-                            {
-                                "visibility": "on"
-                            },
-                            {
-                                "lightness": 700
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "water",
-                        "elementType": "all",
-                        "stylers": [
-                            {
-                                "color": "#7dcdcd"
-                            }
-                        ]
-                    }
-                ], { name: 'Custom Style' });
-            },
             map: null,
             activeMapTypeID: 1,
             tileManager: null,
@@ -117,7 +45,6 @@ define(["marionette",
                     zoomControlOptions: {
                         style: google.maps.ZoomControlStyle.SMALL
                     },
-                    styles: this.getCustomStyle(),
                     zoom: this.defaultLocation.zoom,
                     center: this.defaultLocation.center
 
@@ -125,8 +52,8 @@ define(["marionette",
                 console.log(mapOptions);
                 this.app.map = this.map = new google.maps.Map(document.getElementById(this.$el.attr("id")),
                     mapOptions);
-                this.map.mapTypes.set(this.customMapTypeID, this.getCustomStyle());
-                this.map.setMapTypeId(this.customMapTypeID);
+                //this.map.mapTypes.set(this.customMapTypeID, this.getCustomStyle());
+                //this.map.setMapTypeId(this.customMapTypeID);
             },
 
             addControls: function () {
@@ -143,13 +70,10 @@ define(["marionette",
                 }*/
 
                 //set up the various map tiles in Google maps:
-                /*if (this.tilesets) {
-                    this.tileManager = new TileController(this.app, {
-                        map: this.map,
-                        tilesets: this.tilesets,
-                        activeMapTypeID: this.activeMapTypeID
-                    });
-                }*/
+                this.tileManager = new TileController(this.app, {
+                    map: this.map,
+                    activeMapTypeID: this.activeMapTypeID
+                });
 
                 //add event handlers:
             },
@@ -178,10 +102,11 @@ define(["marionette",
                 var latLng = this.map.getCenter(),
                     state = {
                         center: [latLng.lng(), latLng.lat()],
-                        zoom: this.map.getZoom()
+                        zoom: this.map.getZoom(),
+                        activeMapTypeID: this.tileManager.getMapTypeId()
                     };
                 this.app.saveState("basemap", state);
-                //console.log("saving state:", state);
+                console.log("saving state:", state);
             },
             restoreState: function () {
                 var state = this.app.restoreState("basemap");
@@ -194,6 +119,9 @@ define(["marionette",
                     }
                     if (state.zoom) {
                         this.defaultLocation.zoom = state.zoom;
+                    }
+                    if (state.activeMapTypeID) {
+                        this.activeMapTypeID = state.activeMapTypeID;
                     }
                 }
                 return state;

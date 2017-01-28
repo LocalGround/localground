@@ -37,6 +37,64 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                     stamen: Stamen,
                     mapbox: MapBox
                 },
+                getCustomStyle = function () {
+                    var baseURL = "http://maps.google.com/maps/api/staticmap?sensor=false&maptype=roadmap",
+                        land = "style=feature:landscape.natural%7Celement:geometry.fill%7Cvisibility:on%7Ccolor:0xe0efef",
+                        poi = "style=feature:poi%7Celement:geometry.fill%7Cvisibility:on%7Ccolor:0xc0e8e8",
+                        road = "style=feature:road%7Celement:geometry%7Cvisibility:simplified%7Clightness:100",
+                        all = "style=feature:all%7Celement:labels%7Cvisibility:off",
+                        transit = "style=feature:transit.line%7Celement:geometry%7Clightness:700%7Cvisibility:on",
+                        water = "style=feature:water%7Celement:all%7Ccolor:0x7dcdcd",
+                        staticURL = [baseURL, land, poi, road, all, transit, water].join("&");
+                        //extras = "&size=512x512&zoom=12&center=Berkeley";
+                        //staticURLTest = staticURL + extras;
+                    //console.log(staticURLTest);
+                    return {
+                        sourceName: "google-custom",
+                        min: 1,
+                        max: 20,
+                        is_printable: true,
+                        providerID: "roadmap",
+                        id: 5,
+                        typeID: 1,
+                        name: "Default",
+                        url: staticURL,
+                        sourceID: 5,
+                        type: "Base Tileset",
+                        clientStyles: [
+                            {
+                                "featureType": "landscape.natural",
+                                "elementType": "geometry.fill",
+                                "stylers": [{ "visibility": "on" }, { "color": "#e0efef" }]
+                            },
+                            {
+                                "featureType": "poi",
+                                "elementType": "geometry.fill",
+                                "stylers": [{ "visibility": "on" }, { "color": "#c0e8e8" }]
+                            },
+                            {
+                                "featureType": "road",
+                                "elementType": "geometry",
+                                "stylers": [{ "lightness": 100 }, { "visibility": "simplified" }]
+                            },
+                            {
+                                "featureType": "all",
+                                "elementType": "labels",
+                                "stylers": [{ "visibility": "off" }]
+                            },
+                            {
+                                "featureType": "transit.line",
+                                "elementType": "geometry",
+                                "stylers": [{ "lightness": 700 }, { "visibility": "on" }]
+                            },
+                            {
+                                "featureType": "water",
+                                "elementType": "all",
+                                "stylers": [{ "color": "#7dcdcd" }]
+                            }
+                        ]
+                    };
+                },
                 /**
                  * Initializes the tilesets for the map and adds each
                  * tileset option to the maptype control on the map.
@@ -46,24 +104,31 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                 initTiles = function () {
                     //iterate through each of the user's basemap tilesets and add it to the map:
                     $.each(this.tilesets, function () {
-                        var sourceName = this.sourceName.toLowerCase();
+                        var sourceName = this.sourceName.toLowerCase(),
+                            MapType;
                         if (sourceName === "stamen" || sourceName === "mapbox") {
-                            var MapType = typeLookup[sourceName];
+                            MapType = typeLookup[sourceName];
                             mapTypeIDs.push(this.name);
                             map.mapTypes.set(
                                 this.name,
                                 new MapType({
                                     styleID: this.providerID,
                                     name: this.name,
-                                    max: this.max
+                                    max: this.max,
+                                    clientStyle: this.clientStyle
                                 })
                             );
                         } else if (sourceName === "google") {
                             mapTypeIDs.unshift(this.providerID);
+                        } else if (sourceName === "google-custom") {
+                            map.mapTypes.set(this.name,
+                                new google.maps.StyledMapType(this.clientStyles, { name: this.name }));
+                            mapTypeIDs.push(this.name);
                         } else {
                             alert("Error in localground.maps.TileManager: unknown map type: " + sourceName);
                         }
                     });
+
                     if (map.mapTypeControlOptions) {
                         //map controls may or may not be activated (but tiles still need to be initialized)
                         map.mapTypeControlOptions.mapTypeIds = mapTypeIDs;
@@ -98,7 +163,16 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                  */
                 initialize = function (opts) {
                     //initialize properties:
-                    this.tilesets = opts.tilesets;
+                    this.tilesets = [
+                        {"sourceName": "mapbox", "max": 19, "is_printable": true, "providerID": "lg.i1p5alka", "id": 1, "typeID": 1, "name": "Mapnik", "min": 1, "url": "", "sourceID": 1, "type": "Base Tileset"},
+                        {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "roadmap", "id": 2, "typeID": 1, "name": "Roadmap", "min": 1, "url": "http://maps.google.com/maps/api/staticmap?sensor=false&maptype=roadmap&style=feature:poi.school|element:geometry|saturation:-79|lightness:75", "sourceID": 5, "type": "Base Tileset"},
+                        {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "hybrid", "id": 3, "typeID": 1, "name": "Hybrid", "min": 1, "url": "http://maps.google.com/maps/api/staticmap?sensor=false&maptype=hybrid", "sourceID": 5, "type": "Base Tileset"},
+                        {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "terrain", "id": 4, "typeID": 1, "name": "Terrain", "min": 1, "url": "http://maps.google.com/maps/api/staticmap?sensor=false&maptype=terrain", "sourceID": 5, "type": "Base Tileset"},
+                        {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "satellite", "id": 9, "typeID": 1, "name": "Satellite", "min": 1, "url": "http://maps.google.com/maps/api/staticmap?sensor=false&maptype=satellite", "sourceID": 5, "type": "Base Tileset"},
+                        {"sourceName": "mapbox", "max": 19, "is_printable": true, "providerID": "lg.i1p2e2cf", "id": 12, "typeID": 1, "name": "Grayscale", "min": 1, "url": "", "sourceID": 1, "type": "Base Tileset"},
+                        {"sourceName": "stamen", "max": 20, "is_printable": false, "providerID": "watercolor", "id": 20, "typeID": 1, "name": "Watercolor", "min": 1, "url": "", "sourceID": 6, "type": "Base Tileset"}
+                    ];
+                    this.tilesets.push(getCustomStyle());
                     map = opts.map;
 
                     //initialize tiles and set the active map type
