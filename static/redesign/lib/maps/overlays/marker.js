@@ -16,15 +16,22 @@ define([
          * @returns {Object} icon definition
          */
         getIcon: function () {
-            var opts = {
+            /*var opts = {
                 fillColor: '#' + this.model.get("color"),
                 strokeColor: "#FFF",
                 strokeWeight: 1.5,
                 fillOpacity: 1,
                 scale: 1.6
             };
-            _.extend(opts, _.clone(this._overlay.Shapes.MAP_PIN_HOLLOW));
-            return opts;
+            _.extend(opts, _.clone(this._overlay.Shapes.MAP_PIN_HOLLOW));*/
+            return {
+                path: 'M-2,0a2,2 0 1,0 4,0a2,2 0 1,0 -4,0',
+                scale: 5,
+                fillColor: '#ed867d', //this.model.get("color")
+                fillOpacity: 1,
+                strokeColor: '#f6f6f6',
+                strokeWeight: 2
+            };
         },
 
         /** adds icon to overlay. */

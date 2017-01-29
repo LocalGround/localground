@@ -72,6 +72,7 @@ define(["marionette",
             var that = this;
             //attach click event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
+                this.setIcon(that.getIconActive());
                 that.app.router.navigate("//" + that.app.dataType + "/" + that.model.get("id"));
             });
             //attach mouseout event:
