@@ -115,7 +115,19 @@ define(["jquery"],
                 }
                 return null;
             },
+            getProjectID: function () {
+                var id = this.getParameterByName('project_id');
+                if (!id) {
+                    id = this.restoreState('project_id');
+                }
+                if (!id) {
+                    console.log("You're not logged in. Redirecting...");
+                    window.location = window.location.host + "/accounts/login/?next=" + window.location;
+                }
+                return id;
+            },
             selectProject: function () {
+                //TODO: Deprecate
                 //1. get project from request parameter:
                 this.selectedProject = this.getProjectFromParam();
                 //2. get project from localStorage:

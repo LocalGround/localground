@@ -7,9 +7,12 @@ define([
     "views/toolbar-global",
     "apps/gallery/views/toolbar-dataview",
     "collections/projects",
+    "lib/data/dataManager",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, DataList, DataDetail, ToolbarGlobal, ToolbarDataView, Projects, appUtilities) {
+], function (Marionette, Backbone, Router, DataList, DataDetail,
+             ToolbarGlobal, ToolbarDataView, Projects, DataManager,
+             appUtilities) {
     "use strict";
     var GalleryApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
@@ -23,6 +26,8 @@ define([
         dataType: "photos",
         screenType: "gallery",
         activeTab: "media",
+        dataManager: null,
+        selectedProjectID: null,
 
         start: function (options) {
             // declares any important global functionality;
@@ -41,12 +46,10 @@ define([
             Marionette.Application.prototype.initialize.apply(this, [options]);
 
             //add views to regions after projects load:
-            this.projects = new Projects();
-            this.listenTo(this.projects, 'reset', this.selectProjectLoadRegions);
-            this.projects.fetch({ reset: true });
-        },
-        selectProjectLoadRegions: function () {
-            this.selectProject(); //located in appUtilities
+            //this.projects = new Projects();
+            this.selectedProjectID = this.getProjectID();
+            this.dataManager = new DataManager({ app: this});
+            this.dataManager.fetchDataByProjectID(this.selectedProjectID);
             this.loadRegions();
         },
 

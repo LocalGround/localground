@@ -1,9 +1,8 @@
 define(["models/project",
-        "collections/projects",
         "jquery",
         "config"
     ],
-    function (Project, Projects, $, Config) {
+    function (Project, $, Config) {
         'use strict';
 
         /**
@@ -13,7 +12,7 @@ define(["models/project",
          * this data.
          * @class DataManager
          */
-        var DataManager = function (app) {
+        var DataManager = function (opts) {
             /**
              * Helper function that files Backbone models into their
              * appropriate Backbone collection
@@ -69,25 +68,11 @@ define(["models/project",
 
             this.initialize = function (opts) {
                 this.app = opts.app;
-                this.availableProjects = opts.availableProjects;
-                this.availableProjects.on('toggleProject', this.toggleProject.bind(this));
-                this.app.vent.on("load-projects", this.fetchProjects.bind(this));
                 this.app.vent.on("project-requested", this.fetchDataByProjectID.bind(this));
-                this.app.vent.on("set-active-project", this.setActiveProject.bind(this));
                 this.app.vent.on("marker-added", updateCollection.bind(this));
-                this.app.vent.on('load-snapshot-list', this.fetchSnapshots.bind(this));
                 this.app.vent.on("apply-filter", this.applyFilter.bind(this));
                 this.app.vent.on("clear-filter", this.clearFilter.bind(this));
-                this.app.vent.on("refresh-collections", this.refreshCollections.bind(this));
-                this.selectedProjects = new Projects();
                 //this.restoreState();
-            };
-
-            /**
-             * Fetches the user's available projects from the data API.
-             */
-            this.fetchProjects = function (projectCollection) {
-                projectCollection.fetch({reset: true});
             };
 
             /**
@@ -101,57 +86,8 @@ define(["models/project",
 
                 project.fetch({data: {format: 'json', include_metadata: true}, success: function () {
                     that.updateCollections(project);
+                    console.log(that);
                 }});
-            };
-
-            /**
-             * Removes project data from memory (which subsequently
-             * removes this data from the views which are bound to
-             * the data).
-             * @param {Integer} id
-             * The id of the project of interest.
-             */
-            this.removeDataByProjectID = function (projectId) {
-                ////backbonejs.org/#Collection-remove
-                var key,
-                    collection;
-
-                for (key in this.collections) {
-                    if (this.collections.hasOwnProperty(key)) {
-                        collection = this.collections[key];
-                        collection.remove(collection.where({project_id: Number(projectId)}));
-                    }
-                }
-
-
-                //remove selected project:
-                //
-                this.selectedProjects.remove({id: projectId});
-                this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
-                this.resetActiveProject();
-                this.saveState();
-            };
-
-            this.refreshCollections = function() {
-                this.selectedProjects.each(function(project) {
-                    this.fetchDataByProjectID(project.id);
-                }.bind(this));
-            }
-
-            this.toggleProject = function (projectId, fetch) {
-                if (fetch) {
-                    this.fetchDataByProjectID(projectId);
-                } else {
-                    this.removeDataByProjectID(projectId);
-                }
-            };
-
-            this.resetActiveProject = function () {
-                this.app.setActiveProjectID(-1);
-                var that = this;
-                this.selectedProjects.each(function (model) {
-                    that.app.setActiveProjectID(model.id);
-                });
             };
 
             /**
@@ -210,12 +146,11 @@ define(["models/project",
                             updateMetadata: children[key].update_metadata
                         }));
                     };
-                this.app.setActiveProjectID(project.get("id"));
                 for (key in children) {
                     if (children.hasOwnProperty(key)) {
                         models = [];
                         configKey = key;
-                        if(configKey.indexOf("form_") != -1) {
+                        if (configKey.indexOf("form_") != -1) {
                             configKey = configKey.split("_")[0];
                         }
                         opts = Config[configKey];
@@ -231,13 +166,9 @@ define(["models/project",
                         updateCollection.call(this, opts);
                     }
                 }
-                //add new project to the collection:
-                this.selectedProjects.add(project, {merge: true});
-                this.app.vent.trigger('selected-projects-updated', {projects: this.selectedProjects});
-                this.saveState();
             };
 
-            this.setActiveProject = function (data) {
+            /*this.setActiveProject = function (data) {
                 this.app.setActiveProjectID(data.id);
                 this.saveState();
             };
@@ -251,9 +182,9 @@ define(["models/project",
                     projectIDs: ids,
                     defaultProjectID: this.app.getActiveProjectID()
                 });
-            };
+            };*/
 
-            this.restoreState = function () {
+            /*this.restoreState = function () {
                 var state = this.app.restoreState("dataManager"),
                     i,
                     projIndex;
@@ -274,9 +205,9 @@ define(["models/project",
 
             this.fetchSnapshots = function (snapshotCollection) {
                 snapshotCollection.fetch({reset: true});
-            };
+            };*/
 
-            this.initialize(app);
+            this.initialize(opts);
         };
         return DataManager;
     });
