@@ -63,6 +63,9 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
 
                 this.$el.find(".progress > div").width(this.audio.currentTime /
                                      this.audio.duration * 100 + "%");
+                this.$el.find(".audio-progress-circle").css({
+                    left: this.audio.currentTime / this.audio.duration * 100 + "%"
+                });
             },
 
             formatTime: function(timeCount){

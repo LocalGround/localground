@@ -20,7 +20,7 @@ define([
         },
         currentCollection: null,
         mode: "edit",
-        dataType: "photos",
+        dataType: "audio",
         screenType: "gallery",
         activeTab: "media",
 
@@ -53,7 +53,7 @@ define([
         loadRegions: function () {
             this.showGlobalToolbar();
             this.showDataToolbar();
-            this.router.navigate('//photos', { trigger: true });
+            this.router.navigate('//audio', { trigger: true });
         },
 
         showGlobalToolbar: function () {
