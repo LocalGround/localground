@@ -6,12 +6,11 @@ define([
     "apps/gallery/views/data-detail",
     "views/toolbar-global",
     "apps/gallery/views/toolbar-dataview",
-    "collections/projects",
     "lib/data/dataManager",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, DataList, DataDetail,
-             ToolbarGlobal, ToolbarDataView, Projects, DataManager,
+             ToolbarGlobal, ToolbarDataView, DataManager,
              appUtilities) {
     "use strict";
     var GalleryApp = Marionette.Application.extend(_.extend(appUtilities, {
@@ -36,8 +35,10 @@ define([
             this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
+            //this.loadRegions();
 
             //add event listeners:
+            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
             this.listenTo(this.vent, 'hide-detail', this.hideMediaDetail);
             this.listenTo(this.vent, 'show-list', this.showMediaList);
@@ -49,13 +50,12 @@ define([
             //this.projects = new Projects();
             this.selectedProjectID = this.getProjectID();
             this.dataManager = new DataManager({ app: this});
-            this.dataManager.fetchDataByProjectID(this.selectedProjectID);
-            this.loadRegions();
         },
 
         loadRegions: function () {
             this.showGlobalToolbar();
             this.showDataToolbar();
+            console.log("about to navigate", this.router);
             this.router.navigate('//photos', { trigger: true });
         },
 
@@ -75,11 +75,12 @@ define([
 
         showMediaList: function (mediaType) {
             this.dataType = mediaType;
+            this.currentCollection = this.dataManager.getCollection(this.dataType);//this.mainView.collection;
             this.mainView = new DataList({
-                app: this
+                app: this,
+                collection: this.currentCollection
             });
             this.galleryRegion.show(this.mainView);
-            this.currentCollection = this.mainView.collection;
             this.hideMediaDetail();
         },
 

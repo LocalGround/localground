@@ -1,213 +1,57 @@
-define(["models/project",
-        "jquery",
-        "config"
-    ],
-    function (Project, $, Config) {
+define(["underscore", "marionette", "models/project", "collections/photos",
+        "collections/audio", "collections/mapimages", "collections/markers",
+        "collections/records", "collections/fields"],
+    function (_, Marionette, Project, Photos, Audio, MapImages, Markers, Records, Fields) {
         'use strict';
-
-        /**
-         * The map DataManager class separates the temporary data
-         * storage (data retrieved from various Local Ground Data
-         * API queries) from the different map views that consume
-         * this data.
-         * @class DataManager
-         */
-        var DataManager = function (opts) {
-            /**
-             * Helper function that files Backbone models into their
-             * appropriate Backbone collection
-             * @method updateCollections
-             * @param {String} key
-             * @param {Array} models
-             * A list of Backbone models
-             * @param {Object} opts
-             * An object that tells the function which collection
-             * type to instantiate, and the name of the collection
-             */
-            var updateCollection = function (opts) {
-                if (!opts) {
-                    throw new Error("opts cannot be null");
-                } else if (!opts.models) {
-                    throw new Error("opts.models cannot be null");
-                }
-                var key = opts.key,
-                    models = opts.models,
-                    collectionOpts;
-                if (!this.collections[key]) {
-                    if (!opts.name) {
-                        throw new Error("opts.name must be defined");
-                    } else if (!opts.Collection) {
-                        throw new Error("opts.Collection must be defined");
-                    }
-                    collectionOpts = { key: key, name: opts.name };
-                    //A few special hacks for form data:
-                    if (key.indexOf("form") !== -1) {
-                        collectionOpts.url = '/api/0/forms/' + key.split("_")[1] + '/data/';
-                    }
-                    this.collections[key] = new opts.Collection([], collectionOpts);
-
-                    // important: this trigger enables the overlayManager
-                    // to create a new overlay for each model where the
-                    // GeoJSON geometry is defined.
-                    this.app.vent.trigger('new-collection-created', {collection: this.collections[key]});
-
-                }
-                this.collections[key].add(models, {merge: true});
-            };
-            /**
-             * A dictionary of the various data types available (given
-             * the projects that have been selected), and the corresponding
-             * data records that have been pulled down from the Data API.
-             */
-            this.collections = {};
-
-            /**
-             * The projects that are currently loaded in
-             * corresponding map views.
-             */
-
-            this.initialize = function (opts) {
-                this.app = opts.app;
-                this.app.vent.on("project-requested", this.fetchDataByProjectID.bind(this));
-                this.app.vent.on("marker-added", updateCollection.bind(this));
-                this.app.vent.on("apply-filter", this.applyFilter.bind(this));
-                this.app.vent.on("clear-filter", this.clearFilter.bind(this));
-                //this.restoreState();
-            };
-
-            /**
-             * Fetches a particular project from the data API.
-             * @param {Integer} id
-             * The id of the project of interest.
-             */
-            this.fetchDataByProjectID = function (projectID) {
-                var that = this,
-                    project = new Project({id: projectID});
-
-                project.fetch({data: {format: 'json', include_metadata: true}, success: function () {
-                    that.updateCollections(project);
-                    console.log(that);
-                }});
-            };
-
-            /**
-             * Because projects have many different types of data
-             * associated with them (which must all be treated slightly
-             * differently), each type of data is locally stored in its
-             * own collection. See config.js to view the various data
-             * types associated with a particular project. The config
-             * file coordinates between the data stored in the API, and
-             * the backbone data structures that manipulate this data.
-             * @param {String} key
-             * The key refers to the object_type of the data of interest.
-             */
-            this.getCollection = function (key) {
-                return this.collections[key];
-            };
-
-            this.applyFilter = function (sql) {
-                var key;
-                for (key in this.collections) {
-                    if (this.collections.hasOwnProperty(key)) {
-                        this.collections[key].applyFilter(sql);
-                    }
-                }
-                this.app.vent.trigger('filter-applied');
-            };
-
-            this.clearFilter = function () {
-                var key;
-                for (key in this.collections) {
-                    if (this.collections.hasOwnProperty(key)) {
-                        this.collections[key].clearFilter();
-                    }
-                }
-                this.app.vent.trigger('filter-applied');
-            };
-
-            /**
-             * Coordinates data pulled down from the data API
-             * with the local Backbone collections being stored
-             * and manipulated in memory.
-             * @method updateCollections
-             * @param {Project} project
-             * A project detail data structure returned from the
-             * Local Ground data API.
-             */
-            this.updateCollections = function (project) {
-                //add child data to the collection:
-                var models,
-                    configKey,
-                    opts,
-                    children = project.get("children"),
-                    key,
-                    modelCreator = function () {
-                        models.push(new opts.Model(this, {
-                            updateMetadata: children[key].update_metadata
-                        }));
-                    };
-                for (key in children) {
-                    if (children.hasOwnProperty(key)) {
-                        models = [];
-                        configKey = key;
-                        if (configKey.indexOf("form_") != -1) {
-                            configKey = configKey.split("_")[0];
-                        }
-                        opts = Config[configKey];
-                        $.each(children[key].data, modelCreator);
-
-                        $.extend(opts, {
-                            name: children[key].name,
-                            createMetadata: children[key].create_metadata,
-                            key: key,
-                            models: models
-                        });
-                        //"call" method needed to set this's scope:
-                        updateCollection.call(this, opts);
-                    }
-                }
-            };
-
-            /*this.setActiveProject = function (data) {
-                this.app.setActiveProjectID(data.id);
-                this.saveState();
-            };
-
-            this.saveState = function () {
-                var ids = [];
-                this.selectedProjects.each(function (model) {
-                    ids.push(model.id);
+        var DataManager = Marionette.ItemView.extend({
+            dataDictionary: {},
+            template: false,
+            initialize: function (opts) {
+                _.extend(this, opts);
+                this.model = new Project({ id: this.app.getProjectID() });
+                this.model.fetch({ success: this.setCollections.bind(this) });
+            },
+            setCollections: function () {
+                var that = this;
+                _.each(this.model.get("children"), function (entry, key) {
+                    that.dataDictionary[key] = entry;
+                    that.dataDictionary[key].data = that.initCollection(key, entry.data);
                 });
-                this.app.saveState("dataManager", {
-                    projectIDs: ids,
-                    defaultProjectID: this.app.getActiveProjectID()
+                this.app.vent.trigger('data-loaded');
+                console.log(this.getDataSources());
+            },
+            getDataSources: function () {
+                var dataSources = [];
+                _.each(this.dataDictionary, function (entry, key) {
+                    dataSources.push({
+                        value: key,
+                        name: entry.name
+                    });
                 });
-            };*/
-
-            /*this.restoreState = function () {
-                var state = this.app.restoreState("dataManager"),
-                    i,
-                    projIndex;
-                if (!state) {
-                    return;
+                return dataSources;
+            },
+            getCollection: function (key) {
+                return this.dataDictionary[key].data;
+            },
+            initCollection: function (key, data) {
+                switch (key) {
+                case "photos":
+                    return new Photos(data);
+                case "audio":
+                    return new Audio(data);
+                case "markers":
+                    return new Markers(data);
+                case "map_images":
+                    return new MapImages(data);
+                default:
+                    if (key.indexOf("form_") != -1) {
+                        var url = '/api/0/forms/' + key.split("_")[1] + '/data/';
+                        return new Records(data, { url: url });
+                    }
+                    alert("case not handled");
+                    return null;
                 }
-                for (i = 0; i < state.projectIDs.length; i++) {
-                    this.fetchDataByProjectID({ id: state.projectIDs[i] });
-                }
-                // check to make sure the default project exists in the active list:
-                projIndex = state.projectIDs.indexOf(state.defaultProjectID);
-                // if it doesn't, set the projIndex to the last active project in the list:
-                if (projIndex === -1) {
-                    projIndex = state.projectIDs.length - 1;
-                }
-                this.app.setActiveProjectID(state.projectIDs[projIndex]);
-            };
-
-            this.fetchSnapshots = function (snapshotCollection) {
-                snapshotCollection.fetch({reset: true});
-            };*/
-
-            this.initialize(opts);
-        };
+            }
+        });
         return DataManager;
     });

@@ -250,7 +250,7 @@ define([
 
         getFormData: function () {
             return {
-                project_id: this.app.selectedProject.id,
+                project_id: this.app.getProjectID(),
                 csrfmiddlewaretoken: this.app.getCookie('csrftoken')
             };
         },
