@@ -36,13 +36,14 @@
         <button id="add-media-button" class="click-to-open" data-modal="modal-add-media"><i class="fa fa-plus" aria-hidden="true"></i></button>
     </div>
     {{#each children.photos.data}}
-        <div class="attached-media" style="background: url('{{this.path_small}}');"></div>
-        <!-- div class="uploaded-media1">
-            <div class="hover-to-show edit-img-overlay">
-                <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>
-                <i class="fa fa-cog" aria-hidden="true"></i>
+        <div class="attached-container">
+            <div class="attached-media" style="background: url('{{this.path_small}}');"></div>
+            <div class="attached-media-overlay">
+                <div class="hover-to-show">
+                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>
+                </div>
             </div>
-        </div -->
+        </div>
     {{/each}}
     {{#each children.audio.data}}
         <audio class = "marker-thumb" controls>

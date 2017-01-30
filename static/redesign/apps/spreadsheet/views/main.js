@@ -23,6 +23,7 @@ define(["marionette",
                 'click #addColumn': 'showCreateFieldForm',
                 'click .delete_column' : 'deleteField'
             },
+            foo: "bar",
             initialize: function (opts) {
                 _.extend(this, opts);
 
@@ -45,7 +46,6 @@ define(["marionette",
                 } else if (this.app.dataType ==  "audio") {
                     this.collection = new Audio();
                 } else if (this.app.dataType == "markers") {
-                    //alert("show 'markers' spreadsheet");
                     this.collection = new Markers();
                 } else if (this.app.dataType.indexOf("form_") != -1) {
                     id = this.app.dataType.split("_")[1];
@@ -73,13 +73,10 @@ define(["marionette",
                 return "WHERE project = " + this.app.selectedProject.id;
             },
             renderSpreadsheet: function () {
-                //console.log(this.collection);
-                //*
                 if (this.collection.length == 0) {
                     this.$el.find('#grid').html("no rows found");
                     return;
                 }
-                //*/
                 var grid = this.$el.find('#grid').get(0),
                     rowHeights = [],
                     i = 0,
@@ -116,6 +113,7 @@ define(["marionette",
                         that.saveChanges(changes, source);
                     }
                 });
+                console.log(this.table, "exists");
             },
             saveChanges: function (changes, source) {
                 //sync with collection:
@@ -130,7 +128,7 @@ define(["marionette",
                             console.log("[" + source + "]: saving changes to database...");
                             //Note: relies on the fact that the first column is the ID column
                             //      see the getColumns() function below
-                            model = this.getModelFromCell(idx);
+                            model = this.getModelFromCell(null, idx);
                             if (key === 'lat' || key === 'lng') {
                                 //SV TODO: To handle polygons and polylines, only set latLng if current
                                 //          geometry is null of of type "Point." Still TODO.
@@ -157,8 +155,9 @@ define(["marionette",
                     }
                 }
             },
-            getModelFromCell: function (index) {
-                var modelID = this.table.getDataAtRowProp(index, "id");
+            getModelFromCell: function (table, index) {
+                table = table || this.table;
+                var modelID = table.getDataAtRowProp(index, "id");
                 return this.collection.get(modelID);
             },
             thumbnailRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
@@ -169,11 +168,10 @@ define(["marionette",
                     captionText,
                     modal,
                     span;
-                img.src = value;
-                img.onclick = function () {
-                    model = that.getModelFromCell(rowIndex);
+                    img.src = value;
+                    img.onclick = function () {
+                    model = that.getModelFromCell(instance, rowIndex);
                     console.log(model);
-                    // alert("TODO: Turn this image link into a preview: " + model.get("path_large"));
                     // Get the modal
                     modal = document.getElementById('myModal');
 
@@ -203,8 +201,25 @@ define(["marionette",
                 return td;
             },
 
-            markerRenderer: function(instance, td, rowIndex, colIndex, prop, value, cellProperties){
-                //console.log("Marker Being Worked on");
+            photoCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                var model = this.getModelFromCell(instance, row),
+                    count = model.get("photo_count") || 0,
+                    i;
+                td.innerHTML = "";
+                for (i = 0; i < count; ++i) {
+                    td.innerHTML += "<i class='fa fa-file-photo-o' aria-hidden='true'></i>";
+                }
+            },
+
+            audioCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                var model = this.getModelFromCell(instance, row),
+                    count = model.get("audio_count") || 0,
+                    i;
+                td.innerHTML = "";
+                for (i = 0; i < count; ++i) {
+                    td.innerHTML += "<i class='fa fa-file-audio-o' aria-hidden='true'></i>";
+                }
+
             },
 
             buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
@@ -219,7 +234,7 @@ define(["marionette",
                         return;
                     }
                     // First grab the model of the target row to delete
-                    model = that.getModelFromCell(row);
+                    model = that.getModelFromCell(instance, row);
 
                     // The model holding the row data is destroyed,
                     // but the row containing the data still appears
@@ -245,12 +260,14 @@ define(["marionette",
                     case "photos":
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Delete"];
+                        return ["ID", "Lat", "Lng", "Title", "Caption", "Photos", "Audio", "Tags", "Owner", "Delete"];
                     default:
                         cols = ["ID", "Lat", "Lng"];
                         for (var i = 0; i < this.fields.length; ++i) {
                             cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
                         }
+                        cols.push("Photos");
+                        cols.push("Audio");
                         cols.push("Delete");
                         cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
                         return cols;
@@ -263,7 +280,7 @@ define(["marionette",
                     case "photos":
                         return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "markers":
-                        return [30, 80, 80, 200, 400, 200, 80, 100];
+                        return [30, 80, 80, 200, 400, 100, 100, 200, 80, 100];
                     default:
                         var cols = [30, 80, 80];
                         for (var i = 0; i < this.fields.length; ++i){
@@ -297,11 +314,11 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            { data: "file_path", renderer: this.audioRenderer, readOnly: true},
+                            { data: "file_path", renderer: this.audioRenderer, readOnly: true, disableVisualSelection: true},
                             { data: "tags", renderer: "html" },
                             { data: "attribution", renderer: "html"},
                             { data: "owner", readOnly: true},
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
                         ];
                     case "photos":
                        return [
@@ -310,11 +327,11 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true},
+                            { data: "path_marker_lg", renderer: this.thumbnailRenderer.bind(this), readOnly: true, disableVisualSelection: true},
                             { data: "tags", renderer: "html" },
                             { data: "attribution", renderer: "html"},
                             { data: "owner", readOnly: true},
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
                        ];
                     case "markers":
                        return [
@@ -323,9 +340,11 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
+                            { data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                            { data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true},
                             { data: "tags", renderer: "html" },
                             { data: "owner", readOnly: true},
-                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                            { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
                        ];
                     default:
                         var cols = [
@@ -352,11 +371,19 @@ define(["marionette",
                             })
                         };
                         cols.push(
-                            {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true}
+                            {data: "photos", renderer: "html", readOnly: true, disableVisualSelection: true }
                         );
 
                         cols.push(
-                            {data: "addField", renderer: "html", readOnly: true}
+                            {data: "audio", renderer: "html", readOnly: true, disableVisualSelection: true }
+                        );
+
+                        cols.push(
+                            {data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true }
+                        );
+
+                        cols.push(
+                            {data: "addField", renderer: "html", readOnly: true, disableVisualSelection: true }
                         );
                         return cols;
                 }
@@ -395,7 +422,6 @@ define(["marionette",
                 var targetColumn = this.fields.at(fieldIndex);
                 targetColumn.destroy({
                     success: function () {
-                        alert("successfully deleted!");
                         that.renderSpreadsheet();
                     }
                 });
@@ -404,11 +430,7 @@ define(["marionette",
             addRow: function () {
 
                 var that = this;
-
                 var projectID = this.app.selectedProject.id;
-
-
-
                 var rec;
 
                 if (this.app.dataType == "markers"){
@@ -425,12 +447,6 @@ define(["marionette",
                         that.renderSpreadsheet();
                     }
                 });
-
-                // GOtta do something about the order of ID on table
-
-                // Trying to add a row to the handsonTable at the end index,
-                // but I have no luck yet with that alone
-                //this.table.alter("insert_row", null);
 
             }
 

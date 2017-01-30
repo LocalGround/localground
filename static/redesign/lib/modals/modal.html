@@ -10,12 +10,12 @@
         <footer>
             <div class="buttons">
                 {{#if showDeleteButton}}
-                    <button class="delete-modal button-secondary">Delete</button>
+                    <button class="delete-modal button-secondary">{{ deleteButtonText }}</button>
                 {{else}}
-                    <button class="close-modal button-secondary">Cancel</button>
+                    <button class="close-modal button-secondary">{{ closeButtonText }}</button>
                 {{/if}}
                 {{#if showSaveButton}}
-                    <button class="save-modal-form button-primary">Save</button>
+                    <button class="save-modal-form button-primary">{{ saveButtonText }}</button>
                 {{/if}}
             </div>
         </footer>

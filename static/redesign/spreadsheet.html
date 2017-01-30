@@ -11,6 +11,15 @@
     <link rel=stylesheet type="text/css" href="css/spreadsheet-style.css" />
     <link rel=stylesheet type="text/css" href="css/modal_new_project.css" />
     <link rel=stylesheet type="text/css" href="css/upload-media.css" />
+    <link rel=stylesheet type="text/css" href="css/audio-player.css" />
+
+
+    <style>
+      img{
+          display: block;
+          vertical-align: middle;
+      }
+    </style>
 </head>
 <body>
     <div id="toolbar-main">
@@ -25,14 +34,14 @@
 
 
     <!--Modal Section-->
-    <div id="myModal" class="modal">
+    <div id="myModal" class="modal" onclick="document.getElementById('myModal').style.display='none'">
 
       <!--Close Button-->
       <span class="close" onclick="document.getElementById('myModal').style.display='none'">
         &times;
       </span>
       <!--Modal Content (Image)-->
-      <img class="modal-content" id="img01">
+      <img class="modal-content" id="img01" align="middle">
       <!--Modal Caption (Image Text)-->
       <div id="caption"></div>
 

@@ -3,7 +3,7 @@ define([
     "backbone",
     "apps/style/router",
     "views/toolbar-global",
-    "apps/style/views/map",
+    "apps/map/views/map",
     "apps/style/views/left/left-panel",
     "apps/style/views/right/right-panel",
     "collections/projects",

@@ -42,7 +42,6 @@ define([
                 console.log("errors: ", errors);
                 return;
             }
-            //alert("save");
             this.model.set("ordering", this.fields.length+1); // list starting at 1, thus +1 needed
             this.model.save(
                 null,

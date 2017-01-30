@@ -131,6 +131,7 @@ define([
                 title: 'Upload Media',
                 width: 800,
                 height: 350,
+                closeButtonText: "Done",
                 showSaveButton: false,
                 showDeleteButton: false
                 // bind the scope of the save function to the source view:
@@ -141,19 +142,20 @@ define([
 
         showModal: function (opts) {
             //generic function that displays a view in a modal
-            opts = opts || {};
-            opts = {
-                view: opts.view,
-                title: opts.title,
-                width: opts.width || 500,
-                height: opts.height || 200,
+            var params = {},
+                defaults = {
+                    width: 500,
+                    height: 200
+                };
+            _.extend(params, defaults, opts);
+            _.extend(params, {
                 showSaveButton: opts.saveFunction ? true : false,
                 showDeleteButton: opts.deleteFunction ? true : false,
                 saveFunction: opts.saveFunction ? opts.saveFunction.bind(opts.view) : null,
                 deleteFunction: opts.deleteFunction ? opts.deleteFunction.bind(opts.view) : null
-            };
-            console.log(opts);
-            this.modal.update(opts);
+            });
+            console.log(params);
+            this.modal.update(params);
             this.modal.show();
         },
 
@@ -181,8 +183,8 @@ define([
                 saveFunction: createForm.saveFormSettings.bind(createForm),
                 deleteFunction: createForm.deleteForm.bind(createForm)
             });
-            this.modal.display_DeleteButton();
-            this.modal.display_SaveButton();
+            //this.modal.display_DeleteButton();
+            //this.modal.display_SaveButton();
             this.modal.show();
         }
         /*

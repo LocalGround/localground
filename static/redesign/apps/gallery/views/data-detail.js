@@ -8,10 +8,12 @@ define([
     "text!../templates/audio-detail.html",
     "text!../templates/marker-detail.html",
     "text!../templates/record-detail.html",
+    "lib/audio/audio-player",
     "apps/gallery/views/data-list",
     "form" //extends Backbone
 ], function (Backbone, _, Handlebars, Marionette, MediaBrowser,
              PhotoTemplate, AudioTemplate, MarkerTemplate, RecordTemplate,
+             AudioPlayer,
              DataList) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
@@ -50,12 +52,12 @@ define([
             var mediaBrowser = new MediaBrowser({
                 app: this.app
             });
-            console.log(mediaBrowser);
             this.app.vent.trigger("show-modal", {
                 title: 'Media Browser',
                 width: 800,
                 height: 400,
                 view: mediaBrowser,
+                saveButtonText: "Add",
                 showSaveButton: true,
                 saveFunction: mediaBrowser.addModels.bind(mediaBrowser)
             });
@@ -71,14 +73,11 @@ define([
         },
 
         attachModels: function (models) {
-            console.log("attach models here:", models);
             var that  = this;
             for (var i = 0; i < models.length; ++i){
                 this.model.attach(models[i], function(){
-                    //alert("success");
                     that.model.fetch({reset: true});
                 }, function(){
-                    //alert("failure");
                 })
             }
             this.app.vent.trigger('hide-modal');
@@ -88,28 +87,13 @@ define([
           and it has to be defined inside the function
         */
         detachModel: function(e){
-            //alert("Need to detach model");
             if (!confirm("Want to remove media from site?")) return;
             var that = this;
-            /*
-            console.log(this.model.collection);
-            console.log(this.model);
-            console.log(this.model.attributes);
-            console.log(this.model.attributes.children);
-            */
 
             var $elem = $(e.target);
             var dataType = $elem.attr("data-type");
             var dataID = $elem.attr("data-id");
-            console.log("Model to Detach: Data Type - " + dataType + ", Data ID: " + dataID);
-
-            // So far, I have managed to get the detach function to work through alert
-            // but I have not yet successfully deleted the targeted item
-            // because I need to tie that clicked item into the target model
-            // for detachment
-
             this.model.detach(dataID, dataType, function(){
-                alert("Model Detached");
                 that.model.fetch({reset: true});
             })
 
@@ -139,11 +123,9 @@ define([
             var fields, i, field, type, name;
             if (this.app.dataType.indexOf('form_') != -1) {
                 fields = {};
-                console.log(this.model);
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     /* https://github.com/powmedia/backbone-forms */
                     field = this.model.get("fields")[i];
-                    console.log(field);
                     type = field.data_type.toLowerCase();
                     name = field.col_name;
                     switch (type) {
@@ -157,7 +139,6 @@ define([
                             fields[name] = 'Text';
                     }
                 }
-                console.log(fields);
                 this.form = new Backbone.Form({
                     model: this.model,
                     schema: fields
@@ -168,6 +149,13 @@ define([
                     model: this.model,
                     fields: fields
                 }).render();
+
+                if (this.app.dataType == "audio"){
+                    var player = new AudioPlayer({
+                        model: this.model
+                    });
+                    this.$el.find(".player-container").append(player.$el);
+                }
             }
             this.$el.find('#model-form').append(this.form.$el);
         },

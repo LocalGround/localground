@@ -65,11 +65,6 @@ define([
                 }
             });
         },
-        /*modelEvents: {
-            // When data from Item view changes anywhere and anytime,
-            // re-render to update
-            "change": "render"
-        },*/
         template: Handlebars.compile(CreateFormTemplate),
         events: {
             'click #save-form-settings' : 'saveFormSettings',
@@ -85,25 +80,18 @@ define([
             var $elem = $(e.target),
                 $row =  $elem.parent().parent();
             $row.remove();
-            //this.checkNumberOfRows();
         },
         saveFormSettings: function () {
-            //alert("save!");
             var formName = this.$el.find('#formName').val(),
-                //shareType = $('#share_type').val(),
-                //tags = $('#tags').val(),
                 caption = this.$el.find('#caption').val(),
                 that = this;
 
             this.model.set('name', formName);
-            //this.model.set('access_authority', shareType);
-            //this.model.set('tags', tags);
             this.model.set('caption', caption);
             this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));
-            this.model.set('project_ids', [this.app.selectedProject.id]);
+            this.model.set('project_ids', [this.app.getProjectID()]);
             this.model.save(null, {
                 success: function () {
-                    //alert("saved");
                     that.createNewFields();
                 },
                 error: function(){
@@ -111,11 +99,6 @@ define([
                 }
             });
         },
-
-        //
-        // Still needs refactoring since the majority of the code
-        // is based on the share-form.js file
-        //
 
         createNewFields: function () {
             // Gather the list of fields changed / added

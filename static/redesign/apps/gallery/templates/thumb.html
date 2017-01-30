@@ -14,9 +14,11 @@
 {{/ifequal}}
 
 {{#ifequal dataType "audio"}}
-    <audio controls>
-        <source src="{{ file_path }}"></source>
-    </audio>
+
+    <div class="player-container">
+
+    </div>
+
     <h1>
         <a href="#/{{ dataType }}/{{id}}">{{ name }}</a>
     </h1>
