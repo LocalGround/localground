@@ -106,6 +106,8 @@ audio {
 }
 
 
+
+
 /**************************
  * Simple and Detailed Player
  **************************/
@@ -131,7 +133,7 @@ audio {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7a7a7a', endColorstr='#c4c4c4',GradientType=1 );
     */
     background-color: #c4c4c4;
-    width: 110px;
+    width: 190px;
     height: 6px;
     border-radius: 10px;
     display: inline-block;
@@ -170,6 +172,7 @@ audio {
     border: 6px solid #7a7a7a;
     background-color: white;
 }
+
 
 
 /**************************

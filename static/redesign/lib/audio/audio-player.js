@@ -64,11 +64,13 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
                 this.$el.find(".audio-progress-circle").css({
                     left: this.audio.currentTime / this.audio.duration * 100 + "%"
                 });
+                this.$el.find(".time-current").html(this.getCurrentTime());
+                this.$el.find(".time-duration").html(this.getDuration());
             },
 
             formatTime: function(timeCount){
                 var seconds = timeCount;
-                minutes = Math.floor(seconds / 60);
+                var minutes = Math.floor(seconds / 60);
                 minutes = (minutes >= 10) ? minutes : "0" + minutes;
                 seconds = Math.floor(seconds % 60);
                 seconds = (seconds >= 10) ? seconds : "0" + seconds;
@@ -76,11 +78,11 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
             },
 
             getDuration: function(){
-                return formatTime(this.audio.duration);
+                return this.formatTime(this.audio.duration);
             },
 
             getCurrentTime: function(){
-                return formatTime(this.audio.currentTime);
+                return this.formatTime(this.audio.currentTime);
 
             }
 
