@@ -31,7 +31,7 @@ audio {
 
 .progress {
     height: 10px;
-    width: 200px;
+    width: 110px;
     background: #CBCBCB;
     border-radius: 2px;
     overflow: hidden;
@@ -131,7 +131,7 @@ audio {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7a7a7a', endColorstr='#c4c4c4',GradientType=1 );
     */
     background-color: #c4c4c4;
-    width: 200px;
+    width: 110px;
     height: 6px;
     border-radius: 10px;
     display: inline-block;
@@ -153,11 +153,12 @@ audio {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7a7a7a', endColorstr='#c4c4c4',GradientType=1 );
     */
     background-color: #686868;
-    width: 200px;
+    width: 0px;
     height: 6px;
     border-radius: 10px;
-    top: -8px;
+    top: 0px;
     display: inline-block;
+    position: absolute;
 }
 
 .audio-simple .audio-progress-circle, .audio-detail .audio-progress-circle {
