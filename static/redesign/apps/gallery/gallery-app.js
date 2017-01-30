@@ -74,11 +74,13 @@ define([
         },
 
         showMediaList: function (mediaType) {
+            var data = this.dataManager.getData(mediaType);
             this.dataType = mediaType;
-            this.currentCollection = this.dataManager.getCollection(this.dataType);//this.mainView.collection;
+            this.currentCollection = data.collection;
             this.mainView = new DataList({
                 app: this,
-                collection: this.currentCollection
+                collection: this.currentCollection,
+                fields: data.fields
             });
             this.galleryRegion.show(this.mainView);
             this.hideMediaDetail();
