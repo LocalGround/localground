@@ -18,7 +18,6 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
                 'click .progress .audio-progress' : 'jumpToTime'
             },
             audio: null,
-            className: "audio-simple",
             template: Handlebars.compile(PlayerTemplate),
             initialize: function (opts) {
                 opts = opts || {};
