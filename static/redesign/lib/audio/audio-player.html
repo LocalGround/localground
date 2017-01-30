@@ -1,26 +1,44 @@
-<audio controls preload class="audio">
-  <source src="{{file_path}}" type="audio/mpeg" />
-</audio>
+{{#ifequal audioMode "simple"}}
+    <div>
+        <div class="play-ctrls">
+            <i class="fa fa-play" aria-hidden="true" style="font-size:2em;"></i>
+        </div>
+        <div class="audio-progress">
+            <span class="audio-labels" style="left: 10px;">1:20</span>
+            <div style="position:absolute;left:49px;">
+                <div class="audio-progress-bar" style="width: 110px;"></div>
+                <div class="audio-progress-circle" style="left: 40px;"></div>
+            </div>
+            <span class="audio-labels" style="right: 10px;">3:20</span>
+        </div>
+    </div>
+{{/ifequal}}
 
-<div class="audio-container">
-    <span>Song Name</span><br />
-    Song subtitle and description
-    <div class="play-ctrls">
-        <i class="fa fa-backward fwd-back" aria-hidden="true"></i>
-        <div class="play"></div>
-        <i class="fa fa-forward fwd-back" aria-hidden="true"></i>
+{{#ifequal audioMode "detail"}}
+    <audio controls preload class="audio">
+      <source src="{{file_path}}" type="audio/mpeg" />
+    </audio>
+    
+    <div class="audio-container">
+        <span>Song Name</span><br />
+        Song subtitle and description
+        <div class="play-ctrls">
+            <i class="fa fa-backward fwd-back" aria-hidden="true"></i>
+            <div class="play"></div>
+            <i class="fa fa-forward fwd-back" aria-hidden="true"></i>
+        </div>
+        Start Time
+        <div class="progress">
+            <div class="progress-bar"></div>
+            <div class="progress-circle"></div>
+        </div>
+        End Time
+        <div class="vol">
+            <i class="fa fa-plus-circle fa-2x volUp"></i>
+            <i class="fa fa-minus-circle fa-2x volDown"></i>
+        </div>
     </div>
-    Start Time
-    <div class="progress">
-        <div class="progress-bar"></div>
-        <div class="progress-circle"></div>
-    </div>
-    End Time
-    <div class="vol">
-        <i class="fa fa-plus-circle fa-2x volUp"></i>
-        <i class="fa fa-minus-circle fa-2x volDown"></i>
-    </div>
-</div>
+{{/ifequal}}
 
 <!-- TODO:
      Split up the audio player into different templates so that

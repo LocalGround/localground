@@ -19,6 +19,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
                 // 'timeupdate audio' : 'playerDurationUpdate'
             },
             audio: null,
+            className: "audio-simple",
             template: Handlebars.compile(PlayerTemplate),
             initialize: function (opts) {
                 opts = opts || {};
@@ -31,7 +32,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
             },
             templateHelpers: function () {
                 return {
-
+                    audioMode: this.audioMode
                 };
             },
 
