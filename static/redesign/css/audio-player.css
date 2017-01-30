@@ -2,6 +2,10 @@ audio {
     display: none;
 }
 
+/**************************
+ * Old Templated Player
+ **************************/
+
 .fa{
     display: inline-block;
     text-rendering: auto;
@@ -100,6 +104,12 @@ audio {
     background-position: center center;
     padding-top: 40px;
 }
+
+
+/**************************
+ * Simple and Detailed Player
+ **************************/
+
 .audio-simple .audio-progress, .audio-detail .audio-progress {
     padding: 10px 30px 50px 30px;
     position: relative;
@@ -112,15 +122,41 @@ audio {
 }
 
 .audio-simple .audio-progress-bar, .audio-detail .audio-progress-bar {
+
+    /*
     background: #7a7a7a;
-    background: -moz-linear-gradient(left, #7a7a7a 29%, #7a7a7a 29%, #e4e5eb 29%);
-    background: -webkit-linear-gradient(left, #7a7a7a 29%,#7a7a7a 29%,#e4e5eb 29%);
-    background: linear-gradient(to right, #7a7a7a 29%,#7a7a7a 29%,#e4e5eb 29%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7a7a7a', endColorstr='#e4e5eb',GradientType=1 );
-    background-color: #e4e5eb;
-    width: 260px;
+    background: -moz-linear-gradient(left, #686868 50%, #686868 29%,#c4c4c4 50%);
+    background: -webkit-linear-gradient(left, #686868 50%, #686868 50%,#c4c4c4 50%);
+    background: linear-gradient(to right, #686868 50%, #686868 50%,#c4c4c4 50%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7a7a7a', endColorstr='#c4c4c4',GradientType=1 );
+    */
+    background-color: #c4c4c4;
+    width: 200px;
     height: 6px;
     border-radius: 10px;
+    display: inline-block;
+}
+
+/*
+  For now, I have made a temporary solution to the problem by
+  having a duplicate progress bar until a more elegant one
+  is found that makes it look like the loading bar is coming through
+*/
+
+.audio-simple .audio-progress-duration, .audio-detail .audio-progress-duration {
+
+    /*
+    background: #7a7a7a;
+    background: -moz-linear-gradient(left, #686868 50%, #686868 29%,#c4c4c4 50%);
+    background: -webkit-linear-gradient(left, #686868 50%, #686868 50%,#c4c4c4 50%);
+    background: linear-gradient(to right, #686868 50%, #686868 50%,#c4c4c4 50%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7a7a7a', endColorstr='#c4c4c4',GradientType=1 );
+    */
+    background-color: #686868;
+    width: 200px;
+    height: 6px;
+    border-radius: 10px;
+    top: -8px;
     display: inline-block;
 }
 
@@ -129,7 +165,6 @@ audio {
     width: 10px;
     border-radius: 40px;
     top: -8px;
-    left: 60px;
     position: absolute;
     border: 6px solid #7a7a7a;
     background-color: white;

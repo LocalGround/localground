@@ -15,7 +15,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
                 'click .volUp': 'volumeUp',
                 'click .volDown': 'volumeDown',
                 'click .play' : 'togglePlay',
-                'click .progress .audio-progress' : 'jumpToTime'
+                'click .progress .audio-progress-bar' : 'jumpToTime'
             },
             audio: null,
             template: Handlebars.compile(PlayerTemplate),
@@ -52,8 +52,6 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
             },
 
             jumpToTime: function(e){
-                // As of now, I do not see the green color playing over the
-                // progress bar
                 var posX = this.$el.find(e.target).offset().left,
                     w = (e.pageX - posX) / this.$el.width();
                 this.audio.currentTime = w * this.audio.duration;
@@ -61,7 +59,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
 
             playerDurationUpdate: function(){
 
-                this.$el.find(".progress > div").width(this.audio.currentTime /
+                this.$el.find(".audio-progress-duration").width(this.audio.currentTime /
                                      this.audio.duration * 100 + "%");
                 this.$el.find(".audio-progress-circle").css({
                     left: this.audio.currentTime / this.audio.duration * 100 + "%"
