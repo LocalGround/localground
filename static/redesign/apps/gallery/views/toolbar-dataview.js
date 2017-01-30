@@ -183,8 +183,8 @@ define([
                 saveFunction: createForm.saveFormSettings.bind(createForm),
                 deleteFunction: createForm.deleteForm.bind(createForm)
             });
-            this.modal.display_DeleteButton();
-            this.modal.display_SaveButton();
+            //this.modal.display_DeleteButton();
+            //this.modal.display_SaveButton();
             this.modal.show();
         }
         /*
