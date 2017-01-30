@@ -260,14 +260,20 @@ define(["marionette",
                     case "photos":
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Photos", "Audio", "Tags", "Owner", "Delete"];
+                        cols = ["ID", "Lat", "Lng", "Title", "Caption",
+                        "Photos" + " " + "<a class='fa fa-plus-square-o addPhotos' fieldIndex= '5' aria-hidden='true'></a>",
+                        "Audio" + " " + "<a class='fa fa-plus-square-o addAudio' fieldIndex= '6' aria-hidden='true'></a>",
+                        "Tags", "Owner", "Delete"];
+                        //
+                        //
+                        return cols;
                     default:
                         cols = ["ID", "Lat", "Lng"];
                         for (var i = 0; i < this.fields.length; ++i) {
                             cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
                         }
-                        cols.push("Photos");
-                        cols.push("Audio");
+                        cols.push("Photos" + " " + "<a class='fa fa-plus-square-o addPhotos' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
+                        cols.push("Audio" + " " + "<a class='fa fa-plus-square-o addAudio' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
                         cols.push("Delete");
                         cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
                         return cols;

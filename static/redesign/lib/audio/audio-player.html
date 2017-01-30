@@ -3,13 +3,27 @@
 </audio>
 
 <div class="audio-container">
-    <span>Song Name</span><br /> Song subtitle and description
-    <div class="play"></div>
-    <div class="progress">
-        <div></div>
+    <span>Song Name</span><br />
+    Song subtitle and description
+    <div class="play-ctrls">
+        <i class="fa fa-backward fwd-back" aria-hidden="true"></i>
+        <div class="play"></div>
+        <i class="fa fa-forward fwd-back" aria-hidden="true"></i>
     </div>
+    Start Time
+    <div class="progress">
+        <div class="progress-bar"></div>
+        <div class="progress-circle"></div>
+    </div>
+    End Time
     <div class="vol">
         <i class="fa fa-plus-circle fa-2x volUp"></i>
         <i class="fa fa-minus-circle fa-2x volDown"></i>
     </div>
 </div>
+
+<!-- TODO:
+     Split up the audio player into different templates so that
+     it's possible to make seperate audio players
+     catered to different views
+-->

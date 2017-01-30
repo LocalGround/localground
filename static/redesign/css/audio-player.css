@@ -2,9 +2,14 @@ audio {
     display: none;
 }
 
+.fa{
+    display: inline-block;
+    text-rendering: auto;
+}
+
 .audio-container {
-    background: #2A2B2E;
-    color: #EFEFEF;
+    background: #EDEDED;
+    color: #686868;
     text-align: center;
     font-family: Candara, Calibri, Segoe;
     height: 200px;
@@ -23,7 +28,7 @@ audio {
 .progress {
     height: 10px;
     width: 200px;
-    background: #EFEFEF;
+    background: #CBCBCB;
     border-radius: 2px;
     overflow: hidden;
     margin: auto;
@@ -33,7 +38,22 @@ audio {
 .progress > div {
     height: 10px;
     width: 0;
-    background: #24AD91;
+    background: #686868;
+}
+
+.progress-circle{
+    height: 15px;
+    width: 15px;
+    border: 6px solid #686868;
+    background-color: white;
+    border-radius: 5px;
+    top: -5px;
+}
+
+
+.play-ctrls{
+    text-align: center;
+    margin: 20px 0 10px;
 }
 
 .play {
@@ -42,7 +62,7 @@ audio {
     height: 0px;
     border-style: solid;
     border-width: 15px 0 15px 30px;
-    border-color: transparent transparent transparent #efefef;
+    border-color: transparent transparent transparent #686868;
     margin: 20px auto;
 }
 
@@ -50,7 +70,12 @@ audio {
     width: 10px;
     height: 30px;
     border-width: 0 10px 0 10px;
-    border-color: #efefef;
+    border-color: #686868;
+}
+
+.fwd-back{
+    vertical-align: top;
+    padding: 5px 20px;
 }
 
 .vol {
