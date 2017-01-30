@@ -13,8 +13,8 @@ define(["lib/maps/overlays/base", "lib/maps/overlays/infobubbles/photo"], functi
          */
         getIcon: function () {
             return {
-                path: 'M-2,0a2,2 0 1,0 4,0a2,2 0 1,0 -4,0',
-                scale: 2,
+                path: this.getIconPaths('pin'),
+                scale: 0.8,
                 fillColor: '#7084c2',
                 fillOpacity: 1,
                 strokeColor: '#f6f6f6',

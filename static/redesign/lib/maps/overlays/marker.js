@@ -25,8 +25,8 @@ define([
             };
             _.extend(opts, _.clone(this._overlay.Shapes.MAP_PIN_HOLLOW));*/
             return {
-                path: 'M-2,0a2,2 0 1,0 4,0a2,2 0 1,0 -4,0',
-                scale: 5,
+                path: this.getIconPaths('pin'),
+                scale: 0.8,
                 fillColor: '#ed867d', //this.model.get("color")
                 fillOpacity: 1,
                 strokeColor: '#f6f6f6',
