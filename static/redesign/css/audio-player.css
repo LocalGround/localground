@@ -2,9 +2,18 @@ audio {
     display: none;
 }
 
+/**************************
+ * Old Templated Player
+ **************************/
+
+.fa{
+    display: inline-block;
+    text-rendering: auto;
+}
+
 .audio-container {
-    background: #2A2B2E;
-    color: #EFEFEF;
+    background: #EDEDED;
+    color: #686868;
     text-align: center;
     font-family: Candara, Calibri, Segoe;
     height: 200px;
@@ -22,8 +31,8 @@ audio {
 
 .progress {
     height: 10px;
-    width: 200px;
-    background: #EFEFEF;
+    width: 110px;
+    background: #CBCBCB;
     border-radius: 2px;
     overflow: hidden;
     margin: auto;
@@ -33,7 +42,21 @@ audio {
 .progress > div {
     height: 10px;
     width: 0;
-    background: #24AD91;
+    background: #686868;
+}
+
+.progress-circle{
+    height: 15px;
+    width: 15px;
+    border: 6px solid #686868;
+    background-color: white;
+    border-radius: 5px;
+    top: -5px;
+}
+
+.play-ctrls{
+    text-align: center;
+    margin: 20px 0 10px;
 }
 
 .play {
@@ -42,7 +65,7 @@ audio {
     height: 0px;
     border-style: solid;
     border-width: 15px 0 15px 30px;
-    border-color: transparent transparent transparent #efefef;
+    border-color: transparent transparent transparent #686868;
     margin: 20px auto;
 }
 
@@ -50,7 +73,12 @@ audio {
     width: 10px;
     height: 30px;
     border-width: 0 10px 0 10px;
-    border-color: #efefef;
+    border-color: #686868;
+}
+
+.fwd-back{
+    vertical-align: top;
+    padding: 5px 20px;
 }
 
 .vol {
@@ -60,4 +88,117 @@ audio {
 .vol i {
     cursor: pointer;
     margin-right: 5px;
+}
+
+
+/**************************
+ * Simple Player
+ **************************/
+.audio-simple {
+    background-color: rgba(0, 0, 0, 0.05);
+    width: 100%;
+    height: 100%;
+    border-radius: 2px 2px 0 0;
+    height: 150px;
+    background-size: 410px auto;
+    background-position: center center;
+    padding-top: 40px;
+}
+
+
+
+
+/**************************
+ * Simple and Detailed Player
+ **************************/
+
+.audio-simple .audio-progress, .audio-detail .audio-progress {
+    padding: 10px 30px 50px 30px;
+    position: relative;
+}
+.audio-simple .audio-labels, .audio-detail .audio-labels {
+    font-size: 12px;
+    color: #7a7a7a;
+    position: absolute;
+    top: 4px;
+}
+
+.audio-simple .audio-progress-bar, .audio-detail .audio-progress-bar {
+
+    /*
+    background: #7a7a7a;
+    background: -moz-linear-gradient(left, #686868 50%, #686868 29%,#c4c4c4 50%);
+    background: -webkit-linear-gradient(left, #686868 50%, #686868 50%,#c4c4c4 50%);
+    background: linear-gradient(to right, #686868 50%, #686868 50%,#c4c4c4 50%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7a7a7a', endColorstr='#c4c4c4',GradientType=1 );
+    */
+    background-color: #c4c4c4;
+    width: 190px;
+    height: 6px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+/*
+  For now, I have made a temporary solution to the problem by
+  having a duplicate progress bar until a more elegant one
+  is found that makes it look like the loading bar is coming through
+*/
+
+.audio-simple .audio-progress-duration, .audio-detail .audio-progress-duration {
+
+    /*
+    background: #7a7a7a;
+    background: -moz-linear-gradient(left, #686868 50%, #686868 29%,#c4c4c4 50%);
+    background: -webkit-linear-gradient(left, #686868 50%, #686868 50%,#c4c4c4 50%);
+    background: linear-gradient(to right, #686868 50%, #686868 50%,#c4c4c4 50%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7a7a7a', endColorstr='#c4c4c4',GradientType=1 );
+    */
+    background-color: #686868;
+    width: 0px;
+    height: 6px;
+    border-radius: 10px;
+    top: 0px;
+    display: inline-block;
+    position: absolute;
+}
+
+.audio-simple .audio-progress-circle, .audio-detail .audio-progress-circle {
+    height: 10px;
+    width: 10px;
+    border-radius: 40px;
+    top: -8px;
+    position: absolute;
+    border: 6px solid #7a7a7a;
+    background-color: white;
+}
+
+
+
+/**************************
+ * Detailed Player
+ **************************/
+
+.audio-detail {
+    border: 1px solid #e4e5eb;
+    background-color: white;
+    margin: 16px;
+    position: relative;
+}
+
+.audio-detail .play-ctrls {
+    text-align: center;
+    margin: 20px 0 10px;
+    color: #898989;
+}
+
+.fwd-back {
+    vertical-align: top;
+    padding: 5px 20px;
+    font-size: 1.2em;
+}
+
+.audio-detail .play {
+    margin: 0px auto;
+    display: inline-block;
 }

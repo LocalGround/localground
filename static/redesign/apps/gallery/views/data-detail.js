@@ -114,7 +114,8 @@ define([
         templateHelpers: function () {
             var context = {
                 mode: this.app.mode,
-                dataType: this.app.dataType
+                dataType: this.app.dataType,
+                audioMode: "detail"
             };
             return context;
         },
@@ -152,7 +153,8 @@ define([
 
                 if (this.app.dataType == "audio"){
                     var player = new AudioPlayer({
-                        model: this.model
+                        model: this.model,
+                        audioMode: "detail"
                     });
                     this.$el.find(".player-container").append(player.$el);
                 }
