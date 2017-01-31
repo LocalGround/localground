@@ -73,7 +73,7 @@ define(["marionette",
             //this.model.set('tags', tags);
             this.model.set('caption', caption);
             this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));
-            this.model.set('project_ids', [this.app.selectedProject.id]);
+            this.model.set('project_ids', [this.app.getProjectID()]);
             this.model.save(null, {
                 success: function () {
                     //alert("saved");

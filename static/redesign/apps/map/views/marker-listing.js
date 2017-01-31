@@ -80,11 +80,11 @@ define(["marionette",
             },
 
             getDefaultQueryString: function () {
-                return "WHERE project = " + this.app.selectedProject.id;
+                return "WHERE project = " + this.app.getProjectID();
             },
 
             doSearch: function (query) {
-                query = "WHERE " + query + " AND project = " + this.app.selectedProject.id;
+                query = "WHERE " + query + " AND project = " + this.app.getProjectID();
                 this.collection.query = query;
                 this.collection.fetch({ reset: true });
             },

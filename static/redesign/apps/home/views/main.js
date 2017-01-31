@@ -73,7 +73,7 @@ define(["marionette",
             },
 
             getDefaultQueryString: function () {
-                return "WHERE project = " + this.app.selectedProject.id;
+                return "WHERE project = " + this.app.getProjectID();
             },
             templateHelpers: function () {
                 return {

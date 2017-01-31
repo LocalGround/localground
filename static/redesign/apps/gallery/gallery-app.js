@@ -45,9 +45,6 @@ define([
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-
-            //add views to regions after projects load:
-            //this.projects = new Projects();
             this.selectedProjectID = this.getProjectID();
             this.dataManager = new DataManager({ app: this});
         },

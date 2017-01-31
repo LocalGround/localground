@@ -21,7 +21,6 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     delete entry.data;
                 });
                 this.app.vent.trigger('data-loaded');
-                console.log(this.getDataSources());
             },
             getDataSources: function () {
                 var dataSources = [];
