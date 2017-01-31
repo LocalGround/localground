@@ -39,7 +39,6 @@ define(["marionette",
             
             onRender: function () {
                 var that = this;
-                console.log("it's color");
                 this.$el.find('#color-picker').ColorPicker({
             
                     onShow: function (colpkr) {
@@ -98,7 +97,7 @@ define(["marionette",
                 this.render();
             },
             updateFontSize: function () {
-                this.model.get("panel_styles")[this.activeKey].size = this.$el.find("#font-size").val();
+                this.model.get("panel_styles")[this.activeKey].size = +this.$el.find("#font-size").val();
                 this.render();
             },
             

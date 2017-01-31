@@ -72,11 +72,14 @@ define(["marionette",
                 var symbolShape = this.$el.find("#quant-shape").val();
                 console.log(symbolShape);
                 
+                if (this.model.get("filters") === null) {
+                   this.model.set("filters", { 'tag' : 'nothing' }); 
+                }
                 
                 this.model.set("title", title);
                 this.model.set("data_source", dataSource);
                 this.model.set("layer_type", layerType);
-                // set record property?
+                // set record property?  
                 this.model.set("symbol_shape", symbolShape);
                 this.model.save({
                     error: function(){
@@ -85,35 +88,8 @@ define(["marionette",
                         success: function(){
                             console.log('success');
                     }
-                });
-                
-                
-                
-            //********************\\ Example from another view:
-            /*
-            var formName = this.$el.find('#formName').val(),
-                //shareType = $('#share_type').val(),
-                //tags = $('#tags').val(),
-                caption = this.$el.find('#caption').val(),
-                that = this;
-
-            this.model.set('name', formName);
-            //this.model.set('access_authority', shareType);
-            //this.model.set('tags', tags);
-            this.model.set('caption', caption);
-            this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));
-            this.model.set('project_ids', [this.app.selectedProject.id]);
-            this.model.save(null, {
-                success: function () {
-                    //alert("saved");
-                    that.createNewFields();
-                },
-                error: function(){
-                    console.log("The fields could not be saved");
-                }
-            });
-            */
-        }
+                });       
+            }
         });
         return RightPanelLayout;
     });

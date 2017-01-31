@@ -14,11 +14,25 @@ define(["marionette",
                 _.extend(this, opts);
             },
             
+            /*
+            events: {
+                "change .layer-title": "updateTitle"
+            },
+            */
             templateHelpers: function () {
                 return {
-                   // json: "yeeag",
+                   
                 };
+            },
+            
+            /*
+            updateTitle: function () {
+                var title = this.$el.find('.layer-title').val();
+                this.model.set("title", title);
+                console.log(title);
+                this.app.vent.trigger("update-title", title);
             }
+            */
         });
         return DataSourceView;
     });
