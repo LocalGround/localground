@@ -7,7 +7,7 @@ define([
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
     "text!../templates/marker-detail.html",
-    "text!../templates/record-detail.html",
+    "text!../templates/record-detail.html", 
     "lib/audio/audio-player",
     "apps/gallery/views/data-list",
     "form" //extends Backbone
@@ -119,9 +119,11 @@ define([
             };
             return context;
         },
-        onRender: function () {
-            //https://github.com/powmedia/backbone-forms#custom-editors
-            var fields, i, field, type, name;
+        viewRender: function () {
+            //any extra view logic. Carousel functionality goes here
+        },
+        editRender: function () {
+            var fields, i, field, type, name, that = this;
             if (this.app.dataType.indexOf('form_') != -1) {
                 fields = {};
                 for (i = 0; i < this.model.get("fields").length; i++) {
@@ -150,16 +152,42 @@ define([
                     model: this.model,
                     fields: fields
                 }).render();
-
-                if (this.app.dataType == "audio"){
-                    var player = new AudioPlayer({
-                        model: this.model,
-                        audioMode: "detail"
-                    });
-                    this.$el.find(".player-container").append(player.$el);
-                }
             }
+            if (this.app.dataType.indexOf("form_") != -1 || this.app.dataType == "markers") {
+                console.log("AUDIO!");
+                var audio_attachments = [];
+                if (this.model.get("children") && this.model.get("children").audio) {
+                    audio_attachments = this.model.get("children").audio.data;
+                }
+                _.each(audio_attachments, function (item) {
+                    console.log(item);
+                    var $elem = that.$el.find(".audio-simple").find("[data-id='" + item.id + "']")[0];
+                    console.log($elem);
+                    var player = new AudioPlayer({
+                        model: new Audio(item),
+                        audioMode: "simple"
+                    });
+                    $elem.append(player.$el);
+                });
+            }
+            //https://github.com/powmedia/backbone-forms#custom-editors
             this.$el.find('#model-form').append(this.form.$el);
+        },
+        
+        onRender: function () {
+            if (this.app.mode == "view") {
+                this.viewRender();
+            } else {
+                this.editRender();
+            }
+            // render audio player if audio mode:
+            if (this.app.dataType == "audio"){
+                var player = new AudioPlayer({
+                    model: this.model,
+                    audioMode: "detail"
+                });
+                this.$el.find(".player-container").append(player.$el);
+            }
         },
         saveModel: function () {
             var errors = this.form.commit({ validate: true }),

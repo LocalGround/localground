@@ -131,7 +131,7 @@ audio {
 }
 
 .audio-simple .audio-progress-bar {
-    width: 110px;
+    width: calc(;
 }
 
 .audio-detail .audio-progress-bar {
