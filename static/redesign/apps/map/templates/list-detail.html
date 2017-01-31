@@ -1,5 +1,7 @@
 {{#if geometry }}
-    <i class="fa fa-map-marker" aria-hidden="true"></i>
+    <svg viewBox="{{ icon.viewBox }}" width="20" height="20" style="margin-top:3px;">
+        <path fill="#428BCA" d="{{ icon.path }}"></path>
+    </svg>
 {{else}}
     <i class="fa fa-question-circle" aria-hidden="true"></i>
 {{/if}}

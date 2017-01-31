@@ -12,12 +12,13 @@ define(["lib/maps/overlays/base", "lib/maps/overlays/infobubbles/photo"], functi
          * @returns google.maps.MarkerImage
          */
         getIcon: function () {
+            var opts = this.getIconPaths('plus');
             return {
-                path: this.getIconPaths('pin'),
-                scale: 0.8,
+                path: opts.path,
+                scale: opts.scale,
                 fillColor: '#7084c2',
                 fillOpacity: 1,
-                strokeColor: '#f6f6f6',
+                strokeColor: '#7084c2',
                 strokeWeight: 1
             };
         },

@@ -3,10 +3,11 @@ define(["marionette",
         "handlebars",
         "collections/photos",
         "collections/audio",
+        "lib/maps/icon-lookup",
         "apps/map/views/marker-overlays",
         "text!../templates/list-detail.html",
         "text!../templates/list.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, OverlayListView, ItemTemplate, ListTemplate) {
+    function (Marionette, _, Handlebars, Photos, Audio, IconLookup, OverlayListView, ItemTemplate, ListTemplate) {
         'use strict';
         var MarkerListing = Marionette.CompositeView.extend({
 
@@ -23,7 +24,10 @@ define(["marionette",
                     },
                     tagName: "li",
                     templateHelpers: function () {
-                        return { dataType: this.app.dataType };
+                        return {
+                            dataType: this.app.dataType,
+                            icon: IconLookup.getIconPaths('square')
+                        };
                     }
                 });
             },

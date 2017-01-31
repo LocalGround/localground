@@ -16,20 +16,13 @@ define([
          * @returns {Object} icon definition
          */
         getIcon: function () {
-            /*var opts = {
-                fillColor: '#' + this.model.get("color"),
-                strokeColor: "#FFF",
-                strokeWeight: 1.5,
-                fillOpacity: 1,
-                scale: 1.6
-            };
-            _.extend(opts, _.clone(this._overlay.Shapes.MAP_PIN_HOLLOW));*/
+            var opts = this.getIconPaths('circle');
             return {
-                path: this.getIconPaths('pin'),
-                scale: 0.8,
+                path: opts.path,
+                scale: opts.scale,
                 fillColor: '#ed867d', //this.model.get("color")
                 fillOpacity: 1,
-                strokeColor: '#f6f6f6',
+                strokeColor: '#ed867d',
                 strokeWeight: 2
             };
         },
