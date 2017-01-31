@@ -46,9 +46,10 @@
         </div>
     {{/each}}
     {{#each children.audio.data}}
-        <audio class = "marker-thumb" controls>
-            <source src="{{this.file_path}}"></source>
-        </audio>
+        <div class="player-container audio-simple">
+            <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->
+
+        </div>
         <a class= "detach_media" data-id="{{this.id}}" data-type = "audio" media-name = "{{this.name}}">X</a>
     {{/each}}
     <div class="confirmation success-message">Saved Successfully</div>
