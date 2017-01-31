@@ -96,12 +96,11 @@ define ([
                     },
 
                     onRender: function(){
-                        if (this.app.dataType == "audio"){
+                        if (this.currentMedia == "audio") {
                             var player = new AudioPlayer({
                                 model: this.model,
                                 audioMode: "simple"
                             });
-                            console.log(player.$el);
                             this.$el.find(".player-container").append(player.$el);
                         }
                     },
