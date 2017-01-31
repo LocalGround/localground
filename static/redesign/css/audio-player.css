@@ -131,7 +131,7 @@ audio {
 }
 
 .audio-simple .audio-progress-bar {
-    width: 110px;
+    width: 100px;
 }
 
 .audio-detail .audio-progress-bar {
@@ -200,4 +200,9 @@ audio {
 .audio-detail .play {
     margin: 0px auto;
     display: inline-block;
+}
+
+
+.audio-detail .audio-container {
+    background: #FFFFFF;
 }
