@@ -15,6 +15,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
                 'click .volUp': 'volumeUp',
                 'click .volDown': 'volumeDown',
                 'click .play' : 'togglePlay',
+                'click .skip-fwd' : 'skipForward',
+                'click .skip-back' : 'skipBackward',
                 'click .progress .audio-progress-bar' : 'jumpToTime'
             },
             audio: null,
@@ -56,6 +58,25 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
                     w = (e.pageX - posX) / this.$el.width();
                 this.audio.currentTime = w * this.audio.duration;
             },
+
+            skipForward: function(){
+                if (this.audio.currentTime < this.audio.duration){
+                    var skipStep = this.audio.duration / 10;
+                    this.audio.currentTime += skipStep;
+                } else {
+                    this.audio.currentTime = this.audio.duration;
+                }
+            },
+
+            skipBackward: function(){
+                if (this.audio.currentTime > 0){
+                    var skipStep = this.audio.duration / 10;
+                    this.audio.currentTime -= skipStep;
+                } else {
+                    this.audio.currentTime = 0;
+                }
+            },
+
 
             playerDurationUpdate: function(){
 
