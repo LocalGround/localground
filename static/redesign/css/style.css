@@ -454,10 +454,12 @@ input[type="checkbox"]{
 
 /************************************ Navigation ************************************/
 
-#toolbar-main h2{
+#toolbar-main h2 {
     padding: 14px 0 0;
     font-size: 22px;
-    font-weight:300;
+    font-weight: 300;
+    width: 200px;
+    display: inline-block;
 }
 
 #toolbar-main p{
