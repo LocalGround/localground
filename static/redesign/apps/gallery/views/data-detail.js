@@ -133,8 +133,10 @@ define([
                 player;
             if (this.app.dataType.indexOf('form_') != -1) {
                 fields = {};
+                console.log(this.model.get("fields"));
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     /* https://github.com/powmedia/backbone-forms */
+                    console.log(field);
                     field = this.model.get("fields")[i];
                     type = field.data_type.toLowerCase();
                     name = field.col_name;

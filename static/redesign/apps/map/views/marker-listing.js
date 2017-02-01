@@ -2,22 +2,30 @@ define(["jquery",
         "marionette",
         "underscore",
         "handlebars",
-        "collections/photos",
-        "collections/audio",
         "lib/maps/icon-lookup",
         "lib/maps/marker-overlays",
         "text!../templates/list-detail.html",
         "text!../templates/list.html"],
-    function ($, Marionette, _, Handlebars, Photos, Audio, IconLookup, OverlayListView, ItemTemplate, ListTemplate) {
+    function ($, Marionette, _, Handlebars, IconLookup, OverlayListView, ItemTemplate, ListTemplate) {
         'use strict';
         var MarkerListing = Marionette.CompositeView.extend({
 
             //view that controls what each gallery item looks like:
             overlays: null,
+            fields: null, //for custom data types
+            childViewOptions: function () {
+                return {
+                    app: this.app,
+                    fields: this.fields
+                };
+            },
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
+                        if (this.fields) {
+                            this.model.set("fields", this.fields.toJSON());
+                        }
                     },
                     template: Handlebars.compile(ItemTemplate),
                     events: {
@@ -47,19 +55,8 @@ define(["jquery",
             },
             initialize: function (opts) {
                 _.extend(this, opts);
-
-                // call Marionette's default functionality (similar to "super")
                 Marionette.CompositeView.prototype.initialize.call(this);
-
                 this.displayMedia();
-
-                // when the fetch completes, call Backbone's "render" method
-                // to create the gallery template and bind the data:
-                this.listenTo(this.collection, 'reset', this.render);
-                this.listenTo(this.collection, 'reset', this.renderOverlays);
-                this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
-
-                //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
             },
@@ -77,10 +74,6 @@ define(["jquery",
                 console.log("about to show...");
                 this.app.vent.trigger('unhide-list');
                 e.preventDefault();
-            },
-
-            childViewOptions: function () {
-                return { app: this.app };
             },
 
             hideLoadingMessage: function () {
@@ -105,33 +98,22 @@ define(["jquery",
                 });
             },
 
-            getDefaultQueryString: function () {
-                return "WHERE project = " + this.app.getProjectID();
-            },
-
-            doSearch: function (query) {
-                query = "WHERE " + query + " AND project = " + this.app.getProjectID();
-                this.collection.query = query;
-                this.collection.fetch({ reset: true });
+            doSearch: function (term) {
+                this.collection.doSearch(term, this.app.getProjectID());
             },
 
             clearSearch: function () {
-                this.collection.query = this.getDefaultQueryString();
-                this.collection.fetch({ reset: true });
+                this.collection.clearSearch();
             },
 
             displayMedia: function () {
                 //fetch data from server:
-                if (this.app.dataType == "photos") {
-                    this.collection = new Photos();
-                } else if (this.app.dataType ==  "audio") {
-                    this.collection = new Audio();
-                } else {
-                    alert("Type not accounted for.");
-                    return;
-                }
-                this.collection.query = this.getDefaultQueryString();
-                this.collection.fetch({ reset: true });
+                var data = this.app.dataManager.getData(this.app.dataType);
+                this.collection = data.collection;
+                this.fields = data.fields;
+                this.render();
+                this.renderOverlays();
+                this.hideLoadingMessage();
             }
 
         });

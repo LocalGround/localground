@@ -4,6 +4,7 @@ define([
     "apps/map/router",
     "views/toolbar-global",
     "apps/gallery/views/toolbar-dataview",
+    "lib/data/dataManager",
     "apps/map/views/marker-listing",
     "lib/maps/basemap",
     "apps/gallery/views/data-detail",
@@ -11,7 +12,7 @@ define([
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,
-             MarkerListing, Basemap, DataDetail, Projects, appUtilities) {
+             DataManager, MarkerListing, Basemap, DataDetail, Projects, appUtilities) {
     "use strict";
     /* TODO: Move some of this stuff to a Marionette LayoutView */
     var MapApp = Marionette.Application.extend(_.extend(appUtilities, {
@@ -36,6 +37,7 @@ define([
             this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
+            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
             this.listenTo(this.vent, 'show-list', this.showList);
             this.listenTo(this.vent, 'show-detail', this.showDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
@@ -45,13 +47,8 @@ define([
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            this.projects = new Projects();
-            this.listenTo(this.projects, 'reset', this.selectProjectLoadRegions);
-            this.projects.fetch({ reset: true });
-        },
-        selectProjectLoadRegions: function () {
-            this.selectProject(); //located in appUtilities
-            this.loadRegions();
+            this.dataManager = new DataManager({ app: this});
+            //this.loadRegions();
         },
 
         loadRegions: function () {
