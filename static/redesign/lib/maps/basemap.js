@@ -105,7 +105,7 @@ define(["marionette",
                 setTimeout(function () {
                     console.log('resizing map....');
                     google.maps.event.trigger(that.map, 'resize');
-                }, 500);
+                }, 50);
             },
 
             saveState: function () {
