@@ -1,13 +1,14 @@
-define(["marionette",
+define(["jquery",
+        "marionette",
         "underscore",
         "handlebars",
         "collections/photos",
         "collections/audio",
         "lib/maps/icon-lookup",
-        "apps/map/views/marker-overlays",
+        "lib/maps/marker-overlays",
         "text!../templates/list-detail.html",
         "text!../templates/list.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, IconLookup, OverlayListView, ItemTemplate, ListTemplate) {
+    function ($, Marionette, _, Handlebars, Photos, Audio, IconLookup, OverlayListView, ItemTemplate, ListTemplate) {
         'use strict';
         var MarkerListing = Marionette.CompositeView.extend({
 
@@ -19,6 +20,9 @@ define(["marionette",
                         _.extend(this, opts);
                     },
                     template: Handlebars.compile(ItemTemplate),
+                    events: {
+                        'click a': 'highlight'
+                    },
                     modelEvents: {
                         'saved': 'render'
                     },
@@ -26,14 +30,20 @@ define(["marionette",
                     templateHelpers: function () {
                         return {
                             dataType: this.app.dataType,
-                            icon: IconLookup.getIconPaths('square')
+                            icon: IconLookup.getIconPaths('plus')
                         };
+                    },
+                    highlight: function (e) {
+                        $("a").removeClass("highlight");
+                        var $elem = $(e.target).addClass("highlight");
                     }
                 });
             },
             childViewContainer: ".marker-container",
             events: {
-                'click .zoom-to-extents': 'zoomToExtents'
+                'click .zoom-to-extents': 'zoomToExtents',
+                'click .hide': 'hidePanel',
+                'click .show': 'showPanel'
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -55,6 +65,18 @@ define(["marionette",
             },
             zoomToExtents: function () {
                 this.collection.trigger('zoom-to-extents');
+            },
+            hidePanel: function (e) {
+                $(e.target).removeClass("hide").addClass("show");
+                console.log("about to hide...");
+                this.app.vent.trigger('hide-list');
+                e.preventDefault();
+            },
+            showPanel: function (e) {
+                $(e.target).removeClass("show").addClass("hide");
+                console.log("about to show...");
+                this.app.vent.trigger('unhide-list');
+                e.preventDefault();
             },
 
             childViewOptions: function () {

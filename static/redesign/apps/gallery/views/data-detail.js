@@ -22,7 +22,9 @@ define([
             'click .save-model': 'saveModel',
             'click .delete-model': 'deleteModel',
             'click #add-media-button': 'showMediaBrowser',
-            'click .detach_media': 'detachModel'
+            'click .detach_media': 'detachModel',
+            'click .hide': 'hideMapPanel',
+            'click .show': 'showMapPanel'
         },
         getTemplate: function () {
             if (this.app.dataType == "photos") {
@@ -112,7 +114,8 @@ define([
             var context = {
                 mode: this.app.mode,
                 dataType: this.app.dataType,
-                audioMode: "detail"
+                audioMode: "detail",
+                screenType: this.app.screenType
             };
             return context;
         },
@@ -228,6 +231,18 @@ define([
         },
         doNotDisplay: function () {
             this.$el.html("");
+        },
+        hideMapPanel: function (e) {
+            $(e.target).removeClass("hide").addClass("show");
+            console.log("about to hide...");
+            this.app.vent.trigger('hide-detail');
+            e.preventDefault();
+        },
+        showMapPanel: function (e) {
+            $(e.target).removeClass("show").addClass("hide");
+            console.log("about to show...");
+            this.app.vent.trigger('unhide-detail');
+            e.preventDefault();
         }
     });
     return MediaEditor;

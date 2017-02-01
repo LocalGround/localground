@@ -178,12 +178,7 @@ fieldset > div,
     margin: 0;
 }
 
-.list-indent > li:first-child {
-    padding: 9.2px 14px;
-    font-weight: 500;
-    border-bottom: 1px solid #e4e5eb;
-    background-color: white;
-}
+
 .list-indent > li, .preview-filter-list > li {
     padding: 6px 22px;
     border-bottom: 1px solid #ebebeb;

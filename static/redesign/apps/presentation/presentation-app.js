@@ -2,7 +2,7 @@ define([
     "marionette",
     "backbone",
     "apps/presentation/router",
-    "apps/map/views/map",
+    "lib/maps/basemap",
     "collections/projects",
     "collections/photos",
     "apps/presentation/views/marker-overlays",

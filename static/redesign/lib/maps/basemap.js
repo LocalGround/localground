@@ -1,6 +1,3 @@
-/*
- * DELETE THIS!!!!!!: MOVED TO lib/maps/basemap.js
-*/
 define(["marionette",
         "jquery",
         "lib/maps/controls/searchBox",
@@ -40,14 +37,19 @@ define(["marionette",
                     scrollwheel: false,
                     minZoom: this.minZoom,
                     streetViewControl: true,
+                    streetViewControlOptions: {
+                        position: google.maps.ControlPosition.RIGHT_TOP
+                    },
+                    //fullscreenControl: true,
                     scaleControl: true,
                     panControl: false,
                     mapTypeControlOptions: {
                         style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-                        position: google.maps.ControlPosition.TOP_LEFT
+                        position: google.maps.ControlPosition.TOP_RIGHT
                     },
                     zoomControlOptions: {
-                        style: google.maps.ZoomControlStyle.SMALL
+                        style: google.maps.ZoomControlStyle.SMALL,
+                        position: google.maps.ControlPosition.TOP_RIGHT
                     },
                     zoom: this.defaultLocation.zoom,
                     center: this.defaultLocation.center
@@ -102,6 +104,13 @@ define(["marionette",
                 $(window).on('resize', function () {
                     console.log('map resized');
                 });
+            },
+            redraw: function () {
+                var that = this;
+                setTimeout(function () {
+                    console.log('resizing map....');
+                    google.maps.event.trigger(that.map, 'resize');
+                }, 500);
             },
 
             saveState: function () {

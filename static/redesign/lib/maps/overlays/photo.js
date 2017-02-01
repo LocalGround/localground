@@ -24,13 +24,14 @@ define(["lib/maps/overlays/base", "lib/maps/overlays/infobubbles/photo"], functi
         },
 
         getIconActive: function () {
+            var opts = this.getIconPaths('plus');
             return {
-                path: 'M-2,0a2,2 0 1,0 4,0a2,2 0 1,0 -4,0',
-                scale: 2,
+                path: opts.path,
+                scale: opts.scale,
                 fillColor: '#7084c2',
                 fillOpacity: 1,
                 strokeColor: '#7084c2',
-                strokeWeight: 10
+                strokeWeight: 5
             };
         },
 

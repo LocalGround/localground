@@ -1,8 +1,10 @@
-{{#if geometry }}
-    <svg viewBox="{{ icon.viewBox }}" width="20" height="20" style="margin-top:3px;">
-        <path fill="#428BCA" d="{{ icon.path }}"></path>
-    </svg>
-{{else}}
-    <i class="fa fa-question-circle" aria-hidden="true"></i>
-{{/if}}
-<a href="#/{{dataType}}/{{id}}">{{ name }}</a>
+<a href="#/{{dataType}}/{{id}}">
+    {{#if geometry }}
+        <svg viewBox="{{ icon.viewBox }}" width="15" height="15" style="margin-top:3px;">
+            <path fill="#428BCA" stroke="#428BCA" d="{{ icon.path }}"></path>
+        </svg>
+    {{else}}
+        <i class="fa fa-question-circle" aria-hidden="true"></i>
+    {{/if}}
+{{ name }}
+</a>
