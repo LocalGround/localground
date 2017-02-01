@@ -122,7 +122,7 @@
 }
 
 .controls {
-    margin: 5px 5px;
+    margin: 10px 5px;
     padding: 5px 15px;
     border: solid 2px #CCC;
     width: 250px;
@@ -218,4 +218,13 @@ svg, .fa-question-circle {
     background-position: center center;
     background-size: 8px 8px;
     box-shadow: -1px 1px 4px rgba(0,0,0,0.3);
+}
+
+
+/**********************
+ * Google Maps Override
+ */
+.gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom {
+    right: 50px !important;
+    bottom: 107px !important;
 }
