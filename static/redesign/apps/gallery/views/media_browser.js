@@ -5,10 +5,11 @@ define ([
     "handlebars",
     "collections/photos",
     "collections/audio",
+    "lib/audio/audio-player",
     "text!../templates/thumb.html",
     "text!../templates/media-list.html"],
     function ($, _, Marionette, Handlebars, Photos, Audio,
-              ThumbTemplate, ListTemplate) {
+              AudioPlayer, ThumbTemplate, ListTemplate) {
         'use strict';
 
         /*
@@ -33,7 +34,6 @@ define ([
                     },
                     selectedClass : function (e) {
 
-                        console.log(this.model);
                         if (!e.metaKey && !e.shiftKey){
                             $(".column").removeClass("selected-card");
                             this.model.collection.each(function(model){
@@ -95,6 +95,16 @@ define ([
 
                     },
 
+                    onRender: function(){
+                        if (this.currentMedia == "audio") {
+                            var player = new AudioPlayer({
+                                model: this.model,
+                                audioMode: "simple"
+                            });
+                            this.$el.find(".player-container").append(player.$el);
+                        }
+                    },
+
                     tagName: "div",
                     className: "column",
                     templateHelpers: function () {
@@ -146,6 +156,9 @@ define ([
                 }
                 else if (this.currentMedia == "audio") {
                     this.collection = new Audio();
+
+                    // There must be a for loop to handle creation of the
+                    // audio players
                 }
                 // after you re-initialize the collection, you have to
                 // attach all of the Marionette default event handlers

@@ -596,7 +596,7 @@ input[type="checkbox"]{
     border-color: #e4e5eb;
     border-width: 2px;
     border-radius: 3px;
-    width: 100px;
+    width: 96px;
     height: 96px;
     display: inline-block;
     vertical-align: top;
@@ -615,16 +615,33 @@ input[type="checkbox"]{
     background-size: cover !important;
     background-repeat: no-repeat !important;
 }
-.attached-media + div {
+.attached-media-overlay {
     background-color: rgba(0,0,0,0.1);
     margin-top: -100px;
+    width: 100px;
+    height: 100px;
+    position: relative;
 }
-.attached-media + div > div {
+
+.attached-media-overlay {
+    background-color: rgba(0,0,0,0.1);
+    margin-top: -100px;
+    width: 100px;
+    height: 100px;
+    position: relative;
+}
+
+.attached-media-container {
+    width: 260px;
+    margin-left: 122px;
+    /*border: solid 1px #000;*/
+}
+.hover-to-show {
     width: 100%;
     height: 100%;
 }
-.attached-media + div:hover {
-    background-color: rgba(0,0,0,0.4);
+.attached-media-overlay:hover {
+    background-color: rgba(0,0,0,0.3);
     margin-top: -100px;
 }
 
@@ -640,7 +657,8 @@ input[type="checkbox"]{
 }
 
 .upload-spot, .attached-container {
-    margin: 10px 5px -5px 5px;
+    margin: 10px 6px 0px 0px;
+    vertical-align: top;
 }
 
 #add-media-button {

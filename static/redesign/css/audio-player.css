@@ -105,12 +105,33 @@ audio {
     padding-top: 40px;
 }
 
+.progress-container {
+    width: calc(100% - 40px);
+    margin: auto;
+}
 
+.audio-basic .play {
+    margin-top: 35px;
+    position: relative;
+    z-index: 10;
+}
 
+.audio-basic {
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    background: #f0f1f5;
+    /*margin: 10px 10px 0px 0px;*/
+}
 
 /**************************
  * Simple and Detailed Player
  **************************/
+.progress-container {
+    width: calc(100% - 40px);
+    margin: auto;
+    text-align: left;
+}
 
 .audio-simple .audio-progress, .audio-detail .audio-progress {
     padding: 10px 30px 50px 30px;
@@ -123,54 +144,39 @@ audio {
     top: 4px;
 }
 
-.audio-simple .audio-progress-bar, .audio-detail .audio-progress-bar {
-
-    /*
-    background: #7a7a7a;
-    background: -moz-linear-gradient(left, #686868 50%, #686868 29%,#c4c4c4 50%);
-    background: -webkit-linear-gradient(left, #686868 50%, #686868 50%,#c4c4c4 50%);
-    background: linear-gradient(to right, #686868 50%, #686868 50%,#c4c4c4 50%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7a7a7a', endColorstr='#c4c4c4',GradientType=1 );
-    */
+.audio-progress-bar {
     background-color: #c4c4c4;
-    width: 190px;
     height: 6px;
     border-radius: 10px;
     display: inline-block;
 }
 
-/*
-  For now, I have made a temporary solution to the problem by
-  having a duplicate progress bar until a more elegant one
-  is found that makes it look like the loading bar is coming through
-*/
+.audio-simple .audio-progress-bar {
+    width: 100%;
+}
+
+.audio-detail .audio-progress-bar {
+    width: 100%;
+}
 
 .audio-simple .audio-progress-duration, .audio-detail .audio-progress-duration {
-
-    /*
-    background: #7a7a7a;
-    background: -moz-linear-gradient(left, #686868 50%, #686868 29%,#c4c4c4 50%);
-    background: -webkit-linear-gradient(left, #686868 50%, #686868 50%,#c4c4c4 50%);
-    background: linear-gradient(to right, #686868 50%, #686868 50%,#c4c4c4 50%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7a7a7a', endColorstr='#c4c4c4',GradientType=1 );
-    */
     background-color: #686868;
     width: 0px;
     height: 6px;
     border-radius: 10px;
-    top: 0px;
     display: inline-block;
-    position: absolute;
+    margin-top: -6px;
 }
 
 .audio-simple .audio-progress-circle, .audio-detail .audio-progress-circle {
     height: 10px;
     width: 10px;
     border-radius: 40px;
-    top: -8px;
-    position: absolute;
     border: 6px solid #7a7a7a;
     background-color: white;
+    margin-top: -15px;
+    margin-left: -8px;
+    position: relative;
 }
 
 
@@ -201,4 +207,8 @@ audio {
 .audio-detail .play {
     margin: 0px auto;
     display: inline-block;
+}
+
+.audio-detail .audio-container {
+    background: #FFFFFF;
 }
