@@ -595,6 +595,7 @@ input[type="checkbox"]{
     height: 96px;
     display: inline-block;
     vertical-align: top;
+    margin-left: 28px !important;
 }
 
 .attached-container {
@@ -627,9 +628,9 @@ input[type="checkbox"]{
 }
 
 .attached-media-container {
-    width: 260px;
-    margin-left: 122px;
-    /*border: solid 1px #000;*/
+    /* width: 260px; */
+    margin-left: 30px;
+    /* border: solid 1px #000; */
 }
 .hover-to-show {
     width: 100%;
@@ -652,7 +653,7 @@ input[type="checkbox"]{
 }
 
 .upload-spot, .attached-container {
-    margin: 10px 6px 0px 0px;
+    margin: 16px 12px 0px 0px;
     vertical-align: top;
 }
 

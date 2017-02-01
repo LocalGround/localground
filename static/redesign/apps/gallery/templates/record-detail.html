@@ -27,10 +27,10 @@
     </div>
 
     <h2 style="margin:20px 20px 4px;">Add Media</h2>
-    <div class="upload-spot" id="left-panel-upload">
-        <button id="add-media-button" class="click-to-open" data-modal="modal-add-media"><i class="fa fa-plus" aria-hidden="true"></i></button>
-    </div>
     <div class="attached-media-container">
+        <div class="upload-spot" id="left-panel-upload">
+            <button id="add-media-button" class="click-to-open" data-modal="modal-add-media"><i class="fa fa-plus" aria-hidden="true"></i></button>
+        </div>
         {{#each children.photos.data}}
             <div class="attached-container">
                 <div class="attached-media" style="background: url('{{this.path_small}}');"></div>
