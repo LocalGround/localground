@@ -2,18 +2,13 @@
 {{#ifequal mode "view"}}
     <h4>Preview</h4>
     <div class = "section">
-        <h3>{{ name }}</h3><br>
-            <h4>Caption: {{caption}}</h4><br>
-            <h4>Tags: {{tags}}</h4><br>
-            <h4>Coordinates: {{lat}} , {{lng}}</h4>
-        <!-- As of now, we have this name only
-        Later, we will ahve to add other unique stuff to this
-        -->
+        <h3>{{ display_name }}</h3>
+        {{#each fields}}
+            {{ this.col_alias }}: {{ this.val }}<br>
+        {{/each}}
     </div>
     <div class = "save-options">
-        <button class="edit-model button-primary">Save</button>
-        <button class="edit-mode button-tertiary">Edit</button>
-        <button class="view-mode button-tertiary button-warning delete-model">Delete</button>
+        <button class="edit-mode button-tertiary ">Edit</button>
     </div>
 {{/ifequal}}
 
@@ -35,23 +30,31 @@
     <div class="upload-spot" id="left-panel-upload">
         <button id="add-media-button" class="click-to-open" data-modal="modal-add-media"><i class="fa fa-plus" aria-hidden="true"></i></button>
     </div>
-    {{#each children.photos.data}}
-        <div class="attached-container">
-            <div class="attached-media" style="background: url('{{this.path_small}}');"></div>
-            <div class="attached-media-overlay">
-                <div class="hover-to-show">
-                    <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>
+    <div class="attached-media-container">
+        {{#each children.photos.data}}
+            <div class="attached-container">
+                <div class="attached-media" style="background: url('{{this.path_small}}');"></div>
+                <div class="attached-media-overlay">
+                    <div class="hover-to-show">
+                        <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>
+                    </div>
                 </div>
             </div>
-        </div>
-    {{/each}}
-    {{#each children.audio.data}}
-        <div class="player-container audio-simple" data-id="{{this.id}}">
-            <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->
+        {{/each}}
+        {{#each children.audio.data}}
+            <div class="attached-container">
+                <div class="player-container audio-basic" data-id="{{this.id}}">
+                    <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->
+                </div>
+                <div class="attached-media-overlay">
+                    <div class="hover-to-show">
+                        <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="audio" media-name="{{this.name}}"></i>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
 
-        </div>
-        <a class= "detach_media" data-id="{{this.id}}" data-type = "audio" media-name = "{{this.name}}">X</a>
-    {{/each}}
     <div class="confirmation success-message">Saved Successfully</div>
     <div class = "save-options">
         <button class="save-model button-primary">Save</button>

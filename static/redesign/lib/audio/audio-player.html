@@ -1,5 +1,15 @@
-{{#ifequal audioMode "simple"}}
+{{#ifequal audioMode "basic"}}
+    <audio controls preload class="audio">
+      <source src="{{file_path}}" type="audio/mpeg" />
+    </audio>
+    <div>
+        <div class="play-ctrls">
+            <div class="play"></div>
+        </div>
+    </div>
+{{/ifequal}}
 
+{{#ifequal audioMode "simple"}}
     <audio controls preload class="audio">
       <source src="{{file_path}}" type="audio/mpeg" />
     </audio>
@@ -10,7 +20,7 @@
         </div>
         <div class="audio-progress">
             <span class="audio-labels time-current" style="left: 10px;"></span>
-            <div style="position:absolute;left:49px;">
+            <div class="progress-container">
                 <div class="audio-progress-bar"></div>
                 <div class="audio-progress-duration"></div>
                 <div class="audio-progress-circle"></div>
@@ -33,7 +43,7 @@
         </div>
         <div class="audio-progress">
             <span class="audio-labels time-current" style="left: 10px;"></span>
-            <div style="position:absolute;left:49px;">
+            <div class="progress-container">
                 <div class="audio-progress-bar"></div>
                 <div class="audio-progress-duration"></div>
                 <div class="audio-progress-circle"></div>
@@ -42,11 +52,6 @@
         </div>
         Insert Description here and expand window height
         so that the buttons do not cover this audio player
-        <!--
-        <div class="vol">
-            <i class="fa fa-plus-circle fa-2x volUp"></i>
-            <i class="fa fa-minus-circle fa-2x volDown"></i>
-        </div>
-        -->
+
     </div>
 {{/ifequal}}

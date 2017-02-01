@@ -1,4 +1,5 @@
 define([
+    "jquery",
     "backbone",
     "underscore",
     "handlebars",
@@ -6,15 +7,13 @@ define([
     "apps/gallery/views/media_browser",
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
-    "text!../templates/marker-detail.html",
-    "text!../templates/record-detail.html", 
+    "text!../templates/record-detail.html",
+    "models/audio",
     "lib/audio/audio-player",
-    "apps/gallery/views/data-list",
     "form" //extends Backbone
-], function (Backbone, _, Handlebars, Marionette, MediaBrowser,
-             PhotoTemplate, AudioTemplate, MarkerTemplate, RecordTemplate,
-             AudioPlayer,
-             DataList) {
+], function ($, Backbone, _, Handlebars, Marionette, MediaBrowser,
+             PhotoTemplate, AudioTemplate, SiteTemplate,
+             Audio, AudioPlayer) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -30,11 +29,8 @@ define([
                 return Handlebars.compile(PhotoTemplate);
             } else if (this.app.dataType == "audio") {
                 return Handlebars.compile(AudioTemplate);
-            } else if (this.app.dataType == "markers") {
-                return Handlebars.compile(MarkerTemplate);
-            } else {
-                return Handlebars.compile(RecordTemplate);
             }
+            return Handlebars.compile(SiteTemplate);
         },
         showMediaBrowser: function () {
             // That is a good small start,
@@ -73,12 +69,12 @@ define([
         },
 
         attachModels: function (models) {
-            var that  = this;
-            for (var i = 0; i < models.length; ++i){
-                this.model.attach(models[i], function(){
+            var that = this,
+                i = 0;
+            for (i = 0; i < models.length; ++i) {
+                this.model.attach(models[i], function () {
                     that.model.fetch({reset: true});
-                }, function(){
-                })
+                }, function () {});
             }
             this.app.vent.trigger('hide-modal');
         },
@@ -86,18 +82,19 @@ define([
           Problem stems from that the model is undefined
           and it has to be defined inside the function
         */
-        detachModel: function(e){
-            if (!confirm("Want to remove media from site?")) return;
-            var that = this;
-
-            var $elem = $(e.target);
-            var dataType = $elem.attr("data-type");
-            var dataID = $elem.attr("data-id");
-            this.model.detach(dataID, dataType, function(){
+        detachModel: function (e) {
+            var that = this,
+                $elem = $(e.target),
+                dataType = $elem.attr("data-type"),
+                dataID = $elem.attr("data-id"),
+                name = $elem.attr("media-name");
+            if (!confirm("Are you sure you want to detach " +
+                    name + " from this site? Note that this will not delete the media file -- it just detaches it.")) {
+                return;
+            }
+            this.model.detach(dataID, dataType, function () {
                 that.model.fetch({reset: true});
-            })
-
-
+            });
         },
         switchToViewMode: function () {
             this.app.mode = "view";
@@ -123,7 +120,14 @@ define([
             //any extra view logic. Carousel functionality goes here
         },
         editRender: function () {
-            var fields, i, field, type, name, that = this;
+            var fields,
+                i,
+                field,
+                type,
+                name,
+                that = this,
+                audio_attachments = [],
+                player;
             if (this.app.dataType.indexOf('form_') != -1) {
                 fields = {};
                 for (i = 0; i < this.model.get("fields").length; i++) {
@@ -132,14 +136,14 @@ define([
                     type = field.data_type.toLowerCase();
                     name = field.col_name;
                     switch (type) {
-                        case "boolean":
-                            fields[name] = 'Checkbox';
-                            break;
-                        case "integer":
-                            fields[name] = 'Number';
-                            break;
-                        default:
-                            fields[name] = 'Text';
+                    case "boolean":
+                        fields[name] = 'Checkbox';
+                        break;
+                    case "integer":
+                        fields[name] = 'Number';
+                        break;
+                    default:
+                        fields[name] = 'Text';
                     }
                 }
                 this.form = new Backbone.Form({
@@ -154,26 +158,23 @@ define([
                 }).render();
             }
             if (this.app.dataType.indexOf("form_") != -1 || this.app.dataType == "markers") {
-                console.log("AUDIO!");
-                var audio_attachments = [];
+                audio_attachments = [];
                 if (this.model.get("children") && this.model.get("children").audio) {
                     audio_attachments = this.model.get("children").audio.data;
                 }
                 _.each(audio_attachments, function (item) {
-                    console.log(item);
-                    var $elem = that.$el.find(".audio-simple").find("[data-id='" + item.id + "']")[0];
-                    console.log($elem);
-                    var player = new AudioPlayer({
+                    var $elem = that.$el.find(".audio-basic[data-id='" + item.id + "']")[0];
+                    player = new AudioPlayer({
                         model: new Audio(item),
-                        audioMode: "simple"
+                        audioMode: "basic"
                     });
-                    $elem.append(player.$el);
+                    $elem.append(player.$el[0]);
                 });
             }
             //https://github.com/powmedia/backbone-forms#custom-editors
             this.$el.find('#model-form').append(this.form.$el);
         },
-        
+
         onRender: function () {
             if (this.app.mode == "view") {
                 this.viewRender();
@@ -181,7 +182,7 @@ define([
                 this.editRender();
             }
             // render audio player if audio mode:
-            if (this.app.dataType == "audio"){
+            if (this.app.dataType == "audio") {
                 var player = new AudioPlayer({
                     model: this.model,
                     audioMode: "detail"
