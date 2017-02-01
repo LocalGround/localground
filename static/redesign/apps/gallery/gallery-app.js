@@ -98,7 +98,7 @@ define([
             if (this.dataType.indexOf("form_") != -1) {
                 model.set("fields", this.mainView.fields.toJSON());
             }
-            model.set("project_id", this.selectedProject.get("id"));
+            model.set("project_id", this.selectedProjectID);
             return model;
         },
 

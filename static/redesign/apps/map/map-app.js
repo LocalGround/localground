@@ -47,6 +47,7 @@ define([
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
+            this.selectedProjectID = this.getProjectID();
             this.dataManager = new DataManager({ app: this});
             //this.loadRegions();
         },
@@ -115,6 +116,19 @@ define([
         unhideList: function () {
             this.showLeft = true;
             this.updateDisplay();
+        },
+
+        createNewModelFromCurrentCollection: function () {
+            //creates an empty model object:
+            var Model = this.currentCollection.model,
+                model = new Model();
+            model.collection = this.currentCollection;
+            // If we get the form, pass in the custom field
+            if (this.dataType.indexOf("form_") != -1) {
+                model.set("fields", this.mainView.fields.toJSON());
+            }
+            model.set("project_id", this.selectedProjectID);
+            return model;
         },
 
         showDetail: function (opts) {
