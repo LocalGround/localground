@@ -13,6 +13,17 @@ define(["jquery",
             //view that controls what each gallery item looks like:
             overlays: null,
             fields: null, //for custom data types
+            title: null,
+            templateHelpers: function () {
+                var d = {
+                    title: this.title,
+                    typePlural: this.typePlural,
+                    foo: "sup"
+                };
+                console.log(d);
+                return d;
+            },
+
             childViewOptions: function () {
                 return {
                     app: this.app,
@@ -56,6 +67,8 @@ define(["jquery",
             initialize: function (opts) {
                 _.extend(this, opts);
                 Marionette.CompositeView.prototype.initialize.call(this);
+
+                this.template = Handlebars.compile(ListTemplate);
                 this.displayMedia();
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
@@ -78,10 +91,6 @@ define(["jquery",
 
             hideLoadingMessage: function () {
                 this.$el.find(this.childViewContainer).empty();
-            },
-
-            template: function () {
-                return Handlebars.compile(ListTemplate);
             },
 
             remove: function () {
@@ -109,8 +118,15 @@ define(["jquery",
             displayMedia: function () {
                 //fetch data from server:
                 var data = this.app.dataManager.getData(this.app.dataType);
+
+                // set important data variables:
                 this.collection = data.collection;
                 this.fields = data.fields;
+                this.title = data.name;
+                this.typePlural = data.id;
+                _.bindAll(this, 'render');
+
+                // redraw CompositeView:
                 this.render();
                 this.renderOverlays();
                 this.hideLoadingMessage();

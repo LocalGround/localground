@@ -118,14 +118,24 @@ define([
         },
 
         showDetail: function (opts) {
-            this.showRight = true;
-            this.updateDisplay();
-            var model = this.currentCollection.get(opts.id);
+            var model = null;
+            //var model = this.currentCollection.get(opts.id);
+            if (opts.id) {
+                model = this.currentCollection.get(opts.id);
+                if (this.dataType == "markers" || this.dataType.indexOf("form_") != -1) {
+                    if (!model.get("children")) {
+                        model.fetch({"reset": true});
+                    }
+                }
+            } else {
+                model = this.createNewModelFromCurrentCollection();
+            }
             this.dataDetail = new DataDetail({
                 model: model,
                 app: this
             });
             this.markerDetailRegion.show(this.dataDetail);
+            this.unhideDetail();
         },
 
         hideDetail: function () {
