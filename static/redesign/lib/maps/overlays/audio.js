@@ -22,8 +22,9 @@ define([
                 scale: opts.scale,
                 fillColor: '#7084c2',
                 fillOpacity: 1,
-                strokeColor: '#7084c2',
-                strokeWeight: 1
+                strokeColor: '#fff',
+                strokeWeight: 1,
+                strokeOpacity: 1
             };
 			/*var opts = this._overlay.Shapes.SOUND;
 			_.extend(opts, {

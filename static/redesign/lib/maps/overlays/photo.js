@@ -18,9 +18,9 @@ define(["lib/maps/overlays/base", "lib/maps/overlays/infobubbles/photo"], functi
                 scale: opts.scale,
                 fillColor: '#7084c2',
                 fillOpacity: 1,
-                strokeColor: '#7084c2',
+                strokeColor: '#fff',
                 strokeWeight: 1,
-                "paint-order": "stroke" //does not appear to be honored by Google Maps
+                strokeOpacity: 1
             };
         },
 

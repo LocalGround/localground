@@ -16,14 +16,15 @@ define([
          * @returns {Object} icon definition
          */
         getIcon: function () {
-            var opts = this.getIconPaths('pin');
+            var opts = this.getIconPaths('marker');
             return {
                 path: opts.path,
                 scale: opts.scale,
                 fillColor: '#ed867d', //this.model.get("color")
                 fillOpacity: 1,
-                strokeColor: '#ed867d',
-                strokeWeight: 2
+                strokeColor: '#fff',
+                strokeWeight: 1,
+                strokeOpacity: 1
             };
         },
 
