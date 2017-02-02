@@ -77,6 +77,7 @@ define(["jquery",
                 this.displayMedia();
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
+                //this.listenTo(this.collection, 'add', this.displayMedia);
             },
             addMedia: function (e) {
                 this.app.vent.trigger('add-media');
