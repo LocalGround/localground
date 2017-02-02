@@ -353,6 +353,9 @@ define([
                 sourceCollection = this.app.dataManager.getData("audio").collection;
             }
             model.urlRoot = sourceCollection.url;
+            delete model.attributes.data;
+            delete model.attributes.file;
+            console.log(model);
             sourceCollection.unshift(model); //add to top
         }
     });
