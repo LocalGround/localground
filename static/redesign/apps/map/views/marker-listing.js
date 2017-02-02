@@ -17,8 +17,7 @@ define(["jquery",
             templateHelpers: function () {
                 var d = {
                     title: this.title,
-                    typePlural: this.typePlural,
-                    foo: "sup"
+                    typePlural: this.typePlural
                 };
                 console.log(d);
                 return d;
@@ -47,9 +46,13 @@ define(["jquery",
                     },
                     tagName: "li",
                     templateHelpers: function () {
+                        var icon = IconLookup.getIconPaths(this.model.get("overlay_type"));
                         return {
                             dataType: this.app.dataType,
-                            icon: IconLookup.getIconPaths('plus')
+                            icon: icon,
+                            width: 15 * icon.scale,
+                            height: 15 * icon.scale,
+                            name: this.model.get("name") || this.model.get("display_name")
                         };
                     },
                     highlight: function (e) {
@@ -130,6 +133,7 @@ define(["jquery",
                 this.render();
                 this.renderOverlays();
                 this.hideLoadingMessage();
+                this.zoomToExtents();
             }
 
         });

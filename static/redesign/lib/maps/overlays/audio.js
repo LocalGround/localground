@@ -16,7 +16,16 @@ define([
          * @returns {Object} icon definition
          */
         getIcon: function () {
-			var opts = this._overlay.Shapes.SOUND;
+            var opts = this.getIconPaths('audio');
+            return {
+                path: opts.path,
+                scale: opts.scale,
+                fillColor: '#7084c2',
+                fillOpacity: 1,
+                strokeColor: '#7084c2',
+                strokeWeight: 1
+            };
+			/*var opts = this._overlay.Shapes.SOUND;
 			_.extend(opts, {
                 fillColor: "#333",
                 strokeColor: "#FFF",
@@ -25,7 +34,7 @@ define([
                 //anchor: new google.maps.Point(16, 5),
                 scale: 1.6
             });
-			return opts;
+			return opts;*/
         },
 
         initInfoBubble: function (opts) {

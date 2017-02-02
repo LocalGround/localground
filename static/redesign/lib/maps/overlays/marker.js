@@ -16,7 +16,7 @@ define([
          * @returns {Object} icon definition
          */
         getIcon: function () {
-            var opts = this.getIconPaths('circle');
+            var opts = this.getIconPaths('pin');
             return {
                 path: opts.path,
                 scale: opts.scale,

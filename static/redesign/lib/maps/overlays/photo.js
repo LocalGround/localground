@@ -12,7 +12,7 @@ define(["lib/maps/overlays/base", "lib/maps/overlays/infobubbles/photo"], functi
          * @returns google.maps.MarkerImage
          */
         getIcon: function () {
-            var opts = this.getIconPaths('plus');
+            var opts = this.getIconPaths('photo');
             return {
                 path: opts.path,
                 scale: opts.scale,
