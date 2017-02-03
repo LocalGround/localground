@@ -30,8 +30,6 @@ define(["marionette",
                 this.opts = opts;
                 $.extend(this, opts);
                 Marionette.View.prototype.initialize.call(this);
-                //New
-                this.listenTo(this.app.vent, 'set-map-type', this.setMapTypeId);
             },
 
             renderMap: function () {
@@ -80,8 +78,9 @@ define(["marionette",
                     activeMapTypeID: this.activeMapTypeID
                 });
 
+                //add event handlers:
             },
-            //add event handlers:
+
             addEventHandlers: function () {
                 //add notifications:
                 var that = this;
@@ -101,34 +100,31 @@ define(["marionette",
                     console.log('map resized');
                 });
             },
-     
-            getZoom: function () {
-                return this.map.getZoom();  
+            redraw: function () {
+                var that = this;
+                setTimeout(function () {
+                    console.log('resizing map....');
+                    google.maps.event.trigger(that.map, 'resize');
+                }, 50);
             },
-            
+            getZoom: function () {
+                return this.map.getZoom();
+            },
             getCenter: function () {
                 return this.map.getCenter();
             },
-            
-            
             getMapTypeId: function () {
-                return this.tileManager.getMapTypeId();  
+                return this.tileManager.getMapTypeId();
             },
-            
-            
             setZoom: function (zoom) {
                 this.map.setZoom(zoom);
             },
-            
             setCenter: function (center) {
                 this.map.setCenter(center);
             },
-            
-            
             setMapTypeId: function (id) {
-               this.app.basemapView.tileManager.setActiveMapType(id);
+                this.app.basemapView.tileManager.setActiveMapType(id);
             },
-            
 
             saveState: function () {
                 var latLng = this.map.getCenter(),

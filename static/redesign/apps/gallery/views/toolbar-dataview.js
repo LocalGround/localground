@@ -47,6 +47,7 @@ define([
             this.template = Handlebars.compile(ToolbarTemplate);
 
             // Collection of listeners
+            this.listenTo(this.app.vent, 'add-media', this.createUploadModal);
             this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
             this.listenTo(this.app.vent, 'show-media-type', this.showMediaTypeForm);
             this.listenTo(this.app.vent, 'tab-switch', this.changeMode);

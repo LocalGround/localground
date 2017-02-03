@@ -12,25 +12,16 @@ define(["lib/maps/overlays/base", "lib/maps/overlays/infobubbles/photo"], functi
          * @returns google.maps.MarkerImage
          */
         getIcon: function () {
-            return {
-                path: this.getIconPaths('pin'),
-                scale: 0.8,
-                fillColor: '#7084c2',
+            var opts = {
+                scale: 1,
+                fillColor: '#ed867d', //this.model.get("color")
                 fillOpacity: 1,
-                strokeColor: '#f6f6f6',
-                strokeWeight: 1
+                strokeColor: '#fff',
+                strokeWeight: 1,
+                strokeOpacity: 1
             };
-        },
-
-        getIconActive: function () {
-            return {
-                path: 'M-2,0a2,2 0 1,0 4,0a2,2 0 1,0 -4,0',
-                scale: 2,
-                fillColor: '#7084c2',
-                fillOpacity: 1,
-                strokeColor: '#7084c2',
-                strokeWeight: 10
-            };
+            _.extend(opts, this.getIconPaths('photo'));
+            return opts;
         },
 
         /** adds icon to overlay. */

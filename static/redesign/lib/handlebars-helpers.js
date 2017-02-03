@@ -77,6 +77,14 @@ define(["handlebars"],
             return new Handlebars.SafeString('style="background-color: ' + color + '"');
         });
 
+        Handlebars.registerHelper('times', function (start, end, block) {
+            var accum = '', i;
+            for (i = start; i < end; ++i) {
+                accum += block.fn(i);
+            }
+            return accum;
+        });
+
         Handlebars.registerHelper("repeat", function (txt, fa_class) {
             if (!txt) { return ''; }
 

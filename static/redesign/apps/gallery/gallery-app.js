@@ -45,9 +45,6 @@ define([
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-
-            //add views to regions after projects load:
-            //this.projects = new Projects();
             this.selectedProjectID = this.getProjectID();
             this.dataManager = new DataManager({ app: this});
         },
@@ -101,7 +98,7 @@ define([
             if (this.dataType.indexOf("form_") != -1) {
                 model.set("fields", this.mainView.fields.toJSON());
             }
-            model.set("project_id", this.selectedProject.get("id"));
+            model.set("project_id", this.selectedProjectID);
             return model;
         },
 
@@ -110,7 +107,9 @@ define([
             if (opts.id) {
                 model = this.currentCollection.get(opts.id);
                 if (this.dataType == "markers" || this.dataType.indexOf("form_") != -1) {
-                    model.fetch({"reset": true});
+                    if (!model.get("children")) {
+                        model.fetch({"reset": true});
+                    }
                 }
             } else {
                 model = this.createNewModelFromCurrentCollection();
