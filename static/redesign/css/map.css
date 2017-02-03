@@ -180,6 +180,9 @@ svg, .fa-question-circle {
     background: rgb(123, 155, 225);
     color: white;
 }
+.highlight a {
+    color: white;
+}
 
 .show-hide {
     width: 20px;

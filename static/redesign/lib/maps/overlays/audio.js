@@ -16,16 +16,16 @@ define([
          * @returns {Object} icon definition
          */
         getIcon: function () {
-            var opts = this.getIconPaths('audio');
-            return {
-                path: opts.path,
-                scale: opts.scale,
-                fillColor: '#7084c2',
+            var opts = {
+                scale: 1,
+                fillColor: '#ed867d', //this.model.get("color")
                 fillOpacity: 1,
                 strokeColor: '#fff',
                 strokeWeight: 1,
                 strokeOpacity: 1
             };
+            _.extend(opts, this.getIconPaths('audio'));
+            return opts;
 			/*var opts = this._overlay.Shapes.SOUND;
 			_.extend(opts, {
                 fillColor: "#333",

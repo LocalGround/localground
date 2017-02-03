@@ -16,16 +16,16 @@ define([
          * @returns {Object} icon definition
          */
         getIcon: function () {
-            var opts = this.getIconPaths('marker');
-            return {
-                path: opts.path,
-                scale: opts.scale,
+            var opts = {
+                scale: 1,
                 fillColor: '#ed867d', //this.model.get("color")
                 fillOpacity: 1,
                 strokeColor: '#fff',
                 strokeWeight: 1,
                 strokeOpacity: 1
             };
+            _.extend(opts, this.getIconPaths('marker'));
+            return opts;
         },
 
         /** adds icon to overlay. */

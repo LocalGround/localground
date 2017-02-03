@@ -46,7 +46,12 @@ define(["jquery",
                     },
                     tagName: "li",
                     templateHelpers: function () {
-                        var icon = IconLookup.getIconPaths(this.model.get("overlay_type"));
+                        var key = this.model.get("overlay_type"),
+                            icon;
+                        if (this.model.get("overlay_type").indexOf("form_") != -1) {
+                            key = "marker";
+                        }
+                        icon = IconLookup.getIconPaths(key);
                         return {
                             dataType: this.app.dataType,
                             icon: icon,
@@ -55,9 +60,9 @@ define(["jquery",
                             name: this.model.get("name") || this.model.get("display_name")
                         };
                     },
-                    highlight: function (e) {
-                        $("a").removeClass("highlight");
-                        var $elem = $(e.target).addClass("highlight");
+                    highlight: function () {
+                        $("li").removeClass("highlight");
+                        this.$el.addClass("highlight");
                     }
                 });
             },
