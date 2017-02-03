@@ -46,7 +46,6 @@ define(["marionette",
             changeMap: function(e) {
                 var id = $(e.target).val();
                 var selectedMapModel = this.collection.get(id);
-                console.log("map change");
                 
                 this.setCenterZoom(selectedMapModel);
                 this.setMapTypeId(selectedMapModel);

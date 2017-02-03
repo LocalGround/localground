@@ -5,7 +5,8 @@ define(["marionette",
         "text!../../templates/right/marker-style.html",
         "text!../../templates/right/marker-style-child.html",
         "collections/records",
-        "collections/fields"
+        "collections/fields",
+        "palette"
     ],
     function (Marionette, Handlebars, Layers, Layer, MarkerStyleTemplate, MarkerStyleChildTemplate, Records, Fields) {
         'use strict';
