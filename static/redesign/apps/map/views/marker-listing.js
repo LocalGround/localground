@@ -132,13 +132,13 @@ define(["jquery",
 
             displayMedia: function () {
                 //fetch data from server:
-                var data = this.app.dataManager.getData(this.app.dataType);
+                //var data = this.app.dataManager.getData(this.app.dataType);
 
                 // set important data variables:
-                this.collection = data.collection;
-                this.fields = data.fields;
-                this.title = data.name;
-                this.typePlural = data.id;
+                this.collection = this.data.collection;
+                this.fields = this.data.fields;
+                this.title = this.data.name;
+                this.typePlural = this.data.id;
                 _.bindAll(this, 'render');
 
                 // redraw CompositeView:

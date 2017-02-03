@@ -5,14 +5,13 @@ define([
     "views/toolbar-global",
     "apps/gallery/views/toolbar-dataview",
     "lib/data/dataManager",
-    "apps/map/views/marker-listing",
+    "apps/map/views/marker-listing-manager",
     "lib/maps/basemap",
     "apps/gallery/views/data-detail",
-    "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,
-             DataManager, MarkerListing, Basemap, DataDetail, Projects, appUtilities) {
+             DataManager, MarkerListingManager, Basemap, DataDetail, appUtilities) {
     "use strict";
     /* TODO: Move some of this stuff to a Marionette LayoutView */
     var MapApp = Marionette.Application.extend(_.extend(appUtilities, {
@@ -56,7 +55,8 @@ define([
             this.showGlobalToolbar();
             this.showDataToolbar();
             this.showBasemap();
-            this.router.navigate('//photos', { trigger: true });
+            this.showList();
+            //this.router.navigate('//photos', { trigger: true });
         },
 
         showGlobalToolbar: function () {
@@ -97,16 +97,16 @@ define([
         showList: function (mediaType) {
             this.showLeft = true;
             this.updateDisplay();
-            this.dataType = mediaType;
+            /*this.dataType = mediaType;
             if (this.markerListView) {
                 //destroys all of the existing overlays
                 this.markerListView.remove();
-            }
-            this.markerListView = new MarkerListing({
+            }*/
+            this.markerListManager = new MarkerListingManager({
                 app: this
             });
-            this.markerListRegion.show(this.markerListView);
-            this.currentCollection = this.markerListView.collection;
+            this.markerListRegion.show(this.markerListManager);
+            //this.currentCollection = this.markerListView.collection;
         },
 
         hideList: function () {
@@ -132,15 +132,10 @@ define([
         },
 
         showDetail: function (opts) {
+            this.currentCollection = this.dataManager.getData(opts.mediaType).collection;
             var model = null;
-            //var model = this.currentCollection.get(opts.id);
             if (opts.id) {
                 model = this.currentCollection.get(opts.id);
-                if (this.dataType == "markers" || this.dataType.indexOf("form_") != -1) {
-                    if (!model.get("children")) {
-                        model.fetch({"reset": true});
-                    }
-                }
             } else {
                 model = this.createNewModelFromCurrentCollection();
             }
