@@ -26,7 +26,8 @@ define(["jquery",
             childViewOptions: function () {
                 return {
                     app: this.app,
-                    fields: this.fields
+                    fields: this.fields,
+                    dataType: this.typePlural
                 };
             },
             getChildView: function () {
@@ -53,7 +54,7 @@ define(["jquery",
                         }
                         icon = IconLookup.getIconPaths(key);
                         return {
-                            dataType: this.app.dataType,
+                            dataType: this.dataType,
                             icon: icon,
                             width: 15 * icon.scale,
                             height: 15 * icon.scale,
@@ -71,8 +72,18 @@ define(["jquery",
                 'click .zoom-to-extents': 'zoomToExtents',
                 'click .add-photos': 'addMedia',
                 'click .add-audio': 'addMedia',
-                'click .hide': 'hidePanel',
-                'click .show': 'showPanel'
+                'click .hide-panel': 'hidePanel',
+                'click .show-panel': 'showPanel'
+            },
+            hidePanel: function (e) {
+                this.$el.find(".marker-container").hide();
+                $(e.target).removeClass("hide-panel fa-caret-down");
+                $(e.target).addClass("show-panel fa-caret-right");
+            },
+            showPanel: function (e) {
+                this.$el.find(".marker-container").show();
+                $(e.target).removeClass("show-panel fa-caret-right");
+                $(e.target).addClass("hide-panel fa-caret-down");
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -91,18 +102,6 @@ define(["jquery",
             zoomToExtents: function () {
                 this.collection.trigger('zoom-to-extents');
             },
-            hidePanel: function (e) {
-                $(e.target).removeClass("hide").addClass("show");
-                console.log("about to hide...");
-                this.app.vent.trigger('hide-list');
-                e.preventDefault();
-            },
-            showPanel: function (e) {
-                $(e.target).removeClass("show").addClass("hide");
-                console.log("about to show...");
-                this.app.vent.trigger('unhide-list');
-                e.preventDefault();
-            },
 
             hideLoadingMessage: function () {
                 this.$el.find(this.childViewContainer).empty();
@@ -118,7 +117,8 @@ define(["jquery",
             renderOverlays: function () {
                 this.overlays = new OverlayListView({
                     collection: this.collection,
-                    app: this.app
+                    app: this.app,
+                    dataType: this.typePlural
                 });
             },
 

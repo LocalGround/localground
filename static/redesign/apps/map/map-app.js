@@ -37,7 +37,6 @@ define([
             this.router = new Router({ app: this});
             Backbone.history.start();
             this.listenTo(this.vent, 'data-loaded', this.loadRegions);
-            this.listenTo(this.vent, 'show-list', this.showList);
             this.listenTo(this.vent, 'show-detail', this.showDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
@@ -55,7 +54,7 @@ define([
             this.showGlobalToolbar();
             this.showDataToolbar();
             this.showBasemap();
-            this.showList();
+            this.showMarkerListManager();
             //this.router.navigate('//photos', { trigger: true });
         },
 
@@ -94,19 +93,13 @@ define([
             this.mapRegion.show(this.basemapView);
         },
 
-        showList: function (mediaType) {
+        showMarkerListManager: function () {
             this.showLeft = true;
             this.updateDisplay();
-            /*this.dataType = mediaType;
-            if (this.markerListView) {
-                //destroys all of the existing overlays
-                this.markerListView.remove();
-            }*/
             this.markerListManager = new MarkerListingManager({
                 app: this
             });
             this.markerListRegion.show(this.markerListManager);
-            //this.currentCollection = this.markerListView.collection;
         },
 
         hideList: function () {
@@ -139,9 +132,11 @@ define([
             } else {
                 model = this.createNewModelFromCurrentCollection();
             }
+            console.log(opts.mediaType, model);
             this.dataDetail = new DataDetail({
                 model: model,
-                app: this
+                app: this,
+                dataType: opts.mediaType
             });
             this.markerDetailRegion.show(this.dataDetail);
             this.unhideDetail();

@@ -56,7 +56,7 @@ define([
             });
             this.leftRegion.show(this.leftPanelView);
         },
-        
+
         showRightLayout: function () {
             this.rightPanelView = new RightPanel({
                 app: this
