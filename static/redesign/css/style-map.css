@@ -187,7 +187,6 @@ section {
     border-width: 1px;
     border-color: #e4e5eb;
     box-shadow: 0 2px 0px 0 rgba(0,0,0,.02);
-    background: url(../assets/downArrow.png) no-repeat right #fff;
     background-size: 60px 40px;
     overflow: hidden;
 }

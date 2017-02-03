@@ -24,6 +24,22 @@ define(["models/base"], function (Base) {
                 }
             });
         },
+        
+        getDefaultLocation: function () {
+            
+          return {
+                zoom: this.get("zoom"),
+                center: { lat: this.get("center").coordinates[1], lng: this.get("center").coordinates[0] }
+            };  
+        },
+        
+        getDefaultSkin: function () {
+            return {
+                basemap: this.get("basemap")
+                };  
+        },
+        
+        
         toJSON: function () {
             // ensure that the geometry object is serialized before it
             // gets sent to the server:

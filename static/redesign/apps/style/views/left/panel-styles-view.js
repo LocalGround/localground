@@ -102,9 +102,15 @@ define(["marionette",
             },
             
             saveStyles: function() {
+                this.model.set("zoom", this.app.getZoom());
+                this.model.set("center", this.app.getCenter());
+                
+                console.log("BaseMap?", this.app.getMapTypeId());
+                this.model.set("basemap", this.app.getMapTypeId());
+                
                 console.log("saving our styles");
                 console.log(JSON.stringify(this.model.toJSON(), null, 2));
-                this.model.set("basemap", 1);
+               // this.model.set("basemap", 1);
                 this.model.save({
                     error: function(){
                         console.log('error');

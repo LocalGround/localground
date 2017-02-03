@@ -70,6 +70,25 @@ define([
             });
             this.toolbarMainRegion.show(this.toolbarView);
         },
+        
+        getZoom: function() {
+            return this.basemapView.getZoom();  
+        },
+        
+        getCenter: function() {
+            var latLng = this.basemapView.getCenter();
+            return {
+                "type": "Point",
+                "coordinates": [
+                    latLng.lng(),
+                    latLng.lat()
+                ]
+            };
+        },
+        
+        getMapTypeId: function() {
+            return this.basemapView.getMapTypeId();  
+        },
 
         showBasemap: function () {
             var opts = { app: this };
