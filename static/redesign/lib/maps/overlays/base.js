@@ -3,8 +3,9 @@ define(["marionette",
     "lib/maps/overlays/point",
     "lib/maps/overlays/polyline",
     "lib/maps/overlays/polygon",
+    "lib/maps/icon-lookup",
     "lib/maps/overlays/ground-overlay"
-    ], function (Marionette, $, Point, Polyline, Polygon, GroundOverlay) {
+    ], function (Marionette, $, Point, Polyline, Polygon, IconLookup, GroundOverlay) {
     "use strict";
     /**
      * This class controls the rendering and underlying
@@ -19,11 +20,7 @@ define(["marionette",
         _overlay: null,
         template: false,
         getIconPaths: function (key) {
-            var lookup = {
-                circle: 'M-2,0a2,2 0 1,0 4,0a2,2 0 1,0 -4,0',
-                pin: 'M16,1 C7.7146,1 1,7.65636364 1,15.8648485 C1,24.0760606 16,51 16,51 C16,51 31,24.0760606 31,15.8648485 C31,7.65636364 24.2815,1 16,1 L16,1 Z'
-            };
-            return lookup[key];
+            return IconLookup.getIconPaths(key);
         },
 
         modelEvents: {
@@ -79,7 +76,6 @@ define(["marionette",
             var that = this;
             //attach click event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-                this.setIcon(that.getIconActive());
                 that.app.router.navigate("//" + that.app.dataType + "/" + that.model.get("id"));
             });
             //attach mouseout event:

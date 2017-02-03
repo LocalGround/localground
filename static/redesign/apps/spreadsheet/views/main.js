@@ -1,18 +1,12 @@
 define(["marionette",
         "underscore",
         "handlebars",
-        "collections/photos",
-        "collections/audio",
-        "collections/fields",
-        "collections/records",
-        "collections/markers",
         "models/record",
         "models/marker",
         "apps/spreadsheet/views/create-field",
         "handsontable",
         "text!../templates/spreadsheet.html"],
-    function (Marionette, _, Handlebars, Photos, Audio, Fields, Records, Markers,
-              Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate) {
+    function (Marionette, _, Handlebars, Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
@@ -29,7 +23,7 @@ define(["marionette",
 
                 // call Marionette's default functionality (similar to "super")
                 Marionette.ItemView.prototype.initialize.call(this);
-                this.displaySpreadsheet();
+                this.render();
 
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
@@ -37,40 +31,8 @@ define(["marionette",
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
                 this.listenTo(this.app.vent, "add-row", this.addRow);
             },
-            displaySpreadsheet: function () {
-                //fetch data from server according to mode:
-                var that = this,
-                    id;
-                if (this.app.dataType == "photos") {
-                    this.collection = new Photos();
-                } else if (this.app.dataType ==  "audio") {
-                    this.collection = new Audio();
-                } else if (this.app.dataType == "markers") {
-                    this.collection = new Markers();
-                } else if (this.app.dataType.indexOf("form_") != -1) {
-                    id = this.app.dataType.split("_")[1];
-                    // column names:
-                    this.fields = new Fields(null, {
-                        id: id
-                    });
-                    this.collection = new Records(null, {
-                        url: '/api/0/forms/' + id + '/data/'
-                    });
-                    this.fields.fetch({
-                        success: function () {
-                            that.collection.fetch({ reset: true });
-                        }
-                    });
-                } else {
-                    alert("Type not accounted for.");
-                    return;
-                }
-                this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
-                this.collection.query = this.getDefaultQueryString();
-                this.collection.fetch({ reset: true });
-            },
-            getDefaultQueryString: function () {
-                return "WHERE project = " + this.app.selectedProject.id;
+            onRender: function () {
+                this.renderSpreadsheet();
             },
             renderSpreadsheet: function () {
                 if (this.collection.length == 0) {
@@ -113,7 +75,6 @@ define(["marionette",
                         that.saveChanges(changes, source);
                     }
                 });
-                console.log(this.table, "exists");
             },
             saveChanges: function (changes, source) {
                 //sync with collection:
@@ -260,20 +221,27 @@ define(["marionette",
                     case "photos":
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
-                        return ["ID", "Lat", "Lng", "Title", "Caption", "Photos", "Audio", "Tags", "Owner", "Delete"];
+                        cols = ["ID", "Lat", "Lng", "Title", "Caption",
+                        "Photos" + " " + "<a class='fa fa-plus-square-o addPhotos' fieldIndex= '5' aria-hidden='true'></a>",
+                        "Audio" + " " + "<a class='fa fa-plus-square-o addAudio' fieldIndex= '6' aria-hidden='true'></a>",
+                        "Tags", "Owner", "Delete"];
+                        //
+                        //
+                        return cols;
                     default:
                         cols = ["ID", "Lat", "Lng"];
                         for (var i = 0; i < this.fields.length; ++i) {
                             cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
                         }
-                        cols.push("Photos");
-                        cols.push("Audio");
+                        cols.push("Photos" + " " + "<a class='fa fa-plus-square-o addPhotos' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
+                        cols.push("Audio" + " " + "<a class='fa fa-plus-square-o addAudio' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
                         cols.push("Delete");
                         cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
                         return cols;
                 }
             },
             getColumnWidths: function () {
+                console.log(this.collection.key);
                 switch(this.collection.key){
                     case "audio":
                         return [30, 80, 80, 200, 400, 300, 200, 100, 80, 100];
@@ -294,9 +262,9 @@ define(["marionette",
 
                 // If form exist, do search with 3 parameters, otherwise, do search with two parameters
                 if (this.collection.key.indexOf("form_")){
-                    this.collection.doSearch(term, this.app.selectedProject.id, this.fields);
+                    this.collection.doSearch(term, this.app.getProjectID(), this.fields);
                 } else {
-                    this.collection.doSearch(term, this.app.selectedProject.id);
+                    this.collection.doSearch(term, this.app.getProjectID());
                 }
 
             },
@@ -430,7 +398,7 @@ define(["marionette",
             addRow: function () {
 
                 var that = this;
-                var projectID = this.app.selectedProject.id;
+                var projectID = this.app.getProjectID();
                 var rec;
 
                 if (this.app.dataType == "markers"){

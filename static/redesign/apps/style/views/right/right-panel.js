@@ -63,7 +63,7 @@ define(["marionette",
                 this.filterRules.show(frv);
                 this.app.vent.trigger("re-render");
             },
-            
+
             saveLayer: function () {
                 var title = this.$el.find(".layer-title").val();
                 var dataSource;
@@ -71,24 +71,24 @@ define(["marionette",
                 // get record property?
                 var symbolShape = this.$el.find("#quant-shape").val();
                 console.log(symbolShape);
-                
+
                 if (this.model.get("filters") === null) {
-                   this.model.set("filters", { 'tag' : 'nothing' }); 
+                    this.model.set("filters", { 'tag' : 'nothing' });
                 }
-                
+
                 this.model.set("title", title);
                 this.model.set("data_source", dataSource);
                 this.model.set("layer_type", layerType);
                 // set record property?  
                 this.model.set("symbol_shape", symbolShape);
                 this.model.save({
-                    error: function(){
+                    error: function () {
                         console.log('error');
                     },
-                        success: function(){
-                            console.log('success');
+                    success: function () {
+                        console.log('success');
                     }
-                });       
+                });
             }
         });
         return RightPanelLayout;
