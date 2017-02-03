@@ -1,0 +1,22 @@
+<div class="carouselbox">
+    <ol class="carousel-content">
+        {{#each children.photos.data}}
+            <li>
+                <div class="photo" style="background: url('{{this.path_medium}}');"></div>
+                <p>{{this.caption }}</p>
+            </li>
+        {{/each}}
+    </ol>
+</div>
+
+{{#each children.photos.data}}
+    <i class="fa fa-circle-o" aria-hidden="true"></i>
+{{/each}}
+<div class="carousel-buttons">
+    <button class="prev">
+       << <span class="offscreen">Previous</span>
+    </button>
+    <button class="next">
+        <span class="offscreen">Next</span> >>
+    </button>
+</div>

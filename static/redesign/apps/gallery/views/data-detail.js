@@ -10,10 +10,11 @@ define([
     "text!../templates/record-detail.html",
     "models/audio",
     "lib/audio/audio-player",
+    "lib/carousel/carousel",
     "form" //extends Backbone
 ], function ($, Backbone, _, Handlebars, Marionette, MediaBrowser,
              PhotoTemplate, AudioTemplate, SiteTemplate,
-             Audio, AudioPlayer) {
+             Audio, AudioPlayer, Carousel) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -121,6 +122,11 @@ define([
         },
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
+            var c = new Carousel({
+                model: this.model
+            });
+            this.$el.find(".carousel").append(c.$el);
+            console.log(c);
         },
         editRender: function () {
             var fields,
