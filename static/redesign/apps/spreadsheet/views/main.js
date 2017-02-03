@@ -6,9 +6,13 @@ define(["marionette",
         "models/marker",
         "apps/spreadsheet/views/create-field",
         "handsontable",
-        "text!../templates/spreadsheet.html"],
+        "text!../templates/spreadsheet.html",
+        "lib/audio/audio-player",
+        "lib/carousel/carousel"
+    ],
     function (Marionette, _, Handlebars, MediaBrowser,
-        Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate) {
+        Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate,
+        AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
@@ -19,7 +23,9 @@ define(["marionette",
             events: {
                 'click #addColumn': 'showCreateFieldForm',
                 'click .addMedia': 'showMediaBrowser',
-                'click .delete_column' : 'deleteField'
+                'click .delete_column' : 'deleteField',
+                'click .carousel-photo': 'carouselPhoto',
+                'click .carousel-audio': 'carouselAudio'
             },
             foo: "bar",
             initialize: function (opts) {
@@ -134,8 +140,8 @@ define(["marionette",
                     captionText,
                     modal,
                     span;
-                    img.src = value;
-                    img.onclick = function () {
+                img.src = value;
+                img.onclick = function () {
                     model = that.getModelFromCell(instance, rowIndex);
                     console.log(model);
                     // Get the modal
@@ -173,7 +179,8 @@ define(["marionette",
                     i;
                 td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
                 for (i = 0; i < count; ++i) {
-                    td.innerHTML += "<i class='fa fa-file-photo-o' aria-hidden='true'></i>";
+                    td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\
+                    <i class='fa fa-file-photo-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
                 }
                 console.log(model + " row: " + row + ", column: " + col);
             },
@@ -184,10 +191,70 @@ define(["marionette",
                     i;
                 td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
                 for (i = 0; i < count; ++i) {
-                    td.innerHTML += "<i class='fa fa-file-audio-o' aria-hidden='true'></i>";
+                    td.innerHTML += "<a class = 'carousel-audio' row-index = '"+row+"' col-index = '"+col+"'>\
+                    <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
                 }
                 console.log(model + " row: " + row + ", column: " + col);
 
+            },
+
+            carouselPhoto: function(e){
+
+                var that = this;
+
+                var row_idx = $(e.target).attr("row-index");
+                console.log(e.target);
+                console.log(row_idx);
+                this.currentModel = this.collection.at(parseInt(row_idx));
+                //any extra view logic. Carousel functionality goes here
+                this.currentModel.fetch({success: function(){
+                    console.log(that.currentModel);
+                    var c = new Carousel({
+                        model: that.currentModel,
+                        app: that.app
+                    });
+
+                    $("#carouselModal").empty();
+                    $("#carouselModal").append(c.$el);
+                    var $span = $("<span class='close'>&times;</span>");
+                    $span.click(function () {
+                        $("#carouselModal").hide();
+                        //document.getElementById("carouselModal").style.display='none';
+                    })
+                    $("#carouselModal").append($span);
+
+
+                    /*
+                    "<span class=\"close\" onclick=\"document.getElementById('carouselModal').style.display='none'\"">&times;"
+                     </span>\"");
+                    */
+
+                    console.log(c.$el);
+
+                    // Get the modal
+                    var modal = document.getElementById('carouselModal');
+
+                    modal.style.display = "block";
+
+                    console.log(c);
+                }});
+            },
+
+            carouselAudio: function(e){
+
+                var that = this;
+
+                var row_idx = $(e.target).attr("row-index");
+                //console.log(row_idx);
+                this.currentModel = this.collection.at(parseInt(row_idx));
+                //any extra view logic. Carousel functionality goes here
+                this.currentModel.fetch({success: function(){
+                    var c = new Carousel({
+                        model: that.currentModel
+                    });
+                    that.$el.find(".carousel").append(c.$el);
+                    console.log(c);
+                }});
             },
 
             buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {

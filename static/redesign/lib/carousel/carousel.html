@@ -1,5 +1,7 @@
+{{#ifequal screenType "gallery"}}
 <div class="carouselbox">
     <ol class="carousel-content">
+        <!-- Will have to expand the carousel to include audio -->
         {{#each children.photos.data}}
             <li>
                 <div class="photo" style="background: url('{{this.path_medium}}');"></div>
@@ -18,3 +20,27 @@
     <i class="fa fa-chevron-left prev"></i>
     <i class="fa fa-chevron-right next"></i>
 </div>
+{{/ifequal}}
+{{#ifequal screenType "spreadsheet"}}
+<div class="carouselbox">
+    <ol class="carousel-content">
+        <!-- Will have to expand the carousel to include audio -->
+        {{#each children.photos.data}}
+            <li>
+                <div class="photo" style="background: url('{{this.path_medium}}');"></div>
+                <p>{{this.caption }}</p>
+            </li>
+        {{/each}}
+    </ol>
+</div>
+<div class="circle-buttons">
+    <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>
+    {{#times 1 num_photos}}
+        <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>
+    {{/times}}
+</div>
+<div class="carousel-buttons hover-to-show">
+    <i class="fa fa-chevron-left prev"></i>
+    <i class="fa fa-chevron-right next"></i>
+</div>
+{{/ifequal}}
