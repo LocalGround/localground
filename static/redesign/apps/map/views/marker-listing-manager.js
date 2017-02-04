@@ -52,7 +52,10 @@ define(["marionette",
                 for (i = 0; i < this.overlayViews.length; i++) {
                     bounds.union(this.overlayViews[i].overlays.getBounds());
                 }
-                this.app.map.fitBounds(bounds);
+                console.log(bounds.isEmpty());
+                if (!bounds.isEmpty()) {
+                    this.app.map.fitBounds(bounds);
+                }
             },
             onShow: function () {
                 this.addMarkerListingsToUI();
