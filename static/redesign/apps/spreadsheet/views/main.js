@@ -1,12 +1,14 @@
 define(["marionette",
         "underscore",
         "handlebars",
+        "apps/gallery/views/media_browser",
         "models/record",
         "models/marker",
         "apps/spreadsheet/views/create-field",
         "handsontable",
         "text!../templates/spreadsheet.html"],
-    function (Marionette, _, Handlebars, Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate) {
+    function (Marionette, _, Handlebars, MediaBrowser,
+        Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
@@ -15,6 +17,7 @@ define(["marionette",
             table: null,
             events: {
                 'click #addColumn': 'showCreateFieldForm',
+                'click .addMedia': 'showMediaBrowser',
                 'click .delete_column' : 'deleteField'
             },
             foo: "bar",
@@ -166,7 +169,7 @@ define(["marionette",
                 var model = this.getModelFromCell(instance, row),
                     count = model.get("photo_count") || 0,
                     i;
-                td.innerHTML = "";
+                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true'></a>";
                 for (i = 0; i < count; ++i) {
                     td.innerHTML += "<i class='fa fa-file-photo-o' aria-hidden='true'></i>";
                 }
@@ -176,7 +179,7 @@ define(["marionette",
                 var model = this.getModelFromCell(instance, row),
                     count = model.get("audio_count") || 0,
                     i;
-                td.innerHTML = "";
+                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true'></a>";
                 for (i = 0; i < count; ++i) {
                     td.innerHTML += "<i class='fa fa-file-audio-o' aria-hidden='true'></i>";
                 }
@@ -212,6 +215,28 @@ define(["marionette",
                 };
                 return td;
             },
+            /*
+            * While the media browser itself does work as intended,
+            * The save button itself does not add files to
+            * the affected row.
+            *
+            * Will have to add in code that will target the selected row
+            * to add in new photos and audio
+            */
+            showMediaBrowser: function () {
+                var mediaBrowser = new MediaBrowser({
+                    app: this.app
+                });
+                this.app.vent.trigger("show-modal", {
+                    title: 'Media Browser',
+                    width: 800,
+                    height: 400,
+                    view: mediaBrowser,
+                    saveButtonText: "Add",
+                    showSaveButton: true,
+                    saveFunction: mediaBrowser.addModels.bind(mediaBrowser)
+                });
+            },
 
             getColumnHeaders: function () {
                 var cols;
@@ -222,8 +247,8 @@ define(["marionette",
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
                         cols = ["ID", "Lat", "Lng", "Title", "Caption",
-                        "Photos" + " " + "<a class='fa fa-plus-square-o addPhotos' fieldIndex= '5' aria-hidden='true'></a>",
-                        "Audio" + " " + "<a class='fa fa-plus-square-o addAudio' fieldIndex= '6' aria-hidden='true'></a>",
+                        "Photos",
+                        "Audio",
                         "Tags", "Owner", "Delete"];
                         //
                         //
@@ -233,15 +258,14 @@ define(["marionette",
                         for (var i = 0; i < this.fields.length; ++i) {
                             cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
                         }
-                        cols.push("Photos" + " " + "<a class='fa fa-plus-square-o addPhotos' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
-                        cols.push("Audio" + " " + "<a class='fa fa-plus-square-o addAudio' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
+                        cols.push("Photos");
+                        cols.push("Audio");
                         cols.push("Delete");
                         cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
                         return cols;
                 }
             },
             getColumnWidths: function () {
-                console.log(this.collection.key);
                 switch(this.collection.key){
                     case "audio":
                         return [30, 80, 80, 200, 400, 300, 200, 100, 80, 100];
