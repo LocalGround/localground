@@ -23,7 +23,6 @@ define([
             toolbarMainRegion: "#toolbar-main",
             toolbarDataViewRegion: "#toolbar-dataview"
         },
-        dataType: "photos",
         mode: "edit",
         screenType: "map",
         showLeft: true,
@@ -45,9 +44,7 @@ define([
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            this.selectedProjectID = this.getProjectID();
             this.dataManager = new DataManager({ app: this});
-            //this.loadRegions();
         },
 
         loadRegions: function () {
@@ -55,7 +52,6 @@ define([
             this.showDataToolbar();
             this.showBasemap();
             this.showMarkerListManager();
-            //this.router.navigate('//photos', { trigger: true });
         },
 
         showGlobalToolbar: function () {
@@ -111,32 +107,37 @@ define([
             this.updateDisplay();
         },
 
-        createNewModelFromCurrentCollection: function () {
+        createNewModelFromCurrentCollection: function (dataType) {
             //creates an empty model object:
             var Model = this.currentCollection.model,
                 model = new Model();
             model.collection = this.currentCollection;
             // If we get the form, pass in the custom field
-            if (this.dataType.indexOf("form_") != -1) {
-                model.set("fields", this.mainView.fields.toJSON());
+            if (dataType.indexOf("form_") != -1) {
+                model.set("fields", this.dataManager.getData(dataType).fields.toJSON());
             }
-            model.set("project_id", this.selectedProjectID);
+            model.set("project_id", this.getProjectID());
             return model;
         },
 
         showDetail: function (opts) {
-            this.currentCollection = this.dataManager.getData(opts.mediaType).collection;
-            var model = null;
+            var dataType = opts.dataType,
+                model = null;
+            this.currentCollection = this.dataManager.getData(dataType).collection;
             if (opts.id) {
                 model = this.currentCollection.get(opts.id);
+                if (opts.dataType == "markers" || opts.dataType.indexOf("form_") != -1) {
+                    if (!model.get("children")) {
+                        model.fetch({"reset": true});
+                    }
+                }
             } else {
-                model = this.createNewModelFromCurrentCollection();
+                model = this.createNewModelFromCurrentCollection(dataType);
             }
-            console.log(opts.mediaType, model);
             this.dataDetail = new DataDetail({
                 model: model,
                 app: this,
-                dataType: opts.mediaType
+                dataType: dataType
             });
             this.markerDetailRegion.show(this.dataDetail);
             this.unhideDetail();
