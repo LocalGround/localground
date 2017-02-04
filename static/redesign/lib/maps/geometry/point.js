@@ -38,9 +38,10 @@ define([], function () {
             );
         };
 
-        this.printLatLng = function (geoJSON) {
-            return geoJSON.coordinates[1].toFixed(2) + ", " +
-                geoJSON.coordinates[0].toFixed(2);
+        this.printLatLng = function (geoJSON, places) {
+            places = places || 2;
+            return geoJSON.coordinates[1].toFixed(places) + ", " +
+                geoJSON.coordinates[0].toFixed(places);
         };
 
     };

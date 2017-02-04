@@ -57,7 +57,7 @@ define(["jquery",
                             context.fields = this.fields.toJSON();
                         }
                         if (this.model.get("geometry")) {
-                            context.coords = this.model.printLatLng();
+                            context.coords = this.model.printLatLng(3);
                         }
                         return context;
                     }
