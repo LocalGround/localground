@@ -152,6 +152,12 @@
     border-bottom: 1px solid #ebebeb;
     font-size: 12px;
 }
+.list-indent > li.empty {
+    padding: 0px 40px;
+    color: #999;
+    height: 56px;
+    line-height: 56px;
+}
 
 .list-indent a {
     text-decoration: none;
