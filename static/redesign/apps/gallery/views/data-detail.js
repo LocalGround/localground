@@ -127,7 +127,6 @@ define([
                 model: this.model
             });
             this.$el.find(".carousel").append(c.$el);
-            console.log(c);
         },
         editRender: function () {
             var fields,
@@ -140,10 +139,8 @@ define([
                 player;
             if (this.dataType.indexOf('form_') != -1) {
                 fields = {};
-                console.log(this.model.get("fields"));
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     /* https://github.com/powmedia/backbone-forms */
-                    console.log(field);
                     field = this.model.get("fields")[i];
                     type = field.data_type.toLowerCase();
                     name = field.col_name;

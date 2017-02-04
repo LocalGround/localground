@@ -15,7 +15,6 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 var that = this,
                     extras;
                 _.each(this.model.get("children"), function (entry, key) {
-                    console.log(entry);
                     that.dataDictionary[key] = entry;
                     extras = that.initCollection(key, entry.data);
                     _.extend(that.dataDictionary[key], extras);

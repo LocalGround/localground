@@ -107,32 +107,31 @@ define([
             this.updateDisplay();
         },
 
-        createNewModelFromCurrentCollection: function (dataType) {
-            //creates an empty model object:
+        createNewModelFromCurrentCollection: function () {
             var Model = this.currentCollection.model,
                 model = new Model();
             model.collection = this.currentCollection;
-            // If we get the form, pass in the custom field
-            if (dataType.indexOf("form_") != -1) {
-                model.set("fields", this.dataManager.getData(dataType).fields.toJSON());
-            }
             model.set("project_id", this.getProjectID());
             return model;
         },
 
         showDetail: function (opts) {
             var dataType = opts.dataType,
+                dataEntry = this.dataManager.getData(dataType),
                 model = null;
-            this.currentCollection = this.dataManager.getData(dataType).collection;
+            this.currentCollection = dataEntry.collection;
             if (opts.id) {
                 model = this.currentCollection.get(opts.id);
-                if (opts.dataType == "markers" || opts.dataType.indexOf("form_") != -1) {
+                if (dataType == "markers" || dataType.indexOf("form_") != -1) {
                     if (!model.get("children")) {
                         model.fetch({"reset": true});
                     }
                 }
             } else {
-                model = this.createNewModelFromCurrentCollection(dataType);
+                model = this.createNewModelFromCurrentCollection();
+            }
+            if (dataType.indexOf("form_") != -1) {
+                model.set("fields", dataEntry.fields.toJSON());
             }
             this.dataDetail = new DataDetail({
                 model: model,

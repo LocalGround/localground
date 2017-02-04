@@ -19,24 +19,20 @@ define(["jquery",
                     title: this.title,
                     typePlural: this.typePlural
                 };
-                console.log(d);
                 return d;
             },
 
             childViewOptions: function () {
                 return {
                     app: this.app,
-                    fields: this.fields,
-                    dataType: this.typePlural
+                    dataType: this.typePlural,
+                    fields: this.fields
                 };
             },
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        if (this.fields) {
-                            this.model.set("fields", this.fields.toJSON());
-                        }
                     },
                     template: Handlebars.compile(ItemTemplate),
                     events: {
@@ -93,7 +89,6 @@ define(["jquery",
                 this.displayMedia();
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
-                //this.listenTo(this.collection, 'add', this.displayMedia);
             },
             addMedia: function (e) {
                 this.app.vent.trigger('add-media');
@@ -136,7 +131,6 @@ define(["jquery",
 
                 // set important data variables:
                 this.collection = this.data.collection;
-                this.fields = this.data.fields;
                 this.title = this.data.name;
                 this.typePlural = this.data.id;
                 _.bindAll(this, 'render');
