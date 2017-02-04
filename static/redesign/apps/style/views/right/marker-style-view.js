@@ -8,11 +8,11 @@ define(["marionette",
         "collections/fields",
         "palette"
     ],
-    function (Marionette, Handlebars, Layers, Layer, MarkerStyleTemplate, MarkerStyleChildTemplate, Records, Fields) {
+    function (Marionette, Handlebars, Layers, Layer, MarkerStyleTemplate, MarkerStyleChildTemplate, Records, Fields, Palette) {
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
-
+            buckets: 4,
             template: Handlebars.compile(MarkerStyleTemplate),
             
             getChildView: function () {
@@ -44,6 +44,7 @@ define(["marionette",
                 this.dataType = this.model.get("layer_type");
                 this.displaySymbols();
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
+                this.buildColorRamps();
             },
             
             reRender: function () {
@@ -52,12 +53,15 @@ define(["marionette",
             
             templateHelpers: function () {
                 return {
-                    dataType: this.dataType
+                    dataType: this.dataType,
+                    allColors: this.allColors,
+                    buckets: this.buckets
                 };
             },
             
             events: {
-                'change #data-type-select': 'selectDataType' 
+                'change #data-type-select': 'selectDataType',
+                'change #bucket': 'buildColorRamps'
             }, 
             
             selectDataType: function () {
@@ -88,6 +92,20 @@ define(["marionette",
             },
             buildDropdown: function () {
                 console.log(this.fields);
+            },
+            
+            buildColorRamps: function () {
+                this.buckets = this.$el.find("#bucket").val();
+                var seq1 = palette('tol-dv', this.buckets);
+                var seq2 = palette('cb-Blues', this.buckets);
+                var seq3 = palette('cb-Oranges', this.buckets);
+                var seq4 = palette('cb-Greys', this.buckets);
+                var seq5 = palette('cb-YlGn', this.buckets);
+                var seq6 = palette('cb-RdYlBu', this.buckets);
+                this.allColors = [];
+                this.allColors.push(seq1, seq2, seq3, seq4, seq5, seq6);
+                this.render();
+                console.log(this.allColors);
             }
 
         });

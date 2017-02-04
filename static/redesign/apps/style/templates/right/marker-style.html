@@ -92,16 +92,28 @@
             </tr>
             <tr class="continuous-variable">
                 <td>Buckets:</td>
-                <td><input type="number" placeholder="4"></td>
+                <td><input id="bucket" type="number" value="{{buckets}}"></td>
             </tr>
             <tr class="continuous-variable">
                 <td>Color Ramp</td> 
+            </tr>
+            <tr>
                 <td>
-                    <select id="color-ramps">
-                        <option value="blue-ramp"></option>
-                        <option value="purple-ramp"></option>
-                        <option value="orange-ramp"></option>
-                    </select>
+                    <div class="palette-wrapper">
+                        <ul>
+                            {{#each allColors}}
+                            <li>
+                                <ul class="palette-container">
+                                    {{#each this}}
+                                    <li class="palette-item" style= "background-color: #{{this}}">
+                                        
+                                    </li>
+                                    {{/each}}
+                                </ul>
+                            </li>
+                            {{/each}}
+                        </ul>
+                    </div>
                 </td>
             </tr>
         </tbody>
