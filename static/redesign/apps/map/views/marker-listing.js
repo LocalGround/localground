@@ -21,18 +21,36 @@ define(["jquery",
                 };
                 return d;
             },
+            getEmptyView: function () {
+                console.log("empty", this.title);
+                return Marionette.ItemView.extend({
+                    initialize: function (opts) {
+                        _.extend(this, opts);
+                    },
+                    tagName: "li",
+                    className: "empty",
+                    template: Handlebars.compile('No "{{ title }}" found'),
+                    templateHelpers: function () {
+                        return {
+                            title: this.title.toLowerCase()
+                        };
+                    }
+                });
+            },
 
             childViewOptions: function () {
                 return {
                     app: this.app,
                     dataType: this.typePlural,
-                    fields: this.fields
+                    fields: this.fields,
+                    title: this.title
                 };
             },
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
+                        this.model.set("dataType", this.dataType);
                     },
                     template: Handlebars.compile(ItemTemplate),
                     events: {
@@ -139,7 +157,6 @@ define(["jquery",
                 this.render();
                 this.renderOverlays();
                 this.hideLoadingMessage();
-                this.zoomToExtents();
             }
 
         });
