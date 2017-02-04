@@ -165,6 +165,7 @@
     position: relative;
     top: .1em;
     color: #4e70d4;
+    margin-right: 10px
 }
 
 svg, .fa-question-circle {

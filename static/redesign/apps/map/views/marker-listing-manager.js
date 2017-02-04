@@ -30,7 +30,6 @@ define(["marionette",
                     overlayView,
                     dm = this.app.dataManager,
                     dataSources = dm.getDataSources();
-                console.log(dataSources);
                 for (i = 0; i < dataSources.length; i++) {
                     key = dataSources[i].value;
                     overlayView = new OverlayListView({

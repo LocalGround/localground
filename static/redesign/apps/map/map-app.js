@@ -128,6 +128,7 @@ define([
                     }
                 }
             } else {
+                this.mode = "edit";
                 model = this.createNewModelFromCurrentCollection();
             }
             if (dataType.indexOf("form_") != -1) {
