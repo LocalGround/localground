@@ -137,6 +137,9 @@
     padding: 10px;
     border-bottom: solid 1px #ebebeb;
     font-size: 12px;
+    background: #FFF;
+    font-weight: bold;
+    color: #666;
 }
 
 .list-indent, .list-indent-simple, .preview-filter-list {
@@ -162,6 +165,7 @@
     position: relative;
     top: .1em;
     color: #4e70d4;
+    margin-right: 10px
 }
 
 svg, .fa-question-circle {
@@ -228,4 +232,9 @@ svg, .fa-question-circle {
 
 #map > div > .gm-style > div:nth-child(2) {
     margin-left: 25px !important;
+}
+
+.hide-panel, .show-panel {
+    width: 8px;
+    cursor: pointer;
 }

@@ -17,9 +17,9 @@ define(['marionette',
             map: null,
             getChildView: function () {
                 var overlayView = null;
-                if (this.app.dataType == "photos") {
+                if (this.dataType == "photos") {
                     overlayView = PhotoOverlay;
-                } else if (this.app.dataType == "audio") {
+                } else if (this.dataType == "audio") {
                     overlayView = AudioOverlay;
                 } else {
                     overlayView = MarkerOverlay;

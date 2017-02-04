@@ -19,13 +19,13 @@ define(["jquery",
                     title: this.title,
                     typePlural: this.typePlural
                 };
-                console.log(d);
                 return d;
             },
 
             childViewOptions: function () {
                 return {
                     app: this.app,
+                    dataType: this.typePlural,
                     fields: this.fields
                 };
             },
@@ -33,9 +33,6 @@ define(["jquery",
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        if (this.fields) {
-                            this.model.set("fields", this.fields.toJSON());
-                        }
                     },
                     template: Handlebars.compile(ItemTemplate),
                     events: {
@@ -53,7 +50,7 @@ define(["jquery",
                         }
                         icon = IconLookup.getIconPaths(key);
                         return {
-                            dataType: this.app.dataType,
+                            dataType: this.dataType,
                             icon: icon,
                             width: 15 * icon.scale,
                             height: 15 * icon.scale,
@@ -71,8 +68,18 @@ define(["jquery",
                 'click .zoom-to-extents': 'zoomToExtents',
                 'click .add-photos': 'addMedia',
                 'click .add-audio': 'addMedia',
-                'click .hide': 'hidePanel',
-                'click .show': 'showPanel'
+                'click .hide-panel': 'hidePanel',
+                'click .show-panel': 'showPanel'
+            },
+            hidePanel: function (e) {
+                this.$el.find(".marker-container").hide();
+                $(e.target).removeClass("hide-panel fa-caret-down");
+                $(e.target).addClass("show-panel fa-caret-right");
+            },
+            showPanel: function (e) {
+                this.$el.find(".marker-container").show();
+                $(e.target).removeClass("show-panel fa-caret-right");
+                $(e.target).addClass("hide-panel fa-caret-down");
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -82,7 +89,6 @@ define(["jquery",
                 this.displayMedia();
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
-                //this.listenTo(this.collection, 'add', this.displayMedia);
             },
             addMedia: function (e) {
                 this.app.vent.trigger('add-media');
@@ -90,18 +96,6 @@ define(["jquery",
             },
             zoomToExtents: function () {
                 this.collection.trigger('zoom-to-extents');
-            },
-            hidePanel: function (e) {
-                $(e.target).removeClass("hide").addClass("show");
-                console.log("about to hide...");
-                this.app.vent.trigger('hide-list');
-                e.preventDefault();
-            },
-            showPanel: function (e) {
-                $(e.target).removeClass("show").addClass("hide");
-                console.log("about to show...");
-                this.app.vent.trigger('unhide-list');
-                e.preventDefault();
             },
 
             hideLoadingMessage: function () {
@@ -118,7 +112,8 @@ define(["jquery",
             renderOverlays: function () {
                 this.overlays = new OverlayListView({
                     collection: this.collection,
-                    app: this.app
+                    app: this.app,
+                    dataType: this.typePlural
                 });
             },
 
@@ -136,7 +131,6 @@ define(["jquery",
 
                 // set important data variables:
                 this.collection = this.data.collection;
-                this.fields = this.data.fields;
                 this.title = this.data.name;
                 this.typePlural = this.data.id;
                 _.bindAll(this, 'render');

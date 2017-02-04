@@ -50,7 +50,6 @@ define(["marionette",
                     center: this.defaultLocation.center
 
                 };
-                console.log(mapOptions);
                 this.app.map = this.map = new google.maps.Map(document.getElementById(this.$el.attr("id")),
                     mapOptions);
                 //this.map.mapTypes.set(this.customMapTypeID, this.getCustomStyle());
@@ -103,7 +102,6 @@ define(["marionette",
             redraw: function () {
                 var that = this;
                 setTimeout(function () {
-                    console.log('resizing map....');
                     google.maps.event.trigger(that.map, 'resize');
                 }, 50);
             },
@@ -134,7 +132,6 @@ define(["marionette",
                         activeMapTypeID: this.tileManager.getMapTypeId()
                     };
                 this.app.saveState("basemap", state);
-                console.log("saving state:", state);
             },
             restoreState: function () {
                 var state = this.app.restoreState("basemap");

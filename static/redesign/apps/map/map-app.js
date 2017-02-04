@@ -23,7 +23,6 @@ define([
             toolbarMainRegion: "#toolbar-main",
             toolbarDataViewRegion: "#toolbar-dataview"
         },
-        dataType: "photos",
         mode: "edit",
         screenType: "map",
         showLeft: true,
@@ -37,7 +36,6 @@ define([
             this.router = new Router({ app: this});
             Backbone.history.start();
             this.listenTo(this.vent, 'data-loaded', this.loadRegions);
-            this.listenTo(this.vent, 'show-list', this.showList);
             this.listenTo(this.vent, 'show-detail', this.showDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
@@ -46,17 +44,14 @@ define([
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            this.selectedProjectID = this.getProjectID();
             this.dataManager = new DataManager({ app: this});
-            //this.loadRegions();
         },
 
         loadRegions: function () {
             this.showGlobalToolbar();
             this.showDataToolbar();
             this.showBasemap();
-            this.showList();
-            //this.router.navigate('//photos', { trigger: true });
+            this.showMarkerListManager();
         },
 
         showGlobalToolbar: function () {
@@ -94,19 +89,13 @@ define([
             this.mapRegion.show(this.basemapView);
         },
 
-        showList: function (mediaType) {
+        showMarkerListManager: function () {
             this.showLeft = true;
             this.updateDisplay();
-            /*this.dataType = mediaType;
-            if (this.markerListView) {
-                //destroys all of the existing overlays
-                this.markerListView.remove();
-            }*/
             this.markerListManager = new MarkerListingManager({
                 app: this
             });
             this.markerListRegion.show(this.markerListManager);
-            //this.currentCollection = this.markerListView.collection;
         },
 
         hideList: function () {
@@ -119,29 +108,36 @@ define([
         },
 
         createNewModelFromCurrentCollection: function () {
-            //creates an empty model object:
             var Model = this.currentCollection.model,
                 model = new Model();
             model.collection = this.currentCollection;
-            // If we get the form, pass in the custom field
-            if (this.dataType.indexOf("form_") != -1) {
-                model.set("fields", this.mainView.fields.toJSON());
-            }
-            model.set("project_id", this.selectedProjectID);
+            model.set("project_id", this.getProjectID());
             return model;
         },
 
         showDetail: function (opts) {
-            this.currentCollection = this.dataManager.getData(opts.mediaType).collection;
-            var model = null;
+            var dataType = opts.dataType,
+                dataEntry = this.dataManager.getData(dataType),
+                model = null;
+            this.currentCollection = dataEntry.collection;
             if (opts.id) {
                 model = this.currentCollection.get(opts.id);
+                if (dataType == "markers" || dataType.indexOf("form_") != -1) {
+                    if (!model.get("children")) {
+                        model.fetch({"reset": true});
+                    }
+                }
             } else {
+                this.mode = "edit";
                 model = this.createNewModelFromCurrentCollection();
+            }
+            if (dataType.indexOf("form_") != -1) {
+                model.set("fields", dataEntry.fields.toJSON());
             }
             this.dataDetail = new DataDetail({
                 model: model,
-                app: this
+                app: this,
+                dataType: dataType
             });
             this.markerDetailRegion.show(this.dataDetail);
             this.unhideDetail();

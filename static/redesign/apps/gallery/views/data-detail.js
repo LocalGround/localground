@@ -28,9 +28,9 @@ define([
             'click .show': 'showMapPanel'
         },
         getTemplate: function () {
-            if (this.app.dataType == "photos") {
+            if (this.dataType == "photos") {
                 return Handlebars.compile(PhotoTemplate);
-            } else if (this.app.dataType == "audio") {
+            } else if (this.dataType == "audio") {
                 return Handlebars.compile(AudioTemplate);
             }
             return Handlebars.compile(SiteTemplate);
@@ -63,6 +63,7 @@ define([
         },
         initialize: function (opts) {
             _.extend(this, opts);
+            this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
             this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
         },
@@ -114,7 +115,7 @@ define([
         templateHelpers: function () {
             var context = {
                 mode: this.app.mode,
-                dataType: this.app.dataType,
+                dataType: this.dataType,
                 audioMode: "detail",
                 screenType: this.app.screenType
             };
@@ -126,7 +127,6 @@ define([
                 model: this.model
             });
             this.$el.find(".carousel").append(c.$el);
-            console.log(c);
         },
         editRender: function () {
             var fields,
@@ -137,12 +137,10 @@ define([
                 that = this,
                 audio_attachments = [],
                 player;
-            if (this.app.dataType.indexOf('form_') != -1) {
+            if (this.dataType.indexOf('form_') != -1) {
                 fields = {};
-                console.log(this.model.get("fields"));
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     /* https://github.com/powmedia/backbone-forms */
-                    console.log(field);
                     field = this.model.get("fields")[i];
                     type = field.data_type.toLowerCase();
                     name = field.col_name;
@@ -168,7 +166,7 @@ define([
                     fields: fields
                 }).render();
             }
-            if (this.app.dataType.indexOf("form_") != -1 || this.app.dataType == "markers") {
+            if (this.dataType.indexOf("form_") != -1 || this.dataType == "markers") {
                 audio_attachments = [];
                 if (this.model.get("children") && this.model.get("children").audio) {
                     audio_attachments = this.model.get("children").audio.data;
@@ -193,7 +191,7 @@ define([
                 this.editRender();
             }
             // render audio player if audio mode:
-            if (this.app.dataType == "audio") {
+            if (this.dataType == "audio") {
                 var player = new AudioPlayer({
                     model: this.model,
                     audioMode: "detail"
