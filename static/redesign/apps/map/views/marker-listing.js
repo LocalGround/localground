@@ -33,6 +33,7 @@ define(["jquery",
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
+                        this.model.set("dataType", this.dataType);
                     },
                     template: Handlebars.compile(ItemTemplate),
                     events: {
