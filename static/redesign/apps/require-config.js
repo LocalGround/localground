@@ -15,7 +15,7 @@ require.config({
         'colResizable': 'lib/tables/colResizeableMod',
         'color-picker': 'external/jscolor',
         'color-picker-new': 'external/jscolor-updated',
-        'color-picker-eyecon': 'external/colorpicker/js/colorpicker',
+        'color-picker-eyecon': 'external/colorpicker/js/colorpicker-forked',
         'core': 'external/mediator/core-jquery',
         'form': '//cdnjs.cloudflare.com/ajax/libs/backbone-forms/0.14.1/backbone-forms.min',
         'list': 'external/list.min',

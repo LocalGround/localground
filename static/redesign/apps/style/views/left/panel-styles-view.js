@@ -22,12 +22,13 @@ define(["marionette",
             },
 
             initialize: function (opts) {
-                this.app = opts.app;
+                _.extend(this, opts);
+              /*  this.app = opts.app;
               //  this.model = new Map(
               //      { id: 1, name: "Flowers & Birds", project_id: 4 }
-              //      );
+              //      );*/
               //  console.log(this.model);
-                this.listenTo(this.app.vent, 'change-map', this.setModel);
+              //  this.listenTo(this.app.vent, 'change-map', this.setModel);
 
                 // here is some fake data until the
                 // /api/0/maps/ API Endpoint gets built:
@@ -38,7 +39,6 @@ define(["marionette",
             
             onRender: function () {
                 var that = this;
-                console.log("it's color");
                 this.$el.find('#color-picker').ColorPicker({
             
                     onShow: function (colpkr) {
@@ -72,12 +72,13 @@ define(["marionette",
                    // fontWeight: this.model.get("panel_styles")[this.activeKey].fw
                     };
             },
+            /*
             setModel: function (model) {
                 console.log(model);
                 this.model = model;
                 this.render();
                 console.log(this.model);
-            },
+            },*/
             updateType: function () {
                 this.activeKey = this.$el.find("#text-type").val();
                 this.render();
@@ -96,14 +97,20 @@ define(["marionette",
                 this.render();
             },
             updateFontSize: function () {
-                this.model.get("panel_styles")[this.activeKey].size = this.$el.find("#font-size").val();
+                this.model.get("panel_styles")[this.activeKey].size = +this.$el.find("#font-size").val();
                 this.render();
             },
             
             saveStyles: function() {
+                this.model.set("zoom", this.app.getZoom());
+                this.model.set("center", this.app.getCenter());
+                
+                console.log("BaseMap?", this.app.getMapTypeId());
+                this.model.set("basemap", this.app.getMapTypeId());
+                
                 console.log("saving our styles");
                 console.log(JSON.stringify(this.model.toJSON(), null, 2));
-                this.model.set("basemap", 1);
+               // this.model.set("basemap", 1);
                 this.model.save({
                     error: function(){
                         console.log('error');

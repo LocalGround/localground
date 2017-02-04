@@ -38,15 +38,15 @@ define(["marionette",
             },
 
             initialize: function (opts) {
-                this.app = opts.app;        
-                this.listenTo(this.app.vent, 'send-collection', this.displaySymbols);
+                this.app = opts.app;
+                this.model = opts.model;
+                this.dataType = this.model.get("layer_type");
+                this.displaySymbols();
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
-                
-                /**
-                 * here is some fake data until the
-                 * /api/0/layers/ API Endpoint gets built. Note
-                 * that each layer can have more than one symbol
-                 */
+            },
+            
+            reRender: function () {
+                this.render();  
             },
             
             templateHelpers: function () {
@@ -64,14 +64,14 @@ define(["marionette",
                 this.render();
             },
             
-            displaySymbols: function (layer) {
-                console.log(layer);
-                this.model = layer;
+            displaySymbols: function () {
+                //console.log(layer);
+                //this.model = layer;
                 this.collection = new Backbone.Collection(this.model.get("symbols"));                
-                var symbolsSource = "form_4";
+                //var symbolsSource = "form_4";
                 //layer.get("data_source");
         
-                var id = symbolsSource.split("_")[1];
+                /*var id = this.model.get("data_source").split("_")[1];
                 
                 var data = new Records(null, {
                         url: '/api/0/forms/' + id + '/data/'
@@ -82,7 +82,7 @@ define(["marionette",
                 data.fetch();
                 this.fields.fetch( { reset: true });
                 this.listenTo(this.fields, 'reset', this.buildDropdown);
-                console.log(data);
+                console.log(data);*/
                 this.render();
             },
             buildDropdown: function () {
