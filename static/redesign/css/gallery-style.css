@@ -12,7 +12,7 @@
 /************************************ Cards ************************************/
 
 .column {
-    width: calc(25% - 12px);
+    width: calc(25% - 14px);
     margin: 4px 6px 8px;
     border-radius: 2px;
     display: flex;
@@ -20,6 +20,8 @@
     display:inline-block;
     position: relative;
     vertical-align: top;
+    background: white;
+    border: 1px solid #e4e5eb;
 }
 
 .column img {
