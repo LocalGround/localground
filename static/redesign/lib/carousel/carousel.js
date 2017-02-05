@@ -12,6 +12,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../carousel/ca
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.render();
+                console.log(this.$el);
+                console.log(this.model);
                 this.$el.addClass('active-slide');
                 this.navigate(0);
             },
@@ -24,7 +26,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../carousel/ca
             },
             templateHelpers: function () {
                 return {
-                    num_photos: this.numPhotos()
+                    num_photos: this.numPhotos(),
+                    screenType: this.app.screenType
                 };
             },
 
