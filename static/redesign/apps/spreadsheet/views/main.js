@@ -1,21 +1,31 @@
 define(["marionette",
         "underscore",
         "handlebars",
+        "apps/gallery/views/media_browser",
         "models/record",
         "models/marker",
         "apps/spreadsheet/views/create-field",
         "handsontable",
-        "text!../templates/spreadsheet.html"],
-    function (Marionette, _, Handlebars, Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate) {
+        "text!../templates/spreadsheet.html",
+        "lib/audio/audio-player",
+        "lib/carousel/carousel"
+    ],
+    function (Marionette, _, Handlebars, MediaBrowser,
+        Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate,
+        AudioPlayer, Carousel) {
         'use strict';
         var Spreadsheet = Marionette.ItemView.extend({
             template: function () {
                 return Handlebars.compile(SpreadsheetTemplate);
             },
             table: null,
+            currentModel :null,
             events: {
                 'click #addColumn': 'showCreateFieldForm',
-                'click .delete_column' : 'deleteField'
+                'click .addMedia': 'showMediaBrowser',
+                'click .delete_column' : 'deleteField',
+                'click .carousel-photo': 'carouselPhoto',
+                'click .carousel-audio': 'carouselAudio'
             },
             foo: "bar",
             initialize: function (opts) {
@@ -30,6 +40,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
                 this.listenTo(this.app.vent, "add-row", this.addRow);
+                this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
             },
             onRender: function () {
                 this.renderSpreadsheet();
@@ -129,8 +140,8 @@ define(["marionette",
                     captionText,
                     modal,
                     span;
-                    img.src = value;
-                    img.onclick = function () {
+                img.src = value;
+                img.onclick = function () {
                     model = that.getModelFromCell(instance, rowIndex);
                     console.log(model);
                     // Get the modal
@@ -166,21 +177,85 @@ define(["marionette",
                 var model = this.getModelFromCell(instance, row),
                     count = model.get("photo_count") || 0,
                     i;
-                td.innerHTML = "";
+                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
                 for (i = 0; i < count; ++i) {
-                    td.innerHTML += "<i class='fa fa-file-photo-o' aria-hidden='true'></i>";
+                    td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\
+                    <i class='fa fa-file-photo-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
                 }
+                console.log(model + " row: " + row + ", column: " + col);
             },
 
             audioCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 var model = this.getModelFromCell(instance, row),
                     count = model.get("audio_count") || 0,
                     i;
-                td.innerHTML = "";
+                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
                 for (i = 0; i < count; ++i) {
-                    td.innerHTML += "<i class='fa fa-file-audio-o' aria-hidden='true'></i>";
+                    td.innerHTML += "<a class = 'carousel-audio' row-index = '"+row+"' col-index = '"+col+"'>\
+                    <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
                 }
+                console.log(model + " row: " + row + ", column: " + col);
 
+            },
+
+            carouselPhoto: function(e){
+
+                var that = this;
+
+                var row_idx = $(e.target).attr("row-index");
+                console.log(e.target);
+                console.log(row_idx);
+                this.currentModel = this.collection.at(parseInt(row_idx));
+                //any extra view logic. Carousel functionality goes here
+                this.currentModel.fetch({success: function(){
+                    console.log(that.currentModel);
+                    var c = new Carousel({
+                        model: that.currentModel,
+                        app: that.app
+                    });
+
+                    $("#carouselModal").empty();
+                    $("#carouselModal").append(c.$el);
+                    var $span = $("<span class='close'>&times;</span>");
+                    $span.click(function () {
+                        $("#carouselModal").hide();
+                        //document.getElementById("carouselModal").style.display='none';
+                    })
+                    $("#carouselModal").append($span);
+
+
+                    /*
+                    "<span class=\"close\" onclick=\"document.getElementById('carouselModal').style.display='none'\"">&times;"
+                     </span>\"");
+                    */
+
+                    console.log(c.$el);
+
+                    // Get the modal
+                    var modal = document.getElementById('carouselModal');
+
+                    modal.style.display = "block";
+
+                    console.log(c);
+                }});
+            },
+
+            carouselAudio: function(e){
+
+                var that = this;
+
+                var row_idx = $(e.target).attr("row-index");
+                //console.log(row_idx);
+                this.currentModel = this.collection.at(parseInt(row_idx));
+                //any extra view logic. Carousel functionality goes here
+                this.currentModel.fetch({success: function(){
+                    var c = new Carousel({
+                        model: that.currentModel,
+                        app: that.app
+                    });
+                    that.$el.find(".carousel").append(c.$el);
+                    console.log(c);
+                }});
             },
 
             buttonRenderer: function (instance, td, row, col, prop, value, cellProperties) {
@@ -212,6 +287,51 @@ define(["marionette",
                 };
                 return td;
             },
+            /*
+            * While the media browser itself does work as intended,
+            * The save button itself does not add files to
+            * the affected row.
+            *
+            * Will have to add in code that will target the selected row
+            * to add in new photos and audio
+            */
+            showMediaBrowser: function (e) {
+                var row_idx = $(e.target).attr("row-index");
+                //console.log(row_idx);
+                this.currentModel = this.collection.at(parseInt(row_idx));
+                //console.log(this.currentModel);
+                var mediaBrowser = new MediaBrowser({
+                    app: this.app
+                });
+                this.app.vent.trigger("show-modal", {
+                    title: 'Media Browser',
+                    width: 800,
+                    height: 400,
+                    view: mediaBrowser,
+                    saveButtonText: "Add",
+                    showSaveButton: true,
+                    saveFunction: mediaBrowser.addModels.bind(mediaBrowser)
+                });
+            },
+
+            attachModels: function (models) {
+                //console.log(models);
+                //console.log(this.collection);
+                //console.log(this.currentModel);
+                var that = this,
+                    i = 0;
+                for (i = 0; i < models.length; ++i) {
+                    this.currentModel.attach(models[i], function () {
+                        that.currentModel.fetch({
+                            success: function(){
+                                that.renderSpreadsheet();
+                            }
+                        });
+                    }, function () {});
+                }
+
+                this.app.vent.trigger('hide-modal');
+            },
 
             getColumnHeaders: function () {
                 var cols;
@@ -222,8 +342,8 @@ define(["marionette",
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
                         cols = ["ID", "Lat", "Lng", "Title", "Caption",
-                        "Photos" + " " + "<a class='fa fa-plus-square-o addPhotos' fieldIndex= '5' aria-hidden='true'></a>",
-                        "Audio" + " " + "<a class='fa fa-plus-square-o addAudio' fieldIndex= '6' aria-hidden='true'></a>",
+                        "Photos",
+                        "Audio",
                         "Tags", "Owner", "Delete"];
                         //
                         //
@@ -233,15 +353,14 @@ define(["marionette",
                         for (var i = 0; i < this.fields.length; ++i) {
                             cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
                         }
-                        cols.push("Photos" + " " + "<a class='fa fa-plus-square-o addPhotos' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
-                        cols.push("Audio" + " " + "<a class='fa fa-plus-square-o addAudio' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
+                        cols.push("Photos");
+                        cols.push("Audio");
                         cols.push("Delete");
                         cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
                         return cols;
                 }
             },
             getColumnWidths: function () {
-                console.log(this.collection.key);
                 switch(this.collection.key){
                     case "audio":
                         return [30, 80, 80, 200, 400, 300, 200, 100, 80, 100];

@@ -119,6 +119,8 @@ define(["jquery"],
                 var id = this.getParameterByName('project_id');
                 if (!id) {
                     id = this.restoreState('project_id');
+                } else {
+                    this.saveState('project_id', id, true);
                 }
                 if (!id) {
                     console.log("You're not logged in. Redirecting...");

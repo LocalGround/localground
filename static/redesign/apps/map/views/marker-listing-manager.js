@@ -15,6 +15,7 @@ define(["marionette",
             tagName: 'div',
             template: Handlebars.compile('<div class="show-hide hide"></div>'),
             collections: [],
+            overlayViews: [],
             initialize: function (opts) {
                 _.extend(this, opts);
             },
@@ -37,10 +38,23 @@ define(["marionette",
                         app: this.app,
                         title: dataSources[i].name
                     });
+                    this.overlayViews.push(overlayView);
                     selector = key + '-list';
                     this.$el.append($('<div id="' + selector + '"></div>'));
                     this.addRegion(key, '#' + selector);
                     this[key].show(overlayView);
+                }
+                this.zoomToExtents();
+            },
+            zoomToExtents: function () {
+                var bounds = new google.maps.LatLngBounds(),
+                    i;
+                for (i = 0; i < this.overlayViews.length; i++) {
+                    bounds.union(this.overlayViews[i].overlays.getBounds());
+                }
+                console.log(bounds.isEmpty());
+                if (!bounds.isEmpty()) {
+                    this.app.map.fitBounds(bounds);
                 }
             },
             onShow: function () {

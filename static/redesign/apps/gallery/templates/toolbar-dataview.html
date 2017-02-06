@@ -15,10 +15,21 @@
             {{/each}}
         </select>
     {{/ifequal}}
+    {{#ifequal screenType "map"}}
+    <button class="button-tertiary add"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</button>
+    <div class="dropdown-menu media-type" id="add-data-type" style="display: none;">
+        <a href="#" data-value="photo">Media</a>
+        <hr>
+        <a href="#/markers/new" data-value="marker">Site</a>
+        <a href="#/form_1/new" data-value="form_1">Flowers &amp; Birds</a>
+        <hr>
+        <a href="#" class="add-data">Edit Site Types</a>
+    </div>
+    {{/ifequal}}
 
 
     {{#ifequal activeTab "sites"}}
-		<button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Site Types</button>
+		<!-- button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Site Types</button -->
         {{#ifequal screenType "gallery"}}
             <a id="add-site" class="button-tertiary" href="#/{{dataType}}/new"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Site</a>
         {{/ifequal}}
@@ -29,7 +40,7 @@
 
 	{{#ifequal activeTab "media"}}
 	    <!-- the id of media-type is not working -->
-		<button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Media Types</button>
+		<!-- button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Media Types</button -->
 		{{#ifequal screenType "gallery"}}
 			<a id="add-media" class="button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Media</a>
 		{{/ifequal}}
