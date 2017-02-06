@@ -44,7 +44,7 @@ define(["marionette",
                 this.dataType = this.model.get("layer_type");
                 this.displaySymbols();
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
-                this.buildColorRamps();
+                this.buildPalettes();
             },
             
             reRender: function () {
@@ -61,7 +61,9 @@ define(["marionette",
             
             events: {
                 'change #data-type-select': 'selectDataType',
-                'change #bucket': 'buildColorRamps'
+                'change #bucket': 'buildPalettes',
+                'click .selected-palette-wrapper': 'showPalettes',
+                'click .palette-list': 'selectPalette'
             }, 
             
             selectDataType: function () {
@@ -94,7 +96,7 @@ define(["marionette",
                 console.log(this.fields);
             },
             
-            buildColorRamps: function () {
+            buildPalettes: function () {
                 this.buckets = this.$el.find("#bucket").val();
                 var seq1 = palette('tol-dv', this.buckets);
                 var seq2 = palette('cb-Blues', this.buckets);
@@ -106,7 +108,20 @@ define(["marionette",
                 this.allColors.push(seq1, seq2, seq3, seq4, seq5, seq6);
                 this.render();
                 console.log(this.allColors);
+            },
+            
+            showPalettes: function () {
+                this.$el.find(".palette-wrapper").toggle();
+            },
+            
+            selectPalette: function () {
+                this.$el.find(".palette-wrapper").toggle();
+                // Need to write some code to hide this when user clicks outside pop-up div
+                
+                // Need more code below to save and display selected palette
             }
+            
+            
 
         });
         return MarkerStyleView;

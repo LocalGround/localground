@@ -14,7 +14,7 @@
     <table class="color-properties">
         <tbody>
             <tr>
-                <td>Data Type {{dataType}}{{layer_type}}</td> 
+                <td>Data Type</td> 
                 <td>
                     <!-- Need a better term that "data type". this is how the legend is set up so items are organized based on certain properties..-->
                     <select name="place-properties" id="data-type-select">
@@ -95,26 +95,53 @@
                 <td><input id="bucket" type="number" value="{{buckets}}"></td>
             </tr>
             <tr class="continuous-variable">
-                <td>Color Ramp</td> 
-            </tr>
-            <tr>
+                <td>Color Ramp</td>
                 <td>
-                    <div class="palette-wrapper">
-                        <ul>
-                            {{#each allColors}}
-                            <li>
-                                <ul class="palette-container">
-                                    {{#each this}}
-                                    <li class="palette-item" style= "background-color: #{{this}}">
+                    <div>
+                        <a>
+                            
+                            <div class="selected-palette-wrapper">
+                                <a>
+                                    <ul class="selected-ul">
+                                        {{#with allColors.[1]}}
                                         
+                                            <li class="selected-palette-list">
+                                                <ul class="palette-container">
+                                                    {{#each this}}
+                                                    <li class="palette-item" style= "background-color: #{{this}}">
+                                                          
+                                                    </li>
+                                                    {{/each}}
+                                                </ul>
+                                            </li>
+                                       
+                                        {{/with}}
+                                    </ul>
+                                <i class="fa fa-angle-down palette-icon"></i>
+                                </a>
+                            </div>
+                        </a>
+                        <div class="palette-wrapper">
+                            <ul>
+                                {{#each allColors}}
+                                <a>
+                                    <li class="palette-list">
+                                        <ul class="palette-container">
+                                            {{#each this}}
+                                            <li class="palette-item" style= "background-color: #{{this}}">
+                                                
+                                            </li>
+                                            {{/each}}
+                                        </ul>
                                     </li>
-                                    {{/each}}
-                                </ul>
-                            </li>
-                            {{/each}}
-                        </ul>
+                                </a>
+                                {{/each}}
+                            </ul>
+                        </div>
                     </div>
                 </td>
+            </tr>
+            <tr>
             </tr>
         </tbody>
     </table>
