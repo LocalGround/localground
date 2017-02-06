@@ -124,7 +124,8 @@ define([
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
             var c = new Carousel({
-                model: this.model
+                model: this.model,
+                app: this.app
             });
             this.$el.find(".carousel").append(c.$el);
         },
