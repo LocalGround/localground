@@ -204,6 +204,7 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
             this.getMapTypeId = function () {
                 var tileInfo = getTileInfo("name", map.getMapTypeId().toLowerCase());
                 return tileInfo.id;
+      
             };
 
             /**

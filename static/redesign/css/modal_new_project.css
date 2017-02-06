@@ -25,13 +25,14 @@
 
 /* Modal Content */
 .modal-content {
-    margin: auto;
+    margin: 20px auto 0;
     width: 80%;
     border-radius:6px;
-    background-color: white;
-    box-shadow: 5px 5px 5px rgba(22, 25, 52, 0.2);
+    background-color: #fefefe;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
     margin: 20px auto 0;
-    width:500px;
+    position: relative;
+    width:1100px;
 }
 
 .modal-body{
@@ -82,4 +83,40 @@
 .modal h2{
     font-size: 22px;
     font-weight: 400;
+}
+
+/*Added Feb 4, 2017*/
+.card-img-preview {
+    background-position: center center;
+    width: 100%;
+    border-radius: 2px 2px 0 0;
+    height: 185px;
+    background-size: 300px auto;
+}
+
+.column {
+    width: calc(25% - 12px);
+    margin: 4px 6px 8px;
+    border-radius: 2px;
+    flex-direction: column;
+    width: calc(25% - 12px);
+
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-around;
+}
+
+.column h1 {
+    font-size: 14px;
+    padding: 10px 10px 1px;
+    font-weight: 400;
+}
+
+.column h2 {
+    font-size: 12px;
+    padding: 0 10px 12px;
+    color: #7a7a7a;
 }

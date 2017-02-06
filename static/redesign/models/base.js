@@ -108,9 +108,6 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 if (json.extras != null) {
                     json.extras = JSON.stringify(json.extras);
                 }
-                if (json.panel_styles != null) {
-                    json.panel_styles = JSON.stringify(json.panel_styles);
-                }
                 return json;
             },
             toTemplateJSON: function () {
