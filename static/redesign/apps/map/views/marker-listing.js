@@ -84,8 +84,6 @@ define(["jquery",
             childViewContainer: ".marker-container",
             events: {
                 'click .zoom-to-extents': 'zoomToExtents',
-                'click .add-photos': 'addMedia',
-                'click .add-audio': 'addMedia',
                 'click .hide-panel': 'hidePanel',
                 'click .show-panel': 'showPanel'
             },
@@ -105,12 +103,9 @@ define(["jquery",
 
                 this.template = Handlebars.compile(ListTemplate);
                 this.displayMedia();
+                this.listenTo(this.app.vent, 'show-uploader', this.addMedia);
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
-            },
-            addMedia: function (e) {
-                this.app.vent.trigger('add-media');
-                e.preventDefault();
             },
             zoomToExtents: function () {
                 this.collection.trigger('zoom-to-extents');

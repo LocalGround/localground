@@ -25,6 +25,7 @@ define([
             'click #show-media-type' : 'showMediaTypeForm',
             'click #add-row' : 'triggerAddRow',
             'click #add-media': 'createUploadModal',
+            'click .add-media': 'createUploadModal',
             'click .add': 'toggleMenu'
         },
         modal: null,
