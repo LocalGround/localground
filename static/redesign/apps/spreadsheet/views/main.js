@@ -216,7 +216,7 @@ define(["marionette",
 
                     $("#carouselModal").empty();
                     $("#carouselModal").append(c.$el);
-                    var $span = $("<span class='close'>&times;</span>");
+                    var $span = $("<span class='close big'>&times;</span>");
                     $span.click(function () {
                         $("#carouselModal").hide();
                         //document.getElementById("carouselModal").style.display='none';
