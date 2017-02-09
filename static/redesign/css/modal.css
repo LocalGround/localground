@@ -56,11 +56,11 @@
     position: absolute;
     top: 15px;
     right: 35px;
-    color: #ddd;
-    font-size: 80px;
+    color: #f1f1f1;
+    font-size: 40px;
     font-weight: bold;
     transition: 0.3s;
-    line-height:20px;
+    line-height:14px;
 }
 
 .close:hover,

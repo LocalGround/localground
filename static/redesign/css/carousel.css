@@ -28,6 +28,9 @@
     z-index: 2;
 }
 .active-slide {
+    height: 350px;
+}
+.spreadsheet .active-slide {
     position: absolute;
     height: auto;
     width: 800px;
@@ -35,14 +38,18 @@
     left: 25%;
 }
 .active-slide li {
+    position: absolute;
+    top: 350px;		
+ }
+.spreadsheet .active-slide li {
     top: 0px;
 }
 .active-slide li.current {
     top: 0px;
 }
 .carousel-buttons {
-    top: -380px;
-    height: 290px;
+    margin-top: -350px;
+    height: 350px;
 }
 .carousel-buttons .next, .carousel-buttons .prev {
     cursor: pointer;
