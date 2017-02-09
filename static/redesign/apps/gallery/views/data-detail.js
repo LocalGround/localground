@@ -125,9 +125,17 @@ define([
             //any extra view logic. Carousel functionality goes here
             var c = new Carousel({
                 model: this.model,
-                app: this.app
+                app: this.app,
+                mode: "photo"
             });
-            this.$el.find(".carousel").append(c.$el);
+            this.$el.find(".carousel-photo").append(c.$el);
+            
+            c = new Carousel({
+                model: this.model,
+                app: this.app,
+                mode: "audio"
+            });
+            this.$el.find(".carousel-audio").append(c.$el);
         },
         editRender: function () {
             var fields,
