@@ -59,6 +59,11 @@ audio {
     margin: 20px 0 10px;
 }
 
+.spreadsheet .play-ctrls{
+    text-align: center;
+    margin: 0px auto;
+}
+
 .play {
     cursor: pointer;
     width: 0px;
@@ -67,6 +72,10 @@ audio {
     border-width: 15px 0 15px 30px;
     border-color: transparent transparent transparent #686868;
     margin: 20px auto;
+}
+
+.spreadsheet .play {
+    margin: 0px auto;
 }
 
 .play.pause {

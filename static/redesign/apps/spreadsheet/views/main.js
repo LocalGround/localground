@@ -171,16 +171,14 @@ define(["marionette",
                 //
                 //
                 //
-                var model = this.getModelFromCell(instance, rowIndex);
-                console.log(model);
-                /*
-                this.currentModel = this.collection.at(parseInt(rowIndex));
+                var audio_model = this.getModelFromCell(instance, rowIndex);
+
                 var player = new AudioPlayer({
-                    model: this.currentModel,
+                    model: audio_model,
                     audioMode: "basic"
                 });
-                td.innerHTML = player.$el;
-                */
+                $(td).append(player.$el.addClass("spreadsheet"));
+                //*/
                 return td;
             },
 
@@ -412,7 +410,7 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            { data: "file_path", renderer: this.audioRenderer, readOnly: true, disableVisualSelection: true},
+                            { data: "file_path", renderer: this.audioRenderer.bind(this), readOnly: true, disableVisualSelection: true},
                             { data: "tags", renderer: "html" },
                             { data: "attribution", renderer: "html"},
                             { data: "owner", readOnly: true},
