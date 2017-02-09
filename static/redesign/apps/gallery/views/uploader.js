@@ -6,44 +6,31 @@ define ([
     "collections/photos",
     "collections/audio",
     "lib/audio/audio-player",
-    "text!../templates/table.html",
     "text!../templates/thumb.html",
-    "text!../templates/media-list-add.html"],
+    "text!../templates/media-list.html"],
     function ($, _, Marionette, Handlebars, Photos, Audio,
-              AudioPlayer, TableTemplate, ThumbTemplate, ParentTemplate) {
+              AudioPlayer, ThumbTemplate, ListTemplate) {
         'use strict';
 
         /*
 
         */
-        var BrowserView = Marionette.CompositeView.extend({
+        var Uploader = Marionette.CompositeView.extend({
 
             //view that controls what each gallery item looks like:
             currentMedia: "photos",
             lastSelectedModel: null,
-            template: function () {
-                return Handlebars.compile(ParentTemplate);
-            },
-
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        this.render();
                     },
-                    getTemplate: function () {
-                        
-                        if ($("#card-view-button-modal").hasClass("active") == 1) {
-                            return Handlebars.compile(ThumbTemplate);
-                        } else if ($("#table-view-button-modal").hasClass("active") == 1) {
-                           return Handlebars.compile(TableTemplate);       
-                        }
-                    },
+                    template: Handlebars.compile(ThumbTemplate),
                     modelEvents: {
                         'saved': 'render'
                     },
                     events: {
-                        'click .card-img-preview' : 'selectedClass'
+                        "click" : "selectedClass"
                     },
                     selectedClass : function (e) {
 
@@ -88,6 +75,7 @@ define ([
                                     } else {
                                         currColumn.removeClass("selected-card");
                                         currModel.set("isSelected", false);
+
                                     }
                                 }
                                 //*/
@@ -95,7 +83,6 @@ define ([
                             }
 
                         }
-                        console.log("select class");
                         if (this.$el.hasClass("selected-card")) {
                             this.$el.removeClass("selected-card");
                             this.model.set("isSelected", false);
@@ -109,7 +96,6 @@ define ([
                     },
 
                     onRender: function(){
-                        this.getTemplate();
                         if (this.currentMedia == "audio") {
                             var player = new AudioPlayer({
                                 model: this.model,
@@ -120,14 +106,7 @@ define ([
                     },
 
                     tagName: "div",
-                    className: function () {
-                        if ($("#card-view-button-modal").hasClass("active") == 1) {
-                            return "column";
-                        } else if ($("#table-view-button-modal").hasClass("active") == 1) {
-                           return "table";       
-                        }
-                    },
-                  //  className: "column",
+                    className: "column",
                     templateHelpers: function () {
                         return {
                             dataType: this.currentMedia
@@ -161,27 +140,14 @@ define ([
             events: {
                 "click #media-audio" : "changeToAudio",
                 "click #media-photos" : "changeToPhotos",
-                'click #card-view-button-modal' : 'displayCards',
-                'click #table-view-button-modal' : 'displayTable',
-            },
-            
-            displayCards: function() {
-                console.log("thumb view?");
-                $(".button-secondary").removeClass("active");
-                $("#card-view-button-modal").addClass("active");
-                this.getChildView();
-            },
-            
-            displayTable: function() {
-                console.log("table view?", $(".button-secondary"));
-                $(".button-secondary").removeClass("active");
-                $("#table-view-button-modal").addClass("active");
-                this.getChildView();
             },
 
             hideLoadingMessage: function () {
                 this.$el.find("#loading-animation").empty();
-                
+            },
+
+            template: function () {
+                return Handlebars.compile(ListTemplate);
             },
 
             displayMedia: function () {
@@ -221,7 +187,7 @@ define ([
             }
 
         });
-        return BrowserView;
+        return Uploader;
 
     }
 );
