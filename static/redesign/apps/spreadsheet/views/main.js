@@ -167,9 +167,20 @@ define(["marionette",
                 return td;
             },
             audioRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-                td.innerHTML = "<audio controls>" +
-                    "<source src='" + value + "'></source>" +
-                    "</audio>";
+
+                //
+                //
+                //
+                var model = this.getModelFromCell(instance, rowIndex);
+                console.log(model);
+                /*
+                this.currentModel = this.collection.at(parseInt(rowIndex));
+                var player = new AudioPlayer({
+                    model: this.currentModel,
+                    audioMode: "basic"
+                });
+                td.innerHTML = player.$el;
+                */
                 return td;
             },
 
