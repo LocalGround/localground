@@ -1,5 +1,6 @@
-define(["jquery", "underscore", "marionette", "handlebars", "text!../carousel/carousel.html"],
-    function ($, _, Marionette, Handlebars, CarouselTemplate) {
+define(["jquery", "underscore", "marionette", "handlebars",
+        "text!../carousel/carousel-photo.html", "text!../carousel/carousel-audio.html"],
+    function ($, _, Marionette, Handlebars, CarouselPhotoTemplate, CarouselAudioTemplate) {
         'use strict';
         var Carousel = Marionette.ItemView.extend({
             events: {
@@ -8,12 +9,15 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../carousel/ca
                 "click .show-slide": "jump"
             },
             counter: 0,
-            template: Handlebars.compile(CarouselTemplate),
+            mode: "photo",
             initialize: function (opts) {
                 _.extend(this, opts);
+                if (this.mode == "photo") {
+                    this.template = Handlebars.compile(CarouselPhotoTemplate);
+                } else {
+                    this.template = Handlebars.compile(CarouselAudioTemplate);
+                }
                 this.render();
-                console.log(this.$el);
-                console.log(this.model);
                 this.$el.addClass('active-slide');
                 this.navigate(0);
             },
