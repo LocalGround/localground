@@ -126,10 +126,10 @@ define([
             var c = new Carousel({
                 model: this.model,
                 app: this.app,
-                mode: "photo"
+                mode: "photos"
             });
             this.$el.find(".carousel-photo").append(c.$el);
-            
+
             c = new Carousel({
                 model: this.model,
                 app: this.app,
