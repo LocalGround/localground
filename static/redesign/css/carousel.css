@@ -28,11 +28,14 @@
     z-index: 2;
 }
 .active-slide {
-    height: 350px;
+    position: absolute;
+    height: auto;
+    width: 800px;
+    top: 25%;
+    left: 25%;
 }
 .active-slide li {
-    position: absolute;
-    top: 350px;
+    top: 0px;
 }
 .active-slide li.current {
     top: 0px;
@@ -87,4 +90,3 @@ li.current .photo {
     margin-bottom: 6px;
     cursor: pointer;
 }
-
