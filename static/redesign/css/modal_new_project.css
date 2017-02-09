@@ -15,7 +15,7 @@
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(22, 25, 52, 0.4); /* Black w/ opacity */
+    background-color: rgba(0, 0, 0, 0.8); /* Black w/ opacity */
 }
 
 .modal header {
@@ -25,13 +25,16 @@
 
 /* Modal Content */
 .modal-content {
+    position: relative;
     margin: auto;
     width: 80%;
+    vertical-align: middle;
     border-radius:6px;
     background-color: white;
     box-shadow: 5px 5px 5px rgba(22, 25, 52, 0.2);
     margin: 20px auto 0;
-    width:500px;
+    width:800px;
+    height: auto;
 }
 
 .modal-body{
@@ -55,19 +58,16 @@
 
 /* The Close Button */
 
-
-
-
 .close {
-    color: #aaaaaa;
+    color: #888;
     float: right;
-    font-size: 24px;
-    line-height: 14px;
+    font-size: 80px;
+    line-height: 40px;
 }
 
 .close:hover,
 .close:focus {
-    color: #000;
+    color: #DDD;
     text-decoration: none;
     cursor: pointer;
 }

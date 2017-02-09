@@ -56,11 +56,11 @@
     position: absolute;
     top: 15px;
     right: 35px;
-    color: #f1f1f1;
-    font-size: 40px;
+    color: #ddd;
+    font-size: 80px;
     font-weight: bold;
     transition: 0.3s;
-    line-height:14px;
+    line-height:20px;
 }
 
 .close:hover,
@@ -76,10 +76,3 @@
         width: 100%;
     }
 }
-
-
-
-
-
-
-
