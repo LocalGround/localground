@@ -1,5 +1,12 @@
 #!/bin/bash -ex
 
+# if you are building a server as oposed to a vagrant box, pass 'server' as the first argument to this script.
+if [ "$1" == "server" ]; then
+  SERVER=true
+else
+  SERVER=false
+fi
+
 sudo apt-get update
 ############################
 # Install Useful Utilities #
@@ -54,7 +61,11 @@ echo "Y" | sudo apt-get install libpq-dev
 ##################################
 # Doing some automatic config file manipulations for postgres / postgis:
 DB_OWNER="postgres"
-DB_NAME="lg_test_database"
+if $SERVER; then
+  DB_NAME='lg'
+else
+  DB_NAME="lg_test_database"
+fi
 DB_PASSWORD="password"
 PG_VERSION=9.3
 PG_HBA="/etc/postgresql/$PG_VERSION/main/pg_hba.conf"
