@@ -46,7 +46,7 @@ define([
                     ext = ext.toLowerCase();
                     var isAudio = this.options.audioTypes.indexOf(ext) != -1,
                         url = 'photos/';
-                    if (this.options.mediaType == 'map-images') {
+                    if (this.options.dataType == 'map-images') {
                         url = 'map-images/';
                     } else if (isAudio) {
                         url =  'audio/';
@@ -150,7 +150,7 @@ define([
             };
         },
         defaults: {
-            mediaType: "default",
+            dataType: "default",
             acceptFileTypes: 'png, jpg, jpeg, gif, audio\/x-m4a, m4a, mp3, m4a, mp4, mpeg, video\/3gpp, 3gp, aif, aiff, ogg, wav',
             imageTypes: 'png, jpg, jpeg, gif',
             audioTypes: 'audio\/x-m4a, m4a, mp3, m4a, mp4, mpeg, video\/3gpp, 3gp, aif, aiff, ogg, wav',

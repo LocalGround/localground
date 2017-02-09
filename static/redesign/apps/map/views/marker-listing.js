@@ -19,23 +19,38 @@ define(["jquery",
                     title: this.title,
                     typePlural: this.typePlural
                 };
-                console.log(d);
                 return d;
+            },
+            getEmptyView: function () {
+                console.log("empty", this.title);
+                return Marionette.ItemView.extend({
+                    initialize: function (opts) {
+                        _.extend(this, opts);
+                    },
+                    tagName: "li",
+                    className: "empty",
+                    template: Handlebars.compile('No "{{ title }}" found'),
+                    templateHelpers: function () {
+                        return {
+                            title: this.title.toLowerCase()
+                        };
+                    }
+                });
             },
 
             childViewOptions: function () {
                 return {
                     app: this.app,
-                    fields: this.fields
+                    dataType: this.typePlural,
+                    fields: this.fields,
+                    title: this.title
                 };
             },
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        if (this.fields) {
-                            this.model.set("fields", this.fields.toJSON());
-                        }
+                        this.model.set("dataType", this.dataType);
                     },
                     template: Handlebars.compile(ItemTemplate),
                     events: {
@@ -53,7 +68,7 @@ define(["jquery",
                         }
                         icon = IconLookup.getIconPaths(key);
                         return {
-                            dataType: this.app.dataType,
+                            dataType: this.dataType,
                             icon: icon,
                             width: 15 * icon.scale,
                             height: 15 * icon.scale,
@@ -69,10 +84,18 @@ define(["jquery",
             childViewContainer: ".marker-container",
             events: {
                 'click .zoom-to-extents': 'zoomToExtents',
-                'click .add-photos': 'addMedia',
-                'click .add-audio': 'addMedia',
-                'click .hide': 'hidePanel',
-                'click .show': 'showPanel'
+                'click .hide-panel': 'hidePanel',
+                'click .show-panel': 'showPanel'
+            },
+            hidePanel: function (e) {
+                this.$el.find(".marker-container").hide();
+                $(e.target).removeClass("hide-panel fa-caret-down");
+                $(e.target).addClass("show-panel fa-caret-right");
+            },
+            showPanel: function (e) {
+                this.$el.find(".marker-container").show();
+                $(e.target).removeClass("show-panel fa-caret-right");
+                $(e.target).addClass("hide-panel fa-caret-down");
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -80,28 +103,12 @@ define(["jquery",
 
                 this.template = Handlebars.compile(ListTemplate);
                 this.displayMedia();
+                this.listenTo(this.app.vent, 'show-uploader', this.addMedia);
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
-                //this.listenTo(this.collection, 'add', this.displayMedia);
-            },
-            addMedia: function (e) {
-                this.app.vent.trigger('add-media');
-                e.preventDefault();
             },
             zoomToExtents: function () {
                 this.collection.trigger('zoom-to-extents');
-            },
-            hidePanel: function (e) {
-                $(e.target).removeClass("hide").addClass("show");
-                console.log("about to hide...");
-                this.app.vent.trigger('hide-list');
-                e.preventDefault();
-            },
-            showPanel: function (e) {
-                $(e.target).removeClass("show").addClass("hide");
-                console.log("about to show...");
-                this.app.vent.trigger('unhide-list');
-                e.preventDefault();
             },
 
             hideLoadingMessage: function () {
@@ -118,7 +125,8 @@ define(["jquery",
             renderOverlays: function () {
                 this.overlays = new OverlayListView({
                     collection: this.collection,
-                    app: this.app
+                    app: this.app,
+                    dataType: this.typePlural
                 });
             },
 
@@ -132,20 +140,18 @@ define(["jquery",
 
             displayMedia: function () {
                 //fetch data from server:
-                var data = this.app.dataManager.getData(this.app.dataType);
+                //var data = this.app.dataManager.getData(this.app.dataType);
 
                 // set important data variables:
-                this.collection = data.collection;
-                this.fields = data.fields;
-                this.title = data.name;
-                this.typePlural = data.id;
+                this.collection = this.data.collection;
+                this.title = this.data.name;
+                this.typePlural = this.data.id;
                 _.bindAll(this, 'render');
 
                 // redraw CompositeView:
                 this.render();
                 this.renderOverlays();
                 this.hideLoadingMessage();
-                this.zoomToExtents();
             }
 
         });

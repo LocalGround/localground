@@ -15,7 +15,6 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 var that = this,
                     extras;
                 _.each(this.model.get("children"), function (entry, key) {
-                    console.log(entry);
                     that.dataDictionary[key] = entry;
                     extras = that.initCollection(key, entry.data);
                     _.extend(that.dataDictionary[key], extras);
@@ -24,13 +23,22 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 this.app.vent.trigger('data-loaded');
             },
             getDataSources: function () {
-                var dataSources = [];
+                var dataSources = [
+                    { value: "markers", name: "Markers" }
+                ];
                 _.each(this.dataDictionary, function (entry, key) {
-                    dataSources.push({
-                        value: key,
-                        name: entry.name
-                    });
+                    if (key.indexOf("form_") != -1) {
+                        dataSources.push({
+                            value: key,
+                            name: entry.name
+                        });
+                    }
                 });
+                dataSources = dataSources.concat([
+                    { value: "photos", name: "Photos" },
+                    { value: "audio", name: "Audio" },
+                    { value: "map_images", name: "Map Images" }
+                ]);
                 return dataSources;
             },
             getData: function (key) {

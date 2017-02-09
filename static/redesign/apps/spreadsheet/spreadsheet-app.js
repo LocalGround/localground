@@ -62,8 +62,8 @@ define([
             this.spreadsheetRegion.show(this.spreadsheetView);
         },
 
-        showSpreadsheet: function (mediaType) {
-            this.dataType = mediaType;
+        showSpreadsheet: function (dataType) {
+            this.dataType = dataType;
             var data = this.dataManager.getData(this.dataType);
             this.spreadsheetView = new SpreadsheetView({
                 app: this,

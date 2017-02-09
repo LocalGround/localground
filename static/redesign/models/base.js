@@ -108,9 +108,6 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 if (json.extras != null) {
                     json.extras = JSON.stringify(json.extras);
                 }
-                if (json.panel_styles != null) {
-                    json.panel_styles = JSON.stringify(json.panel_styles);
-                }
                 return json;
             },
             toTemplateJSON: function () {
@@ -129,9 +126,9 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 }
                 return point.getGoogleLatLng(geoJSON);
             },
-            printLatLng: function () {
+            printLatLng: function (places) {
                 var point = new Point();
-                return point.printLatLng(this.get("geometry"));
+                return point.printLatLng(this.get("geometry"), places);
             },
             setExtras: function (extras) {
                 try {

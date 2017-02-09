@@ -70,9 +70,9 @@ define([
             this.toolbarDataViewRegion.show(this.toolbarDataView);
         },
 
-        showMediaList: function (mediaType) {
-            var data = this.dataManager.getData(mediaType);
-            this.dataType = mediaType;
+        showMediaList: function (dataType) {
+            var data = this.dataManager.getData(dataType);
+            this.dataType = dataType;
             this.currentCollection = data.collection;
             this.mainView = new DataList({
                 app: this,

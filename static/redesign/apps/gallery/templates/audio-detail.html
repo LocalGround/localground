@@ -1,16 +1,11 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
     <h4>Preview</h4>
-    <audio controls>
-        <source src="{{ file_path }}"></source>
-    </audio>
-    <h3>{{ name }}</h3>
-    <!-- Three curly braces if you don't want to escape HTML -->
-    {{ caption }}
+    <div class="player-container audio-detail"></div>
     <br>
     {{tags}}
     <br>
-    <div class = "save-options">
+    <div class="save-options">
         <button class="edit-mode button-tertiary ">Edit</button>
     </div>
 {{/ifequal}}

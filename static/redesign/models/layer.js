@@ -69,6 +69,17 @@ define(["models/base", "models/symbol"], function (Base, Symbol) {
             _.each(this.getSymbols(), function (symbol) {
                 symbol.isShowingOnMap = true;
             });
+        },
+        toJSON: function () {
+            var json = Base.prototype.toJSON.call(this);
+            
+            if (json.symbols !== null) {
+                json.symbols = JSON.stringify(json.symbols);
+            }
+            if (json.filters !== null) {
+                json.filters = JSON.stringify(json.filters);
+            }
+            return json;
         }
     });
     return Layer;

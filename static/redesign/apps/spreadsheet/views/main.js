@@ -250,7 +250,8 @@ define(["marionette",
                 //any extra view logic. Carousel functionality goes here
                 this.currentModel.fetch({success: function(){
                     var c = new Carousel({
-                        model: that.currentModel
+                        model: that.currentModel,
+                        app: that.app
                     });
                     that.$el.find(".carousel").append(c.$el);
                     console.log(c);

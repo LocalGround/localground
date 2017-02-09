@@ -27,7 +27,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../carousel/ca
             templateHelpers: function () {
                 return {
                     num_photos: this.numPhotos(),
-                    screenType: this.app.screenType
+                    isSpreadsheet: this.app.screenType === "spreadsheet"
                 };
             },
 

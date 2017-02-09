@@ -18,15 +18,15 @@
                 <td>
                     <!-- Need a better term that "data type". this is how the legend is set up so items are organized based on certain properties..-->
                     <select name="place-properties" id="data-type-select">
-                        <option value="categorical-variable" {{#ifequal dataType "categorical-variable"}} SELECTED {{/ifequal}}>Category</option>
-                        <option value="continuous-variable" {{#ifequal dataType "continuous-variable"}} SELECTED {{/ifequal}}>Continuous</option>
-                        <option value="no-variable" {{#ifequal dataType "no-variable"}} SELECTED {{/ifequal}}>Simple</option>
-                        <option value="no-variable">Individual Sites</option>
+                        <option value="categorical" {{#ifequal dataType "categorical"}} SELECTED {{/ifequal}}>Category</option>
+                        <option value="continuous" {{#ifequal dataType "continuous"}} SELECTED {{/ifequal}}>Continuous</option>
+                        <option value="basic" {{#ifequal dataType "basic"}} SELECTED {{/ifequal}}>Simple</option>
+                        <option value="individual" {{#ifequal dataType "individual"}} SELECTED {{/ifequal}}>Individual Sites</option>
                     </select>
                 </td>
             </tr>
             
-{{#ifequal dataType "categorical-variable"}}
+{{#ifequal dataType "categorical"}}
 
             <!-- Rows in this table update based on what "data type" is selected.-->
             <tr class="categorical-variable">
@@ -69,7 +69,7 @@
     </table>
 </div>
 {{/ifequal}}
-{{#ifequal dataType "continuous-variable"}}
+{{#ifequal dataType "continuous"}}
     
             <tr class="continuous-variable">
                 <td>Property</td> 
@@ -92,17 +92,56 @@
             </tr>
             <tr class="continuous-variable">
                 <td>Buckets:</td>
-                <td><input type="number" placeholder="4"></td>
+                <td><input id="bucket" type="number" value="{{buckets}}"></td>
             </tr>
             <tr class="continuous-variable">
-                <td>Color Ramp</td> 
+                <td>Color Ramp</td>
                 <td>
-                    <select id="color-ramps">
-                        <option value="blue-ramp"></option>
-                        <option value="purple-ramp"></option>
-                        <option value="orange-ramp"></option>
-                    </select>
+                    <div>
+                        <a>
+                            
+                            <div class="selected-palette-wrapper">
+                                <a>
+                                    <ul class="selected-ul">
+                                        {{#with allColors.[1]}}
+                                        
+                                            <li class="selected-palette-list">
+                                                <ul class="palette-container">
+                                                    {{#each this}}
+                                                    <li class="palette-item" style= "background-color: #{{this}}">
+                                                          
+                                                    </li>
+                                                    {{/each}}
+                                                </ul>
+                                            </li>
+                                       
+                                        {{/with}}
+                                    </ul>
+                                <i class="fa fa-angle-down palette-icon"></i>
+                                </a>
+                            </div>
+                        </a>
+                        <div class="palette-wrapper">
+                            <ul>
+                                {{#each allColors}}
+                                <a>
+                                    <li class="palette-list">
+                                        <ul class="palette-container">
+                                            {{#each this}}
+                                            <li class="palette-item" style= "background-color: #{{this}}">
+                                                
+                                            </li>
+                                            {{/each}}
+                                        </ul>
+                                    </li>
+                                </a>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    </div>
                 </td>
+            </tr>
+            <tr>
             </tr>
         </tbody>
     </table>
@@ -124,7 +163,7 @@
 </div>
 {{/ifequal}}
 
-{{#ifequal dataType "no-variable"}}
+{{#ifequal dataType "basic"}}
         </tbody>
     </table>
 </div>

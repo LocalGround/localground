@@ -17,9 +17,9 @@ define(['marionette',
             map: null,
             getChildView: function () {
                 var overlayView = null;
-                if (this.app.dataType == "photos") {
+                if (this.dataType == "photos") {
                     overlayView = PhotoOverlay;
-                } else if (this.app.dataType == "audio") {
+                } else if (this.dataType == "audio") {
                     overlayView = AudioOverlay;
                 } else {
                     overlayView = MarkerOverlay;
@@ -89,12 +89,16 @@ define(['marionette',
                 });
             },
 
-            /** Zooms to the extent of the collection */
-            zoomToExtents: function () {
+            getBounds: function () {
                 var bounds = new google.maps.LatLngBounds();
                 this.children.each(function (overlay) {
                     bounds.union(overlay.getBounds());
                 });
+                return bounds;
+            },
+
+            zoomToExtents: function () {
+                var bounds = this.getBounds();
                 if (!bounds.isEmpty()) {
                     this.map.fitBounds(bounds);
                 }
