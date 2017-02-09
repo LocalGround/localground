@@ -131,7 +131,7 @@ define(["jquery",
             },
 
             doSearch: function (term) {
-                this.collection.doSearch(term, this.app.getProjectID());
+                this.collection.doSearch(term, this.app.getProjectID(), this.fields);
             },
 
             clearSearch: function () {
@@ -144,6 +144,7 @@ define(["jquery",
 
                 // set important data variables:
                 this.collection = this.data.collection;
+                this.fields = this.data.fields;
                 this.title = this.data.name;
                 this.typePlural = this.data.id;
                 _.bindAll(this, 'render');
