@@ -165,12 +165,9 @@ define ([
                 // call Marionette's default functionality (similar to "super")
                 Marionette.CompositeView.prototype.initialize.call(this);
                 this.template = Handlebars.compile(ParentTemplate);
+                this.render();
+                this.collection = this.app.dataManager.getCollection(this.currentMedia);
                 this.displayMedia();
-
-                // when the fetch completes, call Backbone's "render" method
-                // to create the gallery template and bind the data:
-                this.listenTo(this.collection, 'reset', this.render);
-                this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
             },
 
             templateHelpers: function () {
@@ -182,8 +179,8 @@ define ([
             },
 
             childViewOptions: function () {
-                console.log(this.viewMode);
-                console.log(this.determineChildViewTag);
+                //console.log(this.viewMode);
+                //console.log(this.determineChildViewTag);
                 return {
                     app: this.app,
                     currentMedia: this.currentMedia,
@@ -247,20 +244,8 @@ define ([
             },
 
             displayMedia: function () {
-                if (this.currentMedia == "photos") {
-                    this.collection = new Photos();
-                }
-                else if (this.currentMedia == "audio") {
-                    this.collection = new Audio();
-
-                    // There must be a for loop to handle creation of the
-                    // audio players
-                }
-                // after you re-initialize the collection, you have to
-                // attach all of the Marionette default event handlers
-                // in order for this to work:
-                this._initialEvents();
-                this.collection.fetch({ reset: true });
+                this.render();
+                this.hideLoadingMessage();
             },
             changeToAudio: function () {
                 this.currentMedia = "audio";
