@@ -1,1 +1,6 @@
-<input type="checkbox" /><strong>Symbol</strong>{{name}}
+<input type="checkbox" />
+<svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ width }}">
+    <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
+          stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}"></path>
+</svg>
+{{ title }}

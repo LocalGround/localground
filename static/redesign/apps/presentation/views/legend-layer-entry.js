@@ -19,6 +19,7 @@ define(['marionette',
             map: null,
             getChildView: function () {
                 return Marionette.ItemView.extend({
+                    tagName: "li",
                     initialize: function (opts) {
                         _.extend(this, opts);
                         console.log(this.model.toJSON());
@@ -29,15 +30,12 @@ define(['marionette',
                     }
                 });
             },
-
+            childViewContainer: ".symbol-container",
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this.model);
                 this.layers = new Layers(this.model.get("layers"), { mapID: this.model.get("id") });
                 this.model = this.layers.at(0);
-                console.log(this.model.get("symbols"));
                 this.collection = new Symbols(this.model.get("symbols"));
-                console.log(this.collection);
                 this.template = Handlebars.compile(LayerTemplate);
             }
 
