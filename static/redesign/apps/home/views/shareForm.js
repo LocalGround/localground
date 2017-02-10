@@ -29,6 +29,8 @@ define(["jquery",
                 "change": "render"
             },
 
+            slugError: "\"slug\"",
+
             initialize: function (opts) {
                 _.extend(this, opts);
                 if (this.model == undefined) {
@@ -130,7 +132,14 @@ define(["jquery",
                 this.model.set('caption', caption);
                 this.model.set('slug', this.setSlugValue(slug));
                 this.model.set('owner', owner);
-                this.model.save();
+                this.model.save(null, {
+                    success:function(model, response){
+
+                    },
+                    error: function(model, response){
+                        console.log(response);
+                    }
+                });
             },
 
             setSlugValue: function(slug_txt){
@@ -276,6 +285,19 @@ define(["jquery",
             errorUserName: function(_usernameInput){
               try{
                 if (_usernameInput.val().trim() == "" || _usernameInput.val() == undefined){
+                  throw "username missing"
+                }
+              }
+              catch(err){
+                _usernameInput.attr("placeholder", err);
+                _usernameInput.css("background-color", "#FFDDDD");
+                //_usernameInput.css("color", "#FF0000");
+              }
+            },
+
+            errorSlug: function(_slug){
+              try{
+                if (_slug.val().trim() == "" || _usernameInput.val() == undefined){
                   throw "username missing"
                 }
               }
