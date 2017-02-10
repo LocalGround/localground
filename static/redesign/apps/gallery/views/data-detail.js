@@ -123,11 +123,21 @@ define([
         },
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
-            var c = new Carousel({
-                model: this.model,
-                app: this.app
-            });
-            this.$el.find(".carousel").append(c.$el);
+            if (this.dataType.indexOf('form_') != -1 || this.dataType === "markers") {
+                var c = new Carousel({
+                    model: this.model,
+                    app: this.app,
+                    mode: "photos"
+                });
+                this.$el.find(".carousel-photo").append(c.$el);
+
+                c = new Carousel({
+                    model: this.model,
+                    app: this.app,
+                    mode: "audio"
+                });
+                this.$el.find(".carousel-audio").append(c.$el);
+            }
         },
         editRender: function () {
             var fields,

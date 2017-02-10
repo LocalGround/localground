@@ -1,3 +1,6 @@
+/********************************/
+/*       PHOTO PANEL STYLES     */
+/********************************/
 .carousel {
     margin: 20px;
 }
@@ -30,16 +33,17 @@
 .active-slide {
     height: 350px;
 }
+
 .active-slide li {
     position: absolute;
-    top: 350px;
-}
+    top: 350px;		
+ }
 .active-slide li.current {
     top: 0px;
 }
 .carousel-buttons {
-    top: -380px;
-    height: 290px;
+    margin-top: -350px;
+    height: 350px;
 }
 .carousel-buttons .next, .carousel-buttons .prev {
     cursor: pointer;
@@ -59,7 +63,6 @@
     color: white;
     font-size: 30px;
 }
-
 
 .carousel-buttons, .circle-buttons {
     display: block;
@@ -88,3 +91,49 @@ li.current .photo {
     cursor: pointer;
 }
 
+/********************************/
+/*       SPREADSHEET STYLES     */
+/********************************/
+.spreadsheet .active-slide {
+    position: relative;
+    height: auto;
+    width: 800px;
+    top: 50px;
+}
+
+.spreadsheet .active-slide li {
+    top: 0px;
+}
+.spreadsheet li.current .photo {
+    height: auto !important;
+    min-height: 500px;
+    width: 100%;
+    cursor: pointer;
+}
+.spreadsheet .carouselbox, .spreadsheet .active-slide {
+    min-height: 500px;
+    height: auto !important;
+}
+.spreadsheet .carousel-buttons {
+    margin-top: -500px;
+    height: 500px;
+}
+.spreadsheet .carousel-buttons .next, .spreadsheet .carousel-buttons .prev {
+    cursor: pointer;
+    margin-top: 240px;
+}
+
+.close.big {
+    font-size: 80px;
+    line-height: 40px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+/********************************/
+/*       AUDIO PANEL STYLES     */
+/********************************/
+.carouselbox.audio {
+    height: 160px;
+}

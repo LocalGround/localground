@@ -167,9 +167,18 @@ define(["marionette",
                 return td;
             },
             audioRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
-                td.innerHTML = "<audio controls>" +
-                    "<source src='" + value + "'></source>" +
-                    "</audio>";
+
+                //
+                //
+                //
+                var audio_model = this.getModelFromCell(instance, rowIndex);
+
+                var player = new AudioPlayer({
+                    model: audio_model,
+                    audioMode: "basic"
+                });
+                $(td).append(player.$el.addClass("spreadsheet"));
+                //*/
                 return td;
             },
 
@@ -216,20 +225,12 @@ define(["marionette",
 
                     $("#carouselModal").empty();
                     $("#carouselModal").append(c.$el);
-                    var $span = $("<span class='close'>&times;</span>");
+                    var $span = $("<span class='close big'>&times;</span>");
                     $span.click(function () {
                         $("#carouselModal").hide();
                         //document.getElementById("carouselModal").style.display='none';
                     })
                     $("#carouselModal").append($span);
-
-
-                    /*
-                    "<span class=\"close\" onclick=\"document.getElementById('carouselModal').style.display='none'\"">&times;"
-                     </span>\"");
-                    */
-
-                    console.log(c.$el);
 
                     // Get the modal
                     var modal = document.getElementById('carouselModal');
@@ -401,7 +402,7 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            { data: "file_path", renderer: this.audioRenderer, readOnly: true, disableVisualSelection: true},
+                            { data: "file_path", renderer: this.audioRenderer.bind(this), readOnly: true, disableVisualSelection: true},
                             { data: "tags", renderer: "html" },
                             { data: "attribution", renderer: "html"},
                             { data: "owner", readOnly: true},
