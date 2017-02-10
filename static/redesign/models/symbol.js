@@ -1,5 +1,5 @@
-define(['underscore', 'lib/sqlParser', 'lib/maps/icon-lookup', 'lib/maps/overlays/point'],
-    function (_, SqlParser, IconLookup, Point) {
+define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/icon-lookup', 'lib/maps/overlays/point'],
+    function (Backbone, _, SqlParser, IconLookup, Point) {
         'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
@@ -7,27 +7,22 @@ define(['underscore', 'lib/sqlParser', 'lib/maps/icon-lookup', 'lib/maps/overlay
          * the constituent views.
          * @class OverlayGroup
          */
-        var Symbol = function (opts) {
-            this.isShowingOnMap = false;
+        var Symbol = Backbone.Model.extend({
+            isShowingOnMap: false,
             //note: these can be heterogeneous models from many different collections
-            this.modelMap = null;
-            this.color = null;
-            this.shape = null;
-            this.width = null;
-            this.rule = null;
-            this.sqlParser = null;
-            this.init = function (opts) {
-                var markerShape;
+            modelMap: null,
+            color: null,
+            shape: null,
+            width: null,
+            rule: null,
+            sqlParser: null,
+            initialize: function (data, opts) {
                 _.extend(this, opts);
+                Backbone.Model.prototype.initialize.apply(this, arguments);
+                this.shape = this.shape || 'circle';
                 this.width = this.width || 30;
+                this.icon = IconLookup.getIconPaths(this.shape);
                 this.modelMap = {};
-                if (this.shape == "circle") {
-                    markerShape = IconLookup.getIconPaths('circle');
-                } else if (this.shape == "square") {
-                    markerShape = IconLookup.getIconPaths('square');
-                } else {
-                    markerShape = IconLookup.getIconPaths('circle');
-                }
                 /*_.extend(this, markerShape);
                 _.extend(this, { scale: markerShape.scale * this.width / markerShape.markerSize });
                 if (_.isUndefined(this.rule)) {
@@ -37,20 +32,19 @@ define(['underscore', 'lib/sqlParser', 'lib/maps/icon-lookup', 'lib/maps/overlay
                     throw new Error("label must be defined");
                 }
                 this.sqlParser = new SqlParser(this.rule);*/
-            };
-            this.checkModel = function (model) {
+            },
+            checkModel: function (model) {
                 return this.sqlParser.checkModel(model);
-            };
-            this.addModel = function (model) {
+            },
+            addModel: function (model) {
                 var hash = model.get("overlay_type") + "_" + model.get("id");
                 if (_.isUndefined(this.modelMap[hash])) {
                     this.modelMap[hash] = model;
                 }
-            };
-            this.getModels = function () {
+            },
+            getModels: function () {
                 return _.values(this.modelMap);
-            };
-            this.init(opts);
-        };
+            }
+        });
         return Symbol;
     });
