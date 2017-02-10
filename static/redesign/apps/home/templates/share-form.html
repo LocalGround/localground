@@ -21,12 +21,12 @@
     <input type="text" placeholder="put some tags for easy search" id="tags" value="{{ tags }}">
 </div>
 
-<div class = "inline-form slug">
+<div class = "inline-form slug {{#if slugError}}error{{/if}}">
     <label>Friendly URL:</label>
     <input id="slug" type="text" value="{{ slug }}" placeholder="put name or leave blank for autofill">
 </div>
 {{#if slugError}}
-    <p class="slugError errorMessage">{{slugError}}</p>
+    <p class="errorMessage">{{slugError}}</p>
 {{/if}}
 
 <div class = "inline-form share_type">
