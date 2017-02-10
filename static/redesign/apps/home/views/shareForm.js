@@ -108,7 +108,7 @@ define(["jquery",
                 // for new projects, there shall be no projectUsers defined
                 // otherwise, extract data from exising projectUsers
                 var helpers = {};
-                if (this.model.projectUsers == undefined) {
+                if (this.model && this.model.projectUsers) {
                     helpers.projectUsers = this.model.projectUsers.toJSON();
                 }
                 helpers.slugError = this.slugError;
