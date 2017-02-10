@@ -38,15 +38,14 @@ PROJ_FILE=/usr/share/proj/epsg
 sudo printf '\n#Google Projection\n<900913> +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs\n' | sudo tee -a $PROJ_FILE
 
 ###########################################
-# Then Install PostgreSQL9.3, PostGIS 9.3 #
+# Then Install PostgreSQL9.1, PostGIS 9.1 #
 ###########################################
 echo "Y" | sudo apt-get install postgresql-9.3
 echo "Y" | sudo apt-get install postgresql-client-9.3
 echo "Y" | sudo apt-get install postgresql-server-dev-9.3
 echo "Y" | sudo apt-get install postgresql-plperl-9.3
-#echo "Y" | sudo apt-get install postgresql-9.3-postgis-2.1
-#echo "Y" | sudo apt-get install postgresql-9.3-postgis-scripts
-sudo apt-get install -y postgresql-9.3-postgis-2.3 postgresql-9.3-postgis-2.3-scripts
+echo "Y" | sudo apt-get install postgresql-9.3-postgis-2.1
+echo "Y" | sudo apt-get install postgresql-9.3-postgis-scripts
 echo "Y" | sudo apt-get install libpq-dev
 
 ##################################

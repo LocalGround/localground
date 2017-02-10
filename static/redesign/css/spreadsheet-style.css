@@ -56,7 +56,7 @@
 }
 
 
-td i.fa.fa-file-photo-o, td i.fa.fa-file-audio-o {
+td i.fa.fa-file-photo-o, td i.fa.fa-file-audio-o, .fa-plus-square-o {
     margin: 5px 5px 0px 0px;
     color: #BBB;
     font-size: 24px;

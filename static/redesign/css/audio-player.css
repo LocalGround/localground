@@ -5,8 +5,7 @@ audio {
 /**************************
  * Old Templated Player
  **************************/
-
-.fa{
+.fa {
     display: inline-block;
     text-rendering: auto;
 }
@@ -58,6 +57,16 @@ audio {
     text-align: center;
     margin: 20px 0 10px;
 }
+.spreadsheet > div {
+    padding: 0px !important;
+    margin: 0px auto !important;
+    border: solid 1px #000;
+}
+
+.spreadsheet .play-ctrls{
+    text-align: center;
+    margin: 0px auto;
+}
 
 .play {
     cursor: pointer;
@@ -67,6 +76,10 @@ audio {
     border-width: 15px 0 15px 30px;
     border-color: transparent transparent transparent #686868;
     margin: 20px auto;
+}
+
+.spreadsheet .play {
+    margin: 0px auto;
 }
 
 .play.pause {
@@ -211,4 +224,19 @@ audio {
 
 .audio-detail .audio-container {
     background: #FFFFFF;
+}
+
+/**************************
+ * Carousel
+ **************************/
+.carouselbox .audio-detail {
+    border-width: 0px !important;
+}
+.carouselbox .audio-container {
+    padding: 0px;
+}
+
+.carouselbox .audio-detail .audio-progress {
+    padding: 10px 30px 25px 30px;
+    position: relative;
 }

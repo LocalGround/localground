@@ -1,0 +1,9 @@
+<div class="carouselbox audio">
+    <ol class="carousel-content"></ol>
+</div>
+<div class="circle-buttons">
+    <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>
+    {{#times 1 num_children}}
+        <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>
+    {{/times}}
+</div>

@@ -45,7 +45,7 @@
 }
 
 .left #map-panel {
-    width: 80%;
+    width: calc(100% - 280px);
 }
 
 .none #map-panel {
@@ -56,7 +56,7 @@
     height: 100%;
 }    
 .both #map-panel {
-    width: 50%;
+    width: calc(100% - 680px);
     /*-webkit-transition: all 0.15s ease;
     -moz-transition: all 0.15s ease;
     -o-transition: all 0.15s ease;
@@ -138,7 +138,7 @@
     border-bottom: solid 1px #ebebeb;
     font-size: 12px;
     background: #FFF;
-    font-weight: bold;
+    font-weight: 600;
     color: #666;
 }
 
@@ -180,10 +180,18 @@ svg, .fa-question-circle {
     color: #CCC;
     font-size: 16px;
 }
-.zoom-to-extents {
+
+.list-header .zoom-to-extents {
     color: #AAA;
-    font-size: 14px;
-    margin-right: 3px;
+    font-size: 12px;
+    margin-right: 10px;
+    float: right;
+    margin-top: 3px;
+    display: none;
+}
+.list-header:hover .zoom-to-extents {
+    cursor: pointer;
+    display: block;
 }
 
 .highlight {

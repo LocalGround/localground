@@ -5,6 +5,7 @@ define([
     "handlebars",
     "marionette",
     "apps/gallery/views/media_browser",
+    "apps/gallery/views/add-media",
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
     "text!../templates/record-detail.html",
@@ -13,7 +14,7 @@ define([
     "lib/carousel/carousel",
     "form" //extends Backbone
 ], function ($, Backbone, _, Handlebars, Marionette, MediaBrowser,
-             PhotoTemplate, AudioTemplate, SiteTemplate,
+             AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
              Audio, AudioPlayer, Carousel) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
@@ -48,17 +49,17 @@ define([
               I am likely to set default collection to photos
               by assigning its data type to be photos
             */
-            var mediaBrowser = new MediaBrowser({
+            var addMediaLayoutView = new AddMedia({
                 app: this.app
             });
             this.app.vent.trigger("show-modal", {
                 title: 'Media Browser',
-                width: 800,
+                width: 1100,
                 height: 400,
-                view: mediaBrowser,
+                view: addMediaLayoutView,
                 saveButtonText: "Add",
                 showSaveButton: true,
-                saveFunction: mediaBrowser.addModels.bind(mediaBrowser)
+             //   saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView)
             });
         },
         initialize: function (opts) {
@@ -123,10 +124,23 @@ define([
         },
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
-            var c = new Carousel({
-                model: this.model
-            });
-            this.$el.find(".carousel").append(c.$el);
+            var c;
+            if (this.model.get("children") && this.model.get("children").photos) {
+                c = new Carousel({
+                    model: this.model,
+                    app: this.app,
+                    mode: "photos"
+                });
+                this.$el.find(".carousel-photo").append(c.$el);
+            }
+            if (this.model.get("children") && this.model.get("children").audio) {
+                c = new Carousel({
+                    model: this.model,
+                    app: this.app,
+                    mode: "audio"
+                });
+                this.$el.find(".carousel-audio").append(c.$el);
+            }
         },
         editRender: function () {
             var fields,

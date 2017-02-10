@@ -749,10 +749,22 @@ input[type="checkbox"]{
     color: white;
 }
 
+#add-data-type {
+    
+}
+
 
 /************************************ general layout ************************************/
 .section{
     margin:0 20px;
+}
+
+hr {
+    height: 0px;
+    border: solid 1px #EEE;
+    border-top: none;
+    padding: 0px;
+    margin: 2px 0px 2px 0px;
 }
 
 .container-1-4{
