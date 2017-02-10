@@ -59,7 +59,7 @@ define([
                 view: addMediaLayoutView,
                 saveButtonText: "Add",
                 showSaveButton: true,
-             //   saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView)
+                saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView)
             });
         },
         initialize: function (opts) {
