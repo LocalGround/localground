@@ -12,28 +12,16 @@ define(["lib/maps/overlays/base", "lib/maps/overlays/infobubbles/photo"], functi
          * @returns google.maps.MarkerImage
          */
         getIcon: function () {
-            if (this.map.getZoom() > 18) {
-                return {
-                    url: this.model.get("path_small"),
-                    origin: new google.maps.Point(0, 0),
-                    anchor: new google.maps.Point(50, 0)
-                };
-            }
-            if (this.map.getZoom() > 16) {
-                return {
-                    url: this.model.get("path_marker_lg"),
-                    size: new google.maps.Size(52, 52),
-                    origin: new google.maps.Point(0, 0),
-                    anchor: new google.maps.Point(26, 0)
-                };
-            }
-            return {
-                url: this.model.get("path_marker_sm"),
-                size: new google.maps.Size(20, 20),
-                origin: new google.maps.Point(0, 0),
-                anchor: new google.maps.Point(10, 0)
+            var opts = {
+                scale: 1,
+                fillColor: '#ed867d', //this.model.get("color")
+                fillOpacity: 1,
+                strokeColor: '#fff',
+                strokeWeight: 1,
+                strokeOpacity: 1
             };
-
+            _.extend(opts, this.getIconPaths('photo'));
+            return opts;
         },
 
         /** adds icon to overlay. */

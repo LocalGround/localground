@@ -6,10 +6,12 @@ define([
     "apps/gallery/views/data-detail",
     "views/toolbar-global",
     "apps/gallery/views/toolbar-dataview",
-    "collections/projects",
+    "lib/data/dataManager",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, DataList, DataDetail, ToolbarGlobal, ToolbarDataView, Projects, appUtilities) {
+], function (Marionette, Backbone, Router, DataList, DataDetail,
+             ToolbarGlobal, ToolbarDataView, DataManager,
+             appUtilities) {
     "use strict";
     var GalleryApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
@@ -23,6 +25,8 @@ define([
         dataType: "photos",
         screenType: "gallery",
         activeTab: "media",
+        dataManager: null,
+        selectedProjectID: null,
 
         start: function (options) {
             // declares any important global functionality;
@@ -31,28 +35,24 @@ define([
             this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
+            //this.loadRegions();
 
             //add event listeners:
+            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
             this.listenTo(this.vent, 'hide-detail', this.hideMediaDetail);
             this.listenTo(this.vent, 'show-list', this.showMediaList);
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-
-            //add views to regions after projects load:
-            this.projects = new Projects();
-            this.listenTo(this.projects, 'reset', this.selectProjectLoadRegions);
-            this.projects.fetch({ reset: true });
-        },
-        selectProjectLoadRegions: function () {
-            this.selectProject(); //located in appUtilities
-            this.loadRegions();
+            this.selectedProjectID = this.getProjectID();
+            this.dataManager = new DataManager({ app: this});
         },
 
         loadRegions: function () {
             this.showGlobalToolbar();
             this.showDataToolbar();
+            console.log("about to navigate", this.router);
             this.router.navigate('//photos', { trigger: true });
         },
 
@@ -70,13 +70,17 @@ define([
             this.toolbarDataViewRegion.show(this.toolbarDataView);
         },
 
-        showMediaList: function (mediaType) {
-            this.dataType = mediaType;
+        showMediaList: function (dataType) {
+            var data = this.dataManager.getData(dataType);
+            this.dataType = dataType;
+            console.log(dataType);
+            this.currentCollection = data.collection;
             this.mainView = new DataList({
-                app: this
+                app: this,
+                collection: this.currentCollection,
+                fields: data.fields
             });
             this.galleryRegion.show(this.mainView);
-            this.currentCollection = this.mainView.collection;
             this.hideMediaDetail();
         },
 
@@ -95,7 +99,7 @@ define([
             if (this.dataType.indexOf("form_") != -1) {
                 model.set("fields", this.mainView.fields.toJSON());
             }
-            model.set("project_id", this.selectedProject.get("id"));
+            model.set("project_id", this.selectedProjectID);
             return model;
         },
 
@@ -104,7 +108,9 @@ define([
             if (opts.id) {
                 model = this.currentCollection.get(opts.id);
                 if (this.dataType == "markers" || this.dataType.indexOf("form_") != -1) {
-                    model.fetch({"reset": true});
+                    if (!model.get("children")) {
+                        model.fetch({"reset": true});
+                    }
                 }
             } else {
                 model = this.createNewModelFromCurrentCollection();

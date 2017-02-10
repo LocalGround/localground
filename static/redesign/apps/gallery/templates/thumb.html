@@ -15,7 +15,7 @@
 
 {{#ifequal dataType "audio"}}
 
-    <div class="player-container">
+    <div class="player-container audio-simple">
 
     </div>
 
@@ -51,7 +51,7 @@
 
                    <tr>
                        <td>Coordinates</td>
-                       <td>{{ this.lat }}, {{ this.lng }}</td>
+                       <td>{{ coords }}</td>
                    </tr>
             </table>
 
@@ -78,6 +78,10 @@
                         <td>{{ this.val }}</td>
                     </tr>
                 {{/each}}
+                <tr>
+                    <td>Coordinates</td>
+                    <td>{{ coords }}</td>
+                </tr>
             </table>
 
             <h1>

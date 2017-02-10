@@ -2,14 +2,14 @@ define([
     "marionette",
     "backbone",
     "apps/presentation/router",
-    "apps/map/views/map",
-    "collections/projects",
-    "collections/photos",
+    "lib/maps/basemap",
+    "lib/data/dataManager",
+    "models/map/",
     "apps/presentation/views/marker-overlays",
     "apps/presentation/views/legend",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, Basemap, Projects, Photos,
+], function (Marionette, Backbone, Router, Basemap, DataManager, Map,
              OverlayListView, LegendView, appUtilities) {
     "use strict";
     var PresentationApp = Marionette.Application.extend(_.extend(appUtilities, {
@@ -29,16 +29,19 @@ define([
             this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
+            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            this.projects = new Projects();
-            this.listenTo(this.projects, 'reset', this.selectProjectLoadRegions);
-            this.projects.fetch({ reset: true });
+            this.map = new Map({id: 1});
+            this.map.fetch({
+                success: this.getData.bind(this)
+            });
         },
-        selectProjectLoadRegions: function () {
-            this.selectProject(); //located in appUtilities
-            this.loadRegions();
+
+        getData: function () {
+            console.log(this.map);
+            this.dataManager = new DataManager({ app: this});
         },
 
         loadRegions: function () {
@@ -63,16 +66,10 @@ define([
         },
 
         showMapMarkers: function () {
-            var that = this;
-            this.photos = new Photos();
-            this.listenTo(this.photos, 'reset', function () {
-                console.log(that.map);
-                that.overlays = new OverlayListView({
-                    collection: that.photos,
-                    app: that
-                });
+            this.overlays = new OverlayListView({
+                collection: this.dataManager.getCollection('photos'),
+                app: this
             });
-            this.photos.fetch({reset: true});
         }
     }));
     return PresentationApp;

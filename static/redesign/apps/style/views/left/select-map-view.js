@@ -32,23 +32,40 @@ define(["marionette",
             },
             
             drawOnce: function () {
-                
-                this.app.currentMap = this.collection.at(0);
                 this.render();
-                var $selected = this.$el.find("#map-select").val();
+                var $selected = this.$el.find("#map-select").val();                
+                var selectedMapModel = this.collection.get($selected);
                 console.log($selected, this.collection);
-                this.app.vent.trigger("change-map", this.collection.get($selected));
+                
+                
+                this.setCenterZoom(selectedMapModel);
+                this.setMapTypeId(selectedMapModel);
+                this.app.vent.trigger("change-map", selectedMapModel);
             },
             
             changeMap: function(e) {
-                var $select = $(e.target);
-                var id = $select.val();
-                console.log($select.val());
-                console.log("map change");
-                                                                                           
-                this.app.vent.trigger("change-map", this.collection.get(id));
+                var id = $(e.target).val();
+                var selectedMapModel = this.collection.get(id);
+                
+                this.setCenterZoom(selectedMapModel);
+                this.setMapTypeId(selectedMapModel);
+                this.app.vent.trigger("change-map", selectedMapModel);
+            },
+            
+            setCenterZoom: function (selectedMapModel) {
+                var location = selectedMapModel.getDefaultLocation();
+                this.app.basemapView.setCenter(location.center);
+                this.app.basemapView.setZoom(location.zoom);
+            },
+            
+            setMapTypeId: function (selectedMapModel) {
+                var skin = selectedMapModel.getDefaultSkin();
+                this.app.basemapView.setMapTypeId(skin.basemap);
             }
 
         });
         return SelectMapView;
     });
+
+
+

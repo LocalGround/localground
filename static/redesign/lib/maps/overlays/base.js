@@ -3,8 +3,9 @@ define(["marionette",
     "lib/maps/overlays/point",
     "lib/maps/overlays/polyline",
     "lib/maps/overlays/polygon",
+    "lib/maps/icon-lookup",
     "lib/maps/overlays/ground-overlay"
-    ], function (Marionette, $, Point, Polyline, Polygon, GroundOverlay) {
+    ], function (Marionette, $, Point, Polyline, Polygon, IconLookup, GroundOverlay) {
     "use strict";
     /**
      * This class controls the rendering and underlying
@@ -18,6 +19,9 @@ define(["marionette",
         model: null,
         _overlay: null,
         template: false,
+        getIconPaths: function (key) {
+            return IconLookup.getIconPaths(key);
+        },
 
         modelEvents: {
             'change:geometry': 'updateOverlay',
@@ -72,7 +76,7 @@ define(["marionette",
             var that = this;
             //attach click event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-                that.app.router.navigate("//" + that.app.dataType + "/" + that.model.get("id"));
+                that.app.router.navigate("//" + that.model.get("dataType") + "/" + that.model.get("id"));
             });
             //attach mouseout event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {

@@ -1,15 +1,16 @@
 define([
     "jquery",
     "marionette",
+    "backbone",
     "handlebars",
-    "collections/photos",
     "models/photo",
+    "models/audio",
     "text!../templates/create-media.html",
     "text!../templates/new-media.html",
     'load-image',
     'canvas-to-blob',
     'jquery.fileupload-ip'
-], function ($, Marionette, Handlebars, Photos, Photo, CreateMediaTemplate, NewMediaItemTemplate, loadImage) {
+], function ($, Marionette, Backbone, Handlebars, Photo, Audio, CreateMediaTemplate, NewMediaItemTemplate, loadImage) {
     'use strict';
 
     var CreateMediaView = Marionette.CompositeView.extend({
@@ -45,7 +46,7 @@ define([
                     ext = ext.toLowerCase();
                     var isAudio = this.options.audioTypes.indexOf(ext) != -1,
                         url = 'photos/';
-                    if (this.options.mediaType == 'map-images') {
+                    if (this.options.dataType == 'map-images') {
                         url = 'map-images/';
                     } else if (isAudio) {
                         url =  'audio/';
@@ -149,7 +150,7 @@ define([
             };
         },
         defaults: {
-            mediaType: "default",
+            dataType: "default",
             acceptFileTypes: 'png, jpg, jpeg, gif, audio\/x-m4a, m4a, mp3, m4a, mp4, mpeg, video\/3gpp, 3gp, aif, aiff, ogg, wav',
             imageTypes: 'png, jpg, jpeg, gif',
             audioTypes: 'audio\/x-m4a, m4a, mp3, m4a, mp4, mpeg, video\/3gpp, 3gp, aif, aiff, ogg, wav',
@@ -180,7 +181,7 @@ define([
         },
         initialize: function (opts) {
             _.extend(this, opts);
-            this.collection = new Photos();
+            this.collection = new Backbone.Collection();
             var that = this;
             this.options = this.getOptions();
             $('#warning-message-text').empty();
@@ -250,7 +251,7 @@ define([
 
         getFormData: function () {
             return {
-                project_id: this.app.selectedProject.id,
+                project_id: this.app.getProjectID(),
                 csrfmiddlewaretoken: this.app.getCookie('csrftoken')
             };
         },
@@ -313,8 +314,9 @@ define([
         },
 
         onAdd: function (e, data) {
+            console.log('onAdd fired');
             var that = this,
-                photo;
+                model;
             this.$el.find('#nothing-here').hide();
             //validate files:
             this.validate(data);
@@ -325,15 +327,36 @@ define([
                     that.showInitMessage();
                     return true;
                 }
-                that.collection.add(new Photo({
-                    file: file,
-                    data: data
-                }));
+                if (that.options.previewSourceFileTypes.test(file.type)) {
+                    model = new Photo({
+                        file: file,
+                        data: data
+                    });
+                } else {
+                    model = new Audio({
+                        file: file,
+                        data: data
+                    });
+                }
+                that.collection.add(model);
             });
         },
 
         done: function (e, data) {
-            data.files[0].model.set(data.result);
+            var attributes = data.result,
+                model = data.files[0].model,
+                sourceCollection = null;
+            model.set(attributes);
+            if (model.get("overlay_type") == "photo") {
+                sourceCollection = this.app.dataManager.getData("photos").collection;
+            } else {
+                sourceCollection = this.app.dataManager.getData("audio").collection;
+            }
+            model.urlRoot = sourceCollection.url;
+            delete model.attributes.data;
+            delete model.attributes.file;
+            console.log(model);
+            sourceCollection.unshift(model); //add to top
         }
     });
     return CreateMediaView;

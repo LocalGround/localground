@@ -1,6 +1,11 @@
-{{#if geometry }}
-    <i class="fa fa-map-marker" aria-hidden="true"></i>
-{{else}}
-    <i class="fa fa-question-circle" aria-hidden="true"></i>
-{{/if}}
-<a href="#/{{dataType}}/{{id}}">{{ name }}</a>
+<a href="#/{{dataType}}/{{id}}">
+    {{#if geometry }}
+        <svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ width }}">
+            <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
+                  stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}"></path>
+        </svg>
+    {{else}}
+        <i class="fa fa-question-circle" aria-hidden="true"></i>
+    {{/if}}
+<p>{{ name }}</p>
+</a>

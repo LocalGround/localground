@@ -21,10 +21,12 @@ define([
             'click #toolbar-search': 'doSearch',
             'click #toolbar-clear': 'clearSearch',
             'change .media-type': 'changeDisplay',
-            'click #add-data' : 'showFormList',
+            'click .add-data' : 'showFormList',
             'click #show-media-type' : 'showMediaTypeForm',
             'click #add-row' : 'triggerAddRow',
-            'click #add-media': 'createUploadModal'
+            'click #add-media': 'createUploadModal',
+            'click .add-media': 'createUploadModal',
+            'click .add': 'toggleMenu'
         },
         modal: null,
         forms: null,
@@ -47,6 +49,7 @@ define([
             this.template = Handlebars.compile(ToolbarTemplate);
 
             // Collection of listeners
+            this.listenTo(this.app.vent, 'add-media', this.createUploadModal);
             this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
             this.listenTo(this.app.vent, 'show-media-type', this.showMediaTypeForm);
             this.listenTo(this.app.vent, 'tab-switch', this.changeMode);
@@ -55,8 +58,26 @@ define([
             this.listenTo(this.app.vent, 'show-modal', this.showModal);
             this.listenTo(this.app.vent, 'hide-modal', this.hideModal);
             this.listenTo(this.app.vent, 'show-list', this.updateNewObejctRoute);
+            $('body').click(this.hideMenus);
             this.modal = new Modal();
             this.forms = new Forms();
+        },
+
+        hideMenus: function (e) {
+            var $el = $(e.target);
+            if (!$el.hasClass('add') &&
+                    !$el.parent().hasClass('add') &&
+                    !$el.parent().hasClass('media-type')) {
+                $("#add-data-type").hide();
+            }
+        },
+
+        toggleMenu: function (e) {
+            var $btn = $(e.target);
+            this.$el.find("#add-data-type").toggle().css({
+                top: $btn.position().top + 30,
+                left: $btn.position().left
+            });
         },
 
         triggerAddRow: function (e) {
@@ -183,8 +204,8 @@ define([
                 saveFunction: createForm.saveFormSettings.bind(createForm),
                 deleteFunction: createForm.deleteForm.bind(createForm)
             });
-            this.modal.display_DeleteButton();
-            this.modal.display_SaveButton();
+            //this.modal.display_DeleteButton();
+            //this.modal.display_SaveButton();
             this.modal.show();
         }
         /*

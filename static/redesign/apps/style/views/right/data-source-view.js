@@ -11,22 +11,28 @@ define(["marionette",
             template: Handlebars.compile(DataSourceTemplate),
 
             initialize: function (opts) {
-                this.app = opts.app;
-                // here is some fake data until the
-                // /api/0/maps/ API Endpoint gets built:
-                this.collection = new Maps([
-                    { id: 1, name: "Flowers & Birds", project_id: 4 },
-                    { id: 2, name: "Berkeley Public Art", project_id: 4 },
-                    { id: 3, name: "Soil Science", project_id: 4 }                ]);
-                this.model = this.collection.get(1);
-                console.log(this.model);
+                _.extend(this, opts);
             },
             
+            /*
+            events: {
+                "change .layer-title": "updateTitle"
+            },
+            */
             templateHelpers: function () {
                 return {
-                   // json: "yeeag",
+                   
                 };
+            },
+            
+            /*
+            updateTitle: function () {
+                var title = this.$el.find('.layer-title').val();
+                this.model.set("title", title);
+                console.log(title);
+                this.app.vent.trigger("update-title", title);
             }
+            */
         });
         return DataSourceView;
     });

@@ -14,6 +14,7 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                 this.render();
+                this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
             },
             
             events: {
@@ -30,12 +31,12 @@ define(["marionette",
                 // only load views after the LayoutView has
                 // been rendered to the screen:
                 
-                var dsv = new DataSourceView({ app: this.app });
-                this.dataSource.show(dsv);
+                //var dsv = new DataSourceView({ app: this.app });
+                //this.dataSource.show(dsv);
                 
-                var msv = new MarkerStyleView({ app: this.app });
-                this.markerStyle.show(msv);
-                this.app.vent.trigger("find-datatype");
+               // var msv = new MarkerStyleView({ app: this.app });
+               // this.markerStyle.show(msv);
+               // this.app.vent.trigger("find-datatype");
                 
                 var frv = new FilterRulesView({ app: this.app });
                 this.filterRules.show(frv);
@@ -43,6 +44,26 @@ define(["marionette",
                                 
             },
             
+            createLayer: function (layer) {
+                this.model = layer;
+                var dsv = new DataSourceView({
+                    app: this.app,
+                    model: layer
+                });
+                var msv = new MarkerStyleView({
+                    app: this.app,
+                    model: layer
+                });
+                var frv = new FilterRulesView({
+                    app: this.app,
+                    model: layer
+                });
+                this.dataSource.show(dsv);
+                this.markerStyle.show(msv);
+                this.filterRules.show(frv);
+                this.app.vent.trigger("re-render");
+            },
+
             saveLayer: function () {
                 var title = this.$el.find(".layer-title").val();
                 var dataSource;
@@ -50,41 +71,25 @@ define(["marionette",
                 // get record property?
                 var symbolShape = this.$el.find("#quant-shape").val();
                 console.log(symbolShape);
-                
-                
+
+                if (this.model.get("filters") === null) {
+                    this.model.set("filters", { 'tag' : 'nothing' });
+                }
+
                 this.model.set("title", title);
                 this.model.set("data_source", dataSource);
                 this.model.set("layer_type", layerType);
-                // set record property?
+                // set record property?  
                 this.model.set("symbol_shape", symbolShape);
-                
-                
-                
-            //********************\\ Example from another view:
-            /*
-            var formName = this.$el.find('#formName').val(),
-                //shareType = $('#share_type').val(),
-                //tags = $('#tags').val(),
-                caption = this.$el.find('#caption').val(),
-                that = this;
-
-            this.model.set('name', formName);
-            //this.model.set('access_authority', shareType);
-            //this.model.set('tags', tags);
-            this.model.set('caption', caption);
-            this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));
-            this.model.set('project_ids', [this.app.selectedProject.id]);
-            this.model.save(null, {
-                success: function () {
-                    //alert("saved");
-                    that.createNewFields();
-                },
-                error: function(){
-                    console.log("The fields could not be saved");
-                }
-            });
-            */
-        }
+                this.model.save({
+                    error: function () {
+                        console.log('error');
+                    },
+                    success: function () {
+                        console.log('success');
+                    }
+                });
+            }
         });
         return RightPanelLayout;
     });

@@ -1,22 +1,17 @@
-/**
- * Created by zmmachar on 12/17/14.
- */
-define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio-player.html"],
-    function ($, _, Marionette, Handlebars, PlayerTemplate) {
+define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.html"],
+    function (_, Marionette, Handlebars, PlayerTemplate) {
         'use strict';
-        /**
-         * The Printloader class handles loading data for the print generation form
-         * @class PrintLoader
-         */
-        var Modal = Marionette.ItemView.extend({
+
+        var AudioPlayer = Marionette.ItemView.extend({
             events: {
                 'click .close': 'hide',
                 'click .close-modal': 'hide',
                 'click .volUp': 'volumeUp',
                 'click .volDown': 'volumeDown',
                 'click .play' : 'togglePlay',
-                'click .progress' : 'jumpToTime'
-                // 'timeupdate audio' : 'playerDurationUpdate'
+                'click .skip-fwd' : 'skipForward',
+                'click .skip-back' : 'skipBackward',
+                'click .progress .audio-progress-bar' : 'jumpToTime'
             },
             audio: null,
             template: Handlebars.compile(PlayerTemplate),
@@ -25,17 +20,20 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
                 _.extend(this, opts);
                 this.render();
                 this.audio = this.$el.find(".audio").get(0);
-                //$(this.audio).bind(this.playerDurationUpdate);
-                _.bindAll(this,'playerDurationUpdate');
+                _.bindAll(this, 'playerDurationUpdate');
                 this.$el.find('audio').on('timeupdate', this.playerDurationUpdate);
+                this.listenTo(this.app.vent, 'carousel-advanced', this.stop);
             },
             templateHelpers: function () {
                 return {
-
+                    audioMode: this.audioMode
                 };
             },
+            stop: function () {
+                this.audio.pause();
+            },
 
-            togglePlay: function(){
+            togglePlay: function () {
                 if (this.audio.paused) {
                     this.audio.play();
                     this.$el.find(".play").addClass("pause");
@@ -45,66 +43,66 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../audio/audio
                 }
             },
 
-            volumeUp: function(){
-                this.audio.volume += ((this.audio.volume + .1) < 1) ? .1 : 0;
+            volumeUp: function () {
+                this.audio.volume += ((this.audio.volume + 0.1) < 1) ? 0.1 : 0;
             },
 
-            volumeDown: function(){
-                this.audio.volume -= ((this.audio.volume - .1) > 0) ? .1 : 0;
+            volumeDown: function () {
+                this.audio.volume -= ((this.audio.volume - 0.1) > 0) ? 0.1 : 0;
             },
 
-            jumpToTime: function(e){
-                // As of now, I do not see the green color playing over the
-                // progress bar
+            jumpToTime: function (e) {
                 var posX = this.$el.find(e.target).offset().left,
                     w = (e.pageX - posX) / this.$el.width();
                 this.audio.currentTime = w * this.audio.duration;
             },
 
-            playerDurationUpdate: function(){
-                // As of now, I do not see the green color playing over the
-                // progress bar
-                this.$el.find(".progress > div").width(this.audio.currentTime /
-                                     this.audio.duration * 100 + "%");
+            skipForward: function () {
+                if (this.audio.currentTime < this.audio.duration) {
+                    var skipStep = this.audio.duration / 10;
+                    this.audio.currentTime += skipStep;
+                } else {
+                    this.audio.currentTime = this.audio.duration;
+                }
+            },
+
+            skipBackward: function () {
+                if (this.audio.currentTime > 0) {
+                    var skipStep = this.audio.duration / 10;
+                    this.audio.currentTime -= skipStep;
+                } else {
+                    this.audio.currentTime = 0;
+                }
+            },
+
+            playerDurationUpdate: function () {
+                var pos = this.audio.currentTime /
+                                     this.audio.duration * 100 + "%";
+                this.$el.find(".audio-progress-duration").width(pos);
+                this.$el.find(".audio-progress-circle").css({
+                    "margin-left": "calc(" + pos + " - 8px)"
+                });
+                this.$el.find(".time-current").html(this.getCurrentTime());
+                this.$el.find(".time-duration").html(this.getDuration());
+            },
+
+            formatTime: function (timeCount) {
+                var seconds = timeCount,
+                    minutes = Math.floor(seconds / 60);
+                minutes = (minutes >= 10) ? minutes : "0" + minutes;
+                seconds = Math.floor(seconds % 60);
+                seconds = (seconds >= 10) ? seconds : "0" + seconds;
+                return minutes + ":" + seconds;
+            },
+
+            getDuration: function () {
+                return this.formatTime(this.audio.duration);
+            },
+
+            getCurrentTime: function () {
+                return this.formatTime(this.audio.currentTime);
             }
-            /*
-
-            // Will be used to integrate with the rest of the file
-
-var audio = $(".audio").get(0);
-
-var toggle = function () {
-    if (audio.paused) {
-        audio.play();
-        $("#play").addClass("pause");
-    } else {
-        audio.pause();
-        $("#play").removeClass("pause");
-    }
-}
-
-$(".fa-plus-circle").bind("click", function () {
-    audio.volume += ((audio.volume + .1) < 1) ? .1 : 0;
-});
-
-$(".fa-minus-circle").bind("click", function () {
-    audio.volume -= ((audio.volume - .1) > 0) ? .1 : 0;
-});
-
-$("#progress").bind("click", function (e) {
-    var posX = $(e.target).offset().left,
-        w = (e.pageX - posX) / $(this).width();
-    audio.currentTime = w * audio.duration;
-    if (audio.paused) {
-        audio.play();
-    }
-});
-
-$("audio").bind('timeupdate', function () {
-    $("#progress > div").width(audio.currentTime / audio.duration * 100 + "%");
-});
-            */
 
         });
-        return Modal;
+        return AudioPlayer;
     });

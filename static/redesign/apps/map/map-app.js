@@ -4,14 +4,14 @@ define([
     "apps/map/router",
     "views/toolbar-global",
     "apps/gallery/views/toolbar-dataview",
-    "apps/map/views/marker-listing",
-    "apps/map/views/map",
+    "lib/data/dataManager",
+    "apps/map/views/marker-listing-manager",
+    "lib/maps/basemap",
     "apps/gallery/views/data-detail",
-    "collections/projects",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, ToolbarGlobal, ToolbarDataView,
-             MarkerListing, Basemap, DataDetail, Projects, appUtilities) {
+             DataManager, MarkerListingManager, Basemap, DataDetail, appUtilities) {
     "use strict";
     /* TODO: Move some of this stuff to a Marionette LayoutView */
     var MapApp = Marionette.Application.extend(_.extend(appUtilities, {
@@ -23,9 +23,10 @@ define([
             toolbarMainRegion: "#toolbar-main",
             toolbarDataViewRegion: "#toolbar-dataview"
         },
-        dataType: "photos",
         mode: "edit",
         screenType: "map",
+        showLeft: true,
+        showRight: false,
         currentCollection: null,
         start: function (options) {
             // declares any important global functionality;
@@ -34,25 +35,23 @@ define([
             this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
-            this.listenTo(this.vent, 'show-list', this.showMarkerList);
-            this.listenTo(this.vent, 'show-detail', this.showMarkerDetail);
+            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
+            this.listenTo(this.vent, 'show-detail', this.showDetail);
+            this.listenTo(this.vent, 'unhide-list', this.unhideList);
+            this.listenTo(this.vent, 'hide-list', this.hideList);
+            this.listenTo(this.vent, 'hide-detail', this.hideDetail);
+            this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            this.projects = new Projects();
-            this.listenTo(this.projects, 'reset', this.selectProjectLoadRegions);
-            this.projects.fetch({ reset: true });
-        },
-        selectProjectLoadRegions: function () {
-            this.selectProject(); //located in appUtilities
-            this.loadRegions();
+            this.dataManager = new DataManager({ app: this});
         },
 
         loadRegions: function () {
             this.showGlobalToolbar();
             this.showDataToolbar();
             this.showBasemap();
-            this.router.navigate('//photos', { trigger: true });
+            this.showMarkerListManager();
         },
 
         showGlobalToolbar: function () {
@@ -69,6 +68,20 @@ define([
             this.toolbarDataViewRegion.show(this.toolbarDataView);
         },
 
+        updateDisplay: function () {
+            var className = "none";
+            if (this.showLeft && this.showRight) {
+                className = "both";
+            } else if (this.showLeft) {
+                className = "left";
+            } else if (this.showRight) {
+                className = "right";
+            }
+            this.container.$el.removeClass("left right none both");
+            this.container.$el.addClass(className);
+            this.basemapView.redraw();
+        },
+
         showBasemap: function () {
             this.basemapView = new Basemap({
                 app: this
@@ -76,28 +89,68 @@ define([
             this.mapRegion.show(this.basemapView);
         },
 
-        showMarkerList: function (mediaType) {
-            this.container.$el.removeClass("show-detail");
-            this.dataType = mediaType;
-            if (this.markerListView) {
-                //destroys all of the existing overlays
-                this.markerListView.remove();
-            }
-            this.markerListView = new MarkerListing({
+        showMarkerListManager: function () {
+            this.showLeft = true;
+            this.updateDisplay();
+            this.markerListManager = new MarkerListingManager({
                 app: this
             });
-            this.markerListRegion.show(this.markerListView);
-            this.currentCollection = this.markerListView.collection;
+            this.markerListRegion.show(this.markerListManager);
         },
 
-        showMarkerDetail: function (opts) {
-            this.container.$el.addClass("show-detail");
-            var model = this.currentCollection.get(opts.id);
+        hideList: function () {
+            this.showLeft = false;
+            this.updateDisplay();
+        },
+        unhideList: function () {
+            this.showLeft = true;
+            this.updateDisplay();
+        },
+
+        createNewModelFromCurrentCollection: function () {
+            var Model = this.currentCollection.model,
+                model = new Model();
+            model.collection = this.currentCollection;
+            model.set("project_id", this.getProjectID());
+            return model;
+        },
+
+        showDetail: function (opts) {
+            var dataType = opts.dataType,
+                dataEntry = this.dataManager.getData(dataType),
+                model = null;
+            this.currentCollection = dataEntry.collection;
+            if (opts.id) {
+                model = this.currentCollection.get(opts.id);
+                if (dataType == "markers" || dataType.indexOf("form_") != -1) {
+                    if (!model.get("children")) {
+                        model.fetch({"reset": true});
+                    }
+                }
+            } else {
+                this.mode = "edit";
+                model = this.createNewModelFromCurrentCollection();
+            }
+            if (dataType.indexOf("form_") != -1) {
+                model.set("fields", dataEntry.fields.toJSON());
+            }
             this.dataDetail = new DataDetail({
                 model: model,
-                app: this
+                app: this,
+                dataType: dataType
             });
             this.markerDetailRegion.show(this.dataDetail);
+            this.unhideDetail();
+        },
+
+        hideDetail: function () {
+            this.showRight = false;
+            this.updateDisplay();
+        },
+
+        unhideDetail: function () {
+            this.showRight = true;
+            this.updateDisplay();
         }
     }));
     return MapApp;

@@ -17,13 +17,14 @@ define([
          */
         getIcon: function () {
             var opts = {
-                fillColor: '#' + this.model.get("color"),
-                strokeColor: "#FFF",
-                strokeWeight: 1.5,
+                scale: 1,
+                fillColor: '#ed867d', //this.model.get("color")
                 fillOpacity: 1,
-                scale: 1.6
+                strokeColor: '#fff',
+                strokeWeight: 1,
+                strokeOpacity: 1
             };
-            _.extend(opts, _.clone(this._overlay.Shapes.MAP_PIN_HOLLOW));
+            _.extend(opts, this.getIconPaths('marker'));
             return opts;
         },
 
