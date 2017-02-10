@@ -63,6 +63,7 @@ define([], function () {
                 icon.fillColor = '#62929E';
                 break;
             case 'photo':
+                console.log('photo');
                 icon = lookup.circle;
                 icon.width = 12;
                 icon.height = 12;
@@ -81,9 +82,10 @@ define([], function () {
             }
             icon.baseWidth = icon.baseWidth || baseWidth;
             icon.baseHeight = icon.baseHeight || baseHeight;
-            icon.viewBox = icon.getViewBox();
             icon.scale = icon.width / icon.baseWidth;
+            console.log(icon);
             _.extend(this, icon);
+            this.viewBox = this.getViewBox();
         };
         this.initialize = function (key) {
             this.setIcon(key);

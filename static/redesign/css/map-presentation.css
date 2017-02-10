@@ -2232,3 +2232,14 @@ a.logotype{
     border: solid 2px #CCC;
     width: 250px;
 }
+
+
+/************************************ Sarah's Enhancements ************************************/
+.symbol-container p {
+    display: inline-block;    
+}
+
+#legend {
+    width: 250px;
+}
+

@@ -1,5 +1,5 @@
 define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/icon-lookup', 'lib/maps/overlays/point'],
-    function (Backbone, _, SqlParser, IconLookup, Point) {
+    function (Backbone, _, SqlParser, Icon, Point) {
         'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
@@ -20,13 +20,10 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/icon-lookup', 'lib/
                 var icon;
                 _.extend(this, opts);
                 Backbone.Model.prototype.initialize.apply(this, arguments);
-                this.set("shape", this.get("shape") || "circle");
-                this.set("width", this.get("width") || 30);
+                this.set("shape", "photo");//this.get("shape") || "photo");
                 this.set("fillColor", this.get("color"));
-                icon = IconLookup.getIconPaths(this.get("shape"));
-                console.log(this.toJSON(), icon);
+                icon = new Icon(this.get("shape"));
                 _.extend(icon, this.toJSON());
-                console.log(icon);
                 this.set("icon", icon);
                 this.modelMap = {};
                 /*_.extend(this, markerShape);
