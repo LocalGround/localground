@@ -1,3 +1,6 @@
+/********************************/
+/*       PHOTO PANEL STYLES     */
+/********************************/
 .carousel {
     margin: 20px;
 }
@@ -30,20 +33,11 @@
 .active-slide {
     height: 350px;
 }
-.spreadsheet .active-slide {
-    position: absolute;
-    height: auto;
-    width: 800px;
-    top: 25%;
-    left: 25%;
-}
+
 .active-slide li {
     position: absolute;
     top: 350px;		
  }
-.spreadsheet .active-slide li {
-    top: 0px;
-}
 .active-slide li.current {
     top: 0px;
 }
@@ -70,7 +64,6 @@
     font-size: 30px;
 }
 
-
 .carousel-buttons, .circle-buttons {
     display: block;
     padding: 5px 0;
@@ -96,4 +89,51 @@ li.current .photo {
     background-position: center center !important;
     margin-bottom: 6px;
     cursor: pointer;
+}
+
+/********************************/
+/*       SPREADSHEET STYLES     */
+/********************************/
+.spreadsheet .active-slide {
+    position: relative;
+    height: auto;
+    width: 800px;
+    top: 50px;
+}
+
+.spreadsheet .active-slide li {
+    top: 0px;
+}
+.spreadsheet li.current .photo {
+    height: auto !important;
+    min-height: 500px;
+    width: 100%;
+    cursor: pointer;
+}
+.spreadsheet .carouselbox, .spreadsheet .active-slide {
+    min-height: 500px;
+    height: auto !important;
+}
+.spreadsheet .carousel-buttons {
+    margin-top: -500px;
+    height: 500px;
+}
+.spreadsheet .carousel-buttons .next, .spreadsheet .carousel-buttons .prev {
+    cursor: pointer;
+    margin-top: 240px;
+}
+
+.close.big {
+    font-size: 80px;
+    line-height: 40px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+/********************************/
+/*       AUDIO PANEL STYLES     */
+/********************************/
+.carouselbox.audio {
+    height: 160px;
 }

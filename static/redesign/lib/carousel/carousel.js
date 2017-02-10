@@ -1,8 +1,8 @@
 define(["jquery", "underscore", "marionette", "handlebars",
-        "collections/photos", "collections/audio",
+        "collections/photos", "collections/audio", "lib/audio/audio-player",
         "text!../carousel/carousel-photo.html", "text!../carousel/carousel-audio.html",
         "text!../carousel/carousel-photo-item.html"],
-    function ($, _, Marionette, Handlebars, Photos, Audio,
+    function ($, _, Marionette, Handlebars, Photos, Audio, AudioPlayer,
               CarouselPhotoTemplate, CarouselAudioTemplate, PhotoItemTemplate) {
         'use strict';
         var Carousel = Marionette.CompositeView.extend({
@@ -23,18 +23,37 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     this.template = Handlebars.compile(CarouselAudioTemplate);
                     this.collection = new Audio(this.model.get("children").audio.data);
                 }
-                console.log(this.collection);
                 this.render();
                 this.$el.addClass('active-slide');
                 this.navigate(0);
+            },
+            childViewOptions: function () {
+                return {
+                    mode: this.mode
+                };
             },
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        this.template = Handlebars.compile(PhotoItemTemplate);
+                        if (this.mode == "photos") {
+                            this.template = Handlebars.compile(PhotoItemTemplate);
+                        } else {
+                            this.template = Handlebars.compile("<div class='player-container audio-detail'></div>");
+                        }
                     },
-                    tagName: "li"
+                    tagName: "li",
+                    onRender: function () {
+                        if (this.mode == "audio") {
+                            var player = new AudioPlayer({
+                                model: this.model,
+                                audioMode: "detail"
+                            });
+                            console.log(this.$el.html());
+                            this.$el.find('.player-container').append(player.$el);
+                            console.log(this.$el.html());
+                        }
+                    }
                 });
             },
 

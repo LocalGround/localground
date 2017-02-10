@@ -232,14 +232,6 @@ define(["marionette",
                     })
                     $("#carouselModal").append($span);
 
-
-                    /*
-                    "<span class=\"close\" onclick=\"document.getElementById('carouselModal').style.display='none'\"">&times;"
-                     </span>\"");
-                    */
-
-                    console.log(c.$el);
-
                     // Get the modal
                     var modal = document.getElementById('carouselModal');
 

@@ -1,18 +1,5 @@
-<div class="carouselbox">
-    <ol class="carousel-content">
-        <!-- Will have to expand the carousel to include audio -->
-        {{#each children.audio.data}}
-            <li>
-                <div data-id="{{this.id}}">
-                    {{this.id}}AAA<!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->
-                </div>
-            </li>
-        {{/each}}
-    </ol>
-</div>
-<div class="carousel-buttons hover-to-show">
-    <i class="fa fa-chevron-left prev"></i>
-    <i class="fa fa-chevron-right next"></i>
+<div class="carouselbox audio">
+    <ol class="carousel-content"></ol>
 </div>
 <div class="circle-buttons">
     <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>
