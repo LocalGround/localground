@@ -24,13 +24,12 @@ define ([
            // template: function () {
            //     return Handlebars.compile(ParentTemplate);
            // },
-            viewMode: "table",
+            viewMode: "thumb",
 
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        console.log(this.parent);
                    //     if (this.parent.viewMode == "thumb") {
                    //         this.className = "column";
                    //     } else if (this.parent.viewMode == "table") {
@@ -43,7 +42,6 @@ define ([
                         if (this.parent.viewMode == "thumb") {
                             return Handlebars.compile(ThumbTemplate);
                         } else if (this.parent.viewMode == "table") {
-                            console.log("should be table template");
                            return Handlebars.compile(TableTemplate);       
                         }
                     },
@@ -127,11 +125,11 @@ define ([
                             this.$el.find(".player-container").append(player.$el);
                         }
                         //set the proper class for child tag
-                        if (this.parent.viewMode == "thumb") {
-                            this.$el.addClass("column");
-                        } else if (this.parent.viewMode == "table") {
-                            this.$el.addClass("table"); 
-                        }
+                     //   if (this.parent.viewMode == "thumb") {
+                     //       this.$el.addClass("column");
+                     //   } else if (this.parent.viewMode == "table") {
+                     //       this.$el.addClass("table"); 
+                     //   }
                     },
                     
                /*     tagName: function () {
@@ -141,7 +139,7 @@ define ([
                             return "tr";
                         }
                     }, */
-                    tagName: "tr",
+                 //   tagName: "tr",
                  //   className: function () {
                  //       console.log(this.parent);
                  //       if (this.parent.viewMode == "thumb") {
@@ -184,12 +182,32 @@ define ([
             },
 
             childViewOptions: function () {
+                console.log(this.viewMode);
+                console.log(this.determineChildViewTag);
                 return {
                     app: this.app,
                     currentMedia: this.currentMedia,
                     lastSelectedModel: this.lastSelectedColumn,
-                    parent: this
+                    parent: this,
+                    tagName: this.determineChildViewTagName(this.viewMode),
+                    className: this.determineChildViewClassName(this.viewMode)
                 };
+            },
+
+            determineChildViewTagName: function (vm) {
+                if (vm == "thumb") {
+                    return "div";
+                } else if (vm == "table") {
+                    return "tr";
+                }
+            },
+
+            determineChildViewClassName: function (vm) {
+                if (vm == "thumb") {
+                    return "column";
+                } else if (vm == "table") {
+                    return "table";
+                }
             },
 
             events: {
