@@ -124,14 +124,16 @@ define([
         },
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
-            if (this.dataType.indexOf('form_') != -1 || this.dataType === "markers") {
-                var c = new Carousel({
+            var c;
+            if (this.model.get("children") && this.model.get("children").photos) {
+                c = new Carousel({
                     model: this.model,
                     app: this.app,
                     mode: "photos"
                 });
                 this.$el.find(".carousel-photo").append(c.$el);
-
+            }
+            if (this.model.get("children") && this.model.get("children").audio) {
                 c = new Carousel({
                     model: this.model,
                     app: this.app,
