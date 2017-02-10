@@ -1,5 +1,5 @@
-define(['underscore', 'lib/sqlParser', 'lib/maps/overlays/point'],
-    function (_, SqlParser, Point) {
+define(['underscore', 'lib/sqlParser', 'lib/maps/icon-lookup', 'lib/maps/overlays/point'],
+    function (_, SqlParser, IconLookup, Point) {
         'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
@@ -22,13 +22,13 @@ define(['underscore', 'lib/sqlParser', 'lib/maps/overlays/point'],
                 this.width = this.width || 30;
                 this.modelMap = {};
                 if (this.shape == "circle") {
-                    markerShape = Point.Shapes.CIRCLE;
+                    markerShape = IconLookup.getIconPaths('circle');
                 } else if (this.shape == "square") {
-                    markerShape = Point.Shapes.SQUARE;
+                    markerShape = IconLookup.getIconPaths('square');
                 } else {
-                    markerShape = Point.Shapes.MAP_PIN_HOLLOW;
+                    markerShape = IconLookup.getIconPaths('circle');
                 }
-                _.extend(this, markerShape);
+                /*_.extend(this, markerShape);
                 _.extend(this, { scale: markerShape.scale * this.width / markerShape.markerSize });
                 if (_.isUndefined(this.rule)) {
                     throw new Error("rule must be defined");
@@ -36,7 +36,7 @@ define(['underscore', 'lib/sqlParser', 'lib/maps/overlays/point'],
                 if (_.isUndefined(this.title)) {
                     throw new Error("label must be defined");
                 }
-                this.sqlParser = new SqlParser(this.rule);
+                this.sqlParser = new SqlParser(this.rule);*/
             };
             this.checkModel = function (model) {
                 return this.sqlParser.checkModel(model);

@@ -4,9 +4,9 @@ define([
     "apps/presentation/router",
     "lib/maps/basemap",
     "lib/data/dataManager",
-    "models/map/",
+    "models/map",
     "apps/presentation/views/marker-overlays",
-    "apps/presentation/views/legend",
+    "apps/presentation/views/legend-layer-entry",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, Basemap, DataManager, Map,
@@ -33,8 +33,8 @@ define([
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
-            this.map = new Map({id: 1});
-            this.map.fetch({
+            this.model = new Map({id: 1});
+            this.model.fetch({
                 success: this.getData.bind(this)
             });
         },
@@ -60,7 +60,8 @@ define([
 
         showLegend: function () {
             this.legendView = new LegendView({
-                app: this
+                app: this,
+                model: this.model
             });
             this.legendRegion.show(this.legendView);
         },
