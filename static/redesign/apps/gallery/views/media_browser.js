@@ -21,21 +21,29 @@ define ([
             //view that controls what each gallery item looks like:
             currentMedia: "photos",
             lastSelectedModel: null,
-            template: function () {
-                return Handlebars.compile(ParentTemplate);
-            },
+           // template: function () {
+           //     return Handlebars.compile(ParentTemplate);
+           // },
+            viewMode: "table",
 
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
+                        console.log(this.parent);
+                   //     if (this.parent.viewMode == "thumb") {
+                   //         this.className = "column";
+                   //     } else if (this.parent.viewMode == "table") {
+                   //        this.className = "table";       
+                   //     }
                         this.render();
                     },
                     getTemplate: function () {
                         
-                        if ($("#card-view-button-modal").hasClass("active") == 1) {
+                        if (this.parent.viewMode == "thumb") {
                             return Handlebars.compile(ThumbTemplate);
-                        } else if ($("#table-view-button-modal").hasClass("active") == 1) {
+                        } else if (this.parent.viewMode == "table") {
+                            console.log("should be table template");
                            return Handlebars.compile(TableTemplate);       
                         }
                     },
@@ -117,20 +125,36 @@ define ([
                             });
                             this.$el.find(".player-container").append(player.$el);
                         }
-                    },
-
-                    tagName: "div",
-                    className: function () {
-                        if ($("#card-view-button-modal").hasClass("active") == 1) {
-                            return "column";
-                        } else if ($("#table-view-button-modal").hasClass("active") == 1) {
-                           return "table";       
+                        //set the proper class for child tag
+                        if (this.parent.viewMode == "thumb") {
+                            this.$el.addClass("column");
+                        } else if (this.parent.viewMode == "table") {
+                            this.$el.addClass("table"); 
                         }
                     },
-                  //  className: "column",
+                    
+               /*     tagName: function () {
+                        if (this.parent.viewMode == "thumb") {
+                            return "div";
+                        } else if (this.parent.viewMode == "table") {
+                            return "tr";
+                        }
+                    }, */
+                    tagName: "tr",
+                 //   className: function () {
+                 //       console.log(this.parent);
+                 //       if (this.parent.viewMode == "thumb") {
+                 //           return "column";
+                 //       } else if (this.parent.viewMode == "table") {
+                 //          return "table";       
+                 //       }
+                 //   },  
+                    
+                 //   className: "column",
                     templateHelpers: function () {
                         return {
-                            dataType: this.currentMedia
+                            dataType: this.currentMedia,
+
                         };
                     }
                 });
@@ -141,12 +165,21 @@ define ([
 
                 // call Marionette's default functionality (similar to "super")
                 Marionette.CompositeView.prototype.initialize.call(this);
+                this.template = Handlebars.compile(ParentTemplate);
                 this.displayMedia();
 
                 // when the fetch completes, call Backbone's "render" method
                 // to create the gallery template and bind the data:
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
+            },
+
+            templateHelpers: function () {
+                console.log(this.viewMode);
+                return {
+                    viewMode: this.viewMode
+                };
+                
             },
 
             childViewOptions: function () {
@@ -167,16 +200,26 @@ define ([
             
             displayCards: function() {
                 console.log("thumb view?");
+                this.viewMode = "thumb";
+                this.render();
+              
+            /*  
                 $(".button-secondary").removeClass("active");
                 $("#card-view-button-modal").addClass("active");
                 this.getChildView();
+            */
             },
             
             displayTable: function() {
-                console.log("table view?", $(".button-secondary"));
+                console.log("table view?");
+                this.viewMode = "table";
+                console.log(this.viewMode);
+                this.render();
+           /*
                 $(".button-secondary").removeClass("active");
                 $("#table-view-button-modal").addClass("active");
                 this.getChildView();
+            */
             },
 
             hideLoadingMessage: function () {
