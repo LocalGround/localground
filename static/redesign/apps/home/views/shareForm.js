@@ -30,6 +30,7 @@ define(["jquery",
             },
 
             slugError: null,
+            projectSaveSuccess: null,
 
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -111,6 +112,7 @@ define(["jquery",
                     helpers.projectUsers = this.model.projectUsers.toJSON();
                 }
                 helpers.slugError = this.slugError;
+                helpers.projectSaveSuccess = this.projectSaveSuccess;
                 return helpers;
             },
 
@@ -127,6 +129,7 @@ define(["jquery",
                 if (this.blankInputs()) {
                     return;
                 }
+                this.projectSaveSuccess = null;
                 this.model.set('name', projectName);
                 this.model.set('access_authority', shareType);
                 this.model.set('tags', tags);
@@ -136,6 +139,8 @@ define(["jquery",
                 this.model.save(null, {
                     success:function(model, response){
                         that.slugError = null;
+                        console.log(response);
+                        that.projectSaveSuccess = "Project Saved!";
                         that.render();
                     },
                     error: function (model, response){
@@ -292,19 +297,6 @@ define(["jquery",
             errorUserName: function(_usernameInput){
               try{
                 if (_usernameInput.val().trim() == "" || _usernameInput.val() == undefined){
-                  throw "username missing"
-                }
-              }
-              catch(err){
-                _usernameInput.attr("placeholder", err);
-                _usernameInput.css("background-color", "#FFDDDD");
-                //_usernameInput.css("color", "#FF0000");
-              }
-            },
-
-            errorSlug: function(_slug){
-              try{
-                if (_slug.val().trim() == "" || _usernameInput.val() == undefined){
                   throw "username missing"
                 }
               }

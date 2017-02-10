@@ -26,7 +26,7 @@
     <input id="slug" type="text" value="{{ slug }}" placeholder="put name or leave blank for autofill">
 </div>
 {{#if slugError}}
-    <p class="slugError">{{slugError}}</p>
+    <p class="slugError errorMessage">{{slugError}}</p>
 {{/if}}
 
 <div class = "inline-form share_type">
@@ -59,3 +59,7 @@
         </div>
     </div>
 </div>
+
+{{#if projectSaveSuccess}}
+    <p class="projectSaveSuccess successMessage">{{projectSaveSuccess}}</p>
+{{/if}}
