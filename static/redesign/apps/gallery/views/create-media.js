@@ -215,6 +215,8 @@ define([
             });
         },
         dragover: function (e) {
+            //browser debug
+            console.log("drag detected");
             e.stopPropagation();
             e.preventDefault();
             var dropZone = this.$el.find('#dropzone'),
