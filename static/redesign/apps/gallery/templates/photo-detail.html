@@ -10,14 +10,12 @@
         <p>{{ caption }}</p> 
     </div>
         
-    <div class = "section-card">        
+    <div class = "section-card">
         <p>
+        Attribution: {{ attribution }} <br>
         {{#each tags}}
             <a class="tag"> {{this}} </a>
         {{/each}}
-        <br>
-        Attribution: {{ attribution }} 
-
         <!-- Three curly braces if you don't want to escape HTML -->
     </div>
     <div class = "save-options">
