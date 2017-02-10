@@ -34,7 +34,7 @@ define(["marionette",
                 */
 
                 this.mb = new MediaBrowserView({ app: this.app });
-                this.mediaBrowserRegion.show(mb);
+                this.mediaBrowserRegion.show(this.mb);
                 
                 
                 
