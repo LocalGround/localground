@@ -22,11 +22,15 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 this.audio = this.$el.find(".audio").get(0);
                 _.bindAll(this, 'playerDurationUpdate');
                 this.$el.find('audio').on('timeupdate', this.playerDurationUpdate);
+                this.listenTo(this.app.vent, 'carousel-advanced', this.stop);
             },
             templateHelpers: function () {
                 return {
                     audioMode: this.audioMode
                 };
+            },
+            stop: function () {
+                this.audio.pause();
             },
 
             togglePlay: function () {

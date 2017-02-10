@@ -34,7 +34,8 @@ define(["jquery",
                         if (this.app.dataType == "audio") {
                             var player = new AudioPlayer({
                                 model: this.model,
-                                audioMode: "simple"
+                                audioMode: "simple",
+                                app: this.app
                             });
                             this.$el.find(".player-container").append(player.$el);
                         }

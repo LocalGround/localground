@@ -189,7 +189,8 @@ define([
                     var $elem = that.$el.find(".audio-basic[data-id='" + item.id + "']")[0];
                     player = new AudioPlayer({
                         model: new Audio(item),
-                        audioMode: "basic"
+                        audioMode: "basic",
+                        app: that.app
                     });
                     $elem.append(player.$el[0]);
                 });
@@ -208,7 +209,8 @@ define([
             if (this.dataType == "audio") {
                 var player = new AudioPlayer({
                     model: this.model,
-                    audioMode: "detail"
+                    audioMode: "detail",
+                    app: this.app
                 });
                 this.$el.find(".player-container").append(player.$el);
             }

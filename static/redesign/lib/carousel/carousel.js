@@ -29,7 +29,8 @@ define(["jquery", "underscore", "marionette", "handlebars",
             },
             childViewOptions: function () {
                 return {
-                    mode: this.mode
+                    mode: this.mode,
+                    app: this.app
                 };
             },
             getChildView: function () {
@@ -47,7 +48,8 @@ define(["jquery", "underscore", "marionette", "handlebars",
                         if (this.mode == "audio") {
                             var player = new AudioPlayer({
                                 model: this.model,
-                                audioMode: "detail"
+                                audioMode: "detail",
+                                app: this.app
                             });
                             console.log(this.$el.html());
                             this.$el.find('.player-container').append(player.$el);
@@ -65,11 +67,10 @@ define(["jquery", "underscore", "marionette", "handlebars",
             },
 
             navigate: function () {
-                console.log('navigate');
+                this.app.vent.trigger('carousel-advanced');
                 var $items = this.$el.find('.carousel-content li'),
                     amount = this.collection.length;
                 $items.removeClass('current');
-                console.log($items);
                 if (this.counter < 0) {
                     this.counter = amount - 1;
                 }
