@@ -1,0 +1,42 @@
+<div class="filter">
+    <form class="modal-search-form">
+        <input type="text" name="find-media-search"><i class="fa fa-search" aria-hidden="true"></i>
+    </form>
+    <button id="card-view-button-modal" class="button-secondary database-view-buttons-modal"><i class="fa fa-th" aria-hidden="true"></i></button>
+    <button id="table-view-button-modal" class="button-secondary database-view-buttons-modal active"><i class="fa fa-bars" aria-hidden="true"></i></button>
+</div>
+
+<h3>{{viewMode}}</h3>
+
+{{#ifequal viewMode "thumb"}}
+<div class="container" id="gallery-main">
+    <br>
+    <div id="loading-animation">
+        <i class="fa fa-cog fa-5x fa-spin"></i>
+    </div>
+</div>
+{{/ifequal}}
+
+
+
+{{#ifequal viewMode "table"}}
+    <div id="table-view-modal" class="database-views-modal" style="display: block;">
+        <table>
+            <tbody id="gallery-main">
+                <tr>
+                    <td></td>
+                    <td>Name</td>
+                    <td>Description</td>
+                    <td>Tags</td>
+                    <td>Kind</td>
+                    <td>Author</td>
+                </tr>
+                
+            </tbody>
+        </table>
+        <br>
+        <div id="loading-animation">
+            <i class="fa fa-cog fa-5x fa-spin"></i>
+        </div>
+    </div>
+{{/ifequal}}

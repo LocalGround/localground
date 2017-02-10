@@ -6,52 +6,31 @@ define ([
     "collections/photos",
     "collections/audio",
     "lib/audio/audio-player",
-    "text!../templates/table.html",
     "text!../templates/thumb.html",
-    "text!../templates/media-list-add.html"],
+    "text!../templates/media-list.html"],
     function ($, _, Marionette, Handlebars, Photos, Audio,
-              AudioPlayer, TableTemplate, ThumbTemplate, ParentTemplate) {
+              AudioPlayer, ThumbTemplate, ListTemplate) {
         'use strict';
 
         /*
 
         */
-        var BrowserView = Marionette.CompositeView.extend({
+        var Uploader = Marionette.CompositeView.extend({
 
             //view that controls what each gallery item looks like:
             currentMedia: "photos",
             lastSelectedModel: null,
-           // template: function () {
-           //     return Handlebars.compile(ParentTemplate);
-           // },
-            viewMode: "table",
-
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        console.log(this.parent);
-                   //     if (this.parent.viewMode == "thumb") {
-                   //         this.className = "column";
-                   //     } else if (this.parent.viewMode == "table") {
-                   //        this.className = "table";       
-                   //     }
-                        this.render();
                     },
-                    getTemplate: function () {
-                        
-                        if (this.parent.viewMode == "thumb") {
-                            return Handlebars.compile(ThumbTemplate);
-                        } else if (this.parent.viewMode == "table") {
-                            console.log("should be table template");
-                           return Handlebars.compile(TableTemplate);       
-                        }
-                    },
+                    template: Handlebars.compile(ThumbTemplate),
                     modelEvents: {
                         'saved': 'render'
                     },
                     events: {
-                        'click .card-img-preview' : 'selectedClass'
+                        "click" : "selectedClass"
                     },
                     selectedClass : function (e) {
 
@@ -96,6 +75,7 @@ define ([
                                     } else {
                                         currColumn.removeClass("selected-card");
                                         currModel.set("isSelected", false);
+
                                     }
                                 }
                                 //*/
@@ -103,7 +83,6 @@ define ([
                             }
 
                         }
-                        console.log("select class");
                         if (this.$el.hasClass("selected-card")) {
                             this.$el.removeClass("selected-card");
                             this.model.set("isSelected", false);
@@ -117,7 +96,6 @@ define ([
                     },
 
                     onRender: function(){
-                        this.getTemplate();
                         if (this.currentMedia == "audio") {
                             var player = new AudioPlayer({
                                 model: this.model,
@@ -125,36 +103,13 @@ define ([
                             });
                             this.$el.find(".player-container").append(player.$el);
                         }
-                        //set the proper class for child tag
-                        if (this.parent.viewMode == "thumb") {
-                            this.$el.addClass("column");
-                        } else if (this.parent.viewMode == "table") {
-                            this.$el.addClass("table"); 
-                        }
                     },
-                    
-               /*     tagName: function () {
-                        if (this.parent.viewMode == "thumb") {
-                            return "div";
-                        } else if (this.parent.viewMode == "table") {
-                            return "tr";
-                        }
-                    }, */
-                    tagName: "tr",
-                 //   className: function () {
-                 //       console.log(this.parent);
-                 //       if (this.parent.viewMode == "thumb") {
-                 //           return "column";
-                 //       } else if (this.parent.viewMode == "table") {
-                 //          return "table";       
-                 //       }
-                 //   },  
-                    
-                 //   className: "column",
+
+                    tagName: "div",
+                    className: "column",
                     templateHelpers: function () {
                         return {
-                            dataType: this.currentMedia,
-
+                            dataType: this.currentMedia
                         };
                     }
                 });
@@ -165,21 +120,12 @@ define ([
 
                 // call Marionette's default functionality (similar to "super")
                 Marionette.CompositeView.prototype.initialize.call(this);
-                this.template = Handlebars.compile(ParentTemplate);
                 this.displayMedia();
 
                 // when the fetch completes, call Backbone's "render" method
                 // to create the gallery template and bind the data:
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
-            },
-
-            templateHelpers: function () {
-                console.log(this.viewMode);
-                return {
-                    viewMode: this.viewMode
-                };
-                
             },
 
             childViewOptions: function () {
@@ -194,37 +140,14 @@ define ([
             events: {
                 "click #media-audio" : "changeToAudio",
                 "click #media-photos" : "changeToPhotos",
-                'click #card-view-button-modal' : 'displayCards',
-                'click #table-view-button-modal' : 'displayTable',
-            },
-            
-            displayCards: function() {
-                console.log("thumb view?");
-                this.viewMode = "thumb";
-                this.render();
-              
-            /*  
-                $(".button-secondary").removeClass("active");
-                $("#card-view-button-modal").addClass("active");
-                this.getChildView();
-            */
-            },
-            
-            displayTable: function() {
-                console.log("table view?");
-                this.viewMode = "table";
-                console.log(this.viewMode);
-                this.render();
-           /*
-                $(".button-secondary").removeClass("active");
-                $("#table-view-button-modal").addClass("active");
-                this.getChildView();
-            */
             },
 
             hideLoadingMessage: function () {
                 this.$el.find("#loading-animation").empty();
-                
+            },
+
+            template: function () {
+                return Handlebars.compile(ListTemplate);
             },
 
             displayMedia: function () {
@@ -264,7 +187,7 @@ define ([
             }
 
         });
-        return BrowserView;
+        return Uploader;
 
     }
 );
