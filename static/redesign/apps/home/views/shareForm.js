@@ -29,7 +29,7 @@ define(["jquery",
                 "change": "render"
             },
 
-            slugError: "\"slug\"",
+            slugError: null,
 
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -106,12 +106,12 @@ define(["jquery",
             templateHelpers: function () {
                 // for new projects, there shall be no projectUsers defined
                 // otherwise, extract data from exising projectUsers
+                var helpers = {};
                 if (this.model.projectUsers == undefined) {
-                    return false;
+                    helpers.projectUsers = this.model.projectUsers.toJSON();
                 }
-                return {
-                    projectUsers: this.model.projectUsers.toJSON()
-                };
+                helpers.slugError = this.slugError;
+                return helpers;
             },
 
             saveProjectSettings: function () {
@@ -122,7 +122,8 @@ define(["jquery",
                     caption = this.$el.find('#caption').val(),
                     slug = this.$el.find('#slug').val(),
                     owner = this.$el.find('#owner').val(),
-                    tags = this.$el.find('#tags').val();
+                    tags = this.$el.find('#tags').val(),
+                    that = this;
                 if (this.blankInputs()) {
                     return;
                 }
@@ -134,10 +135,16 @@ define(["jquery",
                 this.model.set('owner', owner);
                 this.model.save(null, {
                     success:function(model, response){
-
+                        that.slugError = null;
+                        that.render();
                     },
-                    error: function(model, response){
-                        console.log(response);
+                    error: function (model, response){
+                        var messages = JSON.parse(response.responseText);
+                        console.log(messages);
+                        if (messages.slug && messages.slug.length > 0) {
+                            that.slugError = messages.slug[0];
+                        }
+                        that.render();
                     }
                 });
             },

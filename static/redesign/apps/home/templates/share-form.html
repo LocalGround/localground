@@ -24,8 +24,10 @@
 <div class = "inline-form slug">
     <label>Friendly URL:</label>
     <input id="slug" type="text" value="{{ slug }}" placeholder="put name or leave blank for autofill">
-    <p class= "slugError"></p>
 </div>
+{{#if slugError}}
+    <p class="slugError">{{slugError}}</p>
+{{/if}}
 
 <div class = "inline-form share_type">
     <label for="share_type">Sharing Permissions:</label>
