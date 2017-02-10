@@ -118,6 +118,7 @@ define(["jquery",
                 var projectName = this.$el.find('#projectName').val(),
                     shareType = this.$el.find('#access_authority').val(),
                     caption = this.$el.find('#caption').val(),
+                    slug = this.$el.find('#slug').val(),
                     owner = this.$el.find('#owner').val(),
                     tags = this.$el.find('#tags').val();
                 if (this.blankInputs()) {
@@ -127,9 +128,14 @@ define(["jquery",
                 this.model.set('access_authority', shareType);
                 this.model.set('tags', tags);
                 this.model.set('caption', caption);
-                this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));//base10
+                this.model.set('slug', this.setSlugValue(slug));
                 this.model.set('owner', owner);
                 this.model.save();
+            },
+
+            setSlugValue: function(slug_txt){
+                var convertedSlug = slug_txt.toLowerCase().split(" ").join("_");
+                return convertedSlug != "" ? convertedSlug : 'slug_' + parseInt(Math.random() * 100000, 10); // base10
             },
 
             createNewProjectUsers: function () {
@@ -243,11 +249,6 @@ define(["jquery",
                 if (!($.trim(projectName_))) {
                     blankFields = true;
                     this.$el.find('#projectName').prev().css("color", '#FF0000');
-                }
-
-                if (!($.trim(slug_))) {
-                    blankFields = true;
-                    this.$el.find('#slug').prev().css("color", '#FF0000');
                 }
 
                 if (!(shareType_)) {
