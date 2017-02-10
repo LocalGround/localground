@@ -77,7 +77,7 @@ fieldset {
 
 .side-panel p{
     font-size:12px;
-    padding-bottom:20px;
+    min-height: 30px;
 }
 
 .side-panel h4,
@@ -762,6 +762,15 @@ input[type="checkbox"]{
     
 }
 
+.img-card p {
+    margin: 10px 10px;
+}
+
+.img-card img {
+    width: 100%;
+    max-height: 500px;
+    padding: 0;
+}
 
 /************************************ general layout ************************************/
 .section{
