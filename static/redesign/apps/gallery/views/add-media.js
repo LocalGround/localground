@@ -33,11 +33,14 @@ define(["marionette",
                 this.menu.show(upld);
                 */
 
-                var mb = new MediaBrowserView({ app: this.app });
-                this.mediaBrowserRegion.show(mb);
+                this.mb = new MediaBrowserView({ app: this.app });
+                this.mediaBrowserRegion.show(this.mb);
                 
                 
                 
+            },
+            addModels: function () {
+                this.mb.addModels()
             }
        
         });
