@@ -59,6 +59,7 @@ ul{
 .none #marker-detail-panel {
     width: 0%;
     overflow: hidden;
+    padding: 0px;
 }
 
 .left #map-panel {
@@ -77,6 +78,9 @@ ul{
     overflow: scroll;
     height:100%;
     transition: 0.5s;
+    padding: 20px;
+    padding-top: 80px;
+    border: none !important;
 }
 
 .none #map-panel {
@@ -288,10 +292,6 @@ svg, .fa-question-circle {
     font-size: 12px;
 }
 
-#marker-detail-panel {
-    padding-top: 80px;
-    border: none !important;
-}
 
 /************************************ Sarah's Enhancements ************************************/
 .symbol-container p {

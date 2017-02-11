@@ -573,7 +573,6 @@ input[type="checkbox"]{
     background-color: rgb(246, 246, 249);
     border: 1px solid rgb(217, 220, 229);
     overflow: scroll;
-    padding: 20px;
 }
 
 .side-panel img,
