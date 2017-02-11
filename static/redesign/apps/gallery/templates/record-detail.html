@@ -6,10 +6,15 @@
     <br>
     <div class="carousel carousel-audio"></div>
     
-    <div class="section">
+    <div class="section-card">
         <h3>{{ display_name }}</h3>
         {{#each fields}}
             {{ this.col_alias }}: {{ this.val }}<br>
+        {{/each}}
+        <p>Tags:</p>
+        {{#each tags}}
+            <!-- <p>{{this}}<br></p> -->
+            <a class="tag"> {{this}} </a>
         {{/each}}
     </div>
 {{/ifequal}}
@@ -23,12 +28,18 @@
     <br>
     <div class="carousel carousel-audio"></div>
     
-    <div class="section">
+    <div class="section-card">
         <h3>{{ display_name }}</h3>
         {{#each fields}}
             {{ this.col_alias }}: {{ this.val }}<br>
         {{/each}}
+        <p>Tags:</p>
+        {{#each tags}}
+            <!-- <p>{{this}}<br></p> -->
+            <a class="tag"> {{this}} </a>
+        {{/each}}
     </div>
+
     <div class = "save-options">
         <button class="edit-mode button-tertiary ">Edit</button>
     </div>
