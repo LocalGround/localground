@@ -58,8 +58,8 @@ define([
                 height: 400,
                 view: addMediaLayoutView,
                 saveButtonText: "Add",
-                showSaveButton: true
-             //   saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView)
+                showSaveButton: true,
+                saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView)
             });
         },
         initialize: function (opts) {

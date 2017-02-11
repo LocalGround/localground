@@ -33,37 +33,27 @@ define(["marionette",
                /* var upld = new SelectMapView({ app: this.app });
                 this.menu.show(upld);
                 */
-
                 var upld = new UploaderView({ app: this.app });
                 this.uploaderRegion.show(upld);
                 this.uploaderRegion.$el.hide();
 
-                var mb = new MediaBrowserView({ app: this.app });
-                this.mediaBrowserRegion.show(mb);
+                this.mb = new MediaBrowserView({ app: this.app });
+                this.mediaBrowserRegion.show(this.mb);
 
             },
 
             showUploader: function() {
                 this.mediaBrowserRegion.$el.hide();
-
                 this.uploaderRegion.$el.show();
-/*
-                var upld = new UploaderView({ app: this.app });
-                this.uploaderRegion.show(upld);
-*/
-
             },
 
             showDatabase: function() {
                 this.uploaderRegion.$el.hide();
-
                 this.mediaBrowserRegion.$el.show();
-            /*
-                var mb = new MediaBrowserView({ app: this.app });
-                this.mediaBrowserRegion.show(mb);
-            */
+            },
+            addModels: function () {
+                this.mb.addModels();
             }
-       
         });
         return AddMediaModal;
     });
