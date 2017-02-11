@@ -99,11 +99,12 @@ define(["marionette",
                     console.log('map resized');
                 });
             },
-            redraw: function () {
-                var that = this;
+            redraw: function (opts) {
+                var that = this,
+                    time = (opts && opts.time) ? opts.time : 50;
                 setTimeout(function () {
                     google.maps.event.trigger(that.map, 'resize');
-                }, 50);
+                }, time);
             },
             getZoom: function () {
                 return this.map.getZoom();

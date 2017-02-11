@@ -63,6 +63,20 @@ ul{
 
 .left #map-panel {
     width: calc(100% - 400px);
+    transition: 0.5s;
+}
+
+.left #marker-detail-panel {
+    order: 0;
+    border-right: 1px solid #e4e5eb;
+    box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
+    width: 400px;
+    background-color: #fafafc;
+    z-index: 40;
+    flex: none;
+    overflow: scroll;
+    height:100%;
+    transition: 0.5s;
 }
 
 .none #map-panel {
@@ -78,18 +92,6 @@ ul{
     display: flex;
     position: absolute;
     width: 100%;
-}
-
-.left #marker-detail-panel {
-    order: 0;
-    border-right: 1px solid #e4e5eb;
-    box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
-    width: 400px;
-    background-color: #fafafc;
-    z-index: 40;
-    flex: none;
-    overflow: scroll;
-    height:100%;
 }
 
 .none #marker-detail-panel .show-hide {

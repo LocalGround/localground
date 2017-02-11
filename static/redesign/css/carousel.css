@@ -2,7 +2,7 @@
 /*       PHOTO PANEL STYLES     */
 /********************************/
 .carousel {
-    margin: 20px;
+    margin: 0px;
 }
 .carouselbox {
     font-family: helvetica,sans-serif;
@@ -32,6 +32,7 @@
 }
 .active-slide {
     height: 350px;
+    margin-bottom: 30px;
 }
 
 .active-slide li {
@@ -43,7 +44,7 @@
 }
 .carousel-buttons {
     margin-top: -350px;
-    height: 350px;
+    height: 340px;
 }
 .carousel-buttons .next, .carousel-buttons .prev {
     cursor: pointer;

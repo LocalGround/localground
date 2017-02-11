@@ -82,7 +82,9 @@ define([
             }
             this.container.$el.removeClass("left none");
             this.container.$el.addClass(className);
-            this.basemapView.redraw();
+            this.basemapView.redraw({
+                time: 500
+            });
         },
         showMediaDetail: function (opts) {
             var collection = this.dataManager.getData(opts.dataType).collection,
