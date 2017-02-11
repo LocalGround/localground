@@ -1,5 +1,5 @@
-define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/icon-lookup', 'lib/maps/overlays/point'],
-    function (Backbone, _, SqlParser, Icon, Point) {
+define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/icon-lookup'],
+    function (Backbone, _, SqlParser, Icon) {
         'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
@@ -9,32 +9,24 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/icon-lookup', 'lib/
          */
         var Symbol = Backbone.Model.extend({
             isShowingOnMap: false,
-            //note: these can be heterogeneous models from many different collections
-            modelMap: null,
-            color: null,
-            shape: null,
-            width: null,
-            rule: null,
             sqlParser: null,
             initialize: function (data, opts) {
                 var icon;
                 _.extend(this, opts);
                 Backbone.Model.prototype.initialize.apply(this, arguments);
-                this.set("shape", "photo");//this.get("shape") || "photo");
+                this.set("shape", this.get("shape") || "photo");
                 this.set("fillColor", this.get("color"));
                 icon = new Icon(this.get("shape"));
                 _.extend(icon, this.toJSON());
                 this.set("icon", icon);
                 this.modelMap = {};
-                /*_.extend(this, markerShape);
-                _.extend(this, { scale: markerShape.scale * this.width / markerShape.markerSize });
-                if (_.isUndefined(this.rule)) {
+                if (_.isUndefined(this.get("rule"))) {
                     throw new Error("rule must be defined");
                 }
-                if (_.isUndefined(this.title)) {
-                    throw new Error("label must be defined");
+                if (_.isUndefined(this.get("title"))) {
+                    throw new Error("title must be defined");
                 }
-                this.sqlParser = new SqlParser(this.rule);*/
+                this.sqlParser = new SqlParser(this.get("rule"));
             },
             checkModel: function (model) {
                 return this.sqlParser.checkModel(model);
