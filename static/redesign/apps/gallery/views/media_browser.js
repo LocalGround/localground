@@ -165,8 +165,8 @@ define ([
                 // call Marionette's default functionality (similar to "super")
                 Marionette.CompositeView.prototype.initialize.call(this);
                 this.template = Handlebars.compile(ParentTemplate);
-                this.render();
-                this.collection = this.app.dataManager.getCollection(this.currentMedia);
+                //this.render();
+                //this.collection = this.app.dataManager.getCollection(this.currentMedia);
                 this.displayMedia();
             },
 
@@ -244,8 +244,20 @@ define ([
             },
 
             displayMedia: function () {
+                if (this.currentMedia == 'photos') {
+                    this.collection = new Photos();
+                } else {
+                    this.collection = new Audio();
+                }
+                this.collection.fetch({reset: true});
+                this.listenTo(this.collection, 'reset', this.render);
+                this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
+                /*
+                this.collection = this.app.dataManager.getCollection(this.currentMedia);
+                //this.collection.fetch({reset: true});
                 this.render();
                 this.hideLoadingMessage();
+                */
             },
             changeToAudio: function () {
                 this.currentMedia = "audio";
