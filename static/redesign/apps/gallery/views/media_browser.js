@@ -249,11 +249,13 @@ define ([
             },
             changeToAudio: function () {
                 this.currentMedia = "audio";
+                this.collection = this.app.dataManager.getCollection(this.currentMedia);
                 this.displayMedia();
             },
 
             changeToPhotos: function(){
                 this.currentMedia = "photos";
+                this.collection = this.app.dataManager.getCollection(this.currentMedia);
                 this.displayMedia();
             },
 

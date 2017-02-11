@@ -61,6 +61,8 @@ define([
             $('body').click(this.hideMenus);
             this.modal = new Modal();
             this.forms = new Forms();
+            this.listenTo(this.forms, "reset", this.render);
+            this.forms.fetch({ reset: true });
         },
 
         hideMenus: function (e) {
@@ -86,7 +88,7 @@ define([
         },
 
         changeMode: function () {
-            if (this.app.activeTab == "sites") {
+            if (this.app.activeTab == "data") {
                 this.listenTo(this.forms, 'reset', this.renderAndRoute);
                 this.forms.fetch({ reset: true });
             } else {
