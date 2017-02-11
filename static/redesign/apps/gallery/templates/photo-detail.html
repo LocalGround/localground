@@ -11,6 +11,15 @@
     </div>
 {{/ifequal}}
 
+{{#ifequal mode "presentation"}}
+    <img src="{{ path_medium }}" />
+    <div class = "section">
+        <h3>{{ name }}</h3> <p>{{ caption }}</p>
+        <!-- Three curly braces if you don't want to escape HTML -->
+    </div>
+{{/ifequal}}
+
+
 
 <!-- EDIT MODE -->
 {{#ifequal mode "edit"}}

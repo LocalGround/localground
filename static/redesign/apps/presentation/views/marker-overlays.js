@@ -1,9 +1,10 @@
 define(['marionette',
         'jquery',
         'lib/maps/overlays/photo',
-        'lib/maps/overlays/audio'
+        'lib/maps/overlays/audio',
+        'lib/maps/overlays/marker'
     ],
-    function (Marionette, $, PhotoOverlay, AudioOverlay) {
+    function (Marionette, $, PhotoOverlay, AudioOverlay, MarkerOverlay) {
         'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
@@ -20,6 +21,8 @@ define(['marionette',
                     overlayView = PhotoOverlay;
                 } else if (this.app.dataType == "audio") {
                     overlayView = AudioOverlay;
+                } else if (this.app.dataType == "markers") {
+                    overlayView = MarkerOverlay;
                 } else {
                     alert("dataType not handled");
                 }
