@@ -57,8 +57,9 @@
 }
 
 .carousel-buttons .next, .carousel-buttons .prev {
-    color: white;
+    color: #EEE;
     font-size: 30px;
+    text-shadow: 1px 1px 3px #000 !important;
 }
 
 .carousel-buttons, .circle-buttons {
