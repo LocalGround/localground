@@ -24,13 +24,12 @@ define ([
            // template: function () {
            //     return Handlebars.compile(ParentTemplate);
            // },
-            viewMode: "table",
+            viewMode: "thumb",
 
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        console.log(this.parent);
                    //     if (this.parent.viewMode == "thumb") {
                    //         this.className = "column";
                    //     } else if (this.parent.viewMode == "table") {
@@ -43,7 +42,6 @@ define ([
                         if (this.parent.viewMode == "thumb") {
                             return Handlebars.compile(ThumbTemplate);
                         } else if (this.parent.viewMode == "table") {
-                            console.log("should be table template");
                            return Handlebars.compile(TableTemplate);       
                         }
                     },
@@ -127,11 +125,11 @@ define ([
                             this.$el.find(".player-container").append(player.$el);
                         }
                         //set the proper class for child tag
-                        if (this.parent.viewMode == "thumb") {
-                            this.$el.addClass("column");
-                        } else if (this.parent.viewMode == "table") {
-                            this.$el.addClass("table"); 
-                        }
+                     //   if (this.parent.viewMode == "thumb") {
+                     //       this.$el.addClass("column");
+                     //   } else if (this.parent.viewMode == "table") {
+                     //       this.$el.addClass("table"); 
+                     //   }
                     },
                     
                /*     tagName: function () {
@@ -141,7 +139,7 @@ define ([
                             return "tr";
                         }
                     }, */
-                    tagName: "tr",
+                 //   tagName: "tr",
                  //   className: function () {
                  //       console.log(this.parent);
                  //       if (this.parent.viewMode == "thumb") {
@@ -167,12 +165,9 @@ define ([
                 // call Marionette's default functionality (similar to "super")
                 Marionette.CompositeView.prototype.initialize.call(this);
                 this.template = Handlebars.compile(ParentTemplate);
+                //this.render();
+                //this.collection = this.app.dataManager.getCollection(this.currentMedia);
                 this.displayMedia();
-
-                // when the fetch completes, call Backbone's "render" method
-                // to create the gallery template and bind the data:
-                this.listenTo(this.collection, 'reset', this.render);
-                this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
             },
 
             templateHelpers: function () {
@@ -184,12 +179,32 @@ define ([
             },
 
             childViewOptions: function () {
+                //console.log(this.viewMode);
+                //console.log(this.determineChildViewTag);
                 return {
                     app: this.app,
                     currentMedia: this.currentMedia,
                     lastSelectedModel: this.lastSelectedColumn,
-                    parent: this
+                    parent: this,
+                    tagName: this.determineChildViewTagName(this.viewMode),
+                    className: this.determineChildViewClassName(this.viewMode)
                 };
+            },
+
+            determineChildViewTagName: function (vm) {
+                if (vm == "thumb") {
+                    return "div";
+                } else if (vm == "table") {
+                    return "tr";
+                }
+            },
+
+            determineChildViewClassName: function (vm) {
+                if (vm == "thumb") {
+                    return "column";
+                } else if (vm == "table") {
+                    return "table";
+                }
             },
 
             events: {
@@ -229,20 +244,20 @@ define ([
             },
 
             displayMedia: function () {
-                if (this.currentMedia == "photos") {
+                if (this.currentMedia == 'photos') {
                     this.collection = new Photos();
-                }
-                else if (this.currentMedia == "audio") {
+                } else {
                     this.collection = new Audio();
-
-                    // There must be a for loop to handle creation of the
-                    // audio players
                 }
-                // after you re-initialize the collection, you have to
-                // attach all of the Marionette default event handlers
-                // in order for this to work:
-                this._initialEvents();
-                this.collection.fetch({ reset: true });
+                this.collection.fetch({reset: true});
+                this.listenTo(this.collection, 'reset', this.render);
+                this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
+                /*
+                this.collection = this.app.dataManager.getCollection(this.currentMedia);
+                //this.collection.fetch({reset: true});
+                this.render();
+                this.hideLoadingMessage();
+                */
             },
             changeToAudio: function () {
                 this.currentMedia = "audio";

@@ -179,13 +179,9 @@ define([
                 acceptFileTypes: this.defaults.acceptFileTypes.split(', ')
             };
         },
-        initialize: function (opts) {
-            _.extend(this, opts);
-            this.collection = new Backbone.Collection();
+        onShow: function () {
             var that = this;
-            this.options = this.getOptions();
-            $('#warning-message-text').empty();
-            this.render();
+            console.log('onShow');
             this.$el.find('#fileupload').fileupload({
                 dataType: 'json',
                 autoUpload: true,
@@ -205,8 +201,81 @@ define([
             });
 
             //section for uploading by dragging files from your desktop:
+            console.log(this.$el.find("#dropzone"));
             this.$el.find("#dropzone").bind({
-                dragover: that.dragover.bind(this),
+                dragover: function (e) {
+                    //browser debug
+                    console.log("drag detected");
+                    e.stopPropagation();
+                    e.preventDefault();
+                    var dropZone = that.$el.find('#dropzone'),
+                        timeout = window.dropZoneTimeout;
+                    if (!timeout) {
+                        dropZone.addClass('in hover');
+                    } else {
+                        clearTimeout(timeout);
+                    }
+                    window.dropZoneTimeout = setTimeout(function (e) {
+                        window.dropZoneTimeout = null;
+                        dropZone.removeClass('in hover');
+                        return false;
+                    }, 500);
+                },
+                drop: function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        },
+        initialize: function (opts) {
+            console.log(opts);
+            _.extend(this, opts);
+            this.collection = new Backbone.Collection();
+            var that = this;
+            this.options = this.getOptions();
+            $('#warning-message-text').empty();
+            this.render();
+            console.log(this.$el.find("#fileupload"));
+            this.$el.find('#fileupload').fileupload({
+                dataType: 'json',
+                autoUpload: true,
+                dropZone: this.$el.find("#dropzone"),
+                add: that.onAdd.bind(that),
+                done: that.done.bind(that),
+                stop: that.stop.bind(that),
+                progress: function (e, data) {
+                    data.files[0].context.find('.progress-bar').css(
+                        'width',
+                        parseInt(data.loaded / data.total * 100, 10) + '%'
+                    );
+                },
+                submit: function (e, data) {
+                    data.formData = that.getFormData();
+                }
+            });
+
+            //section for uploading by dragging files from your desktop:
+            console.log(this.$el.find("#dropzone"));
+            this.$el.find("#dropzone").bind({
+                dragover: function (e) {
+                    //browser debug
+                    console.log("drag detected");
+                    e.stopPropagation();
+                    e.preventDefault();
+                    var dropZone = this.$el.find('#dropzone'),
+                        timeout = window.dropZoneTimeout;
+                    if (!timeout) {
+                        dropZone.addClass('in hover');
+                    } else {
+                        clearTimeout(timeout);
+                    }
+                    window.dropZoneTimeout = setTimeout(function (e) {
+                        window.dropZoneTimeout = null;
+                        dropZone.removeClass('in hover');
+                        return false;
+                    }, 500);
+                },
                 drop: function (e) {
                     e.stopPropagation();
                     e.preventDefault();
@@ -215,6 +284,8 @@ define([
             });
         },
         dragover: function (e) {
+            //browser debug
+            console.log("drag detected");
             e.stopPropagation();
             e.preventDefault();
             var dropZone = this.$el.find('#dropzone'),
