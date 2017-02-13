@@ -5,13 +5,14 @@ define(["marionette",
         "text!../../templates/right/marker-style.html",
         "text!../../templates/right/marker-style-child.html",
         "collections/records",
-        "collections/fields"
+        "collections/fields",
+        "palette"
     ],
-    function (Marionette, Handlebars, Layers, Layer, MarkerStyleTemplate, MarkerStyleChildTemplate, Records, Fields) {
+    function (Marionette, Handlebars, Layers, Layer, MarkerStyleTemplate, MarkerStyleChildTemplate, Records, Fields, Palette) {
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
-
+            buckets: 4,
             template: Handlebars.compile(MarkerStyleTemplate),
             
             getChildView: function () {
@@ -43,6 +44,7 @@ define(["marionette",
                 this.dataType = this.model.get("layer_type");
                 this.displaySymbols();
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
+                this.buildPalettes();
             },
             
             reRender: function () {
@@ -51,12 +53,17 @@ define(["marionette",
             
             templateHelpers: function () {
                 return {
-                    dataType: this.dataType
+                    dataType: this.dataType,
+                    allColors: this.allColors,
+                    buckets: this.buckets
                 };
             },
             
             events: {
-                'change #data-type-select': 'selectDataType' 
+                'change #data-type-select': 'selectDataType',
+                'change #bucket': 'buildPalettes',
+                'click .selected-palette-wrapper': 'showPalettes',
+                'click .palette-list': 'selectPalette'
             }, 
             
             selectDataType: function () {
@@ -87,7 +94,34 @@ define(["marionette",
             },
             buildDropdown: function () {
                 console.log(this.fields);
+            },
+            
+            buildPalettes: function () {
+                this.buckets = this.$el.find("#bucket").val();
+                var seq1 = palette('tol-dv', this.buckets);
+                var seq2 = palette('cb-Blues', this.buckets);
+                var seq3 = palette('cb-Oranges', this.buckets);
+                var seq4 = palette('cb-Greys', this.buckets);
+                var seq5 = palette('cb-YlGn', this.buckets);
+                var seq6 = palette('cb-RdYlBu', this.buckets);
+                this.allColors = [];
+                this.allColors.push(seq1, seq2, seq3, seq4, seq5, seq6);
+                this.render();
+                console.log(this.allColors);
+            },
+            
+            showPalettes: function () {
+                this.$el.find(".palette-wrapper").toggle();
+            },
+            
+            selectPalette: function () {
+                this.$el.find(".palette-wrapper").toggle();
+                // Need to write some code to hide this when user clicks outside pop-up div
+                
+                // Need more code below to save and display selected palette
             }
+            
+            
 
         });
         return MarkerStyleView;

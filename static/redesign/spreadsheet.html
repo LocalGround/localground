@@ -12,6 +12,7 @@
     <link rel=stylesheet type="text/css" href="css/modal_new_project.css" />
     <link rel=stylesheet type="text/css" href="css/upload-media.css" />
     <link rel=stylesheet type="text/css" href="css/audio-player.css" />
+    <link rel=stylesheet type="text/css" href="css/carousel.css" />
 
 
     <style>
@@ -34,16 +35,27 @@
 
 
     <!--Modal Section-->
-    <div id="myModal" class="modal" onclick="document.getElementById('myModal').style.display='none'">
+    <div id="myModal" class="modal">
 
       <!--Close Button-->
-      <span class="close" onclick="document.getElementById('myModal').style.display='none'">
+      <span class="close big" onclick="document.getElementById('myModal').style.display='none'">
         &times;
       </span>
       <!--Modal Content (Image)-->
-      <img class="modal-content" id="img01" align="middle">
+      <img class="modal-content" id="img01">
       <!--Modal Caption (Image Text)-->
       <div id="caption"></div>
+
+    </div>
+
+
+    <!--Modal Section-->
+    <div id="carouselModal" class="modal spreadsheet">
+
+      <!--Close Button-->
+      <span class="close big" onclick="document.getElementById('carouselModal').style.display='none'">
+        &times;
+      </span>
 
     </div>
 

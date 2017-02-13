@@ -44,6 +44,9 @@ define(["underscore", "marionette", "models/project", "collections/photos",
             getData: function (key) {
                 return this.dataDictionary[key];
             },
+            getCollection: function (key) {
+                return this.dataDictionary[key].collection;
+            },
             initCollection: function (key, data) {
                 switch (key) {
                 case "photos":

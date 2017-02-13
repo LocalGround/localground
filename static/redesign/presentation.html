@@ -1,121 +1,30 @@
-
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-8">
-    <title>Local Ground</title>
+    <title>Local Ground Map Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/map-presentation.css" />
+    <link rel=stylesheet type="text/css" href="css/style.css" />
+    <link rel=stylesheet type="text/css" href="css/reset.css" />
+    <link rel=stylesheet type="text/css" href="css/map-presentation.css" />
+    <link rel=stylesheet type="text/css" href="css/reset.css" />
+    <link rel=stylesheet type="text/css" href="css/audio-player.css" />
+    <link rel=stylesheet type="text/css" href="css/carousel.css" />
+
 </head>
-
-
-
 <body>
-	<div class = "map-flex-container" style = "display: flex;position: absolute;height: 100%;width: 100%;top: 0px;">
-
-        <div id="lg-logo">
-            <a class="lg" href="http://localground.org" target="_blank" style = "font-family: 'Amatic SC';"><img class="lg-logo" src="assets/lg-logo-circle-100.png" style = "height: 20px;margin: 0 6px -4px;">Local Ground</a>
+    <div class="main-panel none">
+        <div id="marker-detail-panel" class="side-panel">
+            <!-- Marker list goes here -->
+        </div><div id="map-panel">
+            <div id="map"></div>
         </div>
-        <div id="legend"></div> 
-	<div style="flex: 1;order: 1;">
-        <div id="map-panel">
-            <div class="map-background" id="map"></div>
-        </div>
-    
-        <!-- Left hand panel that shows information about selected pin-->
-    
-        <div id="pane-feature" style="display:none: 0;padding: 0;">
-    
-            <div id="presentation-title">
-                <h1 style = "padding: 16px 20px 0px;font-size: 12px;text-transform: uppercase;color: white;font-weight: 400;letter-spacing: 0.6px;font-family:Montserrat;">Berkeley Public Art</h1>
-                <h2 style = "font-style: italic;font-weight: 300;padding: 1px 20px 22px;color: rgba(255,255,255,0.8);font-size: 12px;">by Ellen, Sarah, and Gio</h2>
-            </div>
-    
-            <div id = "preview-selected-pin" class = "pin-content" style = "display:block;">
-                <div id = "empty-state-feature" class = "pin-features" style = "height: 100vh;background-color:rgba(0,0,0,0);border:none;box-shadow:none;">	
-                </div>
-            
-                <!-- Begin Card -->
-                <div id="everyday-feature" class="pin-features-presentation">
-                    <h1>Unique and Everyday Kids</h1>
-                    <h2>Portraits of kids in the community</h2>
-                    <div class = "img-card">
-                        <img src = 'http://ellenvanwyk.github.io/lg-redesign/assets/berkeley-art/ordinary.jpg' onclick = "changePhoto('assets/berkeley-art/ordinary-detial.jpg' , this);"></img>
-                        <p><strong>Unique and Everyday detail: </strong> </p>
-                        <div class = "img-nav-arrows hover-to-show">
-                            <img style="position: absolute; left: 6px;top:40%;height:50px;width:auto;" src = "http://ellenvanwyk.github.io/lg-redesign/assets/left-arrow.png">
-                            <img style="position: absolute; right: 6px;top:40%;height:50px;width:auto;" src = "http://ellenvanwyk.github.io/lg-redesign/assets/right-arrow.png">
-                        </div>
-                    </div>
-                    <div style = "text-align: center;color: rgb(137, 137, 137);font-size: 0.8em;margin: -10px 0 20px;">
-                        <i class="fa fa-circle" aria-hidden="true"></i>
-                        <i class="fa fa-circle-o" aria-hidden="true"></i>
-                        <i class="fa fa-circle-o" aria-hidden="true"></i>
-                    </div>
-    
-                    <div class = "img-card">
-                        <div class = "play-ctrls">
-                            <i class="fa fa-backward fwd-back" aria-hidden="true"></i>
-                            <i class="fa fa-play" aria-hidden="true" style = "font-size:2em;"></i>
-                            <i class="fa fa-forward fwd-back" aria-hidden="true"></i>
-                        </div>
-                        <div class = "audio-progress">
-                            <span class = "audio-labels" style = "left: 10px;">1:20</span>
-                            <div style = "position:absolute;left:49px;">
-                                <div class = "audio-progress-bar"></div>
-                                <div class = "audio-progress-circle"></div>
-                            </div>
-                            <span class = "audio-labels" style = "right: 10px;">3:20</span>
-                        </div>
-                        <p style="padding-bottom:16px;margin-top: 30px;"><strong>History from the community:  </strong>A community member noticed us taking pictures and told the story of the mural and South Berkeley. The mural had been designed to reflect the community, and with recent gentrification it no longer does.</p>
-                    </div>
-    
-                    <table class = "preview-properties">
-                        <tr>
-                            <td>Artist</td>
-                            <td>Isis Rodriguez</td>
-                        </tr>
-                        <tr>
-                            <td>Year</td>
-                            <td>2007</td>
-                        </tr>
-                        <tr>
-                            <td>Medium</td>
-                            <td>Mural</td>
-                        </tr>
-                    </table> 	
-                </div>
-                <!-- End Card -->
-                <!-- Begin Card -->
-                <div id="ashby-feature" class="pin-features-presentation">
-                    <h1>South Berkeley Shines</h1>
-                    <h2>Block letters filled with local imagery spell "South Berkeley Shines"</h2>
-                    <div class = "img-card">
-                        <img src = 'http://ellenvanwyk.github.io/lg-redesign/assets/berkeley-art/ordinary.jpg' onclick = "changePhoto('assets/berkeley-art/ashby.jpg', this);"></img>
-                        <p><strong>Mural detail: </strong> </p>
-                    </div>
-                    <table class = "preview-properties">
-                        <tr>
-                            <td>Artist</td>
-                            <td>Monika Lea Jones</td>
-                        </tr>
-                        <tr>
-                            <td>Year</td>
-                            <td>2003</td>
-                        </tr>
-                        <tr>
-                            <td>Medium</td>
-                            <td>Mural</td>
-                        </tr>
-                    </table> 	
-                </div>
-                <!-- End Card -->
-            </div>
-        </div>
-
-
+    </div>
+    <div id="presentation-title">
+ 	    <h1>Berkeley Public Art</h1>
+	    <h2>by Ellen, Sarah, and Gio</h2>
 	</div>
-</div>
+    <div id="legend"></div>
 
     <script src="external/require.js"></script>
     <script
@@ -126,6 +35,6 @@
             require(['apps/presentation/kickoff.js']);  //or adminApp for the admin area, etc.
         });
     </script>
-</body>
 
+</body>
 </html>

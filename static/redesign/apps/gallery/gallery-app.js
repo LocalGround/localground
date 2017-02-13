@@ -73,6 +73,7 @@ define([
         showMediaList: function (dataType) {
             var data = this.dataManager.getData(dataType);
             this.dataType = dataType;
+            console.log(dataType);
             this.currentCollection = data.collection;
             this.mainView = new DataList({
                 app: this,

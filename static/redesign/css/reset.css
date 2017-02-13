@@ -5,7 +5,7 @@
 
 /************************************ Resetish ************************************/
 
-html, div, body, h1, h2, h3, h4, h5, h6, p, button, table, input, span, a, select, form, ul{
+html, div, body, h1, h2, h3, h4, h5, h6, p, button, table, input, span, a, select, form, ul, textarea{
 	padding:0;
 	margin:0;
 	font-family:"Open Sans",Arial,sans-serif;

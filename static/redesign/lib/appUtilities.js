@@ -120,13 +120,16 @@ define(["jquery"],
                 if (!id) {
                     id = this.restoreState('project_id');
                 } else {
-                    this.saveState('project_id', id, true);
+                    this.setProjectID(id);
                 }
                 if (!id) {
                     console.log("You're not logged in. Redirecting...");
                     window.location = window.location.host + "/accounts/login/?next=" + window.location;
                 }
                 return id;
+            },
+            setProjectID: function (id) {
+                this.saveState('project_id', id, true);
             },
             selectProject: function () {
                 //TODO: Deprecate

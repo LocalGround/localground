@@ -1,15 +1,47 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
     <h4>Media Details</h4>
-    <img src="{{ path_medium }}" />
     <div class = "section">
-        <h3>{{ name }}</h3> <p>{{ caption }}</p>
+        <h3>{{ name }}</h3> 
+    </div>
+
+    <div class="img-card">
+        <img src="{{ path_medium }}" />
+        <p>{{ caption }}</p> 
+    </div>
+        
+    <div class = "section-card">
+        <p>
+        Attribution: {{ attribution }} <br>
+        {{#each tags}}
+            <a class="tag"> {{this}} </a>
+        {{/each}}
         <!-- Three curly braces if you don't want to escape HTML -->
     </div>
     <div class = "save-options">
         <button class="edit-mode button-tertiary ">Edit</button>
     </div>
 {{/ifequal}}
+
+{{#ifequal mode "presentation"}}
+    <div class="section">
+        <h3>{{ name }}</h3> 
+        <p style="font-style: italic">{{ caption }}</p> 
+    </div>
+    <!-- <div class = "section-card">    -->
+        <img src="{{ path_medium }}" />
+    <!-- </div> -->
+    <div class = "section-card">        
+        <p>Tags:
+        {{#each tags}}
+            <!-- <p>{{this}}<br></p> -->
+            <a class="tag"> {{this}} </a>
+        {{/each}}
+        </p>
+        <!-- Three curly braces if you don't want to escape HTML -->
+    </div>
+{{/ifequal}}
+
 
 
 <!-- EDIT MODE -->

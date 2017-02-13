@@ -29,6 +29,9 @@ define(["jquery",
                 "change": "render"
             },
 
+            slugError: null,
+            projectSaveSuccess: null,
+
             initialize: function (opts) {
                 _.extend(this, opts);
                 if (this.model == undefined) {
@@ -104,12 +107,13 @@ define(["jquery",
             templateHelpers: function () {
                 // for new projects, there shall be no projectUsers defined
                 // otherwise, extract data from exising projectUsers
-                if (this.model.projectUsers == undefined) {
-                    return false;
+                var helpers = {};
+                if (this.model && this.model.projectUsers) {
+                    helpers.projectUsers = this.model.projectUsers.toJSON();
                 }
-                return {
-                    projectUsers: this.model.projectUsers.toJSON()
-                };
+                helpers.slugError = this.slugError;
+                helpers.projectSaveSuccess = this.projectSaveSuccess;
+                return helpers;
             },
 
             saveProjectSettings: function () {
@@ -118,18 +122,41 @@ define(["jquery",
                 var projectName = this.$el.find('#projectName').val(),
                     shareType = this.$el.find('#access_authority').val(),
                     caption = this.$el.find('#caption').val(),
+                    slug = this.$el.find('#slug').val(),
                     owner = this.$el.find('#owner').val(),
-                    tags = this.$el.find('#tags').val();
+                    tags = this.$el.find('#tags').val(),
+                    that = this;
                 if (this.blankInputs()) {
                     return;
                 }
+                this.projectSaveSuccess = null;
                 this.model.set('name', projectName);
                 this.model.set('access_authority', shareType);
                 this.model.set('tags', tags);
                 this.model.set('caption', caption);
-                this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));//base10
+                this.model.set('slug', this.setSlugValue(slug));
                 this.model.set('owner', owner);
-                this.model.save();
+                this.model.save(null, {
+                    success:function(model, response){
+                        that.slugError = null;
+                        console.log(response);
+                        that.projectSaveSuccess = "Project Saved!";
+                        that.render();
+                    },
+                    error: function (model, response){
+                        var messages = JSON.parse(response.responseText);
+                        console.log(messages);
+                        if (messages.slug && messages.slug.length > 0) {
+                            that.slugError = messages.slug[0];
+                        }
+                        that.render();
+                    }
+                });
+            },
+
+            setSlugValue: function(slug_txt){
+                var convertedSlug = slug_txt.toLowerCase().split(" ").join("_");
+                return convertedSlug != "" ? convertedSlug : 'slug_' + parseInt(Math.random() * 100000, 10); // base10
             },
 
             createNewProjectUsers: function () {
@@ -243,11 +270,6 @@ define(["jquery",
                 if (!($.trim(projectName_))) {
                     blankFields = true;
                     this.$el.find('#projectName').prev().css("color", '#FF0000');
-                }
-
-                if (!($.trim(slug_))) {
-                    blankFields = true;
-                    this.$el.find('#slug').prev().css("color", '#FF0000');
                 }
 
                 if (!(shareType_)) {

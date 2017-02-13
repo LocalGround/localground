@@ -201,9 +201,8 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
              * @method getMapTypeId
              * @returns {Integer}
              */
-            this.getMapTypeId = function (id) {
+            this.getMapTypeId = function () {
                 var tileInfo = getTileInfo("name", map.getMapTypeId().toLowerCase());
-                console.log("from tile", tileInfo.id);
                 return tileInfo.id;
       
             };

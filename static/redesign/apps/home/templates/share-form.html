@@ -1,3 +1,5 @@
+<!--Global template helper variables go here before HTML structure-->
+
 <div class="inline-form">
     <label for="projectName">Title: </label>
     <input type="text" placeholder="Type name of project" id="projectName" value="{{name}}">
@@ -9,22 +11,25 @@
 {{#if id}}
     <!-- owner isn't an editable field -->
 {{ else }}
-    <div class="inline-form">
+    <div class="inline-form owner">
         <label for="owner">Owner: </label>
         <input type="text" placeholder="TODO: Auto-detect this" id="owner" value="{{ owner }}">
     </div>
 {{/if}}
-<div class="inline-form">
+<div class="inline-form projectName">
     <label for="projectName">Tags: </label>
     <input type="text" placeholder="put some tags for easy search" id="tags" value="{{ tags }}">
 </div>
 
-<div class = "inline-form">
+<div class = "inline-form slug {{#if slugError}}error{{/if}}">
     <label>Friendly URL:</label>
     <input id="slug" type="text" value="{{ slug }}" placeholder="put name or leave blank for autofill">
 </div>
+{{#if slugError}}
+    <p class="errorMessage">{{slugError}}</p>
+{{/if}}
 
-<div class = "inline-form">
+<div class = "inline-form share_type">
     <label for="share_type">Sharing Permissions:</label>
     <div id="share_type" class = "container-3-4">
         <select id="access_authority">
@@ -54,3 +59,7 @@
         </div>
     </div>
 </div>
+
+{{#if projectSaveSuccess}}
+    <p class="projectSaveSuccess successMessage">{{projectSaveSuccess}}</p>
+{{/if}}

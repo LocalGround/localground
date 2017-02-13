@@ -1,13 +1,46 @@
-<!-- VIEW MODE -->
-{{#ifequal mode "view"}}
-    <h4>Preview</h4>
+<!-- PRESENTATION MODE -->
+{{#ifequal mode "presentation"}}
     <h3>{{ name }}</h3>
     <p>{{ caption }}</p>
-    <div class="carousel"></div>
-    <div class = "section">
+    <div class="carousel carousel-photo"></div>
+    <br>
+    <div class="carousel carousel-audio"></div>
+    
+    <div class="section-card">
         <h3>{{ display_name }}</h3>
         {{#each fields}}
             {{ this.col_alias }}: {{ this.val }}<br>
+        {{/each}}
+        <p>Tags:</p>
+        {{#each tags}}
+            <!-- <p>{{this}}<br></p> -->
+            <a class="tag"> {{this}} </a>
+        {{/each}}
+    </div>
+{{/ifequal}}
+
+<!-- VIEW MODE -->
+{{#ifequal mode "view"}}
+    <h4>Preview</h4>
+
+    <div class = "section">
+        <h3>{{ name }}</h3> 
+        <p style="font-style: italic">{{ caption }}</p> 
+    </div>
+    
+    <div class="carousel carousel-photo"></div>
+    <br>
+    <div class="carousel carousel-audio"></div>
+    
+    <div class="section-card">
+        <h3>{{ display_name }}</h3>
+        {{#each fields}}
+            {{ this.col_alias }}: {{ this.val }}<br>
+        {{/each}}
+        <p>Tags:</p>
+        {{#each tags}}
+            <!-- <p>{{this}}<br></p> -->
+            <a class="tag"> {{this}} </a>
         {{/each}}
     </div>
     <div class = "save-options">
