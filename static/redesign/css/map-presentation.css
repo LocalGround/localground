@@ -260,10 +260,12 @@ svg, .fa-question-circle {
     z-index: 400;
     top: 10px;
     background-color: white;
-    padding: 0px 10px 0 14px;
     border: 1px solid #e4e5eb;
     box-shadow: 3px 3px 1px 1px rgba(53, 76, 122, 0.06);
     border-radius: 4px;
+    width: 180px;
+    padding: 20px;
+    min-height: 200px;
 }
 
 #presentation-title {
@@ -301,10 +303,4 @@ svg, .fa-question-circle {
 
 .symbol-container svg {
     vertical-align: bottom;
-}
-
-#legend {
-    width: 250px;
-    padding: 20px;
-    min-height: 200px;
 }
