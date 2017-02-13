@@ -175,7 +175,8 @@ define(["marionette",
 
                 var player = new AudioPlayer({
                     model: audio_model,
-                    audioMode: "basic"
+                    audioMode: "basic",
+                    app: this.app
                 });
                 $(td).append(player.$el.addClass("spreadsheet"));
                 //*/

@@ -1,7 +1,8 @@
 define(["marionette",
         "handlebars",
         "apps/gallery/views/media_browser",
-        "apps/gallery/views/uploader",
+     //   "apps/gallery/views/media-browser-uploader",
+        "apps/gallery/views/create-media",
         "text!../templates/media-browser-layout.html",
         "models/layer"
     ],
@@ -17,9 +18,9 @@ define(["marionette",
             },
             
             events: {
-                     //   "click .hide-button" : "moveLeftPanel",
-                     //   "click .edit" : "showRightPanel",
-                    },
+                'click #upload-tab' : 'showUploader',
+                'click #database-tab' : 'showDatabase'  
+                },
             
             regions: {
                 uploaderRegion: "#uploader",
@@ -32,14 +33,27 @@ define(["marionette",
                /* var upld = new SelectMapView({ app: this.app });
                 this.menu.show(upld);
                 */
+                var upld = new UploaderView({ app: this.app });
+                this.uploaderRegion.show(upld);
+                this.uploaderRegion.$el.hide();
 
-                var mb = new MediaBrowserView({ app: this.app });
-                this.mediaBrowserRegion.show(mb);
-                
-                
-                
+                this.mb = new MediaBrowserView({ app: this.app });
+                this.mediaBrowserRegion.show(this.mb);
+
+            },
+
+            showUploader: function() {
+                this.mediaBrowserRegion.$el.hide();
+                this.uploaderRegion.$el.show();
+            },
+
+            showDatabase: function() {
+                this.uploaderRegion.$el.hide();
+                this.mediaBrowserRegion.$el.show();
+            },
+            addModels: function () {
+                this.mb.addModels();
             }
-       
         });
         return AddMediaModal;
     });

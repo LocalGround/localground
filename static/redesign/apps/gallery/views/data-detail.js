@@ -59,7 +59,7 @@ define([
                 view: addMediaLayoutView,
                 saveButtonText: "Add",
                 showSaveButton: true,
-             //   saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView)
+                saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView)
             });
         },
         initialize: function (opts) {
@@ -189,7 +189,8 @@ define([
                     var $elem = that.$el.find(".audio-basic[data-id='" + item.id + "']")[0];
                     player = new AudioPlayer({
                         model: new Audio(item),
-                        audioMode: "basic"
+                        audioMode: "basic",
+                        app: that.app
                     });
                     $elem.append(player.$el[0]);
                 });
@@ -199,7 +200,7 @@ define([
         },
 
         onRender: function () {
-            if (this.app.mode == "view") {
+            if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();
             } else {
                 this.editRender();
@@ -208,7 +209,8 @@ define([
             if (this.dataType == "audio") {
                 var player = new AudioPlayer({
                     model: this.model,
-                    audioMode: "detail"
+                    audioMode: "detail",
+                    app: this.app
                 });
                 this.$el.find(".player-container").append(player.$el);
             }
