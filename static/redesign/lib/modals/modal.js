@@ -8,7 +8,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
          * The Printloader class handles loading data for the print generation form
          * @class PrintLoader
          */
-        var Modal = Marionette.ItemView.extend({
+        var Modal = Marionette.LayoutView.extend({
             view: null,
             title: null,
             width: 800,
@@ -19,6 +19,9 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             deleteButtonText: "Delete",
             showSaveButton: true,
             showDeleteButton: true,
+            regions: {
+                "modalBodyRegion": '.modal-body'
+            },
             events: {
                 'click .close': 'hide',
                 'click .close-modal': 'hide',
@@ -53,8 +56,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             },
             appendView: function () {
                 if (this.view) {
-                    this.$el.find('.modal-body').empty();
-                    this.$el.find('.modal-body').append(this.view.$el);
+                    this.modalBodyRegion.show(this.view);
                 }
             },
             update: function (opts) {

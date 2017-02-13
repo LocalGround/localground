@@ -200,7 +200,7 @@ define([
         },
 
         onRender: function () {
-            if (this.app.mode == "view") {
+            if (this.app.mode == "view" || this.app.mode == "presentation") {
                 this.viewRender();
             } else {
                 this.editRender();

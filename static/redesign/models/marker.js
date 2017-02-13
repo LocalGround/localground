@@ -15,6 +15,9 @@ define(["models/base",
 		defaults: _.extend({}, Base.prototype.defaults, {
 			color: "CCCCCC" // rough draft color
 		}),
+        getNamePlural: function () {
+            return "markers";
+        },
 		excludeList: [
             "overlay_type",
             "url",

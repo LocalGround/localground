@@ -1,5 +1,5 @@
-define(['underscore', 'lib/sqlParser', 'lib/maps/overlays/point'],
-    function (_, SqlParser, Point) {
+define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/icon-lookup'],
+    function (Backbone, _, SqlParser, Icon) {
         'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
@@ -7,50 +7,39 @@ define(['underscore', 'lib/sqlParser', 'lib/maps/overlays/point'],
          * the constituent views.
          * @class OverlayGroup
          */
-        var Symbol = function (opts) {
-            this.isShowingOnMap = false;
-            //note: these can be heterogeneous models from many different collections
-            this.modelMap = null;
-            this.color = null;
-            this.shape = null;
-            this.width = null;
-            this.rule = null;
-            this.sqlParser = null;
-            this.init = function (opts) {
-                var markerShape;
+        var Symbol = Backbone.Model.extend({
+            isShowingOnMap: false,
+            sqlParser: null,
+            initialize: function (data, opts) {
+                var icon;
                 _.extend(this, opts);
-                this.width = this.width || 30;
+                Backbone.Model.prototype.initialize.apply(this, arguments);
+                this.set("shape", this.get("shape") || "photo");
+                this.set("fillColor", this.get("color"));
+                icon = new Icon(this.get("shape"));
+                _.extend(icon, this.toJSON());
+                this.set("icon", icon);
                 this.modelMap = {};
-                if (this.shape == "circle") {
-                    markerShape = Point.Shapes.CIRCLE;
-                } else if (this.shape == "square") {
-                    markerShape = Point.Shapes.SQUARE;
-                } else {
-                    markerShape = Point.Shapes.MAP_PIN_HOLLOW;
-                }
-                _.extend(this, markerShape);
-                _.extend(this, { scale: markerShape.scale * this.width / markerShape.markerSize });
-                if (_.isUndefined(this.rule)) {
+                if (_.isUndefined(this.get("rule"))) {
                     throw new Error("rule must be defined");
                 }
-                if (_.isUndefined(this.title)) {
-                    throw new Error("label must be defined");
+                if (_.isUndefined(this.get("title"))) {
+                    throw new Error("title must be defined");
                 }
-                this.sqlParser = new SqlParser(this.rule);
-            };
-            this.checkModel = function (model) {
+                this.sqlParser = new SqlParser(this.get("rule"));
+            },
+            checkModel: function (model) {
                 return this.sqlParser.checkModel(model);
-            };
-            this.addModel = function (model) {
+            },
+            addModel: function (model) {
                 var hash = model.get("overlay_type") + "_" + model.get("id");
                 if (_.isUndefined(this.modelMap[hash])) {
                     this.modelMap[hash] = model;
                 }
-            };
-            this.getModels = function () {
+            },
+            getModels: function () {
                 return _.values(this.modelMap);
-            };
-            this.init(opts);
-        };
+            }
+        });
         return Symbol;
     });

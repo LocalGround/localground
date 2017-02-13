@@ -5,7 +5,7 @@ define(["marionette",
     "lib/maps/overlays/polygon",
     "lib/maps/icon-lookup",
     "lib/maps/overlays/ground-overlay"
-    ], function (Marionette, $, Point, Polyline, Polygon, IconLookup, GroundOverlay) {
+    ], function (Marionette, $, Point, Polyline, Polygon, Icon, GroundOverlay) {
     "use strict";
     /**
      * This class controls the rendering and underlying
@@ -20,7 +20,9 @@ define(["marionette",
         _overlay: null,
         template: false,
         getIconPaths: function (key) {
-            return IconLookup.getIconPaths(key);
+            var icon = new Icon(key);
+            return icon;
+            //return IconLookup.getIconPaths(key);
         },
 
         modelEvents: {
@@ -76,7 +78,7 @@ define(["marionette",
             var that = this;
             //attach click event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-                that.app.router.navigate("//" + that.model.get("dataType") + "/" + that.model.get("id"));
+                that.app.router.navigate("//" + that.model.getNamePlural() + "/" + that.model.get("id"));
             });
             //attach mouseout event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {

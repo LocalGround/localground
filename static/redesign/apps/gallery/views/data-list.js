@@ -82,12 +82,36 @@ define(["jquery",
                 };
             },
 
+
+            getEmptyView: function () {
+                console.log("empty", this.title);
+                return Marionette.ItemView.extend({
+                    initialize: function (opts) {
+                        _.extend(this, opts);
+                    },
+                    tagName: "p",
+                    className: "empty",
+                    template: Handlebars.compile('No "{{ title }}" found'),
+                    templateHelpers: function () {
+                        return {
+                            title: this.app.dataType
+                        };
+                    }
+                });
+            },
+
             onRender: function () {
                 this.$el.find("#loading-animation").empty();
+                /*
                 if (this.collection.length == 0){
                     var noData = "You have not added any " + this.app.dataType + " to the gallery. Please add media.";
                     this.$el.find("#gallery-main").html(noData);
                 }
+                /*
+                else {
+                    this.$el.find("#gallery-main").html("");
+                }
+                //*/
             },
 
             template: function () {
