@@ -6,7 +6,7 @@ define(["jquery",
         "lib/maps/marker-overlays",
         "text!../templates/list-detail.html",
         "text!../templates/list.html"],
-    function ($, Marionette, _, Handlebars, IconLookup, OverlayListView, ItemTemplate, ListTemplate) {
+    function ($, Marionette, _, Handlebars, Icon, OverlayListView, ItemTemplate, ListTemplate) {
         'use strict';
         var MarkerListing = Marionette.CompositeView.extend({
 
@@ -66,7 +66,7 @@ define(["jquery",
                         if (this.model.get("overlay_type").indexOf("form_") != -1) {
                             key = "marker";
                         }
-                        icon = IconLookup.getIconPaths(key);
+                        icon = new Icon(key);
                         return {
                             dataType: this.dataType,
                             icon: icon,
