@@ -1,3 +1,4 @@
+
 /********************************/
 /*       PHOTO PANEL STYLES     */
 /********************************/
@@ -37,7 +38,7 @@
 
 .active-slide li {
     position: absolute;
-    top: 350px;		
+    top: 350px;
  }
 .active-slide li.current {
     top: 0px;

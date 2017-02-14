@@ -55,3 +55,8 @@ class MapInstance(generics.RetrieveUpdateDestroyAPIView):
             response.data = self.error_messages
             response.status = status.HTTP_400_BAD_REQUEST
         return response
+
+class MapInstanceSlug(MapInstance):
+    serializer_class = serializers.MapDetailSerializerSlug
+    lookup_field = 'slug'
+    

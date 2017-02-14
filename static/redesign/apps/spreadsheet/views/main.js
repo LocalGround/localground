@@ -347,8 +347,6 @@ define(["marionette",
                         "Photos",
                         "Audio",
                         "Tags", "Owner", "Delete"];
-                        //
-                        //
                         return cols;
                     default:
                         cols = ["ID", "Lat", "Lng"];

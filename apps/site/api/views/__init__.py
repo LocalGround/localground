@@ -9,7 +9,7 @@ from localground.apps.site.api.views.project_views import ProjectList, ProjectIn
 from localground.apps.site.api.views.sharing_views import SharingList, SharingInstance
 from localground.apps.site.api.views.snapshot_views import SnapshotList, SnapshotInstance
 from localground.apps.site.api.views.layer_views import LayerList, LayerInstance
-from localground.apps.site.api.views.map_views import MapList, MapInstance
+from localground.apps.site.api.views.map_views import MapList, MapInstance, MapInstanceSlug
 
 
 from localground.apps.site.api.views.marker_views import MarkerList, MarkerInstance
