@@ -127,9 +127,9 @@ echo "Y" | sudo apt-get install redis-server
 ############################
 # there may be some problems with the map script / map server install
 if $SERVER; then
-#  sudo pip install -r ./requirements.txt
-#  sudo mkdir $APP_INSTALL_DIR
-#  adduser deployer  
+  sudo pip install -r ./requirements.txt
+  sudo mkdir $APP_INSTALL_DIR
+  adduser deployer  
   sudo chown -R deployer:deployer $APP_INSTALL_DIR
   cd $APP_INSTALL_DIR/..
   sudo -u deployer git clone https://github.com/LocalGround/localground.git
