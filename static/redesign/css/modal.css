@@ -1,5 +1,5 @@
 /* The Modal (background) */
-.modal {
+.modal, .carousel-modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 102; /* Sit on top */
