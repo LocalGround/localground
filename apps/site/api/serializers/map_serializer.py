@@ -55,3 +55,8 @@ class MapDetailSerializer(MapSerializer):
     
     def get_layers_url(self, obj):
         return '%s/api/0/maps/%s/layers/' % (settings.SERVER_URL, obj.id)
+    
+class MapDetailSerializerSlug(MapDetailSerializer):
+    extra_kwargs = {
+        'url': {'lookup_field': 'slug'}
+    }
