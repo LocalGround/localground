@@ -45,6 +45,7 @@ define([
             this.listenTo(this.vent, 'data-loaded', this.loadRegions);
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
         },
+        fetchErrors: false,
 
         fetchMap: function (slug) {
             this.slug = slug;
@@ -62,9 +63,15 @@ define([
         },
 
         getSlugFromLocalStorage: function () {
+            if (this.fetchErrors) {
+                alert("map slug must be included");
+            }
+            this.fetchErrors = true;
             var newSlug = this.restoreState("presentation").slug;
             if (newSlug !== this.slug) {
                 this.router.navigate("//" + newSlug);
+            } else {
+                alert("map slug must be included");
             }
         },
 
