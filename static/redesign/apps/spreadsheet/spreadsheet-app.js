@@ -65,6 +65,7 @@ define([
         showSpreadsheet: function (dataType) {
             this.dataType = dataType;
             var data = this.dataManager.getData(this.dataType);
+            console.log(data);
             this.spreadsheetView = new SpreadsheetView({
                 app: this,
                 collection: data.collection,
