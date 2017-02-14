@@ -11,7 +11,8 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 'click .play' : 'togglePlay',
                 'click .skip-fwd' : 'skipForward',
                 'click .skip-back' : 'skipBackward',
-                'click .progress .audio-progress-bar' : 'jumpToTime'
+                'click .audio-progress-duration' : 'jumpToTime',
+                'click .audio-progress-bar' : 'jumpToTime'
             },
             audio: null,
             template: Handlebars.compile(PlayerTemplate),
@@ -52,9 +53,14 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
             },
 
             jumpToTime: function (e) {
+                console.log(this.$el.find(e.target));
                 var posX = this.$el.find(e.target).offset().left,
                     w = (e.pageX - posX) / this.$el.width();
                 this.audio.currentTime = w * this.audio.duration;
+            },
+
+            seek: function(){
+
             },
 
             skipForward: function () {
