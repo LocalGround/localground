@@ -67,7 +67,9 @@ define(["jquery", "underscore", "marionette", "handlebars",
             },
 
             navigate: function () {
-                this.app.vent.trigger('carousel-advanced');
+                if (this.mode == "audio") {
+                    this.app.vent.trigger('audio-carousel-advanced');
+                }
                 var $items = this.$el.find('.carousel-content li'),
                     amount = this.collection.length;
                 $items.removeClass('current');
