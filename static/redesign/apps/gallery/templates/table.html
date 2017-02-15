@@ -1,11 +1,12 @@
-{{#ifequal dataType "photos"}}          
-    <td><img src="{{ path_medium }}" class="thumbnail-img">
-    </td>
+{{#ifequal dataType "photos"}}  
+      
+    <td><img src="{{ path_medium }}" class="thumbnail-img"></td>
     <td>{{name}}</td>
     <td></td>
     <td>tag1, tag2</td>
     <td>{{dataType}}</td>
     <td>{{owner}}</td>
+
 {{/ifequal}}
 
 {{#ifequal dataType "audio"}}

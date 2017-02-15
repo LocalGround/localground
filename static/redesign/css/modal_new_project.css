@@ -228,6 +228,18 @@
 
 table {
     font-size: 13px;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+td {
+    border: none;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none;
 }
 
 .thumbnail-img {
@@ -238,4 +250,13 @@ table {
 
 #media-photos, #media-audio {
     float: right;
+}
+
+tr {
+    cursor: pointer;
+}
+
+.table:hover, td:hover {
+    background-color: rgb(123, 155, 225);;
+    color: white;
 }
