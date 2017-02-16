@@ -10,6 +10,12 @@ define(["marionette",
             template: Handlebars.compile(''),
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log(this.model);
+            },
+            childViewOptions: function () {
+                return {
+                    app: this.app
+                };
             },
             childView: LayerEntryView
         });

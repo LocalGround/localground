@@ -6,14 +6,14 @@ define([
     "lib/data/dataManager",
     "models/map",
     'collections/layers',
-    "apps/presentation/views/marker-overlays",
+    //"apps/presentation/views/marker-overlays",
     "apps/presentation/views/layer-list-manager",
     "apps/presentation/views/map-header",
     "apps/gallery/views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
 ], function (Marionette, Backbone, Router, Basemap, DataManager, Map, Layers,
-             OverlayListView, LegendView, MapHeaderView, DataDetail, appUtilities) {
+             LegendView, MapHeaderView, DataDetail, appUtilities) {
     "use strict";
     var PresentationApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
@@ -80,7 +80,7 @@ define([
             this.showMapTitle();
             this.showBasemap();
             this.showLegend();
-            this.showMapMarkers();
+            //this.showMapMarkers();
         },
 
         showBasemap: function () {
@@ -102,17 +102,18 @@ define([
                 collection: new Layers(
                     this.model.get("layers"),
                     { mapID: this.model.get("id") }
-                )
+                ),
+                model: this.model
             });
             this.legendRegion.show(this.legendView);
         },
 
-        showMapMarkers: function () {
+        /*showMapMarkers: function () {
             this.overlays = new OverlayListView({
                 collection: this.dataManager.getCollection(this.dataType),
                 app: this
             });
-        },
+        },*/
         updateDisplay: function () {
             var className = "none";
             if (this.showLeft) {
