@@ -291,14 +291,7 @@ define(["marionette",
                 };
                 return td;
             },
-            /*
-            * While the media browser itself does work as intended,
-            * The save button itself does not add files to
-            * the affected row.
-            *
-            * Will have to add in code that will target the selected row
-            * to add in new photos and audio
-            */
+
             showMediaBrowser: function (e) {
                 var row_idx = $(e.target).attr("row-index");
                 //console.log(row_idx);

@@ -10,6 +10,7 @@ define([
     var CreateFieldView = Marionette.ItemView.extend({
         template: Handlebars.compile(CreateFieldTemplate),
         initialize: function (opts) {
+            //console.log("Creating field");
             this.model = new Field(null, { id: opts.formID });
             this.fields = opts.fields;
             this.app = opts.app;
@@ -29,8 +30,16 @@ define([
                     }
                 }
             }).render();
+            /*
             this.render();
             this.$el.find("#model-form").append(this.form.$el);
+            */
+        },
+
+        onShow: function(){
+            this.render();
+            this.$el.find("#model-form").append(this.form.$el);
+
         },
         saveToDatabase: function () {
             var that = this;
