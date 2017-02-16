@@ -5,13 +5,14 @@ define([
     "lib/maps/basemap",
     "lib/data/dataManager",
     "models/map",
+    'collections/layers',
     "apps/presentation/views/marker-overlays",
-    "apps/presentation/views/legend-layer-entry",
+    "apps/presentation/views/layer-list-manager",
     "apps/presentation/views/map-header",
     "apps/gallery/views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, Basemap, DataManager, Map,
+], function (Marionette, Backbone, Router, Basemap, DataManager, Map, Layers,
              OverlayListView, LegendView, MapHeaderView, DataDetail, appUtilities) {
     "use strict";
     var PresentationApp = Marionette.Application.extend(_.extend(appUtilities, {
@@ -98,7 +99,10 @@ define([
         showLegend: function () {
             this.legendView = new LegendView({
                 app: this,
-                model: this.model
+                collection: new Layers(
+                    this.model.get("layers"),
+                    { mapID: this.model.get("id") }
+                )
             });
             this.legendRegion.show(this.legendView);
         },

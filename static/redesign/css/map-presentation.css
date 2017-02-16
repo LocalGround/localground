@@ -304,3 +304,7 @@ svg, .fa-question-circle {
 .symbol-container svg {
     vertical-align: bottom;
 }
+
+.layer-entry {
+    margin-bottom: 15px;
+}

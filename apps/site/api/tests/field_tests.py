@@ -12,7 +12,7 @@ def get_base_metadata():
             'ordering': {'read_only': False, 'required': True, 'type': 'integer'},
             'col_alias': {'read_only': False, 'required': True, 'type': 'string'},
             'col_name': {'read_only': True, 'required': False, 'type': 'field'},
-            'is_display_field': {'read_only': False, 'required': False, 'type': 'boolean'},
+            'is_display_field': {'read_only': False, 'required': True, 'type': 'boolean'},
             'url': {'read_only': True, 'required': False, 'type': 'field'},
             'id': {'read_only': True, 'required': False, 'type': 'integer'}
         }
