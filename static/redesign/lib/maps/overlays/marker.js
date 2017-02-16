@@ -15,7 +15,7 @@ define([
          * Get the corresponding SVG marker icon
          * @returns {Object} icon definition
          */
-        getIcon: function () {
+        /*getIcon: function () {
             var opts = {
                 fillColor: '#ed867d', //this.model.get("color")
                 fillOpacity: 1,
@@ -26,7 +26,7 @@ define([
             _.extend(opts, this.getIconPaths('cross'));
             opts.scale = opts.width / opts.baseWidth;
             return opts;
-        },
+        },*/
 
         /** adds icon to overlay. */
         initialize: function () {

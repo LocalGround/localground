@@ -3,9 +3,9 @@ define(["marionette",
     "lib/maps/overlays/point",
     "lib/maps/overlays/polyline",
     "lib/maps/overlays/polygon",
-    "lib/maps/icon-lookup",
-    "lib/maps/overlays/ground-overlay"
-    ], function (Marionette, $, Point, Polyline, Polygon, Icon, GroundOverlay) {
+    "lib/maps/overlays/ground-overlay",
+    "lib/maps/overlays/icon"
+    ], function (Marionette, $, Point, Polyline, Polygon, GroundOverlay, Icon) {
     "use strict";
     /**
      * This class controls the rendering and underlying
@@ -19,11 +19,6 @@ define(["marionette",
         model: null,
         _overlay: null,
         template: false,
-        getIconPaths: function (key) {
-            var icon = new Icon(key);
-            return icon;
-            //return IconLookup.getIconPaths(key);
-        },
 
         modelEvents: {
             'change:geometry': 'updateOverlay',
@@ -42,6 +37,18 @@ define(["marionette",
             this.model = opts.model;
             this.initOverlayType(this.state._isShowingOnMap);
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
+        },
+        getIcon: function () {
+            var opts = {
+                    fillColor: '#ed867d', //this.model.get("color")
+                    fillOpacity: 1,
+                    strokeColor: '#fff',
+                    strokeWeight: 1,
+                    strokeOpacity: 1,
+                    key: 'cross'
+                },
+                icon = new Icon(opts);
+            return icon.generateGoogleIcon();
         },
 
         updateOverlay: function () {
