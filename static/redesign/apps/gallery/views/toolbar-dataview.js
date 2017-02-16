@@ -113,6 +113,7 @@ define([
              */
 
             var term = this.$el.find("#searchTerm").val();
+            console.log(term);
             if (term === "") {
                 this.app.vent.trigger("clear-search");
             } else {

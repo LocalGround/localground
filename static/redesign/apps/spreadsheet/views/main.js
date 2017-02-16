@@ -379,12 +379,17 @@ define(["marionette",
 
             doSearch: function (term) {
 
-                // If form exist, do search with 3 parameters, otherwise, do search with two parameters
-                if (this.collection.key.indexOf("form_")){
+                // If form exist, do search with 3 parameters, otherwise, do search with two parameters]
+                // Old search field condition: collection.key.indexOf("form_")
+                //*
+                if (this.fields){
+                    console.log(this.fields);
                     this.collection.doSearch(term, this.app.getProjectID(), this.fields);
                 } else {
                     this.collection.doSearch(term, this.app.getProjectID());
                 }
+                //*/
+                //this.collection.doSearch(term, this.app.getProjectID(), this.fields);
 
             },
 
