@@ -17,14 +17,15 @@ define([
          */
         getIcon: function () {
             var opts = {
-                scale: 1,
                 fillColor: '#ed867d', //this.model.get("color")
                 fillOpacity: 1,
                 strokeColor: '#fff',
                 strokeWeight: 1,
                 strokeOpacity: 1
             };
-            _.extend(opts, this.getIconPaths('marker'));
+            _.extend(opts, this.getIconPaths('cross'));
+            opts.scale = opts.width / opts.baseWidth;
+            console.log(opts);
             return opts;
         },
 

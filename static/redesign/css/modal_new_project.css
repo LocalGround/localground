@@ -5,7 +5,7 @@
   another one will do for prorotype purposes
 
 */
-.modal {
+.modal, .carousel-modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 101; /* Sit on top */
@@ -218,7 +218,7 @@
     background-color: rgb(123, 155, 225);
 }
 
-.selected-card h1, .selected-card h2, .selected-card > .fa-map-marker, .selected-card .coords { 
+.selected-card h1, .selected-card h2, .selected-card > .fa-map-marker, .selected-card .coords {
     color: #fff;
 }
 
@@ -255,4 +255,15 @@
 .database-views-modal .table:hover, .database-views-modal td:hover {
     background-color: rgb(123, 155, 225);;
     color: white;
+}
+
+.error {
+    background-color: #fae5e3;
+    color: #b94a48;
+    padding: 5px;
+}
+.errorMessage {
+    color: #b94a48;
+    margin: 0px 15px;
+    font-size: 13px;
 }
