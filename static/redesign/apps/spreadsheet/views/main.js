@@ -318,12 +318,9 @@ define(["marionette",
             },
 
             attachModels: function (models) {
-                //console.log(models);
-                //console.log(this.collection);
-                //console.log(this.currentModel);
                 var that = this,
                     i = 0;
-                for (i = 0; i < models.length; ++i) {
+                for (i = 0; i < models.length; i++) {
                     this.currentModel.attach(models[i], function () {
                         that.currentModel.fetch({
                             success: function(){
