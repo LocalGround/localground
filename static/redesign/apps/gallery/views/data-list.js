@@ -123,7 +123,7 @@ define(["jquery",
             },
 
             clearSearch: function () {
-                this.collection.clearSearch();
+                this.collection.clearSearch(this.app.getProjectID());
             }
 
         });
