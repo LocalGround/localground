@@ -21,7 +21,7 @@
 
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
-    <h4>Preview {{photoCount}}</h4>
+    <h4>Preview</h4>
 
     <div class = "section">
         <h3>{{ name }}</h3>
@@ -29,7 +29,11 @@
     </div>
 
     {{#compare photoCount 1 operator="=="}}
-        <div>One Photo</div>
+        {{#each children.photos.data}}
+            <div class="attached-container">
+                <div class="attached-media" style="background: url('{{this.path_medium}}');"></div>
+            </div>
+        {{/each}}
     {{/compare}}
 
     {{#compare photoCount 1 operator=">"}}
@@ -38,7 +42,13 @@
     <br>
 
     {{#compare audioCount 1 operator="=="}}
-        <div>One Audio</div>
+        {{#each children.audio.data}}
+            <div class="attached-container">
+                <div class="player-container audio-basic" data-id="{{this.id}}">
+                    <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->
+                </div>
+            </div>
+        {{/each}}
     {{/compare}}
 
     {{#compare audioCount 1 operator=">"}}
