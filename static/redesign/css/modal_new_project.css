@@ -213,10 +213,6 @@
     overflow: scroll;
 }
 
-.container {
-    height: calc(100% - 44px);
-}
-
 .selected-card {
     color: #fff;
     background-color: rgb(123, 155, 225);
@@ -226,14 +222,39 @@
     color: #fff;
 }
 
-table {
+.database-views-modal table {
     font-size: 13px;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.database-views-modal td {
+    border: none;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none;
 }
 
 .thumbnail-img {
     max-height: 36px;
     max-width: 36px;
     padding: 4px 10px 4px 20px;
+}
+
+#media-photos, #media-audio {
+    float: right;
+}
+
+.database-views-modal tr {
+    cursor: pointer;
+}
+
+.database-views-modal .table:hover, .database-views-modal td:hover {
+    background-color: rgb(123, 155, 225);;
+    color: white;
 }
 
 .error {

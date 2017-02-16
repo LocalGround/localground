@@ -9,23 +9,28 @@ define([
     var Toolbar = Marionette.ItemView.extend({
         events: {
             'click #map-link': 'test',
-            'click nav .sites': 'selectTab',
-            'click nav .media': 'selectTab'
+            'click nav .data': 'selectTab',
         },
         template: Handlebars.compile(ToolbarTemplate),
+
+        templateHelpers: function () {
+            return {
+                activeTab: this.app.activeTab
+            };
+        },
 
         initialize: function (opts) {
             _.extend(this, opts);
             if (this.app.dataManager) {
                 this.model = this.app.dataManager.model;
             }
-            this.app.activeTab = "media";
+            this.app.activeTab = "data";
             Marionette.ItemView.prototype.initialize.call(this);
             this.listenTo(this.app.vent, 'data-loaded', this.setModel);
         },
 
         setModel: function () {
-            this.mdoel = this.app.dataManager.model;
+            this.model = this.app.dataManager.model;
             this.render();
         },
 

@@ -41,6 +41,8 @@ define(["marionette",
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
                 this.listenTo(this.app.vent, "add-row", this.addRow);
                 this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
+                this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
+                this.listenTo(this.collection, 'add', this.renderSpreadsheet);
             },
             onRender: function () {
                 this.renderSpreadsheet();
@@ -317,12 +319,9 @@ define(["marionette",
             },
 
             attachModels: function (models) {
-                //console.log(models);
-                //console.log(this.collection);
-                //console.log(this.currentModel);
                 var that = this,
                     i = 0;
-                for (i = 0; i < models.length; ++i) {
+                for (i = 0; i < models.length; i++) {
                     this.currentModel.attach(models[i], function () {
                         that.currentModel.fetch({
                             success: function(){
@@ -379,17 +378,23 @@ define(["marionette",
 
             doSearch: function (term) {
 
-                // If form exist, do search with 3 parameters, otherwise, do search with two parameters
+                // If form exist, do search with 3 parameters, otherwise, do search with two parameters]
+                // Old search field condition: collection.key.indexOf("form_")
+                //*
                 if (this.collection.key.indexOf("form_")){
+                    console.log(this.fields);
                     this.collection.doSearch(term, this.app.getProjectID(), this.fields);
                 } else {
                     this.collection.doSearch(term, this.app.getProjectID());
                 }
 
+                //*/
+                //this.collection.doSearch(term, this.app.getProjectID(), this.fields);
+
             },
 
             clearSearch: function () {
-                this.collection.clearSearch();
+                this.collection.clearSearch(this.app.getProjectID());
             },
 
             getColumns: function () {
@@ -428,7 +433,7 @@ define(["marionette",
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
                             { data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                            { data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true},
+                            { data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
                             { data: "tags", renderer: "html" },
                             { data: "owner", readOnly: true},
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
@@ -458,11 +463,11 @@ define(["marionette",
                             })
                         };
                         cols.push(
-                            {data: "photos", renderer: "html", readOnly: true, disableVisualSelection: true }
+                            { data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                         );
 
                         cols.push(
-                            {data: "audio", renderer: "html", readOnly: true, disableVisualSelection: true }
+                            { data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                         );
 
                         cols.push(
@@ -514,13 +519,13 @@ define(["marionette",
                 });
 
             },
-            addRow: function () {
+            addRow: function (dataType) {
 
                 var that = this;
                 var projectID = this.app.getProjectID();
                 var rec;
 
-                if (this.app.dataType == "markers"){
+                if (dataType == "markers"){
                     rec = new Marker({project_id: projectID});
                 } else {
                     rec = new Record ({project_id: projectID});
