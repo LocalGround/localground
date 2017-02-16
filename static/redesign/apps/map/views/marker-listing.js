@@ -70,8 +70,8 @@ define(["jquery",
                         return {
                             dataType: this.dataType,
                             icon: icon,
-                            width: 15 * icon.scale,
-                            height: 15 * icon.scale,
+                            width: 15 * icon.getScale(),
+                            height: 15 * icon.getScale(),
                             name: this.model.get("name") || this.model.get("display_name")
                         };
                     },
