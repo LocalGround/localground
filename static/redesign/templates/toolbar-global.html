@@ -5,14 +5,11 @@
         <h2 class="map-title">{{ name }}</h2>
     </div>
     <nav>
-        <div>
-            <a href="#" class="sites">Sites</a>
+        <div {{#ifequal activeTab "data"}}class="selected"{{/ifequal}}>
+            <a href="map.html" class="data">Data</a>
         </div>
-        <div class="selected">
-            <a href="#" class="media">Media</a>
-        </div>
-        <div>
-            <a href="style.html">Style</a>
+        <div {{#ifequal activeTab "style"}}class="selected"{{/ifequal}}>
+            <a href="style.html" class="style">Style</a>
         </div>
     </nav>
 </div>

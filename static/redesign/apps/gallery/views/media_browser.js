@@ -49,9 +49,22 @@ define ([
                         'saved': 'render'
                     },
                     events: {
-                        'click .card-img-preview' : 'selectedClass'
+                        'click .card-img-preview' : 'selectedClass',
+                        'click td' : "selectedTableRow"
+                       // 'click el' : 'selectedTableRow',
+                     //   'click' : 'doSelection'
                     },
-                    selectedClass : function (e) {
+
+                    doSelection: function (e) {
+                        console.log(e.target.tagName);
+                        if(e.target.tagName == "TR") {
+                            this.selectedTableRow(e);
+                        } else if ($(e.target).hasClass("table")) {
+                            this.selectedClass(e);
+                        }
+                    },
+
+                    selectedClass: function (e) {
 
                         if (!e.metaKey && !e.shiftKey){
                             $(".column").removeClass("selected-card");
@@ -87,6 +100,70 @@ define ([
                                 for (var i = startIndex+1; i < endIndex; ++i){
                                     var currModel = this.model.collection.models[i];
                                     var currColumn = columns.eq(i);
+                                    if (!currColumn.hasClass("selected-card"))
+                                    {
+                                        currColumn.addClass("selected-card");
+                                        currModel.set("isSelected", true);
+                                    } else {
+                                        currColumn.removeClass("selected-card");
+                                        currModel.set("isSelected", false);
+                                    }
+                                }
+                                //*/
+
+                            }
+
+                        }
+                        console.log("select class");
+                        if (this.$el.hasClass("selected-card")) {
+                            this.$el.removeClass("selected-card");
+                            this.model.set("isSelected", false);
+                        } else {
+                            this.$el.addClass("selected-card");
+                            this.model.set("isSelected", true);
+                            this.parent.lastSelectedModel = this.model;
+                        }
+                        e.preventDefault();
+
+                    },
+
+                    selectedTableRow : function (e) {
+                        console.log("row selected");
+
+                        if (!e.metaKey && !e.shiftKey){
+                            $(".table").removeClass("selected-card");
+                            this.model.collection.each(function(model){
+                                model.set("isSelected", false);
+                            })
+                        }
+
+                        if (e.shiftKey){
+                            var hasPrevModel = true;
+                            if (this.parent.lastSelectedModel == null){
+                                hasPrevModel = false;
+                            }
+
+                            if (hasPrevModel){
+                                var previousModel, currentModel,
+                                    startIndex, endIndex;
+
+                                previousModel = this.parent.lastSelectedModel;
+                                currentModel = this.model;
+                                if (this.model.collection.indexOf(previousModel) <
+                                    this.model.collection.indexOf(currentModel)){
+                                    startIndex = this.model.collection.indexOf(previousModel);
+                                    endIndex = this.model.collection.indexOf(currentModel);
+                                }
+                                else {
+                                    endIndex = this.model.collection.indexOf(previousModel);
+                                    startIndex = this.model.collection.indexOf(currentModel);
+                                }
+                                var rows = this.$el.parent().children(".table");
+
+                                //*
+                                for (var i = startIndex+1; i < endIndex; ++i){
+                                    var currModel = this.model.collection.models[i];
+                                    var currColumn = rows.eq(i);
                                     if (!currColumn.hasClass("selected-card"))
                                     {
                                         currColumn.addClass("selected-card");
@@ -261,11 +338,13 @@ define ([
             },
             changeToAudio: function () {
                 this.currentMedia = "audio";
+                this.collection = this.app.dataManager.getCollection(this.currentMedia);
                 this.displayMedia();
             },
 
             changeToPhotos: function(){
                 this.currentMedia = "photos";
+                this.collection = this.app.dataManager.getCollection(this.currentMedia);
                 this.displayMedia();
             },
 

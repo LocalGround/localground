@@ -39,17 +39,23 @@ define(["marionette",
 
                 this.mb = new MediaBrowserView({ app: this.app });
                 this.mediaBrowserRegion.show(this.mb);
+                this.$el.find("#database-tab-li").addClass("active");
+
 
             },
 
             showUploader: function() {
                 this.mediaBrowserRegion.$el.hide();
                 this.uploaderRegion.$el.show();
+                this.$el.find("#database-tab-li").removeClass("active");
+                this.$el.find("#upload-tab-li").addClass("active");
             },
 
             showDatabase: function() {
                 this.uploaderRegion.$el.hide();
                 this.mediaBrowserRegion.$el.show();
+                this.$el.find("#upload-tab-li").removeClass("active");
+                this.$el.find("#database-tab-li").addClass("active");
             },
             addModels: function () {
                 this.mb.addModels();

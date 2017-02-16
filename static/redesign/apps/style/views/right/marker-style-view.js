@@ -45,8 +45,20 @@ define(["marionette",
                 this.displaySymbols();
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
                 this.buildPalettes();
+                $('body').click(this.hideColorRamp);
             },
             
+            hideColorRamp: function (e) {
+            var $el = $(e.target);
+            if (!$el.hasClass('palette-wrapper') &&
+                    !$el.parent().hasClass('selected-palette-list') &&
+                    !$el.parent().hasClass('selected-palette-wrapper') &&
+                    !$el.parent().hasClass('selected-ul')
+                    ) {
+                $(".palette-wrapper").hide();
+            }
+        },
+
             reRender: function () {
                 this.render();  
             },
