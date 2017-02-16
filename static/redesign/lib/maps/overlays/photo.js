@@ -29,9 +29,9 @@ define(["lib/maps/overlays/base", "lib/maps/overlays/infobubbles/photo"], functi
             var that = this;
             Base.prototype.initialize.apply(this, arguments);
             this.redraw();
-            google.maps.event.addListener(this.map, 'zoom_changed', function () {
+            /*google.maps.event.addListener(this.map, 'zoom_changed', function () {
                 that.getGoogleOverlay().setIcon(that.getIcon());
-            });
+            });*/
         },
 
         /** shows the google.maps overlay on the map. */

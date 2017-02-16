@@ -26,16 +26,6 @@ define([
             };
             _.extend(opts, this.getIconPaths('audio'));
             return opts;
-			/*var opts = this._overlay.Shapes.SOUND;
-			_.extend(opts, {
-                fillColor: "#333",
-                strokeColor: "#FFF",
-                strokeWeight: 1.5,
-                fillOpacity: 1,
-                //anchor: new google.maps.Point(16, 5),
-                scale: 1.6
-            });
-			return opts;*/
         },
 
         initInfoBubble: function (opts) {

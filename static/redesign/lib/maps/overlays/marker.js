@@ -25,7 +25,6 @@ define([
             };
             _.extend(opts, this.getIconPaths('cross'));
             opts.scale = opts.width / opts.baseWidth;
-            console.log(opts);
             return opts;
         },
 
