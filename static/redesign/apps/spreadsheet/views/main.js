@@ -42,6 +42,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, "add-row", this.addRow);
                 this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
                 this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
+                this.listenTo(this.collection, 'add', this.renderSpreadsheet);
             },
             onRender: function () {
                 this.renderSpreadsheet();
@@ -518,13 +519,13 @@ define(["marionette",
                 });
 
             },
-            addRow: function () {
+            addRow: function (dataType) {
 
                 var that = this;
                 var projectID = this.app.getProjectID();
                 var rec;
 
-                if (this.app.dataType == "markers"){
+                if (dataType == "markers"){
                     rec = new Marker({project_id: projectID});
                 } else {
                     rec = new Record ({project_id: projectID});
