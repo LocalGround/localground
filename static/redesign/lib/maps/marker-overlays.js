@@ -16,6 +16,7 @@ define(['marionette',
             /** A google.maps.Map object */
             map: null,
             getChildView: function () {
+                console.log(this.dataType);
                 var overlayView = null;
                 if (this.dataType == "photos") {
                     overlayView = PhotoOverlay;

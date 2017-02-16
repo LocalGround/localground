@@ -11,8 +11,6 @@ define(["marionette",
 
             initialize: function (opts) {
                 this.app = opts.app;
-                //this.render();
-                console.log(this.$el);
             }
 
         });

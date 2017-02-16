@@ -15,17 +15,13 @@ define(['marionette',
                     tagName: "li",
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        console.log(this.model.toJSON());
+                        console.log(this.model);
                         this.template = Handlebars.compile(SymbolTemplate);
-                        //var key = this.model.get("data_source");
-                        console.log(this.data_source);
+                        var data = this.app.dataManager.getCollection(this.data_source);
                         this.markerOverlays = new OverlayListView({
-                            collection: this.app.dataManager.getCollection(this.data_source),
+                            collection: data,
                             app: this.app
                         });
-                    },
-                    onRender: function () {
-                        console.log('rendered');
                     }
                 });
             },

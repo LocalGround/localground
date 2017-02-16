@@ -11,7 +11,6 @@ define(["underscore",
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.render();
-                //console.log(this.$el);
             }
         });
         return MapHeader;

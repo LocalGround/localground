@@ -80,7 +80,6 @@ define([
             this.showMapTitle();
             this.showBasemap();
             this.showLegend();
-            //this.showMapMarkers();
         },
 
         showBasemap: function () {
@@ -108,12 +107,6 @@ define([
             this.legendRegion.show(this.legendView);
         },
 
-        /*showMapMarkers: function () {
-            this.overlays = new OverlayListView({
-                collection: this.dataManager.getCollection(this.dataType),
-                app: this
-            });
-        },*/
         updateDisplay: function () {
             var className = "none";
             if (this.showLeft) {
@@ -128,7 +121,6 @@ define([
         showMediaDetail: function (opts) {
             var collection = this.dataManager.getData(opts.dataType).collection,
                 model = collection.get(opts.id);
-            console.log(collection, model, opts.id);
             if (opts.dataType == "markers" || opts.dataType.indexOf("form_") != -1) {
                 if (!model.get("children")) {
                     model.fetch({"reset": true});
