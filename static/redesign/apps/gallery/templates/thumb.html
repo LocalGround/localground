@@ -41,7 +41,7 @@
 
                    <tr>
                        <td>Caption</td>
-                       <td>{{ this.caption }}</td>
+                       <td>{{truncate this.caption 10}}</td>
                    </tr>
 
                    <tr>
@@ -85,7 +85,7 @@
             </table>
 
             <h1>
-                {{ name }}
+                {{display_name}}
             </h1>
             <h2>
                 {{owner}}
