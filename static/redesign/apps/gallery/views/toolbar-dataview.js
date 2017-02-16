@@ -75,6 +75,7 @@ define([
         },
 
         toggleMenu: function (e) {
+            console.log("clicked add");
             var $btn = $(e.target);
             this.$el.find("#add-data-type").toggle().css({
                 top: $btn.position().top + 30,
