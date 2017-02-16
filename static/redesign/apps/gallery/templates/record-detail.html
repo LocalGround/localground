@@ -5,7 +5,7 @@
     <div class="carousel carousel-photo"></div>
     <br>
     <div class="carousel carousel-audio"></div>
-    
+
     <div class="section-card">
         <h3>{{ display_name }}</h3>
         {{#each fields}}
@@ -21,16 +21,30 @@
 
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
-    <h4>Preview</h4>
+    <h4>Preview {{photoCount}}</h4>
 
     <div class = "section">
-        <h3>{{ name }}</h3> 
-        <p style="font-style: italic">{{ caption }}</p> 
+        <h3>{{ name }}</h3>
+        <p style="font-style: italic">{{ caption }}</p>
     </div>
-    <div class="carousel carousel-photo"></div>
+
+    {{#compare photoCount 1 operator="=="}}
+        <div>One Photo</div>
+    {{/compare}}
+
+    {{#compare photoCount 1 operator=">"}}
+        <div class="carousel carousel-photo"></div>
+    {{/compare}}
     <br>
-    <div class="carousel carousel-audio"></div>
-    
+
+    {{#compare audioCount 1 operator="=="}}
+        <div>One Audio</div>
+    {{/compare}}
+
+    {{#compare audioCount 1 operator=">"}}
+        <div class="carousel carousel-audio"></div>
+    {{/compare}}
+
     <div class="section-card">
         <h3>{{ display_name }}</h3>
         {{#each fields}}

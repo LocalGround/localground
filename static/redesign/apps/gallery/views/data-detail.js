@@ -119,6 +119,7 @@ define([
                 dataType: this.dataType,
                 audioMode: "detail",
                 screenType: this.app.screenType,
+                audioCount: this.getAudioCount(),
                 photoCount: this.getPhotoCount()
             };
             return context;
@@ -127,6 +128,14 @@ define([
             var count = 0;
             if (this.model.get("children") && this.model.get("children").photos) {
                 count = this.model.get("children").photos.data.length;
+            }
+            return count;
+        },
+
+        getAudioCount: function () {
+            var count = 0;
+            if (this.model.get("children") && this.model.get("children").audio) {
+                count = this.model.get("children").audio.data.length;
             }
             return count;
         },
