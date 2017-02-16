@@ -26,7 +26,8 @@ define([
             'click #add-row' : 'triggerAddRow',
             'click #add-media': 'createUploadModal',
             'click .add-media': 'createUploadModal',
-            'click .add': 'toggleMenu'
+            'click .add': 'toggleMenu',
+            'click #add-new': 'triggerAddNew'
         },
         modal: null,
         forms: null,
@@ -85,6 +86,16 @@ define([
 
         triggerAddRow: function (e) {
             this.app.vent.trigger('add-row');
+            e.preventDefault();
+        },
+        triggerAddNew: function (e) {
+            var mediaType = this.$el.find('.media-type').val(),
+                url = "//" + mediaType + "/new";
+            if (mediaType === 'photos' || mediaType === 'audio') {
+                this.createUploadModal();
+            } else {
+                this.app.router.navigate(url);
+            }
             e.preventDefault();
         },
 
