@@ -120,6 +120,13 @@
     margin-right: 18px;
 }
 
+
+.img-card {
+    border: 1px solid #e4e5eb;
+    background-color: white;
+    margin: 20px;
+    position:relative;
+}
  /************************************ Main area for databases ************************************/
 .dataview {
     top: 110px;

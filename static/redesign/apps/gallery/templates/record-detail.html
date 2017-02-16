@@ -22,8 +22,12 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
     <h4>Preview</h4>
-    <h3>{{ name }}</h3>
-    <p>{{ caption }}</p>
+
+    <div class = "section">
+        <h3>{{ name }}</h3> 
+        <p style="font-style: italic">{{ caption }}</p> 
+    </div>
+    
     <div class="carousel carousel-photo"></div>
     <br>
     <div class="carousel carousel-audio"></div>
@@ -39,7 +43,6 @@
             <a class="tag"> {{this}} </a>
         {{/each}}
     </div>
-
     <div class = "save-options">
         <button class="edit-mode button-tertiary ">Edit</button>
     </div>

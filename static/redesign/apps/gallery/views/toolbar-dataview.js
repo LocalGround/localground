@@ -90,6 +90,7 @@ define([
 
         changeMode: function () {
             if (this.app.activeTab == "data") {
+                this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
                 this.listenTo(this.forms, 'reset', this.renderAndRoute);
                 this.forms.fetch({ reset: true });
             } else {
