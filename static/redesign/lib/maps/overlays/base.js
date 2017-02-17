@@ -32,39 +32,37 @@ define(["marionette",
         initialize: function (opts) {
             this.app = opts.app;
             this.id = this.model.get('overlay_type') + this.model.get('id');
-            $.extend(this, this.restoreState());
             this.map = opts.app.getMap();
             this.model = opts.model;
-            this.initOverlayType(this.state._isShowingOnMap);
+            this.initOverlayType();
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
         },
-        getIcon: function (opts) {
+        getIcon: function () {
             var icon,
                 iconOpts = {
                     fillColor: '#ed867d', //this.model.get("color")
                     fillOpacity: 1,
                     strokeColor: '#fff',
-                    strokeWeight: 1,
-                    strokeOpacity: 1,
+                    strokeWeight: 2,
+                    strokeOpacity: 0.7,
                     shape: 'circle'
                 };
-            _.extend(iconOpts, opts);
+            _.extend(iconOpts, this.iconOpts);
             icon = new Icon(iconOpts);
             return icon.generateGoogleIcon();
         },
 
         updateOverlay: function () {
             this.getGoogleOverlay().setMap(null);
-            this.initOverlayType(this.state._isShowingOnMap);
+            this.initOverlayType();
             this.changeMode();
         },
 
-        initOverlayType: function (isShowingOnMap) {
+        initOverlayType: function () {
             var geoJSON = this.model.get("geometry"),
                 opts = {
                     model: this.model,
-                    map: this.map,
-                    isShowingOnMap: isShowingOnMap
+                    map: this.map
                 };
             if (geoJSON.type === 'Point') {
                 this._overlay = new Point(this.app, opts);
@@ -102,7 +100,7 @@ define(["marionette",
 
         /** determines whether the overlay is visible on the map. */
         isShowingOnMap: function () {
-            return this.getGoogleOverlay().getMap() != null && this.state._isShowingOnMap;
+            return this.getGoogleOverlay().getMap() != null && this.isShowing;
         },
 
         /** shows the google.maps overlay on the map. */
@@ -110,13 +108,14 @@ define(["marionette",
             var go = this.getGoogleOverlay();
             go.setMap(this.map);
             this.changeMode();
-            this.state._isShowingOnMap = true;
-            this.saveState();
+            this.isShowing = true;
         },
 
         render: function () {
             this.redraw();
-            this.show();
+            if (this.isShowing) {
+                this.show();
+            }
         },
 
 
@@ -125,28 +124,13 @@ define(["marionette",
             var go = this.getGoogleOverlay();
             go.setMap(null);
             this.model.trigger("hide-bubble");
-            this.state._isShowingOnMap = false;
-            this.saveState();
-        },
-
-        saveState: function () {
-            this.app.saveState(this.id, {
-                _isShowingOnMap: this.state._isShowingOnMap
-            });
-        },
-
-        restoreState: function () {
-            this.state = this.app.restoreState(this.id);
-            if (!this.state) {
-                this.state = { _isShowingOnMap: false };
-            }
+            this.isShowing = false;
         },
 
         onBeforeDestroy: function () {
-           var go = this.getGoogleOverlay();
+            var go = this.getGoogleOverlay();
             go.setMap(null);
             console.log("onBeforeDestroy", go, this.model.get("id"));
-            //alert(this.model.get("id"));
             Base.__super__.remove.apply(this);
         },
 

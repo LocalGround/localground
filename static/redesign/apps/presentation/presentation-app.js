@@ -60,6 +60,7 @@ define([
 
         getData: function () {
             this.saveState("presentation", {slug: this.slug });
+            this.setProjectID(this.model.get("project_id"));
             this.dataManager = new DataManager({ app: this});
         },
 

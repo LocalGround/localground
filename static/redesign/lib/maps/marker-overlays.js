@@ -1,10 +1,8 @@
 define(['marionette',
         'underscore',
-        'lib/maps/overlays/photo',
-        'lib/maps/overlays/audio',
         'lib/maps/overlays/marker'
     ],
-    function (Marionette, _, PhotoOverlay, AudioOverlay, MarkerOverlay) {
+    function (Marionette, _, MarkerOverlay) {
         'use strict';
         /**
          * The top-level view class that harnesses all of the map editor
@@ -15,25 +13,6 @@ define(['marionette',
         var MarkerOverlays = Marionette.CollectionView.extend({
             /** A google.maps.Map object */
             map: null,
-            /*getChildView: function () {
-                var overlayView = null;
-                switch (this.dataType) {
-                case "photos":
-                    overlayView = PhotoOverlay;
-                    break;
-                case "audio":
-                    overlayView = AudioOverlay;
-                    break;
-                case "markers":
-                case /form_/.test(this.dataType):
-                    overlayView = MarkerOverlay;
-                    break;
-                default:
-                    overlayView = MarkerOverlay;
-                    break;
-                }
-                return overlayView;
-            },*/
             childView: MarkerOverlay,
 
             initialize: function (opts) {
@@ -43,6 +22,7 @@ define(['marionette',
                 this.map = this.app.getMap();
 
                 //this.childView = PhotoOverlay;
+                console.log(opts);
                 this.childViewOptions = opts;
 
                 //listen for new data:

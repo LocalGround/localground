@@ -11,26 +11,9 @@ define([
      */
     var Marker = Base.extend({
 
-        /**
-         * Get the corresponding SVG marker icon
-         * @returns {Object} icon definition
-         */
-        /*getIcon: function () {
-            var opts = {
-                fillColor: '#ed867d', //this.model.get("color")
-                fillOpacity: 1,
-                strokeColor: '#fff',
-                strokeWeight: 1,
-                strokeOpacity: 1
-            };
-            _.extend(opts, this.getIconPaths('cross'));
-            opts.scale = opts.width / opts.baseWidth;
-            return opts;
-        },*/
-
-        /** adds icon to overlay. */
-        initialize: function () {
+        initialize: function (opts) {
             Base.prototype.initialize.apply(this, arguments);
+            _.extend(this, opts);
             this.redraw();
         },
 

@@ -44,7 +44,7 @@ define(["jquery",
                     dataType: this.typePlural,
                     fields: this.fields,
                     title: this.title,
-                    icon: this.icon
+                    iconOpts: this.iconOpts
                 };
             },
             getChildView: function () {
@@ -65,9 +65,9 @@ define(["jquery",
                     templateHelpers: function () {
                         return {
                             dataType: this.dataType,
-                            icon: this.icon,
-                            width: 15 * this.icon.getScale(),
-                            height: 15 * this.icon.getScale(),
+                            icon: this.iconOpts,
+                            width: 15 * this.iconOpts.getScale(),
+                            height: 15 * this.iconOpts.getScale(),
                             name: this.model.get("name") || this.model.get("display_name")
                         };
                     },
@@ -94,16 +94,13 @@ define(["jquery",
                 $(e.target).addClass("hide-panel fa-caret-down");
             },
             initialize: function (opts) {
-                this.icon = new Icon({
-                    shape: 'pin'
-                });
                 if (opts.data.collection.length > 0) {
                     var model = opts.data.collection.at(0),
                         key = model.get("overlay_type");
                     if (model.get("overlay_type").indexOf("form_") != -1) {
                         key = "marker";
                     }
-                    this.icon = new Icon({
+                    this.iconOpts = new Icon({
                         shape: key
                     });
                 }
@@ -137,7 +134,8 @@ define(["jquery",
                     collection: this.collection,
                     app: this.app,
                     dataType: this.typePlural,
-                    icon: this.icon
+                    iconOpts: this.iconOpts,
+                    isShowing: true
                 });
             },
 
