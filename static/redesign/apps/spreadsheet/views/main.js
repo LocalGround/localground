@@ -211,6 +211,10 @@ define(["marionette",
 
             },
 
+            mediaCountRenderer: function(){
+
+            },
+
             carouselPhoto: function(e){
 
                 var that = this;
