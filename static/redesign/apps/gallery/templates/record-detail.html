@@ -11,20 +11,10 @@
         {{/if}}
 
         <div class="carousel carousel-photo"></div>
-    
-        {{#compare audioCount 1 operator="=="}}
-            {{#each children.audio.data}}
-                <div class="player-container audio-detail" data-id="{{this.id}}">
-                    <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->
-                </div>
-            {{/each}}
-        {{/compare}}
-    
-        {{#compare audioCount 1 operator=">"}}
-            <div class="carousel carousel-audio"></div>
-        {{/compare}}
+
+        <div class="carousel carousel-audio"></div>
     </div>
-    
+
     {{#if fields }}
         <table class="preview-properties">
         {{#each fields}}
@@ -49,7 +39,7 @@
             <a class="tag"> {{this}} </a>
         {{/each}}
     {{/if}}
-    
+
     {{#compare screenType "presentation" operator="!="}}
         <div class="save-options">
             <button class="edit-mode button-tertiary">Edit</button>

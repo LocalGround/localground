@@ -223,6 +223,7 @@ define(["marionette",
                     console.log(that.currentModel);
                     var c = new Carousel({
                         model: that.currentModel,
+                        mode: "photos",
                         app: that.app
                     });
 
@@ -255,9 +256,24 @@ define(["marionette",
                 this.currentModel.fetch({success: function(){
                     var c = new Carousel({
                         model: that.currentModel,
+                        mode: "audio",
                         app: that.app
                     });
-                    that.$el.find(".carousel").append(c.$el);
+                    //that.$el.find(".carousel").append(c.$el);
+
+                    $("#carouselModal").empty();
+                    $("#carouselModal").append(c.$el);
+                    var $span = $("<span class='close big'>&times;</span>");
+                    $span.click(function () {
+                        $("#carouselModal").hide();
+                        //document.getElementById("carouselModal").style.display='none';
+                    })
+                    $("#carouselModal").append($span);
+
+                    // Get the modal
+                    var modal = document.getElementById('carouselModal');
+
+                    modal.style.display = "block";
                     console.log(c);
                 }});
             },
