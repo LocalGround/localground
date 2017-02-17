@@ -50,9 +50,8 @@ define ([
                     },
                     events: {
                         'click .card-img-preview' : 'selectedClass',
+                        'click .audio-simple' : 'selectedClass',
                         'click td' : "selectedTableRow"
-                       // 'click el' : 'selectedTableRow',
-                     //   'click' : 'doSelection'
                     },
 
                     doSelection: function (e) {

@@ -137,8 +137,8 @@
     width: 100%;
 }
 
-#gallery-main{
-    width:100%;
+.main-panel #gallery-main{
+    width:100%;  
 }
 
 .side-panel{

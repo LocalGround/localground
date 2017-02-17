@@ -24,11 +24,17 @@ define(["jquery",
                     },
                     events: {
                         "click .card-img-preview" : "selectedClass",
-                        "click .card-site-field" : "selectedClass"
+                        "click .card-site-field" : "selectedClass",
+                        "click #audio-card" : "selectedClass"
                     },
                     selectedClass : function () {
                         $(".column").removeClass("selected-card");
                         this.$el.toggleClass("selected-card");
+                    },
+
+                    selectedClassMod : function () {
+                        console.log("should trugger");
+                        $(".column").addClass("selected-card");
                     },
                     onRender: function () {
                         if (this.app.dataType == "audio") {
