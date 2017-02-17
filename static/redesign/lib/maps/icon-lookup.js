@@ -77,6 +77,7 @@ define(['underscore'], function (_) {
                 icon.fillColor = '#62929E';
                 break;
             case 'photo':
+            case 'photos':
                 //console.log('photo');
                 icon = IconLookup.icons.circle;
                 icon.width = 12;
@@ -84,7 +85,9 @@ define(['underscore'], function (_) {
                 icon.fillColor = '#7084c2';
                 break;
             case 'marker':
+            case 'markers':
             case 'record':
+            case 'records':
                 icon = IconLookup.icons.circle;
                 icon.width = 23;
                 icon.height = 23;
@@ -94,8 +97,10 @@ define(['underscore'], function (_) {
                 icon = IconLookup.icons[key];
                 break;
             }
-            icon.baseWidth = icon.baseWidth || IconLookup.baseWidth;
-            icon.baseHeight = icon.baseHeight || IconLookup.baseHeight;
+            if (icon) {
+                icon.baseWidth = icon.baseWidth || IconLookup.baseWidth;
+                icon.baseHeight = icon.baseHeight || IconLookup.baseHeight;
+            }
             return icon;
         }
     });
