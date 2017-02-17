@@ -31,13 +31,13 @@ define(["marionette",
                             test: "123"
                         };
                     },
-                    
+
                     sendCollection: function() {
                         this.app.vent.trigger("edit-layer", this.model);
                         console.log(this.model);
                     },
-                    
-                    
+
+
                     updateTitle: function (title) {
                         this.model.set("title", title);
                         console.log("should work");
@@ -46,37 +46,37 @@ define(["marionette",
                 });
             },
             childViewContainer: "#layers",
-            
+
             childViewOptions: function () {
-              return { app: this.app };  
+              return { app: this.app };
             },
 
             initialize: function (opts) {
                 this.app = opts.app;
                // this.displayLayersDefault();
-                
+
                 if (this.app.currentMap) {
                     this.displayLayers(this.app.currentMap);
                 }
-                
+
                 this.listenTo(this.app.vent, 'init-collection', this.displayLayers);
                 this.listenTo(this.app.vent, 'change-map', this.displayLayers);
             },
-            
+
             events: {
                 "click .add-layer" : "showDropDown",
                 "click #new-layer-options" : "newLayer"
             },
-            
+
             showDropDown: function() {
-               this.$el.find("#new-layer-options").toggle();  
+               this.$el.find("#new-layer-options").toggle();
             },
-            
+
             newLayer: function() {
                 //send info to right panel?
-                //this.app.vent.trigger();    
+                //this.app.vent.trigger();
             },
-            
+
             //display layers when map is changed
             displayLayers: function (map) {
                 this.collection = new Layers(null, {mapID: map.get("id")});
