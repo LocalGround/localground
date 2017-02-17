@@ -23,10 +23,9 @@ define([
             mapRegion: "#map-panel",
             sideRegion: "#marker-detail-panel"
         },
-        dataType: "markers",
         screenType: "presentation",
         showLeft: false,
-        mode: "presentation",
+        mode: "view",
         start: function (options) {
             // declares any important global functionality;
             // kicks off any objects and processes that need to run

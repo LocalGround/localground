@@ -20,9 +20,6 @@ define(['marionette',
                 this.collection = opts.collection;
                 this.opts = opts;
                 this.map = this.app.getMap();
-
-                //this.childView = PhotoOverlay;
-                console.log(opts);
                 this.childViewOptions = opts;
 
                 //listen for new data:

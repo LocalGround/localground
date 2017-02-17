@@ -9,7 +9,6 @@ define(["models/symbol", "collections/base"], function (Symbol, Base) {
         name: 'Symbols',
         key: 'symbols',
         initialize: function (recs, opts) {
-            console.log(recs);
             Base.prototype.initialize.apply(this, arguments);
         }
     });

@@ -4,8 +4,9 @@ define(["marionette",
     "lib/maps/overlays/polyline",
     "lib/maps/overlays/polygon",
     "lib/maps/overlays/ground-overlay",
+    "lib/maps/overlays/infobubbles/base",
     "lib/maps/overlays/icon"
-    ], function (Marionette, $, Point, Polyline, Polygon, GroundOverlay, Icon) {
+    ], function (Marionette, $, Point, Polyline, Polygon, GroundOverlay, Infobubble, Icon) {
     "use strict";
     /**
      * This class controls the rendering and underlying
@@ -34,8 +35,12 @@ define(["marionette",
             this.id = this.model.get('overlay_type') + this.model.get('id');
             this.map = opts.app.getMap();
             this.model = opts.model;
+            this.initInfoBubble(opts);
             this.initOverlayType();
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
+        },
+        initInfoBubble: function (opts) {
+            this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
         },
         getIcon: function () {
             var icon,
@@ -87,14 +92,23 @@ define(["marionette",
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
                 that.app.router.navigate("//" + that.model.getNamePlural() + "/" + that.model.get("id"));
             });
-            //attach mouseout event:
-            google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
+
+            /*google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
                 console.log('mouseover: ' + that.model.get("id"));
             });
-
-            //attach mouseout event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function () {
                 console.log('mouseout: ' + that.model.get("id"));
+            });*/
+            google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
+                //console.log('show tip');
+                //that.infoBubble.bubble.setPosition(that.getIcon().position);
+                //that.infoBubble.tip.setPosition(that.getIcon().position);
+                that.infoBubble.showTip();
+            });
+            //attach mouseout event:
+            google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function () {
+                console.log('hide tip');
+                that.model.trigger("hide-tip");
             });
         },
 
@@ -130,6 +144,7 @@ define(["marionette",
         onBeforeDestroy: function () {
             var go = this.getGoogleOverlay();
             go.setMap(null);
+            this.infoBubble.remove();
             console.log("onBeforeDestroy", go, this.model.get("id"));
             Base.__super__.remove.apply(this);
         },
