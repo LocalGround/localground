@@ -8,6 +8,7 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 
 
+
 class Form(BaseNamed, BasePermissions):
     slug = models.SlugField(
         verbose_name="Friendly URL",
@@ -21,6 +22,17 @@ class Form(BaseNamed, BasePermissions):
     _model_class = None
     _data_entry_form_class = None
     filter_fields = BaseNamed.filter_fields + ('slug',)
+    
+    @classmethod
+    def get_filter_fields(cls):
+        from localground.apps.lib.helpers import QueryField, FieldTypes
+        query_fields = super(BaseNamed, cls).get_filter_fields()
+        query_fields['project'] = QueryField(
+            'project', django_fieldname='projects__id', title='project',
+            help_text='Project to which the form belongs',
+            data_type=FieldTypes.STRING
+        )
+        return query_fields
 
     class Meta:
         app_label = 'site'

@@ -14,6 +14,10 @@ define([
         },
         dataList: function (dataType) {
             this.app.vent.trigger("show-list", dataType);
+        },
+        fetchMap: function (slug) {
+            //alert(slug);
+            this.app.vent.trigger("fetch-map", slug);
         }
     });
 });

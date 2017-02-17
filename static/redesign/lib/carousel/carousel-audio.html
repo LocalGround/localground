@@ -1,9 +1,47 @@
-<div class="carouselbox audio">
-    <ol class="carousel-content"></ol>
-</div>
-<div class="circle-buttons">
-    <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>
-    {{#times 1 num_children}}
-        <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>
-    {{/times}}
-</div>
+
+{{#if isSpreadsheet}}
+    {{#compare num_children 1 operator="=="}}
+        <div class="carousel-content"></div>
+    {{/compare}}
+
+    {{#compare num_children 1 operator=">"}}
+    <div class="carouselbox spreadsheet audio">
+        <ol class="carousel-content"></ol>
+    </div>
+<!--    
+    <div class="carousel-buttons hover-to-show">
+        <i class="fa fa-chevron-left prev"></i>
+        <i class="fa fa-chevron-right next"></i>
+    </div>
+-->
+    <div class="circle-buttons">
+        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>
+        {{#times 1 num_children}}
+            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>
+        {{/times}}
+    </div>
+    {{/compare}}
+{{else}}
+    {{#compare num_children 1 operator="=="}}
+        <div class="carousel-content"></div>
+    {{/compare}}
+
+    {{#compare num_children 1 operator=">"}}
+    <div class="carouselbox audio">
+        <ol class="carousel-content"></ol>
+    </div>
+<!--
+    <div class="carousel-buttons hover-to-show">
+        <i class="fa fa-chevron-left prev"></i>
+        <i class="fa fa-chevron-right next"></i>
+    </div>
+-->
+    <div class="circle-buttons">
+        <i class="fa fa-circle show-slide" aria-hidden="true" data-index="0"></i>
+        {{#times 1 num_children}}
+            <i class="fa fa-circle-o show-slide" aria-hidden="true" data-index="{{ this }}"></i>
+        {{/times}}
+    </div>
+    {{/compare}}
+
+{{/if}}

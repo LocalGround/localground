@@ -24,13 +24,16 @@ define(["jquery", "underscore", "marionette", "handlebars",
                     this.collection = new Audio(this.model.get("children").audio.data);
                 }
                 this.render();
-                this.$el.addClass('active-slide');
+                if (this.collection.length > 1) {
+                    this.$el.addClass('active-slide');
+                }
                 this.navigate(0);
             },
             childViewOptions: function () {
                 return {
                     mode: this.mode,
-                    app: this.app
+                    app: this.app,
+                    num_children: this.collection.length
                 };
             },
             getChildView: function () {

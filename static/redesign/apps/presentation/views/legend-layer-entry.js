@@ -1,40 +1,68 @@
 define(['marionette',
         'underscore',
+        'jquery',
         'handlebars',
-        'collections/layers',
         'collections/symbols',
+        'lib/maps/marker-overlays',
         'text!../templates/legend-layer.html',
         'text!../templates/legend-symbol-item.html'
     ],
-    function (Marionette, _, Handlebars, Layers, Symbols, LayerTemplate, SymbolTemplate) {
+    function (Marionette, _, $, Handlebars, Symbols, OverlayListView, LayerTemplate, SymbolTemplate) {
         'use strict';
-        /**
-         * The top-level view class that harnesses all of the map editor
-         * functionality. Also coordinates event triggers across all of
-         * the constituent views.
-         * @class OverlayGroup
-         */
+
         var LegendLayerEntry = Marionette.CompositeView.extend({
-            /** A google.maps.Map object */
-            map: null,
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     tagName: "li",
+                    events: {
+                        'click .cb-symbol': 'showHide'
+                    },
+                    showHide: function (e) {
+                        var isChecked = $(e.target).prop('checked');
+                        if (isChecked) {
+                            this.markerOverlays.showAll();
+                        } else {
+                            this.markerOverlays.hideAll();
+                        }
+                    },
+                    templateHelpers: function () {
+                        var height = Math.min(this.model.get("height"), 17),
+                            scale = height / this.model.get("height");
+                        return {
+                            width: this.model.get("width") * scale,
+                            height: height
+                        };
+                    },
                     initialize: function (opts) {
                         _.extend(this, opts);
-                        console.log(this.model.toJSON());
                         this.template = Handlebars.compile(SymbolTemplate);
-                    },
-                    onRender: function () {
-                        console.log('rendered');
+                        var data = this.app.dataManager.getCollection(this.data_source),
+                            matchedCollection = new data.constructor(null, { url: "dummy" }),
+                            that = this;
+                        data.each(function (model) {
+                            if (that.model.checkModel(model)) {
+                                matchedCollection.add(model);
+                            }
+                        });
+                        this.markerOverlays = new OverlayListView({
+                            collection: matchedCollection,
+                            app: this.app,
+                            iconOpts: this.model.toJSON(),
+                            isShowing: this.model.get("is_showing") || false
+                        });
                     }
                 });
             },
+            className: "layer-entry",
             childViewContainer: ".symbol-container",
+            childViewOptions: function () {
+                return {
+                    app: this.app,
+                    data_source: this.model.get("data_source")
+                };
+            },
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.layers = new Layers(this.model.get("layers"), { mapID: this.model.get("id") });
-                this.model = this.layers.at(0);
                 this.collection = new Symbols(this.model.get("symbols"));
                 this.template = Handlebars.compile(LayerTemplate);
             }

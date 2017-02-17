@@ -50,13 +50,19 @@ class BaseRecordSerializer(serializers.ModelSerializer):
         try:
             return obj.photo_count
         except:
-            return None
+            try:
+                return len(obj.photos)
+            except:
+                return None
     
     def get_audio_count(self, obj):
         try:
             return obj.audio_count
         except:
-            return None
+            try:
+                return len(obj.audio)
+            except:
+                return None
         
     def get_photos(self, obj):
         from localground.apps.site.api.serializers import PhotoSerializer
@@ -173,12 +179,13 @@ def create_record_serializer(form, **kwargs):
             audio_fields.extend([f.col_name, f.col_name + "_detail"])
     
     #append display name:
+    field_names.extend(['photo_count', 'audio_count'])
     if display_field is not None:
         field_names.append('display_name') 
     if kwargs.get('show_detail'):
         field_names.append('children')
-    else:
-        field_names.extend(['photo_count', 'audio_count'])
+    #else:
+    #    field_names.extend(['photo_count', 'audio_count'])
     
     TableModel = form.TableModel
     class Meta:

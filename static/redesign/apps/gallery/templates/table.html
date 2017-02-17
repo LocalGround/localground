@@ -1,15 +1,22 @@
-{{#ifequal dataType "photos"}}          
-    <td><img src="{{ path_medium }}" class="thumbnail-img">
-    </td>
+{{#ifequal dataType "photos"}}  
+      
+    <td><img src="{{ path_medium }}" class="thumbnail-img"></td>
     <td>{{name}}</td>
-    <td></td>
-    <td>tag1, tag2</td>
+    <td>{{caption}}</td>
+    <td>{{tags}}</td>
     <td>{{dataType}}</td>
     <td>{{owner}}</td>
+
 {{/ifequal}}
 
 {{#ifequal dataType "audio"}}
-
+    <td><i class="fa fa-volume-up" aria-hidden="true"></i></td>
+    <td>{{name}}</td>
+    <td>{{caption}}</td>
+    <td>{{tags}}</td>
+    <td>{{dataType}}</td>
+    <td>{{owner}}</td>
+<!--
     <div class="player-container audio-simple">
 
     </div>
@@ -21,6 +28,7 @@
     <h2>
         {{owner}}
     </h2>
+-->
 {{/ifequal}}
 
 {{#ifcontains dataType "markers"}}

@@ -21,7 +21,7 @@
     display:inline-block;
     position: relative;
     vertical-align: top;
-    background: white;
+    background: #fafafc;
 }
 
 .column img {
@@ -141,6 +141,7 @@
     height: calc(100vh - 109px);
     width: 100%;
 }
+
 
 #gallery-main{
     /*width:100%;*/

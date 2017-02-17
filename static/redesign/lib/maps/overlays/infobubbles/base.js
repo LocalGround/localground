@@ -1,11 +1,12 @@
 define(['jquery',
         'form',
         'marionette',
+        'handlebars',
         'google-infobubble',
         'underscore'//,
         //'bootstrap-form-templates'
     ],
-    function ($, Form, Marionette, GoogleInfoBubble, _) {
+    function ($, Form, Marionette, Handlebars, GoogleInfoBubble, _) {
         'use strict';
         /**
          * Manages InfoBubble Rendering
@@ -177,7 +178,10 @@ define(['jquery',
                 if (this.app.getMode() === "edit" || this.bubble.isOpen()) {
                     return;
                 }
-                var template = this.getTemplate("TipTemplate");
+                var template = Handlebars.compile(
+                    '<div class="bubble-container" style="width: 150px;height:25px;">' +
+                        '<div class="tip-container">{{ name }}</div></div>'
+                );
                 this.tip.setContent(template(this.getContext()));
                 this._show(this.tip);
 
@@ -190,6 +194,7 @@ define(['jquery',
             },
             getContext: function () {
                 var json = this.model.toTemplateJSON();
+                json.name = json.name || json.display_name;
                 json.mode = this.app.getMode();
                 return json;
             },

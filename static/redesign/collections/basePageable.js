@@ -53,8 +53,8 @@ define([
             this.fetch({ reset: true });
         },
 
-        clearSearch: function(){
-            this.query = null;
+        clearSearch: function(projectID){
+            this.query = "WHERE project = " + projectID;
             this.fetch({ reset: true });
         }
 

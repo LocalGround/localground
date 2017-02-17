@@ -20,6 +20,7 @@ define(["marionette",
             },
             table: null,
             currentModel :null,
+            show_hide_deleteColumn: false,
             events: {
                 'click #addColumn': 'showCreateFieldForm',
                 'click .addMedia': 'showMediaBrowser',
@@ -41,6 +42,8 @@ define(["marionette",
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
                 this.listenTo(this.app.vent, "add-row", this.addRow);
                 this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
+                this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
+                this.listenTo(this.collection, 'add', this.renderSpreadsheet);
             },
             onRender: function () {
                 this.renderSpreadsheet();
@@ -192,7 +195,6 @@ define(["marionette",
                     td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\
                     <i class='fa fa-file-photo-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
                 }
-                console.log(model + " row: " + row + ", column: " + col);
             },
 
             audioCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
@@ -204,7 +206,23 @@ define(["marionette",
                     td.innerHTML += "<a class = 'carousel-audio' row-index = '"+row+"' col-index = '"+col+"'>\
                     <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
                 }
-                console.log(model + " row: " + row + ", column: " + col);
+
+            },
+
+            mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
+                var model = this.getModelFromCell(instance, row),
+                    photoCount = model.get("photo_count") || 0,
+                    audioCount = model.get("audio_count") || 0,
+                    i;
+                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
+                for (i = 0; i < photoCount; ++i) {
+                    td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\
+                    <i class='fa fa-file-photo-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
+                }
+                for (i = 0; i < audioCount; ++i) {
+                    td.innerHTML += "<a class = 'carousel-audio' row-index = '"+row+"' col-index = '"+col+"'>\
+                    <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
+                }
 
             },
 
@@ -221,6 +239,7 @@ define(["marionette",
                     console.log(that.currentModel);
                     var c = new Carousel({
                         model: that.currentModel,
+                        mode: "photos",
                         app: that.app
                     });
 
@@ -253,9 +272,24 @@ define(["marionette",
                 this.currentModel.fetch({success: function(){
                     var c = new Carousel({
                         model: that.currentModel,
+                        mode: "audio",
                         app: that.app
                     });
-                    that.$el.find(".carousel").append(c.$el);
+                    //that.$el.find(".carousel").append(c.$el);
+
+                    $("#carouselModal").empty();
+                    $("#carouselModal").append(c.$el);
+                    var $span = $("<span class='close big'>&times;</span>");
+                    $span.click(function () {
+                        $("#carouselModal").hide();
+                        //document.getElementById("carouselModal").style.display='none';
+                    })
+                    $("#carouselModal").append($span);
+
+                    // Get the modal
+                    var modal = document.getElementById('carouselModal');
+
+                    modal.style.display = "block";
                     console.log(c);
                 }});
             },
@@ -289,14 +323,7 @@ define(["marionette",
                 };
                 return td;
             },
-            /*
-            * While the media browser itself does work as intended,
-            * The save button itself does not add files to
-            * the affected row.
-            *
-            * Will have to add in code that will target the selected row
-            * to add in new photos and audio
-            */
+
             showMediaBrowser: function (e) {
                 var row_idx = $(e.target).attr("row-index");
                 //console.log(row_idx);
@@ -307,7 +334,7 @@ define(["marionette",
                 });
                 this.app.vent.trigger("show-modal", {
                     title: 'Media Browser',
-                    width: 800,
+                    width: 1100,
                     height: 400,
                     view: mediaBrowser,
                     saveButtonText: "Add",
@@ -317,12 +344,9 @@ define(["marionette",
             },
 
             attachModels: function (models) {
-                //console.log(models);
-                //console.log(this.collection);
-                //console.log(this.currentModel);
                 var that = this,
                     i = 0;
-                for (i = 0; i < models.length; ++i) {
+                for (i = 0; i < models.length; i++) {
                     this.currentModel.attach(models[i], function () {
                         that.currentModel.fetch({
                             success: function(){
@@ -344,19 +368,21 @@ define(["marionette",
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
                         cols = ["ID", "Lat", "Lng", "Title", "Caption",
-                        "Photos",
-                        "Audio",
+                        //"Photos",
+                        //"Audio",
+                        "Media",
                         "Tags", "Owner", "Delete"];
-                        //
-                        //
                         return cols;
                     default:
                         cols = ["ID", "Lat", "Lng"];
+                        var deleteColumn = this.show_hide_deleteColumn == true ? " <a class='fa fa-minus-circle delete_column' fieldIndex= '" +
+                                                                          i +"' aria-hidden='true'></a>" : "";
                         for (var i = 0; i < this.fields.length; ++i) {
-                            cols.push(this.fields.at(i).get("col_name") + " " + "<a class='fa fa-minus-circle delete_column' fieldIndex= '"+ i +"' aria-hidden='true'></a>");
+                            cols.push(this.fields.at(i).get("col_name") + deleteColumn);
                         }
-                        cols.push("Photos");
-                        cols.push("Audio");
+                        //cols.push("Photos");
+                        //cols.push("Audio");
+                        cols.push("Media");
                         cols.push("Delete");
                         cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
                         return cols;
@@ -369,7 +395,7 @@ define(["marionette",
                     case "photos":
                         return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "markers":
-                        return [30, 80, 80, 200, 400, 100, 100, 200, 80, 100];
+                        return [30, 80, 80, 200, 400, 100, 200, 80, 100];
                     default:
                         var cols = [30, 80, 80];
                         for (var i = 0; i < this.fields.length; ++i){
@@ -381,17 +407,23 @@ define(["marionette",
 
             doSearch: function (term) {
 
-                // If form exist, do search with 3 parameters, otherwise, do search with two parameters
+                // If form exist, do search with 3 parameters, otherwise, do search with two parameters]
+                // Old search field condition: collection.key.indexOf("form_")
+                //*
                 if (this.collection.key.indexOf("form_")){
+                    console.log(this.fields);
                     this.collection.doSearch(term, this.app.getProjectID(), this.fields);
                 } else {
                     this.collection.doSearch(term, this.app.getProjectID());
                 }
 
+                //*/
+                //this.collection.doSearch(term, this.app.getProjectID(), this.fields);
+
             },
 
             clearSearch: function () {
-                this.collection.clearSearch();
+                this.collection.clearSearch(this.app.getProjectID());
             },
 
             getColumns: function () {
@@ -429,8 +461,9 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            { data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                            { data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true},
+                            //{ data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                            //{ data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
                             { data: "tags", renderer: "html" },
                             { data: "owner", readOnly: true},
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
@@ -459,12 +492,17 @@ define(["marionette",
                                 type: type
                             })
                         };
+                        /*
                         cols.push(
-                            {data: "photos", renderer: "html", readOnly: true, disableVisualSelection: true }
+                            { data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                         );
 
                         cols.push(
-                            {data: "audio", renderer: "html", readOnly: true, disableVisualSelection: true }
+                            { data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
+                        );
+                        */
+                        cols.push(
+                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                         );
 
                         cols.push(
@@ -516,13 +554,13 @@ define(["marionette",
                 });
 
             },
-            addRow: function () {
+            addRow: function (dataType) {
 
                 var that = this;
                 var projectID = this.app.getProjectID();
                 var rec;
 
-                if (this.app.dataType == "markers"){
+                if (dataType == "markers"){
                     rec = new Marker({project_id: projectID});
                 } else {
                     rec = new Record ({project_id: projectID});

@@ -24,11 +24,17 @@ define(["jquery",
                     },
                     events: {
                         "click .card-img-preview" : "selectedClass",
-                        "click .card-site-field" : "selectedClass"
+                        "click .card-site-field" : "selectedClass",
+                        "click #audio-card" : "selectedClass"
                     },
                     selectedClass : function () {
                         $(".column").removeClass("selected-card");
                         this.$el.toggleClass("selected-card");
+                    },
+
+                    selectedClassMod : function () {
+                        console.log("should trugger");
+                        $(".column").addClass("selected-card");
                     },
                     onRender: function () {
                         if (this.app.dataType == "audio") {
@@ -119,11 +125,11 @@ define(["jquery",
             },
 
             doSearch: function (term) {
-                this.collection.doSearch(term, this.app.getProjectID());
+                this.collection.doSearch(term, this.app.getProjectID(), this.fields);
             },
 
             clearSearch: function () {
-                this.collection.clearSearch();
+                this.collection.clearSearch(this.app.getProjectID());
             }
 
         });
