@@ -27,7 +27,8 @@ define([
             'click #add-media': 'createUploadModal',
             'click .add-media': 'createUploadModal',
             'click .add': 'toggleMenu',
-            'click #add-new': 'triggerAddNew'
+            'click #add-new': 'triggerAddNew',
+            'click .add-new': 'triggerAddNew',
         },
         modal: null,
         forms: null,
@@ -224,36 +225,9 @@ define([
                 saveFunction: createForm.saveFormSettings.bind(createForm),
                 deleteFunction: createForm.deleteForm.bind(createForm)
             });
-            //this.modal.display_DeleteButton();
-            //this.modal.display_SaveButton();
             this.modal.show();
         }
-        /*
-        showMediaTypeForm: function (opts) {
-            opts = opts || {};
-            var createMedia = new CreateMedia({
-                    app: this.app,
-                    model: opts.model
-                }),
-                title = "Create New Media Collection";
-            if (opts.model) {
-                title = "Update " + opts.model.get("name") + " Settings";
-            }
-            this.modal.update({
-                view: createForm,
-                title: title,
-                width: 500,
-                showSaveButton: true,
-                showDeleteButton: opts.model,
-                // bind the scope of the save function to the source view:
-                saveFunction: createMedia.saveFormSettings.bind(createMedia),
-                deleteFunction: createMedia.deleteForm.bind(createMedia)
-            });
-            this.modal.display_DeleteButton();
-            this.modal.display_SaveButton();
-            this.modal.show();
-        }
-        */
+
     });
     return ToolbarDataView;
 });

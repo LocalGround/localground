@@ -11,15 +11,15 @@
         {{/each}}
         </select>
     {{/ifequal}}
-    
+
     {{#ifequal screenType "map"}}
     <button class="button-tertiary add"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</button>
     <div class="dropdown-menu media-type" id="add-data-type" style="display: none;">
-        <a href="#" class="add-media">Media</a>
+        <a href="#" class="add-new">Media</a>
         <hr>
-        <a href="#/markers/new" data-value="marker">Site</a>
+        <a href="#/markers/new" class="add-new" data-value="marker">Site</a>
         {{#each forms}}
-        <a href="#/form_{{ this.id }}/new" data-value="form_{{ this.id }}">{{ this.name }}</a>
+        <a href="#/form_{{ this.id }}/new" class="add-new" data-value="form_{{ this.id }}">{{ this.name }}</a>
         {{/each}}
         <hr>
         <a href="#" class="add-data">Edit Site Types</a>
