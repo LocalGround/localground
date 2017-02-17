@@ -24,6 +24,7 @@ define(
             shareWithUser: function (username, authorityID, errorCallback) {
                 var projectUser = new ProjectUser(null, { id: this.get("id") }),
                     that = this;
+                console.log(username);
                 projectUser.set("user", username);
                 projectUser.set("authority", authorityID);
                 projectUser.save(null, {
