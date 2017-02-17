@@ -4,10 +4,11 @@ define(['underscore'], function (_) {
      * https://icomoon.io/app/#/select
      * https://www.mapbox.com/maki-icons/editor/
     */
-    var IconLookup = {};
-    IconLookup = _.extend(IconLookup, {
+    var IconLookup = {
         baseWidth: 15,
-        baseHeight: 15,
+        baseHeight: 15
+    };
+    IconLookup = _.extend(IconLookup, {
         icons: {
             circle: {
                 path: 'M14,7.5c0,3.5899-2.9101,6.5-6.5,6.5S1,11.0899,1,7.5S3.9101,1,7.5,1S14,3.9101,14,7.5z',

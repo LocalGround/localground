@@ -38,16 +38,18 @@ define(["marionette",
             this.initOverlayType(this.state._isShowingOnMap);
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
         },
-        getIcon: function () {
-            var opts = {
+        getIcon: function (opts) {
+            var icon,
+                iconOpts = {
                     fillColor: '#ed867d', //this.model.get("color")
                     fillOpacity: 1,
                     strokeColor: '#fff',
                     strokeWeight: 1,
                     strokeOpacity: 1,
-                    key: 'cross'
-                },
-                icon = new Icon(opts);
+                    shape: 'circle'
+                };
+            _.extend(iconOpts, opts);
+            icon = new Icon(iconOpts);
             return icon.generateGoogleIcon();
         },
 

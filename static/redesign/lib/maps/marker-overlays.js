@@ -15,7 +15,7 @@ define(['marionette',
         var MarkerOverlays = Marionette.CollectionView.extend({
             /** A google.maps.Map object */
             map: null,
-            getChildView: function () {
+            /*getChildView: function () {
                 var overlayView = null;
                 switch (this.dataType) {
                 case "photos":
@@ -33,7 +33,8 @@ define(['marionette',
                     break;
                 }
                 return overlayView;
-            },
+            },*/
+            childView: MarkerOverlay,
 
             initialize: function (opts) {
                 _.extend(this, opts);

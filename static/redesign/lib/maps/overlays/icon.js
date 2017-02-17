@@ -7,8 +7,8 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
         strokeWeight: 1,
         strokeOpacity: 1,
         initialize: function (opts) {
-            if (opts.key) {
-                _.extend(this, IconLookup.getIcon(opts.key));
+            if (opts.shape) {
+                _.extend(this, IconLookup.getIcon(opts.shape));
             }
             _.extend(this, opts);
             this.scale = this.getScale();

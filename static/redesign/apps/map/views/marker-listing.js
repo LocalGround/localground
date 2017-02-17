@@ -2,7 +2,7 @@ define(["jquery",
         "marionette",
         "underscore",
         "handlebars",
-        "lib/maps/icon-lookup",
+        "lib/maps/overlays/icon",
         "lib/maps/marker-overlays",
         "text!../templates/list-detail.html",
         "text!../templates/list.html"],
@@ -43,12 +43,14 @@ define(["jquery",
                     app: this.app,
                     dataType: this.typePlural,
                     fields: this.fields,
-                    title: this.title
+                    title: this.title,
+                    icon: this.icon
                 };
             },
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
+                        console.log(opts);
                         _.extend(this, opts);
                         this.model.set("dataType", this.dataType);
                     },
@@ -61,17 +63,11 @@ define(["jquery",
                     },
                     tagName: "li",
                     templateHelpers: function () {
-                        var key = this.model.get("overlay_type"),
-                            icon;
-                        if (this.model.get("overlay_type").indexOf("form_") != -1) {
-                            key = "marker";
-                        }
-                        icon = new Icon(key);
                         return {
                             dataType: this.dataType,
-                            icon: icon,
-                            width: 15 * icon.getScale(),
-                            height: 15 * icon.getScale(),
+                            icon: this.icon,
+                            width: 15 * this.icon.getScale(),
+                            height: 15 * this.icon.getScale(),
                             name: this.model.get("name") || this.model.get("display_name")
                         };
                     },
@@ -98,11 +94,25 @@ define(["jquery",
                 $(e.target).addClass("hide-panel fa-caret-down");
             },
             initialize: function (opts) {
+                this.icon = new Icon({
+                    shape: 'pin'
+                });
+                if (opts.data.collection.length > 0) {
+                    var model = opts.data.collection.at(0),
+                        key = model.get("overlay_type");
+                    if (model.get("overlay_type").indexOf("form_") != -1) {
+                        key = "marker";
+                    }
+                    this.icon = new Icon({
+                        shape: key
+                    });
+                }
                 _.extend(this, opts);
                 Marionette.CompositeView.prototype.initialize.call(this);
 
                 this.template = Handlebars.compile(ListTemplate);
                 this.displayMedia();
+
                 this.listenTo(this.app.vent, 'show-uploader', this.addMedia);
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
@@ -126,7 +136,8 @@ define(["jquery",
                 this.overlays = new OverlayListView({
                     collection: this.collection,
                     app: this.app,
-                    dataType: this.typePlural
+                    dataType: this.typePlural,
+                    icon: this.icon
                 });
             },
 
