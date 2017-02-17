@@ -5,14 +5,15 @@ define([
     "lib/maps/basemap",
     "lib/data/dataManager",
     "models/map",
-    "apps/presentation/views/marker-overlays",
-    "apps/presentation/views/legend-layer-entry",
+    'collections/layers',
+    //"apps/presentation/views/marker-overlays",
+    "apps/presentation/views/layer-list-manager",
     "apps/presentation/views/map-header",
     "apps/gallery/views/data-detail",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, Basemap, DataManager, Map,
-             OverlayListView, LegendView, MapHeaderView, DataDetail, appUtilities) {
+], function (Marionette, Backbone, Router, Basemap, DataManager, Map, Layers,
+             LegendView, MapHeaderView, DataDetail, appUtilities) {
     "use strict";
     var PresentationApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
@@ -46,6 +47,9 @@ define([
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
         },
         fetchErrors: false,
+        getMode: function () {
+            return "view";
+        },
 
         fetchMap: function (slug) {
             this.slug = slug;
@@ -59,6 +63,7 @@ define([
 
         getData: function () {
             this.saveState("presentation", {slug: this.slug });
+            this.setProjectID(this.model.get("project_id"));
             this.dataManager = new DataManager({ app: this});
         },
 
@@ -79,15 +84,20 @@ define([
             this.showMapTitle();
             this.showBasemap();
             this.showLegend();
-            this.showMapMarkers();
         },
 
         showBasemap: function () {
+            var center = {
+                lat: this.model.get("center").coordinates[1],
+                lng: this.model.get("center").coordinates[0]
+            };
             this.basemapView = new Basemap({
                 app: this,
                 showSearchControl: false
             });
             this.mapRegion.show(this.basemapView);
+            this.basemapView.setCenter(center);
+            this.basemapView.setZoom(this.model.get("zoom"));
         },
 
         showMapTitle: function () {
@@ -98,17 +108,15 @@ define([
         showLegend: function () {
             this.legendView = new LegendView({
                 app: this,
+                collection: new Layers(
+                    this.model.get("layers"),
+                    { mapID: this.model.get("id") }
+                ),
                 model: this.model
             });
             this.legendRegion.show(this.legendView);
         },
 
-        showMapMarkers: function () {
-            this.overlays = new OverlayListView({
-                collection: this.dataManager.getCollection(this.dataType),
-                app: this
-            });
-        },
         updateDisplay: function () {
             var className = "none";
             if (this.showLeft) {
@@ -121,13 +129,16 @@ define([
             });
         },
         showMediaDetail: function (opts) {
-            var collection = this.dataManager.getData(opts.dataType).collection,
+            var dataEntry = this.dataManager.getData(opts.dataType),
+                collection = dataEntry.collection,
                 model = collection.get(opts.id);
-            console.log(collection, model, opts.id);
             if (opts.dataType == "markers" || opts.dataType.indexOf("form_") != -1) {
                 if (!model.get("children")) {
                     model.fetch({"reset": true});
                 }
+            }
+            if (opts.dataType.indexOf("form_") != -1) {
+                model.set("fields", dataEntry.fields.toJSON());
             }
             this.detailView = new DataDetail({
                 model: model,

@@ -42,10 +42,20 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 return dataSources;
             },
             getData: function (key) {
-                return this.dataDictionary[key];
+                var entry = this.dataDictionary[key];
+                if (entry) {
+                    return entry;
+                }
+                alert("No entry found for " + key);
+                return null;
             },
             getCollection: function (key) {
-                return this.dataDictionary[key].collection;
+                var entry = this.dataDictionary[key];
+                if (entry) {
+                    return entry.collection;
+                }
+                alert("No entry found for " + key);
+                return null;
             },
             initCollection: function (key, data) {
                 switch (key) {

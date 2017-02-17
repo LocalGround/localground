@@ -1,50 +1,128 @@
 <!-- PRESENTATION MODE -->
 {{#ifequal mode "presentation"}}
     <h3>{{ name }}</h3>
-    <p>{{ caption }}</p>
-    <div class="carousel carousel-photo"></div>
-    <br>
-    <div class="carousel carousel-audio"></div>
-    
-    <div class="section-card">
-        <h3>{{ display_name }}</h3>
-        {{#each fields}}
-            {{ this.col_alias }}: {{ this.val }}<br>
+    {{#if caption }}
+        <p style="font-style: italic">{{ caption }}</p>
+    {{/if}}
+
+    {{#compare photoCount 1 operator="=="}}
+        {{#each children.photos.data}}
+            <div class="img-card">
+                <img src="{{ this.path_medium }}" />
+                {{#if caption }}
+                    <p>{{ caption }}</p>
+                {{/if}}
+            </div>
         {{/each}}
-        <p>Tags:</p>
+    {{/compare}}
+
+    {{#compare photoCount 1 operator=">"}}
+        <div class="carousel carousel-photo"></div>
+    {{/compare}}
+
+    {{#compare audioCount 1 operator="=="}}
+        {{#each children.audio.data}}
+            <div class="player-container audio-detail" data-id="{{this.id}}">
+                <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->
+            </div>
+        {{/each}}
+    {{/compare}}
+
+    {{#compare audioCount 1 operator=">"}}
+        <div class="carousel carousel-audio"></div>
+    {{/compare}}
+    
+    {{#if fields }}
+        <table class="preview-properties">
+        {{#each fields}}
+            <tr>
+                <td>{{ this.col_alias }}:</td>
+                <td>{{ this.val }}</td>
+            </tr>
+        {{/each}}
+        {{#if tags}}
+            <tr>
+                <td></td>
+                <td>
+                    {{#each tags}}
+                        <a class="tag"> {{this}} </a>
+                    {{/each}}
+                </td>
+            </tr>
+        {{/if}}
+        </table>
+    {{else}}
         {{#each tags}}
-            <!-- <p>{{this}}<br></p> -->
             <a class="tag"> {{this}} </a>
         {{/each}}
-    </div>
+    {{/if}}
 {{/ifequal}}
 
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
     <h4>Preview</h4>
 
-    <div class = "section">
-        <h3>{{ name }}</h3> 
-        <p style="font-style: italic">{{ caption }}</p> 
+    <div class="section">
+        <h3>{{ name }}</h3>
+        {{#if caption }}
+            <p style="font-style: italic">{{ caption }}</p>
+        {{/if}}
+
+        {{#compare photoCount 1 operator="=="}}
+            {{#each children.photos.data}}
+                <div class="img-card">
+                    <img src="{{ this.path_medium }}" />
+                    {{#if caption }}
+                        <p>{{ caption }}</p>
+                    {{/if}}
+                </div>
+            {{/each}}
+        {{/compare}}
+    
+        {{#compare photoCount 1 operator=">"}}
+            <div class="carousel carousel-photo"></div>
+        {{/compare}}
+    
+        {{#compare audioCount 1 operator="=="}}
+            {{#each children.audio.data}}
+                <div class="player-container audio-detail" data-id="{{this.id}}">
+                    <!-- So far, a blank grey canvas came but there is not yet any audio player stuff coming in -->
+                </div>
+            {{/each}}
+        {{/compare}}
+    
+        {{#compare audioCount 1 operator=">"}}
+            <div class="carousel carousel-audio"></div>
+        {{/compare}}
     </div>
     
-    <div class="carousel carousel-photo"></div>
-    <br>
-    <div class="carousel carousel-audio"></div>
-    
-    <div class="section-card">
-        <h3>{{ display_name }}</h3>
+    {{#if fields }}
+        <table class="preview-properties">
         {{#each fields}}
-            {{ this.col_alias }}: {{ this.val }}<br>
+            <tr>
+                <td>{{ this.col_alias }}:</td>
+                <td>{{ this.val }}</td>
+            </tr>
         {{/each}}
-        <p>Tags:</p>
+        {{#if tags}}
+            <tr>
+                <td></td>
+                <td>
+                    {{#each tags}}
+                        <a class="tag"> {{this}} </a>
+                    {{/each}}
+                </td>
+            </tr>
+        {{/if}}
+        </table>
+    {{else}}
         {{#each tags}}
-            <!-- <p>{{this}}<br></p> -->
             <a class="tag"> {{this}} </a>
         {{/each}}
-    </div>
-    <div class = "save-options">
-        <button class="edit-mode button-tertiary ">Edit</button>
+    {{/if}}
+    
+    <div class="save-options">
+        <button class="edit-mode button-tertiary">Edit</button>
     </div>
 {{/ifequal}}
 

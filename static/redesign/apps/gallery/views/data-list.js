@@ -119,11 +119,11 @@ define(["jquery",
             },
 
             doSearch: function (term) {
-                this.collection.doSearch(term, this.app.getProjectID());
+                this.collection.doSearch(term, this.app.getProjectID(), this.fields);
             },
 
             clearSearch: function () {
-                this.collection.clearSearch();
+                this.collection.clearSearch(this.app.getProjectID());
             }
 
         });

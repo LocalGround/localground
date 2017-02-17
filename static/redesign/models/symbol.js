@@ -1,4 +1,4 @@
-define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/icon-lookup'],
+define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
     function (Backbone, _, SqlParser, Icon) {
         'use strict';
         /**
@@ -11,14 +11,11 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/icon-lookup'],
             isShowingOnMap: false,
             sqlParser: null,
             initialize: function (data, opts) {
-                var icon;
                 _.extend(this, opts);
                 Backbone.Model.prototype.initialize.apply(this, arguments);
                 this.set("shape", this.get("shape") || "photo");
                 this.set("fillColor", this.get("color"));
-                icon = new Icon(this.get("shape"));
-                _.extend(icon, this.toJSON());
-                this.set("icon", icon);
+                this.set("icon", new Icon(this.toJSON()));
                 this.modelMap = {};
                 if (_.isUndefined(this.get("rule"))) {
                     throw new Error("rule must be defined");

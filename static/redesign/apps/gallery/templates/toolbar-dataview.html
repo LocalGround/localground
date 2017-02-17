@@ -1,52 +1,40 @@
 <div class = "project-detail">
 	<h3>Media</h3>
     <!-- Temporary placement for implementation purposes -->
-    {{#ifequal activeTab "media"}}
+    {{#ifequal activeTab "data"}}
         <select class="media-type">
             <option value="photos">Photos</option>
             <option value="audio">Audio</option>
-        </select>
-    {{/ifequal}}
-    {{#ifequal activeTab "sites"}}
-        <select class="media-type">
             <option value="markers">Site</option>
-            {{#each forms}}
-                <option value="form_{{ this.id }}">{{ this.name }}</option>
-            {{/each}}
+        {{#each forms}}
+            <option value="form_{{ this.id }}">{{ this.name }}</option>
+        {{/each}}
         </select>
     {{/ifequal}}
+    
     {{#ifequal screenType "map"}}
     <button class="button-tertiary add"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</button>
     <div class="dropdown-menu media-type" id="add-data-type" style="display: none;">
         <a href="#" class="add-media">Media</a>
         <hr>
         <a href="#/markers/new" data-value="marker">Site</a>
-        <a href="#/form_1/new" data-value="form_1">Flowers &amp; Birds</a>
+        {{#each forms}}
+        <a href="#/form_{{ this.id }}/new" data-value="form_{{ this.id }}">{{ this.name }}</a>
+        {{/each}}
         <hr>
         <a href="#" class="add-data">Edit Site Types</a>
     </div>
     {{/ifequal}}
 
 
-    {{#ifequal activeTab "sites"}}
-		<!-- button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Site Types</button -->
-        {{#ifequal screenType "gallery"}}
-            <a id="add-site" class="button-tertiary" href="#/{{dataType}}/new"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Site</a>
-        {{/ifequal}}
-        {{#ifequal screenType "spreadsheet"}}
-            <a id="add-row" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Row</a>
-        {{/ifequal}}
-    {{/ifequal}}
+    {{#ifequal activeTab "data"}}
 
-	{{#ifequal activeTab "media"}}
-	    <!-- the id of media-type is not working -->
-		<!-- button id="add-data" class = "button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Media Types</button -->
-		{{#ifequal screenType "gallery"}}
-			<a id="add-media" class="button-tertiary"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Media</a>
-		{{/ifequal}}
-		{{#ifequal screenType "spreadsheet"}}
-			<a id="add-row" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Row</a>
-		{{/ifequal}}
+        {{#ifequal screenType "spreadsheet"}}
+            <a id="add-new" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Row</a>
+        {{/ifequal}}
+        {{#ifequal screenType "gallery"}}
+            <a id="add-new" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</a>
+        {{/ifequal}}
 	{{/ifequal}}
 </div>
 <div class="main-search">

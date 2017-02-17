@@ -26,7 +26,8 @@ define([
             'click #add-row' : 'triggerAddRow',
             'click #add-media': 'createUploadModal',
             'click .add-media': 'createUploadModal',
-            'click .add': 'toggleMenu'
+            'click .add': 'toggleMenu',
+            'click #add-new': 'triggerAddNew'
         },
         modal: null,
         forms: null,
@@ -61,6 +62,8 @@ define([
             $('body').click(this.hideMenus);
             this.modal = new Modal();
             this.forms = new Forms();
+            this.listenTo(this.forms, "reset", this.render);
+            this.forms.fetch({ reset: true });
         },
 
         hideMenus: function (e) {
@@ -73,6 +76,7 @@ define([
         },
 
         toggleMenu: function (e) {
+            console.log("clicked add");
             var $btn = $(e.target);
             this.$el.find("#add-data-type").toggle().css({
                 top: $btn.position().top + 30,
@@ -84,9 +88,20 @@ define([
             this.app.vent.trigger('add-row');
             e.preventDefault();
         },
+        triggerAddNew: function (e) {
+            var mediaType = this.$el.find('.media-type').val(),
+                url = "//" + mediaType + "/new";
+            if (mediaType === 'photos' || mediaType === 'audio') {
+                this.createUploadModal();
+            } else {
+                this.app.router.navigate(url);
+            }
+            e.preventDefault();
+        },
 
         changeMode: function () {
-            if (this.app.activeTab == "sites") {
+            if (this.app.activeTab == "data") {
+                this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
                 this.listenTo(this.forms, 'reset', this.renderAndRoute);
                 this.forms.fetch({ reset: true });
             } else {
@@ -112,6 +127,7 @@ define([
              */
 
             var term = this.$el.find("#searchTerm").val();
+            console.log(term);
             if (term === "") {
                 this.app.vent.trigger("clear-search");
             } else {

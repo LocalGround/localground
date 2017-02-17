@@ -6,9 +6,8 @@ define([
         initialize: function (options) {
             this.app = options.app;
         },
-        dataDetail: function (dataType, id) {
-            this.app.vent.trigger("show-detail", {
-                id: id,
+        addRow: function (dataType) {
+            this.app.vent.trigger("add-row", {
                 dataType: dataType
             }, false);
         },

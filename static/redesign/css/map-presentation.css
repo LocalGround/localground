@@ -239,10 +239,10 @@ svg, .fa-question-circle {
 /**********************
  * Google Maps Override
  */
-.gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom {
+/*.gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom {
     right: 50px !important;
     bottom: 107px !important;
-}
+}*/
 
 #map > div > .gm-style > div:nth-child(2) {
     margin-left: 25px !important;
@@ -298,9 +298,12 @@ svg, .fa-question-circle {
 /************************************ Sarah's Enhancements ************************************/
 .symbol-container p {
     display: inline-block;
-    margin-left: 4px;
 }
 
 .symbol-container svg {
     vertical-align: bottom;
+}
+
+.layer-entry {
+    margin-bottom: 15px;
 }
