@@ -95,7 +95,10 @@ define([
             if (mediaType === 'photos' || mediaType === 'audio') {
                 this.createUploadModal();
             } else {
-                this.app.router.navigate(url);
+                this.app.router.navigate(url, {
+                    trigger: true,
+                    forceReload: true
+                });
             }
             e.preventDefault();
         },
