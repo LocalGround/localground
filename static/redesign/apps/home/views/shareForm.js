@@ -23,12 +23,6 @@ define(["jquery",
                 'blur #projectName': 'generateSlug'
             },
 
-            modelEvents: {
-                // When data from Item view changes anywhere and anytime,
-                // re-render to update
-                "change": "render"
-            },
-
             slugError: null,
             projectSaveSuccess: null,
 
@@ -161,7 +155,6 @@ define(["jquery",
             },
 
             createNewProjectUsers: function () {
-                console.log(this.$el.find("#userList"));
                 var $userList = this.$el.find("#userList"),
                     $users = $userList.children(),
                     i,
@@ -176,11 +169,7 @@ define(["jquery",
                     this.collection = this.model.projectUsers;
                     this.attachCollectionEventHandlers();
                 }
-                console.log(this.model.projectUsers);
                 //loop through each table row:
-                console.log($userList);
-                console.log($users);
-                console.log($users.length);
                 for (i = 0; i < $users.length; i++) {
                     $row = $($users[i]);
                     $row.css("background-color", "#FFFFFF");
@@ -201,10 +190,8 @@ define(["jquery",
                         existingProjectUser.save();
                     } else {
                         //create new projectuser:
-                        console.log("Making new username");
                         username = $row.find(".username").val();
-                        usernameInput = $row.find(".username");
-                        console.log(username, usernameInput);
+                        usernameInput = $row.find(".username");xs
                         if (!authorityID || (username.trim() == "" || username == undefined )){
                             $row.css("background-color", "#FFAAAA");
                             this.errorUserName(usernameInput);
