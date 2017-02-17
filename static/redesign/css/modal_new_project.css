@@ -92,7 +92,7 @@
     width: 100%;
     border-radius: 2px 2px 0 0;
     height: 185px;
-    background-size: 300px 300px;
+    background-size: cover;
     background-repeat: no-repeat;
 }
 
@@ -141,6 +141,8 @@
     padding: 0px 4px;
     background-color: #ffffff;
     border-top: none;
+    max-height: 75vh;
+    overflow-y: scroll;
 }
 
 
@@ -224,13 +226,14 @@
 }
 
 .database-views-modal table {
+    width: 100%;
     font-size: 13px;
     border-collapse: collapse;
     border-spacing: 0;
 }
 
 .database-views-modal td {
-    padding: 0px 15px;
+    padding: 0px 0px;
     border: none;
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -238,6 +241,10 @@
        -moz-user-select: none; /* Firefox */
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none;
+}
+
+th {
+    text-align: left;
 }
 
 .thumbnail-img {

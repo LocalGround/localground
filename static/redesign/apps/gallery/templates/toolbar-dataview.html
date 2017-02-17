@@ -1,15 +1,29 @@
 <div class = "project-detail">
 	<h3>Media</h3>
     <!-- Temporary placement for implementation purposes -->
+   
     {{#ifequal activeTab "data"}}
-        <select class="media-type">
-            <option value="photos">Photos</option>
-            <option value="audio">Audio</option>
-            <option value="markers">Site</option>
-        {{#each forms}}
-            <option value="form_{{ this.id }}">{{ this.name }}</option>
-        {{/each}}
-        </select>
+        {{#ifequal screenType "spreadsheet"}}
+            <select class="media-type">
+                <option value="photos">Photos</option>
+                <option value="audio">Audio</option>
+                <option value="markers">Site</option>
+            {{#each forms}}
+                <option value="form_{{ this.id }}">{{ this.name }}</option>
+            {{/each}}
+            </select>
+        {{/ifequal}}
+        
+        {{#ifequal screenType "gallery"}}
+            <select class="media-type">
+                <option value="photos">Photos</option>
+                <option value="audio">Audio</option>
+                <option value="markers">Site</option>
+            {{#each forms}}
+                <option value="form_{{ this.id }}">{{ this.name }}</option>
+            {{/each}}
+            </select>
+        {{/ifequal}}
     {{/ifequal}}
 
     {{#ifequal screenType "map"}}
