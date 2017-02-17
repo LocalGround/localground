@@ -23,12 +23,6 @@ define(["jquery",
                 'blur #projectName': 'generateSlug'
             },
 
-            modelEvents: {
-                // When data from Item view changes anywhere and anytime,
-                // re-render to update
-                "change": "render"
-            },
-
             slugError: null,
             projectSaveSuccess: null,
 
@@ -45,7 +39,7 @@ define(["jquery",
                     this.model.getProjectUsers();
                     this.attachCollectionEventHandlers();
                 }
-                this.listenTo(this.model, 'sync', this.createNewProjectUsers);
+                //this.listenTo(this.model, 'sync', this.createNewProjectUsers);
                 this.render();
             },
             childViewOptions: function () {
@@ -138,6 +132,7 @@ define(["jquery",
                 this.model.set('owner', owner);
                 this.model.save(null, {
                     success:function(model, response){
+                        that.createNewProjectUsers();
                         that.slugError = null;
                         console.log(response);
                         that.projectSaveSuccess = "Project Saved!";
