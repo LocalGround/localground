@@ -118,6 +118,7 @@ define([
                 mode: this.app.mode,
                 dataType: this.dataType,
                 audioMode: "detail",
+                name: this.model.get("name") || this.model.get("display_name"),
                 screenType: this.app.screenType,
                 audioCount: this.getAudioCount(),
                 photoCount: this.getPhotoCount()
