@@ -13,7 +13,8 @@
 
 .column {
     width: calc(25% - 12px);
-    margin: 4px 6px 8px;
+    margin: 4px 5px 8px;
+    border: 1px solid #e4e5eb;
     border-radius: 2px;
     display: flex;
     flex-direction: column;
@@ -116,8 +117,11 @@
 }
 
 .confirmation {
-    float: right;
-    margin-right: 18px;
+    padding-left: 20px;
+    line-height: 40px;
+    display: block;
+    position: absolute;
+    width: 100%;
 }
 
 
@@ -127,6 +131,7 @@
     margin: 20px;
     position:relative;
 }
+
  /************************************ Main area for databases ************************************/
 .dataview {
     top: 110px;
@@ -138,7 +143,7 @@
 }
 
 #gallery-main{
-    width:100%;
+    /*width:100%;*/
 }
 
 .side-panel{
@@ -154,7 +159,7 @@
     display: flex;
     flex-wrap: wrap;
     margin: 0 auto;
-    padding: 20px 14px 24px;
+    /*padding: 20px 14px 24px;*/
     overflow: scroll;
     display:flex;
     width:100%;

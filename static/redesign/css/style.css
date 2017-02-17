@@ -73,6 +73,7 @@ fieldset {
     font-size: 22px;
     font-weight: 400;
     padding-bottom: 4px;
+    margin-top: 20px;
 }
 
 .side-panel p{
@@ -576,8 +577,7 @@ input[type="checkbox"]{
 }
 
 .side-panel img,
-#marker-detail-panel img{
-    /*max-height: calc(35% - 40px);*/
+#marker-detail-panel img{    
     width: calc(100% - 40px);
     padding: 20px 20px 10px;    
 }
@@ -585,8 +585,9 @@ input[type="checkbox"]{
 .section-card {
     border: 1px solid #e4e5eb;
     background-color: white;
-    padding:10px;
-    position:relative;
+    padding: 10px;
+    margin: 20px;
+    position: relative;
 }
 
 .upload-spot > h4{
