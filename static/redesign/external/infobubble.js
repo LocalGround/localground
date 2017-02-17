@@ -1125,6 +1125,7 @@ define(["jquery"], function ($) {
 	  if (position) {
 		this.setAnchor(null);
 		this.set('position', position);
+        console.log(position);
 	  }
 	};
 	InfoBubble.prototype['setPosition'] = InfoBubble.prototype.setPosition;

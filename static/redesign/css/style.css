@@ -788,6 +788,11 @@ table.preview-properties td:first-child {
     font-weight: 500;
 }
 
+.tip-container {
+    text-align: center;
+    margin-top: 5px;
+}
+
 /************************************ general layout ************************************/
 .section{
     margin:0 20px;
