@@ -129,12 +129,16 @@ define([
             });
         },
         showMediaDetail: function (opts) {
-            var collection = this.dataManager.getData(opts.dataType).collection,
+            var dataEntry = this.dataManager.getData(opts.dataType),
+                collection = dataEntry.collection,
                 model = collection.get(opts.id);
             if (opts.dataType == "markers" || opts.dataType.indexOf("form_") != -1) {
                 if (!model.get("children")) {
                     model.fetch({"reset": true});
                 }
+            }
+            if (opts.dataType.indexOf("form_") != -1) {
+                model.set("fields", dataEntry.fields.toJSON());
             }
             this.detailView = new DataDetail({
                 model: model,

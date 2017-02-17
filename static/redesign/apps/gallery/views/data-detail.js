@@ -64,9 +64,21 @@ define([
         },
         initialize: function (opts) {
             _.extend(this, opts);
+            this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
             this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
+        },
+
+        bindFields: function () {
+            var i, f;
+            if (this.model.get("overlay_type").indexOf("form_") != -1) {
+                for (i = 0; i < this.model.get("fields").length; i++) {
+                    /* https://github.com/powmedia/backbone-forms */
+                    f = this.model.get("fields")[i];
+                    f.val = this.model.get(f.col_name);
+                }
+            }
         },
 
         modelEvents: {
@@ -142,7 +154,7 @@ define([
         },
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
-            var c;
+            var c, i, f;
             if (this.model.get("children") && this.model.get("children").photos) {
                 c = new Carousel({
                     model: this.model,
@@ -166,6 +178,7 @@ define([
                 field,
                 type,
                 name,
+                title,
                 that = this,
                 audio_attachments = [],
                 player;
@@ -174,17 +187,19 @@ define([
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     /* https://github.com/powmedia/backbone-forms */
                     field = this.model.get("fields")[i];
+                    field.val = this.model.get(field.col_name);
                     type = field.data_type.toLowerCase();
                     name = field.col_name;
+                    title = field.col_alias;
                     switch (type) {
                     case "boolean":
-                        fields[name] = 'Checkbox';
+                        fields[name] = { type: 'Checkbox', title: title };
                         break;
                     case "integer":
-                        fields[name] = 'Number';
+                        fields[name] = { type: 'Number', title: title };
                         break;
                     default:
-                        fields[name] = 'Text';
+                        fields[name] = { type: 'Text', title: title };
                     }
                 }
                 this.form = new Backbone.Form({
