@@ -30,19 +30,14 @@ define ([
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
-                   //     if (this.parent.viewMode == "thumb") {
-                   //         this.className = "column";
-                   //     } else if (this.parent.viewMode == "table") {
-                   //        this.className = "table";       
-                   //     }
                         this.render();
                     },
                     getTemplate: function () {
-                        
+
                         if (this.parent.viewMode == "thumb") {
                             return Handlebars.compile(ThumbTemplate);
                         } else if (this.parent.viewMode == "table") {
-                           return Handlebars.compile(TableTemplate);       
+                           return Handlebars.compile(TableTemplate);
                         }
                     },
                     modelEvents: {
@@ -201,32 +196,7 @@ define ([
                             });
                             this.$el.find(".player-container").append(player.$el);
                         }
-                        //set the proper class for child tag
-                     //   if (this.parent.viewMode == "thumb") {
-                     //       this.$el.addClass("column");
-                     //   } else if (this.parent.viewMode == "table") {
-                     //       this.$el.addClass("table"); 
-                     //   }
                     },
-                    
-               /*     tagName: function () {
-                        if (this.parent.viewMode == "thumb") {
-                            return "div";
-                        } else if (this.parent.viewMode == "table") {
-                            return "tr";
-                        }
-                    }, */
-                 //   tagName: "tr",
-                 //   className: function () {
-                 //       console.log(this.parent);
-                 //       if (this.parent.viewMode == "thumb") {
-                 //           return "column";
-                 //       } else if (this.parent.viewMode == "table") {
-                 //          return "table";       
-                 //       }
-                 //   },  
-                    
-                 //   className: "column",
                     templateHelpers: function () {
                         return {
                             dataType: this.currentMedia,
@@ -242,8 +212,6 @@ define ([
                 // call Marionette's default functionality (similar to "super")
                 Marionette.CompositeView.prototype.initialize.call(this);
                 this.template = Handlebars.compile(ParentTemplate);
-                //this.render();
-                //this.collection = this.app.dataManager.getCollection(this.currentMedia);
                 this.displayMedia();
             },
 
@@ -252,12 +220,10 @@ define ([
                 return {
                     viewMode: this.viewMode
                 };
-                
+
             },
 
             childViewOptions: function () {
-                //console.log(this.viewMode);
-                //console.log(this.determineChildViewTag);
                 return {
                     app: this.app,
                     currentMedia: this.currentMedia,
@@ -290,19 +256,19 @@ define ([
                 'click #card-view-button-modal' : 'displayCards',
                 'click #table-view-button-modal' : 'displayTable',
             },
-            
+
             displayCards: function() {
                 console.log("thumb view?");
                 this.viewMode = "thumb";
                 this.render();
-              
-            /*  
+
+            /*
                 $(".button-secondary").removeClass("active");
                 $("#card-view-button-modal").addClass("active");
                 this.getChildView();
             */
             },
-            
+
             displayTable: function() {
                 console.log("table view?");
                 this.viewMode = "table";
@@ -317,7 +283,7 @@ define ([
 
             hideLoadingMessage: function () {
                 this.$el.find("#loading-animation").empty();
-                
+
             },
 
             displayMedia: function () {
