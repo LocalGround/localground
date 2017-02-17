@@ -89,14 +89,30 @@ define([
         },
 
         attachModels: function (models) {
-            var that = this,
-                i = 0;
-            for (i = 0; i < models.length; ++i) {
-                this.model.attach(models[i], function () {
-                    that.model.fetch({reset: true});
-                }, function () {});
+            var that = this;
+            if (this.model.get("id")){
+                this.attachMedia(models);
+            }
+            else {
+                this.model.save(null, {
+                    success: function(){
+                        console.log("Adding media");
+                        that.attachMedia(models);
+                        that.model.collection.add(that.model);
+                    }
+                });
             }
             this.app.vent.trigger('hide-modal');
+        },
+
+        attachMedia: function(models){
+            //console.log("Adding media");
+            var that = this;
+            for (var i = 0; i < models.length; ++i) {
+                this.model.attach(models[i], function () {
+                    that.model.fetch({reset: true});
+                });
+            }
         },
         /*
           Problem stems from that the model is undefined
