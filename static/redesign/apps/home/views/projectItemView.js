@@ -17,6 +17,8 @@ define(["marionette",
                 //'click #delete_project': 'deleteProject'
             },
 
+            className: "project-card",
+
             modelEvents: {
                 // When data from Item view changes anywhere and anytime,
                 // re-render to update
@@ -27,6 +29,7 @@ define(["marionette",
                 //tell the home-app to show the share-project modal:
                 this.app.vent.trigger('share-project', { model: this.model });
             },
+
             templateHelpers: function () {
                 return {
                     projectUsers: this.model.projectUsers.toJSON()

@@ -139,6 +139,9 @@
 	width: calc(100% - 32px);
 }
 
+.project-card {
+	cursor: pointer;
+}
 
 
 

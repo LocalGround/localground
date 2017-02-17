@@ -19,7 +19,8 @@ define(["marionette",
                 'click .close': 'hideModal',
                 'click #add-project': 'showModal',
                 'click #search': 'doSearch',
-                'click #confirm-add': 'confirmAdd'
+                'click #confirm-add': 'confirmAdd',
+                'click .project-card' : 'linkToProject'
             },
             childViewOptions: function () {
                 return { app: this.app };
@@ -52,6 +53,12 @@ define(["marionette",
                 //close the modal window
                 var modal = document.getElementById('share-modal');
                 modal.style.display = "none";
+            },
+
+            linkToProject: function (e) {
+                var link = $(e.target).find(".project-link").attr('href');
+                window.location = link;
+                e.preventDefault();
             },
 
             template: Handlebars.compile(ListTemplate),
