@@ -14,18 +14,19 @@
 {{/ifequal}}
 
 {{#ifequal dataType "audio"}}
-<a href="#/{{ dataType }}/{{id}}">
+<a href="#/{{ dataType }}/{{id}}" id="audio-card">
     <div class="player-container audio-simple">
 
     </div>
-</a>
+
     <h1>
-        <a href="#/{{ dataType }}/{{id}}">{{ name }}</a>
+        {{ name }}
     </h1>
     {{#if coords}}<p class="coords">{{ coords }}</p>{{/if}}
     <h2>
         {{owner}}
     </h2>
+</a>
 {{/ifequal}}
 
 {{#ifcontains dataType "markers"}}
@@ -41,7 +42,7 @@
 
                    <tr>
                        <td>Caption</td>
-                       <td>{{ this.caption }}</td>
+                       <td>{{truncate this.caption 42}}</td>
                    </tr>
 
                    <tr>
@@ -85,7 +86,7 @@
             </table>
 
             <h1>
-                {{ name }}
+                {{display_name}}
             </h1>
             <h2>
                 {{owner}}

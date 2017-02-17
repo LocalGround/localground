@@ -20,7 +20,7 @@
     display:inline-block;
     position: relative;
     vertical-align: top;
-    background: white;
+    background: #fafafc;
 }
 
 .column img {
@@ -137,8 +137,8 @@
     width: 100%;
 }
 
-#gallery-main{
-    width:100%;
+.main-panel #gallery-main{
+    width:100%;  
 }
 
 .side-panel{

@@ -302,7 +302,7 @@ define(["marionette",
                 });
                 this.app.vent.trigger("show-modal", {
                     title: 'Media Browser',
-                    width: 800,
+                    width: 1100,
                     height: 400,
                     view: mediaBrowser,
                     saveButtonText: "Add",
