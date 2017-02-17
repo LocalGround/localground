@@ -96,7 +96,6 @@ define([
             else {
                 this.model.save(null, {
                     success: function(){
-                        console.log("Adding media");
                         that.attachMedia(models);
                         that.model.collection.add(that.model);
                     }
@@ -106,7 +105,6 @@ define([
         },
 
         attachMedia: function(models){
-            //console.log("Adding media");
             var that = this;
             for (var i = 0; i < models.length; ++i) {
                 this.model.attach(models[i], function () {
