@@ -98,7 +98,8 @@
 
 .column {
     width: calc(25% - 12px);
-    margin: 4px 6px 8px;
+    margin: 4px 5px 8px;
+    border: 1px solid #e4e5eb;
     border-radius: 2px;
     flex-direction: column;
     width: calc(25% - 12px);
