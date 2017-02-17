@@ -30,10 +30,7 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
                 strokeColor: this.strokeColor,
                 strokeWeight: this.strokeWeight,
                 strokeOpacity: this.strokeOpacity,
-                anchor: new google.maps.Point(
-                    this.width / 2,
-                    this.height / 2
-                ),
+                anchor: new google.maps.Point(0, 0),
                 path: this.path,
                 scale: this.getScale()
             };
