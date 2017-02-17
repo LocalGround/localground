@@ -71,6 +71,9 @@ define([
         },
 
         bindFields: function () {
+            if (!this.model || !this.model.get("overlay_type")) {
+                return;
+            }
             var i, f;
             if (this.model.get("overlay_type").indexOf("form_") != -1) {
                 for (i = 0; i < this.model.get("fields").length; i++) {
