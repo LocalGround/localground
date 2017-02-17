@@ -90,6 +90,7 @@ define(["marionette",
             var that = this;
             //attach click event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
+                that.model.trigger('do-highlight');
                 that.app.router.navigate("//" + that.model.getNamePlural() + "/" + that.model.get("id"));
             });
 
@@ -103,12 +104,14 @@ define(["marionette",
                 //console.log('show tip');
                 //that.infoBubble.bubble.setPosition(that.getIcon().position);
                 //that.infoBubble.tip.setPosition(that.getIcon().position);
-                that.infoBubble.showTip();
+                //that.infoBubble.showTip();
+                that.model.trigger('do-hover');
             });
             //attach mouseout event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function () {
-                console.log('hide tip');
-                that.model.trigger("hide-tip");
+                //console.log('hide tip');
+                //that.model.trigger("hide-tip");
+                that.model.trigger('clear-hover');
             });
         },
 

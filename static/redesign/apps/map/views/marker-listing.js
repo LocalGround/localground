@@ -53,6 +53,9 @@ define(["jquery",
                         console.log(opts);
                         _.extend(this, opts);
                         this.model.set("dataType", this.dataType);
+                        this.listenTo(this.model, 'do-highlight', this.highlight);
+                        this.listenTo(this.model, 'do-hover', this.hoverHighlight);
+                        this.listenTo(this.model, 'clear-hover', this.clearHoverHighlight);
                     },
                     template: Handlebars.compile(ItemTemplate),
                     events: {
@@ -72,8 +75,18 @@ define(["jquery",
                         };
                     },
                     highlight: function () {
+                        $("li").removeClass("hover-highlight");
                         $("li").removeClass("highlight");
                         this.$el.addClass("highlight");
+                    },
+                    hoverHighlight: function () {
+                        this.clearHoverHighlight();
+                        if (!this.$el.hasClass('highlight')) {
+                            this.$el.addClass("hover-highlight");
+                        }
+                    },
+                    clearHoverHighlight: function () {
+                        $("li").removeClass("hover-highlight");
                     }
                 });
             },
@@ -94,16 +107,10 @@ define(["jquery",
                 $(e.target).addClass("hide-panel fa-caret-down");
             },
             initialize: function (opts) {
-                if (opts.data.collection.length > 0) {
-                    var model = opts.data.collection.at(0),
-                        key = model.get("overlay_type");
-                    if (model.get("overlay_type").indexOf("form_") != -1) {
-                        key = "marker";
-                    }
-                    this.iconOpts = new Icon({
-                        shape: key
-                    });
-                }
+                alert(opts.data.collection.key);
+                this.iconOpts = new Icon({
+                    shape: opts.data.collection.key
+                });
                 _.extend(this, opts);
                 Marionette.CompositeView.prototype.initialize.call(this);
 
@@ -162,6 +169,9 @@ define(["jquery",
                 this.render();
                 this.renderOverlays();
                 this.hideLoadingMessage();
+            },
+            onRender: function () {
+                console.log("rendering...");
             }
 
         });

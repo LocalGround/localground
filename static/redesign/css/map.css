@@ -198,6 +198,10 @@ svg, .fa-question-circle {
     background: rgb(123, 155, 225);
     color: white;
 }
+.hover-highlight, .marker-container li:hover {
+    background: #EEE;
+    color: #444;
+}
 .highlight a {
     color: white;
 }
