@@ -65,6 +65,9 @@ define(["handlebars"],
         });
 
         Handlebars.registerHelper('truncate', function (str, numChars) {
+            if (!str) {
+                return;
+            }
             if (str.length > numChars && str.length > 0) {
                 var new_str = str + " ";
                 new_str = str.substr(0, numChars);
