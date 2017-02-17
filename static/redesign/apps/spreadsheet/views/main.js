@@ -195,7 +195,6 @@ define(["marionette",
                     td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\
                     <i class='fa fa-file-photo-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
                 }
-                console.log(model + " row: " + row + ", column: " + col);
             },
 
             audioCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
@@ -207,11 +206,23 @@ define(["marionette",
                     td.innerHTML += "<a class = 'carousel-audio' row-index = '"+row+"' col-index = '"+col+"'>\
                     <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
                 }
-                console.log(model + " row: " + row + ", column: " + col);
 
             },
 
-            mediaCountRenderer: function(){
+            mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
+                var model = this.getModelFromCell(instance, row),
+                    photoCount = model.get("photo_count") || 0,
+                    audioCount = model.get("audio_count") || 0,
+                    i;
+                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
+                for (i = 0; i < photoCount; ++i) {
+                    td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\
+                    <i class='fa fa-file-photo-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
+                }
+                for (i = 0; i < audioCount; ++i) {
+                    td.innerHTML += "<a class = 'carousel-audio' row-index = '"+row+"' col-index = '"+col+"'>\
+                    <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
+                }
 
             },
 
@@ -357,8 +368,9 @@ define(["marionette",
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
                         cols = ["ID", "Lat", "Lng", "Title", "Caption",
-                        "Photos",
-                        "Audio",
+                        //"Photos",
+                        //"Audio",
+                        "Media",
                         "Tags", "Owner", "Delete"];
                         return cols;
                     default:
@@ -368,8 +380,9 @@ define(["marionette",
                         for (var i = 0; i < this.fields.length; ++i) {
                             cols.push(this.fields.at(i).get("col_name") + deleteColumn);
                         }
-                        cols.push("Photos");
-                        cols.push("Audio");
+                        //cols.push("Photos");
+                        //cols.push("Audio");
+                        cols.push("Media");
                         cols.push("Delete");
                         cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
                         return cols;
@@ -382,7 +395,7 @@ define(["marionette",
                     case "photos":
                         return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "markers":
-                        return [30, 80, 80, 200, 400, 100, 100, 200, 80, 100];
+                        return [30, 80, 80, 200, 400, 100, 200, 80, 100];
                     default:
                         var cols = [30, 80, 80];
                         for (var i = 0; i < this.fields.length; ++i){
@@ -448,8 +461,9 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            { data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                            { data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                            //{ data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                            //{ data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
+                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
                             { data: "tags", renderer: "html" },
                             { data: "owner", readOnly: true},
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
@@ -478,12 +492,17 @@ define(["marionette",
                                 type: type
                             })
                         };
+                        /*
                         cols.push(
                             { data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                         );
 
                         cols.push(
                             { data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
+                        );
+                        */
+                        cols.push(
+                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                         );
 
                         cols.push(
