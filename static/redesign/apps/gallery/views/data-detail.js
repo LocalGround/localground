@@ -131,26 +131,9 @@ define([
                 dataType: this.dataType,
                 audioMode: "detail",
                 name: this.model.get("name") || this.model.get("display_name"),
-                screenType: this.app.screenType,
-                audioCount: this.getAudioCount(),
-                photoCount: this.getPhotoCount()
+                screenType: this.app.screenType
             };
             return context;
-        },
-        getPhotoCount: function () {
-            var count = 0;
-            if (this.model.get("children") && this.model.get("children").photos) {
-                count = this.model.get("children").photos.data.length;
-            }
-            return count;
-        },
-
-        getAudioCount: function () {
-            var count = 0;
-            if (this.model.get("children") && this.model.get("children").audio) {
-                count = this.model.get("children").audio.data.length;
-            }
-            return count;
         },
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here

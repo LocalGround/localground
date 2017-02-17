@@ -10,20 +10,7 @@
             <p style="font-style: italic">{{ caption }}</p>
         {{/if}}
 
-        {{#compare photoCount 1 operator="=="}}
-            {{#each children.photos.data}}
-                <div class="img-card">
-                    <img src="{{ this.path_medium }}" />
-                    {{#if caption }}
-                        <p>{{ caption }}</p>
-                    {{/if}}
-                </div>
-            {{/each}}
-        {{/compare}}
-    
-        {{#compare photoCount 1 operator=">"}}
-            <div class="carousel carousel-photo"></div>
-        {{/compare}}
+        <div class="carousel carousel-photo"></div>
     
         {{#compare audioCount 1 operator="=="}}
             {{#each children.audio.data}}

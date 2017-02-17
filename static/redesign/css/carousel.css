@@ -32,7 +32,7 @@
     z-index: 2;
 }
 
-.carousel-photo {
+.carousel-photo .active-slide {
     min-height: 350px;
 }
 
