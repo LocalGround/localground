@@ -78,7 +78,6 @@ ul{
     overflow: scroll;
     height:100%;
     transition: 0.5s;
-    padding: 20px;
     padding-top: 80px;
     border: none !important;
 }

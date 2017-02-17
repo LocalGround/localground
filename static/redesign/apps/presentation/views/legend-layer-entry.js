@@ -3,7 +3,7 @@ define(['marionette',
         'jquery',
         'handlebars',
         'collections/symbols',
-        'apps/presentation/views/marker-overlays',
+        'lib/maps/marker-overlays',
         'text!../templates/legend-layer.html',
         'text!../templates/legend-symbol-item.html'
     ],
