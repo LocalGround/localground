@@ -19,7 +19,7 @@ define([
             };
             this.template = Handlebars.compile(FormListTemplate);
             this.collection = new Forms();
-            //this.listenTo()
+            this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
             this.collection.fetch({ reset: true });
             this.render();
         },
