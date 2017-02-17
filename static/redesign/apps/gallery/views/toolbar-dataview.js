@@ -28,7 +28,7 @@ define([
             'click .add-media': 'createUploadModal',
             'click .add': 'toggleMenu',
             'click #add-new': 'triggerAddNew',
-            'click .add-new': 'triggerAddNew',
+            'click .add-new': 'triggerAddNewMap'
         },
         modal: null,
         forms: null,
@@ -104,6 +104,19 @@ define([
             e.preventDefault();
         },
 
+        triggerAddNewMap: function (e) {
+            var mediaType = $(e.target).attr('data-value'),
+                url = "//" + mediaType + "/new";
+            if (mediaType === 'photos' || mediaType === 'audio') {
+                this.createUploadModal();
+            } else {
+                this.app.router.navigate(url, {
+                    trigger: true,
+                    forceReload: true
+                });
+            }
+            e.preventDefault();
+        },
         changeMode: function () {
             if (this.app.activeTab == "data") {
                 this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
