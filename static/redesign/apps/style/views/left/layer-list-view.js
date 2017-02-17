@@ -80,7 +80,6 @@ define(["marionette",
             //display layers when map is changed
             displayLayers: function (map) {
                 this.collection = new Layers(null, {mapID: map.get("id")});
-                this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
                 this.collection.fetch({ reset: true});
                 this.listenTo(this.collection, 'reset', this.render);
             }
