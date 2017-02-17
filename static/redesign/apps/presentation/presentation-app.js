@@ -47,6 +47,9 @@ define([
             this.listenTo(this.vent, 'show-detail', this.showMediaDetail);
         },
         fetchErrors: false,
+        getMode: function () {
+            return "view";
+        },
 
         fetchMap: function (slug) {
             this.slug = slug;
@@ -84,11 +87,17 @@ define([
         },
 
         showBasemap: function () {
+            var center = {
+                lat: this.model.get("center").coordinates[1],
+                lng: this.model.get("center").coordinates[0]
+            };
             this.basemapView = new Basemap({
                 app: this,
                 showSearchControl: false
             });
             this.mapRegion.show(this.basemapView);
+            this.basemapView.setCenter(center);
+            this.basemapView.setZoom(this.model.get("zoom"));
         },
 
         showMapTitle: function () {
