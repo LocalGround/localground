@@ -191,7 +191,7 @@ define(["jquery",
                     } else {
                         //create new projectuser:
                         username = $row.find(".username").val();
-                        usernameInput = $row.find(".username");xs
+                        usernameInput = $row.find(".username");
                         if (!authorityID || (username.trim() == "" || username == undefined )){
                             $row.css("background-color", "#FFAAAA");
                             this.errorUserName(usernameInput);
