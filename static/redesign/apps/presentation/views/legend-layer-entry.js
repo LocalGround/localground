@@ -25,6 +25,14 @@ define(['marionette',
                             this.markerOverlays.hideAll();
                         }
                     },
+                    templateHelpers: function () {
+                        var height = Math.min(this.model.get("height"), 17),
+                            scale = height / this.model.get("height");
+                        return {
+                            width: this.model.get("width") * scale,
+                            height: height
+                        };
+                    },
                     initialize: function (opts) {
                         _.extend(this, opts);
                         this.template = Handlebars.compile(SymbolTemplate);
