@@ -107,7 +107,6 @@ define(["jquery",
                 $(e.target).addClass("hide-panel fa-caret-down");
             },
             initialize: function (opts) {
-                alert(opts.data.collection.key);
                 this.iconOpts = new Icon({
                     shape: opts.data.collection.key
                 });
