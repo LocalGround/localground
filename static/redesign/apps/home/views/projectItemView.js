@@ -19,7 +19,6 @@ define(["marionette",
             },
             linkToProject: function () {
                 var url = this.$el.find(".project-overview").attr("data-url");
-                
                 window.location = url;
             },
 

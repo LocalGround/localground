@@ -358,8 +358,8 @@ Uploader = function (opts) {
                 return false;
             });
 
-        $success = $('<div class="badge success-icon" />')
-            .append($('<i >').addClass('fa fa-check'));
+       // $success = $('<div class="badge success-icon" />')
+       //     .append($('<i >').addClass('fa fa-check'));
         file.context.find('.img-container').prepend($success);
         file.context.find('p')
             .append('<br />').append($delete).append(' | <a href="' + self.getProfileUrl(data.files[0].ext) + '">edit</a>');

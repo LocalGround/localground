@@ -164,15 +164,18 @@
 .badge {
     padding: 5px 0px 0px 5px;
     border-radius: 20px;
-    margin-top: -10px;
-    margin-left: -10px;
-    position: absolute;
+    margin-top: -20px;
+    margin-left: 0px;
+    position: relative;
     width: 20px;
     color: #FFF;
     height: 20px;
+    bottom: -30px;
+    right: -4px;
 }
 .success-icon {
     background-color: #468847;
+    border: solid 1px white; */
 }
 .failure-icon {
     background-color: rgb(185, 74, 72);
