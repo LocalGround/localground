@@ -92,7 +92,17 @@ define([
             };
             this.basemapView = new Basemap({
                 app: this,
-                showSearchControl: false
+                showSearchControl: false,
+                zoomControlOptions: {
+                    style: google.maps.ZoomControlStyle.SMALL,
+                    position: google.maps.ControlPosition.LEFT_BOTTOM
+                },
+                streetViewControlOptions: {
+                    position: google.maps.ControlPosition.LEFT_BOTTOM
+                },
+                rotateControlOptions: {
+                    position: google.maps.ControlPosition.LEFT_BOTTOM
+                }
             });
             this.mapRegion.show(this.basemapView);
             this.basemapView.setCenter(center);

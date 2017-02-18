@@ -1,12 +1,11 @@
 define(["marionette",
-    "jquery",
     "lib/maps/overlays/point",
     "lib/maps/overlays/polyline",
     "lib/maps/overlays/polygon",
     "lib/maps/overlays/ground-overlay",
     "lib/maps/overlays/infobubbles/base",
     "lib/maps/overlays/icon"
-    ], function (Marionette, $, Point, Polyline, Polygon, GroundOverlay, Infobubble, Icon) {
+    ], function (Marionette, Point, Polyline, Polygon, GroundOverlay, Infobubble, Icon) {
     "use strict";
     /**
      * This class controls the rendering and underlying
@@ -23,7 +22,7 @@ define(["marionette",
 
         modelEvents: {
             'change:geometry': 'updateOverlay',
-            'change': 'render',
+            //'change': 'render',
             'show-overlay': 'show',
             'hide-overlay': 'hide',
             'zoom-to-overlay': 'zoomTo',

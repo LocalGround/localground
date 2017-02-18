@@ -37,15 +37,17 @@ define(["marionette",
                     scrollwheel: false,
                     minZoom: this.minZoom,
                     streetViewControl: true,
-                    scaleControl: true,
+                    //scaleControl: true,
                     panControl: false,
                     mapTypeControlOptions: {
                         style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
                         position: google.maps.ControlPosition.TOP_LEFT
                     },
-                    zoomControlOptions: {
+                    zoomControlOptions: this.zoomControlOptions || {
                         style: google.maps.ZoomControlStyle.SMALL
                     },
+                    rotateControlOptions: this.rotateControlOptions,
+                    streetViewControlOptions: this.streetViewControlOptions,
                     zoom: this.defaultLocation.zoom,
                     center: this.defaultLocation.center
 
