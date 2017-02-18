@@ -13,8 +13,14 @@ define(["marionette",
 
             template: Handlebars.compile(ItemTemplate),
             events: {
-                'click .action': 'shareModal'
+                'click .action': 'shareModal',
+                'click' : "linkToProject"
                 //'click #delete_project': 'deleteProject'
+            },
+            linkToProject: function () {
+                var url = this.$el.find(".project-overview").attr("data-url");
+                
+                window.location = url;
             },
 
             className: "project-card",
