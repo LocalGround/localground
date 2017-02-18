@@ -23,10 +23,6 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
             return scale;
         },
         generateGoogleIcon: function () {
-            //console.log(this.width, this.height);
-            /*anchor: new google.maps.Point(0, -50),
-            size: new google.maps.Size(100, 100),
-            origin: new google.maps.Point(100, 100),*/
             return {
                 fillColor: this.fillColor,
                 fillOpacity: this.fillOpacity,
@@ -34,10 +30,11 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
                 strokeWeight: this.strokeWeight,
                 strokeOpacity: this.strokeOpacity,
                 path: this.path,
+                markerSize: this.width,
                 scale: this.getScale(),
-                anchor: new google.maps.Point(0, 0),
-                size: new google.maps.Size(this.width, this.height),
-                origin: new google.maps.Point(this.width / 2, this.height / 2)
+                anchor: this.anchor
+                //size: new google.maps.Size(this.width, this.height),
+                //origin: new google.maps.Point(0, 0)
             };
         }
     });

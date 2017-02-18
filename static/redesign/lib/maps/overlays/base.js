@@ -48,8 +48,8 @@ define(["marionette",
                     fillColor: '#ed867d', //this.model.get("color")
                     fillOpacity: 1,
                     strokeColor: '#fff',
-                    strokeWeight: 2,
-                    strokeOpacity: 0.7,
+                    strokeWeight: 1,
+                    strokeOpacity: 1,
                     shape: 'circle'
                 };
             _.extend(iconOpts, this.iconOpts);
@@ -88,29 +88,16 @@ define(["marionette",
 
         attachEventHandlers: function () {
             var that = this;
-            //attach click event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
                 that.model.trigger('do-highlight');
                 that.app.router.navigate("//" + that.model.getNamePlural() + "/" + that.model.get("id"));
             });
-
-            /*google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
-                console.log('mouseover: ' + that.model.get("id"));
-            });
-            google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function () {
-                console.log('mouseout: ' + that.model.get("id"));
-            });*/
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
-                //console.log('show tip');
-                //that.infoBubble.bubble.setPosition(that.getIcon().position);
-                //that.infoBubble.tip.setPosition(that.getIcon().position);
-                //that.infoBubble.showTip();
+                that.infoBubble.showTip();
                 that.model.trigger('do-hover');
             });
-            //attach mouseout event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function () {
-                //console.log('hide tip');
-                //that.model.trigger("hide-tip");
+                that.model.trigger("hide-tip");
                 that.model.trigger('clear-hover');
             });
         },
