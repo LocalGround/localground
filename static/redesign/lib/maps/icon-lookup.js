@@ -24,7 +24,7 @@ define(['underscore'], function (_) {
                 path: 'M7.5,0C5.0676,0,2.2297,1.4865,2.2297,5.2703 C2.2297,7.8378,6.2838,13.5135,7.5,15c1.0811-1.4865,5.2703-7.027,5.2703-9.7297C12.7703,1.4865,9.9324,0,7.5,0z',
                 width: IconLookup.baseWidth * 2,
                 height: IconLookup.baseHeight * 2,
-                anchor: new google.maps.Point(IconLookup.baseWidth / 2, IconLookup.baseHeight)
+                anchor: [IconLookup.baseWidth / 2, IconLookup.baseHeight]
             },
             square: {
                 path: 'M13,14H2c-0.5523,0-1-0.4477-1-1V2c0-0.5523,0.4477-1,1-1h11c0.5523,0,1,0.4477,1,1v11C14,13.5523,13.5523,14,13,14z'
@@ -118,8 +118,7 @@ define(['underscore'], function (_) {
             if (icon) {
                 icon.baseWidth = icon.baseWidth || IconLookup.baseWidth;
                 icon.baseHeight = icon.baseHeight || IconLookup.baseHeight;
-                icon.anchor = icon.anchor ||
-                    new google.maps.Point(icon.baseWidth / 2, icon.baseHeight / 2);
+                icon.anchor = icon.anchor || [icon.baseWidth / 2, icon.baseHeight / 2];
             }
             return icon;
         }

@@ -16,6 +16,8 @@ define(["marionette",
             map: null,
             showSearchControl: true,
             activeMapTypeID: 1,
+            minZoom: 1,
+            maxZoom: 22,
             tileManager: null,
             userProfile: null,
             //todo: populate this from user prefs:

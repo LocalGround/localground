@@ -35,7 +35,7 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
                 path: this.path,
                 markerSize: this.width,
                 scale: this.getScale(),
-                anchor: this.anchor,
+                anchor: new google.maps.Point(this.anchor[0], this.anchor[1]),
                 url: this.url,
                 //size: new google.maps.Size(this.width, this.height),
                 origin: this.origin || new google.maps.Point(0, 0),
