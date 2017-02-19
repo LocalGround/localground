@@ -298,6 +298,9 @@ svg, .fa-question-circle {
 .symbol-container p {
     display: inline-block;
 }
+.symbol-container li {
+    margin: 3px 0px 3px 0px;
+}
 
 .symbol-container svg {
     vertical-align: bottom;

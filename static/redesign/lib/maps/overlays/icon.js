@@ -12,10 +12,13 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
             }
             _.extend(this, opts);
             this.scale = this.getScale();
-            this.viewBox = this.getViewBox();
+            this.viewBox = this.viewBox || this.getViewBox();
         },
         getViewBox: function () {
-            return '-1 -1 ' + (this.baseWidth + 1) + ' ' + (this.baseHeight + 2);
+            return (-1 * this.strokeWeight) + ' ' +
+                    (-1 * this.strokeWeight) + ' ' +
+                    (this.baseWidth + this.strokeWeight) + ' ' +
+                    (this.baseHeight + this.strokeWeight + 2);
         },
         getScale: function () {
             var scale = this.width / this.baseWidth;
@@ -32,9 +35,11 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
                 path: this.path,
                 markerSize: this.width,
                 scale: this.getScale(),
-                anchor: this.anchor
+                anchor: this.anchor,
+                url: this.url,
                 //size: new google.maps.Size(this.width, this.height),
-                //origin: new google.maps.Point(0, 0)
+                origin: this.origin || new google.maps.Point(0, 0),
+                viewBox: this.getViewBox()
             };
         }
     });
