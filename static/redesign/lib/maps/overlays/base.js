@@ -60,6 +60,7 @@ define(["marionette",
             this.getGoogleOverlay().setMap(null);
             this.initOverlayType();
             this.changeMode();
+            this.render();
         },
 
         initOverlayType: function () {
