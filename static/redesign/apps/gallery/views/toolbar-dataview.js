@@ -36,7 +36,6 @@ define([
         template: Handlebars.compile(ToolbarTemplate),
 
         templateHelpers: function () {
-            //alert(this.app.dataType);
             return {
                 mode: this.app.mode,
                 dataType: this.app.dataType,
@@ -66,6 +65,7 @@ define([
             this.forms = new Forms();
             this.listenTo(this.forms, "reset", this.render);
             this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
+            this.listenTo(this.forms, 'reset', this.renderAndRoute);
             this.forms.fetch({ reset: true });
         },
 
@@ -79,7 +79,6 @@ define([
         },
 
         toggleMenu: function (e) {
-            console.log("clicked add");
             var $btn = $(e.target);
             this.$el.find("#add-data-type").toggle().css({
                 top: $btn.position().top + 30,
@@ -119,19 +118,24 @@ define([
             e.preventDefault();
         },
         changeMode: function () {
-            if (this.app.activeTab == "data") {
+            /*if (this.app.activeTab == "data") {
                 this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
                 this.listenTo(this.forms, 'reset', this.renderAndRoute);
                 this.forms.fetch({ reset: true });
             } else {
                 this.renderAndRoute();
-            }
+            }*/
+            this.renderAndRoute();
         },
         updateNewObejctRoute: function () {
             this.$el.find("#add-site").attr("href", '#/' + this.app.dataType + '/new');
         },
 
         renderAndRoute: function () {
+            this.forms.each(function (form) {
+                //TODO: add to API:
+                form.set("overlay_type", "form_" + form.get("id"));
+            });
             this.render();
             this.app.router.navigate(this.$el.find(".media-type").val(), { trigger: true });
         },
@@ -146,7 +150,6 @@ define([
              */
 
             var term = this.$el.find("#searchTerm").val();
-            console.log(term);
             if (term === "") {
                 this.app.vent.trigger("clear-search");
             } else {
@@ -210,7 +213,6 @@ define([
                 saveFunction: opts.saveFunction ? opts.saveFunction.bind(opts.view) : null,
                 deleteFunction: opts.deleteFunction ? opts.deleteFunction.bind(opts.view) : null
             });
-            console.log(params);
             this.modal.update(params);
             this.modal.show();
         },

@@ -22,7 +22,7 @@ define(["jquery",
                 return d;
             },
             getEmptyView: function () {
-                console.log("empty", this.title);
+                //console.log("empty", this.title);
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
@@ -50,7 +50,7 @@ define(["jquery",
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
-                        console.log(opts);
+                        //console.log(opts);
                         _.extend(this, opts);
                         this.model.set("dataType", this.dataType);
                         this.listenTo(this.model, 'do-highlight', this.highlight);
@@ -168,10 +168,10 @@ define(["jquery",
                 this.render();
                 this.renderOverlays();
                 this.hideLoadingMessage();
-            },
+            }/*,
             onRender: function () {
                 console.log("rendering...");
-            }
+            }*/
 
         });
         return MarkerListing;

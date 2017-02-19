@@ -76,10 +76,21 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                         var formID = key.split("_")[1],
                             recordsURL = '/api/0/forms/' + formID + '/data/',
                             fieldsURL = '/api/0/forms/' + formID + '/fields/',
+                            records = new Records(data, { url: recordsURL }),
                             fields = new Fields(null, {url: fieldsURL });
-                        fields.fetch();
+                        fields.fetch({ success: function () {
+                            // some extra post-processing for custom datatypes so that
+                            // it's easier to loop through fields and output corresponding
+                            // values
+                            records.each(function (record) {
+                                fields.each(function (field) {
+                                    field.set("val", record.get(field.get("col_name")));
+                                });
+                                record.set('fields', fields.toJSON());
+                            });
+                        }});
                         return {
-                            collection: new Records(data, { url: recordsURL }),
+                            collection: records,
                             fields: fields,
                             isCustomType: true,
                             isSite: true

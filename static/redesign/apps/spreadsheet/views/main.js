@@ -100,7 +100,6 @@ define(["marionette",
                         oldVal = changes[i][2];
                         newVal = changes[i][3];
                         if (oldVal !== newVal) {
-                            console.log("[" + source + "]: saving changes to database...");
                             //Note: relies on the fact that the first column is the ID column
                             //      see the getColumns() function below
                             model = this.getModelFromCell(null, idx);
@@ -115,7 +114,6 @@ define(["marionette",
                                 } else {
                                     model.set("geometry", null);
                                     if (!model.get("lat") && !model.get("lng")) {
-                                        console.log("nulling...");
                                         model.save({ geometry: null }, {patch: true, wait: true});
                                     }
                                 }
@@ -123,7 +121,6 @@ define(["marionette",
                                 model.set(key, newVal);
                                 model.save(model.changedAttributes(), {patch: true, wait: true});
                             }
-                            console.log(model.changedAttributes());
                         } else {
                             console.log("[" + source + "], but no value change. Ignored.");
                         }
@@ -146,7 +143,6 @@ define(["marionette",
                 img.src = value;
                 img.onclick = function () {
                     model = that.getModelFromCell(instance, rowIndex);
-                    console.log(model);
                     // Get the modal
                     modal = document.getElementById('myModal');
 
@@ -231,12 +227,12 @@ define(["marionette",
                 var that = this;
 
                 var row_idx = $(e.target).attr("row-index");
-                console.log(e.target);
-                console.log(row_idx);
+                //console.log(e.target);
+                //console.log(row_idx);
                 this.currentModel = this.collection.at(parseInt(row_idx));
                 //any extra view logic. Carousel functionality goes here
                 this.currentModel.fetch({success: function(){
-                    console.log(that.currentModel);
+                    //console.log(that.currentModel);
                     var c = new Carousel({
                         model: that.currentModel,
                         mode: "photos",
@@ -257,7 +253,7 @@ define(["marionette",
 
                     modal.style.display = "block";
 
-                    console.log(c);
+                    //console.log(c);
                 }});
             },
 
@@ -290,7 +286,7 @@ define(["marionette",
                     var modal = document.getElementById('carouselModal');
 
                     modal.style.display = "block";
-                    console.log(c);
+                    //console.log(c);
                 }});
             },
 
@@ -395,12 +391,13 @@ define(["marionette",
                     case "photos":
                         return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "markers":
-                        return [30, 80, 80, 200, 400, 100, 200, 80, 100];
+                        return [30, 80, 80, 200, 400, 100, 200, 120, 100];
                     default:
                         var cols = [30, 80, 80];
                         for (var i = 0; i < this.fields.length; ++i){
                             cols.push(150);
                         }
+                        cols.push(120);
                         return cols;
                 }
             },
@@ -411,7 +408,6 @@ define(["marionette",
                 // Old search field condition: collection.key.indexOf("form_")
                 //*
                 if (this.collection.key.indexOf("form_")){
-                    console.log(this.fields);
                     this.collection.doSearch(term, this.app.getProjectID(), this.fields);
                 } else {
                     this.collection.doSearch(term, this.app.getProjectID());

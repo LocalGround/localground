@@ -9,7 +9,7 @@
                 <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>
                 <option value="markers" {{#ifequal dataType "markers"}}SELECTED{{/ifequal}}>Site</option>
             {{#each forms}}
-                <option value="form_{{ this.id }}">{{ this.name }}</option>
+                <option value="form_{{ this.id }}" {{#ifequal ../dataType this.overlay_type}}SELECTED{{/ifequal}}>{{ this.name }}</option>
             {{/each}}
             </select>
         {{/ifequal}}
@@ -20,7 +20,7 @@
                 <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>
                 <option value="markers" {{#ifequal dataType "markers"}}SELECTED{{/ifequal}}>Site</option>
             {{#each forms}}
-                <option value="form_{{ this.id }}">{{ this.name }}</option>
+                <option value="form_{{ this.id }}" {{#ifequal ../dataType this.overlay_type}}SELECTED{{/ifequal}}>{{ this.name }}</option>
             {{/each}}
             </select>
         {{/ifequal}}

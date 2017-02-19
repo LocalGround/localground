@@ -20,7 +20,8 @@ define(["jquery",
                     },
                     template: Handlebars.compile(ThumbTemplate),
                     modelEvents: {
-                        'saved': 'render'
+                        'saved': 'render',
+                        'change': 'render'
                     },
                     events: {
                         "click .card-img-preview" : "selectedClass",
@@ -108,16 +109,6 @@ define(["jquery",
 
             onRender: function () {
                 this.$el.find("#loading-animation").empty();
-                /*
-                if (this.collection.length == 0){
-                    var noData = "You have not added any " + this.app.dataType + " to the gallery. Please add media.";
-                    this.$el.find("#gallery-main").html(noData);
-                }
-                /*
-                else {
-                    this.$el.find("#gallery-main").html("");
-                }
-                //*/
             },
 
             template: function () {
