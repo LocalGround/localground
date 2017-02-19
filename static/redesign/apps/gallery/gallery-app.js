@@ -22,7 +22,7 @@ define([
         },
         currentCollection: null,
         mode: "edit",
-        dataType: "photos",
+        dataType: "markers",
         screenType: "gallery",
         activeTab: "media",
         dataManager: null,
@@ -53,7 +53,7 @@ define([
             this.showGlobalToolbar();
             this.showDataToolbar();
             console.log("about to navigate", this.router);
-            this.router.navigate('//photos', { trigger: true });
+            this.router.navigate('//' + this.dataType, { trigger: true });
         },
 
         showGlobalToolbar: function () {

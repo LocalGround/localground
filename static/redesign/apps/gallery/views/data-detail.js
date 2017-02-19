@@ -90,12 +90,11 @@ define([
 
         attachModels: function (models) {
             var that = this;
-            if (this.model.get("id")){
+            if (this.model.get("id")) {
                 this.attachMedia(models);
-            }
-            else {
+            } else {
                 this.model.save(null, {
-                    success: function(){
+                    success: function () {
                         that.attachMedia(models);
                         that.model.collection.add(that.model);
                     }
@@ -104,9 +103,9 @@ define([
             this.app.vent.trigger('hide-modal');
         },
 
-        attachMedia: function(models){
-            var that = this;
-            for (var i = 0; i < models.length; ++i) {
+        attachMedia: function (models) {
+            var that = this, i;
+            for (i = 0; i < models.length; ++i) {
                 this.model.attach(models[i], function () {
                     that.model.fetch({reset: true});
                 });
@@ -199,7 +198,7 @@ define([
                         fields[name] = { type: 'Number', title: title };
                         break;
                     default:
-                        fields[name] = { type: 'Text', title: title };
+                        fields[name] = { type: 'TextArea', title: title };
                     }
                 }
                 this.form = new Backbone.Form({

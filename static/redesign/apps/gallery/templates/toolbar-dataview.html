@@ -5,9 +5,9 @@
     {{#ifequal activeTab "data"}}
         {{#ifequal screenType "spreadsheet"}}
             <select class="media-type">
-                <option value="photos">Photos</option>
-                <option value="audio">Audio</option>
-                <option value="markers">Site</option>
+                <option value="photos" {{#ifequal dataType "photos"}}SELECTED{{/ifequal}}>Photos</option>
+                <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>
+                <option value="markers" {{#ifequal dataType "markers"}}SELECTED{{/ifequal}}>Site</option>
             {{#each forms}}
                 <option value="form_{{ this.id }}">{{ this.name }}</option>
             {{/each}}
@@ -16,9 +16,9 @@
         
         {{#ifequal screenType "gallery"}}
             <select class="media-type">
-                <option value="photos">Photos</option>
-                <option value="audio">Audio</option>
-                <option value="markers">Site</option>
+                <option value="photos" {{#ifequal dataType "photos"}}SELECTED{{/ifequal}}>Photos</option>
+                <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>
+                <option value="markers" {{#ifequal dataType "markers"}}SELECTED{{/ifequal}}>Site</option>
             {{#each forms}}
                 <option value="form_{{ this.id }}">{{ this.name }}</option>
             {{/each}}

@@ -21,7 +21,7 @@ define([
         },
 
         currentCollection: null,
-        dataType: "photos",
+        dataType: "markers",
         screenType: "spreadsheet",
         start: function (options) {
             // declares any important global functionality;

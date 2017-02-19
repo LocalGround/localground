@@ -36,6 +36,7 @@ define([
         template: Handlebars.compile(ToolbarTemplate),
 
         templateHelpers: function () {
+            //alert(this.app.dataType);
             return {
                 mode: this.app.mode,
                 dataType: this.app.dataType,
