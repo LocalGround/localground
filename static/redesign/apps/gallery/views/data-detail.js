@@ -104,9 +104,10 @@ define([
         },
 
         attachMedia: function (models) {
-            var that = this, i;
+            var that = this, i, ordering;
             for (i = 0; i < models.length; ++i) {
-                this.model.attach(models[i], function () {
+                ordering = this.model.get("photo_count") + this.model.get("audio_count");
+                this.model.attach(models[i], (ordering + i + 1), function () {
                     that.model.fetch({reset: true});
                 });
             }

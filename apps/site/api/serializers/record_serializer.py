@@ -53,7 +53,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
             try:
                 return len(obj.photos)
             except:
-                return None
+                return 0
     
     def get_audio_count(self, obj):
         try:
@@ -62,7 +62,7 @@ class BaseRecordSerializer(serializers.ModelSerializer):
             try:
                 return len(obj.audio)
             except:
-                return None
+                return 0
         
     def get_photos(self, obj):
         from localground.apps.site.api.serializers import PhotoSerializer

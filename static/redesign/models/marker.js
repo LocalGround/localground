@@ -101,13 +101,13 @@ define(["models/base",
             return messages.join(', ');
         },
 
-        attach: function (model, callbackSuccess, callbackError) {
+        attach: function (model, order, callbackSuccess, callbackError) {
             var association = new Association({
                 overlay_type: this.get("overlay_type"),
                 model_type: model.getKey(),
                 source_id: this.id
             });
-			association.save({ object_id: model.id }, {
+			association.save({ object_id: model.id, ordering: order }, {
 				success: callbackSuccess,
 				error: callbackError
 			});
