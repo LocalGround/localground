@@ -108,7 +108,6 @@ define ([
                             }
 
                         }
-                        console.log("select class");
                         if (this.$el.hasClass("selected-card")) {
                             this.$el.removeClass("selected-card");
                             this.model.set("isSelected", false);
