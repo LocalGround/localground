@@ -21,7 +21,7 @@ define(["marionette",
         template: false,
 
         modelEvents: {
-            'change:geometry': 'updateOverlay',
+            'change:geometry': 'render',
             //'change': 'render',
             'show-overlay': 'show',
             'hide-overlay': 'hide',
@@ -60,7 +60,6 @@ define(["marionette",
             this.getGoogleOverlay().setMap(null);
             this.initOverlayType();
             this.changeMode();
-            this.render();
         },
 
         initOverlayType: function () {
