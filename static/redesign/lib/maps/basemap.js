@@ -41,20 +41,21 @@ define(["marionette",
                 console.log(this.map, this.position);
                 console.log(overlay.map, overlay.position);
                 if (!this.highlightCircle){
-
-                    this.highlightCircle = new google.maps.Circle({
-                        strokeColor: '#FF0000',
-                        strokeOpacity: 0.8,
-                        strokeWeight: 2,
-                        fillColor: '#FF0000',
-                        fillOpacity: 0.35,
-                        map: this.map,
-                        center: overlay.position,
-                        radius: 5
+                    this.highlightCircle = new google.maps.Marker({
+                        position: overlay.position,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            fillOpacity: 0.5,
+                            fillColor: '#fff',
+                            strokeOpacity: 1.0,
+                            strokeColor: '#fff',
+                            strokeWeight: 3.0,
+                            scale: 50 //pixels
+                        }
                     });
                 } else {
                     // This is supposed to change the position of circle, but does not
-                    this.highlightCircle.setCenter(overlay.position);
+                    this.highlightCircle.setPosition(overlay.position);
                 }
 
                 console.log(overlay);
