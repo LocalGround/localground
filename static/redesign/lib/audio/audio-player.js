@@ -13,9 +13,10 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 'click .skip-back' : 'skipBackward',
                 //*
                 'click .audio-progress-duration' : 'jumpToTime',
-                'click .audio-progress-bar' : 'jumpToTime'//,
+                'click .audio-progress-bar' : 'jumpToTime',
                 //*/
-                //'mousedown .audio-progress-circle' : 'seek'
+                'mousedown .audio-progress-circle' : 'seek',
+                'mouseup .audio-progress-circle' : 'endDrag'
             },
             audio: null,
             template: Handlebars.compile(PlayerTemplate),
@@ -27,6 +28,11 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 _.bindAll(this, 'playerDurationUpdate');
                 this.$el.find('audio').on('timeupdate', this.playerDurationUpdate);
                 this.listenTo(this.app.vent, 'audio-carousel-advanced', this.stop);
+                $( ".audio-progress-circle" ).draggable({ 
+                    axis: "x",
+                    containment: "parent"
+                });
+                
             },
             templateHelpers: function () {
                 return {
@@ -63,9 +69,33 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
             },
 
             seek: function(e){
+                $( ".audio-progress-circle" ).draggable({ 
+                    axis: "x",
+                    containment: "parent"
+                });
+                
+              /*  console.log("seek");
                 var posX = this.$el.find(e.target).offset().left,
-                    w = (e.pageX - posX) / this.$el.width();
+                  //  w = (e.pageX - posX) / this.$el.width();
+                  w = (event.target.offsetLeft)/this.$el.find(".progress-container").width();
+                  console.log(event.target.offsetLeft, this.$el.find(".progress-container").width());
+                  console.log(w);
+                  
                 this.audio.currentTime = w * this.audio.duration;
+                this.playerDurationUpdate();
+                console.log(this.audio.currentTime); */
+            },
+
+            endDrag: function (e) {
+                var posX = this.$el.find(e.target).offset().left,
+                  //  w = (e.pageX - posX) / this.$el.width();
+                  w = ((e.target).offsetLeft-40)/this.$el.find(".progress-container").width();
+                  
+                this.audio.currentTime = w * this.audio.duration;
+                var pos = this.audio.currentTime /
+                                     this.audio.duration * 100 + "%";
+                this.playerDurationUpdate(e, pos);
+                
             },
 
             skipForward: function () {
@@ -86,12 +116,14 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 }
             },
 
-            playerDurationUpdate: function () {
+            playerDurationUpdate: function (e, pos) {
+                if (!pos) {
                 var pos = this.audio.currentTime /
                                      this.audio.duration * 100 + "%";
+                }
                 this.$el.find(".audio-progress-duration").width(pos);
                 this.$el.find(".audio-progress-circle").css({
-                    "margin-left": "calc(" + pos + " - 8px)"
+                    "left": "calc(" + pos + " - 8px)"
                 });
                 this.$el.find(".time-current").html(this.getCurrentTime());
                 this.$el.find(".time-duration").html(this.getDuration());
