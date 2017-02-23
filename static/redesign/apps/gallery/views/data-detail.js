@@ -26,7 +26,9 @@ define([
             'click #add-media-button': 'showMediaBrowser',
             'click .detach_media': 'detachModel',
             'click .hide': 'hideMapPanel',
-            'click .show': 'showMapPanel'
+            'click .show': 'showMapPanel',
+            'click .rotate-left': 'rotatePhoto',
+            'click .rotate-right': 'rotatePhoto'
         },
         getTemplate: function () {
             if (this.dataType == "photos") {
@@ -248,6 +250,17 @@ define([
                 this.$el.find(".player-container").append(player.$el);
             }
         },
+
+        rotatePhoto: function(e){
+            var $elem = $(e.target);
+            var rotation = $elem.attr("rotation");
+            //console.log(rotation);
+
+            // Rotate targeted photo and save settings
+            this.model.rotate(rotation);
+            //
+        },
+
         saveModel: function () {
             var errors = this.form.commit({ validate: true }),
                 that = this,
