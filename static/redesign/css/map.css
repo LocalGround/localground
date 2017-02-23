@@ -251,10 +251,10 @@ svg, .fa-question-circle {
 /**********************
  * Google Maps Override
  */
-.gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom {
+/*.gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom {
     right: 50px !important;
     bottom: 107px !important;
-}
+}*/
 
 #map > div > .gm-style > div:nth-child(2) {
     margin-left: 25px !important;
