@@ -89,6 +89,7 @@ define(["marionette",
             var that = this;
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
                 that.model.trigger('do-highlight');
+                that.app.vent.trigger('highlight-marker', that.getGoogleOverlay());
                 that.app.router.navigate("//" + that.model.getNamePlural() + "/" + that.model.get("id"));
             });
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {

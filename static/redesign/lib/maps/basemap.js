@@ -32,8 +32,14 @@ define(["marionette",
                 this.opts = opts;
                 $.extend(this, opts);
                 Marionette.View.prototype.initialize.call(this);
+                this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
             },
-
+            doHighlight: function (overlay) {
+                //draw a circle on the map using this code:
+                //https://developers.google.com/maps/documentation/javascript/shapes#circle_add
+                console.log(overlay);
+                alert(overlay);
+            },
             renderMap: function () {
                 var mapOptions = {
                     scrollwheel: false,
