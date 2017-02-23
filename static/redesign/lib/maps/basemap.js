@@ -18,6 +18,7 @@ define(["marionette",
             activeMapTypeID: 1,
             minZoom: 1,
             maxZoom: 22,
+            highlightCircle: null,
             tileManager: null,
             userProfile: null,
             //todo: populate this from user prefs:
@@ -37,8 +38,27 @@ define(["marionette",
             doHighlight: function (overlay) {
                 //draw a circle on the map using this code:
                 //https://developers.google.com/maps/documentation/javascript/shapes#circle_add
+                console.log(this.map, this.position);
+                console.log(overlay.map, overlay.position);
+                if (!this.highlightCircle){
+
+                    this.highlightCircle = new google.maps.Circle({
+                        strokeColor: '#FF0000',
+                        strokeOpacity: 0.8,
+                        strokeWeight: 2,
+                        fillColor: '#FF0000',
+                        fillOpacity: 0.35,
+                        map: this.map,
+                        center: overlay.position,
+                        radius: 5
+                    });
+                } else {
+                    // This is supposed to change the position of circle, but does not
+                    this.highlightCircle.setCenter(overlay.position);
+                }
+
                 console.log(overlay);
-                alert(overlay);
+                //alert(overlay);
             },
             renderMap: function () {
                 var mapOptions = {
