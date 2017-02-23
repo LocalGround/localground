@@ -3,10 +3,10 @@
     margin-top: 30vh;
     color: #CCC;
     margin-left: 45%;
-} 
+}
 
 #toolbar-main > div{
-    display:flex;    
+    display:flex;
 }
 
 /************************************ Cards ************************************/
@@ -38,7 +38,7 @@
 .fa-map-marker {
     font-size: 1.2em;
     top: -60px;
-    opacity: 0.4; 
+    opacity: 0.4;
 }
 
 .column h1{
@@ -50,7 +50,7 @@
 .column h2{
     font-size: 12px;
     padding: 0 6px 12px;
-    color: #7a7a7a; 
+    color: #7a7a7a;
     font-weight: 400;
 }
 
@@ -65,7 +65,7 @@
     background-color: rgb(123, 155, 225);
 }
 
-.selected-card h1, .selected-card h2, .selected-card > .fa-map-marker, .selected-card .coords { 
+.selected-card h1, .selected-card h2, .selected-card > .fa-map-marker, .selected-card .coords {
     color: #fff;
 }
 
@@ -132,6 +132,13 @@
     position:relative;
 }
 
+.rotate-photo{
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+    text-align: center;
+}
+
  /************************************ Main area for databases ************************************/
 .dataview {
     top: 110px;
@@ -181,4 +188,3 @@ p.coords {
     color: #666;
     padding-right: 5px;
 }
-
