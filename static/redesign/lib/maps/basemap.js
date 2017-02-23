@@ -19,6 +19,7 @@ define(["marionette",
             minZoom: 1,
             maxZoom: 22,
             highlightCircle: null,
+            addMarkerClicked: false, // will need state to determine marker creation upon click
             tileManager: null,
             userProfile: null,
             //todo: populate this from user prefs:
@@ -56,13 +57,21 @@ define(["marionette",
                     // This is supposed to change the position of circle, but does not
                     this.highlightCircle.setPosition(overlay.position);
                 }
-
+                console.log(this.app);
                 overlay.setMap(null);
                 overlay.setMap(this.map);
 
                 //console.log(overlay);
                 //alert(overlay);
             },
+
+            // If the add marker button is clicked, allow user to add marker on click
+            // after the marker is placed, disable adding marker and hide the "add marker" div
+            placeMarkerOnMap: function(){
+                // This function is based on the following resource:
+                // http://stackoverflow.com/questions/15792655/add-marker-to-google-map-on-click
+
+            }
             renderMap: function () {
                 var mapOptions = {
                     scrollwheel: false,
