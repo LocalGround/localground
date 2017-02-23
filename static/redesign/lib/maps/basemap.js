@@ -38,8 +38,6 @@ define(["marionette",
             doHighlight: function (overlay) {
                 //draw a circle on the map using this code:
                 //https://developers.google.com/maps/documentation/javascript/shapes#circle_add
-                console.log(this.map, this.position);
-                console.log(overlay.map, overlay.position);
                 if (!this.highlightCircle){
                     this.highlightCircle = new google.maps.Marker({
                         position: overlay.position,
@@ -50,15 +48,19 @@ define(["marionette",
                             strokeOpacity: 1.0,
                             strokeColor: '#fff',
                             strokeWeight: 3.0,
-                            scale: 50 //pixels
-                        }
+                            scale: 20, //pixels
+                        },
+                        map: this.map
                     });
                 } else {
                     // This is supposed to change the position of circle, but does not
                     this.highlightCircle.setPosition(overlay.position);
                 }
 
-                console.log(overlay);
+                overlay.setMap(null);
+                overlay.setMap(this.map);
+
+                //console.log(overlay);
                 //alert(overlay);
             },
             renderMap: function () {

@@ -167,9 +167,7 @@ define(["marionette",
             },
             audioRenderer: function (instance, td, rowIndex, colIndex, prop, value, cellProperties) {
 
-                //
-                //
-                //
+
                 var audio_model = this.getModelFromCell(instance, rowIndex);
 
                 var player = new AudioPlayer({
@@ -177,8 +175,7 @@ define(["marionette",
                     audioMode: "basic",
                     app: this.app
                 });
-                $(td).append(player.$el.addClass("spreadsheet"));
-                //*/
+                $(td).html(player.$el.addClass("spreadsheet"));
                 return td;
             },
 
