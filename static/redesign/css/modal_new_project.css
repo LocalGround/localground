@@ -138,7 +138,7 @@
 }
 
 .modal-body {
-    padding: 0px 4px;
+    padding: 0px 20px;
     background-color: #ffffff;
     border-top: none;
 }
@@ -157,6 +157,15 @@
     margin: 0 20px 0 20px;
     font-weight: 400;
     font-size: 12px;
+}
+
+.modal-body .inline-form {
+    margin: 6px 0px;
+    width: 100%;
+}
+
+.modal-body .inline-form td {
+    padding: 0px 6px;
 }
 
 .filter {
@@ -212,6 +221,7 @@
     margin: 0 auto;
     padding: 20px 14px 24px;
     overflow: scroll;
+    height: 50%;
 }
 
 .selected-card {

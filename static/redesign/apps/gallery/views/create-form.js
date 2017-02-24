@@ -57,6 +57,10 @@ define([
                     if (!confirm("Are you sure you want to remove this field from the form?")) {
                         return;
                     }
+                    var $elem = $(e.target),
+                    $row =  $elem.parent().parent();
+                    $row.remove();
+                    
                     this.model.destroy();
                     e.preventDefault();
                 },
@@ -76,16 +80,17 @@ define([
         fetchShareData: function () {
             this.model.getFields();
         },
-        removeRow: function (e) {
+        removeRow: function (e) { // to remove a field that has not yet been saved
             var $elem = $(e.target),
                 $row =  $elem.parent().parent();
-            $row.remove();
+            if ($row.has('select').length != 0) { 
+                $row.remove();
+            }            
         },
         saveFormSettings: function () {
             var formName = this.$el.find('#formName').val(),
                 caption = this.$el.find('#caption').val(),
                 that = this;
-
             this.model.set('name', formName);
             this.model.set('caption', caption);
             this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));

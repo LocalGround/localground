@@ -121,7 +121,7 @@
     line-height: 40px;
     display: block;
     position: absolute;
-    width: 100%;
+    width: inital;
 }
 
 
