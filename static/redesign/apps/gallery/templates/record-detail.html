@@ -57,6 +57,14 @@
         Add New
         {{/if}}
     </h4>
+    {{#ifequal screenType "map"}}
+        {{#ifnot geometry}}
+        <div class="add-lat-lng">
+            Insert Latitude and Longitude if empty. When done, hide this div away.
+            <button class="add-marker-button">Add Marker</button>
+        </div>
+        {{/ifnot}}
+    {{/ifequal}}
 
     <div class="confirmation success-message">Saved Successfully &#10003</div>
 

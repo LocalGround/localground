@@ -71,11 +71,9 @@ define(["marionette",
                     map: this.map
                 });*/
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
-                this.targetedModel.save(null, {
-                    success: function () {
-                    
-                    }
-                });
+                this.targetedModel.save();
+                this.addMarkerClicked = false;
+                this.targetedModel = null;
 
 
             },
