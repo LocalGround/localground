@@ -16,8 +16,10 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 'click .audio-progress-bar' : 'jumpToTime',
                 //*/
                 'mousedown .audio-progress-circle' : 'seek',
-                'mouseup .audio-progress-circle' : 'endDrag'
+                'mouseup .audio-progress-circle' : 'endDrag',
+                'mouseup' : 'checkIfJumpToTime'
             },
+            suspendUIUpdate: false,
             audio: null,
             template: Handlebars.compile(PlayerTemplate),
             initialize: function (opts) {
@@ -28,11 +30,10 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 _.bindAll(this, 'playerDurationUpdate');
                 this.$el.find('audio').on('timeupdate', this.playerDurationUpdate);
                 this.listenTo(this.app.vent, 'audio-carousel-advanced', this.stop);
-                $( ".audio-progress-circle" ).draggable({ 
+                $(".audio-progress-circle").draggable({
                     axis: "x",
                     containment: "parent"
                 });
-                
             },
             templateHelpers: function () {
                 return {
@@ -62,31 +63,40 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
             },
 
             jumpToTime: function (e) {
-                //console.log(this.$el.find(e.target));
-                var posX = this.$el.find(e.target).offset().left,
-                    w = (e.pageX - posX) / this.$el.width();
+                this.suspendUIUpdate = false;
+                var $progressContainer = this.$el.find('.progress-container'),
+                    posX = $progressContainer.offset().left,
+                    w = (e.pageX - posX) / $progressContainer.width();
+                console.log(e.pageX - posX, $progressContainer.width());
                 this.audio.currentTime = w * this.audio.duration;
+                if (this.audio.paused) {
+                    this.audio.play();
+                }
+            },
+            seek: function () {
+                this.suspendUIUpdate = true;
             },
 
-            seek: function(e){
-                $( ".audio-progress-circle" ).draggable({ 
-                    axis: "x",
-                    containment: "parent"
-                });
-                
-              /*  console.log("seek");
-                var posX = this.$el.find(e.target).offset().left,
-                  //  w = (e.pageX - posX) / this.$el.width();
-                  w = (event.target.offsetLeft)/this.$el.find(".progress-container").width();
-                  console.log(event.target.offsetLeft, this.$el.find(".progress-container").width());
-                  console.log(w);
-                  
+            checkIfJumpToTime: function () {
+                if (this.suspendUIUpdate) {
+                    this.endDrag();
+                }
+            },
+            endDrag: function () {
+                this.suspendUIUpdate = false;
+                var $progressContainer = this.$el.find('.progress-container'),
+                    $circle = this.$el.find('.audio-progress-circle'),
+                    posX = $circle.offset().left,
+                    offsetX = $progressContainer.offset().left,
+                    w = (posX - offsetX) / ($progressContainer.width() - 20);
+                console.log(posX - offsetX, $progressContainer.width());
                 this.audio.currentTime = w * this.audio.duration;
-                this.playerDurationUpdate();
-                console.log(this.audio.currentTime); */
+                if (this.audio.paused) {
+                    this.audio.play();
+                }
             },
 
-            endDrag: function (e) {
+            /*endDrag: function (e) {
                 var posX = this.$el.find(e.target).offset().left,
                   //  w = (e.pageX - posX) / this.$el.width();
                   w = ((e.target).offsetLeft-40)/this.$el.find(".progress-container").width();
@@ -96,7 +106,7 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                                      this.audio.duration * 100 + "%";
                 this.playerDurationUpdate(e, pos);
                 
-            },
+            },*/
 
             skipForward: function () {
                 if (this.audio.currentTime < this.audio.duration) {
@@ -117,6 +127,9 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
             },
 
             playerDurationUpdate: function (e, pos) {
+                if (this.suspendUIUpdate) {
+                    return;
+                }
                 if (!pos) {
                 var pos = this.audio.currentTime /
                                      this.audio.duration * 100 + "%";
