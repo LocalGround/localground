@@ -67,7 +67,7 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 var $progressContainer = this.$el.find('.progress-container'),
                     posX = $progressContainer.offset().left,
                     w = (e.pageX - posX) / $progressContainer.width();
-                console.log(e.pageX - posX, $progressContainer.width());
+                //console.log(e.pageX - posX, $progressContainer.width());
                 this.audio.currentTime = w * this.audio.duration;
                 if (this.audio.paused) {
                     this.audio.play();
@@ -86,10 +86,11 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 this.suspendUIUpdate = false;
                 var $progressContainer = this.$el.find('.progress-container'),
                     $circle = this.$el.find('.audio-progress-circle'),
-                    posX = $circle.offset().left,
+                    posX = $circle.offset().left + $circle.width() / 2,
                     offsetX = $progressContainer.offset().left,
                     w = (posX - offsetX) / ($progressContainer.width() - 20);
-                console.log(posX - offsetX, $progressContainer.width());
+                //w = Math.max(w, 0);
+                //console.log(posX - offsetX, $progressContainer.width());
                 this.audio.currentTime = w * this.audio.duration;
                 if (this.audio.paused) {
                     this.audio.play();
@@ -136,8 +137,11 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 }
                 this.$el.find(".audio-progress-duration").width(pos);
                 this.$el.find(".audio-progress-circle").css({
-                    "left": "calc(" + pos + " - 8px)"
+                    "left": "calc(" + pos + ")"
                 });
+                /*this.$el.find(".audio-progress-circle").css({
+                    "left": "calc(" + pos + " - 8px)"
+                });*/
                 this.$el.find(".time-current").html(this.getCurrentTime());
                 this.$el.find(".time-duration").html(this.getDuration());
             },
