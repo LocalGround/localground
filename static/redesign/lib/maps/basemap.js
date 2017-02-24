@@ -41,57 +41,35 @@ define(["marionette",
             },
 
             doHighlight: function (overlay) {
-                //draw a circle on the map using this code:
-                //https://developers.google.com/maps/documentation/javascript/shapes#circle_add
-                var icon = {},
-                    that = this;
-                _.extend(icon, overlay.getIcon(), { strokeWeight: 6 });
-                icon.strokeColor = icon.fillColor;
-                if (!this.highlightMarker) {
-                    this.highlightMarker = new google.maps.Marker({
-                        position: overlay.position,
-                        icon: icon,
-                        map: this.map
-                    });
-                } else {
-                    this.highlightMarker.setPosition(overlay.position);
-                    this.highlightMarker.setIcon(icon);
-                    this.highlightMarker.setMap(null);
-                    this.highlightMarker.setMap(this.map);
+                if (this.highlightMarker) {
+                    this.highlightMarker.model.set("active", false);
+                    this.highlightMarker.render();
                 }
+                this.highlightMarker = overlay;
+                overlay.model.set("active", true);
+                this.highlightMarker.render();
             },
 
             // If the add marker button is clicked, allow user to add marker on click
             // after the marker is placed, disable adding marker and hide the "add marker" div
-            placeMarkerOnMap: function(location){
-                if (!this.addMarkerClicked) return;
-                // This function is based on the following resource:
-                // http://stackoverflow.com/questions/15792655/add-marker-to-google-map-on-click
-                /*var marker = new google.maps.Marker({
-                    position: location,
-                    map: this.map
-                });*/
+            placeMarkerOnMap: function (location) {
+                if (!this.addMarkerClicked) {
+                    return;
+                }
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
                 this.targetedModel.save();
                 this.addMarkerClicked = false;
                 this.targetedModel = null;
-
-
             },
 
-            activateMarker: function(model){
+            activateMarker: function (model) {
                 this.addMarkerClicked = true;
-                //console.log("Place Marker on Map!");
                 this.targetedModel = model;
             },
 
-
-            deleteMarker: function(model){
-
+            deleteMarker: function (model) {
                 model.set("geometry", null);
                 model.save();
-                model = null;
-                this.addMarkerClicked = false;
             },
 
             renderMap: function () {

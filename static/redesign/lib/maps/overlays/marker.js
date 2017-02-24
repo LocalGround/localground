@@ -30,7 +30,14 @@ define([
 
         redraw: function () {
             if (this.getShapeType() === "Point") {
-                this._overlay.setIcon(this.getIcon());
+                if (this.model.get("active")) {
+                    var icon = {};
+                    _.extend(icon, this.getGoogleOverlay().getIcon(), { strokeWeight: 6 });
+                    icon.strokeColor = icon.fillColor;
+                    this.getGoogleOverlay().setIcon(icon);
+                } else {
+                    this._overlay.setIcon(this.getIcon());
+                }
             } else {
                 this._overlay.redraw();
             }
