@@ -24,9 +24,15 @@ define(['marionette',
 
                 //listen for new data:
                 this.listenTo(this.collection, 'zoom-to-extents', this.zoomToExtents);
+<<<<<<< HEAD
+||||||| merged common ancestors
+                this.listenTo(this.app.vent, "drag-ended", this.saveDragChange);
+=======
+                this.listenTo(this.collection, 'change:geometry', this.geometryUpdated);
+                this.listenTo(this.app.vent, "drag-ended", this.saveDragChange);
+>>>>>>> cd5c7e2b7918f51a9d89407d6779affc610063ba
 
                 this.render();
-                //this.zoomToExtent();
 
                 google.maps.event.addListenerOnce(this.map, 'idle', function () {
                     if (this.opts.startVisible) {
@@ -36,12 +42,16 @@ define(['marionette',
             },
 
             geometryUpdated: function (model) {
-                //create a child view if one doesn't exist (necessary for
-                // data elements that have just been geo-referenced)
                 if (!this.children.findByModel(model)) {
-                    //console.log("creating child view");
                     this.addChild(model, this.childView);
+                    console.log("Adding child");
                 }
+                else if (!model.get("geometry")){
+                    var view = this.children.findByModel(model);
+                    this.removeChildView(view);
+                    console.log("Removing child");
+                }
+
             },
 
             // overriding the "addChild" method so that data elements w/o

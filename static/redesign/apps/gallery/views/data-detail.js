@@ -28,7 +28,9 @@ define([
             'click .hide': 'hideMapPanel',
             'click .show': 'showMapPanel',
             'click .rotate-left': 'rotatePhoto',
-            'click .rotate-right': 'rotatePhoto'
+            'click .rotate-right': 'rotatePhoto',
+            "click .add-marker-button": "activateMarkerTrigger",
+            "click .delete-marker-button": "deleteMarkerTrigger"
         },
         getTemplate: function () {
             if (this.dataType == "photos") {
@@ -70,6 +72,14 @@ define([
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
             this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
+        },
+
+        activateMarkerTrigger: function(){
+            this.app.vent.trigger("add-new-marker", this.model);
+        },
+
+        deleteMarkerTrigger: function(){
+            this.app.vent.trigger("delete-marker", this.model);
         },
 
         bindFields: function () {
