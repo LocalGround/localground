@@ -88,7 +88,7 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                     $circle = this.$el.find('.audio-progress-circle'),
                     posX = $circle.offset().left + $circle.width() / 2,
                     offsetX = $progressContainer.offset().left,
-                    w = (posX - offsetX) / ($progressContainer.width() - 20);
+                    w = (posX - offsetX + 5) / ($progressContainer.width());
                 //w = Math.max(w, 0);
                 //console.log(posX - offsetX, $progressContainer.width());
                 this.audio.currentTime = w * this.audio.duration;
