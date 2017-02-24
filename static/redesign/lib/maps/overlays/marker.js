@@ -36,7 +36,10 @@ define([
                     icon.strokeColor = icon.fillColor;
                     this.getGoogleOverlay().setIcon(icon);
                 } else {
-                    this._overlay.setIcon(this.getIcon());
+                    if (this.getIcon()) {
+                        console.log(this.getIcon());
+                        this._overlay.setIcon(this.getIcon());
+                    }
                 }
             } else {
                 this._overlay.redraw();

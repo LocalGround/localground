@@ -24,13 +24,7 @@ define(['marionette',
 
                 //listen for new data:
                 this.listenTo(this.collection, 'zoom-to-extents', this.zoomToExtents);
-<<<<<<< HEAD
-||||||| merged common ancestors
-                this.listenTo(this.app.vent, "drag-ended", this.saveDragChange);
-=======
                 this.listenTo(this.collection, 'change:geometry', this.geometryUpdated);
-                this.listenTo(this.app.vent, "drag-ended", this.saveDragChange);
->>>>>>> cd5c7e2b7918f51a9d89407d6779affc610063ba
 
                 this.render();
 
