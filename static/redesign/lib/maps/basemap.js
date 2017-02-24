@@ -37,6 +37,7 @@ define(["marionette",
                 Marionette.View.prototype.initialize.call(this);
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
                 this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
+                this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
             },
 
             doHighlight: function (overlay) {
@@ -82,6 +83,15 @@ define(["marionette",
                 this.addMarkerClicked = true;
                 //console.log("Place Marker on Map!");
                 this.targetedModel = model;
+            },
+
+
+            deleteMarker: function(model){
+
+                model.set("geometry", null);
+                model.save();
+                model = null;
+                this.addMarkerClicked = false;
             },
 
             renderMap: function () {

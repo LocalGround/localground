@@ -29,7 +29,8 @@ define([
             'click .show': 'showMapPanel',
             'click .rotate-left': 'rotatePhoto',
             'click .rotate-right': 'rotatePhoto',
-            "click .add-marker-button": "activateMarkerTrigger"
+            "click .add-marker-button": "activateMarkerTrigger",
+            "click .delete-marker-button": "deleteMarkerTrigger"
         },
         getTemplate: function () {
             if (this.dataType == "photos") {
@@ -74,9 +75,11 @@ define([
         },
 
         activateMarkerTrigger: function(){
-            //console.log("Trigger Jump");
-            console.log(this.model);
             this.app.vent.trigger("add-new-marker", this.model);
+        },
+
+        deleteMarkerTrigger: function(){
+            this.app.vent.trigger("delete-marker", this.model);
         },
 
         bindFields: function () {
