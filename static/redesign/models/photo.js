@@ -10,8 +10,7 @@ define(["models/base", "jquery"], function (Base, $) {
             name: 'Text',
             caption: { type: 'TextArea'},
             tags: 'Text',
-            attribution: 'Text',
-            key: "photos"
+            attribution: 'Text'
         },
         getNamePlural: function () {
             return "photos";
