@@ -116,7 +116,19 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 return json;
             },
             getKey: function () {
-                return this.collection.key;
+                var key = this.collection.key;
+                if (key) {
+                    return this.collection.key;
+                }
+                switch(this.get("overlay_type")) {
+                    case "photo": 
+                        return "photos";
+                    case "audio":
+                        return "audio";
+                    case "marker":
+                        return "markers";
+                    default: alert("case not handled");
+                }
             },
             getCenter: function () {
                 var geoJSON = this.get("geometry"),
