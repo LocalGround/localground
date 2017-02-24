@@ -63,18 +63,19 @@ define(["marionette",
             // If the add marker button is clicked, allow user to add marker on click
             // after the marker is placed, disable adding marker and hide the "add marker" div
             placeMarkerOnMap: function(location){
-                console.log("Testing location: " + location)
                 if (!this.addMarkerClicked) return;
                 // This function is based on the following resource:
                 // http://stackoverflow.com/questions/15792655/add-marker-to-google-map-on-click
-
-                console.log("Adding the marker");
-                var marker = new google.maps.Marker({
+                /*var marker = new google.maps.Marker({
                     position: location,
                     map: this.map
-                });
+                });*/
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
-                this.targetedModel.save();
+                this.targetedModel.save(null, {
+                    success: function () {
+                    
+                    }
+                });
 
 
             },
