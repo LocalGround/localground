@@ -50,7 +50,6 @@ define(["jquery",
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
-                        //console.log(opts);
                         _.extend(this, opts);
                         this.model.set("dataType", this.dataType);
                         this.listenTo(this.model, 'do-highlight', this.highlight);
@@ -119,6 +118,7 @@ define(["jquery",
                 this.listenTo(this.app.vent, 'show-uploader', this.addMedia);
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
+                console.log(this.collection.length);
             },
             zoomToExtents: function () {
                 this.collection.trigger('zoom-to-extents');

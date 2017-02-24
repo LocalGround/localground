@@ -108,7 +108,6 @@ define ([
                             }
 
                         }
-                        console.log("select class");
                         if (this.$el.hasClass("selected-card")) {
                             this.$el.removeClass("selected-card");
                             this.model.set("isSelected", false);
@@ -253,16 +252,15 @@ define ([
             },
 
             displayCards: function() {
-                console.log("thumb view?");
                 this.viewMode = "thumb";
                 this.render();
+                this.hideLoadingMessage();
             },
 
             displayTable: function() {
-                console.log("table view?");
                 this.viewMode = "table";
-                console.log(this.viewMode);
                 this.render();
+                this.hideLoadingMessage();
             },
 
             hideLoadingMessage: function () {
