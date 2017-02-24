@@ -19,7 +19,8 @@ define(["marionette",
             minZoom: 1,
             maxZoom: 22,
             highlightMarker: null,
-            addMarkerClicked: false, // will need state to determine marker creation upon click
+            addMarkerClicked: false,
+            targetedModel: null,
             tileManager: null,
             userProfile: null,
             //todo: populate this from user prefs:
@@ -35,35 +36,42 @@ define(["marionette",
                 $.extend(this, opts);
                 Marionette.View.prototype.initialize.call(this);
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
+                this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
+                this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
             },
+
             doHighlight: function (overlay) {
-                //draw a circle on the map using this code:
-                //https://developers.google.com/maps/documentation/javascript/shapes#circle_add
-                var icon = {},
-                    that = this;
-                _.extend(icon, overlay.getIcon(), { strokeWeight: 6 });
-                icon.strokeColor = icon.fillColor;
-                if (!this.highlightMarker) {
-                    this.highlightMarker = new google.maps.Marker({
-                        position: overlay.position,
-                        icon: icon,
-                        map: this.map
-                    });
-                } else {
-                    this.highlightMarker.setPosition(overlay.position);
-                    this.highlightMarker.setIcon(icon);
-                    this.highlightMarker.setMap(null);
-                    this.highlightMarker.setMap(this.map);
+                if (this.highlightMarker) {
+                    this.highlightMarker.model.set("active", false);
+                    this.highlightMarker.render();
                 }
+                this.highlightMarker = overlay;
+                overlay.model.set("active", true);
+                this.highlightMarker.render();
             },
 
             // If the add marker button is clicked, allow user to add marker on click
             // after the marker is placed, disable adding marker and hide the "add marker" div
-            placeMarkerOnMap: function () {
-                // This function is based on the following resource:
-                // http://stackoverflow.com/questions/15792655/add-marker-to-google-map-on-click
-
+            placeMarkerOnMap: function (location) {
+                if (!this.addMarkerClicked) {
+                    return;
+                }
+                this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
+                this.targetedModel.save();
+                this.addMarkerClicked = false;
+                this.targetedModel = null;
             },
+
+            activateMarker: function (model) {
+                this.addMarkerClicked = true;
+                this.targetedModel = model;
+            },
+
+            deleteMarker: function (model) {
+                model.set("geometry", null);
+                model.save();
+            },
+
             renderMap: function () {
                 var mapOptions = {
                     scrollwheel: false,
@@ -125,6 +133,10 @@ define(["marionette",
                 });
                 google.maps.event.addListener(this.map, 'zoom_changed', function () {
                     that.saveState();
+                });
+
+                google.maps.event.addListener(this.map, 'click', function(event) {
+                   that.placeMarkerOnMap(event.latLng);
                 });
 
                 //todo: possibly move to a layout module?

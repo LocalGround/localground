@@ -61,7 +61,8 @@ define(["jquery",
                         'click a': 'highlight'
                     },
                     modelEvents: {
-                        'saved': 'render'
+                        'saved': 'render',
+                        'change:geometry': 'render'
                     },
                     tagName: "li",
                     templateHelpers: function () {

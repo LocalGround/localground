@@ -33,6 +33,16 @@ define(["handlebars"],
             return options.fn(this);
         });
 
+        Handlebars.registerHelper('ifnot', function (value, options) {
+            if (arguments.length < 2) {
+                throw new Error("Handlebars Helper ifnot needs 1 parameter");
+            }
+            if (value){
+                return options.inverse(this);
+            }
+            return options.fn(this);
+        });
+
         Handlebars.registerHelper('compare', function(lvalue, rvalue, options) {
 
             if (arguments.length < 3)
