@@ -24,7 +24,6 @@ define(['marionette',
 
                 //listen for new data:
                 this.listenTo(this.collection, 'zoom-to-extents', this.zoomToExtents);
-                this.listenTo(this.app.vent, "drag-ended", this.saveDragChange);
 
                 this.render();
                 //this.zoomToExtent();
@@ -43,13 +42,6 @@ define(['marionette',
                     //console.log("creating child view");
                     this.addChild(model, this.childView);
                 }
-            },
-
-            saveDragChange: function (opts) {
-                var model = opts.model,
-                    latLng = opts.latLng;
-                model.setGeometryFromOverlay(latLng);
-                model.save();
             },
 
             // overriding the "addChild" method so that data elements w/o
