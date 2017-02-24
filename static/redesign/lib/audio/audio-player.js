@@ -30,7 +30,7 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 _.bindAll(this, 'playerDurationUpdate');
                 this.$el.find('audio').on('timeupdate', this.playerDurationUpdate);
                 this.listenTo(this.app.vent, 'audio-carousel-advanced', this.stop);
-                $(".audio-progress-circle").draggable({
+                this.$el.find(".audio-progress-circle").draggable({
                     axis: "x",
                     containment: "parent"
                 });
