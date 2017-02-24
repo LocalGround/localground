@@ -36,6 +36,11 @@ define(["marionette",
                 Marionette.View.prototype.initialize.call(this);
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
             },
+
+            events: {
+                "click .add-marker-button": "activateMarker"
+            },
+
             doHighlight: function (overlay) {
                 //draw a circle on the map using this code:
                 //https://developers.google.com/maps/documentation/javascript/shapes#circle_add
@@ -57,7 +62,7 @@ define(["marionette",
                     // This is supposed to change the position of circle, but does not
                     this.highlightCircle.setPosition(overlay.position);
                 }
-                console.log(this.app);
+                //console.log(this.app.screenType);
                 overlay.setMap(null);
                 overlay.setMap(this.map);
 
@@ -68,10 +73,18 @@ define(["marionette",
             // If the add marker button is clicked, allow user to add marker on click
             // after the marker is placed, disable adding marker and hide the "add marker" div
             placeMarkerOnMap: function(){
+                if (!this.addMarkerClicked) return;
                 // This function is based on the following resource:
                 // http://stackoverflow.com/questions/15792655/add-marker-to-google-map-on-click
 
-            }
+
+            },
+
+            activateMarker: function(){
+                this.addMarkerClicked = true;
+                console.log("Place Marker on Map!");
+            },
+
             renderMap: function () {
                 var mapOptions = {
                     scrollwheel: false,
