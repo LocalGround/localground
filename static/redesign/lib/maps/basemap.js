@@ -19,7 +19,8 @@ define(["marionette",
             minZoom: 1,
             maxZoom: 22,
             highlightMarker: null,
-            addMarkerClicked: false, // will need state to determine marker creation upon click
+            addMarkerClicked: false,
+            targetedModel: null,
             tileManager: null,
             userProfile: null,
             //todo: populate this from user prefs:
@@ -35,10 +36,7 @@ define(["marionette",
                 $.extend(this, opts);
                 Marionette.View.prototype.initialize.call(this);
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
-            },
-
-            events: {
-                "click .add-marker-button": "activateMarker"
+                this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
             },
 
             doHighlight: function (overlay) {
@@ -64,17 +62,27 @@ define(["marionette",
 
             // If the add marker button is clicked, allow user to add marker on click
             // after the marker is placed, disable adding marker and hide the "add marker" div
-            placeMarkerOnMap: function(){
+            placeMarkerOnMap: function(location){
+                console.log("Testing location: " + location)
                 if (!this.addMarkerClicked) return;
                 // This function is based on the following resource:
                 // http://stackoverflow.com/questions/15792655/add-marker-to-google-map-on-click
 
+                console.log("Adding the marker");
+                var marker = new google.maps.Marker({
+                    position: location,
+                    map: this.map
+                });
+                this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
+                this.targetedModel.save();
+
 
             },
 
-            activateMarker: function(){
+            activateMarker: function(model){
                 this.addMarkerClicked = true;
-                console.log("Place Marker on Map!");
+                //console.log("Place Marker on Map!");
+                this.targetedModel = model;
             },
 
             renderMap: function () {
@@ -138,6 +146,10 @@ define(["marionette",
                 });
                 google.maps.event.addListener(this.map, 'zoom_changed', function () {
                     that.saveState();
+                });
+
+                google.maps.event.addListener(this.map, 'click', function(event) {
+                   that.placeMarkerOnMap(event.latLng);
                 });
 
                 //todo: possibly move to a layout module?
