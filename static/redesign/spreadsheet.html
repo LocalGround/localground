@@ -1,0 +1,70 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-8">
+    <title>Local Ground Spreadsheet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel=stylesheet type="text/css" href="http://docs.handsontable.com/0.16.1/bower_components/handsontable/dist/handsontable.full.min.css">
+    <link rel=stylesheet type="text/css" href="css/style.css" />
+    <link rel=stylesheet type="text/css" href="css/reset.css" />
+    <link rel=stylesheet type="text/css" href="css/gallery-style.css" />
+    <link rel=stylesheet type="text/css" href="css/spreadsheet-style.css" />
+    <link rel=stylesheet type="text/css" href="css/modal_new_project.css" />
+    <link rel=stylesheet type="text/css" href="css/upload-media.css" />
+    <link rel=stylesheet type="text/css" href="css/audio-player.css" />
+    <link rel=stylesheet type="text/css" href="css/carousel.css" />
+
+
+    <style>
+      img{
+          display: block;
+          vertical-align: middle;
+      }
+    </style>
+</head>
+<body>
+    <div id="toolbar-main">
+        <!-- global toolbar moved to static/redesign/templates/toolbar-global.html -->
+    </div>
+    <div id="toolbar-dataview" class="filter data">
+        <!-- dataview toolbar -->
+    </div>
+    <main class="main-panel">
+        <!-- Spreadsheet goes here -->
+    </main>
+
+
+    <!--Modal Section-->
+    <div id="myModal" class="modal">
+
+      <!--Close Button-->
+      <span class="close big" onclick="document.getElementById('myModal').style.display='none'">
+        &times;
+      </span>
+      <!--Modal Content (Image)-->
+      <img class="modal-content" id="img01">
+      <!--Modal Caption (Image Text)-->
+      <div id="caption"></div>
+
+    </div>
+
+
+    <!--Modal Section-->
+    <div id="carouselModal" class="carousel-modal spreadsheet">
+
+      <!--Close Button-->
+      <span class="close big" onclick="document.getElementById('carouselModal').style.display='none'">
+        &times;
+      </span>
+
+    </div>
+
+    <script src="external/require.js"></script>
+    <script>
+        require(['apps/require-config'], function(){
+            require(['apps/spreadsheet/kickoff.js']);  //or adminApp for the admin area, etc.
+        });
+    </script>
+
+</body>
+</html>

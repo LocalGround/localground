@@ -22,10 +22,10 @@ class Marker(ExtrasMixin, BasePointMixin, BaseNamed, BaseGenericRelationMixin):
 
     # todo:  replace project with generic association to either a project, view,
     # or presentation :)
-    color = models.CharField(max_length=6)
+    color = models.CharField(max_length=6, default="CCCCCC")
     _records_dict = None
     objects = MarkerManager()
-    filter_fields = ('id', 'project', 'name', 'descrption', 'tags',)
+    filter_fields = ('id', 'project', 'name', 'description', 'tags',)
 
     @property
     def geometry(self):

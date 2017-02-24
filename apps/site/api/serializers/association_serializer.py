@@ -41,11 +41,19 @@ class AssociationSerializer(AuditSerializerMixin, serializers.ModelSerializer):
 
     def get_relation(self, obj):
         view = self.context.get('view')
-        return '%s/api/0/%s/%s/%s/%s/' % (settings.SERVER_URL,
-                                          view.kwargs.get('group_name_plural'),
-                                          obj.source_id,
-                                          view.kwargs.get('entity_name_plural'),
-                                          obj.entity_id)
+        try: 
+            form_id = int(view.kwargs.get('group_name_plural'))
+            return '%s/api/0/forms/%s/data/%s/%s/%s/' % (settings.SERVER_URL,
+                        view.kwargs.get('group_name_plural'),
+                        obj.source_id,
+                        view.kwargs.get('entity_name_plural'),
+                        obj.entity_id)
+        except ValueError:
+            return '%s/api/0/%s/%s/%s/%s/' % (settings.SERVER_URL,
+                        view.kwargs.get('group_name_plural'),
+                        obj.source_id,
+                        view.kwargs.get('entity_name_plural'),
+                        obj.entity_id)
 
 
 class AssociationSerializerDetail(AssociationSerializer):
@@ -58,7 +66,13 @@ class AssociationSerializerDetail(AssociationSerializer):
 
     def get_parent(self, obj):
         view = self.context.get('view')
-        return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
+        try: 
+            form_id = int(view.kwargs.get('group_name_plural'))
+            return '%s/api/0/forms/%s/data/%s/' % (settings.SERVER_URL,
+                        view.kwargs.get('group_name_plural'),
+                        obj.source_id)
+        except ValueError:
+            return '%s/api/0/%s/%s/' % (settings.SERVER_URL,
                                     view.kwargs.get('group_name_plural'),
                                     obj.source_id)
 

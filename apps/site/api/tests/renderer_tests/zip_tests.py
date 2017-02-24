@@ -101,13 +101,13 @@ class ZIPRendererInstanceTest(ZipMediaMixin, test.TestCase, ModelMixin):
             '/api/0/markers/{}/'.format(self.marker1.id): 7     # 1 project + 2 photos + 2 audio + 2 records
         }
     def test_all_media_files_present_in_zip_file(self):
-        self.create_relation(self.photo1.get_content_type(), marker=self.marker1, id=self.photo1.id, ordering=1)
-        self.create_relation(self.photo2.get_content_type(), marker=self.marker1, id=self.photo2.id, ordering=2)
-        self.create_relation(self.audio1.get_content_type(), marker=self.marker1, id=self.audio1.id, ordering=1)
-        self.create_relation(self.audio2.get_content_type(), marker=self.marker1, id=self.audio2.id, ordering=2)
-        self.create_relation(self.record1.get_content_type(), marker=self.marker1, id=self.record1.id, ordering=1)
-        self.create_relation(self.record2.get_content_type(), marker=self.marker1, id=self.record2.id, ordering=2)
-
+        self.create_relation(self.marker1, self.photo1)
+        self.create_relation(self.marker1, self.photo2)
+        self.create_relation(self.marker1, self.audio1)
+        self.create_relation(self.marker1, self.audio2)
+        self.create_relation(self.marker1, self.record1)
+        self.create_relation(self.marker1, self.record2)
+        
         for url in self.urls.keys():
             expected_count = self.urls.get(url)
             response = self.client_user.get(url + '?format=zip')

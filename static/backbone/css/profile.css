@@ -25,7 +25,9 @@ top: 25%;
 }
 
 .img-thumb {
-    width: 250px;
+    width: 175px;
+    height: 175px;
+    /*clip: rect(60px,60px,60px,60px);*/
     border: 3px solid #000;
 }
 
@@ -81,4 +83,9 @@ label.col-sm-4.control-label {
 #filter-menu input, #filter-menu select {
     height: 25px;
     width: 100%;
+}
+
+.media-list-item {
+    display: block;
+    border: solid 1px #000;
 }

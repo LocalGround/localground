@@ -1,0 +1,266 @@
+/* Map Layout */
+#marker-detail-panel {
+    display: none;
+}
+/*** Override some of the "fixed / absolute" characteristics of fav bar ****/
+.filter .data, #toolbar-main {
+    position: static;
+}
+
+#toolbar-main .buttons{
+    top: 0;
+}
+
+.main-panel {
+    padding: 0px;
+    width: auto;
+    display:flex;
+}
+
+/*** Begin Map Styles ****/
+
+#marker-list-panel, #marker-detail-panel, #map-panel {
+    /*border: solid 1px #000;*/
+    height: calc(100% - 134px);
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: top;
+}
+#marker-list-panel, #marker-detail-panel {
+    overflow-y: auto;
+}
+
+/*
+.both (.show-detail), .left, .right, .none
+*/
+
+.left #marker-detail-panel, .none #marker-detail-panel{
+    width: 0%;
+    overflow: hidden;
+}
+
+.right #marker-list-panel, .none #marker-list-panel {
+    width: 0%;
+    overflow: hidden;
+}
+
+.left #map-panel {
+    width: calc(100% - 280px);
+}
+
+.none #map-panel {
+    width: 100%;
+}
+#map {
+    width: 100%;
+    height: 100%;
+}    
+.both #map-panel {
+    width: calc(100% - 680px);
+    /*-webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    transition: all 0.15s ease;*/
+}
+
+.right #map-panel {
+    width: calc(100% - 400px);
+    /*-webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    transition: all 0.15s ease;*/
+}
+
+.both #marker-detail-panel, .right #marker-detail-panel {
+    display: inline-block;
+    overflow-y: auto;
+    width:400px;
+    height:100%;
+}
+
+.main-panel {
+    height: calc(100% - 111px);
+    top: 111px;
+    display: flex;
+    position: absolute;
+    width: 100%;
+}
+
+.both #marker-list-panel, .left #marker-list-panel {
+    order: 0;
+    border-right: 1px solid #e4e5eb;
+    box-shadow: 0 1px 1px 1px rgba(53, 76, 122, 0.06);
+    width: 280px;
+    background-color: #fafafc;
+    z-index: 40;
+    flex: none;
+    overflow: scroll;
+    height:100%;
+}
+
+.none #marker-list-panel .show-hide, .right #marker-list-panel .show-hide {
+    left: 0px;
+}
+.left #marker-list-panel .show-hide, .both #marker-list-panel .show-hide {
+    left: 280px;
+}
+
+.none #marker-detail-panel .show-hide, .left #marker-detail-panel .show-hide {
+    right: 0px;
+}
+
+.right #marker-detail-panel .show-hide, .both #marker-detail-panel .show-hide {
+    right: 400px;
+}
+
+#map-panel {
+    height:100%;
+    /*-webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    transition: all 0.15s ease;*/
+}
+
+.controls {
+    margin: 10px 5px;
+    padding: 5px 15px;
+    border: solid 2px #CCC;
+    width: 250px;
+    height: 32px;
+}
+
+#toolbar-main > div{
+    display:flex;    
+}
+
+.list-header {
+    padding: 10px;
+    border-bottom: solid 1px #ebebeb;
+    font-size: 12px;
+    background: #FFF;
+    font-weight: 600;
+    color: #666;
+}
+
+.list-indent, .list-indent-simple, .preview-filter-list {
+    list-style: none;
+    margin: 0;
+}
+
+.list-indent > li, .preview-filter-list > li {
+    padding: 0px;
+    border-bottom: 1px solid #ebebeb;
+    font-size: 12px;
+}
+.list-indent > li.empty {
+    padding: 0px 40px;
+    color: #999;
+    height: 56px;
+    line-height: 56px;
+}
+
+.list-indent a {
+    text-decoration: none;
+    padding: 6px 22px;
+    display: inline-block;
+    width: 100%;
+}
+.new-feature-by-type {
+    float: right;
+    font-size: 1.3em;
+    position: relative;
+    top: .1em;
+    color: #4e70d4;
+    margin-right: 10px
+}
+
+svg, .fa-question-circle {
+    vertical-align: middle;
+    margin: 0px 5px 0px 5px;
+    color: #CCC;
+    font-size: 16px;
+}
+
+.list-header .zoom-to-extents {
+    color: #AAA;
+    font-size: 12px;
+    margin-right: 10px;
+    float: right;
+    margin-top: 3px;
+    display: none;
+}
+.list-header:hover .zoom-to-extents {
+    cursor: pointer;
+    display: block;
+}
+
+.highlight {
+    background: rgb(123, 155, 225);
+    color: white;
+}
+.hover-highlight, .marker-container li:hover {
+    background: #EEE;
+    color: #444;
+}
+.highlight a {
+    color: white;
+}
+.highlight a p {
+    color: white;
+}
+
+.show-hide {
+    width: 20px;
+    height: 57px;
+    background: #FFF;
+    position: absolute;
+    bottom: 0px;
+    z-index: 100;
+    cursor: pointer;
+    line-height: 30px;
+    /* padding: 5px; */
+    font-weight: bold;
+    color: #999;
+}
+.marker-container p {
+    display: inline-block;
+    margin-top: 3px;
+    vertical-align: middle;
+}
+
+#marker-detail-panel .show, #marker-list-panel .hide {
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAJUlEQVR42mNgAILy8vL/DLgASBKnApgkVgXIkhgKiNKJ005s4gDLbCZBiSxfygAAAABJRU5ErkJggg==);
+    background-repeat: no-repeat;
+    background-position: 7px center;
+    background-size: 8px 8px;
+    box-shadow: -1px 1px 4px rgba(0,0,0,0.3);
+}
+
+#marker-detail-panel .hide, #marker-list-panel .show {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAJUlEQVR42mNgAILy8vL/DLgASBKnApgkVgXIkhgKiNKJ005s4gDLbCZBiSxfygAAAABJRU5ErkJggg==);
+    background-repeat: no-repeat;
+    background-position: 7px center;
+    background-size: 8px 8px;
+    box-shadow: -1px 1px 4px rgba(0,0,0,0.3);
+}
+
+
+/**********************
+ * Google Maps Override
+ */
+/*.gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom {
+    right: 50px !important;
+    bottom: 107px !important;
+}*/
+
+#map > div > .gm-style > div:nth-child(2) {
+    margin-left: 25px !important;
+}
+
+.hide-panel, .show-panel {
+    width: 8px;
+    cursor: pointer;
+}

@@ -77,8 +77,10 @@ class EntitiesField(serializers.Field):
 class JSONField(serializers.Field):
     type_label = 'json'
     type_name = 'JSONField'
-
+        
     def to_internal_value(self, data):
+        if isinstance(data, basestring) and len(data) == 0:
+            return None
         try:
             d = json.loads(data)
             if isinstance(d, dict) or isinstance(d, list):

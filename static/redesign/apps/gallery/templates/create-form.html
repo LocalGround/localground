@@ -1,0 +1,34 @@
+<button class="fa fa-chevron-left back button-tertiary">
+    Back
+</button>
+<br>
+<div class="inline-form">
+    <label for="formName">Name: </label>
+    <input type="text" id="formName" value="{{name}}">
+</div>
+<div class="inline-form">
+    <label for="caption">Description:</label>
+    <textarea id="caption" rows="5" cols="50" value="{{caption}}"
+    placeholder="Describe this form"></textarea>
+</div>
+
+<div class="inline-form">
+    <label>Fields:</label>
+    <div id="fieldTableDiv" class = "container-3-4">
+        <table class="fieldTable">
+            <thead>
+                <tr>
+                    <th>Field Name</th>
+                    <th>Data Type</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="fieldList"></tbody>
+        </table>
+        <br>
+        <a class="new_field_button button-tertiary">
+            <i class="fa fa-plus add" aria-hidden="true">
+            </i>Add Column
+        </a>
+    </div>
+</div>

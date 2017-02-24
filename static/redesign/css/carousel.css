@@ -1,0 +1,142 @@
+
+/********************************/
+/*       PHOTO PANEL STYLES     */
+/********************************/
+.carousel {
+    margin: 0px;
+}
+.carouselbox {
+    font-family: helvetica,sans-serif;
+    font-size: 14px;
+    width: 100%;
+    height: 350px;
+    position: relative;
+    border: 1px solid #ccc;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: #FFF;
+}
+.carousel .fa {
+    color: #999;
+}
+.carousel-content {
+    margin: 0;
+    padding: 0;
+}
+.carousel-content li {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    list-style: none;
+    text-align: center;
+    z-index: 2;
+}
+
+.carousel-photo .active-slide {
+    min-height: 350px;
+}
+
+.active-slide li {
+    position: absolute;
+    top: 350px;
+ }
+.active-slide li.current {
+    top: 0px;
+}
+.carousel-buttons {
+    margin-top: -350px;
+    height: 340px;
+}
+.carousel-buttons .next, .carousel-buttons .prev {
+    cursor: pointer;
+    margin-top: 120px;
+}
+.carousel-buttons .next {
+    float: right;
+    margin-right: 10px;
+}
+
+.carousel-buttons .prev {
+    float: left;
+    margin-left: 10px;
+}
+
+.carousel-buttons .next, .carousel-buttons .prev {
+    color: #EEE;
+    font-size: 30px;
+    text-shadow: 1px 1px 3px #000 !important;
+}
+
+.carousel-buttons, .circle-buttons {
+    display: block;
+    padding: 5px 0;
+    text-align: center;
+    z-index: 10;
+    position: relative;
+}
+
+.circle-buttons .fa {
+    cursor: pointer;
+}
+
+.offscreen {
+    position: absolute;
+    left: -2000px;
+}
+
+li.current .photo {
+    width: 100%;
+    height: 300px;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    background-position: center center !important;
+    margin-bottom: 6px;
+    cursor: pointer;
+}
+
+/********************************/
+/*       SPREADSHEET STYLES     */
+/********************************/
+.spreadsheet .active-slide {
+    position: relative;
+    height: auto;
+    width: 800px;
+    top: 50px;
+}
+
+.spreadsheet .active-slide li {
+    top: 0px;
+}
+.spreadsheet li.current .photo {
+    height: auto !important;
+    min-height: 500px;
+    width: 100%;
+    cursor: pointer;
+}
+.spreadsheet .carouselbox, .spreadsheet .active-slide {
+    min-height: 500px;
+    height: auto !important;
+}
+.spreadsheet .carousel-buttons {
+    margin-top: -500px;
+    height: 500px;
+}
+.spreadsheet .carousel-buttons .next, .spreadsheet .carousel-buttons .prev {
+    cursor: pointer;
+    margin-top: 240px;
+}
+
+.close.big {
+    font-size: 80px;
+    line-height: 40px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+/********************************/
+/*       AUDIO PANEL STYLES     */
+/********************************/
+.carouselbox.audio {
+    height: 160px;
+}

@@ -1,0 +1,279 @@
+/* The Modal (background) */
+
+/*
+  Until there is a single unified modal style sheet,
+  another one will do for prorotype purposes
+
+*/
+.modal, .carousel-modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 101; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.8); /* Black w/ opacity */
+}
+
+.modal header {
+    width: calc(100% - 40px);
+    padding: 20px;
+}
+
+/* Modal Content */
+.modal-content {
+    position: relative;
+    margin: 20px auto 0;
+    width: 80%;
+    vertical-align: middle;
+    border-radius:6px;
+    background-color: #fefefe;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
+    margin: 20px auto 0;
+    width:800px;
+    height: auto;
+    position: relative;
+}
+
+.modal-body{
+    background-color: #fafafc;
+    border-top: 1px solid #e4e5eb;
+    padding: 20px 4px;
+}
+
+/* Modal Footer */
+
+.modal footer{
+    border-top: solid;
+    border-color: #e4e5eb;
+    border-width: 1px;
+    padding:16px 20px;
+}
+
+.modal .buttons{
+    text-align: right;
+}
+
+/* The Close Button */
+
+.close {
+    color: #888;
+    float: right;
+    font-size: 24px;
+    line-height: 24px;
+}
+.close:hover,
+.close:focus {
+    color: #DDD;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal h1{
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.modal h2{
+    font-size: 22px;
+    font-weight: 400;
+}
+
+/*Added Feb 4, 2017*/
+/*styles specific to the add-media modal*/
+
+.modal .card-img-preview {
+    background-position: center center;
+    width: 100%;
+    border-radius: 2px 2px 0 0;
+    height: 185px;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.column {
+    width: calc(25% - 12px);
+    margin: 4px 5px 8px;
+    border: 1px solid #e4e5eb;
+    border-radius: 2px;
+    flex-direction: column;
+    width: calc(25% - 12px);
+
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.column h1 {
+    font-size: 14px;
+    padding: 10px 10px 1px;
+    font-weight: 400;
+}
+
+.column h2 {
+    font-size: 12px;
+    padding: 0 10px 12px;
+    color: #7a7a7a;
+}
+
+.modal nav li.active {
+    border-bottom: solid;
+    font-weight: 600;
+    border-color: #4e70d4;
+}
+
+.modal header {
+    padding: 16px 20px 20px;
+}
+
+.modal-body nav {
+    border-bottom: solid 1px #e4e5eb;
+}
+
+.modal-body {
+    padding: 0px 4px;
+    background-color: #ffffff;
+    border-top: none;
+    max-height: 75vh;
+    overflow-y: scroll;
+}
+
+
+.modal-body nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.modal-body nav li {
+    display: inline-block;
+    padding: 14px 4px;
+    font-size: 12px;
+    margin: 0 20px 0 20px;
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.filter {
+    padding: 18px;
+    width: calc(100% - 40px);
+    background-color: #fafafc;
+    margin: 0;
+    border-bottom: 1px solid #e4e5eb;
+}
+
+.modal-search-form {
+    flex: 1;
+    display: inline-block;
+}
+
+.modal-search-form .fa {
+    padding: 4px 0 4px 16px;
+    color: #7a7a7a;
+}
+
+.modal-search-form input {
+    padding: 6px;
+    background-color: white;
+    margin-right: -40px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.button-secondary {
+    background-color: #fafafc;
+    border: none;
+    border-radius: 3px;
+    padding: 0 12px;
+    text-transform: uppercase;
+    font-size: 12px;
+    margin: 0 2px;
+    border: 1px solid #e4e5eb;
+    -webkit-transition: background 0.3s linear;
+    -moz-transition: background 0.3s linear;
+    -ms-transition: background 0.3s linear;
+    -o-transition: background 0.3s linear;
+    transition: background 0.3s linear;
+    line-height: 26px;
+    height: 29px;
+    vertical-align: bottom;
+    letter-spacing: 0.7px;
+    width: 80px;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    padding: 20px 14px 24px;
+    overflow: scroll;
+}
+
+.selected-card {
+    color: #fff;
+    background-color: rgb(123, 155, 225);
+}
+
+.selected-card h1, .selected-card h2, .selected-card > .fa-map-marker, .selected-card .coords {
+    color: #fff;
+}
+
+.database-views-modal table {
+    width: 100%;
+    font-size: 13px;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.database-views-modal td {
+    padding: 0px 0px;
+    border: none;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none;
+}
+
+th {
+    text-align: left;
+}
+
+.thumbnail-img {
+    height: 36px;
+    width: 36px;
+    padding: 4px 10px 4px 20px;
+}
+
+#media-photos, #media-audio {
+    float: right;
+}
+
+.database-views-modal tr {
+    cursor: pointer;
+    border-bottom: 1px solid #E2E2E2;
+}
+
+.database-views-modal .table:hover, .database-views-modal td:hover {
+    background-color: rgb(123, 155, 225);;
+    color: white;
+}
+
+.error {
+    background-color: #fae5e3;
+    color: #b94a48;
+    padding: 5px;
+}
+.errorMessage {
+    color: #b94a48;
+    margin: 0px 15px;
+    font-size: 13px;
+}

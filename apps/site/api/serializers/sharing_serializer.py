@@ -14,7 +14,7 @@ class SharingSerializerMixin(serializers.ModelSerializer):
     )
     class Meta:
         model = models.UserAuthorityObject
-        fields = ('user', 'authority', 'project_id', 'url', 'granted_by')
+        fields = ('id', 'user', 'authority', 'project_id', 'url', 'granted_by')
 
     def validate(self, attrs):
         # first, ensure that there isn't already an UserAuthorityObject

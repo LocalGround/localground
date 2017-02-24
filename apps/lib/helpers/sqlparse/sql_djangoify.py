@@ -23,7 +23,8 @@ def split_statements(where):
     """
     Splits where statement into conditions and conjunctions
     """
-    split = re.split("(\s(?:and|or)\s)", where)
+    #where = where.lower()
+    split = re.split("(\s(?:and|or)\s)(?i)", where)
     out = []
     temp = ""
 

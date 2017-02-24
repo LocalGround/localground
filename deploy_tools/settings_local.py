@@ -14,6 +14,7 @@ PROTOCOL = 'http'
 SERVER_HOST = 'localhost:7777'
 SERVER_URL = '%s://%s' % (PROTOCOL, SERVER_HOST)
 
+
 # Absolute path to the directory root of the local ground instance:
 FILE_ROOT = '/localground'
 STATIC_ROOT = '%s/%s' % (FILE_ROOT, STATIC_MEDIA_DIR)
@@ -29,6 +30,7 @@ MAP_FILE = FILE_ROOT + '/mapserver/localground.map'
 # From Google Developer Console:
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'YOUR_GOOGLE_OAUTH2_KEY'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'YOUR_GOOGLE_OAUTH2_SECRET'
+
 
 #OS variables:
 USER_ACCOUNT = 'vagrant'	#account to use for creating new OS files / directories

@@ -1,0 +1,242 @@
+audio {
+    display: none;
+}
+
+/**************************
+ * Old Templated Player
+ **************************/
+.fa {
+    display: inline-block;
+    text-rendering: auto;
+}
+
+.audio-container {
+    background: #EDEDED;
+    color: #686868;
+    text-align: center;
+    font-family: Candara, Calibri, Segoe;
+    min-height: 200px;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    margin: auto;
+}
+
+.audio-container span {
+    font-size: 1.6em;
+    margin-top: 20px;
+    display: block;
+}
+
+.progress {
+    height: 10px;
+    width: 110px;
+    background: #CBCBCB;
+    border-radius: 2px;
+    overflow: hidden;
+    margin: auto;
+    cursor: pointer;
+}
+
+.progress > div {
+    height: 10px;
+    width: 0;
+    background: #686868;
+}
+
+.progress-circle{
+    height: 15px;
+    width: 15px;
+    border: 6px solid #686868;
+    background-color: white;
+    border-radius: 5px;
+    top: -5px;
+}
+
+.play-ctrls{
+    text-align: center;
+    margin: 20px 0 10px;
+}
+.spreadsheet > div {
+    padding: 0px !important;
+    margin: 0px auto !important;
+    border: solid 1px #000;
+}
+
+.spreadsheet .play-ctrls{
+    text-align: center;
+    margin: 0px auto;
+}
+
+.play {
+    cursor: pointer;
+    width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: 15px 0 15px 30px;
+    border-color: transparent transparent transparent #686868;
+    margin: 20px auto;
+}
+
+.spreadsheet .play {
+    margin: 0px auto;
+}
+
+.play.pause {
+    width: 10px;
+    height: 30px;
+    border-width: 0 10px 0 10px;
+    border-color: #686868;
+}
+
+.fwd-back{
+    vertical-align: top;
+    padding: 5px 20px;
+}
+
+.vol {
+    margin-top: 10px;
+    user-select: none;
+}
+.vol i {
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+
+/**************************
+ * Simple Player
+ **************************/
+.audio-simple {
+    background-color: #fafafc;
+    width: 100%;
+    height: 100%;
+    border-radius: 2px 2px 0 0;
+    height: 150px;
+    background-size: 410px auto;
+    background-position: center center;
+    padding-top: 40px;
+}
+
+.progress-container {
+    width: calc(100% - 40px);
+    margin: auto;
+}
+
+.audio-basic .play {
+    margin-top: 35px;
+    position: relative;
+    z-index: 10;
+}
+
+.audio-basic {
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    background: #f0f1f5;
+    /*margin: 10px 10px 0px 0px;*/
+}
+
+/**************************
+ * Simple and Detailed Player
+ **************************/
+.progress-container {
+    width: calc(100% - 40px);
+    margin: auto;
+    text-align: left;
+}
+
+.audio-simple .audio-progress, .audio-detail .audio-progress {
+    padding: 10px 30px 50px 30px;
+    position: relative;
+}
+.audio-simple .audio-labels, .audio-detail .audio-labels {
+    font-size: 12px;
+    color: #7a7a7a;
+    position: absolute;
+    top: 4px;
+}
+
+.audio-progress-bar {
+    background-color: #c4c4c4;
+    height: 6px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.audio-simple .audio-progress-bar {
+    width: 100%;
+}
+
+.audio-detail .audio-progress-bar {
+    width: 100%;
+}
+
+.audio-simple .audio-progress-duration, .audio-detail .audio-progress-duration {
+    background-color: #686868;
+    width: 0px;
+    height: 6px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-top: -6px;
+}
+
+.audio-simple .audio-progress-circle, .audio-detail .audio-progress-circle {
+    height: 10px;
+    width: 10px;
+    border-radius: 40px;
+    border: 6px solid #7a7a7a;
+    background-color: white;
+    margin-top: -15px;
+    margin-left: -8px;
+    position: relative;
+}
+
+
+
+/**************************
+ * Detailed Player
+ **************************/
+
+.audio-detail {
+    border: 1px solid #e4e5eb;
+    background-color: white;
+    margin: 16px;
+    position: relative;
+}
+
+.audio-detail .play-ctrls {
+    text-align: center;
+    margin: 20px 0 10px;
+    color: #898989;
+}
+
+.fwd-back {
+    vertical-align: top;
+    padding: 5px 20px;
+    font-size: 1.2em;
+}
+
+.audio-detail .play {
+    margin: 0px auto;
+    display: inline-block;
+}
+
+.audio-detail .audio-container {
+    background: #FFFFFF;
+}
+
+/**************************
+ * Carousel
+ **************************/
+.carouselbox .audio-detail {
+    border-width: 0px !important;
+}
+.carouselbox .audio-container {
+    padding: 0px;
+}
+
+.carouselbox .audio-detail .audio-progress {
+    padding: 10px 30px 25px 30px;
+    position: relative;
+}

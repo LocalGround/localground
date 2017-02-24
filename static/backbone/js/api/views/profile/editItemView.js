@@ -1,8 +1,9 @@
-define(["marionette",
+define(["underscore",
+        "marionette",
         "form",
         "bootstrap-form-templates"
     ],
-    function (Marionette, Form) {
+    function (_, Marionette, Form) {
         'use strict';
         var ListEditView = Marionette.ItemView.extend({
             tagName: "div",
@@ -22,6 +23,8 @@ define(["marionette",
                 this.mode = opts.mode;
                 if (this.mode == "edit") {
                     this.Template = opts.EditItemTemplate;
+                } else if (this.mode == "thumb") {
+                    this.Template = opts.ItemTemplate;
                 } else {
                     this.Template = opts.ItemTemplate;
                 }
@@ -37,8 +40,13 @@ define(["marionette",
                 console.log("mark as edited");
                 this.hasBeenEdited = true;
             },
+            templateHelpers: function () {
+                return { mode: this.mode };
+            },
             render: function () {
-                this.$el.html(_.template(this.Template, this.model.toJSON()));
+                var data = this.model.toJSON();
+                data.mode = this.mode;
+                this.$el.html(_.template(this.Template, data));
 
                 // if the form is in edit mode, also append the form:
                 if (this.mode == "edit") {

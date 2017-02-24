@@ -33,7 +33,7 @@ class Group(BaseNamed, BaseGenericRelationMixin, BasePermissions):
     basemap = models.ForeignKey(
         'WMSOverlay',
         default=12)  # default to grayscale
-    filter_fields = BaseNamed.filter_fields + ('slug',)
+    filter_fields = BaseNamed.filter_fields + ('slug', 'name', 'description', 'tags', 'owner')
 
     class Meta:
         abstract = True
