@@ -18,7 +18,7 @@ define(["marionette",
             activeMapTypeID: 1,
             minZoom: 1,
             maxZoom: 22,
-            highlightCircle: null,
+            highlightMarker: null,
             addMarkerClicked: false, // will need state to determine marker creation upon click
             tileManager: null,
             userProfile: null,
@@ -44,30 +44,22 @@ define(["marionette",
             doHighlight: function (overlay) {
                 //draw a circle on the map using this code:
                 //https://developers.google.com/maps/documentation/javascript/shapes#circle_add
-                if (!this.highlightCircle){
-                    this.highlightCircle = new google.maps.Marker({
+                var icon = {},
+                    that = this;
+                _.extend(icon, overlay.getIcon(), { strokeWeight: 6 });
+                icon.strokeColor = icon.fillColor;
+                if (!this.highlightMarker) {
+                    this.highlightMarker = new google.maps.Marker({
                         position: overlay.position,
-                        icon: {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            fillOpacity: 0.5,
-                            fillColor: '#fff',
-                            strokeOpacity: 1.0,
-                            strokeColor: '#fff',
-                            strokeWeight: 3.0,
-                            scale: 20, //pixels
-                        },
+                        icon: icon,
                         map: this.map
                     });
                 } else {
-                    // This is supposed to change the position of circle, but does not
-                    this.highlightCircle.setPosition(overlay.position);
+                    this.highlightMarker.setPosition(overlay.position);
+                    this.highlightMarker.setIcon(icon);
+                    this.highlightMarker.setMap(null);
+                    this.highlightMarker.setMap(this.map);
                 }
-                //console.log(this.app.screenType);
-                overlay.setMap(null);
-                overlay.setMap(this.map);
-
-                //console.log(overlay);
-                //alert(overlay);
             },
 
             // If the add marker button is clicked, allow user to add marker on click
