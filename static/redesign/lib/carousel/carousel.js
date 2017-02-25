@@ -54,9 +54,7 @@ define(["jquery", "underscore", "marionette", "handlebars",
                                 audioMode: "detail",
                                 app: this.app
                             });
-                            console.log(this.$el.html());
                             this.$el.find('.player-container').append(player.$el);
-                            console.log(this.$el.html());
                         }
                     }
                 });

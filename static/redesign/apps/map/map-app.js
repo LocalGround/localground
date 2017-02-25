@@ -134,7 +134,6 @@ define([
                 model = this.createNewModelFromCurrentCollection();
             }
             model.set("active", true);
-            //model.trigger('do-highlight');
             this.vent.trigger('highlight-marker', model);
             
             if (dataType.indexOf("form_") != -1) {

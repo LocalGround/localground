@@ -149,6 +149,8 @@ define([
             if (opts.dataType.indexOf("form_") != -1) {
                 model.set("fields", dataEntry.fields.toJSON());
             }
+            model.set("active", true);
+            this.vent.trigger('highlight-marker', model);
             this.detailView = new DataDetail({
                 model: model,
                 app: this,
