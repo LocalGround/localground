@@ -37,7 +37,6 @@ define([
                     this.getGoogleOverlay().setIcon(icon);
                 } else {
                     if (this.getIcon()) {
-                        console.log(this.getIcon());
                         this._overlay.setIcon(this.getIcon());
                     }
                 }
