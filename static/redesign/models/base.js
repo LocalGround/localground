@@ -84,7 +84,6 @@ define(["underscore", "jquery", "backbone", "form", "lib/maps/geometry/geometry"
                 } else {
                     geoJSON = null;
                 }
-                console.log(geoJSON);
                 this.set("geometry", geoJSON);
                 return geoJSON;
             },

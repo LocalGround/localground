@@ -137,7 +137,7 @@ define(["marionette",
             var go = this.getGoogleOverlay();
             go.setMap(null);
             this.infoBubble.remove();
-            console.log("onBeforeDestroy", go, this.model.get("id"));
+            //console.log("onBeforeDestroy", go, this.model.get("id"));
             Base.__super__.remove.apply(this);
         },
 
