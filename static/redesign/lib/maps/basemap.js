@@ -18,7 +18,7 @@ define(["marionette",
             activeMapTypeID: 1,
             minZoom: 1,
             maxZoom: 22,
-            highlightMarker: null,
+            activeModel: null,
             addMarkerClicked: false,
             targetedModel: null,
             tileManager: null,
@@ -40,14 +40,11 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
             },
 
-            doHighlight: function (overlay) {
-                if (this.highlightMarker) {
-                    this.highlightMarker.model.set("active", false);
-                    this.highlightMarker.render();
+            doHighlight: function (model) {
+                if (this.activeModel) {
+                    this.activeModel.set("active", false);
                 }
-                this.highlightMarker = overlay;
-                overlay.model.set("active", true);
-                this.highlightMarker.render();
+                this.activeModel = model;
             },
 
             // If the add marker button is clicked, allow user to add marker on click
