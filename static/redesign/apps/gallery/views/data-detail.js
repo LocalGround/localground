@@ -67,8 +67,6 @@ define([
             });
         },
         initialize: function (opts) {
-            console.log(this.model);
-            console.log(opts);
             _.extend(this, opts);
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
@@ -78,9 +76,6 @@ define([
         },
 
         activateMarkerTrigger: function(){
-            console.log("make geo cursor");
-            
-            //start Sarah's code
             //Define Class:
             var that = this;
             var MouseMover = function () {
@@ -105,7 +100,7 @@ define([
             var mm = new MouseMover();
             $(window).mousemove(mm.start.bind(mm));
             $('#follower').click(mm.stop);
-            //end Sarah's code
+            
             this.app.vent.trigger("add-new-marker", this.model);
         },
 
