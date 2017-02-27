@@ -57,14 +57,27 @@
         Add New
         {{/if}}
     </h4>
+    <h5>Latitude: {{lat}}</h5>
+    <h5>Longitude: {{long}}</h5>
     {{#ifequal screenType "map"}}
         {{#if geometry}}
-        <button class="delete-marker-button">Delete Marker</button>
+        <button class="button-secondary delete-marker-button" id="delete-marker-button" style="width:160px;">Delete Marker</button>
         {{else}}
         <div class="add-lat-lng">
+        <!--    
             Insert Latitude and Longitude if empty. When done, hide this div away.
             <button class="add-marker-button">Add Marker</button>
+       -->
+            <button class="button-secondary add-marker-button" id="add-marker-button" style="width:160px;">
+                    Place Pin on Map
+            </button>
         </div>
+        <div id="follower">
+        <svg viewBox="-1 -1 16 18" width="33" height="33">
+                    <path fill="#ed867d" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke" stroke-width="2" stroke="#FFFFFF" d="M14,7.5c0,3.5899-2.9101,6.5-6.5,6.5S1,11.0899,1,7.5S3.9101,1,7.5,1S14,3.9101,14,7.5z"></path>
+                </svg>
+        </div>
+
         {{/if}}
     {{/ifequal}}
 

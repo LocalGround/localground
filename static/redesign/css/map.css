@@ -264,3 +264,31 @@ svg, .fa-question-circle {
     width: 8px;
     cursor: pointer;
 }
+
+/*for dragging/dropping pins on map*/
+#follower {
+  position: absolute;
+  display: none;
+}
+
+
+#add-marker-button {
+    display: block;
+    text-align: center;
+    margin: 40px auto;
+}
+
+#delete-marker-button {
+    display: block;
+    text-align: center;
+    margin: 40px auto;
+}
+
+#marker-detail-panel h5 {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-size: 12px;
+    font-weight: 600;
+}
+

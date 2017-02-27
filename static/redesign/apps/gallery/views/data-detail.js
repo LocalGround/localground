@@ -67,6 +67,8 @@ define([
             });
         },
         initialize: function (opts) {
+            console.log(this.model);
+            console.log(opts);
             _.extend(this, opts);
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
@@ -76,6 +78,34 @@ define([
         },
 
         activateMarkerTrigger: function(){
+            console.log("make geo cursor");
+            
+            //start Sarah's code
+            //Define Class:
+            var that = this;
+            var MouseMover = function () {
+                var $follower = $("#follower");
+                this.start = function () {
+                    $follower.show();
+                    $(window).bind('mousemove', this.mouseListener);
+                };
+                this.stop = function () {
+                    $(window).unbind('mousemove');
+                    that.app.vent.trigger("place-marker", that.model);
+                };
+                this.mouseListener = function (event) {
+                    $follower.css({
+                        top: event.clientY - 122,
+                        left: event.clientX - 18
+                    });
+                };
+            };
+
+            //Instantiate Class and Add UI Event Handlers:
+            var mm = new MouseMover();
+            $(window).mousemove(mm.start.bind(mm));
+            $('#follower').click(mm.stop);
+            //end Sarah's code
             this.app.vent.trigger("add-new-marker", this.model);
         },
 
@@ -156,12 +186,26 @@ define([
             this.render();
         },
         templateHelpers: function () {
+
+            var lat, long;
+            //sets filler html string if a marker location has not been set
+            if (this.model.get("geometry") == null) {
+                        lat = "...",
+                        long = "...";
+                    } else {
+                       lat =  this.model.get("geometry").coordinates[0],
+                       long =  this.model.get("geometry").coordinates[1]
+                    }
+
             var context = {
                 mode: this.app.mode,
                 dataType: this.dataType,
                 audioMode: "detail",
                 name: this.model.get("name") || this.model.get("display_name"),
-                screenType: this.app.screenType
+                screenType: this.app.screenType,
+                lat: lat,
+                long: long
+                
             };
             return context;
         },
