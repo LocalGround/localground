@@ -12,10 +12,11 @@ define([
     "models/audio",
     "lib/audio/audio-player",
     "lib/carousel/carousel",
+    "lib/maps/overlays/icon",
     "form" //extends Backbone
 ], function ($, Backbone, _, Handlebars, Marionette, MediaBrowser,
              AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
-             Audio, AudioPlayer, Carousel) {
+             Audio, AudioPlayer, Carousel, Icon) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -75,37 +76,52 @@ define([
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
         },
 
-        activateMarkerTrigger: function(){
+        activateMarkerTrigger: function () {
             //Define Class:
-            var that = this;
-            var MouseMover = function () {
-                var $follower = $("#follower");
-                this.start = function () {
+            var that = this, MouseMover, $follower, mm;
+            MouseMover = function ($follower) {
+                var icon;
+                this.generateIcon = function () {
+                    var template, shape;
+                    template = Handlebars.compile('<svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
+                        '    <path fill="{{ fillColor }}" paint-order="stroke" stroke-width="{{ strokeWeight }}" stroke-opacity="0.5" stroke="{{ fillColor }}" d="{{ path }}"></path>' +
+                        '</svg>');
+                    shape = that.model.get("overlay_type");
+                    if (shape.indexOf("form_") != -1) {
+                        shape = "marker";
+                    }
+                    icon = new Icon({ shape: shape, strokeWeight: 6 }).generateGoogleIcon();
+                    icon.width *= 1.5;
+                    icon.height *= 1.5;
+                    $follower.html(template(icon));
                     $follower.show();
+                };
+                this.start = function () {
+                    this.generateIcon();
                     $(window).bind('mousemove', this.mouseListener);
                 };
                 this.stop = function (event) {
                     $(window).unbind('mousemove');
-                    $follower.hide();
-                    console.log(event);
+                    $follower.remove();
                     that.app.vent.trigger("place-marker", {
-                        x: event.screenX,
-                        y: event.screenY
+                        x: event.clientX,
+                        y: event.clientY
                     });
                 };
                 this.mouseListener = function (event) {
                     $follower.css({
-                        top: event.clientY - 122,
-                        left: event.clientX - 18
+                        top: event.clientY - icon.height * 3 / 4,
+                        left: event.clientX - icon.width * 3 / 4
                     });
                 };
             };
 
             //Instantiate Class and Add UI Event Handlers:
-            var mm = new MouseMover();
+            $follower = $('<div id="follower"></div>');
+            $('body').append($follower);
+            mm = new MouseMover($follower);
             $(window).mousemove(mm.start.bind(mm));
-            $('#follower').click(mm.stop);
-            
+            $follower.click(mm.stop);
             this.app.vent.trigger("add-new-marker", this.model);
         },
 

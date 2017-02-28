@@ -45,7 +45,7 @@ define(["marionette",
                 var topRight, bottomLeft, scale, worldPoint, offset;
                 offset = this.$el.offset();
                 point.x -= offset.left;
-                point.y -= 2 * offset.top;
+                point.y -= offset.top;
                 topRight = this.map.getProjection().fromLatLngToPoint(this.map.getBounds().getNorthEast());
                 bottomLeft = this.map.getProjection().fromLatLngToPoint(this.map.getBounds().getSouthWest());
                 scale = Math.pow(2, this.map.getZoom());
