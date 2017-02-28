@@ -110,7 +110,7 @@ define([
                 };
                 this.mouseListener = function (event) {
                     $follower.css({
-                        top: event.clientY - icon.height * 3 / 4,
+                        top: event.clientY - icon.height * 3 / 4 + 4,
                         left: event.clientX - icon.width * 3 / 4
                     });
                 };
