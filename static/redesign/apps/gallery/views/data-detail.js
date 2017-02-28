@@ -84,9 +84,14 @@ define([
                     $follower.show();
                     $(window).bind('mousemove', this.mouseListener);
                 };
-                this.stop = function () {
+                this.stop = function (event) {
                     $(window).unbind('mousemove');
-                    that.app.vent.trigger("place-marker", that.model);
+                    $follower.hide();
+                    console.log(event);
+                    that.app.vent.trigger("place-marker", {
+                        x: event.screenX,
+                        y: event.screenY
+                    });
                 };
                 this.mouseListener = function (event) {
                     $follower.css({
@@ -182,14 +187,14 @@ define([
         },
         templateHelpers: function () {
 
-            var lat, long;
+            var lat, lng;
             //sets filler html string if a marker location has not been set
             if (this.model.get("geometry") == null) {
                         lat = "...",
-                        long = "...";
+                        lng = "...";
                     } else {
-                       lat =  this.model.get("geometry").coordinates[0],
-                       long =  this.model.get("geometry").coordinates[1]
+                       lat =  this.model.get("geometry").coordinates[0].toFixed(4),
+                       lng =  this.model.get("geometry").coordinates[1].toFixed(4)
                     }
 
             var context = {
@@ -199,7 +204,7 @@ define([
                 name: this.model.get("name") || this.model.get("display_name"),
                 screenType: this.app.screenType,
                 lat: lat,
-                long: long
+                lng: lng
                 
             };
             return context;
