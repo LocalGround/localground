@@ -30,10 +30,18 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 _.bindAll(this, 'playerDurationUpdate');
                 this.$el.find('audio').on('timeupdate', this.playerDurationUpdate);
                 this.listenTo(this.app.vent, 'audio-carousel-advanced', this.stop);
-                this.$el.find(".audio-progress-circle").draggable({
-                    axis: "x",
-                    containment: "parent"
-                });
+            },
+            onRender: function () {
+                setTimeout(function () {
+                    var $c = this.$el.find('.progress-container'),
+                        x = $c.offset().left,
+                        w = $c.width(),
+                        containment = [x, 0, x + w + 5, 0];
+                    this.$el.find(".audio-progress-circle").draggable({
+                        axis: "x",
+                        containment: containment //[ x1, y1, x2, y2 ]
+                    });
+                }.bind(this), 100);
             },
             templateHelpers: function () {
                 return {
@@ -83,14 +91,13 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 }
             },
             endDrag: function () {
+                console.log('endDrag');
                 this.suspendUIUpdate = false;
                 var $progressContainer = this.$el.find('.progress-container'),
                     $circle = this.$el.find('.audio-progress-circle'),
                     posX = $circle.offset().left + $circle.width() / 2,
                     offsetX = $progressContainer.offset().left,
-                    w = (posX - offsetX + 5) / ($progressContainer.width());
-                //w = Math.max(w, 0);
-                //console.log(posX - offsetX, $progressContainer.width());
+                    w = (posX - offsetX) / ($progressContainer.width());
                 this.audio.currentTime = w * this.audio.duration;
                 if (this.audio.paused) {
                     this.audio.play();
