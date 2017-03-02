@@ -181,7 +181,6 @@ define ([
                         e.preventDefault();
 
                     },
-                    /*
                     onRender: function(){
                         this.getTemplate();
 
@@ -195,7 +194,7 @@ define ([
                         }
 
                     },
-                    //*/
+
                     templateHelpers: function () {
                         return {
                             dataType: this.currentMedia,
@@ -261,8 +260,7 @@ define ([
                 "click #media-photos" : "changeToPhotos",
                 'click #card-view-button-modal' : 'displayCards',
                 'click #table-view-button-modal' : 'displayTable',
-                'click #toolbar-search': 'doSearch',
-                //'keypressed #searchTerm': "searchPressed"
+                'click #toolbar-search': 'doSearch'
             },
 
             displayCards: function() {
@@ -290,18 +288,6 @@ define ([
                 this.collection.fetch({reset: true});
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
-            },
-
-            /* As of now, the search by enter button on mediua browser automatically refereshes the web page
-            There must be a trigger that causes the whole refresh when pressing enter on the search bar
-            //*/
-
-            searchPressed: function(e){
-                console.log("Enter pressed on input");
-                var code = e.keyCode || e.which;
-                if (code === 13){
-                    this.doSearch(e);
-                }
             },
 
             doSearch: function (e) {
