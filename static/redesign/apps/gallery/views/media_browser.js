@@ -181,18 +181,21 @@ define ([
                         e.preventDefault();
 
                     },
-
+                    /*
                     onRender: function(){
                         this.getTemplate();
+
                         if (this.currentMedia == "audio") {
                             var player = new AudioPlayer({
                                 model: this.model,
                                 audioMode: "simple",
                                 app: this.app
                             });
-                            this.$el.find(".player-container").append(player.$el);
+                            this.$el.find(".player-container").html(player.$el);
                         }
+
                     },
+                    //*/
                     templateHelpers: function () {
                         return {
                             dataType: this.currentMedia,
@@ -202,6 +205,7 @@ define ([
                 });
             },
             childViewContainer: "#gallery-main",
+            searchTerm: null,
             initialize: function (opts) {
                 _.extend(this, opts);
 
@@ -212,12 +216,15 @@ define ([
 
 
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
+                this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
 
             },
 
             templateHelpers: function () {
                 return {
-                    viewMode: this.viewMode
+                    viewMode: this.viewMode,
+                    searchTerm: this.searchTerm
+
                 };
 
             },
@@ -253,19 +260,18 @@ define ([
                 "click #media-audio" : "changeToAudio",
                 "click #media-photos" : "changeToPhotos",
                 'click #card-view-button-modal' : 'displayCards',
-                'click #table-view-button-modal' : 'displayTable'
+                'click #table-view-button-modal' : 'displayTable',
+                'click #toolbar-search': 'doSearch',
+                //'keypressed #searchTerm': "searchPressed"
             },
 
             displayCards: function() {
-                console.log("thumb view?");
                 this.viewMode = "thumb";
                 this.render();
             },
 
             displayTable: function() {
-                console.log("table view?");
                 this.viewMode = "table";
-                console.log(this.viewMode);
                 this.render();
             },
 
@@ -289,8 +295,21 @@ define ([
             /* As of now, the search by enter button on mediua browser automatically refereshes the web page
             There must be a trigger that causes the whole refresh when pressing enter on the search bar
             //*/
-            doSearch: function (term) {
-                this.collection.doSearch(term, this.app.getProjectID()); // this.fields
+
+            searchPressed: function(e){
+                console.log("Enter pressed on input");
+                var code = e.keyCode || e.which;
+                if (code === 13){
+                    this.doSearch(e);
+                }
+            },
+
+            doSearch: function (e) {
+                console.log(this.app.getProjectID());
+                this.searchTerm = this.$el.find("#searchTerm").val();
+                this.collection.doSearch(this.searchTerm, this.app.getProjectID());
+                e.preventDefault();
+                console.log(this.collection);
             },
 
 
