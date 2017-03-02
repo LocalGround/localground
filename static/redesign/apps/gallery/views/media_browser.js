@@ -209,6 +209,10 @@ define ([
                 Marionette.CompositeView.prototype.initialize.call(this);
                 this.template = Handlebars.compile(ParentTemplate);
                 this.displayMedia();
+
+
+                this.listenTo(this.app.vent, 'search-requested', this.doSearch);
+
             },
 
             templateHelpers: function () {
@@ -249,7 +253,7 @@ define ([
                 "click #media-audio" : "changeToAudio",
                 "click #media-photos" : "changeToPhotos",
                 'click #card-view-button-modal' : 'displayCards',
-                'click #table-view-button-modal' : 'displayTable',
+                'click #table-view-button-modal' : 'displayTable'
             },
 
             displayCards: function() {
@@ -281,6 +285,19 @@ define ([
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
             },
+
+            /* As of now, the search by enter button on mediua browser automatically refereshes the web page
+            There must be a trigger that causes the whole refresh when pressing enter on the search bar
+            //*/
+            doSearch: function (term) {
+                this.collection.doSearch(term, this.app.getProjectID()); // this.fields
+            },
+
+
+            clearSearch: function () {
+                this.collection.clearSearch(this.app.getProjectID());
+            },
+
             changeToAudio: function () {
                 this.currentMedia = "audio";
                 this.collection = this.app.dataManager.getCollection(this.currentMedia);

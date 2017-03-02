@@ -77,8 +77,10 @@ define(["marionette",
                     colWidths: this.getColumnWidths(),
                     rowHeights: rowHeights,
                     colHeaders: this.getColumnHeaders(),
-                    manualColumnResize: true,
-                    manualRowResize: true,
+                    //manualColumnResize: true,
+                    //manualRowResize: true, // However, the manualRowResize overrides the manualRowMove
+                    manualRowMove: true, // The simple way of moving entire rows, but more crude
+                    // but the move rows cannot happen because the headers are not alligned with the rest of the rows
                     rowHeaders: true,
                     columns: this.getColumns(),
                     maxRows: this.collection.length,
@@ -404,16 +406,11 @@ define(["marionette",
             doSearch: function (term) {
 
                 // If form exist, do search with 3 parameters, otherwise, do search with two parameters]
-                // Old search field condition: collection.key.indexOf("form_")
-                //*
                 if (this.collection.key.indexOf("form_")){
                     this.collection.doSearch(term, this.app.getProjectID(), this.fields);
                 } else {
                     this.collection.doSearch(term, this.app.getProjectID());
                 }
-
-                //*/
-                //this.collection.doSearch(term, this.app.getProjectID(), this.fields);
 
             },
 
@@ -563,9 +560,9 @@ define(["marionette",
 
                 rec.collection = this.collection;
                 rec.save(null, {
-                    // The error occurs when there are no rows
                     success: function(){
-                        that.collection.add(rec);
+                        // To add an empty column a the top, set the index to insert at 0
+                        that.collection.add(rec, {at: 0});
                         that.renderSpreadsheet();
                     }
                 });
