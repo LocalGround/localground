@@ -33,14 +33,14 @@ define([
             // kicks off any objects and processes that need to run
             Marionette.Application.prototype.start.apply(this, [options]);
             this.initAJAX(options);
-            this.router = new Router({ app: this});
-            Backbone.history.start();
             this.listenTo(this.vent, 'data-loaded', this.loadRegions);
             this.listenTo(this.vent, 'show-detail', this.showDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
             this.listenTo(this.vent, 'hide-detail', this.hideDetail);
             this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
+            this.router = new Router({ app: this});
+            Backbone.history.start();
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
@@ -52,6 +52,9 @@ define([
             this.showDataToolbar();
             this.showBasemap();
             this.showMarkerListManager();
+            if (this.showDetailsWhenInitialized) {
+                this.showDetail(this.showDetailsWhenInitialized);
+            }
         },
 
         showGlobalToolbar: function () {
@@ -86,7 +89,7 @@ define([
             this.basemapView = new Basemap({
                 app: this,
                 showSearchControl: false, // added for rosa parks pilot
-                minZoom: 6 // added for rosa parks pilot
+                minZoom: 9 // added for rosa parks pilot
             });
             this.mapRegion.show(this.basemapView);
         },
@@ -118,6 +121,10 @@ define([
         },
 
         showDetail: function (opts) {
+            if (this.dataManager.isEmpty()) {
+                this.showDetailsWhenInitialized = opts;
+                return;
+            }
             var dataType = opts.dataType,
                 dataEntry = this.dataManager.getData(dataType),
                 model = null;
@@ -135,7 +142,7 @@ define([
             }
             model.set("active", true);
             this.vent.trigger('highlight-marker', model);
-            
+
             if (dataType.indexOf("form_") != -1) {
                 model.set("fields", dataEntry.fields.toJSON());
             }

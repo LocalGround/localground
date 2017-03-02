@@ -137,7 +137,7 @@ define([
                 form.set("overlay_type", "form_" + form.get("id"));
             });
             this.render();
-            this.app.router.navigate(this.$el.find(".media-type").val(), { trigger: true });
+            //this.app.router.navigate(this.$el.find(".media-type").val(), { trigger: true });
         },
 
         //*

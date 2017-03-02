@@ -6,6 +6,9 @@ define(["underscore", "marionette", "models/project", "collections/photos",
         var DataManager = Marionette.ItemView.extend({
             dataDictionary: {},
             template: false,
+            isEmpty: function () {
+                return Object.keys(this.dataDictionary).length === 0;
+            },
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.model = new Project({ id: this.app.getProjectID() });

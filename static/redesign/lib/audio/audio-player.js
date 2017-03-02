@@ -32,6 +32,9 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
             },
             onRender: function () {
                 var that = this;
+                if (!this.$el.find('.progress-container').get(0)) {
+                    return;
+                }
                 // setTimeout necessary b/c need to wait 'til rendered audio player
                 // has been attached to the DOM in order to calculate the offset
                 setTimeout(function () {
