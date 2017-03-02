@@ -1,12 +1,11 @@
 define(["marionette",
-    "jquery",
     "lib/maps/overlays/point",
     "lib/maps/overlays/polyline",
     "lib/maps/overlays/polygon",
     "lib/maps/overlays/ground-overlay",
     "lib/maps/overlays/infobubbles/base",
     "lib/maps/overlays/icon"
-    ], function (Marionette, $, Point, Polyline, Polygon, GroundOverlay, Infobubble, Icon) {
+    ], function (Marionette, Point, Polyline, Polygon, GroundOverlay, Infobubble, Icon) {
     "use strict";
     /**
      * This class controls the rendering and underlying
@@ -22,8 +21,9 @@ define(["marionette",
         template: false,
 
         modelEvents: {
-            'change:geometry': 'updateOverlay',
-            'change': 'render',
+            'change:geometry': 'render',
+            'change:active': 'render',
+            //'change': 'render',
             'show-overlay': 'show',
             'hide-overlay': 'hide',
             'zoom-to-overlay': 'zoomTo',
@@ -42,19 +42,22 @@ define(["marionette",
         initInfoBubble: function (opts) {
             this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
         },
-        getIcon: function () {
-            var icon,
-                iconOpts = {
-                    fillColor: '#ed867d', //this.model.get("color")
-                    fillOpacity: 1,
-                    strokeColor: '#fff',
-                    strokeWeight: 2,
-                    strokeOpacity: 0.7,
-                    shape: 'circle'
-                };
-            _.extend(iconOpts, this.iconOpts);
-            icon = new Icon(iconOpts);
-            return icon.generateGoogleIcon();
+        getGoogleIcon: function () {
+            if (!this._icon) {
+                var icon,
+                    iconOpts = {
+                        fillColor: '#ed867d', //this.model.get("color")
+                        fillOpacity: 1,
+                        strokeColor: '#fff',
+                        strokeWeight: 1,
+                        strokeOpacity: 1,
+                        shape: 'circle'
+                    };
+                _.extend(iconOpts, this.iconOpts);
+                icon = new Icon(iconOpts);
+                this._icon = icon;
+            }
+            return this._icon.generateGoogleIcon();
         },
 
         updateOverlay: function () {
@@ -88,27 +91,16 @@ define(["marionette",
 
         attachEventHandlers: function () {
             var that = this;
-            //attach click event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
                 that.app.router.navigate("//" + that.model.getNamePlural() + "/" + that.model.get("id"));
             });
-
-            /*google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
-                console.log('mouseover: ' + that.model.get("id"));
-            });
-            google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function () {
-                console.log('mouseout: ' + that.model.get("id"));
-            });*/
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
-                //console.log('show tip');
-                //that.infoBubble.bubble.setPosition(that.getIcon().position);
-                //that.infoBubble.tip.setPosition(that.getIcon().position);
                 that.infoBubble.showTip();
+                that.model.trigger('do-hover');
             });
-            //attach mouseout event:
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseout', function () {
-                console.log('hide tip');
                 that.model.trigger("hide-tip");
+                that.model.trigger('clear-hover');
             });
         },
 
@@ -145,7 +137,7 @@ define(["marionette",
             var go = this.getGoogleOverlay();
             go.setMap(null);
             this.infoBubble.remove();
-            console.log("onBeforeDestroy", go, this.model.get("id"));
+            //console.log("onBeforeDestroy", go, this.model.get("id"));
             Base.__super__.remove.apply(this);
         },
 

@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 from django.http import Http404
 from localground.apps.lib.helpers import classproperty
 from django.contrib.contenttypes.models import ContentType
-
+import operator
 
 class Base(models.Model):
     filter_fields = ('id',)
@@ -187,6 +187,8 @@ class Base(models.Model):
         if len(stale_references) > 0:
             self.entities.filter(id__in=stale_references).delete()
 
+        #SQL sort doesn't seem to be working, so sorting via python:
+        objects = sorted(objects, key=operator.attrgetter('ordering'))
         return objects
 
     def append(self, item, user, ordering=1, turned_on=False):

@@ -22,7 +22,7 @@ define([
         },
         currentCollection: null,
         mode: "edit",
-        dataType: "photos",
+        dataType: "markers",
         screenType: "gallery",
         activeTab: "media",
         dataManager: null,
@@ -50,10 +50,11 @@ define([
         },
 
         loadRegions: function () {
+            this.restoreAppState();
             this.showGlobalToolbar();
             this.showDataToolbar();
-            console.log("about to navigate", this.router);
-            this.router.navigate('//photos', { trigger: true });
+            //console.log("about to navigate", this.router);
+            this.router.navigate('//' + this.dataType, { trigger: true });
         },
 
         showGlobalToolbar: function () {
@@ -73,7 +74,7 @@ define([
         showMediaList: function (dataType) {
             var data = this.dataManager.getData(dataType);
             this.dataType = dataType;
-            console.log(dataType);
+            this.saveAppState();
             this.currentCollection = data.collection;
             this.mainView = new DataList({
                 app: this,
@@ -120,6 +121,19 @@ define([
                 app: this
             });
             this.sideRegion.show(this.detailView);
+        },
+        saveAppState: function () {
+            this.saveState("dataView", {
+                dataType: this.dataType
+            }, true);
+        },
+        restoreAppState: function () {
+            var state = this.restoreState("dataView");
+            if (state) {
+                this.dataType = state.dataType;
+            } else if (this.dataManager) {
+                this.dataType = this.dataManager.getDataSources()[1].value;
+            }
         }
     }));
     return GalleryApp;

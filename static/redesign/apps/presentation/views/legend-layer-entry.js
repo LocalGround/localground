@@ -4,10 +4,11 @@ define(['marionette',
         'handlebars',
         'collections/symbols',
         'lib/maps/marker-overlays',
+        'lib/maps/overlays/icon',
         'text!../templates/legend-layer.html',
         'text!../templates/legend-symbol-item.html'
     ],
-    function (Marionette, _, $, Handlebars, Symbols, OverlayListView, LayerTemplate, SymbolTemplate) {
+    function (Marionette, _, $, Handlebars, Symbols, OverlayListView, Icon, LayerTemplate, SymbolTemplate) {
         'use strict';
 
         var LegendLayerEntry = Marionette.CompositeView.extend({
@@ -26,11 +27,12 @@ define(['marionette',
                         }
                     },
                     templateHelpers: function () {
-                        var height = Math.min(this.model.get("height"), 17),
-                            scale = height / this.model.get("height");
+                        var width = 25,
+                            scale = width / this.model.get("width");
                         return {
-                            width: this.model.get("width") * scale,
-                            height: height
+                            width: width,
+                            height: this.model.get("height") * scale,
+                            strokeWeight: this.model.get("strokeWeight") * 5
                         };
                     },
                     initialize: function (opts) {

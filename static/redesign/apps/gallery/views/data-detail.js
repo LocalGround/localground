@@ -26,7 +26,11 @@ define([
             'click #add-media-button': 'showMediaBrowser',
             'click .detach_media': 'detachModel',
             'click .hide': 'hideMapPanel',
-            'click .show': 'showMapPanel'
+            'click .show': 'showMapPanel',
+            'click .rotate-left': 'rotatePhoto',
+            'click .rotate-right': 'rotatePhoto',
+            "click .add-marker-button": "activateMarkerTrigger",
+            "click .delete-marker-button": "deleteMarkerTrigger"
         },
         getTemplate: function () {
             if (this.dataType == "photos") {
@@ -68,6 +72,15 @@ define([
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
             this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
+            this.listenTo(this.app.vent, 'save-model', this.saveModel);
+        },
+
+        activateMarkerTrigger: function(){
+            this.app.vent.trigger("add-new-marker", this.model);
+        },
+
+        deleteMarkerTrigger: function(){
+            this.app.vent.trigger("delete-marker", this.model);
         },
 
         bindFields: function () {
@@ -89,14 +102,28 @@ define([
         },
 
         attachModels: function (models) {
-            var that = this,
-                i = 0;
-            for (i = 0; i < models.length; ++i) {
-                this.model.attach(models[i], function () {
-                    that.model.fetch({reset: true});
-                }, function () {});
+            var that = this;
+            if (this.model.get("id")) {
+                this.attachMedia(models);
+            } else {
+                this.model.save(null, {
+                    success: function () {
+                        that.attachMedia(models);
+                        that.model.collection.add(that.model);
+                    }
+                });
             }
             this.app.vent.trigger('hide-modal');
+        },
+
+        attachMedia: function (models) {
+            var that = this, i, ordering;
+            for (i = 0; i < models.length; ++i) {
+                ordering = this.model.get("photo_count") + this.model.get("audio_count");
+                this.model.attach(models[i], (ordering + i + 1), function () {
+                    that.model.fetch({reset: true});
+                });
+            }
         },
         /*
           Problem stems from that the model is undefined
@@ -185,7 +212,7 @@ define([
                         fields[name] = { type: 'Number', title: title };
                         break;
                     default:
-                        fields[name] = { type: 'Text', title: title };
+                        fields[name] = { type: 'TextArea', title: title };
                     }
                 }
                 this.form = new Backbone.Form({
@@ -234,6 +261,17 @@ define([
                 this.$el.find(".player-container").append(player.$el);
             }
         },
+
+        rotatePhoto: function(e){
+            var $elem = $(e.target);
+            var rotation = $elem.attr("rotation");
+            //console.log(rotation);
+
+            // Rotate targeted photo and save settings
+            this.model.rotate(rotation);
+            //
+        },
+
         saveModel: function () {
             var errors = this.form.commit({ validate: true }),
                 that = this,

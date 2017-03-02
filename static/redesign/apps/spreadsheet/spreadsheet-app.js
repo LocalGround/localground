@@ -21,7 +21,7 @@ define([
         },
 
         currentCollection: null,
-        dataType: "photos",
+        dataType: "markers",
         screenType: "spreadsheet",
         start: function (options) {
             // declares any important global functionality;
@@ -42,6 +42,7 @@ define([
         },
         loadRegions: function () {
             //initialize toobar view
+            this.restoreAppState();
             var data = this.dataManager.getData(this.dataType);
             this.toolbarView = new ToolbarGlobal({
                 app: this
@@ -49,7 +50,6 @@ define([
             this.toolbarDataView = new ToolbarDataView({
                 app: this
             });
-            //console.log(data.collection);
             this.spreadsheetView = new SpreadsheetView({
                 app: this,
                 collection: data.collection,
@@ -64,14 +64,28 @@ define([
 
         showSpreadsheet: function (dataType) {
             this.dataType = dataType;
+            this.saveAppState();
             var data = this.dataManager.getData(this.dataType);
-            console.log(data);
             this.spreadsheetView = new SpreadsheetView({
                 app: this,
                 collection: data.collection,
                 fields: data.fields
             });
             this.spreadsheetRegion.show(this.spreadsheetView);
+        },
+        saveAppState: function () {
+            this.saveState("dataView", {
+                dataType: this.dataType
+            }, true);
+        },
+        restoreAppState: function () {
+            var state = this.restoreState("dataView");
+            if (state) {
+                this.dataType = state.dataType;
+            } else if (this.dataManager) {
+                this.dataType = this.dataManager.getDataSources()[1].value;
+            }
+            //console.log('restored', this.dataType);
         }
     }));
     return SpreadsheetApp;

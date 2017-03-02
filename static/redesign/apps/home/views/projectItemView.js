@@ -1,8 +1,9 @@
 define(["marionette",
         "underscore",
+        "jquery",
         "handlebars",
         "text!../templates/project-item.html"],
-    function (Marionette, _, Handlebars, ItemTemplate) {
+    function (Marionette, _, $, Handlebars, ItemTemplate) {
         'use strict';
 
         var ProjectItemView = Marionette.ItemView.extend({
@@ -13,9 +14,19 @@ define(["marionette",
 
             template: Handlebars.compile(ItemTemplate),
             events: {
-                'click .action': 'shareModal'
+                'click .action': 'shareModal',
+                'click .project-overview' : "linkToProject"
                 //'click #delete_project': 'deleteProject'
             },
+            linkToProject: function (e) {
+                if ($(e.target).hasClass('action')) {
+                    return;
+                }
+                var url = this.$el.find(".project-overview").attr("data-url");
+                window.location = url;
+            },
+
+            className: "project-card",
 
             modelEvents: {
                 // When data from Item view changes anywhere and anytime,
@@ -23,10 +34,12 @@ define(["marionette",
                 "change": "render"
             },
 
-            shareModal: function () {
+            shareModal: function (e) {
                 //tell the home-app to show the share-project modal:
                 this.app.vent.trigger('share-project', { model: this.model });
+                e.preventDefault();
             },
+
             templateHelpers: function () {
                 return {
                     projectUsers: this.model.projectUsers.toJSON()

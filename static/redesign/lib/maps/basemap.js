@@ -16,6 +16,11 @@ define(["marionette",
             map: null,
             showSearchControl: true,
             activeMapTypeID: 1,
+            minZoom: 1,
+            maxZoom: 22,
+            activeModel: null,
+            addMarkerClicked: false,
+            targetedModel: null,
             tileManager: null,
             userProfile: null,
             //todo: populate this from user prefs:
@@ -30,6 +35,42 @@ define(["marionette",
                 this.opts = opts;
                 $.extend(this, opts);
                 Marionette.View.prototype.initialize.call(this);
+                this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
+                this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
+                this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
+            },
+
+            doHighlight: function (model) {
+                if (this.activeModel) {
+                    this.activeModel.set("active", false);
+                }
+                this.activeModel = model;
+            },
+
+            // If the add marker button is clicked, allow user to add marker on click
+            // after the marker is placed, disable adding marker and hide the "add marker" div
+            placeMarkerOnMap: function (location) {
+                if (!this.addMarkerClicked) {
+                    return;
+                }
+                if (!this.targetedModel.get("id")) {
+                    this.app.vent.trigger('save-model');
+                    this.targetedModel.collection.add(this.targetedModel);
+                }
+                this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
+                this.targetedModel.save();
+                this.addMarkerClicked = false;
+                this.targetedModel = null;
+            },
+
+            activateMarker: function (model) {
+                this.addMarkerClicked = true;
+                this.targetedModel = model;
+            },
+
+            deleteMarker: function (model) {
+                model.set("geometry", null);
+                model.save();
             },
 
             renderMap: function () {
@@ -37,15 +78,17 @@ define(["marionette",
                     scrollwheel: false,
                     minZoom: this.minZoom,
                     streetViewControl: true,
-                    scaleControl: true,
+                    //scaleControl: true,
                     panControl: false,
                     mapTypeControlOptions: {
                         style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
                         position: google.maps.ControlPosition.TOP_LEFT
                     },
-                    zoomControlOptions: {
+                    zoomControlOptions: this.zoomControlOptions || {
                         style: google.maps.ZoomControlStyle.SMALL
                     },
+                    rotateControlOptions: this.rotateControlOptions,
+                    streetViewControlOptions: this.streetViewControlOptions,
                     zoom: this.defaultLocation.zoom,
                     center: this.defaultLocation.center
 
@@ -91,6 +134,10 @@ define(["marionette",
                 });
                 google.maps.event.addListener(this.map, 'zoom_changed', function () {
                     that.saveState();
+                });
+
+                google.maps.event.addListener(this.map, 'click', function(event) {
+                   that.placeMarkerOnMap(event.latLng);
                 });
 
                 //todo: possibly move to a layout module?

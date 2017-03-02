@@ -27,7 +27,8 @@ define([
             'click #add-media': 'createUploadModal',
             'click .add-media': 'createUploadModal',
             'click .add': 'toggleMenu',
-            'click #add-new': 'triggerAddNew'
+            'click #add-new': 'triggerAddNew',
+            'click .add-new': 'triggerAddNewMap'
         },
         modal: null,
         forms: null,
@@ -64,6 +65,7 @@ define([
             this.forms = new Forms();
             this.listenTo(this.forms, "reset", this.render);
             this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
+            this.listenTo(this.forms, 'reset', this.renderAndRoute);
             this.forms.fetch({ reset: true });
         },
 
@@ -77,7 +79,6 @@ define([
         },
 
         toggleMenu: function (e) {
-            console.log("clicked add");
             var $btn = $(e.target);
             this.$el.find("#add-data-type").toggle().css({
                 top: $btn.position().top + 30,
@@ -95,27 +96,48 @@ define([
             if (mediaType === 'photos' || mediaType === 'audio') {
                 this.createUploadModal();
             } else {
-                this.app.router.navigate(url);
+                this.app.router.navigate(url, {
+                    trigger: true,
+                    forceReload: true
+                });
             }
             e.preventDefault();
         },
 
+        triggerAddNewMap: function (e) {
+            var mediaType = $(e.target).attr('data-value'),
+                url = "//" + mediaType + "/new";
+            if (mediaType === 'photos' || mediaType === 'audio') {
+                this.createUploadModal();
+            } else {
+                this.app.router.navigate(url, {
+                    trigger: true,
+                    forceReload: true
+                });
+            }
+            e.preventDefault();
+        },
         changeMode: function () {
-            if (this.app.activeTab == "data") {
+            /*if (this.app.activeTab == "data") {
                 this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
                 this.listenTo(this.forms, 'reset', this.renderAndRoute);
                 this.forms.fetch({ reset: true });
             } else {
                 this.renderAndRoute();
-            }
+            }*/
+            this.renderAndRoute();
         },
         updateNewObejctRoute: function () {
             this.$el.find("#add-site").attr("href", '#/' + this.app.dataType + '/new');
         },
 
         renderAndRoute: function () {
+            this.forms.each(function (form) {
+                //TODO: add to API:
+                form.set("overlay_type", "form_" + form.get("id"));
+            });
             this.render();
-            this.app.router.navigate(this.$el.find(".media-type").val(), { trigger: true });
+            //this.app.router.navigate(this.$el.find(".media-type").val(), { trigger: true });
         },
 
         //*
@@ -128,7 +150,6 @@ define([
              */
 
             var term = this.$el.find("#searchTerm").val();
-            console.log(term);
             if (term === "") {
                 this.app.vent.trigger("clear-search");
             } else {
@@ -192,7 +213,6 @@ define([
                 saveFunction: opts.saveFunction ? opts.saveFunction.bind(opts.view) : null,
                 deleteFunction: opts.deleteFunction ? opts.deleteFunction.bind(opts.view) : null
             });
-            console.log(params);
             this.modal.update(params);
             this.modal.show();
         },
@@ -221,36 +241,9 @@ define([
                 saveFunction: createForm.saveFormSettings.bind(createForm),
                 deleteFunction: createForm.deleteForm.bind(createForm)
             });
-            //this.modal.display_DeleteButton();
-            //this.modal.display_SaveButton();
             this.modal.show();
         }
-        /*
-        showMediaTypeForm: function (opts) {
-            opts = opts || {};
-            var createMedia = new CreateMedia({
-                    app: this.app,
-                    model: opts.model
-                }),
-                title = "Create New Media Collection";
-            if (opts.model) {
-                title = "Update " + opts.model.get("name") + " Settings";
-            }
-            this.modal.update({
-                view: createForm,
-                title: title,
-                width: 500,
-                showSaveButton: true,
-                showDeleteButton: opts.model,
-                // bind the scope of the save function to the source view:
-                saveFunction: createMedia.saveFormSettings.bind(createMedia),
-                deleteFunction: createMedia.deleteForm.bind(createMedia)
-            });
-            this.modal.display_DeleteButton();
-            this.modal.display_SaveButton();
-            this.modal.show();
-        }
-        */
+
     });
     return ToolbarDataView;
 });

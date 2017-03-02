@@ -21,7 +21,7 @@ def get_metadata():
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
-        'color': {'read_only': False, 'required': False, 'type': 'color'},
+        'color': {'read_only': False, 'required': False, 'type': 'string'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         'extras': {'read_only': False, 'required': False, 'type': 'json'}
     }

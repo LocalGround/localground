@@ -57,7 +57,7 @@ define(["models/base",
                 return json;
             },
 
-            attach: function (model, callbackSuccess, callbackError) {
+            attach: function (model, order, callbackSuccess, callbackError) {
                 var association = new Association({
                     overlay_type: this.get("overlay_type"),
                     form_id: parseInt(this.get("overlay_type").split("_")[1], 10),
@@ -65,7 +65,7 @@ define(["models/base",
                     model_type: model.getKey(),
                     source_id: this.id
                 });
-                association.save({ object_id: model.id }, {
+                association.save({ object_id: model.id, ordering: order }, {
                     success: callbackSuccess,
                     error: callbackError
                 });

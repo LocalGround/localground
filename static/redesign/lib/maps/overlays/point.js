@@ -112,15 +112,16 @@ define(["jquery", "underscore"], function ($, _) {
             });
 
             google.maps.event.addListener(this._googleOverlay, "dragend", function (mEvent) {
-                that.map.panTo(that._googleOverlay.position);
-                if (model.getKey() != "markers") {
+                model.setGeometryFromOverlay(mEvent.latLng);
+                model.save();
+                /*if (model.getKey() != "markers") {
                     that.app.vent.trigger("drag-ended", {
                         latLng: mEvent.latLng,
                         model: model
                     });
                 } else {
                     that.saveShape(model);
-                }
+                }*/
             });
 
             google.maps.event.addListener(this._googleOverlay, "drag", function (mEvent) {

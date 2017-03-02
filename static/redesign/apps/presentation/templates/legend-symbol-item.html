@@ -1,6 +1,6 @@
 <input class="cb-symbol" type="checkbox" {{#if is_showing}}checked{{/if}} />
 <svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ height }}">
     <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
-          stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}"></path>
+          stroke-width="{{ strokeWeight }}" stroke="{{ icon.strokeColor }}" d="{{ icon.path }}"></path>
 </svg>
 <p>{{ title }}</p>

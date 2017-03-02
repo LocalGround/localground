@@ -1,25 +1,39 @@
 <div class = "project-detail">
 	<h3>Media</h3>
     <!-- Temporary placement for implementation purposes -->
+   
     {{#ifequal activeTab "data"}}
-        <select class="media-type">
-            <option value="photos">Photos</option>
-            <option value="audio">Audio</option>
-            <option value="markers">Site</option>
-        {{#each forms}}
-            <option value="form_{{ this.id }}">{{ this.name }}</option>
-        {{/each}}
-        </select>
+        {{#ifequal screenType "spreadsheet"}}
+            <select class="media-type">
+                <option value="photos" {{#ifequal dataType "photos"}}SELECTED{{/ifequal}}>Photos</option>
+                <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>
+                <option value="markers" {{#ifequal dataType "markers"}}SELECTED{{/ifequal}}>Site</option>
+            {{#each forms}}
+                <option value="form_{{ this.id }}" {{#ifequal ../dataType this.overlay_type}}SELECTED{{/ifequal}}>{{ this.name }}</option>
+            {{/each}}
+            </select>
+        {{/ifequal}}
+        
+        {{#ifequal screenType "gallery"}}
+            <select class="media-type">
+                <option value="photos" {{#ifequal dataType "photos"}}SELECTED{{/ifequal}}>Photos</option>
+                <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>
+                <option value="markers" {{#ifequal dataType "markers"}}SELECTED{{/ifequal}}>Site</option>
+            {{#each forms}}
+                <option value="form_{{ this.id }}" {{#ifequal ../dataType this.overlay_type}}SELECTED{{/ifequal}}>{{ this.name }}</option>
+            {{/each}}
+            </select>
+        {{/ifequal}}
     {{/ifequal}}
-    
+
     {{#ifequal screenType "map"}}
     <button class="button-tertiary add"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</button>
     <div class="dropdown-menu" id="add-data-type" style="display: none;">
         <a href="#" class="add-media">Media</a>
         <hr>
-        <a href="#/markers/new" data-value="marker">Site</a>
+        <a href="#" class="add-new" data-value="markers">Site</a>
         {{#each forms}}
-        <a href="#/form_{{ this.id }}/new" data-value="form_{{ this.id }}">{{ this.name }}</a>
+        <a href="#" class="add-new" data-value="form_{{ this.id }}">{{ this.name }}</a>
         {{/each}}
         <hr>
         <a href="#" class="add-data">Edit Site Types</a>

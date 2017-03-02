@@ -11,6 +11,7 @@ define(["marionette",
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var AddMediaModal = Marionette.LayoutView.extend({
             template: Handlebars.compile(AddMediaModalTemplate),
+            activeRegion: null,
             initialize: function (opts) {
                 this.app = opts.app;
                 this.render();
@@ -33,13 +34,16 @@ define(["marionette",
                /* var upld = new SelectMapView({ app: this.app });
                 this.menu.show(upld);
                 */
-                var upld = new UploaderView({ app: this.app });
-                this.uploaderRegion.show(upld);
+                this.upld = new UploaderView({ app: this.app });
+                this.uploaderRegion.show(this.upld);
                 this.uploaderRegion.$el.hide();
 
                 this.mb = new MediaBrowserView({ app: this.app });
                 this.mediaBrowserRegion.show(this.mb);
                 this.$el.find("#database-tab-li").addClass("active");
+
+                //sets proper region from which to call addModel() 
+                this.activeRegion = "mediaBrowser";
 
 
             },
@@ -49,6 +53,7 @@ define(["marionette",
                 this.uploaderRegion.$el.show();
                 this.$el.find("#database-tab-li").removeClass("active");
                 this.$el.find("#upload-tab-li").addClass("active");
+                this.activeRegion = "uploader";
             },
 
             showDatabase: function() {
@@ -56,9 +61,15 @@ define(["marionette",
                 this.mediaBrowserRegion.$el.show();
                 this.$el.find("#upload-tab-li").removeClass("active");
                 this.$el.find("#database-tab-li").addClass("active");
+                this.activeRegion = "mediaBrowser";
             },
             addModels: function () {
-                this.mb.addModels();
+                if (this.activeRegion == "mediaBrowser") {
+                    console.log("read mb.addModels()");
+                    this.mb.addModels();
+                } else if (this.activeRegion == "uploader") {
+                    this.upld.addModels();
+                }
             }
         });
         return AddMediaModal;

@@ -14,6 +14,7 @@ define([
     'use strict';
 
     var CreateMediaView = Marionette.CompositeView.extend({
+        models: [],
         template: Handlebars.compile(CreateMediaTemplate),
         getChildView: function () {
             return Marionette.ItemView.extend({
@@ -130,6 +131,7 @@ define([
                 showSuccess: function () {
                     this.mode = "end";
                     this.render();
+                    this.parent.models.push(this.model);
                 }
             });
         },
@@ -381,6 +383,7 @@ define([
         showInitMessage: function () {
             if (this.collection.length == 0) {
                 this.$el.find('#nothing-here').show();
+                this.$el.find('#dropzone').css('border', 'dashed 1px #CCC');
             }
         },
 
@@ -389,6 +392,7 @@ define([
             var that = this,
                 model;
             this.$el.find('#nothing-here').hide();
+            this.$el.find('#dropzone').css('border', 'none');
             //validate files:
             this.validate(data);
             this.showOmittedFiles(data);
@@ -428,7 +432,17 @@ define([
             delete model.attributes.file;
             console.log(model);
             sourceCollection.unshift(model); //add to top
-        }
+        },
+
+        addModels: function () {
+            var selectedModels = [];
+            this.collection.each(function (model) {
+                // if (model.get("isSelected")) {
+                    selectedModels.push(model);
+                // }
+            });
+            this.app.vent.trigger('add-models-to-marker', selectedModels);
+            }
     });
     return CreateMediaView;
 

@@ -108,7 +108,6 @@ define ([
                             }
 
                         }
-                        console.log("select class");
                         if (this.$el.hasClass("selected-card")) {
                             this.$el.removeClass("selected-card");
                             this.model.set("isSelected", false);
@@ -154,7 +153,6 @@ define ([
                                 }
                                 var rows = this.$el.parent().children(".table");
 
-                                //*
                                 for (var i = startIndex+1; i < endIndex; ++i){
                                     var currModel = this.model.collection.models[i];
                                     var currColumn = rows.eq(i);
@@ -167,12 +165,10 @@ define ([
                                         currModel.set("isSelected", false);
                                     }
                                 }
-                                //*/
 
                             }
 
                         }
-                        console.log("select class");
                         if (this.$el.hasClass("selected-card")) {
                             this.$el.removeClass("selected-card");
                             this.model.set("isSelected", false);
@@ -215,7 +211,6 @@ define ([
             },
 
             templateHelpers: function () {
-                console.log(this.viewMode);
                 return {
                     viewMode: this.viewMode
                 };
@@ -257,27 +252,15 @@ define ([
             },
 
             displayCards: function() {
-                console.log("thumb view?");
                 this.viewMode = "thumb";
                 this.render();
-
-            /*
-                $(".button-secondary").removeClass("active");
-                $("#card-view-button-modal").addClass("active");
-                this.getChildView();
-            */
+                this.hideLoadingMessage();
             },
 
             displayTable: function() {
-                console.log("table view?");
                 this.viewMode = "table";
-                console.log(this.viewMode);
                 this.render();
-           /*
-                $(".button-secondary").removeClass("active");
-                $("#table-view-button-modal").addClass("active");
-                this.getChildView();
-            */
+                this.hideLoadingMessage();
             },
 
             hideLoadingMessage: function () {
@@ -291,15 +274,10 @@ define ([
                 } else {
                     this.collection = new Audio();
                 }
+                this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
                 this.collection.fetch({reset: true});
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
-                /*
-                this.collection = this.app.dataManager.getCollection(this.currentMedia);
-                //this.collection.fetch({reset: true});
-                this.render();
-                this.hideLoadingMessage();
-                */
             },
             changeToAudio: function () {
                 this.currentMedia = "audio";
