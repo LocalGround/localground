@@ -11,8 +11,12 @@ define(["underscore", "marionette", "models/project", "collections/photos",
             },
             initialize: function (opts) {
                 _.extend(this, opts);
-                this.model = new Project({ id: this.app.getProjectID() });
-                this.model.fetch({ success: this.setCollections.bind(this) });
+                if (!this.model) {
+                    this.model = new Project({ id: this.app.getProjectID() });
+                    this.model.fetch({ success: this.setCollections.bind(this) });
+                } else {
+                    this.setCollections();
+                }
             },
             setCollections: function () {
                 var that = this,
