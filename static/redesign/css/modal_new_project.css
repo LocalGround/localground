@@ -170,7 +170,7 @@
 }
 
 .modal-search-form {
-    flex: 1;
+    width: 300px;
     display: inline-block;
 }
 
@@ -185,6 +185,12 @@
     margin-right: -40px;
     border-radius: 4px;
     width: 100%;
+}
+
+.modal-search-form button{
+    outline: none;
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .button-secondary {
