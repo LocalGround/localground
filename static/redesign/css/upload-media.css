@@ -250,6 +250,13 @@ span.plus {
     font-size: 0.85em;
 }
 
+.confirmation {
+    padding-left: 20px;
+    line-height: 40px;
+    position: absolute;
+    /*width: calc(100% - 60px);*/
+}
+
 .success-message {
     color: #468847;
     background-color: #dff0d8;
