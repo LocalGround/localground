@@ -15,8 +15,8 @@ require(['boot'], function () {
         'spec/truth-statement-test.js',
 
         //APPS
-        'spec/apps/gallery/gallery-app-test.js',
-        'spec/apps/spreadsheet/spreadsheet-app-test.js'
+        'spec/views/gallery-app-test.js',
+        'spec/views/spreadsheet-app-test.js'
 
         //PROFILE VIEWS
         /*'spec/views/profile/profile-app-test.js',
