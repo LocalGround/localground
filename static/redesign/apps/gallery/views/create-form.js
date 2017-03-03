@@ -73,6 +73,22 @@ define([
             'click .new_field_button' : 'addFieldButton',
             'click .back': 'backToList'
         },
+        onRender: function(){
+            var sortableFields = this.$el.find("#fieldList");
+            sortableFields.sortable({
+                helper: this.fixHelper
+            }).disableSelection();
+            //
+            //
+        },
+
+        // Fix helper with preserved width of cells
+        fixHelper: function(e, ui){
+            ui.children().each(function(){
+                $(this).width($(this).width());
+            });
+            return ui;
+        },
         fetchShareData: function () {
             this.model.getFields();
         },

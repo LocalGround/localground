@@ -79,7 +79,7 @@ define(["marionette",
                     colHeaders: this.getColumnHeaders(),
                     //manualColumnResize: true,
                     //manualRowResize: true, // However, the manualRowResize overrides the manualRowMove
-                    manualRowMove: true, // The simple way of moving entire rows, but more crude
+                    manualColumnMove: true, // The simple but crude way of moving columns, and does not work
                     // but the move rows cannot happen because the headers are not alligned with the rest of the rows
                     rowHeaders: true,
                     columns: this.getColumns(),
