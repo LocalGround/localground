@@ -240,7 +240,17 @@ class ApiFieldInstanceTest(test.TestCase, FieldTestMixin):
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
     def test_delete_field_reorders_other_fields(self, **kwargs):
-        self.assertEqual(1, 1)
+        f3 = self.create_field(self.form, name="Field 3", ordering=3)
+        f4 = self.create_field(self.form, name="Field 4", ordering=4)
+        response = self.client_user.delete(self.url,
+                        HTTP_X_CSRFTOKEN=self.csrf_token
+                    )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        ordering = 1
+        for field in self.form.fields:
+            self.assertTrue(field.id in [self.field2.id, f3.id, f4.id])
+            self.assertEqual(field.ordering, ordering)
+            ordering += 1
     
     def test_can_delete(self, **kwargs):
         field_id = self.field.id
