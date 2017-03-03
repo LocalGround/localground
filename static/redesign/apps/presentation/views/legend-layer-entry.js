@@ -38,6 +38,8 @@ define(['marionette',
                     initialize: function (opts) {
                         _.extend(this, opts);
                         this.template = Handlebars.compile(SymbolTemplate);
+                        console.log(this.data_source);
+                        console.log(this.app.dataManager);
                         var data = this.app.dataManager.getCollection(this.data_source),
                             matchedCollection = new data.constructor(null, { url: "dummy" }),
                             that = this;

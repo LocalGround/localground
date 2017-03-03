@@ -17,11 +17,12 @@ define(
         "models/record",
         "models/mapimage",
         "models/print",
+        "models/layer",
         "lib/data/dataManager"
     ],
     function (Backbone, $, appUtilities, Projects, Photos, AudioFiles,
               MapImages, Markers, Records, Prints,
-              Project, Photo, Marker, Audio, Record, MapImage, Print, DataManager) {
+              Project, Photo, Marker, Audio, Record, MapImage, Print, Layer, DataManager) {
         'use strict';
         beforeEach(function () {
             var $map_container = $('<div id="map_canvas"></div>');
@@ -63,6 +64,47 @@ define(
              * Adds some dummy data for testing convenience.
              * Availabe to all of the tests.
              */
+            this.layer = new Layer({
+                "id": 1,
+                "title": "Earthworm Count",
+                "data_source": "form_1",
+                "symbol_shape": "",
+                "layer_type": "categorical",
+                "filters": null,
+                "map_id": 1,
+                "symbols": [
+                    {
+                        "title": "1 - 5",
+                        "strokeWeight": 1,
+                        "rule": "earthworm_count > 0 and earthworm_count < 6",
+                        "height": 32,
+                        "width": 32,
+                        "shape": "worm",
+                        "strokeColor": "#FFF",
+                        "color": "#d7b5d8"
+                    },
+                    {
+                        "title": "6 - 10",
+                        "strokeWeight": 1,
+                        "rule": "earthworm_count > 5 and earthworm_count < 11",
+                        "height": 32,
+                        "width": 32,
+                        "shape": "worm",
+                        "strokeColor": "#FFF",
+                        "color": "#df65b0"
+                    },
+                    {
+                        "title": "11 or more",
+                        "strokeWeight": 1,
+                        "rule": "earthworm_count >= 11",
+                        "height": 32,
+                        "width": 32,
+                        "shape": "worm",
+                        "strokeColor": "#FFF",
+                        "color": "#ce1256"
+                    }
+                ]
+            });
             this.photos = new Photos([
                 new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", attribution: "Owner1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_medium_sm: '//:0', path_marker_sm: "//:0" }),
                 new Photo({id: 2, name: "Dog", tags: 'animal, dog', project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_medium: '//:0', path_small: '//:0', path_marker_sm: "//:0" }),
@@ -209,10 +251,16 @@ define(
                 fitBounds: function () {},
                 setCenter: function () {}
             };
+            this.vent = _.extend({}, Backbone.Events);
+
+            this.dataManager = new DataManager({
+                vent: this.vent,
+                projectID: this.projects.models[0].id
+            });
             _.extend(this.app, {
-                vent: _.extend({}, Backbone.Events),
+                vent: this.vent,
                 projectID: this.projects.models[0].id,
-                datManager: this.dataManager,
+                dataManager: this.dataManager,
                 map: this.map, //a light stand-in for a Google Map, to speed it up
                 getProjectID: function () {
                     return this.projectID;
@@ -220,10 +268,6 @@ define(
                 getMap: function () {
                     return this.map;
                 }
-            });
-
-            this.dataManager = new DataManager({
-                app: this.app
             });
 
         });

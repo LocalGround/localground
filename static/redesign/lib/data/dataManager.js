@@ -10,9 +10,10 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 return Object.keys(this.dataDictionary).length === 0;
             },
             initialize: function (opts) {
+                //todo: remove app dependency and pass in projectID and vent
                 _.extend(this, opts);
                 if (!this.model) {
-                    this.model = new Project({ id: this.app.getProjectID() });
+                    this.model = new Project({ id: this.projectID });
                     this.model.fetch({ success: this.setCollections.bind(this) });
                 } else {
                     this.setCollections();
@@ -27,7 +28,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     _.extend(that.dataDictionary[key], extras);
                     delete entry.data;
                 });
-                this.app.vent.trigger('data-loaded');
+                this.vent.trigger('data-loaded');
             },
             getDataSources: function () {
                 var dataSources = [
