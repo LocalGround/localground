@@ -1,4 +1,4 @@
-var rootDir = "../../../";
+var rootDir = "../../";
 define([
     "jquery",
     rootDir + "apps/spreadsheet/spreadsheet-app",

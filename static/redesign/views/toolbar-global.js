@@ -8,8 +8,7 @@ define([
     "use strict";
     var Toolbar = Marionette.ItemView.extend({
         events: {
-            'click #map-link': 'test',
-            'click nav .data': 'selectTab',
+            'click nav .data': 'selectTab'
         },
         template: Handlebars.compile(ToolbarTemplate),
 
@@ -34,10 +33,6 @@ define([
             this.render();
         },
 
-        onRender: function () {
-            //this.$el.find(".project-detail > div").css('display', 'inline-block');
-        },
-
         selectTab: function (e) {
             var $tab = $(e.currentTarget);
             this.app.activeTab = $tab.html().toLowerCase();
@@ -45,10 +40,6 @@ define([
             $tab.parent().addClass("selected");
             this.app.vent.trigger("tab-switch");
             e.preventDefault();
-        },
-
-        test: function () {
-            console.log("test");
         }
     });
     return Toolbar;

@@ -14,9 +14,11 @@ require(['boot'], function () {
         'spec/sql-parser-test.js',
         'spec/truth-statement-test.js',
 
-        //APPS
-        'spec/apps/gallery/gallery-app-test.js',
-        'spec/apps/spreadsheet/spreadsheet-app-test.js'
+        // VIEWS
+        'spec/views/global-toolbar-test.js',
+        'spec/views/data-manager-test.js'
+        //'spec/views/gallery-app-test.js',
+        //'spec/views/spreadsheet-app-test.js'
 
         //PROFILE VIEWS
         /*'spec/views/profile/profile-app-test.js',
