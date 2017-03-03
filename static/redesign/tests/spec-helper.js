@@ -50,7 +50,7 @@ define(
                 } else if (overlay_type == "marker") {
                     model = this.markers.at(0);
                 } else if (overlay_type == "record") {
-                    model = this.records.at(0);
+                    model = this.form_1.at(0);
                 } else if (overlay_type == "print") {
                     model = this.prints.at(0);
                 } else if (overlay_type == "project") {
@@ -88,18 +88,18 @@ define(
                 new Marker({id: 2, name: "POI 2", tags: 'friend\'s house, tag1', project_id: 1, overlay_type: "marker" }),
                 new Marker({id: 3, name: "POI 3", tags: 'coffee shop, tag1', project_id: 2, overlay_type: "marker" })
             ]);
-            this.records = new Records([
-                new Record({ id: 1, team_name: "Blue team", display_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 1, overlay_type: "record", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
-                new Record({id: 2, team_name: "Green team", tags: 'friend\'s house, tag1', worm_count: 8, project_id: 1, overlay_type: "record" }),
-                new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 2, project_id: 2, overlay_type: "record" })
+            this.form_1 = new Records([
+                new Record({ id: 1, team_name: "Blue team", display_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
+                new Record({id: 2, team_name: "Green team", tags: 'friend\'s house, tag1', worm_count: 8, project_id: 1, overlay_type: "form_1" }),
+                new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 2, project_id: 2, overlay_type: "form_1" })
             ], { 'url': 'dummy/url' });
 
             this.dataDictionary = {
-                records: this.records,
                 photos: this.photos,
                 audio: this.audio,
                 map_images: this.map_images,
-                markers: this.markers
+                markers: this.markers,
+                form_1: this.form_1
             };
 
             this.projectsLite = new Projects([
@@ -130,6 +130,18 @@ define(
                             id: "map-images",
                             overlay_type: "map-image",
                             data: this.map_images.toJSON()
+                        },
+                        markers: {
+                            name: "Markers",
+                            id: "markers",
+                            overlay_type: "marker",
+                            data: this.markers.toJSON()
+                        },
+                        form_1: {
+                            name: "Team Members",
+                            id: "form_1",
+                            overlay_type: "form_1",
+                            data: this.form_1.toJSON()
                         }
                     }}),
                 new Project({ id: 2, name: "Project 2", tags: 'tag3, tag2', overlay_type: "project",
@@ -138,7 +150,7 @@ define(
                             name: "Soil Form",
                             id: "form_1",
                             overlay_type: "record",
-                            data: this.records.toJSON()
+                            data: this.form_1.toJSON()
                         },
                         markers: {
                             name: "Markers",
@@ -213,7 +225,6 @@ define(
             this.dataManager = new DataManager({
                 app: this.app
             });
-
 
         });
     }
