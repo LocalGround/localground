@@ -817,3 +817,19 @@ hr {
 .inline-form textarea{
     flex:3;
 }
+
+
+#rotate-icon {
+    position: relative;
+    margin-left: 160;
+    color: #ececec;
+    top: -200px;
+}
+
+.rotate-photo {
+    margin: -25px 30px 7px;
+}
+
+.rotate-left, .rotate-right {
+    color: gray;
+}

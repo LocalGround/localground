@@ -325,6 +325,14 @@ define([
         rotatePhoto: function(e){
             var $elem = $(e.target);
             var rotation = $elem.attr("rotation");
+            this.$el.find(".edit-photo").css({
+                filter: "brightness(0.5)"
+            });
+            /*
+            this.$el.find(".photo-container").append(
+                '<i class="fa fa-cog fa-5x fa-spin" id="rotate-icon"></i>'
+            );
+            */
             //console.log(rotation);
 
             // Rotate targeted photo and save settings

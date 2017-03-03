@@ -265,7 +265,7 @@ svg, .fa-question-circle {
     cursor: pointer;
 }
 
-/*for dragging/dropping pins on map*/
+/********** for dragging/dropping pins on map ********************/
 #follower {
   position: absolute;
   display: none;
@@ -275,16 +275,17 @@ svg, .fa-question-circle {
 #add-marker-button {
     display: block;
     text-align: center;
-    margin: 40px auto;
+    margin: 30px auto;
 }
 
 #delete-marker-button {
     display: block;
     text-align: center;
-    margin: 40px auto;
+    margin: 30px auto;
 }
 
 #marker-detail-panel h5 {
+    margin: 10px 10px 10px 120px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .04em;
@@ -292,3 +293,17 @@ svg, .fa-question-circle {
     font-weight: 600;
 }
 
+
+/********** Overlay when rotating photos ********************/
+/*
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  color: #FFF;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.5s ease;
+}
+*/
