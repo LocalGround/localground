@@ -45,6 +45,14 @@ class Field(BaseAudit):
 
     def __str__(self):
         return self.col_alias
+    
+    def toJSON(self):
+        return {
+            'id': self.id,
+            'ordering': self.ordering,
+            'col_alias': self.col_alias,
+            'col_name': self.col_name
+        }
 
     @property
     def col_name(self):
