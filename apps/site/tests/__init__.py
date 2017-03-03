@@ -360,12 +360,13 @@ class ModelMixin(object):
         f.remove_table_from_cache()
         return f
 
-    def create_field(self, form, name='Field 1', data_type=None, ordering=1):
+    def create_field(self, form, name='Field 1', data_type=None, ordering=1, is_display_field=False):
         data_type = data_type or models.DataType.objects.get(id=1)
         f = models.Field(
             col_alias=name,
             data_type=data_type,
             ordering=ordering,
+            is_display_field=is_display_field,
             form=form,
             owner=self.user,
             last_updated_by=self.user
