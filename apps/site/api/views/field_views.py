@@ -33,9 +33,33 @@ class FieldMixin(object):
             if has_changed:
                 field.save()
             new_order += 1
+    
+    def validate_is_valid_col_alias(self, col_alias, form):
+        #if doesn't exist, no need to validate:
+        if not col_alias:
+            return
+
+        col_alias = col_alias.lower()
+        # ensure that col_alias isn't a reserved name:
+        if col_alias in ['id', 'name', 'caption', 'description', 'display_name', 'tags',
+                         'owner', 'last_updated_by', 'date_created', 'timestamp']:
+            raise exceptions.ParseError('"%s" is a reserved column name' % col_alias)
+        # ensure that it doesn't already exist:
+        for f in form.fields:
+            if f.col_alias.lower() == col_alias:
+                raise exceptions.ParseError(
+                    'There is already a form field called "%s"' % col_alias)
+    
             
-    def validate_ordering_value(self, ordering, form):
+    def validate_ordering_value(self, ordering, form, is_create=False):
+        # no validation needed if ordering is undefined:
+        if ordering is None:
+            return
+
+        # ensure that ordering value makes sense (between 1 and the total # of fields):
         max_val = len(form.fields)
+        if is_create:
+            max_val += 1
         if ordering < 1 or ordering > max_val:
              raise exceptions.ParseError(
                     'Your ordering must be an integer between 1 and %s' % max_val)
@@ -52,11 +76,8 @@ class FieldList(FieldMixin, QueryableListCreateAPIView):
     def perform_create(self, serializer):
         form = self.get_form()
         data = serializer.validated_data
-        for f in form.fields:
-            if f.col_alias.lower() == data.get('col_alias').lower():
-                raise exceptions.ParseError(
-                    'There is already a form field called "%s"' % data.get('col_alias'))
-        self.validate_ordering_value(data.get('ordering'), form)
+        self.validate_is_valid_col_alias(data.get('col_alias'), form)
+        self.validate_ordering_value(data.get('ordering'), form, is_create=True)
         instance = serializer.save(form=form)
         self.update_ordering_and_display_field(instance, form)
         
@@ -71,12 +92,7 @@ class FieldInstance(FieldMixin, generics.RetrieveUpdateDestroyAPIView):
         # Todo: move functionality to Serializer
         form = self.get_form()
         data = serializer.validated_data
-        #raise Exception(data)
-        for f in form.fields:
-            if f.col_alias.lower() == data.get('col_alias').lower() and f.id != int(self.kwargs.get('pk')):
-                raise exceptions.ParseError(
-                    'There is already a form field called "%s"' % data.get('col_alias'))
-        
+        self.validate_is_valid_col_alias(data.get('col_alias'), form)
         self.validate_ordering_value(data.get('ordering'), form)
         instance = serializer.save()
         self.update_ordering_and_display_field(instance, form)
