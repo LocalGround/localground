@@ -16,7 +16,6 @@ define([
 
             $(document.body).append($sandbox);
             $sandbox.append($r1);
-            console.log(scope.app);
             lle = new LegendLayerEntry({
                 app: scope.app,
                 model: scope.layer
@@ -44,8 +43,9 @@ define([
 
             it("Renders HTML successfully", function () {
                 lle.render();
-                //loadStyleFixtures('css/stylesheet.css');
+                loadStyleFixtures('test.css');
                 $("#sandbox").append(lle.$el);
+                expect(lle.$el).toContainElement("ul");
                 expect(lle.$el.find('li').length).toBe(4);
                 expect(lle.$el.find('input').length).toBe(3);
                 expect(lle.$el.find('svg').length).toBe(3);

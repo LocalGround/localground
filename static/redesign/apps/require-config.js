@@ -22,7 +22,7 @@ require.config({
         'handsontable': 'https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.28.4/handsontable.full.min',
         'jasmine': 'external/jasmine-2.1.3/jasmine',
         'jasmine-html': 'external/jasmine-2.1.3/jasmine-html',
-        'jasmine-jquery': 'external/jasmine-2.1.3/jasmine-jquery',
+        'jasmine-jquery': 'external/jasmine-2.1.3/jasmine-jquery-forked',
         'handlebars': '//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min',
         'highcharts': '//code.highcharts.com/highcharts',
         'highcharts_export': '//code.highcharts.com/modules/exporting',
@@ -114,7 +114,7 @@ require.config({
         },
         'boot': {
             deps: ['jasmine', 'jasmine-html', 'jasmine-jquery'],
-            //exports: 'window.jasmineRequire'
+            exports: 'jasmine'
         },
         'socketio': {
             exports: 'io'

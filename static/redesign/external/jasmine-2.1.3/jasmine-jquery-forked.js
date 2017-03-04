@@ -27,7 +27,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-+function (window, jasmine, $) { "use strict";
+jasmineRequire.jquery = function (window, jasmine, $) { "use strict";
 
   jasmine.spiedEventsKey = function (selector, eventName) {
     return [$(selector).selector, eventName].toString()
@@ -122,7 +122,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       , url = this.makeFixtureUrl_(relativeUrl)
       , htmlText = ''
       , request = $.ajax({
-        async: false, // must be synchronous to guarantee that no tests are run before fixture is loaded
+        //async: false, // must be synchronous to guarantee that no tests are run before fixture is loaded
         cache: false,
         url: url,
         success: function (data, status, $xhr) {
@@ -136,7 +136,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       scripts.each(function(){
         $.ajax({
-            async: false, // must be synchronous to guarantee that no tests are run before fixture is loaded
+            //async: false, // must be synchronous to guarantee that no tests are run before fixture is loaded
             cache: false,
             dataType: 'script',
             url: $(this).attr('src'),
@@ -248,7 +248,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       , url = this.fixturesPath.match('/$') ? this.fixturesPath + relativeUrl : this.fixturesPath + '/' + relativeUrl
 
     $.ajax({
-      async: false, // must be synchronous to guarantee that no tests are run before fixture is loaded
+      //async: false, // must be synchronous to guarantee that no tests are run before fixture is loaded
       cache: false,
       dataType: 'json',
       url: url,
@@ -810,4 +810,4 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   window.getJSONFixture = function (url) {
     return jasmine.getJSONFixtures().proxyCallTo_('read', arguments)[url]
   }
-}(window, window.jasmine, window.jQuery);
+};

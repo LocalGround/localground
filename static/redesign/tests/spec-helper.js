@@ -41,9 +41,9 @@ define(
                     opts.success({ foo: 'fake' });
                 }
             });
-            spyOn($, 'ajax').and.callFake(function () {
+            /*spyOn($, 'ajax').and.callFake(function () {
                 console.log("AJAX call intercepted");
-            });
+            });*/
             // END SAFETY MEASURES
 
             this.getModelByOverlayType = function (overlay_type) {
