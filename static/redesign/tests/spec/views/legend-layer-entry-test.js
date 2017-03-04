@@ -7,30 +7,30 @@ define([
 ],
     function ($, LegendLayerEntry, Symbols) {
         'use strict';
-        var lle;
+        var lle, fixture;
 
-        function initApp(scope) {
-            // 1) add dummy HTML elements:
-            var $sandbox = $('<div id="sandbox"></div>'),
-                $r1 = $('<div id="layer-entry-container"></div>');
-
-            $(document.body).append($sandbox);
-            $sandbox.append($r1);
+        function initApp(scope, done) {
+            //http://www.itsmycodeblog.com/jasmine-jquery-testing-css/
             lle = new LegendLayerEntry({
                 app: scope.app,
                 model: scope.layer
             });
+            lle.render();
+
+            // NOTE: this setTimeout + done function is needed to give the 
+            // CSS time to load, since it's asynchronous
+            loadStyleFixtures('../../../../css/style.css');
+            loadStyleFixtures('../../../../css/map-presentation.css');
+            setTimeout(function () {
+                fixture = setFixtures('<div id="legend"></div>');
+                done();
+            }, 50);
         }
 
         describe("LegendLayerEntry: Application-Level Tests", function () {
-            beforeEach(function () {
+            beforeEach(function (done) {
                 //called before each "it" test (so we don't have to keep repeating code):
-                initApp(this);
-            });
-
-            afterEach(function () {
-                //called after each "it" test
-                $("#sandbox").remove();
+                initApp(this, done);
             });
 
             it("Initialization methods called successfully", function () {
@@ -42,9 +42,8 @@ define([
             });
 
             it("Renders HTML successfully", function () {
-                lle.render();
-                loadStyleFixtures('test.css');
-                $("#sandbox").append(lle.$el);
+                fixture.append(lle.$el);
+                expect(fixture.find('#legend').width()).toBe(180);
                 expect(lle.$el).toContainElement("ul");
                 expect(lle.$el.find('li').length).toBe(4);
                 expect(lle.$el.find('input').length).toBe(3);
@@ -52,6 +51,7 @@ define([
                 expect(lle.$el.find('p').length).toBe(3);
                 expect($(lle.$el.find('p').get(0)).html()).toBe('1 - 5');
                 expect($(lle.$el.find('p').get(1)).html()).toBe('6 - 10');
+
             });
 
         });

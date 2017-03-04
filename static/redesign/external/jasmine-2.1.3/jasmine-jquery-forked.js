@@ -122,11 +122,11 @@ jasmineRequire.jquery = function (window, jasmine, $) { "use strict";
       , url = this.makeFixtureUrl_(relativeUrl)
       , htmlText = ''
       , request = $.ajax({
-        //async: false, // must be synchronous to guarantee that no tests are run before fixture is loaded
+        async: false, // must be synchronous to guarantee that no tests are run before fixture is loaded
         cache: false,
         url: url,
         success: function (data, status, $xhr) {
-          htmlText = $xhr.responseText
+          htmlText = $xhr.responseText;
         }
       }).fail(function ($xhr, status, err) {
           throw new Error('Fixture could not be loaded: ' + url + ' (status: ' + status + ', message: ' + err.message + ')')
@@ -136,12 +136,12 @@ jasmineRequire.jquery = function (window, jasmine, $) { "use strict";
 
       scripts.each(function(){
         $.ajax({
-            //async: false, // must be synchronous to guarantee that no tests are run before fixture is loaded
+            async: false, // must be synchronous to guarantee that no tests are run before fixture is loaded
             cache: false,
             dataType: 'script',
             url: $(this).attr('src'),
             success: function (data, status, $xhr) {
-                htmlText += '<script>' + $xhr.responseText + '</script>'
+                htmlText += '<script>' + $xhr.responseText + '</script>';
             },
             error: function ($xhr, status, err) {
                 throw new Error('Script could not be loaded: ' + scriptSrc + ' (status: ' + status + ', message: ' + err.message + ')')
@@ -248,7 +248,7 @@ jasmineRequire.jquery = function (window, jasmine, $) { "use strict";
       , url = this.fixturesPath.match('/$') ? this.fixturesPath + relativeUrl : this.fixturesPath + '/' + relativeUrl
 
     $.ajax({
-      //async: false, // must be synchronous to guarantee that no tests are run before fixture is loaded
+      async: false, // must be synchronous to guarantee that no tests are run before fixture is loaded
       cache: false,
       dataType: 'json',
       url: url,
