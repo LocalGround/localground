@@ -40,9 +40,19 @@ define([
             it("Initializes symbols collection successfully", function () {
                 expect(lle.collection).toEqual(jasmine.any(Symbols));
                 expect(lle.collection.length).toEqual(3);
-                expect(lle.$el.find('.list-indent-simple').get(0)).toBe(undefined);
-                lle.render();
-                expect(lle.$el.find('.list-indent-simple').get(0).tagName).toBe("UL");
             });
+
+            it("Renders HTML successfully", function () {
+                lle.render();
+                //loadStyleFixtures('css/stylesheet.css');
+                $("#sandbox").append(lle.$el);
+                expect(lle.$el.find('li').length).toBe(4);
+                expect(lle.$el.find('input').length).toBe(3);
+                expect(lle.$el.find('svg').length).toBe(3);
+                expect(lle.$el.find('p').length).toBe(3);
+                expect($(lle.$el.find('p').get(0)).html()).toBe('1 - 5');
+                expect($(lle.$el.find('p').get(1)).html()).toBe('6 - 10');
+            });
+
         });
     });

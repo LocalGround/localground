@@ -113,8 +113,8 @@ require.config({
             exports: 'jasmine'
         },
         'boot': {
-            deps: ['jasmine', 'jasmine-html'],
-            exports: 'window.jasmineRequire'
+            deps: ['jasmine', 'jasmine-html', 'jasmine-jquery'],
+            //exports: 'window.jasmineRequire'
         },
         'socketio': {
             exports: 'io'
