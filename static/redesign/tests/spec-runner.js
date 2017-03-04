@@ -16,7 +16,7 @@ require(['boot'], function () {
 
         // VIEWS
         'spec/views/global-toolbar-test.js',
-        //'spec/views/data-manager-test.js',
+        'spec/views/data-manager-test.js',
         'spec/views/legend-layer-entry-test.js'
     ];
 

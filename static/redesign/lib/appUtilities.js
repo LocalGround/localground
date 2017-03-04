@@ -50,12 +50,6 @@ define(["jquery"],
             getMode: function () {
                 return this.mode;
             },
-            setActiveProjectID: function (projectID) {
-                this.activeProjectID = projectID;
-            },
-            getActiveProjectID: function () {
-                return this.activeProjectID;
-            },
             setOverlayView: function (overlayView) {
                 this.overlayView = overlayView;
             },

@@ -1,3 +1,4 @@
+var google = {};
 define(
     [
         "backbone",
@@ -25,6 +26,11 @@ define(
               Project, Photo, Marker, Audio, Record, MapImage, Print, Layer, DataManager) {
         'use strict';
         beforeEach(function () {
+            //spoof google maps API:
+            google.maps = {
+                event: { addListenerOnce: function () {} },
+                LatLngBounds: function () {}
+            };
             var $map_container = $('<div id="map_canvas"></div>');
             $(document.body).append($map_container);
 
@@ -255,7 +261,8 @@ define(
 
             this.dataManager = new DataManager({
                 vent: this.vent,
-                projectID: this.projects.models[0].id
+                projectID: this.projects.models[0].id,
+                model: this.projects.models[0]
             });
             _.extend(this.app, {
                 vent: this.vent,

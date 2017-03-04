@@ -21,41 +21,50 @@ define([
             spyOn(Project.prototype, 'fetch').and.callThrough();
             spyOn(Fields.prototype, 'fetch').and.callThrough();
             spyOn(that.app.vent, 'trigger');
+
+            dataManager = new DataManager({
+                vent: that.vent,
+                projectID: that.projects.models[0].id,
+                model: that.projects.models[0]
+            });
         }
 
-        describe("DataManager: Initialization Tests", function () {
-            beforeEach(function () {
-                initApp(this);
-            });
+        describe("DataManager: Initialization Tests w/o model", function () {
 
-            it("Initialization methods called successfully w/o model", function () {
+            it("Initialization methods called successfully w/model", function () {
+                spyOn(DataManager.prototype, 'initialize').and.callThrough();
+                spyOn(DataManager.prototype, 'setCollections').and.callThrough();
+                spyOn(Project.prototype, 'fetch').and.callThrough();
+                spyOn(Fields.prototype, 'fetch').and.callThrough();
+                spyOn(this.app.vent, 'trigger');
+
                 dataManager = new DataManager({
-                    app: this.app
+                    //app: this.app,
+                    vent: this.vent,
+                    projectID: this.projects.models[0].id
                 });
                 expect(dataManager).toEqual(jasmine.any(DataManager));
                 expect(dataManager.initialize).toHaveBeenCalled();
                 expect(dataManager.setCollections).toHaveBeenCalled();
                 expect(dataManager.model.fetch).toHaveBeenCalled();
-                expect(dataManager.app.vent.trigger).toHaveBeenCalledWith('data-loaded');
+                expect(dataManager.vent.trigger).toHaveBeenCalledWith('data-loaded');
+            });
+        });
+
+        describe("DataManager: Initialization Tests w/o model", function () {
+            beforeEach(function () {
+                initApp(this);
             });
 
-            it("Initialization methods called successfully w/model", function () {
-                dataManager = new DataManager({
-                    app: this.app,
-                    model: this.projects.models[0]
-                });
+            it("Initialization methods called successfully w/o model", function () {
                 expect(dataManager).toEqual(jasmine.any(DataManager));
                 expect(dataManager.initialize).toHaveBeenCalled();
                 expect(dataManager.model.fetch).not.toHaveBeenCalled();
                 expect(dataManager.setCollections).toHaveBeenCalled();
-                expect(dataManager.app.vent.trigger).toHaveBeenCalledWith('data-loaded');
+                expect(dataManager.vent.trigger).toHaveBeenCalledWith('data-loaded');
             });
 
             it("does not have a template defined", function () {
-                dataManager = new DataManager({
-                    app: this.app,
-                    model: this.projects.models[0]
-                });
                 expect(dataManager.template).toBeFalsy();
             });
         });
@@ -66,29 +75,17 @@ define([
             });
 
             it("Sets data dictionary as expected", function () {
-                dataManager = new DataManager({
-                    app: this.app,
-                    model: this.projects.models[0]
-                });
                 var keys = Object.keys(dataManager.dataDictionary);
                 expect(keys).toEqual(['photos', 'audio', 'map_images', 'markers', 'form_1']);
             });
 
             it("isEmpty() Method works", function () {
-                dataManager = new DataManager({
-                    app: this.app,
-                    model: this.projects.models[0]
-                });
                 expect(dataManager.isEmpty()).toBeFalsy();
                 dataManager.dataDictionary = {};
                 expect(dataManager.isEmpty()).toBeTruthy();
             });
 
             it("Sets data sources as expected", function () {
-                dataManager = new DataManager({
-                    app: this.app,
-                    model: this.projects.models[0]
-                });
                 expect(dataManager.getDataSources()).toEqual([
                     { value: 'markers', name: 'Markers' },
                     { value: 'form_1', name: 'Team Members' },
@@ -99,10 +96,6 @@ define([
             });
 
             it("Gets a data entry associated with the correct key and returns expected values", function () {
-                dataManager = new DataManager({
-                    app: this.app,
-                    model: this.projects.models[0]
-                });
                 var d, entry, dm_entry, key;
                 d = {
                     markers: Markers,
@@ -122,10 +115,6 @@ define([
             });
 
             it("Sets fields property for custom data types in data entry", function () {
-                dataManager = new DataManager({
-                    app: this.app,
-                    model: this.projects.models[0]
-                });
                 var entry = dataManager.getData('form_1');
                 expect(entry.fields).toEqual(jasmine.any(Fields));
                 expect(entry.fields.fetch).toHaveBeenCalled();
@@ -134,10 +123,6 @@ define([
             });
 
             it("Gets a collection associated with the correct key and returns expected values", function () {
-                dataManager = new DataManager({
-                    app: this.app,
-                    model: this.projects.models[0]
-                });
                 var d, collection, key;
                 d = {
                     markers: Markers,

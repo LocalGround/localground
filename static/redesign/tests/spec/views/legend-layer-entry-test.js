@@ -25,7 +25,7 @@ define([
 
         describe("LegendLayerEntry: Application-Level Tests", function () {
             beforeEach(function () {
-                //called before each "it" test
+                //called before each "it" test (so we don't have to keep repeating code):
                 initApp(this);
             });
 
@@ -40,8 +40,11 @@ define([
             it("Initializes symbols collection successfully", function () {
                 expect(lle.collection).toEqual(jasmine.any(Symbols));
                 expect(lle.collection.length).toEqual(3);
+                expect(lle.$el.find('.list-indent-simple')).toHaveText('.list-indent-simple');
+                //expect('.list-indent-simple').not.toExist();
                 lle.render();
                 console.log(lle.$el);
+                //expect('#my-id').not.toExist();
             });
         });
     });
