@@ -40,11 +40,9 @@ define([
             it("Initializes symbols collection successfully", function () {
                 expect(lle.collection).toEqual(jasmine.any(Symbols));
                 expect(lle.collection.length).toEqual(3);
-                expect(lle.$el.find('.list-indent-simple')).toHaveText('.list-indent-simple');
-                //expect('.list-indent-simple').not.toExist();
+                expect(lle.$el.find('.list-indent-simple').get(0)).toBe(undefined);
                 lle.render();
-                console.log(lle.$el);
-                //expect('#my-id').not.toExist();
+                expect(lle.$el.find('.list-indent-simple').get(0).tagName).toBe("UL");
             });
         });
     });
