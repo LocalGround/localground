@@ -12,7 +12,7 @@ define(['marionette',
             tagName: "li",
 
             events: {
-                'click .cb-symbol': 'showHide'
+                'change .cb-symbol': 'showHide'
             },
 
             showHide: function (e) {

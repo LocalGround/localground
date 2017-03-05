@@ -4,10 +4,11 @@ define([
     rootDir + "apps/presentation/views/legend-symbol-entry",
     rootDir + 'collections/symbols',
     rootDir + 'collections/records',
+    rootDir + 'models/symbol',
     rootDir + 'lib/maps/marker-overlays',
     "tests/spec-helper"
 ],
-    function (LegendLayerEntry, LegendSymbolEntry, Symbols, Records, OverlayListView) {
+    function (LegendLayerEntry, LegendSymbolEntry, Symbols, Records, Symbol, OverlayListView) {
         'use strict';
         var lle, fixture;
 
@@ -36,6 +37,9 @@ define([
         describe("LegendLayerEntry: ChildView Tests", function () {
             beforeEach(function () {
                 spyOn(LegendSymbolEntry.prototype, 'initialize').and.callThrough();
+                spyOn(LegendSymbolEntry.prototype, 'showHide').and.callThrough();
+                spyOn(OverlayListView.prototype, 'showAll');
+                spyOn(OverlayListView.prototype, 'hideAll');
                 initApp(this);
             });
 
@@ -61,6 +65,53 @@ define([
                         expect(fixture.find('input').get(0).outerHTML).not.toBeChecked();
                     }
                 });
+            });
+
+            it("Listens for checkbox click", function () {
+                var counter = 0;
+                lle.children.each(function (childView) {
+                    fixture = setFixtures('<div></div>').append(childView.$el);
+                    expect(childView.showHide).toHaveBeenCalledTimes(counter);
+                    fixture.find('input').click();
+                    ++counter;
+                    expect(childView.showHide).toHaveBeenCalledTimes(counter);
+                });
+            });
+
+            it("Calls the correct OverlayListView toggle function", function () {
+                var opts = {
+                        "title": "6 - 10",
+                        "strokeWeight": 1,
+                        "rule": "earthworm_count > 5 and earthworm_count < 11",
+                        "height": 32,
+                        "width": 32,
+                        "shape": "worm",
+                        "strokeColor": "#FFF",
+                        "color": "#df65b0",
+                        "is_showing": true
+                    },
+                    childView = new LegendSymbolEntry({
+                        app: this.app,
+                        data_source: 'form_1',
+                        model: new Symbol(opts)
+                    });
+                childView.render();
+                fixture = setFixtures('<div></div>').append(childView.$el);
+                expect(childView.showHide).toHaveBeenCalledTimes(0);
+                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(0);
+                expect(childView.markerOverlays.hideAll).toHaveBeenCalledTimes(0);
+
+                //turn on checkbox:
+                fixture.find('input').trigger('click');
+                expect(childView.showHide).toHaveBeenCalledTimes(1);
+                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(0);
+                expect(childView.markerOverlays.hideAll).toHaveBeenCalledTimes(1);
+
+                //turn off checkbox:
+                fixture.find('input').trigger('click');
+                expect(childView.showHide).toHaveBeenCalledTimes(2);
+                expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(1);
+                expect(childView.markerOverlays.hideAll).toHaveBeenCalledTimes(1);
             });
         });
 
