@@ -10,9 +10,11 @@ define(['marionette',
 
         var LegendSymbolEntry = Marionette.ItemView.extend({
             tagName: "li",
+
             events: {
                 'click .cb-symbol': 'showHide'
             },
+
             showHide: function (e) {
                 var isChecked = $(e.target).prop('checked');
                 if (isChecked) {
@@ -21,6 +23,7 @@ define(['marionette',
                     this.markerOverlays.hideAll();
                 }
             },
+
             templateHelpers: function () {
                 var width = 25,
                     scale = width / this.model.get("width");
@@ -30,17 +33,20 @@ define(['marionette',
                     strokeWeight: this.model.get("strokeWeight") * 5
                 };
             },
+
             initialize: function (opts) {
                 _.extend(this, opts);
+                var that = this, matchedCollection;
                 this.template = Handlebars.compile(SymbolTemplate);
-                var data = this.app.dataManager.getCollection(this.data_source),
-                    matchedCollection = new data.constructor(null, { url: "dummy" }),
-                    that = this;
-                data.each(function (model) {
+                this.data = this.app.dataManager.getCollection(this.data_source);
+                matchedCollection = new this.data.constructor(null, { url: "dummy" });
+
+                this.data.each(function (model) {
                     if (that.model.checkModel(model)) {
                         matchedCollection.add(model);
                     }
                 });
+
                 this.markerOverlays = new OverlayListView({
                     collection: matchedCollection,
                     app: this.app,

@@ -97,7 +97,8 @@ define(
                         "width": 32,
                         "shape": "worm",
                         "strokeColor": "#FFF",
-                        "color": "#df65b0"
+                        "color": "#df65b0",
+                        "is_showing": true
                     },
                     {
                         "title": "11 or more",

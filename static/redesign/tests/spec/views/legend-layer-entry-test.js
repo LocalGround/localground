@@ -3,14 +3,15 @@ define([
     rootDir + "apps/presentation/views/legend-layer-entry",
     rootDir + "apps/presentation/views/legend-symbol-entry",
     rootDir + 'collections/symbols',
+    rootDir + 'collections/records',
+    rootDir + 'lib/maps/marker-overlays',
     "tests/spec-helper"
 ],
-    function (LegendLayerEntry, LegendSymbolEntry, Symbols) {
+    function (LegendLayerEntry, LegendSymbolEntry, Symbols, Records, OverlayListView) {
         'use strict';
         var lle, fixture;
 
         function initApp(scope) {
-            //http://www.itsmycodeblog.com/jasmine-jquery-testing-css/
             lle = new LegendLayerEntry({
                 app: scope.app,
                 model: scope.layer
@@ -20,7 +21,6 @@ define([
 
         describe("LegendLayerEntry: Application-Level Tests", function () {
             beforeEach(function () {
-                //called before each "it" test (so we don't have to keep repeating code):
                 initApp(this);
             });
 
@@ -40,18 +40,35 @@ define([
             });
 
             it("Initialization methods called successfully", function () {
-                lle.children.each(function (childview) {
-                    expect(childview.initialize).toHaveBeenCalled();
+                var that = this, overlays;
+                lle.children.each(function (childView) {
+                    overlays = childView.markerOverlays;
+                    expect(childView.initialize).toHaveBeenCalled();
+                    expect(childView.data).toEqual(jasmine.any(Records));
+                    expect(overlays).toEqual(jasmine.any(OverlayListView));
+                    expect(overlays.collection).toEqual(jasmine.any(Records));
+                    expect(overlays.app).toEqual(that.app);
+                    expect(overlays.iconOpts).toEqual(childView.model.toJSON());
+                });
+            });
+
+            it("Initializes checkboxes according to is_showing flag", function () {
+                lle.children.each(function (childView) {
+                    fixture = setFixtures('<div></div>').append(childView.$el);
+                    if (childView.model.get("is_showing")) {
+                        expect(fixture.find('input').get(0).outerHTML).toBeChecked();
+                    } else {
+                        expect(fixture.find('input').get(0).outerHTML).not.toBeChecked();
+                    }
                 });
             });
         });
 
         describe("LegendLayerEntry: DOM Tests", function () {
             beforeEach(function (done) {
-                //called before each "it" test (so we don't have to keep repeating code):
                 initApp(this);
-
                 /*
+                 * Documentation: https://github.com/velesin/jasmine-jquery
                  * NOTE: this setTimeout + done function is needed to give the 
                  * CSS a little extra time to load, since it's asynchronous
                  */
@@ -62,7 +79,6 @@ define([
 
             it("Renders HTML successfully", function () {
                 fixture = setFixtures('<div id="legend"></div>').append(lle.$el);
-                //Documentation: https://github.com/velesin/jasmine-jquery
                 expect(fixture).toContainElement("ul");
                 expect(fixture.find('li')).toHaveLength(4);
                 expect(fixture.find('input')).toHaveLength(3);
