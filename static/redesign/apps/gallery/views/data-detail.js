@@ -41,11 +41,6 @@ define([
             return Handlebars.compile(SiteTemplate);
         },
         showMediaBrowser: function () {
-            // That is a good small start,
-            // but there has to be a way to
-            // utilize aspects of data view so that
-            // it can show a collection of photos already stored in media
-
             /*
               I also made a js class that is like data-list.js but has only
               photos and audio as options.
@@ -259,6 +254,42 @@ define([
                 });
                 this.$el.find(".player-container").append(player.$el);
             }
+
+            // The Column arranger functions go here
+            this.sortMediaTable();
+        },
+
+        sortMediaTable: function(){
+            var sortableFields = this.$el.find(".attached-media-container");
+            var that  = this;
+            sortableFields.sortable({
+                helper: this.fixHelper//,
+                /*
+                update: function (event, ui) {
+                    var newOrder = ui.item.index() + 1,
+                        modelID = ui.item.find('.id').val();
+                    //console.log(newOrder, modelID);
+                    //alert(newOrder + ": " + modelID);
+                    //console.log(that.collection.get(modelID));
+                    var targetModel = that.collection.get(modelID);
+                    targetModel.set("ordering", newOrder);
+                    targetModel.save();
+                    // TODO: get model from collection, set the order, and
+                    // save to the API.
+                }
+                */
+            }).disableSelection();
+        },
+
+        // Fix helper with preserved width of cells
+        fixHelper: function(e, ui){
+            // I want to apply changes made to the media only, not the add media
+            // However, by default it does sort all the items around,
+            // even with target name tag inside children
+            ui.children().each(function(){
+                $(this).width($(this).width());
+            });
+            return ui;
         },
 
         rotatePhoto: function(e){
