@@ -13,6 +13,11 @@ define([
         var lle, fixture;
 
         function initApp(scope) {
+            spyOn(LegendSymbolEntry.prototype, 'initialize').and.callThrough();
+            spyOn(LegendSymbolEntry.prototype, 'showHide').and.callThrough();
+            spyOn(OverlayListView.prototype, 'showAll');
+            spyOn(OverlayListView.prototype, 'hideAll');
+            spyOn(OverlayListView.prototype, 'initialize');
             lle = new LegendLayerEntry({
                 app: scope.app,
                 model: scope.layer
@@ -36,23 +41,19 @@ define([
 
         describe("LegendLayerEntry: ChildView Tests", function () {
             beforeEach(function () {
-                spyOn(LegendSymbolEntry.prototype, 'initialize').and.callThrough();
-                spyOn(LegendSymbolEntry.prototype, 'showHide').and.callThrough();
-                spyOn(OverlayListView.prototype, 'showAll');
-                spyOn(OverlayListView.prototype, 'hideAll');
                 initApp(this);
             });
 
             it("Initialization methods called successfully", function () {
-                var that = this, overlays;
+                var overlays;
                 lle.children.each(function (childView) {
                     overlays = childView.markerOverlays;
                     expect(childView.initialize).toHaveBeenCalled();
                     expect(childView.data).toEqual(jasmine.any(Records));
+                    expect(childView.data.length).toEqual(3);
                     expect(overlays).toEqual(jasmine.any(OverlayListView));
                     expect(overlays.collection).toEqual(jasmine.any(Records));
-                    expect(overlays.app).toEqual(that.app);
-                    expect(overlays.iconOpts).toEqual(childView.model.toJSON());
+                    expect(overlays.collection.length).toEqual(1);
                 });
             });
 

@@ -82,7 +82,7 @@ define(
                     {
                         "title": "1 - 5",
                         "strokeWeight": 1,
-                        "rule": "earthworm_count > 0 and earthworm_count < 6",
+                        "rule": "worm_count > 0 and worm_count < 6",
                         "height": 32,
                         "width": 32,
                         "shape": "worm",
@@ -92,7 +92,7 @@ define(
                     {
                         "title": "6 - 10",
                         "strokeWeight": 1,
-                        "rule": "earthworm_count > 5 and earthworm_count < 11",
+                        "rule": "worm_count > 5 and worm_count < 11",
                         "height": 32,
                         "width": 32,
                         "shape": "worm",
@@ -103,7 +103,7 @@ define(
                     {
                         "title": "11 or more",
                         "strokeWeight": 1,
-                        "rule": "earthworm_count >= 11",
+                        "rule": "worm_count >= 11",
                         "height": 32,
                         "width": 32,
                         "shape": "worm",
@@ -140,7 +140,7 @@ define(
             this.form_1 = new Records([
                 new Record({ id: 1, team_name: "Blue team", display_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
                 new Record({id: 2, team_name: "Green team", tags: 'friend\'s house, tag1', worm_count: 8, project_id: 1, overlay_type: "form_1" }),
-                new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 2, project_id: 2, overlay_type: "form_1" })
+                new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 12, project_id: 2, overlay_type: "form_1" })
             ], { 'url': 'dummy/url' });
 
             this.dataDictionary = {
