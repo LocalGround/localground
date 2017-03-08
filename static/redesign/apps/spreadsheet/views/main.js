@@ -47,6 +47,32 @@ define(["marionette",
             },
             onRender: function () {
                 this.renderSpreadsheet();
+                this.table.addHook('beforeColumnMove', this.columnMoveBefore);
+                this.table.addHook('afterColumnMove', this.columnMoveAfter);
+            },
+            //
+            // Arranging the columns
+            // For now, I only want to arrange without any saving
+            // for this current draft
+            columnMoveBefore: function(col_indexes_to_be_moved, destination_index){
+                console.log(col_indexes_to_be_moved, destination_index);
+                var media_column_index = 7; //change to whatever one is valid
+                if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index) {
+                    alert('Media columns always have to be at the end');
+                    return false;
+                }
+            },
+
+            columnMoveAfter: function(col_indexes_to_be_moved, destination_index){
+                var media_column_index = 7; //change to whatever one is valid
+                if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index) {
+                    return false;
+                }
+
+                console.log(col_indexes_to_be_moved, destination_index);
+                for (var i = 0; i < col_indexes_to_be_moved.length; i++) {
+                    console.log('Save column that used to be at position [' + col_indexes_to_be_moved[i] + '] to position [' + (destination_index + i) + ']');
+                }
             },
             renderSpreadsheet: function () {
                 if (this.collection.length == 0) {
