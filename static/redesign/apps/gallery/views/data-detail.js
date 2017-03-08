@@ -265,7 +265,7 @@ define([
             var that  = this;
             sortableFields.sortable({
                 helper: this.fixHelper,
-                items : '.attached-container',
+                items : '.attached-container'
                 //cancel: ''//,
                 // Still need work on getting the right models since below code returns undefined error
                 /*
@@ -281,7 +281,7 @@ define([
                     targetModel.save();
                     // TODO: get model from collection, set the order, and
                     // save to the API.
-                    //*/
+                    
                 }
                 //*/
             }).disableSelection();
