@@ -260,10 +260,13 @@ define([
         },
 
         sortMediaTable: function(){
+            //http://stackoverflow.com/questions/13885665/how-to-exclude-an-element-from-being-dragged-in-sortable-list
             var sortableFields = this.$el.find(".attached-media-container");
             var that  = this;
             sortableFields.sortable({
-                helper: this.fixHelper//,
+                helper: this.fixHelper,
+                items : '.attached-container'
+                //cancel: ''//,
                 /*
                 update: function (event, ui) {
                     var newOrder = ui.item.index() + 1,
