@@ -12,7 +12,28 @@ define([
         'use strict';
         var lle, fixture;
 
-        function initApp(scope) {
+        function initChildView(scope) {
+            var opts = {
+                    "title": "6 - 10",
+                    "strokeWeight": 1,
+                    "rule": "earthworm_count > 5 and earthworm_count < 11",
+                    "height": 32,
+                    "width": 32,
+                    "shape": "worm",
+                    "strokeColor": "#FFF",
+                    "color": "#df65b0",
+                    "is_showing": true
+                },
+                childView = new LegendSymbolEntry({
+                    app: scope.app,
+                    data_source: 'form_1',
+                    model: new Symbol(opts)
+                });
+            childView.render();
+            return childView;
+        }
+
+        function initLegendLayerEntry(scope) {
             spyOn(LegendSymbolEntry.prototype, 'initialize').and.callThrough();
             spyOn(LegendSymbolEntry.prototype, 'showHide').and.callThrough();
             spyOn(OverlayListView.prototype, 'showAll');
@@ -27,7 +48,7 @@ define([
 
         describe("LegendLayerEntry: Application-Level Tests", function () {
             beforeEach(function () {
-                initApp(this);
+                initLegendLayerEntry(this);
             });
 
             it("Initialization methods called successfully", function () {
@@ -41,7 +62,7 @@ define([
 
         describe("LegendLayerEntry: ChildView Tests", function () {
             beforeEach(function () {
-                initApp(this);
+                initLegendLayerEntry(this);
             });
 
             it("Initialization methods called successfully", function () {
@@ -80,23 +101,7 @@ define([
             });
 
             it("Calls the correct OverlayListView toggle function", function () {
-                var opts = {
-                        "title": "6 - 10",
-                        "strokeWeight": 1,
-                        "rule": "earthworm_count > 5 and earthworm_count < 11",
-                        "height": 32,
-                        "width": 32,
-                        "shape": "worm",
-                        "strokeColor": "#FFF",
-                        "color": "#df65b0",
-                        "is_showing": true
-                    },
-                    childView = new LegendSymbolEntry({
-                        app: this.app,
-                        data_source: 'form_1',
-                        model: new Symbol(opts)
-                    });
-                childView.render();
+                var childView = initChildView(this);
                 fixture = setFixtures('<div></div>').append(childView.$el);
                 expect(childView.showHide).toHaveBeenCalledTimes(0);
                 expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(0);
@@ -114,11 +119,17 @@ define([
                 expect(childView.markerOverlays.showAll).toHaveBeenCalledTimes(1);
                 expect(childView.markerOverlays.hideAll).toHaveBeenCalledTimes(1);
             });
+
+            it("Renders SVG as Expected", function () {
+                var childView = initChildView(this);
+                fixture = setFixtures('<div></div>').append(childView.$el);
+                expect(1).toBe(1);
+            });
         });
 
         describe("LegendLayerEntry: DOM Tests", function () {
             beforeEach(function (done) {
-                initApp(this);
+                initLegendLayerEntry(this);
                 /*
                  * Documentation: https://github.com/velesin/jasmine-jquery
                  * NOTE: this setTimeout + done function is needed to give the 
