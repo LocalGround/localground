@@ -69,6 +69,7 @@ define(["marionette",
                 var media_column_index = this.fields.length + 4, //change to whatever one is valid
                     pre_field_index = 2,
                     i = 0,
+                    currentOrdering,
                     oldPosition,
                     newPosition,
                     fieldIndex,
@@ -81,19 +82,13 @@ define(["marionette",
                 for (i = 0; i < col_indexes_to_be_moved.length; i++) {
                     fieldIndex = col_indexes_to_be_moved[i] - 3;
                     field = this.fields.at(fieldIndex);
-                    oldPosition = col_indexes_to_be_moved[i] - 2;
-                    newPosition = destination_index - 2;
-                    if (newPosition > oldPosition) {
-                        newPosition -= 1;
-                        console.log('forward', oldPosition, newPosition);
-                    } else if (newPosition < oldPosition) {
-                        console.log('backward', oldPosition, newPosition);
-                        //newPosition += 1;
+                    oldPosition = field.get("ordering") + 2;
+                    if (oldPosition < destination_index) {
+                        --destination_index;
                     }
-                    console.log(
-                        'Save column that used to be at position [' +
-                            oldPosition + '] to position [' + newPosition + ']'
-                    );
+                    newPosition = destination_index - 2 + i;
+
+                    console.log(newPosition);
                     field.set("ordering", newPosition);
                     field.save();
                 }
@@ -133,7 +128,7 @@ define(["marionette",
                     columns: this.getColumns(),
                     maxRows: this.collection.length,
                     autoRowSize: true,
-                    //columnSorting: true,
+                    columnSorting: true,
                     undo: true,
                     afterChange: function (changes, source) {
                         that.saveChanges(changes, source);
