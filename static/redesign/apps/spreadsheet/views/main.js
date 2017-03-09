@@ -53,7 +53,6 @@ define(["marionette",
             // For now, I only want to arrange without any saving
             // for this current draft
             columnMoveBefore: function(col_indexes_to_be_moved, destination_index){
-                //console.log(col_indexes_to_be_moved, destination_index);
                 var media_column_index = this.fields.length + 4; //change to whatever one is valid
                 var pre_field_index = 2;
                 if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index) {
@@ -88,7 +87,6 @@ define(["marionette",
                     }
                     newPosition = destination_index - 2 + i;
 
-                    console.log(newPosition);
                     field.set("ordering", newPosition);
                     field.save();
                 }
@@ -273,12 +271,9 @@ define(["marionette",
                 var that = this;
 
                 var row_idx = $(e.target).attr("row-index");
-                //console.log(e.target);
-                //console.log(row_idx);
                 this.currentModel = this.collection.at(parseInt(row_idx));
                 //any extra view logic. Carousel functionality goes here
                 this.currentModel.fetch({success: function(){
-                    //console.log(that.currentModel);
                     var c = new Carousel({
                         model: that.currentModel,
                         mode: "photos",
@@ -290,7 +285,6 @@ define(["marionette",
                     var $span = $("<span class='close big'>&times;</span>");
                     $span.click(function () {
                         $("#carouselModal").hide();
-                        //document.getElementById("carouselModal").style.display='none';
                     })
                     $("#carouselModal").append($span);
 
@@ -299,7 +293,6 @@ define(["marionette",
 
                     modal.style.display = "block";
 
-                    //console.log(c);
                 }});
             },
 
@@ -308,7 +301,6 @@ define(["marionette",
                 var that = this;
 
                 var row_idx = $(e.target).attr("row-index");
-                //console.log(row_idx);
                 this.currentModel = this.collection.at(parseInt(row_idx));
                 //any extra view logic. Carousel functionality goes here
                 this.currentModel.fetch({success: function(){
@@ -332,7 +324,6 @@ define(["marionette",
                     var modal = document.getElementById('carouselModal');
 
                     modal.style.display = "block";
-                    //console.log(c);
                 }});
             },
 
@@ -368,9 +359,7 @@ define(["marionette",
 
             showMediaBrowser: function (e) {
                 var row_idx = $(e.target).attr("row-index");
-                //console.log(row_idx);
                 this.currentModel = this.collection.at(parseInt(row_idx));
-                //console.log(this.currentModel);
                 var mediaBrowser = new MediaBrowser({
                     app: this.app
                 });

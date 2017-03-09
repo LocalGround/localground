@@ -275,7 +275,6 @@ define([
                         modelID = ui.item.find('.detach_media').attr('data-id'),
                         association;
 
-                    console.log(newOrder, modelID);
                     association = new Association({
                         form_id: that.model.get("overlay_type").split("_")[1],
                         overlay_type: that.model.get("overlay_type"),
@@ -303,7 +302,6 @@ define([
         rotatePhoto: function(e){
             var $elem = $(e.target);
             var rotation = $elem.attr("rotation");
-            //console.log(rotation);
 
             // Rotate targeted photo and save settings
             this.model.rotate(rotation);
@@ -351,13 +349,11 @@ define([
         },
         hideMapPanel: function (e) {
             $(e.target).removeClass("hide").addClass("show");
-            console.log("about to hide...");
             this.app.vent.trigger('hide-detail');
             e.preventDefault();
         },
         showMapPanel: function (e) {
             $(e.target).removeClass("show").addClass("hide");
-            console.log("about to show...");
             this.app.vent.trigger('unhide-detail');
             e.preventDefault();
         }

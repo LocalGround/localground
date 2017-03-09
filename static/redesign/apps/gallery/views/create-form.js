@@ -81,9 +81,6 @@ define([
                 update: function (event, ui) {
                     var newOrder = ui.item.index() + 1,
                         modelID = ui.item.find('.id').val();
-                    //console.log(newOrder, modelID);
-                    //alert(newOrder + ": " + modelID);
-                    //console.log(that.collection.get(modelID));
                     var targetModel = that.collection.get(modelID);
                     targetModel.set("ordering", newOrder);
                     targetModel.save();
