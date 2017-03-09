@@ -53,8 +53,8 @@ define(["marionette",
             // For now, I only want to arrange without any saving
             // for this current draft
             columnMoveBefore: function(col_indexes_to_be_moved, destination_index){
-                console.log(col_indexes_to_be_moved, destination_index);
-                var media_column_index = 7; //change to whatever one is valid
+                //console.log(col_indexes_to_be_moved, destination_index);
+                var media_column_index = this.fields.length + 4; //change to whatever one is valid
                 if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index) {
                     alert('Media columns always have to be at the end');
                     return false;
@@ -62,42 +62,31 @@ define(["marionette",
             },
 
             columnMoveAfter: function(col_indexes_to_be_moved, destination_index){
-                var media_column_index = 7; //change to whatever one is valid
+                var media_column_index = this.fields.length + 4, //change to whatever one is valid
+                    i = 0,
+                    oldPosition,
+                    newPosition,
+                    fieldIndex,
+                    field;
                 if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index) {
                     return false;
                 }
 
-                console.log(col_indexes_to_be_moved, destination_index);
-                console.log(this);
-                for (var i = 0; i < col_indexes_to_be_moved.length; i++) {
-                    var oldIndex = col_indexes_to_be_moved[i] - 3,
-                        newIndex = destination_index - 3,
-                        fieldToUpdate = this.fields.at(oldIndex),
-                        difference = oldIndex - newIndex,
-                        currentOrdering = fieldToUpdate.get("ordering"),
-                        // It seems that we are adding  / subtracting the one current ordering before storing the order
-                        // without considering the other item being affected
-                        // instead of going through the whole table to determine the new ordering
-                        // form left to right
-                        newOrdering = currentOrdering - difference;
-                    // Before set ordering
-                    console.log("Before Set Ordering");
-                    console.log("oldIndex", oldIndex);
-                    console.log("newIndex", newIndex);
-                    console.log("difference", difference);
-                    console.log("currentOrdering", currentOrdering);
-                    console.log("newOrdering", newOrdering);
-
-                    fieldToUpdate.set("ordering", newOrdering);
-                    //fieldToUpdate.save();
-
-                    // After set ordering
-                    console.log("After Set Ordering")
-                    //console.log("*********newOrdering:", newIndex + 1);
-                    //console.log("currentOrdering:", currentOrdering);
-                    //console.log("newOrdering:", newOrdering, newIndex);
-                    //console.log("difference:", difference);
-                    //console.log('Save column that used to be at position [' + col_indexes_to_be_moved[i] + '] to position [' + (destination_index + i) + ']');
+                for (i = 0; i < col_indexes_to_be_moved.length; i++) {
+                    fieldIndex = col_indexes_to_be_moved[i] - 3;
+                    field = this.fields.at(fieldIndex);
+                    oldPosition = col_indexes_to_be_moved[i] - 2;
+                    newPosition = destination_index - 2;
+                    if (newPosition >= oldPosition) {
+                        --newPosition;
+                    }
+                    newPosition += i;
+                    console.log(
+                        'Save column that used to be at position [' +
+                            oldPosition + '] to position [' + newPosition + ']'
+                    );
+                    field.set("ordering", newPosition);
+                    field.save();
                 }
             },
             renderSpreadsheet: function () {
@@ -135,7 +124,7 @@ define(["marionette",
                     columns: this.getColumns(),
                     maxRows: this.collection.length,
                     autoRowSize: true,
-                    columnSorting: true,
+                    //columnSorting: true,
                     undo: true,
                     afterChange: function (changes, source) {
                         that.saveChanges(changes, source);
