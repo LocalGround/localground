@@ -1,4 +1,4 @@
-define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.html"],
+define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.html", "lib/handlebars-helpers"],
     function (_, Marionette, Handlebars, PlayerTemplate) {
         'use strict';
 
