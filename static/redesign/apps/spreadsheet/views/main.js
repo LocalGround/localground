@@ -48,8 +48,8 @@ define(["marionette",
             onRender: function () {
                 this.renderSpreadsheet();
                 // Right now I still cannot move the columns around
-                this.table.addHook('beforeColumnMove', this.columnMoveBefore);
-                this.table.addHook('afterColumnMove', this.columnMoveAfter);
+                this.table.addHook('beforeColumnMove', this.columnMoveBefore.bind(this));
+                this.table.addHook('afterColumnMove', this.columnMoveAfter.bind(this));
             },
             //
             // Arranging the columns
@@ -72,7 +72,20 @@ define(["marionette",
 
                 console.log(col_indexes_to_be_moved, destination_index);
                 for (var i = 0; i < col_indexes_to_be_moved.length; i++) {
-                    console.log('Save column that used to be at position [' + col_indexes_to_be_moved[i] + '] to position [' + (destination_index + i) + ']');
+                    var oldIndex = col_indexes_to_be_moved[i] - 3,
+                        newIndex = destination_index - 3,
+                        fieldToUpdate = this.fields.at(oldIndex),
+                        difference = oldIndex - newIndex,
+                        currentOrdering = fieldToUpdate.get("ordering"),
+                        newOrdering = currentOrdering - difference;
+                    fieldToUpdate.set("ordering", newIndex + 1);
+                    //fieldToUpdate.save();
+                    
+                    console.log("*********newOrdering:", newIndex + 1);
+                    console.log("currentOrdering:", currentOrdering);
+                    console.log("newOrdering:", newOrdering, newIndex);
+                    console.log("difference:", difference);
+                    //console.log('Save column that used to be at position [' + col_indexes_to_be_moved[i] + '] to position [' + (destination_index + i) + ']');
                 }
             },
             renderSpreadsheet: function () {
@@ -104,7 +117,7 @@ define(["marionette",
                     colWidths: this.getColumnWidths(),
                     rowHeights: rowHeights,
                     colHeaders: this.getColumnHeaders(),
-                    //manualColumnResize: true,
+                    manualColumnResize: true,
                     //manualRowResize: true, // However, the manualRowResize overrides the manualRowMove
                     manualColumnMove: true, // The simple but crude way of moving columns, and does not work
                     // but the move rows cannot happen because the headers are not alligned with the rest of the rows
