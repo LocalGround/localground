@@ -268,10 +268,21 @@ define([
                 items : '.attached-container'
                 //cancel: ''//,
                 // Still need work on getting the right models since below code returns undefined error
-                /*
+                //*
                 update: function (event, ui) {
                     var newOrder = ui.item.index() + 1,
                         modelID = ui.item.find('.id').val();
+
+                        // Rough draft changes
+                    var association = new Association({
+                        overlay_type: this.get("overlay_type"),
+                        form_id: parseInt(this.get("overlay_type").split("_")[1], 10),
+                        record_id: this.get("id"),
+                        model_type: model.getKey(),
+                        source_id: this.id
+                    });
+
+
                     console.log(newOrder, modelID);
                     //alert(newOrder + ": " + modelID);
                     console.log(that.collection.get(modelID));
@@ -281,7 +292,7 @@ define([
                     targetModel.save();
                     // TODO: get model from collection, set the order, and
                     // save to the API.
-                    
+
                 }
                 //*/
             }).disableSelection();
