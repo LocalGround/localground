@@ -47,6 +47,7 @@ define(["marionette",
             },
             onRender: function () {
                 this.renderSpreadsheet();
+                // Right now I still cannot move the columns around
                 this.table.addHook('beforeColumnMove', this.columnMoveBefore);
                 this.table.addHook('afterColumnMove', this.columnMoveAfter);
             },
