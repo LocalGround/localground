@@ -10,12 +10,13 @@ define([
     "text!../templates/audio-detail.html",
     "text!../templates/record-detail.html",
     "models/audio",
+    "models/association",
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "form" //extends Backbone
 ], function ($, Backbone, _, Handlebars, Marionette, MediaBrowser,
              AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
-             Audio, AudioPlayer, Carousel) {
+             Audio, Association, AudioPlayer, Carousel) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -265,36 +266,26 @@ define([
             var that  = this;
             sortableFields.sortable({
                 helper: this.fixHelper,
-                items : '.attached-container'
+                items : '.attached-container',
                 //cancel: ''//,
                 // Still need work on getting the right models since below code returns undefined error
                 //*
                 update: function (event, ui) {
-                    var newOrder = ui.item.index() + 1,
-                        modelID = ui.item.find('.id').val();
-
-                        // Rough draft changes
-                    var association = new Association({
-                        overlay_type: this.get("overlay_type"),
-                        form_id: parseInt(this.get("overlay_type").split("_")[1], 10),
-                        record_id: this.get("id"),
-                        model_type: model.getKey(),
-                        source_id: this.id
-                    });
-
+                    var newOrder = ui.item.index(),
+                        modelID = ui.item.find('.detach_media').attr('data-id'),
+                        association;
 
                     console.log(newOrder, modelID);
-                    //alert(newOrder + ": " + modelID);
-                    console.log(that.collection.get(modelID));
-                    /*
-                    var targetModel = that.collection.get(modelID);
-                    targetModel.set("ordering", newOrder);
-                    targetModel.save();
-                    // TODO: get model from collection, set the order, and
-                    // save to the API.
-
+                    association = new Association({
+                        form_id: that.model.get("overlay_type").split("_")[1],
+                        overlay_type: that.model.get("overlay_type"),
+                        record_id: that.model.get("id"),
+                        model_type: "photos",
+                        object_id: modelID,
+                        id: modelID
+                    });
+                    association.save({ ordering: newOrder}, {patch: true});
                 }
-                //*/
             }).disableSelection();
         },
 
