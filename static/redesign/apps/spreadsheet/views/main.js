@@ -47,9 +47,6 @@ define(["marionette",
             },
             onRender: function () {
                 this.renderSpreadsheet();
-                // Right now I still cannot move the columns around
-                this.table.addHook('beforeColumnMove', this.columnMoveBefore.bind(this));
-                this.table.addHook('afterColumnMove', this.columnMoveAfter.bind(this));
             },
             //
             // Arranging the columns
@@ -71,20 +68,35 @@ define(["marionette",
                 }
 
                 console.log(col_indexes_to_be_moved, destination_index);
+                console.log(this);
                 for (var i = 0; i < col_indexes_to_be_moved.length; i++) {
                     var oldIndex = col_indexes_to_be_moved[i] - 3,
                         newIndex = destination_index - 3,
                         fieldToUpdate = this.fields.at(oldIndex),
                         difference = oldIndex - newIndex,
                         currentOrdering = fieldToUpdate.get("ordering"),
+                        // It seems that we are adding  / subtracting the one current ordering before storing the order
+                        // without considering the other item being affected
+                        // instead of going through the whole table to determine the new ordering
+                        // form left to right
                         newOrdering = currentOrdering - difference;
-                    fieldToUpdate.set("ordering", newIndex + 1);
+                    // Before set ordering
+                    console.log("Before Set Ordering");
+                    console.log("oldIndex", oldIndex);
+                    console.log("newIndex", newIndex);
+                    console.log("difference", difference);
+                    console.log("currentOrdering", currentOrdering);
+                    console.log("newOrdering", newOrdering);
+
+                    fieldToUpdate.set("ordering", newOrdering);
                     //fieldToUpdate.save();
-                    
-                    console.log("*********newOrdering:", newIndex + 1);
-                    console.log("currentOrdering:", currentOrdering);
-                    console.log("newOrdering:", newOrdering, newIndex);
-                    console.log("difference:", difference);
+
+                    // After set ordering
+                    console.log("After Set Ordering")
+                    //console.log("*********newOrdering:", newIndex + 1);
+                    //console.log("currentOrdering:", currentOrdering);
+                    //console.log("newOrdering:", newOrdering, newIndex);
+                    //console.log("difference:", difference);
                     //console.log('Save column that used to be at position [' + col_indexes_to_be_moved[i] + '] to position [' + (destination_index + i) + ']');
                 }
             },
@@ -118,9 +130,7 @@ define(["marionette",
                     rowHeights: rowHeights,
                     colHeaders: this.getColumnHeaders(),
                     manualColumnResize: true,
-                    //manualRowResize: true, // However, the manualRowResize overrides the manualRowMove
-                    manualColumnMove: true, // The simple but crude way of moving columns, and does not work
-                    // but the move rows cannot happen because the headers are not alligned with the rest of the rows
+                    manualColumnMove: (this.fields != null && this.fields != undefined),
                     rowHeaders: true,
                     columns: this.getColumns(),
                     maxRows: this.collection.length,
@@ -131,6 +141,10 @@ define(["marionette",
                         that.saveChanges(changes, source);
                     }
                 });
+                if (this.fields){
+                    this.table.addHook('beforeColumnMove', this.columnMoveBefore.bind(this));
+                    this.table.addHook('afterColumnMove', this.columnMoveAfter.bind(this));
+                }
             },
             saveChanges: function (changes, source) {
                 //sync with collection:
@@ -404,11 +418,7 @@ define(["marionette",
                     case "photos":
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
-                        cols = ["ID", "Lat", "Lng", "Title", "Caption",
-                        //"Photos",
-                        //"Audio",
-                        "Media",
-                        "Tags", "Owner", "Delete"];
+                        cols = ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Media", "Delete"];
                         return cols;
                     default:
                         cols = ["ID", "Lat", "Lng"];
@@ -417,8 +427,6 @@ define(["marionette",
                         for (var i = 0; i < this.fields.length; ++i) {
                             cols.push(this.fields.at(i).get("col_name") + deleteColumn);
                         }
-                        //cols.push("Photos");
-                        //cols.push("Audio");
                         cols.push("Media");
                         cols.push("Delete");
                         cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
@@ -432,7 +440,7 @@ define(["marionette",
                     case "photos":
                         return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "markers":
-                        return [30, 80, 80, 200, 400, 100, 200, 120, 100];
+                        return [30, 80, 80, 200, 400, 200, 120, 100, 100];
                     default:
                         var cols = [30, 80, 80];
                         for (var i = 0; i < this.fields.length; ++i){
@@ -493,11 +501,9 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            //{ data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                            //{ data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
                             { data: "tags", renderer: "html" },
                             { data: "owner", readOnly: true},
+                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
                        ];
                     default:
