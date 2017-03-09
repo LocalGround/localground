@@ -55,20 +55,26 @@ define(["marionette",
             columnMoveBefore: function(col_indexes_to_be_moved, destination_index){
                 //console.log(col_indexes_to_be_moved, destination_index);
                 var media_column_index = this.fields.length + 4; //change to whatever one is valid
+                var pre_field_index = 2;
                 if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index) {
                     alert('Media columns always have to be at the end');
+                    return false;
+                } else if (col_indexes_to_be_moved.indexOf(pre_field_index) != -1 || destination_index <= pre_field_index){
+                    alert('Cannot enter into ID and geolocation');
                     return false;
                 }
             },
 
             columnMoveAfter: function(col_indexes_to_be_moved, destination_index){
                 var media_column_index = this.fields.length + 4, //change to whatever one is valid
+                    pre_field_index = 2,
                     i = 0,
                     oldPosition,
                     newPosition,
                     fieldIndex,
                     field;
-                if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index) {
+                if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index ||
+                    col_indexes_to_be_moved.indexOf(pre_field_index) != -1 || destination_index <= pre_field_index) {
                     return false;
                 }
 
@@ -78,13 +84,12 @@ define(["marionette",
                     oldPosition = col_indexes_to_be_moved[i] - 2;
                     newPosition = destination_index - 2;
                     if (newPosition > oldPosition) {
-                        console.log('forward', newPosition, oldPosition);
                         newPosition -= 1;
+                        console.log('forward', oldPosition, newPosition);
                     } else if (newPosition < oldPosition) {
-                        console.log('backward', newPosition, oldPosition);
-                        newPosition += 1;
+                        console.log('backward', oldPosition, newPosition);
+                        //newPosition += 1;
                     }
-                    //newPosition += i;
                     console.log(
                         'Save column that used to be at position [' +
                             oldPosition + '] to position [' + newPosition + ']'
