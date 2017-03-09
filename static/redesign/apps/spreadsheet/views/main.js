@@ -77,10 +77,14 @@ define(["marionette",
                     field = this.fields.at(fieldIndex);
                     oldPosition = col_indexes_to_be_moved[i] - 2;
                     newPosition = destination_index - 2;
-                    if (newPosition >= oldPosition) {
-                        --newPosition;
+                    if (newPosition > oldPosition) {
+                        console.log('forward', newPosition, oldPosition);
+                        newPosition -= 1;
+                    } else if (newPosition < oldPosition) {
+                        console.log('backward', newPosition, oldPosition);
+                        newPosition += 1;
                     }
-                    newPosition += i;
+                    //newPosition += i;
                     console.log(
                         'Save column that used to be at position [' +
                             oldPosition + '] to position [' + newPosition + ']'
