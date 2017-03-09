@@ -232,9 +232,6 @@ audio {
 .carouselbox .audio-detail {
     border-width: 0px !important;
 }
-.carouselbox .audio-container {
-    padding: 0px;
-}
 
 .carouselbox .audio-detail .audio-progress {
     padding: 10px 30px 25px 30px;

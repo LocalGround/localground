@@ -77,6 +77,12 @@ define([
         },
 
         activateMarkerTrigger: function () {
+
+            this.$el.find("#add-marker-button").css({
+                background: "#4e70d4",
+                color: "white"
+            });
+            this.$el.find(".add-lat-lng").append("<p id='drop-marker-message'>click on the map to add location</p>");
             //Define Class:
             var that = this, MouseMover, $follower, mm;
             MouseMover = function ($follower) {
@@ -206,11 +212,11 @@ define([
             var lat, lng;
             //sets filler html string if a marker location has not been set
             if (this.model.get("geometry") == null) {
-                        lat = "...",
-                        lng = "...";
+                        lat = "undefined",
+                        lng = "undefined";
                     } else {
-                       lat =  this.model.get("geometry").coordinates[0].toFixed(4),
-                       lng =  this.model.get("geometry").coordinates[1].toFixed(4)
+                       lat =  this.model.get("geometry").coordinates[1].toFixed(4),
+                       lng =  this.model.get("geometry").coordinates[0].toFixed(4)
                     }
 
             var context = {
@@ -325,9 +331,18 @@ define([
         rotatePhoto: function(e){
             var $elem = $(e.target);
             var rotation = $elem.attr("rotation");
+            this.$el.find(".rotate-message").show();
+
             this.$el.find(".edit-photo").css({
-                filter: "brightness(0.5)"
+                filter: "brightness(0.4)"
             });
+        
+            this.$el.find(".overlay").css({
+                display: "block",
+                background: "rgba(0, 0, 0, .6)",
+            })
+            
+            this.$el.find(".photo-container").append('<div style="color: #fff">photo rottating</div>');
             /*
             this.$el.find(".photo-container").append(
                 '<i class="fa fa-cog fa-5x fa-spin" id="rotate-icon"></i>'
@@ -335,9 +350,8 @@ define([
             */
             //console.log(rotation);
 
-            // Rotate targeted photo and save settings
+            //Rotate targeted photo and save settings
             this.model.rotate(rotation);
-            //
         },
 
         saveModel: function () {

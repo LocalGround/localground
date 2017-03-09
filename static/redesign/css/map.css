@@ -272,38 +272,32 @@ svg, .fa-question-circle {
 }
 
 
-#add-marker-button {
+#add-marker-button, #delete-marker-button {
     display: block;
     text-align: center;
     margin: 30px auto;
+    min-width: 160px;
+    width: auto;
 }
 
-#delete-marker-button {
-    display: block;
+#add-marker-button:focus, #delete-marker-button:focus { 
+    outline: none; 
+}
+
+#drop-marker-message {
+    margin-top: -20px;
+    margin-bottom: 20px;
     text-align: center;
-    margin: 30px auto;
+
 }
 
-#marker-detail-panel h5 {
-    margin: 10px 10px 10px 120px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    font-size: 12px;
-    font-weight: 600;
+.latlong {
+    display: inline;
 }
 
-
-/********** Overlay when rotating photos ********************/
-/*
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100px;
-  color: #FFF;
-  background: rgba(0, 0, 0, 0);
-  transition: background 0.5s ease;
+.latlong-container {
+    text-align: center;
+    margin-top: -20px;
+    margin-bottom: 30px;
 }
-*/
+

@@ -3,7 +3,7 @@
 /*       PHOTO PANEL STYLES     */
 /********************************/
 .carousel {
-    margin: 0px;
+    margin: 20px 0px;
 }
 .carouselbox {
     font-family: helvetica,sans-serif;
@@ -11,7 +11,6 @@
     width: 100%;
     height: 300px;
     position: relative;
-    overflow: hidden;
     box-sizing: border-box;
     background: #ffffff;
 }
@@ -25,9 +24,8 @@
     width: 100%;
     height: 300px;
     position: relative;
-    overflow: hidden;
     box-sizing: border-box;
-    background: #ffffff;
+    background: #f6f6f9;
 }
 .carousel-content li {
     background: #f6f6f9;
@@ -92,6 +90,15 @@
     left: -2000px;
 }
 
+.carousel-caption {
+    display: none;
+    color: #999;
+}
+
+.current .carousel-caption {
+    display: inline;
+}
+
 li.current .photo {
     height: 100%;
     width: 100%;
@@ -146,5 +153,13 @@ li.current .photo {
 /*       AUDIO PANEL STYLES     */
 /********************************/
 .carouselbox.audio {
-    height: 160px;
+    height: 200px;
+}
+
+li .player-container {
+    display: none;
+}
+
+.current .player-container {
+    display: block;
 }

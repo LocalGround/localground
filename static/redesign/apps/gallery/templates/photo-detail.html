@@ -6,7 +6,12 @@
     </div>
 
     <div class="img-card">
-        <img src="{{ path_medium }}" />
+        <div class="photo-container">
+            <div class="view-photo" style="background: url('{{this.path_medium}}');"></div>
+            <!--
+            <img src="{{ path_medium }}" />
+            -->
+        </div>
         <p>{{ caption }}</p>
     </div>
 
@@ -67,7 +72,10 @@
     <div class="confirmation success-message">Saved Successfully &#10003</div>
     <div class="photo-container">
         <!-- New-->
-        <div class="edit-photo" style="background: url('{{this.path_small}}');"></div>
+        <div class="edit-photo" style="background: url('{{this.path_medium}}');">
+        </div>
+       <!-- <div class="overlay"></div> -->
+        <div class="rotate-message" style="display: none;"></div>
         <p>{{this.path_small}}</p>
         
     <!--
@@ -75,10 +83,9 @@
         <div class="overlay"></div>
     -->
     </div>
-    <br>
     <div class="rotate-photo">
-        <a class="rotate-left"><i rotation="left" class="fa fa-rotate-left" aria-hidden="true"></i></a>
-        <a class="rotate-right"><i rotation="right" class="fa fa-rotate-right" aria-hidden="true"></i></a>
+        <a class="rotate-left" rotation="left" ><i rotation="left" class="fa fa-rotate-left" aria-hidden="true"></i></a>
+        <a class="rotate-right" rotation="right" ><i rotation="right" class="fa fa-rotate-right" aria-hidden="true"></i></a>
     </div>
 
     <div id="model-form">

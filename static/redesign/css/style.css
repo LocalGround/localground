@@ -78,7 +78,7 @@ fieldset {
 
 .side-panel p{
     font-size:12px;
-    min-height: 30px;
+    /*min-height: 30px;*/
 }
 
 .side-panel h4,
@@ -703,6 +703,11 @@ input[type="checkbox"]{
     word-wrap: break-word;
 }
 
+.side-panel .img-card {
+    margin: 10px 20px;
+    border: none;
+}
+
 #upload-from-computer > .upload-spot{
 	margin:20px;
 	height:408px;
@@ -826,8 +831,11 @@ hr {
     top: -200px;
 }
 
-.rotate-photo {
-    margin: -25px 30px 7px;
+.rotate-photo{
+    margin: auto;
+    width: 50%;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .rotate-left, .rotate-right {
@@ -840,10 +848,57 @@ hr {
     position: relative;
     overflow: hidden;
     box-sizing: border-box;
-    background: #ffffff;
+    background: #f6f6f9;
 }
 
 .edit-photo {
+    height: 100%;
+    width: 100%;
+    background-repeat: no-repeat !important;
+    background-size: contain !important;
+    background-position: center center !important;
+    margin-bottom: 6px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} 
+  
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: #FFF;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.5s ease;
+}
+
+.rotate-message {
+  position: absolute;
+  width: 400px;
+  top: 130px;
+  text-align: center;
+  transition: opacity .35s ease;
+}
+
+.rotate-message p {
+    width: 200px;
+  padding: 12px 48px;
+  text-align: center;
+  color: white;
+  border: solid 2px white;
+  z-index: 1;
+}
+
+.rotate-message:before {
+    content: "rotating photo...";
+    font-size: 14px;
+    color: white;
+}
+
+.view-photo {
     height: 100%;
     width: 100%;
     background-repeat: no-repeat !important;
