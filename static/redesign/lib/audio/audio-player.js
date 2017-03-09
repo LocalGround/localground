@@ -49,6 +49,7 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                         stop: that.jumpToTime.bind(that)
                     });
                 }.bind(this), 100);
+                console.log('done');
             },
             templateHelpers: function () {
                 return {
