@@ -343,13 +343,6 @@ define([
             })
             
             this.$el.find(".photo-container").append('<div style="color: #fff">photo rottating</div>');
-            /*
-            this.$el.find(".photo-container").append(
-                '<i class="fa fa-cog fa-5x fa-spin" id="rotate-icon"></i>'
-            );
-            */
-            //console.log(rotation);
-
             //Rotate targeted photo and save settings
             this.model.rotate(rotation);
         },
