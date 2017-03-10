@@ -31,25 +31,25 @@ define(["underscore", "marionette", "handlebars", "text!../audio/audio-player.ht
                 this.$el.find('audio').on('ended', this.showPlayButton.bind(this));
             },
             onRender: function () {
-                var that = this;
                 if (!this.$el.find('.progress-container').get(0)) {
                     return;
                 }
                 // setTimeout necessary b/c need to wait 'til rendered audio player
                 // has been attached to the DOM in order to calculate the offset
-                setTimeout(function () {
-                    var $c = this.$el.find('.progress-container'),
-                        x = $c.offset().left,
-                        w = $c.width(),
-                        containment = [x, 0, x + w + 5, 0];
-                    this.$el.find(".audio-progress-circle").draggable({
-                        axis: "x",
-                        containment: containment, //[ x1, y1, x2, y2 ]
-                        start: that.seek.bind(that),
-                        stop: that.jumpToTime.bind(that)
-                    });
-                }.bind(this), 100);
-                console.log('done');
+                setTimeout(this.initDraggable.bind(this), 50);
+            },
+            initDraggable: function () {
+                var $c = this.$el.find('.progress-container'),
+                    x = $c.offset().left,
+                    w = $c.width(),
+                    containment = [x, 0, x + w + 5, 0],
+                    that = this;
+                this.$el.find(".audio-progress-circle").draggable({
+                    axis: "x",
+                    containment: containment, //[ x1, y1, x2, y2 ]
+                    start: that.seek.bind(that),
+                    stop: that.jumpToTime.bind(that)
+                });
             },
             templateHelpers: function () {
                 return {

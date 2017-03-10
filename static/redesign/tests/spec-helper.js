@@ -118,9 +118,9 @@ define(
                 new Photo({id: 3, name: "Frog", tags: 'animal, amphibian, cute, frog', project_id: 2, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_marker_sm: '//:0' })
             ]);
             this.audioFiles = new AudioFiles([
-                new Audio({ id: 1, name: "Nirvana", tags: '90s, grunge', project_id: 1, overlay_type: "audio", caption: "Caption1", file_path: "/static/redesign/tests/javascripts/fixtures/sample-audio.mp3", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
-                new Audio({id: 2, name: "Duran Duran", tags: '80s, amazing, tag1', project_id: 1, overlay_type: "audio", caption: "caption 2", file_path: "/static/redesign/tests/javascripts/fixtures/sample-audio.mp3" }),
-                new Audio({id: 3, name: "Flo Rida", tags: 'florida, hip hop', project_id: 2, overlay_type: "audio", caption: "caption 3", file_path: "/static/redesign/tests/javascripts/fixtures/sample-audio.mp3" })
+                new Audio({ id: 1, name: "Nirvana", tags: '90s, grunge', project_id: 1, overlay_type: "audio", caption: "Caption1", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
+                new Audio({id: 2, name: "Duran Duran", tags: '80s, amazing, tag1', project_id: 1, overlay_type: "audio", caption: "caption 2", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3" }),
+                new Audio({id: 3, name: "Flo Rida", tags: 'florida, hip hop', project_id: 2, overlay_type: "audio", caption: "caption 3", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3" })
             ]);
             this.map_images = new MapImages([
                 new MapImage({ id: 1, name: "Map 1", tags: 'parks, oakland', project_id: 1, caption: "Caption1", overlay_type: "map-image", geometry: { type: "Polygon", coordinates: [[[ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ]]]} }),

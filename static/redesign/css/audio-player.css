@@ -74,7 +74,7 @@ audio {
     height: 0px;
     border-style: solid;
     border-width: 15px 0 15px 30px;
-    border-color: transparent transparent transparent #686868;
+    border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgb(104, 104, 104);
     margin: 20px auto;
 }
 
