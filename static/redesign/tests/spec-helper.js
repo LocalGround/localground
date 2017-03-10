@@ -19,11 +19,13 @@ define(
         "models/mapimage",
         "models/print",
         "models/layer",
+        "models/form",
         "lib/data/dataManager"
     ],
     function (Backbone, $, appUtilities, Projects, Photos, AudioFiles,
               MapImages, Markers, Records, Prints,
-              Project, Photo, Marker, Audio, Record, MapImage, Print, Layer, DataManager) {
+              Project, Photo, Marker, Audio, Record, MapImage, Print, Layer, Form,
+              DataManager) {
         'use strict';
         beforeEach(function () {
             //spoof google maps API:
@@ -112,6 +114,53 @@ define(
                     }
                 ]
             });
+
+            this.form = new Form({
+                "url": "http://localhost:7777/api/0/forms/1/",
+                "id": 1,
+                "name": "Test Form",
+                "caption": "",
+                "overlay_type": "form",
+                "tags": [],
+                "owner": "MrJBRPG",
+                "data_url": "http://localhost:7777/api/0/forms/1/data/",
+                "fields_url": "http://localhost:7777/api/0/forms/1/fields/",
+                "slug": "slug_64358",
+                "project_ids": [
+                    3
+                ],
+                "fields": [
+                    {
+                        "id": 1,
+                        "form": 1,
+                        "col_alias": "Test Text",
+                        "col_name": "test_text",
+                        "is_display_field": true,
+                        "ordering": 1,
+                        "data_type": "text",
+                        "url": "http://localhost:7777/api/0/forms/1/fields/1"
+                    },
+                    {
+                        "id": 19,
+                        "form": 1,
+                        "col_alias": "Test Integer",
+                        "col_name": "test_integer",
+                        "is_display_field": true,
+                        "ordering": 2,
+                        "data_type": "integer",
+                        "url": "http://localhost:7777/api/0/forms/1/fields/19"
+                    },
+                    {
+                        "id": 20,
+                        "form": 1,
+                        "col_alias": "Test Boolean",
+                        "col_name": "test_boolean",
+                        "is_display_field": true,
+                        "ordering": 3,
+                        "data_type": "boolean",
+                        "url": "http://localhost:7777/api/0/forms/1/fields/20"
+                    }
+            ]});
             this.photos = new Photos([
                 new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", attribution: "Owner1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_medium_sm: '//:0', path_marker_sm: "//:0" }),
                 new Photo({id: 2, name: "Dog", tags: 'animal, dog', project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_medium: '//:0', path_small: '//:0', path_marker_sm: "//:0" }),
