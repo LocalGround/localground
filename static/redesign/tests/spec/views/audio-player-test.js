@@ -11,6 +11,8 @@ define([
                 spyOn(AudioPlayer.prototype, 'initialize').and.callThrough();
                 spyOn(AudioPlayer.prototype, 'onRender').and.callThrough();
                 spyOn(AudioPlayer.prototype, 'togglePlay').and.callThrough();
+                spyOn(AudioPlayer.prototype, 'showPlayButton').and.callThrough();
+                spyOn(AudioPlayer.prototype, 'showPauseButton').and.callThrough();
                 spyOn(window, 'setTimeout').and.callThrough();
                 spyOn(AudioPlayer.prototype, 'initDraggable');
             },
@@ -22,20 +24,36 @@ define([
                     audioMode: mode //basic, simple, or detail
                 });
             },
-            genericInitializationTests = function () {
-                expect(audioPlayer.initDraggable).not.toHaveBeenCalled();
-                expect(audioPlayer).toEqual(jasmine.any(AudioPlayer));
-                expect(audioPlayer.initialize).toHaveBeenCalled();
-                expect(audioPlayer.onRender).toHaveBeenCalled();
-                expect(window.setTimeout).toHaveBeenCalledWith(jasmine.any(Function), 50);
-                setTimeout(function () {
-                    expect(audioPlayer.initDraggable).toHaveBeenCalled();
-                    done();
-                }, 51);
+            genericTests = {
+                initializesCorrectly: function (done) {
+                    expect(audioPlayer.initDraggable).not.toHaveBeenCalled();
+                    expect(audioPlayer).toEqual(jasmine.any(AudioPlayer));
+                    expect(audioPlayer.initialize).toHaveBeenCalled();
+                    expect(audioPlayer.onRender).toHaveBeenCalled();
+                    expect(window.setTimeout).toHaveBeenCalledWith(jasmine.any(Function), 50);
+                    setTimeout(function () {
+                        expect(audioPlayer.initDraggable).toHaveBeenCalled();
+                        done();
+                    }, 51);
+                },
+                listensForPlayPauseClickEvents: function () {
+                    expect(audioPlayer.togglePlay).not.toHaveBeenCalled();
+                    expect(audioPlayer.showPlayButton).not.toHaveBeenCalled();
+                    expect(audioPlayer.showPauseButton).not.toHaveBeenCalled();
+                    fixture = setFixtures('<div></div>').append(audioPlayer.$el);
+                    fixture.find('.play').trigger('click');
+                    expect(audioPlayer.togglePlay).toHaveBeenCalledTimes(1);
+                    expect(audioPlayer.showPlayButton).not.toHaveBeenCalled();
+                    expect(audioPlayer.showPauseButton).toHaveBeenCalledTimes(1);
+                    fixture.find('.play').trigger('click');
+                    expect(audioPlayer.togglePlay).toHaveBeenCalledTimes(2);
+                    expect(audioPlayer.showPlayButton).toHaveBeenCalledTimes(1);
+                    expect(audioPlayer.showPauseButton).toHaveBeenCalledTimes(1);
+                }
             };
 
         describe("Audio Player: Basic Tests", function () {
-            beforeEach(function () {
+            beforeEach(function (done) {
                 initSpies();
                 initPlayer(this, "basic");
                 loadStyleFixtures('../../../../css/audio-player.css');
@@ -62,6 +80,8 @@ define([
                 expect(fixture.find('.play').css('border-width')).toBe('15px 0px 15px 30px');
                 expect(fixture.find('.play').css('border-color')).toBe('rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgb(104, 104, 104)');
             });
+
+            it("Listens for play / pause click events", genericTests.listensForPlayPauseClickEvents);
         });
 
         describe("Audio Player: Simple Tests", function () {
@@ -70,7 +90,9 @@ define([
                 initPlayer(this, "simple");
             });
 
-            it("Initialization methods called successfully", genericInitializationTests);
+            it("Initialization methods called successfully", genericTests.initializesCorrectly);
+
+            it("Listens for play / pause click events", genericTests.listensForPlayPauseClickEvents);
         });
 
         describe("Audio Player: Detail Tests", function () {
@@ -79,6 +101,8 @@ define([
                 initPlayer(this, "detail");
             });
 
-            it("Initialization methods called successfully", genericInitializationTests);
+            it("Initialization methods called successfully", genericTests.initializesCorrectly);
+
+            it("Listens for play / pause click events", genericTests.listensForPlayPauseClickEvents);
         });
     });
