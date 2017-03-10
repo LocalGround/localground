@@ -36,7 +36,7 @@ define([
                         done();
                     }, 51);
                 },
-                listensForPlayPauseClickEvents: function () {
+                listensForPlayPauseClickEvents: function (done) {
                     expect(audioPlayer.togglePlay).not.toHaveBeenCalled();
                     expect(audioPlayer.showPlayButton).not.toHaveBeenCalled();
                     expect(audioPlayer.showPauseButton).not.toHaveBeenCalled();
@@ -45,10 +45,15 @@ define([
                     expect(audioPlayer.togglePlay).toHaveBeenCalledTimes(1);
                     expect(audioPlayer.showPlayButton).not.toHaveBeenCalled();
                     expect(audioPlayer.showPauseButton).toHaveBeenCalledTimes(1);
-                    fixture.find('.play').trigger('click');
-                    expect(audioPlayer.togglePlay).toHaveBeenCalledTimes(2);
-                    expect(audioPlayer.showPlayButton).toHaveBeenCalledTimes(1);
-                    expect(audioPlayer.showPauseButton).toHaveBeenCalledTimes(1);
+                    // by wrapping this in a setTimeout, we avoid the
+                    // "play() request was interrupted by a call to pause()" error
+                    setTimeout(function () {
+                        fixture.find('.play').trigger('click');
+                        expect(audioPlayer.togglePlay).toHaveBeenCalledTimes(2);
+                        expect(audioPlayer.showPlayButton).toHaveBeenCalledTimes(1);
+                        expect(audioPlayer.showPauseButton).toHaveBeenCalledTimes(1);
+                        done();
+                    }, 30);
                 }
             };
 
