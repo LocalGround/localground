@@ -65,8 +65,9 @@ define(["marionette",
             }, 
             
             updateModel: function () {
-                var sourceCode = this.$el.find(".source-code").val();
                 console.log(this.model);
+                var sourceCode = JSON.parse(this.$el.find(".source-code").val());
+                
                 this.model.set("symbols", sourceCode);
                 console.log(sourceCode);
                 console.log(this.model);

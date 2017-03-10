@@ -93,7 +93,7 @@ define(["marionette",
                 var layerType = this.$el.find("#data-type-select").val();
                 // get record property?
                 var symbolShape = this.$el.find("#quant-shape").val();
-                var sourceCode = this.$el.find(".source-code").val();
+                var sourceCode = JSON.parse(this.$el.find(".source-code").val());
                 console.log(symbolShape);
 
                 if (this.model.get("filters") === null) {
@@ -105,6 +105,7 @@ define(["marionette",
                 this.model.set("symbols", sourceCode);
                 // set record property?  
                 this.model.set("symbol_shape", symbolShape);
+                console.log(this.model.toJSON());
                 this.model.save(null, {
                     error: function () {
                         console.log('error');
