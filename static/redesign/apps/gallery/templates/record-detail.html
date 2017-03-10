@@ -35,9 +35,11 @@
         {{/if}}
         </table>
     {{else}}
+        <div class="tag-container">
         {{#each tags}}
             <a class="tag"> {{this}} </a>
         {{/each}}
+        </div>
     {{/if}}
 
     {{#compare screenType "presentation" operator="!="}}
