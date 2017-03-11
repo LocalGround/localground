@@ -63,7 +63,7 @@ define([
         getData: function () {
             this.saveState("presentation", {slug: this.slug });
             this.setProjectID(this.model.get("project_id"));
-            this.dataManager = new DataManager({ app: this});
+            this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
         },
 
         getSlugFromLocalStorage: function () {
@@ -149,6 +149,8 @@ define([
             if (opts.dataType.indexOf("form_") != -1) {
                 model.set("fields", dataEntry.fields.toJSON());
             }
+            model.set("active", true);
+            this.vent.trigger('highlight-marker', model);
             this.detailView = new DataDetail({
                 model: model,
                 app: this,

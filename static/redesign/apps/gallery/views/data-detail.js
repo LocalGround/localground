@@ -68,6 +68,7 @@ define([
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
             this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
+            this.listenTo(this.app.vent, 'save-model', this.saveModel);
         },
 
         activateMarkerTrigger: function(){

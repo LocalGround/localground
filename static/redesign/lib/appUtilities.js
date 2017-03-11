@@ -50,12 +50,6 @@ define(["jquery"],
             getMode: function () {
                 return this.mode;
             },
-            setActiveProjectID: function (projectID) {
-                this.activeProjectID = projectID;
-            },
-            getActiveProjectID: function () {
-                return this.activeProjectID;
-            },
             setOverlayView: function (overlayView) {
                 this.overlayView = overlayView;
             },
@@ -152,10 +146,10 @@ define(["jquery"],
                 }
             },
             showLoadingMessage: function () {
-                $('#loading_message').show();
+                //console.log("show loading message");
             },
             hideLoadingMessage: function () {
-                $('#loading_message').hide();
+                //console.log("hide loading message");
             },
             handleDatabaseError: function (options, response) {
                 var responseJSON,
@@ -173,6 +167,7 @@ define(["jquery"],
             initAJAX: function (options) {
                 // adding some global AJAX event handlers for showing messages and
                 // appending the Django authorization token:
+                console.log('init ajax');
                 var that = this;
                 $.ajaxSetup({
                     beforeSend: function (xhr, settings) {

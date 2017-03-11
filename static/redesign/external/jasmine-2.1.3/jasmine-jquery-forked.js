@@ -27,7 +27,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-+function (window, jasmine, $) { "use strict";
+jasmineRequire.jquery = function (window, jasmine, $) { "use strict";
 
   jasmine.spiedEventsKey = function (selector, eventName) {
     return [$(selector).selector, eventName].toString()
@@ -126,7 +126,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         cache: false,
         url: url,
         success: function (data, status, $xhr) {
-          htmlText = $xhr.responseText
+          htmlText = $xhr.responseText;
         }
       }).fail(function ($xhr, status, err) {
           throw new Error('Fixture could not be loaded: ' + url + ' (status: ' + status + ', message: ' + err.message + ')')
@@ -141,7 +141,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             dataType: 'script',
             url: $(this).attr('src'),
             success: function (data, status, $xhr) {
-                htmlText += '<script>' + $xhr.responseText + '</script>'
+                htmlText += '<script>' + $xhr.responseText + '</script>';
             },
             error: function ($xhr, status, err) {
                 throw new Error('Script could not be loaded: ' + scriptSrc + ' (status: ' + status + ', message: ' + err.message + ')')
@@ -810,4 +810,4 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   window.getJSONFixture = function (url) {
     return jasmine.getJSONFixtures().proxyCallTo_('read', arguments)[url]
   }
-}(window, window.jasmine, window.jQuery);
+};

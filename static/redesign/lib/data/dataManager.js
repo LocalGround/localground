@@ -6,10 +6,18 @@ define(["underscore", "marionette", "models/project", "collections/photos",
         var DataManager = Marionette.ItemView.extend({
             dataDictionary: {},
             template: false,
+            isEmpty: function () {
+                return Object.keys(this.dataDictionary).length === 0;
+            },
             initialize: function (opts) {
+                //todo: remove app dependency and pass in projectID and vent
                 _.extend(this, opts);
-                this.model = new Project({ id: this.app.getProjectID() });
-                this.model.fetch({ success: this.setCollections.bind(this) });
+                if (!this.model) {
+                    this.model = new Project({ id: this.projectID });
+                    this.model.fetch({ success: this.setCollections.bind(this) });
+                } else {
+                    this.setCollections();
+                }
             },
             setCollections: function () {
                 var that = this,
@@ -20,7 +28,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     _.extend(that.dataDictionary[key], extras);
                     delete entry.data;
                 });
-                this.app.vent.trigger('data-loaded');
+                this.vent.trigger('data-loaded');
             },
             getDataSources: function () {
                 var dataSources = [

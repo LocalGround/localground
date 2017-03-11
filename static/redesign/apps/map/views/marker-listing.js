@@ -44,41 +44,32 @@ define(["jquery",
                     dataType: this.typePlural,
                     fields: this.fields,
                     title: this.title,
-                    iconOpts: this.iconOpts
+                    icon: this.icon
                 };
             },
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
-                        //console.log(opts);
                         _.extend(this, opts);
                         this.model.set("dataType", this.dataType);
-                        this.listenTo(this.model, 'do-highlight', this.highlight);
                         this.listenTo(this.model, 'do-hover', this.hoverHighlight);
                         this.listenTo(this.model, 'clear-hover', this.clearHoverHighlight);
                     },
                     template: Handlebars.compile(ItemTemplate),
-                    events: {
-                        'click a': 'highlight'
-                    },
                     modelEvents: {
                         'saved': 'render',
+                        'change:active': 'render',
                         'change:geometry': 'render'
                     },
                     tagName: "li",
                     templateHelpers: function () {
                         return {
                             dataType: this.dataType,
-                            icon: this.iconOpts,
-                            width: 15 * this.iconOpts.getScale(),
-                            height: 15 * this.iconOpts.getScale(),
+                            icon: this.icon,
+                            width: 15 * this.icon.getScale(),
+                            height: 15 * this.icon.getScale(),
                             name: this.model.get("name") || this.model.get("display_name")
                         };
-                    },
-                    highlight: function () {
-                        $("li").removeClass("hover-highlight");
-                        $("li").removeClass("highlight");
-                        this.$el.addClass("highlight");
                     },
                     hoverHighlight: function () {
                         this.clearHoverHighlight();
@@ -108,7 +99,7 @@ define(["jquery",
                 $(e.target).addClass("hide-panel fa-caret-down");
             },
             initialize: function (opts) {
-                this.iconOpts = new Icon({
+                this.icon = new Icon({
                     shape: opts.data.collection.key
                 });
                 _.extend(this, opts);
@@ -141,7 +132,7 @@ define(["jquery",
                     collection: this.collection,
                     app: this.app,
                     dataType: this.typePlural,
-                    iconOpts: this.iconOpts,
+                    _icon: this.icon,
                     isShowing: true
                 });
             },

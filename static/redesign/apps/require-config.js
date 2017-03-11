@@ -20,9 +20,9 @@ require.config({
         'list': 'external/list.min',
         'google-infobubble': 'external/infobubble',
         'handsontable': 'https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.31.0/handsontable.full.min',
-        'jasmine': 'external/jasmine-2.1.3/jasmine',
-        'jasmine-html': 'external/jasmine-2.1.3/jasmine-html',
-        'jasmine-jquery': 'external/jasmine-2.1.3/jasmine-jquery',
+        'jasmine': '//cdnjs.cloudflare.com/ajax/libs/jasmine/2.5.2/jasmine.min',
+        'jasmine-html': '//cdnjs.cloudflare.com/ajax/libs/jasmine/2.5.2/jasmine-html.min',
+        'jasmine-jquery': 'external/jasmine-2.1.3/jasmine-jquery-forked',
         'handlebars': '//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min',
         'highcharts': '//code.highcharts.com/highcharts',
         'highcharts_export': '//code.highcharts.com/modules/exporting',
@@ -113,8 +113,8 @@ require.config({
             exports: 'jasmine'
         },
         'boot': {
-            deps: ['jasmine', 'jasmine-html'],
-            exports: 'window.jasmineRequire'
+            deps: ['jasmine', 'jasmine-html', 'jasmine-jquery'],
+            exports: 'jasmine'
         },
         'socketio': {
             exports: 'io'

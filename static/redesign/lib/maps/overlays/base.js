@@ -22,6 +22,7 @@ define(["marionette",
 
         modelEvents: {
             'change:geometry': 'render',
+            'change:active': 'render',
             //'change': 'render',
             'show-overlay': 'show',
             'hide-overlay': 'hide',
@@ -41,19 +42,22 @@ define(["marionette",
         initInfoBubble: function (opts) {
             this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
         },
-        getIcon: function () {
-            var icon,
-                iconOpts = {
-                    fillColor: '#ed867d', //this.model.get("color")
-                    fillOpacity: 1,
-                    strokeColor: '#fff',
-                    strokeWeight: 1,
-                    strokeOpacity: 1,
-                    shape: 'circle'
-                };
-            _.extend(iconOpts, this.iconOpts);
-            icon = new Icon(iconOpts);
-            return icon.generateGoogleIcon();
+        getGoogleIcon: function () {
+            if (!this._icon) {
+                var icon,
+                    iconOpts = {
+                        fillColor: '#ed867d', //this.model.get("color")
+                        fillOpacity: 1,
+                        strokeColor: '#fff',
+                        strokeWeight: 1,
+                        strokeOpacity: 1,
+                        shape: 'circle'
+                    };
+                _.extend(iconOpts, this.iconOpts);
+                icon = new Icon(iconOpts);
+                this._icon = icon;
+            }
+            return this._icon.generateGoogleIcon();
         },
 
         updateOverlay: function () {
@@ -88,8 +92,6 @@ define(["marionette",
         attachEventHandlers: function () {
             var that = this;
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-                that.model.trigger('do-highlight');
-                that.app.vent.trigger('highlight-marker', that);
                 that.app.router.navigate("//" + that.model.getNamePlural() + "/" + that.model.get("id"));
             });
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
@@ -135,7 +137,7 @@ define(["marionette",
             var go = this.getGoogleOverlay();
             go.setMap(null);
             this.infoBubble.remove();
-            console.log("onBeforeDestroy", go, this.model.get("id"));
+            //console.log("onBeforeDestroy", go, this.model.get("id"));
             Base.__super__.remove.apply(this);
         },
 

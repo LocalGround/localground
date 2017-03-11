@@ -1,8 +1,8 @@
-var rootDir = "../../../";
+var rootDir = "../../";
 define([
     "jquery",
     rootDir + "apps/gallery/gallery-app",
-    rootDir + "apps/gallery/views/media-detail",
+    rootDir + "apps/gallery/views/data-detail",
     rootDir + "views/toolbar-global",
     rootDir + "apps/gallery/views/toolbar-dataview",
     rootDir + "collections/projects" //,

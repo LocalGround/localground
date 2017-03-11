@@ -122,3 +122,6 @@
   }
 
 }());
+
+// hack to include jasmine-jquery w/require:
+jasmineRequire.jquery(window, window.jasmine, window.jQuery);

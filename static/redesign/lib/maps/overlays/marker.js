@@ -32,11 +32,13 @@ define([
             if (this.getShapeType() === "Point") {
                 if (this.model.get("active")) {
                     var icon = {};
-                    _.extend(icon, this.getGoogleOverlay().getIcon(), { strokeWeight: 6 });
+                    _.extend(icon, this.getGoogleIcon(), { strokeWeight: 10, strokeOpacity: 0.5 });
                     icon.strokeColor = icon.fillColor;
                     this.getGoogleOverlay().setIcon(icon);
                 } else {
-                    this._overlay.setIcon(this.getIcon());
+                    if (this.getGoogleIcon()) {
+                        this._overlay.setIcon(this.getGoogleIcon());
+                    }
                 }
             } else {
                 this._overlay.redraw();
