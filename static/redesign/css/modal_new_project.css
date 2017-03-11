@@ -223,7 +223,7 @@
     margin: 0 auto;
     padding: 20px 14px 24px;
     overflow: scroll;
-    height: 50%;
+    /*height: 50%;*/
 }
 
 .selected-card {
