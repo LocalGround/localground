@@ -22,10 +22,17 @@
     padding: 0;
     font-size: 14px;
 /*    width: 100%; */
-    height: 300px;
     position: relative;
     box-sizing: border-box;
     background: #f6f6f9;
+}
+
+.side-panel .carousel-content {
+    height: 300px;
+}
+
+.carousel-modal .carousel-content {
+    height: 300px;
 }
 .carousel-content li {
     background: #f6f6f9;
@@ -36,6 +43,23 @@
     text-align: center;
     z-index: 2;
 }
+
+.carousel-modal .carousel-content {
+    background: none;
+}
+
+.carousel-modal .carousel-content li {
+    background: none;
+}
+
+.carousel-modal .active-slide {
+    border: none;
+}
+
+.carousel-modal .carouselbox {
+    background: none;
+}
+
 
 .carousel-photo .active-slide {
     min-height: 350px;
@@ -75,7 +99,7 @@
 
 .carousel-buttons, .circle-buttons {
     display: block;
-    padding: 5px 0;
+    padding: 10px 0;
     text-align: center;
     z-index: 10;
     position: relative;

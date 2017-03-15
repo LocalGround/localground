@@ -75,15 +75,16 @@
         </div>
 
         {{/if}}
-    {{/ifequal}}
-    {{#ifequal lat "undefined"}}
-        {{else}}
-        <div class="latlong-container">
-        <p class="latlong" style="font-style: italic">Lat: {{lat}}</p>
-        <p class="latlong" style="font-style: italic">Long: {{lng}}</p>
-        </div>
+        {{#ifequal lat "undefined"}}
+            {{else}}
+            <div class="latlong-container">
+            <p class="latlong" style="font-style: italic">Lat: {{lat}}</p>
+            <p class="latlong" style="font-style: italic">Long: {{lng}}</p>
+            </div>
 
+        {{/ifequal}}
     {{/ifequal}}
+    
 
     <div class="confirmation success-message">Saved Successfully &#10003</div>
 
