@@ -10,44 +10,11 @@ define([
         var fixture;
         var newCreateForm;
 
-        /*function initChildView(scope) {
-            var opts = {
-                    "title": "6 - 10",
-                    "strokeWeight": 1,
-                    "rule": "earthworm_count > 5 and earthworm_count < 11",
-                    "height": 32,
-                    "width": 32,
-                    "shape": "worm",
-                    "strokeColor": "#FFF",
-                    "color": "#df65b0",
-                    "is_showing": true
-                },
-                childView = new LegendSymbolEntry({
-                    app: scope.app,
-                    data_source: 'form_1',
-                    model: new Symbol(opts)
-                });
-            childView.render();
-            return childView;
-        }
-
-        function initCreate Form(scope) {
-            spyOn(LegendSymbolEntry.prototype, 'initialize').and.callThrough();
-            spyOn(LegendSymbolEntry.prototype, 'showHide').and.callThrough();
-            spyOn(OverlayListView.prototype, 'showAll');
-            spyOn(OverlayListView.prototype, 'hideAll');
-            spyOn(OverlayListView.prototype, 'initialize');
-            lle = new Create Form({
-                app: scope.app,
-                model: scope.layer
-            });
-            lle.render();
-        }
-        */
-
         var initSpies = function () {
             spyOn(CreateForm.prototype, 'render').and.callThrough();
             spyOn(CreateForm.prototype, 'initModel').and.callThrough();
+            spyOn(CreateForm.prototype, 'attachCollectionEventHandlers').and.callThrough();
+            spyOn(Form.prototype, "getFields").and.callThrough();
         };
 
         describe("Create Form: Initialization Tests", function () {
@@ -91,9 +58,45 @@ define([
             });
 
             it("Put fields into collection", function(){
-                console.log(newCreateForm.collection);
+                //console.log("New Create Form Collection: " + newCreateForm.collection);
+                //console.log("Length of test Collection " + newCreateForm.collection.length);
                 expect(newCreateForm.collection).toEqual(newCreateForm.model.fields);
                 expect(newCreateForm.collection.length).toEqual(3);
+            });
+        });
+
+        describe("Create Form: Attach Collection Event Handler", function(){
+            beforeEach(function () {
+                initSpies();
+                newCreateForm = new CreateForm({
+                    model: this.form
+                });
+            });
+
+            it("Calls Render when Collection Resets", function(){
+                // trigger collection set and make render be called
+                newCreateForm.collection.trigger("reset");
+                expect(CreateForm.prototype.render).toHaveBeenCalledTimes(2);
+            });
+        });
+
+        describe("Create Form: Initialize Model without fields", function(){
+            it("Create an empty form without fields and get fields", function(){
+                initSpies();
+                var emptyForm = new CreateForm({
+                    model: new Form()
+                });
+                expect(emptyForm.collection).toBeUndefined();
+                expect(Form.prototype.getFields).toHaveBeenCalledTimes(1);
+            });
+
+            it("Create an empty form with an ID without fields", function(){
+                initSpies();
+                var emptyForm = new CreateForm({
+                    model: new Form({id: 5})
+                });
+                expect(emptyForm.collection).not.toBeNull();
+                expect(Form.prototype.getFields).toHaveBeenCalledTimes(0);
             });
         });
     });

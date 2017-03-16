@@ -12,8 +12,6 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
                 if (this.get("id")) {
                     this.fields = new Fields(null, { id: this.get("id") });
                 }
-                console.log(data);
-                console.log(data.fields);
                 if (data && data.fields){
                     this.fields = new Fields(data.fields, {
                         id: this.get("id")
@@ -24,7 +22,9 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
             },
 
             getFields: function () {
-                this.fields.fetch({ reset: true });
+                if (this.fields){
+                    this.fields.fetch({ reset: true });
+                }
             },
 
             createField: function (name, fieldType, ordering) {

@@ -27,13 +27,15 @@ define([
         },
         initModel: function () {
             this.collection = this.model.fields;
-            this.attachCollectionEventHandlers();
+            if (this.collection){
+                this.attachCollectionEventHandlers();
+            }
             Marionette.CompositeView.prototype.initialize.call(this);
-            this.model.getFields();
+            if (!this.collection){
+                this.model.getFields();
+            }
         },
         attachCollectionEventHandlers: function () {
-            //this.listenTo(this.collection, 'add', this.render);
-            //this.listenTo(this.collection, 'destroy', this.render);
             this.listenTo(this.collection, 'reset', this.render);
         },
 
@@ -60,7 +62,7 @@ define([
                     var $elem = $(e.target),
                     $row =  $elem.parent().parent();
                     $row.remove();
-                    
+
                     this.model.destroy();
                     e.preventDefault();
                 },
@@ -83,9 +85,9 @@ define([
         removeRow: function (e) { // to remove a field that has not yet been saved
             var $elem = $(e.target),
                 $row =  $elem.parent().parent();
-            if ($row.has('select').length != 0) { 
+            if ($row.has('select').length != 0) {
                 $row.remove();
-            }            
+            }
         },
         saveFormSettings: function () {
             var formName = this.$el.find('#formName').val(),
