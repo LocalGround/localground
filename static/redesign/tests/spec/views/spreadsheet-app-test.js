@@ -10,23 +10,27 @@ define([
 ],
     function ($, SpreadsheetApp, SpreadsheetView, ToolbarGlobal, ToolbarDataView, Projects) {
         'use strict';
-        var spreadsheetApp;
+        var spreadsheetApp, fixture;
 
         function initApp(scope) {
             // 1) add dummy HTML elements:
-            var $sandbox = $('<div id="sandbox"></div>'),
+            fixture = setFixtures('<div></div>')
+                        .append('<div id="toolbar-main"></div>')
+                        .append('<div id="toolbar-dataview"></div>')
+                        .append('<div class="main-panel"></div>');
+            /*var $sandbox = $('<div id="sandbox"></div>'),
                 $r1 = $('<div id="toolbar-main"></div>'),
                 $r2 = $('<div id="toolbar-dataview"></div>'),
                 $r3 = $('<div class="main-panel"</div>');
 
             $(document.body).append($sandbox);
-            $sandbox.append($r1).append($r2).append($r3);
+            $sandbox.append($r1).append($r2).append($r3);*/
 
             // 2) add spies for all relevant objects:
             spyOn(SpreadsheetApp.prototype, 'start').and.callThrough();
             spyOn(SpreadsheetApp.prototype, 'initialize').and.callThrough();
             spyOn(SpreadsheetApp.prototype, 'selectProject');
-            spyOn(SpreadsheetApp.prototype, 'selectProjectLoadRegions').and.callThrough();
+            //spyOn(SpreadsheetApp.prototype, 'selectProjectLoadRegions').and.callThrough();
             spyOn(SpreadsheetApp.prototype, 'loadRegions');
             spyOn(SpreadsheetApp.prototype, 'showSpreadsheet');//.and.callThrough();
             //spyOn(SpreadsheetView.prototype, 'displaySpreadsheet');
@@ -47,7 +51,7 @@ define([
 
             afterEach(function () {
                 //called after each "it" test
-                $("#sandbox").remove();
+                //$("#sandbox").remove();
                 Backbone.history.stop();
             });
 
