@@ -127,4 +127,30 @@ define([
                 expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(1);
             });
         });
+        
+        describe("Create Form: All Methods work", function () {
+            beforeEach(function () {
+                initSpies();
+                newCreateForm = new CreateForm({
+                    model: this.form
+                });
+            });
+            
+            it("calls the Form's getFields() method when fetchShareData is called", function () {
+                expect(1).toBe(1);
+            });
+
+            it("removes the new row from the DOM successfully when removeRow is called", function () {
+                // hint: first call newCreateForm.addFieldButton() and then
+                // make sure that there's a ".remove-row" in the DOM. Then call
+                // newCreateForm.removeRow() and make sure there's not a ".remove-row" in
+                // the DOM
+                expect(1).toBe(1);
+            });
+
+            it("correctly saves the model when the saveForm is called", function () {
+                //hint: make sure that it sets all of the attributes on the model and then
+                //triggers the form model's "save" method.
+            });
+        });
     });
