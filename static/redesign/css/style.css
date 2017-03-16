@@ -739,7 +739,6 @@ input[type="checkbox"]{
     background-color: rgba(0,0,0,0.4);
     position: absolute;
     margin: 20px 0 20px 20px;
-    position: absolute;
     height: 110px;
     width: 110px;
 }
@@ -780,11 +779,14 @@ input[type="checkbox"]{
 
 .img-card img {
     max-width: 100%;
-    transform: translate(0, 25%);
 }
 
 .single-photo {
     margin: 10px 20px;
+}
+.single-photo .photo-container {
+    border: solid 1px #DDD;
+    background: white;
 }
 
 table.preview-properties {
@@ -855,13 +857,21 @@ hr {
 
 .photo-container {
     height: 300px;
-    border: solid 1px #F00;
 }
 
 .edit-photo {
     max-height: 100%;
     margin: 0px auto;
     display: block;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.center-vertical {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
 }
   
 .overlay {
@@ -876,25 +886,18 @@ hr {
 }
 
 .rotate-message {
-  position: absolute;
-  width: 400px;
-  top: 130px;
-  text-align: center;
-  transition: opacity .35s ease;
-}
-
-.rotate-message p {
-    width: 200px;
-  padding: 12px 48px;
-  text-align: center;
-  color: white;
-  border: solid 2px white;
-  z-index: 1;
-}
-
-.rotate-message:before {
-    content: "rotating photo...";
+    height: calc(300px - 110px) !important;
+    position: relative;
+    display: none;
+    margin-top: -301px;
+    padding-top: 110px;
+    background: rgba(0, 0, 0, .6);
+    z-index: 1;
+    text-align: center;
+    color: white;
     font-size: 14px;
+}
+.rotate-message p {
     color: white;
 }
 

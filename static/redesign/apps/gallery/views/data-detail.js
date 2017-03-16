@@ -332,18 +332,6 @@ define([
             var $elem = $(e.target);
             var rotation = $elem.attr("rotation");
             this.$el.find(".rotate-message").show();
-
-            this.$el.find(".edit-photo").css({
-                filter: "brightness(0.4)"
-            });
-        
-            this.$el.find(".overlay").css({
-                display: "block",
-                background: "rgba(0, 0, 0, .6)",
-            })
-            
-            this.$el.find(".photo-container").append('<div style="color: #fff">photo rottating</div>');
-            //Rotate targeted photo and save settings
             this.model.rotate(rotation);
         },
 

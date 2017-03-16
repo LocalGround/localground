@@ -73,11 +73,10 @@
     <div class="img-card single-photo">
         <div class="photo-container">
             <img class="edit-photo" src="{{ path_medium }}" />
-            <!--
-            <div class="edit-photo" style="background: url('{{this.path_medium}}');">
-            </div>
-            -->
-            <div class="rotate-message" style="display: none;"></div>
+        </div>
+        <div class="rotate-message">
+            <p>rotating photo...</p>
+            <i class="fa fa-refresh fa-spin fa-2x"></i>
         </div>
     </div>
 
@@ -95,7 +94,7 @@
         -->
     </div>
 
-    <div class = "save-options">
+    <div class="save-options">
         <button class="save-model button-primary">Save</button>
         <button class="view-mode button-tertiary">Preview</button>
         <button class="button-tertiary button-warning delete-model">Delete</button>

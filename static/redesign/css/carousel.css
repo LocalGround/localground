@@ -134,12 +134,14 @@ li.current .photo {
     cursor: pointer;
     border: solid 3px #f00;
 }
-li.current .photo-single {
+
+.photo-single {
     margin-bottom: 6px;;
     border: solid 3px #f00;
+    text-align: center;
 }
 
-li.current .photo-single > img {
+.photo-single > img {
     max-height: 100%;
     max-width: 100%;
     padding: 0px !important;
