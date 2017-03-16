@@ -163,12 +163,19 @@ define([
                     // Work in progress
                     fixture = setFixtures('<div></div>').append(newCreateForm.$el);
                     expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
+
+                    //add a new row by triggering the '.new_field_button click'
                     fixture.find('.new_field_button').trigger('click');
+                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
+                    expect(fixture.find('.remove-row')).toBeInDOM();
+                    expect(fixture.find('.remove-row').html()).not.toBeUndefined();
+                    console.log(fixture.find('.remove-row').html());
+
+                    //remove new row by triggering '.remove-row click' 
                     fixture.find('.remove-row').trigger('click');
                     expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(1);
-                    console.log(fixture);
-                    console.log(fixture.find('.remove-row'));
-                    expect(fixture.find('.remove-row')).not.toBeInDOM();
+                    expect(fixture.find('.remove-row').html()).toBeUndefined();
                 });
 
                 it("correctly saves the model when the saveForm is called", function () {
