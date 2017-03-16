@@ -15,14 +15,18 @@ define([
             spyOn(CreateForm.prototype, 'initModel').and.callThrough();
             spyOn(CreateForm.prototype, 'attachCollectionEventHandlers').and.callThrough();
             spyOn(Form.prototype, "getFields").and.callThrough();
+
+            //event methods:
+            spyOn(CreateForm.prototype, 'saveFormSettings').and.callThrough();
+            spyOn(CreateForm.prototype, 'removeRow').and.callThrough();
+            spyOn(CreateForm.prototype, 'addFieldButton').and.callThrough();
+            spyOn(CreateForm.prototype, 'backToList').and.callThrough();
         };
 
         describe("Create Form: Initialization Tests", function () {
             beforeEach(function () {
                 initSpies();
             });
-
-
 
             it("Form Successfully created", function () {
                 newCreateForm = new CreateForm();
@@ -96,7 +100,31 @@ define([
                     model: new Form({id: 5})
                 });
                 expect(emptyForm.collection).not.toBeNull();
-                expect(Form.prototype.getFields).toHaveBeenCalledTimes(0);
+                expect(Form.prototype.getFields).toHaveBeenCalledTimes(1);
+            });
+        });
+
+        describe("Create Form: Parent Events All Fire", function () {
+            beforeEach(function () {
+                initSpies();
+                newCreateForm = new CreateForm({
+                    model: this.form
+                });
+            });
+            
+            it("Adds new field when user clicks 'add column' button", function () {
+                fixture = setFixtures('<div></div>').append(newCreateForm.$el);
+                expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
+                fixture.find('.new_field_button').trigger('click');
+                expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
+            });
+
+            it("Calls remove row when 'delete field' button is clicked", function () {
+                fixture = setFixtures('<div></div>').append(newCreateForm.$el);
+                expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(0);
+                fixture.find('.new_field_button').trigger('click');
+                fixture.find('.remove-row').trigger('click');
+                expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(1);
             });
         });
     });
