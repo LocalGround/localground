@@ -2,8 +2,10 @@
 /********************************/
 /*       PHOTO PANEL STYLES     */
 /********************************/
+
 .carousel {
-    margin: 20px 0px;
+    margin: 20px 0px 0px 0px;
+    border: solid 1px transparent;
 }
 .carouselbox {
     font-family: helvetica,sans-serif;
@@ -12,7 +14,6 @@
     height: 300px;
     position: relative;
     box-sizing: border-box;
-    background: #ffffff;
 }
 .carousel .fa {
     color: #999;
@@ -21,21 +22,21 @@
     margin: 0;
     padding: 0;
     font-size: 14px;
-/*    width: 100%; */
-    position: relative;
+/*    width: 100%; 
+    position: relative;*/
     box-sizing: border-box;
-    background: #f6f6f9;
 }
 
+/*
 .side-panel .carousel-content {
-    height: 300px;
+    max-height: 300px;
 }
 
 .carousel-modal .carousel-content {
-    height: 300px;
-}
+    max-height: 300px;
+}*/
+
 .carousel-content li {
-    background: #f6f6f9;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -131,6 +132,17 @@ li.current .photo {
     background-position: center center !important;
     margin-bottom: 6px;
     cursor: pointer;
+    border: solid 3px #f00;
+}
+li.current .photo-single {
+    margin-bottom: 6px;;
+    border: solid 3px #f00;
+}
+
+li.current .photo-single > img {
+    max-height: 100%;
+    max-width: 100%;
+    padding: 0px !important;
 }
 
 /********************************/

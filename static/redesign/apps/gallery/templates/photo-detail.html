@@ -1,19 +1,18 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
     <h4>Media Details</h4>
-    <div class = "section">
+    <div class="section">
         <h3>{{ name }}</h3>
     </div>
 
-    <div class="img-card single-photo">
-        <div class="photo-container">
-            <div class="view-photo" style="background: url('{{this.path_medium}}');"></div>
-            
+    <div class="img-card">
+        <div class="photo-single">
+            <img src="{{this.path_medium}}" />
         </div>
         <p class="photo-caption">{{ caption }}</p>
     </div>
 
-    <div class = "section-card">
+    <div class="section-card">
         <p>
         Attribution: {{ attribution }} <br>
         {{#each tags}}
@@ -31,10 +30,13 @@
         <h3>{{ name }}</h3>
         <p style="font-style: italic">{{ caption }}</p>
     </div>
-    <!-- <div class = "section-card">    -->
-        <img src="{{ path_medium }}" />
-    <!-- </div> -->
-    <div class = "section-card">
+    <div class="img-card">
+        <div class="photo-single">
+            <img src="{{this.path_medium}}" />
+        </div>
+        <p class="photo-caption">{{ caption }}</p>
+    </div>
+    <div class="section-card">
         <p>Tags:
         {{#each tags}}
             <!-- <p>{{this}}<br></p> -->
@@ -76,7 +78,6 @@
             </div>
             -->
             <div class="rotate-message" style="display: none;"></div>
-            <p>{{this.path_small}}</p>
         </div>
     </div>
 
