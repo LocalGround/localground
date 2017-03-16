@@ -182,7 +182,9 @@ define([
                     //hint: make sure that it sets all of the attributes on the model and then
                     //triggers the form model's "save" method.
                     expect(CreateForm.prototype.saveFormSettings).toHaveBeenCalledTimes(0);
-
+                    fixture = setFixtures('<div></div>').append(newCreateForm.$el);
+                    fixture.find('#formName').val('new form name');
+                    fixture.find('#caption').val('dummy caption');
                 });
             });
         });
