@@ -32,7 +32,7 @@ define([
             }
             Marionette.CompositeView.prototype.initialize.call(this);
             if (!this.collection || this.collection.isEmpty()) {
-                this.model.getFields();
+                this.fetchShareData();
             }
         },
         attachCollectionEventHandlers: function () {

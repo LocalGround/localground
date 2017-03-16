@@ -14,6 +14,7 @@ define([
             spyOn(CreateForm.prototype, 'render').and.callThrough();
             spyOn(CreateForm.prototype, 'initModel').and.callThrough();
             spyOn(CreateForm.prototype, 'attachCollectionEventHandlers').and.callThrough();
+            spyOn(CreateForm.prototype, 'fetchShareData').and.callThrough();
             spyOn(Form.prototype, "getFields").and.callThrough();
 
             //event methods:
@@ -111,7 +112,7 @@ define([
                     model: this.form
                 });
             });
-            
+
             it("Adds new field when user clicks 'add column' button", function () {
                 fixture = setFixtures('<div></div>').append(newCreateForm.$el);
                 expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
@@ -127,30 +128,56 @@ define([
                 expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(1);
             });
         });
-        
+
         describe("Create Form: All Methods work", function () {
             beforeEach(function () {
                 initSpies();
-                newCreateForm = new CreateForm({
-                    model: this.form
+            });
+
+            describe("Functions that require Form to be empty", function(){
+
+                it("calls the Form's getFields() method when fetchShareData is called", function () {
+
+                    expect(CreateForm.prototype.fetchShareData).toHaveBeenCalledTimes(0);
+                    newCreateForm = new CreateForm({
+                        model: new Form()
+                    });
+                    expect(CreateForm.prototype.fetchShareData).toHaveBeenCalledTimes(1);
+                    expect(Form.prototype.getFields).toHaveBeenCalledTimes(1);
                 });
             });
-            
-            it("calls the Form's getFields() method when fetchShareData is called", function () {
-                expect(1).toBe(1);
-            });
 
-            it("removes the new row from the DOM successfully when removeRow is called", function () {
-                // hint: first call newCreateForm.addFieldButton() and then
-                // make sure that there's a ".remove-row" in the DOM. Then call
-                // newCreateForm.removeRow() and make sure there's not a ".remove-row" in
-                // the DOM
-                expect(1).toBe(1);
-            });
+            describe("Functions that the form has fields", function(){
+                beforeEach(function(){
+                    newCreateForm = new CreateForm({
+                        model: new Form()
+                    });
+                });
 
-            it("correctly saves the model when the saveForm is called", function () {
-                //hint: make sure that it sets all of the attributes on the model and then
-                //triggers the form model's "save" method.
+                it("removes the new row from the DOM successfully when removeRow is called", function () {
+                    // hint: first call newCreateForm.addFieldButton() and then
+                    // make sure that there's a ".remove-row" in the DOM. Then call
+                    // newCreateForm.removeRow() and make sure there's not a ".remove-row" in
+                    // the DOM
+
+                    // Work in progress
+                    fixture = setFixtures('<div></div>').append(newCreateForm.$el);
+                    expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(0);
+                    fixture.find('.new_field_button').trigger('click');
+                    fixture.find('.remove-row').trigger('click');
+                    expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(1);
+                    console.log(fixture);
+                    console.log(fixture.find('.remove-row'));
+                    expect(fixture.find('.remove-row')).not.toBeInDOM();
+                });
+
+                it("correctly saves the model when the saveForm is called", function () {
+                    //hint: make sure that it sets all of the attributes on the model and then
+                    //triggers the form model's "save" method.
+                    expect(CreateForm.prototype.saveFormSettings).toHaveBeenCalledTimes(0);
+
+                });
             });
         });
-    });
+    }
+);
