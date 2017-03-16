@@ -150,7 +150,8 @@ define([
             describe("Functions that the form has fields", function(){
                 beforeEach(function(){
                     newCreateForm = new CreateForm({
-                        model: new Form()
+                        model: this.form,
+                        app: this.app
                     });
                 });
 
@@ -172,7 +173,7 @@ define([
                     expect(fixture.find('.remove-row').html()).not.toBeUndefined();
                     console.log(fixture.find('.remove-row').html());
 
-                    //remove new row by triggering '.remove-row click' 
+                    //remove new row by triggering '.remove-row click'
                     fixture.find('.remove-row').trigger('click');
                     expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(1);
                     expect(fixture.find('.remove-row').html()).toBeUndefined();
@@ -185,6 +186,9 @@ define([
                     fixture = setFixtures('<div></div>').append(newCreateForm.$el);
                     fixture.find('#formName').val('new form name');
                     fixture.find('#caption').val('dummy caption');
+                    newCreateForm.saveFormSettings();
+                    expect(newCreateForm.model.get('name')).toBe('new form name');
+                    expect(newCreateForm.model.get('caption')).toBe('dummy caption');
                 });
             });
         });
