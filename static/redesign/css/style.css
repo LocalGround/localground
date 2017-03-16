@@ -708,7 +708,6 @@ input[type="checkbox"]{
 }
 
 .side-panel .img-card {
-    margin: 10px 20px;
     border: none;
 }
 
@@ -779,6 +778,10 @@ input[type="checkbox"]{
     width: 100%;
     max-height: 500px;
     padding: 0;
+}
+
+.single-photo {
+    margin: 10px 20px;
 }
 
 table.preview-properties {

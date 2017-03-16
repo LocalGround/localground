@@ -5,7 +5,7 @@
         <h3>{{ name }}</h3>
     </div>
 
-    <div class="img-card">
+    <div class="img-card single-photo">
         <div class="photo-container">
             <div class="view-photo" style="background: url('{{this.path_medium}}');"></div>
             
@@ -68,14 +68,15 @@
     {{/ifequal}}
 
     <div class="confirmation success-message">Saved Successfully &#10003</div>
-    <div class="photo-container">
-        <div class="edit-photo" style="background: url('{{this.path_medium}}');">
+    <div class="img-card single-photo">
+        <div class="photo-container">
+            <div class="edit-photo" style="background: url('{{this.path_medium}}');">
+            </div>
+            <div class="rotate-message" style="display: none;"></div>
+            <p>{{this.path_small}}</p>
         </div>
-        <div class="rotate-message" style="display: none;"></div>
-        <p>{{this.path_small}}</p>
-        
-  
     </div>
+
     <div class="rotate-photo">
         <a class="rotate-left" rotation="left" ><i rotation="left" class="fa fa-rotate-left" aria-hidden="true"></i></a>
         <a class="rotate-right" rotation="right" ><i rotation="right" class="fa fa-rotate-right" aria-hidden="true"></i></a>
