@@ -100,7 +100,7 @@
 
 .carousel-buttons, .circle-buttons {
     display: block;
-    padding: 10px 0;
+    /*padding: 10px 0;*/
     text-align: center;
     z-index: 10;
     position: relative;
@@ -200,7 +200,12 @@ li.current .photo {
 /*       AUDIO PANEL STYLES     */
 /********************************/
 .carouselbox.audio {
-    height: 200px;
+    height: 180px;
+    background: white;
+    border: solid 1px #EEE;
+}
+.carousel .audio-container {
+    background: none;
 }
 
 li .player-container {

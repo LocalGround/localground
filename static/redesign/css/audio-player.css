@@ -15,11 +15,12 @@ audio {
     color: #686868;
     text-align: center;
     font-family: Candara, Calibri, Segoe;
-    /*min-height: 200px;*/
+    /*min-height: 200px;
     padding: 20px;
     border-radius: 10px;
-    width: 300px;
+    width: 300px;*/
     margin: auto;
+    padding: 20px;
 }
 
 .audio-container span {
@@ -147,7 +148,7 @@ audio {
 }
 
 .audio-simple .audio-progress, .audio-detail .audio-progress {
-    padding: 10px 30px 50px 30px;
+    padding: 10px 30px 30px 30px;
     position: relative;
 }
 .audio-simple .audio-labels, .audio-detail .audio-labels {
@@ -202,6 +203,9 @@ audio {
     border: 1px solid #e4e5eb;
     margin: 16px;
     position: relative;
+}
+.carousel .audio-detail {
+    margin: 0px;
 }
 
 .audio-detail .play-ctrls {
