@@ -93,6 +93,7 @@ define([
             this.basemapView = new Basemap({
                 app: this,
                 showSearchControl: false,
+                minZoom: 11,
                 zoomControlOptions: {
                     style: google.maps.ZoomControlStyle.SMALL,
                     position: google.maps.ControlPosition.LEFT_BOTTOM
