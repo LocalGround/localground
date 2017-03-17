@@ -23,6 +23,7 @@ define([
             spyOn(CreateForm.prototype, 'removeRow').and.callThrough();
             spyOn(CreateForm.prototype, 'addFieldButton').and.callThrough();
             spyOn(CreateForm.prototype, 'backToList').and.callThrough();
+            spyOn(Form.prototype, 'createField').and.callThrough();
         };
 
         describe("Create Form: Initialization Tests", function () {
@@ -192,14 +193,11 @@ define([
             });
 
             describe("Creating a field", function() {
-                beforeEach(function(){
+                it ("successfully adds and saves the field where no fields exist", function(){
                     newCreateForm = new CreateForm({
                         app: this.app,
                         model: new Form({id: 5})
                     });
-                });
-
-                it ("successfully adds and saves the field", function(){
                     fixture = setFixtures("<div></div>").append(newCreateForm.$el);
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
 
@@ -230,11 +228,34 @@ define([
                     // Will have to save the custom field parameters
 
                     // Form has a collection of fields
-                    // newCreateForm.collection // That must be the array of fields
+                    expect(Form.prototype.createField).toHaveBeenCalledWith("Sample Text", "text", 1);
 
+                });
+                it("successfully modifies and saves existing fields", function () {
+                    newCreateForm = new CreateForm({
+                        app: this.app,
+                        model: this.form
+                    });
+
+                    //render existing form:
+                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
+                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
+
+                    //pretend to be a user and update the field names:
+                    var $inputs = fixture.find('input.fieldname');
+                    $($inputs[0]).val("new field 1");
+                    $($inputs[1]).val("new field 2");
+                    $($inputs[2]).val("new field 3");
+
+                    //save the form:
+                    newCreateForm.saveFormSettings();
+
+                    //check that the collection has been updated:
+                    expect(newCreateForm.collection.at(0).get("col_alias")).toBe("new field 1");
+                    expect(newCreateForm.collection.at(1).get("col_alias")).toBe("new field 2");
+                    expect(newCreateForm.collection.at(2).get("col_alias")).toBe("new field 3");
                 });
             });
         });
 
-    }
-);
+    });
