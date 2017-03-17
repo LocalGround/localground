@@ -24,6 +24,11 @@ define([
             spyOn(CreateForm.prototype, 'addFieldButton').and.callThrough();
             spyOn(CreateForm.prototype, 'backToList').and.callThrough();
             spyOn(Form.prototype, 'createField').and.callThrough();
+
+            //error catch functions
+            spyOn(CreateForm.prototype, 'blankField').and.callThrough();
+            spyOn(CreateForm.prototype, 'errorFieldName').and.callThrough();
+            spyOn(CreateForm.prototype, 'errorFieldType').and.callThrough();
         };
 
         describe("Create Form: Initialization Tests", function () {
@@ -239,7 +244,6 @@ define([
 
                     //render existing form:
                     fixture = setFixtures("<div></div>").append(newCreateForm.$el);
-                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
 
                     //pretend to be a user and update the field names:
                     var $inputs = fixture.find('input.fieldname');
@@ -255,16 +259,38 @@ define([
                     expect(newCreateForm.collection.at(1).get("col_alias")).toBe("new field 2");
                     expect(newCreateForm.collection.at(2).get("col_alias")).toBe("new field 3");
                 });
-                
+
                 it("If fieldname is blank, it shows an error", function () {
                     newCreateForm = new CreateForm({
                         app: this.app,
                         model: this.form
                     });
                     //test "errorFieldName" method:
-                    expect(1).toBe(1);
+                    //expect(1).toBe(1);
+
+
+                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
+
+                    var $inputs = fixture.find('input.fieldname');
+                    $($inputs[0]).val(""); // empty out the field and test for the error
+                    console.log($inputs);
+
+                    expect(CreateForm.prototype.errorFieldName).toHaveBeenCalledTimes(0);
+                    newCreateForm.saveFormSettings();
+
+                    expect(CreateForm.prototype.errorFieldName).toHaveBeenCalledTimes(3);
+                    expect($($inputs[0]).css("background-color")).toBe("rgb(255, 221, 221)");
+                    expect($($inputs[1]).css("background-color")).not.toBe("rgb(255, 221, 221)");
+                    expect($($inputs[2]).css("background-color")).not.toBe("rgb(255, 221, 221)");
+                    expect($($inputs[0]).attr("placeholder")).toBe("Field Name Missing");
+
+
+
+
+
+
                 });
-                
+
                 it("If fieldtype is blank, it shows an error", function () {
                     newCreateForm = new CreateForm({
                         app: this.app,
@@ -273,7 +299,7 @@ define([
                     //test "errorFieldType" method:
                     expect(1).toBe(1);
                 });
-                
+
                 it("Successfully deletes the form", function () {
                     newCreateForm = new CreateForm({
                         app: this.app,
@@ -283,7 +309,7 @@ define([
                     expect(1).toBe(1);
                 });
             });
-            
+
             describe("Field Child View Operations", function() {
                 it("Renders a field correctly", function () {
                     //import Field model and create a field or else
@@ -295,7 +321,7 @@ define([
                     //test "errorFieldType" method:
                     expect(1).toBe(1);
                 });
-                
+
                 it("Successfully deletes a field", function () {
                     newCreateForm = new CreateForm({
                         app: this.app,
@@ -304,7 +330,7 @@ define([
                     //test "errorFieldType" method:
                     expect(1).toBe(1);
                 });
-                
+
             });
         });
 
