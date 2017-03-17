@@ -171,9 +171,13 @@ li.current .photo {
 }
 .spreadsheet li.current .photo {
     height: auto !important;
-    min-height: 500px;
-    width: 100%;
+    min-height: 470px;
+    width: auto;
     cursor: pointer;
+}
+.spreadsheet li.current .carousel-caption,
+.spreadsheet .circle-buttons {
+    color: white;
 }
 .spreadsheet .carouselbox, .spreadsheet .active-slide {
     min-height: 500px;
