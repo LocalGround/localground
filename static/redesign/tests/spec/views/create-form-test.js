@@ -255,6 +255,56 @@ define([
                     expect(newCreateForm.collection.at(1).get("col_alias")).toBe("new field 2");
                     expect(newCreateForm.collection.at(2).get("col_alias")).toBe("new field 3");
                 });
+                
+                it("If fieldname is blank, it shows an error", function () {
+                    newCreateForm = new CreateForm({
+                        app: this.app,
+                        model: this.form
+                    });
+                    //test "errorFieldName" method:
+                    expect(1).toBe(1);
+                });
+                
+                it("If fieldtype is blank, it shows an error", function () {
+                    newCreateForm = new CreateForm({
+                        app: this.app,
+                        model: this.form
+                    });
+                    //test "errorFieldType" method:
+                    expect(1).toBe(1);
+                });
+                
+                it("Successfully deletes the form", function () {
+                    newCreateForm = new CreateForm({
+                        app: this.app,
+                        model: this.form
+                    });
+                    //test "errorFieldType" method:
+                    expect(1).toBe(1);
+                });
+            });
+            
+            describe("Field Child View Operations", function() {
+                it("Renders a field correctly", function () {
+                    //import Field model and create a field or else
+                    // use an existing field from this.form.fields
+                    newCreateForm = new CreateForm({
+                        app: this.app,
+                        model: this.form
+                    });
+                    //test "errorFieldType" method:
+                    expect(1).toBe(1);
+                });
+                
+                it("Successfully deletes a field", function () {
+                    newCreateForm = new CreateForm({
+                        app: this.app,
+                        model: this.form
+                    });
+                    //test "errorFieldType" method:
+                    expect(1).toBe(1);
+                });
+                
             });
         });
 
