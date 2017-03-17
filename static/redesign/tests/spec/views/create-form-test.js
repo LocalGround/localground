@@ -15,6 +15,7 @@ define([
             spyOn(CreateForm.prototype, 'initModel').and.callThrough();
             spyOn(CreateForm.prototype, 'attachCollectionEventHandlers').and.callThrough();
             spyOn(CreateForm.prototype, 'fetchShareData').and.callThrough();
+            spyOn(CreateForm.prototype, 'createNewFields').and.callThrough();
             spyOn(Form.prototype, "getFields").and.callThrough();
 
             //event methods:
@@ -161,7 +162,6 @@ define([
                     // newCreateForm.removeRow() and make sure there's not a ".remove-row" in
                     // the DOM
 
-                    // Work in progress
                     fixture = setFixtures('<div></div>').append(newCreateForm.$el);
                     expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(0);
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
@@ -171,7 +171,6 @@ define([
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
                     expect(fixture.find('.remove-row')).toBeInDOM();
                     expect(fixture.find('.remove-row').html()).not.toBeUndefined();
-                    console.log(fixture.find('.remove-row').html());
 
                     //remove new row by triggering '.remove-row click'
                     fixture.find('.remove-row').trigger('click');
@@ -191,6 +190,51 @@ define([
                     expect(newCreateForm.model.get('caption')).toBe('dummy caption');
                 });
             });
+
+            describe("Creating a field", function() {
+                beforeEach(function(){
+                    newCreateForm = new CreateForm({
+                        app: this.app,
+                        model: new Form({id: 5})
+                    });
+                });
+
+                it ("successfully adds and saves the field", function(){
+                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
+                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
+
+                    //add a new row by triggering the '.new_field_button click'
+                    fixture.find('.new_field_button').trigger('click');
+                    expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
+
+                    fixture.find('#formName').val('new form name');
+                    fixture.find('#caption').val('dummy caption');
+                    // We are working with one field from a newly created form
+                    // so it should be easy to find one class of field properties
+
+                    console.log(fixture.find('.fieldname'));
+                    console.log(fixture.find('.fieldType'));
+
+                    fixture.find('.fieldname').val("Sample Text");
+                    fixture.find('.fieldType').val("text");
+
+                    expect(CreateForm.prototype.saveFormSettings).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.createNewFields).toHaveBeenCalledTimes(0);
+                    newCreateForm.saveFormSettings();
+
+                    expect(newCreateForm.model.get('name')).toBe('new form name');
+                    expect(newCreateForm.model.get('caption')).toBe('dummy caption');
+
+                    expect(CreateForm.prototype.saveFormSettings).toHaveBeenCalledTimes(1);
+                    expect(CreateForm.prototype.createNewFields).toHaveBeenCalledTimes(1);
+                    // Will have to save the custom field parameters
+
+                    // Form has a collection of fields
+                    // newCreateForm.collection // That must be the array of fields
+
+                });
+            });
         });
+
     }
 );
