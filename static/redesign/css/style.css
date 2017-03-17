@@ -197,6 +197,11 @@ span.confirmation{
     text-align: left;
 }
 
+.form-reorder {
+    cursor: move;
+}
+
+
 /************************************ Table type ************************************/
 
 .userTable{
