@@ -1,8 +1,47 @@
 /****************************************************************************************/
 /*                                           RESETS                                     */
 /****************************************************************************************/
+@import url(https://fonts.googleapis.com/css?family=Amatic+SC);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,800,300italic,400italic);
+@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro);
+@import url(https://fonts.googleapis.com/css?family=Montserrat:400,700|Slabo+27px);
 
-/* tags, fonts, etc. (proceed w/caution) */
+@font-face {
+  font-family: ProximaNova;
+  src: url("../../fonts/ProximaNova.otf") format("opentype");
+  src: url("../fonts/ProximaNova.otf") format("opentype");
+}
+/************************************ Resetish ************************************/
+
+html, div, body, h1, h2, h3, h4, h5, h6, p, button, table, input, span, a, select, form, ul, textarea{
+	padding:0;
+	margin:0;
+	font-family:"Open Sans",Arial,sans-serif;
+	color:#3d3d3d;
+}
+
+html, body {
+    height: 100%;
+    color: #000;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    font-family: 'ProximaNova', sans-serif;
+}
+
+a {
+	text-decoration:none;
+}
+
+button, a {
+    cursor:pointer;
+    font-size: 12px;
+}
+
+fieldset {
+    padding:0;
+    border: none;
+}
+
 
 /****************************************************************************************/
 /*                                          HEADERS                                     */
