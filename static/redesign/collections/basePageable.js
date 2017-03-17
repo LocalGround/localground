@@ -12,7 +12,7 @@ define([
         },
         state: {
             currentPage: 1,
-            pageSize: 50,
+            pageSize: 150,
             sortKey: 'id',
             order: -1 // 1 for descending, -1 for ascending
         },

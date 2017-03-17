@@ -35,9 +35,11 @@
         {{/if}}
         </table>
     {{else}}
+        <div class="tag-container">
         {{#each tags}}
             <a class="tag"> {{this}} </a>
         {{/each}}
+        </div>
     {{/if}}
 
     {{#compare screenType "presentation" operator="!="}}
@@ -57,15 +59,26 @@
         Add New
         {{/if}}
     </h4>
+
     {{#ifequal screenType "map"}}
         {{#if geometry}}
-        <button class="delete-marker-button">Delete Marker</button>
+            <button class="button-secondary delete-marker-button" id="delete-marker-button">Remove Marker</button>
         {{else}}
-        <div class="add-lat-lng">
-            <button class="add-marker-button">Add Marker</button>
-        </div>
+            <div class="add-lat-lng">
+                <button class="button-secondary add-marker-button" id="add-marker-button">
+                    Place Marker on Map
+                </button>
+            </div>
         {{/if}}
+        {{#ifnotequal lat "undefined"}}
+            <div class="latlong-container">
+            <p class="latlong" style="font-style: italic">
+                ({{lat}}, {{lng}})
+            </p>
+            </div>
+        {{/ifnotequal}}
     {{/ifequal}}
+    
 
     <div class="confirmation success-message">Saved Successfully &#10003</div>
 
@@ -80,7 +93,7 @@
         </div>
         {{#each children.photos.data}}
             <div class="attached-container">
-                <div class="attached-media" style="background: url('{{this.path_small}}');"></div>
+                <div class="attached-media" style="background: url('{{this.path_medium}}');"></div>
                 <div class="attached-media-overlay">
                     <div class="hover-to-show">
                         <i class="fa fa-times close detach_media" aria-hidden="true" data-id="{{this.id}}" data-type="photos" media-name="{{this.name}}"></i>
