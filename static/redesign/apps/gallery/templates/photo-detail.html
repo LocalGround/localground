@@ -64,9 +64,18 @@
         <button class="button-secondary delete-marker-button" id="delete-marker-button" style="width:160px;">Delete Marker</button>
         {{else}}
         <div class="add-lat-lng">
-            <button class="button-secondary add-marker-button" id="add-marker-button" style="width:160px;">Add Marker</button>
+            <button class="button-secondary add-marker-button" id="add-marker-button">
+                Place Marker on Map
+            </button>
         </div>
         {{/if}}
+        {{#ifnotequal lat "undefined"}}
+            <div class="latlong-container">
+            <p class="latlong" style="font-style: italic">
+                ({{lat}}, {{lng}})
+            </p>
+            </div>
+        {{/ifnotequal}}
     {{/ifequal}}
 
     <div class="confirmation success-message">Saved Successfully &#10003</div>

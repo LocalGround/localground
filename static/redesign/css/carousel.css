@@ -132,12 +132,10 @@ li.current .photo {
     background-position: center center !important;
     margin-bottom: 6px;
     cursor: pointer;
-    border: solid 3px #f00;
 }
 
 .photo-single {
     margin-bottom: 6px;;
-    border: solid 3px #f00;
     text-align: center;
 }
 

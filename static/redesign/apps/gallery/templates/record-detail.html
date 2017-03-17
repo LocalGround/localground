@@ -75,14 +75,13 @@
         </div>
 
         {{/if}}
-        {{#ifequal lat "undefined"}}
-            {{else}}
+        {{#ifnotequal lat "undefined"}}
             <div class="latlong-container">
-            <p class="latlong" style="font-style: italic">Lat: {{lat}}</p>
-            <p class="latlong" style="font-style: italic">Long: {{lng}}</p>
+            <p class="latlong" style="font-style: italic">
+                ({{lat}}, {{lng}})
+            </p>
             </div>
-
-        {{/ifequal}}
+        {{/ifnotequal}}
     {{/ifequal}}
     
 

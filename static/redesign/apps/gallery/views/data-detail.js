@@ -77,7 +77,10 @@ define([
         },
 
         activateMarkerTrigger: function () {
-
+            if (this.$el.find('#drop-marker-message').get(0)) {
+                //button has already been clicked
+                return;
+            }
             this.$el.find("#add-marker-button").css({
                 background: "#4e70d4",
                 color: "white"
@@ -332,6 +335,9 @@ define([
             var $elem = $(e.target);
             var rotation = $elem.attr("rotation");
             this.$el.find(".rotate-message").show();
+            this.$el.find(".edit-photo").css({
+                filter: "brightness(0.4)"
+            });
             this.model.rotate(rotation);
         },
 
