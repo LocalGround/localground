@@ -60,7 +60,7 @@ audio {
 .spreadsheet > div {
     padding: 0px !important;
     margin: 0px auto !important;
-    border: solid 1px #000;
+    /*border: solid 1px #000;*/
 }
 
 .spreadsheet .play-ctrls{

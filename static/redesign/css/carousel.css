@@ -145,13 +145,24 @@ li.current .photo {
     padding: 0px !important;
 }
 
+.carousel-modal.spreadsheet .photo-single {
+    text-align: center;
+    margin-top: 50px;
+}
+.carousel-modal.spreadsheet img {
+    display: inline;
+}
+.carousel-modal.spreadsheet .img-card {
+    border: none;
+}
+
 /********************************/
 /*       SPREADSHEET STYLES     */
 /********************************/
 .spreadsheet .active-slide {
     position: relative;
     height: auto;
-    width: 800px;
+    /*width: 800px;*/
     top: 50px;
 }
 
