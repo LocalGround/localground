@@ -1,0 +1,197 @@
+/****************************************************************************************/
+/*                                           RESETS                                     */
+/****************************************************************************************/
+
+/* tags, fonts, etc. (proceed w/caution) */
+
+/****************************************************************************************/
+/*                                          HEADERS                                     */
+/****************************************************************************************/
+.header {
+    /* top of project list */
+}
+.banner {
+    /* the abstract turquoise title bar on some of the more static-y pages */
+}
+.tab {
+    /* Top-level tabs with blue underlines */
+}
+
+/****************************************************************************************/
+/*                                         TOOLBARS                                     */
+/****************************************************************************************/
+
+.toolbar-global {
+    /* top-level toolbar on app pages */
+}
+.toolbar-data {
+    /* app-specific data toolbar*/
+}
+.toolbar-modal {
+    /* toolbar for modal windows */
+}
+.dropdown-menu {}
+
+/****************************************************************************************/
+/*                                        SEARCH BARS                                   */
+/****************************************************************************************/
+
+.searchbar {
+    /* generic searchbar */
+}
+
+.searchbar-projects {
+    /* */
+}
+
+.searchbar-media {
+    /* */
+}
+
+.searchbar-map {
+    /* */
+}
+
+/****************************************************************************************/
+/*                                          FORMS                                       */
+/****************************************************************************************/
+.form {}
+.form-row {}
+.form-label {}
+.form-control {}
+
+/****************************************************************************************/
+/*                                       CONTAINERS                                     */
+/****************************************************************************************/
+
+.card {
+    /**/
+}
+.card-media {
+    /**/
+}
+.card-media img {
+    /**/
+}
+.card-media table {
+    /**/
+}
+.card-project {
+    /**/
+}
+.frame-carousel, .frame-photo, .frame-audio {
+    /* consistent container style */
+}
+
+/****************************************************************************************/
+/*                                   BUTTONS AND BADGES                                 */
+/****************************************************************************************/
+
+.button-neutral {
+    /* white, uppercase, etc.*/
+}
+.button-primary {
+    /* green one */
+}
+.button-save {
+    /* blue one */
+}
+.button-add {
+    /* blue plus sign + text + no background */
+}
+.button-delete-icon {
+    /* trash can or X-mark? */
+}
+.button-close {
+    /* &times X-Mark also? */
+}
+.button-back {
+    /* blue back arrow */
+}
+.button-left-arrow {
+    /* shows / hides the map panels (arrows) */
+}
+.button-right-arrow {
+    /* shows / hides the map panels (arrows) */
+}
+.button-view-mode {
+    /* the spreadsheet / list / card / map icons */
+}
+.button-view-mode .map {}
+.button-view-mode .card {}
+.button-view-mode .list {}
+
+.badge {
+    /* has rounded / oval corners */
+}
+.tag {
+    /* add background to badge */
+}
+
+/****************************************************************************************/
+/*                                     GENERIC CONTROLS                                 */
+/****************************************************************************************/
+
+.alert-message {}
+.success-message {}
+.tooltip {}
+
+/****************************************************************************************/
+/*                                         MODULES                                      */
+/****************************************************************************************/
+
+.map-panel {
+    /* where interactive map goes*/
+}
+
+.map-marker-panel {
+    /* where interactive map goes*/
+}
+.map-marker-panel .heading {
+    /**/
+}
+.map-marker-panel .item {
+    /**/
+}
+
+.detail-panel {
+    /* where individual site / media details are displayed */
+}
+.detail-panel img {}
+.detail-panel .header {}
+.detail-panel .footer {}
+
+.gallery-panel {
+    /* where interactive map goes*/
+}
+
+.spreadsheet-panel {
+    /* where interactive map goes*/
+}
+
+.map-panel {
+    /* where interactive map goes*/
+}
+
+/****************************************************************************************/
+/*                                           MODALS                                     */
+/****************************************************************************************/
+/* Put all generic modal formatting here */
+.modal {}
+.modal .header {}
+.modal .header .close {}
+.modal .footer {}
+.modal .body {}
+
+/****************************************************************************************/
+/*                                          CAROUSEL                                    */
+/****************************************************************************************/
+
+/* Put all generic carousel formatting here */
+
+
+/****************************************************************************************/
+/*                                            AUDIO                                     */
+/****************************************************************************************/
+
+/* Put all generic audio formatting here */
