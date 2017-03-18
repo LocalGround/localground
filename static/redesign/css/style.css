@@ -967,3 +967,16 @@ hr {
     text-align: center;
     color: #999;
 }
+
+.fa.fa-grip:before {
+    content: "\f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142";
+    color: #DDD;
+    font-size: 10px;
+    position: absolute;
+    margin-left: 1px;
+    cursor: move;
+}
+
+input.fieldname {
+    margin-left: 4px;
+}
