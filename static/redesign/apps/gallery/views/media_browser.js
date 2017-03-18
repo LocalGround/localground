@@ -180,18 +180,20 @@ define ([
                         e.preventDefault();
 
                     },
-
                     onRender: function(){
                         this.getTemplate();
+
                         if (this.currentMedia == "audio") {
                             var player = new AudioPlayer({
                                 model: this.model,
                                 audioMode: "simple",
                                 app: this.app
                             });
-                            this.$el.find(".player-container").append(player.$el);
+                            this.$el.find(".player-container").html(player.$el);
                         }
+
                     },
+
                     templateHelpers: function () {
                         return {
                             dataType: this.currentMedia,
@@ -201,6 +203,7 @@ define ([
                 });
             },
             childViewContainer: "#gallery-main",
+            searchTerm: null,
             initialize: function (opts) {
                 _.extend(this, opts);
 
@@ -208,11 +211,18 @@ define ([
                 Marionette.CompositeView.prototype.initialize.call(this);
                 this.template = Handlebars.compile(ParentTemplate);
                 this.displayMedia();
+
+
+                this.listenTo(this.app.vent, 'search-requested', this.doSearch);
+                this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
+
             },
 
             templateHelpers: function () {
                 return {
-                    viewMode: this.viewMode
+                    viewMode: this.viewMode,
+                    searchTerm: this.searchTerm
+
                 };
 
             },
@@ -249,6 +259,7 @@ define ([
                 "click #media-photos" : "changeToPhotos",
                 'click #card-view-button-modal' : 'displayCards',
                 'click #table-view-button-modal' : 'displayTable',
+                'click #toolbar-search': 'doSearch'
             },
 
             displayCards: function() {
@@ -279,6 +290,20 @@ define ([
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'reset', this.hideLoadingMessage);
             },
+
+            doSearch: function (e) {
+                console.log(this.app.getProjectID());
+                this.searchTerm = this.$el.find("#searchTerm").val();
+                this.collection.doSearch(this.searchTerm, this.app.getProjectID());
+                e.preventDefault();
+                console.log(this.collection);
+            },
+
+
+            clearSearch: function () {
+                this.collection.clearSearch(this.app.getProjectID());
+            },
+
             changeToAudio: function () {
                 this.currentMedia = "audio";
                 this.collection = this.app.dataManager.getCollection(this.currentMedia);
