@@ -360,12 +360,13 @@ class ModelMixin(object):
         f.remove_table_from_cache()
         return f
 
-    def create_field(self, form, name='Field 1', data_type=None, ordering=1):
+    def create_field(self, form, name='Field 1', data_type=None, ordering=1, is_display_field=False):
         data_type = data_type or models.DataType.objects.get(id=1)
         f = models.Field(
             col_alias=name,
             data_type=data_type,
             ordering=ordering,
+            is_display_field=is_display_field,
             form=form,
             owner=self.user,
             last_updated_by=self.user
@@ -478,14 +479,12 @@ class ModelMixin(object):
         audio.save()
         return audio
     
-    def create_relation(self, entity_type, marker=None, id=1, ordering=1, turned_on=False):
-        if marker is None:
-            marker = self.marker
+    def create_relation(self, source_model, attach_model, ordering=1, turned_on=False):
         r = models.GenericAssociation(
-            entity_type=entity_type,
-            entity_id=id,
-            source_type=models.Marker.get_content_type(),
-            source_id=marker.id,
+            source_type=type(source_model).get_content_type(),
+            source_id=source_model.id,
+            entity_type=type(attach_model).get_content_type(),
+            entity_id=attach_model.id,
             ordering=ordering,
             owner=self.user,
             turned_on=turned_on,
@@ -493,6 +492,23 @@ class ModelMixin(object):
         )
         r.save()
         return r
+    
+    def delete_relation(self, source_model, attach_model):
+        queryset = models.GenericAssociation.objects.filter(
+            entity_type=type(attach_model).get_content_type(),
+            entity_id=attach_model.id,
+            source_type=type(source_model).get_content_type(),
+            source_id=source_model.id
+        )
+        queryset.delete()
+    
+    def get_relation(self, source_model, attach_model):
+        return models.GenericAssociation.objects.filter(
+            entity_type=type(attach_model).get_content_type(),
+            entity_id=attach_model.id,
+            source_type=type(source_model).get_content_type(),
+            source_id=source_model.id
+        ).first()
 
 class ViewAnonymousMixin(ModelMixin):
     #fixtures = ['test_data.json']

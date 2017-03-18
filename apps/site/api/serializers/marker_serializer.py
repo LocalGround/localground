@@ -7,7 +7,8 @@ from django.conf import settings
 from localground.apps.site.api.metadata import CustomMetadata
 
 class MarkerSerializerMixin(GeometrySerializer):    
-    color = fields.ColorField(required=False)
+    #color = fields.ColorField(required=False)
+    color = serializers.CharField(required=False, allow_null=True, label='name', allow_blank=True)
     update_metadata = serializers.SerializerMethodField()
 
     

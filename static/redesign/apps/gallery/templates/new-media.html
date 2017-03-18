@@ -1,0 +1,48 @@
+{{#ifequal mode "begin"}}
+    <div class="file-container">
+        <div class="img-polaroid thumbnail">
+            <div class="img-container">
+                <img class="preview" src="{{ imageSerial }}" />
+            </div>
+            <p>
+                {{ file_name }}<br>
+                {{ file_size }}<br>
+            </p>
+        </div>
+        <div class="progress">
+            <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="width: 10%;"></div>
+        </div>
+    </div>
+{{/ifequal}}
+
+{{#ifequal mode "end"}}
+    <div class="file-container">
+        <div class="img-polaroid thumbnail">
+            <div class="img-container">
+                <div class="badge success-icon">
+                    <i class="fa fa-check"></i>
+                </div>
+                <img class="preview" src="{{ imageSerial }}" />
+            </div>
+            <p>
+                {{ file_name }}<br>
+                {{ file_size }}<br>
+                <a href="#" class="delete">delete</a>
+            </p>
+        </div>
+    </div>
+{{/ifequal}}
+
+{{#ifequal mode "error"}}
+    <div class="file-container">
+        <div class="img-polaroid thumbnail">
+            <div class="img-container">
+                <div class="failure-icon">
+                    <i class="fa fa-exclamation"></i>
+                </div>
+                <img class="preview" src="{{ imageSerial }}" />
+            </div>
+           <div class="error-holder">{{ errorMessage }}</div>
+        </div>
+    </div>
+{{/ifequal}}

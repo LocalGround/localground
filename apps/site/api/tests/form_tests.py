@@ -9,36 +9,42 @@ from django.contrib.gis.geos import GEOSGeometry
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 
+def get_metadata_form():
+    return {'data_url': {'read_only': True, 'required': False, 'type': 'field'},
+        'project_ids': {'read_only': False, 'required': True, 'type': 'field'},
+        'caption': {'read_only': False, 'required': False, 'type': 'memo'},
+        'tags': {'read_only': False, 'required': False, 'type': 'field'},
+        'url': {'read_only': True, 'required': False, 'type': 'field'},
+        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
+        'slug': {'read_only': False, 'required': True, 'type': 'slug'},
+        'fields_url': {'read_only': True, 'required': False, 'type': 'field'},
+        'owner': {'read_only': True, 'required': False, 'type': 'field'},
+        'id': {'read_only': True, 'required': False, 'type': 'integer'},
+        'name': {'read_only': False, 'required': False, 'type': 'string'}}
+
+def get_metadata_records():
+    return {
+        'url': {'read_only': True, 'required': False, 'type': 'field'},
+        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
+        'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
+        'project_id': {'read_only': False, 'required': False, 'type': 'field'},
+        'id': {'read_only': True, 'required': False, 'type': 'integer'},
+        'owner': {'read_only': True, 'required': False, 'type': 'field' }
+    }
+
 class ApiFormListTest(test.TestCase, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
         self.urls = ['/api/0/forms/']
         self.view = views.FormList.as_view()
-        self.metadata = {'data_url': {'read_only': True, 'required': False, 'type': 'field'},
-            'project_ids': {'read_only': False, 'required': True, 'type': 'field'},
-            'caption': {'read_only': False, 'required': False, 'type': 'memo'},
-            'tags': {'read_only': False, 'required': False, 'type': 'field'},
-            'url': {'read_only': True, 'required': False, 'type': 'field'},
-            'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
-            'slug': {'read_only': False, 'required': True, 'type': 'slug'},
-            'fields_url': {'read_only': True, 'required': False, 'type': 'field'},
-            'owner': {'read_only': True, 'required': False, 'type': 'field'},
-            'id': {'read_only': True, 'required': False, 'type': 'integer'},
-            'name': {'read_only': False, 'required': False, 'type': 'string'}}
+        self.metadata = get_metadata_form()
 
 class FormDataTestMixin(object):
 
     POINT = {
         "type": "Point",
         "coordinates": [12.492324113849, 41.890307434153]
-    }
-    metadata = {
-        'url': {'read_only': True, 'required': False, 'type': 'field'},
-        'overlay_type': {'read_only': True, 'required': False, 'type': 'field'},
-        'geometry': {'read_only': False, 'required': False, 'type': 'geojson'},
-        'project_id': {'read_only': False, 'required': False, 'type': 'field'},
-        'id': {'read_only': True, 'required': False, 'type': 'integer'}
     }
 
     def create_form_post_data(self):
@@ -83,7 +89,6 @@ class FormDataTestMixin(object):
                 self.assertEqual(fields[key]['required'], self.metadata[key]['required'])
                 self.assertEqual(fields[key]['read_only'], self.metadata[key]['read_only'])
 
-
     def verify_success(self, d):
         rec = self.form.TableModel.objects.all().order_by('-id',)[0]
         self.assertEqual(rec.geometry, GEOSGeometry(json.dumps(self.POINT)))
@@ -100,9 +105,13 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
 
     def setUp(self):
         ViewMixinAPI.setUp(self)
+        self.metadata = get_metadata_records()
+        self.metadata['photo_count'] = {'read_only': True, 'required': False, 'type': 'field' }
+        self.metadata['audio_count'] = {'read_only': True, 'required': False, 'type': 'field' }
         self.form = self.create_form_with_fields(
             name="Class Form",
             num_fields=6)
+        self.rec_1 = self.insert_form_data_record(form=self.form, project=self.project)
         self.url = '/api/0/forms/%s/data/' % self.form.id
         self.urls = [self.url]
         self.view = views.FormDataList.as_view()
@@ -131,10 +140,29 @@ class ApiFormDataListTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
     def test_check_metadata(self, **kwargs):
         FormDataTestMixin.test_check_metadata(self, **kwargs)
         
+    def test_counts_serializer(self, **kwargs):
+        self.photo1 = self.create_photo(self.user, self.project)
+        self.audio1 = self.create_audio(self.user, self.project)
+        self.audio2 = self.create_audio(self.user, self.project)
+        self.create_relation(self.rec_1, self.photo1)
+        self.create_relation(self.rec_1, self.audio1)
+        self.create_relation(self.rec_1, self.audio2)
+        
+        response = self.client_user.get(self.url)
+        self.assertEqual(response.data['results'][0]['photo_count'], 1)
+        self.assertEqual(response.data['results'][0]['audio_count'], 2)
+        
+        # clean up:
+        self.delete_relation(self.rec_1, self.photo1)
+        self.delete_relation(self.rec_1, self.audio1)
+        self.delete_relation(self.rec_1, self.audio2)
+        
 class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
     
     def setUp(self):
         ViewMixinAPI.setUp(self)
+        self.metadata = get_metadata_records()
+        self.metadata['children'] = {'read_only': True, 'required': False, 'type': 'field' }
         self.form = self.create_form_with_fields(name="Class Form", num_fields=6)
         #requery:
         self.form = models.Form.objects.get(id=self.form.id)
@@ -152,7 +180,6 @@ class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
     def test_check_metadata(self, **kwargs):
         FormDataTestMixin.test_check_metadata(self, **kwargs)
 
-    @transaction.non_atomic_requests
     def test_update_record_using_put(self, **kwargs):
         d = FormDataTestMixin.create_form_post_data(self)
         response = self.client_user.put(self.url,
@@ -162,4 +189,18 @@ class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         )
         #print response.data
         FormDataTestMixin.verify_success(self, d)
+        
+    def test_child_serializer(self, **kwargs):
+        self.photo1 = self.create_photo(self.user, self.project)
+        self.audio1 = self.create_audio(self.user, self.project)
+        self.create_relation(self.rec_1, self.photo1)
+        self.create_relation(self.rec_1, self.audio1)
+        
+        response = self.client_user.get(self.url)
+        self.assertEqual(len(response.data['children']['photos']['data']), 1)
+        self.assertEqual(len(response.data['children']['audio']['data']), 1)
+        
+        # clean up:
+        self.delete_relation(self.rec_1, self.photo1)
+        self.delete_relation(self.rec_1, self.audio1)
     

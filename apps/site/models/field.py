@@ -19,7 +19,7 @@ class Field(BaseAudit):
         RATING = 6
         PHOTO = 7
         AUDIO = 8
-        
+
     form = models.ForeignKey('Form')
     col_name_db = models.CharField(max_length=255, db_column="col_name")
     col_alias = models.CharField(max_length=255, verbose_name="column name")
@@ -45,6 +45,14 @@ class Field(BaseAudit):
 
     def __str__(self):
         return self.col_alias
+    
+    def toJSON(self):
+        return {
+            'id': self.id,
+            'ordering': self.ordering,
+            'col_alias': self.col_alias,
+            'col_name': self.col_name
+        }
 
     @property
     def col_name(self):
@@ -68,8 +76,10 @@ class Field(BaseAudit):
         # 1. ensure that user doesn't inadvertently change the data type of the
         # column
         if is_new:
+            import random
+            random_string = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 8))
             self.date_created = get_timestamp_no_milliseconds()
-            self.col_name_db = 'col_placeholder'
+            self.col_name_db = 'col_placeholder_' + random_string
         else:
             o = Field.objects.get(id=self.id)
             if o.data_type != self.data_type:
@@ -109,7 +119,7 @@ class Field(BaseAudit):
                         foreign_table=Photo._meta.db_table
                     )
                 )
-            
+
             # Audio:
             if self.data_type.id == self.DataTypes.AUDIO:
                 sql.append('''
@@ -132,4 +142,4 @@ class Field(BaseAudit):
             except Exception as e:
                 import sys
                 sys.stderr.write('ERROR: %s' % e)
-                transaction.rollback_unless_managed()
+                transaction.rollback()

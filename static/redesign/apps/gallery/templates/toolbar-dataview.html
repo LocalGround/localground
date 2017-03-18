@@ -1,0 +1,66 @@
+<div class = "project-detail">
+	<h3>Media</h3>
+    <!-- Temporary placement for implementation purposes -->
+   
+    {{#ifequal activeTab "data"}}
+        {{#ifequal screenType "spreadsheet"}}
+            <select class="media-type">
+                <option value="photos" {{#ifequal dataType "photos"}}SELECTED{{/ifequal}}>Photos</option>
+                <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>
+                <option value="markers" {{#ifequal dataType "markers"}}SELECTED{{/ifequal}}>Site</option>
+            {{#each forms}}
+                <option value="form_{{ this.id }}" {{#ifequal ../dataType this.overlay_type}}SELECTED{{/ifequal}}>{{ this.name }}</option>
+            {{/each}}
+            </select>
+        {{/ifequal}}
+        
+        {{#ifequal screenType "gallery"}}
+            <select class="media-type">
+                <option value="photos" {{#ifequal dataType "photos"}}SELECTED{{/ifequal}}>Photos</option>
+                <option value="audio" {{#ifequal dataType "audio"}}SELECTED{{/ifequal}}>Audio</option>
+                <option value="markers" {{#ifequal dataType "markers"}}SELECTED{{/ifequal}}>Site</option>
+            {{#each forms}}
+                <option value="form_{{ this.id }}" {{#ifequal ../dataType this.overlay_type}}SELECTED{{/ifequal}}>{{ this.name }}</option>
+            {{/each}}
+            </select>
+        {{/ifequal}}
+    {{/ifequal}}
+
+    {{#ifequal screenType "map"}}
+    <button class="button-tertiary add"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</button>
+    <div class="dropdown-menu" id="add-data-type" style="display: none;">
+        <a href="#" class="add-media">Media</a>
+        <hr>
+        <a href="#" class="add-new" data-value="markers">Site</a>
+        {{#each forms}}
+        <a href="#" class="add-new" data-value="form_{{ this.id }}">{{ this.name }}</a>
+        {{/each}}
+        <hr>
+        <a href="#" class="add-data">Edit Site Types</a>
+    </div>
+    {{/ifequal}}
+
+
+    {{#ifequal activeTab "data"}}
+
+        {{#ifequal screenType "spreadsheet"}}
+            <a id="add-new" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add Row</a>
+        {{/ifequal}}
+        {{#ifequal screenType "gallery"}}
+            <a id="add-new" class="button-tertiary" href="#"><i class="fa fa-plus add-feature-icon" aria-hidden="true"></i>Add</a>
+        {{/ifequal}}
+	{{/ifequal}}
+</div>
+<div class="main-search">
+	<form class="search-form" value="Search Media">
+		<input id="searchTerm" type="text" value="" placeholder="Filter data and media">
+		<button id="toolbar-search"><i class="fa fa-search" aria-hidden="true"></i></button>
+	</form>
+</div>
+<button id="toolbar-clear" style = "display:none;">Clear</button>
+
+<div class="view-options">
+	<a id="map-link" class="database-view-buttons {{#ifequal screenType "map"}}active{{/ifequal}}" href="map.html"><i class="fa fa-map" aria-hidden="true"></i></a>
+	<a href="gallery.html" class="database-view-buttons {{#ifequal screenType "gallery"}}active{{/ifequal}}"><i class="fa fa-th" aria-hidden="true"></i></a>
+	<a href="spreadsheet.html" class="database-view-buttons {{#ifequal screenType "spreadsheet"}}active{{/ifequal}}"><i class="fa fa-bars" aria-hidden="true"></i></a>
+</div>

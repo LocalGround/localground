@@ -3,9 +3,9 @@ import json
 register = template.Library()
 
 @register.filter
-def jsonify(dictionary):
-    if isinstance(dictionary, dict):
-        return json.dumps(dictionary)
-    return dictionary
+def jsonify(obj):
+    if isinstance(obj, dict) or isinstance(obj, list):
+        return json.dumps(obj)
+    return obj
 
 register.filter('jsonify', jsonify)

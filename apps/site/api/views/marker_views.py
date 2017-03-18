@@ -6,8 +6,10 @@ from localground.apps.site import models
 class MarkerGeometryMixin(object):
     
     def get_geometry_dictionary(self, serializer):
+        d = {}
         geom = serializer.validated_data.get('point')
-        del serializer.validated_data['point']
+        if geom:
+            del serializer.validated_data['point']
         point, polyline, polygon = None, None, None
         if geom is not None:
             if geom.geom_type == 'Point':
@@ -19,13 +21,13 @@ class MarkerGeometryMixin(object):
             else:
                 raise serializers.ValidationError('Unsupported geometry type')
         
-        # clear out existing geometries (marker can either be a point, polyline, or polygon),
-        # but not more than one
-        d = {
-            'point': point,
-            'polyline': polyline,
-            'polygon': polygon
-        }
+            # clear out existing geometries (marker can either be a point, polyline, or polygon),
+            # but not more than one
+            d = {
+                'point': point,
+                'polyline': polyline,
+                'polygon': polygon
+            }
         d.update(serializer.validated_data)
         return d
 

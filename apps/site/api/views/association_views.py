@@ -6,17 +6,25 @@ from rest_framework.response import Response
 from django.db import IntegrityError
 from rest_framework.serializers import ValidationError
 
+def get_group_model(model_type):
+    group_model = None
+    try: 
+        form_id = int(model_type)
+        group_model = models.Form.objects.get(id=form_id).TableModel
+    except ValueError:
+        group_model = models.Base.get_model(
+            model_name_plural=model_type
+        )
+    return group_model
 
 class RelatedMediaList(generics.ListCreateAPIView):
     # return HttpResponse(self.kwargs.get('entity_name_plural'))
     model = models.GenericAssociation
     serializer_class = serializers.AssociationSerializer
     # http://stackoverflow.com/questions/3210491/association-of-entities-in-a-rest-service
-
+    
     def get_queryset(self):
-        group_model = models.Base.get_model(
-            model_name_plural=self.kwargs.get('group_name_plural')
-        )
+        group_model = get_group_model(self.kwargs.get('group_name_plural'))
         try:
             marker = group_model.objects.get(
                 id=int(
@@ -34,9 +42,7 @@ class RelatedMediaList(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         d = {}
-        group_model = models.Base.get_model(
-            model_name_plural=self.kwargs.get('group_name_plural')
-        )
+        group_model = get_group_model(self.kwargs.get('group_name_plural'))
         source_type = group_model.get_content_type()
         entity_model = models.Base.get_model(
             model_name_plural=self.kwargs.get('entity_name_plural')
@@ -45,7 +51,7 @@ class RelatedMediaList(generics.ListCreateAPIView):
         if self.kwargs.get('entity_name_plural') in [
                 'markers',
                 'views',
-                'prints']:
+                'prints'] or 'form_' in self.kwargs.get('entity_name_plural'):
             raise exceptions.ParseError(
                 'You cannot attach a %s to a %s' % (
                     entity_model.model_name, group_model.model_name
@@ -67,9 +73,8 @@ class RelatedMediaInstance(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.AssociationSerializerDetail
 
     def get_object(self, queryset=None):
-        source_type = models.Base.get_model(
-            model_name_plural=self.kwargs.get('group_name_plural')
-        ).get_content_type()
+        group_model = get_group_model(self.kwargs.get('group_name_plural'))
+        source_type = group_model.get_content_type()
         entity_type = models.Base.get_model(
             model_name_plural=self.kwargs.get('entity_name_plural')
         ).get_content_type()
