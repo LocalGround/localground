@@ -43,6 +43,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, "add-row", this.addRow);
                 this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
                 this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
+                this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
                 this.listenTo(this.collection, 'add', this.renderSpreadsheet);
             },
             onRender: function () {
@@ -56,10 +57,10 @@ define(["marionette",
                 var media_column_index = this.fields.length + 4; //change to whatever one is valid
                 var pre_field_index = 2;
                 if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index) {
-                    alert('Media columns always have to be at the end');
+                    console.error('Cannot move your column behind the media column');
                     return false;
                 } else if (col_indexes_to_be_moved.indexOf(pre_field_index) != -1 || destination_index <= pre_field_index){
-                    alert('Cannot enter into ID and geolocation');
+                    console.error('Cannot move your column before the ID and lat/lng');
                     return false;
                 }
             },
