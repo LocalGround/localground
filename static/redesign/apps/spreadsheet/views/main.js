@@ -43,8 +43,10 @@ define(["marionette",
                 this.listenTo(this.app.vent, "add-row", this.addRow);
                 this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
                 this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
-                this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
                 this.listenTo(this.collection, 'add', this.renderSpreadsheet);
+                if (this.fields) {
+                    this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
+                }
             },
             onRender: function () {
                 this.renderSpreadsheet();
