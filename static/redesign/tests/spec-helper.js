@@ -30,7 +30,8 @@ define(
             //spoof google maps API:
             google.maps = {
                 event: { addListenerOnce: function () {} },
-                LatLngBounds: function () {}
+                LatLngBounds: function () {},
+                LatLng: function(lat, lng) {}            
             };
             var $map_container = $('<div id="map_canvas"></div>');
             $(document.body).append($map_container);

@@ -1,9 +1,10 @@
 var rootDir = "../../";
 define([
     "jquery",
-    rootDir + "apps/style/style-app"    
+    rootDir + "apps/style/style-app",
+    rootDir + "lib/maps/basemap"    
 ],
-    function ($, StyleApp) {
+    function ($, StyleApp, BaseMapView) {
         'use strict';
         var styleApp, fixture;
 
@@ -13,30 +14,33 @@ define([
                 $r1 = $('<div id="toolbar-main"></div>'),
                 $r2 = $('<div id="toolbar-dataview"></div>'),
                 $r3 = $('<div id="map-panel"</div>');
-
-            $(document.body).append($sandbox);
-            $sandbox.append($r1);
-            $sandbox.append($r2);
-            $sandbox.append($r3);  
-            console.log($sandbox);  
-                
+       
             // 1) add spies for all relevant objects:
             spyOn(StyleApp.prototype, 'initialize').and.callThrough();
             spyOn(StyleApp.prototype, 'resizeMap').and.callThrough();
+            spyOn(BaseMapView.prototype, 'renderMap');
+            spyOn(BaseMapView.prototype, 'initialize');
+            spyOn(BaseMapView.prototype, 'onShow');
           //  spyOn(GalleryApp.prototype, 'showMediaDetail');
           //  spyOn(Projects.prototype, "fetch").and.callThrough();
 
+            
+        
+
+            // 3) add dummy HTML elements:
+            fixture = setFixtures('<div id="toolbar-main"></div><div class="main-panel"><div id="left-panel"></div><div id="map-panel"><div id="map"></div></div><div id="right-panel" class="side-panel"></div></div>');
             // 2) initialize ProfileApp object:
             styleApp = new StyleApp();
             styleApp.start(); // opts defined in spec-helpers
-
-            // 3) add dummy HTML elements:
-          //  fixture = setFixtures('<div></div>').append(styleApp.$el);
+            fixture.append(styleApp.$el);
         };
 
         describe("StyleApp: Application-Level Tests", function () {
             beforeEach(function () {
                 initApp(this); 
+            });
+            afterEach(function () {
+                Backbone.history.stop();
             });
 
             it("should initialize correctly", function () {
@@ -47,7 +51,7 @@ define([
             });
 
             it("events should trigger correct functions", function () {
-                  expect(styleApp.resizeMap).toHaveBeenCalledTimes(0);
+                expect(styleApp.resizeMap).toHaveBeenCalledTimes(0);
                 styleApp.vent.trigger('resize-map', 300);
                 expect(styleApp.resizeMap).toHaveBeenCalledTimes(1);
             });

@@ -21,14 +21,15 @@ require(['boot'], function () {
         // VIEWS
         'spec/views/global-toolbar-test.js',
         'spec/views/data-manager-test.js',
-        'spec/views/legend-layer-entry-test.js',
+       // 'spec/views/legend-layer-entry-test.js',
         'spec/views/audio-player-new-test.js',
        // 'spec/views/audio-player-test.js',
         'spec/views/style-right-panel-test.js',
-        'spec/views/style-left-panel-test.js'
+        'spec/views/style-left-panel-test.js',
+        'spec/views/select-map-view-test.js',
 
-        //encountering problems with style app test
-       // 'spec/views/style-app-test.js'
+        //APPS
+        'spec/views/style-app-test.js'
 
     ];
 
