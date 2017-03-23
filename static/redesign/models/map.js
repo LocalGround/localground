@@ -26,7 +26,7 @@ define(["models/base", "collections/layers"], function (Base, Layers) {
                 console.log("serialize");
                 this.set("panel_styles", JSON.parse(panelStyles));
             }
-            if (data.layers) {
+            if (data && data.layers) {
                 this.set("layers", new Layers(data.layers, {mapID: this.id}));
             }
 		},

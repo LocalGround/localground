@@ -9,6 +9,10 @@ urlpatterns = patterns('',
     # mostly static html:
     (r'^$', direct_to_template, {'template_name': 'pages/splash.html'}),
     (r'^map/$', direct_to_template, {'template_name': 'pages/map.html'}),
+    (r'^gallery/$', direct_to_template, {'template_name': 'pages/gallery.html'}),
+    (r'^table/$', direct_to_template, {'template_name': 'pages/spreadsheet.html'}),
+    (r'^style/$', direct_to_template, {'template_name': 'pages/style.html'}),
+    (r'^presentation/$', direct_to_template, {'template_name': 'pages/presentation.html'}),
     (r'^pages/(?P<page_name>\w+)/', 'localground.apps.site.views.pages.about_pages'),
 
     # django authentication:
