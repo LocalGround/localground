@@ -17,7 +17,7 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
         getViewBox: function () {
             return (-1 * this.strokeWeight) + ' ' +
                     (-1 * this.strokeWeight) + ' ' +
-                    (this.baseWidth + this.strokeWeight) + ' ' +
+                    (this.baseWidth + this.strokeWeight + 2) + ' ' +
                     (this.baseHeight + this.strokeWeight + 2);
         },
         getScale: function () {
@@ -39,7 +39,9 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
                 url: this.url,
                 //size: new google.maps.Size(this.width, this.height),
                 origin: this.origin || new google.maps.Point(0, 0),
-                viewBox: this.getViewBox()
+                viewBox: this.getViewBox(),
+                width: this.width,
+                height: this.height
             };
         }
     });

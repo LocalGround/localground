@@ -19,6 +19,7 @@ require(['boot'], function () {
         'spec/truth-statement-test.js',
 
         // VIEWS
+        'spec/views/spreadsheet-app-test.js',
         'spec/views/global-toolbar-test.js',
         'spec/views/data-manager-test.js',
         'spec/views/legend-layer-entry-test.js',
