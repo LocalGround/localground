@@ -35,19 +35,16 @@ define(["marionette",
                 // call Marionette's default functionality (similar to "super")
                 Marionette.ItemView.prototype.initialize.call(this);
                 this.render();
-
-                if (!this.collection){
-                    console.log("Collection must be defined")
-                    return;
-                }
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
                 this.listenTo(this.app.vent, "add-row", this.addRow);
                 this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
-                this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
-                this.listenTo(this.collection, 'add', this.renderSpreadsheet);
+                if (this.collection) {
+                    this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
+                    this.listenTo(this.collection, 'add', this.renderSpreadsheet);
+                }
             },
             onRender: function () {
                 this.renderSpreadsheet();

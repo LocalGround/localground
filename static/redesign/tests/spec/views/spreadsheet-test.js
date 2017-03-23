@@ -12,6 +12,7 @@ define([
 
         var initSpies = function () {
             spyOn(Spreadsheet.prototype, 'render').and.callThrough();
+            spyOn(Spreadsheet.prototype, 'initialize').and.callThrough();
             //spyOn(Spreadsheet.prototype, 'initModel').and.callThrough();
         };
 
@@ -24,23 +25,38 @@ define([
                 newSpreadsheet = new Spreadsheet({
                     app: this.app
                 });
-                expect(Spreadsheet).toEqual(jasmine.any(Spreadsheet));
-                // How do I confirm that Spreadsheet is new spreadsheet?
+                expect(newSpreadsheet).toEqual(jasmine.any(Spreadsheet));
+            });
+            
+            it("Spreadsheet successfully sets the collection", function () {
+                //Test with photos, audio, and records collections:
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app,
+                    collection: this.photos
+                });
+                expect(1).toEqual(1);
             });
 
             it("Template created", function () {
                 newSpreadsheet = new Spreadsheet({
                     app: this.app
                 });
-                expect(Spreadsheet.template).toEqual(jasmine.any(Function));
+                expect(newSpreadsheet.template).toEqual(jasmine.any(Function));
             });
 
             it("Render gets called", function () {
                 newSpreadsheet = new Spreadsheet({
                     app: this.app
                 });
-                expect(Spreadsheet.model).toEqual(jasmine.any(Spreadsheet));
                 expect(Spreadsheet.prototype.render).toHaveBeenCalledTimes(1);
+            });
+            
+            it("Spreadsheet listens for event handlers", function () {
+                //TODO:
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app
+                });
+                expect(1).toEqual(1);
             });
 
         });
