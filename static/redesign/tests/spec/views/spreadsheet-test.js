@@ -16,6 +16,10 @@ define([
 
             // Event handler functions
             spyOn(Spreadsheet.prototype, 'doSearch').and.callThrough();
+            spyOn(Spreadsheet.prototype, 'clearSearch').and.callThrough();
+            spyOn(Spreadsheet.prototype, 'renderSpreadsheet').and.callThrough();
+            spyOn(Spreadsheet.prototype, 'addRow').and.callThrough();
+            spyOn(Spreadsheet.prototype, 'attachModels').and.callThrough();
         };
 
         describe("Spreadsheet: Initialization Tests", function () {
@@ -82,17 +86,35 @@ define([
                 expect(Spreadsheet.prototype.render).toHaveBeenCalledTimes(1);
             });
 
-            it("Spreadsheet listens for event handlers", function () {
-                //TODO:
-                newSpreadsheet = new Spreadsheet({
-                    app: this.app
-                });
-                //expect(1).toEqual(1);
+            describe("Spreadsheet listens for even handlers", function(){
 
-                // trigger collection set and make render be called
-                newSpreadsheet.app.vent.trigger("search-requested");
-                expect(Spreadsheet.prototype.doSearch).toHaveBeenCalledTimes(1);
+                /*
+                  Requires a sample collection with fields to make that work
+                */
+                it("Successfully calls doSearch", function () {
+                    //TODO:
+                    newSpreadsheet = new Spreadsheet({
+                        app: this.app
+                    });
+                    //expect(1).toEqual(1);
+
+                    // trigger collection set and make render be called
+                    newSpreadsheet.app.vent.trigger("search-requested");
+                    expect(Spreadsheet.prototype.doSearch).toHaveBeenCalledTimes(1);
+                });
+
+                it ("Successfully calls clearSearch", function(){
+                    newSpreadsheet = new Spreadsheet({
+                        app: this.app
+                    });
+                    //expect(1).toEqual(1);
+
+                    // trigger collection set and make render be called
+                    newSpreadsheet.app.vent.trigger("clear-search");
+                    expect(Spreadsheet.prototype.clearSearch).toHaveBeenCalledTimes(1);
+                });
             });
+
 
         });
 
