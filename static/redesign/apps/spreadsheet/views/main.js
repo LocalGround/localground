@@ -36,6 +36,10 @@ define(["marionette",
                 Marionette.ItemView.prototype.initialize.call(this);
                 this.render();
 
+                if (!this.collection){
+                    console.log("Collection must be defined")
+                    return;
+                }
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
@@ -49,6 +53,15 @@ define(["marionette",
                 this.renderSpreadsheet();
             },
             renderSpreadsheet: function () {
+                // When the spreadsheet is made without a defined collection
+                // Alert that there is no collection
+                // for the sole purpose of unit testing
+
+                if (!this.collection) {
+                    this.$el.find('#grid').html("Collection is not defined");
+                    return;
+                }
+
                 if (this.collection.length == 0) {
                     this.$el.find('#grid').html("no rows found");
                     return;

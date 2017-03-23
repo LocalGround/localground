@@ -21,20 +21,26 @@ define([
             });
 
             it("Spreadsheet Successfully created", function () {
-                newSpreadsheet = new Sreadsheet();
-                //expect(newCreateForm.model).toEqual(jasmine.any(Spreadsheet));
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app
+                });
+                expect(Spreadsheet).toEqual(jasmine.any(Spreadsheet));
                 // How do I confirm that Spreadsheet is new spreadsheet?
             });
 
             it("Template created", function () {
-                newSpreadsheet = new Sreadsheet();
-                expect(newCreateForm.template).toEqual(jasmine.any(Function));
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app
+                });
+                expect(Spreadsheet.template).toEqual(jasmine.any(Function));
             });
 
             it("Render gets called", function () {
-                newSpreadsheet = new Sreadsheet();
-                expect(newCreateForm.model).toEqual(jasmine.any(Spreadsheet));
-                expect(CreateForm.prototype.render).toHaveBeenCalledTimes(0);
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app
+                });
+                expect(Spreadsheet.model).toEqual(jasmine.any(Spreadsheet));
+                expect(Spreadsheet.prototype.render).toHaveBeenCalledTimes(1);
             });
 
         });
