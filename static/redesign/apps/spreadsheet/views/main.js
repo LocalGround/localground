@@ -47,6 +47,7 @@ define(["marionette",
                 }
             },
             onRender: function () {
+                console.log(this);
                 this.renderSpreadsheet();
             },
             renderSpreadsheet: function () {

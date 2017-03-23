@@ -114,10 +114,7 @@ define([
 
                 it("Successfully calls renderSpreadsheet", function(){
                     newSpreadsheet.app.vent.trigger("render-spreadsheet");
-                    // Intended for it to be called once, but actually calls twice
-                    // I will have to leave it at called two times unless
-                    // can be back to called one time again
-                    expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(1);
+                    expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(2);
                 });
 
                 it("Successfully calls addRow", function(){
@@ -129,7 +126,12 @@ define([
                     // Unforntunately, this one requires digging into oen of the elements
                     // inside field so that it can actually gather the collection of models
                     // for the "added media" column
-                    newSpreadsheet.app.vent.trigger("add-models-to-marker");
+                    var models = [];
+                    this.photos.each(function(model){
+                        models.push(model);
+                    });
+                    newSpreadsheet.currentModel = this.form_1.at(0);
+                    newSpreadsheet.app.vent.trigger("add-models-to-marker", models);
                     expect(Spreadsheet.prototype.attachModels).toHaveBeenCalledTimes(1);
                 });
 
@@ -137,18 +139,12 @@ define([
 
                 it("Successfully calls Collection -> add", function(){
                     newSpreadsheet.collection.trigger("add");
-                    // Intended for it to be called once, but actually calls twice
-                    // I will have to leave it at called two times unless
-                    // can be back to called one time again
-                    expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(1);
+                    expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(2);
                 });
 
                 it("Successfully calls Collection -> reset", function(){
                     newSpreadsheet.collection.trigger("reset");
-                    // Intended for it to be called once, but actually calls twice
-                    // I will have to leave it at called two times unless
-                    // can be back to called one time again
-                    expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(1);
+                    expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(2);
                 });
             });
 
