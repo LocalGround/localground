@@ -117,7 +117,7 @@ define([
                     // Intended for it to be called once, but actually calls twice
                     // I will have to leave it at called two times unless
                     // can be back to called one time again
-                    expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(2);
+                    expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(1);
                 });
 
                 it("Successfully calls addRow", function(){
