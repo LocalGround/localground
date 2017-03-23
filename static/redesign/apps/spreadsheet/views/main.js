@@ -350,6 +350,7 @@ define(["marionette",
                 var that = this,
                     i = 0,
                     ordering;
+                console.log();
                 for (i = 0; i < models.length; i++) {
                     ordering = this.currentModel.get("photo_count") + this.currentModel.get("audio_count");
                     this.currentModel.attach(models[i], (ordering + i + 1), function () {

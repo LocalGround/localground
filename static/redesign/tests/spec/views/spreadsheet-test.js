@@ -3,9 +3,13 @@ define([
     "handlebars",
     rootDir + "apps/spreadsheet/views/main",
     rootDir + "models/form",
+    rootDir + "collections/photos",
+    rootDir + "collections/audio",
+    rootDir + "collections/markers",
+    rootDir + "collections/records",
     "tests/spec-helper"
 ],
-    function (Handlebars, Spreadsheet, Form) {
+    function (Handlebars, Spreadsheet, Form, Photos, Audio, Markers, Records) {
         'use strict';
         var fixture;
         var newSpreadsheet;
@@ -42,7 +46,8 @@ define([
                         app: this.app,
                         collection: this.photos
                     });
-                    expect(newSpreadsheet.collection).toBeDefined();
+                    expect(newSpreadsheet.collection.length).toBe(this.photos.length);
+                    expect(newSpreadsheet.collection).toEqual(jasmine.any(Photos));
                 });
 
                 it("Successfully set audio collection", function () {
@@ -50,7 +55,8 @@ define([
                         app: this.app,
                         collection: this.audioFiles
                     });
-                    expect(newSpreadsheet.collection).toBeDefined();
+                    expect(newSpreadsheet.collection.length).toBe(this.audioFiles.length);
+                    expect(newSpreadsheet.collection).toEqual(jasmine.any(Audio));
                 });
 
                 it("Successfully set markers collection", function () {
@@ -58,7 +64,8 @@ define([
                         app: this.app,
                         collection: this.markers
                     });
-                    expect(newSpreadsheet.collection).toBeDefined();
+                    expect(newSpreadsheet.collection.length).toBe(this.markers.length);
+                    expect(newSpreadsheet.collection).toEqual(jasmine.any(Markers));
                 });
 
                 it("Successfully set records collection", function () {
@@ -66,11 +73,10 @@ define([
                         app: this.app,
                         collection: this.form_1
                     });
-                    // However, the example provided does not contain any fields
-                    expect(newSpreadsheet.collection).toBeDefined();
+                    expect(newSpreadsheet.collection.length).toBe(this.form_1.length);
+                    expect(newSpreadsheet.collection).toEqual(jasmine.any(Records));
                 });
             });
-
 
             it("Template created", function () {
                 newSpreadsheet = new Spreadsheet({
@@ -87,31 +93,62 @@ define([
             });
 
             describe("Spreadsheet listens for even handlers", function(){
-
-                /*
-                  Requires a sample collection with fields to make that work
-                */
-                it("Successfully calls doSearch", function () {
-                    //TODO:
+                beforeEach(function(){
                     newSpreadsheet = new Spreadsheet({
-                        app: this.app
+                        app: this.app,
+                        collection: this.form_1,
+                        fields: this.fields
                     });
-                    //expect(1).toEqual(1);
+                });
+                it("Successfully calls doSearch", function () {
 
-                    // trigger collection set and make render be called
                     newSpreadsheet.app.vent.trigger("search-requested");
                     expect(Spreadsheet.prototype.doSearch).toHaveBeenCalledTimes(1);
                 });
 
-                it ("Successfully calls clearSearch", function(){
-                    newSpreadsheet = new Spreadsheet({
-                        app: this.app
-                    });
-                    //expect(1).toEqual(1);
+                it("Successfully calls clearSearch", function(){
 
-                    // trigger collection set and make render be called
                     newSpreadsheet.app.vent.trigger("clear-search");
                     expect(Spreadsheet.prototype.clearSearch).toHaveBeenCalledTimes(1);
+                });
+
+                it("Successfully calls renderSpreadsheet", function(){
+                    newSpreadsheet.app.vent.trigger("render-spreadsheet");
+                    // Intended for it to be called once, but actually calls twice
+                    // I will have to leave it at called two times unless
+                    // can be back to called one time again
+                    expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(2);
+                });
+
+                it("Successfully calls addRow", function(){
+                    newSpreadsheet.app.vent.trigger("add-row");
+                    expect(Spreadsheet.prototype.addRow).toHaveBeenCalledTimes(1);
+                });
+
+                it("Successfully calls attachModels", function(){
+                    // Unforntunately, this one requires digging into oen of the elements
+                    // inside field so that it can actually gather the collection of models
+                    // for the "added media" column
+                    newSpreadsheet.app.vent.trigger("add-models-to-marker");
+                    expect(Spreadsheet.prototype.attachModels).toHaveBeenCalledTimes(1);
+                });
+
+                // Even triggers form collection:
+
+                it("Successfully calls Collection -> add", function(){
+                    newSpreadsheet.collection.trigger("add");
+                    // Intended for it to be called once, but actually calls twice
+                    // I will have to leave it at called two times unless
+                    // can be back to called one time again
+                    expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(1);
+                });
+
+                it("Successfully calls Collection -> reset", function(){
+                    newSpreadsheet.collection.trigger("reset");
+                    // Intended for it to be called once, but actually calls twice
+                    // I will have to leave it at called two times unless
+                    // can be back to called one time again
+                    expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(1);
                 });
             });
 

@@ -11,6 +11,7 @@ define(
         "collections/markers",
         "collections/records",
         "collections/prints",
+        "collections/fields",
         "models/project",
         "models/photo",
         "models/marker",
@@ -20,11 +21,13 @@ define(
         "models/print",
         "models/layer",
         "models/form",
+        "models/field",
         "lib/data/dataManager"
     ],
     function (Backbone, $, appUtilities, Projects, Photos, AudioFiles,
-              MapImages, Markers, Records, Prints,
-              Project, Photo, Marker, Audio, Record, MapImage, Print, Layer, Form,
+              MapImages, Markers, Records, Prints, Fields,
+              Project, Photo, Marker, Audio, Record,
+              MapImage, Print, Layer, Form, Field,
               DataManager) {
         'use strict';
         beforeEach(function () {
@@ -191,6 +194,27 @@ define(
                 new Record({id: 2, team_name: "Green team", tags: ['friend\'s house', 'tag1'], worm_count: 8, project_id: 1, overlay_type: "form_1" }),
                 new Record({id: 3, team_name: "Red team", tags: ['coffee shop'], worm_count: 12, project_id: 2, overlay_type: "form_1" })
             ], { 'url': 'dummy/url' });
+
+            this.fields = new Fields([
+                {
+                    "id": 1,
+                    "form": 3,
+                    "col_alias": "Team Name",
+                    "col_name": "team_name",
+                    "is_display_field": true,
+                    "ordering": 1,
+                    "data_type": "text"
+                },
+                {
+                    "id": 2,
+                    "form": 3,
+                    "col_alias": "Worm Count",
+                    "col_name": "worm_count",
+                    "is_display_field": false,
+                    "ordering": 2,
+                    "data_type": "integer"
+                }
+            ], {url: "dummy"});
 
             this.dataDictionary = {
                 photos: this.photos,
