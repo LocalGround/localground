@@ -124,10 +124,80 @@ define(
                         "fw": "bold"
                     }
                 },
-                "project_id": 3
-             });
-
-            this.layer = new Layer({
+                "project_id": 3,
+                "layers": [
+                    {
+                        "id": 3,
+                        "title": "untitled",
+                        "data_source": null,
+                        "symbol_shape": "fa-circle",
+                        "layer_type": "categorical",
+                        "filters": [
+                            {
+                                "tag": "nothing"
+                            }
+                        ],
+                        "map_id": 1,
+                        "symbols": [
+                            {
+                                "color": "#7075FF",
+                                "width": 30,
+                                "rule": "sculptures > 0",
+                                "title": "At least 1 sculpturrre"
+                            }
+                        ]
+                    },
+                    {
+                        "id": 2,
+                        "title": "Photo",
+                        "data_source": null,
+                        "symbol_shape": "fa-circle",
+                        "layer_type": "categorical",
+                        "filters": [
+                            {
+                                "tag": "nothing"
+                            }
+                        ],
+                        "map_id": 1,
+                        "symbols": [
+                            {
+                                "color": "#7075FF",
+                                "width": 30,
+                                "rule": "sculptures > 0",
+                                "title": "At least 1 sculpture"
+                            }
+                        ]
+                    },
+                    {
+                        "id": 1,
+                        "title": "Murals",
+                        "data_source": "murals",
+                        "symbol_shape": "circle",
+                        "layer_type": "continuous",
+                        "filters": {
+                            "tags": "nothing"
+                        },
+                        "map_id": 1,
+                        "symbols": [
+                            {
+                                "color": "#7075FF",
+                                "width": 30,
+                                "rule": "murals > 0",
+                                "title": "At least 1 mural"
+                            },
+                            {
+                                "color": "#F011D9",
+                                "width": 30,
+                                "rule": "murals = 0",
+                                "title": "No murals"
+                            }
+                        ]
+                    }
+                ],
+                "layers_url": "http://localhost:7777/api/0/maps/1/layers/"
+            });
+            this.layer = this.testMap.get("layers").at(0);
+          /*  this.layer = new Layer({
                 "id": 1,
                 "title": "Earthworm Count",
                 "data_source": "form_1",
@@ -169,6 +239,7 @@ define(
                     }
                 ]
             });
+            */
             this.photos = new Photos([
                 new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", attribution: "Owner1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_medium_sm: '//:0', path_marker_sm: "//:0" }),
                 new Photo({id: 2, name: "Dog", tags: 'animal, dog', project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_medium: '//:0', path_small: '//:0', path_marker_sm: "//:0" }),
