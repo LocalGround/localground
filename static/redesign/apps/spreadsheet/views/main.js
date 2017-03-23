@@ -373,12 +373,13 @@ define(["marionette",
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
                         cols = ["ID", "Lat", "Lng", "Title", "Caption",
-                        //"Photos",
-                        //"Audio",
                         "Media",
                         "Tags", "Owner", "Delete"];
                         return cols;
                     default:
+                        if (!this.fields){
+                            return null;
+                        }//*/
                         cols = ["ID", "Lat", "Lng"];
                         var deleteColumn = this.show_hide_deleteColumn == true ? " <a class='fa fa-minus-circle delete_column' fieldIndex= '" +
                                                                           i +"' aria-hidden='true'></a>" : "";
@@ -402,6 +403,9 @@ define(["marionette",
                     case "markers":
                         return [30, 80, 80, 200, 400, 100, 200, 120, 100];
                     default:
+                        if (!this.fields){
+                            return null;
+                        }//*/
                         var cols = [30, 80, 80];
                         for (var i = 0; i < this.fields.length; ++i){
                             cols.push(150);
@@ -474,6 +478,9 @@ define(["marionette",
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
                        ];
                     default:
+                        if (!this.fields){
+                            return null;
+                        }//*/
                         var cols = [
                             { data: "id", readOnly: true },
                             { data: "lat", type: "numeric", format: '0.00000' },
