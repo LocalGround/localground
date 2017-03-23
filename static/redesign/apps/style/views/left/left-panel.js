@@ -61,6 +61,7 @@ define(["marionette",
                 this.app.vent.trigger("resize-map", "80%");
             },
             showRightPanel: function () {
+                console.log("clicked .edit");
                 $("#right-panel").addClass("show-right-panel");
             },
             createNewLayer: function (e) {

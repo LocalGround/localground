@@ -16,6 +16,7 @@ define(
         "models/marker",
         "models/audio",
         "models/record",
+        "models/map",
         "models/mapimage",
         "models/print",
         "models/layer",
@@ -23,7 +24,7 @@ define(
     ],
     function (Backbone, $, appUtilities, Projects, Photos, AudioFiles,
               MapImages, Markers, Records, Prints,
-              Project, Photo, Marker, Audio, Record, MapImage, Print, Layer, DataManager) {
+              Project, Photo, Marker, Audio, Record, Map, MapImage, Print, Layer, DataManager) {
         'use strict';
         beforeEach(function () {
             //spoof google maps API:
@@ -70,6 +71,62 @@ define(
              * Adds some dummy data for testing convenience.
              * Availabe to all of the tests.
              */
+             this.testMap = new Map({
+                "url": "http://localhost:7777/api/0/maps/1/",
+                "id": 1,
+                "name": "Berkeley Public Art",
+                "caption": "A map of public art around Berkeley",
+                "overlay_type": "styled_map",
+                "tags": [
+                    "tag1",
+                    "tag2",
+                    "tag3"
+                ],
+                "owner": "riley2",
+                "slug": "berkeley-art",
+                "sharing_url": "berkeley-art",
+                "center": {
+                    "type": "Point",
+                    "coordinates": [
+                        -122.04732196997611,
+                        37.75351445273666
+                    ]
+                },
+                "basemap": 5,
+                "zoom": 8,
+                "panel_styles": {
+                    "title": {
+                        "color": "33ff52",
+                        "font": "Lato",
+                        "type": "title",
+                        "size": 28,
+                        "fw": "bold"
+                    },
+                    "paragraph": {
+                        "color": "ffa84c",
+                        "font": "bebas",
+                        "type": "title",
+                        "size": 21,
+                        "fw": "bold"
+                    },
+                    "subtitle": {
+                        "color": "33ff52",
+                        "font": "Lato",
+                        "type": "title",
+                        "size": 15,
+                        "fw": "bold"
+                    },
+                    "tags": {
+                        "color": "33ff52",
+                        "font": "Lato",
+                        "type": "title",
+                        "size": 15,
+                        "fw": "bold"
+                    }
+                },
+                "project_id": 3
+             });
+
             this.layer = new Layer({
                 "id": 1,
                 "title": "Earthworm Count",
