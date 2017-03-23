@@ -65,16 +65,11 @@ define(["marionette",
 
             events: {
                 "click .add-layer" : "showDropDown",
-                "click #new-layer-options" : "newLayer"
+                "click #new-layer-options a" : "createNewLayer"
             },
 
             showDropDown: function() {
                this.$el.find("#new-layer-options").toggle();
-            },
-
-            newLayer: function() {
-                //send info to right panel?
-                //this.app.vent.trigger();
             },
 
             //display layers when map is changed
@@ -82,6 +77,26 @@ define(["marionette",
                 this.collection = new Layers(null, {mapID: map.get("id")});
                 this.collection.fetch({ reset: true});
                 this.listenTo(this.collection, 'reset', this.render);
+            },
+            createNewLayer: function (e) {
+                this.app.vent.trigger('add-layer');
+                var $selection = $(e.target).attr("data-value");
+                var layer = new Layer ({
+                    map_id: this.model.id,
+                    data_source: $selection,
+                    layer_type: "categorical",
+                    filters: [{ "tag" : "nothing" }],
+                    symbols: [{
+                        "color": "#7075FF",
+                        "width": 30,
+                        "rule": "sculptures > 0",
+                        "title": "At least 1 sculpture"
+                    }],
+                    title: "untitled"
+                    
+                });
+                console.log(layer);
+                this.app.vent.trigger("edit-layer", layer);
             }
 
         });

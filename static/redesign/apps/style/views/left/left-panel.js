@@ -19,6 +19,7 @@ define(["marionette",
                 this.render();
                 this.listenTo(this.app.vent, 'change-map', this.handleNewMap);
                 this.listenTo(this.app.vent, 'edit-layer', this.showRightPanel);
+                this.listenTo(this.app.vent, 'add-layer', this.showRightPanel);
             },
             
             events: {
@@ -65,26 +66,6 @@ define(["marionette",
                 //TODO: move this method to lay-list-view's childview class
                 console.log("clicked .edit");
                 $("#right-panel").addClass("show-right-panel");
-            },
-            createNewLayer: function (e) {
-                this.showRightPanel();
-                var $selection = $(e.target).attr("data-value");
-                var layer = new Layer ({
-                    map_id: this.model.id,
-                    data_source: $selection,
-                    layer_type: "categorical",
-                    filters: [{ "tag" : "nothing" }],
-                    symbols: [{
-                        "color": "#7075FF",
-                        "width": 30,
-                        "rule": "sculptures > 0",
-                        "title": "At least 1 sculpture"
-                    }],
-                    title: "untitled"
-                    
-                });
-                console.log(layer);
-                this.app.vent.trigger("edit-layer", layer);
             }
         });
         return LeftPanelLayout;

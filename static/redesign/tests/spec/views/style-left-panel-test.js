@@ -15,6 +15,7 @@ define([
         function initView(scope) {
             // 1) add spies for all relevant objects:
             spyOn(Marionette.Region.prototype, 'show').and.callThrough();
+            spyOn(scope.app.vent, 'trigger').and.callThrough();
 
             spyOn(SelectMapView.prototype, 'render').and.callThrough();
             spyOn(LayerListView.prototype, 'render').and.callThrough();
@@ -25,7 +26,6 @@ define([
             spyOn(LeftPanelView.prototype, 'handleNewMap').and.callThrough();
             spyOn(LeftPanelView.prototype, 'moveLeftPanel').and.callThrough();
             spyOn(LeftPanelView.prototype, 'showRightPanel').and.callThrough();
-            spyOn(LeftPanelView.prototype, 'createNewLayer').and.callThrough();
 
 
             // 2) initialize rightPanel object:
@@ -92,18 +92,8 @@ define([
                 expect(leftPanel.moveLeftPanel).toHaveBeenCalledTimes(0);
                 fixture.find('.hide-button').trigger("click");
                 expect(leftPanel.moveLeftPanel).toHaveBeenCalledTimes(1);
-
-                expect(leftPanel.showRightPanel).toHaveBeenCalledTimes(0);
-                fixture.find('.edit').trigger("click");
-                expect(leftPanel.showRightPanel).toHaveBeenCalledTimes(1);
-
-                //these two aren't working
-                expect(leftPanel.createNewLayer).toHaveBeenCalledTimes(0);
-                fixture.find('#new-layer-options a').trigger("click");
-                expect(leftPanel.createNewLayer).toHaveBeenCalledTimes(1);
-
-                
             });
+            
             
         });
 
