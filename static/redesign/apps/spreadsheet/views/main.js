@@ -20,7 +20,7 @@ define(["marionette",
             },
             table: null,
             currentModel :null,
-            show_hide_deleteColumn: false,
+            show_hide_deleteColumn: true,
             events: {
                 'click #addColumn': 'showCreateFieldForm',
                 'click .addMedia': 'showMediaBrowser',
@@ -398,9 +398,10 @@ define(["marionette",
                             return null;
                         }//*/
                         cols = ["ID", "Lat", "Lng"];
-                        var deleteColumn = this.show_hide_deleteColumn == true ? " <a class='fa fa-minus-circle delete_column' fieldIndex= '" +
-                                                                          i +"' aria-hidden='true'></a>" : "";
+
                         for (var i = 0; i < this.fields.length; ++i) {
+                            var deleteColumn = this.show_hide_deleteColumn == true ? " <a class='fa fa-minus-circle delete_column' fieldIndex= '" +
+                                                                              i +"' aria-hidden='true'></a>" : "";
                             cols.push(this.fields.at(i).get("col_name") + deleteColumn);
                         }
                         cols.push("Media");

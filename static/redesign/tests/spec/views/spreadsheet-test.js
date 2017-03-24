@@ -230,10 +230,13 @@ define([
             };
 
             var triggerDeleteField = function(){
+                newSpreadsheet.show_hide_deleteColumn = true;
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
                 newSpreadsheet.renderSpreadsheet();
                 expect(Spreadsheet.prototype.deleteField).toHaveBeenCalledTimes(0);
-                newSpreadsheet.$el.find('.delete_column').trigger('click');
+                newSpreadsheet.$el.find('.delete_column').trigger('click', {
+                    currentTarget: $(".delete_column").get(0)
+                });
             };
 
             beforeEach(function(done){
@@ -277,10 +280,13 @@ define([
             });
 
             describe("Spreadsheer Delete Field Test", function(){
+
                 it("Does not delete field", function(){
                     spyOn(window, 'confirm').and.returnValue(false);
                     triggerDeleteField();
-                    expect(Spreadsheet.prototype.deleteField).toHaveBeenCalledTimes(0);
+                    expect(Spreadsheet.prototype.deleteField).toHaveBeenCalledTimes(newSpreadsheet.fields.length * 2);
+                    // We discovered that there are two of those delete column items per header, but one is on top
+                    // of the other, hence we had to multiply by two for number of available fields
                 });
                 it("Does delete field", function(){
                     spyOn(window, 'confirm').and.returnValue(true);
