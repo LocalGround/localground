@@ -24,9 +24,8 @@ define(
         "lib/data/dataManager"
     ],
     function (Backbone, $, appUtilities, Projects, Photos, AudioFiles,
-              MapImages, Markers, Records, Prints,
-              Project, Photo, Marker, Audio, Record, MapImage, Print, Layer, Form,
-              DataManager) {
+              MapImages, Markers, Records, Prints, Project, Photo, Marker,
+              Audio, Record, Map, MapImage, Print, Layer, Form, DataManager) {
         'use strict';
         beforeEach(function () {
             //spoof google maps API:

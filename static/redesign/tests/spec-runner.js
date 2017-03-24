@@ -26,7 +26,7 @@ require(['boot'], function () {
         'spec/views/audio-player-new-test.js',
        // 'spec/views/audio-player-test.js',
         'spec/views/style-right-panel-test.js',
-        'spec/views/style-left-panel-test.js'
+        'spec/views/style-left-panel-test.js',
         'spec/views/audio-player-test.js',
         'spec/views/create-form-test.js',
         'spec/views/form-field-test.js'
