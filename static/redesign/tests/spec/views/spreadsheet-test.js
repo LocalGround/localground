@@ -206,7 +206,14 @@ define([
 
         describe("Spreadsheet: Clickable functions", function(){
 
-            // Work in progress
+            beforeEach(function(){
+                initSpies();
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app,
+                    collection: this.form_1,
+                    fields: this.fields
+                });
+            });
 
             it("Shows the Create Field Form", function(){
                 expect(Spreadsheet.prototype.showCreateFieldForm).toHaveBeenCalledTimes(1);
@@ -231,21 +238,32 @@ define([
 
         describe("Spreadsheet: Renderer functions", function(){
 
-            // Work in progress
+            beforeEach(function(){
+                initSpies();
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app
+                });
+            });
 
             it("Go through the Button renderer", function(){
+                newSpreadsheet.fields = this.fields;
+                newSpreadsheet.collection = this.form_1;
                 expect(Spreadsheet.prototype.buttonRenderer).toHaveBeenCalledTimes(1);
             });
 
             it("Go through the Thumbnail renderer", function(){
+                newSpreadsheet.collection = this.photos;
                 expect(Spreadsheet.prototype.thumbnailRenderer).toHaveBeenCalledTimes(1);
             });
 
             it("Go through the Audio renderer", function(){
+                newSpreadsheet.collection = this.audioFiles;
                 expect(Spreadsheet.prototype.audioRenderer).toHaveBeenCalledTimes(1);
             });
 
             it("Go through the Media Count renderer", function(){
+                newSpreadsheet.fields = this.fields;
+                newSpreadsheet.collection = this.form_1;
                 expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(1);
             });
         });

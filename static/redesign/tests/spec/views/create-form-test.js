@@ -1,16 +1,15 @@
 var rootDir = "../../";
 define([
-    "handlebars",
+    "jquery",
     rootDir + "apps/gallery/views/create-form",
     rootDir + "models/form",
     "tests/spec-helper"
 ],
-    function (Handlebars, CreateForm, Form) {
+    function ($, CreateForm, Form) {
         'use strict';
-        var fixture;
-        var newCreateForm;
+        var fixture, newCreateForm, initSpies;
 
-        var initSpies = function () {
+        initSpies = function () {
             spyOn(CreateForm.prototype, 'render').and.callThrough();
             spyOn(CreateForm.prototype, 'initModel').and.callThrough();
             spyOn(CreateForm.prototype, 'attachCollectionEventHandlers').and.callThrough();
@@ -43,7 +42,6 @@ define([
             });
 
             it("Template is created", function () {
-                //console.log(newCreateForm.template);
                 newCreateForm = new CreateForm();
                 expect(newCreateForm.template).toEqual(jasmine.any(Function));
             });
@@ -53,7 +51,7 @@ define([
                 expect(CreateForm.prototype.render).toHaveBeenCalledTimes(1);
             });
 
-            it("No Model defined, make new model", function(){
+            it("No Model defined, make new model", function () {
                 newCreateForm = new CreateForm({
                     model: this.form
                 });
@@ -61,7 +59,7 @@ define([
             });
         });
 
-        describe("Create Form: Initialize model", function() {
+        describe("Create Form: Initialize model", function () {
             beforeEach(function () {
                 initSpies();
                 newCreateForm = new CreateForm({
@@ -69,15 +67,13 @@ define([
                 });
             });
 
-            it("Put fields into collection", function(){
-                //console.log("New Create Form Collection: " + newCreateForm.collection);
-                //console.log("Length of test Collection " + newCreateForm.collection.length);
+            it("Put fields into collection", function () {
                 expect(newCreateForm.collection).toEqual(newCreateForm.model.fields);
                 expect(newCreateForm.collection.length).toEqual(3);
             });
         });
 
-        describe("Create Form: Attach Collection Event Handler", function(){
+        describe("Create Form: Attach Collection Event Handler", function () {
             beforeEach(function () {
                 initSpies();
                 newCreateForm = new CreateForm({
@@ -85,15 +81,14 @@ define([
                 });
             });
 
-            it("Calls Render when Collection Resets", function(){
-                // trigger collection set and make render be called
+            it("Calls Render when Collection Resets", function () {
                 newCreateForm.collection.trigger("reset");
                 expect(CreateForm.prototype.render).toHaveBeenCalledTimes(2);
             });
         });
 
-        describe("Create Form: Initialize Model without fields", function(){
-            it("Create an empty form without fields and get fields", function(){
+        describe("Create Form: Initialize Model without fields", function () {
+            it("Create an empty form without fields and get fields", function () {
                 initSpies();
                 var emptyForm = new CreateForm({
                     model: new Form()
@@ -102,7 +97,7 @@ define([
                 expect(Form.prototype.getFields).toHaveBeenCalledTimes(1);
             });
 
-            it("Create an empty form with an ID without fields", function(){
+            it("Create an empty form with an ID without fields", function () {
                 initSpies();
                 var emptyForm = new CreateForm({
                     model: new Form({id: 5})
@@ -141,7 +136,7 @@ define([
                 initSpies();
             });
 
-            describe("Functions that require Form to be empty", function(){
+            describe("Functions that require Form to be empty", function () {
 
                 it("calls the Form's getFields() method when fetchShareData is called", function () {
 
@@ -154,8 +149,8 @@ define([
                 });
             });
 
-            describe("Functions that the form has fields", function(){
-                beforeEach(function(){
+            describe("Functions that the form has fields", function () {
+                beforeEach(function () {
                     newCreateForm = new CreateForm({
                         model: this.form,
                         app: this.app
@@ -197,8 +192,8 @@ define([
                 });
             });
 
-            describe("Creating a field", function() {
-                it ("successfully adds and saves the field where no fields exist", function(){
+            describe("Creating a field", function () {
+                it("successfully adds and saves the field where no fields exist", function () {
                     newCreateForm = new CreateForm({
                         app: this.app,
                         model: new Form({id: 5})
@@ -214,9 +209,6 @@ define([
                     fixture.find('#caption').val('dummy caption');
                     // We are working with one field from a newly created form
                     // so it should be easy to find one class of field properties
-
-                    console.log(fixture.find('.fieldname'));
-                    console.log(fixture.find('.fieldType'));
 
                     fixture.find('.fieldname').val("Sample Text");
                     fixture.find('.fieldType').val("text");
@@ -265,15 +257,11 @@ define([
                         app: this.app,
                         model: this.form
                     });
-                    //test "errorFieldName" method:
-                    //expect(1).toBe(1);
-
 
                     fixture = setFixtures("<div></div>").append(newCreateForm.$el);
 
                     var $inputs = fixture.find('input.fieldname');
                     $($inputs[0]).val(""); // empty out the field and test for the error
-                    console.log($inputs);
 
                     expect(CreateForm.prototype.errorFieldName).toHaveBeenCalledTimes(0);
                     newCreateForm.saveFormSettings();
@@ -283,11 +271,6 @@ define([
                     expect($($inputs[1]).css("background-color")).not.toBe("rgb(255, 221, 221)");
                     expect($($inputs[2]).css("background-color")).not.toBe("rgb(255, 221, 221)");
                     expect($($inputs[0]).attr("placeholder")).toBe("Field Name Missing");
-
-
-
-
-
 
                 });
 
@@ -310,7 +293,7 @@ define([
                 });
             });
 
-            describe("Field Child View Operations", function() {
+            describe("Field Child View Operations", function () {
                 it("Renders a field correctly", function () {
                     //import Field model and create a field or else
                     // use an existing field from this.form.fields
