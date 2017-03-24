@@ -14,10 +14,11 @@ define([
         var fixture;
         var newSpreadsheet;
 
-        var setupSpreadsheetTest = function () {
+        var setupSpreadsheetTest = function (scope) {
             fixture = setFixtures('<div id="toolbar-main"></div> \
                     <div id="toolbar-dataview" class="filter data"></div> \
                     <main class="main-panel"></main>');
+            spyOn(scope.app.vent, 'trigger').and.callThrough();
 
             spyOn(Spreadsheet.prototype, 'render').and.callThrough();
             spyOn(Spreadsheet.prototype, 'initialize').and.callThrough();
@@ -29,6 +30,8 @@ define([
             spyOn(Spreadsheet.prototype, 'renderSpreadsheet').and.callThrough();
             spyOn(Spreadsheet.prototype, 'addRow').and.callThrough();
             spyOn(Spreadsheet.prototype, 'attachModels').and.callThrough();
+
+
 
             // functions involving renderers
             spyOn(Spreadsheet.prototype, "thumbnailRenderer").and.callThrough();
@@ -53,7 +56,7 @@ define([
 
         describe("Spreadsheet: Initialization Tests", function () {
             beforeEach(function () {
-                setupSpreadsheetTest();
+                setupSpreadsheetTest(this);
             });
 
             it("Spreadsheet Successfully created", function () {
@@ -178,7 +181,7 @@ define([
 
         describe("Spreadsheet: Rendering the spreadsheet", function(){
             beforeEach(function(){
-                setupSpreadsheetTest();
+                setupSpreadsheetTest(this);
                 newSpreadsheet = new Spreadsheet({
                     app: this.app,
                     collection: this.form_1,
@@ -218,8 +221,23 @@ define([
                 expect(Spreadsheet.prototype.showCreateFieldForm).toHaveBeenCalledTimes(1);
             };
 
+            var triggerMediaBrowser = function(){
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.showMediaBrowser).toHaveBeenCalledTimes(0);
+                newSpreadsheet.$el.find('.addMedia').trigger('click');
+                expect(Spreadsheet.prototype.showMediaBrowser).toHaveBeenCalledTimes(newSpreadsheet.collection.length);
+            };
+
+            var triggerDeleteField = function(){
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.deleteField).toHaveBeenCalledTimes(0);
+                newSpreadsheet.$el.find('.delete_column').trigger('click');
+            };
+
             beforeEach(function(done){
-                setupSpreadsheetTest();
+                setupSpreadsheetTest(this);
                 newSpreadsheet = new Spreadsheet({
                     app: this.app,
                     collection: this.form_1,
@@ -236,20 +254,52 @@ define([
 
             describe("Spreadsheet Create Field Form Tests", function(){
                 it ("Opens the Modal Window", function(){
-                    console.log($(".modal").is(":visible"));
-                    expect($(".modal").is(":visible")).toBe(false);
+                    expect(this.app.vent.trigger).toHaveBeenCalledTimes(0);
+                    //console.log($(".modal").is(":visible"));
                     triggerAddField();
-                    expect($(".modal").is(":visible")).toBe(true);
+                    expect(this.app.vent.trigger).toHaveBeenCalledTimes(1);
+
                 });
             });
 
             it("Shows the Media Browser", function(){
-                expect(Spreadsheet.prototype.showMediaBrowser).toHaveBeenCalledTimes(1);
+                triggerMediaBrowser();
             });
 
-            it("Deletes a Field", function(){
-                expect(Spreadsheet.prototype.deleteField).toHaveBeenCalledTimes(1);
+            describe("Spreadsheet Show Media Browser Tests", function(){
+                it ("Opens the Modal Window", function(){
+                    expect(this.app.vent.trigger).toHaveBeenCalledTimes(0);
+                    //console.log($(".modal").is(":visible"));
+                    triggerMediaBrowser();
+                    expect(this.app.vent.trigger).toHaveBeenCalledTimes(newSpreadsheet.collection.length);
+
+                });
             });
+
+            describe("Spreadsheer Delete Field Test", function(){
+                it("Does not delete field", function(){
+                    spyOn(window, 'confirm').and.returnValue(false);
+                    triggerDeleteField();
+                    expect(Spreadsheet.prototype.deleteField).toHaveBeenCalledTimes(0);
+                });
+                it("Does delete field", function(){
+                    spyOn(window, 'confirm').and.returnValue(true);
+                    triggerDeleteField();
+                    expect(Spreadsheet.prototype.deleteField).toHaveBeenCalledTimes(1);
+                });
+            });
+
+            /*
+            describe("Spreadsheet Delete Field Tests", function(){
+                it ("Opens the Modal Window", function(){
+                    expect(this.app.vent.trigger).toHaveBeenCalledTimes(0);
+                    //console.log($(".modal").is(":visible"));
+                    triggerMediaBrowser();
+                    expect(this.app.vent.trigger).toHaveBeenCalledTimes(newSpreadsheet.collection.length);
+
+                });
+            });
+            */
 
             it("Shows the Carousel Audio", function(){
                 expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(1);
@@ -263,7 +313,7 @@ define([
         describe("Spreadsheet: Renderer functions", function(){
 
             beforeEach(function(){
-                setupSpreadsheetTest();
+                setupSpreadsheetTest(this);
                 newSpreadsheet = new Spreadsheet({
                     app: this.app
                 });
