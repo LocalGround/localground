@@ -1,5 +1,5 @@
 require(
-    ["jquery", "apps/home/home-app.js"],
+    ["jquery", "apps/home/home-app"],
     function ($, HomeApp) {
         'use strict';
         $(function () {
