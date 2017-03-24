@@ -7,9 +7,10 @@ define([
     rootDir + "collections/audio",
     rootDir + "collections/markers",
     rootDir + "collections/records",
+    rootDir + "lib/carousel/carousel",
     "tests/spec-helper"
 ],
-    function (Handlebars, Spreadsheet, Form, Photos, Audio, Markers, Records) {
+    function (Handlebars, Spreadsheet, Form, Photos, Audio, Markers, Records, Carousel) {
         'use strict';
         var fixture;
         var newSpreadsheet;
@@ -17,7 +18,13 @@ define([
         var setupSpreadsheetTest = function (scope) {
             fixture = setFixtures('<div id="toolbar-main"></div> \
                     <div id="toolbar-dataview" class="filter data"></div> \
-                    <main class="main-panel"></main>');
+                    <main class="main-panel"></main> \
+                    <div id="carouselModal" class="carousel-modal spreadsheet">\
+                      <span class="close big" onclick="document.getElementById(\'carouselModal\').style.display=\'none\'">\
+                        &times;\
+                      </span>\
+                    </div>\
+                    ');
             spyOn(scope.app.vent, 'trigger').and.callThrough();
 
             spyOn(Spreadsheet.prototype, 'render').and.callThrough();
@@ -51,6 +58,9 @@ define([
             spyOn(Spreadsheet.prototype, "deleteField").and.callThrough();
             spyOn(Spreadsheet.prototype, "carouselAudio").and.callThrough();
             spyOn(Spreadsheet.prototype, "carouselPhoto").and.callThrough();
+
+            // Carousel to catch initalize
+            spyOn(Carousel.prototype, "initialize");
 
         };
 
@@ -304,24 +314,29 @@ define([
             beforeEach(function(){
                 setupSpreadsheetTest(this);
                 newSpreadsheet = new Spreadsheet({
-                    app: this.app
+                    app: this.app,
+                    collection: this.form_1,
+                    fields: this.fields
                 });
+
             });
 
             var triggerCarouselAudio = function(){
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
                 newSpreadsheet.renderSpreadsheet();
+                console.log($('.carousel-audio'));
                 expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(0);
                 newSpreadsheet.$el.find('.carousel-audio').trigger('click');
-                expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(1);
+                expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(6);
             };
 
             var triggerCarouselPhoto = function(){
                 fixture.find('.main-panel').append(newSpreadsheet.$el);
                 newSpreadsheet.renderSpreadsheet();
+                console.log($('.carousel-photo'));
                 expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(0);
                 newSpreadsheet.$el.find('.carousel-photo').trigger('click');
-                expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(1);
+                expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(6);
             };
 
             it("Shows the Carousel Audio", function(){
