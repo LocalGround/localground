@@ -12,7 +12,7 @@ define(["marionette",
 
             template: Handlebars.compile(LayerListTemplate),
 
-            getChildView: LayerListChild,
+            childView: LayerListChild,
             childViewContainer: "#layers",
 
             childViewOptions: function () {
@@ -22,7 +22,6 @@ define(["marionette",
             initialize: function (opts) {
                 this.app = opts.app;
                // this.displayLayersDefault();
-
                 if (this.app.currentMap) {
                     this.displayLayers(this.app.currentMap);
                 }
