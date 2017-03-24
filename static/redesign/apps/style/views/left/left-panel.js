@@ -13,15 +13,17 @@ define(["marionette",
         var LeftPanelLayout = Marionette.LayoutView.extend({
             template: Handlebars.compile(LeftPanelLayoutTemplate),
             initialize: function (opts) {
+                /*This Layout View relies on a Map model which gets set from the change-map event, 
+                which is triggered from the select-map-view.js */ 
                 this.app = opts.app;
                 this.render();
                 this.listenTo(this.app.vent, 'change-map', this.handleNewMap);
+                this.listenTo(this.app.vent, 'edit-layer', this.showRightPanel);
+                this.listenTo(this.app.vent, 'add-layer', this.showRightPanel);
             },
             
             events: {
                         "click .hide-button" : "moveLeftPanel",
-                        "click .edit" : "showRightPanel",
-                      //  "click #new-layer-options a" : "showRightPanel",
                         "click #new-layer-options a" : "createNewLayer"
                     },
             
@@ -46,11 +48,11 @@ define(["marionette",
                 var ps = new PanelStylesView({ app: this.app });
                 this.styles.show(ps);
             },
-            handleNewMap: function(mapModel) {
-                this.mapModel = mapModel;
+            handleNewMap: function(model) {
+                this.model = model;
                 var ps = new PanelStylesView({
                     app: this.app,
-                    model: mapModel
+                    model: model
                 });
                 this.styles.show(ps); 
             },
@@ -61,27 +63,9 @@ define(["marionette",
                 this.app.vent.trigger("resize-map", "80%");
             },
             showRightPanel: function () {
+                //TODO: move this method to lay-list-view's childview class
+                console.log("clicked .edit");
                 $("#right-panel").addClass("show-right-panel");
-            },
-            createNewLayer: function (e) {
-                this.showRightPanel();
-                var $selection = $(e.target).attr("data-value");
-                var layer = new Layer ({
-                    map_id: this.mapModel.id,
-                    data_source: $selection,
-                    layer_type: "categorical",
-                    filters: [{ "tag" : "nothing" }],
-                    symbols: [{
-                        "color": "#7075FF",
-                        "width": 30,
-                        "rule": "sculptures > 0",
-                        "title": "At least 1 sculpture"
-                    }],
-                    title: "untitled"
-                    
-                });
-                console.log(layer);
-                this.app.vent.trigger("edit-layer", layer);
             }
         });
         return LeftPanelLayout;

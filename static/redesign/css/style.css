@@ -139,6 +139,11 @@ span.confirmation{
     text-align: left;
 }
 
+.form-reorder {
+    cursor: move;
+}
+
+
 /************************************ Table type ************************************/
 
 .userTable{
@@ -899,4 +904,61 @@ hr {
 .photo-caption {
     text-align: center;
     color: #999;
+}
+
+.fa.fa-grip:before {
+    content: "\f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142";
+    color: #DDD;
+    font-size: 10px;
+    position: absolute;
+    margin-left: 1px;
+    cursor: move;
+}
+
+input.fieldname {
+    margin-left: 4px;
+}
+
+/**************************************** TOOLTIPS *************************************/
+
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 100px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+
+    /* Position the tooltip text */
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    margin-left: -80px;
+}
+
+/* Tooltip arrow */
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 80px;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #555 transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }

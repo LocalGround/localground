@@ -4,19 +4,20 @@ define([
     "underscore",
     "handlebars",
     "marionette",
+    "models/association",
+    "models/audio",
     "apps/gallery/views/media_browser",
     "apps/gallery/views/add-media",
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
     "text!../templates/record-detail.html",
-    "models/audio",
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
     "form" //extends Backbone
-], function ($, Backbone, _, Handlebars, Marionette, MediaBrowser,
-             AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
-             Audio, AudioPlayer, Carousel, Icon) {
+], function ($, Backbone, _, Handlebars, Marionette, Association, Audio,
+             MediaBrowser, AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
+             AudioPlayer, Carousel, Icon) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -42,11 +43,6 @@ define([
             return Handlebars.compile(SiteTemplate);
         },
         showMediaBrowser: function () {
-            // That is a good small start,
-            // but there has to be a way to
-            // utilize aspects of data view so that
-            // it can show a collection of photos already stored in media
-
             /*
               I also made a js class that is like data-list.js but has only
               photos and audio as options.
@@ -329,6 +325,48 @@ define([
                 });
                 this.$el.find(".player-container").append(player.$el);
             }
+
+            // The Column arranger functions go here
+            this.sortMediaTable();
+        },
+
+        sortMediaTable: function(){
+            //http://stackoverflow.com/questions/13885665/how-to-exclude-an-element-from-being-dragged-in-sortable-list
+            var sortableFields = this.$el.find(".attached-media-container");
+            var that  = this;
+            sortableFields.sortable({
+                helper: this.fixHelper,
+                items : '.attached-container',
+                //cancel: ''//,
+                // Still need work on getting the right models since below code returns undefined error
+                //*
+                update: function (event, ui) {
+                    var newOrder = ui.item.index(),
+                        modelID = ui.item.find('.detach_media').attr('data-id'),
+                        association;
+
+                    association = new Association({
+                        form_id: that.model.get("overlay_type").split("_")[1],
+                        overlay_type: that.model.get("overlay_type"),
+                        record_id: that.model.get("id"),
+                        model_type: "photos",
+                        object_id: modelID,
+                        id: modelID
+                    });
+                    association.save({ ordering: newOrder}, {patch: true});
+                }
+            }).disableSelection();
+        },
+
+        // Fix helper with preserved width of cells
+        fixHelper: function(e, ui){
+            // I want to apply changes made to the media only, not the add media
+            // However, by default it does sort all the items around,
+            // even with target name tag inside children
+            ui.children().each(function(){
+                $(this).width($(this).width());
+            });
+            return ui;
         },
 
         rotatePhoto: function(e){
@@ -382,13 +420,11 @@ define([
         },
         hideMapPanel: function (e) {
             $(e.target).removeClass("hide").addClass("show");
-            console.log("about to hide...");
             this.app.vent.trigger('hide-detail');
             e.preventDefault();
         },
         showMapPanel: function (e) {
             $(e.target).removeClass("show").addClass("hide");
-            console.log("about to show...");
             this.app.vent.trigger('unhide-detail');
             e.preventDefault();
         }
