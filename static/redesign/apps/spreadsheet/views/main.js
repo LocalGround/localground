@@ -45,9 +45,55 @@ define(["marionette",
                     this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
                     this.listenTo(this.collection, 'add', this.renderSpreadsheet);
                 }
+                if (this.fields) {
+                    this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
+                }
             },
             onRender: function () {
                 this.renderSpreadsheet();
+            },
+            //
+            // Arranging the columns
+            // For now, I only want to arrange without any saving
+            // for this current draft
+            columnMoveBefore: function(col_indexes_to_be_moved, destination_index){
+                var media_column_index = this.fields.length + 4; //change to whatever one is valid
+                var pre_field_index = 2;
+                if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index) {
+                    console.error('Cannot move your column behind the media column');
+                    return false;
+                } else if (col_indexes_to_be_moved.indexOf(pre_field_index) != -1 || destination_index <= pre_field_index){
+                    console.error('Cannot move your column before the ID and lat/lng');
+                    return false;
+                }
+            },
+
+            columnMoveAfter: function(col_indexes_to_be_moved, destination_index){
+                var media_column_index = this.fields.length + 4, //change to whatever one is valid
+                    pre_field_index = 2,
+                    i = 0,
+                    currentOrdering,
+                    oldPosition,
+                    newPosition,
+                    fieldIndex,
+                    field;
+                if (col_indexes_to_be_moved.indexOf(media_column_index) != -1 || destination_index >= media_column_index ||
+                    col_indexes_to_be_moved.indexOf(pre_field_index) != -1 || destination_index <= pre_field_index) {
+                    return false;
+                }
+
+                for (i = 0; i < col_indexes_to_be_moved.length; i++) {
+                    fieldIndex = col_indexes_to_be_moved[i] - 3;
+                    field = this.fields.at(fieldIndex);
+                    oldPosition = field.get("ordering") + 2;
+                    if (oldPosition < destination_index) {
+                        --destination_index;
+                    }
+                    newPosition = destination_index - 2 + i;
+
+                    field.set("ordering", newPosition);
+                    field.save();
+                }
             },
             renderSpreadsheet: function () {
                 // When the spreadsheet is made without a defined collection
@@ -88,7 +134,7 @@ define(["marionette",
                     rowHeights: rowHeights,
                     colHeaders: this.getColumnHeaders(),
                     manualColumnResize: true,
-                    manualRowResize: true,
+                    manualColumnMove: (this.fields != null && this.fields != undefined),
                     rowHeaders: true,
                     columns: this.getColumns(),
                     maxRows: this.collection.length,
@@ -99,6 +145,10 @@ define(["marionette",
                         that.saveChanges(changes, source);
                     }
                 });
+                if (this.fields){
+                    this.table.addHook('beforeColumnMove', this.columnMoveBefore.bind(this));
+                    this.table.addHook('afterColumnMove', this.columnMoveAfter.bind(this));
+                }
             },
             saveChanges: function (changes, source) {
                 //sync with collection:
@@ -211,12 +261,9 @@ define(["marionette",
                 var that = this;
 
                 var row_idx = $(e.target).attr("row-index");
-                //console.log(e.target);
-                //console.log(row_idx);
                 this.currentModel = this.collection.at(parseInt(row_idx));
                 //any extra view logic. Carousel functionality goes here
                 this.currentModel.fetch({success: function(){
-                    //console.log(that.currentModel);
                     var c = new Carousel({
                         model: that.currentModel,
                         mode: "photos",
@@ -228,7 +275,6 @@ define(["marionette",
                     var $span = $("<span class='close big'>&times;</span>");
                     $span.click(function () {
                         $("#carouselModal").hide();
-                        //document.getElementById("carouselModal").style.display='none';
                     })
                     $("#carouselModal").append($span);
 
@@ -237,7 +283,6 @@ define(["marionette",
 
                     modal.style.display = "block";
 
-                    //console.log(c);
                 }});
             },
 
@@ -246,7 +291,6 @@ define(["marionette",
                 var that = this;
 
                 var row_idx = $(e.target).attr("row-index");
-                //console.log(row_idx);
                 this.currentModel = this.collection.at(parseInt(row_idx));
                 //any extra view logic. Carousel functionality goes here
                 this.currentModel.fetch({success: function(){
@@ -270,7 +314,6 @@ define(["marionette",
                     var modal = document.getElementById('carouselModal');
 
                     modal.style.display = "block";
-                    //console.log(c);
                 }});
             },
 
@@ -306,9 +349,7 @@ define(["marionette",
 
             showMediaBrowser: function (e) {
                 var row_idx = $(e.target).attr("row-index");
-                //console.log(row_idx);
                 this.currentModel = this.collection.at(parseInt(row_idx));
-                //console.log(this.currentModel);
                 var mediaBrowser = new MediaBrowser({
                     app: this.app
                 });
@@ -350,9 +391,7 @@ define(["marionette",
                     case "photos":
                         return ["ID", "Lat", "Lng", "Title", "Caption", "Thumbnail", "Tags", "Attribution", "Owner", "Delete"];
                     case "markers":
-                        cols = ["ID", "Lat", "Lng", "Title", "Caption",
-                        "Media",
-                        "Tags", "Owner", "Delete"];
+                        cols = ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Media", "Delete"];
                         return cols;
                     default:
                         if (!this.fields){
@@ -364,8 +403,6 @@ define(["marionette",
                         for (var i = 0; i < this.fields.length; ++i) {
                             cols.push(this.fields.at(i).get("col_name") + deleteColumn);
                         }
-                        //cols.push("Photos");
-                        //cols.push("Audio");
                         cols.push("Media");
                         cols.push("Delete");
                         cols.push("<a class='fa fa-plus-circle' id='addColumn' aria-hidden='true'></a>");
@@ -379,7 +416,7 @@ define(["marionette",
                     case "photos":
                         return [30, 80, 80, 200, 400, 65, 200, 100, 80, 100];
                     case "markers":
-                        return [30, 80, 80, 200, 400, 100, 200, 120, 100];
+                        return [30, 80, 80, 200, 400, 200, 120, 100, 100];
                     default:
                         if (!this.fields){
                             return null;
@@ -396,16 +433,11 @@ define(["marionette",
             doSearch: function (term) {
 
                 // If form exist, do search with 3 parameters, otherwise, do search with two parameters]
-                // Old search field condition: collection.key.indexOf("form_")
-                //*
                 if (this.collection.key.indexOf("form_")){
                     this.collection.doSearch(term, this.app.getProjectID(), this.fields);
                 } else {
                     this.collection.doSearch(term, this.app.getProjectID());
                 }
-
-                //*/
-                //this.collection.doSearch(term, this.app.getProjectID(), this.fields);
 
             },
 
@@ -448,9 +480,9 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
                             { data: "tags", renderer: "html" },
                             { data: "owner", readOnly: true},
+                            { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
                        ];
                     default:
@@ -548,9 +580,9 @@ define(["marionette",
 
                 rec.collection = this.collection;
                 rec.save(null, {
-                    // The error occurs when there are no rows
                     success: function(){
-                        that.collection.add(rec);
+                        // To add an empty column a the top, set the index to insert at 0
+                        that.collection.add(rec, {at: 0});
                         that.renderSpreadsheet();
                     }
                 });

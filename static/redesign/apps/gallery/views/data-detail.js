@@ -4,18 +4,20 @@ define([
     "underscore",
     "handlebars",
     "marionette",
+    "models/association",
+    "models/audio",
     "apps/gallery/views/media_browser",
     "apps/gallery/views/add-media",
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
     "text!../templates/record-detail.html",
-    "models/audio",
     "lib/audio/audio-player",
     "lib/carousel/carousel",
+    "lib/maps/overlays/icon",
     "form" //extends Backbone
-], function ($, Backbone, _, Handlebars, Marionette, MediaBrowser,
-             AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
-             Audio, AudioPlayer, Carousel) {
+], function ($, Backbone, _, Handlebars, Marionette, Association, Audio,
+             MediaBrowser, AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
+             AudioPlayer, Carousel, Icon) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -41,11 +43,6 @@ define([
             return Handlebars.compile(SiteTemplate);
         },
         showMediaBrowser: function () {
-            // That is a good small start,
-            // but there has to be a way to
-            // utilize aspects of data view so that
-            // it can show a collection of photos already stored in media
-
             /*
               I also made a js class that is like data-list.js but has only
               photos and audio as options.
@@ -75,7 +72,61 @@ define([
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
         },
 
-        activateMarkerTrigger: function(){
+        activateMarkerTrigger: function () {
+            if (this.$el.find('#drop-marker-message').get(0)) {
+                //button has already been clicked
+                return;
+            }
+            this.$el.find("#add-marker-button").css({
+                background: "#4e70d4",
+                color: "white"
+            });
+            this.$el.find(".add-lat-lng").append("<p id='drop-marker-message'>click on the map to add location</p>");
+            //Define Class:
+            var that = this, MouseMover, $follower, mm;
+            MouseMover = function ($follower) {
+                var icon;
+                this.generateIcon = function () {
+                    var template, shape;
+                    template = Handlebars.compile('<svg viewBox="{{ viewBox }}" width="{{ width }}" height="{{ height }}">' +
+                        '    <path fill="{{ fillColor }}" paint-order="stroke" stroke-width="{{ strokeWeight }}" stroke-opacity="0.5" stroke="{{ fillColor }}" d="{{ path }}"></path>' +
+                        '</svg>');
+                    shape = that.model.get("overlay_type");
+                    if (shape.indexOf("form_") != -1) {
+                        shape = "marker";
+                    }
+                    icon = new Icon({ shape: shape, strokeWeight: 6 }).generateGoogleIcon();
+                    icon.width *= 1.5;
+                    icon.height *= 1.5;
+                    $follower.html(template(icon));
+                    $follower.show();
+                };
+                this.start = function () {
+                    this.generateIcon();
+                    $(window).bind('mousemove', this.mouseListener);
+                };
+                this.stop = function (event) {
+                    $(window).unbind('mousemove');
+                    $follower.remove();
+                    that.app.vent.trigger("place-marker", {
+                        x: event.clientX,
+                        y: event.clientY
+                    });
+                };
+                this.mouseListener = function (event) {
+                    $follower.css({
+                        top: event.clientY - icon.height * 3 / 4 + 4,
+                        left: event.clientX - icon.width * 3 / 4
+                    });
+                };
+            };
+
+            //Instantiate Class and Add UI Event Handlers:
+            $follower = $('<div id="follower"></div>');
+            $('body').append($follower);
+            mm = new MouseMover($follower);
+            $(window).mousemove(mm.start.bind(mm));
+            $follower.click(mm.stop);
             this.app.vent.trigger("add-new-marker", this.model);
         },
 
@@ -156,12 +207,26 @@ define([
             this.render();
         },
         templateHelpers: function () {
+
+            var lat, lng;
+            //sets filler html string if a marker location has not been set
+            if (this.model.get("geometry") == null) {
+                        lat = "undefined",
+                        lng = "undefined";
+                    } else {
+                       lat =  this.model.get("geometry").coordinates[1].toFixed(4),
+                       lng =  this.model.get("geometry").coordinates[0].toFixed(4)
+                    }
+
             var context = {
                 mode: this.app.mode,
                 dataType: this.dataType,
                 audioMode: "detail",
                 name: this.model.get("name") || this.model.get("display_name"),
-                screenType: this.app.screenType
+                screenType: this.app.screenType,
+                lat: lat,
+                lng: lng
+                
             };
             return context;
         },
@@ -260,16 +325,58 @@ define([
                 });
                 this.$el.find(".player-container").append(player.$el);
             }
+
+            // The Column arranger functions go here
+            this.sortMediaTable();
+        },
+
+        sortMediaTable: function(){
+            //http://stackoverflow.com/questions/13885665/how-to-exclude-an-element-from-being-dragged-in-sortable-list
+            var sortableFields = this.$el.find(".attached-media-container");
+            var that  = this;
+            sortableFields.sortable({
+                helper: this.fixHelper,
+                items : '.attached-container',
+                //cancel: ''//,
+                // Still need work on getting the right models since below code returns undefined error
+                //*
+                update: function (event, ui) {
+                    var newOrder = ui.item.index(),
+                        modelID = ui.item.find('.detach_media').attr('data-id'),
+                        association;
+
+                    association = new Association({
+                        form_id: that.model.get("overlay_type").split("_")[1],
+                        overlay_type: that.model.get("overlay_type"),
+                        record_id: that.model.get("id"),
+                        model_type: "photos",
+                        object_id: modelID,
+                        id: modelID
+                    });
+                    association.save({ ordering: newOrder}, {patch: true});
+                }
+            }).disableSelection();
+        },
+
+        // Fix helper with preserved width of cells
+        fixHelper: function(e, ui){
+            // I want to apply changes made to the media only, not the add media
+            // However, by default it does sort all the items around,
+            // even with target name tag inside children
+            ui.children().each(function(){
+                $(this).width($(this).width());
+            });
+            return ui;
         },
 
         rotatePhoto: function(e){
             var $elem = $(e.target);
             var rotation = $elem.attr("rotation");
-            //console.log(rotation);
-
-            // Rotate targeted photo and save settings
+            this.$el.find(".rotate-message").show();
+            this.$el.find(".edit-photo").css({
+                filter: "brightness(0.4)"
+            });
             this.model.rotate(rotation);
-            //
         },
 
         saveModel: function () {
@@ -313,13 +420,11 @@ define([
         },
         hideMapPanel: function (e) {
             $(e.target).removeClass("hide").addClass("show");
-            console.log("about to hide...");
             this.app.vent.trigger('hide-detail');
             e.preventDefault();
         },
         showMapPanel: function (e) {
             $(e.target).removeClass("show").addClass("hide");
-            console.log("about to show...");
             this.app.vent.trigger('unhide-detail');
             e.preventDefault();
         }

@@ -38,6 +38,19 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
                 this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
                 this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
+                this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
+            },
+
+            point2LatLng: function (point) {
+                var topRight, bottomLeft, scale, worldPoint, offset;
+                offset = this.$el.offset();
+                point.x -= offset.left;
+                point.y -= offset.top;
+                topRight = this.map.getProjection().fromLatLngToPoint(this.map.getBounds().getNorthEast());
+                bottomLeft = this.map.getProjection().fromLatLngToPoint(this.map.getBounds().getSouthWest());
+                scale = Math.pow(2, this.map.getZoom());
+                worldPoint = new google.maps.Point(point.x / scale + bottomLeft.x, point.y / scale + topRight.y);
+                return this.map.getProjection().fromPointToLatLng(worldPoint);
             },
 
             doHighlight: function (model) {
@@ -45,6 +58,11 @@ define(["marionette",
                     this.activeModel.set("active", false);
                 }
                 this.activeModel = model;
+            },
+
+            placeMarkerOnMapXY: function (point) {
+                var location = this.point2LatLng(point);
+                this.placeMarkerOnMap(location);
             },
 
             // If the add marker button is clicked, allow user to add marker on click
