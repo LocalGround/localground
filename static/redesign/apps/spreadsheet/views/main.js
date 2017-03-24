@@ -35,15 +35,16 @@ define(["marionette",
                 // call Marionette's default functionality (similar to "super")
                 Marionette.ItemView.prototype.initialize.call(this);
                 this.render();
-
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
                 this.listenTo(this.app.vent, "render-spreadsheet", this.renderSpreadsheet);
                 this.listenTo(this.app.vent, "add-row", this.addRow);
                 this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
-                this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
-                this.listenTo(this.collection, 'add', this.renderSpreadsheet);
+                if (this.collection) {
+                    this.listenTo(this.collection, 'reset', this.renderSpreadsheet);
+                    this.listenTo(this.collection, 'add', this.renderSpreadsheet);
+                }
                 if (this.fields) {
                     this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
                 }
@@ -95,6 +96,15 @@ define(["marionette",
                 }
             },
             renderSpreadsheet: function () {
+                // When the spreadsheet is made without a defined collection
+                // Alert that there is no collection
+                // for the sole purpose of unit testing
+
+                if (!this.collection) {
+                    this.$el.find('#grid').html("Collection is not defined");
+                    return;
+                }
+
                 if (this.collection.length == 0) {
                     this.$el.find('#grid').html("no rows found");
                     return;
@@ -229,29 +239,6 @@ define(["marionette",
                 return td;
             },
 
-            photoCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var model = this.getModelFromCell(instance, row),
-                    count = model.get("photo_count") || 0,
-                    i;
-                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
-                for (i = 0; i < count; ++i) {
-                    td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-photo-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
-            },
-
-            audioCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var model = this.getModelFromCell(instance, row),
-                    count = model.get("audio_count") || 0,
-                    i;
-                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
-                for (i = 0; i < count; ++i) {
-                    td.innerHTML += "<a class = 'carousel-audio' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
-
-            },
-
             mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
                 var model = this.getModelFromCell(instance, row),
                     photoCount = model.get("photo_count") || 0,
@@ -381,6 +368,7 @@ define(["marionette",
                 var that = this,
                     i = 0,
                     ordering;
+                console.log();
                 for (i = 0; i < models.length; i++) {
                     ordering = this.currentModel.get("photo_count") + this.currentModel.get("audio_count");
                     this.currentModel.attach(models[i], (ordering + i + 1), function () {
@@ -406,6 +394,9 @@ define(["marionette",
                         cols = ["ID", "Lat", "Lng", "Title", "Caption", "Tags", "Owner", "Media", "Delete"];
                         return cols;
                     default:
+                        if (!this.fields){
+                            return null;
+                        }//*/
                         cols = ["ID", "Lat", "Lng"];
                         var deleteColumn = this.show_hide_deleteColumn == true ? " <a class='fa fa-minus-circle delete_column' fieldIndex= '" +
                                                                           i +"' aria-hidden='true'></a>" : "";
@@ -427,6 +418,9 @@ define(["marionette",
                     case "markers":
                         return [30, 80, 80, 200, 400, 200, 120, 100, 100];
                     default:
+                        if (!this.fields){
+                            return null;
+                        }//*/
                         var cols = [30, 80, 80];
                         for (var i = 0; i < this.fields.length; ++i){
                             cols.push(150);
@@ -492,6 +486,9 @@ define(["marionette",
                             { data: "button", renderer: this.buttonRenderer.bind(this), readOnly: true, disableVisualSelection: true}
                        ];
                     default:
+                        if (!this.fields){
+                            return null;
+                        }//*/
                         var cols = [
                             { data: "id", readOnly: true },
                             { data: "lat", type: "numeric", format: '0.00000' },
@@ -515,15 +512,7 @@ define(["marionette",
                                 type: type
                             })
                         };
-                        /*
-                        cols.push(
-                            { data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
-                        );
 
-                        cols.push(
-                            { data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
-                        );
-                        */
                         cols.push(
                             { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                         );

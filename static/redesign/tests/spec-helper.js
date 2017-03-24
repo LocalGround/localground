@@ -11,6 +11,7 @@ define(
         "collections/markers",
         "collections/records",
         "collections/prints",
+        "collections/fields",
         "models/project",
         "models/photo",
         "models/marker",
@@ -19,11 +20,15 @@ define(
         "models/mapimage",
         "models/print",
         "models/layer",
+        "models/form",
+        "models/field",
         "lib/data/dataManager"
     ],
     function (Backbone, $, appUtilities, Projects, Photos, AudioFiles,
-              MapImages, Markers, Records, Prints,
-              Project, Photo, Marker, Audio, Record, MapImage, Print, Layer, DataManager) {
+              MapImages, Markers, Records, Prints, Fields,
+              Project, Photo, Marker, Audio, Record,
+              MapImage, Print, Layer, Form, Field,
+              DataManager) {
         'use strict';
         beforeEach(function () {
             //spoof google maps API:
@@ -112,36 +117,104 @@ define(
                     }
                 ]
             });
+
+            this.form = new Form({
+                "url": "http://localhost:7777/api/0/forms/1/",
+                "id": 1,
+                "name": "Test Form",
+                "caption": "",
+                "overlay_type": "form",
+                "tags": [],
+                "owner": "MrJBRPG",
+                "data_url": "http://localhost:7777/api/0/forms/1/data/",
+                "fields_url": "http://localhost:7777/api/0/forms/1/fields/",
+                "slug": "slug_64358",
+                "project_ids": [
+                    3
+                ],
+                "fields": [
+                    {
+                        "id": 1,
+                        "form": 1,
+                        "col_alias": "Test Text",
+                        "col_name": "test_text",
+                        "is_display_field": true,
+                        "ordering": 1,
+                        "data_type": "text",
+                        "url": "http://localhost:7777/api/0/forms/1/fields/1"
+                    },
+                    {
+                        "id": 19,
+                        "form": 1,
+                        "col_alias": "Test Integer",
+                        "col_name": "test_integer",
+                        "is_display_field": true,
+                        "ordering": 2,
+                        "data_type": "integer",
+                        "url": "http://localhost:7777/api/0/forms/1/fields/19"
+                    },
+                    {
+                        "id": 20,
+                        "form": 1,
+                        "col_alias": "Test Boolean",
+                        "col_name": "test_boolean",
+                        "is_display_field": true,
+                        "ordering": 3,
+                        "data_type": "boolean",
+                        "url": "http://localhost:7777/api/0/forms/1/fields/20"
+                    }
+            ]});
             this.photos = new Photos([
-                new Photo({ id: 1, name: "Cat", tags: 'animal, cat, cute, tag1', project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", attribution: "Owner1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_medium_sm: '//:0', path_marker_sm: "//:0" }),
-                new Photo({id: 2, name: "Dog", tags: 'animal, dog', project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_medium: '//:0', path_small: '//:0', path_marker_sm: "//:0" }),
-                new Photo({id: 3, name: "Frog", tags: 'animal, amphibian, cute, frog', project_id: 2, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_marker_sm: '//:0' })
+                new Photo({ id:1, name: "Cat", tags: ['animal', 'cat', 'cute', 'tag1'], project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", attribution: "Owner1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_medium_sm: '//:0', path_marker_sm: "//:0" }),
+                new Photo({id: 2, name: "Dog", tags: ['animal', 'dog'], project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_medium: '//:0', path_small: '//:0', path_marker_sm: "//:0" }),
+                new Photo({id: 3, name: "Frog", tags: ['animal', 'amphibian', 'cute', 'frog'], project_id: 2, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_marker_sm: '//:0' })
             ]);
             this.audioFiles = new AudioFiles([
-                new Audio({ id: 1, name: "Nirvana", tags: '90s, grunge', project_id: 1, overlay_type: "audio", caption: "Caption1", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
-                new Audio({id: 2, name: "Duran Duran", tags: '80s, amazing, tag1', project_id: 1, overlay_type: "audio", caption: "caption 2", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3" }),
-                new Audio({id: 3, name: "Flo Rida", tags: 'florida, hip hop', project_id: 2, overlay_type: "audio", caption: "caption 3", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3" })
+                new Audio({ id: 1, name: "Nirvana", tags: ['90s', 'grunge'], project_id: 1, overlay_type: "audio", caption: "Caption1", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
+                new Audio({id: 2, name: "Duran Duran", tags: ['80s', 'amazing', 'tag1'], project_id: 1, overlay_type: "audio", caption: "caption 2", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3" }),
+                new Audio({id: 3, name: "Flo Rida", tags: ['florida', 'hip hop'], project_id: 2, overlay_type: "audio", caption: "caption 3", file_path: "/static/redesign/tests/spec/javascripts/fixtures/sample-audio.mp3" })
             ]);
             this.map_images = new MapImages([
-                new MapImage({ id: 1, name: "Map 1", tags: 'parks, oakland', project_id: 1, caption: "Caption1", overlay_type: "map-image", geometry: { type: "Polygon", coordinates: [[[ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ]]]} }),
-                new MapImage({id: 2, name: "Map 2", tags: 'parks, berkeley, tag1', project_id: 1, overlay_type: "map-image" }),
-                new MapImage({id: 3, name: "Map 3", tags: 'emeryville', project_id: 2, overlay_type: "map-image" })
+                new MapImage({ id: 1, name: "Map 1", tags: ['parks', 'oakland'], project_id: 1, caption: "Caption1", overlay_type: "map-image", geometry: { type: "Polygon", coordinates: [[[ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ]]]} }),
+                new MapImage({id: 2, name: "Map 2", tags: ['parks', 'berkeley', 'tag1'], project_id: 1, overlay_type: "map-image" }),
+                new MapImage({id: 3, name: "Map 3", tags: ['emeryville'], project_id: 2, overlay_type: "map-image" })
             ]);
             this.prints = new Prints([
-                new Print({ id: 1, name: "Print 1", tags: 'parks, oakland', project_id: 1, caption: "Caption1", overlay_type: "print", geometry: { type: "Polygon", coordinates: [[[ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ]]]} }),
-                new Print({id: 2, name: "Print 2", tags: 'parks, berkeley, tag1', project_id: 1, overlay_type: "print" }),
-                new Print({id: 3, name: "Print 3", tags: 'emeryville', project_id: 2, overlay_type: "print" })
+                new Print({ id: 1, name: "Print 1", tags: ['parks', 'oakland'], project_id: 1, caption: "Caption1", overlay_type: "print", geometry: { type: "Polygon", coordinates: [[[ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ], [ -82.54, 35.62 ]]]} }),
+                new Print({id: 2, name: "Print 2", tags: ['parks', 'berkeley', 'tag1'], project_id: 1, overlay_type: "print" }),
+                new Print({id: 3, name: "Print 3", tags: ['emeryville'], project_id: 2, overlay_type: "print" })
             ]);
             this.markers = new Markers([
-                new Marker({ id: 1, name: "POI 1", tags: 'my house', project_id: 1, overlay_type: "marker", caption: "Caption1", color: "FF0000", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
-                new Marker({id: 2, name: "POI 2", tags: 'friend\'s house, tag1', project_id: 1, overlay_type: "marker" }),
-                new Marker({id: 3, name: "POI 3", tags: 'coffee shop, tag1', project_id: 2, overlay_type: "marker" })
+                new Marker({ id: 1, name: "POI 1", tags: ['my house'], project_id: 1, overlay_type: "marker", caption: "Caption1", color: "FF0000", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
+                new Marker({id: 2, name: "POI 2", tags: ['friend\'s house', 'tag1'], project_id: 1, overlay_type: "marker" }),
+                new Marker({id: 3, name: "POI 3", tags: ['coffee shop', 'tag1'], project_id: 2, overlay_type: "marker" })
             ]);
             this.form_1 = new Records([
-                new Record({ id: 1, team_name: "Blue team", display_name: "Blue team", tags: 'my house', worm_count: 4, project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
-                new Record({id: 2, team_name: "Green team", tags: 'friend\'s house, tag1', worm_count: 8, project_id: 1, overlay_type: "form_1" }),
-                new Record({id: 3, team_name: "Red team", tags: 'coffee shop', worm_count: 12, project_id: 2, overlay_type: "form_1" })
+                new Record({ id: 1, team_name: "Blue team", display_name: "Blue team", tags: ['my house'], worm_count: 4, project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
+                new Record({id: 2, team_name: "Green team", tags: ['friend\'s house', 'tag1'], worm_count: 8, project_id: 1, overlay_type: "form_1" }),
+                new Record({id: 3, team_name: "Red team", tags: ['coffee shop'], worm_count: 12, project_id: 2, overlay_type: "form_1" })
             ], { 'url': 'dummy/url' });
+
+            this.fields = new Fields([
+                {
+                    "id": 1,
+                    "form": 3,
+                    "col_alias": "Team Name",
+                    "col_name": "team_name",
+                    "is_display_field": true,
+                    "ordering": 1,
+                    "data_type": "text"
+                },
+                {
+                    "id": 2,
+                    "form": 3,
+                    "col_alias": "Worm Count",
+                    "col_name": "worm_count",
+                    "is_display_field": false,
+                    "ordering": 2,
+                    "data_type": "integer"
+                }
+            ], {url: "dummy"});
 
             this.dataDictionary = {
                 photos: this.photos,
