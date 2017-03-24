@@ -1,11 +1,12 @@
 define(["marionette",
         "handlebars",
         "collections/layers",
+        "models/layer",
         "apps/style/views/left/layer-list-child-view",
         "text!../../templates/left/layer-list.html",
         "text!../../templates/left/layer-item.html"
     ],
-    function (Marionette, Handlebars, Layers, LayerListChild,LayerListTemplate, LayerItemTemplate) {
+    function (Marionette, Handlebars, Layers, Layer, LayerListChild,LayerListTemplate, LayerItemTemplate) {
         'use strict';
 
         var SelectMapView = Marionette.CompositeView.extend({
@@ -21,6 +22,7 @@ define(["marionette",
 
             initialize: function (opts) {
                 this.app = opts.app;
+                this.model = opts.model;
                // this.displayLayersDefault();
                 if (this.app.currentMap) {
                     this.displayLayers(this.app.currentMap);
@@ -46,10 +48,11 @@ define(["marionette",
                 this.listenTo(this.collection, 'reset', this.render);
             },
             createNewLayer: function (e) {
+                console.log(this.app);
                 this.app.vent.trigger('add-layer');
                 var $selection = $(e.target).attr("data-value");
                 var layer = new Layer ({
-                    map_id: this.model.id,
+                    map_id: this.app.model.id,
                     data_source: $selection,
                     layer_type: "categorical",
                     filters: [{ "tag" : "nothing" }],

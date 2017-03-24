@@ -15,7 +15,8 @@ define([
           
 
             spyOn(LayerListView.prototype, 'initialize').and.callThrough();
-           // spyOn(LayerListView.prototype, 'sendCollection').and.callThrough();
+            spyOn(LayerListView.prototype, 'showDropDown').and.callThrough();
+            spyOn(LayerListView.prototype, 'createNewLayer').and.callThrough();
             fixture = setFixtures('<div></div>');
 
              // 2) initialize rightPanel object:
@@ -61,10 +62,16 @@ define([
                 Backbone.history.stop();
             });
             it(": events should trigger correct functions", function () {
-                expect(layerListView.sendCollection).toHaveBeenCalledTimes(0);
-                fixture.find('.edit').trigger("click");
-                expect(layerListView.sendCollection).toHaveBeenCalledTimes(1);
-            });
+                expect(layerListView.showDropDown).toHaveBeenCalledTimes(0);
+                fixture.find('.add-layer').trigger("click");
+                expect(layerListView.showDropDown).toHaveBeenCalledTimes(1);
+            }); 
+
+            it(": events should trigger correct functions", function () {
+                expect(layerListView.createNewLayer).toHaveBeenCalledTimes(0);
+                fixture.find('#new-layer-options a').trigger("click");
+                expect(layerListView.createNewLayer).toHaveBeenCalledTimes(1);
+            }); 
 
         });
 

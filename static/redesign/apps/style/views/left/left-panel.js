@@ -49,6 +49,7 @@ define(["marionette",
                 this.styles.show(ps);
             },
             handleNewMap: function(model) {
+                console.log(model, this);
                 this.model = model;
                 var ps = new PanelStylesView({
                     app: this.app,
