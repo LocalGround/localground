@@ -21,6 +21,7 @@ define(["marionette",
 
             initialize: function (opts) {
                 this.app = opts.app;
+                this.model = opts.model;
                // this.displayLayersDefault();
                 if (this.app.currentMap) {
                     this.displayLayers(this.app.currentMap);

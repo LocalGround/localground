@@ -39,7 +39,7 @@ define(["marionette",
                 var sv = new SelectMapView({ app: this.app });
                 this.menu.show(sv);
 
-                var lv = new LayerListView({ app: this.app });
+                var lv = new LayerListView({ app: this.app, model: this.model });
                 this.layers.show(lv);
                 
                 var skv = new SkinView({ app: this.app });
