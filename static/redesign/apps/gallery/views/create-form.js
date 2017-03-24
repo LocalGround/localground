@@ -7,7 +7,8 @@ define([
     "text!../templates/field-item.html",
     "models/form",
     "collections/fields",
-    "apps/gallery/views/field-child-view"
+    "apps/gallery/views/field-child-view",
+    "jquery.ui"
 ], function ($, _, Handlebars, Marionette, CreateFormTemplate, FieldItemTemplate, Form, Fields, FieldChildView) {
     'use strict';
     var CreateFormView = Marionette.CompositeView.extend({
