@@ -14,7 +14,11 @@ define([
         var fixture;
         var newSpreadsheet;
 
-        var initSpies = function () {
+        var setupSpreadsheetTest = function () {
+            fixture = setFixtures('<div id="toolbar-main"></div> \
+                    <div id="toolbar-dataview" class="filter data"></div> \
+                    <main class="main-panel"></main>');
+
             spyOn(Spreadsheet.prototype, 'render').and.callThrough();
             spyOn(Spreadsheet.prototype, 'initialize').and.callThrough();
             spyOn(Spreadsheet.prototype, 'saveChanges').and.callThrough();
@@ -49,7 +53,7 @@ define([
 
         describe("Spreadsheet: Initialization Tests", function () {
             beforeEach(function () {
-                initSpies();
+                setupSpreadsheetTest();
             });
 
             it("Spreadsheet Successfully created", function () {
@@ -174,7 +178,7 @@ define([
 
         describe("Spreadsheet: Rendering the spreadsheet", function(){
             beforeEach(function(){
-                initSpies();
+                setupSpreadsheetTest();
                 newSpreadsheet = new Spreadsheet({
                     app: this.app,
                     collection: this.form_1,
@@ -207,15 +211,20 @@ define([
         describe("Spreadsheet: Clickable functions", function(){
 
             beforeEach(function(){
-                initSpies();
+                setupSpreadsheetTest();
                 newSpreadsheet = new Spreadsheet({
                     app: this.app,
                     collection: this.form_1,
                     fields: this.fields
                 });
+                newSpreadsheet.app.dataType = 'form_1';
             });
 
-            it("Shows the Create Field Form", function(){
+            it("Shows the Create Field Form", function () {
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.showCreateFieldForm).toHaveBeenCalledTimes(0);
+                newSpreadsheet.$el.find('#addColumn').trigger('click');
                 expect(Spreadsheet.prototype.showCreateFieldForm).toHaveBeenCalledTimes(1);
             });
 
@@ -239,16 +248,18 @@ define([
         describe("Spreadsheet: Renderer functions", function(){
 
             beforeEach(function(){
-                initSpies();
+                setupSpreadsheetTest();
                 newSpreadsheet = new Spreadsheet({
                     app: this.app
                 });
             });
 
             it("Go through the Button renderer", function(){
-                newSpreadsheet.fields = this.fields;
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
                 newSpreadsheet.collection = this.form_1;
-                expect(Spreadsheet.prototype.buttonRenderer).toHaveBeenCalledTimes(1);
+                newSpreadsheet.fields = this.fields;
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.buttonRenderer).toHaveBeenCalledTimes(newSpreadsheet.collection.length);
             });
 
             it("Go through the Thumbnail renderer", function(){
