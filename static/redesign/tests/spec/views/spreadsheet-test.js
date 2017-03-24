@@ -295,24 +295,41 @@ define([
                 });
             });
 
-            /*
-            describe("Spreadsheet Delete Field Tests", function(){
-                it ("Opens the Modal Window", function(){
-                    expect(this.app.vent.trigger).toHaveBeenCalledTimes(0);
-                    //console.log($(".modal").is(":visible"));
-                    triggerMediaBrowser();
-                    expect(this.app.vent.trigger).toHaveBeenCalledTimes(newSpreadsheet.collection.length);
 
+
+        });
+
+        describe("Spreadsheet Carousel Click Functions", function(){
+
+            beforeEach(function(){
+                setupSpreadsheetTest(this);
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app
                 });
             });
-            */
+
+            var triggerCarouselAudio = function(){
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(0);
+                newSpreadsheet.$el.find('.carousel-audio').trigger('click');
+                expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(1);
+            };
+
+            var triggerCarouselPhoto = function(){
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(0);
+                newSpreadsheet.$el.find('.carousel-photo').trigger('click');
+                expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(1);
+            };
 
             it("Shows the Carousel Audio", function(){
-                expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(1);
+                triggerCarouselAudio();
             });
 
             it("Shows the Carousel Photo", function(){
-                expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(1);
+                triggerCarouselPhoto();
             });
         });
 
