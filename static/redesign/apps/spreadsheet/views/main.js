@@ -47,7 +47,6 @@ define(["marionette",
                 }
             },
             onRender: function () {
-                console.log(this);
                 this.renderSpreadsheet();
             },
             renderSpreadsheet: function () {
@@ -188,29 +187,6 @@ define(["marionette",
                 });
                 $(td).html(player.$el.addClass("spreadsheet"));
                 return td;
-            },
-
-            photoCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var model = this.getModelFromCell(instance, row),
-                    count = model.get("photo_count") || 0,
-                    i;
-                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
-                for (i = 0; i < count; ++i) {
-                    td.innerHTML += "<a class = 'carousel-photo' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-photo-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
-            },
-
-            audioCountRenderer: function (instance, td, row, col, prop, value, cellProperties) {
-                var model = this.getModelFromCell(instance, row),
-                    count = model.get("audio_count") || 0,
-                    i;
-                td.innerHTML = "<a class='fa fa-plus-square-o addMedia' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></a>";
-                for (i = 0; i < count; ++i) {
-                    td.innerHTML += "<a class = 'carousel-audio' row-index = '"+row+"' col-index = '"+col+"'>\
-                    <i class='fa fa-file-audio-o' aria-hidden='true' row-index = '"+row+"' col-index = '"+col+"'></i></a>";
-                }
-
             },
 
             mediaCountRenderer: function(instance, td, row, col, prop, value, cellProperties){
@@ -472,8 +448,6 @@ define(["marionette",
                             { data: "lng", type: "numeric", format: '0.00000' },
                             { data: "name", renderer: "html"},
                             { data: "caption", renderer: "html"},
-                            //{ data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
-                            //{ data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
                             { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true },
                             { data: "tags", renderer: "html" },
                             { data: "owner", readOnly: true},
@@ -506,15 +480,7 @@ define(["marionette",
                                 type: type
                             })
                         };
-                        /*
-                        cols.push(
-                            { data: "photos", renderer: this.photoCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
-                        );
 
-                        cols.push(
-                            { data: "audio", renderer: this.audioCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
-                        );
-                        */
                         cols.push(
                             { data: "media", renderer: this.mediaCountRenderer.bind(this), readOnly: true, disableVisualSelection: true }
                         );

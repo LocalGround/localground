@@ -17,6 +17,7 @@ define([
         var initSpies = function () {
             spyOn(Spreadsheet.prototype, 'render').and.callThrough();
             spyOn(Spreadsheet.prototype, 'initialize').and.callThrough();
+            spyOn(Spreadsheet.prototype, 'saveChanges').and.callThrough();
 
             // Event handler functions
             spyOn(Spreadsheet.prototype, 'doSearch').and.callThrough();
@@ -24,6 +25,26 @@ define([
             spyOn(Spreadsheet.prototype, 'renderSpreadsheet').and.callThrough();
             spyOn(Spreadsheet.prototype, 'addRow').and.callThrough();
             spyOn(Spreadsheet.prototype, 'attachModels').and.callThrough();
+
+            // functions involving renderers
+            spyOn(Spreadsheet.prototype, "thumbnailRenderer").and.callThrough();
+            spyOn(Spreadsheet.prototype, "audioRenderer").and.callThrough();
+            spyOn(Spreadsheet.prototype, "buttonRenderer").and.callThrough();
+            spyOn(Spreadsheet.prototype, "mediaCountRenderer").and.callThrough();
+
+            // column functions
+            spyOn(Spreadsheet.prototype, "getColumns").and.callThrough();
+            spyOn(Spreadsheet.prototype, "getColumnHeaders").and.callThrough();
+            spyOn(Spreadsheet.prototype, "getColumnWidths").and.callThrough();
+            spyOn(Spreadsheet.prototype, "getModelFromCell").and.callThrough();
+
+            // clickable functions
+            spyOn(Spreadsheet.prototype, "showCreateFieldForm").and.callThrough();
+            spyOn(Spreadsheet.prototype, "showMediaBrowser").and.callThrough();
+            spyOn(Spreadsheet.prototype, "deleteField").and.callThrough();
+            spyOn(Spreadsheet.prototype, "carouselAudio").and.callThrough();
+            spyOn(Spreadsheet.prototype, "carouselPhoto").and.callThrough();
+
         };
 
         describe("Spreadsheet: Initialization Tests", function () {
@@ -148,6 +169,38 @@ define([
                 });
             });
 
+
+        });
+
+        describe("Spreadsheet: Rendering the spreadsheet", function(){
+            beforeEach(function(){
+                initSpies();
+                newSpreadsheet = new Spreadsheet({
+                    app: this.app,
+                    collection: this.form_1,
+                    fields: this.fields
+                });
+            });
+
+            it("Successfully calls getColumns", function(){
+                expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(1);
+                expect(Spreadsheet.prototype.getColumns).toHaveBeenCalledTimes(1);
+
+            });
+
+            it("Successfully calls getColumnHeaders", function(){
+                expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(1);
+                expect(Spreadsheet.prototype.getColumnHeaders).toHaveBeenCalledTimes(1);
+            });
+
+            it("Successfully calls getColumnWidths", function(){
+                expect(Spreadsheet.prototype.renderSpreadsheet).toHaveBeenCalledTimes(1);
+                expect(Spreadsheet.prototype.getColumnWidths).toHaveBeenCalledTimes(1);
+            });
+
+            describe("Render Spreadsheet: Saving settings", function(){
+
+            });
 
         });
 
