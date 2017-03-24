@@ -24,10 +24,14 @@ require(['boot'], function () {
         'spec/views/data-manager-test.js',
         'spec/views/legend-layer-entry-test.js',
         'spec/views/audio-player-new-test.js',
-       // 'spec/views/audio-player-test.js',
         'spec/views/style-right-panel-test.js',
         'spec/views/style-left-panel-test.js',
         'spec/views/audio-player-test.js',
+        'spec/views/select-map-view-test.js',
+        'spec/views/layer-list-view-test.js',
+
+        //APPS
+        'spec/views/style-app-test.js',
         'spec/views/create-form-test.js',
         'spec/views/form-field-test.js'
     ];
