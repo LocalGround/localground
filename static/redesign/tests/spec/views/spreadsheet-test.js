@@ -204,5 +204,30 @@ define([
 
         });
 
+        describe("Spreadsheet: Clickable functions", function(){
+            //
+            //
+
+            it("Shows the Create Field Form", function(){
+                expect(Spreadsheet.prototype.showCreateFieldForm).toHaveBeenCalledTimes(1);
+            });
+
+            it("Shows the Media Browser", function(){
+                expect(Spreadsheet.prototype.showMediaBrowser).toHaveBeenCalledTimes(1);
+            });
+
+            it("Deletes a Field", function(){
+                expect(Spreadsheet.prototype.deleteField).toHaveBeenCalledTimes(1);
+            });
+
+            it("Shows the Carousel Audio", function(){
+                expect(Spreadsheet.prototype.carouselAudio).toHaveBeenCalledTimes(1);
+            });
+
+            it("Shows the Carousel Photo", function(){
+                expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(1);
+            });
+        });
+
     }
 );
