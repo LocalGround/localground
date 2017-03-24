@@ -1,11 +1,11 @@
 require(
-    ["jquery", "apps/style/style-app.js"],
-    function ($, MapApp) {
+    ["jquery", "apps/style/style-app"],
+    function ($, StyleApp) {
         'use strict';
         $(function () {
             window.location.hash = ''; //make sure the page initializes on the first page...
-            var map = new MapApp();
-            map.start();
+            var styleApp = new StyleApp();
+            styleApp.start();
         });
     }
 );

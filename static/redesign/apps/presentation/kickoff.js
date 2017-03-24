@@ -1,5 +1,5 @@
 require(
-    ["jquery", "apps/presentation/presentation-app.js"],
+    ["jquery", "apps/presentation/presentation-app"],
     function ($, PresentationApp) {
         'use strict';
         $(function () {

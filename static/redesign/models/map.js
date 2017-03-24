@@ -1,4 +1,4 @@
-define(["models/base"], function (Base) {
+define(["models/base", "collections/layers"], function (Base, Layers) {
     "use strict";
     var Map = Base.extend({
         getNamePlural: function () {
@@ -25,6 +25,9 @@ define(["models/base"], function (Base) {
             if (!_.isUndefined(panelStyles) && _.isString(panelStyles)) {
                 console.log("serialize");
                 this.set("panel_styles", JSON.parse(panelStyles));
+            }
+            if (data && data.layers) {
+                this.set("layers", new Layers(data.layers, {mapID: this.id}));
             }
 		},
         defaults: function () {
