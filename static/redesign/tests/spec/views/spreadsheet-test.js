@@ -205,8 +205,8 @@ define([
         });
 
         describe("Spreadsheet: Clickable functions", function(){
-            //
-            //
+
+            // Work in progress
 
             it("Shows the Create Field Form", function(){
                 expect(Spreadsheet.prototype.showCreateFieldForm).toHaveBeenCalledTimes(1);
@@ -226,6 +226,27 @@ define([
 
             it("Shows the Carousel Photo", function(){
                 expect(Spreadsheet.prototype.carouselPhoto).toHaveBeenCalledTimes(1);
+            });
+        });
+
+        describe("Spreadsheet: Renderer functions", function(){
+
+            // Work in progress
+
+            it("Go through the Button renderer", function(){
+                expect(Spreadsheet.prototype.buttonRenderer).toHaveBeenCalledTimes(1);
+            });
+
+            it("Go through the Thumbnail renderer", function(){
+                expect(Spreadsheet.prototype.thumbnailRenderer).toHaveBeenCalledTimes(1);
+            });
+
+            it("Go through the Audio renderer", function(){
+                expect(Spreadsheet.prototype.audioRenderer).toHaveBeenCalledTimes(1);
+            });
+
+            it("Go through the Media Count renderer", function(){
+                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(1);
             });
         });
 
