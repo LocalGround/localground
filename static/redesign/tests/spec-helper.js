@@ -190,9 +190,9 @@ define(
                 new Marker({id: 3, name: "POI 3", tags: ['coffee shop', 'tag1'], project_id: 2, overlay_type: "marker" })
             ]);
             this.form_1 = new Records([
-                new Record({ id: 1, team_name: "Blue team", display_name: "Blue team", tags: ['my house'], worm_count: 4, project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]} }),
-                new Record({id: 2, team_name: "Green team", tags: ['friend\'s house', 'tag1'], worm_count: 8, project_id: 1, overlay_type: "form_1" }),
-                new Record({id: 3, team_name: "Red team", tags: ['coffee shop'], worm_count: 12, project_id: 2, overlay_type: "form_1" })
+                new Record({ id: 1, team_name: "Blue team", display_name: "Blue team", tags: ['my house'], worm_count: 4, project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, photo_count: 3, audio_count: 1 }),
+                new Record({id: 2, team_name: "Green team", tags: ['friend\'s house', 'tag1'], worm_count: 8, project_id: 1, overlay_type: "form_1", photo_count: 1, audio_count: 2 }),
+                new Record({id: 3, team_name: "Red team", tags: ['coffee shop'], worm_count: 12, project_id: 2, overlay_type: "form_1", photo_count: 2, audio_count: 3 })
             ], { 'url': 'dummy/url' });
 
             this.fields = new Fields([
