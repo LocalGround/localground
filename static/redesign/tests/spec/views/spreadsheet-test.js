@@ -210,7 +210,15 @@ define([
 
         describe("Spreadsheet: Clickable functions", function(){
 
-            beforeEach(function(){
+            var triggerAddField = function(){
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.showCreateFieldForm).toHaveBeenCalledTimes(0);
+                newSpreadsheet.$el.find('#addColumn').trigger('click');
+                expect(Spreadsheet.prototype.showCreateFieldForm).toHaveBeenCalledTimes(1);
+            };
+
+            beforeEach(function(done){
                 setupSpreadsheetTest();
                 newSpreadsheet = new Spreadsheet({
                     app: this.app,
@@ -218,14 +226,21 @@ define([
                     fields: this.fields
                 });
                 newSpreadsheet.app.dataType = 'form_1';
+                loadStyleFixtures('../../../../css/modal_new_project.css');
+                setTimeout(function () { done(); }, 10);
             });
 
             it("Shows the Create Field Form", function () {
-                fixture.find('.main-panel').append(newSpreadsheet.$el);
-                newSpreadsheet.renderSpreadsheet();
-                expect(Spreadsheet.prototype.showCreateFieldForm).toHaveBeenCalledTimes(0);
-                newSpreadsheet.$el.find('#addColumn').trigger('click');
-                expect(Spreadsheet.prototype.showCreateFieldForm).toHaveBeenCalledTimes(1);
+                triggerAddField();
+            });
+
+            describe("Spreadsheet Create Field Form Tests", function(){
+                it ("Opens the Modal Window", function(){
+                    console.log($(".modal").is(":visible"));
+                    expect($(".modal").is(":visible")).toBe(false);
+                    triggerAddField();
+                    expect($(".modal").is(":visible")).toBe(true);
+                });
             });
 
             it("Shows the Media Browser", function(){
