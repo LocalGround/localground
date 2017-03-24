@@ -7,6 +7,7 @@ define(
         "collections/projects",
         "collections/photos",
         "collections/audio",
+        "collections/maps",
         "collections/mapimages",
         "collections/markers",
         "collections/records",
@@ -23,7 +24,7 @@ define(
         "models/form",
         "lib/data/dataManager"
     ],
-    function (Backbone, $, appUtilities, Projects, Photos, AudioFiles,
+    function (Backbone, $, appUtilities, Projects, Photos, AudioFiles, Maps,
               MapImages, Markers, Records, Prints,
               Project, Photo, Marker, Audio, Record, MapImage, Print, Layer, Form,
               DataManager) {
@@ -32,7 +33,8 @@ define(
             //spoof google maps API:
             google.maps = {
                 event: { addListenerOnce: function () {} },
-                LatLngBounds: function () {}
+                LatLngBounds: function () {},
+                LatLng: function(lat, lng) {}            
             };
             var $map_container = $('<div id="map_canvas"></div>');
             $(document.body).append($map_container);
@@ -224,6 +226,8 @@ define(
                 "layers_url": "http://localhost:7777/api/0/maps/1/layers/"
             });
             this.layer = this.testMap.get("layers").at(0);
+            this.layers = this.testMap.get("layers");
+            this.maps = new Maps([this.mapTest]);
             this.form = new Form({
                 "url": "http://localhost:7777/api/0/forms/1/",
                 "id": 1,
