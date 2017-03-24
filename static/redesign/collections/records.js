@@ -59,8 +59,8 @@ define([
              */
             if (!fields) return;
 
-            this.query = "WHERE project = " + projectID + " AND ";
-            this.query += this.addFieldQuery(fields, term);
+            this.query = "WHERE " + this.addFieldQuery(fields, term);
+            this.query += " AND project = " + projectID
             this.fetch({ reset: true });
         },
 

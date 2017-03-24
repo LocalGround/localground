@@ -19,7 +19,7 @@ require.config({
         'form': '//cdnjs.cloudflare.com/ajax/libs/backbone-forms/0.14.1/backbone-forms.min',
         'list': 'external/list.min',
         'google-infobubble': 'external/infobubble',
-        'handsontable': 'https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.28.4/handsontable.full.min',
+        'handsontable': 'https://cdnjs.cloudflare.com/ajax/libs/handsontable/0.31.0/handsontable.full.min',
         'jasmine': '//cdnjs.cloudflare.com/ajax/libs/jasmine/2.5.2/jasmine.min',
         'jasmine-html': '//cdnjs.cloudflare.com/ajax/libs/jasmine/2.5.2/jasmine-html.min',
         'jasmine-jquery': 'external/jasmine-2.1.3/jasmine-jquery-forked',
@@ -135,5 +135,3 @@ function getUrlParameter(sParam) {
     }
     return null;
 }
-
-

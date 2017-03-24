@@ -86,7 +86,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                             fieldsURL = '/api/0/forms/' + formID + '/fields/',
                             records = new Records(data, { url: recordsURL }),
                             fields = new Fields(null, {url: fieldsURL });
-                        fields.fetch({ success: function () {
+                        fields.fetch({ reset: true, success: function () {
                             // some extra post-processing for custom datatypes so that
                             // it's easier to loop through fields and output corresponding
                             // values

@@ -20,11 +20,12 @@ function (Marker, BasePageable) {
              *   - Please see localground/apps/site/api/tests/sql_parse_tests.py
              *     for samples of valid queries.
              */
-            this.query = "WHERE project = " + projectID;
-            this.query += " AND name like %" + term +
+
+            this.query = "WHERE name like %" + term +
                         "% OR caption like %" + term +
                         "% OR owner like %" + term +
                         "% OR tags contains (" + term + ")";
+            this.query += " AND project = " + projectID;
             this.fetch({ reset: true });
         },
 
