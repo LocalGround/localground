@@ -50,6 +50,30 @@ define([
             'click .new_field_button' : 'addFieldButton',
             'click .back': 'backToList'
         },
+        onRender: function(){
+            var sortableFields = this.$el.find("#fieldList");
+            var that  = this;
+            sortableFields.sortable({
+                helper: this.fixHelper,
+                update: function (event, ui) {
+                    var newOrder = ui.item.index() + 1,
+                        modelID = ui.item.find('.id').val();
+                    var targetModel = that.collection.get(modelID);
+                    targetModel.set("ordering", newOrder);
+                    targetModel.save();
+                    // TODO: get model from collection, set the order, and
+                    // save to the API.
+                }
+            }).disableSelection();
+        },
+
+        // Fix helper with preserved width of cells
+        fixHelper: function(e, ui){
+            ui.children().each(function(){
+                $(this).width($(this).width());
+            });
+            return ui;
+        },
         fetchShareData: function () {
             this.model.getFields();
         },

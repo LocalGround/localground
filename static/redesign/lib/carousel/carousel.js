@@ -46,6 +46,12 @@ define(["jquery", "underscore", "marionette", "handlebars",
                             this.template = Handlebars.compile("<div class='player-container audio-detail'></div>");
                         }
                     },
+                    templateHelpers: function () {
+                        console.log(this.num_children);
+                        return {
+                            num_children: this.num_children
+                        };
+                    },
                     tagName: "li",
                     onRender: function () {
                         if (this.mode == "audio") {

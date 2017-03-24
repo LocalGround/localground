@@ -22,13 +22,22 @@
     </h4>
     {{#ifequal screenType "map"}}
         {{#if geometry}}
-        <button class="delete-marker-button">Delete Marker</button>
+        <button class="button-secondary delete-marker-button" id="delete-marker-button">Remove Marker</button>
         {{else}}
         <div class="add-lat-lng">
-            Insert Latitude and Longitude if empty. When done, hide this div away.
-            <button class="add-marker-button">Add Marker</button>
+            <button class="button-secondary add-marker-button" id="add-marker-button">
+                Place Marker on Map
+            </button>
         </div>
         {{/if}}
+        
+        {{#ifnotequal lat "undefined"}}
+            <div class="latlong-container">
+            <p class="latlong" style="font-style: italic">
+                ({{lat}}, {{lng}})
+            </p>
+            </div>
+        {{/ifnotequal}}
     {{/ifequal}}
     <div class="player-container audio-detail">
 

@@ -12,7 +12,7 @@ define([
         },
         state: {
             currentPage: 1,
-            pageSize: 50,
+            pageSize: 150,
             sortKey: 'id',
             order: -1 // 1 for descending, -1 for ascending
         },
@@ -44,12 +44,13 @@ define([
              *   - Please see localground/apps/site/api/tests/sql_parse_tests.py
              *     for samples of valid queries.
              */
-            this.query = "WHERE project = " + projectID;
-            this.query += " AND name like %" + term +
+
+            this.query ="WHERE name like %" + term +
                         "% OR caption like %" + term +
                         "% OR attribution like %" + term +
                         "% OR owner like %" + term +
                         "% OR tags contains (" + term + ")";
+            this.query += " AND project = " + projectID;
             this.fetch({ reset: true });
         },
 
