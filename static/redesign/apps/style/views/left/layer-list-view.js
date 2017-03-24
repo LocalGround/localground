@@ -1,50 +1,18 @@
 define(["marionette",
         "handlebars",
         "collections/layers",
+        "apps/style/views/left/layer-list-child-view",
         "text!../../templates/left/layer-list.html",
         "text!../../templates/left/layer-item.html"
     ],
-    function (Marionette, Handlebars, Layers, LayerListTemplate, LayerItemTemplate) {
+    function (Marionette, Handlebars, Layers, LayerListChild,LayerListTemplate, LayerItemTemplate) {
         'use strict';
 
         var SelectMapView = Marionette.CompositeView.extend({
 
             template: Handlebars.compile(LayerListTemplate),
 
-            getChildView: function () {
-                return Marionette.ItemView.extend({
-                    initialize: function (opts) {
-                        _.extend(this, opts);
-                       // this.listenTo(this.app.vent, 'update-title', this.updateTitle);
-                       this.listenTo(this.model, "change", this.render);
-                    },
-                    template: Handlebars.compile(LayerItemTemplate),
-                    modelEvents: {},
-                    events: {
-                        //edit event here, pass the this.model to the right panel
-                        "click .edit" : "sendCollection"
-                        },
-                    tagName: "div",
-                    className: "column",
-                    templateHelpers: function () {
-                        return {
-                            test: "123"
-                        };
-                    },
-
-                    sendCollection: function() {
-                        this.app.vent.trigger("edit-layer", this.model);
-                        console.log(this.model);
-                    },
-
-
-                    updateTitle: function (title) {
-                        this.model.set("title", title);
-                        console.log("should work");
-                        this.render();
-                    }
-                });
-            },
+            getChildView: LayerListChild,
             childViewContainer: "#layers",
 
             childViewOptions: function () {
