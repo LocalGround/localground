@@ -6,9 +6,10 @@ define([
     "text!../templates/create-form.html",
     "text!../templates/field-item.html",
     "models/form",
-    "collections/fields"
-], function ($, _, Handlebars, Marionette, CreateFormTemplate, FieldItemTemplate, Form, Fields) {
-    // Setting up a create form js
+    "collections/fields",
+    "apps/gallery/views/field-child-view",
+    "jquery.ui"
+], function ($, _, Handlebars, Marionette, CreateFormTemplate, FieldItemTemplate, Form, Fields, FieldChildView) {
     'use strict';
     var CreateFormView = Marionette.CompositeView.extend({
 
@@ -21,19 +22,20 @@ define([
             } else {
                 this.initModel();
             }
-            //this.listenTo(this.model, 'sync', this.createNewFields);
             this.template = Handlebars.compile(CreateFormTemplate);
             this.render();
         },
         initModel: function () {
             this.collection = this.model.fields;
-            this.attachCollectionEventHandlers();
+            if (this.collection) {
+                this.attachCollectionEventHandlers();
+            }
             Marionette.CompositeView.prototype.initialize.call(this);
-            this.model.getFields();
+            if (!this.collection || this.collection.isEmpty()) {
+                this.fetchShareData();
+            }
         },
         attachCollectionEventHandlers: function () {
-            //this.listenTo(this.collection, 'add', this.render);
-            //this.listenTo(this.collection, 'destroy', this.render);
             this.listenTo(this.collection, 'reset', this.render);
         },
 
@@ -41,51 +43,22 @@ define([
         childViewOptions: function () {
             return this.model.toJSON();
         },
-        getChildView: function () {
-            // this child view is responsible for displaying
-            // and deleting Field models:
-            return Marionette.ItemView.extend({
-                initialize: function (opts) {
-                    _.extend(this, opts);
-                },
-                events: {
-                    'click .delete-field': 'doDelete'
-                },
-                template: Handlebars.compile(FieldItemTemplate),
-                tagName: "tr",
-                doDelete: function (e) {
-                    if (!confirm("Are you sure you want to remove this field from the form?")) {
-                        return;
-                    }
-                    var $elem = $(e.target),
-                    $row =  $elem.parent().parent();
-                    $row.remove();
-                    
-                    this.model.destroy();
-                    e.preventDefault();
-                },
-                onRender: function () {
-                    console.log(this.model.toJSON());
-                }
-            });
-        },
+        childView: FieldChildView,
         template: Handlebars.compile(CreateFormTemplate),
         events: {
-            'click #save-form-settings' : 'saveFormSettings',
-            'click .close': 'hideModal',
-            'click .delete-field': 'removeRow',
+            'click .remove-row': 'removeRow',
             'click .new_field_button' : 'addFieldButton',
             'click .back': 'backToList'
         },
-        onRender: function(){
-            var sortableFields = this.$el.find("#fieldList");
-            var that  = this;
+        onRender: function () {
+            var sortableFields = this.$el.find("#fieldList"),
+                that  = this;
             sortableFields.sortable({
                 helper: this.fixHelper,
                 update: function (event, ui) {
                     var newOrder = ui.item.index() + 1,
-                        modelID = ui.item.find('.id').val();
-                    var targetModel = that.collection.get(modelID);
+                        modelID = ui.item.find('.id').val(),
+                        targetModel = that.collection.get(modelID);
                     targetModel.set("ordering", newOrder);
                     targetModel.save();
                     // TODO: get model from collection, set the order, and
@@ -95,8 +68,8 @@ define([
         },
 
         // Fix helper with preserved width of cells
-        fixHelper: function(e, ui){
-            ui.children().each(function(){
+        fixHelper: function (e, ui) {
+            ui.children().each(function () {
                 $(this).width($(this).width());
             });
             return ui;
@@ -107,9 +80,9 @@ define([
         removeRow: function (e) { // to remove a field that has not yet been saved
             var $elem = $(e.target),
                 $row =  $elem.parent().parent();
-            if ($row.has('select').length != 0) { 
+            if ($row.has('select').length != 0) {
                 $row.remove();
-            }            
+            }
         },
         saveFormSettings: function () {
             var formName = this.$el.find('#formName').val(),
@@ -123,7 +96,7 @@ define([
                 success: function () {
                     that.createNewFields();
                 },
-                error: function(){
+                error: function () {
                     console.log("The fields could not be saved");
                 }
             });
@@ -158,63 +131,53 @@ define([
                     //edit existing fields:
                     id = $row.find(".id").val();
                     existingField = this.model.getFieldByID(id);
-                    if (!this.errorFieldName(fieldNameInput)){
+                    if (!this.errorFieldName(fieldNameInput)) {
                         existingField.set("ordering", i + 1);
                         existingField.set("col_alias", fieldName);
                         existingField.save();
-                    }
-                    else{
-                        $row.css("background-color", "FFAAAA")
+                    } else {
+                        $row.css("background-color", "FFAAAA");
                     }
                 } else {
                     //create new fields:
                     fieldType = $row.find(".fieldType").val();
-                    if (!this.blankField(fieldNameInput, fieldType)){
+                    if (!this.blankField(fieldNameInput, fieldType)) {
                         this.model.createField(fieldName, fieldType, i + 1);
-                    }
-                    else{
-                        $row.css("background-color", "FFAAAA")
+                    } else {
+                        $row.css("background-color", "FFAAAA");
                     }
                 }
             }
         },
-        blankField: function(fieldName, fieldType){
-            var blankfield = false,
-
-            blankfield = this.errorFieldName(fieldName) ||
+        blankField: function (fieldName, fieldType) {
+            return this.errorFieldName(fieldName) ||
                          this.errorFieldType(fieldType);
-
-            return blankfield;
         },
 
-        errorFieldName: function(_fieldName){
+        errorFieldName: function (_fieldName) {
             var errorCaught = false;
-            try{
-                if (_fieldName.val().trim() == ""){
+            try {
+                if (_fieldName.val().trim() === "") {
                     throw "Field Name Missing";
                 }
-            }
-            catch (err){
+            } catch (err) {
                 errorCaught = true;
                 _fieldName.attr("placeholder", err);
                 _fieldName.css("background-color", "#FFDDDD");
-            }
-            finally{
+            } finally {
                 return errorCaught;
             }
         },
 
-        errorFieldType: function(_fieldType){
+        errorFieldType: function (_fieldType) {
             var errorCaught = false;
-            try{
-                if (!_fieldType){
+            try {
+                if (!_fieldType) {
                     throw "Field Type Missing";
                 }
-            }
-            catch (err){
+            } catch (err) {
                 errorCaught = true;
-            }
-            finally{
+            } finally {
                 return errorCaught;
             }
         },
@@ -233,7 +196,7 @@ define([
             if (!confirm("Are you sure you want to delete this form?")) {
                 return;
             }
-            this.model.destroy( {
+            this.model.destroy({
                 success: function () {
                     that.backToList();
                 }
@@ -241,7 +204,7 @@ define([
 
         },
 
-        backToList: function(){
+        backToList: function () {
             this.app.vent.trigger("show-form-list");
         }
     });
