@@ -25,9 +25,6 @@ define([
 
             this.model.destroy();
             e.preventDefault();
-        },
-        onRender: function () {
-            console.log(this.model.toJSON());
         }
     });
     return FieldChildView;

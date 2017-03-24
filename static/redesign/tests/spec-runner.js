@@ -24,7 +24,8 @@ require(['boot'], function () {
         'spec/views/data-manager-test.js',
         'spec/views/legend-layer-entry-test.js',
         'spec/views/audio-player-test.js',
-        'spec/views/create-form-test.js'
+        'spec/views/create-form-test.js',
+        'spec/views/form-field-test.js'
     ];
 
     require(specs, function () {
