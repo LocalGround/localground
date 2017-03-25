@@ -17,9 +17,9 @@ define([
     var MapApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
             container: ".main-panel",
-            markerListRegion: "#marker-list-panel",
+            markerListRegion: "#left-panel",
             mapRegion: "#map-panel",
-            markerDetailRegion: "#marker-detail-panel",
+            markerDetailRegion: "#right-panel",
             toolbarMainRegion: "#toolbar-main",
             toolbarDataViewRegion: "#toolbar-dataview"
         },
@@ -82,7 +82,8 @@ define([
             }
             this.container.$el.removeClass("left right none both");
             this.container.$el.addClass(className);
-            this.basemapView.redraw();
+            //wait 'til CSS animation completes before redrawing map
+            setTimeout(this.basemapView.redraw, 220);
         },
 
         showBasemap: function () {
