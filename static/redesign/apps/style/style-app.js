@@ -38,19 +38,16 @@ define([
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
-            //this.projects = new Projects();
-            //this.listenTo(this.projects, 'reset', this.selectProjectLoadRegions);
-            //this.projects.fetch({ reset: true });
+            this.showGlobalToolbar();
+            this.showBasemap();
             this.listenTo(this.vent, 'hide-detail', this.hideDetail);
             this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
             this.listenTo(this.vent, 'hide-list', this.hideList);
         },
         loadRegions: function () {
-            this.showGlobalToolbar();
-            this.showBasemap();
-            this.showLeftLayout();
             this.showRightLayout();
+            this.showLeftLayout();
         },
 
         showLeftLayout: function () {

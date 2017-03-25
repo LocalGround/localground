@@ -45,12 +45,12 @@ define([
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
-        },
-
-        loadRegions: function () {
             this.showGlobalToolbar();
             this.showDataToolbar();
             this.showBasemap();
+        },
+
+        loadRegions: function () {
             this.showMarkerListManager();
             if (this.showDetailsWhenInitialized) {
                 this.showDetail(this.showDetailsWhenInitialized);
