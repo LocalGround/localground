@@ -28,8 +28,9 @@
     </div>
     <script src="/static/redesign/external/require.js"></script>
     <script>
+        var username = '{{ user.username }}';
         require(['/static/redesign/apps/require-config.js'], function(){
-            require(['apps/home/kickoff']);  //or adminApp for the admin area, etc.
+            require(['apps/home/kickoff']);
         });
     </script>
 
