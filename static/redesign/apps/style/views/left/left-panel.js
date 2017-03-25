@@ -21,11 +21,11 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'edit-layer', this.showRightPanel);
                 this.listenTo(this.app.vent, 'add-layer', this.showRightPanel);
             },
-            
             events: {
-                        "click .hide-button" : "moveLeftPanel",
-                        "click #new-layer-options a" : "createNewLayer"
-                    },
+                "click #new-layer-options a" : "createNewLayer",
+                'click .hide': 'hidePanel',
+                'click .show': 'showPanel'
+            },
             
             regions: {
                 menu: "#map_dropdown_region",
@@ -50,23 +50,22 @@ define(["marionette",
             },
             handleNewMap: function(model) {
                 console.log(model, this);
-                this.model = model;
+                this.app.model = model;
                 var ps = new PanelStylesView({
                     app: this.app,
                     model: model
                 });
                 this.styles.show(ps); 
             },
-            moveLeftPanel: function (e) {
-                var $btn = $(e.target);
-                $btn.toggleClass("map-left-panel-hide", 1000);
-                $("#left-panel").toggleClass("left-panel-hide");
-                this.app.vent.trigger("resize-map", "80%");
+            hidePanel: function (e) {
+                $(e.target).removeClass("hide").addClass("show");
+                this.app.vent.trigger('hide-list');
+                e.preventDefault();
             },
-            showRightPanel: function () {
-                //TODO: move this method to lay-list-view's childview class
-                console.log("clicked .edit");
-                $("#right-panel").addClass("show-right-panel");
+            showPanel: function (e) {
+                $(e.target).removeClass("show").addClass("hide");
+                this.app.vent.trigger('unhide-list');
+                e.preventDefault();
             }
         });
         return LeftPanelLayout;

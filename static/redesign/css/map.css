@@ -11,6 +11,10 @@
     top: 0;
 }
 
+#toolbar-main > div{
+    display:flex;    
+}
+
 .main-panel {
     padding: 0px;
     width: auto;
@@ -112,6 +116,37 @@
 .right #marker-detail-panel .show-hide, .both #marker-detail-panel .show-hide {
     right: 400px;
 }
+.show-hide {
+    width: 20px;
+    height: 57px;
+    background: #FFF;
+    position: absolute;
+    bottom: 0px;
+    z-index: 100;
+    cursor: pointer;
+    line-height: 30px;
+    /* padding: 5px; */
+    font-weight: bold;
+    color: #999;
+}
+#marker-detail-panel .show, #marker-list-panel .hide {
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAJUlEQVR42mNgAILy8vL/DLgASBKnApgkVgXIkhgKiNKJ005s4gDLbCZBiSxfygAAAABJRU5ErkJggg==);
+    background-repeat: no-repeat;
+    background-position: 7px center;
+    background-size: 8px 8px;
+    box-shadow: -1px 1px 4px rgba(0,0,0,0.3);
+}
+
+#marker-detail-panel .hide, #marker-list-panel .show {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAJUlEQVR42mNgAILy8vL/DLgASBKnApgkVgXIkhgKiNKJ005s4gDLbCZBiSxfygAAAABJRU5ErkJggg==);
+    background-repeat: no-repeat;
+    background-position: 7px center;
+    background-size: 8px 8px;
+    box-shadow: -1px 1px 4px rgba(0,0,0,0.3);
+}
 
 #map-panel {
     height:100%;
@@ -129,9 +164,6 @@
     height: 32px;
 }
 
-#toolbar-main > div{
-    display:flex;    
-}
 
 .list-header {
     padding: 10px;
@@ -209,43 +241,14 @@ svg, .fa-question-circle {
     color: white;
 }
 
-.show-hide {
-    width: 20px;
-    height: 57px;
-    background: #FFF;
-    position: absolute;
-    bottom: 0px;
-    z-index: 100;
-    cursor: pointer;
-    line-height: 30px;
-    /* padding: 5px; */
-    font-weight: bold;
-    color: #999;
-}
+
 .marker-container p {
     display: inline-block;
     margin-top: 3px;
     vertical-align: middle;
 }
 
-#marker-detail-panel .show, #marker-list-panel .hide {
-    -moz-transform: scaleX(-1);
-    -webkit-transform: scaleX(-1);
-    -o-transform: scaleX(-1);
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAJUlEQVR42mNgAILy8vL/DLgASBKnApgkVgXIkhgKiNKJ005s4gDLbCZBiSxfygAAAABJRU5ErkJggg==);
-    background-repeat: no-repeat;
-    background-position: 7px center;
-    background-size: 8px 8px;
-    box-shadow: -1px 1px 4px rgba(0,0,0,0.3);
-}
 
-#marker-detail-panel .hide, #marker-list-panel .show {
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAJUlEQVR42mNgAILy8vL/DLgASBKnApgkVgXIkhgKiNKJ005s4gDLbCZBiSxfygAAAABJRU5ErkJggg==);
-    background-repeat: no-repeat;
-    background-position: 7px center;
-    background-size: 8px 8px;
-    box-shadow: -1px 1px 4px rgba(0,0,0,0.3);
-}
 
 
 /**********************

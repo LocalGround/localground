@@ -18,9 +18,11 @@ define(["marionette",
             },
             
             events: {
-                        //"click .hide-button" : "moveLeftPanel"
-                        "click .layer-save" : "saveLayer"
-                    },
+                //"click .hide-button" : "moveLeftPanel"
+                "click .layer-save" : "saveLayer",
+                'click .hide': 'hidePanel',
+                'click .show': 'showPanel'
+            },
             
             regions: {
                 dataSource: "#data_source_region",
@@ -43,8 +45,8 @@ define(["marionette",
                 
                                 
             },
-            
             createLayer: function (layer) {
+                this.triggerShowPanel();
                 this.model = layer;
                 var dsv = new DataSourceView({
                     app: this.app,
@@ -89,6 +91,20 @@ define(["marionette",
                         console.log('success');
                     }
                 });
+            },
+            triggerShowPanel: function () {
+                this.app.vent.trigger('unhide-detail');
+                this.$el.find('.right-panel-btn').show();
+            },
+            hidePanel: function (e) {
+                $(e.target).removeClass("hide").addClass("show");
+                this.app.vent.trigger('hide-detail');
+                e.preventDefault();
+            },
+            showPanel: function (e) {
+                $(e.target).removeClass("show").addClass("hide");
+                this.app.vent.trigger('unhide-detail');
+                e.preventDefault();
             }
         });
         return RightPanelLayout;

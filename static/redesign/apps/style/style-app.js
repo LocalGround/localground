@@ -22,6 +22,9 @@ define([
             leftRegion: "#left-panel",
             toolbarMainRegion: "#toolbar-main"
         },
+        screenType: "style",
+        showLeft: true,
+        showRight: false,
         currentCollection: null,
         start: function (options) {
             // declares any important global functionality;
@@ -38,13 +41,11 @@ define([
             //this.projects = new Projects();
             //this.listenTo(this.projects, 'reset', this.selectProjectLoadRegions);
             //this.projects.fetch({ reset: true });
-            this.listenTo(this.vent, 'resize-map', this.resizeMap);
+            this.listenTo(this.vent, 'hide-detail', this.hideDetail);
+            this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
+            this.listenTo(this.vent, 'unhide-list', this.unhideList);
+            this.listenTo(this.vent, 'hide-list', this.hideList);
         },
-        /*selectProjectLoadRegions: function () {
-            this.selectProject(); //located in appUtilities
-            this.loadRegions();
-        },*/
-
         loadRegions: function () {
             this.showGlobalToolbar();
             this.showBasemap();
@@ -98,11 +99,38 @@ define([
             this.basemapView = new Basemap(opts);
             this.mapRegion.show(this.basemapView);
         },
-        resizeMap: function (width) {
-            this.mapRegion.$el.css({
-                width: width
-            });
-            this.vent.trigger('google-redraw');
+        updateDisplay: function () {
+            var className = "none";
+            if (this.showLeft && this.showRight) {
+                className = "both";
+            } else if (this.showLeft) {
+                className = "left";
+            } else if (this.showRight) {
+                className = "right";
+            }
+            this.container.$el.removeClass("left right none both");
+            this.container.$el.addClass(className);
+            //wait 'til CSS animation completes before redrawing map
+            setTimeout(this.basemapView.redraw, 220);
+        },
+
+        hideList: function () {
+            this.showLeft = false;
+            this.updateDisplay();
+        },
+        unhideList: function () {
+            this.showLeft = true;
+            this.updateDisplay();
+        },
+
+        hideDetail: function () {
+            this.showRight = false;
+            this.updateDisplay();
+        },
+
+        unhideDetail: function () {
+            this.showRight = true;
+            this.updateDisplay();
         }
     }));
     return MapApp;
