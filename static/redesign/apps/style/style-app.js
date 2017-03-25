@@ -33,13 +33,13 @@ define([
             this.initAJAX(options);
             this.router = new Router({ app: this});
             Backbone.history.start();
-            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
         },
         initialize: function (options) {
             Marionette.Application.prototype.initialize.apply(this, [options]);
             this.dataManager = new DataManager({ vent: this.vent, projectID: this.getProjectID() });
             this.showGlobalToolbar();
             this.showBasemap();
+            this.listenTo(this.vent, 'data-loaded', this.loadRegions);
             this.listenTo(this.vent, 'hide-detail', this.hideDetail);
             this.listenTo(this.vent, 'unhide-detail', this.unhideDetail);
             this.listenTo(this.vent, 'unhide-list', this.unhideList);
