@@ -2,11 +2,12 @@ define(["marionette",
         "handlebars",
         "apps/style/views/right/data-source-view",
         "apps/style/views/right/marker-style-view",
+        "apps/style/views/right/source-code-style-view",
         "apps/style/views/right/filter-rules-view",
         "text!../../templates/right/right-panel-layout.html",
         "models/layer"
     ],
-    function (Marionette, Handlebars, DataSourceView, MarkerStyleView, FilterRulesView, RightPanelLayoutTemplate, Layer) {
+    function (Marionette, Handlebars, DataSourceView, MarkerStyleView, SourceCodeStyleView, FilterRulesView, RightPanelLayoutTemplate, Layer) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var RightPanelLayout = Marionette.LayoutView.extend({
@@ -16,10 +17,12 @@ define(["marionette",
                 this.render();
                 this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
             },
-            
+
             events: {
                 //"click .hide-button" : "moveLeftPanel"
                 "click .layer-save" : "saveLayer",
+                "click .style-source-tab" : "showSourceRegion",
+                "click .style-basic-tab" : "showMarkerStyleRegion",
                 'click .hide': 'hidePanel',
                 'click .show': 'showPanel'
             },
@@ -27,6 +30,7 @@ define(["marionette",
             regions: {
                 dataSource: "#data_source_region",
                 markerStyle: "#marker_style_region",
+                sourceCodeStyle: "#source_code_style_region",
                 filterRules: "#filter_rules_region"
             },
             onRender: function () {
@@ -52,18 +56,37 @@ define(["marionette",
                     app: this.app,
                     model: layer
                 });
-                var msv = new MarkerStyleView({
+                this.msv = new MarkerStyleView({
                     app: this.app,
                     model: layer
                 });
-                var frv = new FilterRulesView({
+                this.frv = new FilterRulesView({
                     app: this.app,
                     model: layer
                 });
                 this.dataSource.show(dsv);
-                this.markerStyle.show(msv);
-                this.filterRules.show(frv);
+                this.markerStyle.show(this.msv);
+                this.filterRules.show(this.frv);
                 this.app.vent.trigger("re-render");
+            },
+
+            showSourceRegion: function () {
+                this.markerStyle.$el.hide();
+                
+                if (!this.sourceCode) {
+                    this.sourceCode = new SourceCodeStyleView({
+                        app: this.app,
+                        model: this.model
+                    });
+                    this.sourceCodeStyle.show(this.sourceCode);
+                } else {
+                    this.sourceCodeStyle.$el.show();
+                }
+            },
+
+            showMarkerStyleRegion: function () {
+                this.sourceCodeStyle.$el.hide();
+                this.markerStyle.$el.show();
             },
 
             saveLayer: function () {
@@ -72,18 +95,20 @@ define(["marionette",
                 var layerType = this.$el.find("#data-type-select").val();
                 // get record property?
                 var symbolShape = this.$el.find("#quant-shape").val();
+                var sourceCode = JSON.parse(this.$el.find(".source-code").val());
                 console.log(symbolShape);
 
                 if (this.model.get("filters") === null) {
                     this.model.set("filters", { 'tag' : 'nothing' });
                 }
-
                 this.model.set("title", title);
                 this.model.set("data_source", dataSource);
                 this.model.set("layer_type", layerType);
+                this.model.set("symbols", sourceCode);
                 // set record property?  
                 this.model.set("symbol_shape", symbolShape);
-                this.model.save({
+                console.log(this.model.toJSON());
+                this.model.save(null, {
                     error: function () {
                         console.log('error');
                     },
