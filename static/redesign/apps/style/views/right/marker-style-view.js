@@ -49,15 +49,15 @@ define(["marionette",
             },
             
             hideColorRamp: function (e) {
-            var $el = $(e.target);
-            if (!$el.hasClass('palette-wrapper') &&
-                    !$el.parent().hasClass('selected-palette-list') &&
-                    !$el.parent().hasClass('selected-palette-wrapper') &&
-                    !$el.parent().hasClass('selected-ul')
-                    ) {
-                $(".palette-wrapper").hide();
-            }
-        },
+                var $el = $(e.target);
+                if (!$el.hasClass('palette-wrapper') &&
+                        !$el.parent().hasClass('selected-palette-list') &&
+                        !$el.parent().hasClass('selected-palette-wrapper') &&
+                        !$el.parent().hasClass('selected-ul')
+                        ) {
+                    $(".palette-wrapper").hide();
+                }
+            },
 
             reRender: function () {
                 this.render();  

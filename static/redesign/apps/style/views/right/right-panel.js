@@ -68,16 +68,23 @@ define(["marionette",
                 this.markerStyle.show(this.msv);
                 this.filterRules.show(this.frv);
                 this.app.vent.trigger("re-render");
+                this.updateSourceCode();
+            },
+            updateSourceCode: function () {
+                this.sourceCode = new SourceCodeStyleView({
+                    app: this.app,
+                    model: this.model
+                });
+                this.sourceCodeStyle.show(this.sourceCode);
             },
 
             showSourceRegion: function () {
                 this.markerStyle.$el.hide();
-                
-                if (!this.sourceCode) {
-                    this.sourceCode = new SourceCodeStyleView({
-                        app: this.app,
-                        model: this.model
-                    });
+                this.sourceCode = new SourceCodeStyleView({
+                    app: this.app,
+                    model: this.model
+                });
+                if (!this.sourceCodeStyle.hasView()) {
                     this.sourceCodeStyle.show(this.sourceCode);
                 } else {
                     this.sourceCodeStyle.$el.show();
@@ -90,12 +97,11 @@ define(["marionette",
             },
 
             saveLayer: function () {
-                var title = this.$el.find(".layer-title").val();
-                var dataSource;
-                var layerType = this.$el.find("#data-type-select").val();
-                // get record property?
-                var symbolShape = this.$el.find("#quant-shape").val();
-                var sourceCode = JSON.parse(this.$el.find(".source-code").val());
+                var dataSource,
+                    title = this.$el.find(".layer-title").val(),
+                    layerType = this.$el.find("#data-type-select").val(),
+                    symbolShape = this.$el.find("#quant-shape").val(),
+                    sourceCode = JSON.parse(this.$el.find(".source-code").val());
                 console.log(symbolShape);
 
                 if (this.model.get("filters") === null) {

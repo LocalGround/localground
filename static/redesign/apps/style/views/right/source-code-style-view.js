@@ -1,62 +1,20 @@
 define(["marionette",
         "handlebars",
-        "collections/layers",
-        "models/layer",
-        "text!../../templates/right/source-code-style.html",
-        "text!../../templates/right/marker-style-child.html",
-        "collections/records",
-        "collections/fields",
-        "palette"
+        "text!../../templates/right/source-code-style.html"
     ],
-    function (Marionette, Handlebars, Layers, Layer, SourceCodeStyleTemplate, MarkerStyleChildTemplate, Records, Fields, Palette) {
+    function (Marionette, Handlebars, SourceCodeStyleTemplate) {
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
-            buckets: 4,
             template: Handlebars.compile(SourceCodeStyleTemplate),
-            
-            getChildView: function () {
-                return Marionette.ItemView.extend({
-                    initialize: function (opts) {
-                        _.extend(this, opts);
-                    },
-                    template: Handlebars.compile(MarkerStyleChildTemplate),
-                    modelEvents: {},
-                    events: {},
-                    tagName: "tr",
-                    className: "table-row",
-                    templateHelpers: function () {
-                        return {
-                            dataType: this.dataType
-                        };
-                    }
-                });
-            },
-            childViewContainer: "#symbols",
-            
-            childViewOptions: function () {
-              return { app: this.app };  
-            },
 
             initialize: function (opts) {
-                this.app = opts.app;
-                this.model = opts.model;
-                this.dataType = this.model.get("layer_type");
-                this.displaySymbols();
-                this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
+                _.extend(this, opts);
             },
 
-            reRender: function () {
-                this.render();  
-            },
-            
             templateHelpers: function () {
                 return {
-                    dataType: this.dataType,
-                    allColors: this.allColors,
-                    buckets: this.buckets,
-                    //add formatting/indenting to JSON:
-                    symbols: JSON.stringify(this.model.get("symbols"), null, 4)
+                    symbols: JSON.stringify(this.model.get("symbols"), null, 3)
                 };
             },
 
@@ -65,11 +23,12 @@ define(["marionette",
             },
 
             updateModel: function () {
-                console.log(this.model);
-                var sourceCode = JSON.parse(this.$el.find(".source-code").val());
-                this.model.set("symbols", sourceCode);
-                console.log(sourceCode);
-                console.log(this.model);
+                try {
+                    var sourceCode = JSON.parse(this.$el.find(".source-code").val());
+                    this.model.set("symbols", sourceCode);
+                } catch (e) {
+                    alert('Invalid JSON. Please revert and try again.');
+                }
             },
 
             selectDataType: function () {
@@ -78,7 +37,7 @@ define(["marionette",
             },
 
             displaySymbols: function () {
-                this.collection = new Backbone.Collection(this.model.get("symbols"));                
+                this.collection = new Marionette.Collection(this.model.get("symbols"));
                 this.render();
             }
 
