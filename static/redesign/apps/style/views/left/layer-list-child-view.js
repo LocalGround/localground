@@ -8,20 +8,26 @@ define(["jquery",
         'use strict';
         var LayerListChild =  Marionette.ItemView.extend({
             initialize: function (opts) {
-                console.log('initialize childView');
                 _.extend(this, opts);
                 // this.listenTo(this.app.vent, 'update-title', this.updateTitle);
                 this.listenTo(this.app.vent, "change-map", this.hide);
-                this.listenTo(this.model, "change", this.render);
+                this.listenTo(this.model, "change:title", this.render);
                 this.initMapOverlays();
             },
             template: Handlebars.compile(LayerItemTemplate),
+            templateHelpers: function () {
+                return {
+                    isChecked: this.isChecked
+                };
+            },
             markerOverlayList: null,
-            modelEvents: {},
+            modelEvents: {
+                'change:symbols': 'updateMapOverlays'
+            },
             events: {
                 //edit event here, pass the this.model to the right panel
                 "click .edit" : "sendCollection",
-                'change input': 'showHide'
+                'change input': 'showHideOverlays'
             },
 
             sendCollection: function () {
@@ -31,6 +37,16 @@ define(["jquery",
             updateTitle: function (title) {
                 this.model.set("title", title);
                 this.render();
+            },
+
+            updateMapOverlays: function () {
+                this.hideOverlays();
+                this.model.rebuildSymbolMap();
+                console.log(this.model.getSymbols());
+                this.initMapOverlays();
+                if (this.isChecked) {
+                    this.showOverlays();
+                }
             },
 
             initMapOverlays: function () {
@@ -59,24 +75,24 @@ define(["jquery",
                 });
             },
 
-            show: function () {
+            showOverlays: function () {
                 _.each(this.markerOverlayList, function (overlays) {
                     overlays.showAll();
                 });
             },
 
-            hide: function () {
+            hideOverlays: function () {
                 _.each(this.markerOverlayList, function (overlays) {
                     overlays.hideAll();
                 });
             },
 
-            showHide: function (e) {
-                var isChecked = $(e.target).prop('checked');
-                if (isChecked) {
-                    this.show();
+            showHideOverlays: function (e) {
+                this.isChecked = $(e.target).prop('checked');
+                if (this.isChecked) {
+                    this.showOverlays();
                 } else {
-                    this.hide();
+                    this.hideOverlays();
                 }
             }
         });

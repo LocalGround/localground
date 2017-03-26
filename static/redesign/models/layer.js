@@ -32,6 +32,10 @@ define(["models/base", "models/symbol"], function (Base, Symbol) {
             return null;
 		},
 
+        rebuildSymbolMap: function () {
+            this.symbolMap = null;
+            this.buildSymbolMap();
+        },
         buildSymbolMap: function () {
             //set the basic flag:
             if (this.get("symbols").length == 1) {

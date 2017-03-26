@@ -45,8 +45,6 @@ define(["marionette",
                 this.displaySymbols();
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
             },
-            
-        
 
             reRender: function () {
                 this.render();  
@@ -56,18 +54,19 @@ define(["marionette",
                 return {
                     dataType: this.dataType,
                     allColors: this.allColors,
-                    buckets: this.buckets
+                    buckets: this.buckets,
+                    //add formatting/indenting to JSON:
+                    symbols: JSON.stringify(this.model.get("symbols"), null, 4)
                 };
             },
-            
+
             events: {
-                'keyup .source-code': 'updateModel'
-            }, 
-            
+                'blur .source-code': 'updateModel'
+            },
+
             updateModel: function () {
                 console.log(this.model);
                 var sourceCode = JSON.parse(this.$el.find(".source-code").val());
-                
                 this.model.set("symbols", sourceCode);
                 console.log(sourceCode);
                 console.log(this.model);
@@ -77,17 +76,11 @@ define(["marionette",
                 this.dataType = this.$el.find("#data-type-select").val();
                 this.render();
             },
-            
+
             displaySymbols: function () {
                 this.collection = new Backbone.Collection(this.model.get("symbols"));                
                 this.render();
-            },
-           
-            
-        
-            
-            
-            
+            }
 
         });
         return MarkerStyleView;
