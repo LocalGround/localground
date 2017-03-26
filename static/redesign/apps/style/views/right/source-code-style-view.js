@@ -22,6 +22,11 @@ define(["marionette",
                 'blur .source-code': 'updateModel'
             },
 
+            onShow: function () {
+                console.log('showing');
+                this.render();
+            },
+
             updateModel: function () {
                 try {
                     var sourceCode = JSON.parse(this.$el.find(".source-code").val());

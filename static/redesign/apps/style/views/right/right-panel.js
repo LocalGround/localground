@@ -1,13 +1,13 @@
-define(["marionette",
+define(["jquery",
+        "marionette",
         "handlebars",
         "apps/style/views/right/data-source-view",
         "apps/style/views/right/marker-style-view",
         "apps/style/views/right/source-code-style-view",
         "apps/style/views/right/filter-rules-view",
-        "text!../../templates/right/right-panel-layout.html",
-        "models/layer"
+        "text!../../templates/right/right-panel-layout.html"
     ],
-    function (Marionette, Handlebars, DataSourceView, MarkerStyleView, SourceCodeStyleView, FilterRulesView, RightPanelLayoutTemplate, Layer) {
+    function ($, Marionette, Handlebars, DataSourceView, MarkerStyleView, SourceCodeStyleView, FilterRulesView, RightPanelLayoutTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var RightPanelLayout = Marionette.LayoutView.extend({
@@ -26,7 +26,7 @@ define(["marionette",
                 'click .hide': 'hidePanel',
                 'click .show': 'showPanel'
             },
-            
+
             regions: {
                 dataSource: "#data_source_region",
                 markerStyle: "#marker_style_region",
@@ -36,18 +36,17 @@ define(["marionette",
             onRender: function () {
                 // only load views after the LayoutView has
                 // been rendered to the screen:
-                
+
                 //var dsv = new DataSourceView({ app: this.app });
                 //this.dataSource.show(dsv);
-                
+
                // var msv = new MarkerStyleView({ app: this.app });
                // this.markerStyle.show(msv);
                // this.app.vent.trigger("find-datatype");
-                
+
                 var frv = new FilterRulesView({ app: this.app });
                 this.filterRules.show(frv);
-                
-                                
+
             },
             createLayer: function (layer) {
                 this.triggerShowPanel();
@@ -70,29 +69,34 @@ define(["marionette",
                 this.app.vent.trigger("re-render");
                 this.updateSourceCode();
             },
+
             updateSourceCode: function () {
-                this.sourceCode = new SourceCodeStyleView({
-                    app: this.app,
-                    model: this.model
-                });
-                this.sourceCodeStyle.show(this.sourceCode);
+                if (this.sourceCode) {
+                    this.sourceCode.model = this.model;
+                    this.sourceCode.render();
+                } else {
+                    this.sourceCode = new SourceCodeStyleView({
+                        app: this.app,
+                        model: this.model
+                    });
+                }
             },
 
             showSourceRegion: function () {
-                this.markerStyle.$el.hide();
-                this.sourceCode = new SourceCodeStyleView({
-                    app: this.app,
-                    model: this.model
-                });
-                if (!this.sourceCodeStyle.hasView()) {
-                    this.sourceCodeStyle.show(this.sourceCode);
-                } else {
+                if (this.sourceCodeStyle.$el) {
                     this.sourceCodeStyle.$el.show();
+                } else {
+                    this.sourceCodeStyle.show(this.sourceCode);
+                }
+                if (this.markerStyle.$el) {
+                    this.markerStyle.$el.hide();
                 }
             },
 
             showMarkerStyleRegion: function () {
-                this.sourceCodeStyle.$el.hide();
+                if (this.sourceCodeStyle.$el) {
+                    this.sourceCodeStyle.$el.hide();
+                }
                 this.markerStyle.$el.show();
             },
 
