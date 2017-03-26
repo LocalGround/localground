@@ -524,7 +524,7 @@ input[type="checkbox"]{
     right:0;
 }
 
-#toolbar-main > .title{
+.project-detail > .title{
     width: 400px;
 }
 
@@ -545,12 +545,10 @@ input[type="checkbox"]{
     margin-left: auto;
 }
 
-#toolbar-dataview .main-search{
-    margin-left: 25%;
-    margin-right: 25%;
-    width: 50%;
+#toolbar-dataview .main-search {
+    margin-left: 260px;
+    width: calc(100% - 680px);
     position: fixed;
-
 }
 
 #toolbar-dataview .search-form input, #toolbar-dataview .search-form {

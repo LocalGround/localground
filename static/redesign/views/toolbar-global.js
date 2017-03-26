@@ -11,7 +11,8 @@ define([
 
         templateHelpers: function () {
             return {
-                activeTab: this.app.activeTab
+                activeTab: this.app.activeTab,
+                name: this.model.get("name") === "Untitled" ? "" : this.model.get("name")
             };
         },
 

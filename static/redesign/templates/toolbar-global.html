@@ -1,8 +1,9 @@
 <div class="project-detail">
     <div class="title">
-            
-        <a href="/"><i class="fa fa-arrow-left back-to-profile"></i></a>
-        <h2 class="map-title">{{ name }}</h2>
+        {{#if name}}   
+            <a href="/"><i class="fa fa-arrow-left back-to-profile"></i></a>
+            <h2 class="map-title">{{ name }}</h2>
+        {{/if}}
     </div>
     <nav>
         <div {{#ifequal activeTab "data"}}class="selected"{{/ifequal}}>
