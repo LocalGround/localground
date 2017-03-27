@@ -101,23 +101,17 @@ define(["jquery",
             },
 
             saveLayer: function () {
-                var dataSource,
-                    title = this.$el.find(".layer-title").val(),
+                var title = this.$el.find(".layer-title").val(),
+                    dataSource = this.$el.find("#data_source").val(),
                     layerType = this.$el.find("#data-type-select").val(),
-                    symbolShape = this.$el.find("#quant-shape").val(),
-                    sourceCode = JSON.parse(this.$el.find(".source-code").val());
-                console.log(symbolShape);
-
+                    symbolShape = this.$el.find("#quant-shape").val();
                 if (this.model.get("filters") === null) {
                     this.model.set("filters", { 'tag' : 'nothing' });
                 }
                 this.model.set("title", title);
                 this.model.set("data_source", dataSource);
-                this.model.set("layer_type", layerType);
-                this.model.set("symbols", sourceCode);
-                // set record property?  
+                this.model.set("layer_type", layerType); 
                 this.model.set("symbol_shape", symbolShape);
-                console.log(this.model.toJSON());
                 this.model.save(null, {
                     error: function () {
                         console.log('error');
