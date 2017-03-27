@@ -1,12 +1,10 @@
-
 <td>{{ color }}</td>
 <td>{{ title }}</td>
 <td>
-    <select id="quant-shape" name="marker-shapes">
-        <option value="circle">circle</option>
-        <option value="square">square</option>
-        <option value="plus">plus</option>
-        <option value="cross">cross</option>
+    <select class="marker-shape">
+    {{#each icons}}
+        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>
+    {{/each}}
     </select>    
 </td>
 
@@ -16,11 +14,10 @@
 <td>{{ color }}</td>
 <td>{{ title }}</td>
 <td>
-    <select id="quant-shape" name="marker-shapes">
-        <option value="circle">circle</option>
-        <option value="square">square</option>
-        <option value="plus">plus</option>
-        <option value="cross">cross</option>
+    <select class="marker-shape">
+    {{#each icons}}
+        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>
+    {{/each}}
     </select>
 </td>
 

@@ -1,12 +1,14 @@
+#left-panel, #right-panel, #map-panel, .show-hide, #left-panel .save-options-left  {
+    transition-property: -webkit-transform,transform,opacity,width,margin,left,right;
+    transition-duration: 0.2s;
+    transition-timing-function: cubic-bezier(0.0,0.0,0.5,1);
+}
 #left-panel, #right-panel, #map-panel {
     /*border: solid 1px #000;*/
     height: 100%;
     display: inline-block;
     box-sizing: border-box;
     vertical-align: top;
-    transition-property: -webkit-transform,transform,opacity, width;
-    transition-duration: 0.2s;
-    transition-timing-function: cubic-bezier(0.0,0.0,0.5,1);
 }
 #left-panel, #right-panel {
     overflow-y: auto;
@@ -22,11 +24,11 @@
     overflow: hidden;
 }
 
-#left-panel .save-options {
-    position: static;
+#left-panel .save-options-left {
+    margin-left: 0px;
 }
-.none #left-panel .save-options {
-    position: relative;
+.none #left-panel .save-options, .right #left-panel .save-options {
+    margin-left: -270px;
 }
 
 .left #map-panel {

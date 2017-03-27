@@ -2,11 +2,12 @@ define(["jquery",
         "backbone",
         "marionette",
         "handlebars",
+        "lib/maps/icon-lookup",
         "text!../../templates/right/marker-style.html",
         "text!../../templates/right/marker-style-child.html",
         "palette"
     ],
-    function ($, Backbone, Marionette, Handlebars, MarkerStyleTemplate, MarkerStyleChildTemplate) {
+    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleTemplate, MarkerStyleChildTemplate) {
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
@@ -21,20 +22,35 @@ define(["jquery",
                         _.extend(this, opts);
                     },
                     template: Handlebars.compile(MarkerStyleChildTemplate),
-                    events: {},
+                    events: {
+                        'change .marker-shape': 'setSymbol'
+                    },
+                    modelEvents: {
+                        'change': 'updateLayerSymbols'
+                    },
                     tagName: "tr",
                     className: "table-row",
                     templateHelpers: function () {
                         return {
-                            dataType: this.dataType
+                            dataType: this.dataType,
+                            icons: IconLookup.getIcons()
                         };
+                    },
+                    setSymbol: function (e) {
+                        this.model.set("shape", $(e.target).val());
+                    },
+                    updateLayerSymbols: function () {
+                        this.layer.setSymbol(this.model);
                     }
                 });
             },
             childViewContainer: "#symbols",
 
             childViewOptions: function () {
-                return { app: this.app };
+                return {
+                    app: this.app,
+                    layer: this.model
+                };
             },
 
             initialize: function (opts) {

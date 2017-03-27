@@ -42,7 +42,6 @@ define(["jquery",
             updateMapOverlays: function () {
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
-                console.log(this.model.getSymbols());
                 this.initMapOverlays();
                 if (this.isChecked) {
                     this.showOverlays();
@@ -57,8 +56,9 @@ define(["jquery",
                     overlays,
                     that = this,
                     dataSource = this.model.get("data_source"),
-                    data = this.app.dataManager.getCollection(dataSource);
-                _.each(this.model.getSymbols(), function (symbol) {
+                    data = this.app.dataManager.getCollection(dataSource),
+                    symbols = this.model.getSymbols();
+                symbols.each(function (symbol) {
                     matchedCollection = new data.constructor(null, { url: "dummy" });
                     data.each(function (model) {
                         if (symbol.checkModel(model)) {

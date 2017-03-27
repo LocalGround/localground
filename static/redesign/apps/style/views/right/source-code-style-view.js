@@ -14,7 +14,7 @@ define(["marionette",
 
             templateHelpers: function () {
                 return {
-                    symbols: JSON.stringify(this.model.get("symbols"), null, 3)
+                    symbols: JSON.stringify(this.model.getSymbolsJSON(), null, 3)
                 };
             },
 
@@ -38,7 +38,6 @@ define(["marionette",
                 try {
                     this.model.set("symbols", sourceCode);
                 } catch (e2) {
-                    console.error(e2);
                     alert('Invalid icon shape specified. Please revert and try again.');
                 }
             },

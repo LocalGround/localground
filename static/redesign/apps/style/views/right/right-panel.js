@@ -103,15 +103,13 @@ define(["jquery",
             saveLayer: function () {
                 var title = this.$el.find(".layer-title").val(),
                     dataSource = this.$el.find("#data_source").val(),
-                    layerType = this.$el.find("#data-type-select").val(),
-                    symbolShape = this.$el.find("#quant-shape").val();
+                    layerType = this.$el.find("#data-type-select").val();
                 if (this.model.get("filters") === null) {
                     this.model.set("filters", { 'tag' : 'nothing' });
                 }
                 this.model.set("title", title);
                 this.model.set("data_source", dataSource);
-                this.model.set("layer_type", layerType); 
-                this.model.set("symbol_shape", symbolShape);
+                this.model.set("layer_type", layerType);
                 this.model.save(null, {
                     error: function () {
                         console.log('error');
