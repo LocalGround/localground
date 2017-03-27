@@ -24,7 +24,8 @@ define(["marionette",
             events: {
                 "click #new-layer-options a" : "createNewLayer",
                 'click .hide': 'hidePanel',
-                'click .show': 'showPanel'
+                'click .show': 'showPanel',
+                "click .map-save" : "saveMap"
             },
             
             regions: {
@@ -50,7 +51,7 @@ define(["marionette",
             },
             handleNewMap: function(model) {
                 console.log(model, this);
-                this.app.model = model;
+                this.app.model = this.model = model;
                 var ps = new PanelStylesView({
                     app: this.app,
                     model: model
@@ -66,6 +67,22 @@ define(["marionette",
                 $(e.target).removeClass("show").addClass("hide");
                 this.app.vent.trigger('unhide-list');
                 e.preventDefault();
+            },
+
+            saveMap: function () {
+                this.model.set("zoom", this.app.getZoom());
+                this.model.set("center", this.app.getCenter());
+                this.model.set("basemap", this.app.getMapTypeId());
+                console.log(JSON.stringify(this.model.toJSON(), null, 2));
+               // this.model.set("basemap", 1);
+                this.model.save({
+                    error: function () {
+                        console.log('error');
+                    },
+                    success: function () {
+                        console.log('success');
+                    }
+                });
             }
         });
         return LeftPanelLayout;
