@@ -85,24 +85,7 @@ define(["jquery",
             },
 
             displaySymbols: function () {
-                //console.log(layer);
-                //this.model = layer;
                 this.collection = new Backbone.Collection(this.model.get("symbols"));
-                //var symbolsSource = "form_4";
-                //layer.get("data_source");
-
-                /*var id = this.model.get("data_source").split("_")[1];
-                
-                var data = new Records(null, {
-                        url: '/api/0/forms/' + id + '/data/'
-                    });
-                this.fields = new Fields(null, {
-                        url: '/api/0/forms/' + id + '/fields/'
-                    });
-                data.fetch();
-                this.fields.fetch( { reset: true });
-                this.listenTo(this.fields, 'reset', this.buildDropdown);
-                console.log(data);*/
                 this.render();
             },
             buildDropdown: function () {
@@ -111,7 +94,7 @@ define(["jquery",
 
             buildPalettes: function () {
                 var seq1, seq2, seq3, seq4, seq5, seq6;
-                this.buckets = this.$el.find("#bucket").val();
+                this.buckets = this.$el.find("#bucket").val() || 4;
                 seq1 = palette('tol-dv', this.buckets);
                 seq2 = palette('cb-Blues', this.buckets);
                 seq3 = palette('cb-Oranges', this.buckets);
