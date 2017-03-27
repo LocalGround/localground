@@ -194,7 +194,7 @@ section {
     margin-top: 10px;
 }
 
-#layer-name {
+.layer-name {
     display: inline;
     font-size: 12px;
     margin-left: 4px;
