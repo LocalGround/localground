@@ -22,6 +22,7 @@ define(["models/base", "models/symbol"], function (Base, Symbol) {
             if (data.map_id) {
                 this.urlRoot = "/api/0/maps/" + data.map_id + "/layers/";
             }
+            this.on("change:symbols", this.rebuildSymbolMap);
 		},
 		validate: function (attrs) {
             //if symbols is an array or it's null or it's empty, raise an exception:

@@ -28,11 +28,18 @@ define(["marionette",
             },
 
             updateModel: function () {
+                var sourceCode;
                 try {
-                    var sourceCode = JSON.parse(this.$el.find(".source-code").val());
-                    this.model.set("symbols", sourceCode);
-                } catch (e) {
+                    sourceCode = JSON.parse(this.$el.find(".source-code").val());
+                } catch (e1) {
                     alert('Invalid JSON. Please revert and try again.');
+                    return;
+                }
+                try {
+                    this.model.set("symbols", sourceCode);
+                } catch (e2) {
+                    console.error(e2);
+                    alert('Invalid icon shape specified. Please revert and try again.');
                 }
             },
 
