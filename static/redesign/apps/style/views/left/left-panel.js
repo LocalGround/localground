@@ -50,7 +50,7 @@ define(["marionette",
             },
             handleNewMap: function(model) {
                 console.log(model, this);
-                this.app.model = model;
+                this.app.selectedMapModel = model;
                 var ps = new PanelStylesView({
                     app: this.app,
                     model: model

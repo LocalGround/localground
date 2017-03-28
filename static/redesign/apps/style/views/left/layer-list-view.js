@@ -48,11 +48,10 @@ define(["marionette",
                 this.listenTo(this.collection, 'reset', this.render);
             },
             createNewLayer: function (e) {
-                console.log(this.app);
                 this.app.vent.trigger('add-layer');
                 var $selection = $(e.target).attr("data-value");
                 var layer = new Layer ({
-                    map_id: this.app.model.id,
+                    map_id: this.app.selectedMapModel.id,
                     data_source: $selection,
                     layer_type: "categorical",
                     filters: [{ "tag" : "nothing" }],
