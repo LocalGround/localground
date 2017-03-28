@@ -7,14 +7,12 @@ define([
 ], function ($, _, Handlebars, Marionette, ToolbarTemplate) {
     "use strict";
     var Toolbar = Marionette.ItemView.extend({
-        events: {
-            'click nav .data': 'selectTab'
-        },
         template: Handlebars.compile(ToolbarTemplate),
 
         templateHelpers: function () {
             return {
-                activeTab: this.app.activeTab
+                activeTab: this.app.activeTab,
+                name: this.model.get("name") === "Untitled" ? "" : this.model.get("name")
             };
         },
 
@@ -24,6 +22,9 @@ define([
                 this.model = this.app.dataManager.model;
             }
             this.app.activeTab = "data";
+            if (this.app.screenType == "style") {
+                this.app.activeTab = "style";
+            }
             Marionette.ItemView.prototype.initialize.call(this);
             this.listenTo(this.app.vent, 'data-loaded', this.setModel);
         },
@@ -31,15 +32,6 @@ define([
         setModel: function () {
             this.model = this.app.dataManager.model;
             this.render();
-        },
-
-        selectTab: function (e) {
-            var $tab = $(e.currentTarget);
-            this.app.activeTab = $tab.html().toLowerCase();
-            this.$el.find("nav div").removeClass("selected");
-            $tab.parent().addClass("selected");
-            this.app.vent.trigger("tab-switch");
-            e.preventDefault();
         }
     });
     return Toolbar;

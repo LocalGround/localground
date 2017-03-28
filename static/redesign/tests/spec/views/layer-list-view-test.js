@@ -2,15 +2,18 @@ var rootDir = "../../";
 define([
     "marionette",
     "jquery",
+    'lib/maps/marker-overlays',
     rootDir + "apps/style/views/left/left-panel",
     rootDir + "apps/style/views/left/layer-list-view"
 ],
-    function (Marionette, $, LeftPanelView, LayerListView) {
+    function (Marionette, $, OverlayListView, LeftPanelView, LayerListView) {
         'use strict';
         var layerListView, fixture;
 
         function initView(scope) {
-            console.log("layer list test working");
+            //ensures that OverlayListView functions don't get called:
+            spyOn(OverlayListView.prototype, 'initialize');
+
             // 1) add spies for all relevant objects:
             spyOn(LayerListView.prototype, 'initialize').and.callThrough();
             spyOn(LayerListView.prototype, 'showDropDown').and.callThrough();

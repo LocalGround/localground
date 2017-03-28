@@ -524,12 +524,12 @@ input[type="checkbox"]{
     right:0;
 }
 
-#toolbar-main > .title{
+.project-detail > .title{
     width: 400px;
 }
 
 
-#toolbar-dataview h3{
+#toolbar-dataview h3 {
     display: inline-block;
     font-weight: 400;
     font-size: 18px;
@@ -545,12 +545,10 @@ input[type="checkbox"]{
     margin-left: auto;
 }
 
-#toolbar-dataview .main-search{
-    margin-left: 25%;
-    margin-right: 25%;
-    width: 50%;
+#toolbar-dataview .main-search {
+    margin-left: 260px;
+    width: calc(100% - 680px);
     position: fixed;
-
 }
 
 #toolbar-dataview .search-form input, #toolbar-dataview .search-form {
@@ -584,6 +582,16 @@ input[type="checkbox"]{
 .save-options{
     position: fixed;
     bottom: 0;width: 372px;
+    z-index: 100;
+    background-color: white;
+    border-top: 1px solid #e4e5eb;
+    padding: 14px 20px;
+    height: 29px;
+}
+.save-options-left{
+    position: fixed;
+    bottom: 0;
+    width: 240px;
     z-index: 100;
     background-color: white;
     border-top: 1px solid #e4e5eb;

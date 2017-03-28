@@ -19,7 +19,6 @@ define([
             // 2) add spies for all relevant objects:
             spyOn(ToolbarGlobal.prototype, 'initialize').and.callThrough();
             spyOn(ToolbarGlobal.prototype, 'setModel').and.callThrough();
-            spyOn(ToolbarGlobal.prototype, 'selectTab').and.callThrough();
 
             // 3) initialize toolbar:
             toolbar = new ToolbarGlobal({
