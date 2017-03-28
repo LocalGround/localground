@@ -9,7 +9,6 @@ define(["jquery",
         var LayerListChild =  Marionette.ItemView.extend({
             initialize: function (opts) {
                 _.extend(this, opts);
-                // this.listenTo(this.app.vent, 'update-title', this.updateTitle);
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
                 this.listenTo(this.model, "change:title", this.render);
                 this.initMapOverlays();

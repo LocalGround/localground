@@ -2,25 +2,27 @@ var rootDir = "../../";
 define([
     "marionette",
     "jquery",
+    'lib/maps/marker-overlays',
     rootDir + "apps/style/views/left/left-panel",
     rootDir + "apps/style/views/left/layer-list-view"
 ],
-    function (Marionette, $, LeftPanelView, LayerListView) {
+    function (Marionette, $, OverlayListView, LeftPanelView, LayerListView) {
         'use strict';
         var layerListView, fixture;
 
         function initView(scope) {
-            console.log("layer list test working");
-            // 1) add spies for all relevant objects:
-          
+            //ensures that OverlayListView functions don't get called:
+            spyOn(OverlayListView.prototype, 'initialize');
 
+            // 1) add spies for all relevant objects:
             spyOn(LayerListView.prototype, 'initialize').and.callThrough();
             spyOn(LayerListView.prototype, 'showDropDown').and.callThrough();
             spyOn(LayerListView.prototype, 'createNewLayer').and.callThrough();
             fixture = setFixtures('<div></div>');
 
              // 2) initialize rightPanel object:
-            layerListView = new LayerListView({
+             scope.app.selectedMapModel = scope.testMap;
+             layerListView = new LayerListView({
                 app: scope.app,
                 collection: scope.layers
             });
@@ -28,7 +30,6 @@ define([
             
             // 3) set fixture:
             fixture.append(layerListView.$el);
-            console.log(fixture);
         };
 
         describe("When LayerListView is initialized", function () {
@@ -69,7 +70,7 @@ define([
 
             it(": events should trigger correct functions", function () {
                 expect(layerListView.createNewLayer).toHaveBeenCalledTimes(0);
-                fixture.find('#new-layer-options a').trigger("click");
+                $(fixture.find('#new-layer-options a').get(0)).trigger("click");
                 expect(layerListView.createNewLayer).toHaveBeenCalledTimes(1);
             }); 
 

@@ -176,7 +176,7 @@ define(
                     },
                     {
                         "id": 2,
-                        "title": "Photo",
+                        "title": "Murals",
                         "data_source": "form_1",
                         "symbol_shape": "fa-circle",
                         "layer_type": "categorical",
@@ -198,7 +198,7 @@ define(
                     {
                         "id": 1,
                         "title": "Murals",
-                        "data_source": "murals",
+                        "data_source": "form_1",
                         "symbol_shape": "circle",
                         "layer_type": "continuous",
                         "filters": {
