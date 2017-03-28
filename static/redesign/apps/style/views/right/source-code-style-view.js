@@ -11,6 +11,9 @@ define(["marionette",
             initialize: function (opts) {
                 _.extend(this, opts);
             },
+            modelEvents: {
+                'change:symbols': 'render'
+            },
 
             templateHelpers: function () {
                 return {
