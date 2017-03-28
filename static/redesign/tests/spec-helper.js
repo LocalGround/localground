@@ -130,7 +130,7 @@ define(
                 "layers": [
                     {
                         "id": 3,
-                        "title": "untitled",
+                        "title": "layer 1",
                         "data_source": "form_1",
                         "symbol_shape": "fa-circle",
                         "layer_type": "categorical",

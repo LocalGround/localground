@@ -30,6 +30,7 @@ require(['boot'], function () {
         'spec/views/select-map-view-test.js',
         'spec/views/layer-list-view-test.js',
         'spec/views/layer-list-child-view-test.js',
+        'spec/views/panel-styles-view-test.js',
 
         //APPS
         'spec/views/style-app-test.js',

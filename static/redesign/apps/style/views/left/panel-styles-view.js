@@ -23,6 +23,9 @@ define(["marionette",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                console.log(this);
+                console.log(this.model);
+                console.log(opts);
               /*  this.app = opts.app;
               //  this.model = new Map(
               //      { id: 1, name: "Flowers & Birds", project_id: 4 }
@@ -34,6 +37,7 @@ define(["marionette",
                 // /api/0/maps/ API Endpoint gets built:
                 //  this.collection = Maps;
                 console.log("panel styles initialized");
+                console.log(this.collection);
                 
             },
             

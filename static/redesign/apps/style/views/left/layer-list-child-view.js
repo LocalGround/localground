@@ -19,22 +19,8 @@ define(["marionette",
                 },
             tagName: "div",
             className: "column",
-            templateHelpers: function () {
-                return {
-                    test: "123"
-                };
-            },
-
             sendCollection: function() {
                 this.app.vent.trigger("edit-layer", this.model);
-                console.log(this.model);
-            },
-
-
-            updateTitle: function (title) {
-                this.model.set("title", title);
-                console.log("should work");
-                this.render();
             }
         });
         return LayerListChild;

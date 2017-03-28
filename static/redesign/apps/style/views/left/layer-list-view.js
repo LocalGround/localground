@@ -64,7 +64,6 @@ define(["marionette",
                     title: "untitled"
                     
                 });
-                console.log(layer);
                 this.app.vent.trigger("edit-layer", layer);
             }
 
