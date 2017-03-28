@@ -27,6 +27,9 @@ define(
               MapImages, Markers, Records, Prints, Project, Photo, Marker,
               Audio, Record, Map, MapImage, Print, Form, DataManager) {
         'use strict';
+        afterEach(function () {
+            $('body').find('.colorpicker').remove();
+        });
         beforeEach(function () {
             //spoof google maps API:
             google.maps = {
