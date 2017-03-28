@@ -23,7 +23,7 @@ define(["lib/maps/overlays/base", "lib/maps/overlays/infobubbles/photo"], functi
         },
 
         redraw: function () {
-            //this._overlay.setIcon(this.getIcon());
+            //this._overlay.setIcon(this.getGoogleIcon());
         },
         initInfoBubble: function (opts) {
             this.infoBubble = new PhotoBubble(_.extend({overlay: this}, opts));

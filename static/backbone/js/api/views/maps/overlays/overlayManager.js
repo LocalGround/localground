@@ -37,6 +37,27 @@ define(["backbone",
 
             getMarkerOverlays: function () {
                 return this.overlayGroups.markers || [];
+            },
+
+            getSites: function () {
+                //returns a list of everything that isn't a media type
+                var key,
+                    overlays = [],
+                    cv;
+                for (key in this.overlayGroups) {
+                    if (['photos', 'audio', 'map-images'].indexOf(key) == -1) {
+                        cv = this.overlayGroups[key];
+                        cv.children.each(function (view) {
+                            overlays.push(view);
+                        });
+                        //overlays = overlays.concat(this.overlayGroups[key].children);
+                        //console.log(key, this.overlayGroups[key].children);
+                    } else {
+                        console.log(key);
+                    }
+                }
+                console.log(overlays);
+                return overlays;
             }
         });
         return OverlayManager;

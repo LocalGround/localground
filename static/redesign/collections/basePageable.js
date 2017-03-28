@@ -6,11 +6,15 @@ define([
     "use strict";
     var PageableCollection = BackbonePageableCollection.extend({
 
+        events: {
+            'click #toolbar-search': 'doSearch',
+            'click #toolbar-clear': 'clearSearch'
+        },
         state: {
             currentPage: 1,
-            pageSize: 50,
+            pageSize: 150,
             sortKey: 'id',
-            order: 1
+            order: -1 // 1 for descending, -1 for ascending
         },
 
         //  See documentation:
@@ -31,14 +35,36 @@ define([
 
         parseRecords: function (response, options) {
             return response.results;
+        },
+
+        doSearch: function (term, projectID) {
+            /*
+             * NOTE
+             *   - app.js is listening for the search-requested event
+             *   - Please see localground/apps/site/api/tests/sql_parse_tests.py
+             *     for samples of valid queries.
+             */
+
+            this.query ="WHERE name like %" + term +
+                        "% OR caption like %" + term +
+                        "% OR attribution like %" + term +
+                        "% OR owner like %" + term +
+                        "% OR tags contains (" + term + ")";
+            this.query += " AND project = " + projectID;
+            this.fetch({ reset: true });
+        },
+
+        clearSearch: function(projectID){
+            this.query = "WHERE project = " + projectID;
+            this.fetch({ reset: true });
         }
+
     });
     _.extend(PageableCollection.prototype, BaseMixin);
 
     // and finally, need to override fetch from BaseMixin in a way that calls the parent class
     _.extend(PageableCollection.prototype, {
         fetch: function (options) {
-            //console.log(this.query);
             //override fetch and append query parameters:
             if (this.query) {
                 // apply some additional options to the fetch:

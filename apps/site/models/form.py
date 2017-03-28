@@ -8,6 +8,7 @@ from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from django.db import transaction
 
 
+
 class Form(BaseNamed, BasePermissions):
     slug = models.SlugField(
         verbose_name="Friendly URL",
@@ -21,6 +22,17 @@ class Form(BaseNamed, BasePermissions):
     _model_class = None
     _data_entry_form_class = None
     filter_fields = BaseNamed.filter_fields + ('slug',)
+    
+    @classmethod
+    def get_filter_fields(cls):
+        from localground.apps.lib.helpers import QueryField, FieldTypes
+        query_fields = super(BaseNamed, cls).get_filter_fields()
+        query_fields['project'] = QueryField(
+            'project', django_fieldname='projects__id', title='project',
+            help_text='Project to which the form belongs',
+            data_type=FieldTypes.STRING
+        )
+        return query_fields
 
     class Meta:
         app_label = 'site'
@@ -133,11 +145,14 @@ class Form(BaseNamed, BasePermissions):
             'field_set__data_type').all()
         for form in forms:
             m = form.TableModel
-            
+
             #first remove from cache:
             app_models = apps.all_models[form.TableModel._meta.app_label]
-            del app_models[form.TableModel._meta.model_name]
-            
+            try:
+                del app_models[self.TableModel._meta.model_name]
+            except:
+                pass
+
             # then register
             apps.register_model(m._meta.app_label, m)
 
@@ -150,8 +165,11 @@ class Form(BaseNamed, BasePermissions):
 
         app_models = apps.all_models[self.TableModel._meta.app_label]
         if app_models.get(self.TableModel._meta.model_name):
-            del app_models[self.TableModel._meta.model_name]
-        
+            try:
+                del app_models[self.TableModel._meta.model_name]
+            except:
+                pass
+
         reload(import_module(settings.ROOT_URLCONF))
         clear_url_caches()
         apps.clear_cache()
@@ -231,7 +249,7 @@ class Form(BaseNamed, BasePermissions):
                 self.owner = user
             self.date_created = get_timestamp_no_milliseconds()
             self.table_name = 'table_%s_%s' % (
-                self.owner.username, generic.generateID(num_digits=10))
+                self.owner.username.lower(), generic.generateID(num_digits=10))
 
         if user:
             self.last_updated_by = user
@@ -333,7 +351,7 @@ class Form(BaseNamed, BasePermissions):
             return True
         except Exception:
             # Table doesn't exist
-            transaction.rollback_unless_managed()
+            transaction.rollback()
             return False
 
     def delete(self, destroy_everything=True, **kwargs):
@@ -353,9 +371,9 @@ class Form(BaseNamed, BasePermissions):
             ct.delete()
         except ContentType.DoesNotExist:
             pass
-        
+
         self.clear_table_model_cache()
         super(Form, self).delete(**kwargs)
-        
+
     def remove_table_from_cache(self):
         self.clear_table_model_cache()

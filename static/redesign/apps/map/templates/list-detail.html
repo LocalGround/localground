@@ -1,0 +1,11 @@
+<a href="#/{{dataType}}/{{id}}" {{#if active }}class="highlight"{{/if}}>
+    {{#if geometry }}
+        <svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ width }}">
+            <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
+                  stroke-width="2" stroke="#FFFFFF" d="{{ icon.path }}"></path>
+        </svg>
+    {{else}}
+        <i class="fa fa-question-circle" aria-hidden="true"></i>
+    {{/if}}
+<p>{{ name }}</p>
+</a>

@@ -11,25 +11,9 @@ define([
      */
     var Marker = Base.extend({
 
-        /**
-         * Get the corresponding SVG marker icon
-         * @returns {Object} icon definition
-         */
-        getIcon: function () {
-            var opts = {
-                fillColor: '#' + this.model.get("color"),
-                strokeColor: "#FFF",
-                strokeWeight: 1.5,
-                fillOpacity: 1,
-                scale: 1.6
-            };
-            _.extend(opts, _.clone(this._overlay.Shapes.MAP_PIN_HOLLOW));
-            return opts;
-        },
-
-        /** adds icon to overlay. */
-        initialize: function () {
+        initialize: function (opts) {
             Base.prototype.initialize.apply(this, arguments);
+            _.extend(this, opts);
             this.redraw();
         },
 
@@ -46,7 +30,16 @@ define([
 
         redraw: function () {
             if (this.getShapeType() === "Point") {
-                this._overlay.setIcon(this.getIcon());
+                if (this.model.get("active")) {
+                    var icon = {};
+                    _.extend(icon, this.getGoogleIcon(), { strokeWeight: 10, strokeOpacity: 0.5 });
+                    icon.strokeColor = icon.fillColor;
+                    this.getGoogleOverlay().setIcon(icon);
+                } else {
+                    if (this.getGoogleIcon()) {
+                        this._overlay.setIcon(this.getGoogleIcon());
+                    }
+                }
             } else {
                 this._overlay.redraw();
             }

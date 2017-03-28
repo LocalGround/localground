@@ -1,6 +1,6 @@
-define(["jquery", "backbone", "models/form"], function ($, Backbone, Form) {
+define(["jquery", "backbone", "models/form", "collections/basePageable"], function ($, Backbone, Form, BasePageable) {
     "use strict";
-    var Forms = Backbone.Collection.extend({
+    var Forms = BasePageable.extend({
         model: Form,
         name: 'Forms',
         key: 'forms',

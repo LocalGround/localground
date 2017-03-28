@@ -27,7 +27,7 @@ define([
             currentPage: 1,
             pageSize: 200,
             sortKey: 'id',
-            order: 1
+            order: -1 // -1 for ascending, 1 for descending
         },
 
         //  See documentation:
@@ -50,24 +50,76 @@ define([
             return response.results;
         },
 
+        doSearch: function (term, projectID, fields) {
+            /*
+             * NOTE
+             *   - app.js is listening for the search-requested event
+             *   - Please see localground/apps/site/api/tests/sql_parse_tests.py
+             *     for samples of valid queries.
+             */
+            if (!fields) return;
+
+            this.query = "WHERE " + this.addFieldQuery(fields, term);
+            this.query += " AND project = " + projectID
+            this.fetch({ reset: true });
+        },
+
+        addFieldQuery: function(fields, term){
+            var recordQuery = "";
+            var fieldQueries = [];
+
+            for (var i = 0; i < fields.length; ++i){
+                var type = fields.at(i).get("data_type").toLowerCase();
+                var fieldName = fields.at(i).get("col_name").toLowerCase();
+                var fieldQuery = "";
+
+                var conditionalSQL = i == 0? " AND " : " OR ";
+
+                switch (type) {
+                    case "boolean":
+                        if (term.toLowerCase() === "true"){
+                            fieldQueries.push(fieldName + " = 1");
+                        } else if (term.toLowerCase() === "false") {
+                            fieldQueries.push(fieldName + " = 0");
+                        }
+                        break;
+                    case "integer":
+                        // Check if it is a number
+                        if (!isNaN(term)){
+                            fieldQueries.push(fieldName + " = " + term);
+                        }
+                        break;
+                    default:
+                        fieldQueries.push(fieldName + " like '%" + term + "%'");
+                }
+            }
+            return fieldQueries.join(" OR ");
+        },
+
+        clearSearch: function(projectID){
+            this.query = "WHERE project = " + projectID;
+            this.fetch({ reset: true });
+        }
+    });
+    _.extend(Records.prototype, CollectionMixin);
+    _.extend(Records.prototype, {
         fetch: function (options) {
             options = options || {};
 			options.data = options.data || {};
 			$.extend(options.data, {
 				page_size: this.state.pageSize,
 				format: 'json',
-				page: this.state.currentPage
+				page: this.state.currentPage,
+                ordering: this.state.sortKey,
+                order: (this.state.order === -1) ? "asc" : "desc"
 			});
-            //query
             if (this.query) {
                 $.extend(options.data, {
 					query: this.query
 				});
             }
-			//console.log(options.data);
             PageableCollection.__super__.fetch.apply(this, arguments);
         }
     });
-    _.extend(Records.prototype, CollectionMixin);
     return Records;
 });

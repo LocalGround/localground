@@ -1,19 +1,102 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
-    <img src="{{ path_medium }}" />
-    <h3>{{ name }}</h3>
-    <!-- Three curly braces if you don't want to escape HTML -->
-    {{ caption }}
-    <br>
-    {{tags}}
-    <br>
-    <button class="edit-mode">Edit</button>
+    {{#compare screenType "presentation" operator="!="}}
+        <h4>Preview</h4>
+    {{/compare}}
+    <div class="section">
+        <h3>{{ name }}</h3>
+    </div>
+
+    <div class="img-card">
+        <div class="photo-single">
+            <img src="{{this.path_medium}}" />
+        </div>
+        <p class="photo-caption">{{ caption }}</p>
+    </div>
+
+    <div class="section-card">
+        <p>
+        Attribution: {{ attribution }} <br>
+        {{#each tags}}
+            <a class="tag"> {{this}} </a>
+        {{/each}}
+        <!-- Three curly braces if you don't want to escape HTML -->
+    </div>
+    {{#compare screenType "presentation" operator="!="}}
+        <div class="save-options">
+            <button class="edit-mode button-tertiary ">Edit</button>
+        </div>
+    {{/compare}}
 {{/ifequal}}
+
+{{#ifequal mode "presentation"}}
+    <div class="section">
+        <h3>{{ name }}</h3>
+        <p style="font-style: italic">{{ caption }}</p>
+    </div>
+    <div class="img-card">
+        <div class="photo-single">
+            <img src="{{this.path_medium}}" />
+        </div>
+        <p class="photo-caption">{{ caption }}</p>
+    </div>
+    <div class="section-card">
+        <p>Tags:
+        {{#each tags}}
+            <!-- <p>{{this}}<br></p> -->
+            <a class="tag"> {{this}} </a>
+        {{/each}}
+        </p>
+        <!-- Three curly braces if you don't want to escape HTML -->
+    </div>
+{{/ifequal}}
+
 
 
 <!-- EDIT MODE -->
 {{#ifequal mode "edit"}}
-    <img src="{{ path_medium }}" />
+    <h4>
+        {{#if id}}
+        Edit
+        {{else}}
+        Add New
+        {{/if}}
+        Media Details
+    </h4>
+    {{#ifequal screenType "map"}}
+        {{#if geometry}}
+            <button class="button-secondary delete-marker-button" id="delete-marker-button">Remove Marker</button>
+        {{else}}
+            <div class="add-lat-lng">
+                <button class="button-secondary add-marker-button" id="add-marker-button">
+                    Place Marker on Map
+                </button>
+            </div>
+        {{/if}}
+        {{#ifnotequal lat "undefined"}}
+            <div class="latlong-container">
+            <p class="latlong" style="font-style: italic">
+                ({{lat}}, {{lng}})
+            </p>
+            </div>
+        {{/ifnotequal}}
+    {{/ifequal}}
+
+    <div class="confirmation success-message">Saved Successfully &#10003</div>
+    <div class="img-card single-photo">
+        <div class="photo-container">
+            <img class="edit-photo" src="{{ path_medium }}" />
+        </div>
+        <div class="rotate-message">
+            <p>rotating photo...</p>
+            <i class="fa fa-refresh fa-spin fa-2x"></i>
+        </div>
+    </div>
+
+    <div class="rotate-photo">
+        <a class="rotate-left" rotation="left" ><i rotation="left" class="fa fa-rotate-left" aria-hidden="true"></i></a>
+        <a class="rotate-right" rotation="right" ><i rotation="right" class="fa fa-rotate-right" aria-hidden="true"></i></a>
+    </div>
 
     <div id="model-form">
         <!-- Form goes here. To modify the fields that are editable,
@@ -23,8 +106,14 @@
              https://github.com/powmedia/backbone-forms#custom-editors
         -->
     </div>
-    <button class="save-model">Save</button>
-    <button class="view-mode">View</button>
+
+    <div class="save-options">
+        <button class="save-model button-primary">Save</button>
+        <button class="view-mode button-tertiary">Preview</button>
+        <button class="button-tertiary button-warning delete-model">Delete</button>
+    </div>
 {{/ifequal}}
 
-
+{{#ifequal screenType "map"}}
+    <div class="show-hide hide"></div>
+{{/ifequal}}

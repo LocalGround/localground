@@ -31,7 +31,7 @@ class FormDataMixin(object):
         # if self.request.method == 'GET' and is_list and d.get('format') != 'csv':
         #    return serializers.create_compact_record_serializer(form)
         # else:
-        return serializers.create_record_serializer(form)
+        return serializers.create_record_serializer(form, show_detail=(not is_list))
 
     def get_queryset(self):
         try:
@@ -68,6 +68,7 @@ class FormDataList(QueryableListCreateAPIView, FormDataMixin):
             form = models.Form.objects.get(id=self.kwargs.get('form_id'))
         except models.Form.DoesNotExist:
             raise Http404
+        #raise Exception(form.TableModel.objects.get_objects(self.request.user).first().photo_count)
         if self.request.user.is_authenticated():
             return form.TableModel.objects.get_objects(self.request.user)
         else:

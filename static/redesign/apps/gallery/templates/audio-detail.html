@@ -1,23 +1,47 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
-    <audio controls>
-        <source src="{{ file_path }}"></source>
-    </audio>
-    <h3>{{ name }}</h3>
-    <!-- Three curly braces if you don't want to escape HTML -->
-    {{ caption }}
+    <h4>Preview</h4>
+    <div class="player-container audio-detail"></div>
     <br>
     {{tags}}
     <br>
-    <button class="edit-mode">Edit</button>
+    <div class="save-options">
+        <button class="edit-mode button-tertiary ">Edit</button>
+    </div>
 {{/ifequal}}
 
 
 <!-- EDIT MODE -->
 {{#ifequal mode "edit"}}
-    <audio controls>
-        <source src="{{ file_path }}"></source>
-    </audio>
+    <h4>
+        {{#if id}}
+        Edit
+        {{else}}
+        Add New
+        {{/if}}
+    </h4>
+    {{#ifequal screenType "map"}}
+        {{#if geometry}}
+        <button class="button-secondary delete-marker-button" id="delete-marker-button">Remove Marker</button>
+        {{else}}
+        <div class="add-lat-lng">
+            <button class="button-secondary add-marker-button" id="add-marker-button">
+                Place Marker on Map
+            </button>
+        </div>
+        {{/if}}
+        
+        {{#ifnotequal lat "undefined"}}
+            <div class="latlong-container">
+            <p class="latlong" style="font-style: italic">
+                ({{lat}}, {{lng}})
+            </p>
+            </div>
+        {{/ifnotequal}}
+    {{/ifequal}}
+    <div class="player-container audio-detail">
+
+    </div>
 
     <div id="model-form">
         <!-- Form goes here. To modify the fields that are editable,
@@ -27,8 +51,13 @@
              https://github.com/powmedia/backbone-forms#custom-editors
         -->
     </div>
-    <button class="save-model">Save</button>
-    <button class="view-mode">View</button>
+    <div class = "save-options">
+        <button class="save-model button-primary">Save</button>
+        <button class="view-mode button-tertiary">Preview</button>
+        <button class="button-tertiary button-warning delete-model">Delete</button>
+    </div>
 {{/ifequal}}
 
-
+{{#ifequal screenType "map"}}
+    <div class="show-hide hide"></div>
+{{/ifequal}}

@@ -1,0 +1,31 @@
+<td>{{ color }}</td>
+<td>{{ title }}</td>
+<td>
+    <select class="marker-shape">
+    {{#each icons}}
+        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>
+    {{/each}}
+    </select>    
+</td>
+
+
+{{#ifequal dataType "continuous-variable"}}
+
+<td>{{ color }}</td>
+<td>{{ title }}</td>
+<td>
+    <select class="marker-shape">
+    {{#each icons}}
+        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>
+    {{/each}}
+    </select>
+</td>
+
+{{/ifequal}}
+
+{{#ifequal dataType "no-variable"}}
+
+<td>{{ title }}</td>
+<td>edit img</td>
+
+{{/ifequal}}

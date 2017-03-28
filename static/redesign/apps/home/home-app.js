@@ -4,15 +4,20 @@ define([
     "apps/home/router",
     "apps/home/views/main",
     "apps/home/views/toolbar",
+    "apps/home/views/shareForm",
+    "lib/modals/modal",
     "lib/appUtilities",
     "lib/handlebars-helpers"
-], function (Marionette, Backbone, Router, ProjectList, Toolbar, appUtilities) {
+], function (Marionette, Backbone, Router, ProjectList, Toolbar, ShareForm, Modal, appUtilities) {
     "use strict";
     var HomeApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
             projectRegion: ".main-panel",
-            toolbarMainRegion: "#toolbar-main"
+            toolbarMainRegion: "#toolbar-main",
+            shareFormRegion: "#share-form"
         },
+
+        modal: null,
 
         start: function (options) {
             // declares any important global functionality;
@@ -27,11 +32,31 @@ define([
 
             //add views to regions:
             this.loadRegions();
+            this.modal = new Modal();
+            this.listenTo(this.vent, 'share-project', this.showShareForm);
         },
 
         loadRegions: function () {
             this.showProjectList();
             this.showToolbar();
+        },
+
+        showShareForm: function (opts) {
+            var shareFormView = new ShareForm({
+                    app: this,
+                    model: opts.model
+                }),
+                title = ((opts.model && opts.model.get("name"))
+                            ? "Update " + opts.model.get("name") + " Settings" :
+                            "Create New Project");
+            this.modal.update({
+                view: shareFormView,
+                title: title,
+                width: 500,
+                // bind the scope of the save function to the source view:
+                saveFunction: shareFormView.saveProjectSettings.bind(shareFormView)
+            });
+            this.modal.show();
         },
 
         showToolbar: function () {

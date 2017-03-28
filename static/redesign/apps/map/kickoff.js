@@ -1,9 +1,9 @@
 require(
-    ["jquery", "apps/map/map-app.js"],
+    ["jquery", "apps/map/map-app"],
     function ($, MapApp) {
         'use strict';
         $(function () {
-            window.location.hash = ''; //make sure the page initializes on the first page...
+            //window.location.hash = ''; //make sure the page initializes on the first page...
             var map = new MapApp();
             map.start();
         });

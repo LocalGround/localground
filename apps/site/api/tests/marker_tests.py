@@ -21,7 +21,7 @@ def get_metadata():
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'project_id': {'read_only': False, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
-        'color': {'read_only': False, 'required': False, 'type': 'color'},
+        'color': {'read_only': False, 'required': False, 'type': 'string'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
         'extras': {'read_only': False, 'required': False, 'type': 'json'}
     }
@@ -70,6 +70,11 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.view = views.MarkerList.as_view()
         self.metadata = get_metadata()
         self.marker = self.create_marker(self.user, self.project)
+        
+    def tearDown(self):
+        #delete method also removes files from file system:
+        models.Photo.objects.all().delete()
+        models.Audio.objects.all().delete()
     
     def test_metadata_only_available_with_flag(self, **kwargs):
         response = self.client_user.get(self.urls[0])
@@ -84,8 +89,9 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
         #create some associations:
         self.photo1 = self.create_photo(self.user, self.project)
         self.audio1 = self.create_audio(self.user, self.project)
-        self.create_relation(models.Photo.get_content_type(), marker=self.marker, id=self.photo1.id, ordering=1)
-        self.create_relation(models.Audio.get_content_type(), marker=self.marker, id=self.audio1.id, ordering=1)
+        self.create_relation(self.marker, self.photo1)
+        self.create_relation(self.marker, self.audio1)
+        
         response = self.client_user.get(
             self.urls[0], {'marker_with_media_arrays': True}
         )
@@ -94,6 +100,10 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
         self.assertEqual(len(marker.get('audio_array')), 1)
         self.assertTrue('record_array' in marker)
         self.assertTrue('map_image_array' in marker)
+        
+        # clean up:
+        self.delete_relation(self.marker, self.photo1)
+        self.delete_relation(self.marker, self.audio1)
         
 
     def test_bad_json_creates_fails(self, **kwargs):
@@ -155,15 +165,21 @@ class ApiMarkerListTest(test.TestCase, ViewMixinAPI, DataMixin):
 class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
 
     def setUp(self):
-        ViewMixinAPI.setUp(self, load_fixtures=True)
-        self.marker = self.get_marker()
-        self.urls = ['/api/0/markers/%s/' % self.marker.id]
+        ViewMixinAPI.setUp(self)
+        self.marker = self.create_marker(self.user, self.project)
+        self.url = '/api/0/markers/%s/' % self.marker.id
+        self.urls = [self.url]
         self.view = views.MarkerInstance.as_view()
         self.metadata = get_metadata()
         self.metadata.update({
             'children': {'read_only': True, 'required': False, 'type': u'field'},
             'form_ids': {'read_only': True, 'required': False, 'type': u'field'}
         })
+    
+    def tearDown(self):
+        #delete method also removes files from file system:
+        models.Photo.objects.all().delete()
+        models.Audio.objects.all().delete()
 
     def test_bad_json_update_fails(self, **kwargs):
         # 1. define a series of bad JSON dictionaries
@@ -256,3 +272,17 @@ class ApiMarkerInstanceTest(test.TestCase, ViewMixinAPI, DataMixin):
         except models.Marker.DoesNotExist:
             # trigger assertion success if marker is removed
             self.assertEqual(1, 1)
+            
+    def test_child_serializer(self, **kwargs):
+        self.photo1 = self.create_photo(self.user, self.project)
+        self.audio1 = self.create_audio(self.user, self.project)
+        self.create_relation(self.marker, self.photo1)
+        self.create_relation(self.marker, self.audio1)
+        
+        response = self.client_user.get(self.url)
+        self.assertEqual(len(response.data['children']['photos']['data']), 1)
+        self.assertEqual(len(response.data['children']['audio']['data']), 1)
+        
+        # clean up:
+        self.delete_relation(self.marker, self.photo1)
+        self.delete_relation(self.marker, self.audio1)

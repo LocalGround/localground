@@ -6,8 +6,13 @@ define([
         initialize: function (options) {
             this.app = options.app;
         },
-        mediaList: function (mediaType) {
-            this.app.vent.trigger("show-list", mediaType);
+        addRow: function (dataType) {
+            this.app.vent.trigger("add-row", {
+                dataType: dataType
+            }, false);
+        },
+        dataList: function (dataType) {
+            this.app.vent.trigger("show-list", dataType);
         }
     });
 });

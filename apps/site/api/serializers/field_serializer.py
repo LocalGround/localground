@@ -13,6 +13,7 @@ class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
     url = serializers.SerializerMethodField()#'get_url')
     col_name = serializers.SerializerMethodField()
     form = serializers.SerializerMethodField()
+    is_display_field = serializers.BooleanField()
     data_type = serializers.SlugRelatedField(
                                 queryset=models.DataType.objects.all(),
                                 slug_field='name',

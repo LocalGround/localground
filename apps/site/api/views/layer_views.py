@@ -14,20 +14,14 @@ class LayerList(QueryableListCreateAPIView):
     filter_backends = (filters.SQLFilterBackend,)
     model = models.Layer
     paginate_by = 100
-
+        
     def get_queryset(self):
-        if self.request.user.is_authenticated():
-            return self.model.objects.get_objects(self.request.user)
-        else:
-            return self.model.objects.get_objects_public(
-                access_key=self.request.GET.get('access_key')
-            )
-
-    def perform_create(self, serializer):
-        d = {
-            'access_authority': models.ObjectAuthority.objects.get(id=1)
-        }
-        serializer.save(**d)
+        map_id = int(self.kwargs.get('map_id'))
+        try:
+            styled_map = models.StyledMap.objects.get(id=map_id)
+        except models.StyledMap.DoesNotExist:
+            raise Http404
+        return self.model.objects.filter(styled_map=styled_map)
 
     def create(self, request, *args, **kwargs):
         response = super(LayerList, self).create(request, *args, **kwargs)
@@ -43,7 +37,14 @@ class LayerInstance(
         generics.RetrieveUpdateDestroyAPIView):
     error_messages = {}
     warnings = []
-    queryset = models.Layer.objects.select_related('owner').all()
+    def get_queryset(self):
+        map_id = int(self.kwargs.get('map_id'))
+        try:
+            styled_map = models.StyledMap.objects.get(id=map_id)
+        except models.StyledMap.DoesNotExist:
+            raise Http404
+        return self.model.objects.filter(styled_map=styled_map)
+    
     serializer_class = serializers.LayerDetailSerializer
     model = models.Layer
 

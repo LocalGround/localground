@@ -12,6 +12,12 @@ define(["models/base",
      */
     var Marker = Base.extend({
         urlRoot: '/api/0/markers/',
+		defaults: _.extend({}, Base.prototype.defaults, {
+			color: "CCCCCC" // rough draft color
+		}),
+        getNamePlural: function () {
+            return "markers";
+        },
 		excludeList: [
             "overlay_type",
             "url",
@@ -95,13 +101,13 @@ define(["models/base",
             return messages.join(', ');
         },
 
-        attach: function (model, callbackSuccess, callbackError) {
-			var association = new Association({
-				object_id: model.id,
-				model_type: model.getKey(),
-				marker_id: this.id
-			});
-			association.save(null, {
+        attach: function (model, order, callbackSuccess, callbackError) {
+            var association = new Association({
+                overlay_type: this.get("overlay_type"),
+                model_type: model.getKey(),
+                source_id: this.id
+            });
+			association.save({ object_id: model.id, ordering: order }, {
 				success: callbackSuccess,
 				error: callbackError
 			});
@@ -109,10 +115,10 @@ define(["models/base",
 
 		detach: function (model_id, key, callback) {
             var association = new Association({
-                id: model_id, //only define id for the detach
+                overlay_type: this.get("overlay_type"),
                 object_id: model_id,
                 model_type: key,
-                marker_id: this.id
+                source_id: this.id
             });
             association.destroy({success: callback});
 		}

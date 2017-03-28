@@ -1,0 +1,136 @@
+/* Map Layout */
+#marker-detail-panel {
+    display: none;
+}
+/*** Override some of the "fixed / absolute" characteristics of fav bar ****/
+.filter .data, #toolbar-main {
+    position: static;
+}
+
+#toolbar-main .buttons{
+    top: 0;
+}
+
+#toolbar-main > div{
+    display:flex;    
+}
+
+.list-header {
+    padding: 10px;
+    border-bottom: solid 1px #ebebeb;
+    font-size: 12px;
+    background: #FFF;
+    font-weight: 600;
+    color: #666;
+}
+
+.list-indent, .list-indent-simple, .preview-filter-list {
+    list-style: none;
+    margin: 0;
+}
+
+.list-indent > li, .preview-filter-list > li {
+    padding: 0px;
+    border-bottom: 1px solid #ebebeb;
+    font-size: 12px;
+}
+.list-indent > li.empty {
+    padding: 0px 40px;
+    color: #999;
+    height: 56px;
+    line-height: 56px;
+}
+
+.list-indent a {
+    text-decoration: none;
+    padding: 6px 22px;
+    display: inline-block;
+    width: 100%;
+}
+.new-feature-by-type {
+    float: right;
+    font-size: 1.3em;
+    position: relative;
+    top: .1em;
+    color: #4e70d4;
+    margin-right: 10px
+}
+
+svg, .fa-question-circle {
+    vertical-align: middle;
+    margin: 0px 5px 0px 5px;
+    color: #CCC;
+    font-size: 16px;
+}
+
+.list-header .zoom-to-extents {
+    color: #AAA;
+    font-size: 12px;
+    margin-right: 10px;
+    float: right;
+    margin-top: 3px;
+    display: none;
+}
+.list-header:hover .zoom-to-extents {
+    cursor: pointer;
+    display: block;
+}
+
+.highlight {
+    background: rgb(123, 155, 225);
+    color: white;
+}
+.hover-highlight, .marker-container li:hover {
+    background: #EEE;
+    color: #444;
+}
+.highlight a {
+    color: white;
+}
+.highlight a p {
+    color: white;
+}
+
+
+.marker-container p {
+    display: inline-block;
+    margin-top: 3px;
+    vertical-align: middle;
+}
+
+/********** for dragging/dropping pins on map ********************/
+#follower {
+  position: absolute;
+  display: none;
+}
+
+
+#add-marker-button, #delete-marker-button {
+    display: block;
+    text-align: center;
+    margin: 30px auto;
+    min-width: 160px;
+    width: auto;
+}
+
+#add-marker-button:focus, #delete-marker-button:focus { 
+    outline: none; 
+}
+
+#drop-marker-message {
+    margin-top: -20px;
+    margin-bottom: 20px;
+    text-align: center;
+
+}
+
+.latlong {
+    display: inline;
+}
+
+.latlong-container {
+    text-align: center;
+    margin-top: -20px;
+    margin-bottom: 30px;
+}
+

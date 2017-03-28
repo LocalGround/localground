@@ -6,5 +6,8 @@
 {% endblock %}
 {% block page_title %}Logged Out{% endblock %}
 {% block main_content %}
-  <p>{% trans "You have just logged out of your account." %}</p>
+    <p>
+        {% trans "You have just logged out of your account." %}
+        <a href="/accounts/login/">Log in again</a>.
+    </p>
 {% endblock %}

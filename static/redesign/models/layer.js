@@ -1,4 +1,4 @@
-define(["models/base", "views/maps/overlays/symbol"], function (Base, Symbol) {
+define(["backbone", "models/base", "models/symbol"], function (Backbone, Base, Symbol) {
     "use strict";
     /**
      * A Backbone Model class for the Photo datatype.
@@ -11,7 +11,7 @@ define(["models/base", "views/maps/overlays/symbol"], function (Base, Symbol) {
             isVisible: false
         }),
         symbolMap: null,
-        urlRoot: "/api/0/layers/",
+        //urlRoot: "/api/0/layers/",
         getNamePlural: function () {
             return "layers";
         },
@@ -19,6 +19,10 @@ define(["models/base", "views/maps/overlays/symbol"], function (Base, Symbol) {
         initialize: function (data, opts) {
 			Base.prototype.initialize.apply(this, arguments);
             this.buildSymbolMap();
+            if (data.map_id) {
+                this.urlRoot = "/api/0/maps/" + data.map_id + "/layers/";
+            }
+            this.on("change:symbols", this.rebuildSymbolMap);
 		},
 		validate: function (attrs) {
             //if symbols is an array or it's null or it's empty, raise an exception:
@@ -29,6 +33,10 @@ define(["models/base", "views/maps/overlays/symbol"], function (Base, Symbol) {
             return null;
 		},
 
+        rebuildSymbolMap: function () {
+            this.symbolMap = null;
+            this.buildSymbolMap();
+        },
         buildSymbolMap: function () {
             //set the basic flag:
             if (this.get("symbols").length == 1) {
@@ -37,19 +45,33 @@ define(["models/base", "views/maps/overlays/symbol"], function (Base, Symbol) {
             if (!this.symbolMap) {
                 this.symbolMap = {};
                 var i = 0,
-                    symbolList = this.get("symbols");
+                    symbolList = this.get("symbols"),
+                    symbol;
                 for (i = 0; i < symbolList.length; i++) {
-                    this.symbolMap[symbolList[i].rule] = new Symbol(symbolList[i]);
+                    symbol = symbolList[i];
+                    symbol.id = (i + 1);
+                    this.symbolMap['symbol_' + symbol.id] = new Symbol(symbolList[i]);
                 }
             }
         },
 
         getSymbols: function () {
-            return _.values(this.symbolMap);
+            return new Backbone.Collection(_.values(this.symbolMap));
+        },
+        getSymbolsJSON: function () {
+            var symbols = this.getSymbols().clone();
+            symbols.each(function (symbol) {
+                symbol.set("icon", null);
+            });
+            return symbols.toJSON();
         },
 
-        getSymbol: function (rule) {
-            return this.symbolMap[rule];
+        getSymbol: function (id) {
+            return this.symbolMap['symbol_' + id];
+        },
+        setSymbol: function (model) {
+            this.symbolMap['symbol_' + model.id] = model;
+            this.set("symbols", this.getSymbols().toJSON());
         },
 
         getSymbolMap: function () {
@@ -57,15 +79,35 @@ define(["models/base", "views/maps/overlays/symbol"], function (Base, Symbol) {
         },
 
         hideSymbols: function () {
-            _.each(this.getSymbols(), function (symbol) {
+            this.getSymbols().each(function (symbol) {
                 symbol.isShowingOnMap = false;
             });
         },
 
         showSymbols: function () {
-            _.each(this.getSymbols(), function (symbol) {
+            this.getSymbols().each(function (symbol) {
                 symbol.isShowingOnMap = true;
             });
+        },
+        toJSON: function () {
+            var json = Base.prototype.toJSON.call(this),
+                symbols;
+
+            // extra code to remove icon references
+            // to avoid JSON serialization errors:
+            if (json.symbols !== null) {
+                symbols = new Backbone.Collection(json.symbols).clone();
+                symbols.each(function (symbol) {
+                    symbol.set("icon", null);
+                });
+                json.symbols = JSON.stringify(symbols);
+            }
+
+            // serialize filters also:
+            if (json.filters !== null) {
+                json.filters = JSON.stringify(json.filters);
+            }
+            return json;
         }
     });
     return Layer;

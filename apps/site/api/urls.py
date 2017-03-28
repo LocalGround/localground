@@ -32,11 +32,23 @@ urlpatterns = patterns('',
 
 urlpatterns += format_suffix_patterns(patterns('',
     url(
+        r'^usernames/$',
+        views.ListUsernames.as_view(),
+        name="usernames"),
+    url(
         r'^(?P<group_name_plural>markers|snapshots|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/$',
         views.RelatedMediaList.as_view(),
         name='related-media-list'),
     url(
         r'^(?P<group_name_plural>markers|snapshots|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$',
+        views.RelatedMediaInstance.as_view(),
+        name='related-media-detail'),
+    url(
+        r'^forms/(?P<group_name_plural>[0-9]+)/data/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/$',
+        views.RelatedMediaList.as_view(),
+        name='related-media-list'),
+    url(
+        r'^forms/(?P<group_name_plural>[0-9]+)/data/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$',
         views.RelatedMediaInstance.as_view(),
         name='related-media-detail'),
     url(
@@ -68,13 +80,32 @@ urlpatterns += format_suffix_patterns(patterns('',
     url(r'^snapshots/$',
         views.SnapshotList.as_view(),
         name='snapshot-list'),
+    #url(
+    #    r'^layers/(?P<pk>[0-9]+)/$',
+    #    views.LayerInstance.as_view(),
+    #    name='layer-detail'),
+    #url(r'^layers/$',
+    #    views.LayerList.as_view(),
+    #    name='layer-list'),
     url(
-        r'^layers/(?P<pk>[0-9]+)/$',
+        r'^maps/(?P<map_id>[0-9]+)/layers/(?P<pk>[0-9]+)/$',
         views.LayerInstance.as_view(),
         name='layer-detail'),
-    url(r'^layers/$',
+    url(
+        r'^maps/(?P<map_id>[0-9]+)/layers/$',
         views.LayerList.as_view(),
         name='layer-list'),
+    url(
+        r'^maps/(?P<pk>[0-9]+)/$',
+        views.MapInstance.as_view(),
+        name='map-detail'),
+    url(
+        r'^maps/(?P<slug>[\w-]+)/$',
+        views.MapInstanceSlug.as_view(),
+        name='map-detail-slug'),
+    url(r'^maps/$',
+        views.MapList.as_view(),
+        name='map-list'),
     url(
         r'^photos/(?P<pk>[0-9]+)/$',
         views.PhotoInstance.as_view(),

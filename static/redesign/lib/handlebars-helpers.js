@@ -17,7 +17,67 @@ define(["handlebars"],
             return options.fn(this);
         });
 
+        Handlebars.registerHelper('ifcontains', function (val, chars, block) {
+            if (val.indexOf(chars) != -1) {
+                return block.fn(this);
+            }
+        });
+
+        Handlebars.registerHelper('ifnotequal', function (lvalue, rvalue, options) {
+            if (arguments.length < 3) {
+                throw new Error("Handlebars Helper equal needs 2 parameters");
+            }
+            if (lvalue == rvalue) {
+                return options.inverse(this);
+            }
+            return options.fn(this);
+        });
+
+        Handlebars.registerHelper('ifnot', function (value, options) {
+            if (arguments.length < 2) {
+                throw new Error("Handlebars Helper ifnot needs 1 parameter");
+            }
+            if (value){
+                return options.inverse(this);
+            }
+            return options.fn(this);
+        });
+
+        Handlebars.registerHelper('compare', function(lvalue, rvalue, options) {
+
+            if (arguments.length < 3)
+                throw new Error("Handlerbars Helper 'compare' needs 2 parameters");
+
+            var operator = options.hash.operator || "==";
+
+            var operators = {
+                '==':       function(l,r) { return l == r; },
+                '===':      function(l,r) { return l === r; },
+                '!=':       function(l,r) { return l != r; },
+                '<':        function(l,r) { return l < r; },
+                '>':        function(l,r) { return l > r; },
+                '<=':       function(l,r) { return l <= r; },
+                '>=':       function(l,r) { return l >= r; },
+                'typeof':   function(l,r) { return typeof l == r; }
+            }
+
+            if (!operators[operator])
+                throw new Error("Handlerbars Helper 'compare' doesn't know the operator "+operator);
+
+            var result = operators[operator](lvalue,rvalue);
+
+            if( result ) {
+                return options.fn(this);
+            } else {
+                return options.inverse(this);
+            }
+
+        });
+
         Handlebars.registerHelper('truncate', function (str, numChars) {
+            if (!str) {
+                return;
+            }
             if (str.length > numChars && str.length > 0) {
                 var new_str = str + " ";
                 new_str = str.substr(0, numChars);
@@ -59,6 +119,14 @@ define(["handlebars"],
                 color = "#FCE694";
             }
             return new Handlebars.SafeString('style="background-color: ' + color + '"');
+        });
+
+        Handlebars.registerHelper('times', function (start, end, block) {
+            var accum = '', i;
+            for (i = start; i < end; ++i) {
+                accum += block.fn(i);
+            }
+            return accum;
         });
 
         Handlebars.registerHelper("repeat", function (txt, fa_class) {

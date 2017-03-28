@@ -20,13 +20,14 @@ from localground.apps.site.api.serializers.print_serializer import PrintSerializ
 from localground.apps.site.api.serializers.mapimage_serializer import MapImageSerializerCreate, MapImageSerializerUpdate
 from localground.apps.site.api.serializers.user_profile_serializer import UserProfileSerializer, UserProfileListSerializer
 from localground.apps.site.api.serializers.layer_serializer import LayerSerializer, LayerDetailSerializer
+from localground.apps.site.api.serializers.map_serializer import MapSerializer, MapDetailSerializer, MapDetailSerializerSlug
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ('url', 'username', 'email', 'groups')
+        fields = ('id', 'username',)
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):

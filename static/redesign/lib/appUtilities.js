@@ -50,12 +50,6 @@ define(["jquery"],
             getMode: function () {
                 return this.mode;
             },
-            setActiveProjectID: function (projectID) {
-                this.activeProjectID = projectID;
-            },
-            getActiveProjectID: function () {
-                return this.activeProjectID;
-            },
             setOverlayView: function (overlayView) {
                 this.overlayView = overlayView;
             },
@@ -83,6 +77,7 @@ define(["jquery"],
                 if (!this.csrfSafeMethod(settings.type) && this.sameOrigin(settings.url)) {
                     var csrf = this.getCookie('csrftoken');
                     xhr.setRequestHeader("X-CSRFToken", csrf);
+                    xhr.setRequestHeader("HTTP_X_CSRFTOKEN", csrf);
                 }
             },
             getCookie: function (name) {
@@ -114,7 +109,24 @@ define(["jquery"],
                 }
                 return null;
             },
+            getProjectID: function () {
+                var id = this.getParameterByName('project_id');
+                if (!id) {
+                    id = this.restoreState('project_id');
+                } else {
+                    this.setProjectID(id);
+                }
+                if (!id) {
+                    console.log("You're not logged in. Redirecting...");
+                    window.location = window.location.host + "/accounts/login/?next=" + window.location;
+                }
+                return id;
+            },
+            setProjectID: function (id) {
+                this.saveState('project_id', id, true);
+            },
             selectProject: function () {
+                //TODO: Deprecate
                 //1. get project from request parameter:
                 this.selectedProject = this.getProjectFromParam();
                 //2. get project from localStorage:
@@ -134,10 +146,10 @@ define(["jquery"],
                 }
             },
             showLoadingMessage: function () {
-                $('#loading_message').show();
+                //console.log("show loading message");
             },
             hideLoadingMessage: function () {
-                $('#loading_message').hide();
+                //console.log("hide loading message");
             },
             handleDatabaseError: function (options, response) {
                 var responseJSON,
@@ -155,6 +167,7 @@ define(["jquery"],
             initAJAX: function (options) {
                 // adding some global AJAX event handlers for showing messages and
                 // appending the Django authorization token:
+                console.log('init ajax');
                 var that = this;
                 $.ajaxSetup({
                     beforeSend: function (xhr, settings) {
