@@ -23,10 +23,16 @@ class ProjectSerializer(BaseNamedSerializer, ProjectSerializerMixin):
     sharing_url = serializers.SerializerMethodField()
     access_authority = serializers.PrimaryKeyRelatedField(queryset=models.ObjectAuthority.objects.all(), read_only=False, required=False)
     slug = serializers.SlugField(max_length=100, label='friendly url')
+    last_updated_by = serializers.SerializerMethodField()
+
     class Meta:
         model = models.Project
-        fields = BaseNamedSerializer.Meta.fields + ('slug', 'access_authority', 'sharing_url')
+        read_only_fields = ('time_stamp', 'date_created', 'last_updated_by')
+        fields = BaseNamedSerializer.Meta.fields + ('slug', 'access_authority', 'sharing_url', 'time_stamp', 'date_created', 'last_updated_by')
         depth = 0
+    
+    def get_last_updated_by(self, obj):
+        return obj.last_updated_by.username
 
 
 class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
