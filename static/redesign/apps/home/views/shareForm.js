@@ -101,7 +101,9 @@ define(["jquery",
             templateHelpers: function () {
                 // for new projects, there shall be no projectUsers defined
                 // otherwise, extract data from exising projectUsers
-                var helpers = {};
+                var helpers = {
+                    username: this.app.username
+                };
                 if (this.model && this.model.projectUsers) {
                     helpers.projectUsers = this.model.projectUsers.toJSON();
                 }
