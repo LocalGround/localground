@@ -7,9 +7,21 @@ define(["marionette",
         'use strict';
 
         var ProjectItemView = Marionette.ItemView.extend({
+            timeStamp: null,
+            dateCreated: null,
+            currentDate: null,
+            lastEditedString: null,
             initialize: function (opts) {
                 _.extend(this, opts);
-                Marionette.CompositeView.prototype.initialize.call(this);
+                Marionette.ItemView.prototype.initialize.call(this);
+                //console.log(new Date(this.model.get("time_stamp") + "Z"));
+                //console.log(new Date(this.model.get("date_created") + "Z"));
+                //console.log(new Date());
+                this.currentDate = new Date();
+                this.timeStamp = new Date(this.model.get("time_stamp") + "Z");
+                this.dateCreated = new Date(this.model.get("date_created") + "Z");
+                this.lastEditedString = this.lastEdited();
+                //console.log(this.lastEditedString);
             },
 
             template: Handlebars.compile(ItemTemplate),
@@ -42,7 +54,9 @@ define(["marionette",
 
             templateHelpers: function () {
                 return {
-                    projectUsers: this.model.projectUsers.toJSON()
+                    projectUsers: this.model.projectUsers.toJSON(),
+                    timeAgo: this.lastEditedString
+
                 };
             },
 
@@ -52,7 +66,78 @@ define(["marionette",
                 }
                 this.model.destroy();
 
+            },
+            /*
+              Find out how liong since a project was last edited
+            */
+            lastEdited: function(){
+                var lastEditString = "";
+                var addPlural = "";
+                //
+                var timeStampYear = this.timeStamp.getFullYear();
+                var timeStampMonth = this.timeStamp.getMonth();
+                var timeStampDay = this.timeStamp.getDate();
+
+                var diffYears = this.currentDate.getFullYear() - timeStampYear;
+                var diffMonths = this.currentDate.getMonth() - timeStampMonth;
+                var diffDays = this.currentDate.getDate() - timeStampDay;
+                //console.log(diffYears);
+                //console.log(diffMonths);
+                //console.log(diffDays);
+                if (diffYears > 0){
+                    addPlural = diffYears > 1 ? "s" : "";
+                    lastEditString = diffYears + " Year" + addPlural + " ago";
+                }
+                else if (diffMonths > 0){
+                    addPlural = diffMonths > 1 ? "s" : "";
+                    lastEditString = diffMonths + " Month" + addPlural + " ago";
+                }
+                else if (diffDays > 0){
+                    addPlural = diffDays > 1 ? "s" : "";
+                    lastEditedString = diffDays + " Day" + addPlural + " ago";
+                }
+                else {
+                    lastEditString = "Today";
+                }
+
+                return lastEditString;
+            },
+
+            daysPerYear: function(date){
+                var numDaysPerYear = 365
+                if (date.getFullYear() % 4 == 0){
+                    numDaysPerYear + 1;
+                }
+                return numDaysPerYear;
+            },
+            /*
+              Guide to days per month in zero-index order (0-11)
+              28 / 29 days -> 1
+              30 days -> 3, 5, 8, 10
+              31 days -> 0, 2, 4, 6, 7, 9, 11
+            */
+            daysPerMonth(date){
+                var month = date.getMonth();
+                var days_per_month = 0;
+
+                if (month == 1){
+                    if (daysPerYear(date) == 366){
+                        days_per_month = 29;
+                    } else {
+                        days_per_month = 28;
+                    }
+                } else if (month == 3 ||
+                    month == 5 ||
+                    month == 8 ||
+                    month == 10){
+                    days_per_month = 30;
+                } else {
+                    days_per_month = 31;
+                }
+                return days_per_month;
+
             }
+
         });
         return ProjectItemView;
     });
