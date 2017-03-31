@@ -7,8 +7,8 @@
         <!-- hidden form field that stashes the id -->
         <input class="id" value={{ id }} type="hidden">
         <span class="fieldname">
-            {{#ifequal data_type "boolean"}} Yes/No 
-            {{else}} {{ data_type }} 
+            {{#ifequal data_type "boolean"}} Yes/No
+            {{else}} {{ data_type }}
             {{/ifequal}}
         </span>
     {{else}}
@@ -19,5 +19,8 @@
             <option value="boolean"{{#ifequal data_type "boolean"}} SELECTED {{/ifequal}}>Yes/No</option>
         </select>
     {{/if}}
+</td>
+<td>
+  <input class="display_field_button" type="radio" name="display_field">
 </td>
 <td><a href="#" class="{{#if id }}delete-field {{else}} remove-row{{/if}} ">&times;</a></td>
