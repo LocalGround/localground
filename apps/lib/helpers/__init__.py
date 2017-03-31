@@ -4,7 +4,7 @@ from localground.apps.lib.helpers.generic import FastPaginator, prep_paginator, 
 from localground.apps.lib.helpers.sqlparse.sqlparser import QueryParser
 from localground.apps.lib.helpers.sqlparse.queryfield import FieldTypes, QueryField
 from localground.apps.lib.helpers.reports import Report
-from localground.apps.lib.helpers.static_maps import OutputFormat, StaticMap
+from localground.apps.lib.helpers.maps.static_maps import OutputFormat, StaticMap
 from localground.apps.lib.helpers.units import Units
 
 def get_timestamp_no_milliseconds():
