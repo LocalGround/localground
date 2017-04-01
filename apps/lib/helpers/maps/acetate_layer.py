@@ -1,6 +1,7 @@
 #sudo pip install svgpathtools svgwrite #also requires numpy
 #https://pypi.python.org/pypi/svgpathtools/ 
 from svgpathtools import parse_path, svg2paths, wsvg
+import random
 IconLookup = {
     'baseWidth': 15,
     'baseHeight': 15
@@ -102,7 +103,7 @@ def set_defaults(icon):
         icon['baseWidth'] = icon.get('baseWidth') or IconLookup.get('baseWidth')
         icon['baseHeight'] = icon.get('baseHeight') or IconLookup.get('baseHeight')
         icon['anchor'] = icon.get('anchor') or [icon.get('baseWidth') / 2, icon.get('baseHeight') / 2]
-        icon['fillColor'] = icon.get('strokeColor') or 'teal'
+        icon['fillColor'] = icon.get('fillColor') or 'teal'
         icon['fillOpacity'] = icon.get('fillOpacity') or 1
         icon['strokeColor'] = icon.get('strokeColor') or '#000000'
         icon['strokeOpacity'] = icon.get('strokeOpacity') or 1
@@ -138,21 +139,27 @@ def get_icon(key):
     return icon
     
 def make_svg():
-    icon = get_icon('circle')
-    p = parse_path(icon.get('path'))
+    paths, path_attributes, icon = [], [], None
+    for n in range(0, 10):
+        icon = get_icon('circle')
+        paths.append(parse_path(icon.get('path')))
+        x, y, scale = random.randint(10, 400), random.randint(10, 400), random.uniform(0.8, 2.5)
+        path_attributes.append({
+            "fill": icon.get('fillColor'),
+            "fill-opacity": icon.get('fillOpacity'),
+            "stroke": icon.get('strokeColor'),
+            "stroke-width": icon.get('strokeWeight'),
+            "transform": "translate({0}, {1}) scale({2}, {3})".format(
+                x, y, scale, scale
+            )
+        })
     svg_attributes = {
         'height': icon.get('height'),
         'width': icon.get('width'),
-        'viewBox': icon.get('viewBox')
+        'viewBox': '0 0 600 600'
     }
-    path_attributes = {
-        "fill": icon.get('fillColor'),
-        "fill-opacity": icon.get('fillOpacity'),
-        "stroke": icon.get('strokeColor'),
-        "stroke-width": icon.get('strokeWeight')
-    }
-    print(p)
+    #print(paths)
     print(svg_attributes)
     print(path_attributes)
-    wsvg(p, attributes=[path_attributes], svg_attributes=svg_attributes, filename='output1.svg')
-    wsvg(p, attributes=[path_attributes], dimensions=[20, 20], viewbox=(-2, -2, 19, 19), filename='output.svg')
+    wsvg(paths, attributes=path_attributes, svg_attributes=svg_attributes, filename='output1.svg')
+    #wsvg(p, attributes=[path_attributes], dimensions=[20, 20], viewbox=(-2, -2, 19, 19), filename='output.svg')
