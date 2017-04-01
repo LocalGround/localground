@@ -98,64 +98,88 @@ icons = {
         'height': 20
     }
 }
-def set_defaults(icon):
-    if icon:
-        icon['baseWidth'] = icon.get('baseWidth') or IconLookup.get('baseWidth')
-        icon['baseHeight'] = icon.get('baseHeight') or IconLookup.get('baseHeight')
-        icon['anchor'] = icon.get('anchor') or [icon.get('baseWidth') / 2, icon.get('baseHeight') / 2]
-        icon['fillColor'] = icon.get('fillColor') or 'teal'
-        icon['fillOpacity'] = icon.get('fillOpacity') or 1
-        icon['strokeColor'] = icon.get('strokeColor') or '#000000'
-        icon['strokeOpacity'] = icon.get('strokeOpacity') or 1
-        icon['strokeWeight'] = icon.get('strokeWeight') or 1
-        icon['viewBox'] = icon.get('viewBox') or \
-            str(-1 * icon['strokeWeight']) + ' ' + \
-            str(-1 * icon['strokeWeight']) + ' ' + \
-            str(icon['baseWidth'] + icon['strokeWeight'] + 2) + ' ' + \
-            str(icon['baseWidth'] + icon['strokeWeight'] + 2)
 
-def get_icon(key):
-    icon = None
-    if key == 'audio':
-        icon = icons.get('circle')
-        icon['width'] = 12
-        icon['height'] = 12
-        icon['fillColor'] = '#62929E'
-    elif key == 'photo':
-        icon = icons.get('circle')
-        icon['width'] = 12
-        icon['height'] = 12
-        icon['fillColor'] = '#7084c2'
-    elif key in ['marker', 'record']:
-        icon = icons.get('circle')
-        icon['width'] = 23
-        icon['height'] = 23
-        icon['fillColor'] = '#ed867d'
-    else:
-        icon = icons.get(key)
+class Icon(object):
     
-    # set defaults:
-    set_defaults(icon)
-    return icon
+    def __init__(self, key):
+        self.baseWidth = None
+        self.baseHeight = None
+        self.width = None
+        self.height = None
+        self.scale = None
+        self.anchor = None
+        self.fillColor = None
+        self.fillOpacity = None
+        self.strokeColor = None
+        self.strokeOpacity = None
+        self.strokeWeight = None
+        self.viewBox = None
+
+        props = icons.get('key')
+        if not props:
+            props = icons.get('circle')
+            if key == 'audio':
+                props['width'] = 12
+                props['height'] = 12
+                props['fillColor'] = '#62929E'
+            elif key == 'photo':
+                props['width'] = 12
+                props['height'] = 12
+                props['fillColor'] = '#7084c2'
+            elif key in ['marker', 'record']:
+                props['width'] = 23
+                props['height'] = 23
+                props['fillColor'] = '#ed867d'
+            else:
+                icon = icons.get(key)
+        
+        for k, v in props.items():
+            setattr(self, k, v)
+        # set defaults:
+        self.set_defaults()
+
+    def get_scale(self):
+        return 1.0 * self.width / self.baseWidth
+
+    def set_defaults(self):
+        self.baseWidth = self.baseWidth or IconLookup.get('baseWidth')
+        self.baseHeight = self.baseHeight or IconLookup.get('baseHeight')
+        self.width = self.width or 30
+        self.height = self.height or 30
+        self.scale = self.get_scale()
+        self.anchor = self.anchor or [self.baseWidth / 2, self.baseHeight / 2]
+        self.fillColor = self.fillColor or 'teal'
+        self.fillOpacity = self.fillOpacity or 1
+        self.strokeColor = self.strokeColor or 'black'
+        self.strokeOpacity = self.strokeOpacity or 1
+        self.strokeWeight = self.strokeWeight or 1
+        self.viewBox = self.viewBox or \
+            str(-1 * self.strokeWeight) + ' ' + \
+            str(-1 * self.strokeWeight) + ' ' + \
+            str(self.baseWidth + self.strokeWeight + 2) + ' ' + \
+            str(self.baseWidth + self.strokeWeight + 2)
+
     
 def make_svg():
     paths, path_attributes, icon = [], [], None
-    for n in range(0, 10):
-        icon = get_icon('circle')
-        paths.append(parse_path(icon.get('path')))
-        x, y, scale = random.randint(10, 400), random.randint(10, 400), random.uniform(0.8, 2.5)
+    for n in range(0, 100):
+        icon = Icon('circle')
+        icon.width = icon.height = random.randint(10, 80)
+        paths.append(parse_path(icon.path))
+        x, y, scale = random.randint(0, 600), random.randint(0, 600), random.uniform(0.8, 2.5)
         path_attributes.append({
-            "fill": icon.get('fillColor'),
-            "fill-opacity": icon.get('fillOpacity'),
-            "stroke": icon.get('strokeColor'),
-            "stroke-width": icon.get('strokeWeight'),
+            "fill": icon.fillColor,
+            "fill-opacity": icon.fillOpacity,
+            "vector-effect": "non-scaling-stroke", #this is valid, but SVG lib bails. TODO: fix.
+            "stroke": icon.strokeColor,
+            "stroke-width": icon.strokeWeight,
             "transform": "translate({0}, {1}) scale({2}, {3})".format(
-                x, y, scale, scale
+                x, y, icon.get_scale(), icon.get_scale()
             )
         })
     svg_attributes = {
-        'height': icon.get('height'),
-        'width': icon.get('width'),
+        'height': 600,
+        'width': 600,
         'viewBox': '0 0 600 600'
     }
     #print(paths)
