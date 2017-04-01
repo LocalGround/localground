@@ -164,6 +164,16 @@ class Icon(object):
         self.viewBox = self.viewBox or self.get_viewbox()
 
 class AcetateLayer(object):
+    '''
+------------------------------------------------------------------------
+TO TEST THIS CLASS:
+------------------------------------------------------------------------
+$ cd /localground/apps
+$ python manage.py shell
+
+from localground.apps.lib.helpers.maps.acetate_layer import AcetateLayer
+AcetateLayer()
+    '''
 
     def __init__(self):
         paths, path_attributes, icon = [], [], None
