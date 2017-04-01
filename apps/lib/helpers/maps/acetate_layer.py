@@ -1,4 +1,7 @@
-#sudo pip install svgpathtools svgwrite #also requires numpy
+# sudo pip install svgpathtools svgwrite #also requires numpy
+# sudo apt-get install libffi-dev
+# sudo pip install --upgrade cffi
+# sudo pip install cairosvg==1.0.22
 #https://pypi.python.org/pypi/svgpathtools/ 
 from svgpathtools import parse_path, svg2paths, wsvg
 import random
@@ -172,10 +175,12 @@ $ cd /localground/apps
 $ python manage.py shell
 
 from localground.apps.lib.helpers.maps.acetate_layer import AcetateLayer
-AcetateLayer()
+a = AcetateLayer()
+a.toPNG()
     '''
 
     def __init__(self):
+        self.output_path = 'output.svg'
         paths, path_attributes, icon = [], [], None
         for n in range(0, 50):
             # Ideally, this Icon constructor would read from each
@@ -184,7 +189,8 @@ AcetateLayer()
                         fillOpacity=0.3, strokeWeight=2, strokeOpacity=1)
             icon.width = icon.height = random.randint(10, 40)
             paths.append(parse_path(icon.path))
-            x, y = random.randint(0, 600), random.randint(0, 600)
+            x = random.randint(0, 1200)
+            y = random.randint(0, 600)
             path_attributes.append({
                 "fill": icon.fillColor,
                 "fill-opacity": icon.fillOpacity,
@@ -196,13 +202,24 @@ AcetateLayer()
                 )
             })
         svg_attributes = {
+            'width': 1200,
             'height': 600,
-            'width': 600,
-            'viewBox': '0 0 600 600'
+            'viewBox': '0 0 {0} {1}'.format(1200, 600)
         }
         #print(paths)
         #print(svg_attributes)
         #print(path_attributes)
         #wsvg(p, attributes=[path_attributes], dimensions=[20, 20], viewbox=(-2, -2, 19, 19), filename='output.svg')
-        wsvg(paths, attributes=path_attributes, svg_attributes=svg_attributes, filename='output1.svg')
+        wsvg(paths, attributes=path_attributes, svg_attributes=svg_attributes, filename=self.output_path)
         
+    def toPNG(self):
+        import cairosvg
+        import os
+        
+        #set environment variables b/c of cairo bug:
+        os.environ['LANG'] = 'en_US.UTF-8'
+        os.environ['LC_ALL'] = 'en_US.UTF-8'
+
+        cairosvg.svg2png(url=self.output_path,
+            write_to=self.output_path.replace('.svg', '.png')
+        )
