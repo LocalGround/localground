@@ -104,6 +104,14 @@ class Icon(object):
         }
     }
     
+    @staticmethod
+    def get_icon_list():
+        return Icon.ICONS.values()
+    
+    @staticmethod
+    def get_icon_keys():
+        return Icon.ICONS.keys()
+    
     def __init__(self, key, **kwargs):
         # set defaults:
         self.baseWidth = 15
@@ -138,7 +146,7 @@ class Icon(object):
                 raise Exception('"{0}" icon not found'.format(key))
         
         # apply icon properties:
-        for k, v in props.items():
+        for k, v in props.iteritems():
             setattr(self, k, v)
         
         # apply kwargs:
@@ -182,10 +190,12 @@ a.toPNG()
     def __init__(self):
         self.output_path = 'output.svg'
         paths, path_attributes, icon = [], [], None
+        keys = Icon.get_icon_keys()
         for n in range(0, 50):
+            key = keys[random.randint(0, len(keys)) - 1]
             # Ideally, this Icon constructor would read from each
             # Symbol of the Layer record:
-            icon = Icon('pin', fillColor='#CE6D8B', strokeColor="#CE6D8B",
+            icon = Icon(key, fillColor='#CE6D8B', strokeColor="#CE6D8B",
                         fillOpacity=0.3, strokeWeight=2, strokeOpacity=1)
             icon.width = icon.height = random.randint(10, 40)
             paths.append(parse_path(icon.path))
@@ -213,12 +223,13 @@ a.toPNG()
         wsvg(paths, attributes=path_attributes, svg_attributes=svg_attributes, filename=self.output_path)
         
     def toPNG(self):
-        import cairosvg
-        import os
-        
         #set environment variables b/c of cairo bug:
+        import os
         os.environ['LANG'] = 'en_US.UTF-8'
         os.environ['LC_ALL'] = 'en_US.UTF-8'
+        
+        #now import cairosvg
+        import cairosvg
 
         cairosvg.svg2png(url=self.output_path,
             write_to=self.output_path.replace('.svg', '.png')
