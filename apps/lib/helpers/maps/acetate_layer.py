@@ -3,7 +3,7 @@
 # sudo pip install --upgrade cffi
 # sudo pip install cairosvg==1.0.22
 #https://pypi.python.org/pypi/svgpathtools/ 
-from svgpathtools import parse_path, svg2paths, wsvg
+from localground.apps.lib.externals.svgpathtools import parse_path, svg2paths, wsvg
 import random
 
 class Icon(object):
@@ -204,7 +204,7 @@ a.toPNG()
             path_attributes.append({
                 "fill": icon.fillColor,
                 "fill-opacity": icon.fillOpacity,
-                "vector-effect": "non-scaling-stroke", #this is valid, but SVG lib bails. TODO: fix.
+                "vector-effect": "non-scaling-stroke",
                 "stroke": icon.strokeColor,
                 "stroke-width": icon.strokeWeight,
                 "transform": "translate({0}, {1}) scale({2}, {3})".format(
