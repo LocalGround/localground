@@ -211,12 +211,15 @@ a.toPNG()
         keys = Icon.get_icon_keys()
         maxX, maxY, pixels = self.get_pixels(13)
         for coord in pixels:
-            key = keys[random.randint(0, len(keys)) - 1]
             # Ideally, this Icon constructor would read from each
             # Symbol of the Layer record:
-            icon = Icon('circle', fillColor='#CE6D8B', strokeColor="#CE6D8B",
+            '''
+            key = keys[random.randint(0, len(keys)) - 1]
+            icon = Icon(key, fillColor='#CE6D8B', strokeColor="#CE6D8B",
                         fillOpacity=0.3, strokeWeight=2, strokeOpacity=1)
             icon.width = icon.height = 10 #random.randint(10, 40)
+            '''
+            icon = Icon('photo', strokeWeight=1, strokeColor='white')
             paths.append(parse_path(icon.path))
             x = coord[0]
             y = coord[1]
