@@ -204,9 +204,8 @@ a.toPNG()
             path_attributes.append({
                 "fill": icon.fillColor,
                 "fill-opacity": icon.fillOpacity,
-                "vector-effect": "non-scaling-stroke",
                 "stroke": icon.strokeColor,
-                "stroke-width": icon.strokeWeight,
+                "stroke-width": icon.strokeWeight * 1 / icon.get_scale(),
                 "transform": "translate({0}, {1}) scale({2}, {3})".format(
                     x, y, icon.get_scale(), icon.get_scale()
                 )
