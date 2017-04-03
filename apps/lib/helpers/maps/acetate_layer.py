@@ -188,22 +188,39 @@ $ python manage.py shell
 from localground.apps.lib.helpers.maps.acetate_layer import AcetateLayer
 a = AcetateLayer()
 a.toPNG()
+
     '''
 
+    def get_pixels(self, zoom):
+        buffer = 20
+        from localground.apps.site.models import Photo
+        from localground.apps.lib.helpers.units import Units
+        photos = Photo.objects.filter(project__id=3)
+        points = [p.point for p in photos if p.point is not None]
+        pixels = [Units.latlng_to_pixel(p, zoom) for p in points]
+        minX = min([p[0] for p in pixels]) - buffer
+        minY = min([p[1] for p in pixels]) - buffer
+        pixels = [(p[0] - minX, p[1] - minY) for p in pixels]
+        maxX = max([p[0] for p in pixels])
+        maxY = max([p[1] for p in pixels])
+        return maxX + 2 * buffer, maxY + 2 * buffer, pixels
+    
     def __init__(self):
         self.output_path = 'output.svg'
         paths, path_attributes, icon = [], [], None
         keys = Icon.get_icon_keys()
-        for n in range(0, 50):
+        maxX, maxY, pixels = self.get_pixels(13)
+        for coord in pixels:
             key = keys[random.randint(0, len(keys)) - 1]
             # Ideally, this Icon constructor would read from each
             # Symbol of the Layer record:
-            icon = Icon(key, fillColor='#CE6D8B', strokeColor="#CE6D8B",
+            icon = Icon('circle', fillColor='#CE6D8B', strokeColor="#CE6D8B",
                         fillOpacity=0.3, strokeWeight=2, strokeOpacity=1)
-            icon.width = icon.height = random.randint(10, 40)
+            icon.width = icon.height = 10 #random.randint(10, 40)
             paths.append(parse_path(icon.path))
-            x = random.randint(0, 1200)
-            y = random.randint(0, 600)
+            x = coord[0]
+            y = coord[1]
+            print(x, y)
             path_attributes.append({
                 "fill": icon.fillColor,
                 "fill-opacity": icon.fillOpacity,
@@ -214,9 +231,9 @@ a.toPNG()
                 )
             })
         svg_attributes = {
-            'width': 1200,
-            'height': 600,
-            'viewBox': '0 0 {0} {1}'.format(1200, 600)
+            'width': maxX,
+            'height': maxY,
+            'viewBox': '0 0 {0} {1}'.format(maxX, maxY)
         }
         #print(paths)
         #print(svg_attributes)
