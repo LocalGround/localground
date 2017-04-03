@@ -162,6 +162,9 @@ class Icon(object):
     def get_anchor(self):
         return [self.baseWidth / 2, self.baseHeight / 2]
 
+    def get_stroke_weight_normalized(self):
+        return self.strokeWeight / self.get_scale()
+
     def get_viewbox(self):
         return (str(-1 * self.strokeWeight) + ' ' +
             str(-1 * self.strokeWeight) + ' ' +
@@ -205,7 +208,7 @@ a.toPNG()
                 "fill": icon.fillColor,
                 "fill-opacity": icon.fillOpacity,
                 "stroke": icon.strokeColor,
-                "stroke-width": icon.strokeWeight * 1 / icon.get_scale(),
+                "stroke-width": icon.get_stroke_weight_normalized(),
                 "transform": "translate({0}, {1}) scale({2}, {3})".format(
                     x, y, icon.get_scale(), icon.get_scale()
                 )
