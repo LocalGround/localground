@@ -5,6 +5,9 @@
 #https://pypi.python.org/pypi/svgpathtools/ 
 from localground.apps.lib.externals.svgpathtools import parse_path, svg2paths, wsvg
 import random
+from localground.apps.lib.helpers.units import Units
+from localground.apps.site import models
+from django.contrib.gis.geos import Point
 
 class Icon(object):
     ICONS = {
@@ -143,7 +146,9 @@ class Icon(object):
                 props['height'] = 23
                 props['fillColor'] = '#ed867d'
             else:
-                raise Exception('"{0}" icon not found'.format(key))
+                props['width'] = 23
+                props['height'] = 23
+                props['fillColor'] = '#ed867d'
         
         # apply icon properties:
         for k, v in props.iteritems():
@@ -191,53 +196,83 @@ a.toPNG()
 
     '''
 
-    def get_pixels(self, zoom):
-        buffer = 20
-        from localground.apps.site.models import Photo
-        from localground.apps.lib.helpers.units import Units
-        photos = Photo.objects.filter(project__id=3)
-        points = [p.point for p in photos if p.point is not None]
+    def get_pixels(self, models, zoom, extents, minXPixels, minYPixels):
+        points = [p.point for p in models if p.point is not None]
         pixels = [Units.latlng_to_pixel(p, zoom) for p in points]
-        minX = min([p[0] for p in pixels]) - buffer
-        minY = min([p[1] for p in pixels]) - buffer
-        pixels = [(p[0] - minX, p[1] - minY) for p in pixels]
-        maxX = max([p[0] for p in pixels])
-        maxY = max([p[1] for p in pixels])
-        return maxX + 2 * buffer, maxY + 2 * buffer, pixels
+        pixels = [(p[0] - minXPixels, p[1] - minYPixels) for p in pixels]
+        return pixels
+    
+    def get_extents(self, layers, zoom):
+        points, minX, minY, maxX, maxY = [], None, None, None, None
+        for models in layers:
+            for p in models:
+                if p.point is not None:
+                    points.append(Units.latlng_to_pixel(p.point, zoom))
+
+        class Extents(object):
+            minX = min([p[0] for p in points])
+            minY = min([p[1] for p in points])
+            maxX = max([p[0] for p in points])
+            maxY = max([p[1] for p in points])
+        
+        return Extents()
+        
     
     def __init__(self):
+        from localground.apps.site import models
+        zoom = 13
+        buffer = 20
         self.output_path = 'output.svg'
         paths, path_attributes, icon = [], [], None
         keys = Icon.get_icon_keys()
-        maxX, maxY, pixels = self.get_pixels(13)
-        for coord in pixels:
-            # Ideally, this Icon constructor would read from each
-            # Symbol of the Layer record:
-            '''
-            key = keys[random.randint(0, len(keys)) - 1]
-            icon = Icon(key, fillColor='#CE6D8B', strokeColor="#CE6D8B",
-                        fillOpacity=0.3, strokeWeight=2, strokeOpacity=1)
-            icon.width = icon.height = 10 #random.randint(10, 40)
-            '''
-            icon = Icon('photo', strokeWeight=1, strokeColor='white')
-            paths.append(parse_path(icon.path))
-            x = coord[0]
-            y = coord[1]
-            print(x, y)
-            path_attributes.append({
-                "fill": icon.fillColor,
-                "fill-opacity": icon.fillOpacity,
-                "stroke": icon.strokeColor,
-                "stroke-width": icon.get_stroke_weight_normalized(),
-                "transform": "translate({0}, {1}) scale({2}, {3})".format(
-                    x, y, icon.get_scale(), icon.get_scale()
-                )
-            })
-        svg_attributes = {
-            'width': maxX,
-            'height': maxY,
-            'viewBox': '0 0 {0} {1}'.format(maxX, maxY)
-        }
+        form = models.Form.objects.get(id=2)
+        layers = [
+            models.Photo.objects.filter(project__id=3),
+            models.Audio.objects.filter(project__id=3),
+            models.Marker.objects.filter(project__id=3),
+            form.TableModel.objects.all()
+        ]
+        extents = self.get_extents(layers, zoom)
+        
+        maxX = extents.maxX + 2 * buffer
+        maxY = extents.maxY + 2 * buffer
+        minX = extents.minX - 2 * buffer
+        minY = extents.minY - 2 * buffer
+        width = maxX - minX
+        height = maxY - minY
+
+        for l in layers:
+            pixels = self.get_pixels(l, zoom, extents, minX, minY)
+
+            for coord in pixels:
+                # Ideally, this Icon constructor would read from each
+                # Symbol of the Layer record:
+                '''
+                key = keys[random.randint(0, len(keys)) - 1]
+                icon = Icon(key, fillColor='#CE6D8B', strokeColor="#CE6D8B",
+                            fillOpacity=0.3, strokeWeight=2, strokeOpacity=1)
+                icon.width = icon.height = 10 #random.randint(10, 40)
+                '''
+                key = l[0]._meta.verbose_name
+                icon = Icon(key, strokeWeight=1, strokeColor='white')
+                paths.append(parse_path(icon.path))
+                x = coord[0]
+                y = coord[1]
+                print(x, y)
+                path_attributes.append({
+                    "fill": icon.fillColor,
+                    "fill-opacity": icon.fillOpacity,
+                    "stroke": icon.strokeColor,
+                    "stroke-width": icon.get_stroke_weight_normalized(),
+                    "transform": "translate({0}, {1}) scale({2}, {3})".format(
+                        x, y, icon.get_scale(), icon.get_scale()
+                    )
+                })
+            svg_attributes = {
+                'width': width,
+                'height': height,
+                'viewBox': '0 0 {0} {1}'.format(width, height)
+            }
         #print(paths)
         #print(svg_attributes)
         #print(path_attributes)
