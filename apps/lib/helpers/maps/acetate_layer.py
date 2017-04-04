@@ -198,6 +198,8 @@ a.toPNG()
 
     def get_pixels(self, models, zoom, extents, minXPixels, minYPixels):
         points = [p.point for p in models if p.point is not None]
+        for p in points:
+            print(p.x, p.y)
         pixels = [Units.latlng_to_pixel(p, zoom) for p in points]
         pixels = [(p[0] - minXPixels, p[1] - minYPixels) for p in pixels]
         return pixels
@@ -216,22 +218,35 @@ a.toPNG()
             maxY = max([p[1] for p in points])
         
         return Extents()
+    
+    def get_static_map(self):
+        from localground.apps.lib.helpers import StaticMap
+        from localground.apps.site.models import WMSOverlay
+        m = StaticMap()
+        info = m.get_basemap_and_extents(
+            WMSOverlay.objects.filter(name='Grayscale')[0], 15, Point(-122.29729, 37.86812),
+            1024, 1024
+        )
+        map_image = info.get('map_image')
+        map_image.save('map.jpg')
         
     
     def __init__(self):
         from localground.apps.site import models
-        zoom = 13
+        zoom = 15
+        project_id = 5
         buffer = 20
         self.output_path = 'output.svg'
         paths, path_attributes, icon = [], [], None
         keys = Icon.get_icon_keys()
-        form = models.Form.objects.get(id=2)
+        forms = models.Form.objects.filter(projects__id=project_id)
         layers = [
-            models.Photo.objects.filter(project__id=3),
-            models.Audio.objects.filter(project__id=3),
-            models.Marker.objects.filter(project__id=3),
-            form.TableModel.objects.all()
+            models.Photo.objects.filter(project__id=project_id),
+            models.Audio.objects.filter(project__id=project_id),
+            models.Marker.objects.filter(project__id=project_id)
         ]
+        for form in forms:
+            layers.append(form.TableModel.objects.all())
         extents = self.get_extents(layers, zoom)
         
         maxX = extents.maxX + 2 * buffer
@@ -278,6 +293,7 @@ a.toPNG()
         #print(path_attributes)
         #wsvg(p, attributes=[path_attributes], dimensions=[20, 20], viewbox=(-2, -2, 19, 19), filename='output.svg')
         wsvg(paths, attributes=path_attributes, svg_attributes=svg_attributes, filename=self.output_path)
+        self.get_static_map()
         
     def toPNG(self):
         #set environment variables b/c of cairo bug:
