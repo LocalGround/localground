@@ -139,6 +139,8 @@ define([
                         existingField.set("col_alias", fieldName);
                         existingField.set("is_display_field", fieldNameRadio);
                         existingField.save();
+                        var collection = this.app.dataManager.getCollection("form_" + this.model.id);
+                        collection.fetch({reset: true});
                     } else {
                         $row.css("background-color", "FFAAAA");
                     }
