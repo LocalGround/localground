@@ -111,6 +111,7 @@ define([
                 $row,
                 fieldName,
                 fieldNameInput,
+                fieldNameRadio,
                 fieldType,
                 existingField;
 
@@ -127,6 +128,8 @@ define([
                 $row = $($fields[i]);
                 fieldName = $row.find(".fieldname").val();
                 fieldNameInput = $row.find(".fieldname");
+                fieldNameRadio = $row.find(".display_field_button").prop("checked");
+                console.log(fieldNameRadio);
                 if ($row.attr("id") == this.model.id) {
                     //edit existing fields:
                     id = $row.find(".id").val();
@@ -134,6 +137,7 @@ define([
                     if (!this.errorFieldName(fieldNameInput)) {
                         existingField.set("ordering", i + 1);
                         existingField.set("col_alias", fieldName);
+                        existingField.set("is_display_field", fieldNameRadio);
                         existingField.save();
                     } else {
                         $row.css("background-color", "FFAAAA");
@@ -142,7 +146,7 @@ define([
                     //create new fields:
                     fieldType = $row.find(".fieldType").val();
                     if (!this.blankField(fieldNameInput, fieldType)) {
-                        this.model.createField(fieldName, fieldType, i + 1);
+                        this.model.createField(fieldName, fieldType, fieldNameRadio, i + 1);
                     } else {
                         $row.css("background-color", "FFAAAA");
                     }

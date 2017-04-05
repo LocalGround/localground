@@ -21,6 +21,6 @@
     {{/if}}
 </td>
 <td>
-  <input class="display_field_button" type="radio" name="display_field">
+  <input class="display_field_button" type="radio" {{#if is_display_field}} CHECKED {{/if}} name="display_field">
 </td>
 <td><a href="#" class="{{#if id }}delete-field {{else}} remove-row{{/if}} ">&times;</a></td>
