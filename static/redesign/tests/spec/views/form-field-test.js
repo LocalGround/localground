@@ -106,7 +106,7 @@ define([
                 fieldView.$el.find('a.delete-field').trigger('click');
                 expect(FieldChildView.prototype.doDelete).toHaveBeenCalledTimes(1);
                 expect(Field.prototype.destroy).toHaveBeenCalledTimes(1);
-                console.log(fieldView.$el);
+                //console.log(fieldView.$el);
                 expect(fieldView.$el).not.toBeInDOM();
             });
         });

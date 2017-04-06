@@ -19,6 +19,7 @@ define([
 
             //event methods:
             spyOn(CreateForm.prototype, 'saveFormSettings').and.callThrough();
+            spyOn(CreateForm.prototype, 'deleteForm').and.callThrough();
             spyOn(CreateForm.prototype, 'removeRow').and.callThrough();
             spyOn(CreateForm.prototype, 'addFieldButton').and.callThrough();
             spyOn(CreateForm.prototype, 'backToList').and.callThrough();
@@ -333,8 +334,25 @@ define([
                         app: this.app,
                         model: this.form
                     });
-                    //test "errorFieldType" method:
-                    expect(1).toBe(1);
+                    //I am almost there with delete form, but I am getting the problem that
+                    // deleteForm is not defined
+
+
+                    spyOn(window, 'confirm').and.returnValue(true);
+
+                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
+                    expect(newCreateForm.$el).toBeInDOM();
+
+                    expect(newCreateForm.prototype.deleteForm).toHaveBeenCalledTimes(0);
+                    expect(newCreateForm.prototype.destroy).toHaveBeenCalledTimes(0);
+
+                    newCreateForm.deleteForm();
+
+                    expect(newCreateForm.prototype.deleteForm).toHaveBeenCalledTimes(1);
+                    expect(newCreateForm.prototype.destroy).toHaveBeenCalledTimes(1);
+
+                    expect(newCreateForm.$el).not.toBeInDOM();
+
                 });
             });
 
