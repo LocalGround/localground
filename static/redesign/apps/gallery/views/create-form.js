@@ -142,7 +142,7 @@ define([
                         var collection = this.app.dataManager.getCollection("form_" + this.model.id);
                         collection.fetch({reset: true});
                     } else {
-                        $row.css("background-color", "FFAAAA");
+                        $row.css("background-color", "#FFAAAA");
                     }
                 } else {
                     //create new fields:
@@ -150,7 +150,7 @@ define([
                     if (!this.blankField(fieldNameInput, fieldType)) {
                         this.model.createField(fieldName, fieldType, fieldNameRadio, i + 1);
                     } else {
-                        $row.css("background-color", "FFAAAA");
+                        $row.css({"background-color": "#FFAAAA"});
                     }
                 }
             }
