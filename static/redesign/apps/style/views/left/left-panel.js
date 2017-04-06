@@ -52,7 +52,9 @@ define(["jquery",
                 this.styles.show(ps);
             },
             handleNewMap: function (model) {
-                this.app.selectedMapModel = model;
+                // is 'this.app.model' necessary?
+                this.app.model = model;
+                this.model = model;
                 var ps = new PanelStylesView({
                     app: this.app,
                     model: model

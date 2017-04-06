@@ -24,13 +24,18 @@ require(['boot'], function () {
         'spec/views/data-manager-test.js',
         'spec/views/legend-layer-entry-test.js',
         'spec/views/audio-player-new-test.js',
-        'spec/views/style-right-panel-test.js',
-        'spec/views/style-left-panel-test.js',
         'spec/views/audio-player-test.js',
+
+        //style app left panel
+        'spec/views/style-left-panel-test.js',
         'spec/views/select-map-view-test.js',
         'spec/views/layer-list-view-test.js',
         'spec/views/layer-list-child-view-test.js',
         'spec/views/panel-styles-view-test.js',
+
+        //style app right panel
+        'spec/views/style-right-panel-test.js',
+        'spec/views/data-source-view-test.js',
 
         //APPS
         'spec/views/style-app-test.js',

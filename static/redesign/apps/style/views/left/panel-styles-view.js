@@ -16,28 +16,11 @@ define(["marionette",
                 'change #text-type': 'updateType',
                 'change #font': 'updateFont',
                 'change #fw': 'updateFontWeight',
-                'change #color-picker': 'updateFontColor',
                 'change #font-size': 'updateFontSize'
             },
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this);
-                console.log(this.model);
-                console.log(opts);
-              /*  this.app = opts.app;
-              //  this.model = new Map(
-              //      { id: 1, name: "Flowers & Birds", project_id: 4 }
-              //      );*/
-              //  console.log(this.model);
-              //  this.listenTo(this.app.vent, 'change-map', this.setModel);
-
-                // here is some fake data until the
-                // /api/0/maps/ API Endpoint gets built:
-                //  this.collection = Maps;
-                console.log("panel styles initialized");
-                console.log(this.collection);
-                
             },
             
             onRender: function () {
@@ -53,9 +36,7 @@ define(["marionette",
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
-                        that.model.get("panel_styles")[that.activeKey].color = hex;
-                        $('#color-picker').css('color', '#' + hex);
-                        that.render();
+                        that.updateFontColor(hex);
                     }
                 });
             },
@@ -66,22 +47,13 @@ define(["marionette",
                 if (!this.model) {
                     return;
                 }
-                console.log(this.model.get("panel_styles")[this.activeKey]);
                 return {
                     json: JSON.stringify(this.model.toJSON(), null, 2),
                     currentType: this.model.get("panel_styles")[this.activeKey],
-                    activeKey: this.activeKey,
-                   // font: this.model.get("panel_styles")[this.activeKey].font,
-                   // fontWeight: this.model.get("panel_styles")[this.activeKey].fw
+                    activeKey: this.activeKey
                     };
             },
-            /*
-            setModel: function (model) {
-                console.log(model);
-                this.model = model;
-                this.render();
-                console.log(this.model);
-            },*/
+           
             updateType: function () {
                 this.activeKey = this.$el.find("#text-type").val();
                 this.render();
@@ -94,11 +66,12 @@ define(["marionette",
                 this.model.get("panel_styles")[this.activeKey].fw = this.$el.find("#fw").val();
                 this.render();
             },
-            updateFontColor: function () {
-                this.model.get("panel_styles")[this.activeKey].color = this.$el.find("#color-picker").css("color");
-                console.log(this.$el.find("#color-picker").css("color"));
+            // triggered from colorPicker
+            updateFontColor: function (hex) {
+                this.model.get("panel_styles")[this.activeKey].color = hex;
+                $('#color-picker').css('color', '#' + hex);
                 this.render();
-            },
+            },  
             updateFontSize: function () {
                 this.model.get("panel_styles")[this.activeKey].size = +this.$el.find("#font-size").val();
                 this.render();

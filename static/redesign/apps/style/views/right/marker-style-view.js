@@ -54,18 +54,15 @@ define(["jquery",
             },
 
             initialize: function (opts) {
-                //the model is a layer
-                this.app = opts.app;
-                this.model = opts.model;
+                _.extend(this,opts);
                 this.dataType = this.model.get("layer_type");
 
-                this.data_source = this.model.get("data_source"); // e.g. "form_1"
+                this.data_source = this.model.get("data_source"); //e.g. "form_1"
                 this.fields = this.app.dataManager.getData(this.data_source).fields;
 
                 this.displaySymbols();
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
                 this.buildPalettes();
-                this.buildDropdown();
                 $('body').click(this.hideColorRamp);
             },
 
@@ -91,7 +88,7 @@ define(["jquery",
                     dataType: this.dataType,
                     allColors: this.allColors,
                     buckets: this.buckets,
-                    properties: this.getPropertiesCategorial()
+                    properties: this.fields.toJSON()
                 };
             },
 
@@ -114,37 +111,11 @@ define(["jquery",
             buildDropdown: function () {
                 console.log(this.fields);
             },
-            getPropertiesCategorial: function () {
 
-                switch (this.data_source) {
-                case "audio":
-                case "photos":
-                    return [
-                        { value: "title", name: "Title" },
-                        { value: "caption", name: "Caption" },
-                        { value: "tags", name: "Tags" },
-                        { value: "attribution", name: "Attribution" },
-                        { value: "owner", name: "Owner" }
-                    ];
-                case "markers":
-                    return [
-                        { value: "title", name: "Title" },
-                        { value: "caption", name: "Caption" },
-                        { value: "tags", name: "Tags" },
-                        { value: "owner", name: "Owner" }
-                    ];
-                default:
-                    //todo: filter by data_type = 'text'
-                    var properties = [];
-                    this.fields.each(function (field) {
-                        properties.push({
-                            value: field.get("col_name"),
-                            name: field.get("col_alias")
-                        });
-                    });
-                    return properties;
-                }
+            getPropertiesCategorical: function () {
+                this.properties = [];
             },
+
             getPropertiesContinuous: function () {
                 this.properties = [];
             },

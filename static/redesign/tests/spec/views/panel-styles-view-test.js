@@ -15,13 +15,16 @@ define([
             spyOn(PanelStylesView.prototype, 'initialize').and.callThrough();
             spyOn(PanelStylesView.prototype, 'updateType').and.callThrough();
             spyOn(PanelStylesView.prototype, 'updateFont').and.callThrough();
+            spyOn(PanelStylesView.prototype, 'updateFontWeight').and.callThrough();
+            spyOn(PanelStylesView.prototype, 'updateFontSize').and.callThrough();
             fixture = setFixtures('<div></div>');
 
              // 2) initialize rightPanel object:
              scope.app.selectedMapModel = scope.testMap;
              panelStyleView = new PanelStylesView({
                 app: scope.app,
-                collection: scope.layers
+               // collection: scope.layers//,
+                model: scope.testMap
             });
             panelStyleView.render();
             
@@ -47,9 +50,42 @@ define([
                 expect(fixture).toContainElement('.bordered-section');    
             });
 
-            it(": collection should be correct", function () {
-                expect(panelStyleView.collection).toEqual(this.layers);
+            it(": model should be correct", function () {
+                expect(panelStyleView.model).toEqual(this.testMap);
             });
-            
+        });
+
+        describe("PanelStylesView - events", function () {
+            beforeEach(function () {
+                initView(this);
+            });
+            afterEach(function () {
+                Backbone.history.stop();
+            });
+            it(": updateType event", function () {
+                expect(panelStyleView.updateType).toHaveBeenCalledTimes(0);
+                $(fixture.find("#text-type").val('subtitle')).change();
+                expect(panelStyleView.updateType).toHaveBeenCalledTimes(1);
+            });
+
+            it(": updateFont event", function () {
+                expect(panelStyleView.updateFont).toHaveBeenCalledTimes(0);
+                $(fixture.find("#font").val('bebas')).change();
+                console.log($(fixture.find("#font").val()));
+                expect(panelStyleView.updateFont).toHaveBeenCalledTimes(1);
+            });
+
+            it(": updateFontWeight event", function () {
+                expect(panelStyleView.updateFontWeight).toHaveBeenCalledTimes(0);
+                $(fixture.find("#fw").val("bold")).change();
+                expect(panelStyleView.updateFontWeight).toHaveBeenCalledTimes(1);
+            });
+
+            it(": updateFontSize event", function () {
+                expect(panelStyleView.updateFontSize).toHaveBeenCalledTimes(0);
+                $(fixture.find("#font-size")).val("7").change();
+                expect(panelStyleView.updateFontSize).toHaveBeenCalledTimes(1);
+            });
+
         });
 });
