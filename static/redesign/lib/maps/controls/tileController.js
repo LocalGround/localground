@@ -57,7 +57,7 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                         providerID: "roadmap",
                         id: 5,
                         typeID: 1,
-                        name: "Default",
+                        name: "Simple",
                         url: staticURL,
                         sourceID: 5,
                         type: "Base Tileset",
@@ -123,7 +123,7 @@ define(["lib/maps/tiles/mapbox", "lib/maps/tiles/stamen", "jquery"],
                         } else if (sourceName === "google-custom") {
                             map.mapTypes.set(this.name,
                                 new google.maps.StyledMapType(this.clientStyles, { name: this.name }));
-                            mapTypeIDs.push(this.name);
+                            mapTypeIDs.unshift(this.name);
                         } else {
                             alert("Error in localground.maps.TileManager: unknown map type: " + sourceName);
                         }
