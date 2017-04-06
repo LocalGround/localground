@@ -196,13 +196,13 @@ from localground.apps.lib.helpers.maps.acetate_layer import AcetateLayer
 a = AcetateLayer()
     '''
     
-    def __init__(self):
+    def __init__(self, center=None, project_id=3, zoom=13, width=1024, height=1024):
         from localground.apps.site import models
-        self.center = Point(-122.29729, 37.86812)
-        self.zoom = 14
-        self.width = 1024
-        self.height = 600
-        self.project_id = 5
+        self.center = center or Point(-122.29729, 37.86812)
+        self.zoom = zoom
+        self.width = width
+        self.height = height
+        self.project_id = project_id
         self.svg_path = 'map_acetate.svg'
         self.acetate_path = 'map_acetate.png'
         self.basemap_path = 'map_base.png'
