@@ -99,6 +99,7 @@ class StaticMap():
             '''
             map_url = 'http://api.tiles.mapbox.com/v3/{0}/{1},{2},{3}/{4}x{5}.png'
             map_url = map_url.format(map_type.provider_id, center.x, center.y, zoom, width, height)
+            raise Exception(map_url)
         #if google is the map provider:
         else:
             scale_factor = 1

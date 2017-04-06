@@ -40,6 +40,15 @@ class WMSOverlay(BaseNamed):
             'max': self.max_zoom,
             'is_printable': self.is_printable
         }
+    
+    def can_view(self, user, access_key=None):
+        return True
+    
+    def can_edit(self, user):
+        return user.is_superuser
+
+    def can_manage(self, user):
+        return user.is_superuser
 
     def __unicode__(self):
         return '%s. %s' % (self.id, self.name)

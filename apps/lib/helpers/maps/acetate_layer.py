@@ -196,9 +196,9 @@ from localground.apps.lib.helpers.maps.acetate_layer import AcetateLayer
 a = AcetateLayer()
     '''
     
-    def __init__(self, center=None, project_id=3, zoom=13, width=1024, height=1024):
+    def __init__(self, center=None, project_id=3, zoom=15, width=1024, height=1024):
         from localground.apps.site import models
-        self.center = center or Point(-122.29729, 37.86812)
+        self.center = center or Point(-122.2939, 37.8686)
         self.zoom = zoom
         self.width = width
         self.height = height
@@ -241,7 +241,10 @@ a = AcetateLayer()
                     "stroke": icon.strokeColor,
                     "stroke-width": icon.get_stroke_weight_normalized(),
                     "transform": "translate({0}, {1}) scale({2}, {3})".format(
-                        x, y, icon.get_scale(), icon.get_scale()
+                        x - icon.anchor[0],
+                        y - icon.anchor[1],
+                        icon.get_scale(),
+                        icon.get_scale()
                     )
                 })
             svg_attributes = {
@@ -254,8 +257,9 @@ a = AcetateLayer()
 
     def generate_static_map(self):
         m = StaticMap()
+        map_type = WMSOverlay.objects.filter(name='Grayscale')[0]
         info = m.get_basemap_and_extents(
-            WMSOverlay.objects.filter(name='Grayscale')[0], self.zoom, self.center, self.width, self.height
+            map_type, self.zoom, self.center, self.width, self.height
         )
         map_image = info.get('map_image')
         map_image.save(self.basemap_path)

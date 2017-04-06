@@ -18,12 +18,12 @@ define(["jquery"], function ($) {
         this.name = opts.name;
         this.tileSize = new google.maps.Size(256, 256);
         this.getTile = function (coord, zoom, ownerDocument) {
-            var url = '//' + ['a.', 'b.', 'c.', 'd.'][parseInt(Math.random() * 4, 10)] + 'tiles.mapbox.com/v3/';
+            var url = '//' + ['', 'a.', 'b.'][parseInt(Math.random() * 3, 10)] + 'api.mapbox.com/styles/v1/mapbox/';
             return $('<div></div>').css({
                 'width': '256px',
                 'height': '256px',
-                'backgroundImage': 'url(' + url + this.styleID + '/' + zoom + '/' +
-                    coord.x + '/' + coord.y + '.png)'
+                'backgroundImage': 'url(' + url + this.styleID + '/tiles/256/' + zoom + '/' +
+                    coord.x + '/' + coord.y + '?access_token=' + MAPBOX_API_KEY + ')'
 
             }).get(0);
         };

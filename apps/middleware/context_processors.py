@@ -17,6 +17,7 @@ def persistant_queries(request):
         'user': request.user,
         'is_authenticated': request.user.is_authenticated(),
         'is_impersonation': request.session.get('active_impersonation') is not None,
+        'MAPBOX_API_KEY': settings.MAPBOX_API_KEY,
         'serverURL': settings.SERVER_URL,
         'JQUERY_PATH': settings.JQUERY_PATH,
         'JQUERY_UI_PATH': settings.JQUERY_UI_PATH,

@@ -12,7 +12,7 @@ class TileViewSet(viewsets.ModelViewSet):
         'overlay_source').all()
     serializer_class = serializers.WMSOverlaySerializer
     filter_backends = (SQLFilterBackend,)
-    permission_classes = (permissions.IsAdminUser,)
+    #permission_classes = (permissions.IsAdminUser,)
 
 class OverlayTypeViewSet(viewsets.ModelViewSet):
     queryset = models.OverlayType.objects.all()

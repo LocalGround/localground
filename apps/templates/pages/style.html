@@ -32,6 +32,7 @@
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places">
     </script>
     <script>
+        var MAPBOX_API_KEY = '{{ MAPBOX_API_KEY }}';
         require(['/static/redesign/apps/require-config.js'], function(){
             require(['apps/style/kickoff']);  //or adminApp for the admin area, etc.
         });
