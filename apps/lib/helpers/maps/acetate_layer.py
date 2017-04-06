@@ -194,83 +194,42 @@ $ python manage.py shell
 
 from localground.apps.lib.helpers.maps.acetate_layer import AcetateLayer
 a = AcetateLayer()
-a.toPNG()
-
     '''
-
-    def get_pixels(self, models, zoom, extents, minXPixels, minYPixels):
-        points = [p.point for p in models if p.point is not None]
-        for p in points:
-            print(p.x, p.y)
-        pixels = [Units.latlng_to_pixel(p, zoom) for p in points]
-        pixels = [(p[0] - minXPixels, p[1] - minYPixels) for p in pixels]
-        return pixels
-    
-    def get_extents(self, layers, zoom):
-        points, minX, minY, maxX, maxY = [], None, None, None, None
-        for models in layers:
-            for p in models:
-                if p.point is not None:
-                    points.append(Units.latlng_to_pixel(p.point, zoom))
-
-        class Extents(object):
-            left = min([p[0] for p in points])
-            top = min([p[1] for p in points])
-            right = max([p[0] for p in points])
-            bottom = max([p[1] for p in points])
-        
-        return Extents()
-    
-    def get_static_map(self):
-        m = StaticMap()
-        info = m.get_basemap_and_extents(
-            WMSOverlay.objects.filter(name='Grayscale')[0], 15, Point(-122.29729, 37.86812),
-            1024, 1024
-        )
-        map_image = info.get('map_image')
-        map_image.save('map.jpg')
-        
     
     def __init__(self):
         from localground.apps.site import models
-        zoom = 15
-        project_id = 5
-        buffer = 20
-        self.output_path = 'output.svg'
+        self.center = Point(-122.29729, 37.86812)
+        self.zoom = 14
+        self.width = 1024
+        self.height = 600
+        self.project_id = 5
+        self.svg_path = 'map_acetate.svg'
+        self.acetate_path = 'map_acetate.png'
+        self.basemap_path = 'map_base.png'
+        self.final_path = 'map_final.png'
+        self.generate_acetate_layer()
+        self.generate_static_map()
+        self.generate_final_map()
+
+    def generate_acetate_layer(self):
         paths, path_attributes, icon = [], [], None
         keys = Icon.get_icon_keys()
-        forms = models.Form.objects.filter(projects__id=project_id)
-        extents = StaticMap.get_extents_from_center(Point(-122.29729, 37.86812), 15, 1024, 1024)
-        print(extents.top, extents.left, extents.right, extents.bottom)
+        forms = models.Form.objects.filter(projects__id=self.project_id)
+        extents = StaticMap.get_extents_from_center(self.center, self.zoom, self.width, self.height)
+        extents.toPixels(self.zoom)
         layers = [
-            models.Photo.objects.filter(project__id=project_id),
-            models.Audio.objects.filter(project__id=project_id),
-            models.Marker.objects.filter(project__id=project_id)
+            models.Photo.objects.filter(project__id=self.project_id),
+            models.Audio.objects.filter(project__id=self.project_id),
+            models.Marker.objects.filter(project__id=self.project_id)
         ]
         for form in forms:
             layers.append(form.TableModel.objects.all())
-        extents = self.get_extents(layers, zoom)
-        
-        maxX = extents.right + 2 * buffer
-        maxY = extents.bottom + 2 * buffer
-        minX = extents.left - 2 * buffer
-        minY = extents.top - 2 * buffer
-        width = maxX - minX
-        height = maxY - minY
 
-        for l in layers:
-            pixels = self.get_pixels(l, zoom, extents, minX, minY)
+        for layer in layers:
+            pixels = self.get_pixel_coordinates_from_models(layer, self.zoom, extents.left, extents.top)
 
             for coord in pixels:
-                # Ideally, this Icon constructor would read from each
-                # Symbol of the Layer record:
-                '''
-                key = keys[random.randint(0, len(keys)) - 1]
-                icon = Icon(key, fillColor='#CE6D8B', strokeColor="#CE6D8B",
-                            fillOpacity=0.3, strokeWeight=2, strokeOpacity=1)
-                icon.width = icon.height = 10 #random.randint(10, 40)
-                '''
-                key = l[0]._meta.verbose_name
+                key = layer[0]._meta.verbose_name
                 icon = Icon(key, strokeWeight=1, strokeColor='white')
                 paths.append(parse_path(icon.path))
                 x = coord[0]
@@ -286,26 +245,48 @@ a.toPNG()
                     )
                 })
             svg_attributes = {
-                'width': width,
-                'height': height,
-                'viewBox': '0 0 {0} {1}'.format(width, height)
+                'width': self.width,
+                'height': self.height,
+                'viewBox': '0 0 {0} {1}'.format(self.width, self.height)
             }
-        #print(paths)
-        #print(svg_attributes)
-        #print(path_attributes)
-        #wsvg(p, attributes=[path_attributes], dimensions=[20, 20], viewbox=(-2, -2, 19, 19), filename='output.svg')
-        wsvg(paths, attributes=path_attributes, svg_attributes=svg_attributes, filename=self.output_path)
-        self.get_static_map()
+        wsvg(paths, attributes=path_attributes, svg_attributes=svg_attributes, filename=self.svg_path)
+        self.toPNG()
+
+    def generate_static_map(self):
+        m = StaticMap()
+        info = m.get_basemap_and_extents(
+            WMSOverlay.objects.filter(name='Grayscale')[0], self.zoom, self.center, self.width, self.height
+        )
+        map_image = info.get('map_image')
+        map_image.save(self.basemap_path)
+        
+    def generate_final_map(self):
+        from PIL import Image
+        basemap_image = Image.open(self.basemap_path, 'r').convert('RGBA')
+        acetate_image = Image.open(self.acetate_path, 'r')
+        final_image = Image.new(mode='RGBA',size=(self.width, self.height), color=(255,255,255,0))
+        final_image.paste(basemap_image, (0, 0), basemap_image)
+        final_image.paste(acetate_image, (0, 0), acetate_image)
+        final_image.save(self.final_path)
+
+    def get_pixel_coordinates_from_models(self, models, zoom, minXPixels, minYPixels):
+        pixels = []
+        for model in models:
+            if model.point is not None:
+                pixel = Units.latlng_to_pixel(model.point, zoom)
+                pixel = (pixel[0] - minXPixels, pixel[1] - minYPixels)
+                pixels.append(pixel)
+        return pixels
+
         
     def toPNG(self):
-        #set environment variables b/c of cairo bug:
+        # first set environment variables b/c of cairo bug:
         import os
         os.environ['LANG'] = 'en_US.UTF-8'
         os.environ['LC_ALL'] = 'en_US.UTF-8'
         
-        #now import cairosvg
+        # then import cairosvg:
         import cairosvg
-
-        cairosvg.svg2png(url=self.output_path,
-            write_to=self.output_path.replace('.svg', '.png')
+        cairosvg.svg2png(url=self.svg_path,
+            write_to=self.acetate_path
         )

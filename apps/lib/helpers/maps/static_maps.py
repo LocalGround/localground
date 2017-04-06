@@ -25,6 +25,35 @@ class OutputFormat():
     PNG = 1
     HTTP_RESPONSE = 2
 
+class Extents(object):
+    def __init__(self, northeast, southwest):
+        self.mode = 'latlng'
+        self.top = northeast.y
+        self.right = northeast.x
+        self.bottom = southwest.y
+        self.left = southwest.x
+        self.northeast = northeast
+        self.southwest = southwest
+        
+    def toPixels(self, zoom):
+        self.mode = 'pixel'
+        self.northeast = Units.latlng_to_pixel(self.northeast, zoom)
+        self.southwest = Units.latlng_to_pixel(self.southwest, zoom)
+        self.top = self.northeast[1]
+        self.right = self.northeast[0]
+        self.bottom = self.southwest[1]
+        self.left = self.southwest[0]
+    
+    def toLatLng(self, zoom):
+        self.mode = 'latlng'
+        self.northeast = Units.pixel_to_latlng(self.northeast[1], self.northeast[0], zoom)
+        self.southwest = Units.pixel_to_latlng(self.southwest[1], self.southwest[0], zoom)
+        self.top = self.northeast.y
+        self.right = self.northeast.x
+        self.bottom = self.southwest.y
+        self.left = self.southwest.x
+    
+
 class StaticMap():
     """
     Creates static map (based on a pretty long set of possible
@@ -52,16 +81,7 @@ class StaticMap():
     def get_extents_from_center(center, zoom, width, height):
         northeast = Units.add_pixels_to_latlng(center.clone(), zoom, int(width/2), -1*int(height/2))
         southwest = Units.add_pixels_to_latlng(center.clone(), zoom, -1*int(width/2), int(height/2))
-        class Extents(object):
-            def __init__(self, northeast, southwest):
-                self.top = northeast.x
-                self.right = northeast.y
-                self.bottom = southwest.x
-                self.left = southwest.y
-                self.northeast = northeast
-                self.southwest = southwest
         return Extents(northeast, southwest)
-        
         
     def get_basemap_and_extents(self, map_type, zoom, center, width, height):
         import os, urllib, StringIO, Image
