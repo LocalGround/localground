@@ -299,6 +299,35 @@ define([
 
                 });
 
+                it("Changes default display of field inside form", function(){
+                    newCreateForm = new CreateForm({
+                        app: this.app,
+                        model: this.form
+                    });
+
+                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
+
+                    var $inputs_isDisplay = fixture.find('input.display_field_button');
+                    console.log($inputs_isDisplay);
+                    // before save changes
+                    expect($($inputs_isDisplay[0]).prop("checked")).toBe(true);
+                    expect($($inputs_isDisplay[1]).prop("checked")).toBe(false);
+                    expect($($inputs_isDisplay[2]).prop("checked")).toBe(false);
+
+                    // Set property of other check to be true,
+                    // and previous check automatically set to false
+                    $($inputs_isDisplay[1]).prop("checked", true);
+                    newCreateForm.saveFormSettings();
+
+                    // After save changes
+                    expect($($inputs_isDisplay[0]).prop("checked")).toBe(false);
+                    expect($($inputs_isDisplay[1]).prop("checked")).toBe(true);
+                    expect($($inputs_isDisplay[2]).prop("checked")).toBe(false);
+
+
+
+                });
+
                 it("Successfully deletes the form", function () {
                     newCreateForm = new CreateForm({
                         app: this.app,
@@ -309,28 +338,6 @@ define([
                 });
             });
 
-            describe("Field Child View Operations", function () {
-                it("Renders a field correctly", function () {
-                    //import Field model and create a field or else
-                    // use an existing field from this.form.fields
-                    newCreateForm = new CreateForm({
-                        app: this.app,
-                        model: this.form
-                    });
-                    //test "errorFieldType" method:
-                    expect(1).toBe(1);
-                });
-
-                it("Successfully deletes a field", function () {
-                    newCreateForm = new CreateForm({
-                        app: this.app,
-                        model: this.form
-                    });
-                    //test "errorFieldType" method:
-                    expect(1).toBe(1);
-                });
-
-            });
         });
 
     });
