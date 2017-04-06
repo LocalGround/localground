@@ -276,6 +276,8 @@ define([
                 });
 
                 it("If fieldtype is blank, it shows an error", function () {
+
+                    /*
                     newCreateForm = new CreateForm({
                         app: this.app,
                         model: this.form
@@ -294,6 +296,39 @@ define([
                     expect($($inputs[1]).css("background-color")).not.toBe("rgb(255, 221, 221)");
                     expect($($inputs[2]).css("background-color")).not.toBe("rgb(255, 221, 221)");
                     expect($($inputs[0]).attr("placeholder")).toBe("Field Type Missing");
+
+                    //*/
+
+                    newCreateForm = new CreateForm({
+                        app: this.app,
+                        model: new Form({id: 5})
+                    });
+
+                    //*
+                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
+
+                    fixture.find('.new_field_button').trigger('click');
+
+                    var $inputs_type = fixture.find('input.fieldtype');
+                    $($inputs_type[0]).val(""); // empty out the field and test for the error
+
+                    var $inputs_name = fixture.find('input.fieldname');
+                    $($inputs_name[0]).val('Test'); // empty out the field and test for the error
+
+                    expect(CreateForm.prototype.errorFieldType).toHaveBeenCalledTimes(0);
+                    newCreateForm.saveFormSettings();
+
+                    expect(CreateForm.prototype.errorFieldType).toHaveBeenCalledTimes(1);
+                    // Attempt at debugging py parent
+                    console.log($($inputs_type[0]));
+                    console.log($($inputs_type[0]).parent());
+                    console.log($($inputs_type[0]).parent().parent());
+                    // Attempt at debugging by parent
+                    expect($($inputs_type[0]).parent().parent().css("background-color")).toBe("rgb(255, 221, 221)");
+                    //expect($($inputs_name[0]).attr("placeholder")).toBe("Field Type Missing");
+                    //*/
+
+                    //expect(1).toBe(1);
 
                 });
 
