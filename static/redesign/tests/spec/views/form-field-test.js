@@ -72,6 +72,8 @@ define([
                 expect(fieldView.$el.find('select')).not.toExist();
                 expect(fieldView.$el.find('span.fieldname').html().trim()).toBe(field.get("data_type"));
                 expect(fieldView.$el.find('input.fieldname').val()).toBe(field.get("col_alias"));
+                expect(fieldView.$el.find('input.display_field_button').prop("checked")\
+                    .toBe(field.get("is_display_field"));
             });
 
             it("Don't delete when user cancels confirm dialog", function () {

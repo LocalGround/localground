@@ -212,6 +212,7 @@ define([
 
                     fixture.find('.fieldname').val("Sample Text");
                     fixture.find('.fieldType').val("text");
+                    fixture.find('.display_field_button').prop("checked");
 
                     expect(CreateForm.prototype.saveFormSettings).toHaveBeenCalledTimes(0);
                     expect(CreateForm.prototype.createNewFields).toHaveBeenCalledTimes(0);
@@ -225,7 +226,7 @@ define([
                     // Will have to save the custom field parameters
 
                     // Form has a collection of fields
-                    expect(Form.prototype.createField).toHaveBeenCalledWith("Sample Text", "text", 1);
+                    expect(Form.prototype.createField).toHaveBeenCalledWith("Sample Text", "text", false, 1);
 
                 });
                 it("successfully modifies and saves existing fields", function () {
@@ -279,8 +280,21 @@ define([
                         app: this.app,
                         model: this.form
                     });
-                    //test "errorFieldType" method:
-                    expect(1).toBe(1);
+
+                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
+
+                    var $inputs = fixture.find('input.fieldtype');
+                    $($inputs[0]).val(""); // empty out the field and test for the error
+
+                    expect(CreateForm.prototype.errorFieldType).toHaveBeenCalledTimes(0);
+                    newCreateForm.saveFormSettings();
+
+                    expect(CreateForm.prototype.errorFieldType).toHaveBeenCalledTimes(3);
+                    expect($($inputs[0]).css("background-color")).toBe("rgb(255, 221, 221)");
+                    expect($($inputs[1]).css("background-color")).not.toBe("rgb(255, 221, 221)");
+                    expect($($inputs[2]).css("background-color")).not.toBe("rgb(255, 221, 221)");
+                    expect($($inputs[0]).attr("placeholder")).toBe("Field Type Missing");
+
                 });
 
                 it("Successfully deletes the form", function () {
