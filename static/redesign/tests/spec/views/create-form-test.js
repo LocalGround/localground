@@ -24,6 +24,7 @@ define([
             spyOn(CreateForm.prototype, 'addFieldButton').and.callThrough();
             spyOn(CreateForm.prototype, 'backToList').and.callThrough();
             spyOn(Form.prototype, 'createField').and.callThrough();
+            spyOn(Form.prototype, 'destroy').and.callThrough();
 
             //error catch functions
             spyOn(CreateForm.prototype, 'blankField').and.callThrough();
@@ -341,17 +342,17 @@ define([
                     spyOn(window, 'confirm').and.returnValue(true);
 
                     fixture = setFixtures("<div></div>").append(newCreateForm.$el);
-                    expect(newCreateForm.$el).toBeInDOM();
 
-                    expect(newCreateForm.prototype.deleteForm).toHaveBeenCalledTimes(0);
-                    expect(newCreateForm.prototype.destroy).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.deleteForm).toHaveBeenCalledTimes(0);
+                    expect(Form.prototype.destroy).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.backToList).toHaveBeenCalledTimes(0);
 
                     newCreateForm.deleteForm();
 
-                    expect(newCreateForm.prototype.deleteForm).toHaveBeenCalledTimes(1);
-                    expect(newCreateForm.prototype.destroy).toHaveBeenCalledTimes(1);
+                    expect(CreateForm.prototype.deleteForm).toHaveBeenCalledTimes(1);
+                    expect(Form.prototype.destroy).toHaveBeenCalledTimes(1);
+                    expect(CreateForm.prototype.backToList).toHaveBeenCalledTimes(1);
 
-                    expect(newCreateForm.$el).not.toBeInDOM();
 
                 });
             });
