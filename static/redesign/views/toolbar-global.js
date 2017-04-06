@@ -4,8 +4,9 @@ define([
     "handlebars",
     "marionette",
     "lib/modals/modal",
+    "views/generate-print",
     "text!../templates/toolbar-global.html"
-], function ($, _, Handlebars, Marionette, Modal, ToolbarTemplate) {
+], function ($, _, Handlebars, Marionette, Modal, GeneratePrintView, ToolbarTemplate) {
     "use strict";
     var Toolbar = Marionette.ItemView.extend({
         template: Handlebars.compile(ToolbarTemplate),
@@ -41,11 +42,16 @@ define([
         },
 
         openPrintModal: function () {
+            var generatePrintView = new GeneratePrintView({
+                app: this.app
+            });
             this.modal.update({
-                view: null,
+                view: generatePrintView,
                 title: 'Generate Print',
-                width: 500,
-                showSaveButton: false,
+                width: 800,
+                height: 500,
+                showSaveButton: true,
+                saveButtonText: 'Print',
                 showDeleteButton: false
                 // bind the scope of the save function to the source view:
                 //saveFunction: createForm.saveFormSettings.bind(createForm)
