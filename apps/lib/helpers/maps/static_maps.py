@@ -48,6 +48,21 @@ class StaticMap():
         self.north = None
         self.east = None
         
+    @staticmethod   
+    def get_extents_from_center(center, zoom, width, height):
+        northeast = Units.add_pixels_to_latlng(center.clone(), zoom, int(width/2), -1*int(height/2))
+        southwest = Units.add_pixels_to_latlng(center.clone(), zoom, -1*int(width/2), int(height/2))
+        class Extents(object):
+            def __init__(self, northeast, southwest):
+                self.top = northeast.x
+                self.right = northeast.y
+                self.bottom = southwest.x
+                self.left = southwest.y
+                self.northeast = northeast
+                self.southwest = southwest
+        return Extents(northeast, southwest)
+        
+        
     def get_basemap_and_extents(self, map_type, zoom, center, width, height):
         import os, urllib, StringIO, Image
         #units.Units.add_pixels_to_latlng(center_lat, center_lng, zoom, 300, 300)
@@ -77,8 +92,9 @@ class StaticMap():
         
         #calculate extents (returns geos Point):
         #(0,0) in pacific northwest; x = lat, y = lng
-        northeast = Units.add_pixels_to_latlng(center.clone(), zoom, int(width/2), -1*int(height/2))
-        southwest = Units.add_pixels_to_latlng(center.clone(), zoom, -1*int(width/2), int(height/2))
+        extents = StaticMap.get_extents_from_center(center, zoom, width, height)
+        #northeast = Units.add_pixels_to_latlng(center.clone(), zoom, int(width/2), -1*int(height/2))
+        #southwest = Units.add_pixels_to_latlng(center.clone(), zoom, -1*int(width/2), int(height/2))
         try:
             file = urllib.urlopen(map_url)
             map_image = StringIO.StringIO(file.read()) # constructs a StringIO holding the image
@@ -90,8 +106,8 @@ class StaticMap():
             map_image = Image.open(map_image).convert('RGB')
         return {
             'map_image': map_image,
-            'northeast': northeast,
-            'southwest': southwest
+            'northeast': extents.northeast,
+            'southwest': extents.southwest
         }
         
     def get_map(self, layers, southwest=None, northeast=None, mapimages=None,

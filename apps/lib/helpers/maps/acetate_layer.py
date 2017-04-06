@@ -8,6 +8,8 @@ import random
 from localground.apps.lib.helpers.units import Units
 from localground.apps.site import models
 from django.contrib.gis.geos import Point
+from localground.apps.lib.helpers import StaticMap
+from localground.apps.site.models import WMSOverlay
 
 class Icon(object):
     ICONS = {
@@ -212,16 +214,14 @@ a.toPNG()
                     points.append(Units.latlng_to_pixel(p.point, zoom))
 
         class Extents(object):
-            minX = min([p[0] for p in points])
-            minY = min([p[1] for p in points])
-            maxX = max([p[0] for p in points])
-            maxY = max([p[1] for p in points])
+            left = min([p[0] for p in points])
+            top = min([p[1] for p in points])
+            right = max([p[0] for p in points])
+            bottom = max([p[1] for p in points])
         
         return Extents()
     
     def get_static_map(self):
-        from localground.apps.lib.helpers import StaticMap
-        from localground.apps.site.models import WMSOverlay
         m = StaticMap()
         info = m.get_basemap_and_extents(
             WMSOverlay.objects.filter(name='Grayscale')[0], 15, Point(-122.29729, 37.86812),
@@ -240,6 +240,8 @@ a.toPNG()
         paths, path_attributes, icon = [], [], None
         keys = Icon.get_icon_keys()
         forms = models.Form.objects.filter(projects__id=project_id)
+        extents = StaticMap.get_extents_from_center(Point(-122.29729, 37.86812), 15, 1024, 1024)
+        print(extents.top, extents.left, extents.right, extents.bottom)
         layers = [
             models.Photo.objects.filter(project__id=project_id),
             models.Audio.objects.filter(project__id=project_id),
@@ -249,10 +251,10 @@ a.toPNG()
             layers.append(form.TableModel.objects.all())
         extents = self.get_extents(layers, zoom)
         
-        maxX = extents.maxX + 2 * buffer
-        maxY = extents.maxY + 2 * buffer
-        minX = extents.minX - 2 * buffer
-        minY = extents.minY - 2 * buffer
+        maxX = extents.right + 2 * buffer
+        maxY = extents.bottom + 2 * buffer
+        minX = extents.left - 2 * buffer
+        minY = extents.top - 2 * buffer
         width = maxX - minX
         height = maxY - minY
 
