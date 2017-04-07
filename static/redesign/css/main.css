@@ -281,8 +281,6 @@ fieldset > div, .inline-form {
     margin:6px 0;
 }
 
-
-
 /****************************************************************************************/
 /*                                       CONTAINERS                                     */
 /****************************************************************************************/
@@ -595,7 +593,7 @@ fieldset > div, .inline-form {
 
 
 /****************************************************************************************/
-/*                                         MODULES                                      */
+/*                                      MAIN PANELS                                   */
 /****************************************************************************************/
 
 
@@ -607,7 +605,7 @@ fieldset > div, .inline-form {
     width: 100%;
 }
 
-.main-panel> div{
+.main-panel > div{
     width:100%;
 }
 
@@ -618,6 +616,37 @@ fieldset > div, .inline-form {
     position: absolute;
     width: 100%;
 }
+
+.spreadsheet-main-panel {
+    background-color: #ecedf2;
+    display: flex;
+    height: calc(100vh - 111px);
+    width: 100%;
+    top: 111px;
+    position: absolute;
+    padding:0;
+    z-index: 0;
+}
+
+.gallery-main-panel {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    /*padding: 20px 14px 24px;*/
+    overflow: scroll;
+    width:100%;
+
+    height: auto;
+    top: 0;
+    position: initial;
+}
+.gallery-main-panel > div{
+    width:100%;
+}
+
+/****************************************************************************************/
+/*                                         MODULES                                      */
+/****************************************************************************************/
 
 .map-panel {
     /* where interactive map goes*/
@@ -1012,6 +1041,55 @@ li.current .photo {
     position: absolute;
     right: 10px;
     top: 10px;
+}
+
+.handsontable th, .handsontable td{
+    border-bottom: 1px solid #ededed;
+    border-right: 1px solid #ededed;
+}
+
+.handsontable th{
+    background-color:white;
+    font-weight:600;
+}
+
+.handsontable th:first-child, .handsontable td:first-of-type, .handsontable .htNoFrame + th, .handsontable .htNoFrame + td {
+    border-left: 1px solid #ededed;
+}
+
+.handsontable th, .handsontable td {
+    border-bottom: 1px solid #ededed;
+    border-right: 1px solid #ededed;
+}
+
+.handsontable tr:first-child th, .handsontable tr:first-child td {
+    border-top: 1px solid #ededed;
+}
+
+.handsontable th:last-child {
+    border-right: 1px solid #ededed;
+    border-bottom: 1px solid #ededed;
+}
+.handsontable td, .handsontable th{
+    font-size: 12px;
+}
+
+.handsontable thead th .relative {
+    padding: 4px 8px;
+}
+
+.handsontable.htRowHeaders thead tr th:nth-child(2) {
+    border-left: 1px solid #ededed;
+}
+
+td i.fa.fa-file-photo-o, td i.fa.fa-file-audio-o, .fa-plus-square-o {
+    margin: 5px 5px 0px 0px;
+    color: #BBB;
+    font-size: 24px;
+}
+
+.filter.data {
+    position: static;
 }
 
 /********************************/
