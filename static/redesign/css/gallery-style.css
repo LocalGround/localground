@@ -154,19 +154,6 @@
     border-left: 1px solid rgb(217, 220, 229);
     overflow: scroll;
 }
-.main-panel {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 auto;
-    /*padding: 20px 14px 24px;*/
-    overflow: scroll;
-    display:flex;
-    width:100%;
-}
-
-.main-panel> div{
-    width:100%;
-}
 
 .success-message {
     display: none;
