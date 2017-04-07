@@ -256,8 +256,8 @@ a = AcetateLayer()
     def generate_static_map(self):
         m = StaticMap()
         #map_type = models.TileSet.objects.get(id=3)
-        #map_type = models.TileSet.objects.get(id=6)
-        map_type = models.TileSet.objects.get(id=9)
+        map_type = models.TileSet.objects.get(id=6)
+        #map_type = models.TileSet.objects.get(id=8)
         print self.center
         map_image = m.get_basemap_and_extents(
             map_type, self.zoom, self.center, self.width, self.height
