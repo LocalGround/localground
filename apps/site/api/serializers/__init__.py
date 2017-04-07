@@ -3,8 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User, Group
 from django.db.models.fields import Field
 from localground.apps.site import models
-
-from localground.apps.site.api.serializers.base_serializer import BaseSerializer, BaseNamedSerializer, MediaGeometrySerializer
+from localground.apps.site.api.serializers.base_serializer import BaseSerializer, BaseNamedSerializer, MediaGeometrySerializer, AuditSerializerMixin
 from localground.apps.site.api.serializers.project_serializer import ProjectSerializer, ProjectDetailSerializer
 from localground.apps.site.api.serializers.sharing_serializer import SharingListSerializer, SharingDetailSerializer
 from localground.apps.site.api.serializers.snapshot_serializer import SnapshotSerializer, SnapshotDetailSerializer
@@ -21,6 +20,7 @@ from localground.apps.site.api.serializers.mapimage_serializer import MapImageSe
 from localground.apps.site.api.serializers.user_profile_serializer import UserProfileSerializer, UserProfileListSerializer
 from localground.apps.site.api.serializers.layer_serializer import LayerSerializer, LayerDetailSerializer
 from localground.apps.site.api.serializers.map_serializer import MapSerializer, MapDetailSerializer, MapDetailSerializerSlug
+from localground.apps.site.api.serializers.tileset_serializer import TileSetSerializer
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -36,15 +36,6 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = ('name', )
 
-
-class WMSOverlaySerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = models.WMSOverlay
-        fields = ('id', 'name', 'tags', 'overlay_type', 'overlay_source')
-        depth = 0
-
-
 class LayoutSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -57,14 +48,6 @@ class DataTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Layout
-        fields = ('id', 'name')
-        depth = 0
-
-
-class OverlayTypeSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.OverlayType
         fields = ('id', 'name')
         depth = 0
 

@@ -3,22 +3,6 @@ from django import test
 from localground.apps.site.api import views
 
 
-class ApiOverlayTypeListTest(test.TestCase, ViewMixinAPISuperuser):
-
-    def setUp(self):
-        ViewMixinAPISuperuser.setUp(self)
-        self.urls = ['/api/0/overlay-types/']
-        self.view = views.OverlayTypeViewSet.as_view({'get': 'list'})
-
-
-class ApiOverlayTypeInstanceTest(test.TestCase, ViewMixinAPISuperuser):
-
-    def setUp(self):
-        ViewMixinAPISuperuser.setUp(self)
-        self.urls = ['/api/0/overlay-types/1/', '/api/0/overlay-types/2/']
-        self.view = views.OverlayTypeViewSet.as_view({'get': 'detail'})
-
-
 class ApiOverlaySourceListTest(test.TestCase, ViewMixinAPISuperuser):
 
     def setUp(self):

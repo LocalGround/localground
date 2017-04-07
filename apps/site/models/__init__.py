@@ -18,6 +18,7 @@ from localground.apps.site.models.marker import Marker
 from localground.apps.site.models.overlaysource import OverlaySource
 from localground.apps.site.models.overlaytype import OverlayType
 from localground.apps.site.models.wmsoverlay import WMSOverlay
+from localground.apps.site.models.tileset import TileSet
 
 # accounts
 #from localground.apps.site.models.base import Base

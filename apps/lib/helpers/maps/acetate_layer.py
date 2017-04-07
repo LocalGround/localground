@@ -196,7 +196,7 @@ from localground.apps.lib.helpers.maps.acetate_layer import AcetateLayer
 a = AcetateLayer()
     '''
     
-    def __init__(self, center=None, project_id=3, zoom=15, width=1024, height=1024):
+    def __init__(self, center=None, project_id=3, zoom=15, width=640, height=640):
         from localground.apps.site import models
         self.center = center or Point(-122.2939, 37.8686)
         self.zoom = zoom

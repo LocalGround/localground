@@ -23,7 +23,7 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         view_name='wmsoverlay-detail',
         source='map_provider',
         read_only=True)
-    map_provider = serializers.PrimaryKeyRelatedField(queryset=models.WMSOverlay.objects.all())
+    map_provider = serializers.PrimaryKeyRelatedField(queryset=models.TileSet.objects.all())
     pdf = serializers.SerializerMethodField()
     thumb = serializers.SerializerMethodField()
     instructions = serializers.CharField(

@@ -19,12 +19,12 @@ from localground.apps.site.api.views.association_views import (
 from localground.apps.site.api.views.ebays_views import TrackList
 from localground.apps.site.api.views.field_views import FieldList, FieldInstance
 from localground.apps.site.api.views.form_views import FormList, FormInstance
+from localground.apps.site.api.views.tile_views import TileSetList, TileSetInstance
 from localground.apps.site.api.views.form_data_views import (
     FormDataList, FormDataInstance
 )
 from localground.apps.site.api.views.admin_views import (
-    TileViewSet, OverlayTypeViewSet, OverlaySourceViewSet,
-    UserViewSet, GroupViewSet, DataTypeViewSet, ListUsernames
+    OverlaySourceViewSet, UserViewSet, GroupViewSet, DataTypeViewSet, ListUsernames
 )
 from localground.apps.site.api.views.tags_views import TagList
 from localground.apps.site.api.views.user_profile_views import UserProfileList, UserProfileInstance
@@ -48,9 +48,6 @@ def api_root(request, format=None, **kwargs):
     d['overlay-sources'] = reverse('overlaysource-list',
                                    request=request,
                                    format=format)
-    d['overlay-types'] = reverse('overlaytype-list',
-                                 request=request,
-                                 format=format)
     d['photos'] = reverse('photo-list', request=request, format=format)
     d['presentations'] = reverse(
         'presentation-list',
@@ -62,7 +59,7 @@ def api_root(request, format=None, **kwargs):
     #d['layers'] = reverse('layer-list', request=request, format=format)
     d['maps'] = reverse('map-list', request=request, format=format)
     d['tags'] = reverse('tag-list', request=request, format=format)
-    d['tiles'] = reverse('wmsoverlay-list', request=request, format=format)
+    d['tiles'] = reverse('tileset-list', request=request, format=format)
     d['users'] = reverse('user-list', request=request, format=format)
     d['userprofiles'] = reverse('userprofile-list',
                                     request=request,

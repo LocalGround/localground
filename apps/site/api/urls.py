@@ -15,10 +15,9 @@ router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 #router.register(r'map-images', views.MapImageViewSet)
 router.register(r'data-types', views.DataTypeViewSet)
-router.register(r'tiles', views.TileViewSet)
+#router.register(r'tiles', views.TileViewSet)
 #router.register(r'fields', views.FieldViewSet)
 router.register(r'layouts', views.LayoutViewSet)
-router.register(r'overlay-types', views.OverlayTypeViewSet)
 router.register(r'overlay-sources', views.OverlaySourceViewSet)
 
 # The API URLs are now determined automatically by the router.
@@ -186,6 +185,13 @@ urlpatterns += format_suffix_patterns(patterns('',
         r'^user-profile/(?P<pk>[0-9]+)/$',
         views.UserProfileInstance.as_view(),
         name='userprofile-detail'),
+    url(
+        r'^tiles/(?P<pk>[0-9]+)/$',
+        views.TileSetInstance.as_view(),
+        name='tileset-detail'),
+    url(r'^tiles/$',
+        views.TileSetList.as_view(),
+        name='tileset-list'),
     # Todo: generalize this one:
     url(r'^forms/84/data/tracks/$',
         views.TrackList.as_view(),
