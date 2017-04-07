@@ -3,8 +3,13 @@ define([
     "underscore",
     "handlebars",
     "marionette",
+    "lib/modals/modal",
+    "views/generate-print",
+    "text!../templates/print-layout.html",
     "text!../templates/toolbar-global.html"
-], function ($, _, Handlebars, Marionette, ToolbarTemplate) {
+], function ($, _, Handlebars, Marionette,
+             Modal, PrintLayoutView,
+             PrintLayoutTemplate, ToolbarTemplate) {
     "use strict";
     var Toolbar = Marionette.ItemView.extend({
         template: Handlebars.compile(ToolbarTemplate),
@@ -16,6 +21,12 @@ define([
             };
         },
 
+        events: {
+            'click .print-button': "showModal"
+        },
+
+        modal: null,
+
         initialize: function (opts) {
             _.extend(this, opts);
             if (this.app.dataManager) {
@@ -25,8 +36,31 @@ define([
             if (this.app.screenType == "style") {
                 this.app.activeTab = "style";
             }
+
+            this.modal = new Modal();
+
             Marionette.ItemView.prototype.initialize.call(this);
             this.listenTo(this.app.vent, 'data-loaded', this.setModel);
+        },
+
+        showModal: function (opts) {
+            ///*
+            var printLayout = new PrintLayoutView({
+                app: this.app
+            });
+            //*/
+            this.modal.update({
+                view: printLayout,
+                title: 'Generate Print',
+                width: 800,
+                height: 600,
+                closeButtonText: "Done",
+                showSaveButton: false,
+                showDeleteButton: false
+                // bind the scope of the save function to the source view:
+                //saveFunction: createForm.saveFormSettings.bind(createForm)
+            });
+            this.modal.show();
         },
 
         setModel: function () {
