@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 from localground.apps.site.models.abstract.named import BaseNamed
+from jsonfield import JSONField
 
 class TileSet(BaseNamed):
 
@@ -11,8 +12,10 @@ class TileSet(BaseNamed):
     overlay_source = models.ForeignKey('OverlaySource')
     is_printable = models.BooleanField(default=False)
     provider_id = models.CharField(max_length=30, blank=True)
-    tile_url = models.CharField(max_length=512, blank=True)
-    static_url = models.CharField(max_length=512, blank=True)
+    tile_url = models.CharField(max_length=2000, blank=True)
+    static_url = models.CharField(max_length=2000, blank=True)
+    key = models.CharField(max_length=512, blank=True, null=True)
+    extras = JSONField(blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "Map Services (WMS Overlays)"

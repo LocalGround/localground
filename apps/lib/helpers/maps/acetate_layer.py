@@ -196,7 +196,7 @@ from localground.apps.lib.helpers.maps.acetate_layer import AcetateLayer
 a = AcetateLayer()
     '''
     
-    def __init__(self, center=None, project_id=5, zoom=15, width=640, height=640):
+    def __init__(self, center=None, project_id=5, zoom=14, width=640, height=640):
         from localground.apps.site import models
         self.center = center or Point(-122.2939, 37.8686)
         self.zoom = zoom
@@ -256,8 +256,9 @@ a = AcetateLayer()
     def generate_static_map(self):
         m = StaticMap()
         #map_type = models.TileSet.objects.get(id=3)
-        map_type = models.TileSet.objects.get(id=6)
+        #map_type = models.TileSet.objects.get(id=6)
         #map_type = models.TileSet.objects.get(id=8)
+        map_type = models.TileSet.objects.get(id=10)
         print self.center
         map_image = m.get_basemap_and_extents(
             map_type, self.zoom, self.center, self.width, self.height
