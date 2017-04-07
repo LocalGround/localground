@@ -15,5 +15,6 @@ class TileSetSerializer(AuditSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = models.TileSet
         read_only_fields = ('owner',)
-        fields = ('id', 'url', 'name', 'tags', 'overlay_source', 'base_tile_url', 'base_static_url', 'owner')
+        fields = ('id', 'url', 'name', 'tags', 'overlay_source', 'base_tile_url',
+                  'base_static_url', 'min_zoom', 'max_zoom', 'is_printable', 'owner')
         depth = 0

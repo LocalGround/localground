@@ -137,7 +137,7 @@ class Units():
     @staticmethod 
     def map_size(zoom_level):
         #returns the map width and height in pixels
-        return 256 << zoom_level
+        return 256 << zoom_level + 1
 
     '''@staticmethod   
     def latlng_to_pixel(lat, lng, zoom_level):

@@ -9,7 +9,7 @@ from localground.apps.lib.helpers.units import Units
 from localground.apps.site import models
 from django.contrib.gis.geos import Point
 from localground.apps.lib.helpers import StaticMap
-from localground.apps.site.models import WMSOverlay
+from localground.apps.site import models
 
 class Icon(object):
     ICONS = {
@@ -196,7 +196,7 @@ from localground.apps.lib.helpers.maps.acetate_layer import AcetateLayer
 a = AcetateLayer()
     '''
     
-    def __init__(self, center=None, project_id=3, zoom=15, width=640, height=640):
+    def __init__(self, center=None, project_id=5, zoom=13, width=640, height=640):
         from localground.apps.site import models
         self.center = center or Point(-122.2939, 37.8686)
         self.zoom = zoom
@@ -257,7 +257,8 @@ a = AcetateLayer()
 
     def generate_static_map(self):
         m = StaticMap()
-        map_type = WMSOverlay.objects.filter(name='Grayscale')[0]
+        map_type = models.TileSet.objects.get(id=3)
+        print self.center
         info = m.get_basemap_and_extents(
             map_type, self.zoom, self.center, self.width, self.height
         )
