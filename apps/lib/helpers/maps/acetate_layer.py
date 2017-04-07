@@ -167,7 +167,7 @@ class Icon(object):
         return 1.0 * self.width / self.baseWidth
 
     def get_anchor(self):
-        return [self.baseWidth / 2, self.baseHeight / 2]
+        return [self.baseWidth / 2.0, self.baseHeight / 2.0]
 
     def get_stroke_weight_normalized(self):
         return self.strokeWeight / self.get_scale()
@@ -196,7 +196,7 @@ from localground.apps.lib.helpers.maps.acetate_layer import AcetateLayer
 a = AcetateLayer()
     '''
     
-    def __init__(self, center=None, project_id=5, zoom=13, width=640, height=640):
+    def __init__(self, center=None, project_id=5, zoom=15, width=640, height=640):
         from localground.apps.site import models
         self.center = center or Point(-122.2939, 37.8686)
         self.zoom = zoom
@@ -232,19 +232,17 @@ a = AcetateLayer()
                 key = layer[0]._meta.verbose_name
                 icon = Icon(key, strokeWeight=1, strokeColor='white')
                 paths.append(parse_path(icon.path))
-                x = coord[0]
-                y = coord[1]
-                print(x, y)
+                scale = icon.get_scale()
+                x = coord[0] - icon.anchor[0] * scale
+                y = coord[1] - icon.anchor[1] * scale
+                #print(x, y)
                 path_attributes.append({
                     "fill": icon.fillColor,
                     "fill-opacity": icon.fillOpacity,
                     "stroke": icon.strokeColor,
                     "stroke-width": icon.get_stroke_weight_normalized(),
                     "transform": "translate({0}, {1}) scale({2}, {3})".format(
-                        x - icon.anchor[0],
-                        y - icon.anchor[1],
-                        icon.get_scale(),
-                        icon.get_scale()
+                        x, y, scale, scale
                     )
                 })
             svg_attributes = {
@@ -257,12 +255,13 @@ a = AcetateLayer()
 
     def generate_static_map(self):
         m = StaticMap()
-        map_type = models.TileSet.objects.get(id=3)
+        #map_type = models.TileSet.objects.get(id=3)
+        #map_type = models.TileSet.objects.get(id=6)
+        map_type = models.TileSet.objects.get(id=9)
         print self.center
-        info = m.get_basemap_and_extents(
+        map_image = m.get_basemap_and_extents(
             map_type, self.zoom, self.center, self.width, self.height
         )
-        map_image = info.get('map_image')
         map_image.save(self.basemap_path)
         
     def generate_final_map(self):

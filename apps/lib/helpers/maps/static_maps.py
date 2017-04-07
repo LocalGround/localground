@@ -89,25 +89,15 @@ class StaticMap():
         #units.Units.add_pixels_to_latlng(center_lat, center_lng, zoom, 300, 300)
         map_url = None
         if map_type.overlay_source.name == 'mapbox':
+            zoom = zoom - 1 #this is a workaround to a mapbox bug:
             map_url = map_type.static_url + "?access_token=" + settings.MAPBOX_API_KEY
             map_url = map_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
             print(map_url)
         #if google is the map provider:
         else:
-            scale_factor = 1
-            if not settings.IS_GOOGLE_REGISTERED_NONPROFIT:
-                zoom, width, height = zoom-1, int(width/2), int(height/2)
-                scale_factor = 2
-            
-            map_url = map_type.wms_url + '&zoom=' + str(zoom) + '&center=' + \
-                str(center.y) + ',' + str(center.x) + '&size=' + str(width) + \
-                'x' + str(height) + '&scale=' + str(scale_factor)
+            map_url = map_type.static_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
+            print(map_url)
         
-        #calculate extents (returns geos Point):
-        #(0,0) in pacific northwest; x = lat, y = lng
-        extents = StaticMap.get_extents_from_center(center, zoom, width, height)
-        #northeast = Units.add_pixels_to_latlng(center.clone(), zoom, int(width/2), -1*int(height/2))
-        #southwest = Units.add_pixels_to_latlng(center.clone(), zoom, -1*int(width/2), int(height/2))
         try:
             file = urllib.urlopen(map_url)
             map_image = StringIO.StringIO(file.read()) # constructs a StringIO holding the image
@@ -117,11 +107,7 @@ class StaticMap():
             file = urllib.urlopen(error_image_url)
             map_image = StringIO.StringIO(file.read()) # constructs a StringIO holding the image
             map_image = Image.open(map_image).convert('RGB')
-        return {
-            'map_image': map_image,
-            'northeast': extents.northeast,
-            'southwest': extents.southwest
-        }
+        return map_image
         
     def get_map(self, layers, southwest=None, northeast=None, mapimages=None,
                 srs=Units.EPSG_900913, height=300, width=300, format=OutputFormat.PNG,
