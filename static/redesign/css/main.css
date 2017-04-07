@@ -628,21 +628,20 @@ fieldset > div, .inline-form {
     z-index: 0;
 }
 
-.gallery-main-panel {
+.gallery-panel {
     display: flex;
     flex-wrap: wrap;
     margin: 0 auto;
     /*padding: 20px 14px 24px;*/
     overflow: scroll;
     width:100%;
+}
 
-    height: auto;
+.presentation-main-panel {
     top: 0;
-    position: initial;
+    height: 100%;
 }
-.gallery-main-panel > div{
-    width:100%;
-}
+
 
 /****************************************************************************************/
 /*                                         MODULES                                      */

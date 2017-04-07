@@ -15,7 +15,7 @@ define([
     "use strict";
     var GalleryApp = Marionette.Application.extend(_.extend(appUtilities, {
         regions: {
-            galleryRegion: ".main-panel",
+            galleryRegion: ".gallery-panel",
             sideRegion: ".side-panel",
             toolbarMainRegion: "#toolbar-main",
             toolbarDataViewRegion: "#toolbar-dataview"
