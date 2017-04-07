@@ -28,13 +28,15 @@ define(["marionette",
                 zoom: 15,
                 center: { lat: -34, lng: 151 }
             },
-            el: '#map',
+            //el: '#map',
             template: false,
 
             initialize: function (opts) {
                 this.opts = opts;
                 $.extend(this, opts);
+                this.mapID = this.mapID || 'map';
                 Marionette.View.prototype.initialize.call(this);
+                this.render();
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
                 this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
                 this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
@@ -111,7 +113,11 @@ define(["marionette",
                     center: this.defaultLocation.center
 
                 };
-                this.app.map = this.map = new google.maps.Map(document.getElementById(this.$el.attr("id")),
+                if (!this.$el.find("#" + this.mapID).get(0)) {
+                    this.$el.append($('<div id="' + this.mapID + '"></div>'));
+                }
+                console.log(this.$el.find("#" + this.mapID).get(0));
+                this.app.map = this.map = new google.maps.Map(document.getElementById(this.mapID),
                     mapOptions);
                 //this.map.mapTypes.set(this.customMapTypeID, this.getCustomStyle());
                 //this.map.setMapTypeId(this.customMapTypeID);

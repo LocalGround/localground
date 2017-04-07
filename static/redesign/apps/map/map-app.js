@@ -90,7 +90,8 @@ define([
             this.basemapView = new Basemap({
                 app: this,
                 showSearchControl: false, // added for rosa parks pilot
-                minZoom: 13 // added for rosa parks pilot
+                minZoom: 13, // added for rosa parks pilot
+                mapID: "map"
             });
             this.mapRegion.show(this.basemapView);
         },

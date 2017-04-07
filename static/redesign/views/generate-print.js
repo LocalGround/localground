@@ -37,13 +37,17 @@ define(["jquery",
             },
 
             showBasemap: function () {
+                var that = this;
                 this.basemapView = new Basemap({
                     app: this.app,
                     showSearchControl: false, // added for rosa parks pilot
-                    minZoom: 13//, // added for rosa parks pilot
-                    //el: "#print_map"
+                    minZoom: 13, // added for rosa parks pilot
+                    mapID: "print_map"
                 });
                 this.regionRight.show(this.basemapView);
+                setTimeout(function () {
+                    google.maps.event.trigger(that.app.map, 'resize');
+                }, 100);
             },
 
             onRender: function () {
