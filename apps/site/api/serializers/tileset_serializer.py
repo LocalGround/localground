@@ -6,6 +6,7 @@ from localground.apps.site.api import fields
 
 class TileSetSerializer(AuditSerializerMixin, serializers.ModelSerializer):
 
+    source_name = serializers.SerializerMethodField();
     base_tile_url = serializers.CharField(
         source='tile_url', required=False, allow_null=True, label='base_tile_url',
         style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
@@ -15,10 +16,15 @@ class TileSetSerializer(AuditSerializerMixin, serializers.ModelSerializer):
         style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
     )
     extras = fields.JSONField(style={'base_template': 'json.html', 'rows': 5}, required=False)
+    
     class Meta:
         model = models.TileSet
-        read_only_fields = ('owner',)
+        read_only_fields = ('owner', 'source_name')
         fields = ('id', 'url', 'name', 'tags', 'overlay_source', 'base_tile_url',
-                  'base_static_url', 'min_zoom', 'max_zoom', 'is_printable',
+                  'base_static_url', 'min_zoom', 'source_name', 'max_zoom', 'is_printable',
                   'extras', 'key', 'owner')
         depth = 0
+    
+    def get_source_name(self, obj):
+        return obj.overlay_source.name
+    

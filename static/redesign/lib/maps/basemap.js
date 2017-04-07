@@ -113,8 +113,6 @@ define(["marionette",
                 };
                 this.app.map = this.map = new google.maps.Map(document.getElementById(this.$el.attr("id")),
                     mapOptions);
-                //this.map.mapTypes.set(this.customMapTypeID, this.getCustomStyle());
-                //this.map.setMapTypeId(this.customMapTypeID);
             },
 
             addControls: function () {
@@ -202,6 +200,7 @@ define(["marionette",
             restoreState: function () {
                 var state = this.app.restoreState("basemap");
                 if (state) {
+                    //alert(state.activeMapTypeID);
                     if (state.center) {
                         this.defaultLocation.center = new google.maps.LatLng(
                             state.center[1],
