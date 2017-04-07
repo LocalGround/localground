@@ -10,8 +10,11 @@ define(["models/base"], function (Base) {
         getNamePlural: function () {
             return "tilesets";
         },
+        getClientStyles: function () {
+            return this.get("extras") ? this.get("extras").clientStyles : null;
+        },
         isCustom: function () {
-            
+            return this.getClientStyles() !== null;
         }
 
     });

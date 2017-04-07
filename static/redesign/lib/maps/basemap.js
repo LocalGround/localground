@@ -98,10 +98,7 @@ define(["marionette",
                     streetViewControl: true,
                     //scaleControl: true,
                     panControl: false,
-                    mapTypeControlOptions: {
-                        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-                        position: google.maps.ControlPosition.TOP_LEFT
-                    },
+                    mapTypeControl: false,
                     zoomControlOptions: this.zoomControlOptions || {
                         style: google.maps.ZoomControlStyle.SMALL
                     },
@@ -133,7 +130,8 @@ define(["marionette",
                 //set up the various map tiles in Google maps:
                 this.tileManager = new TileController(this.app, {
                     map: this.map,
-                    activeMapTypeID: this.activeMapTypeID
+                    activeMapTypeID: this.activeMapTypeID,
+                    showDropdown: true
                 });
 
                 //add event handlers:
