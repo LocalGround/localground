@@ -925,7 +925,8 @@ input.fieldname {
 .print-layout-left, .print-layout-right{
     border: solid 1px black;
     display: inline-block;
-    width: 300px;
+    width: 550px;
     margin: 5px;
-    min-height: 300px;
+    min-height: 400px;
+    vertical-align: top;
 }
