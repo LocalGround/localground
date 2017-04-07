@@ -28,6 +28,7 @@ define([
             Backbone.history.start();
         },
         initialize: function (options) {
+            _.extend(this, options);
             Marionette.Application.prototype.initialize.apply(this, [options]);
 
             //add views to regions:

@@ -1,18 +1,17 @@
 var rootDir = "../../";
 define([
     "marionette",
-    "jquery",
     rootDir + "apps/style/views/left/left-panel",
     rootDir + "apps/style/views/left/select-map-view",
     rootDir + "apps/style/views/left/layer-list-view",
     rootDir + "apps/style/views/left/skin-view",
     rootDir + "apps/style/views/left/panel-styles-view"
 ],
-    function (Marionette, $, LeftPanelView, SelectMapView, LayerListView, SkinView, PanelStylesView) {
+    function (Marionette, LeftPanelView, SelectMapView, LayerListView, SkinView, PanelStylesView) {
         'use strict';
-        var leftPanel, fixture;
+        var leftPanel, fixture, initView;
 
-        function initView(scope) {
+        initView = function (scope) {
             // 1) add spies for all relevant objects:
             spyOn(Marionette.Region.prototype, 'show').and.callThrough();
             spyOn(scope.app.vent, 'trigger').and.callThrough();
@@ -24,8 +23,8 @@ define([
 
             spyOn(LeftPanelView.prototype, 'initialize').and.callThrough();
             spyOn(LeftPanelView.prototype, 'handleNewMap').and.callThrough();
-            spyOn(LeftPanelView.prototype, 'moveLeftPanel').and.callThrough();
-            spyOn(LeftPanelView.prototype, 'showRightPanel').and.callThrough();
+            spyOn(LeftPanelView.prototype, 'showPanel').and.callThrough();
+            spyOn(LeftPanelView.prototype, 'hidePanel').and.callThrough();
 
 
             // 2) initialize rightPanel object:
@@ -50,7 +49,7 @@ define([
 
             it("should have correct html", function () {
                 //has correct layout template
-                expect(fixture).toContainElement('.left-wrapper');    
+                expect(fixture).toContainElement('.left-wrapper');
             });
 
             it("should initialize and render child views and regions", function () {
@@ -76,10 +75,6 @@ define([
                 leftPanel.app.vent.trigger('change-map', this.testMap);
                 expect(leftPanel.handleNewMap).toHaveBeenCalledTimes(1);
 
-                expect(leftPanel.showRightPanel).toHaveBeenCalledTimes(0);
-                leftPanel.app.vent.trigger('edit-layer', this.layer);
-                expect(leftPanel.showRightPanel).toHaveBeenCalledTimes(1);
-
                 //has correct model
                 expect(leftPanel.model).toEqual(this.testMap);
 
@@ -88,14 +83,22 @@ define([
                 expect(fixture).toContainElement('.bordered-section');
             });
 
-            it("should trigger click events", function () {
-                expect(leftPanel.moveLeftPanel).toHaveBeenCalledTimes(0);
-                fixture.find('.hide-button').trigger("click");
-                expect(leftPanel.moveLeftPanel).toHaveBeenCalledTimes(1);
+            it("should trigger show / hide click events", function () {
+                //hide:
+                expect(leftPanel.app.vent.trigger).not.toHaveBeenCalledWith('hide-list');
+                expect(leftPanel.hidePanel).toHaveBeenCalledTimes(0);
+                fixture.find('.hide').trigger('click');
+                expect(leftPanel.hidePanel).toHaveBeenCalledTimes(1);
+                expect(leftPanel.app.vent.trigger).toHaveBeenCalledWith('hide-list');
+
+                //show:
+                expect(leftPanel.app.vent.trigger).not.toHaveBeenCalledWith('unhide-list');
+                expect(leftPanel.showPanel).toHaveBeenCalledTimes(0);
+                fixture.find('.show').trigger('click');
+                expect(leftPanel.showPanel).toHaveBeenCalledTimes(1);
+                expect(leftPanel.app.vent.trigger).toHaveBeenCalledWith('unhide-list');
             });
-            
-            
+
         });
 
-        
     });

@@ -1,6 +1,8 @@
 <!-- VIEW MODE -->
 {{#ifequal mode "view"}}
-    <h4>Media Details</h4>
+    {{#compare screenType "presentation" operator="!="}}
+        <h4>Preview</h4>
+    {{/compare}}
     <div class="section">
         <h3>{{ name }}</h3>
     </div>
@@ -20,9 +22,11 @@
         {{/each}}
         <!-- Three curly braces if you don't want to escape HTML -->
     </div>
-    <div class = "save-options">
-        <button class="edit-mode button-tertiary ">Edit</button>
-    </div>
+    {{#compare screenType "presentation" operator="!="}}
+        <div class="save-options">
+            <button class="edit-mode button-tertiary ">Edit</button>
+        </div>
+    {{/compare}}
 {{/ifequal}}
 
 {{#ifequal mode "presentation"}}

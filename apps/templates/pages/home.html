@@ -9,7 +9,6 @@
     <link rel=stylesheet type="text/css" href="/static/redesign/css/index-style.css" />
     <link rel=stylesheet type="text/css" href="/static/redesign/css/style.css" />
     <link rel=stylesheet type="text/css" href="/static/redesign/css/modal_new_project.css" />
-    <link rel=stylesheet type="text/css" href="/static/redesign/css/audio-player.css" />
     <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
 </head>
 <body>
@@ -29,8 +28,9 @@
     </div>
     <script src="/static/redesign/external/require.js"></script>
     <script>
+        var username = '{{ user.username }}';
         require(['/static/redesign/apps/require-config.js'], function(){
-            require(['apps/home/kickoff']);  //or adminApp for the admin area, etc.
+            require(['apps/home/kickoff']);
         });
     </script>
 

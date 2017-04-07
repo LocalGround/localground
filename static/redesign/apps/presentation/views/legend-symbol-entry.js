@@ -30,7 +30,7 @@ define(['marionette',
                 return {
                     width: width,
                     height: this.model.get("height") * scale,
-                    strokeWeight: this.model.get("strokeWeight") * 5
+                    strokeWeight: this.model.get("strokeWeight")
                 };
             },
 

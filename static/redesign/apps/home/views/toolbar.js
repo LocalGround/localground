@@ -12,6 +12,11 @@ define([
         events: {
             'click #toggle-button': 'toggleVisibility'
         },
+        templateHelpers: function () {
+            return {
+                username: this.app.username
+            };
+        },
 
         initialize: function (opts) {
             _.extend(this, opts);
