@@ -28,7 +28,7 @@ define(["marionette",
                 zoom: 15,
                 center: { lat: -34, lng: 151 }
             },
-            el: '#map',
+            //el: '#map',
             template: false,
 
             initialize: function (opts) {
