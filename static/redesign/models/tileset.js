@@ -9,6 +9,9 @@ define(["models/base"], function (Base) {
         },
         getNamePlural: function () {
             return "tilesets";
+        },
+        isCustom: function () {
+            
         }
 
     });

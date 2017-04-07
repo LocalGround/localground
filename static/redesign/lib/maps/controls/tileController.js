@@ -68,7 +68,8 @@ define(["jquery", "collections/tilesets", "lib/maps/tiles/mapbox", "lib/maps/til
                 });
 
                 if (this.map.mapTypeControlOptions) {
-                    this.map.mapTypeControlOptions.mapTypeIds = that.mapTypeIDs;
+                    console.log(this.mapTypeIDs);
+                    this.map.mapTypeControlOptions.mapTypeIds = this.mapTypeIDs;
                 }
             };
 
@@ -114,9 +115,10 @@ define(["jquery", "collections/tilesets", "lib/maps/tiles/mapbox", "lib/maps/til
                 if (tileset) {
                     sourceName = tileset.get("source_name").toLowerCase();
                     mapTypeID = tileset.get("name");
-                    if (sourceName === "google") {
+                    if (sourceName === "google" && !tileset.get("extras")) {
                         mapTypeID = tileset.get("name").toLowerCase();
                     }
+                    console.log(mapTypeID);
                     this.map.setMapTypeId(mapTypeID);
                     this.app.vent.trigger("map-tiles-changed");
                 }
