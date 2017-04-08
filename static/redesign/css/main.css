@@ -129,7 +129,7 @@ fieldset {
     width: 400px;
 }
 
-#toolbar-main > div{
+.data-toolbar-main > div{
     display:flex;
 }
 
@@ -615,6 +615,11 @@ fieldset > div, .inline-form {
     display: flex;
     position: absolute;
     width: 100%;
+}
+
+.home-main-panel {
+    height: calc(100% - 211px);
+    top: 211px;
 }
 
 .spreadsheet-main-panel {
