@@ -365,20 +365,29 @@ define([
                 expect(Spreadsheet.prototype.buttonRenderer).toHaveBeenCalledTimes(newSpreadsheet.collection.length);
             });
 
-            it("Go through the Thumbnail renderer", function(){
+            it("Go through the Thumbnail renderer", function() {
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(0);
                 newSpreadsheet.collection = this.photos;
-                expect(Spreadsheet.prototype.thumbnailRenderer).toHaveBeenCalledTimes(1);
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.thumbnailRenderer).toHaveBeenCalledTimes(6);
             });
 
-            it("Go through the Audio renderer", function(){
+            it("Go through the Audio renderer", function () {
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(0);
                 newSpreadsheet.collection = this.audioFiles;
-                expect(Spreadsheet.prototype.audioRenderer).toHaveBeenCalledTimes(1);
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.audioRenderer).toHaveBeenCalledTimes(6);
             });
 
-            it("Go through the Media Count renderer", function(){
+            it("Go through the Media Count renderer", function () {
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(0);
                 newSpreadsheet.fields = this.fields;
                 newSpreadsheet.collection = this.form_1;
-                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(1);
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(4);
             });
         });
 
