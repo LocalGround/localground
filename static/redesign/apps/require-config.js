@@ -94,6 +94,9 @@ require.config({
         'slick': {
             deps: ['jquery']
         },
+        'color-picker-eyecon': {
+            deps: ['jquery']
+        },
         'highcharts_export': {
             deps: ['highcharts']
         },

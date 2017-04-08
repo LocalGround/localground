@@ -1,0 +1,37 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-8">
+    <title>Local Ground Gallery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/style.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/gallery-style.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/modal_new_project.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/upload-media.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
+</head>
+<body>
+    <div id="toolbar-main">
+        <!-- global toolbar moved to static/redesign/templates/toolbar-global.html -->
+    </div>
+
+    <div id="toolbar-dataview" class = "filter data">
+        <!-- dataview toolbar -->
+    </div>
+    <div class = "dataview">
+        <main class=" gallery-panel gallery-main-panel">
+            <!-- Photos go here -->
+        </main><aside class="side-panel">
+            <!-- Photo editor goes here -->
+        </aside>
+    </div>
+
+    <script src="/static/redesign/external/require.js"></script>
+    <script>
+        require(['/static/redesign/apps/require-config.js'], function(){
+            require(['apps/gallery/kickoff']);  //or adminApp for the admin area, etc.
+        });
+    </script>
+</body>
+</html>

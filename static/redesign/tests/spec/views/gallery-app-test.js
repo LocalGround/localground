@@ -15,12 +15,14 @@ define([
         function initApp(scope) {
             // 1) add dummy HTML elements:
             var $sandbox = $('<div id="sandbox"></div>'),
-                $r1 = $('<div id="toolbar-main"></div>'),
-                $r2 = $('<div id="toolbar-dataview"></div>'),
-                $r3 = $('<div id="main-panel"</div>');
+                $r1 = $('<div class="main-panel"></div>'),
+                $r2 = $('<div id="right-panel"></div>'),
+                $r3 = $('<div id="map-panel"</div>'),
+                $r4 = $('<div id="left-panel"</div>');
+
 
             $(document.body).append($sandbox);
-            $sandbox.append($r1).append($r2).append($r3);
+            $sandbox.append($r1).append($r2).append($r3).append($r4);
 
             // 2) add spies for all relevant objects:
             spyOn(GalleryApp.prototype, 'start').and.callThrough();

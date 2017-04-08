@@ -7,6 +7,7 @@ define(
         "collections/projects",
         "collections/photos",
         "collections/audio",
+        "collections/maps",
         "collections/mapimages",
         "collections/markers",
         "collections/records",
@@ -17,6 +18,7 @@ define(
         "models/marker",
         "models/audio",
         "models/record",
+        "models/map",
         "models/mapimage",
         "models/print",
         "models/layer",
@@ -24,17 +26,22 @@ define(
         "models/field",
         "lib/data/dataManager"
     ],
-    function (Backbone, $, appUtilities, Projects, Photos, AudioFiles,
-              MapImages, Markers, Records, Prints, Fields,
-              Project, Photo, Marker, Audio, Record,
-              MapImage, Print, Layer, Form, Field,
+
+    function (Backbone, $, appUtilities, Projects, Photos, AudioFiles, Maps,
+              MapImages, Markers, Records, Prints, Fields, 
+              Project, Photo, Marker, Audio, Record, 
+              Map, MapImage, Print, Layer, Form, Field, 
               DataManager) {
         'use strict';
+        afterEach(function () {
+            $('body').find('.colorpicker').remove();
+        });
         beforeEach(function () {
             //spoof google maps API:
             google.maps = {
                 event: { addListenerOnce: function () {} },
-                LatLngBounds: function () {}
+                LatLngBounds: function () {},
+                LatLng: function(lat, lng) {}            
             };
             var $map_container = $('<div id="map_canvas"></div>');
             $(document.body).append($map_container);
@@ -75,49 +82,159 @@ define(
              * Adds some dummy data for testing convenience.
              * Availabe to all of the tests.
              */
-            this.layer = new Layer({
+             this.testMap = new Map({
+                "url": "http://localhost:7777/api/0/maps/1/",
                 "id": 1,
-                "title": "Earthworm Count",
-                "data_source": "form_1",
-                "symbol_shape": "",
-                "layer_type": "categorical",
-                "filters": null,
-                "map_id": 1,
-                "symbols": [
-                    {
-                        "title": "1 - 5",
-                        "strokeWeight": 1,
-                        "rule": "worm_count > 0 and worm_count < 6",
-                        "height": 32,
-                        "width": 32,
-                        "shape": "worm",
-                        "strokeColor": "#FFF",
-                        "color": "#d7b5d8"
+                "name": "Berkeley Public Art",
+                "caption": "A map of public art around Berkeley",
+                "overlay_type": "styled_map",
+                "tags": [
+                    "tag1",
+                    "tag2",
+                    "tag3"
+                ],
+                "owner": "riley2",
+                "slug": "berkeley-art",
+                "sharing_url": "berkeley-art",
+                "center": {
+                    "type": "Point",
+                    "coordinates": [
+                        -122.04732196997611,
+                        37.75351445273666
+                    ]
+                },
+                "basemap": 5,
+                "zoom": 8,
+                "panel_styles": {
+                    "title": {
+                        "color": "33ff52",
+                        "font": "Lato",
+                        "type": "title",
+                        "size": 28,
+                        "fw": "bold"
                     },
-                    {
-                        "title": "6 - 10",
-                        "strokeWeight": 1,
-                        "rule": "worm_count > 5 and worm_count < 11",
-                        "height": 32,
-                        "width": 32,
-                        "shape": "worm",
-                        "strokeColor": "#FFF",
-                        "color": "#df65b0",
-                        "is_showing": true
+                    "paragraph": {
+                        "color": "ffa84c",
+                        "font": "bebas",
+                        "type": "title",
+                        "size": 21,
+                        "fw": "bold"
                     },
-                    {
-                        "title": "11 or more",
-                        "strokeWeight": 1,
-                        "rule": "worm_count >= 11",
-                        "height": 32,
-                        "width": 32,
-                        "shape": "worm",
-                        "strokeColor": "#FFF",
-                        "color": "#ce1256"
+                    "subtitle": {
+                        "color": "33ff52",
+                        "font": "Lato",
+                        "type": "title",
+                        "size": 15,
+                        "fw": "bold"
+                    },
+                    "tags": {
+                        "color": "33ff52",
+                        "font": "Lato",
+                        "type": "title",
+                        "size": 15,
+                        "fw": "bold"
                     }
-                ]
+                },
+                "project_id": 3,
+                "layers": [
+                    {
+                        "id": 3,
+                        "title": "untitled",
+                        "data_source": "form_1",
+                        "symbol_shape": "fa-circle",
+                        "layer_type": "categorical",
+                        "filters": [
+                            {
+                                "tag": "nothing"
+                            }
+                        ],
+                        "map_id": 1,
+                        "symbols": [
+                            {
+                                "title": "1 - 5",
+                                "strokeWeight": 1,
+                                "rule": "worm_count > 0 and worm_count < 6",
+                                "height": 32,
+                                "width": 32,
+                                "shape": "worm",
+                                "strokeColor": "#FFF",
+                                "color": "#d7b5d8"
+                            },
+                            {
+                                "title": "6 - 10",
+                                "strokeWeight": 1,
+                                "rule": "worm_count > 5 and worm_count < 11",
+                                "height": 32,
+                                "width": 32,
+                                "shape": "worm",
+                                "strokeColor": "#FFF",
+                                "color": "#df65b0",
+                                "is_showing": true
+                            },
+                            {
+                                "title": "11 or more",
+                                "strokeWeight": 1,
+                                "rule": "worm_count >= 11",
+                                "height": 32,
+                                "width": 32,
+                                "shape": "worm",
+                                "strokeColor": "#FFF",
+                                "color": "#ce1256"
+                            }
+                        ]
+                    },
+                    {
+                        "id": 2,
+                        "title": "Murals",
+                        "data_source": "form_1",
+                        "symbol_shape": "fa-circle",
+                        "layer_type": "categorical",
+                        "filters": [
+                            {
+                                "tag": "nothing"
+                            }
+                        ],
+                        "map_id": 1,
+                        "symbols": [
+                            {
+                                "color": "#7075FF",
+                                "width": 30,
+                                "rule": "sculptures > 0",
+                                "title": "At least 1 sculpture"
+                            }
+                        ]
+                    },
+                    {
+                        "id": 1,
+                        "title": "Murals",
+                        "data_source": "form_1",
+                        "symbol_shape": "circle",
+                        "layer_type": "continuous",
+                        "filters": {
+                            "tags": "nothing"
+                        },
+                        "map_id": 1,
+                        "symbols": [
+                            {
+                                "color": "#7075FF",
+                                "width": 30,
+                                "rule": "murals > 0",
+                                "title": "At least 1 mural"
+                            },
+                            {
+                                "color": "#F011D9",
+                                "width": 30,
+                                "rule": "murals = 0",
+                                "title": "No murals"
+                            }
+                        ]
+                    }
+                ],
+                "layers_url": "http://localhost:7777/api/0/maps/1/layers/"
             });
-
+            this.layer = this.testMap.get("layers").at(0);
+            this.layers = this.testMap.get("layers");
+            this.maps = new Maps([this.mapTest]);
             this.form = new Form({
                 "url": "http://localhost:7777/api/0/forms/1/",
                 "id": 1,

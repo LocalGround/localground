@@ -4,16 +4,14 @@
     <title>Local Ground Map Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link rel=stylesheet type="text/css" href="css/style.css" />
-    <link rel=stylesheet type="text/css" href="css/reset.css" />
-    <link rel=stylesheet type="text/css" href="css/map-presentation.css" />
-    <link rel=stylesheet type="text/css" href="css/reset.css" />
-    <link rel=stylesheet type="text/css" href="css/audio-player.css" />
-    <link rel=stylesheet type="text/css" href="css/carousel.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/style.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/map-presentation.css" />
+    <link rel=stylesheet type="text/css" href="/static/redesign/css/main.css" />
 
 </head>
 <body>
-    <div class="main-panel none">
+    <div class="main-panel presentation-main-panel none">
         <div id="marker-detail-panel" class="side-panel">
             <!-- Marker list goes here -->
         </div><div id="map-panel">
@@ -23,13 +21,13 @@
     <div id="presentation-title"></div>
     <div id="legend"></div>
 
-    <script src="external/require.js"></script>
+    <script src="/static/redesign/external/require.js"></script>
     <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15wvaiyd_TXf10qLAE29UHJasLbptvN4&libraries=places">
     </script>
     <script>
-        require(['apps/require-config'], function(){
-            require(['apps/presentation/kickoff.js']);  //or adminApp for the admin area, etc.
+        require(['/static/redesign/apps/require-config.js'], function(){
+            require(['apps/presentation/kickoff']);  //or adminApp for the admin area, etc.
         });
     </script>
 

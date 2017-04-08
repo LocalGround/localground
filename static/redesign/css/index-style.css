@@ -99,16 +99,16 @@
 
 }
 
-.project-overview  p{
+.project-overview  p {
 	font-size:14px;
 	margin-bottom:10px;
 }
 
-.project-overview .fa{
+.project-overview .fa {
 	padding:0 4px 0 0;
 }
 
-#gallery-main >div{
+#gallery-main > div{
 	width: calc(33.333% - 44px);
 	border-radius: 4px;
 	position: relative;
@@ -133,7 +133,7 @@
 	margin-bottom: 8px;
 }
 
-.project-detail{
+.project-detail {
 	position: absolute;
 	bottom: 16px;
 	width: calc(100% - 32px);

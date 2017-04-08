@@ -17,8 +17,7 @@ define(["marionette",
                 'change #font': 'updateFont',
                 'change #fw': 'updateFontWeight',
                 'change #color-picker': 'updateFontColor',
-                'change #font-size': 'updateFontSize',
-                'click #style-save' : "saveStyles" 
+                'change #font-size': 'updateFontSize'
             },
 
             initialize: function (opts) {
@@ -99,24 +98,6 @@ define(["marionette",
             updateFontSize: function () {
                 this.model.get("panel_styles")[this.activeKey].size = +this.$el.find("#font-size").val();
                 this.render();
-            },
-            
-            saveStyles: function() {
-                this.model.set("zoom", this.app.getZoom());
-                this.model.set("center", this.app.getCenter());
-                
-                this.model.set("basemap", this.app.getMapTypeId());
-                
-                console.log(JSON.stringify(this.model.toJSON(), null, 2));
-               // this.model.set("basemap", 1);
-                this.model.save({
-                    error: function(){
-                        console.log('error');
-                    },
-                        success: function(){
-                            console.log('success');
-                    }
-                });
             }
 
 
