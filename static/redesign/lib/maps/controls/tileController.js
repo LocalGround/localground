@@ -1,5 +1,5 @@
-define(["collections/tilesets", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"],
-    function (TileSets, MapBox, Stamen) {
+define(["collections/tilesets"],
+    function (TileSets) {
         "use strict";
 
         var TileController = function (app, opts) {
@@ -17,36 +17,21 @@ define(["collections/tilesets", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"
                 this.tilesets.fetch({ success: this.buildMapTypes.bind(this) });
             };
 
-            /** Lookup table of non-Google tile managers */
-            this.typeLookup = {
-                stamen: Stamen,
-                mapbox: MapBox
-            };
-
             this.initTiles = function () {
                 //iterate through each of the user's basemap tilesets and add it to the map:
                 var that = this;
                 this.tilesets.each(function (tileset) {
                     var sourceName = tileset.get("source_name").toLowerCase(),
-                        mapTypeID = tileset.getMapTypeID(),
-                        MapType;
+                        mapTypeID = tileset.getMapTypeID();
                     switch (sourceName) {
                     case "stamen":
                     case "mapbox":
-                        MapType = that.typeLookup[sourceName];
-                        that.mapTypes[mapTypeID] = new MapType({
-                            url: tileset.get("base_tile_url"),
-                            max: tileset.get("max_zoom"),
-                            name: tileset.getMapTypeID()
-                        });
+                        that.mapTypes[mapTypeID] = tileset.getMapType();
                         that.mapTypeIDs.push(mapTypeID);
                         break;
                     case "google":
                         if (tileset.isCustom()) {
-                            that.mapTypes[mapTypeID] = new google.maps.StyledMapType(
-                                tileset.getClientStyles(),
-                                { name: tileset.getMapTypeID() }
-                            );
+                            that.mapTypes[mapTypeID] = that.mapTypes[mapTypeID] = tileset.getMapType();
                         }
                         that.mapTypeIDs.unshift(mapTypeID);
                         break;
