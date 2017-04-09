@@ -8,11 +8,11 @@ define(["collections/tilesets", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"
              * @see <a href="//localground.org/api/0/tiles">Local Ground Data API</a>.
              */
             this.mapTypeIDs = [];
+            this.mapTypes = {};
             this.initialize = function (app, opts) {
                 this.app = app;
                 this.map = opts.map;
                 this.activeMapTypeID = opts.activeMapTypeID;
-                this.showDropdown = opts.showDropdown || false;
                 this.tilesets = new TileSets();
                 this.tilesets.fetch({ success: this.buildMapTypes.bind(this) });
             };
@@ -28,48 +28,40 @@ define(["collections/tilesets", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"
                 var that = this;
                 this.tilesets.each(function (tileset) {
                     var sourceName = tileset.get("source_name").toLowerCase(),
-                        MapType,
-                        name = tileset.get("name"),
-                        base_tile_url = tileset.get("base_tile_url"),
-                        maxZoom = tileset.get("max_zoom"),
-                        clientStyles = tileset.getClientStyles();
-                    if (sourceName === "stamen" || sourceName === "mapbox") {
+                        mapTypeID = tileset.getMapTypeID(),
+                        MapType;
+                    switch (sourceName) {
+                    case "stamen":
+                    case "mapbox":
                         MapType = that.typeLookup[sourceName];
-                        that.mapTypeIDs.push(name);
-                        that.map.mapTypes.set(
-                            name,
-                            new MapType({
-                                url: base_tile_url,
-                                styleID: name.toLowerCase(),
-                                max: maxZoom,
-                                name: name
-                            })
-                        );
-                    } else if (sourceName === "google" && !tileset.isCustom()) {
-                        that.mapTypeIDs.unshift(name.toLowerCase());
-                    } else if (clientStyles) {
-                        that.map.mapTypes.set(name,
-                            new google.maps.StyledMapType(clientStyles, { name: name }));
-                        that.mapTypeIDs.unshift(name);
-                    } else {
+                        that.mapTypes[mapTypeID] = new MapType({
+                            url: tileset.get("base_tile_url"),
+                            max: tileset.get("max_zoom"),
+                            name: tileset.getMapTypeID()
+                        });
+                        that.mapTypeIDs.push(mapTypeID);
+                        break;
+                    case "google":
+                        if (tileset.isCustom()) {
+                            that.mapTypes[mapTypeID] = new google.maps.StyledMapType(
+                                tileset.getClientStyles(),
+                                { name: tileset.getMapTypeID() }
+                            );
+                        }
+                        that.mapTypeIDs.unshift(mapTypeID);
+                        break;
+                    case "default":
                         alert("Error in localground.maps.TileManager: unknown map type: " + sourceName);
+                        break;
                     }
                 });
-
-                //only show map dropdown once tilesets loaded:
-                if (this.showDropdown) {
-                    this.map.setOptions({
-                        mapTypeControlOptions: {
-                            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-                            position: google.maps.ControlPosition.TOP_LEFT,
-                            mapTypeIds: this.mapTypeIDs
-                        },
-                        mapTypeControl: true
-                    });
-                }
+                this.app.vent.trigger('tiles-loaded', {
+                    mapTypeIDs: this.mapTypeIDs,
+                    mapTypes: this.mapTypes
+                });
             };
 
-            this.getTileInfo = function (key, value) {
+            this.getTileSetByKey = function (key, value) {
                 return this.tilesets.find(function (model) {
                     if (key === 'name') {
                         return model.get(key).toLowerCase() === value.toLowerCase();
@@ -83,13 +75,8 @@ define(["collections/tilesets", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"
                 this.initTiles();
             };
 
-            this.getMapTypeNamebyId = function (id) {
-                var tileInfo = this.getTileInfo("id", id);
-                return tileInfo.get("name");
-            };
-
             this.getMapTypeId = function () {
-                var tileset = this.getTileInfo("name", this.map.getMapTypeId().toLowerCase());
+                var tileset = this.getTileSetByKey("name", this.map.getMapTypeId().toLowerCase());
                 if (!tileset) {
                     return null;
                 }
@@ -100,16 +87,9 @@ define(["collections/tilesets", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"
                 if (!id) {
                     return;
                 }
-                var tileset = this.getTileInfo("id", id),
-                    sourceName = null,
-                    mapTypeID = null;
+                var tileset = this.getTileSetByKey("id", id);
                 if (tileset) {
-                    sourceName = tileset.get("source_name").toLowerCase();
-                    mapTypeID = tileset.get("name");
-                    if (sourceName === "google" && !tileset.isCustom()) {
-                        mapTypeID = tileset.get("name").toLowerCase();
-                    }
-                    this.map.setMapTypeId(mapTypeID);
+                    this.map.setMapTypeId(tileset.getMapTypeID());
                     this.app.vent.trigger("map-tiles-changed");
                 }
             };

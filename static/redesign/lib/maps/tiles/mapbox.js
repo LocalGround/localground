@@ -4,9 +4,8 @@ define(["jquery"], function ($) {
         /*
          * https://api.mapbox.com/styles/v1/lg/cj176x4e400252sk86yda5omv/tiles/256/{z}/{x}/{y}
          */
-        this.id = opts.styleID;
+        //this.id = opts.styleID;
         this.maxZoom = opts.max;
-        this.styleID = opts.styleID;
         this.name = opts.name;
         this.url = opts.url.split('{z}')[0].split('//')[1];
         this.tileSize = new google.maps.Size(256, 256);

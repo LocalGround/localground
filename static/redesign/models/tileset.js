@@ -15,6 +15,14 @@ define(["models/base"], function (Base) {
         },
         isCustom: function () {
             return this.getClientStyles() !== null;
+        },
+        getMapTypeID: function () {
+            var sourceName = this.get("source_name").toLowerCase(),
+                mapTypeID = this.get("name");
+            if (sourceName === "google" && !this.isCustom()) {
+                mapTypeID = mapTypeID.toLowerCase();
+            }
+            return mapTypeID;
         }
 
     });
