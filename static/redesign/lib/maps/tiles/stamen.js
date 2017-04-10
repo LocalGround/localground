@@ -1,30 +1,20 @@
 define(["jquery"], function ($) {
     "use strict";
-    /**
-     * Class that initializes a Stamen tileset.
-     * @class Stamen
-     * @param opts Initialization options for the Stamen class.
-     * @param {Integer} opts.max
-     * The maximum valid zoom level for the tileset.
-     * @param {Integer} opts.styleID
-     * The corresponding style ID associated with the tileset.
-     * @param {String} name
-     * The name of the tileset.
-     */
     var Stamen = function (opts) {
-        this.styleID = 1;
+        /*
+         * http://a.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg
+         */
         this.maxZoom = opts.max;
-        this.styleID = opts.styleID;
         this.name = opts.name;
+        this.url = opts.url.split('{z}')[0].split('//')[1];
         this.tileSize = new google.maps.Size(256, 256);
-        this.getTile = function (coord, zoom, ownerDocument) {
-            var url = '//' + ['', 'a.', 'b.', 'c.', 'd.'][parseInt(Math.random() * 5, 10)] + 'tile.stamen.com/';
+        this.getTile = function (coord, zoom) {
+            var url = '//' + ['', 'a.', 'b.'][parseInt(Math.random() * 3, 10)] + this.url;
             return $('<div></div>').css({
                 'width': '256px',
                 'height': '256px',
-                'backgroundImage': 'url(' + url + this.styleID + '/' + zoom + '/' +
+                'backgroundImage': 'url(' + url + zoom + '/' +
                     coord.x + '/' + coord.y + '.jpg)'
-
             }).get(0);
         };
     };
