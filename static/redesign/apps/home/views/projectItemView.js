@@ -116,7 +116,7 @@ define(["marionette",
               30 days -> 3, 5, 8, 10
               31 days -> 0, 2, 4, 6, 7, 9, 11
             */
-            daysPerMonth(date){
+            daysPerMonth: function(date){
                 var month = date.getMonth();
                 var days_per_month = 0;
 
