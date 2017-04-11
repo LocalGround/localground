@@ -136,6 +136,15 @@ define(["marionette",
                 }
                 return days_per_month;
 
+            },
+
+
+            /*
+              Functions exclusively used for unit testing
+            */
+
+            setTimeStamp: function(_date){
+                timeStamp = _date;
             }
 
         });
