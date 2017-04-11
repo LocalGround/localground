@@ -94,7 +94,7 @@ define(["marionette",
                 }
                 else if (diffDays > 0){
                     addPlural = diffDays > 1 ? "s" : "";
-                    lastEditedString = diffDays + " Day" + addPlural + " ago";
+                    lastEditString = diffDays + " Day" + addPlural + " ago";
                 }
                 else {
                     lastEditString = "Today";
