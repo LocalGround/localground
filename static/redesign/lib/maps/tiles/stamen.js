@@ -6,6 +6,9 @@ define(["jquery"], function ($) {
          */
         this.maxZoom = opts.max;
         this.name = opts.name;
+        this.ext = opts.url.split('{y}');
+        this.ext = (this.ext.length > 0) ? this.ext[1] : '';
+        console.log(opts.url, this.ext);
         this.url = opts.url.split('{z}')[0].split('//')[1];
         this.tileSize = new google.maps.Size(256, 256);
         this.getTile = function (coord, zoom) {
@@ -14,7 +17,7 @@ define(["jquery"], function ($) {
                 'width': '256px',
                 'height': '256px',
                 'backgroundImage': 'url(' + url + zoom + '/' +
-                    coord.x + '/' + coord.y + '.jpg)'
+                    coord.x + '/' + coord.y + this.ext + ')'
             }).get(0);
         };
     };
