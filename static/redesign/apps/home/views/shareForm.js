@@ -15,8 +15,6 @@ define(["jquery",
             template: Handlebars.compile(ItemTemplate),
             events: {
                 'click .delete_project': 'deleteProject',
-                //'click .close': 'hideModal',
-                //'click .action': 'shareModal',
                 'click .save-project-settings': 'saveProjectSettings',
                 'click .new_user_button': 'addUserButton',
                 'click .delete-project-user': 'removeRow',

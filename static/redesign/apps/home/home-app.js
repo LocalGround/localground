@@ -55,7 +55,8 @@ define([
                 title: title,
                 width: 500,
                 // bind the scope of the save function to the source view:
-                saveFunction: shareFormView.saveProjectSettings.bind(shareFormView)
+                saveFunction: shareFormView.saveProjectSettings.bind(shareFormView),
+                showDeleteButton: opts.model != null
             });
             this.modal.show();
         },
