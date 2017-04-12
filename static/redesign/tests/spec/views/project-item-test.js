@@ -8,16 +8,20 @@ define([
 ],
     function ($, ProjectItemView, ShareForm, Project) {
         'use strict';
-        var fixture, newCreateForm, initSpies;
+        var fixture, newProjectItemView, newShareForm, initSpies;
 
         initSpies = function () {
+            // Project Item View
+            spyOn(ProjectItemView.prototype, 'render').and.callThrough();
 
         };
 
-        describe("Making a project:", function(){
+        describe("Project Item View - Making a project:", function(){
             it("Successfully creates a project", function(
                 // Rough draft for creating a project
-                expect(1).toEqual(1);
+                var newProject = new Project();
+
+                expect (newProject).not.toEqual(null);
             ));
         });
     }
