@@ -144,7 +144,7 @@ define(["marionette",
             */
 
             setTimeStamp: function(_date){
-                timeStamp = _date;
+                this.timeStamp = _date;
             }
 
         });

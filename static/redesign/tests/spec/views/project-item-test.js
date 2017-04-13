@@ -8,18 +8,35 @@ define([
 ],
     function ($, ProjectItemView, ShareForm, Project) {
         'use strict';
-        var fixture, newProjectItemView, newShareForm, initSpies;
+        var fixture, newProjectItemView, newProject, newShareForm, initSpies;
 
         initSpies = function () {
             // Project Item View
             spyOn(ProjectItemView.prototype, 'render').and.callThrough();
+            spyOn(ProjectItemView.prototype, 'linkToProject').and.callThrough();
+            spyOn(ProjectItemView.prototype, 'shareModal').and.callThrough();
+            spyOn(ProjectItemView.prototype, 'deleteProject').and.callThrough();
+            spyOn(ProjectItemView.prototype, 'lastEdited').and.callThrough();
+
+            // Project
+            spyOn(Project.prototype,'shareWithUser').and.callThrough();
+            spyOn(Project.prototype,'getProjectUsers').and.callThrough();
+            spyOn(Project.prototype,'getProjectUserCount').and.callThrough();
+            spyOn(Project.prototype,'getProjectUserByUsername').and.callThrough();
+
+            // Share Form
+            spyOn(ShareForm.prototype,'saveProjectSettings').and.callThrough();
+            spyOn(ShareForm.prototype,'createNewProjectUsers').and.callThrough();
+            spyOn(ShareForm.prototype,'addUserButton').and.callThrough();
+            spyOn(ShareForm.prototype,'blankInputs').and.callThrough();
+            spyOn(ShareForm.prototype,'deleteProject').and.callThrough();
 
         };
 
         describe("Project Item View - Making a project:", function(){
             it("Successfully creates a project", function(){
                 // Rough draft for creating a project
-                var newProject = new Project();
+                newProject = new Project();
 
                 expect (newProject).not.toEqual(null);
             });
@@ -35,8 +52,48 @@ define([
             });
         });
 
-        describe("Project: Inspecting attributes", function(){
+        describe("Project Item View - Test the time difference since last edited", function(){
+            beforeEach(function(){
+                initSpies();
+                newProjectItemView = new ProjectItemView({
+                    model: new Project({
+                        id: 8,
+                        time_stamp: new Date(),
+                        date_created: new Date()
+                    })
+                });
+            });
 
+            it ("Last edited on new project: Today", function(){
+
+                var lastEditedString = newProjectItemView.lastEdited();
+                expect(lastEditedString).toEqual("Today");
+
+            });
+
+            it ("Last edited on new project: 1 day ago", function(){
+                var prevDay = newProjectItemView.timeStamp.getDate() - 1;
+                newProjectItemView.setTimeStamp(prevDay);
+                var lastEditedString = newProjectItemView.lastEdited();
+                expect(lastEditedString).toEqual("1 Day ago");
+
+            });
+
+            it ("Last edited on new project: 1 month ago", function(){
+                var prevMonth = newProjectItemView.timeStamp.getMonth() - 1;
+                newProjectItemView.setTimeStamp(prevMonth);
+                var lastEditedString = newProjectItemView.lastEdited();
+                expect(lastEditedString).toEqual("1 Month ago");
+
+            });
+
+            it ("Last edited on new project: 1 year ago", function(){
+                var prevYear = newProjectItemView.timeStamp.getYear() - 1;
+                newProjectItemView.setTimeStamp();
+                var lastEditedString = newProjectItemView.lastEdited();
+                expect(lastEditedString).toEqual("1 Year ago");
+
+            });
         });
     }
 );
