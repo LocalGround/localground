@@ -58,8 +58,8 @@ define([
                 newProjectItemView = new ProjectItemView({
                     model: new Project({
                         id: 8,
-                        time_stamp: new Date(),
-                        date_created: new Date()
+                        time_stamp: new Date().toISOString().replace("Z", ""),
+                        date_created: new Date().toISOString().replace("Z", "")
                     })
                 });
             });
@@ -72,8 +72,9 @@ define([
             });
 
             it ("Last edited on new project: 1 day ago", function(){
+                console.log(newProjectItemView.timeStamp);
                 var prevDay = newProjectItemView.timeStamp.getDate() - 1;
-                newProjectItemView.setTimeStamp(prevDay);
+                newProjectItemView.timeStamp.setDate(prevDay);
                 var lastEditedString = newProjectItemView.lastEdited();
                 expect(lastEditedString).toEqual("1 Day ago");
 
@@ -81,15 +82,15 @@ define([
 
             it ("Last edited on new project: 1 month ago", function(){
                 var prevMonth = newProjectItemView.timeStamp.getMonth() - 1;
-                newProjectItemView.setTimeStamp(prevMonth);
+                newProjectItemView.timeStamp.setMonth(prevMonth);
                 var lastEditedString = newProjectItemView.lastEdited();
                 expect(lastEditedString).toEqual("1 Month ago");
 
             });
 
             it ("Last edited on new project: 1 year ago", function(){
-                var prevYear = newProjectItemView.timeStamp.getYear() - 1;
-                newProjectItemView.setTimeStamp();
+                var prevYear = newProjectItemView.timeStamp.getFullYear() - 1;
+                newProjectItemView.timeStamp.setFullYear(prevYear);
                 var lastEditedString = newProjectItemView.lastEdited();
                 expect(lastEditedString).toEqual("1 Year ago");
 
