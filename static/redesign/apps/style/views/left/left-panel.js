@@ -19,8 +19,8 @@ define(["jquery",
                 this.app = opts.app;
                 this.render();
                 this.listenTo(this.app.vent, 'change-map', this.handleNewMap);
-                this.listenTo(this.app.vent, 'edit-layer', this.showRightPanel);
-                this.listenTo(this.app.vent, 'add-layer', this.showRightPanel);
+              //  this.listenTo(this.app.vent, 'edit-layer', this.showRightPanel);
+              //  this.listenTo(this.app.vent, 'add-layer', this.showRightPanel);
             },
             events: {
                 "click #new-layer-options a" : "createNewLayer",
@@ -53,6 +53,7 @@ define(["jquery",
             },
             handleNewMap: function (model) {
                 // is 'this.app.model' necessary?
+                this.app.selectedMapModel = model;
                 this.app.model = model;
                 this.model = model;
                 var ps = new PanelStylesView({

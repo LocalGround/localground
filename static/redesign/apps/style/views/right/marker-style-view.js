@@ -84,6 +84,8 @@ define(["jquery",
             },
 
             templateHelpers: function () {
+                console.log(this);
+                console.log(this.model);
                 return {
                     dataType: this.dataType,
                     allColors: this.allColors,

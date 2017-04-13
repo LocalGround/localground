@@ -16,7 +16,7 @@ define(["jquery",
             template: Handlebars.compile(LayerItemTemplate),
             modelEvents: {},
             tagName: "div",
-            className: "column",
+            className: "layer-column",
             templateHelpers: function () {
                 return {
                     isChecked: this.isChecked

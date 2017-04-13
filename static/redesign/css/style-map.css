@@ -41,7 +41,7 @@ section {
 
 #map-select {
     width: calc(100%);
-    padding: 10px 20px;
+    margin-top: 10px;
     font-weight: 400;
     font-family: 'Open Sans';
     font-size: 14px;
@@ -272,4 +272,8 @@ palette-options {
 .palette-icon {
     position: fixed;
     margin-top: 11px;
+}
+
+.plus-container {
+    margin-top: 5px;
 }

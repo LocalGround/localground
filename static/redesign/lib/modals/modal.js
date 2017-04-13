@@ -25,7 +25,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             events: {
                 'click .close': 'hide',
                 'click .close-modal': 'hide',
-                'click .save-modal-form': 'saveFunction',
+                'click .save-modal-form': 'saveAndClose',
                 'click .delete-modal': 'deleteFunction'
             },
             template: Handlebars.compile(ModalTemplate),
@@ -68,6 +68,12 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 this.delegateEvents();
                 this.appendView();
             },
+
+            saveAndClose: function () {
+                this.saveFunction();
+                this.hide();
+            },
+
             setSize: function () {
                 this.$el.find('.modal-content').css('width', this.width);
                 this.$el.find('.modal-body').css('min-height', this.height);
