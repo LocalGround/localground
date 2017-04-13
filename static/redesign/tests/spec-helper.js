@@ -323,7 +323,13 @@ define(
             ]);
 
             this.projects = new Projects([
-                new Project({ id: 1, name: "Project 1", tags: 'tag1, tag2', overlay_type: "project",
+                new Project({
+                    id: 1,
+                    name: "Project 1",
+                    tags: 'tag1, tag2',
+                    overlay_type: "project",
+                    time_stamp: "2017-02-17T21:17:33",
+                    date_created: "2017-02-17T21:17:33",
                     children: {
                         photos: {
                             name: "Photos",
@@ -356,7 +362,13 @@ define(
                             data: this.form_1.toJSON()
                         }
                     }}),
-                new Project({ id: 2, name: "Project 2", tags: 'tag3, tag2', overlay_type: "project",
+                new Project({
+                    id: 2,
+                    name: "Project 2",
+                    tags: 'tag3, tag2',
+                    overlay_type: "project",
+                    time_stamp: "2017-04-02T21:17:33",
+                    date_created: "2017-04-02T21:17:33",
                     children: {
                         form_1: {
                             name: "Soil Form",
@@ -371,7 +383,13 @@ define(
                             data: this.markers.toJSON()
                         }
                     }}),
-                new Project({ id: 3, name: "Blah", tags: 'tag6, tag7', overlay_type: "project",
+                new Project({
+                    id: 3,
+                    name: "Blah",
+                    tags: 'tag6, tag7',
+                    overlay_type: "project",
+                    time_stamp: "2016-02-17T21:17:33",
+                    date_created: "2016-02-17T21:17:33",
                     children: {
                         photos: {
                             name: "Photos",

@@ -30,12 +30,12 @@ require(['boot'], function () {
         'spec/views/select-map-view-test.js',
         'spec/views/layer-list-view-test.js',
         'spec/views/layer-list-child-view-test.js',
+        'spec/views/project-item-test.js',
 
         //APPS
         'spec/views/style-app-test.js',
         'spec/views/create-form-test.js',
-        'spec/views/form-field-test.js',
-        'spec/views/project-item-test.js'
+        'spec/views/form-field-test.js'
     ];
 
     require(specs, function () {
