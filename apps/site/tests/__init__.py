@@ -182,8 +182,8 @@ class ModelMixin(object):
                 lat,
                 srid=4326),
             zoom=19,
-            basemap=models.WMSOverlay.objects.get(
-                id=4),
+            basemap=models.TileSet.objects.get(
+                id=3),
         )
         v.save()
         return v
@@ -286,7 +286,7 @@ class ModelMixin(object):
             self.user,
             self.project,
             models.Layout.objects.get(id=layout_id),
-            models.WMSOverlay.objects.get(id=map_provider),
+            models.TileSet.objects.get(id=map_provider),
             zoom,
             Point(lng, lat, srid=4326),
             'http://localground.stage',

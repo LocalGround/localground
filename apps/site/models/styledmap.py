@@ -15,8 +15,8 @@ class StyledMap(BaseNamed, ProjectMixin):
         db_index=True,
         help_text='A few words, separated by dashes "-", to be used as part of the url')
     basemap = models.ForeignKey(
-        'WMSOverlay',
-        default=12)  # default to grayscale
+        'TileSet',
+        default=3)  # default to grayscale
     filter_fields = BaseNamed.filter_fields + ('slug', 'name', 'description', 'tags', 'owner', 'project')
     objects = StyledMapManager()
     

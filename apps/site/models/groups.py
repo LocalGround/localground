@@ -10,7 +10,7 @@ from localground.apps.site.models.photo import Photo
 from localground.apps.site.models.audio import Audio
 from localground.apps.site.models.video import Video
 from localground.apps.site.models import \
-    Marker, WMSOverlay, ObjectTypes, BaseNamed, BaseGenericRelationMixin
+    Marker, ObjectTypes, BaseNamed, BaseGenericRelationMixin
 
 from localground.apps.site.managers import ProjectManager, SnapshotManager
 
@@ -31,8 +31,8 @@ class Group(BaseNamed, BaseGenericRelationMixin, BasePermissions):
         db_index=True,
         help_text='A few words, separated by dashes "-", to be used as part of the url')
     basemap = models.ForeignKey(
-        'WMSOverlay',
-        default=12)  # default to grayscale
+        'TileSet',
+        default=3)  # default to grayscale
     filter_fields = BaseNamed.filter_fields + ('slug', 'name', 'description', 'tags', 'owner')
 
     class Meta:

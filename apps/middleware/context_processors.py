@@ -6,7 +6,6 @@ def persistant_queries(request):
     '/map-images/update-record/), this function also adds information about the tilesets
     which are available to the interactive map.
     """
-    from localground.apps.site.models import WMSOverlay
     from localground.apps.site.models import Project
     from localground.apps.site.models import Form
     import simplejson as json
@@ -49,12 +48,6 @@ def persistant_queries(request):
     if add_overlays:
         if request.path in ['/print/']:
             is_printable=True
-        context.update({
-            'overlays' : json.dumps(
-                WMSOverlay.objects.get_objects(user=request.user).to_dict_list()
-                #, is_printable=True)
-            )
-        })
         if request.GET.get('markerID') is not None:
             try:
                 context.update({'markerID' : int(request.GET.get('markerID'))})

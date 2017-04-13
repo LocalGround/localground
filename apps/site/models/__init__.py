@@ -17,7 +17,6 @@ from localground.apps.site.models.lookups import StatusCode, UploadSource, \
 from localground.apps.site.models.marker import Marker
 from localground.apps.site.models.overlaysource import OverlaySource
 from localground.apps.site.models.overlaytype import OverlayType
-from localground.apps.site.models.wmsoverlay import WMSOverlay
 from localground.apps.site.models.tileset import TileSet
 
 # accounts

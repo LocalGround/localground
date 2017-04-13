@@ -25,7 +25,7 @@ class SnapshotSerializer(BaseNamedSerializer):
                 required=True,
                 style={'base_template': 'json.html', 'rows': 5}
             )
-    basemap = serializers.PrimaryKeyRelatedField(queryset=models.WMSOverlay.objects.all())
+    basemap = serializers.PrimaryKeyRelatedField(queryset=models.TileSet.objects.all())
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
     children = serializers.SerializerMethodField()
 

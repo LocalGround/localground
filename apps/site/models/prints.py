@@ -21,9 +21,9 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         verbose_name="Instructions")
     tags = ArrayField(models.TextField(), default=list)
     map_provider = models.ForeignKey(
-        'WMSOverlay',
+        'TileSet',
         db_column='fk_provider',
-        related_name='prints_print_wmsoverlays')
+        related_name='prints_print_tilesets')
     layout = models.ForeignKey('Layout')
     map_width = models.IntegerField()
     map_height = models.IntegerField()
@@ -41,14 +41,6 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
     def inline_form(cls, user):
         from localground.apps.site.forms import get_inline_form_with_tags
         return get_inline_form_with_tags(cls, user)
-
-    @property
-    def embedded_layers(self):
-        #raise Exception('emdedded')
-        from localground.apps.site.models import WMSOverlay
-        if not hasattr(self, '_embedded_layers'):
-            self._embedded_layers = self.grab(WMSOverlay)
-        return self._embedded_layers
 
     @property
     def embedded_mapimages(self):
@@ -177,15 +169,12 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 
     @classmethod
     def insert_print_record(cls, user, project, layout, map_provider, zoom,
-                            center, host, map_title=None, instructions=None,
-                            layer_ids=None, mapimage_ids=None,
+                            center, host, map_title=None, instructions=None, mapimage_ids=None,
                             do_save=True):
         from localground.apps.site import models
         from localground.apps.lib.helpers import generic, StaticMap
 
         layers, mapimages = None, None
-        if layer_ids is not None:
-            layers = models.WMSOverlay.objects.filter(id__in=layer_ids)
         if mapimage_ids is not None:
             mapimages = models.MapImage.objects.filter(id__in=mapimage_ids)
         if instructions is not None:  # preserve line breaks in the pdf report
