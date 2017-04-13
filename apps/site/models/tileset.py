@@ -15,6 +15,7 @@ class TileSet(BaseNamed):
     tile_url = models.CharField(max_length=2000, blank=True)
     static_url = models.CharField(max_length=2000, blank=True)
     key = models.CharField(max_length=512, blank=True, null=True)
+    attribution = models.CharField(max_length=1000, blank=True, null=True)
     extras = JSONField(blank=True, null=True)
 
     class Meta:

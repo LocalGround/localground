@@ -15,6 +15,9 @@ class TileSetSerializer(AuditSerializerMixin, serializers.ModelSerializer):
         source='static_url', required=False, allow_null=True, label='base_static_url',
         style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
     )
+    attribution = serializers.CharField(required=False, allow_null=True,
+        style={'base_template': 'textarea.html', 'rows': 5}, allow_blank=True
+    )
     extras = fields.JSONField(style={'base_template': 'json.html', 'rows': 5}, required=False)
     
     class Meta:
@@ -22,7 +25,7 @@ class TileSetSerializer(AuditSerializerMixin, serializers.ModelSerializer):
         read_only_fields = ('owner', 'source_name')
         fields = ('id', 'url', 'name', 'tags', 'overlay_source', 'base_tile_url',
                   'base_static_url', 'min_zoom', 'source_name', 'max_zoom', 'is_printable',
-                  'extras', 'key', 'owner')
+                  'extras', 'key', 'owner', 'attribution')
         depth = 0
     
     def get_source_name(self, obj):

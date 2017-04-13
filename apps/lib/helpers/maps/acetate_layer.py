@@ -235,7 +235,6 @@ a = AcetateLayer()
                 scale = icon.get_scale()
                 x = coord[0] - icon.anchor[0] * scale
                 y = coord[1] - icon.anchor[1] * scale
-                #print(x, y)
                 path_attributes.append({
                     "fill": icon.fillColor,
                     "fill-opacity": icon.fillOpacity,
@@ -258,7 +257,8 @@ a = AcetateLayer()
         #map_type = models.TileSet.objects.get(id=3)
         #map_type = models.TileSet.objects.get(id=6)
         #map_type = models.TileSet.objects.get(id=8)
-        map_type = models.TileSet.objects.get(id=10)
+        #map_type = models.TileSet.objects.get(id=10)
+        map_type = models.TileSet.objects.get(id=12)
         print self.center
         map_image = m.get_basemap_and_extents(
             map_type, self.zoom, self.center, self.width, self.height

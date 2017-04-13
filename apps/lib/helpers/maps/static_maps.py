@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 from os import path
-import cStringIO as StringIO
+from django.conf import settings
 from django.conf import settings
 from django.http import HttpResponse
 from PIL import Image, ImageFilter, ImageDraw, ImageFont, ImageOps
-import numpy as np
-import logging
 from localground.apps.lib.helpers.units import Units
 from django.contrib.gis.geos import Point, LinearRing, Polygon
-import mapscript
-import urllib
-from django.conf import settings
+import cStringIO as StringIO
+import logging, mapscript, urllib, json
 
 """
 Defines 2 helper classes -- ``OutputFormat`` and ``StaticMap`` -- that help
@@ -92,12 +89,17 @@ class StaticMap():
             zoom = zoom - 1 #this is a workaround to a mapbox bug:
             map_url = map_type.static_url + "?access_token=" + settings.MAPBOX_API_KEY
             map_url = map_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
-            print(map_url)
+            
         #if google is the map provider:
+        elif map_type.overlay_source.name == 'stamen':
+            map_url = map_type.static_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
+            # extra step for STAMEN: get map image from JSON object:
+            file = urllib.urlopen(map_url)
+            data = json.loads(file.read())
+            map_url = data[0].get('image')
         else:
             map_url = map_type.static_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
-            print(map_url)
-        
+        print(map_url)
         try:
             file = urllib.urlopen(map_url)
             map_image = StringIO.StringIO(file.read()) # constructs a StringIO holding the image

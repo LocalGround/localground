@@ -15,7 +15,7 @@ define(["jquery", "collections/tilesets"],
                 this.activeMapTypeID = opts.activeMapTypeID;
                 this.tilesets = new TileSets();
                 this.tilesets.fetch({ success: this.buildMapTypes.bind(this) });
-                this.app.vent.on('map-tiles-changed', this.hideAttribution);
+                this.app.vent.on('map-tiles-changed', this.showCustomAttribution.bind(this));
             };
 
             this.initTiles = function () {
@@ -69,16 +69,30 @@ define(["jquery", "collections/tilesets"],
                 return tileset.id;
             };
 
-            this.hideAttribution = function () {
+            this.hideCustomAttribution = function () {
                 $('.tile-attribution').parent().prev().show();
                 $('.tile-attribution').remove();
             };
 
-            this.setActiveMapType = function (id) {
-                this.hideAttribution();
-                if (!id) {
+            this.showCustomAttribution = function (id) {
+                this.hideCustomAttribution();
+                id = id || this.getMapTypeId();
+                var tileset = this.tilesets.get(id),
+                    $message;
+                if (!tileset.get("attribution")) {
                     return;
                 }
+                $message = $('<span class="tile-attribution"></span>').html(tileset.get("attribution"));
+                $('.gm-style-cc span').parent().append($message);
+                $message.css({
+                    marginLeft: ($message.width() - 6) * -1,
+                    backgroundColor: "rgba(255, 255, 255, 0.7)"
+                });
+                $message.parent().prev().hide();
+            };
+
+            this.setActiveMapType = function (id) {
+                this.showCustomAttribution(id);
                 var tileset = this.getTileSetByKey("id", id);
                 if (tileset) {
                     this.map.setMapTypeId(tileset.getMapTypeID());
