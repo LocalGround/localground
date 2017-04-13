@@ -282,11 +282,6 @@ select t.id as marker_id, max(t.view_authority) as view_authority,
 	array_to_string(array_agg(t.access_key), ',') as access_keys
 from 
 (
-select a.entity_id as id, v.view_authority, v.access_key
-from site_genericassociation a
-where
-  a.entity_type_id = (select id from django_content_type where model = 'marker') 
-union
 select m.id, pr.view_authority, pr.access_key
 from site_marker m, site_project pr
  where m.project_id = pr.id
