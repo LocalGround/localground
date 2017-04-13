@@ -24,16 +24,15 @@ define(["jquery"], function ($) {
         };
 
         this.showAttribution = function () {
-            setTimeout(function () {
-                var message = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>.';
-                $('.gm-style-cc span').html(message);
-                $('.gm-style-cc span').show();
-                $('.gm-style-cc span').parent().parent().parent().css({
-                    "width": 220,
-                    "margin-left": "-207",
-                    "background-color": 'rgba(255, 255, 255, 0.2)'
-                });
-            }, 100);
+            var $message = $('<span class="tile-attribution">Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>.</span>');
+            $('.tile-attribution').remove();
+            $('.gm-style-cc span').parent().append($message);
+            $message.css({
+                "width": 220,
+                "margin-left": "-205",
+                "background-color": 'rgba(255, 255, 255, 0.7)'
+            });
+            $message.parent().prev().hide();
         };
     };
     return Stamen;

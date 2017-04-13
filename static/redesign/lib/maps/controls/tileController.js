@@ -1,5 +1,5 @@
-define(["collections/tilesets"],
-    function (TileSets) {
+define(["jquery", "collections/tilesets"],
+    function ($, TileSets) {
         "use strict";
 
         var TileController = function (app, opts) {
@@ -15,6 +15,7 @@ define(["collections/tilesets"],
                 this.activeMapTypeID = opts.activeMapTypeID;
                 this.tilesets = new TileSets();
                 this.tilesets.fetch({ success: this.buildMapTypes.bind(this) });
+                this.app.vent.on('map-tiles-changed', this.hideAttribution);
             };
 
             this.initTiles = function () {
@@ -68,7 +69,13 @@ define(["collections/tilesets"],
                 return tileset.id;
             };
 
+            this.hideAttribution = function () {
+                $('.tile-attribution').parent().prev().show();
+                $('.tile-attribution').remove();
+            };
+
             this.setActiveMapType = function (id) {
+                this.hideAttribution();
                 if (!id) {
                     return;
                 }

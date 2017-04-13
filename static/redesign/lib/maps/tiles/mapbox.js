@@ -21,17 +21,17 @@ define(["jquery"], function ($) {
         };
 
         this.showAttribution = function () {
-            setTimeout(function () {
-                var message = 'Map tiles by <a href="http://mapbox.com">MapBox</a>.';
-                $('.gm-style-cc span').html(message);
-                $('.gm-style-cc span').show();
-                $('.gm-style-cc span').parent().parent().parent().css({
-                    "width": 120,
-                    "margin-left": "-107",
-                    "background-color": 'rgba(255, 255, 255, 0.2)'
-                });
-            }, 100);
+            var $message = $('<span class="tile-attribution">Map tiles by <a href="http://mapbox.com">MapBox</a>.</span>');
+            $('.tile-attribution').remove();
+            $('.gm-style-cc span').parent().append($message);
+            $message.css({
+                "width": 110,
+                "margin-left": "-95",
+                "background-color": 'rgba(255, 255, 255, 0.7)'
+            });
+            $message.parent().prev().hide();
         };
+
     };
     return MapBox;
 });

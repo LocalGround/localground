@@ -160,6 +160,7 @@ define(["marionette",
                 //add notifications:
                 var that = this;
                 google.maps.event.addListener(this.map, "maptypeid_changed", function () {
+                    that.app.vent.trigger('map-tiles-changed');
                     that.saveState();
                 });
                 google.maps.event.addListener(this.map, "idle", function () {
