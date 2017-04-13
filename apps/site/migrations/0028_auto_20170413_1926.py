@@ -39,17 +39,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='project',
             name='basemap',
-            field=models.ForeignKey(default=3, to='site.TileSet'),
-        ),
-        migrations.AlterField(
-            model_name='snapshot',
-            name='basemap',
-            field=models.ForeignKey(default=3, to='site.TileSet'),
+            field=models.ForeignKey(default=1, to='site.TileSet'),
         ),
         migrations.AlterField(
             model_name='styledmap',
             name='basemap',
-            field=models.ForeignKey(default=3, to='site.TileSet'),
+            field=models.ForeignKey(default=1, to='site.TileSet'),
         ),
         migrations.DeleteModel(
             name='WMSOverlay',

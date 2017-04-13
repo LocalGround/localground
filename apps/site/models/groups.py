@@ -12,7 +12,7 @@ from localground.apps.site.models.video import Video
 from localground.apps.site.models import \
     Marker, ObjectTypes, BaseNamed, BaseGenericRelationMixin
 
-from localground.apps.site.managers import ProjectManager, SnapshotManager
+from localground.apps.site.managers import ProjectManager
 
 from django.contrib.gis.db import models
 from datetime import datetime
@@ -30,9 +30,6 @@ class Group(BaseNamed, BaseGenericRelationMixin, BasePermissions):
         max_length=100,
         db_index=True,
         help_text='A few words, separated by dashes "-", to be used as part of the url')
-    basemap = models.ForeignKey(
-        'TileSet',
-        default=3)  # default to grayscale
     filter_fields = BaseNamed.filter_fields + ('slug', 'name', 'description', 'tags', 'owner')
 
     class Meta:
@@ -181,84 +178,3 @@ class Project(Group):
         return Project.objects.filter(
             Q(owner=user) | Q(users__user=user)
         ).order_by('-time_stamp')[0]
-
-
-class Snapshot(Group):
-
-    """
-    A user-generated grouping of media.  Media associations are specified in the
-    GenericAssociation Model.  Only partially implemented.
-    """
-    center = models.PointField()
-    zoom = models.IntegerField()
-    objects = SnapshotManager()
-
-    class Meta(Group.Meta):
-        verbose_name = 'snapshot'
-        verbose_name_plural = 'snapshots'
-
-    @property
-    def geometry(self):
-        return self.center
-    
-    @classmethod
-    def sharing_form(cls):
-        from localground.apps.site.forms import SnapshotPermissionsForm
-
-        return SnapshotPermissionsForm
-
-    @classmethod
-    def inline_form(cls, user=None):
-        from localground.apps.site.forms import SnapshotInlineUpdateForm
-
-        return SnapshotInlineUpdateForm
-
-    @classmethod
-    def get_form(cls):
-        from localground.apps.site.forms import SnapshotCreateForm
-
-        return SnapshotCreateForm
-
-    def get_markers_with_counts(self):
-        """
-        Queries for Markers and also uses raw sql to retrieve how many Audio,
-        Photo, Table Records are associated with the marker.
-        """
-        marker_ids = [m.id for m in self.markers]
-        markers_with_counts = Marker.objects.by_marker_ids_with_counts(
-            marker_ids)
-        # append turned_on flag:
-        for m in self.markers:
-            for m1 in markers_with_counts:
-                if m.id == m1.id:
-                    m1.turned_on = m.turned_on
-                    break
-        return [m.to_dict(aggregate=True) for m in markers_with_counts]
-
-    '''
-    def to_dict(self, include_auth_users=False, include_processed_maps=False,
-                include_markers=False, include_audio=False, include_photos=False,
-                include_tables=False):
-        d = {
-            'id': self.id,
-            'name': self.name,
-            'description': self.description,
-            'owner': self.owner.username
-        }
-        if include_processed_maps:
-            d.update(dict(processed_maps=[rec.to_dict() for rec in self.map_images]))
-        if include_audio:
-            d.update(dict(audio=[rec.to_dict() for rec in self.audio_files]))
-        if include_photos:
-            d.update(dict(photos=[rec.to_dict() for rec in self.photos]))
-        if include_markers:
-            d.update(dict(markers=self.get_markers_with_counts()))
-        return d
-    '''
-
-    def to_dict(self, detailed=False):
-        from localground.apps.site.api.serializers import SnapshotSerializer, SnapshotDetailSerializer
-
-        if detailed:
-            return SnapshotDetailSerializer(self, context={'request': {}}).data
-        return SnapshotSerializer(self, context={'request': {}}).data

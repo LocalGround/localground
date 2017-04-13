@@ -112,16 +112,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='SnapshotUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_views',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
             name='VideoUser',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -535,28 +525,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Snapshot',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
-                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
-                ('name', models.CharField(max_length=255, null=True, blank=True)),
-                ('description', models.TextField(null=True, blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
-                ('access_key', models.CharField(max_length=16, null=True, blank=True)),
-                ('extents', django.contrib.gis.db.models.fields.PolygonField(srid=4326, null=True, blank=True)),
-                ('slug', models.SlugField(help_text=b'A few words, separated by dashes "-", to be used as part of the url', max_length=100, verbose_name=b'Friendly URL')),
-                ('center', django.contrib.gis.db.models.fields.PointField(srid=4326)),
-                ('zoom', models.IntegerField()),
-                ('access_authority', models.ForeignKey(db_column=b'view_authority', verbose_name=b'Sharing', to='site.ObjectAuthority')),
-            ],
-            options={
-                'abstract': False,
-                'verbose_name': 'snapshot',
-                'verbose_name_plural': 'snapshots',
-            },
-        ),
-        migrations.CreateModel(
             name='Snippet',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -687,21 +655,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.AddField(
-            model_name='snapshot',
-            name='basemap',
-            field=models.ForeignKey(default=12, to='site.WMSOverlay'),
-        ),
-        migrations.AddField(
-            model_name='snapshot',
-            name='last_updated_by',
-            field=models.ForeignKey(related_name='site_snapshot_related', to=settings.AUTH_USER_MODEL),
-        ),
-        migrations.AddField(
-            model_name='snapshot',
-            name='owner',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
-        ),
-        migrations.AddField(
             model_name='scan',
             name='status',
             field=models.ForeignKey(to='site.StatusCode'),
@@ -714,7 +667,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='project',
             name='basemap',
-            field=models.ForeignKey(default=12, to='site.WMSOverlay'),
+            field=models.ForeignKey(default=1, to='site.WMSOverlay'),
         ),
         migrations.AddField(
             model_name='project',
@@ -840,10 +793,6 @@ class Migration(migrations.Migration):
             model_name='attachment',
             name='upload_source',
             field=models.ForeignKey(to='site.UploadSource'),
-        ),
-        migrations.AlterUniqueTogether(
-            name='snapshot',
-            unique_together=set([('slug', 'owner')]),
         ),
         migrations.AlterUniqueTogether(
             name='project',

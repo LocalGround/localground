@@ -1,4 +1,4 @@
-from localground.apps.site.managers.groups import ProjectManager, SnapshotManager, FormManager, \
+from localground.apps.site.managers.groups import ProjectManager, FormManager, \
     PresentationManager, LayerManager
 from localground.apps.site.managers.overlays import MarkerManager
 from localground.apps.site.managers.prints import PrintManager

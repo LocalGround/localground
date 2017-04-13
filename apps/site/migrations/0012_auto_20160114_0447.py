@@ -49,10 +49,6 @@ class Migration(migrations.Migration):
             new_name='tags',
             old_name='newtags'),
         migrations.RenameField(
-            model_name='snapshot',
-            new_name='tags',
-            old_name='newtags'),
-        migrations.RenameField(
             model_name='video',
             new_name='tags',
             old_name='newtags'),

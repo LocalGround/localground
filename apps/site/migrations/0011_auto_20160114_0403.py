@@ -48,10 +48,6 @@ class Migration(migrations.Migration):
             name='tags',
         ),
         migrations.RemoveField(
-            model_name='snapshot',
-            name='tags',
-        ),
-        migrations.RemoveField(
             model_name='video',
             name='tags',
         ),

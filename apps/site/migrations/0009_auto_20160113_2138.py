@@ -58,11 +58,6 @@ class Migration(migrations.Migration):
             field=django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None),
         ),
         migrations.AddField(
-            model_name='snapshot',
-            name='newtags',
-            field=django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None),
-        ),
-        migrations.AddField(
             model_name='video',
             name='newtags',
             field=django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None),
