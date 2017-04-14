@@ -129,10 +129,12 @@ define([
             });
 
             it("delete function works", function(){
+                //JOHN TODO:
                 expect(1).toBe(1);
             });
 
             it("link to project function works", function(){
+                //JOHN TODO:
                 expect(1).toBe(1);
             });
         });
@@ -154,10 +156,46 @@ define([
             });
 
             it("Renders the HTML Correctly", function () {
-                //https://github.com/velesin/jasmine-jquery
+                // Here is the documentation for the renderer helpers:
+                // https://github.com/velesin/jasmine-jquery
+                /*
+                <div class="project-overview" data-url="/map/?project_id={{ id }}">
+                    <div>
+                        <h2 class="map-title">{{ name }}</h2>
+                        <span class = "owner">Owner: {{ owner }}</span>
+                        <p>{{ caption }}</p>
+                    </div>
+                    <div class = "project-detail">
+                        <a class="tag">
+                        {{#ifequal access_authority 1}}
+                            Private
+                        {{ else }}
+                            Public
+                        {{/ifequal}}
+                        </a>
+                        <!-- Replace the "5 Days ago" with the Date() function with info on current date-->
+                        <!-- time_stamp -->
+                        <span class="action"><i class="fa fa-clock-o" aria-hidden="true"></i> {{timeAgo}}</span>
+                    </div>
+                </div>
+                */
                 fixture = setFixtures("<div></div>").append(newProjectItemView.$el);
+                //check that all elements exist in the DOM:
                 expect(fixture).toContainElement('.project-overview');
-                expect(fixture.find('source')).toHaveAttr('src', '/map/?project_id=' + this.project.id);
+                expect(fixture).toContainElement('.map-title');
+                expect(fixture).toContainElement('.owner');
+                expect(fixture).toContainElement('.project-detail');
+                expect(fixture).toContainElement('.action');
+                expect(fixture).toContainElement('.fa.fa-clock-o');
+                expect(fixture).toContainElement('.tag');
+
+                //check that values have been set correctly from variables:
+                expect(fixture.find('.project-overview')).toHaveAttr('data-url', '/map/?project_id=' + newProjectItemView.model.id);
+                expect(fixture.find('.project-overview')).toContainText(newProjectItemView.model.get("name"));
+                //JOHN TODO:
+                //1. check tag set correctly
+                //2. check owner set correctly
+                //3. check that time text is set correctly
             });
 
         });
