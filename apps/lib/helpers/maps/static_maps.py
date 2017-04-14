@@ -42,7 +42,6 @@ class StaticMap():
         
     def get_basemap(self, map_type, zoom, center, width, height):
         import os, urllib, StringIO, Image
-        #units.Units.add_pixels_to_latlng(center_lat, center_lng, zoom, 300, 300)
         map_url = None
         if map_type.overlay_source.name == 'mapbox':
             zoom = zoom - 1 #this is a workaround to a mapbox bug:
@@ -57,11 +56,16 @@ class StaticMap():
             data = json.loads(file.read())
             map_url = data[0].get('image')
             import time
-            time.sleep(1) # delay for stamen map b/c URL returned before image exists
+            time.sleep(2) # delay for stamen map b/c URL returned before image exists
         else:
             map_url = map_type.static_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
 
-        #print(map_url)
+        print(map_url)
+        f = urllib.urlopen(map_url)
+        map_image = StringIO.StringIO(f.read()) # constructs a StringIO holding the image
+        map_image = Image.open(map_image)
+        map_image = map_image.convert('RGB')
+        '''
         try:
             f = urllib.urlopen(map_url)
             map_image = StringIO.StringIO(f.read()) # constructs a StringIO holding the image
@@ -72,7 +76,7 @@ class StaticMap():
             file = urllib.urlopen(error_image_url)
             map_image = StringIO.StringIO(file.read()) # constructs a StringIO holding the image
             map_image = Image.open(map_image).convert('RGB')
-
+        '''
         return map_image
         
     '''

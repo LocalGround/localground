@@ -79,6 +79,10 @@ before_install:
 install:
   - pip install -r deploy_tools/requirements.txt
   - python --version
+  # Am having a heck of a time installing cairo. Trying this workaround...
+  - pip uninstall cffi
+  - pip install cffi==1.10.0
+  - pip install cairocffi==0.8.0
 
 before_script:
   - psql -c 'create database lg_database;' -U postgres
