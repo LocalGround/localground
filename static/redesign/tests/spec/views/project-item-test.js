@@ -4,9 +4,12 @@ define([
     rootDir + "apps/home/views/projectItemView",
     rootDir + "apps/home/views/shareForm",
     rootDir + "models/project",
+    rootDir + "models/projectUser",
+    rootDir + "collections/projects",
+    rootDir + "collections/projectUsers",
     "tests/spec-helper"
 ],
-    function ($, ProjectItemView, ShareForm, Project) {
+    function ($, ProjectItemView, ShareForm, Project, ProjectUser, Projects, ProjectUsers) {
         'use strict';
         var fixture, newProjectItemView, newProject, newShareForm, initSpies;
 
@@ -95,6 +98,26 @@ define([
                 expect(lastEditedString).toEqual("1 Year ago");
 
             });
+        });
+
+        describe("Project Item View: Project Modal Window", function(){
+
+            beforeEach(function(){
+                initSpies();
+
+            });
+
+            it("Opens a new project modal", function(){
+                expect(1).toEqual(1);
+                // Make a new shareForm, the one that holds the modal for projects
+                // then create a new empty Project
+                // Add that shareForm to the empty div space for access to buttons
+            });
+
+            it("Opens an edit project modal", function(){
+                expect(1).toEqual(1);
+            });
+
         });
     }
 );
