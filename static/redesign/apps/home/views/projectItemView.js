@@ -49,7 +49,9 @@ define(["marionette",
             shareModal: function (e) {
                 //tell the home-app to show the share-project modal:
                 this.app.vent.trigger('share-project', { model: this.model });
-                e.preventDefault();
+                if (e) {
+                    e.preventDefault();
+                }
             },
 
             templateHelpers: function () {

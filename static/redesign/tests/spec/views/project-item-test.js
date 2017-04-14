@@ -104,18 +104,28 @@ define([
 
             beforeEach(function(){
                 initSpies();
-
+                newProjectItemView = new ProjectItemView({
+                    model: new Project({
+                        id: 8,
+                        time_stamp: new Date().toISOString().replace("Z", ""),
+                        date_created: new Date().toISOString().replace("Z", "")
+                    }),
+                    app: this.app
+                });
+                newProjectItemView.render();
             });
 
-            it("Opens a new project modal", function(){
-                expect(1).toEqual(1);
-                // Make a new shareForm, the one that holds the modal for projects
-                // then create a new empty Project
-                // Add that shareForm to the empty div space for access to buttons
+            it("Calls shareModal function when user clicks the share button", function () {
+                fixture = setFixtures("<div></div>").append(newProjectItemView.$el);
+                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(0);
+                newProjectItemView.$el.find('.action').trigger('click');
+                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(1);
             });
 
-            it("Opens an edit project modal", function(){
-                expect(1).toEqual(1);
+            it("shareModel function opens a new modal window with the right form inside", function(){
+                spyOn(this.app.vent, 'trigger');
+                newProjectItemView.shareModal();
+                expect(this.app.vent.trigger).toHaveBeenCalledWith('share-project', { model: newProjectItemView.model });
             });
 
         });
