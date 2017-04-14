@@ -8,7 +8,8 @@ import random
 from localground.apps.lib.helpers.units import Units
 from localground.apps.site import models
 from django.contrib.gis.geos import Point
-from localground.apps.lib.helpers import StaticMap
+from localground.apps.lib.helpers.map.static_map import StaticMap
+from localground.apps.lib.helpers.map import Extents
 from localground.apps.site import models
 
 class Icon(object):
@@ -215,7 +216,7 @@ a = AcetateLayer()
         paths, path_attributes, icon = [], [], None
         keys = Icon.get_icon_keys()
         forms = models.Form.objects.filter(projects__id=self.project_id)
-        extents = StaticMap.get_extents_from_center(self.center, self.zoom, self.width, self.height)
+        extents = Extents.get_extents_from_center(self.center, self.zoom, self.width, self.height)
         extents.toPixels(self.zoom)
         layers = [
             models.Photo.objects.filter(project__id=self.project_id),
@@ -260,7 +261,7 @@ a = AcetateLayer()
         #map_type = models.TileSet.objects.get(id=10)
         map_type = models.TileSet.objects.get(id=12)
         print self.center
-        map_image = m.get_basemap_and_extents(
+        map_image = m.get_basemap(
             map_type, self.zoom, self.center, self.width, self.height
         )
         map_image.save(self.basemap_path)

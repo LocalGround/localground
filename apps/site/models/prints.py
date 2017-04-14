@@ -183,16 +183,17 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         # use static map helper function to calculate additional geometric
         # calculations
         m = StaticMap()
-        info = m.get_basemap_and_extents(
+        map_image = m.get_basemap(
             map_provider, zoom, center,
             layout.map_width_pixels, layout.map_height_pixels
         )
-        map_image = info.get('map_image')
-        northeast = info.get('northeast')
-        southwest = info.get('southwest')
-        bbox = (northeast.coords, southwest.coords)
+        extents = Extents.get_extents_from_center(
+            center, zoom,
+            layout.map_width_pixels, layout.map_height_pixels
+        )
+        bbox = (extents.northeast.coords, extents.southwest.coords)
         bbox = [element for tupl in bbox for element in tupl]
-        extents = Polygon.from_bbox(bbox)
+        extents_polygon = Polygon.from_bbox(bbox)
 
         # Save the print
         p = Print()
@@ -212,9 +213,9 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         p.name = map_title
         p.description = instructions
         p.center = center
-        p.northeast = northeast
-        p.southwest = southwest
-        p.extents = extents
+        p.northeast = extents.northeast
+        p.southwest = extents.southwest
+        p.extents = extents_polygon
         p.virtual_path = p.generate_relative_path()
         #raise Exception(p.to_dict())
 
