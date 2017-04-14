@@ -172,7 +172,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
                             center, host, map_title=None, instructions=None, mapimage_ids=None,
                             do_save=True):
         from localground.apps.site import models
-        from localground.apps.lib.helpers import generic, StaticMap
+        from localground.apps.lib.helpers import generic, StaticMap, Extents
 
         layers, mapimages = None, None
         if mapimage_ids is not None:
@@ -187,7 +187,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
             map_provider, zoom, center,
             layout.map_width_pixels, layout.map_height_pixels
         )
-        extents = Extents.get_extents_from_center(
+        extents = Extents.get_extents_from_center_lat_lng(
             center, zoom,
             layout.map_width_pixels, layout.map_height_pixels
         )
@@ -232,7 +232,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 
     def generate_pdf(self):
         from localground.apps.site import models
-        from localground.apps.lib.helpers import generic, StaticMap, Report
+        from localground.apps.lib.helpers import Extents, generic, StaticMap, Report
         import os
 
         # use static map helper function to calculate additional geometric
@@ -244,30 +244,36 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         os.mkdir(path)  # create new directory
         file_name = 'Print_' + self.uuid + '.pdf'
 
-        layers = self.embedded_layers
         mapimages = self.embedded_mapimages
-
-        info = m.get_basemap_and_extents(
-            self.map_provider, self.zoom, self.center, map_width, map_height)
-        map_image = info.get('map_image')
-        northeast = info.get('northeast')
-        southwest = info.get('southwest')
-        bbox = (northeast.coords, southwest.coords)
+        map_image = m.get_basemap(
+            self.map_provider, self.zoom, self.center, map_width, map_height
+        )
+        extents = Extents.get_extents_from_center_lat_lng(
+            self.center, self.zoom, map_width, map_height
+        )
+        #info = m.get_basemap_and_extents(
+        #    self.map_provider, self.zoom, self.center, map_width, map_height)
+        #map_image = info.get('map_image')
+        #northeast = info.get('northeast')
+        #southwest = info.get('southwest')
+        bbox = (extents.northeast.coords, extents.southwest.coords)
         bbox = [element for tupl in bbox for element in tupl]
-        extents = Polygon.from_bbox(bbox)
         qr_size = self.layout.qr_size_pixels
         border_width = self.layout.border_width
 
+        '''
+        #TODO: Replace w/new acetate layer functionality:
         overlay_image = m.get_map(
             layers,
-            southwest=southwest,
-            northeast=northeast,
+            southwest=extents.southwest,
+            northeast=extents.northeast,
             mapimages=mapimages,
             height=map_height,
             width=map_width,
             show_north_arrow=True)
 
         map_image.paste(overlay_image, (0, 0), overlay_image)
+        '''
 
         if self.layout.is_data_entry:
             map_image = map_image.convert("L")  # convert to black and white

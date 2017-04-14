@@ -56,20 +56,27 @@ class StaticMap():
             file = urllib.urlopen(map_url)
             data = json.loads(file.read())
             map_url = data[0].get('image')
+            import time
+            time.sleep(1) # delay for stamen map b/c URL returned before image exists
         else:
             map_url = map_type.static_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
-        print(map_url)
+
+        #print(map_url)
         try:
-            file = urllib.urlopen(map_url)
-            map_image = StringIO.StringIO(file.read()) # constructs a StringIO holding the image
-            map_image = Image.open(map_image).convert('RGB')
+            f = urllib.urlopen(map_url)
+            map_image = StringIO.StringIO(f.read()) # constructs a StringIO holding the image
+            map_image = Image.open(map_image)
+            map_image = map_image.convert('RGB')
         except IOError:
             error_image_url = 'https://chart.googleapis.com/chart?chst=d_fnote_title&chld=sticky_y|1|FF0000|l|Map%20Service%20Unavailable|'
             file = urllib.urlopen(error_image_url)
             map_image = StringIO.StringIO(file.read()) # constructs a StringIO holding the image
             map_image = Image.open(map_image).convert('RGB')
+
         return map_image
         
+    '''
+    # Deprecated, b/c no longer using map server to render overlays:
     def get_map(self, layers, southwest=None, northeast=None, mapimages=None,
                 srs=Units.EPSG_900913, height=300, width=300, format=OutputFormat.PNG,
                 opacity=100, extra_layers=None, show_north_arrow=False, **kwargs):
@@ -127,6 +134,7 @@ class StaticMap():
             return response
         elif format == OutputFormat.PNG:
             return return_image
+    '''
         
     def _render_mapimages(self, msmap, mapimages, srs):
         for mapimage in mapimages:

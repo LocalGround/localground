@@ -1,3 +1,5 @@
+from localground.apps.lib.helpers.units import Units
+
 class PixelCoordinate(object):
     
     def __init__(self, x, y):

@@ -3,14 +3,12 @@
 # sudo pip install --upgrade cffi
 # sudo pip install cairosvg==1.0.22
 #https://pypi.python.org/pypi/svgpathtools/ 
-from localground.apps.lib.externals.svgpathtools import parse_path, svg2paths, wsvg
 import random
+from localground.apps.lib.externals.svgpathtools import parse_path, svg2paths, wsvg
 from localground.apps.lib.helpers.units import Units
-from localground.apps.site import models
 from django.contrib.gis.geos import Point
-from localground.apps.lib.helpers.map.static_map import StaticMap
-from localground.apps.lib.helpers.map import Extents
-from localground.apps.site import models
+from localground.apps.lib.helpers.maps.static_maps import StaticMap
+from localground.apps.lib.helpers.maps import Extents
 
 class Icon(object):
     ICONS = {
@@ -197,8 +195,7 @@ from localground.apps.lib.helpers.maps.acetate_layer import AcetateLayer
 a = AcetateLayer()
     '''
     
-    def __init__(self, center=None, project_id=5, zoom=14, width=640, height=640):
-        from localground.apps.site import models
+    def __init__(self, center=None, project_id=2, zoom=14, width=640, height=640):
         self.center = center or Point(-122.2939, 37.8686)
         self.zoom = zoom
         self.width = width
@@ -213,10 +210,11 @@ a = AcetateLayer()
         self.generate_final_map()
 
     def generate_acetate_layer(self):
+        from localground.apps.site import models
         paths, path_attributes, icon = [], [], None
         keys = Icon.get_icon_keys()
         forms = models.Form.objects.filter(projects__id=self.project_id)
-        extents = Extents.get_extents_from_center(self.center, self.zoom, self.width, self.height)
+        extents = Extents.get_extents_from_center_lat_lng(self.center, self.zoom, self.width, self.height)
         extents.toPixels(self.zoom)
         layers = [
             models.Photo.objects.filter(project__id=self.project_id),
@@ -228,7 +226,6 @@ a = AcetateLayer()
 
         for layer in layers:
             pixels = self.get_pixel_coordinates_from_models(layer, self.zoom, extents.left, extents.top)
-
             for coord in pixels:
                 key = layer[0]._meta.verbose_name
                 icon = Icon(key, strokeWeight=1, strokeColor='white')
@@ -250,16 +247,19 @@ a = AcetateLayer()
                 'height': self.height,
                 'viewBox': '0 0 {0} {1}'.format(self.width, self.height)
             }
+        if len(paths) == 0:
+            return
         wsvg(paths, attributes=path_attributes, svg_attributes=svg_attributes, filename=self.svg_path)
         self.toPNG()
 
     def generate_static_map(self):
+        from localground.apps.site import models
         m = StaticMap()
         #map_type = models.TileSet.objects.get(id=3)
         #map_type = models.TileSet.objects.get(id=6)
         #map_type = models.TileSet.objects.get(id=8)
-        #map_type = models.TileSet.objects.get(id=10)
-        map_type = models.TileSet.objects.get(id=12)
+        #map_type = models.TileSet.objects.get(id=9)
+        map_type = models.TileSet.objects.get(id=10)
         print self.center
         map_image = m.get_basemap(
             map_type, self.zoom, self.center, self.width, self.height
@@ -272,7 +272,10 @@ a = AcetateLayer()
         acetate_image = Image.open(self.acetate_path, 'r')
         final_image = Image.new(mode='RGBA',size=(self.width, self.height), color=(255,255,255,0))
         final_image.paste(basemap_image, (0, 0), basemap_image)
-        final_image.paste(acetate_image, (0, 0), acetate_image)
+        try:
+            final_image.paste(acetate_image, (0, 0), acetate_image)
+        except:
+            print('acetate_image paste error')
         final_image.save(self.final_path)
 
     def get_pixel_coordinates_from_models(self, models, zoom, minXPixels, minYPixels):
