@@ -40,7 +40,7 @@ class ApiTileListTest(test.TestCase, ViewMixinAPISuperuser):
     def setUp(self):
         ViewMixinAPISuperuser.setUp(self)
         self.urls = ['/api/0/tiles/']
-        self.view = views.TileViewSet.as_view({'get': 'list'})
+        self.view = views.TileSetList.as_view()
 
 
 class ApiTileInstanceTest(test.TestCase, ViewMixinAPISuperuser):
@@ -48,4 +48,4 @@ class ApiTileInstanceTest(test.TestCase, ViewMixinAPISuperuser):
     def setUp(self):
         ViewMixinAPISuperuser.setUp(self)
         self.urls = ['/api/0/tiles/1/', '/api/0/tiles/2/', '/api/0/tiles/3/']
-        self.view = views.TileViewSet.as_view({'get': 'detail'})
+        self.view = views.TileSetInstance.as_view()
