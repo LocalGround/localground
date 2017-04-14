@@ -51,6 +51,7 @@ TAGGING_AUTOCOMPLETE_JS_BASE_URL = '/%s/scripts/jquery-autocomplete' % STATIC_ME
 # From Google Developer Console:
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'YOUR_CLIENT_KEY'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'YOUR_SECRET'
+MAPBOX_API_KEY = 'YOUR_MAPBOX_KEY'
 
 #SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
 

@@ -107,6 +107,12 @@ sudo apt-get -y install libffi-dev
 sudo ln -s /vagrant /localground
 sudo pip install -r /vagrant/deploy_tools/requirements.txt
 
+# Due to difficulties installing cairo via requirements.txt, I'm
+# Installing it the manual way...
+sudo pip uninstall cffi
+sudo pip install cffi==1.10.0
+sudo pip install cairocffi==0.8.0
+
 #############################
 # Install Node.js and Bower #
 #############################
