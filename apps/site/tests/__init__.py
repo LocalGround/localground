@@ -268,7 +268,6 @@ class ModelMixin(object):
             'http://localground.stage',
             map_title=map_title,
             instructions=instructions,
-            layer_ids=None,
             mapimage_ids=None
         )
         p.tags = tags

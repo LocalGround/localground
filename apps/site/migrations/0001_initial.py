@@ -5,32 +5,39 @@ from django.db import models, migrations
 import datetime
 import django.contrib.gis.db.models.fields
 import jsonfield.fields
+import django.contrib.postgres.fields
 from django.conf import settings
-import tagging_autocomplete.models
 import localground.apps.lib.helpers
+import os
+from django.conf import settings
+from sys import path
+from django.core import serializers
 
+fixture_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fixtures'))
+fixture_filename = 'database_initialization.json'
+
+def get_extra_sql():
+    from localground.apps.settings import APPS_ROOT
+    sql_statements = open(os.path.join(APPS_ROOT, 'sql/custom.sql'), 'r').read()
+    return sql_statements
+
+def load_fixture(apps, schema_editor):
+    fixture_file = os.path.join(fixture_dir, fixture_filename)
+
+    fixture = open(fixture_file, 'rb')
+    objects = serializers.deserialize('json', fixture, ignorenonexistent=True)
+    for obj in objects:
+        obj.save()
+    fixture.close()
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
-        ('auth', '0006_require_contenttypes_0002'),
-        ('tagging', '0001_initial'),
-        #('registration', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='AttachmentUser',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-            ],
-            options={
-                'db_table': 'v_private_attachments',
-                'managed': False,
-            },
-        ),
         migrations.CreateModel(
             name='AudioUser',
             fields=[
@@ -48,6 +55,16 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'v_private_forms',
+                'managed': False,
+            },
+        ),
+        migrations.CreateModel(
+            name='MapImageUser',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+            ],
+            options={
+                'db_table': 'v_private_mapimages',
                 'managed': False,
             },
         ),
@@ -102,12 +119,12 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='ScanUser',
+            name='StyledMapUser',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
             ],
             options={
-                'db_table': 'v_private_scans',
+                'db_table': 'v_private_maps',
                 'managed': False,
             },
         ),
@@ -122,55 +139,22 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Attachment',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
-                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
-                ('host', models.CharField(max_length=255)),
-                ('virtual_path', models.CharField(max_length=255)),
-                ('file_name_orig', models.CharField(max_length=255)),
-                ('content_type', models.CharField(max_length=50)),
-                ('name', models.CharField(max_length=255, null=True, blank=True)),
-                ('description', models.TextField(null=True, blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
-                ('file_name_new', models.CharField(max_length=255)),
-                ('attribution', models.CharField(max_length=500, null=True, verbose_name=b'Author / Creator', blank=True)),
-                ('uuid', models.CharField(unique=True, max_length=8)),
-                ('file_name_thumb', models.CharField(max_length=255, null=True, blank=True)),
-                ('file_name_scaled', models.CharField(max_length=255, null=True, blank=True)),
-                ('scale_factor', models.FloatField(null=True, blank=True)),
-                ('email_sender', models.CharField(max_length=255, null=True, blank=True)),
-                ('email_subject', models.CharField(max_length=500, null=True, blank=True)),
-                ('email_body', models.TextField(null=True, blank=True)),
-                ('qr_rect', models.CharField(max_length=255, null=True, blank=True)),
-                ('qr_code', models.CharField(max_length=8, null=True, blank=True)),
-                ('is_short_form', models.BooleanField(default=False)),
-                ('last_updated_by', models.ForeignKey(related_name='site_attachment_related', to=settings.AUTH_USER_MODEL)),
-                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'ordering': ['id'],
-                'verbose_name': 'attachment',
-                'verbose_name_plural': 'attachments',
-            },
-        ),
-        migrations.CreateModel(
             name='Audio',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
                 ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
+                ('extras', jsonfield.fields.JSONField(null=True, blank=True)),
+                ('point', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
                 ('host', models.CharField(max_length=255)),
                 ('virtual_path', models.CharField(max_length=255)),
                 ('file_name_orig', models.CharField(max_length=255)),
                 ('content_type', models.CharField(max_length=50)),
                 ('name', models.CharField(max_length=255, null=True, blank=True)),
-                ('description', models.TextField(null=True, blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
+                ('description', models.TextField(null=True, verbose_name=b'caption', blank=True)),
+                ('tags', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None)),
                 ('file_name_new', models.CharField(max_length=255)),
-                ('attribution', models.CharField(max_length=500, null=True, verbose_name=b'Author / Creator', blank=True)),
-                ('point', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
+                ('attribution', models.CharField(help_text=b'Name of the person who actually created the media file (text)', max_length=500, null=True, verbose_name=b'Author / Creator', blank=True)),
                 ('last_updated_by', models.ForeignKey(related_name='site_audio_related', to=settings.AUTH_USER_MODEL)),
                 ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
@@ -184,8 +168,8 @@ class Migration(migrations.Migration):
             name='DataType',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=255)),
-                ('sql', models.CharField(max_length=500)),
+                ('name', models.CharField(max_length=255, editable=False)),
+                ('sql', models.CharField(max_length=500, editable=False)),
             ],
             options={
                 'ordering': ['name'],
@@ -209,10 +193,7 @@ class Migration(migrations.Migration):
                 ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
                 ('col_name_db', models.CharField(max_length=255, db_column=b'col_name')),
                 ('col_alias', models.CharField(max_length=255, verbose_name=b'column name')),
-                ('display_width', models.IntegerField()),
                 ('is_display_field', models.BooleanField(default=False)),
-                ('is_printable', models.BooleanField(default=True)),
-                ('has_snippet_field', models.BooleanField(default=True)),
                 ('ordering', models.IntegerField()),
                 ('data_type', models.ForeignKey(to='site.DataType')),
             ],
@@ -223,23 +204,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='FieldLayout',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
-                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
-                ('width', models.IntegerField()),
-                ('ordering', models.IntegerField()),
-                ('field', models.ForeignKey(to='site.Field')),
-                ('last_updated_by', models.ForeignKey(related_name='site_fieldlayout_related', to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'ordering': ['map_print__id', 'ordering'],
-                'verbose_name': 'field-layout',
-                'verbose_name_plural': 'field-layouts',
-            },
-        ),
-        migrations.CreateModel(
             name='Form',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -247,7 +211,7 @@ class Migration(migrations.Migration):
                 ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
                 ('name', models.CharField(max_length=255, null=True, blank=True)),
                 ('description', models.TextField(null=True, blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
+                ('tags', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None)),
                 ('access_key', models.CharField(max_length=16, null=True, blank=True)),
                 ('slug', models.SlugField(help_text=b'A few words, separated by dashes "-", to be used as part of the url', max_length=100, verbose_name=b'Friendly URL')),
                 ('table_name', models.CharField(unique=True, max_length=255)),
@@ -298,12 +262,15 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
                 ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
-                ('name', models.CharField(max_length=255, null=True, blank=True)),
+                ('title', models.CharField(max_length=255)),
                 ('description', models.TextField(null=True, blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
-                ('access_key', models.CharField(max_length=16, null=True, blank=True)),
-                ('slug', models.SlugField(help_text=b'A few words, separated by dashes "-", to be used as part of the url', max_length=100, verbose_name=b'Friendly URL')),
+                ('data_source', models.TextField(null=True, blank=True)),
+                ('symbol_shape', models.TextField(null=True, blank=True)),
+                ('layer_type', models.CharField(default=b'basic', max_length=64, choices=[(b'categorical', b'Category'), (b'continuous', b'Continuous'), (b'basic', b'Basic'), (b'individual', b'Individual Sites')])),
+                ('filters', jsonfield.fields.JSONField(null=True, blank=True)),
                 ('symbols', jsonfield.fields.JSONField(null=True, blank=True)),
+                ('last_updated_by', models.ForeignKey(related_name='site_layer_related', to=settings.AUTH_USER_MODEL)),
+                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
@@ -326,6 +293,41 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='MapImage',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
+                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
+                ('host', models.CharField(max_length=255)),
+                ('virtual_path', models.CharField(max_length=255)),
+                ('file_name_orig', models.CharField(max_length=255)),
+                ('content_type', models.CharField(max_length=50)),
+                ('name', models.CharField(max_length=255, null=True, blank=True)),
+                ('description', models.TextField(null=True, verbose_name=b'caption', blank=True)),
+                ('tags', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None)),
+                ('file_name_new', models.CharField(max_length=255)),
+                ('attribution', models.CharField(help_text=b'Name of the person who actually created the media file (text)', max_length=500, null=True, verbose_name=b'Author / Creator', blank=True)),
+                ('uuid', models.CharField(unique=True, max_length=8)),
+                ('file_name_thumb', models.CharField(max_length=255, null=True, blank=True)),
+                ('file_name_scaled', models.CharField(max_length=255, null=True, blank=True)),
+                ('scale_factor', models.FloatField(null=True, blank=True)),
+                ('email_sender', models.CharField(max_length=255, null=True, blank=True)),
+                ('email_subject', models.CharField(max_length=500, null=True, blank=True)),
+                ('email_body', models.TextField(null=True, blank=True)),
+                ('qr_rect', models.CharField(max_length=255, null=True, blank=True)),
+                ('qr_code', models.CharField(max_length=8, null=True, blank=True)),
+                ('map_rect', models.CharField(max_length=255, null=True, blank=True)),
+                ('last_updated_by', models.ForeignKey(related_name='site_mapimage_related', to=settings.AUTH_USER_MODEL)),
+                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('processed_image', models.ForeignKey(blank=True, to='site.ImageOpts', null=True)),
+            ],
+            options={
+                'ordering': ['id'],
+                'verbose_name': 'map-image',
+                'verbose_name_plural': 'map-images',
+            },
+        ),
+        migrations.CreateModel(
             name='Marker',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -333,11 +335,12 @@ class Migration(migrations.Migration):
                 ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
                 ('name', models.CharField(max_length=255, null=True, blank=True)),
                 ('description', models.TextField(null=True, blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
+                ('tags', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None)),
+                ('extras', jsonfield.fields.JSONField(null=True, blank=True)),
                 ('point', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
                 ('polyline', django.contrib.gis.db.models.fields.LineStringField(srid=4326, null=True, blank=True)),
                 ('polygon', django.contrib.gis.db.models.fields.PolygonField(srid=4326, null=True, blank=True)),
-                ('color', models.CharField(max_length=6)),
+                ('color', models.CharField(default=b'CCCCCC', max_length=6)),
                 ('last_updated_by', models.ForeignKey(related_name='site_marker_related', to=settings.AUTH_USER_MODEL)),
                 ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
@@ -370,8 +373,8 @@ class Migration(migrations.Migration):
             name='OverlayType',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=255, blank=True)),
-                ('description', models.TextField(blank=True)),
+                ('name', models.CharField(max_length=255, editable=False, blank=True)),
+                ('description', models.TextField(editable=False, blank=True)),
             ],
             options={
                 'verbose_name': 'overlay-type',
@@ -384,16 +387,17 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
                 ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
+                ('extras', jsonfield.fields.JSONField(null=True, blank=True)),
+                ('point', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
                 ('host', models.CharField(max_length=255)),
                 ('virtual_path', models.CharField(max_length=255)),
                 ('file_name_orig', models.CharField(max_length=255)),
                 ('content_type', models.CharField(max_length=50)),
                 ('name', models.CharField(max_length=255, null=True, blank=True)),
-                ('description', models.TextField(null=True, blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
+                ('description', models.TextField(null=True, verbose_name=b'caption', blank=True)),
+                ('tags', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None)),
                 ('file_name_new', models.CharField(max_length=255)),
-                ('attribution', models.CharField(max_length=500, null=True, verbose_name=b'Author / Creator', blank=True)),
-                ('point', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
+                ('attribution', models.CharField(help_text=b'Name of the person who actually created the media file (text)', max_length=500, null=True, verbose_name=b'Author / Creator', blank=True)),
                 ('file_name_large', models.CharField(max_length=255)),
                 ('file_name_medium', models.CharField(max_length=255)),
                 ('file_name_medium_sm', models.CharField(max_length=255)),
@@ -418,7 +422,7 @@ class Migration(migrations.Migration):
                 ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
                 ('name', models.CharField(max_length=255, null=True, blank=True)),
                 ('description', models.TextField(null=True, blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
+                ('tags', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None)),
                 ('access_key', models.CharField(max_length=16, null=True, blank=True)),
                 ('code', jsonfield.fields.JSONField(null=True, blank=True)),
                 ('slug', models.SlugField(help_text=b'A few words, separated by dashes "-", to be used as part of the url', max_length=100, verbose_name=b'Friendly URL')),
@@ -448,16 +452,13 @@ class Migration(migrations.Migration):
                 ('uuid', models.CharField(unique=True, max_length=8)),
                 ('name', models.CharField(max_length=255, verbose_name=b'Map Title', blank=True)),
                 ('description', models.TextField(null=True, verbose_name=b'Instructions', blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
+                ('tags', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None)),
                 ('map_width', models.IntegerField()),
                 ('map_height', models.IntegerField()),
                 ('map_image_path', models.CharField(max_length=255)),
                 ('pdf_path', models.CharField(max_length=255)),
                 ('preview_image_path', models.CharField(max_length=255)),
-                ('form_column_widths', models.CharField(max_length=200, null=True, blank=True)),
-                ('sorted_field_ids', models.CharField(max_length=100, null=True, db_column=b'form_column_ids', blank=True)),
                 ('deleted', models.BooleanField(default=False)),
-                ('form', models.ForeignKey(blank=True, to='site.Form', null=True)),
                 ('last_updated_by', models.ForeignKey(related_name='site_print_related', to=settings.AUTH_USER_MODEL)),
                 ('layout', models.ForeignKey(to='site.Layout')),
             ],
@@ -475,76 +476,18 @@ class Migration(migrations.Migration):
                 ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
                 ('name', models.CharField(max_length=255, null=True, blank=True)),
                 ('description', models.TextField(null=True, blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
+                ('tags', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None)),
                 ('access_key', models.CharField(max_length=16, null=True, blank=True)),
                 ('extents', django.contrib.gis.db.models.fields.PolygonField(srid=4326, null=True, blank=True)),
                 ('slug', models.SlugField(help_text=b'A few words, separated by dashes "-", to be used as part of the url', max_length=100, verbose_name=b'Friendly URL')),
                 ('access_authority', models.ForeignKey(db_column=b'view_authority', verbose_name=b'Sharing', to='site.ObjectAuthority')),
+                ('last_updated_by', models.ForeignKey(related_name='site_project_related', to=settings.AUTH_USER_MODEL)),
+                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'abstract': False,
                 'verbose_name': 'project',
                 'verbose_name_plural': 'projects',
-            },
-        ),
-        migrations.CreateModel(
-            name='Scan',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
-                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
-                ('host', models.CharField(max_length=255)),
-                ('virtual_path', models.CharField(max_length=255)),
-                ('file_name_orig', models.CharField(max_length=255)),
-                ('content_type', models.CharField(max_length=50)),
-                ('name', models.CharField(max_length=255, null=True, blank=True)),
-                ('description', models.TextField(null=True, blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
-                ('file_name_new', models.CharField(max_length=255)),
-                ('attribution', models.CharField(max_length=500, null=True, verbose_name=b'Author / Creator', blank=True)),
-                ('uuid', models.CharField(unique=True, max_length=8)),
-                ('file_name_thumb', models.CharField(max_length=255, null=True, blank=True)),
-                ('file_name_scaled', models.CharField(max_length=255, null=True, blank=True)),
-                ('scale_factor', models.FloatField(null=True, blank=True)),
-                ('email_sender', models.CharField(max_length=255, null=True, blank=True)),
-                ('email_subject', models.CharField(max_length=500, null=True, blank=True)),
-                ('email_body', models.TextField(null=True, blank=True)),
-                ('qr_rect', models.CharField(max_length=255, null=True, blank=True)),
-                ('qr_code', models.CharField(max_length=8, null=True, blank=True)),
-                ('map_rect', models.CharField(max_length=255, null=True, blank=True)),
-                ('last_updated_by', models.ForeignKey(related_name='site_scan_related', to=settings.AUTH_USER_MODEL)),
-                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-                ('processed_image', models.ForeignKey(blank=True, to='site.ImageOpts', null=True)),
-                ('project', models.ForeignKey(related_name='scan+', to='site.Project')),
-                ('source_print', models.ForeignKey(blank=True, to='site.Print', null=True)),
-            ],
-            options={
-                'ordering': ['id'],
-                'verbose_name': 'map-image',
-                'verbose_name_plural': 'map-images',
-            },
-        ),
-        migrations.CreateModel(
-            name='Snippet',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
-                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
-                ('host', models.CharField(max_length=255)),
-                ('virtual_path', models.CharField(max_length=255)),
-                ('file_name_orig', models.CharField(max_length=255)),
-                ('content_type', models.CharField(max_length=50)),
-                ('point', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
-                ('shape_string_json', models.CharField(max_length=512, blank=True)),
-                ('is_blank', models.BooleanField(default=False)),
-                ('last_updated_by', models.ForeignKey(related_name='site_snippet_related', to=settings.AUTH_USER_MODEL)),
-                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-                ('source_attachment', models.ForeignKey(to='site.Attachment')),
-            ],
-            options={
-                'ordering': ['id'],
-                'verbose_name': 'snippet',
-                'verbose_name_plural': 'snippets',
             },
         ),
         migrations.CreateModel(
@@ -554,6 +497,56 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
                 ('description', models.CharField(max_length=2000, null=True, blank=True)),
             ],
+            options={
+                'ordering': ('id',),
+            },
+        ),
+        migrations.CreateModel(
+            name='StyledMap',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
+                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
+                ('name', models.CharField(max_length=255, null=True, blank=True)),
+                ('description', models.TextField(null=True, blank=True)),
+                ('tags', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None)),
+                ('center', django.contrib.gis.db.models.fields.PointField(srid=4326)),
+                ('zoom', models.IntegerField()),
+                ('panel_styles', jsonfield.fields.JSONField(null=True, blank=True)),
+                ('slug', models.SlugField(help_text=b'A few words, separated by dashes "-", to be used as part of the url', max_length=100, verbose_name=b'Friendly URL')),
+            ],
+            options={
+                'verbose_name': 'styled_map',
+                'verbose_name_plural': 'styled_maps',
+            },
+        ),
+        migrations.CreateModel(
+            name='TileSet',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
+                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
+                ('name', models.CharField(max_length=255, null=True, blank=True)),
+                ('description', models.TextField(null=True, blank=True)),
+                ('tags', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None)),
+                ('min_zoom', models.IntegerField(default=1)),
+                ('max_zoom', models.IntegerField(default=20)),
+                ('is_printable', models.BooleanField(default=False)),
+                ('provider_id', models.CharField(max_length=30, blank=True)),
+                ('tile_url', models.CharField(max_length=2000, blank=True)),
+                ('static_url', models.CharField(max_length=2000, blank=True)),
+                ('key', models.CharField(max_length=512, null=True, blank=True)),
+                ('attribution', models.CharField(max_length=1000, null=True, blank=True)),
+                ('extras', jsonfield.fields.JSONField(null=True, blank=True)),
+                ('last_updated_by', models.ForeignKey(related_name='site_tileset_related', to=settings.AUTH_USER_MODEL)),
+                ('overlay_source', models.ForeignKey(to='site.OverlaySource')),
+                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'ordering': ('id',),
+                'verbose_name': 'tile',
+                'verbose_name_plural': 'tiles',
+            },
         ),
         migrations.CreateModel(
             name='UploadSource',
@@ -607,16 +600,17 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
                 ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
+                ('extras', jsonfield.fields.JSONField(null=True, blank=True)),
+                ('point', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
                 ('host', models.CharField(max_length=255)),
                 ('virtual_path', models.CharField(max_length=255)),
                 ('file_name_orig', models.CharField(max_length=255)),
                 ('content_type', models.CharField(max_length=50)),
                 ('name', models.CharField(max_length=255, null=True, blank=True)),
-                ('description', models.TextField(null=True, blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
+                ('description', models.TextField(null=True, verbose_name=b'caption', blank=True)),
+                ('tags', django.contrib.postgres.fields.ArrayField(default=list, base_field=models.TextField(), size=None)),
                 ('file_name_new', models.CharField(max_length=255)),
-                ('attribution', models.CharField(max_length=500, null=True, verbose_name=b'Author / Creator', blank=True)),
-                ('point', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True, blank=True)),
+                ('attribution', models.CharField(help_text=b'Name of the person who actually created the media file (text)', max_length=500, null=True, verbose_name=b'Author / Creator', blank=True)),
                 ('last_updated_by', models.ForeignKey(related_name='site_video_related', to=settings.AUTH_USER_MODEL)),
                 ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
                 ('project', models.ForeignKey(related_name='video+', to='site.Project')),
@@ -627,62 +621,30 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'videos',
             },
         ),
-        migrations.CreateModel(
-            name='WMSOverlay',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date_created', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds)),
-                ('time_stamp', models.DateTimeField(default=localground.apps.lib.helpers.get_timestamp_no_milliseconds, db_column=b'last_updated')),
-                ('name', models.CharField(max_length=255, null=True, blank=True)),
-                ('description', models.TextField(null=True, blank=True)),
-                ('tags', tagging_autocomplete.models.TagAutocompleteField(max_length=255, null=True, blank=True)),
-                ('wms_url', models.CharField(max_length=500, blank=True)),
-                ('min_zoom', models.IntegerField(default=1)),
-                ('max_zoom', models.IntegerField(default=20)),
-                ('extents', django.contrib.gis.db.models.fields.PolygonField(srid=4326, null=True, blank=True)),
-                ('is_printable', models.BooleanField(default=False)),
-                ('provider_id', models.CharField(max_length=30, blank=True)),
-                ('auth_groups', models.ManyToManyField(to='auth.Group', blank=True)),
-                ('last_updated_by', models.ForeignKey(related_name='site_wmsoverlay_related', to=settings.AUTH_USER_MODEL)),
-                ('overlay_source', models.ForeignKey(to='site.OverlaySource')),
-                ('overlay_type', models.ForeignKey(to='site.OverlayType')),
-                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'ordering': ('id',),
-                'verbose_name': 'tile',
-                'verbose_name_plural': 'tiles',
-            },
-        ),
         migrations.AddField(
-            model_name='scan',
-            name='status',
-            field=models.ForeignKey(to='site.StatusCode'),
-        ),
-        migrations.AddField(
-            model_name='scan',
-            name='upload_source',
-            field=models.ForeignKey(to='site.UploadSource'),
-        ),
-        migrations.AddField(
-            model_name='project',
+            model_name='styledmap',
             name='basemap',
-            field=models.ForeignKey(default=1, to='site.WMSOverlay'),
+            field=models.ForeignKey(default=1, to='site.TileSet'),
         ),
         migrations.AddField(
-            model_name='project',
+            model_name='styledmap',
             name='last_updated_by',
-            field=models.ForeignKey(related_name='site_project_related', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='site_styledmap_related', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
-            model_name='project',
+            model_name='styledmap',
             name='owner',
             field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
+            model_name='styledmap',
+            name='project',
+            field=models.ForeignKey(related_name='styledmap+', to='site.Project'),
+        ),
+        migrations.AddField(
             model_name='print',
             name='map_provider',
-            field=models.ForeignKey(related_name='prints_print_wmsoverlays', db_column=b'fk_provider', to='site.WMSOverlay'),
+            field=models.ForeignKey(related_name='prints_print_tilesets', db_column=b'fk_provider', to='site.TileSet'),
         ),
         migrations.AddField(
             model_name='print',
@@ -705,24 +667,34 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(to='site.Project'),
         ),
         migrations.AddField(
-            model_name='layer',
-            name='access_authority',
-            field=models.ForeignKey(db_column=b'view_authority', verbose_name=b'Sharing', to='site.ObjectAuthority'),
+            model_name='mapimage',
+            name='project',
+            field=models.ForeignKey(related_name='mapimage+', to='site.Project'),
+        ),
+        migrations.AddField(
+            model_name='mapimage',
+            name='source_print',
+            field=models.ForeignKey(blank=True, to='site.Print', null=True),
+        ),
+        migrations.AddField(
+            model_name='mapimage',
+            name='status',
+            field=models.ForeignKey(default=1, to='site.StatusCode'),
+        ),
+        migrations.AddField(
+            model_name='mapimage',
+            name='upload_source',
+            field=models.ForeignKey(default=1, to='site.UploadSource'),
         ),
         migrations.AddField(
             model_name='layer',
-            name='last_updated_by',
-            field=models.ForeignKey(related_name='site_layer_related', to=settings.AUTH_USER_MODEL),
-        ),
-        migrations.AddField(
-            model_name='layer',
-            name='owner',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            name='styled_map',
+            field=models.ForeignKey(related_name='layer+', to='site.StyledMap'),
         ),
         migrations.AddField(
             model_name='imageopts',
-            name='source_scan',
-            field=models.ForeignKey(to='site.Scan'),
+            name='source_mapimage',
+            field=models.ForeignKey(to='site.MapImage'),
         ),
         migrations.AddField(
             model_name='form',
@@ -745,16 +717,6 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(to='site.Project'),
         ),
         migrations.AddField(
-            model_name='fieldlayout',
-            name='map_print',
-            field=models.ForeignKey(to='site.Print'),
-        ),
-        migrations.AddField(
-            model_name='fieldlayout',
-            name='owner',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
-        ),
-        migrations.AddField(
             model_name='field',
             name='form',
             field=models.ForeignKey(to='site.Form'),
@@ -774,25 +736,9 @@ class Migration(migrations.Migration):
             name='project',
             field=models.ForeignKey(related_name='audio+', to='site.Project'),
         ),
-        migrations.AddField(
-            model_name='attachment',
-            name='project',
-            field=models.ForeignKey(related_name='attachment+', to='site.Project'),
-        ),
-        migrations.AddField(
-            model_name='attachment',
-            name='source_print',
-            field=models.ForeignKey(blank=True, to='site.Print', null=True),
-        ),
-        migrations.AddField(
-            model_name='attachment',
-            name='status',
-            field=models.ForeignKey(to='site.StatusCode'),
-        ),
-        migrations.AddField(
-            model_name='attachment',
-            name='upload_source',
-            field=models.ForeignKey(to='site.UploadSource'),
+        migrations.AlterUniqueTogether(
+            name='styledmap',
+            unique_together=set([('slug', 'owner')]),
         ),
         migrations.AlterUniqueTogether(
             name='project',
@@ -800,7 +746,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='layer',
-            unique_together=set([('slug', 'owner')]),
+            unique_together=set([('title', 'styled_map')]),
         ),
         migrations.AlterUniqueTogether(
             name='genericassociation',
@@ -811,11 +757,9 @@ class Migration(migrations.Migration):
             unique_together=set([('slug', 'owner')]),
         ),
         migrations.AlterUniqueTogether(
-            name='fieldlayout',
-            unique_together=set([('map_print', 'field')]),
-        ),
-        migrations.AlterUniqueTogether(
             name='field',
             unique_together=set([('col_alias', 'form'), ('col_name_db', 'form')]),
         ),
+        migrations.RunPython(load_fixture),
+        migrations.RunSQL(get_extra_sql()),
     ]
