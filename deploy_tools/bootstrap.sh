@@ -98,7 +98,6 @@ echo "Y" | sudo apt-get install redis-server
 # SVG Libraries #
 #################
 sudo apt-get -y install python-cffi
-sudo apt-get -y install python-cffi libffi
 sudo apt-get -y install libffi-dev
 
 ############################
