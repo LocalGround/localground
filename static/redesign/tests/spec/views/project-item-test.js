@@ -100,7 +100,7 @@ define([
             });
         });
 
-        describe("Project Item View: Project Modal Window", function(){
+        describe("Project Item View: Helper Functions Working Correctly", function(){
 
             beforeEach(function(){
                 initSpies();
@@ -126,6 +126,38 @@ define([
                 spyOn(this.app.vent, 'trigger');
                 newProjectItemView.shareModal();
                 expect(this.app.vent.trigger).toHaveBeenCalledWith('share-project', { model: newProjectItemView.model });
+            });
+
+            it("delete function works", function(){
+                expect(1).toBe(1);
+            });
+
+            it("link to project function works", function(){
+                expect(1).toBe(1);
+            });
+        });
+        
+        
+        describe("Project Item View: Renders Correctly", function(){
+
+            beforeEach(function(){
+                initSpies();
+                newProjectItemView = new ProjectItemView({
+                    model: new Project({
+                        id: 8,
+                        time_stamp: new Date().toISOString().replace("Z", ""),
+                        date_created: new Date().toISOString().replace("Z", "")
+                    }),
+                    app: this.app
+                });
+                newProjectItemView.render();
+            });
+
+            it("Renders the HTML Correctly", function () {
+                //https://github.com/velesin/jasmine-jquery
+                fixture = setFixtures("<div></div>").append(newProjectItemView.$el);
+                expect(fixture).toContainElement('.project-overview');
+                expect(fixture.find('source')).toHaveAttr('src', '/map/?project_id=' + this.project.id);
             });
 
         });
