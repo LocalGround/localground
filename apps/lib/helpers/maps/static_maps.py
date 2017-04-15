@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 from os import path
 from django.conf import settings
 from django.conf import settings
@@ -45,7 +46,7 @@ class StaticMap():
         map_url = None
         if map_type.overlay_source.name == 'mapbox':
             zoom = zoom - 1 #this is a workaround to a mapbox bug:
-            map_url = map_type.static_url + "?access_token=" + settings.MAPBOX_API_KEY
+            map_url = map_type.static_url + "?access_token=" + os.environ.get('MAPBOX_API_KEY', settings.MAPBOX_API_KEY)
             map_url = map_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
             
         #if google is the map provider:
