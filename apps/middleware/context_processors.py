@@ -1,3 +1,4 @@
+import os
 def persistant_queries(request):
     """
     Intercepts HttpRequests in order to add relevant data to the template
@@ -10,13 +11,13 @@ def persistant_queries(request):
     from localground.apps.site.models import Form
     import simplejson as json
     from django.conf import settings
-    
+    #raise Exception(os.environ)
     context = {
         'path': request.path,
         'user': request.user,
         'is_authenticated': request.user.is_authenticated(),
         'is_impersonation': request.session.get('active_impersonation') is not None,
-        'MAPBOX_API_KEY': settings.MAPBOX_API_KEY,
+        'MAPBOX_API_KEY': settings.MAPBOX_API_KEY or os.environ['MAPBOX_API_KEY'],
         'serverURL': settings.SERVER_URL,
         'JQUERY_PATH': settings.JQUERY_PATH,
         'JQUERY_UI_PATH': settings.JQUERY_UI_PATH,
