@@ -172,7 +172,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
                             center, host, map_title=None, instructions=None, mapimage_ids=None,
                             do_save=True):
         from localground.apps.site import models
-        from localground.apps.lib.helpers import generic, StaticMap, Extents
+        from localground.apps.lib.helpers import generic, StaticMap, Extents, AcetateLayer
 
         layers, mapimages = None, None
         if mapimage_ids is not None:
@@ -232,7 +232,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 
     def generate_pdf(self):
         from localground.apps.site import models
-        from localground.apps.lib.helpers import Extents, generic, StaticMap, Report
+        from localground.apps.lib.helpers import Extents, generic, StaticMap, Report, AcetateLayer
         import os
 
         # use static map helper function to calculate additional geometric
@@ -251,17 +251,14 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         extents = Extents.get_extents_from_center_lat_lng(
             self.center, self.zoom, map_width, map_height
         )
-        #info = m.get_basemap_and_extents(
-        #    self.map_provider, self.zoom, self.center, map_width, map_height)
-        #map_image = info.get('map_image')
-        #northeast = info.get('northeast')
-        #southwest = info.get('southwest')
+
         bbox = (extents.northeast.coords, extents.southwest.coords)
         bbox = [element for tupl in bbox for element in tupl]
         qr_size = self.layout.qr_size_pixels
         border_width = self.layout.border_width
 
         '''
+        
         #TODO: Replace w/new acetate layer functionality:
         overlay_image = m.get_map(
             layers,
@@ -271,9 +268,20 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
             height=map_height,
             width=map_width,
             show_north_arrow=True)
-
         map_image.paste(overlay_image, (0, 0), overlay_image)
         '''
+        
+        a = AcetateLayer(
+            file_path=path,
+            center=self.center,
+            project_id=self.project.id,
+            zoom=self.zoom,
+            width=map_width,
+            height=map_height
+        )
+        overlay_image = a.generate_acetate_layer()
+        if overlay_image is not None:
+            map_image.paste(overlay_image, (0, 0), overlay_image)
 
         if self.layout.is_data_entry:
             map_image = map_image.convert("L")  # convert to black and white

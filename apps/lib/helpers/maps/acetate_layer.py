@@ -193,24 +193,31 @@ $ python manage.py shell
 
 from localground.apps.lib.helpers.maps.acetate_layer import AcetateLayer
 a = AcetateLayer()
+a.generate_acetate_layer_with_map()
     '''
     
-    def __init__(self, center=None, project_id=2, zoom=13, width=640, height=640):
+    def __init__(self, file_path=".", center=None, project_id=2, zoom=13, width=640, height=640):
         self.center = center or Point(-122.2939, 37.8686)
         self.zoom = zoom
         self.width = width
         self.height = height
         self.project_id = project_id
-        self.svg_path = 'map_acetate.svg'
-        self.acetate_path = 'map_acetate.png'
-        self.basemap_path = 'map_base.png'
-        self.final_path = 'map_final.png'
+        self.svg_path = file_path + '/map_acetate.svg'
+        self.acetate_path = file_path + '/map_acetate.png'
+        self.basemap_path = file_path + '/map_base.png'
+        self.final_path = file_path + '/map_final.png'
+        # self.generate_acetate_layer()
+        # self.generate_static_map()
+        # self.generate_final_map()
+
+    def generate_acetate_layer_with_map(self):
         self.generate_acetate_layer()
         self.generate_static_map()
         self.generate_final_map()
-
+        
     def generate_acetate_layer(self):
         from localground.apps.site import models
+        from PIL import Image
         paths, path_attributes, icon = [], [], None
         keys = Icon.get_icon_keys()
         forms = models.Form.objects.filter(projects__id=self.project_id)
@@ -248,9 +255,11 @@ a = AcetateLayer()
                 'viewBox': '0 0 {0} {1}'.format(self.width, self.height)
             }
         if len(paths) == 0:
-            return
+            return None
         wsvg(paths, attributes=path_attributes, svg_attributes=svg_attributes, filename=self.svg_path)
         self.toPNG()
+        im = Image.open(self.acetate_path, 'r')
+        return im
 
     def generate_static_map(self):
         from localground.apps.site import models
@@ -295,6 +304,7 @@ a = AcetateLayer()
         os.environ['LC_ALL'] = 'en_US.UTF-8'
         
         # then import cairosvg:
+        #print(self.acetate_path)
         import cairosvg
         cairosvg.svg2png(url=self.svg_path,
             write_to=self.acetate_path

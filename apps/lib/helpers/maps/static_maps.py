@@ -42,8 +42,10 @@ class StaticMap():
         self.east = None
         
     def get_basemap(self, map_type, zoom, center, width, height):
-        import os, urllib, StringIO, Image
+        import os, urllib, StringIO, Image, time
         map_url = None
+        total_tries = 1
+        tries = 0
         if map_type.overlay_source.name == 'mapbox':
             zoom = zoom - 1 #this is a workaround to a mapbox bug:
             map_url = map_type.static_url + "?access_token=" + os.environ.get('MAPBOX_API_KEY', settings.MAPBOX_API_KEY)
@@ -56,90 +58,28 @@ class StaticMap():
             file = urllib.urlopen(map_url)
             data = json.loads(file.read())
             map_url = data[0].get('image')
-            import time
+            total_tries = 3
             time.sleep(2) # delay for stamen map b/c URL returned before image exists
         else:
             map_url = map_type.static_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
 
-        print(map_url)
-        f = urllib.urlopen(map_url)
-        map_image = StringIO.StringIO(f.read()) # constructs a StringIO holding the image
-        map_image = Image.open(map_image)
-        map_image = map_image.convert('RGB')
-        '''
-        try:
-            f = urllib.urlopen(map_url)
-            map_image = StringIO.StringIO(f.read()) # constructs a StringIO holding the image
-            map_image = Image.open(map_image)
-            map_image = map_image.convert('RGB')
-        except IOError:
-            error_image_url = 'https://chart.googleapis.com/chart?chst=d_fnote_title&chld=sticky_y|1|FF0000|l|Map%20Service%20Unavailable|'
-            file = urllib.urlopen(error_image_url)
-            map_image = StringIO.StringIO(file.read()) # constructs a StringIO holding the image
-            map_image = Image.open(map_image).convert('RGB')
-        '''
+        # This '3 tries' while loop accounts for the fact that in the
+        # Stamen static map print, the path is sometimes returned well
+        # before the file exists on the server. So, after each failure,
+        # it waits 2 seconds and tries again:
+        while tries < total_tries:
+            try:
+                f = urllib.urlopen(map_url)
+                map_image = StringIO.StringIO(f.read()) # constructs a StringIO holding the image
+                map_image = Image.open(map_image)
+                map_image = map_image.convert('RGB')
+                tries += 1
+                break
+            except IOError:
+                print('Error getting image. Trying again...')
+                tries += 1
+                time.sleep(2)
         return map_image
-        
-    '''
-    # Deprecated, b/c no longer using map server to render overlays:
-    def get_map(self, layers, southwest=None, northeast=None, mapimages=None,
-                srs=Units.EPSG_900913, height=300, width=300, format=OutputFormat.PNG,
-                opacity=100, extra_layers=None, show_north_arrow=False, **kwargs):
-        """
-        Renders a MapServer-generated map, in the user-specified format, according
-        to a set of optional key word arguments.
-        """
-        if layers is not None:
-            self.layers.extend(layers)
-        msmap = mapscript.mapObj(settings.MAP_FILE)
-        
-        #draw base layers:
-        if extra_layers is not None:
-            self.layers.extend(extra_layers)
-        for n in self.layers:
-            l = msmap.getLayerByName(n.provider_id) #WMS_Overlay Object
-            l.status = 1
-            l.opacity = opacity
-        
-        #set map image width and height:
-        msmap.set_width(width)
-        msmap.set_height(height)
-        
-        #turn on scale bar:
-        msmap.scalebar.status = 3       # 3=code for 'embed'
-        
-        if show_north_arrow:
-            self._add_north_arrow(msmap, height)
-        
-        #mapimages = [1]
-        if mapimages is not None and len(mapimages) > 0:
-            self._render_mapimages(msmap, mapimages, srs)
-            
-        #update map extents, if specified:
-        if southwest is not None and northeast is not None:
-            if southwest.srs != srs: southwest.transform(srs)
-            if northeast.srs != srs: northeast.transform(srs)
-            #west, south, east, north:
-            msmap.setExtent(southwest.x, southwest.y, northeast.x, northeast.y)
-            msmap.setProjection('init=epsg:%s' % (srs))  
-        
-        #render map image:
-        map_image = msmap.draw()
-        
-        #convert from MapScript Image to PIL Image (for further manipulation):
-        bytes = StringIO.StringIO(map_image.getBytes())
-        new_image = Image.open(bytes)#.convert('RGBA')
-        return_image = Image.new(mode='RGBA',size=(width,height),color=(255,255,255,0))
-        return_image.paste(new_image, (0, 0), new_image)
-        
-        #return object    
-        if format == OutputFormat.HTTP_RESPONSE:
-            response = HttpResponse(mimetype="image/png")
-            return_image.save(response, "PNG")
-            return response
-        elif format == OutputFormat.PNG:
-            return return_image
-    '''
         
     def _render_mapimages(self, msmap, mapimages, srs):
         for mapimage in mapimages:
