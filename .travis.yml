@@ -83,6 +83,7 @@ install:
   - pip uninstall cffi
   - pip install cffi==1.10.0
   - pip install cairocffi==0.8.0
+  - pip install cairosvg==1.0.22
 
 before_script:
   - psql -c 'create database lg_database;' -U postgres

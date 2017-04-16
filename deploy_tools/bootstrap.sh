@@ -112,6 +112,7 @@ sudo pip install -r /vagrant/deploy_tools/requirements.txt
 sudo pip uninstall cffi
 sudo pip install cffi==1.10.0
 sudo pip install cairocffi==0.8.0
+sudo pip install cairosvg==1.0.22
 
 #############################
 # Install Node.js and Bower #
