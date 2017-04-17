@@ -142,11 +142,7 @@ define([
                 expect(ProjectItemView.prototype.deleteProject).toHaveBeenCalledTimes(1);
                 expect(Project.prototype.destroy).toHaveBeenCalledTimes(1);
             });
-
-            it("link to project function works", function(){
-                //JOHN TODO:
-                expect(1).toBe(1);
-            });
+            
         });
 
 

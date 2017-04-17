@@ -14,8 +14,8 @@ define(["jquery",
             childViewContainer: "#userList",
             template: Handlebars.compile(ItemTemplate),
             events: {
-                'click .delete_project': 'deleteProject',
-                'click .save-project-settings': 'saveProjectSettings',
+                //'click .delete_project': 'deleteProject',
+                //'click .save-project-settings': 'saveProjectSettings',
                 'click .new_user_button': 'addUserButton',
                 'click .delete-project-user': 'removeRow',
                 'blur #projectName': 'generateSlug'

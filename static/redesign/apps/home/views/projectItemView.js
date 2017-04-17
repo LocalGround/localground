@@ -26,8 +26,8 @@ define(["marionette",
 
             template: Handlebars.compile(ItemTemplate),
             events: {
-                'click .action': 'shareModal',
-                'click #delete_project': 'deleteProject'
+                'click .action': 'shareModal'//,
+                //'click #delete_project': 'deleteProjectView'
             },
 
 
@@ -55,7 +55,7 @@ define(["marionette",
                 };
             },
 
-            deleteProject: function () {
+            deleteProjectView: function () {
                 if (!confirm("Are you sure you want to delete this project?")) {
                     return;
                 }
