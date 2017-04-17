@@ -35,6 +35,7 @@ define([
             this.loadRegions();
             this.modal = new Modal();
             this.listenTo(this.vent, 'share-project', this.showShareForm);
+            this.listenTo(this.vent, 'hide-modal', this.hideShareForm);
         },
 
         loadRegions: function () {
@@ -56,9 +57,14 @@ define([
                 width: 500,
                 // bind the scope of the save function to the source view:
                 saveFunction: shareFormView.saveProjectSettings.bind(shareFormView),
-                showDeleteButton: opts.model != null
+                showDeleteButton: opts.model != null,
+                deleteFunction: shareFormView.deleteProject.bind(shareFormView)
             });
             this.modal.show();
+        },
+        hideShareForm: function () {
+            console.log("hideShareForm");
+            this.modal.hide();
         },
 
         showToolbar: function () {

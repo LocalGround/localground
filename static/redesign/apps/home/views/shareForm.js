@@ -281,12 +281,14 @@ define(["jquery",
             },
 
             deleteProject: function () {
+                var that = this;
                 if (!confirm("Are you sure you want to delete this project?")) {
                     return;
                 }
-                this.model.destroy();
-                //this.$el.find('.modal').hide();
-
+                this.model.destroy({ success: function () {
+                    console.log(that.app.vent);
+                    that.app.vent.trigger('hide-modal');
+                }});
             },
 
             errorUserName: function(_usernameInput){
