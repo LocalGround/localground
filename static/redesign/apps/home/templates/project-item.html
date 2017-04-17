@@ -1,6 +1,9 @@
 <div class="project-overview" data-url="/map/?project_id={{ id }}">
     <div>
-        <h2 class="map-title">{{ name }}</h2>
+        <h2 class="map-title" >{{ name }}</h2>
+        <!-- Attempted to put data-url inside h2, but returns an undefined error
+        data-url="/map/?project_id={{ id }}"
+        -->
         <span class = "owner">Owner: {{ owner }}</span>
         <p>{{ caption }}</p>
     </div>
@@ -12,8 +15,6 @@
             Public
         {{/ifequal}}
         </a>
-        <!-- Replace the "5 Days ago" with the Date() function with info on current date-->
-        <!-- time_stamp -->
         <span class="action"><i class="fa fa-clock-o" aria-hidden="true"></i> {{timeAgo}}</span>
     </div>
 </div>

@@ -129,15 +129,27 @@ define([
             });
 
             it("delete function works", function(){
-                expect(1).toBe(1);
+
+                spyOn(window, 'confirm').and.returnValue(true);
+
+                fixture = setFixtures("<div></div>").append(newProjectItemView.$el);
+                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(0);
+                newProjectItemView.$el.find('.action').trigger('click');
+                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(1);
+                expect(ProjectItemView.prototype.deleteProject).toHaveBeenCalledTimes(0);
+                newProjectItemView.deleteProject();
+                expect(ProjectItemView.prototype.deleteProject).toHaveBeenCalledTimes(1);
+                expect(newProjectItemView.model).toBeUndefined();
+
+                //expect(1).toBe(1);
             });
 
             it("link to project function works", function(){
                 expect(1).toBe(1);
             });
         });
-        
-        
+
+
         describe("Project Item View: Renders Correctly", function(){
 
             beforeEach(function(){
@@ -158,6 +170,7 @@ define([
                 fixture = setFixtures("<div></div>").append(newProjectItemView.$el);
                 expect(fixture).toContainElement('.project-overview');
                 expect(fixture.find('source')).toHaveAttr('src', '/map/?project_id=' + this.project.id);
+                // Fix the render test
             });
 
         });
