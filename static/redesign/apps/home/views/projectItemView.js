@@ -27,16 +27,9 @@ define(["marionette",
             template: Handlebars.compile(ItemTemplate),
             events: {
                 'click .action': 'shareModal',
-                'click .project-overview' : "linkToProject"
-                //'click #delete_project': 'deleteProject'
+                'click #delete_project': 'deleteProject'
             },
-            linkToProject: function (e) {
-                if ($(e.target).hasClass('action')) {
-                    return;
-                }
-                var url = this.$el.find(".project-overview").attr("data-url");
-                window.location = url;
-            },
+
 
             className: "project-card",
 

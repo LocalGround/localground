@@ -1,12 +1,12 @@
-<div class="project-overview" data-url="/map/?project_id={{ id }}">
-    <div>
+<div class="project-overview" >
+    <a href="/map/?project_id={{ id }}">
         <h2 class="map-title" >{{ name }}</h2>
         <!-- Attempted to put data-url inside h2, but returns an undefined error
         data-url="/map/?project_id={{ id }}"
         -->
         <span class = "owner">Owner: {{ owner }}</span>
         <p>{{ caption }}</p>
-    </div>
+    </a>
     <div class = "project-detail">
         <a class="tag">
         {{#ifequal access_authority 1}}

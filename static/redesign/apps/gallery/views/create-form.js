@@ -198,6 +198,7 @@ define([
         },
 
         deleteForm: function () {
+            console.log("Delete Form");
             var that = this;
             if (!confirm("Are you sure you want to delete this form?")) {
                 return;

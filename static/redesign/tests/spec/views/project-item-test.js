@@ -26,6 +26,7 @@ define([
             spyOn(Project.prototype,'getProjectUsers').and.callThrough();
             spyOn(Project.prototype,'getProjectUserCount').and.callThrough();
             spyOn(Project.prototype,'getProjectUserByUsername').and.callThrough();
+            spyOn(Project.prototype,'destroy').and.callThrough();
 
             // Share Form
             spyOn(ShareForm.prototype,'saveProjectSettings').and.callThrough();
@@ -139,7 +140,7 @@ define([
                 expect(ProjectItemView.prototype.deleteProject).toHaveBeenCalledTimes(0);
                 newProjectItemView.deleteProject();
                 expect(ProjectItemView.prototype.deleteProject).toHaveBeenCalledTimes(1);
-                expect(newProjectItemView.model).toBeUndefined();
+                expect(Project.prototype.destroy).toHaveBeenCalledTimes(1);
             });
 
             it("link to project function works", function(){
@@ -167,34 +168,11 @@ define([
             it("Renders the HTML Correctly", function () {
                 // Here is the documentation for the renderer helpers:
                 // https://github.com/velesin/jasmine-jquery
-                /*
-                <div class="project-overview" data-url="/map/?project_id={{ id }}">
-                    <div>
-                        <h2 class="map-title">{{ name }}</h2>
-                        <span class = "owner">Owner: {{ owner }}</span>
-                        <p>{{ caption }}</p>
-                    </div>
-                    <div class = "project-detail">
-                        <a class="tag">
-                        {{#ifequal access_authority 1}}
-                            Private
-                        {{ else }}
-                            Public
-                        {{/ifequal}}
-                        </a>
-                        <!-- Replace the "5 Days ago" with the Date() function with info on current date-->
-                        <!-- time_stamp -->
-                        <span class="action"><i class="fa fa-clock-o" aria-hidden="true"></i> {{timeAgo}}</span>
-                    </div>
-                </div>
-                */
+
                 fixture = setFixtures("<div></div>").append(newProjectItemView.$el);
                 //check that all elements exist in the DOM:
                 expect(fixture).toContainElement('.project-overview');
-<<<<<<< HEAD
-                expect(fixture.find('source')).toHaveAttr('src', '/map/?project_id=' + this.project.id);
                 // Fix the render test
-=======
                 expect(fixture).toContainElement('.map-title');
                 expect(fixture).toContainElement('.owner');
                 expect(fixture).toContainElement('.project-detail');
@@ -209,7 +187,6 @@ define([
                 //1. check tag set correctly
                 //2. check owner set correctly
                 //3. check that time text is set correctly
->>>>>>> e5a06e3eb8fa779b319e73f5304f28ba20de5170
             });
 
         });
