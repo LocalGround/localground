@@ -31,6 +31,7 @@ require(['boot'], function () {
         'spec/views/layer-list-view-test.js',
         'spec/views/layer-list-child-view-test.js',
         'spec/views/project-item-test.js',
+        'spec/views/share-form-test.js',
 
         //APPS
         'spec/views/style-app-test.js',

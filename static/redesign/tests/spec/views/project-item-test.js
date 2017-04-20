@@ -16,9 +16,8 @@ define([
         initSpies = function () {
             // Project Item View
             spyOn(ProjectItemView.prototype, 'render').and.callThrough();
-            spyOn(ProjectItemView.prototype, 'linkToProject').and.callThrough();
             spyOn(ProjectItemView.prototype, 'shareModal').and.callThrough();
-            spyOn(ProjectItemView.prototype, 'deleteProject').and.callThrough();
+            spyOn(ProjectItemView.prototype, 'deleteProjectView').and.callThrough();
             spyOn(ProjectItemView.prototype, 'lastEdited').and.callThrough();
 
             // Project
@@ -27,13 +26,6 @@ define([
             spyOn(Project.prototype,'getProjectUserCount').and.callThrough();
             spyOn(Project.prototype,'getProjectUserByUsername').and.callThrough();
             spyOn(Project.prototype,'destroy').and.callThrough();
-
-            // Share Form
-            spyOn(ShareForm.prototype,'saveProjectSettings').and.callThrough();
-            spyOn(ShareForm.prototype,'createNewProjectUsers').and.callThrough();
-            spyOn(ShareForm.prototype,'addUserButton').and.callThrough();
-            spyOn(ShareForm.prototype,'blankInputs').and.callThrough();
-            spyOn(ShareForm.prototype,'deleteProject').and.callThrough();
 
         };
 
@@ -137,61 +129,13 @@ define([
                 expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(0);
                 newProjectItemView.$el.find('.action').trigger('click');
                 expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(1);
-                expect(ProjectItemView.prototype.deleteProject).toHaveBeenCalledTimes(0);
-                newProjectItemView.deleteProject();
-                expect(ProjectItemView.prototype.deleteProject).toHaveBeenCalledTimes(1);
+                expect(ProjectItemView.prototype.deleteProjectView).toHaveBeenCalledTimes(0);
+                newProjectItemView.deleteProjectView();
+                expect(ProjectItemView.prototype.deleteProjectView).toHaveBeenCalledTimes(1);
                 expect(Project.prototype.destroy).toHaveBeenCalledTimes(1);
             });
 
         });
-
-
-        describe("Project Item View: Project User List", function() {
-            //
-            //
-            /*
-              To look for project users inside the project itself,
-              look for the attribute "sharing_url" that leads to the users list
-              The question now is that how do I access that content to create new users
-
-              Several links can help
-              http://localhost:7777/api/0/projects/
-              http://localhost:7777/api/0/user-profile/
-              // Sample example
-              http://localhost:7777/api/0/projects/5/users/
-            */
-            beforeEach(function(){
-                initSpies();
-                newProjectItemView = new ProjectItemView({
-                    model: new Project({
-                        id: 8,
-                        time_stamp: new Date().toISOString().replace("Z", ""),
-                        date_created: new Date().toISOString().replace("Z", "")
-                    }),
-                    app: this.app
-                });
-                newProjectItemView.render();
-            });
-            it ("Successfully adds a project user", function() {
-                fixture = setFixtures("<div></div>").append(newProjectItemView.$el);
-                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(0);
-                newProjectItemView.$el.find('.action').trigger('click');
-                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(1);
-                // Make sure to add a new username
-                expect(1).toEqual(1);
-            });
-
-
-            it ("Successfully removes a project user", function() {
-                fixture = setFixtures("<div></div>").append(newProjectItemView.$el);
-                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(0);
-                newProjectItemView.$el.find('.action').trigger('click');
-                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(1);
-                // Delete an existing username
-                expect(1).toEqual(1);
-            });
-        });
-
 
         describe("Project Item View: Renders Correctly", function(){
 
@@ -201,7 +145,9 @@ define([
                     model: new Project({
                         id: 8,
                         time_stamp: new Date().toISOString().replace("Z", ""),
-                        date_created: new Date().toISOString().replace("Z", "")
+                        date_created: new Date().toISOString().replace("Z", ""),
+                        access_authority: 1, // Private
+                        owner: "MrJBRPG"
                     }),
                     app: this.app
                 });
@@ -224,12 +170,12 @@ define([
                 expect(fixture).toContainElement('.tag');
 
                 //check that values have been set correctly from variables:
-                expect(fixture.find('.project-overview')).toHaveAttr('data-url', '/map/?project_id=' + newProjectItemView.model.id);
+                expect(fixture.find('a')).toHaveAttr('href', '/map/?project_id=' + newProjectItemView.model.id);
                 expect(fixture.find('.project-overview')).toContainText(newProjectItemView.model.get("name"));
-                //JOHN TODO:
-                //1. check tag set correctly
-                //2. check owner set correctly
-                //3. check that time text is set correctly
+                expect(fixture.find('.tag')).toContainText("Private");
+                expect(fixture.find('.owner')).toContainText("Owner: " + newProjectItemView.model.get("owner"));
+                var lastEditedString = newProjectItemView.lastEdited();
+                expect(fixture.find('.action')).toContainText(lastEditedString);
             });
 
         });
