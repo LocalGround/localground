@@ -19,8 +19,6 @@ define(["jquery",
                 this.app = opts.app;
                 this.render();
                 this.listenTo(this.app.vent, 'change-map', this.handleNewMap);
-              //  this.listenTo(this.app.vent, 'edit-layer', this.showRightPanel);
-              //  this.listenTo(this.app.vent, 'add-layer', this.showRightPanel);
             },
             events: {
                 "click #new-layer-options a" : "createNewLayer",
@@ -78,7 +76,6 @@ define(["jquery",
                 this.model.set("center", this.app.getCenter());
                 this.model.set("basemap", this.app.getMapTypeId());
                 console.log(JSON.stringify(this.model.toJSON(), null, 2));
-               // this.model.set("basemap", 1);
                 this.model.save({
                     error: function () {
                         console.log('error');

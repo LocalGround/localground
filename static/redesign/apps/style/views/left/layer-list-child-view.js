@@ -33,7 +33,7 @@ define(["jquery",
             },
 
             sendCollection: function () {
-                this.app.vent.trigger("edit-layer", this.model);
+                this.app.vent.trigger("edit-layer", this.model, this.collection);
             },
 
             updateTitle: function (title) {

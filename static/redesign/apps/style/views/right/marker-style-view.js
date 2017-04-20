@@ -56,9 +56,7 @@ define(["jquery",
             initialize: function (opts) {
                 _.extend(this,opts);
                 this.dataType = this.model.get("layer_type");
-
                 this.data_source = this.model.get("data_source"); //e.g. "form_1"
-                this.fields = this.app.dataManager.getData(this.data_source).fields;
 
                 this.displaySymbols();
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
@@ -84,14 +82,15 @@ define(["jquery",
             },
 
             templateHelpers: function () {
-                console.log(this);
-                console.log(this.model);
-                return {
+                var helpers = {
                     dataType: this.dataType,
                     allColors: this.allColors,
-                    buckets: this.buckets,
-                    properties: this.fields.toJSON()
+                    buckets: this.buckets
                 };
+                if (this.fields) {
+                    helpers.properties = this.fields.toJSON();
+                }
+                return helpers;
             },
 
             events: {

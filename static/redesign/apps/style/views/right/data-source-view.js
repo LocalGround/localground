@@ -12,20 +12,22 @@ define(["marionette",
 
             initialize: function (opts) {
                 _.extend(this, opts);
-                console.log(this.model);
+                this.dataSource = this.app.dataManager.getDataSources();
             },
             
-            /*
+            
             events: {
-                "change .layer-title": "updateTitle"
+                //"change .layer-title": "updateTitle"
+                "change .selected-data-source" : "changeDataSource"
             },
-            */
+            
             templateHelpers: function () {
                 return {
-                   
+                    dataSource: this.dataSource,
+                    currentDataSource: this.model.attributes.data_source
                 };
-            },
-            
+            }
+
             /*
             updateTitle: function () {
                 var title = this.$el.find('.layer-title').val();

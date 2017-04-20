@@ -15,14 +15,12 @@ define(["marionette",
 
             events: {
                 'change #map-select': 'changeMap',
-                'click .add-map': 'addMap'
+                'click .add-map': 'showAddMapModal'
             },
             modal: null,
 
             initialize: function (opts) {
                 var that = this;
-                //this.app = opts.app;
-                //this.collection = opts.collection;
                 _.extend(this, opts);
                 if (!this.collection) {
                     // /api/0/maps/ API Endpoint gets built:
@@ -46,11 +44,12 @@ define(["marionette",
                 this.app.currentMap = this.collection.at(0);
             },
 
-            newMap: function (mapName) {
-                latLng = this.basemapView.getCenter();
+            newMap: function (mapAttrs) {
+                var that = this;
+                var latLng = this.app.basemapView.getCenter();
                 this.map = new Map({
-                    name: mapName, 
-                    slug: "test",
+                    name: mapAttrs.name, 
+                    slug: mapAttrs.slug,
                     center: {
                         "type": "Point",
                         "coordinates": [
@@ -58,19 +57,32 @@ define(["marionette",
                             latLng.lat()
                         ]
                     },
-                    basemap: 12,
-                    project_id: 3
+                    basemap: this.app.getMapTypeId(),
+                    zoom: this.app.getZoom(),
+                    project_id: this.app.getProjectID()
                 });
+              
                 this.collection.add(this.map);
-                this.render();
-                this.map.save();
+                
+                this.map.save(null, {
+                    success: this.render,
+                    error: function (model, response){
+                        var messages = JSON.parse(response.responseText);
+                        console.log(messages);
+                        if (messages.slug && messages.slug.length > 0) {
+                            that.slugError = messages.slug[0];
+                            console.log("should have error message", that.slugError);
+                        }
+                        that.app.vent.trigger("send-modal-error", that.slugError);
+                    }
+                    
+                });
             },
 
             drawOnce: function () {
                 this.render();
                 var $selected = this.$el.find("#map-select").val();
                 var selectedMapModel = this.collection.get($selected);
-
 
                 this.setCenterZoom(selectedMapModel);
                 this.setMapTypeId(selectedMapModel);
@@ -84,11 +96,10 @@ define(["marionette",
                 this.setCenterZoom(selectedMapModel);
                 this.setMapTypeId(selectedMapModel);
                 this.app.vent.trigger("change-map", selectedMapModel);
+                this.app.vent.trigger("hide-right-panel");
             },
 
-            addMap: function() {
-                // u can var createMapModeol= new Marionette.ItemView({}); or create new file
-                console.log(this.app);
+            showAddMapModal: function() {
                 var createMapModel = new NewMap({
                     app: this.app
                 });
@@ -102,8 +113,6 @@ define(["marionette",
                     showSaveButton: true,
                     saveFunction: createMapModel.saveMap.bind(createMapModel),
                     showDeleteButton: false
-                    // bind the scope of the save function to the source view:
-                    //saveFunction: createForm.saveFormSettings.bind(createForm)
                 });
                 this.modal.show();
             },
