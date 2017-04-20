@@ -14,13 +14,7 @@
 #toolbar-main > div{
     display: flex;    
 }
-.main-panel {
-    height: calc(100% - 61px);
-    top: 61px;
-    display: flex;
-    position: absolute;
-    width: 100%;
-}
+
 
 #right-panel h3 {
     padding: 0px 20px 20px 20px;
