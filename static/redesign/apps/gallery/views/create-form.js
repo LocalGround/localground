@@ -4,12 +4,12 @@ define([
     "handlebars",
     "marionette",
     "text!../templates/create-form.html",
-    "text!../templates/field-item.html",
     "models/form",
+    "models/field",
     "collections/fields",
     "apps/gallery/views/field-child-view",
     "jquery.ui"
-], function ($, _, Handlebars, Marionette, CreateFormTemplate, FieldItemTemplate, Form, Fields, FieldChildView) {
+], function ($, _, Handlebars, Marionette, CreateFormTemplate, Form, Field, Fields, FieldChildView) {
     'use strict';
     var CreateFormView = Marionette.CompositeView.extend({
 
@@ -59,7 +59,7 @@ define([
                 helper: this.fixHelper,
                 update: function (event, ui) {
                     var newOrder = ui.item.index() + 1,
-                        modelID = ui.item.find('.id').val(),
+                        modelID = ui.item.attr("id"),
                         targetModel = that.collection.get(modelID);
                     targetModel.set("ordering", newOrder);
                     targetModel.save();
@@ -101,8 +101,7 @@ define([
             this.model.set('project_ids', [this.app.getProjectID()]);
             this.model.save(null, {
                 success: function () {
-                    alert('success!');
-                    that.createNewFields();
+                    that.saveFields();
                 },
                 error: function () {
                     console.log("The fields could not be saved");
@@ -110,101 +109,24 @@ define([
             });
         },
 
-        createNewFields: function () {
-            // Gather the list of fields changed / added
-            var $fieldList = this.$el.find("#fieldList"),
-                $fields = $fieldList.children(),
-                i,
-                id,
-                $row,
-                fieldName,
-                fieldNameInput,
-                fieldType,
-                existingField;
-
+        saveFields: function () {
+            var that = this;
             if (!this.model.fields) {
-                alert("setting");
                 this.model.fields = new Fields(null,
-                    { id: this.model.get("id") }
-                );
+                    { id: this.model.get("id") });
                 this.collection = this.model.fields;
                 this.attachCollectionEventHandlers();
             }
-            console.log(this.collection);
-
-            //loop through each table row:
-            console.log($fields.length);
-            for (i = 0; i < $fields.length; i++) {
-                $row = $($fields[i]);
-                fieldName = $row.find(".fieldname").val();
-                fieldNameInput = $row.find(".fieldname");
-                if ($row.find("span.fieldname").get(0)) {
-                    console.log('existing!');
-                    //edit existing fields:
-                    id = $row.find(".id").val();
-                    existingField = this.model.getFieldByID(id);
-                    if (!this.errorFieldName(fieldNameInput)) {
-                        existingField.set("ordering", i + 1);
-                        existingField.set("col_alias", fieldName);
-                        existingField.save();
-                    } else {
-                        $row.css("background-color", "FFAAAA");
-                    }
-                } else {
-                    child = collectionView.children.findByModel(model);
-                    //create new fields:
-                    fieldType = $row.find(".fieldType").val();
-                    if (!this.blankField(fieldNameInput, fieldType)) {
-                        this.model.createField(fieldName, fieldType, i + 1);
-                    } else {
-                        console.log('bleh');
-                        $row.css("background-color", "FFAAAA");
-                    }
-                }
-                this.wait(500);
-            }
-            //this.model.getFields();
+            console.log(this);
+            console.log(this.children);
+            this.children.each(function (childview, i) {
+                console.log(i);
+                childview.saveField(i + 1);
+                that.wait(100);
+            });
         },
-        blankField: function (fieldName, fieldType) {
-            return this.errorFieldName(fieldName) ||
-                         this.errorFieldType(fieldType);
-        },
-
-        errorFieldName: function (_fieldName) {
-            var errorCaught = false;
-            try {
-                if (_fieldName.val().trim() === "") {
-                    throw "Field Name Missing";
-                }
-            } catch (err) {
-                errorCaught = true;
-                _fieldName.attr("placeholder", err);
-                _fieldName.css("background-color", "#FFDDDD");
-            } finally {
-                return errorCaught;
-            }
-        },
-
-        errorFieldType: function (_fieldType) {
-            var errorCaught = false;
-            try {
-                if (!_fieldType) {
-                    throw "Field Type Missing";
-                }
-            } catch (err) {
-                errorCaught = true;
-            } finally {
-                return errorCaught;
-            }
-        },
-
         addFieldButton: function () {
-            var fieldTableDisplay = $(".fieldTable"),
-                $newTR = $("<tr class='new-row'></tr>"),
-                template = Handlebars.compile(FieldItemTemplate);
-            fieldTableDisplay.show();// Make this visible even with 0 users
-            $newTR.append(template());
-            this.$el.find("#fieldList").append($newTR);
+            this.collection.add(new Field(null, { id: this.model.get("id") }));
         },
 
         deleteForm: function () {
@@ -217,7 +139,6 @@ define([
                     that.backToList();
                 }
             });
-
         },
 
         backToList: function () {
