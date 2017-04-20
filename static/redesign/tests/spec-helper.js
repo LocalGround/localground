@@ -326,6 +326,8 @@ define(
                 new Project({
                     id: 1,
                     name: "Project 1",
+                    owner: "MrJBRPG",
+                    access_authority: 1,
                     tags: 'tag1, tag2',
                     overlay_type: "project",
                     time_stamp: "2017-02-17T21:17:33",

@@ -175,7 +175,7 @@ define([
                 expect(fixture.find('.tag')).toContainText("Private");
                 expect(fixture.find('.owner')).toContainText("Owner: " + newProjectItemView.model.get("owner"));
                 var lastEditedString = newProjectItemView.lastEdited();
-                expect(fixture.find('.action')).toContainText(lastEditedString);
+                expect(fixture.find('.time-stamp')).toContainText(lastEditedString);
             });
 
         });

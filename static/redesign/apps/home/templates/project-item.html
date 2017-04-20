@@ -5,13 +5,13 @@
         <p>{{ caption }}</p>
     </a>
     <div class = "project-detail">
-        <a class="tag">
+        <a class="tag action">
         {{#ifequal access_authority 1}}
             Private
         {{ else }}
             Public
         {{/ifequal}}
         </a>
-        <span class="action"><i class="fa fa-clock-o" aria-hidden="true"></i> {{timeAgo}}</span>
+        <span class="time-stamp"><i class="fa fa-clock-o" aria-hidden="true"></i> {{timeAgo}}</span>
     </div>
 </div>

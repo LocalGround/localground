@@ -30,6 +30,62 @@ define([
 
         };
 
+        describe("Initialization Test", function(){
+            /*
+            DO the following:
+            When project created,
+            the following fields should be left undefined -
+            title = "Untitled"
+            owner = The curret user on computer (username)
+            access authority is private by default
+            All else blank
+
+            When editing existing project (model exists)
+            make sure information is same as model
+            include the following functions for testing
+            make sure they are called once
+
+            this.model.getProjectUsers();
+            this.attachCollectionEventHandlers();
+
+            */
+
+            beforeEach(function(){
+                initSpies();
+            });
+
+            it("Creates a new empty project",function(){
+                newShareForm = new ShareForm({
+                    app: this.app,
+                    model: new Project({
+                        id: 8,
+                        //name: "Untitled",
+                        time_stamp: new Date().toISOString().replace("Z", ""),
+                        date_created: new Date().toISOString().replace("Z", ""),
+                        access_authority: 1, // Private
+                        owner: "MrJBRPG"
+                    })
+                });
+                expect(newShareForm.model.get("name")).toEqual("Untitled");
+                expect(newShareForm.model.get("owner")).toEqual("MrJBRPG");
+                expect(newShareForm.model.get("access_authority")).toEqual(1);
+
+            });
+
+            it("Opens an existing project", function(){
+                newShareForm = new ShareForm({
+                    app: this.app,
+                    model: this.project
+                });
+
+                expect(newShareForm.model.get("name")).toEqual(newShareForm.model.get("name"));
+                expect(newShareForm.model.get("access_authority")).toEqual(newShareForm.model.get("access_authority"));
+                expect(newShareForm.model.get("caption")).toEqual(newShareForm.model.get("caption"));
+                expect(newShareForm.model.get("tags")).toEqual(newShareForm.model.get("tags"));
+                expect(newShareForm.model.get("owner")).toEqual(newShareForm.model.get("owner"));
+            });
+        });
+
         describe("Share Form: Project User List", function() {
             //
             //
