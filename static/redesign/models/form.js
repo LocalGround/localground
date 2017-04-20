@@ -34,7 +34,7 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
                 field.set("ordering", ordering);
                 field.save(null, {
                     success: function () {
-                        that.getFields();
+                        //that.getFields();
                         //that.fields.add(field);
                     },
                     error: function () {

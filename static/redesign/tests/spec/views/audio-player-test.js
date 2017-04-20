@@ -61,7 +61,7 @@ define([
             beforeEach(function (done) {
                 initSpies();
                 initPlayer(this, "basic");
-                loadStyleFixtures('../../../../css/audio-player.css');
+                loadStyleFixtures('../../../../css/main.css');
                 setTimeout(function () { done(); }, 10);
             });
 

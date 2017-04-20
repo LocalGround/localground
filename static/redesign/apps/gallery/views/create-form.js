@@ -84,6 +84,11 @@ define([
                 $row.remove();
             }
         },
+        wait: function (ms) {
+            var d = new Date(),
+                d2 = null;
+            do { d2 = new Date(); } while (d2 - d < ms);
+        },
         saveFormSettings: function () {
             var formName = this.$el.find('#formName').val(),
                 caption = this.$el.find('#caption').val(),
@@ -147,7 +152,9 @@ define([
                         $row.css("background-color", "FFAAAA");
                     }
                 }
+                this.wait(500);
             }
+            this.model.getFields();
         },
         blankField: function (fieldName, fieldType) {
             return this.errorFieldName(fieldName) ||

@@ -247,6 +247,7 @@ define([
                     newCreateForm.saveFormSettings();
 
                     //check that the collection has been updated:
+                    console.log(newCreateForm.collection);
                     expect(newCreateForm.collection.at(0).get("col_alias")).toBe("new field 1");
                     expect(newCreateForm.collection.at(1).get("col_alias")).toBe("new field 2");
                     expect(newCreateForm.collection.at(2).get("col_alias")).toBe("new field 3");
