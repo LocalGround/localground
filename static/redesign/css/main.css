@@ -626,9 +626,7 @@ fieldset > div, .inline-form {
     background-color: #ecedf2;
     display: flex;
     height: calc(100vh - 111px);
-    width: 100%;
-    top: 111px;
-    position: absolute;
+        top: 111px;
     padding:0;
     z-index: 0;
 }
