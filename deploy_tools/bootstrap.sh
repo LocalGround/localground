@@ -78,7 +78,6 @@ echo "Y" | sudo apt-get install python-gdal
 echo "Y" | sudo apt-get install libcv-dev libopencv-dev python-opencv
 echo "Y" | sudo apt-get install python-psycopg2
 echo "Y" | sudo apt-get install python-setuptools
-echo 'NEW!!!!!!!'
 # sudo apt-get install -y python-pip=1.5.4-1ubuntu3 #try a different version of pip?
 sudo apt-get install -y software-properties-common
 sudo apt-add-repository universe
