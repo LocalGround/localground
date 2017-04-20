@@ -42,6 +42,7 @@ class ProjectDetailSerializer(ProjectSerializer, ProjectSerializerMixin):
         
     class Meta:
         model = models.Project
+        read_only_fields = ('time_stamp', 'date_created', 'last_updated_by')
         fields = ProjectSerializer.Meta.fields + ('sharing_url', 'children')
         depth = 0
     
