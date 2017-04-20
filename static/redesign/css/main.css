@@ -282,24 +282,105 @@ fieldset > div, .inline-form {
 }
 
 /****************************************************************************************/
+/*                                       CARD STYLES                                     */
+/****************************************************************************************/
+
+
+.column {
+    width: calc(25% - 12px);
+    margin: 4px 5px 8px;
+    border: 1px solid #e4e5eb;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    display:inline-block;
+    position: relative;
+    vertical-align: top;
+    background: #fafafc;
+}
+
+.column img {
+    width:100%;
+}
+
+.card-img-preview {
+    background-size: cover;
+    background-position: center center;
+    border-radius: 2px 2px 0 0;
+    height: 185px;
+}
+
+.column h1{
+    font-size: 14px;
+    padding: 10px 6px 1px;
+    font-weight: 400;
+}
+
+.column h2{
+    font-size: 12px;
+    padding: 0 6px 12px;
+    color: #7a7a7a;
+    font-weight: 400;
+}
+
+.column .fa-map-marker{
+    position:absolute;
+    right:16px;
+    bottom:16px;
+}
+
+.selected-card {
+    color: #fff;
+    background-color: rgb(123, 155, 225);
+}
+
+.selected-card h1, .selected-card h2, .selected-card > .fa-map-marker, .selected-card .coords {
+    color: #fff;
+}
+
+.selected-icon {
+    color: #ffffff !important;
+}
+
+p.coords {
+    font-size: 7px;
+    float: right;
+    margin-top: -25px;
+    color: #666;
+    padding-right: 5px;
+}
+
+/******************** Site Cards *********************/
+.column table {
+    padding: 16px;
+    font-weight:600;
+    background-color: #fafafc;
+    height: 20px;
+    overflow:hidden;
+    width: 100%;
+    font-size: 10px;
+    border-radius: 2px 2px 0 0;
+}
+
+.column table td:first-child {
+    text-align:right;
+    width:33%;
+    padding-right:6px;
+    font-weight:500;
+}
+
+.card-site-field {
+   /* background: #fafafc; */
+    background-size: 410px auto;
+    background-position: center center;
+    border-radius: 2px 2px 0 0;
+    /*  height: 185px;  */
+}
+
+/****************************************************************************************/
 /*                                       CONTAINERS                                     */
 /****************************************************************************************/
 
-.card {
-    /**/
-}
-.card-media {
-    /**/
-}
-.card-media img {
-    /**/
-}
-.card-media table {
-    /**/
-}
-.card-project {
-    /**/
-}
 .frame-carousel, .frame-photo, .frame-audio {
     /* consistent container style */
 }
@@ -637,6 +718,10 @@ fieldset > div, .inline-form {
     margin: 0 auto;
     /*padding: 20px 14px 24px;*/
     overflow: scroll;
+    width:100%;
+}
+
+.gallery-panel > div{
     width:100%;
 }
 
@@ -1330,7 +1415,7 @@ audio {
     position: relative;
 }
 
-/**************************
+ /**************************
  * Detailed Player
  **************************/
 
@@ -1360,3 +1445,103 @@ audio {
 .audio-detail .audio-container {
     background: #FFFFFF;
 }
+
+/*************************** UPLOAD MEDIA  **************************/
+.img-polaroid {
+    margin-bottom: 5px;
+    margin-top: 5px;
+    background-color: #FFF;
+    padding: 5px 5px 10px 5px;
+}
+.img-polaroid > p {
+    margin-top: 5px;
+    line-height: 12px;
+    font-size: 11px;
+    color: #999;
+    margin: 0px;
+    text-align: center;
+    overflow: hidden;
+}
+.img-container {
+    width: 145px;
+    max-height: 140px;
+    min-height: 100px;
+    overflow: hidden;
+}
+.preview {
+    width: 145px;
+}
+.audio-holder, .error-holder {
+    display: inline-block;
+    width: 145px;
+}
+.file-container {
+    width: 155px;
+    height: 190px;
+    float: left;
+    margin: 0px 8px 8px 0px;
+}
+#nothing-here {
+    text-align: center;
+    margin-top: 40px;
+    width: 100%;
+    font-size: 20px;
+    color: #666;
+}
+
+
+span.plus {
+    width: 28px;
+    height: 28px;
+    border: solid 1px #CCC;
+    border-radius: 40px;
+    display: inline-block;
+    background: #FFF;
+    line-height: 22px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1.428571429;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+#fileupload {
+    opacity: 0;
+    poosition: absolute;
+    height: 0px;
+}
+#dropzone {
+    border: dashed 1px #CCC;
+    margin-right: 10px;
+    margin-left: 10px;
+    min-height: 350px;
+}
+
+#dropzone.hover {
+    background: #dff0d8;
+}
+#dropzone.fade {
+    -webkit-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+    -ms-transition: all 0.3s ease-out;
+    -o-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+    opacity: 1;
+}
+
+
