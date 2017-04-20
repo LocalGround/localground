@@ -3,9 +3,10 @@ define([
     "jquery",
     rootDir + "apps/gallery/views/create-form",
     rootDir + "models/form",
+    rootDir + "models/field",
     "tests/spec-helper"
 ],
-    function ($, CreateForm, Form) {
+    function ($, CreateForm, Form, Field) {
         'use strict';
         var fixture, newCreateForm, initSpies;
 
@@ -23,6 +24,7 @@ define([
             spyOn(CreateForm.prototype, 'addFieldButton').and.callThrough();
             spyOn(CreateForm.prototype, 'backToList').and.callThrough();
             spyOn(Form.prototype, 'createField').and.callThrough();
+            spyOn(Field.prototype, 'save').and.callThrough();
 
             //error catch functions
             spyOn(CreateForm.prototype, 'blankField').and.callThrough();
@@ -63,7 +65,7 @@ define([
             beforeEach(function () {
                 initSpies();
                 newCreateForm = new CreateForm({
-                    model: this.form
+                    model: this.form //initializes w/three fields
                 });
             });
 
@@ -244,10 +246,12 @@ define([
                     $($inputs[2]).val("new field 3");
 
                     //save the form:
+                    console.log(newCreateForm.collection.length);
                     newCreateForm.saveFormSettings();
-
-                    //check that the collection has been updated:
-                    console.log(newCreateForm.collection);
+                    console.log(newCreateForm.collection.length);
+                    newCreateForm.createNewFields(); //spoof
+                    console.log(newCreateForm.collection.length);
+                    expect(Field.prototype.save).toHaveBeenCalledTimes(3);
                     expect(newCreateForm.collection.at(0).get("col_alias")).toBe("new field 1");
                     expect(newCreateForm.collection.at(1).get("col_alias")).toBe("new field 2");
                     expect(newCreateForm.collection.at(2).get("col_alias")).toBe("new field 3");

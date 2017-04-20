@@ -6,7 +6,7 @@
     {{#if id }}
         <!-- hidden form field that stashes the id -->
         <input class="id" value={{ id }} type="hidden">
-        <span class="fieldname">
+        <span class="fieldType">
             {{#ifequal data_type "boolean"}} Yes/No 
             {{else}} {{ data_type }} 
             {{/ifequal}}

@@ -15,6 +15,9 @@ define([
         },
         template: Handlebars.compile(FieldItemTemplate),
         tagName: "tr",
+        id: function () {
+            return "row_" + this.model.get("id");
+        },
         doDelete: function (e) {
             if (!confirm("Are you sure you want to remove this field from the form?")) {
                 return;

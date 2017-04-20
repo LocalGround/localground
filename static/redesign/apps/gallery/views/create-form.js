@@ -41,7 +41,9 @@ define([
 
         childViewContainer: "#fieldList",
         childViewOptions: function () {
-            return this.model.toJSON();
+            var opts = this.model.toJSON();
+            delete opts.id;
+            return opts;
         },
         childView: FieldChildView,
         template: Handlebars.compile(CreateFormTemplate),
@@ -99,6 +101,7 @@ define([
             this.model.set('project_ids', [this.app.getProjectID()]);
             this.model.save(null, {
                 success: function () {
+                    alert('success!');
                     that.createNewFields();
                 },
                 error: function () {
@@ -120,19 +123,23 @@ define([
                 existingField;
 
             if (!this.model.fields) {
+                alert("setting");
                 this.model.fields = new Fields(null,
-                        { id: this.model.get("id") }
-                    );
+                    { id: this.model.get("id") }
+                );
                 this.collection = this.model.fields;
                 this.attachCollectionEventHandlers();
             }
+            console.log(this.collection);
 
             //loop through each table row:
+            console.log($fields.length);
             for (i = 0; i < $fields.length; i++) {
                 $row = $($fields[i]);
                 fieldName = $row.find(".fieldname").val();
                 fieldNameInput = $row.find(".fieldname");
-                if ($row.attr("id") == this.model.id) {
+                if ($row.find("span.fieldname").get(0)) {
+                    console.log('existing!');
                     //edit existing fields:
                     id = $row.find(".id").val();
                     existingField = this.model.getFieldByID(id);
@@ -144,17 +151,19 @@ define([
                         $row.css("background-color", "FFAAAA");
                     }
                 } else {
+                    child = collectionView.children.findByModel(model);
                     //create new fields:
                     fieldType = $row.find(".fieldType").val();
                     if (!this.blankField(fieldNameInput, fieldType)) {
                         this.model.createField(fieldName, fieldType, i + 1);
                     } else {
+                        console.log('bleh');
                         $row.css("background-color", "FFAAAA");
                     }
                 }
                 this.wait(500);
             }
-            this.model.getFields();
+            //this.model.getFields();
         },
         blankField: function (fieldName, fieldType) {
             return this.errorFieldName(fieldName) ||
