@@ -1,0 +1,12 @@
+
+<div class="inline-form">
+    <label>Title: </label>
+    <input type="text" placeholder="name of map" id="new-map-name" value="{{name}}">
+</div>
+<div class = "inline-form slug {{#if slugError}}error{{/if}}">
+    <label>Friendly URL:</label>
+    <input type="text" placeholder="enter name or leave blank for autofill" id="new-map-slug" value="{{slug}}">
+</div>
+{{#if slugError}}
+<p class="errorMessage">{{slugError}}</p>
+{{/if}}

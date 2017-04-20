@@ -68,6 +68,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 this.delegateEvents();
                 this.appendView();
             },
+
             setSize: function () {
                 this.$el.find('.modal-content').css('width', this.width);
                 this.$el.find('.modal-body').css('min-height', this.height);
