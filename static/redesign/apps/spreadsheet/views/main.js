@@ -152,13 +152,16 @@ define(["marionette",
             },
             saveChanges: function (changes, source) {
                 //sync with collection:
+                source = source.split(".");
+                source = source[source.length - 1];
                 var i, idx, key, oldVal, newVal, model, geoJSON;
-                if (_.contains(["edit", "autofill", "undo", "redo", "paste"], source)) {
+                if (_.contains(["edit", "autofill", "fill", "undo", "redo", "paste"], source)) {
                     for (i = 0; i < changes.length; i++) {
                         idx = changes[i][0];
                         key = changes[i][1];
                         oldVal = changes[i][2];
                         newVal = changes[i][3];
+                        console.log(idx, key, oldVal, newVal);
                         if (oldVal !== newVal) {
                             //Note: relies on the fact that the first column is the ID column
                             //      see the getColumns() function below
@@ -179,6 +182,7 @@ define(["marionette",
                                 }
                             } else {
                                 model.set(key, newVal);
+                                console.log("saving...", model.changedAttributes());
                                 model.save(model.changedAttributes(), {patch: true, wait: true});
                             }
                         } else {
