@@ -123,7 +123,7 @@ define([
                 expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(1);
             });
 
-            it("shareModel function opens a new modal window with the right form inside", function(){
+            it("shareModal function opens a new modal window with the right form inside", function(){
                 spyOn(this.app.vent, 'trigger');
                 newProjectItemView.shareModal();
                 expect(this.app.vent.trigger).toHaveBeenCalledWith('share-project', { model: newProjectItemView.model });
@@ -142,7 +142,54 @@ define([
                 expect(ProjectItemView.prototype.deleteProject).toHaveBeenCalledTimes(1);
                 expect(Project.prototype.destroy).toHaveBeenCalledTimes(1);
             });
-            
+
+        });
+
+
+        describe("Project Item View: Project User List", function() {
+            //
+            //
+            /*
+              To look for project users inside the project itself,
+              look for the attribute "sharing_url" that leads to the users list
+              The question now is that how do I access that content to create new users
+
+              Several links can help
+              http://localhost:7777/api/0/projects/
+              http://localhost:7777/api/0/user-profile/
+              // Sample example
+              http://localhost:7777/api/0/projects/5/users/
+            */
+            beforeEach(function(){
+                initSpies();
+                newProjectItemView = new ProjectItemView({
+                    model: new Project({
+                        id: 8,
+                        time_stamp: new Date().toISOString().replace("Z", ""),
+                        date_created: new Date().toISOString().replace("Z", "")
+                    }),
+                    app: this.app
+                });
+                newProjectItemView.render();
+            });
+            it ("Successfully adds a project user", function() {
+                fixture = setFixtures("<div></div>").append(newProjectItemView.$el);
+                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(0);
+                newProjectItemView.$el.find('.action').trigger('click');
+                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(1);
+                // Make sure to add a new username
+                expect(1).toEqual(1);
+            });
+
+
+            it ("Successfully removes a project user", function() {
+                fixture = setFixtures("<div></div>").append(newProjectItemView.$el);
+                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(0);
+                newProjectItemView.$el.find('.action').trigger('click');
+                expect(ProjectItemView.prototype.shareModal).toHaveBeenCalledTimes(1);
+                // Delete an existing username
+                expect(1).toEqual(1);
+            });
         });
 
 
