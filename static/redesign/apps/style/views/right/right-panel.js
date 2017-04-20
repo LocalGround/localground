@@ -16,10 +16,10 @@ define(["jquery",
                 this.app = opts.app;
                 this.render();
                 this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
+                this.listenTo(this.app.vent, 'hide-right-panel', this.hidePanel);
             },
 
             events: {
-                //"click .hide-button" : "moveLeftPanel"
                 "click .layer-save" : "saveLayer",
                 "click .style-source-tab" : "showSourceRegion",
                 "click .style-basic-tab" : "showMarkerStyleRegion",
@@ -37,31 +37,26 @@ define(["jquery",
                 // only load views after the LayoutView has
                 // been rendered to the screen:
 
-                //var dsv = new DataSourceView({ app: this.app });
-                //this.dataSource.show(dsv);
-
-               // var msv = new MarkerStyleView({ app: this.app });
-               // this.markerStyle.show(msv);
-               // this.app.vent.trigger("find-datatype");
-
                 var frv = new FilterRulesView({ app: this.app });
                 this.filterRules.show(frv);
 
             },
-            createLayer: function (layer) {
+
+            createLayer: function (layer, collection) {
                 this.triggerShowPanel();
                 this.model = layer;
+                this.collection = collection;
                 var dsv = new DataSourceView({
                     app: this.app,
-                    model: layer
+                    model: this.model
                 });
                 this.msv = new MarkerStyleView({
                     app: this.app,
-                    model: layer
+                    model: this.model
                 });
                 this.frv = new FilterRulesView({
                     app: this.app,
-                    model: layer
+                    model: this.model
                 });
                 this.dataSource.show(dsv);
                 this.markerStyle.show(this.msv);
@@ -101,8 +96,9 @@ define(["jquery",
             },
 
             saveLayer: function () {
+                var that = this;
                 var title = this.$el.find(".layer-title").val(),
-                    dataSource = this.$el.find("#data_source").val(),
+                    dataSource = this.$el.find(".selected-data-source").val(),
                     layerType = this.$el.find("#data-type-select").val();
                 if (this.model.get("filters") === null) {
                     this.model.set("filters", { 'tag' : 'nothing' });
@@ -116,6 +112,7 @@ define(["jquery",
                     },
                     success: function () {
                         console.log('success');
+                        that.collection.add(that.model);
                     }
                 });
             },
@@ -124,9 +121,11 @@ define(["jquery",
                 this.$el.find('.right-panel-btn').show();
             },
             hidePanel: function (e) {
-                $(e.target).removeClass("hide").addClass("show");
+                $(".right-panel-button").removeClass("hide").addClass("show");
                 this.app.vent.trigger('hide-detail');
-                e.preventDefault();
+                if(e) {
+                    e.preventDefault();
+                }
             },
             showPanel: function (e) {
                 $(e.target).removeClass("show").addClass("hide");

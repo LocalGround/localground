@@ -35,7 +35,6 @@ define([
 
             // 3) set fixture:
             fixture.append(layerListChildView.$el);
-            console.log(fixture);
         };
 
         describe("LayerListChildView: Initialization", function () {
@@ -63,8 +62,7 @@ define([
                 expect(fixture.find('p.layer-name').html()).toBe("hello world");
             });
 
-            it("should have correct html", function () {
-                console.log(fixture);
+            it("should have correct html", function () {  
                 expect(fixture).toContainElement('p.layer-name');
                 expect(fixture).toContainElement('input');
                 expect(fixture).toContainElement('a.edit');
@@ -73,6 +71,19 @@ define([
             it("should set model correctly", function () {
                 expect(layerListChildView.model).toEqual(this.layer);
             });
+        });
+
+        describe("When events are triggered", function () {
+            beforeEach(function () {
+                initView(this);
+            });
+            afterEach(function () {
+                Backbone.history.stop();
+            });
+            it("functions should run", function() {
+                expect(layerListChildView.sendCollection).toHaveBeenCalledTimes(0);
+                fixture.find('.edit').trigger("click");
+                expect(layerListChildView.sendCollection).toHaveBeenCalledTimes(1);
 
             it("initialized 3 OverlayListView objects", function () {
                 expect(layerListChildView.markerOverlayList.length).toBe(3);

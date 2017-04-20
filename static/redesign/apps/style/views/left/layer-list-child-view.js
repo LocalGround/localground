@@ -14,6 +14,9 @@ define(["jquery",
                 this.initMapOverlays();
             },
             template: Handlebars.compile(LayerItemTemplate),
+            modelEvents: {},
+            tagName: "div",
+            className: "layer-column",
             templateHelpers: function () {
                 return {
                     isChecked: this.isChecked
@@ -30,7 +33,7 @@ define(["jquery",
             },
 
             sendCollection: function () {
-                this.app.vent.trigger("edit-layer", this.model);
+                this.app.vent.trigger("edit-layer", this.model, this.collection);
             },
 
             updateTitle: function (title) {
