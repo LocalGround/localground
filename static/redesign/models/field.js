@@ -4,7 +4,6 @@ define(["underscore", "collections/dataTypes", "models/base"],
         var Field = Base.extend({
             urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
             defaults: _.extend({}, Base.prototype.defaults, {
-                data_type: "text",
                 col_alias: '',
                 is_display_field: true,
                 display_width: 100,

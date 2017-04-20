@@ -112,15 +112,14 @@ define([
         saveFields: function () {
             var that = this;
             if (!this.model.fields) {
-                this.model.fields = new Fields(null,
-                    { id: this.model.get("id") });
+                this.model.fields = new Fields(
+                    null,
+                    { id: this.model.get("id") }
+                );
                 this.collection = this.model.fields;
                 this.attachCollectionEventHandlers();
             }
-            console.log(this);
-            console.log(this.children);
             this.children.each(function (childview, i) {
-                console.log(i);
                 childview.saveField(i + 1);
                 that.wait(100);
             });

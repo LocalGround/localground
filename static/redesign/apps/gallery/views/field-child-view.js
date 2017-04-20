@@ -18,12 +18,15 @@ define([
         },
         templateHelpers: function () {
             return {
-                error: this.error
+                errorFieldType: this.errorFieldType,
+                errorFieldName: this.errorFieldName,
+                serverErrorMessage: this.serverErrorMessage
             };
         },
         template: Handlebars.compile(FieldItemTemplate),
         errorFieldType: false,
         errorFieldName: false,
+        serverErrorMessage: null,
         tagName: "tr",
         id: function () {
             return this.model.get("id");
@@ -32,15 +35,7 @@ define([
             var fieldName = this.$el.find(".fieldname").val(),
                 fieldType = this.$el.find(".fieldType").val(),
                 that = this;
-
-            this.errorFieldName = this.errorFieldType = false;
-            if (fieldName.trim() === "") {
-                this.errorFieldName = true;
-            }
-            if (!fieldType && this.model.get("id") === "undefined") {
-                this.errorFieldType = true;
-            }
-            console.log(fieldName, fieldType);
+            this.validate(fieldName, fieldType);
             this.model.set("ordering", ordering);
             this.model.set("col_alias", fieldName);
             if (fieldType) {
@@ -50,16 +45,30 @@ define([
                 this.model.save(null, {
                     success: function () {
                         that.render();
+                    },
+                    error: function (model, response) {
+                        var messages = JSON.parse(response.responseText);
+                        that.serverErrorMessage = messages.detail;
+                        that.render();
                     }
                 });
             } else {
                 this.render();
             }
         },
+        validate: function (fieldName, fieldType) {
+            this.errorFieldName = this.errorFieldType = false;
+            this.serverErrorMessage = null;
+            if (fieldName.trim() === "") {
+                this.errorFieldName = true;
+            }
+            if (fieldType === "-1") {
+                this.errorFieldType = true;
+            }
+        },
         onRender: function () {
-            console.log('rendered');
             this.$el.removeClass("failure-message");
-            if (this.errorFieldType || this.errorFieldName) {
+            if (this.errorFieldType || this.errorFieldName || this.serverErrorMessage) {
                 this.$el.addClass("failure-message show");
             }
         },
