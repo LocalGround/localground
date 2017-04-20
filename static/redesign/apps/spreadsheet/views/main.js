@@ -145,7 +145,7 @@ define(["marionette",
                         that.saveChanges(changes, source);
                     }
                 });
-                if (this.fields){
+                if (this.fields) {
                     this.table.addHook('beforeColumnMove', this.columnMoveBefore.bind(this));
                     this.table.addHook('afterColumnMove', this.columnMoveAfter.bind(this));
                 }
@@ -161,7 +161,6 @@ define(["marionette",
                         key = changes[i][1];
                         oldVal = changes[i][2];
                         newVal = changes[i][3];
-                        console.log(idx, key, oldVal, newVal);
                         if (oldVal !== newVal) {
                             //Note: relies on the fact that the first column is the ID column
                             //      see the getColumns() function below
@@ -182,7 +181,6 @@ define(["marionette",
                                 }
                             } else {
                                 model.set(key, newVal);
-                                console.log("saving...", model.changedAttributes());
                                 model.save(model.changedAttributes(), {patch: true, wait: true});
                             }
                         } else {
