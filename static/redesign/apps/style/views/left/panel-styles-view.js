@@ -100,8 +100,6 @@ define(["marionette",
                 var state = this.app.restoreState("panel_styles");
                 if (state) {
                     this.isShowing = state.isShowing;
-                } else {
-                    this.isShowing = true;
                 }
             }
         });
