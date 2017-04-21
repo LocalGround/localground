@@ -38,7 +38,20 @@ define(["marionette",
             events: {
                // "click .add-layer" : "showDropDown",
                // "click #new-layer-options a" : "createNewLayer"
-               "click .add-layer" : "createNewLayer"
+                'click .add-layer' : 'createNewLayer',
+                'click .hide-panel': 'hideSection',
+                'click .show-panel': 'showSection'
+            },
+
+            hideSection: function (e) {
+                this.$el.find("#layers").hide();
+                $(e.target).removeClass("hide-panel fa-caret-down");
+                $(e.target).addClass("show-panel fa-caret-right");
+            },
+            showSection: function (e) {
+                this.$el.find("#layers").show();
+                $(e.target).removeClass("show-panel fa-caret-right");
+                $(e.target).addClass("hide-panel fa-caret-down");
             },
 
             showDropDown: function() {

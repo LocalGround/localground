@@ -16,7 +16,9 @@ define(["marionette",
                 'change #text-type': 'updateType',
                 'change #font': 'updateFont',
                 'change #fw': 'updateFontWeight',
-                'change #font-size': 'updateFontSize'
+                'change #font-size': 'updateFontSize',
+                'click .hide-panel': 'hideSection',
+                'click .show-panel': 'showSection'
             },
 
             initialize: function (opts) {
@@ -75,6 +77,17 @@ define(["marionette",
             updateFontSize: function () {
                 this.model.get("panel_styles")[this.activeKey].size = +this.$el.find("#font-size").val();
                 this.render();
+            },
+
+            hideSection: function (e) {
+                this.$el.find("#type").hide();
+                $(e.target).removeClass("hide-panel fa-caret-down");
+                $(e.target).addClass("show-panel fa-caret-right");
+            },
+            showSection: function (e) {
+                this.$el.find("#type").show();
+                $(e.target).removeClass("show-panel fa-caret-right");
+                $(e.target).addClass("hide-panel fa-caret-down");
             }
 
 

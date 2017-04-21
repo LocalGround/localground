@@ -15,7 +15,9 @@ define(["marionette",
 
             events: {
                 'change #map-select': 'changeMap',
-                'click .add-map': 'showAddMapModal'
+                'click .add-map': 'showAddMapModal',
+                'click .hide-panel': 'hideSection',
+                'click .show-panel': 'showSection'
             },
             modal: null,
 
@@ -126,7 +128,19 @@ define(["marionette",
             setMapTypeId: function (selectedMapModel) {
                 var skin = selectedMapModel.getDefaultSkin();
                 this.app.basemapView.setMapTypeId(skin.basemap);
-            }
+            },
+
+            hideSection: function (e) {
+                this.$el.find("#map-select").hide();
+                $(e.target).removeClass("hide-panel fa-caret-down");
+                $(e.target).addClass("show-panel fa-caret-right");
+            },
+            showSection: function (e) {
+                this.$el.find("#map-select").show();
+                $(e.target).removeClass("show-panel fa-caret-right");
+                $(e.target).addClass("hide-panel fa-caret-down");
+            },
+            
 
         });
         return SelectMapView;

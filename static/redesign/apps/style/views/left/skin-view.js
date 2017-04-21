@@ -19,6 +19,22 @@ define(["marionette",
                     { id: 1, name: "Greyscale", project_id: 4 },
                     { id: 2, name: "Default", project_id: 4 },
                     { id: 3, name: "Dark", project_id: 4 }                ]);
+            }, 
+
+            events: {
+                'click .hide-panel': 'hideSection',
+                'click .show-panel': 'showSection'
+            },
+
+            hideSection: function (e) {
+                this.$el.find("#skin-select").hide();
+                $(e.target).removeClass("hide-panel fa-caret-down");
+                $(e.target).addClass("show-panel fa-caret-right");
+            },
+            showSection: function (e) {
+                this.$el.find("#skin-select").show();
+                $(e.target).removeClass("show-panel fa-caret-right");
+                $(e.target).addClass("hide-panel fa-caret-down");
             }
 
         });

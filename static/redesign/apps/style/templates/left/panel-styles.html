@@ -1,10 +1,9 @@
 
 <div class="bordered-section end-section">
-    <h5>
-        <a onclick="toggleVisibility('type', 'hidden'); ">Panel Styles</a>
-        <i class="fa fa-caret-up caret" aria-hidden="true"></i>
-        <i class="fa fa-caret-down" aria-hidden="true" style="display:none;"></i>
-    </h5>
+    <div class="style-section-header">
+        <i class="fa hide-panel fa-caret-down"></i>
+        <h4>Panel Styles</h4>
+    </div>
     <div id="type" style="display: block;">
 
     <!--Choose the type category to style -->
@@ -51,9 +50,6 @@
 </div>
 <br>
 <br>
-<pre>{{name}}
-{{panel_styles.[0].color}}
-{{currentType.fw}}<br>
-{{currentType.font}}
-</pre>
+<!--
 <pre>{{json}}</pre>
+-->
