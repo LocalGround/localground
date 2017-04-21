@@ -94,12 +94,24 @@ define([
                 expect(fieldView.$el).toContainElement("span.fieldType");
                 expect(fieldView.$el).toContainElement("a.delete-field");
                 expect(fieldView.$el).toContainElement(".display-field");
-                expect(this.form.fields.at(0).get("is_display_field")).toBe(true);
-                expect(this.form.fields.at(1).get("is_display_field")).toBe(false);
+                expect(fieldView.model.get("is_display_field")).toBe(true);
+                expect(fieldView.$el.find('.display-field').is(":checked")).toBeTruthy();
                 expect(fieldView.$el.attr('id')).toBe(field.id.toString());
                 expect(fieldView.$el.find('select')).not.toExist();
                 expect(fieldView.$el.find('input.fieldname').val().trim()).toBe(field.get("col_alias"));
                 expect(fieldView.$el.find('span.fieldType').html().trim()).toBe(field.get("data_type"));
+            });
+            
+            it("If isn't a display field, don't check box", function () {
+                var opts = {}, field = this.form.fields.at(1);
+                _.extend(opts, this.form.toJSON(), {
+                    model: field
+                });
+                fieldView = new FieldChildView(opts);
+                fieldView.render();
+                expect(fieldView.$el).toContainElement(".display-field");
+                expect(fieldView.model.get("is_display_field")).toBe(false);
+                expect(fieldView.$el.find('.display-field').is(":checked")).toBeFalsy();
             });
 
             it("Don't delete when user cancels confirm dialog", function () {
@@ -152,12 +164,26 @@ define([
                 expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
                 expect($(fieldView.$el.find('span')[1]).html()).toBe("Field Type Missing");
             });
-
-            describe("Radio Button Tests", function(){
-                it("Successfully changes display field between multiple fields", function(){
-                    expect(1).toEqual(1);
+        });
+        
+        describe("Radio button switch test", function () {
+            beforeEach(function () {
+                initSpies();
+            });
+            it("Renders child HTML", function () {
+                var opts = {}, field = this.form.fields.at(1);
+                _.extend(opts, this.form.toJSON(), {
+                    model: field
                 });
-
+                expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(0);
+                fieldView = new FieldChildView(opts);
+                fieldView.render();
+                fixture = setFixtures('<div></div>').append(formView.$el);
+                expect(fieldView.model.get("is_display_field")).toBeFalsy();
+                expect(fieldView.$el.find('.display-field').is(":checked")).toBeFalsy();
+                fieldView.$el.find('.display-field').trigger('click');
+                fieldView.saveField();
+                expect(fieldView.$el.find('.display-field').is(":checked")).toBeTruthy();
             });
         });
     });
