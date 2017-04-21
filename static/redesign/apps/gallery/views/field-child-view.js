@@ -10,6 +10,9 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
         },
+        modelEvents: {
+            'draw': 'render'
+        },
         events: {
             'click .delete-field': 'doDelete'
         },

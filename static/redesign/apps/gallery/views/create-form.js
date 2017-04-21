@@ -34,7 +34,7 @@ define([
         },
         attachCollectionEventHandlers: function () {
             //this.listenTo(this.collection, 'reset', this.render);
-            this.listenTo(this.collection, 'add', this.render);
+            //this.listenTo(this.collection, 'add', this.render);
         },
 
         childViewContainer: "#fieldList",
@@ -132,7 +132,12 @@ define([
         },
         addFieldButton: function () {
             this.initCollection();
-            this.collection.add(new Field(null, { form: this.model }));
+            var field = new Field(null, { form: this.model });
+            this.collection.add(field);
+            if (this.collection.length == 1) {
+                this.render();
+            }
+            this.render();
         },
 
         deleteForm: function () {
