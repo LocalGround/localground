@@ -91,15 +91,14 @@ define([
             this.model.set('caption', caption);
             this.model.set('slug', 'slug_' + parseInt(Math.random() * 100000, 10));
             this.model.set('project_ids', [this.app.getProjectID()]);
-            /*this.model.save(null, {
+            this.model.save(null, {
                 success: function () {
                     that.saveFields();
                 },
                 error: function () {
                     console.log("The fields could not be saved");
                 }
-            });*/
-            that.saveFields();
+            });
         },
 
         initCollection: function () {
