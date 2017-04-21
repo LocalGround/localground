@@ -30,11 +30,11 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 // This had to be made dynamic because there are different Fields
                 // for each form
                 if (this.collection && this.collection.url) {
-                    this.baseURL = this.collection.url;
+                    this.baseURL = this.collection.url();
                 } else if (opts.id) {
                     this.baseURL = '/api/0/forms/' + opts.id + '/fields/';
                 } else if (opts.form) {
-                    this.form = opts.form;
+                    this.form =  opts.form;
                 } else {
                     alert("id initialization parameter required for Field");
                     return;

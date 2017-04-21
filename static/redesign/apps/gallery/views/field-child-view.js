@@ -37,6 +37,7 @@ define([
                 this.model.set("data_type", fieldType);
             }
             if (!this.errorFieldName && !this.errorFieldType) {
+                console.log(this.model.urlRoot());
                 this.model.save(null, {
                     success: function () {
                         that.render();
