@@ -39,6 +39,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
                     alert("id initialization parameter required for Field");
                     return;
                 }
+                this.set('temp_id', (Math.random(10) * 10000000).toString());
                 if (this.get("field")) {
                     this.url = this.urlRoot() + this.get("field") + "/";
                 }

@@ -121,6 +121,7 @@ define([
                 modelID,
                 model,
                 childView;
+            
             $rows.each(function (i) {
                 modelID = $(this).find(".id").val();
                 if (modelID) {
