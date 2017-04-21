@@ -14,6 +14,7 @@ define(
         "collections/prints",
         "collections/fields",
         "models/project",
+        "models/projectUser",
         "models/photo",
         "models/marker",
         "models/audio",
@@ -28,10 +29,9 @@ define(
     ],
 
     function (Backbone, $, appUtilities, Projects, Photos, AudioFiles, Maps,
-              MapImages, Markers, Records, Prints, Fields, 
-              Project, Photo, Marker, Audio, Record, 
-              Map, MapImage, Print, Layer, Form, Field, 
-              DataManager) {
+              MapImages, Markers, Records, Prints, Fields, Project, ProjectUser, Photo, Marker,
+              Audio, Record, Map, MapImage, Print, Layer, Form, Field, DataManager) {
+
         'use strict';
         afterEach(function () {
             $('body').find('.colorpicker').remove();
@@ -41,7 +41,7 @@ define(
             google.maps = {
                 event: { addListenerOnce: function () {} },
                 LatLngBounds: function () {},
-                LatLng: function(lat, lng) {}            
+                LatLng: function(lat, lng) {}
             };
             var $map_container = $('<div id="map_canvas"></div>');
             $(document.body).append($map_container);
@@ -265,7 +265,7 @@ define(
                         "form": 1,
                         "col_alias": "Test Integer",
                         "col_name": "test_integer",
-                        "is_display_field": true,
+                        "is_display_field": false,
                         "ordering": 2,
                         "data_type": "integer",
                         "url": "http://localhost:7777/api/0/forms/1/fields/19"
@@ -275,7 +275,7 @@ define(
                         "form": 1,
                         "col_alias": "Test Boolean",
                         "col_name": "test_boolean",
-                        "is_display_field": true,
+                        "is_display_field": false,
                         "ordering": 3,
                         "data_type": "boolean",
                         "url": "http://localhost:7777/api/0/forms/1/fields/20"
@@ -350,7 +350,16 @@ define(
             ]);
 
             this.projects = new Projects([
-                new Project({ id: 1, name: "Project 1", tags: 'tag1, tag2', overlay_type: "project",
+                new Project({
+                    id: 1,
+                    name: "Project 1",
+                    caption: '',
+                    owner: "MrJBRPG",
+                    access_authority: '1',
+                    tags: 'tag1, tag2',
+                    overlay_type: "project",
+                    time_stamp: "2017-02-17T21:17:33",
+                    date_created: "2017-02-17T21:17:33",
                     children: {
                         photos: {
                             name: "Photos",
@@ -383,7 +392,13 @@ define(
                             data: this.form_1.toJSON()
                         }
                     }}),
-                new Project({ id: 2, name: "Project 2", tags: 'tag3, tag2', overlay_type: "project",
+                new Project({
+                    id: 2,
+                    name: "Project 2",
+                    tags: 'tag3, tag2',
+                    overlay_type: "project",
+                    time_stamp: "2017-04-02T21:17:33",
+                    date_created: "2017-04-02T21:17:33",
                     children: {
                         form_1: {
                             name: "Soil Form",
@@ -398,7 +413,13 @@ define(
                             data: this.markers.toJSON()
                         }
                     }}),
-                new Project({ id: 3, name: "Blah", tags: 'tag6, tag7', overlay_type: "project",
+                new Project({
+                    id: 3,
+                    name: "Blah",
+                    tags: 'tag6, tag7',
+                    overlay_type: "project",
+                    time_stamp: "2016-02-17T21:17:33",
+                    date_created: "2016-02-17T21:17:33",
                     children: {
                         photos: {
                             name: "Photos",
@@ -420,6 +441,9 @@ define(
                         }
                     }})
             ]);
+
+            this.project = this.projects.at(0);
+
             this.tilesets = [
                 {"sourceName": "mapbox", "max": 19, "is_printable": true, "providerID": "lg.i1p5alka", "id": 1, "typeID": 1, "name": "Mapnik", "min": 1, "url": "", "sourceID": 1, "type": "Base Tileset"},
                 {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "roadmap", "id": 2, "typeID": 1, "name": "Roadmap", "min": 1, "url": "//maps.google.com/maps/api/staticmap?sensor=false&maptype=roadmap&style=feature:poi.school|element:geometry|saturation:-79|lightness:75", "sourceID": 5, "type": "Base Tileset"},
@@ -444,6 +468,13 @@ define(
 
             //initialize this.app:
             this.app = _.extend({}, appUtilities);
+            this.app.username = "Tester";
+
+            this.projectUser = new ProjectUser({
+                user: "Tester",
+                authority: "1"
+            }, {id: this.project.id});
+
             this.map = {
                 fitBounds: function () {},
                 setCenter: function () {}

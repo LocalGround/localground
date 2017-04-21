@@ -9,6 +9,7 @@ define([
     var FieldChildView = Marionette.ItemView.extend({
         initialize: function (opts) {
             _.extend(this, opts);
+            this.getDisplayField();
         },
         modelEvents: {
             'draw': 'render'
@@ -30,6 +31,7 @@ define([
         errorFieldName: false,
         serverErrorMessage: null,
         tagName: "tr",
+
         setAlias: function () {
             this.model.set("col_alias", this.$el.find(".fieldname").val());
         },
@@ -86,6 +88,16 @@ define([
                 this.$el.addClass("failure-message show");
             }
         },
+        //*
+        getDisplayField: function(){
+            console.log(this.model.get("is_display_field"));
+            console.log(this.$el);
+            // I get context undefined each time I attempt to find class that holds the radio input
+            var $displayFieldRadio = this.$el.find(".display_field_button");
+            console.log($displayFieldRadio);
+            //$displayFieldRadio.
+        },
+
         doDelete: function (e) {
             if (!confirm("Are you sure you want to remove this field from the form?")) {
                 return;
@@ -99,6 +111,7 @@ define([
                 e.preventDefault();
             }
         }
+
     });
     return FieldChildView;
 

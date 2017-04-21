@@ -28,6 +28,9 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 'click .save-modal-form': 'saveFunction',
                 'click .delete-modal': 'deleteFunction'
             },
+            deleteFunction: function () {
+                alert("blah");
+            },
             template: Handlebars.compile(ModalTemplate),
             initialize: function (opts) {
                 opts = opts || {};

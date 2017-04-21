@@ -145,6 +145,7 @@ define([
         },
 
         deleteForm: function () {
+            console.log("Delete Form");
             var that = this;
             if (!confirm("Are you sure you want to delete this form? This will delete all data associated with this form and cannot be undone.")) {
                 return;
