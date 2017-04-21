@@ -25,6 +25,9 @@ define([
                 serverErrorMessage: this.serverErrorMessage
             };
         },
+        id: function () {
+            return this.model.get("temp_id");
+        },
         template: Handlebars.compile(FieldItemTemplate),
         errorFieldType: false,
         errorFieldName: false,

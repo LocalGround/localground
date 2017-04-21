@@ -52,10 +52,21 @@ define([
             sortableFields.sortable({
                 helper: this.fixHelper,
                 update: function (event, ui) {
-                    var newOrder = ui.item.index() + 1,
-                        modelID = ui.item.find(".id").val(),
-                        targetModel = that.collection.get(modelID);
-                    targetModel.set("ordering", newOrder);
+                    /*var newOrder = ui.item.index() + 1,
+                        tempID = ui.item.attr("id"),
+                        targetModel = that.collection.find(function (model) { return model.get('temp_id') === tempID; });
+                    targetModel.set("ordering", newOrder);*/
+                    var $rows = that.$el.find("#fieldList tr"),
+                        tempID,
+                        model,
+                        childView;
+                    $rows.each(function (i) {
+                        tempID = $(this).attr("id");
+                        model = that.collection.find(function (model) { return model.get('temp_id') === tempID; });
+                        model.set("ordering", i + 1);
+                    });
+                    that.collection.sort();
+                    that.render();
                     //targetModel.save();
                 }
             }).disableSelection();
@@ -118,18 +129,13 @@ define([
             this.initCollection();
             var that = this,
                 $rows = this.$el.find("#fieldList tr"),
-                modelID,
+                tempID,
                 model,
                 childView;
-            
             $rows.each(function (i) {
-                modelID = $(this).find(".id").val();
-                if (modelID) {
-                    model = that.collection.get(modelID);
-                    childView = that.children.findByModel(model);
-                } else {
-                    childView = that.children.findByIndex(i);
-                }
+                tempID = $(this).attr("id");
+                model = that.collection.find(function (model) { return model.get('temp_id') === tempID; });
+                childView = that.children.findByModel(model);
                 childView.saveField(i + 1);
                 that.wait(300);
             });
