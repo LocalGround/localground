@@ -93,6 +93,9 @@ define([
                 expect(fieldView.$el).toContainElement("td.form-reorder");
                 expect(fieldView.$el).toContainElement("span.fieldType");
                 expect(fieldView.$el).toContainElement("a.delete-field");
+                expect(fieldView.$el).toContainElement(".display-field");
+                expect(this.form.fields.at(0).get("is_display_field")).toBe(true);
+                expect(this.form.fields.at(1).get("is_display_field")).toBe(false);
                 expect(fieldView.$el.attr('id')).toBe(field.id.toString());
                 expect(fieldView.$el.find('select')).not.toExist();
                 expect(fieldView.$el.find('input.fieldname').val().trim()).toBe(field.get("col_alias"));
@@ -148,6 +151,13 @@ define([
                 expect(fieldView.$el.hasClass("failure-message")).toBeTruthy();
                 expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
                 expect($(fieldView.$el.find('span')[1]).html()).toBe("Field Type Missing");
+            });
+
+            describe("Radio Button Tests", function(){
+                it("Successfully changes display field between multiple fields", function(){
+                    expect(1).toEqual(1);
+                });
+
             });
         });
     });

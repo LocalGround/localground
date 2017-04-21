@@ -28,9 +28,9 @@ define(
     ],
 
     function (Backbone, $, appUtilities, Projects, Photos, AudioFiles, Maps,
-              MapImages, Markers, Records, Prints, Fields, 
-              Project, Photo, Marker, Audio, Record, 
-              Map, MapImage, Print, Layer, Form, Field, 
+              MapImages, Markers, Records, Prints, Fields,
+              Project, Photo, Marker, Audio, Record,
+              Map, MapImage, Print, Layer, Form, Field,
               DataManager) {
         'use strict';
         afterEach(function () {
@@ -41,7 +41,7 @@ define(
             google.maps = {
                 event: { addListenerOnce: function () {} },
                 LatLngBounds: function () {},
-                LatLng: function(lat, lng) {}            
+                LatLng: function(lat, lng) {}
             };
             var $map_container = $('<div id="map_canvas"></div>');
             $(document.body).append($map_container);
@@ -265,7 +265,7 @@ define(
                         "form": 1,
                         "col_alias": "Test Integer",
                         "col_name": "test_integer",
-                        "is_display_field": true,
+                        "is_display_field": false,
                         "ordering": 2,
                         "data_type": "integer",
                         "url": "http://localhost:7777/api/0/forms/1/fields/19"
@@ -275,7 +275,7 @@ define(
                         "form": 1,
                         "col_alias": "Test Boolean",
                         "col_name": "test_boolean",
-                        "is_display_field": true,
+                        "is_display_field": false,
                         "ordering": 3,
                         "data_type": "boolean",
                         "url": "http://localhost:7777/api/0/forms/1/fields/20"
