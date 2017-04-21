@@ -1,10 +1,13 @@
 
 <div class="bordered-section end-section">
     <div class="style-section-header">
-        <i class="fa hide-panel fa-caret-down"></i>
+        <i class="fa {{#if isShowing}} hide-panel fa-caret-down{{else}} show-panel fa-caret-right {{/if}}"></i>
         <h4>Panel Styles</h4>
     </div>
-    <div id="type" style="display: block;">
+    
+    
+    
+    <div id="type" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}">
 
     <!--Choose the type category to style -->
         <select id="text-type" name="title-list" style="width:100%; margin: 20px 0px 10px;">

@@ -1,5 +1,5 @@
 <div class="style-section-header">
-    <i class="fa hide-panel fa-caret-down"></i>
+    <i class="fa {{#if isShowing}} hide-panel fa-caret-down{{else}} show-panel fa-caret-right {{/if}}"></i>
    
 
     <div class="plus-container" style="position:relative;float:right;">
@@ -8,4 +8,4 @@
 
     <h4>Layers</h4>
 </div>
-<div id="layers"></div>
+<div id="layers" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}"></div>

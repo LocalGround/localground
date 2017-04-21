@@ -9,9 +9,9 @@ define(["marionette",
 
         var SelectSkinView = Marionette.ItemView.extend({
             activeKey: "title",
-
+            isShowing: false,
             template: Handlebars.compile(PanelStylesTemplate),
-            
+
             events: {
                 'change #text-type': 'updateType',
                 'change #font': 'updateFont',
@@ -23,6 +23,7 @@ define(["marionette",
 
             initialize: function (opts) {
                 _.extend(this, opts);
+                this.restoreState();
             },
             
             onRender: function () {
@@ -52,8 +53,9 @@ define(["marionette",
                 return {
                     json: JSON.stringify(this.model.toJSON(), null, 2),
                     currentType: this.model.get("panel_styles")[this.activeKey],
-                    activeKey: this.activeKey
-                    };
+                    activeKey: this.activeKey,
+                    isShowing: this.isShowing
+                };
             },
            
             updateType: function () {
@@ -80,17 +82,28 @@ define(["marionette",
             },
 
             hideSection: function (e) {
-                this.$el.find("#type").hide();
-                $(e.target).removeClass("hide-panel fa-caret-down");
-                $(e.target).addClass("show-panel fa-caret-right");
+                this.isShowing = false;
+                this.saveState();
+                this.render();
             },
             showSection: function (e) {
-                this.$el.find("#type").show();
-                $(e.target).removeClass("show-panel fa-caret-right");
-                $(e.target).addClass("hide-panel fa-caret-down");
+                this.isShowing = true;
+                this.saveState();
+                this.render();
+            },
+            saveState: function () {
+                this.app.saveState("panel_styles", {
+                    isShowing: this.isShowing
+                });
+            },
+            restoreState: function () {
+                var state = this.app.restoreState("panel_styles");
+                if (state) {
+                    this.isShowing = state.isShowing;
+                } else {
+                    this.isShowing = true;
+                }
             }
-
-
         });
         return SelectSkinView;
     });

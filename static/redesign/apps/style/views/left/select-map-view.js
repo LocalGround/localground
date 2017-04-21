@@ -139,8 +139,7 @@ define(["marionette",
                 this.$el.find("#map-select").show();
                 $(e.target).removeClass("show-panel fa-caret-right");
                 $(e.target).addClass("hide-panel fa-caret-down");
-            },
-            
+            }
 
         });
         return SelectMapView;

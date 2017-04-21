@@ -12,13 +12,14 @@ define(["marionette",
         var SelectMapView = Marionette.CompositeView.extend({
 
             template: Handlebars.compile(LayerListTemplate),
-
+            isShowing: true,
             childView: LayerListChild,
             childViewContainer: "#layers",
 
             childViewOptions: function () {
-                return { app: this.app,
-                        collection: this.collection    
+                return {
+                    app: this.app,
+                    collection: this.collection
                 };
             },
 
@@ -29,6 +30,7 @@ define(["marionette",
                 if (this.app.currentMap) {
                     this.displayLayers(this.app.currentMap);
                 }
+                this.restoreState();
 
                 this.listenTo(this.app.vent, 'init-collection', this.displayLayers);
                 this.listenTo(this.app.vent, 'change-map', this.displayLayers);
@@ -43,7 +45,7 @@ define(["marionette",
                 'click .show-panel': 'showSection'
             },
 
-            hideSection: function (e) {
+            /*hideSection: function (e) {
                 this.$el.find("#layers").hide();
                 $(e.target).removeClass("hide-panel fa-caret-down");
                 $(e.target).addClass("show-panel fa-caret-right");
@@ -52,6 +54,16 @@ define(["marionette",
                 this.$el.find("#layers").show();
                 $(e.target).removeClass("show-panel fa-caret-right");
                 $(e.target).addClass("hide-panel fa-caret-down");
+            },*/
+            hideSection: function (e) {
+                this.isShowing = false;
+                this.saveState();
+                this.render();
+            },
+            showSection: function (e) {
+                this.isShowing = true;
+                this.saveState();
+                this.render();
             },
 
             showDropDown: function() {
@@ -83,6 +95,24 @@ define(["marionette",
                     
                 });
                 this.app.vent.trigger("edit-layer", layer, this.collection);
+            },
+            templateHelpers: function () {
+                return {
+                    isShowing: this.isShowing
+                };
+            },
+            saveState: function () {
+                this.app.saveState("layer_list", {
+                    isShowing: this.isShowing
+                });
+            },
+            restoreState: function () {
+                var state = this.app.restoreState("layer_list");
+                if (state) {
+                    this.isShowing = state.isShowing;
+                } else {
+                    this.isShowing = true;
+                }
             }
 
         });
