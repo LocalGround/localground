@@ -31,7 +31,6 @@ define(
     function (Backbone, $, appUtilities, Projects, Photos, AudioFiles, Maps,
               MapImages, Markers, Records, Prints, Fields, Project, ProjectUser, Photo, Marker,
               Audio, Record, Map, MapImage, Print, Layer, Form, Field, DataManager) {
-
         'use strict';
         afterEach(function () {
             $('body').find('.colorpicker').remove();

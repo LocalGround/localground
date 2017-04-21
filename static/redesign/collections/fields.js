@@ -17,6 +17,7 @@ define(["models/field", "collections/basePageable"], function (Field, BasePageab
             return '/api/0/forms/' + this.form.get("id") + '/fields/';
         },
         initialize: function (recs, opts) {
+            this.sort_key = 'ordering';
             if (opts.url) {
                 this.baseURL = opts.url;
             } else if (opts.id) {

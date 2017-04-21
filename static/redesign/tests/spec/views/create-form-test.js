@@ -13,7 +13,6 @@ define([
         initSpies = function () {
             spyOn(CreateForm.prototype, 'render').and.callThrough();
             spyOn(CreateForm.prototype, 'initModel').and.callThrough();
-            spyOn(CreateForm.prototype, 'attachCollectionEventHandlers').and.callThrough();
             spyOn(CreateForm.prototype, 'fetchShareData').and.callThrough();
             spyOn(CreateForm.prototype, 'saveFields').and.callThrough();
             spyOn(Form.prototype, "getFields").and.callThrough();
@@ -26,18 +25,7 @@ define([
             spyOn(CreateForm.prototype, 'backToList').and.callThrough();
             spyOn(Field.prototype, 'save').and.callThrough();
             spyOn(Form.prototype, 'createField').and.callThrough();
-
-            //error catch functions
-            spyOn(CreateForm.prototype, 'blankField').and.callThrough();
-            spyOn(CreateForm.prototype, 'errorFieldName').and.callThrough();
-            spyOn(CreateForm.prototype, 'errorFieldType').and.callThrough();
-            spyOn(Form.prototype, 'createField').and.callThrough();
             spyOn(Form.prototype, 'destroy').and.callThrough();
-
-            //error catch functions
-            spyOn(CreateForm.prototype, 'blankField').and.callThrough();
-            spyOn(CreateForm.prototype, 'errorFieldName').and.callThrough();
-            spyOn(CreateForm.prototype, 'errorFieldType').and.callThrough();
         };
 
         describe("Create Form: Initialization Tests", function () {
@@ -91,11 +79,6 @@ define([
                 });
             });
 
-            it("Calls Render when Collection Resets", function () {
-                expect(CreateForm.prototype.render).toHaveBeenCalledTimes(1);
-                newCreateForm.collection.trigger("add");
-                expect(CreateForm.prototype.render).toHaveBeenCalledTimes(2);
-            });
         });
 
         describe("Create Form: Initialize Model without fields", function () {
@@ -180,7 +163,7 @@ define([
                     //remove new row by triggering '.remove-row click'
                     expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(0);
                     fixture.find('.remove-row').trigger('click');
-                    expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(2);
+                    expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(1);
                     expect(fixture.find('.remove-row').html()).toBeUndefined();
                 });
 
@@ -229,9 +212,6 @@ define([
                     expect(CreateForm.prototype.saveFormSettings).toHaveBeenCalledTimes(1);
                     expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(1);
 
-                    // Form has a collection of fields
-                    expect(Form.prototype.createField).toHaveBeenCalledWith("Sample Text", "text", false, 1);
-
                 });
                 it("successfully modifies and saves existing fields", function () {
                     newCreateForm = new CreateForm({
@@ -254,113 +234,6 @@ define([
                     expect(newCreateForm.collection.at(0).get("col_alias")).toBe("new field 1");
                     expect(newCreateForm.collection.at(1).get("col_alias")).toBe("new field 2");
                     expect(newCreateForm.collection.at(2).get("col_alias")).toBe("new field 3");
-                });
-
-                it("If fieldname is blank, it shows an error", function () {
-                    newCreateForm = new CreateForm({
-                        app: this.app,
-                        model: this.form
-                    });
-
-                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
-
-                    var $inputs = fixture.find('input.fieldname');
-                    $($inputs[0]).val(""); // empty out the field and test for the error
-
-                    expect(CreateForm.prototype.errorFieldName).toHaveBeenCalledTimes(0);
-                    newCreateForm.saveFormSettings();
-
-                    expect(CreateForm.prototype.errorFieldName).toHaveBeenCalledTimes(3);
-                    expect($($inputs[0]).css("background-color")).toBe("rgb(255, 221, 221)");
-                    expect($($inputs[1]).css("background-color")).not.toBe("rgb(255, 221, 221)");
-                    expect($($inputs[2]).css("background-color")).not.toBe("rgb(255, 221, 221)");
-                    expect($($inputs[0]).attr("placeholder")).toBe("Field Name Missing");
-
-                });
-
-                it("If fieldtype is blank, it shows an error", function () {
-                    newCreateForm = new CreateForm({
-                        app: this.app,
-                        model: this.form
-                    });
-                    //test "errorFieldType" method:
-                    expect(1).toBe(1);
-                });
-
-
-                it("If fieldname is blank, it shows an error", function () {
-                    newCreateForm = new CreateForm({
-                        app: this.app,
-                        model: this.form
-                    });
-
-                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
-
-                    var $inputs = fixture.find('input.fieldname');
-                    $($inputs[0]).val(""); // empty out the field and test for the error
-
-                    expect(CreateForm.prototype.errorFieldName).toHaveBeenCalledTimes(0);
-                    newCreateForm.saveFormSettings();
-
-                    expect(CreateForm.prototype.errorFieldName).toHaveBeenCalledTimes(3);
-                    expect($($inputs[0]).css("background-color")).toBe("rgb(255, 221, 221)");
-                    expect($($inputs[1]).css("background-color")).not.toBe("rgb(255, 221, 221)");
-                    expect($($inputs[2]).css("background-color")).not.toBe("rgb(255, 221, 221)");
-                    expect($($inputs[0]).attr("placeholder")).toBe("Field Name Missing");
-
-                });
-
-                it("If fieldtype is blank, it shows an error", function () {
-
-                    newCreateForm = new CreateForm({
-                        app: this.app,
-                        model: new Form({id: 5})
-                    });
-                    newCreateForm.render();
-
-                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
-                    fixture.find('.new_field_button').trigger('click');
-                    var $inputs_type = fixture.find('select.fieldType');
-                    //$($inputs_type[0]).val(""); // empty out the field and test for the error
-
-                    var $inputs_name = fixture.find('input.fieldname');
-                    $($inputs_name[0]).val('Test'); // empty out the field and test for the error
-
-                    expect(CreateForm.prototype.errorFieldType).toHaveBeenCalledTimes(0);
-                    newCreateForm.saveFormSettings();
-
-                    expect(CreateForm.prototype.errorFieldType).toHaveBeenCalledTimes(1);
-                    expect($($inputs_type[0]).parent().parent().css("background-color")).toBe("rgb(255, 170, 170)");
-
-                });
-
-                it("Changes default display of field inside form", function(){
-                    newCreateForm = new CreateForm({
-                        app: this.app,
-                        model: this.form
-                    });
-
-                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
-
-                    var $inputs_isDisplay = fixture.find('input.display_field_button');
-                    console.log($inputs_isDisplay);
-                    // before save changes
-                    expect($($inputs_isDisplay[0]).prop("checked")).toBe(true);
-                    expect($($inputs_isDisplay[1]).prop("checked")).toBe(false);
-                    expect($($inputs_isDisplay[2]).prop("checked")).toBe(false);
-
-                    // Set property of other check to be true,
-                    // and previous check automatically set to false
-                    $($inputs_isDisplay[1]).prop("checked", true);
-                    newCreateForm.saveFormSettings();
-
-                    // After save changes
-                    expect($($inputs_isDisplay[0]).prop("checked")).toBe(false);
-                    expect($($inputs_isDisplay[1]).prop("checked")).toBe(true);
-                    expect($($inputs_isDisplay[2]).prop("checked")).toBe(false);
-
-
-
                 });
 
                 it("Successfully deletes the form", function () {

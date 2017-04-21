@@ -26,6 +26,9 @@ define([
                 serverErrorMessage: this.serverErrorMessage
             };
         },
+        id: function () {
+            return this.model.get("temp_id");
+        },
         template: Handlebars.compile(FieldItemTemplate),
         errorFieldType: false,
         errorFieldName: false,
@@ -41,12 +44,15 @@ define([
         saveField: function (ordering) {
             var fieldName = this.$el.find(".fieldname").val(),
                 fieldType = this.$el.find(".fieldType").val(),
+                isDisplaying = this.$el.find('.display-field').is(":checked"),
                 that = this,
                 messages;
+                console.log(isDisplaying);
             //ordering = this.model.get("ordering") || ordering;
             this.validate(fieldName, fieldType);
             this.model.set("ordering", ordering);
             this.model.set("col_alias", fieldName);
+            this.model.set("is_display_field", isDisplaying);
             if (fieldType) {
                 this.model.set("data_type", fieldType);
             }
