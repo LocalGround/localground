@@ -13,7 +13,6 @@ define([
         initSpies = function () {
             spyOn(CreateForm.prototype, 'render').and.callThrough();
             spyOn(CreateForm.prototype, 'initModel').and.callThrough();
-            spyOn(CreateForm.prototype, 'attachCollectionEventHandlers').and.callThrough();
             spyOn(CreateForm.prototype, 'fetchShareData').and.callThrough();
             spyOn(CreateForm.prototype, 'saveFields').and.callThrough();
             spyOn(Form.prototype, "getFields").and.callThrough();
@@ -77,11 +76,6 @@ define([
                 });
             });
 
-            it("Calls Render when Collection Resets", function () {
-                expect(CreateForm.prototype.render).toHaveBeenCalledTimes(1);
-                newCreateForm.collection.trigger("add");
-                expect(CreateForm.prototype.render).toHaveBeenCalledTimes(2);
-            });
         });
 
         describe("Create Form: Initialize Model without fields", function () {
@@ -166,7 +160,7 @@ define([
                     //remove new row by triggering '.remove-row click'
                     expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(0);
                     fixture.find('.remove-row').trigger('click');
-                    expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(2);
+                    expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(1);
                     expect(fixture.find('.remove-row').html()).toBeUndefined();
                 });
 
