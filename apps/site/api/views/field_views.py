@@ -68,6 +68,7 @@ class FieldMixin(object):
     
             
     def validate_ordering_value(self, ordering, form, is_create=False):
+        #Am pretty sure this is more trouble than it's worth
         # no validation needed if ordering is undefined:
         if ordering is None:
             return
@@ -95,7 +96,7 @@ class FieldList(FieldMixin, QueryableListCreateAPIView):
         form = self.get_form()
         data = serializer.validated_data
         self.validate_is_valid_col_alias(data.get('col_alias'), form)
-        self.validate_ordering_value(data.get('ordering'), form, is_create=True)
+        #self.validate_ordering_value(data.get('ordering'), form, is_create=True)
         instance = serializer.save(form=form)
         self.update_display_field(instance, form)
         if do_reshuffle:
@@ -114,7 +115,7 @@ class FieldInstance(FieldMixin, generics.RetrieveUpdateDestroyAPIView):
         form = self.get_form()
         data = serializer.validated_data
         self.validate_is_valid_col_alias(data.get('col_alias'), form, pk=int(self.kwargs.get('pk')))
-        self.validate_ordering_value(data.get('ordering'), form)
+        #self.validate_ordering_value(data.get('ordering'), form)
         instance = serializer.save()
         self.update_display_field(instance, form)
         if do_reshuffle:
