@@ -14,7 +14,9 @@ define([
             'draw': 'render'
         },
         events: {
-            'click .delete-field': 'doDelete'
+            'click .delete-field': 'doDelete',
+            'blur input.fieldname': 'setAlias',
+            'change select.fieldType': 'setDataType'
         },
         templateHelpers: function () {
             return {
@@ -28,25 +30,36 @@ define([
         errorFieldName: false,
         serverErrorMessage: null,
         tagName: "tr",
+        setAlias: function () {
+            this.model.set("col_alias", this.$el.find(".fieldname").val());
+        },
+        setDataType: function () {
+            this.model.set("data_type", this.$el.find(".fieldType").val());
+        },
         saveField: function (ordering) {
             var fieldName = this.$el.find(".fieldname").val(),
                 fieldType = this.$el.find(".fieldType").val(),
-                that = this;
+                that = this,
+                messages;
+            //ordering = this.model.get("ordering") || ordering;
             this.validate(fieldName, fieldType);
             this.model.set("ordering", ordering);
             this.model.set("col_alias", fieldName);
-            console.log('saving field...', fieldName, fieldType);
             if (fieldType) {
                 this.model.set("data_type", fieldType);
             }
             if (!this.errorFieldName && !this.errorFieldType) {
-                console.log(this.model.urlRoot());
+                console.log({
+                    id: this.model.get("id"),
+                    col_alias: this.model.get("col_alias"),
+                    ordering: this.model.get("ordering")
+                });
                 this.model.save(null, {
                     success: function () {
                         that.render();
                     },
                     error: function (model, response) {
-                        var messages = JSON.parse(response.responseText);
+                        messages = JSON.parse(response.responseText);
                         that.serverErrorMessage = messages.detail;
                         that.render();
                     }
