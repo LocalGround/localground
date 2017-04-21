@@ -84,7 +84,7 @@ define([
                 expect(layerListChildView.sendCollection).toHaveBeenCalledTimes(0);
                 fixture.find('.edit').trigger("click");
                 expect(layerListChildView.sendCollection).toHaveBeenCalledTimes(1);
-
+            });
             it("initialized 3 OverlayListView objects", function () {
                 expect(layerListChildView.markerOverlayList.length).toBe(3);
             });

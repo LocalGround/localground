@@ -54,15 +54,14 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 if (entry) {
                     return entry;
                 }
-                alert("No entry found for " + key);
-                return null;
+                throw new Error("No entry found for " + key);
             },
             getCollection: function (key) {
                 var entry = this.dataDictionary[key];
                 if (entry) {
                     return entry.collection;
                 }
-                alert("No entry found for " + key);
+                throw new Error("No entry found for " + key);
                 return null;
             },
             initCollection: function (key, data) {
@@ -104,7 +103,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                             isSite: true
                         };
                     }
-                    alert("case not handled");
+                    throw new Error("case not handled");
                     return null;
                 }
             }

@@ -26,17 +26,15 @@ define([
             this.render();
         },
         initModel: function () {
-            this.collection = this.model.fields;
-            if (this.collection) {
-                this.attachCollectionEventHandlers();
-            }
+            this.initCollection();
             Marionette.CompositeView.prototype.initialize.call(this);
             if (!this.collection || this.collection.isEmpty()) {
                 this.fetchShareData();
             }
         },
         attachCollectionEventHandlers: function () {
-            this.listenTo(this.collection, 'reset', this.render);
+            //this.listenTo(this.collection, 'reset', this.render);
+            this.listenTo(this.collection, 'add', this.render);
         },
 
         childViewContainer: "#fieldList",
@@ -53,6 +51,7 @@ define([
             'click .back': 'backToList'
         },
         onRender: function () {
+            return;
             var sortableFields = this.$el.find("#fieldList"),
                 that  = this;
             sortableFields.sortable({
@@ -109,23 +108,31 @@ define([
             });
         },
 
-        saveFields: function () {
-            var that = this;
+        initCollection: function () {
+            if (this.collection) {
+                return;
+            }
             if (!this.model.fields) {
                 this.model.fields = new Fields(
                     null,
-                    { id: this.model.get("id") }
+                    { form: this.model }
                 );
-                this.collection = this.model.fields;
-                this.attachCollectionEventHandlers();
             }
+            this.collection = this.model.fields;
+            this.attachCollectionEventHandlers();
+        },
+
+        saveFields: function () {
+            var that = this;
+            this.initCollection();
             this.children.each(function (childview, i) {
                 childview.saveField(i + 1);
                 that.wait(100);
             });
         },
         addFieldButton: function () {
-            this.collection.add(new Field(null, { id: this.model.get("id") }));
+            this.initCollection();
+            this.collection.add(new Field(null, { form: this.model }));
         },
 
         deleteForm: function () {

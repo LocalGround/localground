@@ -10,9 +10,6 @@ define([
         initialize: function (opts) {
             _.extend(this, opts);
         },
-        modelEvents: {
-            'redraw': 'render'
-        },
         events: {
             'click .delete-field': 'doDelete'
         },
@@ -28,9 +25,6 @@ define([
         errorFieldName: false,
         serverErrorMessage: null,
         tagName: "tr",
-        id: function () {
-            return this.model.get("id");
-        },
         saveField: function (ordering) {
             var fieldName = this.$el.find(".fieldname").val(),
                 fieldType = this.$el.find(".fieldType").val(),
@@ -38,6 +32,7 @@ define([
             this.validate(fieldName, fieldType);
             this.model.set("ordering", ordering);
             this.model.set("col_alias", fieldName);
+            console.log('saving field...', fieldName, fieldType);
             if (fieldType) {
                 this.model.set("data_type", fieldType);
             }
@@ -53,6 +48,7 @@ define([
                     }
                 });
             } else {
+                console.log("ERROR!");
                 this.render();
             }
         },
@@ -69,6 +65,7 @@ define([
         onRender: function () {
             this.$el.removeClass("failure-message");
             if (this.errorFieldType || this.errorFieldName || this.serverErrorMessage) {
+                console.log("adding class");
                 this.$el.addClass("failure-message show");
             }
         },
@@ -81,7 +78,9 @@ define([
             $row.remove();
 
             this.model.destroy();
-            e.preventDefault();
+            if (e) {
+                e.preventDefault();
+            }
         }
     });
     return FieldChildView;

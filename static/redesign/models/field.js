@@ -2,7 +2,8 @@ define(["underscore", "collections/dataTypes", "models/base"],
     function (_, DataTypes, Base) {
         'use strict';
         var Field = Base.extend({
-            urlRoot: null, /* /api/0/forms/<form_id>/fields/.json */
+            baseURL: null,
+            form: null,
             defaults: _.extend({}, Base.prototype.defaults, {
                 col_alias: '',
                 is_display_field: true,
@@ -19,22 +20,30 @@ define(["underscore", "collections/dataTypes", "models/base"],
                 has_snippet_field: 'Hidden',
                 ordering: 'Hidden'
             },
+            urlRoot: function () {
+                if (this.baseURL) {
+                    return this.baseURL;
+                }
+                return '/api/0/forms/' + this.form.get("id") + '/fields/';
+            },
             initialize: function (data, opts) {
                 // This had to be made dynamic because there are different Fields
                 // for each form
                 if (this.collection && this.collection.url) {
-                    this.urlRoot = this.collection.url;
+                    this.baseURL = this.collection.url;
                 } else if (opts.id) {
-                    this.urlRoot = '/api/0/forms/' + opts.id + '/fields/';
+                    this.baseURL = '/api/0/forms/' + opts.id + '/fields/';
+                } else if (opts.form) {
+                    this.form = opts.form;
                 } else {
                     alert("id initialization parameter required for Field");
                     return;
                 }
                 if (this.get("field")) {
-                    this.url = this.urlRoot + this.get("field") + "/";
+                    this.url = this.urlRoot() + this.get("field") + "/";
                 }
                 Base.prototype.initialize.apply(this, arguments);
-    		}
+            }
         });
         return Field;
     });

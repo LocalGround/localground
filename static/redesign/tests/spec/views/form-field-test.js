@@ -3,13 +3,12 @@ define([
     "jquery",
     rootDir + "apps/gallery/views/create-form",
     rootDir + "apps/gallery/views/field-child-view",
-    rootDir + "models/form",
     rootDir + "models/field",
     "tests/spec-helper"
 ],
-    function ($, CreateForm, FieldChildView, Form, Field) {
+    function ($, CreateForm, FieldChildView, Field) {
         'use strict';
-        var fixture, formView, fieldView, initSpies;
+        var fixture, formView, fieldView, initSpies, createExistingFieldView, createNewFieldView;
 
         initSpies = function () {
             //error catch functions
@@ -17,6 +16,31 @@ define([
             spyOn(FieldChildView.prototype, 'render').and.callThrough();
             spyOn(FieldChildView.prototype, 'doDelete').and.callThrough();
             spyOn(Field.prototype, 'destroy');
+
+            //error catch functions
+            spyOn(FieldChildView.prototype, 'validate').and.callThrough();
+        };
+
+        createExistingFieldView = function (scope) {
+            var opts = {};
+            _.extend(opts, scope.form.toJSON(), {
+                model: scope.form.fields.at(0)
+            });
+            console.log(opts);
+            expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(0);
+            fieldView = new FieldChildView(opts);
+            fieldView.render();
+        };
+
+        createNewFieldView = function (scope) {
+            var opts = {};
+            _.extend(opts, scope.form.toJSON(), {
+                model: new Field(null, {id: scope.form.id })
+            });
+            console.log(opts);
+            expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(0);
+            fieldView = new FieldChildView(opts);
+            fieldView.render();
         };
 
         describe("Create Form Fields: Initialization Tests", function () {
@@ -62,16 +86,17 @@ define([
                 expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(1);
 
                 //check HTML in DOM:
+                console.log(fieldView.$el.html());
                 expect(fieldView.$el).toEqual("tr");
                 expect(fieldView.$el).toContainElement(".fa-grip");
                 expect(fieldView.$el).toContainElement("input.fieldname");
                 expect(fieldView.$el).toContainElement("td.form-reorder");
-                expect(fieldView.$el).toContainElement("span.fieldname");
+                expect(fieldView.$el).toContainElement("span.fieldType");
                 expect(fieldView.$el).toContainElement("a.delete-field");
                 expect(fieldView.$el.attr('id')).toBe(field.id.toString());
                 expect(fieldView.$el.find('select')).not.toExist();
-                expect(fieldView.$el.find('span.fieldname').html().trim()).toBe(field.get("data_type"));
-                expect(fieldView.$el.find('input.fieldname').val()).toBe(field.get("col_alias"));
+                expect(fieldView.$el.find('input.fieldname').val().trim()).toBe(field.get("col_alias"));
+                expect(fieldView.$el.find('span.fieldType').html().trim()).toBe(field.get("data_type"));
             });
 
             it("Don't delete when user cancels confirm dialog", function () {
@@ -105,8 +130,24 @@ define([
                 fieldView.$el.find('a.delete-field').trigger('click');
                 expect(FieldChildView.prototype.doDelete).toHaveBeenCalledTimes(1);
                 expect(Field.prototype.destroy).toHaveBeenCalledTimes(1);
-                console.log(fieldView.$el);
                 expect(fieldView.$el).not.toBeInDOM();
+            });
+
+            it("If fieldname is blank, it shows an error", function () {
+                createExistingFieldView(this);
+                fieldView.$el.find("input.fieldname").val("");
+                fieldView.saveField(1);
+                expect(fieldView.$el.hasClass("failure-message")).toBeTruthy();
+                expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
+            });
+
+            it("If fieldtype is blank, it shows an error", function () {
+                createNewFieldView(this);
+                fieldView.$el.find("select").val("-1");
+                fieldView.saveField(1);
+                expect(fieldView.$el.hasClass("failure-message")).toBeTruthy();
+                expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
+                expect($(fieldView.$el.find('span')[1]).html()).toBe("Field Type Missing");
             });
         });
     });
