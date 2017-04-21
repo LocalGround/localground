@@ -1,7 +1,7 @@
 var rootDir = "../../";
 define([
     'lib/maps/marker-overlays',
-    'models/Symbol',
+    'models/symbol',
     rootDir + "apps/style/views/left/layer-list-child-view"
 ],
     function (OverlayListView, Symbol, LayerListChildView) {
