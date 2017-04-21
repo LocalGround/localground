@@ -59,7 +59,6 @@ define([
                     app: this.app,
                     model: new Project({
                         id: 8,
-                        //name: "Untitled",
                         time_stamp: new Date().toISOString().replace("Z", ""),
                         date_created: new Date().toISOString().replace("Z", ""),
                         access_authority: 1, // Private
@@ -77,12 +76,12 @@ define([
                     app: this.app,
                     model: this.project
                 });
-
-                expect(newShareForm.model.get("name")).toEqual(newShareForm.model.get("name"));
-                expect(newShareForm.model.get("access_authority")).toEqual(newShareForm.model.get("access_authority"));
-                expect(newShareForm.model.get("caption")).toEqual(newShareForm.model.get("caption"));
-                expect(newShareForm.model.get("tags")).toEqual(newShareForm.model.get("tags"));
-                expect(newShareForm.model.get("owner")).toEqual(newShareForm.model.get("owner"));
+                fixture = setFixtures("<div></div>").append(newShareForm.$el);
+                expect(newShareForm.model.get("name")).toEqual(fixture.find('#projectName').val());
+                expect(newShareForm.model.get("access_authority")).toEqual(fixture.find("#access_authority").val());
+                expect(newShareForm.model.get("caption")).toEqual(fixture.find("#caption").val());
+                expect(newShareForm.model.get("tags")).toEqual(fixture.find("#tags").val());
+                expect(fixture.find("#owner").val()).toBeUndefined();
             });
         });
 
@@ -109,12 +108,8 @@ define([
             });
             it ("Successfully adds a project user", function() {
                 // Make sure to add a new username
-                expect(1).toEqual(1);
-            });
 
-
-            it ("Successfully removes a project user", function() {
-                // Delete an existing username
+                fixture = setFixtures("<div></div>").append(newShareForm.$el);
                 expect(1).toEqual(1);
             });
         });

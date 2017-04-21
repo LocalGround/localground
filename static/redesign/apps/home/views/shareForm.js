@@ -6,9 +6,10 @@ define(["jquery",
         "text!../templates/project-user-item.html",
         "models/project",
         "collections/projectUsers",
+        "apps/home/views/projectUserView",
         "jquery.ui"],
     function ($, Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
-              Project, ProjectUsers) {
+              Project, ProjectUsers, ProjectUserView) {
         'use strict';
         var ShareFormView = Marionette.CompositeView.extend({
             childViewContainer: "#userList",
@@ -50,27 +51,7 @@ define(["jquery",
                     this.$el.find('#slug').val(slug);
                 }
             },
-            getChildView: function () {
-                // this child view is responsible for displaying
-                // and deleting ProjectUser models:
-                return Marionette.ItemView.extend({
-                    initialize: function (opts) {
-                        _.extend(this, opts);
-                    },
-                    events: {
-                        'click .delete-project-user': 'doDelete'
-                    },
-                    template: Handlebars.compile(ProjectUserFormTemplate),
-                    tagName: "tr",
-                    doDelete: function (e) {
-                        if (!confirm("Are you sure you want to remove this user from the project?")) {
-                            return;
-                        }
-                        this.model.destroy();
-                        e.preventDefault();
-                    }
-                });
-            },
+            childView: ProjectUserView,
             attachCollectionEventHandlers: function () {
                 this.listenTo(this.collection, 'add', this.render);
                 this.listenTo(this.collection, 'reset', this.render);

@@ -13,6 +13,7 @@ define(
         "collections/records",
         "collections/prints",
         "models/project",
+        "models/projectUser",
         "models/photo",
         "models/marker",
         "models/audio",
@@ -24,7 +25,7 @@ define(
         "lib/data/dataManager"
     ],
     function (Backbone, $, appUtilities, Projects, Photos, AudioFiles, Maps,
-              MapImages, Markers, Records, Prints, Project, Photo, Marker,
+              MapImages, Markers, Records, Prints, Project, ProjectUser, Photo, Marker,
               Audio, Record, Map, MapImage, Print, Form, DataManager) {
         'use strict';
         afterEach(function () {
@@ -326,8 +327,9 @@ define(
                 new Project({
                     id: 1,
                     name: "Project 1",
+                    caption: '',
                     owner: "MrJBRPG",
-                    access_authority: 1,
+                    access_authority: '1',
                     tags: 'tag1, tag2',
                     overlay_type: "project",
                     time_stamp: "2017-02-17T21:17:33",
@@ -440,6 +442,13 @@ define(
 
             //initialize this.app:
             this.app = _.extend({}, appUtilities);
+            this.app.username = "Tester";
+
+            this.projectUser = new ProjectUser({
+                user: "Tester",
+                authority: "1"
+            }, {id: this.project.id});
+
             this.map = {
                 fitBounds: function () {},
                 setCenter: function () {}
