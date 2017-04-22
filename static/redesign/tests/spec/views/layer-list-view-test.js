@@ -10,7 +10,7 @@ define([
         'use strict';
         var layerListView, fixture;
 
-        function initView(scope) {
+        /*function initView(scope) {
             //ensures that OverlayListView functions don't get called:
             spyOn(OverlayListView.prototype, 'initialize');
 
@@ -74,6 +74,6 @@ define([
                 expect(layerListView.createNewLayer).toHaveBeenCalledTimes(1);
             }); 
 
-        });
+        });*/
 
 });

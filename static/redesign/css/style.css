@@ -1,71 +1,9 @@
-@import url(https://fonts.googleapis.com/css?family=Montserrat:400,700|Slabo+27px);
-
-@font-face {
-  font-family: ProximaNova;
-  src: url("../../fonts/ProximaNova.otf") format("opentype");
-  src: url("../fonts/ProximaNova.otf") format("opentype");
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    color: #000;
-    -webkit-font-smoothing: antialiased;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-    font-family: 'ProximaNova', sans-serif;
-}
-
-
-button , a{
-    cursor:pointer;
-    font-size: 12px;
-}
-
-fieldset{
-    padding:0;
-}
-
 /*
-
-* {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    box-sizing: border-box;
-}*/
-/*
-
-#toolbar-main {
-    background: #DDD;
-    padding: 10px;
-    height: 40px;
-}
-
-#toolbar-main .project-detail {
-    width: 200px;
-    display: inline-block;
-    vertical-align: top;
-    margin-top: -5px;
-    font-size: 13px;
-}
-
-#toolbar-dataview {
-    background: #CCC;
-    padding: 10px;
-    height: 60px;
-}
-*/
 #menu {
     display: inline-block;
     float: right;
 }
-
-fieldset {
-    border: none;
-}
-
-
+*/
 /************************************ General Typography ************************************/
 
 
@@ -104,6 +42,7 @@ a.logotype{
 span.tag, a.tag {
     background-color: #e7e7e7;
     font-size:12px;
+    float: right;
     padding:1px 8px;
     border-radius:20px;
     margin: 0 2px;
@@ -129,55 +68,7 @@ span.action.tag:hover, a.action.tag:hover {
     padding: 20px;
 }
 
-#model-form fieldset label,
-.inline-form label{
-    padding: 8px;
-    font-weight: 400;
-    color: #666;
-    font-size: 12px;
-    text-align: right;
-    word-wrap: break-word;
-    flex:1;
-}
 
-.inline-form div > select{
-    margin-top:7px;
-}
-
-#model-form fieldset textarea,
-#model-form fieldset input,
-.inline-form textarea,
-.inline-form input {
-    padding: 4px 6px;
-    border-radius: 2px;
-    font-size: 14px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    margin: 1px;
-    width:100%;
-}
-
-#model-form select {
-    height: 25px;
-    font-size: 14px;
-}
-
-.error *[data-error] {
-    font-size: 11px;
-    color: #c7254e;
-}
-
-fieldset > div,
-.inline-form{
-    margin: 4px 16px;
-    display: flex;
-    width: calc(100% - 32px);
-}
-
-.inline-form > select{
-    margin:6px 0;
-}
 
 .list-indent, .list-indent-simple, .preview-filter-list {
     list-style: none;
@@ -194,16 +85,6 @@ span.confirmation{
 
 }
 
-#fieldTableDiv th{
-    font-weight: 600;
-    font-size: 12px;
-    padding: 6px;
-    text-align: left;
-}
-
-.form-reorder {
-    cursor: move;
-}
 
 
 /************************************ Table type ************************************/
@@ -231,6 +112,7 @@ span.confirmation{
     z-index:100;
     box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
 }
+
 
 .dropdown-menu > a{
     display:block;
@@ -396,7 +278,7 @@ input[type="number"]{
     width: 40px;
     border-style:solid;
     border-width:1px;
-    border-color:#ebecf2; 
+    border-color:#ebecf2;
 }
 input[type="checkbox"]{
     margin-top: 10px !important;
@@ -467,6 +349,98 @@ input[type="checkbox"]{
 
 /************************************ Navigation ************************************/
 
+/*
+#toolbar-main h2 {
+    padding: 14px 0 0;
+    font-size: 22px;
+    font-weight: 300;
+    width: 300px;
+    display: inline-block;
+}
+
+#toolbar-main p{
+    font-size: 12px;
+    width: 230px;
+    padding: 0 0 0 12px;
+    color: rgb(122, 122, 122);
+    font-style: italic;
+}
+
+#toolbar-main nav, .right-nav{
+    float: right;
+    text-transform: uppercase;
+    line-height: 57px;
+    display:inline-block;
+}
+
+
+#toolbar-main nav> div, .right-nav>li{
+    display:inline-block;
+    height:57px;
+    margin: 0 10px;
+    vertical-align: top;
+    padding: 0 2px;
+}
+
+#toolbar-main{
+    height:60px;
+    position:fixed;
+    z-index:40;
+    border-bottom: 1px solid #e4e5eb;
+    background-color: white;
+    width: 100%;
+    box-shadow: 0 2px 1px 1px rgba(53, 76, 122, 0.06);
+}
+
+
+#toolbar-main nav{
+    font-size:12px;
+}
+
+
+
+#toolbar-main .buttons{
+    padding: 15px 16px 11.5px 60px;
+    width: 260px;
+    order: 3;
+    position:absolute;
+    right:0;
+}
+
+#toolbar-main > .title{
+    width: 400px;
+}
+
+
+#toolbar-dataview h3{
+    display: inline-block;
+    font-weight: 400;
+    font-size: 18px;
+    margin:0;
+}
+
+#toolbar-dataview > div{
+    display:flex;
+}
+
+#toolbar-dataview .view-options{
+    margin-right: 0%;
+    margin-left: auto;
+}
+
+#toolbar-dataview .main-search{
+    margin-left: 25%;
+    margin-right: 25%;
+    width: 50%;
+    position: fixed;
+
+}
+
+#toolbar-dataview .search-form input, #toolbar-dataview .search-form {
+    width:100%;
+}
+*/
+/************??????????*******************/
 #toolbar-main h2 {
     padding: 14px 0 0;
     font-size: 22px;
@@ -554,6 +528,7 @@ input[type="checkbox"]{
 #toolbar-dataview .search-form input, #toolbar-dataview .search-form {
     width:100%;
 }
+/************??????????*******************/
 
 .back-to-profile{
     color:#4e70d4;
@@ -565,7 +540,7 @@ input[type="checkbox"]{
 
 .project-detail > div{
     display:inline-block;
-} 
+}
 
 .project-detail h3 {
     vertical-align: middle;
@@ -611,9 +586,9 @@ input[type="checkbox"]{
 }
 
 /*.side-panel img,
-#marker-detail-panel img{    
+#marker-detail-panel img{
     width: calc(100% - 40px);
-    padding: 20px 20px 10px;    
+    padding: 20px 20px 10px;
 }*/
 
 .section-card {
@@ -715,7 +690,7 @@ input[type="checkbox"]{
 }
 
 #add-media-button:hover{
-	color:#555555;	
+	color:#555555;
 }
 
 #add-media-button .fa {
@@ -796,7 +771,7 @@ input[type="checkbox"]{
 }
 
 #add-data-type {
-    
+
 }
 
 .img-card {
@@ -843,34 +818,7 @@ table.preview-properties td:first-child {
 }
 
 /************************************ Forms ************************************/
-#form-list-container {
-    max-height: 350px;
-    overflow-y: scroll;
-}
-#form-list {
-    width: 100%;
-    line-height: 30px;
-    font-size: 12px;
-    margin-bottom: 20px;
-}
 
-#form-list tr:nth-child(odd) {
-    background-color: #f2f2f2;
-}
-
-#form-list p {
-    cursor: hand;
-    padding: 4px 8px;
-}
-
-.add-new-form {
-    line-height: 30px;
-}
-
-#fieldTableDiv {
-    max-height: 300px;
-    overflow: scroll;
-}
 
 /************************************ general layout ************************************/
 .section{
@@ -889,12 +837,6 @@ hr {
     flex:1;
 }
 
-#model-form fieldset>div>div,
-.inline-form input,
-.inline-form .container-3-4,
-.inline-form textarea{
-    flex:3;
-}
 
 
 #rotate-icon {
@@ -933,7 +875,7 @@ hr {
     top: 50%;
     transform: translateY(-50%);
 }
-  
+
 .overlay {
   position: absolute;
   top: 0;
@@ -976,59 +918,8 @@ hr {
     color: #999;
 }
 
-.fa.fa-grip:before {
-    content: "\f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142 \202F \f142";
-    color: #DDD;
-    font-size: 10px;
-    position: absolute;
-    margin-left: 1px;
-    cursor: move;
-}
+
 
 input.fieldname {
     margin-left: 4px;
-}
-
-/**************************************** TOOLTIPS *************************************/
-
-/* Tooltip container */
-.tooltip {
-    position: relative;
-    display: inline-block;
-}
-
-/* Tooltip text */
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 100px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    padding: 5px 0;
-    border-radius: 6px;
-
-    /* Position the tooltip text */
-    position: absolute;
-    z-index: 1;
-    top: 125%;
-    left: 50%;
-    margin-left: -80px;
-}
-
-/* Tooltip arrow */
-.tooltip .tooltiptext::after {
-    content: "";
-    position: absolute;
-    bottom: 100%;
-    left: 80px;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent transparent #555 transparent;
-}
-
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
 }

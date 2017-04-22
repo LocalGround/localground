@@ -29,8 +29,8 @@
                     <td>Font weight:</td>
                     <td>
                         <select id="fw" name="type-list" class="type-list">
-                            <option value="regular" {{#ifequal font-weight "regular"}} SELECTED {{/ifequal}}>Regular</option>
-                            <option value="bold" {{#ifequal fontWeight "bold"}} SELECTED {{/ifequal}}>Bold</option>
+                            <option value="regular" {{#ifequal currentType.fw "regular"}} SELECTED {{/ifequal}}>Regular</option>
+                            <option value="bold" {{#ifequal currentType.fw "bold"}} SELECTED {{/ifequal}}>Bold</option>
                         </select>
                     </td>
                 </tr>

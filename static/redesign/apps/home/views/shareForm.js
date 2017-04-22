@@ -6,18 +6,17 @@ define(["jquery",
         "text!../templates/project-user-item.html",
         "models/project",
         "collections/projectUsers",
+        "apps/home/views/projectUserView",
         "jquery.ui"],
     function ($, Marionette, _, Handlebars, ItemTemplate, ProjectUserFormTemplate,
-              Project, ProjectUsers) {
+              Project, ProjectUsers, ProjectUserView) {
         'use strict';
         var ShareFormView = Marionette.CompositeView.extend({
             childViewContainer: "#userList",
             template: Handlebars.compile(ItemTemplate),
             events: {
-                'click .delete_project': 'deleteProject',
-                //'click .close': 'hideModal',
-                //'click .action': 'shareModal',
-                'click .save-project-settings': 'saveProjectSettings',
+                //'click .delete_project': 'deleteProject',
+                //'click .save-project-settings': 'saveProjectSettings',
                 'click .new_user_button': 'addUserButton',
                 'click .delete-project-user': 'removeRow',
                 'blur #projectName': 'generateSlug'
@@ -52,27 +51,7 @@ define(["jquery",
                     this.$el.find('#slug').val(slug);
                 }
             },
-            getChildView: function () {
-                // this child view is responsible for displaying
-                // and deleting ProjectUser models:
-                return Marionette.ItemView.extend({
-                    initialize: function (opts) {
-                        _.extend(this, opts);
-                    },
-                    events: {
-                        'click .delete-project-user': 'doDelete'
-                    },
-                    template: Handlebars.compile(ProjectUserFormTemplate),
-                    tagName: "tr",
-                    doDelete: function (e) {
-                        if (!confirm("Are you sure you want to remove this user from the project?")) {
-                            return;
-                        }
-                        this.model.destroy();
-                        e.preventDefault();
-                    }
-                });
-            },
+            childView: ProjectUserView,
             attachCollectionEventHandlers: function () {
                 this.listenTo(this.collection, 'add', this.render);
                 this.listenTo(this.collection, 'reset', this.render);
@@ -101,7 +80,9 @@ define(["jquery",
             templateHelpers: function () {
                 // for new projects, there shall be no projectUsers defined
                 // otherwise, extract data from exising projectUsers
-                var helpers = {};
+                var helpers = {
+                    username: this.app.username
+                };
                 if (this.model && this.model.projectUsers) {
                     helpers.projectUsers = this.model.projectUsers.toJSON();
                 }
@@ -281,12 +262,14 @@ define(["jquery",
             },
 
             deleteProject: function () {
+                var that = this;
                 if (!confirm("Are you sure you want to delete this project?")) {
                     return;
                 }
-                this.model.destroy();
-                //this.$el.find('.modal').hide();
-
+                this.model.destroy({ success: function () {
+                    console.log(that.app.vent);
+                    that.app.vent.trigger('hide-modal');
+                }});
             },
 
             errorUserName: function(_usernameInput){

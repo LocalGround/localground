@@ -17,6 +17,10 @@ def get_metadata():
         'owner': {'read_only': True, 'required': False, 'type': 'field'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
         'name': {'read_only': False, 'required': False, 'type': 'string'},
+        'sharing_url': { 'type': 'field', 'required': False, 'read_only': True },
+        'time_stamp': { 'type': 'datetime', 'required': False, 'read_only': True },
+        'date_created': { 'type': 'datetime', 'required': False, 'read_only': True },
+        'last_updated_by': { 'type': 'field', 'required': False, 'read_only': True },
         'sharing_url': { 'type': 'field', 'required': False, 'read_only': True }
     }
 

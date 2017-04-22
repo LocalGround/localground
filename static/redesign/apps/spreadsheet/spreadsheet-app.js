@@ -43,7 +43,13 @@ define([
         loadRegions: function () {
             //initialize toobar view
             this.restoreAppState();
-            var data = this.dataManager.getData(this.dataType);
+            var data;
+            try {
+                data = this.dataManager.getData(this.dataType);
+            } catch (e) {
+                this.dataType = "markers";
+                data = this.dataManager.getData(this.dataType);
+            }
             this.toolbarView = new ToolbarGlobal({
                 app: this
             });
@@ -65,7 +71,13 @@ define([
         showSpreadsheet: function (dataType) {
             this.dataType = dataType;
             this.saveAppState();
-            var data = this.dataManager.getData(this.dataType);
+            var data;
+            try {
+                data = this.dataManager.getData(this.dataType);
+            } catch (e) {
+                this.dataType = "markers";
+                data = this.dataManager.getData(this.dataType);
+            }
             this.spreadsheetView = new SpreadsheetView({
                 app: this,
                 collection: data.collection,

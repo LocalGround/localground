@@ -17,7 +17,9 @@ define(["marionette",
             childViewContainer: "#layers",
 
             childViewOptions: function () {
-              return { app: this.app };
+                return { app: this.app,
+                        collection: this.collection    
+                };
             },
 
             initialize: function (opts) {
@@ -30,11 +32,13 @@ define(["marionette",
 
                 this.listenTo(this.app.vent, 'init-collection', this.displayLayers);
                 this.listenTo(this.app.vent, 'change-map', this.displayLayers);
+                this.listenTo(this.app.vent, 'update-layer-list', this.render);
             },
 
             events: {
-                "click .add-layer" : "showDropDown",
-                "click #new-layer-options a" : "createNewLayer"
+               // "click .add-layer" : "showDropDown",
+               // "click #new-layer-options a" : "createNewLayer"
+               "click .add-layer" : "createNewLayer"
             },
 
             showDropDown: function() {
@@ -42,17 +46,18 @@ define(["marionette",
             },
 
             //display layers when map is changed
-            displayLayers: function (map) {
-                this.collection = new Layers(null, {mapID: map.get("id")});
+            displayLayers: function (selectedMapModel) {
+                this.collection = new Layers(null, {mapID: selectedMapModel.get("id")});
                 this.collection.fetch({ reset: true});
                 this.listenTo(this.collection, 'reset', this.render);
+                this.listenTo(this.collection, 'add', this.render);
+                console.log(this.collection);
             },
             createNewLayer: function (e) {
-                this.app.vent.trigger('add-layer');
-                var $selection = $(e.target).attr("data-value");
+             //   var $selection = $(e.target).attr("data-value");
                 var layer = new Layer ({
                     map_id: this.app.selectedMapModel.id,
-                    data_source: $selection,
+                    data_source: "photos", //default
                     layer_type: "categorical",
                     filters: [{ "tag" : "nothing" }],
                     symbols: [{
@@ -64,8 +69,7 @@ define(["marionette",
                     title: "untitled"
                     
                 });
-                console.log(layer);
-                this.app.vent.trigger("edit-layer", layer);
+                this.app.vent.trigger("edit-layer", layer, this.collection);
             }
 
         });

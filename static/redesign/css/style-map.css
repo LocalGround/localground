@@ -14,13 +14,7 @@
 #toolbar-main > div{
     display: flex;    
 }
-.main-panel {
-    height: calc(100% - 61px);
-    top: 61px;
-    display: flex;
-    position: absolute;
-    width: 100%;
-}
+
 
 #right-panel h3 {
     padding: 0px 20px 20px 20px;
@@ -41,7 +35,7 @@ section {
 
 #map-select {
     width: calc(100%);
-    padding: 10px 20px;
+    margin-top: 10px;
     font-weight: 400;
     font-family: 'Open Sans';
     font-size: 14px;
@@ -184,7 +178,6 @@ th {
 
 #new-layer-options {
     display: none;
-    right: 0px;
 }
 
 .palette-item{
@@ -272,4 +265,22 @@ palette-options {
 .palette-icon {
     position: fixed;
     margin-top: 11px;
+}
+
+.plus-container {
+    margin-top: 5px;
+}
+
+.selected-data-source {
+    background-color: white;
+    width: calc(60%);
+    margin-top: 10px;
+    font-weight: 400;
+    font-family: 'Open Sans';
+    font-size: 14px;
+    border-style: none none solid none;
+    border-width: 1px;
+    border-color: #e4e5eb;
+    box-shadow: 0 2px 0px 0 rgba(0,0,0,.02);
+    background-size: 60px 40px;;
 }
