@@ -54,9 +54,10 @@ define(["jquery",
             },
 
             initialize: function (opts) {
-                this.app = opts.app;
-                this.model = opts.model;
+                _.extend(this,opts);
                 this.dataType = this.model.get("layer_type");
+                this.data_source = this.model.get("data_source"); //e.g. "form_1"
+
                 this.displaySymbols();
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
                 this.buildPalettes();
@@ -81,11 +82,15 @@ define(["jquery",
             },
 
             templateHelpers: function () {
-                return {
+                var helpers = {
                     dataType: this.dataType,
                     allColors: this.allColors,
                     buckets: this.buckets
                 };
+                if (this.fields) {
+                    helpers.properties = this.fields.toJSON();
+                }
+                return helpers;
             },
 
             events: {
@@ -106,6 +111,14 @@ define(["jquery",
             },
             buildDropdown: function () {
                 console.log(this.fields);
+            },
+
+            getPropertiesCategorical: function () {
+                this.properties = [];
+            },
+
+            getPropertiesContinuous: function () {
+                this.properties = [];
             },
 
             buildPalettes: function () {

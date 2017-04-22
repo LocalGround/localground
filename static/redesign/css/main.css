@@ -366,6 +366,15 @@ fieldset > div, .inline-form {
 .success-message, .failure-message, .warning-message {
     display: none;
 }
+tr.success-message.show, tr.failure-message.show, tr.warning-message.show {
+    display: table-row;
+}
+tr.failure-message.show span {
+    display: table-row;
+    font-size: 12px;
+    display: block;
+    color: #b94a48;
+}
 
 .alert {
     padding: 5px;

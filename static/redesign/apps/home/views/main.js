@@ -110,6 +110,7 @@ define(["marionette",
                 // when the fetch completes, call Backbone's "render" method
                 // to create the gallery template and bind the data:
                 this.listenTo(this.collection, 'reset', this.render);
+                this.listenTo(this.collection, 'remove', this.render);
             }
 
         });

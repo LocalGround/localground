@@ -26,15 +26,16 @@ define(["underscore", "models/base", "models/field", "collections/fields"],
                 }
             },
 
-            createField: function (name, fieldType, ordering) {
+            createField: function (name, fieldType, displayField, ordering) {
                 var field = new Field(null, { id: this.get("id") }),
                     that = this;
                 field.set("col_alias", name);
                 field.set("data_type", fieldType);
+                field.set("is_display_field", displayField);
                 field.set("ordering", ordering);
                 field.save(null, {
                     success: function () {
-                        that.getFields();
+                        //that.getFields();
                         //that.fields.add(field);
                     },
                     error: function () {

@@ -3,31 +3,29 @@ define([
     "jquery",
     rootDir + "apps/gallery/views/create-form",
     rootDir + "models/form",
+    rootDir + "models/field",
     "tests/spec-helper"
 ],
-    function ($, CreateForm, Form) {
+    function ($, CreateForm, Form, Field) {
         'use strict';
         var fixture, newCreateForm, initSpies;
 
         initSpies = function () {
             spyOn(CreateForm.prototype, 'render').and.callThrough();
             spyOn(CreateForm.prototype, 'initModel').and.callThrough();
-            spyOn(CreateForm.prototype, 'attachCollectionEventHandlers').and.callThrough();
             spyOn(CreateForm.prototype, 'fetchShareData').and.callThrough();
-            spyOn(CreateForm.prototype, 'createNewFields').and.callThrough();
+            spyOn(CreateForm.prototype, 'saveFields').and.callThrough();
             spyOn(Form.prototype, "getFields").and.callThrough();
 
             //event methods:
             spyOn(CreateForm.prototype, 'saveFormSettings').and.callThrough();
+            spyOn(CreateForm.prototype, 'deleteForm').and.callThrough();
             spyOn(CreateForm.prototype, 'removeRow').and.callThrough();
             spyOn(CreateForm.prototype, 'addFieldButton').and.callThrough();
             spyOn(CreateForm.prototype, 'backToList').and.callThrough();
+            spyOn(Field.prototype, 'save').and.callThrough();
             spyOn(Form.prototype, 'createField').and.callThrough();
-
-            //error catch functions
-            spyOn(CreateForm.prototype, 'blankField').and.callThrough();
-            spyOn(CreateForm.prototype, 'errorFieldName').and.callThrough();
-            spyOn(CreateForm.prototype, 'errorFieldType').and.callThrough();
+            spyOn(Form.prototype, 'destroy').and.callThrough();
         };
 
         describe("Create Form: Initialization Tests", function () {
@@ -63,7 +61,7 @@ define([
             beforeEach(function () {
                 initSpies();
                 newCreateForm = new CreateForm({
-                    model: this.form
+                    model: this.form //initializes w/three fields
                 });
             });
 
@@ -81,10 +79,6 @@ define([
                 });
             });
 
-            it("Calls Render when Collection Resets", function () {
-                newCreateForm.collection.trigger("reset");
-                expect(CreateForm.prototype.render).toHaveBeenCalledTimes(2);
-            });
         });
 
         describe("Create Form: Initialize Model without fields", function () {
@@ -93,7 +87,7 @@ define([
                 var emptyForm = new CreateForm({
                     model: new Form()
                 });
-                expect(emptyForm.collection).toBeUndefined();
+                expect(emptyForm.collection.length).toBe(0);
                 expect(Form.prototype.getFields).toHaveBeenCalledTimes(1);
             });
 
@@ -120,14 +114,6 @@ define([
                 expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
                 fixture.find('.new_field_button').trigger('click');
                 expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
-            });
-
-            it("Calls remove row when 'delete field' button is clicked", function () {
-                fixture = setFixtures('<div></div>').append(newCreateForm.$el);
-                expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(0);
-                fixture.find('.new_field_button').trigger('click');
-                fixture.find('.remove-row').trigger('click');
-                expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(1);
             });
         });
 
@@ -168,12 +154,14 @@ define([
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(0);
 
                     //add a new row by triggering the '.new_field_button click'
+                    expect(fixture.find('.remove-row').html()).toBeUndefined();
                     fixture.find('.new_field_button').trigger('click');
                     expect(CreateForm.prototype.addFieldButton).toHaveBeenCalledTimes(1);
                     expect(fixture.find('.remove-row')).toBeInDOM();
                     expect(fixture.find('.remove-row').html()).not.toBeUndefined();
 
                     //remove new row by triggering '.remove-row click'
+                    expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(0);
                     fixture.find('.remove-row').trigger('click');
                     expect(CreateForm.prototype.removeRow).toHaveBeenCalledTimes(1);
                     expect(fixture.find('.remove-row').html()).toBeUndefined();
@@ -212,20 +200,17 @@ define([
 
                     fixture.find('.fieldname').val("Sample Text");
                     fixture.find('.fieldType').val("text");
+                    fixture.find('.display_field_button').prop("checked");
 
                     expect(CreateForm.prototype.saveFormSettings).toHaveBeenCalledTimes(0);
-                    expect(CreateForm.prototype.createNewFields).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(0);
                     newCreateForm.saveFormSettings();
 
                     expect(newCreateForm.model.get('name')).toBe('new form name');
                     expect(newCreateForm.model.get('caption')).toBe('dummy caption');
 
                     expect(CreateForm.prototype.saveFormSettings).toHaveBeenCalledTimes(1);
-                    expect(CreateForm.prototype.createNewFields).toHaveBeenCalledTimes(1);
-                    // Will have to save the custom field parameters
-
-                    // Form has a collection of fields
-                    expect(Form.prototype.createField).toHaveBeenCalledWith("Sample Text", "text", 1);
+                    expect(CreateForm.prototype.saveFields).toHaveBeenCalledTimes(1);
 
                 });
                 it("successfully modifies and saves existing fields", function () {
@@ -245,42 +230,10 @@ define([
 
                     //save the form:
                     newCreateForm.saveFormSettings();
-
-                    //check that the collection has been updated:
+                    expect(Field.prototype.save).toHaveBeenCalledTimes(3);
                     expect(newCreateForm.collection.at(0).get("col_alias")).toBe("new field 1");
                     expect(newCreateForm.collection.at(1).get("col_alias")).toBe("new field 2");
                     expect(newCreateForm.collection.at(2).get("col_alias")).toBe("new field 3");
-                });
-
-                it("If fieldname is blank, it shows an error", function () {
-                    newCreateForm = new CreateForm({
-                        app: this.app,
-                        model: this.form
-                    });
-
-                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
-
-                    var $inputs = fixture.find('input.fieldname');
-                    $($inputs[0]).val(""); // empty out the field and test for the error
-
-                    expect(CreateForm.prototype.errorFieldName).toHaveBeenCalledTimes(0);
-                    newCreateForm.saveFormSettings();
-
-                    expect(CreateForm.prototype.errorFieldName).toHaveBeenCalledTimes(3);
-                    expect($($inputs[0]).css("background-color")).toBe("rgb(255, 221, 221)");
-                    expect($($inputs[1]).css("background-color")).not.toBe("rgb(255, 221, 221)");
-                    expect($($inputs[2]).css("background-color")).not.toBe("rgb(255, 221, 221)");
-                    expect($($inputs[0]).attr("placeholder")).toBe("Field Name Missing");
-
-                });
-
-                it("If fieldtype is blank, it shows an error", function () {
-                    newCreateForm = new CreateForm({
-                        app: this.app,
-                        model: this.form
-                    });
-                    //test "errorFieldType" method:
-                    expect(1).toBe(1);
                 });
 
                 it("Successfully deletes the form", function () {
@@ -288,33 +241,28 @@ define([
                         app: this.app,
                         model: this.form
                     });
-                    //test "errorFieldType" method:
-                    expect(1).toBe(1);
+                    //I am almost there with delete form, but I am getting the problem that
+                    // deleteForm is not defined
+
+
+                    spyOn(window, 'confirm').and.returnValue(true);
+
+                    fixture = setFixtures("<div></div>").append(newCreateForm.$el);
+
+                    expect(CreateForm.prototype.deleteForm).toHaveBeenCalledTimes(0);
+                    expect(Form.prototype.destroy).toHaveBeenCalledTimes(0);
+                    expect(CreateForm.prototype.backToList).toHaveBeenCalledTimes(0);
+
+                    newCreateForm.deleteForm();
+
+                    expect(CreateForm.prototype.deleteForm).toHaveBeenCalledTimes(1);
+                    expect(Form.prototype.destroy).toHaveBeenCalledTimes(1);
+                    expect(CreateForm.prototype.backToList).toHaveBeenCalledTimes(1);
+
+
                 });
             });
 
-            describe("Field Child View Operations", function () {
-                it("Renders a field correctly", function () {
-                    //import Field model and create a field or else
-                    // use an existing field from this.form.fields
-                    newCreateForm = new CreateForm({
-                        app: this.app,
-                        model: this.form
-                    });
-                    //test "errorFieldType" method:
-                    expect(1).toBe(1);
-                });
-
-                it("Successfully deletes a field", function () {
-                    newCreateForm = new CreateForm({
-                        app: this.app,
-                        model: this.form
-                    });
-                    //test "errorFieldType" method:
-                    expect(1).toBe(1);
-                });
-
-            });
         });
 
     });

@@ -42,6 +42,7 @@ a.logotype{
 span.tag, a.tag {
     background-color: #e7e7e7;
     font-size:12px;
+    float: right;
     padding:1px 8px;
     border-radius:20px;
     margin: 0 2px;
@@ -111,6 +112,7 @@ span.confirmation{
     z-index:100;
     box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
 }
+
 
 .dropdown-menu > a{
     display:block;
@@ -276,7 +278,7 @@ input[type="number"]{
     width: 40px;
     border-style:solid;
     border-width:1px;
-    border-color:#ebecf2; 
+    border-color:#ebecf2;
 }
 input[type="checkbox"]{
     margin-top: 10px !important;
@@ -538,7 +540,7 @@ input[type="checkbox"]{
 
 .project-detail > div{
     display:inline-block;
-} 
+}
 
 .project-detail h3 {
     vertical-align: middle;
@@ -584,9 +586,9 @@ input[type="checkbox"]{
 }
 
 /*.side-panel img,
-#marker-detail-panel img{    
+#marker-detail-panel img{
     width: calc(100% - 40px);
-    padding: 20px 20px 10px;    
+    padding: 20px 20px 10px;
 }*/
 
 .section-card {
@@ -688,7 +690,7 @@ input[type="checkbox"]{
 }
 
 #add-media-button:hover{
-	color:#555555;	
+	color:#555555;
 }
 
 #add-media-button .fa {
@@ -769,7 +771,7 @@ input[type="checkbox"]{
 }
 
 #add-data-type {
-    
+
 }
 
 .img-card {
@@ -873,7 +875,7 @@ hr {
     top: 50%;
     transform: translateY(-50%);
 }
-  
+
 .overlay {
   position: absolute;
   top: 0;

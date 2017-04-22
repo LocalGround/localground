@@ -130,6 +130,6 @@ class Migration(migrations.Migration):
         migrations.DeleteModel(
             name='WMSOverlay',
         ),
-        migrations.RunSQL(get_extra_sql()),
         migrations.RunPython(load_fixture),
+        migrations.RunSQL(get_extra_sql()),
     ]

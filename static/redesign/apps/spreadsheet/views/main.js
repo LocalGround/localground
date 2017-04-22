@@ -145,15 +145,17 @@ define(["marionette",
                         that.saveChanges(changes, source);
                     }
                 });
-                if (this.fields){
+                if (this.fields) {
                     this.table.addHook('beforeColumnMove', this.columnMoveBefore.bind(this));
                     this.table.addHook('afterColumnMove', this.columnMoveAfter.bind(this));
                 }
             },
             saveChanges: function (changes, source) {
                 //sync with collection:
+                source = source.split(".");
+                source = source[source.length - 1];
                 var i, idx, key, oldVal, newVal, model, geoJSON;
-                if (_.contains(["edit", "autofill", "undo", "redo", "paste"], source)) {
+                if (_.contains(["edit", "autofill", "fill", "undo", "redo", "paste"], source)) {
                     for (i = 0; i < changes.length; i++) {
                         idx = changes[i][0];
                         key = changes[i][1];
