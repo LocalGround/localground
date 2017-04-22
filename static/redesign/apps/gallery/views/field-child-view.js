@@ -9,30 +9,28 @@ define([
     var FieldChildView = Marionette.ItemView.extend({
         initialize: function (opts) {
             _.extend(this, opts);
-            this.getDisplayField();
         },
         modelEvents: {
             'draw': 'render'
         },
         events: {
+            'click .remove-row': 'removeModel',
             'click .delete-field': 'doDelete',
             'blur input.fieldname': 'setAlias',
             'change select.fieldType': 'setDataType'
         },
         templateHelpers: function () {
-            return {
-                errorFieldType: this.errorFieldType,
-                errorFieldName: this.errorFieldName,
-                serverErrorMessage: this.serverErrorMessage
+            var errorMessages = {
+                errorFieldType: this.model.errorFieldType,
+                errorFieldName: this.model.errorFieldName,
+                serverErrorMessage: this.model.serverErrorMessage
             };
+            return errorMessages;
         },
         id: function () {
             return this.model.get("temp_id");
         },
         template: Handlebars.compile(FieldItemTemplate),
-        errorFieldType: false,
-        errorFieldName: false,
-        serverErrorMessage: null,
         tagName: "tr",
 
         setAlias: function () {
@@ -42,13 +40,11 @@ define([
             this.model.set("data_type", this.$el.find(".fieldType").val());
         },
         saveField: function (ordering) {
-            var fieldName = this.$el.find(".fieldname").val(),
+            var that = this,
+                fieldName = this.$el.find(".fieldname").val(),
                 fieldType = this.$el.find(".fieldType").val(),
                 isDisplaying = this.$el.find('.display-field').is(":checked"),
-                that = this,
                 messages;
-                console.log(isDisplaying);
-            //ordering = this.model.get("ordering") || ordering;
             this.validate(fieldName, fieldType);
             this.model.set("ordering", ordering);
             this.model.set("col_alias", fieldName);
@@ -56,52 +52,37 @@ define([
             if (fieldType) {
                 this.model.set("data_type", fieldType);
             }
-            if (!this.errorFieldName && !this.errorFieldType) {
-                console.log({
-                    id: this.model.get("id"),
-                    col_alias: this.model.get("col_alias"),
-                    ordering: this.model.get("ordering")
-                });
+            if (!this.model.errorFieldName && !this.model.errorFieldType) {
                 this.model.save(null, {
                     success: function () {
-                        that.render();
+                        that.parent.renderWithSaveMessages();
                     },
                     error: function (model, response) {
                         messages = JSON.parse(response.responseText);
-                        that.serverErrorMessage = messages.detail;
-                        that.render();
+                        that.model.serverErrorMessage = messages.detail;
+                        that.parent.renderWithSaveMessages();
                     }
                 });
-            } else {
-                console.log("ERROR!");
-                this.render();
             }
         },
         validate: function (fieldName, fieldType) {
-            this.errorFieldName = this.errorFieldType = false;
-            this.serverErrorMessage = null;
+            this.model.errorFieldName = this.model.errorFieldType = false;
+            this.model.serverErrorMessage = null;
             if (fieldName.trim() === "") {
-                this.errorFieldName = true;
+                this.model.errorFieldName = true;
             }
             if (fieldType === "-1") {
-                this.errorFieldType = true;
+                this.model.errorFieldType = true;
             }
         },
         onRender: function () {
             this.$el.removeClass("failure-message");
-            if (this.errorFieldType || this.errorFieldName || this.serverErrorMessage) {
-                console.log("adding class");
+            if (this.model.errorFieldType || this.model.errorFieldName || this.model.serverErrorMessage) {
                 this.$el.addClass("failure-message show");
             }
         },
-        //*
-        getDisplayField: function(){
-            console.log(this.model.get("is_display_field"));
-            console.log(this.$el);
-            // I get context undefined each time I attempt to find class that holds the radio input
-            var $displayFieldRadio = this.$el.find(".display_field_button");
-            console.log($displayFieldRadio);
-            //$displayFieldRadio.
+        removeModel: function () {
+            this.model.destroy();
         },
 
         doDelete: function (e) {

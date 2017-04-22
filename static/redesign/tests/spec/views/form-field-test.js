@@ -152,7 +152,7 @@ define([
             it("If fieldname is blank, it shows an error", function () {
                 createExistingFieldView(this);
                 fieldView.$el.find("input.fieldname").val("");
-                fieldView.saveField(1);
+                fieldView.saveField();
                 expect(fieldView.$el.hasClass("failure-message")).toBeTruthy();
                 expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
             });
