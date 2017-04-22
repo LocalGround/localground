@@ -218,18 +218,15 @@ define([
                         app: this.app,
                         model: this.form
                     });
-                    newCreateForm.render();
 
                     //render existing form:
                     fixture = setFixtures("<div></div>").append(newCreateForm.$el);
-
-                    //pretend to be a user and update the field names:
-                    var $inputs = fixture.find('input.fieldname');
-                    console.log($inputs);
-                    $($inputs[0]).val("new field 1");
-                    $($inputs[1]).val("new field 2");
-                    $($inputs[2]).val("new field 3");
-                    console.log(newCreateForm.$el.find('tbody').html());
+                    fixture.find('.fieldname').each(function (i) {
+                        $(this).val("new field " + (i + 1)).trigger('blur');
+                    });
+                    expect($(fixture.find('.fieldname')[0]).val()).toBe("new field 1");
+                    expect($(fixture.find('.fieldname')[1]).val()).toBe("new field 2");
+                    expect($(fixture.find('.fieldname')[2]).val()).toBe("new field 3");
 
                     //save the form:
                     newCreateForm.saveFormSettings();

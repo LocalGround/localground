@@ -39,14 +39,13 @@ define([
         setDataType: function () {
             this.model.set("data_type", this.$el.find(".fieldType").val());
         },
-        saveField: function (ordering) {
+        saveField: function () {
             var that = this,
                 fieldName = this.$el.find(".fieldname").val(),
                 fieldType = this.$el.find(".fieldType").val(),
                 isDisplaying = this.$el.find('.display-field').is(":checked"),
                 messages;
             this.validate(fieldName, fieldType);
-            this.model.set("ordering", ordering);
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);
             if (fieldType) {
@@ -63,6 +62,8 @@ define([
                         that.parent.renderWithSaveMessages();
                     }
                 });
+            } else {
+                this.render();
             }
         },
         validate: function (fieldName, fieldType) {

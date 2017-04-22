@@ -64,6 +64,7 @@ define([
             this.model.set('caption', this.$el.find('.caption').val());
         },
         onRender: function () {
+            console.log("onRender");
             var sortableFields = this.$el.find("#fieldList"),
                 that  = this;
             sortableFields.sortable({
