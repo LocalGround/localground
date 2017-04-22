@@ -92,7 +92,7 @@ class FieldList(FieldMixin, QueryableListCreateAPIView):
         return self.get_form().fields
            
     def perform_create(self, serializer):
-        do_reshuffle = self.request.GET.get('do_reshuffle')
+        do_reshuffle = self.request.data.get('do_reshuffle')
         form = self.get_form()
         data = serializer.validated_data
         self.validate_is_valid_col_alias(data.get('col_alias'), form)
@@ -111,7 +111,7 @@ class FieldInstance(FieldMixin, generics.RetrieveUpdateDestroyAPIView):
 
     def perform_update(self, serializer):
         # Todo: move functionality to Serializer
-        do_reshuffle = self.request.GET.get('do_reshuffle')
+        do_reshuffle = self.request.data.get('do_reshuffle')
         form = self.get_form()
         data = serializer.validated_data
         self.validate_is_valid_col_alias(data.get('col_alias'), form, pk=int(self.kwargs.get('pk')))
