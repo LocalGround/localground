@@ -214,11 +214,6 @@ fieldset {
     line-height: 30px;
 }
 
-#fieldTableDiv {
-    max-height: 300px;
-    overflow: scroll;
-}
-
 #fieldTableDiv th {
     font-weight: 600;
     font-size: 12px;
@@ -391,6 +386,12 @@ tr.failure-message.show span {
     line-height: 40px;
     position: absolute;
     /*width: calc(100% - 60px);*/
+}
+.form-confirmation {
+    display: block;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    border-radius: 2px;
 }
 
 .success-message {
