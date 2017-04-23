@@ -114,6 +114,14 @@ class Migration(migrations.Migration):
             name='color',
             field=models.CharField(default=b'CCCCCC', max_length=6),
         ),
+        migrations.DeleteModel(
+            name='Snapshot',
+        ),
+        migrations.DeleteModel(
+            name='WMSOverlay',
+        ),
+        migrations.RunPython(load_fixture),
+        migrations.RunSQL(get_extra_sql()),
         migrations.AlterField(
             model_name='print',
             name='map_provider',
@@ -123,13 +131,5 @@ class Migration(migrations.Migration):
             model_name='styledmap',
             name='basemap',
             field=models.ForeignKey(default=1, to='site.TileSet'),
-        ),
-        migrations.DeleteModel(
-            name='Snapshot',
-        ),
-        migrations.DeleteModel(
-            name='WMSOverlay',
-        ),
-        migrations.RunPython(load_fixture),
-        migrations.RunSQL(get_extra_sql()),
+        )
     ]
