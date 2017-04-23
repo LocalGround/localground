@@ -15,19 +15,19 @@ define([
             spyOn(FieldChildView.prototype, 'initialize').and.callThrough();
             spyOn(FieldChildView.prototype, 'render').and.callThrough();
             spyOn(FieldChildView.prototype, 'doDelete').and.callThrough();
+            spyOn(FieldChildView.prototype, 'validate').and.callThrough();
             spyOn(Field.prototype, 'destroy');
 
-            //error catch functions
-            spyOn(FieldChildView.prototype, 'validate').and.callThrough();
         };
 
         createExistingFieldView = function (scope) {
             var opts = {};
             _.extend(opts, scope.form.toJSON(), {
-                model: scope.form.fields.at(0)
+                model: scope.form.fields.at(0),
+                parent: new CreateForm({
+                    model: scope.form
+                })
             });
-            console.log(opts);
-            expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(0);
             fieldView = new FieldChildView(opts);
             fieldView.render();
         };
@@ -35,10 +35,11 @@ define([
         createNewFieldView = function (scope) {
             var opts = {};
             _.extend(opts, scope.form.toJSON(), {
-                model: new Field(null, {id: scope.form.id })
+                model: new Field({}, {id: scope.form.id }),
+                parent: new CreateForm({
+                    model: scope.form
+                })
             });
-            console.log(opts);
-            expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(0);
             fieldView = new FieldChildView(opts);
             fieldView.render();
         };
@@ -151,8 +152,11 @@ define([
 
             it("If fieldname is blank, it shows an error", function () {
                 createExistingFieldView(this);
-                fieldView.$el.find("input.fieldname").val("");
-                fieldView.saveField(1);
+                expect(FieldChildView.prototype.validate).toHaveBeenCalledTimes(0);
+                fixture = setFixtures("<div></div>").append(fieldView.$el);
+                fixture.find(".fieldname").val("").trigger('blur');
+                fieldView.saveField();
+                expect(FieldChildView.prototype.validate).toHaveBeenCalledTimes(1);
                 expect(fieldView.$el.hasClass("failure-message")).toBeTruthy();
                 expect($(fieldView.$el.find('span')[0]).html()).toBe("Field Name Missing");
             });
@@ -175,12 +179,14 @@ define([
             it("Renders child HTML", function () {
                 var opts = {}, field = this.form.fields.at(1);
                 _.extend(opts, this.form.toJSON(), {
-                    model: field
+                    model: field,
+                    parent: new CreateForm({
+                        model: this.form
+                    })
                 });
-                expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(0);
                 fieldView = new FieldChildView(opts);
                 fieldView.render();
-                fixture = setFixtures('<div></div>').append(formView.$el);
+                fixture = setFixtures('<div></div>').append(fieldView.$el);
                 expect(fieldView.model.get("is_display_field")).toBeFalsy();
                 expect(fieldView.$el.find('.display-field').is(":checked")).toBeFalsy();
                 fieldView.$el.find('.display-field').trigger('click');
