@@ -56,60 +56,6 @@ class ProjectManager(models.GeoManager, ProjectMixin):
     def get_queryset(self):
         return ProjectQuerySet(self.model, using=self._db)
 
-
-class SnapshotMixin(GroupMixin):
-
-    def _get_objects(self, user, authority_id=1, request=None, context=None,
-                     ordering_field='-time_stamp', with_counts=True, **kwargs):
-
-        if user is None or not user.is_authenticated():
-            raise GenericLocalGroundError('The user cannot be empty')
-
-        q = (
-            self.model.objects
-            .select_related(*self.related_fields)
-            .filter(
-                Q(authuser__user=user) &
-                Q(authuser__user_authority__id__gte=authority_id)
-            )
-        )
-        if request:
-            q = self._apply_sql_filter(q, request, context)
-        q = q.prefetch_related(*self.prefetch_fields)
-        if with_counts:
-            sql = '''select count(entity_id) from site_genericassociation a
-				where a.source_type_id = (select id from django_content_type where model = 'snapshot')
-				and a.entity_type_id = (select id from django_content_type where model = '{0}')
-				and a.source_id = site_snapshot.id'''
-            q = q.extra(
-                select={
-                    'photo_count': sql.format('photo'),
-                    'audio_count': sql.format('audio'),
-                    'processed_maps_count': sql.format('mapimage'),
-                    'marker_count': sql.format('marker'),
-                    'shared_with': 'select shared_with from v_views_shared_with WHERE v_views_shared_with.id = site_snapshot.id'
-                }
-            )
-        if ordering_field:
-            q = q.order_by(ordering_field)
-        return q  # self.populate_tags_for_queryset(q)
-
-    def to_dict_list(self):
-        # does this need to be implemented, or can we just rely on
-        # the ViewSerializer in the API?
-        return []
-
-
-#class SnapshotQuerySet(QuerySet, SnapshotMixin):
-#    pass
-
-
-class SnapshotManager(models.GeoManager, SnapshotMixin):
-    #def get_queryset(self):
-    #    return SnapshotQuerySet(self.model, using=self._db)
-    pass
-
-
 class FormMixin(GroupMixin):
     # For now, only the owner can view / edit a form.
     # Todo: restrict viewing data to the row-level, based on project

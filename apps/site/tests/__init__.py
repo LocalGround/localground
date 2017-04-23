@@ -164,30 +164,6 @@ class ModelMixin(object):
         uao.save()
         return uao
 
-    def create_snapshot(self, user, name='Test Snapshot', authority_id=1):
-        import random
-        from django.contrib.gis.geos import Point
-        lat = 37.87
-        lng = -122.28
-        slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
-        v = models.Snapshot(
-            name=name,
-            owner=user,
-            last_updated_by=user,
-            access_authority=models.ObjectAuthority.objects.get(
-                id=authority_id),
-            slug=slug,
-            center=Point(
-                lng,
-                lat,
-                srid=4326),
-            zoom=19,
-            basemap=models.WMSOverlay.objects.get(
-                id=4),
-        )
-        v.save()
-        return v
-
     def create_layer(self, user, name='Test Layer', authority_id=1):
         import random
         slug = ''.join(random.sample('0123456789abcdefghijklmnopqrstuvwxyz', 16))
@@ -286,13 +262,12 @@ class ModelMixin(object):
             self.user,
             self.project,
             models.Layout.objects.get(id=layout_id),
-            models.WMSOverlay.objects.get(id=map_provider),
+            models.TileSet.objects.get(id=map_provider),
             zoom,
             Point(lng, lat, srid=4326),
             'http://localground.stage',
             map_title=map_title,
             instructions=instructions,
-            layer_ids=None,
             mapimage_ids=None
         )
         p.tags = tags

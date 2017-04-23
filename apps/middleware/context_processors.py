@@ -1,3 +1,4 @@
+import os
 def persistant_queries(request):
     """
     Intercepts HttpRequests in order to add relevant data to the template
@@ -6,17 +7,17 @@ def persistant_queries(request):
     '/map-images/update-record/), this function also adds information about the tilesets
     which are available to the interactive map.
     """
-    from localground.apps.site.models import WMSOverlay
     from localground.apps.site.models import Project
     from localground.apps.site.models import Form
     import simplejson as json
     from django.conf import settings
-    
+    #raise Exception(os.environ)
     context = {
         'path': request.path,
         'user': request.user,
         'is_authenticated': request.user.is_authenticated(),
         'is_impersonation': request.session.get('active_impersonation') is not None,
+        'MAPBOX_API_KEY': os.environ.get('MAPBOX_API_KEY', settings.MAPBOX_API_KEY),
         'serverURL': settings.SERVER_URL,
         'JQUERY_PATH': settings.JQUERY_PATH,
         'JQUERY_UI_PATH': settings.JQUERY_UI_PATH,
@@ -48,12 +49,6 @@ def persistant_queries(request):
     if add_overlays:
         if request.path in ['/print/']:
             is_printable=True
-        context.update({
-            'overlays' : json.dumps(
-                WMSOverlay.objects.get_objects(user=request.user).to_dict_list()
-                #, is_printable=True)
-            )
-        })
         if request.GET.get('markerID') is not None:
             try:
                 context.update({'markerID' : int(request.GET.get('markerID'))})

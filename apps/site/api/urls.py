@@ -15,10 +15,9 @@ router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 #router.register(r'map-images', views.MapImageViewSet)
 router.register(r'data-types', views.DataTypeViewSet)
-router.register(r'tiles', views.TileViewSet)
+#router.register(r'tiles', views.TileViewSet)
 #router.register(r'fields', views.FieldViewSet)
 router.register(r'layouts', views.LayoutViewSet)
-router.register(r'overlay-types', views.OverlayTypeViewSet)
 router.register(r'overlay-sources', views.OverlaySourceViewSet)
 
 # The API URLs are now determined automatically by the router.
@@ -36,11 +35,11 @@ urlpatterns += format_suffix_patterns(patterns('',
         views.ListUsernames.as_view(),
         name="usernames"),
     url(
-        r'^(?P<group_name_plural>markers|snapshots|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/$',
+        r'^(?P<group_name_plural>markers|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/$',
         views.RelatedMediaList.as_view(),
         name='related-media-list'),
     url(
-        r'^(?P<group_name_plural>markers|snapshots|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$',
+        r'^(?P<group_name_plural>markers|prints)/(?P<source_id>[0-9]+)/(?P<entity_name_plural>\w+)/(?P<id>[0-9]+)/$',
         views.RelatedMediaInstance.as_view(),
         name='related-media-detail'),
     url(
@@ -73,13 +72,6 @@ urlpatterns += format_suffix_patterns(patterns('',
     url(r'^presentations/$',
         views.PresentationList.as_view(),
         name='presentation-list'),
-    url(
-        r'^snapshots/(?P<pk>[0-9]+)/$',
-        views.SnapshotInstance.as_view(),
-        name='snapshot-detail'),
-    url(r'^snapshots/$',
-        views.SnapshotList.as_view(),
-        name='snapshot-list'),
     #url(
     #    r'^layers/(?P<pk>[0-9]+)/$',
     #    views.LayerInstance.as_view(),
@@ -186,6 +178,13 @@ urlpatterns += format_suffix_patterns(patterns('',
         r'^user-profile/(?P<pk>[0-9]+)/$',
         views.UserProfileInstance.as_view(),
         name='userprofile-detail'),
+    url(
+        r'^tiles/(?P<pk>[0-9]+)/$',
+        views.TileSetInstance.as_view(),
+        name='tileset-detail'),
+    url(r'^tiles/$',
+        views.TileSetList.as_view(),
+        name='tileset-list'),
     # Todo: generalize this one:
     url(r'^forms/84/data/tracks/$',
         views.TrackList.as_view(),
