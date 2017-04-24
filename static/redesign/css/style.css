@@ -42,6 +42,7 @@ a.logotype{
 span.tag, a.tag {
     background-color: #e7e7e7;
     font-size:12px;
+    float: right;
     padding:1px 8px;
     border-radius:20px;
     margin: 0 2px;
@@ -111,6 +112,7 @@ span.confirmation{
     z-index:100;
     box-shadow: 2px 2px 2px 1px rgba(53, 76, 122, 0.06);
 }
+
 
 .dropdown-menu > a{
     display:block;
@@ -802,6 +804,7 @@ table.preview-properties {
     padding: 10px;
     background-color: white;
     margin-bottom: 40px;
+    display: block;
 }
 table.preview-properties td:first-child {
     text-align: right;

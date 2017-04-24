@@ -129,7 +129,7 @@ fieldset {
     width: 400px;
 }
 
-#toolbar-main > div{
+.data-toolbar-main > div{
     display:flex;
 }
 
@@ -147,14 +147,6 @@ fieldset {
 #toolbar-dataview .view-options {
     margin-right: 0%;
     margin-left: auto;
-}
-
-#toolbar-dataview .main-search {
-    margin-left: 25%;
-    margin-right: 25%;
-    width: 50%;
-    position: fixed;
-
 }
 
 #toolbar-dataview .search-form input, #toolbar-dataview .search-form {
@@ -212,11 +204,6 @@ fieldset {
 
 .add-new-form {
     line-height: 30px;
-}
-
-#fieldTableDiv {
-    max-height: 300px;
-    overflow: scroll;
 }
 
 #fieldTableDiv th {
@@ -280,8 +267,6 @@ fieldset > div, .inline-form {
 .inline-form > select {
     margin:6px 0;
 }
-
-
 
 /****************************************************************************************/
 /*                                       CONTAINERS                                     */
@@ -368,6 +353,15 @@ fieldset > div, .inline-form {
 .success-message, .failure-message, .warning-message {
     display: none;
 }
+tr.success-message.show, tr.failure-message.show, tr.warning-message.show {
+    display: table-row;
+}
+tr.failure-message.show span {
+    display: table-row;
+    font-size: 12px;
+    display: block;
+    color: #b94a48;
+}
 
 .alert {
     padding: 5px;
@@ -384,6 +378,12 @@ fieldset > div, .inline-form {
     line-height: 40px;
     position: absolute;
     /*width: calc(100% - 60px);*/
+}
+.form-confirmation {
+    display: block;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    border-radius: 2px;
 }
 
 .success-message {
@@ -595,7 +595,7 @@ fieldset > div, .inline-form {
 
 
 /****************************************************************************************/
-/*                                         MODULES                                      */
+/*                                      MAIN PANELS                                   */
 /****************************************************************************************/
 
 
@@ -607,7 +607,7 @@ fieldset > div, .inline-form {
     width: 100%;
 }
 
-.main-panel> div{
+.main-panel > div{
     width:100%;
 }
 
@@ -618,6 +618,41 @@ fieldset > div, .inline-form {
     position: absolute;
     width: 100%;
 }
+
+.home-main-panel {
+    height: calc(100% - 211px);
+    top: 211px;
+}
+
+.spreadsheet-main-panel {
+    background-color: #ecedf2;
+    display: flex;
+    height: calc(100vh - 111px);
+    width: 100%;
+    top: 111px;
+    position: absolute;
+    padding:0;
+    z-index: 0;
+}
+
+.gallery-panel {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    /*padding: 20px 14px 24px;*/
+    overflow: scroll;
+    width:100%;
+}
+
+.presentation-main-panel {
+    top: 0;
+    height: 100%;
+}
+
+
+/****************************************************************************************/
+/*                                         MODULES                                      */
+/****************************************************************************************/
 
 .map-panel {
     /* where interactive map goes*/
@@ -1012,6 +1047,55 @@ li.current .photo {
     position: absolute;
     right: 10px;
     top: 10px;
+}
+
+.handsontable th, .handsontable td{
+    border-bottom: 1px solid #ededed;
+    border-right: 1px solid #ededed;
+}
+
+.handsontable th{
+    background-color:white;
+    font-weight:600;
+}
+
+.handsontable th:first-child, .handsontable td:first-of-type, .handsontable .htNoFrame + th, .handsontable .htNoFrame + td {
+    border-left: 1px solid #ededed;
+}
+
+.handsontable th, .handsontable td {
+    border-bottom: 1px solid #ededed;
+    border-right: 1px solid #ededed;
+}
+
+.handsontable tr:first-child th, .handsontable tr:first-child td {
+    border-top: 1px solid #ededed;
+}
+
+.handsontable th:last-child {
+    border-right: 1px solid #ededed;
+    border-bottom: 1px solid #ededed;
+}
+.handsontable td, .handsontable th{
+    font-size: 12px;
+}
+
+.handsontable thead th .relative {
+    padding: 4px 8px;
+}
+
+.handsontable.htRowHeaders thead tr th:nth-child(2) {
+    border-left: 1px solid #ededed;
+}
+
+td i.fa.fa-file-photo-o, td i.fa.fa-file-audio-o, .fa-plus-square-o {
+    margin: 5px 5px 0px 0px;
+    color: #BBB;
+    font-size: 24px;
+}
+
+.filter.data {
+    position: static;
 }
 
 /********************************/

@@ -108,29 +108,6 @@ class MarkerManager(GeoManager, ObjectMixin, MarkerMixin):
     #    return MarkerQuerySet(self.model, using=self._db)
     pass
 
-class WMSOverlayQuerySet(QuerySet, BaseMixin):
-    related_fields = ['overlay_source', 'overlay_type']
-
-    def get_objects(self, user=None, filter=None, is_printable=None,
-                    ordering_field=None, **kwargs):
-        q = (self.model.objects
-             .select_related(*self.related_fields)
-             .filter(overlay_type__id=1)
-             )
-        if is_printable is not None:
-            q = q.filter(is_printable=is_printable)
-        return q
-
-class ManagerMixin(object):
-
-    def get_objects(self, **kwargs):
-        return self.get_queryset().get_objects(**kwargs)
-    
-    
-class WMSOverlayManager(GeoManager, ManagerMixin):
-
-    def get_queryset(self):
-        return WMSOverlayQuerySet(self.model, using=self._db)
     
     
     

@@ -1,17 +1,17 @@
-<div class="project-overview" data-url="/map/?project_id={{ id }}">
-    <div>
-        <h2 class="map-title">{{ name }}</h2>
+<div class="project-overview" >
+    <a href="/map/?project_id={{ id }}">
+        <h2 class="map-title" >{{ name }}</h2>
         <span class = "owner">Owner: {{ owner }}</span>
         <p>{{ caption }}</p>
-    </div>
+    </a>
     <div class = "project-detail">
-        <a class="action tag">
+        <a class="tag action">
         {{#ifequal access_authority 1}}
             Private
         {{ else }}
             Public
         {{/ifequal}}
         </a>
-        <span class="action"><i class="fa fa-clock-o" aria-hidden="true"></i>5 days ago</span>
+        <span class="time-stamp"><i class="fa fa-clock-o" aria-hidden="true"></i> {{timeAgo}}</span>
     </div>
 </div>

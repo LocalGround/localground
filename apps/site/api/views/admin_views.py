@@ -7,18 +7,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 class TileViewSet(viewsets.ModelViewSet):
-    queryset = models.WMSOverlay.objects.select_related(
-        'overlay_type',
+    queryset = models.TileSet.objects.select_related(
         'overlay_source').all()
-    serializer_class = serializers.WMSOverlaySerializer
+    serializer_class = serializers.TileSetSerializer
     filter_backends = (SQLFilterBackend,)
-    permission_classes = (permissions.IsAdminUser,)
-
-class OverlayTypeViewSet(viewsets.ModelViewSet):
-    queryset = models.OverlayType.objects.all()
-    serializer_class = serializers.OverlayTypeSerializer
-    filter_backends = (SQLFilterBackend,)
-    permission_classes = (permissions.IsAdminUser,)
+    #permission_classes = (permissions.IsAdminUser,)
 
 class OverlaySourceViewSet(viewsets.ModelViewSet):
     queryset = models.OverlaySource.objects.all()

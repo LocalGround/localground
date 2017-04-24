@@ -2,15 +2,20 @@
   <i class="fa fa-chevron-left"> </i> Back
 </a>
 <br>
-<!-- <div class="confirmation success-message">Saved Successfully &#10003</div> -->
+{{#if showSuccess }}
+    <div class="form-confirmation success-message">Saved Successfully &#10003</div>
+{{/if}}
+{{#if showError }}
+    <div class="form-confirmation failure-message">Error Saving. Please review messages</div>
+{{/if}}
 <div class="inline-form">
     <label for="formName">Name: </label>
-    <input type="text" id="formName" value="{{name}}">
+    <input type="text" id="formName" class="formName" value="{{name}}">
 </div>
 <div class="inline-form">
-    <label for="caption">Description:</label>
-    <textarea id="caption" rows="5" cols="50" value="{{caption}}"
-    placeholder="Describe this form"></textarea>
+    <label for="caption">Description: {{caption}}</label>
+    <textarea id="caption" class="caption" rows="5" cols="50"
+    placeholder="Describe this form">{{caption}}</textarea>
 </div>
 
 <div class="inline-form">
@@ -21,6 +26,7 @@
                 <tr>
                     <th>Field Name</th>
                     <th>Data Type</th>
+                    <th>Display Field</th>
                     <th></th>
                 </tr>
             </thead>

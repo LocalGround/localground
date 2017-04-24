@@ -1,2 +1,8 @@
 <h5>Title</h5><input class="layer-title" type="text" value="{{title}}"></input>
-<h5>Data Source</h5><input id="data_source" name="data_source" type="text" value="{{data_source}}" />
+<h5>Data Source</h5>
+<select class="selected-data-source">
+    {{#each dataSource}}
+    <option value="{{this.value}}" {{#ifequal this.value ../currentDataSource }}SELECTED{{/ifequal}}>{{this.name}}</option>
+    {{/each}}
+    
+</div>
