@@ -3,6 +3,7 @@ from localground.apps.site import models
 from localground.apps.site.api.serializers.base_serializer import AuditSerializerMixin
 from django.conf import settings
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
+from localground.apps.site.api.fields.json_fields import JSONField
 
 class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
     '''
@@ -14,6 +15,11 @@ class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
     col_name = serializers.SerializerMethodField()
     form = serializers.SerializerMethodField()
     is_display_field = serializers.BooleanField()
+    extras = JSONField(
+        help_text='Store arbitrary key / value pairs here in JSON form. Example: {"key": "value"}',
+        allow_null=True,
+        required=False,
+        style={'base_template': 'json.html', 'rows': 5})
     data_type = serializers.SlugRelatedField(
                                 queryset=models.DataType.objects.all(),
                                 slug_field='name',
@@ -22,7 +28,7 @@ class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = models.Field
-        fields = ('id', 'form', 'col_alias', 'col_name', 'is_display_field',
+        fields = ('id', 'form', 'col_alias', 'col_name', 'extras', 'is_display_field',
                     'ordering', 'data_type', 'url')
         
     def get_url(self, obj):
