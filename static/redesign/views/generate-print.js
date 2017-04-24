@@ -3,16 +3,18 @@ define(["jquery",
         "handlebars",
         "lib/modals/modal",
         "lib/maps/basemap",
+        "views/print-options",
         "text!../templates/print-layout.html"
     ],
     function ($, Marionette, Handlebars, Modal,
-              Basemap, PrintLayoutTemplate) {
+              Basemap, PrintOptions, PrintLayoutTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var GeneratePrintLayout = Marionette.LayoutView.extend({
             template: Handlebars.compile(PrintLayoutTemplate),
 
             basemapView: null,
+            printOptions: null,
 
             initialize: function (opts) {
                 /*This Layout View relies on a Map model which gets set from the change-map event,
@@ -25,6 +27,7 @@ define(["jquery",
             onShow: function(){
                 console.log("Showing");
                 this.showBasemap();
+                this.showPrintOptions();
             },
 
             events: {
@@ -34,6 +37,13 @@ define(["jquery",
             regions: {
                 regionLeft: ".print-layout-left",
                 regionRight: ".print-layout-right"
+            },
+
+            showPrintOptions: function(){
+                this.printOptions = new PrintOptions({
+                    app: this.app
+                });
+                this.regionLeft.show(this.printOptions);
             },
 
             showBasemap: function () {
