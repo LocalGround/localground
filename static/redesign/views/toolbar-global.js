@@ -85,7 +85,8 @@ define([
         },
 
         printMap: function(){
-            alert("Print Map Settings")
+            //alert("Print Map Settings")
+            this.modal.view.callMakePrint();
         }
     });
     return Toolbar;

@@ -4,10 +4,11 @@ define(["jquery",
         "lib/modals/modal",
         "lib/maps/basemap",
         "views/print-options",
+        "models/print",
         "text!../templates/print-layout.html"
     ],
     function ($, Marionette, Handlebars, Modal,
-              Basemap, PrintOptions, PrintLayoutTemplate) {
+              Basemap, PrintOptions, Print, PrintLayoutTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var GeneratePrintLayout = Marionette.LayoutView.extend({

@@ -8,7 +8,7 @@ define(["jquery",
         "text!../templates/print-options.html"
     ],
     function ($, Marionette, Handlebars, Modal,
-              Basemap, Print, GeneratePrint, PrintOptionsTemplate) {
+              BaseMap, Print, GeneratePrint, PrintOptionsTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var PrintOptions = Marionette.ItemView.extend({
@@ -27,6 +27,12 @@ define(["jquery",
 
             makePrint: function(){
                 alert("Call Generate Print");
+                // Todo: Make the new map based on the current data stored on the map.
+                basemapView = new BaseMap();
+                //basemapView.setZoom();
+                //basemapView.setCenter();
+                //basemapView.setMapTypeId();
+
             }
         });
         return PrintOptions;
