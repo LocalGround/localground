@@ -22,6 +22,7 @@ define(["jquery",
                 this.app = opts.app;
                 this.model = new Print();
                 this.render();
+                this.basemapView = this.app.basemapView; // Let's try this for now....
                 //this.showBasemap();
             },
 
@@ -31,6 +32,14 @@ define(["jquery",
                 //basemapView.setZoom();
                 //basemapView.setCenter();
                 //basemapView.setMapTypeId();
+
+                // Let's test this rough draft
+                // Will be tweaked later
+                var printMap = new Print();
+                printMap.set("center", this.basemapView.getCenter());
+                printMap.set("zoom", this.basemapView.getZoom());
+                printMap.set("mapTypeId", this.basemapView.getMapTypeId());
+                printMap.save();
 
             }
         });
