@@ -28,7 +28,6 @@ define(["jquery",
             makePrint: function(){
                 alert("Call Generate Print");
                 // Todo: Make the new map based on the current data stored on the map.
-                basemapView = new BaseMap();
                 //basemapView.setZoom();
                 //basemapView.setCenter();
                 //basemapView.setMapTypeId();
