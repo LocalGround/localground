@@ -10,7 +10,7 @@ define(["marionette",
         'use strict';
 
         var SelectMapView = Marionette.ItemView.extend({
-
+            isShowing: true,
             template: Handlebars.compile(MapTemplate),
 
             events: {
@@ -24,6 +24,7 @@ define(["marionette",
             initialize: function (opts) {
                 var that = this;
                 _.extend(this, opts);
+                this.restoreState();
                 if (!this.collection) {
                     // /api/0/maps/ API Endpoint gets built:
                     this.collection = new Maps();
@@ -40,6 +41,11 @@ define(["marionette",
                 
                 this.listenTo(this.collection, 'reset', this.drawOnce);
                 this.listenTo(this.app.vent, "create-new-map", this.newMap);
+            },
+            templateHelpers:  function () {
+                return {
+                    isShowing: this.isShowing
+                }
             },
 
             setModel: function (collection) {
@@ -117,6 +123,7 @@ define(["marionette",
                     showDeleteButton: false
                 });
                 this.modal.show();
+                this.showSection();
             },
 
             setCenterZoom: function (selectedMapModel) {
@@ -131,14 +138,27 @@ define(["marionette",
             },
 
             hideSection: function (e) {
-                this.$el.find("#map-select").hide();
-                $(e.target).removeClass("hide-panel fa-caret-down");
-                $(e.target).addClass("show-panel fa-caret-right");
+                console.log("show section");
+                this.isShowing = false;
+                this.saveState();
+                this.render();
             },
             showSection: function (e) {
-                this.$el.find("#map-select").show();
-                $(e.target).removeClass("show-panel fa-caret-right");
-                $(e.target).addClass("hide-panel fa-caret-down");
+                console.log("show section");
+                this.isShowing = true;
+                this.saveState();
+                this.render();
+            },
+            saveState: function () {
+                this.app.saveState("select-map", {
+                    isShowing: this.isShowing
+                });
+            },
+            restoreState: function () {
+                var state = this.app.restoreState("select-map");
+                if (state) {
+                    this.isShowing = state.isShowing;
+                }
             }
 
         });

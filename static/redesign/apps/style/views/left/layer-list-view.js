@@ -76,7 +76,6 @@ define(["marionette",
                 this.collection.fetch({ reset: true});
                 this.listenTo(this.collection, 'reset', this.render);
                 this.listenTo(this.collection, 'add', this.render);
-                console.log(this.collection);
             },
             createNewLayer: function (e) {
              //   var $selection = $(e.target).attr("data-value");
@@ -95,6 +94,7 @@ define(["marionette",
                     
                 });
                 this.app.vent.trigger("edit-layer", layer, this.collection);
+                this.showSection();
             },
             templateHelpers: function () {
                 return {

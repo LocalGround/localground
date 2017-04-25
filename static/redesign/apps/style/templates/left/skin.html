@@ -1,8 +1,8 @@
 <div class="style-section-header">
-    <i class="fa hide-panel fa-caret-down"></i>
+     <i class="fa {{#if isShowing}} hide-panel fa-caret-down{{else}} show-panel fa-caret-right {{/if}}"></i>
     <h4 id="skin-header">Map Skin Style</h4>
 </div>
-<select id="skin-select">
+<select id="skin-select" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}">
 {{#each items}}
     <option value={{ this.id }}>{{ this.name }}</option>
 {{/each}}

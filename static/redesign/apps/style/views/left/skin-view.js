@@ -7,11 +7,12 @@ define(["marionette",
         'use strict';
 
         var SelectSkinView = Marionette.ItemView.extend({
-
+            isShowing: false,
             template: Handlebars.compile(SkinTemplate),
 
             initialize: function (opts) {
                 this.app = opts.app;
+                this.restoreState();
 
                 // here is some fake data until the
                 // /api/0/maps/ API Endpoint gets built:
@@ -26,15 +27,32 @@ define(["marionette",
                 'click .show-panel': 'showSection'
             },
 
+            templateHelpers:  function () {
+                return {
+                    isShowing: this.isShowing
+                };
+            },
+
             hideSection: function (e) {
-                this.$el.find("#skin-select").hide();
-                $(e.target).removeClass("hide-panel fa-caret-down");
-                $(e.target).addClass("show-panel fa-caret-right");
+                this.isShowing = false;
+                this.saveState();
+                this.render();
             },
             showSection: function (e) {
-                this.$el.find("#skin-select").show();
-                $(e.target).removeClass("show-panel fa-caret-right");
-                $(e.target).addClass("hide-panel fa-caret-down");
+                this.isShowing = true;
+                this.saveState();
+                this.render();
+            },
+            saveState: function () {
+                this.app.saveState("skin", {
+                    isShowing: this.isShowing
+                });
+            },
+            restoreState: function () {
+                var state = this.app.restoreState("skin");
+                if (state) {
+                    this.isShowing = state.isShowing;
+                }
             }
 
         });
