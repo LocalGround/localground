@@ -71,8 +71,10 @@ define([
                 width: 1200,
                 height: 500,
                 closeButtonText: "Done",
+                printButtonText: "Print Map",
                 showSaveButton: false,
-                showDeleteButton: false
+                showDeleteButton: false,
+                showPrintButton: true
                 // bind the scope of the save function to the source view:
                 //saveFunction: createForm.saveFormSettings.bind(createForm)
             });
