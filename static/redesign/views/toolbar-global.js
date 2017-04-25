@@ -71,12 +71,10 @@ define([
                 width: 1200,
                 height: 500,
                 closeButtonText: "Done",
-                printButtonText: "Print Map",
                 showSaveButton: false,
                 showDeleteButton: false,
-                showPrintButton: true
-                // bind the scope of the save function to the source view:
-                //saveFunction: createForm.saveFormSettings.bind(createForm)
+                showPrintButton: true,
+                printFunction: this.printMap.bind(this)
             });
             this.modal.show();
         },
@@ -84,6 +82,10 @@ define([
         setModel: function () {
             this.model = this.app.dataManager.model;
             this.render();
+        },
+
+        printMap: function(){
+            alert("Print Map Settings")
         }
     });
     return Toolbar;

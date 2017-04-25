@@ -78,7 +78,12 @@ define(["jquery",
                 ps = new PanelStylesView({ app: this.app });
                 this.styles.show(ps);
                 */
+            },
+
+            callMakePrint: function(){
+                this.printOptions.makePrint();
             }
+
         });
         return GeneratePrintLayout;
     });

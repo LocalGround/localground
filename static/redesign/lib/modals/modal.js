@@ -56,11 +56,11 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                     height: this.height,
                     showSaveButton: this.showSaveButton,
                     showDeleteButton: this.showDeleteButton,
-                    showPrintButton: this.showDeleteButton,
+                    showPrintButton: this.showPrintButton,
                     closeButtonText: this.closeButtonText,
                     saveButtonText: this.saveButtonText,
                     deleteButtonText: this.deleteButtonText,
-                    printButtonText: this.deleteButtonText
+                    printButtonText: this.printButtonText
                 };
             },
             appendView: function () {
