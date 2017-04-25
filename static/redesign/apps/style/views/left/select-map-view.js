@@ -118,12 +118,14 @@ define(["marionette",
             },
 
             setCenterZoom: function (selectedMapModel) {
+                if(!selectedMapModel) {return;}
                 var location = selectedMapModel.getDefaultLocation();
                 this.app.basemapView.setCenter(location.center);
                 this.app.basemapView.setZoom(location.zoom);
             },
 
             setMapTypeId: function (selectedMapModel) {
+                if(!selectedMapModel) {return;}
                 var skin = selectedMapModel.getDefaultSkin();
                 this.app.basemapView.setMapTypeId(skin.basemap);
             }
