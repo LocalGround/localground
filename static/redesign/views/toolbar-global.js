@@ -16,7 +16,8 @@ define([
             return {
                 activeTab: this.app.activeTab,
                 name: this.model.get("name") === "Untitled" ? "" : this.model.get("name"),
-                previewURL: this.previewURL
+                previewURL: this.previewURL,
+                screenType: this.app.screenType
             };
         },
 
