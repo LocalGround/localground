@@ -15,6 +15,8 @@ define(["jquery",
             template: Handlebars.compile(PrintOptionsTemplate),
 
             basemapView: null,
+            pdf: null,
+            thumb: null,
 
             initialize: function (opts) {
                 /*This Layout View relies on a Map model which gets set from the change-map event,
@@ -25,6 +27,15 @@ define(["jquery",
                 this.basemapView = this.app.basemapView; // Let's try this for now....
                 //this.showBasemap();
                 console.log(this.app);
+            },
+
+            templateHelpers: function(){
+                ///*
+                return {
+                    pdf: this.pdf,
+                    thumb: this.thumb
+                };
+                //*/
             },
 
             detectLayout: function(){
@@ -73,26 +84,20 @@ define(["jquery",
                 printMap.set("map_title", this.$el.find("#print-title").val());
                 printMap.set("instructions", this.$el.find("#print-instructions").val());
                 console.log(printMap);
+                this.$el.find(".loading").show();
                 printMap.save(null, {
                     success: function (model, response) {
                         //show the user the PDF and the thumbnail
                         console.log(response);
+                        that.$el.find(".loading").hide();
+                        that.pdf = response.pdf;
+                        that.thumb = response.thumb;
+                        that.render();
+
                     },
                     error: function (model, response) {
                         //show the user the PDF and the thumbnail
                         console.log(response);
-                    }
-                });
-                console.log(printMap);
-                this.$el.find(".loading").show();
-                printMap.save(null, {
-                    success: function(){
-                        console.log("Map Saved");
-                        that.$el.find(".loading").hide();
-
-                    },
-                    error: function(){
-                        console.log("Map Not Saved");
                     }
                 });
 
