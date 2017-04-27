@@ -73,6 +73,17 @@ define(["jquery",
                 printMap.set("map_title", this.$el.find("#print-title").val());
                 printMap.set("instructions", this.$el.find("#print-instructions").val());
                 console.log(printMap);
+                printMap.save(null, {
+                    success: function (model, response) {
+                        //show the user the PDF and the thumbnail
+                        console.log(response);
+                    },
+                    error: function (model, response) {
+                        //show the user the PDF and the thumbnail
+                        console.log(response);
+                    }
+                });
+                console.log(printMap);
                 this.$el.find(".loading").show();
                 printMap.save(null, {
                     success: function(){
