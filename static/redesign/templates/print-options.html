@@ -1,17 +1,19 @@
+<div class="loading" style="display: none">Loading</div>
 <div>
-    <label>Title:</label><input type="text" id="print-title"><br>
-    <label>Instructions:</label><textarea id="print-instructions"> </textarea><br>
+    <label>Title:</label><input type="text" id="print-title" placeholder="Insert title"><br>
+    <label>Instructions:</label><textarea id="print-instructions"
+    rows="4" cols="50" placeholder="Type instructions here"> </textarea><br>
 
 
     <label>Layout</label><br>
-    <input type="radio" name="print_layout" id="portrait" value="Portrait"> Portrait<br>
-    <input type="radio" name="print_layout" id="landscape" value="Landscape"> Landscape<br>
+    <input class="option-layout" type="radio" name="print_layout" id="portrait" value="Portrait" checked> Portrait<br>
+    <input class="option-layout" type="radio" name="print_layout" id="landscape" value="Landscape"> Landscape<br>
 
     <br>
 
     <label>Collect Data?</label><br>
-    <input type="radio" name="data_collect" id="choose_yes" value="Yes"> Yes<br>
-    <input type="radio" name="data_collect" id="choose_no" value="No"> No<br>
+    <input class="option-data" type="radio" name="data_collect" id="choose_yes" value="Yes" checked> Yes<br>
+    <input class="option-data" type="radio" name="data_collect" id="choose_no" value="No"> No<br>
 
     <br>
 

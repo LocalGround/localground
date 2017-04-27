@@ -27,6 +27,33 @@ define(["jquery",
                 console.log(this.app);
             },
 
+            detectLayout: function(){
+
+                var layoutVal = 0;
+                var option_layout = this.$el.find(".option-layout").prop("checked");
+                var option_data = this.$el.find(".option-data").prop("checked");
+                var option_layout_val = this.$el.find(".option-layout:checked").val();
+                var option_data_val = this.$el.find(".option-data:checked").val();
+
+                if (option_data_val == "Yes"){
+                    layoutVal += 0;
+                } else if (option_data_val == "No"){
+                    layoutVal += 2;
+                }
+
+                if (option_layout_val == "Portrait"){
+                    layoutVal += 0;
+                } else if (option_layout_val == "Landscape"){
+                    layoutVal += 1;
+                }
+
+                layoutVal += 1;
+
+                return layoutVal;
+
+
+            },
+
             makePrint: function(){
                 alert("Call Generate Print");
                 // Todo: Make the new map based on the current data stored on the map.
@@ -37,18 +64,30 @@ define(["jquery",
                 // Let's test this rough draft
                 // Will be tweaked later
                 var printMap = new Print();
+                var that = this;
                 printMap.set("project_id", this.app.getProjectID());
-                printMap.set("layout", 1); // replace with modular setting soon
+                printMap.set("layout", this.detectLayout()); // replace with modular setting soon
                 printMap.set("center", this.basemapView.getCenter());
                 printMap.set("zoom", this.basemapView.getZoom());
                 printMap.set("map_provider", this.basemapView.getMapTypeId());
-                printMap.set("map_title", "hello world");
-                printMap.set("instructions", "hello world");
+                printMap.set("map_title", this.$el.find("#print-title").val());
+                printMap.set("instructions", this.$el.find("#print-instructions").val());
                 console.log(printMap);
-                printMap.save();
-                console.log(printMap);
+                this.$el.find(".loading").show();
+                printMap.save(null, {
+                    success: function(){
+                        console.log("Map Saved");
+                        that.$el.find(".loading").hide();
+
+                    },
+                    error: function(){
+                        console.log("Map Not Saved");
+                    }
+                });
 
             }
+
+
         });
         return PrintOptions;
 });
