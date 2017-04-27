@@ -65,17 +65,13 @@ define(["marionette",
                 this.collection.add(this.map);
                 
                 this.map.save(null, {
-                    success: this.render,
+                    success: function() {
+                        that.drawOnce(),
+                        that.modal.hide()
+                    },
                     error: function (model, response){
-                        var messages = JSON.parse(response.responseText);
-                        console.log(messages);
-                        if (messages.slug && messages.slug.length > 0) {
-                            that.slugError = messages.slug[0];
-                            console.log("should have error message", that.slugError);
-                        }
-                        that.app.vent.trigger("send-modal-error", that.slugError);
-                    }
-                    
+                        that.app.vent.trigger("send-modal-error", response); 
+                    }       
                 });
             },
 
@@ -100,18 +96,18 @@ define(["marionette",
             },
 
             showAddMapModal: function() {
-                var createMapModel = new NewMap({
+                var createMapModal = new NewMap({
                     app: this.app
                 });
                 this.modal.update({
                     class: "add-map",
-                    view: createMapModel,
+                    view: createMapModal,
                     title: 'Add Map',
                     width: 400,
                     height: 0,
                     closeButtonText: "Done",
                     showSaveButton: true,
-                    saveFunction: createMapModel.saveMap.bind(createMapModel),
+                    saveFunction: createMapModal.saveMap.bind(createMapModal),
                     showDeleteButton: false
                 });
                 this.modal.show();
