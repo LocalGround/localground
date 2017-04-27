@@ -64,6 +64,9 @@ define([
         });
 
         describe("Panel Show / Hide Tests", function () {
-            Helper.genericChecks({ ClassType: SelectMapView });
+            Helper.genericChecks({
+                ClassType: SelectMapView,
+                name: "SelectMapView"
+            });
         });
     });

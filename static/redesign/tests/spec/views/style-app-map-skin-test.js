@@ -21,6 +21,9 @@ define([
         });
 
         describe("Panel Show / Hide Tests", function () {
-            Helper.genericChecks({ ClassType: SkinView });
+            Helper.genericChecks({
+                ClassType: SkinView,
+                name: "SkinView"
+            });
         });
     });

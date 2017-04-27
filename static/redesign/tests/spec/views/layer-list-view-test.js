@@ -56,7 +56,10 @@ define([
         });
 
         describe("Panel Show / Hide Tests", function () {
-            Helper.genericChecks({ ClassType: LayerListView });
+            Helper.genericChecks({
+                ClassType: LayerListView,
+                name: "LayerListView"
+            });
         });
 
         /*describe("Events tests", function () {

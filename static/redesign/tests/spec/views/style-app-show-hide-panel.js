@@ -26,8 +26,9 @@ define([
             var that = this,
                 panelView,
                 ClassType = opts.ClassType,
+                name = opts.name,
                 fixture;
-            describe("Style App: Show / Hide Panels", function () {
+            describe("Style App: Show / Hide Panels for " + name, function () {
                 beforeEach(function () {
                     panelView = that.initSpies(this, ClassType);
                     fixture = setFixtures('<div></div>').append(panelView.$el);
