@@ -45,7 +45,16 @@ define(["jquery",
                 printMap.set("map_title", "hello world");
                 printMap.set("instructions", "hello world");
                 console.log(printMap);
-                printMap.save();
+                printMap.save(null, {
+                    success: function (model, response) {
+                        //show the user the PDF and the thumbnail
+                        console.log(response);
+                    },
+                    error: function (model, response) {
+                        //show the user the PDF and the thumbnail
+                        console.log(response);
+                    }
+                });
                 console.log(printMap);
 
             }
