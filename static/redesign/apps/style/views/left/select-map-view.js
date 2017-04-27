@@ -1,23 +1,29 @@
-define(["marionette",
+define(["jquery",
+        "marionette",
         "handlebars",
         "models/map",
         "collections/maps",
         "apps/style/views/left/new-map-modal-view",
+        "apps/style/visibility-mixin",
         "text!../../templates/left/select-map.html",
         "lib/modals/modal"
     ],
-    function (Marionette, Handlebars, Map, Maps, NewMap, MapTemplate, Modal) {
+    function ($, Marionette, Handlebars, Map, Maps, NewMap, PanelVisibilityExtensions, MapTemplate, Modal) {
         'use strict';
 
-        var SelectMapView = Marionette.ItemView.extend({
+        var SelectMapView = Marionette.ItemView.extend(_.extend({}, PanelVisibilityExtensions, {
+            stateKey: 'select-map',
             isShowing: true,
             template: Handlebars.compile(MapTemplate),
 
-            events: {
-                'change #map-select': 'changeMap',
-                'click .add-map': 'showAddMapModal',
-                'click .hide-panel': 'hideSection',
-                'click .show-panel': 'showSection'
+            events: function () {
+                return _.extend(
+                    {
+                        'change #map-select': 'changeMap',
+                        'click .add-map': 'showAddMapModal'
+                    },
+                    PanelVisibilityExtensions.events
+                );
             },
             modal: null,
 
@@ -38,25 +44,20 @@ define(["marionette",
                     });
                 }
                 this.modal = new Modal();
-                
+
                 this.listenTo(this.collection, 'reset', this.drawOnce);
                 this.listenTo(this.app.vent, "create-new-map", this.newMap);
             },
-            templateHelpers:  function () {
-                return {
-                    isShowing: this.isShowing
-                }
-            },
 
-            setModel: function (collection) {
+            setModel: function () {
                 this.app.currentMap = this.collection.at(0);
             },
 
             newMap: function (mapAttrs) {
-                var that = this;
-                var latLng = this.app.basemapView.getCenter();
+                var that = this,
+                    latLng = this.app.basemapView.getCenter();
                 this.map = new Map({
-                    name: mapAttrs.name, 
+                    name: mapAttrs.name,
                     slug: mapAttrs.slug,
                     center: {
                         "type": "Point",
@@ -89,17 +90,17 @@ define(["marionette",
 
             drawOnce: function () {
                 this.render();
-                var $selected = this.$el.find("#map-select").val();
-                var selectedMapModel = this.collection.get($selected);
+                var $selected = this.$el.find("#map-select").val(),
+                    selectedMapModel = this.collection.get($selected);
 
                 this.setCenterZoom(selectedMapModel);
                 this.setMapTypeId(selectedMapModel);
                 this.app.vent.trigger("change-map", selectedMapModel);
             },
 
-            changeMap: function(e) {
-                var id = $(e.target).val();
-                var selectedMapModel = this.collection.get(id);
+            changeMap: function (e) {
+                var id = $(e.target).val(),
+                    selectedMapModel = this.collection.get(id);
 
                 this.setCenterZoom(selectedMapModel);
                 this.setMapTypeId(selectedMapModel);
@@ -107,7 +108,7 @@ define(["marionette",
                 this.app.vent.trigger("hide-right-panel");
             },
 
-            showAddMapModal: function() {
+            showAddMapModal: function () {
                 var createMapModel = new NewMap({
                     app: this.app
                 });
@@ -135,32 +136,8 @@ define(["marionette",
             setMapTypeId: function (selectedMapModel) {
                 var skin = selectedMapModel.getDefaultSkin();
                 this.app.basemapView.setMapTypeId(skin.basemap);
-            },
-
-            hideSection: function (e) {
-                console.log("show section");
-                this.isShowing = false;
-                this.saveState();
-                this.render();
-            },
-            showSection: function (e) {
-                console.log("show section");
-                this.isShowing = true;
-                this.saveState();
-                this.render();
-            },
-            saveState: function () {
-                this.app.saveState("select-map", {
-                    isShowing: this.isShowing
-                });
-            },
-            restoreState: function () {
-                var state = this.app.restoreState("select-map");
-                if (state) {
-                    this.isShowing = state.isShowing;
-                }
             }
 
-        });
+        }));
         return SelectMapView;
     });

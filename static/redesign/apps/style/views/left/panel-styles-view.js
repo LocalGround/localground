@@ -2,23 +2,28 @@ define(["marionette",
         "handlebars",
         'color-picker-eyecon',
         "models/map",
+        "apps/style/visibility-mixin",
         "text!../../templates/left/panel-styles.html"
     ],
-    function (Marionette, Handlebars, colorPicker, Map, PanelStylesTemplate) {
+    function (Marionette, Handlebars, colorPicker, Map, PanelVisibilityExtensions, PanelStylesTemplate) {
         'use strict';
 
-        var SelectSkinView = Marionette.ItemView.extend({
+        var SelectSkinView = Marionette.ItemView.extend(_.extend({}, PanelVisibilityExtensions, {
+            stateKey: 'panel-styles',
             activeKey: "title",
             isShowing: false,
             template: Handlebars.compile(PanelStylesTemplate),
 
-            events: {
-                'change #text-type': 'updateType',
-                'change #font': 'updateFont',
-                'change #fw': 'updateFontWeight',
-                'change #font-size': 'updateFontSize',
-                'click .hide-panel': 'hideSection',
-                'click .show-panel': 'showSection'
+            events: function () {
+                return _.extend(
+                    {
+                        'change #text-type': 'updateType',
+                        'change #font': 'updateFont',
+                        'change #fw': 'updateFontWeight',
+                        'change #font-size': 'updateFontSize'
+                    },
+                    PanelVisibilityExtensions.events
+                );
             },
 
             initialize: function (opts) {
@@ -47,8 +52,11 @@ define(["marionette",
 
             
             templateHelpers: function () {
+                var opts = PanelVisibilityExtensions.templateHelpers();
                 if (!this.model) {
-                    return;
+                    return {
+                        isShowing: this.isShowing
+                    };
                 }
                 return {
                     json: JSON.stringify(this.model.toJSON(), null, 2),
@@ -79,30 +87,8 @@ define(["marionette",
             updateFontSize: function () {
                 this.model.get("panel_styles")[this.activeKey].size = +this.$el.find("#font-size").val();
                 this.render();
-            },
-
-            hideSection: function (e) {
-                this.isShowing = false;
-                this.saveState();
-                this.render();
-            },
-            showSection: function (e) {
-                this.isShowing = true;
-                this.saveState();
-                this.render();
-            },
-            saveState: function () {
-                this.app.saveState("panel_styles", {
-                    isShowing: this.isShowing
-                });
-            },
-            restoreState: function () {
-                var state = this.app.restoreState("panel_styles");
-                if (state) {
-                    this.isShowing = state.isShowing;
-                }
             }
-        });
+        }));
         return SelectSkinView;
     });
 
