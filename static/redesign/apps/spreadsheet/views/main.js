@@ -92,7 +92,7 @@ define(["marionette",
                     newPosition = destination_index - 2 + i;
 
                     field.set("ordering", newPosition);
-                    field.save();
+                    field.save({"ordering": newPosition, do_reshuffle: 1}, { patch: true, wait: true });
                 }
             },
             renderSpreadsheet: function () {

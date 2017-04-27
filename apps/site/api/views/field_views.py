@@ -26,7 +26,17 @@ class FieldMixin(object):
             form.fields[0].is_display_field = True
             form.fields[0].save()
 
-    def update_ordering_and_display_field(self, instance, form):
+    def update_display_field(self, instance, form):
+        fields = []
+        for field in form.fields:
+            if field.id != instance.id:
+                fields.append(field)
+        for field in fields:
+            if instance.is_display_field and field.is_display_field:
+                field.is_display_field = False
+                field.save()
+            
+    def update_ordering(self, instance, form):
         ordering = instance.ordering
         new_order = 1
         fields = []
@@ -35,15 +45,8 @@ class FieldMixin(object):
                 fields.append(field)
         fields.insert(ordering - 1, instance)
         for field in fields:
-            has_changed = False
             if field.ordering != new_order:
-                has_changed = True
                 field.ordering = new_order
-            if instance.is_display_field and field.is_display_field and \
-                field.id != instance.id:
-                field.is_display_field = False
-                has_changed = True
-            if has_changed:
                 field.save()
             new_order += 1
     
@@ -65,6 +68,7 @@ class FieldMixin(object):
     
             
     def validate_ordering_value(self, ordering, form, is_create=False):
+        #Am pretty sure this is more trouble than it's worth
         # no validation needed if ordering is undefined:
         if ordering is None:
             return
@@ -73,8 +77,9 @@ class FieldMixin(object):
         max_val = len(form.fields)
         if is_create:
             max_val += 1
-        if ordering < 1 or ordering > max_val:
-             raise exceptions.ParseError(
+        elif ordering < 1 or ordering > max_val:
+            # only raise an exception on update:
+            raise exceptions.ParseError(
                     'Your ordering must be an integer between 1 and %s' % max_val)
     
 
@@ -87,12 +92,15 @@ class FieldList(FieldMixin, QueryableListCreateAPIView):
         return self.get_form().fields
            
     def perform_create(self, serializer):
+        do_reshuffle = self.request.data.get('do_reshuffle')
         form = self.get_form()
         data = serializer.validated_data
         self.validate_is_valid_col_alias(data.get('col_alias'), form)
-        self.validate_ordering_value(data.get('ordering'), form, is_create=True)
+        #self.validate_ordering_value(data.get('ordering'), form, is_create=True)
         instance = serializer.save(form=form)
-        self.update_ordering_and_display_field(instance, form)
+        self.update_display_field(instance, form)
+        if do_reshuffle:
+            self.update_ordering(instance, form)
         
 class FieldInstance(FieldMixin, generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.FieldSerializerUpdate
@@ -103,12 +111,15 @@ class FieldInstance(FieldMixin, generics.RetrieveUpdateDestroyAPIView):
 
     def perform_update(self, serializer):
         # Todo: move functionality to Serializer
+        do_reshuffle = self.request.data.get('do_reshuffle')
         form = self.get_form()
         data = serializer.validated_data
         self.validate_is_valid_col_alias(data.get('col_alias'), form, pk=int(self.kwargs.get('pk')))
-        self.validate_ordering_value(data.get('ordering'), form)
+        #self.validate_ordering_value(data.get('ordering'), form)
         instance = serializer.save()
-        self.update_ordering_and_display_field(instance, form)
+        self.update_display_field(instance, form)
+        if do_reshuffle:
+            self.update_ordering(instance, form)
   
     def perform_destroy(self, instance):
         form = instance.form

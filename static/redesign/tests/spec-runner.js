@@ -37,6 +37,10 @@ require(['boot'], function () {
         //'spec/views/style-right-panel-test.js', //SV: commented this out for now b/c it's failing
         'spec/views/data-source-view-test.js',
 
+        'spec/views/project-item-test.js',
+        'spec/views/share-form-test.js',
+        'spec/views/project-user-test.js',
+
         //APPS
         'spec/views/style-app-test.js',
         'spec/views/create-form-test.js',

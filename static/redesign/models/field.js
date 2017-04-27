@@ -6,7 +6,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
             form: null,
             defaults: _.extend({}, Base.prototype.defaults, {
                 col_alias: '',
-                is_display_field: true,
+                is_display_field: false,
                 display_width: 100,
                 is_printable: true,
                 ordering: 1
@@ -39,6 +39,7 @@ define(["underscore", "collections/dataTypes", "models/base"],
                     alert("id initialization parameter required for Field");
                     return;
                 }
+                this.set('temp_id', parseInt(Math.random(10) * 10000000).toString());
                 if (this.get("field")) {
                     this.url = this.urlRoot() + this.get("field") + "/";
                 }

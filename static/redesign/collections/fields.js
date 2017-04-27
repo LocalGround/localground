@@ -10,11 +10,18 @@ define(["models/field", "collections/basePageable"], function (Field, BasePageab
         name: 'Fields',
         baseURL: null,
         form: null,
+        sort_key: 'ordering',
         url: function () {
             if (this.baseURL) {
                 return this.baseURL;
             }
             return '/api/0/forms/' + this.form.get("id") + '/fields/';
+        },
+        comparator: function (item) {
+            return item.get(this.sort_key);
+        },
+        getModelByAttribute: function (key, val) {
+            return this.find(function (model) { return model.get(key) === val; });
         },
         initialize: function (recs, opts) {
             if (opts.url) {

@@ -12,7 +12,8 @@ define([
 ], function ($, _, Handlebars, Marionette, CreateFormTemplate, Form, Field, Fields, FieldChildView) {
     'use strict';
     var CreateFormView = Marionette.CompositeView.extend({
-
+        showSuccess: false,
+        showError: false,
         initialize: function (opts) {
             _.extend(this, opts);
 
@@ -32,38 +33,53 @@ define([
                 this.fetchShareData();
             }
         },
-        attachCollectionEventHandlers: function () {
-            //this.listenTo(this.collection, 'reset', this.render);
-            //this.listenTo(this.collection, 'add', this.render);
+
+        templateHelpers: function () {
+            return {
+                showSuccess: this.showSuccess,
+                showError: this.showError,
+                caption: this.model.get("caption")
+            };
         },
 
         childViewContainer: "#fieldList",
         childViewOptions: function () {
-            var opts = this.model.toJSON();
-            delete opts.id;
-            return opts;
+            return {
+                parent: this
+            };
         },
         childView: FieldChildView,
         template: Handlebars.compile(CreateFormTemplate),
         events: {
             'click .remove-row': 'removeRow',
             'click .new_field_button' : 'addFieldButton',
-            'click .back': 'backToList'
+            'click .back': 'backToList',
+            'blur .formName': 'setFormName',
+            'blur .caption': 'setCaption'
+        },
+        setFormName: function () {
+            this.model.set('name', this.$el.find('.formName').val());
+        },
+        setCaption: function () {
+            this.model.set('caption', this.$el.find('.caption').val());
         },
         onRender: function () {
-            return;
+            console.log("onRender");
             var sortableFields = this.$el.find("#fieldList"),
                 that  = this;
             sortableFields.sortable({
                 helper: this.fixHelper,
                 update: function (event, ui) {
-                    var newOrder = ui.item.index() + 1,
-                        modelID = ui.item.attr("id"),
-                        targetModel = that.collection.get(modelID);
-                    targetModel.set("ordering", newOrder);
-                    targetModel.save();
-                    // TODO: get model from collection, set the order, and
-                    // save to the API.
+                    var $rows = that.$el.find("#fieldList tr"),
+                        tempID,
+                        model;
+                    $rows.each(function (i) {
+                        tempID = $(this).attr("id");
+                        model = that.collection.find(function (model) { return model.get('temp_id') === tempID; });
+                        model.set("ordering", i + 1);
+                    });
+                    that.collection.sort("ordering");
+                    that.render();
                 }
             }).disableSelection();
         },
@@ -91,8 +107,8 @@ define([
             do { d2 = new Date(); } while (d2 - d < ms);
         },
         saveFormSettings: function () {
-            var formName = this.$el.find('#formName').val(),
-                caption = this.$el.find('#caption').val(),
+            var formName = this.$el.find('.formName').val(),
+                caption = this.$el.find('.caption').val(),
                 that = this;
             this.model.set('name', formName);
             this.model.set('caption', caption);
@@ -103,7 +119,7 @@ define([
                     that.saveFields();
                 },
                 error: function () {
-                    console.log("The fields could not be saved");
+                    console.error("The form could not be saved");
                 }
             });
         },
@@ -119,30 +135,35 @@ define([
                 );
             }
             this.collection = this.model.fields;
-            this.attachCollectionEventHandlers();
         },
 
         saveFields: function () {
-            var that = this;
             this.initCollection();
-            this.children.each(function (childview, i) {
-                childview.saveField(i + 1);
+            var that = this,
+                $rows = this.$el.find("#fieldList tr"),
+                tempID,
+                model,
+                childView;
+            $rows.each(function (i) {
+                tempID = $(this).attr("id");
+                model = that.collection.getModelByAttribute('temp_id', tempID);
+                childView = that.children.findByModel(model);
+                childView.saveField(i + 1);
                 that.wait(100);
             });
         },
         addFieldButton: function () {
             this.initCollection();
-            var field = new Field(null, { form: this.model });
-            this.collection.add(field);
-            if (this.collection.length == 1) {
-                this.render();
-            }
+            this.collection.add(new Field(
+                { ordering: this.collection.length + 1},
+                { form: this.model }
+            ));
             this.render();
         },
 
         deleteForm: function () {
             var that = this;
-            if (!confirm("Are you sure you want to delete this form?")) {
+            if (!confirm("Are you sure you want to delete this form? This will delete all data associated with this form and cannot be undone.")) {
                 return;
             }
             this.model.destroy({
@@ -154,6 +175,24 @@ define([
 
         backToList: function () {
             this.app.vent.trigger("show-form-list");
+        },
+        renderWithSaveMessages: function () {
+            this.showMessage();
+            this.render();
+        },
+        showMessage: function () {
+            var that = this;
+            this.showSuccess = this.showError = false;
+            this.collection.each(function (model) {
+                if (model.serverErrorMessage ||
+                        model.errorFieldType || model.errorFieldName) {
+                    that.showError = true;
+                    return;
+                }
+            });
+            if (!this.showError) {
+                this.showSuccess = true;
+            }
         }
     });
     return CreateFormView;
