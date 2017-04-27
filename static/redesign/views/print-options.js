@@ -24,6 +24,7 @@ define(["jquery",
                 this.render();
                 this.basemapView = this.app.basemapView; // Let's try this for now....
                 //this.showBasemap();
+                console.log(this.app);
             },
 
             makePrint: function(){
@@ -36,10 +37,16 @@ define(["jquery",
                 // Let's test this rough draft
                 // Will be tweaked later
                 var printMap = new Print();
+                printMap.set("project_id", this.app.getProjectID());
+                printMap.set("layout", 1); // replace with modular setting soon
                 printMap.set("center", this.basemapView.getCenter());
                 printMap.set("zoom", this.basemapView.getZoom());
-                printMap.set("mapTypeId", this.basemapView.getMapTypeId());
+                printMap.set("map_provider", this.basemapView.getMapTypeId());
+                printMap.set("map_title", "hello world");
+                printMap.set("instructions", "hello world");
+                console.log(printMap);
                 printMap.save();
+                console.log(printMap);
 
             }
         });
