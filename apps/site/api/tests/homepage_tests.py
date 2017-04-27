@@ -16,7 +16,7 @@ class ApiHomePageTest(test.TestCase, ViewMixinAPI):
             response = self.client_user.get(url)
             if response.status_code == status.HTTP_200_OK:
                 for item in [
-                    'projects', 'photos', 'audio', 'users', 'groups', 'markers', 'snapshots',
+                    'projects', 'photos', 'audio', 'users', 'groups', 'markers',
                     'tiles', 'prints', 'map-images', 'forms'
                 ]:
                     self.assertIn(item, response.content)

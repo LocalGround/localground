@@ -17,17 +17,17 @@ from localground.apps.site.models.lookups import StatusCode, UploadSource, \
 from localground.apps.site.models.marker import Marker
 from localground.apps.site.models.overlaysource import OverlaySource
 from localground.apps.site.models.overlaytype import OverlayType
-from localground.apps.site.models.wmsoverlay import WMSOverlay
+from localground.apps.site.models.tileset import TileSet
 
 # accounts
 #from localground.apps.site.models.base import Base
-from localground.apps.site.models.groups import Group, Project, Snapshot
+from localground.apps.site.models.groups import Group, Project
 from localground.apps.site.models.presentation import Presentation
 from localground.apps.site.models.userprofile import UserProfile
 from localground.apps.site.models.permissions import \
     BasePermissions, ObjectUserPermissions, UserAuthorityObject, \
     UserAuthority, ObjectAuthority, AudioUser, PhotoUser, MarkerUser, \
-    SnapshotUser, ProjectUser, VideoUser, MapImageUser, PrintUser, \
+    ProjectUser, VideoUser, MapImageUser, PrintUser, \
     FormUser, PresentationUser
 from localground.apps.site.models.genericassociation import GenericAssociation
 

@@ -149,14 +149,6 @@ fieldset {
     margin-left: auto;
 }
 
-#toolbar-dataview .main-search {
-    margin-left: 25%;
-    margin-right: 25%;
-    width: 50%;
-    position: fixed;
-
-}
-
 #toolbar-dataview .search-form input, #toolbar-dataview .search-form {
     width:100%;
 }
@@ -212,11 +204,6 @@ fieldset {
 
 .add-new-form {
     line-height: 30px;
-}
-
-#fieldTableDiv {
-    max-height: 300px;
-    overflow: scroll;
 }
 
 #fieldTableDiv th {
@@ -391,6 +378,12 @@ tr.failure-message.show span {
     line-height: 40px;
     position: absolute;
     /*width: calc(100% - 60px);*/
+}
+.form-confirmation {
+    display: block;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    border-radius: 2px;
 }
 
 .success-message {
