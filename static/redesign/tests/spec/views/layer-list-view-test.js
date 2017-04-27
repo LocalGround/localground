@@ -1,16 +1,15 @@
 var rootDir = "../../";
 define([
-    "marionette",
-    "jquery",
     'lib/maps/marker-overlays',
     rootDir + "apps/style/views/left/left-panel",
-    rootDir + "apps/style/views/left/layer-list-view"
+    rootDir + "apps/style/views/left/layer-list-view",
+    rootDir + "tests/spec/views/style-app-show-hide-panel"
 ],
-    function (Marionette, $, OverlayListView, LeftPanelView, LayerListView) {
+    function (OverlayListView, LeftPanelView, LayerListView, Helper) {
         'use strict';
-        var layerListView, fixture;
+        var layerListView, fixture, initView;
 
-        /*function initView(scope) {
+        initView = function (scope) {
             //ensures that OverlayListView functions don't get called:
             spyOn(OverlayListView.prototype, 'initialize');
 
@@ -20,14 +19,14 @@ define([
             spyOn(LayerListView.prototype, 'createNewLayer').and.callThrough();
             fixture = setFixtures('<div></div>');
 
-             // 2) initialize rightPanel object:
-             scope.app.selectedMapModel = scope.testMap;
-             layerListView = new LayerListView({
+            // 2) initialize rightPanel object:
+            scope.app.selectedMapModel = scope.testMap;
+            layerListView = new LayerListView({
                 app: scope.app,
                 collection: scope.layers
             });
             layerListView.render();
-            
+
             // 3) set fixture:
             fixture.append(layerListView.$el);
         };
@@ -47,15 +46,20 @@ define([
             });
 
             it("should have correct html", function () {
-                expect(fixture).toContainElement('#layers');    
+                expect(fixture).toContainElement('#layers');
             });
 
             it(": collection should be correct", function () {
                 expect(layerListView.collection).toEqual(this.layers);
             });
-            
+
         });
-        describe("Events tests", function () {
+
+        describe("Panel Show / Hide Tests", function () {
+            Helper.genericChecks({ ClassType: LayerListView });
+        });
+
+        /*describe("Events tests", function () {
             beforeEach(function () {
                 initView(this);
             });
@@ -66,14 +70,12 @@ define([
                 expect(layerListView.showDropDown).toHaveBeenCalledTimes(0);
                 fixture.find('.add-layer').trigger("click");
                 expect(layerListView.showDropDown).toHaveBeenCalledTimes(1);
-            }); 
+            });
 
             it(": events should trigger correct functions", function () {
                 expect(layerListView.createNewLayer).toHaveBeenCalledTimes(0);
                 $(fixture.find('#new-layer-options a').get(0)).trigger("click");
                 expect(layerListView.createNewLayer).toHaveBeenCalledTimes(1);
-            }); 
-
+            });
         });*/
-
-});
+    });

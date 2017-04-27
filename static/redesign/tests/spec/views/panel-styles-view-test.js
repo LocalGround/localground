@@ -3,9 +3,10 @@ define([
     "marionette",
     "jquery",
     rootDir + "apps/style/views/left/left-panel",
-    rootDir + "apps/style/views/left/panel-styles-view"
+    rootDir + "apps/style/views/left/panel-styles-view",
+    rootDir + "tests/spec/views/style-app-show-hide-panel"
 ],
-    function (Marionette, $, LeftPanelView, PanelStylesView) {
+    function (Marionette, $, LeftPanelView, PanelStylesView, Helper) {
         'use strict';
         var panelStyleView, fixture;
 
@@ -87,5 +88,9 @@ define([
                 expect(panelStyleView.updateFontSize).toHaveBeenCalledTimes(1);
             });
 
+        });
+
+        describe("Panel Show / Hide Tests", function () {
+            Helper.genericChecks({ ClassType: PanelStylesView });
         });
 });

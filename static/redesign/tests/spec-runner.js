@@ -28,6 +28,7 @@ require(['boot'], function () {
 
         //style app left panel
         'spec/views/style-left-panel-test.js',
+        'spec/views/style-app-map-skin-test.js',
         'spec/views/select-map-view-test.js',
         'spec/views/layer-list-view-test.js',
         'spec/views/layer-list-child-view-test.js',
