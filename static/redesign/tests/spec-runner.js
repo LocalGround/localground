@@ -28,11 +28,11 @@ require(['boot'], function () {
 
         //style app left panel
         'spec/views/style-left-panel-test.js',
+        'spec/views/style-app-map-skin-test.js',
         'spec/views/select-map-view-test.js',
         'spec/views/layer-list-view-test.js',
         'spec/views/layer-list-child-view-test.js',
         'spec/views/panel-styles-view-test.js',
-        'spec/views/style-app-show-hide-panel.js',
 
         //style app right panel
         //'spec/views/style-right-panel-test.js', //SV: commented this out for now b/c it's failing

@@ -1,24 +1,16 @@
 var rootDir = "../../";
 define([
-    "marionette",
-    "jquery",
-    rootDir + "apps/style/views/left/left-panel",
     rootDir + "apps/style/views/left/select-map-view",
-    rootDir + "apps/style/views/left/layer-list-view",
-    rootDir + "apps/style/views/left/skin-view",
-    rootDir + "apps/style/views/left/panel-styles-view"
+    rootDir + "tests/spec/views/style-app-show-hide-panel"
 ],
-    function (Marionette, $, LeftPanelView, SelectMapView, LayerListView, SkinView, PanelStylesView) {
+    function (SelectMapView, Helper) {
         'use strict';
-        var mapView, fixture;
-
-        function initView(scope) {
+        var mapView, fixture, initView;
+        initView = function (scope) {
             // 1) add spies for all relevant objects:
-          
 
             spyOn(SelectMapView.prototype, 'initialize').and.callThrough();
             spyOn(SelectMapView.prototype, 'changeMap');
-    
 
             fixture = setFixtures('<div id="map_dropdown_region"></div>');
 
@@ -30,7 +22,7 @@ define([
             mapView.render();
 
             // 3) set fixture:
-            fixture.append(mapView.$el); 
+            fixture.append(mapView.$el);
         };
 
         describe("When MapView is initialized", function () {
@@ -69,5 +61,9 @@ define([
                 fixture.find('#map-select').trigger("change");
                 expect(mapView.changeMap).toHaveBeenCalledTimes(1);
             });
+        });
+
+        describe("Panel Show / Hide Tests", function () {
+            Helper.genericChecks({ ClassType: SelectMapView });
         });
     });
