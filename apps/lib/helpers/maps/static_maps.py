@@ -1,30 +1,23 @@
 #!/usr/bin/env python
+import os
 from os import path
-import cStringIO as StringIO
+from django.conf import settings
 from django.conf import settings
 from django.http import HttpResponse
 from PIL import Image, ImageFilter, ImageDraw, ImageFont, ImageOps
-import numpy as np
-import logging
 from localground.apps.lib.helpers.units import Units
 from django.contrib.gis.geos import Point, LinearRing, Polygon
-import mapscript
-import urllib
-
-"""
-Defines 2 helper classes -- ``OutputFormat`` and ``StaticMap`` -- that help
-create a static map (by either pulling from Google or CloudMade) and pasting
-user-drawn annotations on top (reprojected).  Todo:  add ability to include
-points, lines, and polygons on these maps too.
-"""
+import cStringIO as StringIO
+import logging, mapscript, urllib, json
 
 class OutputFormat():
-    """
+
+    '''
     Look-up object to enumerate possible formats to be returned by print
-    """
+    '''
     PNG = 1
     HTTP_RESPONSE = 2
-
+    
 class StaticMap():
     """
     Creates static map (based on a pretty long set of possible
@@ -48,109 +41,45 @@ class StaticMap():
         self.north = None
         self.east = None
         
-    def get_basemap_and_extents(self, map_type, zoom, center, width, height):
-        import os, urllib, StringIO, Image
-        #units.Units.add_pixels_to_latlng(center_lat, center_lng, zoom, 300, 300)
+    def get_basemap(self, map_type, zoom, center, width, height):
+        import os, urllib, StringIO, Image, time
         map_url = None
-        # http://api.tiles.mapbox.com/v3/{mapid}/{lon},{lat},{z}/{width}x{height}.{format}
-        # http://api.tiles.mapbox.com/v3/examples.map-zr0njcqy/-73.99,40.70,13/500x300.png
+        total_tries = 1
+        tries = 0
         if map_type.overlay_source.name == 'mapbox':
-            styleid = map_type.provider_id
-            '''
-            map_url = 'http://staticmaps.cloudmade.com/' + api_key + \
-                '/staticmap?styleid=' + styleid + '&zoom=' + str(zoom) + \
-                '&center=' + str(center.y) + ',' + str(center.x) + \
-                '&size=' + str(width) + 'x' + str(height)
-            '''
-            map_url = 'http://api.tiles.mapbox.com/v3/{0}/{1},{2},{3}/{4}x{5}.png'
-            map_url = map_url.format(map_type.provider_id, center.x, center.y, zoom, width, height)
+            zoom = zoom - 1 #this is a workaround to a mapbox bug:
+            map_url = map_type.static_url + "?access_token=" + os.environ.get('MAPBOX_API_KEY', settings.MAPBOX_API_KEY)
+            map_url = map_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
+            
         #if google is the map provider:
-        else:
-            scale_factor = 1
-            if not settings.IS_GOOGLE_REGISTERED_NONPROFIT:
-                zoom, width, height = zoom-1, int(width/2), int(height/2)
-                scale_factor = 2
-            
-            map_url = map_type.wms_url + '&zoom=' + str(zoom) + '&center=' + \
-                str(center.y) + ',' + str(center.x) + '&size=' + str(width) + \
-                'x' + str(height) + '&scale=' + str(scale_factor)
-        
-        #calculate extents (returns geos Point):
-        #(0,0) in pacific northwest; x = lat, y = lng
-        northeast = Units.add_pixels_to_latlng(center.clone(), zoom, int(width/2), -1*int(height/2))
-        southwest = Units.add_pixels_to_latlng(center.clone(), zoom, -1*int(width/2), int(height/2))
-        try:
+        elif map_type.overlay_source.name == 'stamen':
+            map_url = map_type.static_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
+            # extra step for STAMEN: get map image from JSON object:
             file = urllib.urlopen(map_url)
-            map_image = StringIO.StringIO(file.read()) # constructs a StringIO holding the image
-            map_image = Image.open(map_image).convert('RGB')
-        except IOError:
-            error_image_url = 'https://chart.googleapis.com/chart?chst=d_fnote_title&chld=sticky_y|1|FF0000|l|Map%20Service%20Unavailable|'
-            file = urllib.urlopen(error_image_url)
-            map_image = StringIO.StringIO(file.read()) # constructs a StringIO holding the image
-            map_image = Image.open(map_image).convert('RGB')
-        return {
-            'map_image': map_image,
-            'northeast': northeast,
-            'southwest': southwest
-        }
-        
-    def get_map(self, layers, southwest=None, northeast=None, mapimages=None,
-                srs=Units.EPSG_900913, height=300, width=300, format=OutputFormat.PNG,
-                opacity=100, extra_layers=None, show_north_arrow=False, **kwargs):
-        """
-        Renders a MapServer-generated map, in the user-specified format, according
-        to a set of optional key word arguments.
-        """
-        if layers is not None:
-            self.layers.extend(layers)
-        msmap = mapscript.mapObj(settings.MAP_FILE)
-        
-        #draw base layers:
-        if extra_layers is not None:
-            self.layers.extend(extra_layers)
-        for n in self.layers:
-            l = msmap.getLayerByName(n.provider_id) #WMS_Overlay Object
-            l.status = 1
-            l.opacity = opacity
-        
-        #set map image width and height:
-        msmap.set_width(width)
-        msmap.set_height(height)
-        
-        #turn on scale bar:
-        msmap.scalebar.status = 3       # 3=code for 'embed'
-        
-        if show_north_arrow:
-            self._add_north_arrow(msmap, height)
-        
-        #mapimages = [1]
-        if mapimages is not None and len(mapimages) > 0:
-            self._render_mapimages(msmap, mapimages, srs)
-            
-        #update map extents, if specified:
-        if southwest is not None and northeast is not None:
-            if southwest.srs != srs: southwest.transform(srs)
-            if northeast.srs != srs: northeast.transform(srs)
-            #west, south, east, north:
-            msmap.setExtent(southwest.x, southwest.y, northeast.x, northeast.y)
-            msmap.setProjection('init=epsg:%s' % (srs))  
-        
-        #render map image:
-        map_image = msmap.draw()
-        
-        #convert from MapScript Image to PIL Image (for further manipulation):
-        bytes = StringIO.StringIO(map_image.getBytes())
-        new_image = Image.open(bytes)#.convert('RGBA')
-        return_image = Image.new(mode='RGBA',size=(width,height),color=(255,255,255,0))
-        return_image.paste(new_image, (0, 0), new_image)
-        
-        #return object    
-        if format == OutputFormat.HTTP_RESPONSE:
-            response = HttpResponse(mimetype="image/png")
-            return_image.save(response, "PNG")
-            return response
-        elif format == OutputFormat.PNG:
-            return return_image
+            data = json.loads(file.read())
+            map_url = data[0].get('image')
+            total_tries = 3
+            time.sleep(2) # delay for stamen map b/c URL returned before image exists
+        else:
+            map_url = map_type.static_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
+
+        # This '3 tries' while loop accounts for the fact that in the
+        # Stamen static map print, the path is sometimes returned well
+        # before the file exists on the server. So, after each failure,
+        # it waits 2 seconds and tries again:
+        while tries < total_tries:
+            try:
+                f = urllib.urlopen(map_url)
+                map_image = StringIO.StringIO(f.read()) # constructs a StringIO holding the image
+                map_image = Image.open(map_image)
+                map_image = map_image.convert('RGB')
+                tries += 1
+                break
+            except IOError:
+                print('Error getting image. Trying again...')
+                tries += 1
+                time.sleep(2)
+        return map_image
         
     def _render_mapimages(self, msmap, mapimages, srs):
         for mapimage in mapimages:

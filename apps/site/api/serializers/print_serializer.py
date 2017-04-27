@@ -20,10 +20,10 @@ class PrintSerializerMixin(serializers.ModelSerializer):
         read_only=True)
     layout = serializers.PrimaryKeyRelatedField(queryset=models.Layout.objects.all())
     map_provider_url = serializers.HyperlinkedRelatedField(
-        view_name='wmsoverlay-detail',
+        view_name='tileset-detail',
         source='map_provider',
         read_only=True)
-    map_provider = serializers.PrimaryKeyRelatedField(queryset=models.WMSOverlay.objects.all())
+    map_provider = serializers.PrimaryKeyRelatedField(queryset=models.TileSet.objects.all())
     pdf = serializers.SerializerMethodField()
     thumb = serializers.SerializerMethodField()
     instructions = serializers.CharField(

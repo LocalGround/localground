@@ -93,6 +93,11 @@ echo "Y" | sudo apt-get install ffmpeg
 #echo "Y" | sudo apt-get install libavcodec-extra-53
 echo "Y" | sudo apt-get install redis-server
 
+#################
+# SVG Libraries #
+#################
+sudo apt-get -y install python-cffi
+sudo apt-get -y install libffi-dev
 
 ############################
 # Install PIP Dependencies #
@@ -100,6 +105,13 @@ echo "Y" | sudo apt-get install redis-server
 # there may be some problems with the map script / map server install
 sudo ln -s /vagrant /localground
 sudo pip install -r /vagrant/deploy_tools/requirements.txt
+
+# Due to difficulties installing cairo via requirements.txt, I'm
+# Installing it the manual way...
+sudo pip uninstall cffi
+sudo pip install cffi==1.10.0
+sudo pip install cairocffi==0.8.0
+sudo pip install cairosvg==1.0.22
 
 #############################
 # Install Node.js and Bower #

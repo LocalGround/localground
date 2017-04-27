@@ -16,7 +16,7 @@ class MapSerializer(BaseNamedSerializer):
             )
     panel_styles = fields.JSONField(style={'base_template': 'json.html', 'rows': 5},
                                required=False)
-    basemap = serializers.PrimaryKeyRelatedField(queryset=models.WMSOverlay.objects.all())
+    basemap = serializers.PrimaryKeyRelatedField(queryset=models.TileSet.objects.all())
     zoom = serializers.IntegerField(min_value=1, max_value=20, default=17)
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),

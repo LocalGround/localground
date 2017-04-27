@@ -138,20 +138,6 @@ class Units():
     def map_size(zoom_level):
         #returns the map width and height in pixels
         return 256 << zoom_level
-
-    '''@staticmethod   
-    def latlng_to_pixel(lat, lng, zoom_level):
-        lat   = Units.clip(lat, Units.min_lat, Units.max_lat)
-        lng   = Units.clip(lng, Units.min_lng, Units.max_lng)
-        #print 'latlng_to_pixel:', lat, lng, zoom_level
-        x = (lng + 180) / 360 
-        sin_lat = math.sin(lat * math.pi / 180)
-        y = 0.5 - math.log((1 + sin_lat) / (1 - sin_lat)) / (4 * math.pi)
-        map_size = Units.map_size(zoom_level)
-        pixel_x = Units.clip(x * map_size + 0.5, 0, map_size - 1)
-        pixel_y = Units.clip(y * map_size + 0.5, 0, map_size - 1)
-        #print 'pixelX / pixelY:', pixelX, pixelY
-        return [pixel_x, pixel_y]'''
        
     @staticmethod   
     def latlng_to_pixel(point, zoom_level):
@@ -164,18 +150,6 @@ class Units():
         x = Units.clip(x * map_size + 0.5, 0, map_size - 1)
         y = Units.clip(y * map_size + 0.5, 0, map_size - 1)
         return (x, y)
-
-    '''@staticmethod 
-    def pixel_to_latlng(pixel_x, pixel_y, zoom_level):
-        # (in WGS-84 coordinates)
-        map_size = Units.map_size(zoom_level)
-        x = (Units.clip(pixel_x, 0, map_size - 1) / map_size) - 0.5
-        y = 0.5 - (Units.clip(pixel_y, 0, map_size - 1) / map_size)
-        #print 'pixel_to_latlng:', x, y
-        lat = 90 - 360 * math.atan(math.exp(-y * 2 * math.pi)) / math.pi
-        lng = 360 * x
-        return [lng, lat]'''
-        
     
     @staticmethod 
     def pixel_to_latlng(x, y, zoom_level):
@@ -185,14 +159,6 @@ class Units():
         lat = 90 - 360 * math.atan(math.exp(-y * 2 * math.pi)) / math.pi
         lng = 360 * x
         return Point(lng, lat, srid=Units.EPSG_4326) #WGS-84 coordinates
-    
-    
-    '''@staticmethod 
-    def add_pixels_to_latlng(lat, lng, zoom_level, x, y):
-        pix = Units.latlng_to_pixel(lat, lng, zoom_level)
-        pix[0]   = pix[0] + x
-        pix[1]   = pix[1] + y
-        return Units.pixel_to_latlng(pix[0], pix[1], zoom_level)'''
         
     @staticmethod 
     def add_pixels_to_latlng(point, zoom_level, x, y):

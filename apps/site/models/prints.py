@@ -21,9 +21,9 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         verbose_name="Instructions")
     tags = ArrayField(models.TextField(), default=list)
     map_provider = models.ForeignKey(
-        'WMSOverlay',
+        'TileSet',
         db_column='fk_provider',
-        related_name='prints_print_wmsoverlays')
+        related_name='prints_print_tilesets')
     layout = models.ForeignKey('Layout')
     map_width = models.IntegerField()
     map_height = models.IntegerField()
@@ -41,14 +41,6 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
     def inline_form(cls, user):
         from localground.apps.site.forms import get_inline_form_with_tags
         return get_inline_form_with_tags(cls, user)
-
-    @property
-    def embedded_layers(self):
-        #raise Exception('emdedded')
-        from localground.apps.site.models import WMSOverlay
-        if not hasattr(self, '_embedded_layers'):
-            self._embedded_layers = self.grab(WMSOverlay)
-        return self._embedded_layers
 
     @property
     def embedded_mapimages(self):
@@ -177,15 +169,12 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 
     @classmethod
     def insert_print_record(cls, user, project, layout, map_provider, zoom,
-                            center, host, map_title=None, instructions=None,
-                            layer_ids=None, mapimage_ids=None,
+                            center, host, map_title=None, instructions=None, mapimage_ids=None,
                             do_save=True):
         from localground.apps.site import models
-        from localground.apps.lib.helpers import generic, StaticMap
+        from localground.apps.lib.helpers import generic, StaticMap, Extents, AcetateLayer
 
         layers, mapimages = None, None
-        if layer_ids is not None:
-            layers = models.WMSOverlay.objects.filter(id__in=layer_ids)
         if mapimage_ids is not None:
             mapimages = models.MapImage.objects.filter(id__in=mapimage_ids)
         if instructions is not None:  # preserve line breaks in the pdf report
@@ -194,16 +183,17 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         # use static map helper function to calculate additional geometric
         # calculations
         m = StaticMap()
-        info = m.get_basemap_and_extents(
+        map_image = m.get_basemap(
             map_provider, zoom, center,
             layout.map_width_pixels, layout.map_height_pixels
         )
-        map_image = info.get('map_image')
-        northeast = info.get('northeast')
-        southwest = info.get('southwest')
-        bbox = (northeast.coords, southwest.coords)
+        extents = Extents.get_extents_from_center_lat_lng(
+            center, zoom,
+            layout.map_width_pixels, layout.map_height_pixels
+        )
+        bbox = (extents.northeast.coords, extents.southwest.coords)
         bbox = [element for tupl in bbox for element in tupl]
-        extents = Polygon.from_bbox(bbox)
+        extents_polygon = Polygon.from_bbox(bbox)
 
         # Save the print
         p = Print()
@@ -223,9 +213,9 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         p.name = map_title
         p.description = instructions
         p.center = center
-        p.northeast = northeast
-        p.southwest = southwest
-        p.extents = extents
+        p.northeast = extents.northeast
+        p.southwest = extents.southwest
+        p.extents = extents_polygon
         p.virtual_path = p.generate_relative_path()
         #raise Exception(p.to_dict())
 
@@ -242,7 +232,7 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
 
     def generate_pdf(self):
         from localground.apps.site import models
-        from localground.apps.lib.helpers import generic, StaticMap, Report
+        from localground.apps.lib.helpers import Extents, generic, StaticMap, Report, AcetateLayer
         import os
 
         # use static map helper function to calculate additional geometric
@@ -254,30 +244,44 @@ class Print(BaseExtents, BaseMedia, ProjectMixin, BaseGenericRelationMixin):
         os.mkdir(path)  # create new directory
         file_name = 'Print_' + self.uuid + '.pdf'
 
-        layers = self.embedded_layers
         mapimages = self.embedded_mapimages
+        map_image = m.get_basemap(
+            self.map_provider, self.zoom, self.center, map_width, map_height
+        )
+        extents = Extents.get_extents_from_center_lat_lng(
+            self.center, self.zoom, map_width, map_height
+        )
 
-        info = m.get_basemap_and_extents(
-            self.map_provider, self.zoom, self.center, map_width, map_height)
-        map_image = info.get('map_image')
-        northeast = info.get('northeast')
-        southwest = info.get('southwest')
-        bbox = (northeast.coords, southwest.coords)
+        bbox = (extents.northeast.coords, extents.southwest.coords)
         bbox = [element for tupl in bbox for element in tupl]
-        extents = Polygon.from_bbox(bbox)
         qr_size = self.layout.qr_size_pixels
         border_width = self.layout.border_width
 
+        '''
+        
+        #TODO: Replace w/new acetate layer functionality:
         overlay_image = m.get_map(
             layers,
-            southwest=southwest,
-            northeast=northeast,
+            southwest=extents.southwest,
+            northeast=extents.northeast,
             mapimages=mapimages,
             height=map_height,
             width=map_width,
             show_north_arrow=True)
-
         map_image.paste(overlay_image, (0, 0), overlay_image)
+        '''
+        
+        a = AcetateLayer(
+            file_path=path,
+            center=self.center,
+            project_id=self.project.id,
+            zoom=self.zoom,
+            width=map_width,
+            height=map_height
+        )
+        overlay_image = a.generate_acetate_layer()
+        if overlay_image is not None:
+            map_image.paste(overlay_image, (0, 0), overlay_image)
 
         if self.layout.is_data_entry:
             map_image = map_image.convert("L")  # convert to black and white

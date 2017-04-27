@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.forms import ModelForm, fields, formsets, widgets, HiddenInput, models
 from localground.apps.site.widgets import UserAutocomplete
-from localground.apps.site.models import Project, Snapshot, Form
+from localground.apps.site.models import Project, Form
 from django.conf import settings
 
 class ProjectPermissionsForm(ModelForm):
@@ -103,30 +103,6 @@ class ProjectUpdateForm(ModelForm):
             settings.STATIC_MEDIA_DIR,
             '/%s/scripts/site/account/createupdategroup.js' %
             settings.STATIC_MEDIA_DIR)
-
-
-class SnapshotPermissionsForm(ProjectPermissionsForm):
-
-    class Meta(ProjectPermissionsForm.Meta):
-        model = Snapshot
-
-
-class SnapshotCreateForm(ProjectCreateForm):
-
-    class Meta(ProjectCreateForm.Meta):
-        model = Snapshot
-
-
-class SnapshotInlineUpdateForm(ProjectInlineUpdateForm):
-
-    class Meta(ProjectInlineUpdateForm.Meta):
-        model = Snapshot
-
-
-class SnapshotUpdateForm(ProjectUpdateForm):
-
-    class Meta(ProjectUpdateForm.Meta):
-        model = Snapshot
 
 
 class FormPermissionsForm(ProjectPermissionsForm):

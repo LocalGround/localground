@@ -7,7 +7,7 @@ from django.template import RequestContext
 import simplejson as json
 from django.core.context_processors import csrf
 from django.contrib.auth.models import User
-from localground.apps.site.models import Base, MapImage, Print, Project, Snapshot, Presentation
+from localground.apps.site.models import Base, MapImage, Print, Project, Presentation
 from django.core.exceptions import ObjectDoesNotExist
 
 # Constants describing default latitudes, longitudes, and zoom
@@ -56,8 +56,6 @@ def show_map_editor(request, template='map/editor.html', slug=None):
     if u.is_authenticated():
         projects = Project.objects.get_objects(u)
         projects = [p.to_dict() for p in projects]
-        snapshots = Snapshot.objects.get_objects(u)
-        #snapshots = [v.to_dict() for v in snapshots]
         presentations = Presentation.objects.get_objects(u)
         presentations = [pr.to_dict() for pr in presentations]
         if u.profile.default_location is not None:
@@ -69,7 +67,6 @@ def show_map_editor(request, template='map/editor.html', slug=None):
         'lng': lng,
         'zoom': zoom,
         'projects': json.dumps(projects),
-        #'snapshots': json.dumps(snapshots),
         'presentations': json.dumps(presentations),
         'num_projects': len(projects)
     })
@@ -92,12 +89,6 @@ def show_map_viewer_embedded(request, slug, template='map/embedded.html'):
         'num_projects': 1,
         'read_only': True
     })
-    if slug is not None:
-        snapshot = get_object_or_404(Snapshot, slug=slug)
-        snapshot = snapshot.to_dict()
-        context.update({
-            'snapshot': json.dumps(snapshot)
-        })
     return render_to_response(template, context)
     #return show_map_editor(request, template=template, slug=slug)
 

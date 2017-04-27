@@ -15,7 +15,7 @@ class EntitiesField(serializers.Field):
     def to_internal_value(self, value):
         '''
         This is a hack to do some pre-validation. The building of the
-        GenericRelations must be done in the view itself (snapshot_views),
+        GenericRelations must be done in the view itself
         b/c it needs access to the saved instance.
         '''
         import json
