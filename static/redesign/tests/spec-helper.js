@@ -478,7 +478,18 @@ define(
 
             this.map = {
                 fitBounds: function () {},
-                setCenter: function () {}
+                setCenter: function () {},
+                getCenter: function () {
+                    return {lat: function() {return 84},
+                            lng: function() {return -122}
+                           };
+                },
+                getZoom: function(){
+                    return 18;
+                },
+                getMapTypeId: function(){
+                    return 5;
+                }
             };
             this.vent = _.extend({}, Backbone.Events);
 
