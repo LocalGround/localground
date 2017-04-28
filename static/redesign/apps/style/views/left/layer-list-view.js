@@ -47,6 +47,7 @@ define(["marionette",
 
             //display layers when map is changed
             displayLayers: function (selectedMapModel) {
+                if(!selectedMapModel) {return;}
                 this.collection = new Layers(null, {mapID: selectedMapModel.get("id")});
                 this.collection.fetch({ reset: true});
                 this.listenTo(this.collection, 'reset', this.render);

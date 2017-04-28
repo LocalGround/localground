@@ -1,5 +1,5 @@
 
-<div class="inline-form">
+<div class="inline-form {{#if generalError}}error{{/if}}">
     <label>Title: </label>
     <input type="text" placeholder="name of map" id="new-map-name" value="{{name}}">
 </div>
@@ -9,4 +9,7 @@
 </div>
 {{#if slugError}}
 <p class="errorMessage">{{slugError}}</p>
+{{/if}}
+{{#if generalError}}
+<p class="errorMessage">{{generalError}}</p>
 {{/if}}
