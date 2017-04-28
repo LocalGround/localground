@@ -64,7 +64,6 @@ define(["jquery",
             },
 
             makePrint: function(){
-                
                 var printMap = new Print();
                 var that = this;
                 printMap.set("project_id", this.app.getProjectID());

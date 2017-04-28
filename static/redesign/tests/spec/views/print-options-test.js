@@ -86,9 +86,9 @@ define([
                 expect(newPrintOptions.model.get("instructions")).toBe("All you need to do is print the map");
                 expect(newPrintOptions.model.get("project_id")).toBe(this.app.getProjectID());
                 expect(newPrintOptions.model.get("layout")).toBe(1);
-                expect(newPrintOptions.model.get("project_id")).toBe(this.basemapView.getCenter());
-                expect(newPrintOptions.model.get("project_id")).toBe(this.basemapView.getZoom());
-                expect(newPrintOptions.model.get("project_id")).toBe(this.basemapView.getMapTypeId());
+                expect(newPrintOptions.model.get("center")).toBe(this.basemapView.getCenter());
+                expect(newPrintOptions.model.get("zoom")).toBe(this.basemapView.getZoom());
+                expect(newPrintOptions.model.get("map_provider")).toBe(this.basemapView.getMapTypeId());
 
             });
 
