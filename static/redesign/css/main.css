@@ -788,13 +788,18 @@ span.action.tag:hover, a.action.tag:hover {
     padding-left: 20px;
     line-height: 40px;
     position: absolute;
-    /*width: calc(100% - 60px);*/
+    display: block;
+    position: absolute;
+    /* These widths vary for the various places this confirmation is used... */
+    /*width: initial;*/ 
+    width: calc(100% - 60px);
 }
 
 .success-message {
     color: #468847;
     background-color: #dff0d8;
     border-color: #d6e9c6;
+    display: none;
 }
 
 .failure-message {
@@ -1056,6 +1061,7 @@ span.action.tag:hover, a.action.tag:hover {
     height: 100%;
 }
 
+/*Add some padding below the content to compensate for the overlap*/
 .side-panel > div{
     padding-bottom: 80px;
 }
@@ -1327,6 +1333,21 @@ span.action.tag:hover, a.action.tag:hover {
 /********************************/
 /*       PHOTO PANEL STYLES     */
 /********************************/
+
+.img-card {
+    border: 1px solid #e4e5eb;
+    background-color: white;
+    margin: 20px;
+    position:relative;
+}
+
+.img-card p {
+    margin: 10px 10px;
+}
+
+.img-card img {
+    max-width: 100%;
+}
 
 .carousel {
     margin: 20px 0px 0px 0px;

@@ -1,10 +1,6 @@
 /************************************ Side Panel ************************************/
 
-/*Add some padding below the content to compensate for the overlap*/
-/*.side-panel > div{
-    padding-bottom: 80px;
-}*/
-
+/* ALSO IN style.css */
 .save-options{
     position: fixed;
     bottom: 0;width: 372px;
@@ -12,22 +8,6 @@
     background-color: white;
     border-top: 1px solid #e4e5eb;
     padding: 14px 20px;
-}
-
-.confirmation {
-    padding-left: 20px;
-    line-height: 40px;
-    display: block;
-    position: absolute;
-    width: inital;
-}
-
-
-.img-card {
-    border: 1px solid #e4e5eb;
-    background-color: white;
-    margin: 20px;
-    position:relative;
 }
 
 
@@ -40,10 +20,4 @@
     height: calc(100vh - 109px);
     width: 100%;
 }
-
-
-.success-message {
-    display: none;
-}
-
 

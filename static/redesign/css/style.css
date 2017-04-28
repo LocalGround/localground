@@ -1,9 +1,3 @@
-/*
-#menu {
-    display: inline-block;
-    float: right;
-}
-*/
 /************************************ General Typography ************************************/
 
 
@@ -17,12 +11,6 @@
     padding: 6px 22px;
     border-bottom: 1px solid #ebebeb;
 }
-
-span.confirmation{
-
-}
-
-
 
 /************************************ Table type ************************************/
 
@@ -193,18 +181,6 @@ span.confirmation{
 
 #add-data-type {
     
-}
-
-.img-card {
-    margin: 20px;
-}
-
-.img-card p {
-    margin: 10px 10px;
-}
-
-.img-card img {
-    max-width: 100%;
 }
 
 .single-photo {
