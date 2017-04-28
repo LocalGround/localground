@@ -87,34 +87,6 @@ define([
                 mapView.showAddMapModal();
                 expect(Modal.prototype.update).toHaveBeenCalledTimes(1);
                 expect(Modal.prototype.show).toHaveBeenCalledTimes(1);
-                var createMapModel = new NewMapModal({
-                    app: this.app
-                });
-                expect(Modal.prototype.update).toHaveBeenCalledWith(
-                    {
-                        class: "add-map",
-                        view: jasmine.any(Function),
-                        title: 'Add Map',
-                        width: 400,
-                        height: 0,
-                        closeButtonText: "Done",
-                        showSaveButton: true,
-                        saveFunction: jasmine.any(Function),
-                        showDeleteButton: false
-                    }
-                );
-                /*this.modal.update({
-                    class: "add-map",
-                    view: createMapModel,
-                    title: 'Add Map',
-                    width: 400,
-                    height: 0,
-                    closeButtonText: "Done",
-                    showSaveButton: true,
-                    saveFunction: createMapModel.saveMap.bind(createMapModel),
-                    showDeleteButton: false
-                });
-                */
             });
 
         });
