@@ -19,8 +19,10 @@ define ([
             },
             slugError: null,
             templateHelpers: function () {
-                var helpers = {};
-                helpers.slugError = this.slugError;
+                var helpers = {
+                    slugError: this.slugError,
+                    generalError: this.generalError
+                };
                 return helpers; 
             },
 
@@ -33,12 +35,19 @@ define ([
            
             generateSlug: function () {
                 var name = this.$el.find('#new-map-name').val(),
-                    slug = name.toLowerCase().replace(/\s+/g, "_");
+                    slug = name.toLowerCase().replace(/\s+/g, "-");
                 this.$el.find('#new-map-slug').val(slug);
             },
 
             updateModal: function (errorMessage) {
-                this.slugError = errorMessage;
+                if (errorMessage.status == '400') {
+                    var messages = JSON.parse(errorMessage.responseText);
+                    this.slugError = messages.slug[0];
+                    this.generalError = null;
+                } else {
+                    this.generalError = "Save Unsuccessful. Unspecified Server Error. Consider changing Map Title or Friendly Url";
+                    this.slugError = null;
+                }
                 this.render();
             }
 
