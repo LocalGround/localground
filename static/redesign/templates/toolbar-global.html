@@ -15,12 +15,16 @@
     </nav>
 </div>
 <div class="buttons">
+
     <!-- button class="button-secondary">
         Print
     </button -->
+    {{#if previewURL}}
     <button class="button-primary button-main-action">
-        <a href="/presentation#/rosa-parks" target="_blank" style="color: white;">Preview</a>
+        <a href="/presentation#/{{previewURL}}" target="_blank" style="color: white;">Preview</a>
     </button>
+    {{/if}}
+
     <!-- button class="button-primary button-main-action">
         Share
     </button -->

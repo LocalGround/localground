@@ -94,7 +94,7 @@ define([
             beforeEach(function(done) {
                 initSpies();
                 initPlayer(this, "simple");
-                loadStyleFixtures('../../../../css/audio-player.css');
+                loadStyleFixtures('../../../../css/main.css');
                 setTimeout(function () { done(); }, 100);
                 fixture = setFixtures('<div></div>').append(audioPlayer.$el);
             });

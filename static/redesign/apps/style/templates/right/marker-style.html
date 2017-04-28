@@ -33,23 +33,13 @@
                 <td>Property</td> 
                 <td>
                     <select>
-                        <option value="continuous-variable">Medium</option>
-                        <option value="friendliness">Artist</option>
+                        {{#each properties}}
+                            <option value="{{ this.value }}">{{ this.name }}</option>
+                        {{/each}}
                     </select>
                 </td>
             </tr>
-    
-            <!-- tr class="categorical-variable">
-                <td>Marker Shape  </td>
-                <td>
-                    <select id="quant-shape" name="marker-shapes">
-                        <option value="fa-circle">●</option>
-                        <option value="square">☐</option>
-                        <option value="star">◎</option>
-                        <option value="fa-times">╳</option>
-                    </select>
-                </td>
-            </tr -->
+
         </tbody>
     </table>
 </div>
@@ -79,17 +69,7 @@
                     </select>
                 </td>
             </tr>
-            <!-- tr class="continuous-variable" style="display: none;">
-                <td>Marker Shape  </td>
-                <td>
-                    <select id="quant-shape" name="marker-shapes">
-                        <option value="circle">●</option>
-                        <option value="square">☐</option>
-                        <option value="double-circle">◎</option>
-                        <option value="x">╳</option>
-                    </select>
-                </td>
-            </tr -->
+
             <tr class="continuous-variable">
                 <td>Buckets:</td>
                 <td><input id="bucket" type="number" value="{{buckets}}"></td>

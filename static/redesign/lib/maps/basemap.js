@@ -15,6 +15,7 @@ define(["marionette",
             customMapTypeID: 'custom-style',
             map: null,
             showSearchControl: true,
+            showDropdownControl: true,
             activeMapTypeID: 1,
             minZoom: 1,
             maxZoom: 22,
@@ -38,6 +39,7 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
                 this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
                 this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
+                this.listenTo(this.app.vent, 'tiles-loaded', this.showMapTypesDropdown);
                 this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
             },
 
@@ -81,6 +83,24 @@ define(["marionette",
                 this.targetedModel = null;
             },
 
+            showMapTypesDropdown: function (opts) {
+                // only show map dropdown once tilesets loaded:
+                var key;
+                for (key in opts.mapTypes) {
+                    this.map.mapTypes.set(key, opts.mapTypes[key]);
+                }
+                if (this.showDropdownControl) {
+                    this.map.setOptions({
+                        mapTypeControlOptions: {
+                            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+                            position: google.maps.ControlPosition.TOP_LEFT,
+                            mapTypeIds: opts.mapTypeIDs
+                        },
+                        mapTypeControl: true
+                    });
+                }
+            },
+
             activateMarker: function (model) {
                 this.addMarkerClicked = true;
                 this.targetedModel = model;
@@ -98,10 +118,7 @@ define(["marionette",
                     streetViewControl: true,
                     //scaleControl: true,
                     panControl: false,
-                    mapTypeControlOptions: {
-                        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-                        position: google.maps.ControlPosition.TOP_LEFT
-                    },
+                    mapTypeControl: false,
                     zoomControlOptions: this.zoomControlOptions || {
                         style: google.maps.ZoomControlStyle.SMALL
                     },
@@ -113,8 +130,6 @@ define(["marionette",
                 };
                 this.app.map = this.map = new google.maps.Map(document.getElementById(this.$el.attr("id")),
                     mapOptions);
-                //this.map.mapTypes.set(this.customMapTypeID, this.getCustomStyle());
-                //this.map.setMapTypeId(this.customMapTypeID);
             },
 
             addControls: function () {
@@ -145,6 +160,7 @@ define(["marionette",
                 //add notifications:
                 var that = this;
                 google.maps.event.addListener(this.map, "maptypeid_changed", function () {
+                    that.app.vent.trigger('map-tiles-changed');
                     that.saveState();
                 });
                 google.maps.event.addListener(this.map, "idle", function () {
@@ -154,8 +170,8 @@ define(["marionette",
                     that.saveState();
                 });
 
-                google.maps.event.addListener(this.map, 'click', function(event) {
-                   that.placeMarkerOnMap(event.latLng);
+                google.maps.event.addListener(this.map, 'click', function (event) {
+                    that.placeMarkerOnMap(event.latLng);
                 });
 
                 //todo: possibly move to a layout module?
@@ -202,6 +218,7 @@ define(["marionette",
             restoreState: function () {
                 var state = this.app.restoreState("basemap");
                 if (state) {
+                    //alert(state.activeMapTypeID);
                     if (state.center) {
                         this.defaultLocation.center = new google.maps.LatLng(
                             state.center[1],

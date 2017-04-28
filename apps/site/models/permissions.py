@@ -134,7 +134,7 @@ class UserAuthorityObject(models.Model):
     def __unicode__(self):
         return self.user.username
 
-    # Leveraging parent project / snapshot's can_edit function
+    # Leveraging parent project's can_edit function
     def can_view(self, user, access_key=None):
         # to view someone else's privs, you need edit privs:
         return self.object.can_edit(user) or self.user == user
@@ -251,19 +251,6 @@ class MapImageUser(ObjectUserPermissions):
         app_label = 'site'
         managed = False
         db_table = 'v_private_mapimages'
-
-
-class SnapshotUser(ObjectUserPermissions):
-    snapshot = models.ForeignKey(
-        'Snapshot',
-        db_column='snapshot_id',
-        on_delete=models.DO_NOTHING,
-        related_name='authuser')
-
-    class Meta:
-        app_label = 'site'
-        managed = False
-        db_table = 'v_private_views'
 
 
 class ProjectUser(ObjectUserPermissions):

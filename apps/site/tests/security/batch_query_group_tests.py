@@ -264,29 +264,3 @@ class BatchFormQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
             2,
             len(self.model.objects.get_objects_public())
         )
-
-
-class BatchViewQuerySecurityTest(test.TestCase, BatchQueryGroupMixin):
-    model = models.Snapshot
-
-    def setUp(self):
-        BatchQueryGroupMixin.setUp(self)
-        
-    def tearDown(self):
-        BatchQueryGroupMixin.tearDown(self)
-
-    def _create_groups(self):
-        # delete all views in database:
-        models.Snapshot.objects.all().delete()
-
-        # and add two new ones:
-        self.group1 = self.create_snapshot(
-            self.owner,
-            name='View #1',
-            authority_id=1
-        )
-        self.group2 = self.create_snapshot(
-            self.owner,
-            name='View #2',
-            authority_id=1
-        )

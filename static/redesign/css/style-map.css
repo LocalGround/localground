@@ -27,15 +27,32 @@
 section {
     border: none;
     margin: 0px 16px;
-    padding: 20px 0;
+    padding: 12px 0;
     min-height: 15px;
     border-bottom: 1px solid #e4e5eb;
     font: 11px;
 }
+  
+.style-section-header {
+   padding: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+}
+
+.style-section-header h4 {
+   display: inline;
+   font-weight: 600;
+   color: #666;
+}
+
+.style-section-header a {
+    color: #666;
+}
 
 #map-select {
     width: calc(100%);
-    padding: 10px 20px;
+    margin-top: 10px;
     font-weight: 400;
     font-family: 'Open Sans';
     font-size: 14px;
@@ -59,10 +76,9 @@ section {
     font-size: 12px;
     margin-left: 4px;
 }
-
 #skin-select {
-    display: inline;
-    float: right;
+    display: block;
+    margin: 5px 15px;
 }
 
 #skin-header {
@@ -178,7 +194,6 @@ th {
 
 #new-layer-options {
     display: none;
-    right: 0px;
 }
 
 .palette-item{
@@ -266,4 +281,22 @@ palette-options {
 .palette-icon {
     position: fixed;
     margin-top: 11px;
+}
+
+.plus-container {
+    margin-top: 5px;
+}
+
+.selected-data-source {
+    background-color: white;
+    width: calc(60%);
+    margin-top: 10px;
+    font-weight: 400;
+    font-family: 'Open Sans';
+    font-size: 14px;
+    border-style: none none solid none;
+    border-width: 1px;
+    border-color: #e4e5eb;
+    box-shadow: 0 2px 0px 0 rgba(0,0,0,.02);
+    background-size: 60px 40px;;
 }

@@ -28,6 +28,9 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 'click .save-modal-form': 'saveFunction',
                 'click .delete-modal': 'deleteFunction'
             },
+            deleteFunction: function () {
+                alert("blah");
+            },
             template: Handlebars.compile(ModalTemplate),
             initialize: function (opts) {
                 opts = opts || {};
@@ -68,6 +71,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 this.delegateEvents();
                 this.appendView();
             },
+
             setSize: function () {
                 this.$el.find('.modal-content').css('width', this.width);
                 this.$el.find('.modal-body').css('min-height', this.height);

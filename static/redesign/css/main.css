@@ -773,6 +773,12 @@ span.action.tag:hover, a.action.tag:hover {
 .success-message, .failure-message, .warning-message {
     display: none;
 }
+.create-form .failure-message, .create-form .success-message {
+    display: block;
+}
+tbody .failure-message, tbody .success-message {
+    display: table-row !important;
+}
 
 .alert {
     padding: 5px;
@@ -2040,5 +2046,4 @@ span.plus {
     transition: all 0.3s ease-out;
     opacity: 1;
 }
-
 
