@@ -66,7 +66,6 @@ define([
                 initSpies(this);
                 initPrintOptions(this);
                 fixture = setFixtures("<div></div>").append(newPrintOptions.$el);
-                // spyOn(this.app.vent, 'trigger');
             });
 
             it("Contains all the necessary HTML attributes", function(){
@@ -98,9 +97,6 @@ define([
 
             });
 
-            // For the following parameters below,
-            // Change the radio buttons to make the other value checked
-
             describe("Layout and Data Settings", function(){
                 //
                 it("Defualt value - Portrait + Data Entry (Layout = 1)", function(){
@@ -111,9 +107,6 @@ define([
                     expect(fixture.find("#choose_yes").prop("checked")).toBeTruthy();
                     newPrintOptions.makePrint();
                     expect(newPrintOptions.model.get("layout")).toBe(1);
-                    //fixture.find("#landscape").trigger('click');
-                    //expect(fixture.find("#portrait").prop("checked")).toBeFalsy();
-                    //fixture.find("#portrait").trigger('click');
                 });
 
                 it("Landscape + Data Entry (Layout = 2)", function(){
@@ -135,9 +128,6 @@ define([
                     expect(fixture.find("#choose_no").prop("checked")).toBeTruthy();
                     newPrintOptions.makePrint();
                     expect(newPrintOptions.model.get("layout")).toBe(3);
-                    //fixture.find("#landscape").trigger('click');
-                    //expect(fixture.find("#portrait").prop("checked")).toBeFalsy();
-                    //fixture.find("#portrait").trigger('click');
                 });
 
                 it("Landscape + No Data (Layout = 4)", function(){
@@ -149,6 +139,28 @@ define([
                     newPrintOptions.makePrint();
                     expect(newPrintOptions.model.get("layout")).toBe(4);
                 });
+            });
+
+            describe("Links for Thumbnail and PDF", function(){
+                beforeEach(function(){
+                    //initSpies(this);
+                    //initPrintOptions(this);
+                    newPrintOptions.pdf = "http://localhost:7777/profile/prints/L3VzZXJkYXRhL3ByaW50cy81dDRocjRybi9QcmludF81dDRocjRybi5wZGYjMTQ5MzQxNDM2Mw==/";
+                    newPrintOptions.thumb = "http://localhost:7777/profile/prints/L3VzZXJkYXRhL3ByaW50cy81dDRocjRybi90aHVtYm5haWwuanBnIzE0OTM0MTQzNjM=/";
+                    newPrintOptions.render();
+
+                    fixture = setFixtures("<div></div>").append(newPrintOptions.$el);
+                });
+
+                it("Finds the existing PDF", function(){
+                    expect(fixture.find(".link-pdf").attr("href")).toEqual(newPrintOptions.pdf);
+                });
+
+
+                it("Finds the existing Thumbnail", function(){
+                    expect(fixture.find(".link-thumb").attr("src")).toEqual(newPrintOptions.thumb);
+                });
+
             });
 
         });
