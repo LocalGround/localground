@@ -35,7 +35,7 @@ define ([
            
             generateSlug: function () {
                 var name = this.$el.find('#new-map-name').val(),
-                    slug = name.toLowerCase().replace(/\s+/g, "_");
+                    slug = name.toLowerCase().replace(/\s+/g, "-");
                 this.$el.find('#new-map-slug').val(slug);
             },
 
