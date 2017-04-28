@@ -45,6 +45,7 @@ require(['boot'], function () {
         'spec/views/style-app-test.js',
         'spec/views/create-form-test.js',
         'spec/views/form-field-test.js',
+        'spec/views/generate-print-test.js',
         'spec/views/spreadsheet-test.js'
 
     ];
