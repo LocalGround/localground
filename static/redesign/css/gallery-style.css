@@ -1,27 +1,9 @@
-
-.fa-cog {
-    margin-top: 30vh;
-    color: #CCC;
-    margin-left: 45%;
-}
-
-.fa-map-marker {
-    font-size: 1.2em;
-    top: -60px;
-    opacity: 0.4;
-}
-
-
-/************************************ Cards ************************************/
-
-
-
 /************************************ Side Panel ************************************/
 
 /*Add some padding below the content to compensate for the overlap*/
-.side-panel > div{
+/*.side-panel > div{
     padding-bottom: 80px;
-}
+}*/
 
 .save-options{
     position: fixed;
@@ -59,16 +41,6 @@
     width: 100%;
 }
 
-
-.side-panel{
-    width: 400px;
-    flex: none;
-    height: 100%;
-    order: 2;
-    background-color: rgb(246, 246, 249);
-    border-left: 1px solid rgb(217, 220, 229);
-    overflow: scroll;
-}
 
 .success-message {
     display: none;
