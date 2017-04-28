@@ -3,12 +3,14 @@ define([
     "handlebars",
     rootDir + "views/print-options",
     rootDir + "models/print",
+    rootDir + "lib/maps/basemap",
     "tests/spec-helper"
 ],
-    function (Handlebars, PrintOptions, Print) {
+    function (Handlebars, PrintOptions, Print, BaseMap) {
         'use strict';
         var fixture;
         var newPrintOptions;
+        var newBaseMap;
 
         var initSpies = function(){
             // Print options creation
@@ -21,6 +23,15 @@ define([
         };
 
         var initPrintOptions = function(scope){
+            newBaseMap = new BaseMap({
+                app: scope.app,
+                showSearchControl: false, // added for rosa parks pilot
+                minZoom: 13, // added for rosa parks pilot
+                mapID: "print_map"
+            });
+
+            scope.app.basemapView = newBaseMap;
+
             newPrintOptions = new PrintOptions({
                 app: scope.app
             });
@@ -28,8 +39,8 @@ define([
 
         describe("Print Options Initialization Test", function(){
             beforeEach(function(){
-                initPrintOptions(this);
                 initSpies();
+                initPrintOptions(this);
             });
             it ("Initialization Passes", function(){
                 expect(newPrintOptions).toEqual(jasmine.any(PrintOptions));
@@ -41,19 +52,20 @@ define([
                 expect(newPrintOptions.model).toEqual(jasmine.any(Print));
                 expect(PrintOptions.prototype.render).toHaveBeenCalledTimes(1);
                 //expect(newPrintOptions.basemapView).toEqual(this.basemapView);
-                expect(PrintOptions.prototype.initalize).toHaveBeenCalledTimes(1);
+                expect(PrintOptions.prototype.initialize).toHaveBeenCalledTimes(1);
             });
         });
 
         describe("User Print Option Parameters", function(){
 
             beforeEach(function(){
-                initPrintOptions();
                 initSpies();
+                initPrintOptions(this);
                 fixture = setFixtures("<div></div>").append(newPrintOptions.$el);
+                // spyOn(this.app.vent, 'trigger');
             });
 
-            it("Contains all the necessary attributes", function(){
+            it("Contains all the necessary HTML attributes", function(){
                 //
                 expect(fixture).toContainElement(".loading");
                 expect(fixture).toContainElement("#print-title");
@@ -65,12 +77,19 @@ define([
                 expect(fixture).toContainElement(".link-thumb");
             });
 
-            it ("Detects and saves the filled Title", function(){
+            it ("Fill in the text contents and save the print", function(){
                 expect(1).toEqual(1);
-            });
+                fixture.find("#print-title").val("Hello World");
+                fixture.find("#print-instructions").val("All you need to do is print the map");
+                newPrintOptions.makePrint();
+                expect(newPrintOptions.model.get("map_title")).toBe("Hello World");
+                expect(newPrintOptions.model.get("instructions")).toBe("All you need to do is print the map");
+                expect(newPrintOptions.model.get("project_id")).toBe(this.app.getProjectID());
+                expect(newPrintOptions.model.get("layout")).toBe(1);
+                expect(newPrintOptions.model.get("project_id")).toBe(this.basemapView.getCenter());
+                expect(newPrintOptions.model.get("project_id")).toBe(this.basemapView.getZoom());
+                expect(newPrintOptions.model.get("project_id")).toBe(this.basemapView.getMapTypeId());
 
-            it ("Saves the instructions if filled", function(){
-                expect(1).toEqual(1);
             });
 
             // For the following parameters below,
@@ -79,22 +98,30 @@ define([
             describe("Layout Settings", function(){
                 //
                 it("Defualt value - Portrait", function(){
-                    expect(1).toEqual(1);
+                    expect(fixture.find("#portrait").prop("checked")).toBeTruthy();
+                    fixture.find("#landscape").trigger('click');
+                    expect(fixture.find("#portrait").prop("checked")).toBeFalsy();
                 });
 
                 it("Alternate value - Landscape", function(){
-                    expect(1).toEqual(1);
+                    expect(fixture.find("#landscape").prop("checked")).toBeFalsy();
+                    fixture.find("#landscape").trigger('click');
+                    expect(fixture.find("#landscape").prop("checked")).toBeTruthy();
                 });
             });
 
             describe("Collect Data Settings", function(){
                 //
                 it("Defualt value - Yes", function(){
-                    expect(1).toEqual(1);
+                    expect(fixture.find("#choose_yes").prop("checked")).toBeTruthy();
+                    fixture.find("#choose_no").trigger('click');
+                    expect(fixture.find("#choose_yes").prop("checked")).toBeFalsy();
                 });
 
                 it("Alternate value - No", function(){
-                    expect(1).toEqual(1);
+                    expect(fixture.find("#choose_no").prop("checked")).toBeFalsy();
+                    fixture.find("#choose_no").trigger('click');
+                    expect(fixture.find("#choose_no").prop("checked")).toBeTruthy();
                 });
             });
         });

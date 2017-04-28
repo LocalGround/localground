@@ -64,18 +64,11 @@ define(["jquery",
             },
 
             makePrint: function(){
-                alert("Call Generate Print");
-                // Todo: Make the new map based on the current data stored on the map.
-                //basemapView.setZoom();
-                //basemapView.setCenter();
-                //basemapView.setMapTypeId();
-
-                // Let's test this rough draft
-                // Will be tweaked later
+                
                 var printMap = new Print();
                 var that = this;
                 printMap.set("project_id", this.app.getProjectID());
-                printMap.set("layout", this.detectLayout()); // replace with modular setting soon
+                printMap.set("layout", this.detectLayout());
                 printMap.set("center", this.basemapView.getCenter());
                 printMap.set("zoom", this.basemapView.getZoom());
                 printMap.set("map_provider", this.basemapView.getMapTypeId());
