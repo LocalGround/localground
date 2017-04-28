@@ -25,8 +25,6 @@ define(["jquery",
                 this.model = new Print();
                 this.render();
                 this.basemapView = this.app.basemapView; // Let's try this for now....
-                //this.showBasemap();
-                console.log(this.app);
             },
 
             templateHelpers: function(){

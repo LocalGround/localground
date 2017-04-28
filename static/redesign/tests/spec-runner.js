@@ -41,11 +41,15 @@ require(['boot'], function () {
         'spec/views/share-form-test.js',
         'spec/views/project-user-test.js',
 
+        // PRINT
+
+        'spec/views/generate-print-test.js',
+        'spec/views/print-options-test.js',
+
         //APPS
         'spec/views/style-app-test.js',
         'spec/views/create-form-test.js',
         'spec/views/form-field-test.js',
-        'spec/views/generate-print-test.js',
         'spec/views/spreadsheet-test.js'
 
     ];
