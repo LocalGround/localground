@@ -26,6 +26,12 @@ define(["marionette",
                     dataSource: this.dataSource,
                     currentDataSource: this.model.attributes.data_source
                 };
+            },
+
+            changeDataSource: function() {
+                var dataSource = this.$el.find(".selected-data-source").val();
+                this.model.set("data_source", dataSource);
+                this.app.vent.trigger('update-data-source');
             }
 
             /*
