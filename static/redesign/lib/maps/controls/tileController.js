@@ -1,24 +1,21 @@
-define(["jquery", "collections/tilesets"],
-    function ($, TileSets) {
+define(["marionette", "underscore", "jquery", "collections/tilesets"],
+    function (Marionette, _, $, TileSets) {
         "use strict";
 
-        var TileController = function (app, opts) {
+        var TileController = Marionette.ItemView.extend({
             /**
              * Raw data array of map overlays, pulled from the Local Ground Data API.
              * @see <a href="//localground.org/api/0/tiles">Local Ground Data API</a>.
              */
-            this.mapTypeIDs = [];
-            this.mapTypes = {};
-            this.initialize = function (app, opts) {
-                this.app = app;
-                this.map = opts.map;
-                this.activeMapTypeID = opts.activeMapTypeID;
+            mapTypeIDs: [],
+            mapTypes: {},
+            initialize: function (opts) {
+                _.extend(this, opts);
                 this.tilesets = new TileSets();
                 this.tilesets.fetch({ success: this.buildMapTypes.bind(this) });
                 this.app.vent.on('map-tiles-changed', this.showCustomAttribution.bind(this));
-            };
-
-            this.initTiles = function () {
+            },
+            initTiles: function () {
                 //iterate through each of the user's basemap tilesets and add it to the map:
                 var that = this;
                 this.tilesets.each(function (tileset) {
@@ -45,36 +42,31 @@ define(["jquery", "collections/tilesets"],
                     mapTypeIDs: this.mapTypeIDs,
                     mapTypes: this.mapTypes
                 });
-            };
-
-            this.getTileSetByKey = function (key, value) {
+            },
+            getTileSetByKey: function (key, value) {
                 return this.tilesets.find(function (model) {
                     if (key === 'name') {
                         return model.get(key).toLowerCase() === value.toLowerCase();
                     }
                     return model.get(key) === value;
                 });
-            };
-
-            this.buildMapTypes = function () {
+            },
+            buildMapTypes: function () {
                 this.setActiveMapType(this.activeMapTypeID);
                 this.initTiles();
-            };
-
-            this.getMapTypeId = function () {
+            },
+            getMapTypeId: function () {
                 var tileset = this.getTileSetByKey("name", this.map.getMapTypeId().toLowerCase());
                 if (!tileset) {
                     return null;
                 }
                 return tileset.id;
-            };
-
-            this.hideCustomAttribution = function () {
+            },
+            hideCustomAttribution: function () {
                 $('.tile-attribution').parent().prev().show();
                 $('.tile-attribution').remove();
-            };
-
-            this.showCustomAttribution = function (id) {
+            },
+            showCustomAttribution: function (id) {
                 this.hideCustomAttribution();
                 id = id || this.getMapTypeId();
                 var tileset = this.tilesets.get(id),
@@ -89,20 +81,16 @@ define(["jquery", "collections/tilesets"],
                     backgroundColor: "rgba(255, 255, 255, 0.7)"
                 });
                 $message.parent().prev().hide();
-            };
-
-            this.setActiveMapType = function (id) {
+            },
+            setActiveMapType: function (id) {
                 this.showCustomAttribution(id);
                 var tileset = this.getTileSetByKey("id", id);
                 if (tileset) {
                     this.map.setMapTypeId(tileset.getMapTypeID());
                     this.app.vent.trigger("map-tiles-changed");
                 }
-            };
-
-            // call on initialization:
-            this.initialize(app, opts);
-        };
+            }
+        });
 
 
         return TileController;

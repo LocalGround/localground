@@ -6,23 +6,17 @@ define([
     rootDir + "views/toolbar-global",
     rootDir + "models/print",
     rootDir + "lib/maps/basemap",
+    rootDir + "lib/maps/controls/tileController",
     "tests/spec-helper"
 ],
-    function (Handlebars, PrintLayoutView, PrintOptions, ToolbarGlobal, Print, Basemap) {
+    function (Handlebars, PrintLayoutView, PrintOptions, ToolbarGlobal, Print, Basemap, TileController) {
         'use strict';
         var fixture;
         var newPrintLayoutView;
 
         var createPrintLayoutView = function(scope){
             newPrintLayoutView = new PrintLayoutView({
-                app: scope.app//,
-
-                /*
-                regions: {
-                    regionLeft: ".print-layout-left",
-                    regionRight: ".print-layout-right"
-                }
-                */
+                app: scope.app
             });
             fixture = setFixtures("<div>\
                 <div class='print-layout-left'></div>\
@@ -30,8 +24,8 @@ define([
             </div>").append(newPrintLayoutView.$el);
         };
 
-        var initSpies = function(){
-            spyOn(Basemap.prototype,"initialize");
+        var initSpies = function () {
+            spyOn(TileController.prototype, "initialize");
             spyOn(PrintLayoutView.prototype, "render").and.callThrough();
             spyOn(PrintLayoutView.prototype, "showPrintOptions").and.callThrough();
             spyOn(PrintLayoutView.prototype, "showBasemap").and.callThrough();

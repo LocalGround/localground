@@ -154,8 +154,9 @@ define(["marionette",
                 }*/
 
                 //set up the various map tiles in Google maps:
-                this.tileManager = new TileController(this.app, {
+                this.tileManager = new TileController({
                     map: this.map,
+                    app: this.app,
                     activeMapTypeID: this.activeMapTypeID
                 });
 

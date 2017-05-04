@@ -38,9 +38,21 @@ define(
         beforeEach(function () {
             //spoof google maps API:
             google.maps = {
-                event: { addListenerOnce: function () {} },
+                event: {
+                    addListenerOnce: function () {},
+                    addListener: function () {},
+                    trigger: function () {}
+                },
                 LatLngBounds: function () {},
-                LatLng: function(lat, lng) {}
+                LatLng: function (lat, lng) {
+                    return [lat, lng];
+                },
+                ZoomControlStyle: {
+                    SMALL: "small"
+                },
+                Map: function (div_id, opts) {
+                    return this.map;
+                }
             };
             var $map_container = $('<div id="map_canvas"></div>');
             $(document.body).append($map_container);
@@ -489,8 +501,7 @@ define(
                 },
                 getMapTypeId: function(){
                     return 5;
-                },
-                 google.maps.ZoomControlStyle.SMALL
+                }
             };
             this.vent = _.extend({}, Backbone.Events);
 
