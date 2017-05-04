@@ -489,7 +489,8 @@ define(
                 },
                 getMapTypeId: function(){
                     return 5;
-                }
+                },
+                 google.maps.ZoomControlStyle.SMALL
             };
             this.vent = _.extend({}, Backbone.Events);
 

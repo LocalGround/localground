@@ -22,11 +22,10 @@ define(["jquery",
                 which is triggered from the select-map-view.js */
                 this.app = opts.app;
                 this.render();
-                //this.showBasemap();
             },
 
             onShow: function(){
-                console.log("Showing");
+                //console.log("Showing");
                 this.showBasemap();
                 this.showPrintOptions();
             },
@@ -59,26 +58,6 @@ define(["jquery",
                 setTimeout(function () {
                     google.maps.event.trigger(that.app.map, 'resize');
                 }, 100);
-            },
-
-            onRender: function () {
-                // only load views after the LayoutView has
-                // been rendered to the screen:
-
-                /*
-                var sv, lv, skv, ps;
-                sv = new SelectMapView({ app: this.app });
-                this.menu.show(sv);
-
-                lv = new LayerListView({ app: this.app });
-                this.layers.show(lv);
-
-                skv = new SkinView({ app: this.app });
-                this.skins.show(skv);
-
-                ps = new PanelStylesView({ app: this.app });
-                this.styles.show(ps);
-                */
             },
 
             callMakePrint: function(){
