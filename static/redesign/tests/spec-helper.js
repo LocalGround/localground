@@ -2,6 +2,7 @@ var google = {};
 define(
     [
         "backbone",
+        "marionette",
         "jquery",
         "lib/appUtilities",
         "collections/projects",
@@ -28,7 +29,7 @@ define(
         "lib/data/dataManager"
     ],
 
-    function (Backbone, $, appUtilities, Projects, Photos, AudioFiles, Maps,
+    function (Backbone, Marionette, $, appUtilities, Projects, Photos, AudioFiles, Maps,
               MapImages, Markers, Records, Prints, Fields, Project, ProjectUser, Photo, Marker,
               Audio, Record, Map, MapImage, Print, Layer, Form, Field, DataManager) {
         'use strict';
@@ -50,9 +51,7 @@ define(
                 ZoomControlStyle: {
                     SMALL: "small"
                 },
-                Map: function (div_id, opts) {
-                    return this.map;
-                }
+                Map: this.Map
             };
             var $map_container = $('<div id="map_canvas"></div>');
             $(document.body).append($map_container);
@@ -488,21 +487,23 @@ define(
                 authority: "1"
             }, {id: this.project.id});
 
-            this.map = {
+            this.Map = Marionette.ItemView.extend({
                 fitBounds: function () {},
                 setCenter: function () {},
                 getCenter: function () {
-                    return {lat: function() {return 84},
-                            lng: function() {return -122}
-                           };
+                    return {
+                        lat: function () { return 84; },
+                        lng: function () { return -122; }
+                    };
                 },
-                getZoom: function(){
+                getZoom: function () {
                     return 18;
                 },
-                getMapTypeId: function(){
+                getMapTypeId: function () {
                     return 5;
                 }
-            };
+            });
+            this.map = new this.Map();
             this.vent = _.extend({}, Backbone.Events);
 
             this.dataManager = new DataManager({
