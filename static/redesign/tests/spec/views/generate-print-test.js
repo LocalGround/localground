@@ -20,7 +20,7 @@ define([
             });
             fixture = setFixtures("<div>\
                 <div class='print-layout-left'></div>\
-                <div class='print-layout-right'></div>\
+                <div class='print-layout-right'><div id='map'></div></div>\
             </div>").append(newPrintLayoutView.$el);
         };
 
@@ -33,7 +33,7 @@ define([
             spyOn(PrintLayoutView.prototype, "callMakePrint").and.callThrough();
             spyOn(PrintLayoutView.prototype, "onShow").and.callThrough();
 
-            spyOn(PrintOptions.prototype, "makePrint").and.callThrough();
+            spyOn(PrintOptions.prototype, "makePrint");
         };
 
         describe("PrintLayoutView: Initialization Test", function(){

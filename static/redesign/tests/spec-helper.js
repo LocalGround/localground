@@ -51,7 +51,24 @@ define(
                 ZoomControlStyle: {
                     SMALL: "small"
                 },
-                Map: this.Map
+                Map: function (elem, opts) {
+                    this.elem = elem;
+                    this.opts = opts;
+                    this.fitBounds = function () {};
+                    this.setCenter = function () {};
+                    this.getCenter = function () {
+                        return {
+                            lat: function () { return 84; },
+                            lng: function () { return -122; }
+                        };
+                    };
+                    this.getZoom = function () {
+                        return 18;
+                    };
+                    this.getMapTypeId = function () {
+                        return 5;
+                    };
+                }
             };
             var $map_container = $('<div id="map_canvas"></div>');
             $(document.body).append($map_container);
@@ -486,24 +503,7 @@ define(
                 user: "Tester",
                 authority: "1"
             }, {id: this.project.id});
-
-            this.Map = Marionette.ItemView.extend({
-                fitBounds: function () {},
-                setCenter: function () {},
-                getCenter: function () {
-                    return {
-                        lat: function () { return 84; },
-                        lng: function () { return -122; }
-                    };
-                },
-                getZoom: function () {
-                    return 18;
-                },
-                getMapTypeId: function () {
-                    return 5;
-                }
-            });
-            this.map = new this.Map();
+            this.map = new google.maps.Map();
             this.vent = _.extend({}, Backbone.Events);
 
             this.dataManager = new DataManager({
