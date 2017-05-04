@@ -19,6 +19,7 @@ define(["jquery",
             modelEvents: {
                 'change:symbols': 'reRender'
             },
+            //each of these childViews is a symbol. this view render the value-rules box
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
@@ -129,7 +130,7 @@ define(["jquery",
                 this.continuousList.length = 0;
                 var key = this.model.get('data_source'),
                     dataEntry = this.app.dataManager.getData(key);
-               
+                console.log(dataEntry);
                 //still need to account for map-images below...
                 if (key == "photos" || key == "audio") {
                     var list = ["id", "name", "caption", "tags", "owner", "attribution"];
@@ -191,6 +192,7 @@ define(["jquery",
                     segmentSize = range/this.buckets;
                 console.log(range, this.buckets, segmentSize);
                 dataEntry.collection.models.forEach(function(d) {
+                    console.log(d);
                     console.log(d.get($selected), segmentSize);
                     if (d.get($selected) <= segmentSize) {
                         //need to determine proper place to store color information for each data unit/row
@@ -199,11 +201,34 @@ define(["jquery",
                     } else if (d.get($selected) <= 2*segmentSize) {
                         d.contColor = that.allColors[0][1];
                         console.log("2nd bucket ",d);
+                    } else if (d.get($selected) <= 3*segmentSize) {
+                        d.contColor = that.allColors[0][2];
+                        console.log("3rd bucket ",d);
+                    } else if (d.get($selected) <= 4*segmentSize) {
+                        d.contColor = that.allColors[0][3];
+                        console.log("4th bucket ",d);
+                    } else if (d.get($selected) <= 5*segmentSize) {
+                        d.contColor = that.allColors[0][4];
+                        console.log("5th bucket ",d);
+                    } else if (d.get($selected) <= 6*segmentSize) {
+                        d.contColor = that.allColors[0][5];
+                        console.log("6th bucket ",d);
+                    } else if (d.get($selected) <= 7*segmentSize) {
+                        d.contColor = that.allColors[0][6];
+                        console.log("7th bucket ",d);
+                    } else if (d.get($selected) <= 8*segmentSize) {
+                        d.contColor = that.allColors[0][7];
+                        console.log("8th bucket ",d);
+                    } else if (d.get($selected) <= 9*segmentSize) {
+                        d.contColor = that.allColors[0][8];
+                        console.log("9th bucket ",d);
                     }
 
                 });
                 
             },
+
+           
 
             catData: function() {  
                 var key = this.model.get('data_source'); 
