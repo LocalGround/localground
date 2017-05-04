@@ -7,6 +7,7 @@ define([
     function ($, ToolbarGlobal) {
         'use strict';
         var toolbar;
+        var fixture;
 
         function initApp(scope) {
             // 1) add dummy HTML elements:
@@ -15,6 +16,7 @@ define([
 
             $(document.body).append($sandbox);
             $sandbox.append($r1);
+            fixture = $sandbox;
 
             // 2) add spies for all relevant objects:
             spyOn(ToolbarGlobal.prototype, 'initialize').and.callThrough();
@@ -40,6 +42,21 @@ define([
             it("Initialization methods called successfully", function () {
                 expect(toolbar).toEqual(jasmine.any(ToolbarGlobal));
                 expect(toolbar.initialize).toHaveBeenCalled();
+            });
+
+            describe("Toolbar Global: Map Mode Trigger Print Button", function(){
+
+                it("Toolbar not in map mode, no print button", function(){
+                    toolbar.app.screenType = "gallery";
+                    toolbar.render();
+                    expect(fixture).not.toContainElement(".print-button");
+                });
+
+                it("Toolbar in map mode, print button appears", function(){
+                    toolbar.app.screenType = "map";
+                    toolbar.render();
+                    expect(fixture).toContainElement(".print-button");
+                });
             });
         });
     });
