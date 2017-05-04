@@ -507,6 +507,15 @@ define(["marionette",
                                 case "integer":
                                     type = "numeric";
                                     break;
+                                case "decimal":
+                                    type = "numeric";
+                                    break;
+                                case "date-time":
+                                    type = "date";
+                                    break;
+                                case "rating":
+                                    type = "dropdown";
+                                    break;
                                 default:
                                     type = "text";
                             }
