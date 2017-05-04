@@ -26,11 +26,14 @@ define([
 
         var initSpies = function () {
             spyOn(TileController.prototype, "initialize");
+
             spyOn(PrintLayoutView.prototype, "render").and.callThrough();
             spyOn(PrintLayoutView.prototype, "showPrintOptions").and.callThrough();
             spyOn(PrintLayoutView.prototype, "showBasemap").and.callThrough();
             spyOn(PrintLayoutView.prototype, "callMakePrint").and.callThrough();
             spyOn(PrintLayoutView.prototype, "onShow").and.callThrough();
+
+            spyOn(PrintOptions.prototype, "makePrint").and.callThrough();
         };
 
         describe("PrintLayoutView: Initialization Test", function(){
@@ -69,7 +72,10 @@ define([
             });
 
             it("Succesfuly goes through makePrint", function(){
-                expect(1).toEqual(1);
+                expect(PrintOptions.prototype.makePrint).toHaveBeenCalledTimes(0);
+                newPrintLayoutView.showPrintOptions();
+                newPrintLayoutView.callMakePrint();
+                expect(PrintOptions.prototype.makePrint).toHaveBeenCalledTimes(1);
             });
         });
 
