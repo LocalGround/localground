@@ -1,6 +1,11 @@
-<div class="plus-container" style="position:relative;float:right;">
-    <a class="add-layer"><i class="fa fa-plus add" aria-hidden="true"></i></a>
-</div>
+<div class="style-section-header">
+    <i class="fa {{#if isShowing}} hide-panel fa-caret-down{{else}} show-panel fa-caret-right {{/if}}"></i>
+   
 
-<h5>Layers</h5>
-<div id="layers"></div>
+    <div class="plus-container" style="position:relative;float:right;">
+        <a class="add-layer"><i class="fa fa-plus add" aria-hidden="true"></i></a>
+    </div>
+
+    <h4>Layers</h4>
+</div>
+<div id="layers" style="{{#if isShowing}}display: block; {{else}} display:none; {{/if}}"></div>
