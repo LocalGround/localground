@@ -1,21 +1,47 @@
 <div class="loading" style="display: none">Loading</div>
 <div>
-    <label>Title:</label><input type="text" id="print-title" placeholder="Insert title"><br>
-    <label>Instructions:</label><textarea id="print-instructions"
-    rows="4" cols="50" placeholder="Type instructions here"> </textarea><br>
+    <div class="inline-form">
+        <label>Title:</label>
+        <div class="container-input">
+        </div>
+        <input type="text" id="print-title" placeholder="Insert title">
+    </div>
+
+    <div class="inline-form">
+        <label>Instructions:</label>
+        <div class="container-input">
+            <textarea id="print-instructions"
+            rows="4" cols="50" placeholder="Type instructions here"> </textarea>
+        </div>
+    </div>
+
+    <div class="inline-form">
+        <label>Layout</label>
+        <div class="container-input">
+            <form action>
+                <input class="option-layout" type="radio" name="print_layout" id="portrait" value="Portrait" checked> Portrait
+                <input class="option-layout" type="radio" name="print_layout" id="landscape" value="Landscape"> Landscape
+            </form>
+        </div>
+
+    </div>
+
+    <div class="inline-form">
+        <label>Collect Data?</label>
+        <div class="container-input">
+            <form action>
+                <input class="option-data" type="radio" name="data_collect" id="choose_yes" value="Yes" checked> Yes
+                <input class="option-data" type="radio" name="data_collect" id="choose_no" value="No"> No
+            </form>
+        </div>
+    </div>
 
 
-    <label>Layout</label><br>
-    <input class="option-layout" type="radio" name="print_layout" id="portrait" value="Portrait" checked> Portrait<br>
-    <input class="option-layout" type="radio" name="print_layout" id="landscape" value="Landscape"> Landscape<br>
 
-    <br>
 
-    <label>Collect Data?</label><br>
-    <input class="option-data" type="radio" name="data_collect" id="choose_yes" value="Yes" checked> Yes<br>
-    <input class="option-data" type="radio" name="data_collect" id="choose_no" value="No"> No<br>
 
-    <br>
+
+
 
 </div>
 <div class="print-links">
