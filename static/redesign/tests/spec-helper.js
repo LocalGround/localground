@@ -2,6 +2,7 @@ var google = {};
 define(
     [
         "backbone",
+        "marionette",
         "jquery",
         "lib/appUtilities",
         "collections/projects",
@@ -28,19 +29,47 @@ define(
         "lib/data/dataManager"
     ],
 
-    function (Backbone, $, appUtilities, Projects, Photos, AudioFiles, Maps,
+    function (Backbone, Marionette, $, appUtilities, Projects, Photos, AudioFiles, Maps,
               MapImages, Markers, Records, Prints, Fields, Project, ProjectUser, Photo, Marker,
               Audio, Record, Map, MapImage, Print, Layer, Form, Field, DataManager) {
         'use strict';
         afterEach(function () {
             $('body').find('.colorpicker').remove();
+            $('body').find('.modal').remove();
         });
         beforeEach(function () {
             //spoof google maps API:
             google.maps = {
-                event: { addListenerOnce: function () {} },
+                event: {
+                    addListenerOnce: function () {},
+                    addListener: function () {},
+                    trigger: function () {}
+                },
                 LatLngBounds: function () {},
-                LatLng: function(lat, lng) {}
+                LatLng: function (lat, lng) {
+                    return [lat, lng];
+                },
+                ZoomControlStyle: {
+                    SMALL: "small"
+                },
+                Map: function (elem, opts) {
+                    this.elem = elem;
+                    this.opts = opts;
+                    this.fitBounds = function () {};
+                    this.setCenter = function () {};
+                    this.getCenter = function () {
+                        return {
+                            lat: function () { return 84; },
+                            lng: function () { return -122; }
+                        };
+                    };
+                    this.getZoom = function () {
+                        return 18;
+                    };
+                    this.getMapTypeId = function () {
+                        return 5;
+                    };
+                }
             };
             var $map_container = $('<div id="map_canvas"></div>');
             $(document.body).append($map_container);
@@ -443,6 +472,8 @@ define(
 
             this.project = this.projects.at(0);
 
+            this.print = this.prints.at(0);
+
             this.tilesets = [
                 {"sourceName": "mapbox", "max": 19, "is_printable": true, "providerID": "lg.i1p5alka", "id": 1, "typeID": 1, "name": "Mapnik", "min": 1, "url": "", "sourceID": 1, "type": "Base Tileset"},
                 {"sourceName": "google", "max": 20, "is_printable": true, "providerID": "roadmap", "id": 2, "typeID": 1, "name": "Roadmap", "min": 1, "url": "//maps.google.com/maps/api/staticmap?sensor=false&maptype=roadmap&style=feature:poi.school|element:geometry|saturation:-79|lightness:75", "sourceID": 5, "type": "Base Tileset"},
@@ -473,11 +504,7 @@ define(
                 user: "Tester",
                 authority: "1"
             }, {id: this.project.id});
-
-            this.map = {
-                fitBounds: function () {},
-                setCenter: function () {}
-            };
+            this.map = new google.maps.Map();
             this.vent = _.extend({}, Backbone.Events);
 
             this.dataManager = new DataManager({

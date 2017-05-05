@@ -909,10 +909,15 @@ tr.failure-message.show span {
 .carousel-modal .carouselbox {
     background: none;
 }
+.carousel-photo .carouselbox {
+    border-bottom: solid 1px #CCC;
+}
 
 
 .carousel-photo .active-slide {
     min-height: 350px;
+    border: solid 1px #CCC;
+    background: white;
 }
 
 .active-slide li {
@@ -949,7 +954,7 @@ tr.failure-message.show span {
 
 .carousel-buttons, .circle-buttons {
     display: block;
-    /*padding: 10px 0;*/
+    padding: 0px 0px 10px 0px;
     text-align: center;
     z-index: 10;
     position: relative;
@@ -978,7 +983,7 @@ li.current .photo {
     width: 100%;
     background-repeat: no-repeat !important;
     background-size: contain !important;
-    background-position: center center !important;
+    background-position: center bottom !important;
     margin-bottom: 6px;
     cursor: pointer;
 }

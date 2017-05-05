@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 from localground.apps.site.models import BaseAudit
 from datetime import datetime
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
-
+from jsonfield import JSONField
 
 class Field(BaseAudit):
 
@@ -24,6 +24,7 @@ class Field(BaseAudit):
     col_name_db = models.CharField(max_length=255, db_column="col_name")
     col_alias = models.CharField(max_length=255, verbose_name="column name")
     data_type = models.ForeignKey('DataType')
+    extras = JSONField(blank=True, null=True)
 
     # field to be displayed in viewer
     is_display_field = models.BooleanField(default=False)

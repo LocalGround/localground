@@ -14,6 +14,7 @@ def get_base_metadata():
             'form': {'read_only': True, 'required': False, 'type': 'field'},
             'ordering': {'read_only': False, 'required': True, 'type': 'integer'},
             'col_alias': {'read_only': False, 'required': True, 'type': 'string'},
+            'extras': {'read_only': False, 'required': False, 'type': 'json'},
             'col_name': {'read_only': True, 'required': False, 'type': 'field'},
             'is_display_field': {'read_only': False, 'required': True, 'type': 'boolean'},
             'url': {'read_only': True, 'required': False, 'type': 'field'},

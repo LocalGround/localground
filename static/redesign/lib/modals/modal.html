@@ -9,6 +9,10 @@
         </div>
         <footer>
             <div class="buttons">
+
+                {{#if showPrintButton}}
+                    <button class="print-modal button-secondary">{{ printButtonText }}</button>
+                {{/if}}
                 {{#if showDeleteButton}}
                     <button class="delete-modal button-secondary">{{ deleteButtonText }}</button>
                 {{else}}

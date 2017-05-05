@@ -225,6 +225,9 @@
     letter-spacing: 0.7px;
     width: 80px;
 }
+.pull-right {
+    float: right
+}
 
 .container {
     display: flex;
