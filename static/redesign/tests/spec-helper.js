@@ -35,6 +35,7 @@ define(
         'use strict';
         afterEach(function () {
             $('body').find('.colorpicker').remove();
+            $('body').find('.modal').remove();
         });
         beforeEach(function () {
             //spoof google maps API:
