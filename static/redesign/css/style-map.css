@@ -32,6 +32,23 @@ section {
     border-bottom: 1px solid #e4e5eb;
     font: 11px;
 }
+  
+.style-section-header {
+   padding: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+}
+
+.style-section-header h4 {
+   display: inline;
+   font-weight: 600;
+   color: #666;
+}
+
+.style-section-header a {
+    color: #666;
+}
 
 .style-section-header {
     padding: 10px;
@@ -76,7 +93,6 @@ section {
     font-size: 12px;
     margin-left: 4px;
 }
-
 #skin-select {
     display: block;
     margin: 5px 15px;

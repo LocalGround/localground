@@ -1,109 +1,6 @@
-
-.fa-cog {
-    margin-top: 30vh;
-    color: #CCC;
-    margin-left: 45%;
-}
-
-
-/************************************ Cards ************************************/
-
-.column {
-    width: calc(25% - 12px);
-    margin: 4px 5px 8px;
-    border: 1px solid #e4e5eb;
-    border-radius: 2px;
-    display: flex;
-    flex-direction: column;
-    display:inline-block;
-    position: relative;
-    vertical-align: top;
-    background: #fafafc;
-}
-
-.column img {
-    width:100%;
-}
-
-.card-img-preview {
-    background-size: 410px auto;
-    background-position: center center;
-    border-radius: 2px 2px 0 0;
-    height: 185px;
-}
-
-.fa-map-marker {
-    font-size: 1.2em;
-    top: -60px;
-    opacity: 0.4;
-}
-
-.column h1{
-    font-size: 14px;
-    padding: 10px 6px 1px;
-    font-weight: 400;
-}
-
-.column h2{
-    font-size: 12px;
-    padding: 0 6px 12px;
-    color: #7a7a7a;
-    font-weight: 400;
-}
-
-.column .fa-map-marker{
-    position:absolute;
-    right:16px;
-    bottom:16px;
-}
-
-.selected-card {
-    color: #fff;
-    background-color: rgb(123, 155, 225);
-}
-
-.selected-card h1, .selected-card h2, .selected-card > .fa-map-marker, .selected-card .coords {
-    color: #fff;
-}
-
-.selected-icon {
-    color: #ffffff !important;
-}
-
-/************************************ Site Cards ************************************/
-.column table {
-	padding: 16px;
-	font-weight:600;
-	background-color: #fafafc;
-	height: 20px;
-	overflow:hidden;
-	width: 100%;
-	font-size: 10px;
-	border-radius: 2px 2px 0 0;
-}
-
-.column table td:first-child {
-	text-align:right;
-	width:33%;
-	padding-right:6px;
-	font-weight:500;
-}
-
-.card-site-field {
-   /* background: #fafafc; */
-    background-size: 410px auto;
-    background-position: center center;
-    border-radius: 2px 2px 0 0;
-    /*  height: 185px;  */
-}
-
 /************************************ Side Panel ************************************/
 
-/*Add some padding below the content to compensate for the overlap*/
-.side-panel > div{
-    padding-bottom: 80px;
-}
-
+/* ALSO IN style.css */
 .save-options{
     position: fixed;
     bottom: 0;width: 372px;
@@ -111,22 +8,6 @@
     background-color: white;
     border-top: 1px solid #e4e5eb;
     padding: 14px 20px;
-}
-
-.confirmation {
-    padding-left: 20px;
-    line-height: 40px;
-    display: block;
-    position: absolute;
-    width: inital;
-}
-
-
-.img-card {
-    border: 1px solid #e4e5eb;
-    background-color: white;
-    margin: 20px;
-    position:relative;
 }
 
 
@@ -140,29 +21,3 @@
     width: 100%;
 }
 
-
-#gallery-main{
-    /*width:100%;*/
-}
-
-.side-panel{
-    width: 400px;
-    flex: none;
-    height: 100%;
-    order: 2;
-    background-color: rgb(246, 246, 249);
-    border-left: 1px solid rgb(217, 220, 229);
-    overflow: scroll;
-}
-
-.success-message {
-    display: none;
-}
-
-p.coords {
-    font-size: 7px;
-    float: right;
-    margin-top: -25px;
-    color: #666;
-    padding-right: 5px;
-}
