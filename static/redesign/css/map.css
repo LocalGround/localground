@@ -12,7 +12,7 @@
 }
 
 #toolbar-main > div{
-    display:flex;    
+    display:flex;
 }
 
 .list-header {
@@ -22,6 +22,11 @@
     background: #FFF;
     font-weight: 600;
     color: #666;
+}
+
+.list-header .new-field-plus {
+
+    float: right;
 }
 
 .list-indent, .list-indent-simple, .preview-filter-list {
@@ -113,8 +118,8 @@ svg, .fa-question-circle {
     width: auto;
 }
 
-#add-marker-button:focus, #delete-marker-button:focus { 
-    outline: none; 
+#add-marker-button:focus, #delete-marker-button:focus {
+    outline: none;
 }
 
 #drop-marker-message {
@@ -133,4 +138,3 @@ svg, .fa-question-circle {
     margin-top: -20px;
     margin-bottom: 30px;
 }
-
