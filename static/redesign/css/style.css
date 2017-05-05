@@ -926,7 +926,6 @@ input.fieldname {
 }
 
 .print-layout-left, .print-layout-right{
-    border: solid 1px black;
     display: inline-block;
     width: 550px;
     margin: 5px;

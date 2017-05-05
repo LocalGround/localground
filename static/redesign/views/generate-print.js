@@ -14,6 +14,8 @@ define(["jquery",
         var GeneratePrintLayout = Marionette.LayoutView.extend({
             template: Handlebars.compile(PrintLayoutTemplate),
 
+            className: "grey-bg",
+
             basemapView: null,
             printOptions: null,
 

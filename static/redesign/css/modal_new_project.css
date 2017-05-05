@@ -38,7 +38,7 @@
     width:800px;
     height: auto;
     position: relative;
-    
+
 }
 
 .modal-body{
@@ -141,7 +141,7 @@
 }
 
 .modal-body {
-    padding: 0px 20px;
+    /* padding: 0px 20px; */
     background-color: #ffffff;
     border-top: none;
     max-height: 75vh;
@@ -171,6 +171,13 @@
 
 .modal-body .inline-form td {
     padding: 0px 6px;
+}
+
+.modal-body .grey-bg{
+    background-color: #eee;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    min-height: 500px;
 }
 
 .filter {
