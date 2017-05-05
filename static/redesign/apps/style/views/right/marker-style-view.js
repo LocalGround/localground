@@ -245,23 +245,24 @@ define(["jquery",
                     this.layerDraft.continuous.add({
                         "rule": $selected + " >= " + currentFloor.toFixed(2) + " < " + (currentFloor + segmentSize).toFixed(2),
                         "title": $selected + " greater than " + currentFloor.toFixed(2) + " and less than " + (currentFloor + segmentSize).toFixed(2),
-                        "fillOpacity": this.$el.find("#palette-opacity").val(),
-                        "strokeWeight": this.$el.find("#stroke-weight").val(),
-                        "strokeOpacity": this.$el.find("#stroke-opacity").val(),
-                        "width": this.$el.find("#marker-width").val(),
+                        "fillOpacity": parseFloat(this.$el.find("#palette-opacity").val()),
+                        "strokeWeight": parseFloat(this.$el.find("#stroke-weight").val()),
+                        "strokeOpacity": parseFloat(this.$el.find("#stroke-opacity").val()),
+                        "width": parseFloat(this.$el.find("#marker-width").val()) || 20,
                         "shape": this.$el.find(".global-marker-shape").val(),
                         "fillColor": this.allColors[1][counter],
-                        "strokeColor": this.$el.find("#stroke-color").val(),
+                        "strokeColor": "#" + this.$el.find("#stroke-color").val(),
                         "color": this.allColors[1][counter],
-                        "id": 100
+                        "id": (counter + 1)
                     });
                     counter++;
                     currentFloor += segmentSize;
 
                 }
                 this.collection = this.layerDraft.continuous;
-             //   this.model.set("symbols", this.layerDraft.continuous);
+                this.model.set("symbols", this.layerDraft.continuous.toJSON());
                 console.log(this.collection);
+
                 this.render();
 /*
                 dataEntry.collection.models.forEach(function(d) {
