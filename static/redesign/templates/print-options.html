@@ -1,3 +1,10 @@
+{{#if pdf }}
+<div class="print-links">
+    <a class="link-pdf" href="{{pdf}}">
+        <img class="link-thumb" src="{{thumb}}">
+    </a>
+</div>
+{{else}}
 <div>
     <div class="inline-form">
         <label>Title:</label>
@@ -32,14 +39,7 @@
             <input class="option-data" type="radio" name="data_collect" id="choose_no" value="No"> <label>No</label>
         </div>
     </div>
-
-
-
-    <div class="print-links">
-        <a class="link-pdf" href="{{pdf}}">
-            <img class="link-thumb" src="{{thumb}}">
-        </a>
-    </div>
+{{/if}}
 
 
 
