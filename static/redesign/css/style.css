@@ -226,10 +226,14 @@ table.preview-properties td:first-child {
     flex:1;
 }
 
-
+.print-layout-left {
+    width: 450px;   
+}
+.print-layout-right {
+    width: 520px;   
+}
 .print-layout-left, .print-layout-right{
     display: inline-block;
-    width: 550px;
     margin: 5px;
     height: 400px;
     vertical-align: top;

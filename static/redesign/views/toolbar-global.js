@@ -68,7 +68,7 @@ define([
             this.modal.update({
                 view: printLayout,
                 title: 'Generate Print',
-                width: 1200,
+                width: 1000,
                 height: null,
                 closeButtonText: "Done",
                 showSaveButton: false,

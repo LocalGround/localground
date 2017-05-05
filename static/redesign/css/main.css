@@ -372,10 +372,6 @@ nav .selected{
     line-height: 30px;
 }
 
-#fieldTableDiv {
-    max-height: 300px;
-    overflow: scroll;
-}
 
 #fieldTableDiv th {
     font-weight: 600;

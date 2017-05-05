@@ -31,10 +31,9 @@ define([
                 map: scope.map
             });
 
-            scope.app.basemapView = newBaseMap;
-
             newPrintOptions = new PrintOptions({
-                app: scope.app
+                app: scope.app,
+                basemapView: newBaseMap
             });
         };
 
@@ -50,7 +49,6 @@ define([
 
             it("Successfully passes all initalization steps", function () {
                 expect(newPrintOptions.app).toEqual(this.app);
-                expect(newPrintOptions.model).toEqual(jasmine.any(Print));
                 expect(PrintOptions.prototype.render).toHaveBeenCalledTimes(1);
                 expect(PrintOptions.prototype.initialize).toHaveBeenCalledTimes(1);
             });

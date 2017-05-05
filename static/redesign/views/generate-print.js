@@ -45,7 +45,8 @@ define(["jquery",
 
             showPrintOptions: function(){
                 this.printOptions = new PrintOptions({
-                    app: this.app
+                    app: this.app,
+                    basemapView: this.basemapView
                 });
                 this.regionLeft.show(this.printOptions);
             },
