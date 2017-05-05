@@ -74,7 +74,7 @@
 
             <tr class="continuous-variable">
                 <td>Buckets:</td>
-                <td><input id="bucket" type="number" value="{{buckets}}"></td>
+                <td><input id="bucket" type="number" value="{{buckets}}" min="1" max="9"></td>
             </tr>
             <tr class="continuous-variable">
                 <td>Color Ramp</td>
@@ -88,7 +88,7 @@
                                         {{#with allColors.[1]}}
                                         
                                             <li class="selected-palette-list">
-                                                <ul class="palette-container">
+                                                <ul class="palette-container" style="opacity: {{../paletteOpacity}};">
                                                     {{#each this}}
                                                     <li class="palette-item" style= "background-color: #{{this}}">
                                                           
@@ -122,8 +122,29 @@
                         </div>
                     </div>
                 </td>
+                <td>
+                     <input id="palette-opacity" type="number" value="{{paletteOpacity}}" min="0.0" max="1.0" step=".1">
+                </td>
             </tr>
             <tr>
+                <td>Symbol Shape</td>
+                <td>
+                    <select class="global-marker-shape">
+                    {{#each icons}}
+                        <option value="{{ this.key }}" {{#ifequal ../shape this.key}} SELECTED {{/ifequal}}>{{ this.name }}</option>
+                    {{/each}}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Width</td>
+                <td><input id="marker-width" type="number" value="{{width}}"></td>
+            </tr>
+            <tr>
+                <td>Stroke</td>
+                <td><input id="stroke-weight" type="number" value="{{width}}"></td>
+                <td><input id="stroke-color" type="test" value="{{strokeColor}}"></td>
+                <td><input id="stroke-opacity" type="number" value="{{strokeOpacity}}" min="0.0" max="1.0" step=".1"></td>
             </tr>
         </tbody>
     </table>

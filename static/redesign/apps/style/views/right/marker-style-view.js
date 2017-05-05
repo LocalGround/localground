@@ -5,16 +5,26 @@ define(["jquery",
         "lib/maps/icon-lookup",
         "text!../../templates/right/marker-style.html",
         "text!../../templates/right/marker-style-child.html",
+        "collections/symbols",
         "palette"
     ],
-    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleTemplate, MarkerStyleChildTemplate) {
+    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleTemplate, MarkerStyleChildTemplate, Symbols) {
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
             buckets: 4,
+            paletteOpacity: .8,
+            width: 50,
             categoricalList: [],
             continuousList: [],
             allColors: [],
+            rules: [],
+            layerDraft: {
+                continuous: null,
+                categorical: null,
+                simple: null, 
+                individual: null
+            },
             template: Handlebars.compile(MarkerStyleTemplate),
             modelEvents: {
                 'change:symbols': 'reRender'
@@ -28,6 +38,7 @@ define(["jquery",
                     template: Handlebars.compile(MarkerStyleChildTemplate),
                     events: {
                         'change .marker-shape': 'setSymbol'
+                        
                     },
                     modelEvents: {
                         'change': 'updateLayerSymbols'
@@ -35,6 +46,7 @@ define(["jquery",
                     tagName: "tr",
                     className: "table-row",
                     templateHelpers: function () {
+                        console.log(this, this.dataType);
                         return {
                             dataType: this.dataType,
                             icons: IconLookup.getIcons()
@@ -42,10 +54,12 @@ define(["jquery",
                     },
                     setSymbol: function (e) {
                         this.model.set("shape", $(e.target).val());
+                        console.log(this.model);
                     },
                     updateLayerSymbols: function () {
                         this.layer.setSymbol(this.model);
                     }
+
                 });
             },
             childViewContainer: "#symbols",
@@ -53,7 +67,8 @@ define(["jquery",
             childViewOptions: function () {
                 return {
                     app: this.app,
-                    layer: this.model
+                    layer: this.model,
+                    dataType: this.dataType
                 };
             },
 
@@ -87,6 +102,25 @@ define(["jquery",
                 //rebuild symbols collection based on updated info:
                 this.collection = new Backbone.Collection(this.model.get("symbols"));
                 this.render();
+                this.addNewSymbol();
+            },
+
+            addNewSymbol: function() {
+                this.collection.add({
+                    "fillOpacity": 0.5,
+                    "title": "Less Than 50",
+                    "strokeWeight": 5,
+                    "strokeOpacity": 0.5,
+                    "rule": "b < 50",
+                    "width": 50,
+                    "shape": "photo",
+                    "fillColor": "#FFFFFF",
+                    "strokeColor": "#7075FF",
+                   // "id": 100,
+                    "color": "#000" 
+                });
+                console.log("new symbol called", this.collection);
+                this.render();
             },
 
             templateHelpers: function () {
@@ -95,7 +129,9 @@ define(["jquery",
                     allColors: this.allColors,
                     buckets: this.buckets,
                     categoricalList: this.categoricalList,
-                    continuousList: this.continuousList
+                    continuousList: this.continuousList, 
+                    paletteOpacity: this.paletteOpacity,
+                    icons: IconLookup.getIcons()
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
@@ -108,22 +144,35 @@ define(["jquery",
                 'change #cat-prop': 'catData',
                 'change #cont-prop': 'contData',
                 'change #bucket': 'buildPalettes',
+                'change #palette-opacity': 'updatePaletteOpacity',
+                'change .global-marker-shape': 'updateGlobalShape',
+                'change .marker-width': 'updateWidth',
+                'change #stroke-weight': 'updateStrokeWeight',
+                'change #stroke-color': 'updateStrokeColor',
+                'change #stroke-opacity': 'updateStrokeOpacity',
                 'click .selected-palette-wrapper': 'showPalettes',
                 'click .palette-list': 'selectPalette'
             },
 
-            selectDataType: function () {
-                this.dataType = this.$el.find("#data-type-select").val();
+            selectDataType: function (e) {
+                //this.dataType = this.$el.find("#data-type-select").val();
+                this.dataType = $(e.target).val();
                 this.render();
                 this.buildColumnList();
-                this.contData();
-                this.catData();
+                if (this.dataType == "continuous") {
+                    this.contData();
+                }
+                if (this.dataType == "categorical") {
+                    this.catData();
+                }
             },
 
 
             displaySymbols: function () {
                 this.collection = new Backbone.Collection(this.model.get("symbols"));
+
                 this.render();
+                this.addNewSymbol();
             },
             buildColumnList: function () {
                 this.categoricalList.length = 0;
@@ -174,57 +223,52 @@ define(["jquery",
             contData: function() {
                 this.buckets = this.$el.find("#bucket").val() || 4;
                 var key = this.model.get('data_source'); 
-                console.log(key);
                 var valueList = []
                 this.continuousData = [];
                 var dataEntry = this.app.dataManager.getData(key);
                 var $selected = this.$el.find("#cont-prop").val();
                 var that = this;
-                console.log(dataEntry);
                 dataEntry.collection.models.forEach(function(d) {
-                    console.log(d);
                     that.continuousData.push(d.get($selected));
                 });
                 console.log(this.continuousData);
                 var min = Math.min(...this.continuousData),
                     max = Math.max(...this.continuousData), 
                     range = max-min,
-                    segmentSize = range/this.buckets;
+                    segmentSize = range/this.buckets,
+                    currentFloor = min,
+                    counter = 0;
                 console.log(range, this.buckets, segmentSize);
-                dataEntry.collection.models.forEach(function(d) {
-                    console.log(d);
-                    console.log(d.get($selected), segmentSize);
-                    if (d.get($selected) <= segmentSize) {
-                        //need to determine proper place to store color information for each data unit/row
-                        d.contColor = that.allColors[0][0];
-                        console.log("1st bucket ", d);
-                    } else if (d.get($selected) <= 2*segmentSize) {
-                        d.contColor = that.allColors[0][1];
-                        console.log("2nd bucket ",d);
-                    } else if (d.get($selected) <= 3*segmentSize) {
-                        d.contColor = that.allColors[0][2];
-                        console.log("3rd bucket ",d);
-                    } else if (d.get($selected) <= 4*segmentSize) {
-                        d.contColor = that.allColors[0][3];
-                        console.log("4th bucket ",d);
-                    } else if (d.get($selected) <= 5*segmentSize) {
-                        d.contColor = that.allColors[0][4];
-                        console.log("5th bucket ",d);
-                    } else if (d.get($selected) <= 6*segmentSize) {
-                        d.contColor = that.allColors[0][5];
-                        console.log("6th bucket ",d);
-                    } else if (d.get($selected) <= 7*segmentSize) {
-                        d.contColor = that.allColors[0][6];
-                        console.log("7th bucket ",d);
-                    } else if (d.get($selected) <= 8*segmentSize) {
-                        d.contColor = that.allColors[0][7];
-                        console.log("8th bucket ",d);
-                    } else if (d.get($selected) <= 9*segmentSize) {
-                        d.contColor = that.allColors[0][8];
-                        console.log("9th bucket ",d);
-                    }
+                this.layerDraft.continuous = new Symbols();
+                while (currentFloor < max) {
+                    console.log("bucket #" + counter, this.allColors[0][counter]);
+                    this.layerDraft.continuous.add({
+                        "rule": $selected + " >= " + currentFloor.toFixed(2) + " < " + (currentFloor + segmentSize).toFixed(2),
+                        "title": $selected + " greater than " + currentFloor.toFixed(2) + " and less than " + (currentFloor + segmentSize).toFixed(2),
+                        "fillOpacity": this.$el.find("#palette-opacity").val(),
+                        "strokeWeight": this.$el.find("#stroke-weight").val(),
+                        "strokeOpacity": this.$el.find("#stroke-opacity").val(),
+                        "width": this.$el.find("#marker-width").val(),
+                        "shape": this.$el.find(".global-marker-shape").val(),
+                        "fillColor": this.allColors[1][counter],
+                        "strokeColor": this.$el.find("#stroke-color").val(),
+                        "color": this.allColors[1][counter],
+                        "id": 100
+                    });
+                    counter++;
+                    currentFloor += segmentSize;
 
+                }
+                this.collection = this.layerDraft.continuous;
+             //   this.model.set("symbols", this.layerDraft.continuous);
+                console.log(this.collection);
+                this.render();
+/*
+                dataEntry.collection.models.forEach(function(d) {
+                    console.log(d, $selected);
+                    console.log(d.get($selected), segmentSize);
                 });
+                */
                 
             },
 
@@ -262,6 +306,45 @@ define(["jquery",
                // this.allColors.push(seq1, seq2, seq3, seq4, seq5, seq6);
                 this.contData();
                 this.render();
+            },
+
+            updatePaletteOpacity: function() {
+                var opacity = this.$el.find("#palette-opacity").val();
+                if (opacity > 1) {
+                    opacity = 1;
+                } else if (opacity < 0 ) {
+                    opacity = 0;
+                } 
+                console.log(this.model.get("symbols"));
+                this.paletteOpacity = opacity;
+               // this.model.symbols.set("fillOpacity", this.paletteOpacity);
+                this.render();
+            },
+
+            updateGlobalShape: function(e) {
+            //    this.model.set("shape", $(e.target).val());
+            },
+
+            updateWidth: function(e) {
+            //    this.model.set("width", $(e.target).val());    
+            },
+
+            updateStrokeWeight: function(e) {
+            //    this.model.set("strokeWeight", $(e.target).val());    
+            },
+
+            updateStrokeColor: function(e) {
+            //    this.model.set("strokeColor", $(e.target).val());    
+            },
+
+            updateStrokeOpacity: function(e) {
+                var opacity = this.$el.find("#stroke-opacity").val();
+                    if (opacity > 1) {
+                        opacity = 1;
+                    } else if (opacity < 0 ) {
+                        opacity = 0;
+                    } 
+            //    this.model.set("strokeOpacity", $(e.target).val());   
             },
 
             showPalettes: function () {
