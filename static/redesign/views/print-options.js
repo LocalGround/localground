@@ -73,7 +73,7 @@ define(["jquery",
                 printMap.set("map_provider", this.basemapView.getMapTypeId());
                 printMap.set("map_title", this.$el.find("#print-title").val());
                 printMap.set("instructions", this.$el.find("#print-instructions").val());
-                console.log(printMap);
+                //console.log(printMap);
                 this.$el.find(".loading").show();
                 printMap.save(null, {
                     success: function (model, response) {
