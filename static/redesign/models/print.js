@@ -17,18 +17,17 @@ define(["models/base"], function (Base) {
         toJSON: function () {
             // ensure that the geometry object is serialized before it
             // gets sent to the server:
-            var json = Base.prototype.toJSON.call(this);
-
-            if (json.center != null) {
-                json.center = {
+            var json = Base.prototype.toJSON.call(this),
+                center;
+            if (this.center != null) {
+                center = {
                     "type": "Point",
                     "coordinates": [
-                        json.center.lng(),
-                        json.center.lat()
+                        this.center.lng(),
+                        this.center.lat()
                     ]
-                }
-                json.center = JSON.stringify(json.center);
-
+                };
+                json.center = JSON.stringify(center);
             }
             return json;
         }

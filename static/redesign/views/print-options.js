@@ -66,10 +66,10 @@ define(["jquery",
             makePrint: function(){
                 var printMap = this.model;
                 var that = this;
+                printMap.center = this.basemapView.getCenter();
+                printMap.set("zoom", this.basemapView.getZoom());
                 printMap.set("project_id", this.app.getProjectID());
                 printMap.set("layout", this.detectLayout());
-                printMap.set("center", this.basemapView.getCenter());
-                printMap.set("zoom", this.basemapView.getZoom());
                 printMap.set("map_provider", this.basemapView.getMapTypeId());
                 printMap.set("map_title", this.$el.find("#print-title").val());
                 printMap.set("instructions", this.$el.find("#print-instructions").val());
