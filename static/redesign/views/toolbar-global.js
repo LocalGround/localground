@@ -69,7 +69,7 @@ define([
                 view: printLayout,
                 title: 'Generate Print',
                 width: 1200,
-                height: 500,
+                height: null,
                 closeButtonText: "Done",
                 showSaveButton: false,
                 showDeleteButton: false,
