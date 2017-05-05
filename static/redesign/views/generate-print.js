@@ -24,6 +24,8 @@ define(["jquery",
                 which is triggered from the select-map-view.js */
                 this.app = opts.app;
                 this.render();
+                this.listenTo(this.app.vent, "show-print-generate-message", this.displayLoad);
+                this.listenTo(this.app.vent, "hide-print-generate-message", this.hideLoad);
             },
 
             onShow: function(){
@@ -64,6 +66,14 @@ define(["jquery",
 
             callMakePrint: function(){
                 this.printOptions.makePrint();
+            },
+            
+            displayLoad: function(){
+                this.$el.find(".load-message").show();
+            },
+
+            hideLoad: function(){
+                this.$el.find(".load-message").hide();
             }
 
         });

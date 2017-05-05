@@ -180,3 +180,38 @@ svg, .fa-question-circle {
     color: #666;
     font-size: 12px;
 }
+
+.load-message {
+    display: block;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    text-align: center;
+    font-size: 36px;
+    padding-top: 150px;
+    position: absolute;
+    margin-top: -440px;
+    width: 100%;
+    height: 290px;
+    z-index: 100;
+}
+
+.load-message span{
+    color: white;
+    font-size: 24px;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.print-confirm {
+    display: block;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    text-align: center;
+    font-size: 36px;
+    padding-top: 150px;
+    position: absolute;
+    margin-top: -440px;
+    width: 100%;
+    height: 290px;
+    z-index: 100;
+}
