@@ -49,6 +49,12 @@ define(
                 LatLng: function (lat, lng) {
                     return [lat, lng];
                 },
+                MapTypeControlStyle: {
+                    DROPDOWN_MENU: 'DROPDOWN_MENU'
+                },
+                ControlPosition: {
+                    TOP_LEFT: 'DROPDOWN_MENU'
+                },
                 ZoomControlStyle: {
                     SMALL: "small"
                 },

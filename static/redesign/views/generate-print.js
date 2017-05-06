@@ -57,7 +57,8 @@ define(["jquery",
                     app: this.app,
                     showSearchControl: false, // added for rosa parks pilot
                     minZoom: 13, // added for rosa parks pilot
-                    mapID: "print_map"
+                    mapID: "print_map",
+                    disableStateMemory: true
                 });
                 this.regionRight.show(this.basemapView);
                 setTimeout(function () {

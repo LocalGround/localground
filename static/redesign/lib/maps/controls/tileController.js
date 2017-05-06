@@ -1,5 +1,5 @@
-define(["marionette", "underscore", "jquery", "collections/tilesets"],
-    function (Marionette, _, $, TileSets) {
+define(["marionette", "underscore", "jquery"],
+    function (Marionette, _, $) {
         "use strict";
 
         var TileController = Marionette.ItemView.extend({
@@ -7,41 +7,16 @@ define(["marionette", "underscore", "jquery", "collections/tilesets"],
              * Raw data array of map overlays, pulled from the Local Ground Data API.
              * @see <a href="//localground.org/api/0/tiles">Local Ground Data API</a>.
              */
-            mapTypeIDs: [],
-            mapTypes: {},
             initialize: function (opts) {
+                var key;
                 _.extend(this, opts);
-                this.tilesets = new TileSets();
-                this.tilesets.fetch({ success: this.buildMapTypes.bind(this) });
+                this.tilesets = this.app.dataManager.tilesets;
+                this.map = this.app.map;
+                for (key in this.tilesets.mapTypes) {
+                    this.map.mapTypes.set(key, this.tilesets.mapTypes[key]);
+                }
+                this.setActiveMapType(this.activeMapTypeID);
                 this.app.vent.on('map-tiles-changed', this.showCustomAttribution.bind(this));
-            },
-            initTiles: function () {
-                //iterate through each of the user's basemap tilesets and add it to the map:
-                var that = this;
-                this.tilesets.each(function (tileset) {
-                    var sourceName = tileset.get("source_name").toLowerCase(),
-                        mapTypeID = tileset.getMapTypeID();
-                    switch (sourceName) {
-                    case "stamen":
-                    case "mapbox":
-                        that.mapTypes[mapTypeID] = tileset.getMapType();
-                        that.mapTypeIDs.push(mapTypeID);
-                        break;
-                    case "google":
-                        if (tileset.isCustom()) {
-                            that.mapTypes[mapTypeID] = that.mapTypes[mapTypeID] = tileset.getMapType();
-                        }
-                        that.mapTypeIDs.unshift(mapTypeID);
-                        break;
-                    case "default":
-                        alert("Error in localground.maps.TileManager: unknown map type: " + sourceName);
-                        break;
-                    }
-                });
-                this.app.vent.trigger('tiles-loaded', {
-                    mapTypeIDs: this.mapTypeIDs,
-                    mapTypes: this.mapTypes
-                });
             },
             getTileSetByKey: function (key, value) {
                 return this.tilesets.find(function (model) {
@@ -50,10 +25,6 @@ define(["marionette", "underscore", "jquery", "collections/tilesets"],
                     }
                     return model.get(key) === value;
                 });
-            },
-            buildMapTypes: function () {
-                this.setActiveMapType(this.activeMapTypeID);
-                this.initTiles();
             },
             getMapTypeId: function () {
                 var tileset = this.getTileSetByKey("name", this.map.getMapTypeId().toLowerCase());
