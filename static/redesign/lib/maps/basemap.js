@@ -136,6 +136,7 @@ define(["marionette",
             },
 
             renderMap: function () {
+                console.log(this.defaultLocation.center.lng(), this.defaultLocation.center.lat());
                 var mapOptions = {
                     scrollwheel: false,
                     minZoom: this.minZoom,
@@ -253,7 +254,7 @@ define(["marionette",
                         zoom: this.map.getZoom(),
                         activeMapTypeID: this.tileManager.getMapTypeId()
                     };
-                console.log('saving...', state);
+                console.log('saving...', state.center);
                 this.app.saveState("basemap", state);
             },
             restoreState: function () {
