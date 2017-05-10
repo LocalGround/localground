@@ -1,14 +1,10 @@
-define(["jquery",
-        "marionette",
+define(["marionette",
         "handlebars",
-        "lib/modals/modal",
         "lib/maps/basemap",
         "views/print-options",
-        "models/print",
         "text!../templates/print-layout.html"
     ],
-    function ($, Marionette, Handlebars, Modal,
-              Basemap, PrintOptions, Print, PrintLayoutTemplate) {
+    function (Marionette, Handlebars, Basemap, PrintOptions, PrintLayoutTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var GeneratePrintLayout = Marionette.LayoutView.extend({
@@ -28,8 +24,7 @@ define(["jquery",
                 this.listenTo(this.app.vent, "hide-print-generate-message", this.hideLoad);
             },
 
-            onShow: function(){
-                //console.log("Showing");
+            onShow: function () {
                 this.showBasemap();
                 this.showPrintOptions();
             },
@@ -43,36 +38,42 @@ define(["jquery",
                 regionRight: ".print-layout-right"
             },
 
-            showPrintOptions: function(){
+            showPrintOptions: function () {
                 this.printOptions = new PrintOptions({
-                    app: this.app
+                    app: this.app,
+                    basemapView: this.basemapView
                 });
                 this.regionLeft.show(this.printOptions);
             },
 
             showBasemap: function () {
                 var that = this;
-                this.basemapView = new Basemap({
-                    app: this.app,
-                    showSearchControl: false, // added for rosa parks pilot
-                    minZoom: 13, // added for rosa parks pilot
-                    mapID: "print_map"
-                });
-                this.regionRight.show(this.basemapView);
+                // Used timeout to delay map rendering until modal completely 
+                // opens. Otherwise, the map doesn't center correctly.
                 setTimeout(function () {
-                    google.maps.event.trigger(that.app.map, 'resize');
+                    that.basemapView = new Basemap({
+                        app: that.app,
+                        showSearchControl: false, // added for rosa parks pilot
+                        mapID: "print_map",
+                        disableStateMemory: true
+                    });
+                    that.regionRight.show(that.basemapView);
+
+                    setTimeout(function () {
+                        google.maps.event.trigger(that.app.map, 'resize');
+                    }, 100);
                 }, 100);
             },
 
-            callMakePrint: function(){
+            callMakePrint: function () {
                 this.printOptions.makePrint();
             },
-            
-            displayLoad: function(){
+
+            displayLoad: function () {
                 this.$el.find(".load-message").show();
             },
 
-            hideLoad: function(){
+            hideLoad: function () {
                 this.$el.find(".load-message").hide();
             }
 

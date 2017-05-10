@@ -14,6 +14,7 @@ define([
     var CreateFormView = Marionette.CompositeView.extend({
         showSuccess: false,
         showError: false,
+        className: 'create-form',
         initialize: function (opts) {
             _.extend(this, opts);
 

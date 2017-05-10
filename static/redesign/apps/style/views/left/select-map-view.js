@@ -1,27 +1,36 @@
-define(["marionette",
+define(["jquery",
+        "marionette",
         "handlebars",
         "models/map",
         "collections/maps",
         "apps/style/views/left/new-map-modal-view",
+        "apps/style/visibility-mixin",
         "text!../../templates/left/select-map.html",
         "lib/modals/modal"
     ],
-    function (Marionette, Handlebars, Map, Maps, NewMap, MapTemplate, Modal) {
+    function ($, Marionette, Handlebars, Map, Maps, NewMap, PanelVisibilityExtensions, MapTemplate, Modal) {
         'use strict';
 
-        var SelectMapView = Marionette.ItemView.extend({
-
+        var SelectMapView = Marionette.ItemView.extend(_.extend({}, PanelVisibilityExtensions, {
+            stateKey: 'select-map',
+            isShowing: true,
             template: Handlebars.compile(MapTemplate),
 
-            events: {
-                'change #map-select': 'changeMap',
-                'click .add-map': 'showAddMapModal'
+            events: function () {
+                return _.extend(
+                    {
+                        'change #map-select': 'changeMap',
+                        'click .add-map': 'showAddMapModal'
+                    },
+                    PanelVisibilityExtensions.events
+                );
             },
             modal: null,
 
             initialize: function (opts) {
                 var that = this;
                 _.extend(this, opts);
+                this.restoreState();
                 if (!this.collection) {
                     // /api/0/maps/ API Endpoint gets built:
                     this.collection = new Maps();
@@ -35,20 +44,20 @@ define(["marionette",
                     });
                 }
                 this.modal = new Modal();
-                
+
                 this.listenTo(this.collection, 'reset', this.drawOnce);
                 this.listenTo(this.app.vent, "create-new-map", this.newMap);
             },
 
-            setModel: function (collection) {
+            setModel: function () {
                 this.app.currentMap = this.collection.at(0);
             },
 
             newMap: function (mapAttrs) {
-                var that = this;
-                var latLng = this.app.basemapView.getCenter();
+                var that = this,
+                    latLng = this.app.basemapView.getCenter();
                 this.map = new Map({
-                    name: mapAttrs.name, 
+                    name: mapAttrs.name,
                     slug: mapAttrs.slug,
                     center: {
                         "type": "Point",
@@ -65,29 +74,33 @@ define(["marionette",
                 this.collection.add(this.map);
                 
                 this.map.save(null, {
-                    success: function() {
-                        that.drawOnce(),
-                        that.modal.hide()
-                    },
+                    success: this.render,
                     error: function (model, response){
-                        that.app.vent.trigger("send-modal-error", response); 
-                    }       
+                        var messages = JSON.parse(response.responseText);
+                        console.log(messages);
+                        if (messages.slug && messages.slug.length > 0) {
+                            that.slugError = messages.slug[0];
+                            console.log("should have error message", that.slugError);
+                        }
+                        that.app.vent.trigger("send-modal-error", that.slugError);
+                    }
+                    
                 });
             },
 
             drawOnce: function () {
                 this.render();
-                var $selected = this.$el.find("#map-select").val();
-                var selectedMapModel = this.collection.get($selected);
+                var $selected = this.$el.find("#map-select").val(),
+                    selectedMapModel = this.collection.get($selected);
 
                 this.setCenterZoom(selectedMapModel);
                 this.setMapTypeId(selectedMapModel);
                 this.app.vent.trigger("change-map", selectedMapModel);
             },
 
-            changeMap: function(e) {
-                var id = $(e.target).val();
-                var selectedMapModel = this.collection.get(id);
+            changeMap: function (e) {
+                var id = $(e.target).val(),
+                    selectedMapModel = this.collection.get(id);
 
                 this.setCenterZoom(selectedMapModel);
                 this.setMapTypeId(selectedMapModel);
@@ -95,37 +108,36 @@ define(["marionette",
                 this.app.vent.trigger("hide-right-panel");
             },
 
-            showAddMapModal: function() {
-                var createMapModal = new NewMap({
+            showAddMapModal: function () {
+                var createMapModel = new NewMap({
                     app: this.app
                 });
                 this.modal.update({
                     class: "add-map",
-                    view: createMapModal,
+                    view: createMapModel,
                     title: 'Add Map',
                     width: 400,
                     height: 0,
                     closeButtonText: "Done",
                     showSaveButton: true,
-                    saveFunction: createMapModal.saveMap.bind(createMapModal),
+                    saveFunction: createMapModel.saveMap.bind(createMapModel),
                     showDeleteButton: false
                 });
                 this.modal.show();
+                this.showSection();
             },
 
             setCenterZoom: function (selectedMapModel) {
-                if(!selectedMapModel) {return;}
                 var location = selectedMapModel.getDefaultLocation();
                 this.app.basemapView.setCenter(location.center);
                 this.app.basemapView.setZoom(location.zoom);
             },
 
             setMapTypeId: function (selectedMapModel) {
-                if(!selectedMapModel) {return;}
                 var skin = selectedMapModel.getDefaultSkin();
                 this.app.basemapView.setMapTypeId(skin.basemap);
             }
 
-        });
+        }));
         return SelectMapView;
     });

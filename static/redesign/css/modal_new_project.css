@@ -41,10 +41,13 @@
 
 }
 
-.modal-body{
+.modal-body {
     background-color: #fafafc;
     border-top: 1px solid #e4e5eb;
     /* padding: 20px 4px; */
+}
+.modal-body > div {
+    margin: 20px;
 }
 
 /* Modal Footer */
@@ -176,6 +179,7 @@
 .modal-body .grey-bg{
     background-color: #eee;
     border-top: 1px solid #ddd;
+    margin: 0px !important;
 }
 .filter {
     padding: 18px;

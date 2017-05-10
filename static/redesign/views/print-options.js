@@ -1,14 +1,10 @@
-define(["jquery",
+define(["underscore",
         "marionette",
         "handlebars",
-        "lib/modals/modal",
-        "lib/maps/basemap",
         "models/print",
-        "views/generate-print",
         "text!../templates/print-options.html"
     ],
-    function ($, Marionette, Handlebars, Modal,
-              BaseMap, Print, GeneratePrint, PrintOptionsTemplate) {
+    function (_, Marionette, Handlebars, Print, PrintOptionsTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var PrintOptions = Marionette.ItemView.extend({
@@ -21,38 +17,31 @@ define(["jquery",
             initialize: function (opts) {
                 /*This Layout View relies on a Map model which gets set from the change-map event,
                 which is triggered from the select-map-view.js */
-                this.app = opts.app;
-                this.model = new Print();
+                _.extend(this, opts);
                 this.render();
-                this.basemapView = this.app.basemapView; // Let's try this for now....
             },
 
-            templateHelpers: function(){
-                ///*
+            templateHelpers: function () {
                 return {
                     pdf: this.pdf,
                     thumb: this.thumb
                 };
-                //*/
             },
 
-            detectLayout: function(){
+            detectLayout: function () {
+                var layoutVal = 0,
+                    option_layout_val = this.$el.find(".option-layout:checked").val(),
+                    option_data_val = this.$el.find(".option-data:checked").val();
 
-                var layoutVal = 0;
-                var option_layout = this.$el.find(".option-layout").prop("checked");
-                var option_data = this.$el.find(".option-data").prop("checked");
-                var option_layout_val = this.$el.find(".option-layout:checked").val();
-                var option_data_val = this.$el.find(".option-data:checked").val();
-
-                if (option_data_val == "Yes"){
+                if (option_data_val == "Yes") {
                     layoutVal += 0;
-                } else if (option_data_val == "No"){
+                } else if (option_data_val == "No") {
                     layoutVal += 2;
                 }
 
-                if (option_layout_val == "Portrait"){
+                if (option_layout_val == "Portrait") {
                     layoutVal += 0;
-                } else if (option_layout_val == "Landscape"){
+                } else if (option_layout_val == "Landscape") {
                     layoutVal += 1;
                 }
 
@@ -63,9 +52,9 @@ define(["jquery",
 
             },
 
-            makePrint: function(){
-                var printMap = this.model;
-                var that = this;
+            makePrint: function () {
+                var printMap = this.model = new Print(),
+                    that = this;
                 printMap.center = this.basemapView.getCenter();
                 printMap.set("zoom", this.basemapView.getZoom());
                 printMap.set("project_id", this.app.getProjectID());
@@ -98,4 +87,4 @@ define(["jquery",
 
         });
         return PrintOptions;
-});
+    });
