@@ -2,11 +2,12 @@ define(["jquery",
         "marionette",
         "underscore",
         "handlebars",
+        "apps/gallery/views/create-media",
         "lib/maps/overlays/icon",
         "lib/maps/marker-overlays",
         "text!../templates/list-detail.html",
         "text!../templates/list.html"],
-    function ($, Marionette, _, Handlebars, Icon, OverlayListView, ItemTemplate, ListTemplate) {
+    function ($, Marionette, _, Handlebars, CreateMedia, Icon, OverlayListView, ItemTemplate, ListTemplate) {
         'use strict';
         var MarkerListing = Marionette.CompositeView.extend({
 
@@ -86,7 +87,8 @@ define(["jquery",
             events: {
                 'click .zoom-to-extents': 'zoomToExtents',
                 'click .hide-panel': 'hidePanel',
-                'click .show-panel': 'showPanel'
+                'click .show-panel': 'showPanel'//,
+                //'click .add-new': 'triggerAddNewMap'
             },
             hidePanel: function (e) {
                 this.$el.find(".marker-container").hide();
@@ -136,6 +138,47 @@ define(["jquery",
                     isShowing: true
                 });
             },
+
+            // The commneted code caused an undefined error
+            // it has to be solve with some way to get the trigger
+            // to be sent to toolbar-dataview.js under addNewMap function.
+
+            /*
+            triggerAddNewMap: function (e) {
+                var mediaType = $(e.target).attr('data-value'),
+                    url = "//" + mediaType + "/new";
+                if (mediaType === 'photos' || mediaType === 'audio') {
+                    this.createUploadModal();
+                } else {
+                    this.app.router.navigate(url, {
+                        trigger: true,
+                        forceReload: true
+                    });
+                }
+                e.preventDefault();
+            },
+            //*/
+
+
+            /*
+            createUploadModal: function () {
+                var uploadMediaForm = new CreateMedia({
+                    app: this.app
+                });
+                this.modal.update({
+                    view: uploadMediaForm,
+                    title: 'Upload Media',
+                    width: 800,
+                    height: 350,
+                    closeButtonText: "Done",
+                    showSaveButton: false,
+                    showDeleteButton: false
+                    // bind the scope of the save function to the source view:
+                    //saveFunction: createForm.saveFormSettings.bind(createForm)
+                });
+                this.modal.show();
+            },
+            //*/
 
             doSearch: function (term) {
                 this.collection.doSearch(term, this.app.getProjectID(), this.fields);
