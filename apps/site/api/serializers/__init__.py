@@ -39,7 +39,7 @@ class LayoutSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Layout
-        fields = ('id', 'name', 'display_name')
+        fields = ('id', 'name', 'display_name', 'map_width_pixels', 'map_height_pixels')
         depth = 0
 
 

@@ -40,9 +40,9 @@ define(["underscore",
                 }
 
                 if (option_layout_val == "Portrait") {
-                    layoutVal += 0;
-                } else if (option_layout_val == "Landscape") {
                     layoutVal += 1;
+                } else if (option_layout_val == "Landscape") {
+                    layoutVal += 0;
                 }
 
                 layoutVal += 1;

@@ -66,7 +66,7 @@ class StaticMap():
         else:
             zoom = zoom - 1
             map_url = map_type.static_url.format(x=center.x, y=center.y, z=zoom, w=width / 2, h=height / 2)
-
+        raise Exception(map_url)
         # This '3 tries' while loop accounts for the fact that in the
         # Stamen static map print, the path is sometimes returned well
         # before the file exists on the server. So, after each failure,

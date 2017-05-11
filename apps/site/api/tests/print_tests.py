@@ -75,19 +75,20 @@ class ApiPrintListTest(test.TestCase, ViewMixinAPI, PrintMixin):
         map_provider = 1
         zoom = 17
 
-        response = self.client_user.post(self.url,
-                                         data=urllib.urlencode({
-                                             'center': self.point,
-                                             'map_title': map_title,
-                                             'instructions': instructions,
-                                             'layout': layout,
-                                             'map_provider': map_provider,
-                                             'zoom': zoom,
-                                             'project_id': self.project.id
-                                         }),
-                                         HTTP_X_CSRFTOKEN=self.csrf_token,
-                                         content_type="application/x-www-form-urlencoded"
-                                         )
+        response = self.client_user.post(
+            self.url,
+            data=urllib.urlencode({
+                'center': self.point,
+                'map_title': map_title,
+                'instructions': instructions,
+                'layout': layout,
+                'map_provider': map_provider,
+                'zoom': zoom,
+                'project_id': self.project.id
+            }),
+            HTTP_X_CSRFTOKEN=self.csrf_token,
+            content_type="application/x-www-form-urlencoded"
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         new_object = (models.Print.objects
                       .select_related('layout', 'map_provider')
