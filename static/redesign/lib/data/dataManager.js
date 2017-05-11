@@ -85,7 +85,10 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                         var formID = key.split("_")[1],
                             recordsURL = '/api/0/forms/' + formID + '/data/',
                             fieldsURL = '/api/0/forms/' + formID + '/fields/',
-                            records = new Records(data, { url: recordsURL }),
+                            records = new Records(data, {
+                                url: recordsURL,
+                                key: 'form_' + formID
+                            }),
                             fields = new Fields(null, {url: fieldsURL });
                         fields.fetch({ reset: true, success: function () {
                             // some extra post-processing for custom datatypes so that

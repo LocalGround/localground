@@ -108,7 +108,6 @@ define([
         triggerAddNewMap: function (e) {
             var mediaType = $(e.target).attr('data-value'),
                 url = "//" + mediaType + "/new";
-            alert(mediaType);
             if (mediaType === 'photos' || mediaType === 'audio') {
                 this.createUploadModal();
             } else {

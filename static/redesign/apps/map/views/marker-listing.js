@@ -153,28 +153,6 @@ define(["jquery",
                 });
                 e.preventDefault();
             },
-            //*/
-
-
-            //*
-            createUploadModal: function () {
-                var uploadMediaForm = new CreateMedia({
-                    app: this.app
-                });
-                this.modal.update({
-                    view: uploadMediaForm,
-                    title: 'Upload Media',
-                    width: 800,
-                    height: 350,
-                    closeButtonText: "Done",
-                    showSaveButton: false,
-                    showDeleteButton: false
-                    // bind the scope of the save function to the source view:
-                    //saveFunction: createForm.saveFormSettings.bind(createForm)
-                });
-                this.modal.show();
-            },
-            //*/
 
             doSearch: function (term) {
                 this.collection.doSearch(term, this.app.getProjectID(), this.fields);
