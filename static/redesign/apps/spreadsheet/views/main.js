@@ -500,6 +500,9 @@ define(["marionette",
                         for (var i = 0; i < this.fields.length; ++i){
                             // Make sure to add in the "-" symbol after field name to delete column
                             var type = this.fields.at(i).get("data_type").toLowerCase();
+                            var field_format = "";
+                            var field_dateFormat = "";
+                            var field_correctFormat = false;
                             switch (type) {
                                 case "boolean":
                                     type = "checkbox";
@@ -509,9 +512,12 @@ define(["marionette",
                                     break;
                                 case "decimal":
                                     type = "numeric";
+                                    field_format = "0,0.000";
                                     break;
                                 case "date-time":
                                     type = "date";
+                                    field_dateFormat = "YYYY-MM-DDThh:mm";
+                                    field_correctFormat = true;
                                     break;
                                 case "rating":
                                     type = "dropdown";
@@ -521,7 +527,10 @@ define(["marionette",
                             }
                             cols.push({
                                 data: this.fields.at(i).get("col_name"),
-                                type: type
+                                type: type,
+                                format: field_format,
+                                dateFormat: field_dateFormat,
+                                correctFormat: field_correctFormat
                             })
                         };
 
