@@ -12,12 +12,16 @@ define(["jquery",
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
-            buckets: 4,
+            buckets: function() {
+                return this.collection.length || 4
+            },
             paletteOpacity: .8,
             width: 50,
             categoricalList: [],
             continuousList: [],
             allColors: [],
+            selectedColorPalette: null,
+            paletteId: null,
             rules: [],
             layerDraft: {
                 continuous: null,
@@ -34,6 +38,7 @@ define(["jquery",
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);
+                        this.listenTo(this.app.vent, "update-opacity", this.updateSymbolOpacity);
                     },
                     template: Handlebars.compile(MarkerStyleChildTemplate),
                     events: {
@@ -42,14 +47,16 @@ define(["jquery",
                     },
                     modelEvents: {
                         'change': 'updateLayerSymbols'
+                        
                     },
                     tagName: "tr",
                     className: "table-row",
                     templateHelpers: function () {
-                        console.log(this, this.dataType);
+                    //    console.log(this, this.dataType);
                         return {
                             dataType: this.dataType,
-                            icons: IconLookup.getIcons()
+                            icons: IconLookup.getIcons(),
+                            fillOpacity: this.fillOpacity
                         };
                     },
                     setSymbol: function (e) {
@@ -58,7 +65,12 @@ define(["jquery",
                     },
                     updateLayerSymbols: function () {
                         this.layer.setSymbol(this.model);
-                    }
+                    }, 
+                    updateSymbolOpacity: function (opacity) {
+                        this.model.set("fillOpacity", opacity);
+                       // this.render();
+                       this.templateHelpers();
+                    },
 
                 });
             },
@@ -76,13 +88,10 @@ define(["jquery",
                 _.extend(this,opts);
                 this.dataType = this.model.get("layer_type");
                 this.data_source = this.model.get("data_source"); //e.g. "form_1"
-                console.log(this.model);
-                console.log(this.dataType);
-                console.log(this.data_source);
+                this.buildPalettes();
                 this.buildColumnList();
                 this.displaySymbols();
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
-                this.buildPalettes();
                 $('body').click(this.hideColorRamp);
                 this.listenTo(this.app.vent, 'update-data-source', this.buildColumnList);
             },
@@ -102,31 +111,13 @@ define(["jquery",
                 //rebuild symbols collection based on updated info:
                 this.collection = new Backbone.Collection(this.model.get("symbols"));
                 this.render();
-                this.addNewSymbol();
-            },
-
-            addNewSymbol: function() {
-                this.collection.add({
-                    "fillOpacity": 0.5,
-                    "title": "Less Than 50",
-                    "strokeWeight": 5,
-                    "strokeOpacity": 0.5,
-                    "rule": "b < 50",
-                    "width": 50,
-                    "shape": "photo",
-                    "fillColor": "#FFFFFF",
-                    "strokeColor": "#7075FF",
-                   // "id": 100,
-                    "color": "#000" 
-                });
-                console.log("new symbol called", this.collection);
-                this.render();
             },
 
             templateHelpers: function () {
                 var helpers = {
                     dataType: this.dataType,
                     allColors: this.allColors,
+                    selectedColorPalette: this.selectedColorPalette,
                     buckets: this.buckets,
                     categoricalList: this.categoricalList,
                     continuousList: this.continuousList, 
@@ -143,7 +134,7 @@ define(["jquery",
                 'change #data-type-select': 'selectDataType',
                 'change #cat-prop': 'catData',
                 'change #cont-prop': 'contData',
-                'change #bucket': 'buildPalettes',
+                'change #bucket': 'updateBuckets',
                 'change #palette-opacity': 'updatePaletteOpacity',
                 'change .global-marker-shape': 'updateGlobalShape',
                 'change .marker-width': 'updateWidth',
@@ -170,9 +161,7 @@ define(["jquery",
 
             displaySymbols: function () {
                 this.collection = new Backbone.Collection(this.model.get("symbols"));
-
                 this.render();
-                this.addNewSymbol();
             },
             buildColumnList: function () {
                 this.categoricalList.length = 0;
@@ -231,7 +220,6 @@ define(["jquery",
                 dataEntry.collection.models.forEach(function(d) {
                     that.continuousData.push(d.get($selected));
                 });
-                console.log(this.continuousData);
                 var min = Math.min(...this.continuousData),
                     max = Math.max(...this.continuousData), 
                     range = max-min,
@@ -240,6 +228,8 @@ define(["jquery",
                     counter = 0;
                 console.log(range, this.buckets, segmentSize);
                 this.layerDraft.continuous = new Symbols();
+                console.log(this.collection);
+                console.log(this.layerDraft.continuous);
                 while (currentFloor < max) {
                     console.log("bucket #" + counter, this.allColors[0][counter]);
                     this.layerDraft.continuous.add({
@@ -250,9 +240,9 @@ define(["jquery",
                         "strokeOpacity": parseFloat(this.$el.find("#stroke-opacity").val()),
                         "width": parseFloat(this.$el.find("#marker-width").val()) || 20,
                         "shape": this.$el.find(".global-marker-shape").val(),
-                        "fillColor": this.allColors[1][counter],
+                        "fillColor": this.selectedColorPalette[counter],
                         "strokeColor": "#" + this.$el.find("#stroke-color").val(),
-                        "color": this.allColors[1][counter],
+                        "color": this.selectedColorPalette[counter],
                         "id": (counter + 1)
                     });
                     counter++;
@@ -262,6 +252,8 @@ define(["jquery",
                 this.collection = this.layerDraft.continuous;
                 this.model.set("symbols", this.layerDraft.continuous.toJSON());
                 console.log(this.collection);
+                console.log(this.model);
+                console.log("selected color palette from contData: ", this.selectedColorPalette);
 
                 this.render();
 /*
@@ -294,30 +286,39 @@ define(["jquery",
                 this.properties = [];
             },
 
+            updateBuckets: function(e) {
+                //var numBuckets = $(e.target).val();
+                this.model.set({buckets: $(e.target).val() });
+                console.log("new bucket #: " + this.model.get("buckets"));
+                console.log(this.model);
+                this.buildPalettes();
+            },
+
             buildPalettes: function () {
                 var seq1, seq2, seq3, seq4, seq5, seq6;
                 this.buckets = this.$el.find("#bucket").val() || 4;
-                seq1 = palette('tol-dv', this.buckets);
-                seq2 = palette('cb-Blues', this.buckets);
-                seq3 = palette('cb-Oranges', this.buckets);
-                seq4 = palette('cb-Greys', this.buckets);
-                seq5 = palette('cb-YlGn', this.buckets);
-                seq6 = palette('cb-RdYlBu', this.buckets);
+                seq1 = palette('cb-Blues', this.buckets);
+                seq2 = palette('cb-Oranges', this.buckets);
+                seq3 = palette('cb-Greys', this.buckets);
+                seq4 = palette('cb-YlGn', this.buckets);
+                seq5 = palette('cb-RdYlBu', this.buckets);
+                seq6 = palette('tol-dv', this.buckets);
                 this.allColors = [seq1, seq2, seq3, seq4, seq5, seq6];
+                this.selectedColorPalette = this.allColors[this.paletteId || 0];
                // this.allColors.push(seq1, seq2, seq3, seq4, seq5, seq6);
                 this.contData();
                 this.render();
             },
 
             updatePaletteOpacity: function() {
-                var opacity = this.$el.find("#palette-opacity").val();
+                var opacity = parseFloat(this.$el.find("#palette-opacity").val());
                 if (opacity > 1) {
                     opacity = 1;
                 } else if (opacity < 0 ) {
                     opacity = 0;
                 } 
-                console.log(this.model.get("symbols"));
                 this.paletteOpacity = opacity;
+                this.app.vent.trigger("update-opacity", opacity);
                // this.model.symbols.set("fillOpacity", this.paletteOpacity);
                 this.render();
             },
@@ -352,11 +353,15 @@ define(["jquery",
                 this.$el.find(".palette-wrapper").toggle();
             },
 
-            selectPalette: function () {
+            selectPalette: function (e) {
                 this.$el.find(".palette-wrapper").toggle();
                 // Need to write some code to hide this when user clicks outside pop-up div
 
                 // Need more code below to save and display selected palette
+                this.paletteId = $(e.target).val();
+                this.selectedColorPalette = this.allColors[$(e.target).val()];
+                this.contData();
+                console.log("selected color palette: ", this.selectedColorPalette);
             }
 
         });

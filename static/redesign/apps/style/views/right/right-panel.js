@@ -99,19 +99,22 @@ define(["jquery",
                 var that = this;
                 var title = this.$el.find(".layer-title").val(),
                     dataSource = this.$el.find(".selected-data-source").val(),
-                    layerType = this.$el.find("#data-type-select").val();
+                    layerType = this.$el.find("#data-type-select").val(), 
+                    buckets = this.$el.find("#bucket").val();
                 if (this.model.get("filters") === null) {
                     this.model.set("filters", { 'tag' : 'nothing' });
                 }
                 this.model.set("title", title);
                 this.model.set("data_source", dataSource);
                 this.model.set("layer_type", layerType);
+                this.model.set("buckets", buckets);
                 this.model.save(null, {
                     error: function () {
                         console.log('error');
                     },
                     success: function () {
                         console.log('success');
+                        console.log(that.model);
                         that.collection.add(that.model);
                     }
                 });
