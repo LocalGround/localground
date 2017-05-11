@@ -7,7 +7,7 @@ from localground.apps.site.api import fields
 class LayerSerializer(BaseSerializer):
     symbols = fields.JSONField(style={'base_template': 'json.html', 'rows': 5},
                                required=False)
-    filters = fields.JSONField(style={'base_template': 'json.html', 'rows': 5},
+    metadata = fields.JSONField(style={'base_template': 'json.html', 'rows': 5},
                                required=False)
     map_id = serializers.PrimaryKeyRelatedField(
         queryset=models.StyledMap.objects.all(),
@@ -17,8 +17,7 @@ class LayerSerializer(BaseSerializer):
     class Meta:
         model = models.Layer
         fields = BaseSerializer.Meta.fields + \
-            ('title', 'data_source', 'symbol_shape',
-             'layer_type', 'filters', 'map_id', 'symbols')
+            ('title', 'data_source', 'layer_type', 'metadata', 'map_id', 'symbols')
         depth = 0
 
 

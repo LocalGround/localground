@@ -11,18 +11,16 @@ class Layer(BaseAudit):
         ('individual', 'Individual Sites'),
     )
     
+    styled_map = models.ForeignKey('StyledMap', related_name='%(class)s+')
     title = models.CharField(max_length=255, null=False, blank=False)
     description = models.TextField(null=True, blank=True)
     data_source = models.TextField(null=True, blank=True)
-    symbol_shape = models.TextField(null=True, blank=True)
-    styled_map = models.ForeignKey('StyledMap', related_name='%(class)s+')
-    
     layer_type = models.CharField(
         max_length=64,
         choices=LAYER_TYPES,
         default='basic',
     )
-    filters = JSONField(blank=True, null=True)
+    metadata = JSONField(blank=True, null=True)
     symbols = JSONField(blank=True, null=True)
     
     def can_view(self, user, access_key=None):
