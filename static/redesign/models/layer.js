@@ -91,7 +91,8 @@ define(["backbone", "models/base", "models/symbol"], function (Backbone, Base, S
         },
         toJSON: function () {
             var json = Base.prototype.toJSON.call(this),
-                symbols;
+                symbols,
+                metadata;
 
             // extra code to remove icon references
             // to avoid JSON serialization errors:
@@ -101,6 +102,12 @@ define(["backbone", "models/base", "models/symbol"], function (Backbone, Base, S
                     symbol.set("icon", null);
                 });
                 json.symbols = JSON.stringify(symbols);
+            }
+
+            if (json.metadata !== null) {
+                metadata = json.metadata;
+                console.log(json);
+                json.metadata = JSON.stringify(metadata);
             }
 
             // serialize filters also:

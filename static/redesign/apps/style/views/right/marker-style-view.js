@@ -29,6 +29,7 @@ define(["jquery",
                 simple: null, 
                 individual: null
             },
+            metadata: {},
             template: Handlebars.compile(MarkerStyleTemplate),
             modelEvents: {
                 'change:symbols': 'reRender'
@@ -68,7 +69,7 @@ define(["jquery",
                     }, 
                     updateSymbolOpacity: function (opacity) {
                         this.model.set("fillOpacity", opacity);
-                       // this.render();
+                        this.render();
                        this.templateHelpers();
                     },
 
@@ -311,6 +312,7 @@ define(["jquery",
             },
 
             updatePaletteOpacity: function() {
+                var localMeta;
                 var opacity = parseFloat(this.$el.find("#palette-opacity").val());
                 if (opacity > 1) {
                     opacity = 1;
@@ -318,8 +320,11 @@ define(["jquery",
                     opacity = 0;
                 } 
                 this.paletteOpacity = opacity;
-                this.app.vent.trigger("update-opacity", opacity);
-               // this.model.symbols.set("fillOpacity", this.paletteOpacity);
+                //this.app.vent.trigger("update-opacity", opacity); 
+                localMeta = this.model.get("metadata") || {};
+                localMeta.fillOpacity = opacity;
+                this.model.set("metadata", {foo: "bar"});
+                console.log("updated opacity: ", this.model);
                 this.render();
             },
 

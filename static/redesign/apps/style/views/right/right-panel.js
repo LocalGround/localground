@@ -104,10 +104,9 @@ define(["jquery",
                 if (this.model.get("filters") === null) {
                     this.model.set("filters", { 'tag' : 'nothing' });
                 }
-                this.model.set("title", title);
-                this.model.set("data_source", dataSource);
+               // this.model.set("title", title);
+              //  this.model.set("data_source", dataSource);
                 this.model.set("layer_type", layerType);
-                this.model.set("buckets", buckets);
                 this.model.save(null, {
                     error: function () {
                         console.log('error');

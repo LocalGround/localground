@@ -17,7 +17,7 @@ define(["marionette",
             
             
             events: {
-                //"change .layer-title": "updateTitle"
+                "change .layer-title": "updateTitle",
                 "change .selected-data-source" : "changeDataSource"
             },
             
@@ -32,16 +32,16 @@ define(["marionette",
                 var dataSource = this.$el.find(".selected-data-source").val();
                 this.model.set("data_source", dataSource);
                 this.app.vent.trigger('update-data-source');
-            }
+            },
 
-            /*
+            
             updateTitle: function () {
                 var title = this.$el.find('.layer-title').val();
                 this.model.set("title", title);
                 console.log(title);
                 this.app.vent.trigger("update-title", title);
             }
-            */
+            
         });
         return DataSourceView;
     });
