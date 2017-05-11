@@ -60,6 +60,7 @@ define([
             this.listenTo(this.app.vent, 'show-modal', this.showModal);
             this.listenTo(this.app.vent, 'hide-modal', this.hideModal);
             this.listenTo(this.app.vent, 'show-list', this.updateNewObejctRoute);
+            this.listenTo(this.app.vent, 'add-new-item-to-map', this.triggerAddNewMap);
             $('body').click(this.hideMenus);
             this.modal = new Modal();
             this.forms = new Forms();
@@ -107,6 +108,7 @@ define([
         triggerAddNewMap: function (e) {
             var mediaType = $(e.target).attr('data-value'),
                 url = "//" + mediaType + "/new";
+            alert(mediaType);
             if (mediaType === 'photos' || mediaType === 'audio') {
                 this.createUploadModal();
             } else {

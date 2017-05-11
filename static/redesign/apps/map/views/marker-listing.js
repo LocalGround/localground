@@ -18,7 +18,8 @@ define(["jquery",
             templateHelpers: function () {
                 var d = {
                     title: this.title,
-                    typePlural: this.typePlural
+                    typePlural: this.typePlural,
+                    key: this.collection.key
                 };
                 return d;
             },
@@ -145,16 +146,11 @@ define(["jquery",
 
             //*
             triggerAddNewMap: function (e) {
-                var mediaType = $(e.target).attr('data-value'),
-                    url = "//" + mediaType + "/new";
-                if (mediaType === 'photos' || mediaType === 'audio') {
-                    this.createUploadModal();
-                } else {
-                    this.app.router.navigate(url, {
-                        trigger: true,
-                        forceReload: true
-                    });
-                }
+                var target = this.$el.find('.add-new');
+                this.app.vent.trigger('add-new-item-to-map', {
+                    target: target,
+                    preventDefault: function () {}
+                });
                 e.preventDefault();
             },
             //*/

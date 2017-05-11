@@ -8,7 +8,7 @@ define(["marionette", "underscore", "jquery"],
              * @see <a href="//localground.org/api/0/tiles">Local Ground Data API</a>.
              */
             initialize: function (opts) {
-                var key;
+                var key, that = this;
                 _.extend(this, opts);
                 this.tilesets = this.app.dataManager.tilesets;
                 this.map = this.app.map;
@@ -16,6 +16,9 @@ define(["marionette", "underscore", "jquery"],
                     this.map.mapTypes.set(key, this.tilesets.mapTypes[key]);
                 }
                 this.setActiveMapType(this.activeMapTypeID);
+                setTimeout(function () {
+                    that.showCustomAttribution(that.activeMapTypeID);
+                }, 500);
                 this.app.vent.on('map-tiles-changed', this.showCustomAttribution.bind(this));
             },
             getTileSetByKey: function (key, value) {

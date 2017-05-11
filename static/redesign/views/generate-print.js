@@ -41,7 +41,7 @@ define(["marionette",
             showPrintOptions: function () {
                 this.printOptions = new PrintOptions({
                     app: this.app,
-                    basemapView: this.basemapView
+                    parent: this
                 });
                 this.regionLeft.show(this.printOptions);
             },

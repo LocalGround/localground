@@ -10,7 +10,7 @@ define(["underscore",
         var PrintOptions = Marionette.ItemView.extend({
             template: Handlebars.compile(PrintOptionsTemplate),
 
-            basemapView: null,
+            parent: null,
             pdf: null,
             thumb: null,
 
@@ -55,6 +55,7 @@ define(["underscore",
             makePrint: function () {
                 var printMap = this.model = new Print(),
                     that = this;
+                this.basemapView = this.parent.basemapView;
                 printMap.center = this.basemapView.getCenter();
                 printMap.set("zoom", this.basemapView.getZoom());
                 printMap.set("project_id", this.app.getProjectID());
