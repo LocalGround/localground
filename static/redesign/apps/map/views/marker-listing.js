@@ -87,8 +87,8 @@ define(["jquery",
             events: {
                 'click .zoom-to-extents': 'zoomToExtents',
                 'click .hide-panel': 'hidePanel',
-                'click .show-panel': 'showPanel'//,
-                //'click .add-new': 'triggerAddNewMap'
+                'click .show-panel': 'showPanel',
+                'click .add-new': 'triggerAddNewMap'
             },
             hidePanel: function (e) {
                 this.$el.find(".marker-container").hide();
@@ -143,7 +143,7 @@ define(["jquery",
             // it has to be solve with some way to get the trigger
             // to be sent to toolbar-dataview.js under addNewMap function.
 
-            /*
+            //*
             triggerAddNewMap: function (e) {
                 var mediaType = $(e.target).attr('data-value'),
                     url = "//" + mediaType + "/new";
@@ -160,7 +160,7 @@ define(["jquery",
             //*/
 
 
-            /*
+            //*
             createUploadModal: function () {
                 var uploadMediaForm = new CreateMedia({
                     app: this.app
