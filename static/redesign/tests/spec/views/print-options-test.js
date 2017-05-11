@@ -1,11 +1,10 @@
 var rootDir = "../../";
 define([
     rootDir + "views/print-options",
-    rootDir + "models/print",
     rootDir + "lib/maps/basemap",
     "tests/spec-helper"
 ],
-    function (PrintOptions, Print, BaseMap) {
+    function (PrintOptions, BaseMap) {
         'use strict';
         var fixture, newPrintOptions, newBaseMap, initSpies, initPrintOptions;
 
@@ -13,11 +12,8 @@ define([
             // Print options creation
             spyOn(PrintOptions.prototype, "initialize").and.callThrough();
             spyOn(PrintOptions.prototype, "render").and.callThrough();
-
             spyOn(PrintOptions.prototype, "detectLayout").and.callThrough();
             spyOn(PrintOptions.prototype, "makePrint").and.callThrough();
-
-
             spyOn(BaseMap.prototype, "getMapTypeId").and.returnValue(scope.map.getMapTypeId());
 
         };
@@ -28,12 +24,14 @@ define([
                 showSearchControl: false, // added for rosa parks pilot
                 minZoom: 13, // added for rosa parks pilot
                 mapID: "print_map",
-                map: scope.map
+                map: scope.map,
             });
 
             newPrintOptions = new PrintOptions({
                 app: scope.app,
-                basemapView: newBaseMap
+                parent: {
+                    basemapView: newBaseMap
+                }
             });
         };
 
