@@ -516,7 +516,7 @@ define(["marionette",
                                     break;
                                 case "date-time":
                                     type = "date";
-                                    field_dateFormat = "MM-DD-YYYY";
+                                    field_dateFormat = "YYYY-MM-DDThh:mm";
                                     field_correctFormat = true;
                                     break;
                                 case "rating":

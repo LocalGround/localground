@@ -61,7 +61,7 @@ input[type="number"]{
     width: 40px;
     border-style:solid;
     border-width:1px;
-    border-color:#ebecf2; 
+    border-color:#ebecf2;
 }
 input[type="checkbox"]{
     margin-top: 10px !important;
@@ -107,7 +107,7 @@ nav .selected{
 
 .project-detail > div{
     display:inline-block;
-} 
+}
 
 .project-detail h3 {
     vertical-align: middle;
@@ -686,7 +686,7 @@ p.coords {
 }
 
 #add-media-button:hover{
-  color:#555555;  
+  color:#555555;
 }
 
 #add-media-button .fa {
@@ -797,7 +797,7 @@ tbody .failure-message, tbody .success-message {
     display: block;
     position: absolute;
     /* These widths vary for the various places this confirmation is used... */
-    /*width: initial;*/ 
+    /*width: initial;*/
     width: calc(100% - 60px);
 }
 
@@ -1133,9 +1133,9 @@ tbody .failure-message, tbody .success-message {
 }
 
 /*.side-panel img,
-#marker-detail-panel img{    
+#marker-detail-panel img{
     width: calc(100% - 40px);
-    padding: 20px 20px 10px;    
+    padding: 20px 20px 10px;
 }*/
 
 /****************************************************************************************/
@@ -1549,7 +1549,7 @@ li.current .photo {
     top: 50%;
     transform: translateY(-50%);
 }
-  
+
 .overlay {
   position: absolute;
   top: 0;
@@ -2052,3 +2052,25 @@ span.plus {
     opacity: 1;
 }
 
+/****************************************************************************************/
+/*                                       SPREADSBEET                                    */
+/****************************************************************************************/
+
+/**************************
+* HOT Calendar Table
+**************************/
+
+/*
+As of now, I am makiung a quick rough draft of the calendar by having a white background with border
+
+More details will be covered later
+*/
+
+.htDatepickerHolder{
+    border: solid black 2px;
+    background-color: white;
+}
+
+.htDatepickerHolder .pika-lendar th{
+    margin: 4px;
+}
