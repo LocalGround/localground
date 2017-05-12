@@ -2,12 +2,11 @@ define(["jquery",
         "marionette",
         "underscore",
         "handlebars",
-        "apps/gallery/views/create-media",
         "lib/maps/overlays/icon",
         "lib/maps/marker-overlays",
         "text!../templates/list-detail.html",
         "text!../templates/list.html"],
-    function ($, Marionette, _, Handlebars, CreateMedia, Icon, OverlayListView, ItemTemplate, ListTemplate) {
+    function ($, Marionette, _, Handlebars, Icon, MarkerOverlays, ItemTemplate, ListTemplate) {
         'use strict';
         var MarkerListing = Marionette.CompositeView.extend({
 
@@ -131,7 +130,7 @@ define(["jquery",
             },
 
             renderOverlays: function () {
-                this.overlays = new OverlayListView({
+                this.overlays = new MarkerOverlays({
                     collection: this.collection,
                     app: this.app,
                     dataType: this.typePlural,

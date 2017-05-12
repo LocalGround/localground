@@ -2,9 +2,10 @@ define(["marionette",
         "handlebars",
         "lib/maps/basemap",
         "views/print-options",
+        "lib/maps/marker-overlays",
         "text!../templates/print-layout.html"
     ],
-    function (Marionette, Handlebars, Basemap, PrintOptions, PrintLayoutTemplate) {
+    function (Marionette, Handlebars, Basemap, PrintOptions, MarkerOverlays, PrintLayoutTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var GeneratePrintLayout = Marionette.LayoutView.extend({
@@ -27,6 +28,7 @@ define(["marionette",
             onShow: function () {
                 this.showBasemap();
                 this.showPrintOptions();
+                this.showMarkerOverlays();
             },
 
             events: {
@@ -44,6 +46,30 @@ define(["marionette",
                     parent: this
                 });
                 this.regionLeft.show(this.printOptions);
+            },
+            showStyles: function () {
+                console.log("show styles");
+            },
+            showMarkerOverlays: function () {
+                var i,
+                    overlays,
+                    key,
+                    entry,
+                    dm = this.app.dataManager,
+                    dataSources = dm.getDataSources();
+                for (i = 0; i < dataSources.length; i++) {
+                    key = dataSources[i].value;
+                    entry = dm.getData(key);
+                    console.log(entry);
+                    console.log(entry.collection);
+                    overlays = new MarkerOverlays({
+                        collection: entry.collection,
+                        app: this.app,
+                        dataType: entry.collection.key,
+                        isShowing: true
+                    });
+                }
+                console.log("show overlays");
             },
 
             showBasemap: function () {
