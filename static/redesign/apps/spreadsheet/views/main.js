@@ -349,6 +349,31 @@ define(["marionette",
                 return td;
             },
 
+            ratingRenderer: function (instance, td, row, col, prop, value, cellProperties) {
+                var that = this,
+                    model = this.getModelFromCell(instance, row),
+                    idx = col - 3;
+
+                console.log(this.fields);
+                console.log(idx);
+                console.log(this.fields.at(idx));
+                var extras = this.fields.at(idx).get("extras");
+                console.log(extras);
+
+                var intVal = model.get(prop);
+                var textVal = null;
+
+                for (var i = 0; i < extras.length; ++i){
+                    if (extras[i].value == intVal){
+                        textVal = extras[i].name;
+                    }
+                }
+
+                td.innerHTML = textVal;
+                return td;
+
+            },
+
             showMediaBrowser: function (e) {
                 var row_idx = $(e.target).attr("row-index");
                 this.currentModel = this.collection.at(parseInt(row_idx));
@@ -448,6 +473,17 @@ define(["marionette",
                 this.collection.clearSearch(this.app.getProjectID());
             },
 
+            // Extract the name of the ratings for drop-down source
+            //
+            extractRatingstoSource: function(extras_array){
+                var source_names = [];
+                for (var i = 0 ; i < extras_array.length; ++i){
+                    source_names.push(extras_array[i].name);
+                }
+                console.log(source_names);
+                return source_names;
+            },
+
             getColumns: function () {
                 switch (this.collection.key) {
                     case "audio":
@@ -503,7 +539,8 @@ define(["marionette",
                             var field_format = "";
                             var field_dateFormat = "";
                             var field_correctFormat = false;
-                            var field_ratings_source_draft; // Will be replaced with customized version
+                            var field_ratings_source;
+                            var renderer;
                             switch (type) {
                                 case "boolean":
                                     type = "checkbox";
@@ -522,7 +559,10 @@ define(["marionette",
                                     break;
                                 case "rating":
                                     type = "dropdown";
-                                    field_ratings_source_draft = ["1 star", "2 star", "3 star", "4 star", "5 star"];
+                                    field_ratings_source = this.fields.at(i).get("extras");
+                                    field_ratings_source = this.extractRatingstoSource(field_ratings_source);
+                                    console.log(field_ratings_source);
+                                    renderer = this.ratingRenderer.bind(this);
                                     break;
                                 default:
                                     type = "text";
@@ -533,7 +573,8 @@ define(["marionette",
                                 format: field_format,
                                 dateFormat: field_dateFormat,
                                 correctFormat: field_correctFormat,
-                                source: field_ratings_source_draft
+                                source: field_ratings_source,
+                                renderer: renderer
                             })
                         };
 
