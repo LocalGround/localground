@@ -36,10 +36,11 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('name', )
 
 class LayoutSerializer(serializers.ModelSerializer):
-
+    map_width = serializers.CharField(source='map_width_pixels')
+    map_height = serializers.CharField(source='map_height_pixels')
     class Meta:
         model = models.Layout
-        fields = ('id', 'name', 'display_name', 'map_width_pixels', 'map_height_pixels')
+        fields = ('id', 'name', 'display_name', 'map_width', 'map_height')
         depth = 0
 
 

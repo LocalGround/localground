@@ -13,7 +13,9 @@ class LayoutMixin(object):
     metadata = {
         'display_name': {'read_only': False, 'required': False, 'type': 'string'},
         'id': {'read_only': True, 'required': False, 'type': 'integer'},
-        'name': {'read_only': False, 'required': True, 'type': 'string'}
+        'name': {'read_only': False, 'required': True, 'type': 'string'},
+        'map_width': { 'type': 'string', 'required': True, 'read_only': False },
+        'map_height': {'type': 'string', 'required': True, 'read_only': False }
     }
 
 def get_metadata():
