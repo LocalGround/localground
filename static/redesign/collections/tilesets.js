@@ -21,7 +21,9 @@ define(["underscore", "models/tileset", "collections/base"], function (_, TileSe
             return tileset.id;
         },
         initTiles: function () {
-            console.log('initTiles');
+            try {
+                if (google === 'undefined') { return; }
+            } catch (e) { return; }
             //iterate through each of the user's basemap tilesets and add it to the map:
             var that = this;
             this.each(function (tileset) {
