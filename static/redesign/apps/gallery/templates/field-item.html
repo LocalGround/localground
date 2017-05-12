@@ -1,10 +1,15 @@
+
+<td>
+    <!-- Radio button -->
+    <input class=display-field type="radio" name="display_field"
+    {{#if is_display_field}}checked{{/if}}><br>
+</td>
 <td>
     <i class="fa fa-grip fa-rotate-90"></i>
     <input type="text" class="fieldname" placeholder="field name" value="{{ col_alias }}">
     {{#if errorFieldName}}<span>Field Name Missing</span>{{/if}}
     {{#if serverErrorMessage}}<span>{{serverErrorMessage}}</span>{{/if}}
 
-</td>
 </td>
 <td class="form-reorder">
     {{#if id }}
@@ -27,10 +32,5 @@
         </select>
         {{#if errorFieldType}}<span>Field Type Missing</span>{{/if}}
     {{/if}}
-</td>
-<td>
-    <!-- Radio button -->
-    <input class=display-field type="radio" name="display_field"
-    {{#if is_display_field}}checked{{/if}}><br>
 </td>
 <td><a href="#" class="{{#if id }}delete-field {{else}} remove-row{{/if}} ">&times;</a></td>

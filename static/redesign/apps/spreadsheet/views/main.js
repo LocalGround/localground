@@ -503,6 +503,7 @@ define(["marionette",
                             var field_format = "";
                             var field_dateFormat = "";
                             var field_correctFormat = false;
+                            var field_ratings_source_draft; // Will be replaced with customized version
                             switch (type) {
                                 case "boolean":
                                     type = "checkbox";
@@ -521,6 +522,7 @@ define(["marionette",
                                     break;
                                 case "rating":
                                     type = "dropdown";
+                                    field_ratings_source_draft = ["1 star", "2 star", "3 star", "4 star", "5 star"];
                                     break;
                                 default:
                                     type = "text";
@@ -530,7 +532,8 @@ define(["marionette",
                                 type: type,
                                 format: field_format,
                                 dateFormat: field_dateFormat,
-                                correctFormat: field_correctFormat
+                                correctFormat: field_correctFormat,
+                                source: field_ratings_source_draft
                             })
                         };
 
