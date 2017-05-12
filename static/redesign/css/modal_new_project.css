@@ -176,6 +176,12 @@
     padding: 0px 6px;
 }
 
+.modal-body .inline-form label {
+    text-align: left;
+}
+
+
+
 .modal-body .grey-bg{
     background-color: #eee;
     border-top: 1px solid #ddd;
@@ -324,4 +330,25 @@ th {
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
     border: 1px solid #4d90fe;
     outline: none;
+}
+
+/*
+  Field Form Modal
+*/
+
+.fieldTable{
+    width: 100%;
+}
+
+.fieldTable th:last-child{
+    text-align: right;
+}
+
+
+.fieldTable td:last-child{
+    text-align: right;
+}
+
+.fieldTable .th-display-field{
+    width: 40px;
 }

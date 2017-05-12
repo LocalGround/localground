@@ -38,6 +38,9 @@ define([
         },
         setDataType: function () {
             this.model.set("data_type", this.$el.find(".fieldType").val());
+            if (this.model.get("data_type") == "rating"){
+                alert("show the drop-down options");
+            }
         },
         saveField: function () {
             var that = this,

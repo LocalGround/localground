@@ -166,7 +166,7 @@ define([
             this.modal.update({
                 view: formList,
                 title: 'List of Forms',
-                width: 500,
+                width: 800,
                 showSaveButton: false,
                 showDeleteButton: false
                 // bind the scope of the save function to the source view:
@@ -228,7 +228,7 @@ define([
             this.modal.update({
                 view: createForm,
                 title: title,
-                width: 500,
+                width: 800,
                 showSaveButton: true,
                 showDeleteButton: opts.model,
                 // bind the scope of the save function to the source view:
