@@ -39,7 +39,8 @@ define([
         setDataType: function () {
             this.model.set("data_type", this.$el.find(".fieldType").val());
             if (this.model.get("data_type") == "rating"){
-                alert("show the drop-down options");
+                console.log("show the drop-down options");
+                this.render();
             }
         },
         saveField: function () {
@@ -47,11 +48,18 @@ define([
                 fieldName = this.$el.find(".fieldname").val(),
                 fieldType = this.$el.find(".fieldType").val(),
                 isDisplaying = this.$el.find('.display-field').is(":checked"),
+                extras = this.$el.find('.extras').val(),
                 messages;
             console.log(fieldType);
             this.validate(fieldName, fieldType);
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);
+            if (extras) {
+                console.log(extras);
+                extras = JSON.parse(extras);
+                console.log(extras);
+                this.model.set("extras", extras);
+            }
             if (fieldType) {
                 this.model.set("data_type", fieldType);
             }

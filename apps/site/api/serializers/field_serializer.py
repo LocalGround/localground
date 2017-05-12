@@ -18,6 +18,7 @@ class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
     extras = fields.JSONField(
         style={'base_template': 'json.html', 'rows': 5},
         required=False,
+        allow_null=True,
         help_text='Use to store ratings and lookup tables. Example: [{"key1": "value1", "key2": "value2" }, {"key1": "value3", "key2": "value4" }]'
         )
     data_type = serializers.SlugRelatedField(

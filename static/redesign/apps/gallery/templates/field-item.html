@@ -19,6 +19,9 @@
             {{#ifequal data_type "boolean"}} Yes/No
             {{else}} {{ data_type }}
             {{/ifequal}}
+            {{#ifequal data_type "rating"}}
+                <textarea class="extras">{{ extras }}</textarea>
+            {{/ifequal}}
         </span>
     {{else}}
         <select class="fieldType">
@@ -30,6 +33,9 @@
             <option value="date-time"{{#ifequal data_type "date-time"}} SELECTED {{/ifequal}}>Date / Time</option>
             <option value="rating"{{#ifequal data_type "rating"}} SELECTED {{/ifequal}}>Rating</option>
         </select>
+        {{#ifequal data_type "rating"}}
+        <textarea class="extras">{{ extras }}</textarea>
+        {{/ifequal}}
         {{#if errorFieldType}}<span>Field Type Missing</span>{{/if}}
     {{/if}}
 </td>
