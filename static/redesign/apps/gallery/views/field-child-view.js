@@ -41,7 +41,7 @@ define([
             this.model.set("col_alias", this.$el.find(".fieldname").val());
         },
         addNewRating: function (e) {
-            alert("add New Rating");
+            //alert("add New Rating");
             this.showRatingTextbox = true;
             this.render();
             e.preventDefault();
@@ -65,10 +65,19 @@ define([
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);
             if (extras) {
+                /*
+                * Somehow, we have to inside the loop and go through each text box
+                * and set the names based on the index value of the text boxes
+
+                However, the way to find the ratings is not yet unified
+                */
+
+                /*
                 console.log(extras);
                 extras = JSON.parse(extras);
                 console.log(extras);
                 this.model.set("extras", extras);
+                */
             }
             if (fieldType) {
                 this.model.set("data_type", fieldType);
