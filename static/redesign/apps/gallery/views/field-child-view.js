@@ -68,11 +68,16 @@ define([
                 /*
                 * Somehow, we have to inside the loop and go through each text box
                 * and set the names based on the index value of the text boxes
+
+                However, the way to find the ratings is not yet unified
                 */
+
+                /*
                 console.log(extras);
                 extras = JSON.parse(extras);
                 console.log(extras);
                 this.model.set("extras", extras);
+                */
             }
             if (fieldType) {
                 this.model.set("data_type", fieldType);

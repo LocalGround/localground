@@ -22,18 +22,20 @@
 
             {{#ifequal data_type "rating"}}
             <!-- Make this list the new extras list to reduce confusion for users -->
-                <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
-                {{#each extraList}}
-                    <input type="text" class="rating" placeholder="Type new rating" value="{{this.name}}" />
-                {{/each}}
-                {{#if showRatingTextbox}}
-                    <input type="text" class="new-rating" placeholder="Type new rating" />
-                {{/if}}
+                <span class ="extras">
+                    <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
+                    {{#each extraList}}
+                        <input type="text" class="rating" placeholder="Type new rating" value="{{this.name}}" />
+                    {{/each}}
+                    {{#if showRatingTextbox}}
+                        <input type="text" class="new-rating" placeholder="Type new rating" />
+                    {{/if}}
+                </span>
 
                 <!-- This is where the extras us currently being targeted without any changes made
                      when targeting only the rows of text boxes
                 -->
-                <textarea class="extras">{{ extras }}</textarea>
+                <!--textarea class="extras">{{ extras }}</textarea-->
             {{/ifequal}}
         </span>
     {{else}}
@@ -47,16 +49,19 @@
             <option value="rating"{{#ifequal data_type "rating"}} SELECTED {{/ifequal}}>Rating</option>
         </select>
         {{#ifequal data_type "rating"}}
-            <select class="menu">
-                <option value="add-new">--Add New Menu Item --</option>
-                {{#each extras}}
-                    <option value="{{this.value}}">{{this.name}}</option>
-                {{/each}}
-            </select>
+            <span class ="extras">
+                <select class="menu">
+                    <option value="add-new">--Add New Menu Item --</option>
+                    {{#each extras}}
+                        <option value="{{this.value}}">{{this.name}}</option>
+                    {{/each}}
+                </select>
+
+            </span>
             <!-- This is where the extras us currently being targeted without any changes made
                  when targeting only the rows of text boxes
             -->
-            <textarea class="extras">{{ extras }}</textarea>
+            <!--textarea class="extras">{{ extras }}</textarea-->
         {{/ifequal}}
         {{#if errorFieldType}}<span>Field Type Missing</span>{{/if}}
     {{/if}}
