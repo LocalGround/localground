@@ -19,18 +19,17 @@
             {{#ifequal data_type "boolean"}} Yes/No
             {{else}} {{ data_type }}
             {{/ifequal}}
-            
+
             {{#ifequal data_type "rating"}}
+                <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
                 {{#each extraList}}
                     <input type="text" class="rating" placeholder="Type new rating" value="{{this.name}}" />
                 {{/each}}
-                <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
                 {{#if showRatingTextbox}}
                     <input type="text" class="new-rating" placeholder="Type new rating" />
                 {{/if}}
                 <textarea class="extras">{{ extras }}</textarea>
             {{/ifequal}}
-            
         </span>
     {{else}}
         <select class="fieldType">

@@ -65,6 +65,10 @@ define([
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);
             if (extras) {
+                /*
+                * Somehow, we have to inside the loop and go through each text box
+                * and set the names based on the index value of the text boxes
+                */
                 console.log(extras);
                 extras = JSON.parse(extras);
                 console.log(extras);
