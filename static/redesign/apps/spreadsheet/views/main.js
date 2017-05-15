@@ -53,8 +53,11 @@ define(["jquery",
             },
             registerRatingEditor: function () {
                 // following this tutorial: https://docs.handsontable.com/0.15.0-beta1/tutorial-cell-editor.html
-                var SelectRatingsEditor = Handsontable.editors.SelectEditor.prototype.extend();
+                var SelectRatingsEditor = Handsontable.editors.SelectEditor.prototype.extend(),
+                    that = this;
                 SelectRatingsEditor.prototype.prepare = function () {
+                    var me = this;
+                    console.log(this);
                     var selectOptions, i, option, optionElement;
                     Handsontable.editors.SelectEditor.prototype.prepare.apply(this, arguments);
                     selectOptions = this.cellProperties.selectOptions;
@@ -66,6 +69,12 @@ define(["jquery",
                         optionElement.innerHTML = option.name;
                         this.select.appendChild(optionElement);
                     }
+                    //this is a hack b/c the renderer isn't being called correctly:
+                    $(this.select).blur(function () {
+                        setTimeout(function () {
+                            that.table.setDataAtCell(me.row, me.col, $(me.select).val());
+                        }, 50);
+                    });
                 };
                 Handsontable.editors.registerEditor('select-ratings', SelectRatingsEditor);
             },
@@ -171,11 +180,14 @@ define(["jquery",
                 }
             },
             saveChanges: function (changes, source) {
+                var that = this;
                 //sync with collection:
                 source = source.split(".");
                 source = source[source.length - 1];
                 var i, idx, key, oldVal, newVal, model, geoJSON;
+                console.log(source);
                 if (_.contains(["edit", "autofill", "fill", "undo", "redo", "paste"], source)) {
+                    console.log(changes);
                     for (i = 0; i < changes.length; i++) {
                         idx = changes[i][0];
                         key = changes[i][1];
@@ -201,10 +213,11 @@ define(["jquery",
                                 }
                             } else {
                                 model.set(key, newVal);
-                                model.save(model.changedAttributes(), {patch: true, wait: true});
+                                model.save(model.changedAttributes(), { patch: true, wait: true});
                             }
                         } else {
                             console.log("[" + source + "], but no value change. Ignored.");
+                            console.log("old value:", oldVal, "new value:", newVal);
                         }
                     }
                 }
@@ -378,12 +391,12 @@ define(["jquery",
                     textVal = null,
                     i;
 
-                for (i = 0; i < extras.length; ++i){
+                for (i = 0; i < extras.length; i++){
                     if (extras[i].value == intVal){
                         textVal = extras[i].name;
+                        break;
                     }
                 }
-
                 td.innerHTML = textVal;
                 return td;
             },
