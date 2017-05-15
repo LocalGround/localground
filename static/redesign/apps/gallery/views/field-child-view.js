@@ -41,7 +41,7 @@ define([
             this.model.set("col_alias", this.$el.find(".fieldname").val());
         },
         addNewRating: function (e) {
-            alert("add New Rating");
+            //alert("add New Rating");
             this.showRatingTextbox = true;
             this.render();
             e.preventDefault();

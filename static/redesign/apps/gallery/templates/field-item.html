@@ -50,13 +50,10 @@
         </select>
         {{#ifequal data_type "rating"}}
             <span class ="extras">
-                <select class="menu">
-                    <option value="add-new">--Add New Menu Item --</option>
-                    {{#each extras}}
-                        <option value="{{this.value}}">{{this.name}}</option>
-                    {{/each}}
-                </select>
-
+                <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
+                {{#if showRatingTextbox}}
+                    <input type="text" class="new-rating" placeholder="Type new rating" />
+                {{/if}}
             </span>
             <!-- This is where the extras us currently being targeted without any changes made
                  when targeting only the rows of text boxes
