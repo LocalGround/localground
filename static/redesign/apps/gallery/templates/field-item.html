@@ -49,6 +49,9 @@
                     <option value="{{this.value}}">{{this.name}}</option>
                 {{/each}}
             </select>
+            <!-- This is where the extras us currently being targeted without any changes made
+                 when targeting only the rows of text boxes
+            -->
             <textarea class="extras">{{ extras }}</textarea>
         {{/ifequal}}
         {{#if errorFieldType}}<span>Field Type Missing</span>{{/if}}
