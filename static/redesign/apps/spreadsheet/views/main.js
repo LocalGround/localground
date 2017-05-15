@@ -1,4 +1,5 @@
-define(["marionette",
+define(["jquery",
+        "marionette",
         "underscore",
         "handlebars",
         "apps/gallery/views/media_browser",
@@ -10,7 +11,7 @@ define(["marionette",
         "lib/audio/audio-player",
         "lib/carousel/carousel"
     ],
-    function (Marionette, _, Handlebars, MediaBrowser,
+    function ($, Marionette, _, Handlebars, MediaBrowser,
         Record, Marker, CreateFieldView, Handsontable, SpreadsheetTemplate,
         AudioPlayer, Carousel) {
         'use strict';
@@ -19,7 +20,7 @@ define(["marionette",
                 return Handlebars.compile(SpreadsheetTemplate);
             },
             table: null,
-            currentModel :null,
+            currentModel: null,
             show_hide_deleteColumn: true,
             events: {
                 'click #addColumn': 'showCreateFieldForm',
@@ -34,6 +35,7 @@ define(["marionette",
 
                 // call Marionette's default functionality (similar to "super")
                 Marionette.ItemView.prototype.initialize.call(this);
+                this.registerRatingEditor();
                 this.render();
                 //listen to events that fire from other parts of the application:
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
@@ -48,6 +50,24 @@ define(["marionette",
                 if (this.fields) {
                     this.listenTo(this.fields, 'reset', this.renderSpreadsheet);
                 }
+            },
+            registerRatingEditor: function () {
+                // following this tutorial: https://docs.handsontable.com/0.15.0-beta1/tutorial-cell-editor.html
+                var SelectRatingsEditor = Handsontable.editors.SelectEditor.prototype.extend();
+                SelectRatingsEditor.prototype.prepare = function () {
+                    var selectOptions, i, option, optionElement;
+                    Handsontable.editors.SelectEditor.prototype.prepare.apply(this, arguments);
+                    selectOptions = this.cellProperties.selectOptions;
+                    $(this.select).empty();
+                    for (i = 0; i < selectOptions.length; i++) {
+                        option = selectOptions[i];
+                        optionElement = document.createElement('OPTION');
+                        optionElement.value = option.value;
+                        optionElement.innerHTML = option.name;
+                        this.select.appendChild(optionElement);
+                    }
+                };
+                Handsontable.editors.registerEditor('select-ratings', SelectRatingsEditor);
             },
             onRender: function () {
                 this.renderSpreadsheet();
@@ -352,18 +372,13 @@ define(["marionette",
             ratingRenderer: function (instance, td, row, col, prop, value, cellProperties) {
                 var that = this,
                     model = this.getModelFromCell(instance, row),
-                    idx = col - 3;
+                    idx = col - 3,
+                    extras = this.fields.at(idx).get("extras"),
+                    intVal = model.get(prop),
+                    textVal = null,
+                    i;
 
-                console.log(this.fields);
-                console.log(idx);
-                console.log(this.fields.at(idx));
-                var extras = this.fields.at(idx).get("extras");
-                console.log(extras);
-
-                var intVal = model.get(prop);
-                var textVal = null;
-
-                for (var i = 0; i < extras.length; ++i){
+                for (i = 0; i < extras.length; ++i){
                     if (extras[i].value == intVal){
                         textVal = extras[i].name;
                     }
@@ -371,7 +386,6 @@ define(["marionette",
 
                 td.innerHTML = textVal;
                 return td;
-
             },
 
             showMediaBrowser: function (e) {
@@ -541,6 +555,7 @@ define(["marionette",
                             var field_correctFormat = false;
                             var field_ratings_source;
                             var renderer;
+                            var editor;
                             switch (type) {
                                 case "boolean":
                                     type = "checkbox";
@@ -558,10 +573,9 @@ define(["marionette",
                                     field_correctFormat = true;
                                     break;
                                 case "rating":
-                                    type = "dropdown";
+                                    type = "numeric";
+                                    editor = "select-ratings";
                                     field_ratings_source = this.fields.at(i).get("extras");
-                                    field_ratings_source = this.extractRatingstoSource(field_ratings_source);
-                                    console.log(field_ratings_source);
                                     renderer = this.ratingRenderer.bind(this);
                                     break;
                                 default:
@@ -570,10 +584,12 @@ define(["marionette",
                             cols.push({
                                 data: this.fields.at(i).get("col_name"),
                                 type: type,
+                                editor: editor,
                                 format: field_format,
                                 dateFormat: field_dateFormat,
                                 correctFormat: field_correctFormat,
-                                source: field_ratings_source,
+                                selectOptions: field_ratings_source,
+                                selectKey: 'name',
                                 renderer: renderer
                             })
                         };
