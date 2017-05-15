@@ -21,6 +21,7 @@
             {{/ifequal}}
 
             {{#ifequal data_type "rating"}}
+            <!-- Make this list the new extras list to reduce confusion for users -->
                 <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
                 {{#each extraList}}
                     <input type="text" class="rating" placeholder="Type new rating" value="{{this.name}}" />
