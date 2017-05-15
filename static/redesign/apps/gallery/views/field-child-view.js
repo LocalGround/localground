@@ -7,6 +7,7 @@ define([
 ], function ($, _, Handlebars, Marionette, FieldItemTemplate) {
     'use strict';
     var FieldChildView = Marionette.ItemView.extend({
+        showRatingTextbox: false,
         initialize: function (opts) {
             _.extend(this, opts);
         },
@@ -17,13 +18,16 @@ define([
             'click .remove-row': 'removeModel',
             'click .delete-field': 'doDelete',
             'blur input.fieldname': 'setAlias',
-            'change select.fieldType': 'setDataType'
+            'change select.fieldType': 'setDataType',
+            'click .add-new-rating': 'addNewRating'
         },
         templateHelpers: function () {
             var errorMessages = {
                 errorFieldType: this.model.errorFieldType,
                 errorFieldName: this.model.errorFieldName,
-                serverErrorMessage: this.model.serverErrorMessage
+                serverErrorMessage: this.model.serverErrorMessage,
+                extraList: this.model.get("extras"),
+                showRatingTextbox: this.showRatingTextbox
             };
             return errorMessages;
         },
@@ -35,6 +39,12 @@ define([
 
         setAlias: function () {
             this.model.set("col_alias", this.$el.find(".fieldname").val());
+        },
+        addNewRating: function (e) {
+            alert("add New Rating");
+            this.showRatingTextbox = true;
+            this.render();
+            e.preventDefault();
         },
         setDataType: function () {
             this.model.set("data_type", this.$el.find(".fieldType").val());
