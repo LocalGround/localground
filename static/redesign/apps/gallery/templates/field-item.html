@@ -28,9 +28,9 @@
                         <input type="text" class="rating" placeholder="Type new rating" value="{{this.name}}" />
                     {{/each}}
                     <!-- As of now, it cannot append new ratings except one from the showRatingTextBox -->
-                    {{#if showRatingTextbox}}
-                        <input type="text" class="new-rating" placeholder="Type new rating" />
-                    {{/if}}
+                    {{#times 0 numNewRatings}}
+                        <input type="text" class="rating" placeholder="Type new rating" />
+                    {{/times}}
                 </span>
 
             {{/ifequal}}
@@ -49,9 +49,9 @@
             <span class ="extras">
                 <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
                 <!-- As of now, it cannot append new ratings except one from the showRatingTextBox -->
-                {{#if showRatingTextbox}}
+                {{#times 0 numNewRatings}}
                     <input type="text" class="new-rating" placeholder="Type new rating" />
-                {{/if}}
+                {{/times}}
             </span>
         {{/ifequal}}
         {{#if errorFieldType}}<span>Field Type Missing</span>{{/if}}

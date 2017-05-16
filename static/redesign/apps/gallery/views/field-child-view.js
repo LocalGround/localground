@@ -7,7 +7,7 @@ define([
 ], function ($, _, Handlebars, Marionette, FieldItemTemplate) {
     'use strict';
     var FieldChildView = Marionette.ItemView.extend({
-        showRatingTextbox: false,
+        numNewRatings: 0,
         initialize: function (opts) {
             _.extend(this, opts);
         },
@@ -27,7 +27,7 @@ define([
                 errorFieldName: this.model.errorFieldName,
                 serverErrorMessage: this.model.serverErrorMessage,
                 extraList: this.model.get("extras"),
-                showRatingTextbox: this.showRatingTextbox
+                numNewRatings: this.numNewRatings
             };
             return errorMessages;
         },
@@ -44,7 +44,7 @@ define([
             //alert("add New Rating");
             // Need to replace invisible area with append
             // at the end of the extras html class
-            this.showRatingTextbox = true;
+            this.numNewRatings += 1;
             this.render();
             e.preventDefault();
         },
@@ -60,18 +60,22 @@ define([
                 fieldName = this.$el.find(".fieldname").val(),
                 fieldType = this.$el.find(".fieldType").val(),
                 isDisplaying = this.$el.find('.display-field').is(":checked"),
-                extras = this.$el.find('.extras'),
+                extras = [],
                 messages;
             console.log(fieldType);
             this.validate(fieldName, fieldType);
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);
-            if (extras) {
-                /*
-                * The '+' symbol is always the first index (0) inside the extras
-                * followed by the text boxes that contain names
-                * we set the number values based on the order of the ratings
-                */
+
+            this.$el.find('.rating').each(function (index) {
+                console.log(index, $(this));
+                extras.push({
+                    name: $(this).val(),
+                    value: (index + 1)
+                });
+            });
+            this.model.set("extras", extras);
+            /*if (extras) {
 
                 console.log(extras);
                 console.log(extras.children());
@@ -84,16 +88,12 @@ define([
                     extras_list.push({name: ratingName, value: i});
                 }
 
-
                 this.model.set("extras", extras_list);
 
-
-                /*
-                console.log(extras);
-                extras = JSON.parse(extras);
-                console.log(extras);
-                */
-            }
+                //console.log(extras);
+                //extras = JSON.parse(extras);
+                //console.log(extras);
+            }*/
             if (fieldType) {
                 this.model.set("data_type", fieldType);
             }
