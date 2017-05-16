@@ -190,9 +190,7 @@ define(["jquery",
                 source = source.split(".");
                 source = source[source.length - 1];
                 var i, idx, key, oldVal, newVal, model, geoJSON;
-                console.log(source);
                 if (_.contains(["edit", "autofill", "fill", "undo", "redo", "paste"], source)) {
-                    console.log(changes);
                     for (i = 0; i < changes.length; i++) {
                         idx = changes[i][0];
                         key = changes[i][1];
@@ -391,11 +389,10 @@ define(["jquery",
                 var that = this,
                     model = this.getModelFromCell(instance, row),
                     idx = col - 3,
-                    extras = this.fields.at(idx).get("extras"),
+                    extras = this.fields.at(idx).get("extras") || [],
                     intVal = model.get(prop),
                     textVal = null,
-                    i;
-
+                    i;                
                 for (i = 0; i < extras.length; i++){
                     if (extras[i].value == intVal){
                         textVal = extras[i].name;
@@ -427,7 +424,6 @@ define(["jquery",
                 var that = this,
                     i = 0,
                     ordering;
-                console.log();
                 for (i = 0; i < models.length; i++) {
                     ordering = this.currentModel.get("photo_count") + this.currentModel.get("audio_count");
                     this.currentModel.attach(models[i], (ordering + i + 1), function () {
@@ -505,17 +501,6 @@ define(["jquery",
                 this.collection.clearSearch(this.app.getProjectID());
             },
 
-            // Extract the name of the ratings for drop-down source
-            //
-            extractRatingstoSource: function(extras_array){
-                var source_names = [];
-                for (var i = 0 ; i < extras_array.length; ++i){
-                    source_names.push(extras_array[i].name);
-                }
-                console.log(source_names);
-                return source_names;
-            },
-
             getColumns: function () {
                 switch (this.collection.key) {
                     case "audio":
@@ -571,45 +556,50 @@ define(["jquery",
                             var field_format = "";
                             var field_dateFormat = "";
                             var field_correctFormat = false;
-                            var field_ratings_source;
-                            var renderer;
-                            var editor;
+                            var renderer = null;
+                            var editor = null;
+                            var entry = null;
                             switch (type) {
                                 case "boolean":
-                                    type = "checkbox";
+                                    entry = {
+                                        type:  "checkbox"
+                                    };
                                     break;
                                 case "integer":
-                                    type = "numeric";
+                                    entry = {
+                                        type:  "numeric"
+                                    };
                                     break;
                                 case "decimal":
-                                    type = "numeric";
-                                    field_format = "0,0.000";
+                                    entry = {
+                                        type:  "numeric",
+                                        format: "0,0.000"
+                                    };
                                     break;
                                 case "date-time":
-                                    type = "date";
-                                    field_dateFormat = "YYYY-MM-DDThh:mm";
-                                    field_correctFormat = true;
+                                    entry = {
+                                        type:  "date",
+                                        dateFormat: "YYYY-MM-DDThh:mm",
+                                        correctFormat: true
+                                    };
                                     break;
                                 case "rating":
-                                    type = "numeric";
-                                    editor = "select-ratings";
-                                    field_ratings_source = this.fields.at(i).get("extras");
-                                    renderer = this.ratingRenderer.bind(this);
+                                    entry = {
+                                        type:  "numeric",
+                                        editor: "select-ratings",
+                                        renderer: this.ratingRenderer.bind(this),
+                                        selectOptions: this.fields.at(i).get("extras") || []
+                                    };
                                     break;
                                 default:
-                                    type = "text";
+                                    entry = {
+                                        type:  "text"
+                                    };
                             }
-                            cols.push({
-                                data: this.fields.at(i).get("col_name"),
-                                type: type,
-                                editor: editor,
-                                format: field_format,
-                                dateFormat: field_dateFormat,
-                                correctFormat: field_correctFormat,
-                                selectOptions: field_ratings_source,
-                                selectKey: 'name',
-                                renderer: renderer
-                            })
+                            _.extend(entry, {
+                                data: this.fields.at(i).get("col_name")
+                            });
+                            cols.push(entry);
                         };
 
                         cols.push(

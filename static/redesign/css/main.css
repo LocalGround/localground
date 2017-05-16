@@ -1020,7 +1020,7 @@ tbody .failure-message, tbody .success-message {
     top: 111px;
     display: flex;
     position: absolute;
-    width: 100%;
+    min-width: 100%;
 }
 
 .main-panel > div{
