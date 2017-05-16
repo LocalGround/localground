@@ -56,17 +56,22 @@ define(["jquery",
                 var SelectRatingsEditor = Handsontable.editors.SelectEditor.prototype.extend(),
                     that = this;
                 SelectRatingsEditor.prototype.prepare = function () {
-                    var me = this;
-                    console.log(this);
-                    var selectOptions, i, option, optionElement;
+                    var me = this, selectOptions, i, option, optionElement;
                     Handsontable.editors.SelectEditor.prototype.prepare.apply(this, arguments);
                     selectOptions = this.cellProperties.selectOptions;
                     $(this.select).empty();
+                    optionElement = document.createElement('OPTION');
+                    optionElement.value = "0";
+                    optionElement.innerHTML = "-- Select --";
+                    this.select.appendChild(optionElement);
                     for (i = 0; i < selectOptions.length; i++) {
                         option = selectOptions[i];
                         optionElement = document.createElement('OPTION');
                         optionElement.value = option.value;
                         optionElement.innerHTML = option.name;
+                        if (option.value === this.originalValue) {
+                            optionElement.selected = true;
+                        }
                         this.select.appendChild(optionElement);
                     }
                     //this is a hack b/c the renderer isn't being called correctly:
