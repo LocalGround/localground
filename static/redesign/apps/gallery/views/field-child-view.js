@@ -8,6 +8,7 @@ define([
     'use strict';
     var FieldChildView = Marionette.ItemView.extend({
         numNewRatings: 0,
+        ratingsList: null,
         initialize: function (opts) {
             _.extend(this, opts);
         },
@@ -19,7 +20,8 @@ define([
             'click .delete-field': 'doDelete',
             'blur input.fieldname': 'setAlias',
             'change select.fieldType': 'setDataType',
-            'click .add-new-rating': 'addNewRating'
+            'click .add-new-rating': 'addNewRating',
+            'blur .rating': 'saveRatingText'
         },
         templateHelpers: function () {
             var errorMessages = {
@@ -40,6 +42,25 @@ define([
         setAlias: function () {
             this.model.set("col_alias", this.$el.find(".fieldname").val());
         },
+
+        saveRatingText: function(e){
+            $(e.target).attr("value", $(e.target).val());
+            //this.updateRatingList();
+        },
+
+        updateRatingList: function(){
+            //if (!this.ratingsList) return;
+            //AN attempt to solve the problem, but this.ratingsList is undefined
+            // despite that it is an empty array, therefore nothing can be pushed
+            this.ratingsList = [];
+            if (this.$el.find('.rating').length == 0) return;
+            var ratingsArray = this.$el.find('.rating');
+            ratingsArray.each(function (index) {
+                console.log(index, $(this));
+                this.ratingsList.push(ratingsArray[index]);
+            });
+        },
+
         addNewRating: function (e) {
             //alert("add New Rating");
             // Need to replace invisible area with append
@@ -75,25 +96,7 @@ define([
                 });
             });
             this.model.set("extras", extras);
-            /*if (extras) {
 
-                console.log(extras);
-                console.log(extras.children());
-                var extras_list = {};
-                for (var i = 1; i < extras.children().length; ++i){
-                    var ratingName = extras.children().eq(i).val();
-                    //console.log(ratingName, i);
-                    // As of now, the changes are not yet saved
-                    // ans still need to append new ratings
-                    extras_list.push({name: ratingName, value: i});
-                }
-
-                this.model.set("extras", extras_list);
-
-                //console.log(extras);
-                //extras = JSON.parse(extras);
-                //console.log(extras);
-            }*/
             if (fieldType) {
                 this.model.set("data_type", fieldType);
             }
@@ -127,6 +130,20 @@ define([
             if (this.model.errorFieldType || this.model.errorFieldName || this.model.serverErrorMessage) {
                 this.$el.addClass("failure-message show");
             }
+            // On ratings refresh, save the value for each stored rating
+            //this.updateRatingList();
+            // However, it is plagued from undefined errors at this.ratingsList
+
+            /*
+            if (this.ratingsList){
+                var ratingTextBoxes = this.$el.find('.rating');
+                ratingTextBoxes.each(function (index) {
+                    console.log(index, $(this));
+                    ratingTextBoxes[index].val(this.ratingsList[index]);
+                });
+            }
+            */
+
         },
         removeModel: function () {
             this.model.destroy();
