@@ -61,7 +61,7 @@ define(["jquery",
                     selectOptions = this.cellProperties.selectOptions;
                     $(this.select).empty();
                     optionElement = document.createElement('OPTION');
-                    optionElement.value = "0";
+                    optionElement.value = "-100000";
                     optionElement.innerHTML = "-- Select --";
                     this.select.appendChild(optionElement);
                     for (i = 0; i < selectOptions.length; i++) {
@@ -77,9 +77,16 @@ define(["jquery",
                     //this is a hack b/c the renderer isn't being called correctly:
                     $(this.select).blur(function () {
                         setTimeout(function () {
-                            that.table.setDataAtCell(me.row, me.col, $(me.select).val());
+                            that.table.setDataAtCell(me.row, me.col, me.getValue());
                         }, 50);
                     });
+                };
+                SelectRatingsEditor.prototype.getValue = function () {
+                    var val = this.select.value;
+                    if (val == "-100000" || val == "") {
+                        val = null;
+                    }
+                    return val;
                 };
                 Handsontable.editors.registerEditor('select-ratings', SelectRatingsEditor);
             },
