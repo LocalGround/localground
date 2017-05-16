@@ -27,15 +27,12 @@
                     {{#each extraList}}
                         <input type="text" class="rating" placeholder="Type new rating" value="{{this.name}}" />
                     {{/each}}
+                    <!-- As of now, it cannot append new ratings except one from the showRatingTextBox -->
                     {{#if showRatingTextbox}}
                         <input type="text" class="new-rating" placeholder="Type new rating" />
                     {{/if}}
                 </span>
 
-                <!-- This is where the extras us currently being targeted without any changes made
-                     when targeting only the rows of text boxes
-                -->
-                <!--textarea class="extras">{{ extras }}</textarea-->
             {{/ifequal}}
         </span>
     {{else}}
@@ -51,14 +48,11 @@
         {{#ifequal data_type "rating"}}
             <span class ="extras">
                 <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
+                <!-- As of now, it cannot append new ratings except one from the showRatingTextBox -->
                 {{#if showRatingTextbox}}
                     <input type="text" class="new-rating" placeholder="Type new rating" />
                 {{/if}}
             </span>
-            <!-- This is where the extras us currently being targeted without any changes made
-                 when targeting only the rows of text boxes
-            -->
-            <!--textarea class="extras">{{ extras }}</textarea-->
         {{/ifequal}}
         {{#if errorFieldType}}<span>Field Type Missing</span>{{/if}}
     {{/if}}

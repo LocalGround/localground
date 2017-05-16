@@ -42,6 +42,8 @@ define([
         },
         addNewRating: function (e) {
             //alert("add New Rating");
+            // Need to replace invisible area with append
+            // at the end of the extras html class
             this.showRatingTextbox = true;
             this.render();
             e.preventDefault();
@@ -58,7 +60,7 @@ define([
                 fieldName = this.$el.find(".fieldname").val(),
                 fieldType = this.$el.find(".fieldType").val(),
                 isDisplaying = this.$el.find('.display-field').is(":checked"),
-                extras = this.$el.find('.extras').val(),
+                extras = this.$el.find('.extras'),
                 messages;
             console.log(fieldType);
             this.validate(fieldName, fieldType);
@@ -66,17 +68,30 @@ define([
             this.model.set("is_display_field", isDisplaying);
             if (extras) {
                 /*
-                * Somehow, we have to inside the loop and go through each text box
-                * and set the names based on the index value of the text boxes
-
-                However, the way to find the ratings is not yet unified
+                * The '+' symbol is always the first index (0) inside the extras
+                * followed by the text boxes that contain names
+                * we set the number values based on the order of the ratings
                 */
+
+                console.log(extras);
+                console.log(extras.children());
+                var extras_list = {};
+                for (var i = 1; i < extras.children().length; ++i){
+                    var ratingName = extras.children().eq(i).val();
+                    //console.log(ratingName, i);
+                    // As of now, the changes are not yet saved
+                    // ans still need to append new ratings
+                    extras_list.push({name: ratingName, value: i});
+                }
+
+
+                this.model.set("extras", extras_list);
+
 
                 /*
                 console.log(extras);
                 extras = JSON.parse(extras);
                 console.log(extras);
-                this.model.set("extras", extras);
                 */
             }
             if (fieldType) {
