@@ -57,7 +57,7 @@ define([
             */
             if (window.confirm("Want to remove rating?")){
                 var rating_row = $(e.target).closest(".rating-row");
-                $("rating-row").remove();
+                $(rating_row).remove();
                 this.updateRatingList();
             }
 
