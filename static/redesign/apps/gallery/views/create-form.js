@@ -14,6 +14,7 @@ define([
     var CreateFormView = Marionette.CompositeView.extend({
         showSuccess: false,
         showError: false,
+        className: 'create-form',
         initialize: function (opts) {
             _.extend(this, opts);
 
@@ -140,7 +141,7 @@ define([
         saveFields: function () {
             this.initCollection();
             var that = this,
-                $rows = this.$el.find("#fieldList tr"),
+                $rows = this.$el.find("#fieldList > tr"),
                 tempID,
                 model,
                 childView;

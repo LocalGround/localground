@@ -46,12 +46,13 @@ class StaticMap():
         map_url = None
         total_tries = 1
         tries = 0
+        #if mapbox is the map provider:
         if map_type.overlay_source.name == 'mapbox':
             zoom = zoom - 1 #this is a workaround to a mapbox bug:
             map_url = map_type.static_url + "?access_token=" + os.environ.get('MAPBOX_API_KEY', settings.MAPBOX_API_KEY)
             map_url = map_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
             
-        #if google is the map provider:
+        #if stamen is the map provider:
         elif map_type.overlay_source.name == 'stamen':
             map_url = map_type.static_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
             # extra step for STAMEN: get map image from JSON object:
@@ -60,9 +61,12 @@ class StaticMap():
             map_url = data[0].get('image')
             total_tries = 3
             time.sleep(2) # delay for stamen map b/c URL returned before image exists
-        else:
-            map_url = map_type.static_url.format(x=center.x, y=center.y, z=zoom, w=width, h=height)
 
+        #google is the map provider:
+        else:
+            zoom = zoom - 1
+            map_url = map_type.static_url.format(x=center.x, y=center.y, z=zoom, w=width / 2, h=height / 2)
+        #raise Exception(map_url)
         # This '3 tries' while loop accounts for the fact that in the
         # Stamen static map print, the path is sometimes returned well
         # before the file exists on the server. So, after each failure,

@@ -9,7 +9,7 @@ define([
     var Records = PageableCollection.extend({
         model: Record,
         columns: null,
-        key: 'records',
+        key: 'form_?',
         overlay_type: null,
         name: 'Records',
         query: '',
@@ -19,6 +19,10 @@ define([
             $.extend(this, opts);
             if (!this.url) {
                 alert("The Records collection requires a url parameter upon initialization");
+                return;
+            }
+            if (!this.key) {
+                alert("The Records collection requires a key parameter upon initialization");
                 return;
             }
             PageableCollection.prototype.initialize.apply(this, arguments);

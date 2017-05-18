@@ -131,32 +131,24 @@ define(['underscore'], function (_) {
         },
         getIcon: function (key) {
             var icon;
-            switch (key) {
-            case 'audio':
+            if (key == 'audio') {
                 icon = IconLookup.icons.circle;
                 icon.width = 12;
                 icon.height = 12;
                 icon.fillColor = '#62929E';
-                break;
-            case 'photo':
-            case 'photos':
+            } else if (key == 'photo' || key == 'photos') {
                 icon = IconLookup.icons.circle;
                 icon.width = 12;
                 icon.height = 12;
                 icon.fillColor = '#7084c2';
-                break;
-            case 'marker':
-            case 'markers':
-            case 'record':
-            case 'records':
+            } else if (key == 'marker' || key == 'markers'
+                    || key == 'record' || /form_\d/.test(key)) {
                 icon = IconLookup.icons.circle;
                 icon.width = 23;
                 icon.height = 23;
                 icon.fillColor = '#ed867d';
-                break;
-            default:
+            } else {
                 icon = IconLookup.icons[key];
-                break;
             }
             if (icon) {
                 icon.baseWidth = icon.baseWidth || IconLookup.baseWidth;

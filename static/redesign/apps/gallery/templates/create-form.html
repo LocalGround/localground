@@ -13,7 +13,7 @@
     <input type="text" id="formName" class="formName" value="{{name}}">
 </div>
 <div class="inline-form">
-    <label for="caption">Description: {{caption}}</label>
+    <label for="caption">Description: </label>
     <textarea id="caption" class="caption" rows="5" cols="50"
     placeholder="Describe this form">{{caption}}</textarea>
 </div>
@@ -24,10 +24,10 @@
         <table class="fieldTable">
             <thead>
                 <tr>
-                    <th>Field Name</th>
-                    <th>Data Type</th>
-                    <th>Display Field</th>
-                    <th></th>
+                    <th class="th-display-field">Display Field</th>
+                    <th class="th-field-name">Field Name</th>
+                    <th class="th-data-type">Data Type</th>
+                    <th class="th-delete-row"></th>
                 </tr>
             </thead>
             <tbody id="fieldList"></tbody>

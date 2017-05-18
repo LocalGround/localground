@@ -12,7 +12,7 @@
 }
 
 #toolbar-main > div{
-    display:flex;    
+    display:flex;
 }
 
 .list-header {
@@ -22,6 +22,11 @@
     background: #FFF;
     font-weight: 600;
     color: #666;
+}
+
+.list-header .new-field-plus {
+
+    float: right;
 }
 
 .list-indent, .list-indent-simple, .preview-filter-list {
@@ -113,8 +118,8 @@ svg, .fa-question-circle {
     width: auto;
 }
 
-#add-marker-button:focus, #delete-marker-button:focus { 
-    outline: none; 
+#add-marker-button:focus, #delete-marker-button:focus {
+    outline: none;
 }
 
 #drop-marker-message {
@@ -134,3 +139,65 @@ svg, .fa-question-circle {
     margin-bottom: 30px;
 }
 
+.inline-form {
+    margin: 4px 16px;
+    display: flex;
+    width: calc(100% - 32px);
+    line-height: 20px;
+}
+
+.inline-form label {
+    padding: 8px;
+    font-weight: 400;
+    color: #666;
+    font-size: 12px;
+    text-align: right;
+    word-wrap: break-word;
+    flex: 1;
+    font-weight: 600;
+}
+
+.inline-form .container-input, .inline-form textarea {
+    flex: 3;
+    padding: 8px;
+}
+
+.inline-form form {
+    font-weight: 400;
+    color: #666;
+    font-size: 12px;
+}
+
+.load-message {
+    display: block;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    text-align: center;
+    font-size: 21px;
+    padding-top: 100px;
+    position: relative;
+    margin-top: -420px;
+    width: 100%;
+    height: 320px;
+}
+
+.load-message span{
+    color: white;
+    font-size: 20px;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.print-confirm {
+    display: block;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    text-align: center;
+    font-size: 36px;
+    padding-top: 150px;
+    position: absolute;
+    margin-top: -440px;
+    width: 100%;
+    height: 290px;
+    z-index: 100;
+}

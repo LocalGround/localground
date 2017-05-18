@@ -1,5 +1,5 @@
 <div class="modal">
-    <div class="modal-content" style="width: {{ width }}px;">
+    <div class="modal-content" {{#if width }} style="width: {{ width }}px;" {{/if}}>
         <header>
           <span class="close">&times;</span>
           <h1>{{ title }}</h1>
@@ -9,6 +9,10 @@
         </div>
         <footer>
             <div class="buttons">
+
+                {{#if showPrintButton}}
+                    <button class="print-modal button-secondary">{{ printButtonText }}</button>
+                {{/if}}
                 {{#if showDeleteButton}}
                     <button class="delete-modal button-secondary">{{ deleteButtonText }}</button>
                 {{else}}

@@ -60,6 +60,7 @@ define([
             this.listenTo(this.app.vent, 'show-modal', this.showModal);
             this.listenTo(this.app.vent, 'hide-modal', this.hideModal);
             this.listenTo(this.app.vent, 'show-list', this.updateNewObejctRoute);
+            this.listenTo(this.app.vent, 'add-new-item-to-map', this.triggerAddNewMap);
             $('body').click(this.hideMenus);
             this.modal = new Modal();
             this.forms = new Forms();
@@ -118,13 +119,6 @@ define([
             e.preventDefault();
         },
         changeMode: function () {
-            /*if (this.app.activeTab == "data") {
-                this.forms.setServerQuery("WHERE project = " + this.app.getProjectID());
-                this.listenTo(this.forms, 'reset', this.renderAndRoute);
-                this.forms.fetch({ reset: true });
-            } else {
-                this.renderAndRoute();
-            }*/
             this.renderAndRoute();
         },
         updateNewObejctRoute: function () {
@@ -172,7 +166,7 @@ define([
             this.modal.update({
                 view: formList,
                 title: 'List of Forms',
-                width: 500,
+                width: 800,
                 showSaveButton: false,
                 showDeleteButton: false
                 // bind the scope of the save function to the source view:
@@ -234,7 +228,7 @@ define([
             this.modal.update({
                 view: createForm,
                 title: title,
-                width: 500,
+                width: 800,
                 showSaveButton: true,
                 showDeleteButton: opts.model,
                 // bind the scope of the save function to the source view:

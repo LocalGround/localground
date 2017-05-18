@@ -6,7 +6,7 @@ define(["jquery",
         "lib/maps/marker-overlays",
         "text!../templates/list-detail.html",
         "text!../templates/list.html"],
-    function ($, Marionette, _, Handlebars, Icon, OverlayListView, ItemTemplate, ListTemplate) {
+    function ($, Marionette, _, Handlebars, Icon, MarkerOverlays, ItemTemplate, ListTemplate) {
         'use strict';
         var MarkerListing = Marionette.CompositeView.extend({
 
@@ -17,7 +17,8 @@ define(["jquery",
             templateHelpers: function () {
                 var d = {
                     title: this.title,
-                    typePlural: this.typePlural
+                    typePlural: this.typePlural,
+                    key: this.collection.key
                 };
                 return d;
             },
@@ -86,7 +87,8 @@ define(["jquery",
             events: {
                 'click .zoom-to-extents': 'zoomToExtents',
                 'click .hide-panel': 'hidePanel',
-                'click .show-panel': 'showPanel'
+                'click .show-panel': 'showPanel',
+                'click .add-new': 'triggerAddNewMap'
             },
             hidePanel: function (e) {
                 this.$el.find(".marker-container").hide();
@@ -128,13 +130,27 @@ define(["jquery",
             },
 
             renderOverlays: function () {
-                this.overlays = new OverlayListView({
+                this.overlays = new MarkerOverlays({
                     collection: this.collection,
                     app: this.app,
                     dataType: this.typePlural,
                     _icon: this.icon,
                     isShowing: true
                 });
+            },
+
+            // The commneted code caused an undefined error
+            // it has to be solve with some way to get the trigger
+            // to be sent to toolbar-dataview.js under addNewMap function.
+
+            //*
+            triggerAddNewMap: function (e) {
+                var target = this.$el.find('.add-new');
+                this.app.vent.trigger('add-new-item-to-map', {
+                    target: target,
+                    preventDefault: function () {}
+                });
+                e.preventDefault();
             },
 
             doSearch: function (term) {

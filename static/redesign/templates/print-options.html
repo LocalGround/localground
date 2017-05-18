@@ -1,0 +1,52 @@
+{{#if pdf }}
+<div class="print-links">
+    <a class="link-pdf" href="{{pdf}}">
+        <img class="link-thumb" src="{{thumb}}">
+    </a>
+    <div class="download-message">
+        <i class="fa fa-download fa-5x"></i>
+        <br>
+        Print Generated.. Click to download.
+    </div>
+</div>
+{{else}}
+<div>
+    <div class="inline-form">
+        <label>Title:</label>
+        <div class="container-input">
+            <input type="text" id="print-title" placeholder="Add a title to your map (optional)">
+        </div>
+    </div>
+
+    <div class="inline-form">
+        <label>Instructions / Notes:</label>
+        <div class="container-input">
+            <textarea id="print-instructions"
+            rows="4" cols="50" placeholder="Add notes / instructions to your map (optional)"></textarea>
+        </div>
+    </div>
+
+    <div class="inline-form">
+        <label>Layout</label>
+        <div class="container-input">
+            <input class="option-layout" type="radio" name="print_layout" id="portrait" value="Portrait" checked> <label>Portrait</label>
+            <br>
+            <input class="option-layout" type="radio" name="print_layout" id="landscape" value="Landscape"> <label>Landscape</label>
+        </div>
+
+    </div>
+
+    <div class="inline-form">
+        <label>Collect Data?</label>
+        <div class="container-input">
+            <input class="option-data" type="radio" name="data_collect" id="choose_yes" value="Yes" checked> <label>Yes</label>
+            <br>
+            <input class="option-data" type="radio" name="data_collect" id="choose_no" value="No"> <label>No</label>
+        </div>
+    </div>
+{{/if}}
+
+
+
+
+</div>

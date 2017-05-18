@@ -1,10 +1,15 @@
+
+<td>
+    <!-- Radio button -->
+    <input class=display-field type="radio" name="display_field"
+    {{#if is_display_field}}checked{{/if}}><br>
+</td>
 <td>
     <i class="fa fa-grip fa-rotate-90"></i>
     <input type="text" class="fieldname" placeholder="field name" value="{{ col_alias }}">
     {{#if errorFieldName}}<span>Field Name Missing</span>{{/if}}
     {{#if serverErrorMessage}}<span>{{serverErrorMessage}}</span>{{/if}}
 
-</td>
 </td>
 <td class="form-reorder">
     {{#if id }}
@@ -14,6 +19,31 @@
             {{#ifequal data_type "boolean"}} Yes/No
             {{else}} {{ data_type }}
             {{/ifequal}}
+
+            {{#ifequal data_type "rating"}}
+            <!-- Make this list the new extras list to reduce confusion for users -->
+                <span class ="extras">
+                    <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
+                    <table>
+                        {{#each extraList}}
+                        <tr class="rating-row">
+                            <td>
+                                <input type="text" class="rating-value" placeholder="Type rating value" value="{{this.value}}" />
+                                {{#if this.errorRatingValue}}<span>Rating Value Missing</span>{{/if}}
+                            </td>
+                            <td>
+                                <input type="text" class="rating-name" placeholder="Type new rating" value="{{this.name}}" />
+                                {{#if this.errorRatingName}}<span>Rating Name Missing</span>{{/if}}
+                            </td>
+                            <td>
+                                <a href="#" class="remove-rating">&times;</a>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </table>
+                </span>
+
+            {{/ifequal}}
         </span>
     {{else}}
         <select class="fieldType">
@@ -21,13 +51,19 @@
             <option value="text" {{#ifequal data_type "text"}} SELECTED {{/ifequal}}>Text</option>
             <option value="integer"{{#ifequal data_type "integer"}} SELECTED {{/ifequal}}>Integer</option>
             <option value="boolean"{{#ifequal data_type "boolean"}} SELECTED {{/ifequal}}>Yes/No</option>
+            <option value="decimal" {{#ifequal data_type "decimal"}} SELECTED {{/ifequal}}>Decimal</option>
+            <option value="date-time"{{#ifequal data_type "date-time"}} SELECTED {{/ifequal}}>Date / Time</option>
+            <option value="rating"{{#ifequal data_type "rating"}} SELECTED {{/ifequal}}>Rating</option>
         </select>
+        {{#ifequal data_type "rating"}}
+            <span class ="extras">
+                <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
+                {{#each extraList}}
+                    <input type="text" class="rating" placeholder="Type new rating" value="{{this.name}}" />
+                {{/each}}
+            </span>
+        {{/ifequal}}
         {{#if errorFieldType}}<span>Field Type Missing</span>{{/if}}
     {{/if}}
-</td>
-<td>
-    <!-- Radio button -->
-    <input class=display-field type="radio" name="display_field"
-    {{#if is_display_field}}checked{{/if}}><br>
 </td>
 <td><a href="#" class="{{#if id }}delete-field {{else}} remove-row{{/if}} ">&times;</a></td>

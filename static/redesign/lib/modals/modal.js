@@ -17,8 +17,10 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             closeButtonText: "Cancel",
             saveButtonText: "Save",
             deleteButtonText: "Delete",
+            printButtonText: "Print",
             showSaveButton: true,
             showDeleteButton: true,
+            showPrintButton: false,
             regions: {
                 "modalBodyRegion": '.modal-body'
             },
@@ -26,7 +28,8 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 'click .close': 'hide',
                 'click .close-modal': 'hide',
                 'click .save-modal-form': 'saveFunction',
-                'click .delete-modal': 'deleteFunction'
+                'click .delete-modal': 'deleteFunction',
+                'click .print-modal': 'printFunction'
             },
             deleteFunction: function () {
                 alert("blah");
@@ -36,6 +39,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts = opts || {};
                 _.extend(this, opts);
                 this.saveFunction = opts.saveFunction;
+                this.printFunction = opts.printFunction;
                 if (!$(".modal").get(0)) {
                     this.render();
                     $('body').append(this.$el);
@@ -52,9 +56,11 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                     height: this.height,
                     showSaveButton: this.showSaveButton,
                     showDeleteButton: this.showDeleteButton,
+                    showPrintButton: this.showPrintButton,
                     closeButtonText: this.closeButtonText,
                     saveButtonText: this.saveButtonText,
-                    deleteButtonText: this.deleteButtonText
+                    deleteButtonText: this.deleteButtonText,
+                    printButtonText: this.printButtonText
                 };
             },
             appendView: function () {
@@ -66,6 +72,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts.closeButtonText = opts.closeButtonText || "Cancel";
                 opts.saveButtonText = opts.saveButtonText || "Save";
                 opts.deleteButtonText = opts.deleteButtonText || "Delete";
+                opts.printButtonText = opts.printButtonText || "Print";
                 _.extend(this, opts);
                 this.render();
                 this.delegateEvents();

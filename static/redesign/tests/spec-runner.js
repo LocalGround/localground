@@ -28,6 +28,7 @@ require(['boot'], function () {
 
         //style app left panel
         'spec/views/style-left-panel-test.js',
+        'spec/views/style-app-map-skin-test.js',
         'spec/views/select-map-view-test.js',
         'spec/views/layer-list-view-test.js',
         'spec/views/layer-list-child-view-test.js',
@@ -41,6 +42,11 @@ require(['boot'], function () {
         'spec/views/project-item-test.js',
         'spec/views/share-form-test.js',
         'spec/views/project-user-test.js',
+
+        // PRINT
+
+        'spec/views/generate-print-test.js',
+        'spec/views/print-options-test.js',
 
         //APPS
         'spec/views/style-app-test.js',

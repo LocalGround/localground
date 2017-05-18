@@ -19,6 +19,7 @@ define(["marionette",
             activeMapTypeID: 1,
             minZoom: 1,
             maxZoom: 22,
+            disableStateMemory: false,
             activeModel: null,
             addMarkerClicked: false,
             targetedModel: null,
@@ -29,17 +30,22 @@ define(["marionette",
                 zoom: 15,
                 center: { lat: -34, lng: 151 }
             },
-            el: '#map',
+            //el: '#map',
             template: false,
 
             initialize: function (opts) {
                 this.opts = opts;
                 $.extend(this, opts);
+                this.mapID = this.mapID || 'map';
+                this.restoreState();
+                this.tilesets = this.app.dataManager.tilesets;
+                this.listenTo(this.tilesets, 'reset', this.onShow);
                 Marionette.View.prototype.initialize.call(this);
+                this.render();
                 this.listenTo(this.app.vent, 'highlight-marker', this.doHighlight);
                 this.listenTo(this.app.vent, 'add-new-marker', this.activateMarker);
                 this.listenTo(this.app.vent, 'delete-marker', this.deleteMarker);
-                this.listenTo(this.app.vent, 'tiles-loaded', this.showMapTypesDropdown);
+                //this.listenTo(this.app.vent, 'tiles-loaded', this.showMapTypesDropdown);
                 this.listenTo(this.app.vent, 'place-marker', this.placeMarkerOnMapXY);
             },
 
@@ -83,6 +89,24 @@ define(["marionette",
                 this.targetedModel = null;
             },
 
+            getTileSetByKey: function (key, value) {
+                return this.tilesets.find(function (model) {
+                    if (key === 'name') {
+                        return model.get(key).toLowerCase() === value.toLowerCase();
+                    }
+                    return model.get(key) === value;
+                });
+            },
+
+            setActiveMapType: function (id) {
+                //this.showCustomAttribution(id);
+                var tileset = this.getTileSetByKey("id", id);
+                if (tileset) {
+                    this.map.setMapTypeId(tileset.getMapTypeID());
+                    this.app.vent.trigger("map-tiles-changed");
+                }
+            },
+
             showMapTypesDropdown: function (opts) {
                 // only show map dropdown once tilesets loaded:
                 var key;
@@ -118,18 +142,39 @@ define(["marionette",
                     streetViewControl: true,
                     //scaleControl: true,
                     panControl: false,
-                    mapTypeControl: false,
                     zoomControlOptions: this.zoomControlOptions || {
                         style: google.maps.ZoomControlStyle.SMALL
                     },
+                    mapTypeControl: this.showDropdownControl,
+                    //mapTypeId: this.activeMapTypeID,
                     rotateControlOptions: this.rotateControlOptions,
                     streetViewControlOptions: this.streetViewControlOptions,
                     zoom: this.defaultLocation.zoom,
                     center: this.defaultLocation.center
-
                 };
-                this.app.map = this.map = new google.maps.Map(document.getElementById(this.$el.attr("id")),
+
+                if (!this.$el.find("#" + this.mapID).get(0)) {
+                    this.$el.append($('<div id="' + this.mapID + '"></div>'));
+                }
+
+                this.app.map = this.map = new google.maps.Map(document.getElementById(this.mapID),
                     mapOptions);
+                this.initTileManager();
+            },
+            initTileManager: function () {
+                if (this.tilesets.length == 0 || !this.map) {
+                    return;
+                }
+                this.tileManager = new TileController({
+                    map: this.map,
+                    app: this.app,
+                    activeMapTypeID: this.activeMapTypeID
+                });
+                this.map.set('mapTypeControlOptions', {
+                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+                    position: google.maps.ControlPosition.TOP_LEFT,
+                    mapTypeIds: this.tilesets.mapTypeIDs
+                });
             },
 
             addControls: function () {
@@ -146,14 +191,6 @@ define(["marionette",
                         defaultLocation: this.defaultLocation
                     });
                 }*/
-
-                //set up the various map tiles in Google maps:
-                this.tileManager = new TileController(this.app, {
-                    map: this.map,
-                    activeMapTypeID: this.activeMapTypeID
-                });
-
-                //add event handlers:
             },
 
             addEventHandlers: function () {
@@ -207,6 +244,9 @@ define(["marionette",
             },
 
             saveState: function () {
+                if (!this.tileManager || this.disableStateMemory) {
+                    return;
+                }
                 var latLng = this.map.getCenter(),
                     state = {
                         center: [latLng.lng(), latLng.lat()],
@@ -218,7 +258,6 @@ define(["marionette",
             restoreState: function () {
                 var state = this.app.restoreState("basemap");
                 if (state) {
-                    //alert(state.activeMapTypeID);
                     if (state.center) {
                         this.defaultLocation.center = new google.maps.LatLng(
                             state.center[1],
@@ -235,6 +274,9 @@ define(["marionette",
                 return state;
             },
             onShow: function () {
+                if (this.tilesets.length == 0) {
+                    return;
+                }
                 this.restoreState();
                 this.renderMap();
                 this.addControls();

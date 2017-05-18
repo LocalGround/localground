@@ -3,6 +3,7 @@ from localground.apps.site import models
 from localground.apps.site.api.serializers.base_serializer import AuditSerializerMixin
 from django.conf import settings
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
+from localground.apps.site.api import fields
 
 class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
     '''
@@ -14,6 +15,12 @@ class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
     col_name = serializers.SerializerMethodField()
     form = serializers.SerializerMethodField()
     is_display_field = serializers.BooleanField()
+    extras = fields.JSONField(
+        style={'base_template': 'json.html', 'rows': 5},
+        required=False,
+        allow_null=True,
+        help_text='Use to store ratings and lookup tables. Example: [{"key1": "value1", "key2": "value2" }, {"key1": "value3", "key2": "value4" }]'
+        )
     data_type = serializers.SlugRelatedField(
                                 queryset=models.DataType.objects.all(),
                                 slug_field='name',
@@ -22,7 +29,7 @@ class FieldSerializerBase(AuditSerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = models.Field
-        fields = ('id', 'form', 'col_alias', 'col_name', 'is_display_field',
+        fields = ('id', 'form', 'col_alias', 'col_name', 'extras', 'is_display_field',
                     'ordering', 'data_type', 'url')
         
     def get_url(self, obj):

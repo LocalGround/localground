@@ -2,9 +2,12 @@ define([
     "underscore",
     "handlebars",
     "marionette",
+    "lib/modals/modal",
     "collections/maps",
+    "views/generate-print",
     "text!../templates/toolbar-global.html"
-], function (_, Handlebars, Marionette, Maps, ToolbarTemplate) {
+], function (_, Handlebars, Marionette,
+             Modal, Maps, PrintLayoutView, ToolbarTemplate) {
     "use strict";
     var Toolbar = Marionette.ItemView.extend({
         template: Handlebars.compile(ToolbarTemplate),
@@ -13,9 +16,16 @@ define([
             return {
                 activeTab: this.app.activeTab,
                 name: this.model.get("name") === "Untitled" ? "" : this.model.get("name"),
-                previewURL: this.previewURL
+                previewURL: this.previewURL,
+                screenType: this.app.screenType
             };
         },
+
+        events: {
+            'click .print-button': "showModal"
+        },
+
+        modal: null,
 
         initialize: function (opts) {
             _.extend(this, opts);
@@ -26,6 +36,9 @@ define([
             if (this.app.screenType == "style") {
                 this.app.activeTab = "style";
             }
+
+            this.modal = new Modal();
+
             Marionette.ItemView.prototype.initialize.call(this);
             this.listenTo(this.app.vent, 'data-loaded', this.setModel);
             this.getPreviewMap();
@@ -46,9 +59,34 @@ define([
             });
         },
 
+        showModal: function (opts) {
+            ///*
+            var printLayout = new PrintLayoutView({
+                app: this.app
+            });
+            //*/
+            this.modal.update({
+                view: printLayout,
+                title: 'Generate Print',
+                width: 1000,
+                height: null,
+                closeButtonText: "Done",
+                showSaveButton: false,
+                showDeleteButton: false,
+                showPrintButton: true,
+                printFunction: this.printMap.bind(this)
+            });
+            this.modal.show();
+        },
+
         setModel: function () {
             this.model = this.app.dataManager.model;
             this.render();
+        },
+
+        printMap: function(){
+            //alert("Print Map Settings")
+            this.modal.view.callMakePrint();
         }
     });
     return Toolbar;

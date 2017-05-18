@@ -1,7 +1,7 @@
 define(["underscore", "marionette", "models/project", "collections/photos",
         "collections/audio", "collections/mapimages", "collections/markers",
-        "collections/records", "collections/fields"],
-    function (_, Marionette, Project, Photos, Audio, MapImages, Markers, Records, Fields) {
+        "collections/records", "collections/fields", "collections/tilesets"],
+    function (_, Marionette, Project, Photos, Audio, MapImages, Markers, Records, Fields, TileSets) {
         'use strict';
         var DataManager = Marionette.ItemView.extend({
             dataDictionary: {},
@@ -18,6 +18,8 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 } else {
                     this.setCollections();
                 }
+                this.tilesets = new TileSets();
+                this.tilesets.fetch({reset: 'true'});
             },
             setCollections: function () {
                 var that = this,
@@ -83,7 +85,10 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                         var formID = key.split("_")[1],
                             recordsURL = '/api/0/forms/' + formID + '/data/',
                             fieldsURL = '/api/0/forms/' + formID + '/fields/',
-                            records = new Records(data, { url: recordsURL }),
+                            records = new Records(data, {
+                                url: recordsURL,
+                                key: 'form_' + formID
+                            }),
                             fields = new Fields(null, {url: fieldsURL });
                         fields.fetch({ reset: true, success: function () {
                             // some extra post-processing for custom datatypes so that

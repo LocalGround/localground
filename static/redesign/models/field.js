@@ -44,7 +44,14 @@ define(["underscore", "collections/dataTypes", "models/base"],
                     this.url = this.urlRoot() + this.get("field") + "/";
                 }
                 Base.prototype.initialize.apply(this, arguments);
-            }
+            }/*,
+            toJSON: function () {
+                var json = Base.prototype.toJSON.call(this);
+                if (json.extras !== null) {
+                    json.extras = JSON.stringify(json.extras);
+                }
+                return json;
+            }*/
         });
         return Field;
     });
