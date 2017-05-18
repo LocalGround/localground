@@ -45,19 +45,20 @@ define([
 
         saveRatingText: function(e){
             $(e.target).attr("value", $(e.target).val());
-            //this.updateRatingList();
+            this.updateRatingList();
         },
 
         updateRatingList: function(){
             //if (!this.ratingsList) return;
             //AN attempt to solve the problem, but this.ratingsList is undefined
             // despite that it is an empty array, therefore nothing can be pushed
+            var that  = this;
             this.ratingsList = [];
             if (this.$el.find('.rating').length == 0) return;
             var ratingsArray = this.$el.find('.rating');
             ratingsArray.each(function (index) {
-                console.log(index, $(this));
-                this.ratingsList.push(ratingsArray[index]);
+                console.log(index, $(that));
+                that.ratingsList.push($(this).val());
             });
         },
 
@@ -131,18 +132,19 @@ define([
                 this.$el.addClass("failure-message show");
             }
             // On ratings refresh, save the value for each stored rating
-            //this.updateRatingList();
+            this.updateRatingList();
             // However, it is plagued from undefined errors at this.ratingsList
 
-            /*
+            //*
+            var that = this;
             if (this.ratingsList){
                 var ratingTextBoxes = this.$el.find('.rating');
                 ratingTextBoxes.each(function (index) {
-                    console.log(index, $(this));
-                    ratingTextBoxes[index].val(this.ratingsList[index]);
+                    console.log(index, $(that));
+                    $(this).val(that.ratingsList[index]);
                 });
             }
-            */
+            //*/
 
         },
         removeModel: function () {
