@@ -48,8 +48,19 @@ define([
             this.updateRatingList();
         },
         removeRating: function (e) {
-            alert("remove rating");
             e.preventDefault();
+            /*
+            console.log($(e.target));
+            console.log($(e.target).parent());
+            console.log($(e.target).parent().parent());
+            console.log($(e.target).closest(".rating-row").find(".rating"));
+            */
+            if (window.confirm("Want to remove rating?")){
+                var rating_row = $(e.target).closest(".rating-row");
+                $("rating-row").remove();
+                this.updateRatingList();
+            }
+
         },
 
         updateRatingList: function() {
