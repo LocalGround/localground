@@ -6,22 +6,20 @@ define(["jquery",
         "text!../../templates/right/marker-style.html",
         "text!../../templates/right/marker-style-child.html",
         "collections/symbols",
+        'color-picker-eyecon',
         "palette"
     ],
-    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleTemplate, MarkerStyleChildTemplate, Symbols) {
+    function ($, Backbone, Marionette, Handlebars, IconLookup, MarkerStyleTemplate, MarkerStyleChildTemplate, Symbols, ColorPicker) {
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
             buckets: function() {
                 return this.collection.length || 4
             },
-            paletteOpacity: .8,
-            width: 50,
             categoricalList: [],
             continuousList: [],
             allColors: [],
             selectedColorPalette: null,
-            paletteId: null,
             rules: [],
             layerDraft: {
                 continuous: null,
@@ -29,12 +27,12 @@ define(["jquery",
                 simple: null, 
                 individual: null
             },
-            metadata: {},
             template: Handlebars.compile(MarkerStyleTemplate),
             modelEvents: {
                 'change:symbols': 'reRender'
             },
-            //each of these childViews is a symbol. this view render the value-rules box
+
+            //each of these childViews is a symbol. this view renders the value-rules box
             getChildView: function () {
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
@@ -53,7 +51,7 @@ define(["jquery",
                     tagName: "tr",
                     className: "table-row",
                     templateHelpers: function () {
-                    //    console.log(this, this.dataType);
+                        console.log(this.model);
                         return {
                             dataType: this.dataType,
                             icons: IconLookup.getIcons(),
@@ -62,7 +60,6 @@ define(["jquery",
                     },
                     setSymbol: function (e) {
                         this.model.set("shape", $(e.target).val());
-                        console.log(this.model);
                     },
                     updateLayerSymbols: function () {
                         this.layer.setSymbol(this.model);
@@ -97,6 +94,24 @@ define(["jquery",
                 this.listenTo(this.app.vent, 'update-data-source', this.buildColumnList);
             },
 
+            onRender: function () {
+                var that = this;
+                this.$el.find('#stroke-color-picker').ColorPicker({
+            
+                    onShow: function (colpkr) {
+                        $(colpkr).fadeIn(500);
+                        return false;
+                    },
+                    onHide: function (colpkr) {
+                        $(colpkr).fadeOut(500);
+                        return false;
+                    },
+                    onChange: function (hsb, hex, rgb) {
+                        that.updateStrokeColor(hex);
+                    }
+                });
+            },
+
             hideColorRamp: function (e) {
                 var $el = $(e.target);
                 if (!$el.hasClass('palette-wrapper') &&
@@ -115,14 +130,15 @@ define(["jquery",
             },
 
             templateHelpers: function () {
+                var metadata = this.model.get("metadata");
                 var helpers = {
+                    metadata: metadata,
                     dataType: this.dataType,
                     allColors: this.allColors,
                     selectedColorPalette: this.selectedColorPalette,
                     buckets: this.buckets,
                     categoricalList: this.categoricalList,
                     continuousList: this.continuousList, 
-                    paletteOpacity: this.paletteOpacity,
                     icons: IconLookup.getIcons()
                 };
                 if (this.fields) {
@@ -138,7 +154,7 @@ define(["jquery",
                 'change #bucket': 'updateBuckets',
                 'change #palette-opacity': 'updatePaletteOpacity',
                 'change .global-marker-shape': 'updateGlobalShape',
-                'change .marker-width': 'updateWidth',
+                'change #marker-width': 'updateWidth',
                 'change #stroke-weight': 'updateStrokeWeight',
                 'change #stroke-color': 'updateStrokeColor',
                 'change #stroke-opacity': 'updateStrokeOpacity',
@@ -227,10 +243,8 @@ define(["jquery",
                     segmentSize = range/this.buckets,
                     currentFloor = min,
                     counter = 0;
-                console.log(range, this.buckets, segmentSize);
                 this.layerDraft.continuous = new Symbols();
-                console.log(this.collection);
-                console.log(this.layerDraft.continuous);
+                
                 while (currentFloor < max) {
                     console.log("bucket #" + counter, this.allColors[0][counter]);
                     this.layerDraft.continuous.add({
@@ -248,32 +262,16 @@ define(["jquery",
                     });
                     counter++;
                     currentFloor += segmentSize;
-
                 }
                 this.collection = this.layerDraft.continuous;
                 this.model.set("symbols", this.layerDraft.continuous.toJSON());
-                console.log(this.collection);
-                console.log(this.model);
-                console.log("selected color palette from contData: ", this.selectedColorPalette);
-
                 this.render();
-/*
-                dataEntry.collection.models.forEach(function(d) {
-                    console.log(d, $selected);
-                    console.log(d.get($selected), segmentSize);
-                });
-                */
-                
             },
-
-           
 
             catData: function() {  
                 var key = this.model.get('data_source'); 
                 this.categoricalData = this.app.dataManager.getData(key);
-                console.log(this.categoricalData);
                 var $selected = this.$el.find("#cat-prop").val();
-                console.log($selected);
                 this.categoricalData.collection.models.forEach(function(d) {
                     console.log(d.get($selected));
                 });
@@ -288,60 +286,53 @@ define(["jquery",
             },
 
             updateBuckets: function(e) {
-                //var numBuckets = $(e.target).val();
-                this.model.set({buckets: $(e.target).val() });
-                console.log("new bucket #: " + this.model.get("buckets"));
-                console.log(this.model);
+                var buckets = parseFloat($(e.target).val());
+                this.updateMetedata("buckets", buckets);
                 this.buildPalettes();
             },
 
             buildPalettes: function () {
                 var seq1, seq2, seq3, seq4, seq5, seq6;
-                this.buckets = this.$el.find("#bucket").val() || 4;
-                seq1 = palette('cb-Blues', this.buckets);
-                seq2 = palette('cb-Oranges', this.buckets);
-                seq3 = palette('cb-Greys', this.buckets);
-                seq4 = palette('cb-YlGn', this.buckets);
-                seq5 = palette('cb-RdYlBu', this.buckets);
-                seq6 = palette('tol-dv', this.buckets);
+                this.buckets = parseInt(this.$el.find("#bucket").val()) || 4;
+                var buckets = this.model.get("metadata").buckets; 
+                var paletteId = this.model.get("metadata").paletteId || 0;
+                
+                seq1 = palette('cb-Blues', buckets);
+                seq2 = palette('cb-Oranges', buckets);
+                seq3 = palette('cb-Greys', buckets);
+                seq4 = palette('cb-YlGn', buckets);
+                seq5 = palette('cb-RdYlBu', buckets);
+                seq6 = palette('tol-dv', buckets);
                 this.allColors = [seq1, seq2, seq3, seq4, seq5, seq6];
-                this.selectedColorPalette = this.allColors[this.paletteId || 0];
-               // this.allColors.push(seq1, seq2, seq3, seq4, seq5, seq6);
+                this.selectedColorPalette = this.allColors[paletteId];
+
                 this.contData();
-                this.render();
             },
 
             updatePaletteOpacity: function() {
-                var localMeta;
                 var opacity = parseFloat(this.$el.find("#palette-opacity").val());
                 if (opacity > 1) {
                     opacity = 1;
                 } else if (opacity < 0 ) {
                     opacity = 0;
                 } 
-                this.paletteOpacity = opacity;
-                //this.app.vent.trigger("update-opacity", opacity); 
-                localMeta = this.model.get("metadata") || {};
-                localMeta.fillOpacity = opacity;
-                this.model.set("metadata", {foo: "bar"});
-                console.log("updated opacity: ", this.model);
+                this.updateMetedata("fillOpacity", opacity);
                 this.render();
             },
 
             updateGlobalShape: function(e) {
-            //    this.model.set("shape", $(e.target).val());
+                var shape = $(e.target).val();
+                this.updateMetedata("shape", shape);
             },
 
             updateWidth: function(e) {
-            //    this.model.set("width", $(e.target).val());    
+                var width = $(e.target).val();
+                this.updateMetedata("width", width);
             },
 
             updateStrokeWeight: function(e) {
-            //    this.model.set("strokeWeight", $(e.target).val());    
-            },
-
-            updateStrokeColor: function(e) {
-            //    this.model.set("strokeColor", $(e.target).val());    
+                var strokeWeight = parseFloat($(e.target).val());
+                this.updateMetedata("strokeWeight", strokeWeight);
             },
 
             updateStrokeOpacity: function(e) {
@@ -351,22 +342,34 @@ define(["jquery",
                     } else if (opacity < 0 ) {
                         opacity = 0;
                     } 
-            //    this.model.set("strokeOpacity", $(e.target).val());   
+                this.updateMetedata("strokeOpacity", opacity);
             },
 
             showPalettes: function () {
                 this.$el.find(".palette-wrapper").toggle();
             },
 
+            // triggered from colorPicker
+            updateStrokeColor: function (hex) {
+                
+                this.updateMetedata("strokeColor", hex);
+                $('#stroke-color-picker').css('color', '#' + hex);
+                this.render();
+            },
+
             selectPalette: function (e) {
                 this.$el.find(".palette-wrapper").toggle();
-                // Need to write some code to hide this when user clicks outside pop-up div
-
-                // Need more code below to save and display selected palette
-                this.paletteId = $(e.target).val();
-                this.selectedColorPalette = this.allColors[$(e.target).val()];
+                var paletteId = $(e.target).val();
+                this.updateMetedata("paletteId", paletteId);
+                this.selectedColorPalette = this.allColors[paletteId];
                 this.contData();
-                console.log("selected color palette: ", this.selectedColorPalette);
+            }, 
+
+            //convenience function
+            updateMetedata: function(newKey, newValue) {
+                var localMeta = this.model.get("metadata") || {};
+                localMeta[newKey] = newValue;
+                this.model.set("metadata", localMeta);                
             }
 
         });

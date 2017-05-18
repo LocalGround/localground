@@ -8,7 +8,18 @@ define(["backbone", "models/base", "models/symbol"], function (Backbone, Base, S
      */
     var Layer = Base.extend({
 		defaults: _.extend({}, Base.prototype.defaults, {
-            isVisible: false
+            isVisible: false,
+            metadata: {
+                buckets: 4,
+                paletteId: 0,
+                fillOpacity: 1,
+                width: 20,
+                fillColor: "4e70d4",
+                strokeColor: "4e70d4",
+                strokeWeight: 3, 
+                strokeOpacity: 1,
+                shape: "circle"
+            } 
         }),
         symbolMap: null,
         //urlRoot: "/api/0/layers/",
@@ -18,7 +29,10 @@ define(["backbone", "models/base", "models/symbol"], function (Backbone, Base, S
         basic: false,
         initialize: function (data, opts) {
 			Base.prototype.initialize.apply(this, arguments);
-            this.buildSymbolMap();
+            var currentMetadata = _.clone(this.get("metadata")),
+            defaults = _.clone(this.defaults.metadata);
+            _.extend(defaults, currentMetadata);
+            this.set("metadata", defaults);
             if (data.map_id) {
                 this.urlRoot = "/api/0/maps/" + data.map_id + "/layers/";
             }
@@ -106,7 +120,6 @@ define(["backbone", "models/base", "models/symbol"], function (Backbone, Base, S
 
             if (json.metadata !== null) {
                 metadata = json.metadata;
-                console.log(json);
                 json.metadata = JSON.stringify(metadata);
             }
 

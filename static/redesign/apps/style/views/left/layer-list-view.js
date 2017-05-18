@@ -60,7 +60,7 @@ define(["marionette",
                     map_id: this.app.selectedMapModel.id,
                     data_source: "photos", //default
                     layer_type: "categorical",
-                    filters: [{ "tag" : "nothing" }],
+                    filters: {},
                     symbols: [{
                         "color": "#7075FF",
                         "width": 30,
