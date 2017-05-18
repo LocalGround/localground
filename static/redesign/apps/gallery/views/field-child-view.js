@@ -8,6 +8,8 @@ define([
     'use strict';
     var FieldChildView = Marionette.ItemView.extend({
         ratingsList: [],
+        errorRatingValue: false,
+        erroRatingName: false
         initialize: function (opts) {
             _.extend(this, opts);
             this.setRatingsFromModel();
@@ -31,7 +33,9 @@ define([
                 errorFieldName: this.model.errorFieldName,
                 serverErrorMessage: this.model.serverErrorMessage,
                 extraList: this.model.get("extras"),
-                numNewRatings: this.numNewRatings
+                errorRatingValue: this.errorRatingValue,
+                errorRatingName: this.errorRatingName
+
             };
             return errorMessages;
         },
@@ -110,13 +114,7 @@ define([
             }
         },
         saveRatingsToModel: function () {
-            /*var i, extras = [];
-            for (i = 0; i < this.ratingsList.length; i++) {
-                extras.push({
-                    name: this.ratingsList[i].name,
-                    value: this.ratingsList[i].value
-                });
-            }*/
+
             console.log(this.ratingsList);
             this.model.set("extras", this.ratingsList);
         },
@@ -136,15 +134,19 @@ define([
             if (fieldType) {
                 this.model.set("data_type", fieldType);
             }
-            if (!this.model.errorFieldName && !this.model.errorFieldType) {
+            if (!this.model.errorFieldName && !this.model.errorFieldType &&
+                this.errorRatingValue && this.errorRatingName) {
                 this.model.save(null, {
                     success: function () {
                         that.parent.renderWithSaveMessages();
+                        that.renderWithSaveMessages();
+
                     },
                     error: function (model, response) {
                         messages = JSON.parse(response.responseText);
                         that.model.serverErrorMessage = messages.detail;
                         that.parent.renderWithSaveMessages();
+                        that.renderWithSaveMessages();
                     }
                 });
             } else {
@@ -161,6 +163,18 @@ define([
                 this.model.errorFieldType = true;
             }
         },
+
+        validateRating: function(ratingName, ratingValue){
+
+            if (ratingName.trim() === "") {
+                this.errorRatingName = true;
+            }
+            if (ratingName.trim() === "") {
+                this.errorRatingValue = true;
+            }
+            //
+        },
+
         onRender: function () {
             this.$el.removeClass("failure-message");
             if (this.model.errorFieldType || this.model.errorFieldName || this.model.serverErrorMessage) {
@@ -196,6 +210,23 @@ define([
             this.model.destroy();
             if (e) {
                 e.preventDefault();
+            }
+        },
+        renderWithSaveMessages: function () {
+            this.showMessage();
+            this.render();
+        },
+        showMessage: function () {
+            var that = this;
+            this.showSuccess = this.showError = false;
+            this.collection.each(function (this) {
+                if (that.errorRatingName || that.errorRatingValue) {
+                    that.showError = true;
+                    return;
+                }
+            });
+            if (!this.showError) {
+                this.showSuccess = true;
             }
         }
 
