@@ -3,9 +3,10 @@ define(["marionette",
         "lib/maps/basemap",
         "views/print-options",
         "lib/maps/marker-overlays",
+        "lib/maps/overlays/icon",
         "text!../templates/print-layout.html"
     ],
-    function (Marionette, Handlebars, Basemap, PrintOptions, MarkerOverlays, PrintLayoutTemplate) {
+    function (Marionette, Handlebars, Basemap, PrintOptions, MarkerOverlays, Icon, PrintLayoutTemplate) {
         'use strict';
         // More info here: http://marionettejs.com/docs/v2.4.4/marionette.layoutview.html
         var GeneratePrintLayout = Marionette.LayoutView.extend({
@@ -28,7 +29,6 @@ define(["marionette",
             onShow: function () {
                 this.showBasemap();
                 this.showPrintOptions();
-                this.showMarkerOverlays();
             },
 
             events: {
@@ -60,13 +60,15 @@ define(["marionette",
                 for (i = 0; i < dataSources.length; i++) {
                     key = dataSources[i].value;
                     entry = dm.getData(key);
-                    console.log(entry);
-                    console.log(entry.collection);
+                    if (entry.collection.length === 0) { continue; }
                     overlays = new MarkerOverlays({
                         collection: entry.collection,
                         app: this.app,
+                        map: this.basemapView.map,
                         dataType: entry.collection.key,
-                        isShowing: true
+                        isShowing: true,
+                        startVisible: true,
+                        _icon: new Icon({ shape: entry.collection.key })
                     });
                 }
                 console.log("show overlays");
@@ -84,6 +86,7 @@ define(["marionette",
                         disableStateMemory: true
                     });
                     that.regionRight.show(that.basemapView);
+                    that.showMarkerOverlays();
 
                     setTimeout(function () {
                         google.maps.event.trigger(that.app.map, 'resize');

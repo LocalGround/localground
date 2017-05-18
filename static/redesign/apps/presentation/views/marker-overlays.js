@@ -34,7 +34,7 @@ define(['marionette',
                 $.extend(this, opts);
                 this.collection = opts.collection;
                 this.opts = opts;
-                this.map = this.app.getMap();
+                this.map = this.map || this.app.getMap();
 
                 //this.childView = PhotoOverlay;
                 this.childViewOptions = opts;
