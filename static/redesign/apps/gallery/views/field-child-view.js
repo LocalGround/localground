@@ -7,9 +7,10 @@ define([
 ], function ($, _, Handlebars, Marionette, FieldItemTemplate) {
     'use strict';
     var FieldChildView = Marionette.ItemView.extend({
-        ratingsList: null,
+        ratingsList: [],
         initialize: function (opts) {
             _.extend(this, opts);
+            this.setRatingsFromModel();
         },
         modelEvents: {
             'draw': 'render'
@@ -18,9 +19,10 @@ define([
             'click .remove-row': 'removeModel',
             'click .delete-field': 'doDelete',
             'blur input.fieldname': 'setAlias',
+            'blur input.rating-value': 'saveNewRating',
+            'blur input.rating-name': 'saveNewRating',
             'change select.fieldType': 'setDataType',
             'click .add-new-rating': 'addNewRating',
-            'blur .rating': 'saveRatingText',
             'click .remove-rating': 'removeRating'
         },
         templateHelpers: function () {
@@ -43,38 +45,47 @@ define([
             this.model.set("col_alias", this.$el.find(".fieldname").val());
         },
 
-        saveRatingText: function(e){
-            $(e.target).attr("value", $(e.target).val());
+        setRatingsFromModel: function () {
+            if (this.model.get("data_type") != "rating") { return; }
+            var i,
+                ratings = this.model.get("extras") || [];
+            for (i = 0; i < ratings.length; i++) {
+                this.ratingsList.push({
+                    name: ratings[i].name,
+                    value: ratings[i].value
+                });
+            }
+        },
+
+        saveNewRating: function (e) {
+            //$(e.target).attr("value", $(e.target).val());
             this.updateRatingList();
         },
         removeRating: function (e) {
             e.preventDefault();
-            /*
-            console.log($(e.target));
-            console.log($(e.target).parent());
-            console.log($(e.target).parent().parent());
-            console.log($(e.target).closest(".rating-row").find(".rating"));
-            */
             if (window.confirm("Want to remove rating?")){
                 var rating_row = $(e.target).closest(".rating-row");
                 $(rating_row).remove();
                 this.updateRatingList();
             }
-
         },
 
-        updateRatingList: function() {
+        updateRatingList: function () {
             //if (!this.ratingsList) return;
             //AN attempt to solve the problem, but this.ratingsList is undefined
             // despite that it is an empty array, therefore nothing can be pushed
-            console.log("update ratings list called");
-            var that  = this;
+            //console.log("update ratings list called");
+            if (this.$el.find('.rating-row').length == 0) { return; }
             this.ratingsList = [];
-            if (this.$el.find('.rating').length == 0) return;
-            var ratingsArray = this.$el.find('.rating');
-            ratingsArray.each(function (index) {
-                console.log(index, $(that));
-                that.ratingsList.push($(this).val());
+            var that = this,
+                $rows = this.$el.find('.rating-row'),
+                $row;
+            $rows.each(function () {
+                $row = $(this);
+                that.ratingsList.push({
+                    name: $row.find('.rating-name').val(),
+                    value: $row.find('.rating-value').val()
+                });
             });
             console.log(this.ratingsList);
             this.saveRatingsToModel();
@@ -84,7 +95,10 @@ define([
             //alert("add New Rating");
             // Need to replace invisible area with append
             // at the end of the extras html class
-            this.ratingsList.push("");
+            this.ratingsList.push({
+                name: "",
+                value: ""
+            });
             this.saveRatingsToModel();
             this.render();
             e.preventDefault();
@@ -92,20 +106,19 @@ define([
         setDataType: function () {
             this.model.set("data_type", this.$el.find(".fieldType").val());
             if (this.model.get("data_type") == "rating") {
-                console.log("show the drop-down options");
                 this.render();
             }
         },
         saveRatingsToModel: function () {
-            var i, extras = [];
+            /*var i, extras = [];
             for (i = 0; i < this.ratingsList.length; i++) {
-                console.log(i, this.ratingsList[i]);
                 extras.push({
-                    name: this.ratingsList[i],
-                    value: (i + 1)
+                    name: this.ratingsList[i].name,
+                    value: this.ratingsList[i].value
                 });
-            }
-            this.model.set("extras", extras);
+            }*/
+            console.log(this.ratingsList);
+            this.model.set("extras", this.ratingsList);
         },
         saveField: function () {
             var that = this,
@@ -154,7 +167,7 @@ define([
                 this.$el.addClass("failure-message show");
             }
             // On ratings refresh, save the value for each stored rating
-            this.updateRatingList();
+            //this.updateRatingList();
             // However, it is plagued from undefined errors at this.ratingsList
 
             //*
@@ -162,7 +175,6 @@ define([
             if (this.ratingsList){
                 var ratingTextBoxes = this.$el.find('.rating');
                 ratingTextBoxes.each(function (index) {
-                    console.log(index, $(that));
                     $(this).val(that.ratingsList[index]);
                 });
             }

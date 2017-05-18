@@ -28,7 +28,10 @@
                         {{#each extraList}}
                         <tr class="rating-row">
                             <td>
-                                <input type="text" class="rating" placeholder="Type new rating" value="{{this.name}}" />
+                                <input type="text" class="rating-value" placeholder="Type rating value" value="{{this.value}}" />
+                            </td>
+                            <td>
+                                <input type="text" class="rating-name" placeholder="Type new rating" value="{{this.name}}" />
                             </td>
                             <td>
                                 <a href="#" class="remove-rating">&times;</a>

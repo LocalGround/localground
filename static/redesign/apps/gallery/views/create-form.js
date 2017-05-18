@@ -141,7 +141,7 @@ define([
         saveFields: function () {
             this.initCollection();
             var that = this,
-                $rows = this.$el.find("#fieldList tr"),
+                $rows = this.$el.find("#fieldList > tr"),
                 tempID,
                 model,
                 childView;
