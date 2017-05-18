@@ -7,7 +7,6 @@ define([
 ], function ($, _, Handlebars, Marionette, FieldItemTemplate) {
     'use strict';
     var FieldChildView = Marionette.ItemView.extend({
-        numNewRatings: 0,
         ratingsList: null,
         initialize: function (opts) {
             _.extend(this, opts);
@@ -21,7 +20,8 @@ define([
             'blur input.fieldname': 'setAlias',
             'change select.fieldType': 'setDataType',
             'click .add-new-rating': 'addNewRating',
-            'blur .rating': 'saveRatingText'
+            'blur .rating': 'saveRatingText',
+            'click .remove-rating': 'removeRating'
         },
         templateHelpers: function () {
             var errorMessages = {
@@ -47,11 +47,16 @@ define([
             $(e.target).attr("value", $(e.target).val());
             this.updateRatingList();
         },
+        removeRating: function (e) {
+            alert("remove rating");
+            e.preventDefault();
+        },
 
-        updateRatingList: function(){
+        updateRatingList: function() {
             //if (!this.ratingsList) return;
             //AN attempt to solve the problem, but this.ratingsList is undefined
             // despite that it is an empty array, therefore nothing can be pushed
+            console.log("update ratings list called");
             var that  = this;
             this.ratingsList = [];
             if (this.$el.find('.rating').length == 0) return;
@@ -60,43 +65,49 @@ define([
                 console.log(index, $(that));
                 that.ratingsList.push($(this).val());
             });
+            console.log(this.ratingsList);
+            this.saveRatingsToModel();
         },
 
         addNewRating: function (e) {
             //alert("add New Rating");
             // Need to replace invisible area with append
             // at the end of the extras html class
-            this.numNewRatings += 1;
+            this.ratingsList.push("");
+            this.saveRatingsToModel();
             this.render();
             e.preventDefault();
         },
         setDataType: function () {
             this.model.set("data_type", this.$el.find(".fieldType").val());
-            if (this.model.get("data_type") == "rating"){
+            if (this.model.get("data_type") == "rating") {
                 console.log("show the drop-down options");
                 this.render();
             }
+        },
+        saveRatingsToModel: function () {
+            var i, extras = [];
+            for (i = 0; i < this.ratingsList.length; i++) {
+                console.log(i, this.ratingsList[i]);
+                extras.push({
+                    name: this.ratingsList[i],
+                    value: (i + 1)
+                });
+            }
+            this.model.set("extras", extras);
         },
         saveField: function () {
             var that = this,
                 fieldName = this.$el.find(".fieldname").val(),
                 fieldType = this.$el.find(".fieldType").val(),
                 isDisplaying = this.$el.find('.display-field').is(":checked"),
-                extras = [],
                 messages;
             console.log(fieldType);
             this.validate(fieldName, fieldType);
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);
 
-            this.$el.find('.rating').each(function (index) {
-                console.log(index, $(this));
-                extras.push({
-                    name: $(this).val(),
-                    value: (index + 1)
-                });
-            });
-            this.model.set("extras", extras);
+            this.saveRatingsToModel();
 
             if (fieldType) {
                 this.model.set("data_type", fieldType);

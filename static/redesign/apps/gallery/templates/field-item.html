@@ -24,13 +24,18 @@
             <!-- Make this list the new extras list to reduce confusion for users -->
                 <span class ="extras">
                     <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
-                    {{#each extraList}}
-                        <input type="text" class="rating" placeholder="Type new rating" value="{{this.name}}" />
-                    {{/each}}
-                    <!-- As of now, it cannot append new ratings except one from the showRatingTextBox -->
-                    {{#times 0 numNewRatings}}
-                        <input type="text" class="rating" placeholder="Type new rating" />
-                    {{/times}}
+                    <table>
+                        {{#each extraList}}
+                        <tr>
+                            <td>
+                                <input type="text" class="rating" placeholder="Type new rating" value="{{this.name}}" />
+                            </td>
+                            <td>
+                                <a href="#" class="remove-rating">&times;</a>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </table>
                 </span>
 
             {{/ifequal}}
@@ -48,10 +53,9 @@
         {{#ifequal data_type "rating"}}
             <span class ="extras">
                 <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
-                <!-- As of now, it cannot append new ratings except one from the showRatingTextBox -->
-                {{#times 0 numNewRatings}}
-                    <input type="text" class="new-rating" placeholder="Type new rating" />
-                {{/times}}
+                {{#each extraList}}
+                    <input type="text" class="rating" placeholder="Type new rating" value="{{this.name}}" />
+                {{/each}}
             </span>
         {{/ifequal}}
         {{#if errorFieldType}}<span>Field Type Missing</span>{{/if}}
