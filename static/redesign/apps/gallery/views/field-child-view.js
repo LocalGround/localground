@@ -30,8 +30,8 @@ define([
                 errorFieldType: this.model.errorFieldType,
                 errorFieldName: this.model.errorFieldName,
                 serverErrorMessage: this.model.serverErrorMessage,
-                extraList: this.model.get("extras"),
-                numNewRatings: this.numNewRatings
+                extraList: this.model.get("extras")
+
             };
             return errorMessages;
         },
@@ -110,14 +110,7 @@ define([
             }
         },
         saveRatingsToModel: function () {
-            /*var i, extras = [];
-            for (i = 0; i < this.ratingsList.length; i++) {
-                extras.push({
-                    name: this.ratingsList[i].name,
-                    value: this.ratingsList[i].value
-                });
-            }*/
-            console.log(this.ratingsList);
+
             this.model.set("extras", this.ratingsList);
         },
         saveField: function () {
@@ -136,10 +129,13 @@ define([
             if (fieldType) {
                 this.model.set("data_type", fieldType);
             }
-            if (!this.model.errorFieldName && !this.model.errorFieldType) {
+
+            if (!this.model.errorFieldName && !this.model.errorFieldType &&
+                this.validateRating()) {
                 this.model.save(null, {
                     success: function () {
                         that.parent.renderWithSaveMessages();
+
                     },
                     error: function (model, response) {
                         messages = JSON.parse(response.responseText);
@@ -160,7 +156,29 @@ define([
             if (fieldType === "-1") {
                 this.model.errorFieldType = true;
             }
+            // Go through an array of rating rows to check for empty names and values
         },
+
+        validateRating: function(){
+            var errors = false;
+            for (var i = 0; i < this.ratingsList.length; ++i){
+                console.log(this.ratingsList[i]);
+                if (this.ratingsList[i].name.trim() === ""){
+                    this.ratingsList[i].erroRatingName = true;
+                    errors = true;
+                } else {
+                    this.ratingsList[i].erroRatingName = false;
+                }
+                if (this.ratingsList[i].value.toString().trim() === ""){
+                    this.ratingsList[i].erroRatingValue = true;
+                    errors = true;
+                } else {
+                    this.ratingsList[i].erroRatingValue = false;
+                }
+            }
+            return !errors;
+        },
+
         onRender: function () {
             this.$el.removeClass("failure-message");
             if (this.model.errorFieldType || this.model.errorFieldName || this.model.serverErrorMessage) {
