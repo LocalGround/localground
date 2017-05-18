@@ -29,13 +29,11 @@
                         <tr class="rating-row">
                             <td>
                                 <input type="text" class="rating-value" placeholder="Type rating value" value="{{this.value}}" />
-
-                                {{#if errorRatingValue}}<span>Rating Value Missing</span>{{/if}}
+                                {{#if this.errorRatingValue}}<span>Rating Value Missing</span>{{/if}}
                             </td>
                             <td>
                                 <input type="text" class="rating-name" placeholder="Type new rating" value="{{this.name}}" />
-
-                                {{#if errorRatingName}}<span>Rating Name Missing</span>{{/if}}
+                                {{#if this.errorRatingName}}<span>Rating Name Missing</span>{{/if}}
                             </td>
                             <td>
                                 <a href="#" class="remove-rating">&times;</a>

@@ -132,6 +132,7 @@ define([
 
             if (!this.model.errorFieldName && !this.model.errorFieldType &&
                 this.validateRating()) {
+                console.log('saving...');
                 this.model.save(null, {
                     success: function () {
                         that.parent.renderWithSaveMessages();
@@ -144,6 +145,7 @@ define([
                     }
                 });
             } else {
+                console.log('rendering...');
                 this.render();
             }
         },
@@ -159,21 +161,17 @@ define([
             // Go through an array of rating rows to check for empty names and values
         },
 
-        validateRating: function(){
+        validateRating: function () {
             var errors = false;
             for (var i = 0; i < this.ratingsList.length; ++i){
                 console.log(this.ratingsList[i]);
                 if (this.ratingsList[i].name.trim() === ""){
-                    this.ratingsList[i].erroRatingName = true;
+                    this.ratingsList[i].errorRatingName = true;
                     errors = true;
-                } else {
-                    this.ratingsList[i].erroRatingName = false;
                 }
                 if (this.ratingsList[i].value.toString().trim() === ""){
-                    this.ratingsList[i].erroRatingValue = true;
+                    this.ratingsList[i].errorRatingValue = true;
                     errors = true;
-                } else {
-                    this.ratingsList[i].erroRatingValue = false;
                 }
             }
             return !errors;
