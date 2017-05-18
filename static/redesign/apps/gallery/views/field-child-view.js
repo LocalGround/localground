@@ -162,6 +162,7 @@ define([
             if (fieldType === "-1") {
                 this.model.errorFieldType = true;
             }
+            // Go through an array of rating rows to check for empty names and values
         },
 
         validateRating: function(ratingName, ratingValue){
