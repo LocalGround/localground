@@ -67,7 +67,6 @@ define(["marionette",
                         map: this.basemapView.map,
                         dataType: entry.collection.key,
                         isShowing: true,
-                        startVisible: true,
                         _icon: new Icon({ shape: entry.collection.key })
                     });
                 }

@@ -282,3 +282,12 @@ input.fieldname {
     margin-left: 4px;
 }
 
+.print-links {
+    text-align: center;
+}
+
+.download-message {
+    position: relative;
+    top: -150px;
+    color: #666;
+}

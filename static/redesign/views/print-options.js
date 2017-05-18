@@ -29,27 +29,18 @@ define(["underscore",
             },
 
             detectLayout: function () {
-                var layoutVal = 0,
-                    option_layout_val = this.$el.find(".option-layout:checked").val(),
-                    option_data_val = this.$el.find(".option-data:checked").val();
+                var option_layout_val = this.$el.find(".option-layout:checked").val(),
+                    option_data_val = this.$el.find(".option-data:checked").val(),
+                    layoutVal = 1;
 
-                if (option_data_val == "Yes") {
-                    layoutVal += 0;
-                } else if (option_data_val == "No") {
-                    layoutVal += 2;
-                }
-
-                if (option_layout_val == "Portrait") {
-                    layoutVal += 0;
-                } else if (option_layout_val == "Landscape") {
+                if (option_layout_val === "Landscape") {
                     layoutVal += 1;
                 }
-
-                layoutVal += 1;
-
+                if (option_data_val === "No") {
+                    layoutVal += 2;
+                }
+                console.log(layoutVal);
                 return layoutVal;
-
-
             },
 
             makePrint: function () {

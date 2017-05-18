@@ -8,7 +8,6 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
         strokeOpacity: 1,
         initialize: function (opts) {
             if (opts.shape) {
-                console.log(opts.shape);
                 _.extend(this, IconLookup.getIcon(opts.shape));
             }
             _.extend(this, opts);
@@ -44,7 +43,6 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
                 width: this.width,
                 height: this.height
             };
-            console.log(this.shape, opts);
             return opts;
         }
     });
