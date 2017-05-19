@@ -295,7 +295,7 @@ define(
                         "url": "http://localhost:7777/api/0/forms/1/fields/1"
                     },
                     {
-                        "id": 19,
+                        "id": 2,
                         "form": 1,
                         "col_alias": "Test Integer",
                         "col_name": "test_integer",
@@ -305,7 +305,7 @@ define(
                         "url": "http://localhost:7777/api/0/forms/1/fields/19"
                     },
                     {
-                        "id": 20,
+                        "id": 3,
                         "form": 1,
                         "col_alias": "Test Boolean",
                         "col_name": "test_boolean",
@@ -313,8 +313,31 @@ define(
                         "ordering": 3,
                         "data_type": "boolean",
                         "url": "http://localhost:7777/api/0/forms/1/fields/20"
-                    }
-            ]});
+                    },
+                    {
+                        "id": 4,
+                        "form": 1,
+                        "col_alias": "Test Rating",
+                        "col_name": "test_rating",
+                        "is_display_field": false,
+                        "ordering": 4,
+                        "extras": [
+                            {
+                                "name": "Positive",
+                                "value": 1
+                            },
+                            {
+                                "name": "Neutral",
+                                "value": 2
+                            },
+                            {
+                                "name": "Negative",
+                                "value": 3
+                            }
+                        ],
+                        "data_type": "rating"
+                    }]
+            });
             this.photos = new Photos([
                 new Photo({ id:1, name: "Cat", tags: ['animal', 'cat', 'cute', 'tag1'], project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", attribution: "Owner1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, path_small: '//:0', path_medium: "//:0", path_large: "//:0", path_medium_sm: '//:0', path_marker_sm: "//:0" }),
                 new Photo({id: 2, name: "Dog", tags: ['animal', 'dog'], project_id: 1, overlay_type: "photo", caption: "Caption1", owner: "Owner1", geometry: { type: "Point", coordinates: [-122.2943, 37.8645] }, path_medium_sm: '//:0', path_medium: '//:0', path_small: '//:0', path_marker_sm: "//:0" }),
@@ -346,49 +369,7 @@ define(
                 new Record({id: 3, team_name: "Red team", tags: ['coffee shop'], worm_count: 12, project_id: 2, overlay_type: "form_1", photo_count: 2, audio_count: 3 })
             ], { 'url': 'dummy/url' });
 
-            this.fields = new Fields([
-                {
-                    "id": 1,
-                    "form": 3,
-                    "col_alias": "Team Name",
-                    "col_name": "team_name",
-                    "is_display_field": true,
-                    "ordering": 1,
-                    "data_type": "text"
-                },
-                {
-                    "id": 2,
-                    "form": 3,
-                    "col_alias": "Worm Count",
-                    "col_name": "worm_count",
-                    "is_display_field": false,
-                    "ordering": 2,
-                    "data_type": "integer"
-                },
-                {
-                    "id": 3,
-                    "form": 3,
-                    "col_alias": "Worm Load",
-                    "col_name": "worm_load",
-                    "is_display_field": false,
-                    "ordering": 3,
-                    "extras": [
-                        {
-                            "name": "Positive",
-                            "value": 1
-                        },
-                        {
-                            "name": "Neutral",
-                            "value": 2
-                        },
-                        {
-                            "name": "Negative",
-                            "value": 3
-                        }
-                    ],
-                    "data_type": "rating"
-                }
-            ], {url: "dummy"});
+            this.fields = this.form.fields;
 
             this.dataDictionary = {
                 photos: this.photos,

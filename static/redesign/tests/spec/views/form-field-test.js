@@ -65,8 +65,8 @@ define([
                     model: this.form
                 });
                 fixture = setFixtures('<div></div>').append(formView.$el);
-                expect(FieldChildView.prototype.initialize).toHaveBeenCalledTimes(3);
-                expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(3);
+                expect(FieldChildView.prototype.initialize).toHaveBeenCalledTimes(4);
+                expect(FieldChildView.prototype.render).toHaveBeenCalledTimes(4);
             });
 
              it("Creates field and sets variables", function () {
@@ -207,7 +207,7 @@ define([
         describe("Ratings Test", function(){
             beforeEach(function(){
                 initSpies();
-                var opts = {}, field = this.form.fields.at(2);
+                var opts = {}, field = this.form.fields.at(3);
                 _.extend(opts, this.form.toJSON(), {
                     model: field,
                     parent: new CreateForm({
@@ -222,25 +222,18 @@ define([
 
             it("Successfully loads the ratings list onto the field", function(){
 
-                var field = this.form.fields.at(2);
+                var field = this.form.fields.at(3);
                 expect(fieldView.model).toEqual(field);
 
                 expect(fieldView.model.get("extras")).toEqual(field.get("extras"));
-
-                console.log(field);
-                console.log(fixture.find(".rating-row"));
-                console.log(field.get("extras"));
-                console.log(fixture.find(".rating-row").length);
-                console.log(field.get("extras").length);
-
                 expect(fixture.find(".rating-row").length).toEqual(field.get("extras").length);
                 expect(fixture.find(".rating-row").length).toEqual(3);
 
 
             });
 
-            it ("Successfully adds a new rating to the list", function(){
+            /*it ("Successfully adds a new rating to the list", function(){
                 //
-            });
+            });*/
         });
     });

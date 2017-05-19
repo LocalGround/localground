@@ -45,8 +45,8 @@ require(['boot'], function () {
 
         // PRINT
 
-        'spec/views/generate-print-test.js',
-        'spec/views/print-options-test.js',
+        //'spec/views/generate-print-test.js',
+        //'spec/views/print-options-test.js',
 
         //APPS
         'spec/views/style-app-test.js',
