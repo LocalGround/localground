@@ -13,14 +13,10 @@ define(["jquery",
         'use strict';
 
         var MarkerStyleView = Marionette.CompositeView.extend({
-            buckets: function() {
-                return this.collection.length || 4
-            },
             categoricalList: [],
             continuousList: [],
             allColors: [],
             selectedColorPalette: null,
-            rules: [],
             layerDraft: {
                 continuous: null,
                 categorical: null,
@@ -51,7 +47,7 @@ define(["jquery",
                     tagName: "tr",
                     className: "table-row",
                     templateHelpers: function () {
-                        console.log(this.model);
+                    //    console.log(this.model);
                         return {
                             dataType: this.dataType,
                             icons: IconLookup.getIcons(),
@@ -136,7 +132,6 @@ define(["jquery",
                     dataType: this.dataType,
                     allColors: this.allColors,
                     selectedColorPalette: this.selectedColorPalette,
-                    buckets: this.buckets,
                     categoricalList: this.categoricalList,
                     continuousList: this.continuousList, 
                     icons: IconLookup.getIcons()
@@ -227,7 +222,7 @@ define(["jquery",
                 this.catData();
             },
             contData: function() {
-                this.buckets = this.$el.find("#bucket").val() || 4;
+                var buckets = this.model.get("metadata").buckets;
                 var key = this.model.get('data_source'); 
                 var valueList = []
                 this.continuousData = [];
@@ -240,13 +235,12 @@ define(["jquery",
                 var min = Math.min(...this.continuousData),
                     max = Math.max(...this.continuousData), 
                     range = max-min,
-                    segmentSize = range/this.buckets,
+                    segmentSize = range/buckets,
                     currentFloor = min,
                     counter = 0;
                 this.layerDraft.continuous = new Symbols();
                 
                 while (currentFloor < max) {
-                    console.log("bucket #" + counter, this.allColors[0][counter]);
                     this.layerDraft.continuous.add({
                         "rule": $selected + " >= " + currentFloor.toFixed(2) + " < " + (currentFloor + segmentSize).toFixed(2),
                         "title": $selected + " greater than " + currentFloor.toFixed(2) + " and less than " + (currentFloor + segmentSize).toFixed(2),
@@ -293,7 +287,6 @@ define(["jquery",
 
             buildPalettes: function () {
                 var seq1, seq2, seq3, seq4, seq5, seq6;
-                this.buckets = parseInt(this.$el.find("#bucket").val()) || 4;
                 var buckets = this.model.get("metadata").buckets; 
                 var paletteId = this.model.get("metadata").paletteId || 0;
                 

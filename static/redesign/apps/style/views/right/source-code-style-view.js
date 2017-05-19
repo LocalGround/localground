@@ -31,6 +31,7 @@ define(["marionette",
             },
 
             updateModel: function () {
+                console.log("update model");
                 var sourceCode;
                 try {
                     sourceCode = JSON.parse(this.$el.find(".source-code").val());
@@ -40,6 +41,8 @@ define(["marionette",
                 }
                 try {
                     this.model.set("symbols", sourceCode);
+                    console.log("source code", sourceCode);
+                    console.log(this.model.get("symbols"));
                 } catch (e2) {
                     alert('Invalid icon shape specified. Please revert and try again.');
                 }
