@@ -60,21 +60,20 @@ define([
         },
 
         showModal: function (opts) {
-            ///*
             var printLayout = new PrintLayoutView({
                 app: this.app
             });
-            //*/
             this.modal.update({
+                app: this.app,
                 view: printLayout,
                 title: 'Generate Print',
+                saveButtonText: 'Print',
                 width: 1000,
                 height: null,
                 closeButtonText: "Done",
-                showSaveButton: false,
+                showSaveButton: true,
                 showDeleteButton: false,
-                showPrintButton: true,
-                printFunction: this.printMap.bind(this)
+                saveFunction: printLayout.callMakePrint.bind(printLayout)
             });
             this.modal.show();
         },
@@ -82,11 +81,6 @@ define([
         setModel: function () {
             this.model = this.app.dataManager.model;
             this.render();
-        },
-
-        printMap: function(){
-            //alert("Print Map Settings")
-            this.modal.view.callMakePrint();
         }
     });
     return Toolbar;

@@ -239,6 +239,20 @@ table.preview-properties td:first-child {
     vertical-align: top;
 }
 
+.confirmation-message {
+    text-align: center;
+    min-height: 200px;
+}
+
+.confirmation-message .link-pdf {
+    margin-top: 50px;
+    display: block;
+}
+
+.confirmation-message .link-pdf .fa {
+    color: rgb(78,112,212);
+}
+
 #print_map {
     width: 100%;
     height: 100%;

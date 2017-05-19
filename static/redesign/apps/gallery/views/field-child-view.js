@@ -47,18 +47,10 @@ define([
 
         setRatingsFromModel: function () {
             if (this.model.get("data_type") != "rating") { return; }
-            var i,
-                ratings = this.model.get("extras") || [];
-            for (i = 0; i < ratings.length; i++) {
-                this.ratingsList.push({
-                    name: ratings[i].name,
-                    value: ratings[i].value
-                });
-            }
+            this.ratingsList = this.model.get("extras") || [];
         },
 
-        saveNewRating: function (e) {
-            //$(e.target).attr("value", $(e.target).val());
+        saveNewRating: function () {
             this.updateRatingList();
         },
         removeRating: function (e) {
@@ -84,7 +76,7 @@ define([
                 $row = $(this);
                 that.ratingsList.push({
                     name: $row.find('.rating-name').val(),
-                    value: $row.find('.rating-value').val()
+                    value: parseInt($row.find('.rating-value').val(), 10)
                 });
             });
             console.log(this.ratingsList);

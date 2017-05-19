@@ -54,19 +54,19 @@ define(["underscore",
                 printMap.set("map_provider", this.basemapView.getMapTypeId());
                 printMap.set("map_title", this.$el.find("#print-title").val());
                 printMap.set("instructions", this.$el.find("#print-instructions").val());
-                //console.log(printMap);
-                //this.$el.find(".load-message").show();
                 this.app.vent.trigger("show-print-generate-message");
+                /*that.app.vent.trigger('update-modal-save-button', {
+                    display: 'none'
+                });*/
                 printMap.save(null, {
                     success: function (model, response) {
                         //show the user the PDF and the thumbnail
                         console.log(response);
                         //that.$el.find(".load-message").hide();
-                        that.app.vent.trigger("hide-print-generate-message");
-                        that.pdf = response.pdf;
-                        that.thumb = response.thumb;
-                        that.render();
-
+                        that.app.vent.trigger("show-print-generated-message", response);
+                        //window.open(response.pdf);
+                        //that.thumb = response.thumb;
+                        //that.render();
                     },
                     error: function (model, response) {
                         //show the user the PDF and the thumbnail
