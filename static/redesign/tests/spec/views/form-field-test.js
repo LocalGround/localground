@@ -244,8 +244,118 @@ define([
                 }
             });
 
-            /*it ("Successfully adds a new rating to the list", function(){
-                //
-            });*/
+            it ("Successfully adds a new rating to the list", function(){
+
+                var field = this.form.fields.at(3);
+                fixture.find(".add-new-rating").trigger("click");
+                var extras = field.get("extras");
+                var rating_rows = fixture.find(".rating-row");
+
+
+                $(rating_rows[3]).find(".rating-name").val("Test");
+                $(rating_rows[3]).find(".rating-value").val(5);
+                fieldView.updateRatingList();
+
+                extras = field.get("extras");
+                var lastIndexRating = extras[extras.length - 1];
+                console.log(lastIndexRating);
+                console.log(extras);
+                expect(field.get("extras").length).toEqual(4);
+                expect($(rating_rows[3]).find(".rating-name").val()).toEqual(lastIndexRating.name);
+                expect($(rating_rows[3]).find(".rating-value").val()).toEqual(lastIndexRating.value.toString());
+
+
+            });
+
+            it ("Successfully removes a rating from the list", function(){
+                spyOn(window, 'confirm').and.returnValue(true);
+                var field = this.form.fields.at(3);
+                var rating_rows = fixture.find(".rating-row");
+
+                $(rating_rows[2]).find(".remove-rating").trigger("click");
+
+                var extras = field.get("extras");
+                expect(field.get("extras").length).toEqual(2);
+
+            });
+
+            it ("Edits Existing Rating", function(){
+
+                var field = this.form.fields.at(3);
+                var rating_rows = fixture.find(".rating-row");
+
+
+                var original_name = $(rating_rows[2]).find(".rating-name").val();
+                var original_value = $(rating_rows[2]).find(".rating-value").val();
+
+
+                $(rating_rows[2]).find(".rating-name").val("Hello World");
+                $(rating_rows[2]).find(".rating-value").val(10);
+
+                fieldView.updateRatingList();
+
+                var extras = field.get("extras");
+                var lastIndexRating = extras[extras.length - 1];
+
+                expect($(rating_rows[2]).find(".rating-name").val()).toEqual(lastIndexRating.name);
+                expect($(rating_rows[2]).find(".rating-value").val()).toEqual(lastIndexRating.value.toString());
+
+                expect($(rating_rows[2]).find(".rating-name").val()).not.toEqual(original_name);
+                expect($(rating_rows[2]).find(".rating-value").val()).not.toEqual(original_value.toString());
+
+            });
+
+            it ("Detects user input error", function(){
+
+                var field = this.form.fields.at(3);
+                fixture.find(".add-new-rating").trigger("click");
+                var extras = field.get("extras");
+                var rating_rows = fixture.find(".rating-row");
+
+
+                fieldView.updateRatingList();
+                fieldView.validateRating();
+
+                extras = field.get("extras");
+                var lastIndexRating = extras[extras.length - 1];
+                console.log(lastIndexRating);
+                console.log(extras);
+
+                expect(lastIndexRating.errorRatingName).toBeTruthy();
+                expect(lastIndexRating.errorRatingValue).toBeTruthy();
+
+            });
+
+            it ("Successfully saves the rating list", function(){
+                var field = this.form.fields.at(3);
+                var rating_rows = fixture.find(".rating-row");
+
+                var original_extras = _.clone(field.get("extras"));
+
+                $(rating_rows[0]).find(".rating-name").val("Javascript");
+                $(rating_rows[0]).find(".rating-value").val(30);
+
+                $(rating_rows[1]).find(".rating-name").val("Web Engineer");
+                $(rating_rows[1]).find(".rating-value").val(20);
+
+                $(rating_rows[2]).find(".rating-name").val("Hello World");
+                $(rating_rows[2]).find(".rating-value").val(10);
+
+                fieldView.updateRatingList();
+                fieldView.saveField();
+
+                var extras = field.get("extras");
+
+                // Equals changes made
+
+                for (var i = 0; i < extras.length; ++i){
+                    expect($(rating_rows[i]).find(".rating-name").val()).toEqual(extras[i].name);
+                    expect($(rating_rows[i]).find(".rating-value").val()).toEqual(extras[i].value.toString());
+
+                    expect($(rating_rows[i]).find(".rating-name").val()).not.toEqual(original_extras[i].name);
+                    expect($(rating_rows[i]).find(".rating-value").val()).not.toEqual(original_extras[i].value.toString());
+                }
+
+            });
         });
     });
