@@ -114,7 +114,8 @@ define(["marionette",
                     display: 'none'
                 });
                 $others.hide();
-                $container.find('.link-pdf').attr('href', response.pdf);
+                $container.find('.link').attr('href', response.pdf);
+                $container.find('.thumb').attr('src', response.thumb);
                 $container.show();
             },
 

@@ -60,13 +60,7 @@ define(["underscore",
                 });*/
                 printMap.save(null, {
                     success: function (model, response) {
-                        //show the user the PDF and the thumbnail
-                        console.log(response);
-                        //that.$el.find(".load-message").hide();
                         that.app.vent.trigger("show-print-generated-message", response);
-                        //window.open(response.pdf);
-                        //that.thumb = response.thumb;
-                        //that.render();
                     },
                     error: function (model, response) {
                         //show the user the PDF and the thumbnail
