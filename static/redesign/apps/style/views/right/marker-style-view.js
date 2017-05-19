@@ -270,12 +270,18 @@ define(["jquery",
             },
 
             catData: function() {  
+                var list = [];
                 var key = this.model.get('data_source'); 
                 this.categoricalData = this.app.dataManager.getData(key);
                 var $selected = this.$el.find("#cat-prop").val();
+
                 this.categoricalData.collection.models.forEach(function(d) {
                     console.log(d.get($selected));
+                    if (!list.includes(d.get($selected))) {
+                        list.push(d.get($selected));
+                    }
                 });
+                console.log(list);
             },
 
             getPropertiesCategorical: function () {
