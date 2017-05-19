@@ -364,6 +364,29 @@ define(
                     "is_display_field": false,
                     "ordering": 2,
                     "data_type": "integer"
+                },
+                {
+                    "id": 3,
+                    "form": 3,
+                    "col_alias": "Worm Load",
+                    "col_name": "worm_load",
+                    "is_display_field": false,
+                    "ordering": 3,
+                    "extras": [
+                        {
+                            "name": "Positive",
+                            "value": 1
+                        },
+                        {
+                            "name": "Neutral",
+                            "value": 2
+                        },
+                        {
+                            "name": "Negative",
+                            "value": 3
+                        }
+                    ],
+                    "data_type": "rating"
                 }
             ], {url: "dummy"});
 

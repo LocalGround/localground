@@ -16,6 +16,15 @@ define([
             spyOn(FieldChildView.prototype, 'render').and.callThrough();
             spyOn(FieldChildView.prototype, 'doDelete').and.callThrough();
             spyOn(FieldChildView.prototype, 'validate').and.callThrough();
+
+            spyOn(FieldChildView.prototype, 'setRatingsFromModel').and.callThrough();
+            spyOn(FieldChildView.prototype, 'saveNewRating').and.callThrough();
+            spyOn(FieldChildView.prototype, 'removeRating').and.callThrough();
+            spyOn(FieldChildView.prototype, 'updateRatingList').and.callThrough();
+            spyOn(FieldChildView.prototype, 'addNewRating').and.callThrough();
+            spyOn(FieldChildView.prototype, 'saveRatingsToModel').and.callThrough();
+            spyOn(FieldChildView.prototype, 'validateRating').and.callThrough();
+
             spyOn(Field.prototype, 'destroy');
 
         };
@@ -103,7 +112,7 @@ define([
                 expect(fieldView.$el.find('span.fieldType').html().trim()).toBe(field.get("data_type"));
                 expect(fieldView.$el.find('input.fieldname').val()).toBe(field.get("col_alias"));
             });
-            
+
             it("If isn't a display field, don't check box", function () {
                 var opts = {}, field = this.form.fields.at(1);
                 _.extend(opts, this.form.toJSON(), {
@@ -192,6 +201,46 @@ define([
                 fieldView.$el.find('.display-field').trigger('click');
                 fieldView.saveField();
                 expect(fieldView.$el.find('.display-field').is(":checked")).toBeTruthy();
+            });
+        });
+
+        describe("Ratings Test", function(){
+            beforeEach(function(){
+                initSpies();
+                var opts = {}, field = this.form.fields.at(2);
+                _.extend(opts, this.form.toJSON(), {
+                    model: field,
+                    parent: new CreateForm({
+                        model: this.form
+                    })
+                });
+                fieldView = new FieldChildView(opts);
+                fieldView.render();
+                fixture = setFixtures('<div></div>').append(fieldView.$el);
+
+            });
+
+            it("Successfully loads the ratings list onto the field", function(){
+
+                var field = this.form.fields.at(2);
+                expect(fieldView.model).toEqual(field);
+
+                expect(fieldView.model.get("extras")).toEqual(field.get("extras"));
+
+                console.log(field);
+                console.log(fixture.find(".rating-row"));
+                console.log(field.get("extras"));
+                console.log(fixture.find(".rating-row").length);
+                console.log(field.get("extras").length);
+
+                expect(fixture.find(".rating-row").length).toEqual(field.get("extras").length);
+                expect(fixture.find(".rating-row").length).toEqual(3);
+
+
+            });
+
+            it ("Successfully adds a new rating to the list", function(){
+                //
             });
         });
     });
