@@ -266,6 +266,7 @@ define(["jquery",
                 }
                 this.collection = this.layerDraft.continuous;
                 this.model.set("symbols", this.layerDraft.continuous.toJSON());
+                this.model.trigger('rebuild-markers');
                 this.render();
             },
 
@@ -288,7 +289,7 @@ define(["jquery",
 
             updateBuckets: function(e) {
                 var buckets = parseFloat($(e.target).val());
-                this.updateMetedata("buckets", buckets);
+                this.updateMetadata("buckets", buckets);
                 this.buildPalettes();
             },
 
@@ -316,23 +317,23 @@ define(["jquery",
                 } else if (opacity < 0 ) {
                     opacity = 0;
                 } 
-                this.updateMetedata("fillOpacity", opacity);
+                this.updateMetadata("fillOpacity", opacity);
                 this.render();
             },
 
             updateGlobalShape: function(e) {
                 var shape = $(e.target).val();
-                this.updateMetedata("shape", shape);
+                this.updateMetadata("shape", shape);
             },
 
             updateWidth: function(e) {
                 var width = $(e.target).val();
-                this.updateMetedata("width", width);
+                this.updateMetadata("width", width);
             },
 
             updateStrokeWeight: function(e) {
                 var strokeWeight = parseFloat($(e.target).val());
-                this.updateMetedata("strokeWeight", strokeWeight);
+                this.updateMetadata("strokeWeight", strokeWeight);
             },
 
             updateStrokeOpacity: function(e) {
@@ -342,7 +343,7 @@ define(["jquery",
                     } else if (opacity < 0 ) {
                         opacity = 0;
                     } 
-                this.updateMetedata("strokeOpacity", opacity);
+                this.updateMetadata("strokeOpacity", opacity);
             },
 
             showPalettes: function () {
@@ -351,28 +352,29 @@ define(["jquery",
 
             // triggered from colorPicker
             updateStrokeColor: function (hex) {
-                this.updateMetedata("strokeColor", hex);
+                this.updateMetadata("strokeColor", hex);
                 $('#stroke-color-picker').css('color', '#' + hex);
             },
 
             selectPalette: function (e) {
                 this.$el.find(".palette-wrapper").toggle();
                 var paletteId = $(e.target).val();
-                this.updateMetedata("paletteId", paletteId);
+                this.updateMetadata("paletteId", paletteId);
                 this.selectedColorPalette = this.allColors[paletteId];
                 this.contData();
             }, 
 
             //convenience function
-            updateMetedata: function(newKey, newValue) {
+            updateMetadata: function(newKey, newValue) {
                 var localMeta = this.model.get("metadata") || {};
                 localMeta[newKey] = newValue;
                 this.model.set("metadata", localMeta); 
                 
                 this.collection.each(function(symbol) {
                     symbol.set(newKey, newValue);
-                });          
-                
+                });
+                this.model.trigger('rebuild-markers');
+
             }
 
         });

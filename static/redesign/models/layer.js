@@ -29,15 +29,18 @@ define(["backbone", "models/base", "models/symbol"], function (Backbone, Base, S
         basic: false,
         initialize: function (data, opts) {
 			Base.prototype.initialize.apply(this, arguments);
-            var currentMetadata = _.clone(this.get("metadata")),
-            defaults = _.clone(this.defaults.metadata);
-            _.extend(defaults, currentMetadata);
-            this.set("metadata", defaults);
+            this.applyDefaults();
             if (data.map_id) {
                 this.urlRoot = "/api/0/maps/" + data.map_id + "/layers/";
             }
-            this.on("change:symbols", this.rebuildSymbolMap);
+            this.rebuildSymbolMap();
 		},
+        applyDefaults: function () {
+            var currentMetadata = _.clone(this.get("metadata")),
+                defaults = _.clone(this.defaults.metadata);
+            _.extend(defaults, currentMetadata);
+            this.set("metadata", defaults);
+        },
 		validate: function (attrs) {
             //if symbols is an array or it's null or it's empty, raise an exception:
             if (!_.isArray(attrs.symbols) || _.isNull(attrs.symbols) || attrs.symbols.length == 0) {

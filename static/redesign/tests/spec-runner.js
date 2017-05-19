@@ -6,6 +6,9 @@ require(['boot'], function () {
     'use strict';
     var specs = [
 
+        // MODELS
+        'spec/models/layer-test.js',
+
         // COLLECTIONS
         'spec/collections/base-test.js',
         'spec/collections/photos-test.js',
