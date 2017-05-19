@@ -229,7 +229,19 @@ define([
                 expect(fixture.find(".rating-row").length).toEqual(field.get("extras").length);
                 expect(fixture.find(".rating-row").length).toEqual(3);
 
+            });
 
+            it("Shows the HTML elements of the ratings", function(){
+                var field = this.form.fields.at(3);
+
+                var rating_rows = fixture.find(".rating-row");
+                var extras = field.get("extras");
+                for (var i = 0; i < rating_rows.length; ++i){
+                    var rating_name = $(rating_rows[i]).find(".rating-name").val();
+                    var rating_value = $(rating_rows[i]).find(".rating-value").val();
+                    expect(rating_name).toEqual(extras[i].name);
+                    expect(rating_value).toEqual(extras[i].value.toString());
+                }
             });
 
             /*it ("Successfully adds a new rating to the list", function(){
