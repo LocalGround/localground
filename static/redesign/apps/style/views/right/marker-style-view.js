@@ -25,8 +25,10 @@ define(["jquery",
             },
             template: Handlebars.compile(MarkerStyleTemplate),
             modelEvents: {
-                'change:symbols': 'reRender'
+               // 'change:symbols': 'reRender'//,
+                //'change:metadata': 'contData'
             },
+            
 
             //each of these childViews is a symbol. this view renders the value-rules box
             getChildView: function () {
@@ -84,7 +86,7 @@ define(["jquery",
                 this.data_source = this.model.get("data_source"); //e.g. "form_1"
                 this.buildPalettes();
                 this.buildColumnList();
-                this.displaySymbols();
+             //   this.displaySymbols();
                 this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
                 $('body').click(this.hideColorRamp);
                 this.listenTo(this.app.vent, 'update-data-source', this.buildColumnList);
@@ -92,6 +94,7 @@ define(["jquery",
 
             onRender: function () {
                 var that = this;
+                var newHex;
                 this.$el.find('#stroke-color-picker').ColorPicker({
             
                     onShow: function (colpkr) {
@@ -99,11 +102,12 @@ define(["jquery",
                         return false;
                     },
                     onHide: function (colpkr) {
+                        that.updateStrokeColor(newHex);
                         $(colpkr).fadeOut(500);
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
-                        that.updateStrokeColor(hex);
+                        newHex = hex;
                     }
                 });
             },
@@ -118,13 +122,14 @@ define(["jquery",
                     $(".palette-wrapper").hide();
                 }
             },
-
+/*
             reRender: function () {
+                console.log("symbol change registered");
                 //rebuild symbols collection based on updated info:
                 this.collection = new Backbone.Collection(this.model.get("symbols"));
                 this.render();
             },
-
+*/
             templateHelpers: function () {
                 var metadata = this.model.get("metadata");
                 var helpers = {
@@ -222,6 +227,7 @@ define(["jquery",
                 this.catData();
             },
             contData: function() {
+                console.log("meta change registered");
                 var buckets = this.model.get("metadata").buckets;
                 var key = this.model.get('data_source'); 
                 var valueList = []
@@ -249,9 +255,10 @@ define(["jquery",
                         "strokeOpacity": parseFloat(this.$el.find("#stroke-opacity").val()),
                         "width": parseFloat(this.$el.find("#marker-width").val()) || 20,
                         "shape": this.$el.find(".global-marker-shape").val(),
-                        "fillColor": this.selectedColorPalette[counter],
-                        "strokeColor": "#" + this.$el.find("#stroke-color").val(),
-                        "color": this.selectedColorPalette[counter],
+                        "fillColor": "#" + this.selectedColorPalette[counter],
+                      //  "strokeColor": "#" + this.$el.find("#stroke-color").val(),
+                        "strokeColor": "#" + this.model.get("metadata").strokeColor,
+                        "color": "#" + this.selectedColorPalette[counter],
                         "id": (counter + 1)
                     });
                     counter++;
@@ -344,10 +351,8 @@ define(["jquery",
 
             // triggered from colorPicker
             updateStrokeColor: function (hex) {
-                
                 this.updateMetedata("strokeColor", hex);
                 $('#stroke-color-picker').css('color', '#' + hex);
-                this.render();
             },
 
             selectPalette: function (e) {
@@ -362,7 +367,12 @@ define(["jquery",
             updateMetedata: function(newKey, newValue) {
                 var localMeta = this.model.get("metadata") || {};
                 localMeta[newKey] = newValue;
-                this.model.set("metadata", localMeta);                
+                this.model.set("metadata", localMeta); 
+                
+                this.collection.each(function(symbol) {
+                    symbol.set(newKey, newValue);
+                });          
+                
             }
 
         });

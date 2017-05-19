@@ -11,7 +11,7 @@ define(["jquery",
                 _.extend(this, opts);
                 this.listenTo(this.app.vent, "change-map", this.hideOverlays);
                 this.listenTo(this.model, "change:title", this.render);
-                this.initMapOverlays();
+             //   this.initMapOverlays();
             },
             template: Handlebars.compile(LayerItemTemplate),
             modelEvents: {},
@@ -44,7 +44,7 @@ define(["jquery",
             updateMapOverlays: function () {
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
-                this.initMapOverlays();
+                //this.initMapOverlays();
                 if (this.isChecked) {
                     this.showOverlays();
                 }
