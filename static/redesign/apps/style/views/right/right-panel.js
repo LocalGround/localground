@@ -13,7 +13,7 @@ define(["jquery",
         var RightPanelLayout = Marionette.LayoutView.extend({
             template: Handlebars.compile(RightPanelLayoutTemplate),
             initialize: function (opts) {
-                this.app = opts.app;
+                _.extend(this, opts);
                 this.render();
                 this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
                 this.listenTo(this.app.vent, 'hide-right-panel', this.hidePanel);
