@@ -66,21 +66,6 @@ define([
                 expect(fixture).toContainElement("#print-instructions");
                 expect(fixture).toContainElement(".option-layout");
                 expect(fixture).toContainElement(".option-data");
-                expect(fixture).not.toContainElement(".print-links");
-                expect(fixture).not.toContainElement(".link-pdf");
-                expect(fixture).not.toContainElement(".link-thumb");
-            });
-
-            it("Contains all the necessary confirmation HTML attributes", function () {
-                newPrintOptions.pdf = "blah";
-                newPrintOptions.render();
-                expect(fixture).not.toContainElement("#print-title");
-                expect(fixture).not.toContainElement("#print-instructions");
-                expect(fixture).not.toContainElement(".option-layout");
-                expect(fixture).not.toContainElement(".option-data");
-                expect(fixture).toContainElement(".print-links");
-                expect(fixture).toContainElement(".link-pdf");
-                expect(fixture).toContainElement(".link-thumb");
             });
 
             it("Fill in the text contents and save the print", function () {
@@ -140,27 +125,6 @@ define([
                     newPrintOptions.makePrint();
                     expect(newPrintOptions.model.get("layout")).toBe(4);
                 });
-            });
-
-            describe("Links for Thumbnail and PDF", function () {
-                beforeEach(function () {
-                    //initSpies(this);
-                    //initPrintOptions(this);
-                    newPrintOptions.pdf = "http://localhost:7777/profile/prints/L3VzZXJkYXRhL3ByaW50cy81dDRocjRybi9QcmludF81dDRocjRybi5wZGYjMTQ5MzQxNDM2Mw==/";
-                    newPrintOptions.thumb = "http://localhost:7777/profile/prints/L3VzZXJkYXRhL3ByaW50cy81dDRocjRybi90aHVtYm5haWwuanBnIzE0OTM0MTQzNjM=/";
-                    newPrintOptions.render();
-                    fixture = setFixtures("<div></div>").append(newPrintOptions.$el);
-                });
-
-                it("Finds the existing PDF", function () {
-                    expect(fixture.find(".link-pdf").attr("href")).toEqual(newPrintOptions.pdf);
-                });
-
-
-                it("Finds the existing Thumbnail", function () {
-                    expect(fixture.find(".link-thumb").attr("src")).toEqual(newPrintOptions.thumb);
-                });
-
             });
 
         });

@@ -387,7 +387,7 @@ define([
                 newSpreadsheet.fields = this.fields;
                 newSpreadsheet.collection = this.form_1;
                 newSpreadsheet.renderSpreadsheet();
-                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(4);
+                expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(3);
             });
         });
 

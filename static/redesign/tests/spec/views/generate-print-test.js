@@ -29,6 +29,7 @@ define([
                 spyOn(PrintLayoutView.prototype, "showBasemap").and.callThrough();
                 spyOn(PrintLayoutView.prototype, "callMakePrint").and.callThrough();
                 spyOn(PrintLayoutView.prototype, "onShow").and.callThrough();
+                spyOn(PrintLayoutView.prototype, "displayConfirmation").and.callThrough();
                 spyOn(PrintOptions.prototype, "makePrint");
             };
 
@@ -76,6 +77,17 @@ define([
                 newPrintLayoutView.showPrintOptions();
                 newPrintLayoutView.callMakePrint();
                 expect(PrintOptions.prototype.makePrint).toHaveBeenCalledTimes(1);
+            });
+
+            it("Finds the existing PDF", function () {
+                expect(PrintLayoutView.prototype.displayConfirmation).toHaveBeenCalledTimes(0);
+                var response = { pdf: "pdf_link", thumb: "thumb_ref" };
+                this.app.vent.trigger("show-print-generated-message", response);
+                expect(PrintLayoutView.prototype.displayConfirmation).toHaveBeenCalledTimes(1);
+                expect(fixture.find(".link-pdf").attr("href")).toEqual(response.pdf);
+                expect(fixture.find(".link-pdf").attr("href")).toEqual("pdf_link");
+                expect(fixture.find(".thumb").attr("src")).toEqual(response.thumb);
+                expect(fixture.find(".thumb").attr("src")).toEqual("thumb_ref");
             });
         });
     });
