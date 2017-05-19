@@ -2053,27 +2053,19 @@ span.plus {
 }
 
 /****************************************************************************************/
-/*                                       SPREADSBEET                                    */
+/*                                      OTHER CSS                                  */
 /****************************************************************************************/
 
 /**************************
-* HOT Calendar Table
+* FIELDS                  *
 **************************/
 
 /*
-As of now, I am makiung a quick rough draft of the calendar by having a white background with border
-
-More details will be covered later
+  Ratings
 */
 
-/*
-.htDatepickerHolder{
-    border: solid black 2px;
-    background-color: white;
+.ratingError {
+    background-color: #FFDDDD;
+    color: #D22;
+    font-weight: bold;
 }
-
-.htDatepickerHolder .pika-lendar th{
-    margin: 4px;
-}
-
-*/
