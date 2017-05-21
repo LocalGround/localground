@@ -80,11 +80,11 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             return new Symbols(_.values(this.symbolMap));
         },
         getSymbolsJSON: function () {
-            var symbols = this.getSymbols().clone();
-            symbols.each(function (symbol) {
-                delete symbol.attributes.icon;
+            var symbolsJSON = [];
+            this.getSymbols().each(function (symbol) {
+                symbolsJSON.push(symbol.getSymbolJSON());
             });
-            return symbols.toJSON();
+            return symbolsJSON;
         },
 
         getSymbol: function (id) {
@@ -111,24 +111,12 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             });
         },
         toJSON: function () {
-            var json = Base.prototype.toJSON.call(this),
-                symbols,
-                metadata;
+            var json = Base.prototype.toJSON.call(this);
 
             // extra code to remove icon references
             // to avoid JSON serialization errors:
-            if (json.symbols !== null) {
-                symbols = new Symbols(json.symbols).clone();
-                symbols.each(function (symbol) {
-                    symbol.set("icon", null);
-                });
-                json.symbols = JSON.stringify(symbols);
-            }
-
-            if (json.metadata !== null) {
-                metadata = json.metadata;
-                json.metadata = JSON.stringify(metadata);
-            }
+            json.symbols = JSON.stringify(this.getSymbolsJSON());
+            json.metadata = JSON.stringify(json.metadata);
 
             // serialize filters also:
             if (json.filters !== null) {

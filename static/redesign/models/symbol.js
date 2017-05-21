@@ -33,6 +33,11 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
                 }
                 this.sqlParser = new SqlParser(this.get("rule"));
             },
+            getSymbolJSON: function () {
+                var symbol = this.clone();
+                delete symbol.attributes.icon;
+                return symbol.toJSON();
+            },
             checkModel: function (model) {
                 return this.sqlParser.checkModel(model);
             },

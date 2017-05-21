@@ -187,5 +187,61 @@ define([
                     "strokeOpacity": 1
                 }]);
             });
+
+            it("getSymbol() returns the correct symbol", function () {
+                expect(layer.getSymbol(1)).toEqual(layer.getSymbols().at(0));
+                expect(layer.getSymbol(2)).toEqual(layer.getSymbols().at(1));
+                expect(layer.getSymbol(3)).toEqual(layer.getSymbols().at(2));
+            });
+
+            it("setSymbol() correctly sets symbol and regenerates collection", function () {
+                //first, overwrite the first symbol:
+                var newSymbol = new Symbol({
+                    id: 1,
+                    rule: "worm_count = 1",
+                    title: "hello"
+                });
+                layer.setSymbol(newSymbol);
+                expect(layer.getSymbols().length).toEqual(3);
+                expect(layer.getSymbol(1).getSymbolJSON()).toEqual(newSymbol.getSymbolJSON());
+                expect(layer.getSymbol(1)).toEqual(layer.getSymbols().at(0));
+                expect(layer.getSymbol(2)).toEqual(layer.getSymbols().at(1));
+                expect(layer.getSymbol(3)).toEqual(layer.getSymbols().at(2));
+
+                //then add a new symbol:
+                newSymbol = new Symbol({
+                    id: 80,
+                    rule: "worm_count = 1",
+                    title: "hello"
+                });
+                layer.setSymbol(newSymbol);
+                expect(layer.getSymbols().length).toEqual(4);
+                expect(layer.getSymbol(1)).toEqual(layer.getSymbols().at(0));
+                expect(layer.getSymbol(2)).toEqual(layer.getSymbols().at(1));
+                expect(layer.getSymbol(3)).toEqual(layer.getSymbols().at(2));
+                expect(layer.getSymbol(80)).toEqual(layer.getSymbols().at(3));
+                expect(layer.getSymbol(80).getSymbolJSON()).toEqual(newSymbol.getSymbolJSON());
+            });
+
+            it("showSybols() and hideSymbols() shows and hides all symbols", function () {
+                layer.getSymbols().each(function (symbol) {
+                    expect(symbol.isShowingOnMap).toBeFalsy();
+                });
+                layer.showSymbols();
+                layer.getSymbols().each(function (symbol) {
+                    expect(symbol.isShowingOnMap).toBeTruthy();
+                });
+                layer.hideSymbols();
+                layer.getSymbols().each(function (symbol) {
+                    expect(symbol.isShowingOnMap).toBeFalsy();
+                });
+            });
+
+            it("serializes nested JSON correctly for API POST / PUT / PATCH", function () {
+                var json = layer.toJSON();
+                expect(json.symbols).toEqual(JSON.stringify(layer.getSymbolsJSON()));
+                expect(json.metadata).toEqual(JSON.stringify(layer.get("metadata")));
+                expect(json.filters).toEqual(JSON.stringify(layer.get("filters")));
+            });
         });
     });
