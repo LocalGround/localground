@@ -10,6 +10,15 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
         var Symbol = Backbone.Model.extend({
             isShowingOnMap: false,
             sqlParser: null,
+            defaults: {
+                fillOpacity: 1,
+                width: 20,
+                fillColor: "#4e70d4",
+                strokeColor: "#4e70d4",
+                strokeWeight: 3,
+                strokeOpacity: 1,
+                shape: "circle"
+            },
             initialize: function (data, opts) {
                 _.extend(this, opts);
                 Backbone.Model.prototype.initialize.apply(this, arguments);

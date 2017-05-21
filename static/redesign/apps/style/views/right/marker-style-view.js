@@ -316,10 +316,12 @@ define(["jquery",
             },
 
             updateMap: function () {
+                // sneaky workaround: delegate the marker rebuild
+                // to an asynchronous process:
                 var that = this;
                 setTimeout(function () {
                     that.model.trigger('rebuild-markers');
-                }, 500);
+                }, 1);
             },
 
             updatePaletteOpacity: function() {
@@ -353,7 +355,7 @@ define(["jquery",
             },
 
             updateStrokeOpacity: function(e) {
-                var opacity = this.$el.find("#stroke-opacity").val();
+                var opacity = parseFloat(this.$el.find("#stroke-opacity").val());
                     if (opacity > 1) {
                         opacity = 1;
                     } else if (opacity < 0 ) {
@@ -369,7 +371,7 @@ define(["jquery",
 
             // triggered from colorPicker
             updateStrokeColor: function (hex) {
-                this.updateMetadata("strokeColor", hex);
+                this.updateMetadata("strokeColor", '#' + hex);
                 $('#stroke-color-picker').css('color', '#' + hex);
                 this.updateMap();
             },
