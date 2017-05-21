@@ -192,7 +192,7 @@ define(
                                 "width": 32,
                                 "shape": "worm",
                                 "strokeColor": "#FFF",
-                                "color": "#d7b5d8"
+                                "fillColor": "#d7b5d8"
                             },
                             {
                                 "title": "6 - 10",
@@ -202,7 +202,7 @@ define(
                                 "width": 32,
                                 "shape": "worm",
                                 "strokeColor": "#FFF",
-                                "color": "#df65b0",
+                                "fillColor": "#df65b0",
                                 "is_showing": true
                             },
                             {
@@ -213,7 +213,7 @@ define(
                                 "width": 32,
                                 "shape": "worm",
                                 "strokeColor": "#FFF",
-                                "color": "#ce1256"
+                                "fillColor": "#ce1256"
                             }
                         ]
                     },
@@ -231,7 +231,7 @@ define(
                         "map_id": 1,
                         "symbols": [
                             {
-                                "color": "#7075FF",
+                                "fillColor": "#7075FF",
                                 "width": 30,
                                 "rule": "sculptures > 0",
                                 "title": "At least 1 sculpture"
@@ -250,13 +250,13 @@ define(
                         "map_id": 1,
                         "symbols": [
                             {
-                                "color": "#7075FF",
+                                "fillColor": "#7075FF",
                                 "width": 30,
                                 "rule": "murals > 0",
                                 "title": "At least 1 mural"
                             },
                             {
-                                "color": "#F011D9",
+                                "fillColor": "#F011D9",
                                 "width": 30,
                                 "rule": "murals = 0",
                                 "title": "No murals"

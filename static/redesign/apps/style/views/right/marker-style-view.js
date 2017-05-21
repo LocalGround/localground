@@ -258,7 +258,7 @@ define(["jquery",
                         "fillColor": "#" + this.selectedColorPalette[counter],
                       //  "strokeColor": "#" + this.$el.find("#stroke-color").val(),
                         "strokeColor": "#" + this.model.get("metadata").strokeColor,
-                        "color": "#" + this.selectedColorPalette[counter],
+                        //"color": "#" + this.selectedColorPalette[counter],
                         "id": (counter + 1)
                     });
                     counter++;

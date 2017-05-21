@@ -14,7 +14,6 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
                 _.extend(this, opts);
                 Backbone.Model.prototype.initialize.apply(this, arguments);
                 this.set("shape", this.get("shape") || "photo");
-                this.set("fillColor", this.get("color"));
                 this.set("icon", new Icon(this.toJSON()));
                 this.modelMap = {};
                 if (_.isUndefined(this.get("rule"))) {
