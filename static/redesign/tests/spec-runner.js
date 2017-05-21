@@ -41,6 +41,7 @@ require(['boot'], function () {
         //style app right panel
         'spec/views/style-right-panel-test.js',
         'spec/views/style-right-data-source-view-test.js',
+        'spec/views/style-right-marker-style-view-test.js',
         'spec/views/style-right-source-code-style-view-test.js',
 
         'spec/views/project-item-test.js',

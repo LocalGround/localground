@@ -162,9 +162,9 @@ define(["jquery",
                 'click .palette-list': 'selectPalette'
             },
 
-            selectDataType: function (e) {
+            selectDataType: function () {
                 //this.dataType = this.$el.find("#data-type-select").val();
-                this.dataType = $(e.target).val();
+                this.dataType = this.$el.find("#data-type-select").val(); //$(e.target).val();
                 this.render();
                 this.buildColumnList();
                 if (this.dataType == "continuous") {
