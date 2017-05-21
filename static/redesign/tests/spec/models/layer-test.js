@@ -15,6 +15,7 @@ define([
             },
             initSpies = function () {
                 spyOn(Layer.prototype, 'initialize').and.callThrough();
+                spyOn(Layer.prototype, 'validate').and.callThrough();
                 spyOn(Layer.prototype, 'applyDefaults').and.callThrough();
                 spyOn(Layer.prototype, 'buildSymbolMap').and.callThrough();
                 spyOn(Layer.prototype, 'rebuildSymbolMap').and.callThrough();
@@ -109,6 +110,82 @@ define([
             it("getSymbols should return a Symbols collection", function () {
                 expect(layer.getSymbols()).toEqual(jasmine.any(Symbols));
                 expect(layer.getSymbols().length).toEqual(3);
+            });
+
+            it("setting the symbols attribute should regenreate the Symbols collection", function () {
+                expect(Layer.prototype.buildSymbolMap).toHaveBeenCalledTimes(1);
+                layer.set("symbols", [{
+                    "id": 100,
+                    "title": "cat",
+                    "rule": "a = 1"
+                }, {
+                    "id": 101,
+                    "title": "dog",
+                    "rule": "b = 5"
+                }]);
+                expect(Layer.prototype.buildSymbolMap).toHaveBeenCalledTimes(2);
+                expect(layer.getSymbols().length).toEqual(2);
+                expect(layer.getSymbols().length).toEqual(2);
+                expect(layer.getSymbols().at(0).get("id")).toBe(100);
+                expect(layer.getSymbols().at(0).get("title")).toBe("cat");
+                expect(layer.getSymbols().at(0).get("rule")).toBe("a = 1");
+                expect(layer.getSymbols().at(1).get("id")).toBe(101);
+                expect(layer.getSymbols().at(1).get("title")).toBe("dog");
+                expect(layer.getSymbols().at(1).get("rule")).toBe("b = 5");
+            });
+
+            it("validates correctly when save is called", function () {
+                layer.set("symbols", []);
+                expect(layer.isValid()).toBeFalsy();
+                expect(Layer.prototype.validate).toHaveBeenCalledTimes(1);
+                layer.set("symbols", [{
+                    "id": 100,
+                    "title": "cat",
+                    "rule": "a = 1"
+                }]);
+                expect(layer.isValid()).toBeTruthy();
+                expect(Layer.prototype.validate).toHaveBeenCalledTimes(2);
+            });
+
+            it("getSymbolsJSON returns the correct JSON (removing the unserializable icon)", function () {
+                expect(layer.getSymbolsJSON()).toEqual([{
+                    "title": "1 - 5",
+                    "strokeWeight": 1,
+                    "rule": "worm_count > 0 and worm_count < 6",
+                    "height": 32,
+                    "width": 32,
+                    "shape": "worm",
+                    "strokeColor": "#FFF",
+                    "fillColor": "#d7b5d8",
+                    "id": 1,
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
+                }, {
+                    "title": "6 - 10",
+                    "strokeWeight": 1,
+                    "rule": "worm_count > 5 and worm_count < 11",
+                    "height": 32,
+                    "width": 32,
+                    "shape": "worm",
+                    "strokeColor": "#FFF",
+                    "fillColor": "#df65b0",
+                    "is_showing": true,
+                    "id": 2,
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
+                }, {
+                    "title": "11 or more",
+                    "strokeWeight": 1,
+                    "rule": "worm_count >= 11",
+                    "height": 32,
+                    "width": 32,
+                    "shape": "worm",
+                    "strokeColor": "#FFF",
+                    "fillColor": "#ce1256",
+                    "id": 3,
+                    "fillOpacity": 1,
+                    "strokeOpacity": 1
+                }]);
             });
         });
     });
