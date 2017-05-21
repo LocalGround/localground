@@ -24,6 +24,8 @@ define(["marionette",
                 this.render();
                 this.listenTo(this.app.vent, "show-print-generate-message", this.displayLoad);
                 this.listenTo(this.app.vent, "hide-print-generate-message", this.hideLoad);
+                this.listenTo(this.app.vent, "show-print-generated-message", this.displayConfirmation);
+                this.listenTo(this.app.vent, "hide-print-generated-message", this.hideConfirmation);
             },
 
             onShow: function () {
@@ -103,6 +105,26 @@ define(["marionette",
 
             hideLoad: function () {
                 this.$el.find(".load-message").hide();
+            },
+
+            displayConfirmation: function (response) {
+                var $container = this.$el.find(".confirmation-message"),
+                    $others = this.$el.find(".load-message, .print-layout-right, .print-layout-left");
+                this.app.vent.trigger('update-modal-save-button', {
+                    display: 'none'
+                });
+                $others.hide();
+                $container.find('.link').attr('href', response.pdf);
+                $container.find('.thumb').attr('src', response.thumb);
+                $container.show();
+            },
+
+            hideConfirmation: function () {
+                this.app.vent.trigger('update-modal-save-button', {
+                    display: 'block'
+                });
+                this.$el.find(".print-layout-right, .print-layout-left").show();
+                this.$el.find(".confirmation-message").hide();
             }
 
         });

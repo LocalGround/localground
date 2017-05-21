@@ -5,14 +5,11 @@
           <h1>{{ title }}</h1>
         </header>
         <div class="modal-body" style="min-height: {{ height }}px;">
-            <!-- view content injected here -->
+            <!-- view content injectsed here -->
         </div>
         <footer>
             <div class="buttons">
 
-                {{#if showPrintButton}}
-                    <button class="print-modal button-secondary">{{ printButtonText }}</button>
-                {{/if}}
                 {{#if showDeleteButton}}
                     <button class="delete-modal button-secondary">{{ deleteButtonText }}</button>
                 {{else}}

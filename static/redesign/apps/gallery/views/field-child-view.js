@@ -47,18 +47,10 @@ define([
 
         setRatingsFromModel: function () {
             if (this.model.get("data_type") != "rating") { return; }
-            var i,
-                ratings = this.model.get("extras") || [];
-            for (i = 0; i < ratings.length; i++) {
-                this.ratingsList.push({
-                    name: ratings[i].name,
-                    value: ratings[i].value
-                });
-            }
+            this.ratingsList = this.model.get("extras") || [];
         },
 
-        saveNewRating: function (e) {
-            //$(e.target).attr("value", $(e.target).val());
+        saveNewRating: function () {
             this.updateRatingList();
         },
         removeRating: function (e) {
@@ -82,9 +74,16 @@ define([
                 $row;
             $rows.each(function () {
                 $row = $(this);
+
+                var original_value = $row.find('.rating-value').val();
+                var _rating_value = parseInt($row.find('.rating-value').val());
+                if (isNaN(_rating_value)) _rating_value = original_value;
+
+
+
                 that.ratingsList.push({
                     name: $row.find('.rating-name').val(),
-                    value: $row.find('.rating-value').val()
+                    value: _rating_value
                 });
             });
             console.log(this.ratingsList);
@@ -169,7 +168,7 @@ define([
                     this.ratingsList[i].errorRatingName = true;
                     errors = true;
                 }
-                if (this.ratingsList[i].value.toString().trim() === ""){
+                if (isNaN(parseInt(this.ratingsList[i].value))){
                     this.ratingsList[i].errorRatingValue = true;
                     errors = true;
                 }

@@ -68,13 +68,19 @@ svg, .fa-question-circle {
     font-size: 16px;
 }
 
-.list-header .zoom-to-extents {
-    color: #AAA;
+.list-header .zoom-to-extents,
+.list-header .new-field-plus {
     font-size: 12px;
-    margin-right: 10px;
+    margin-right: 6px;
     float: right;
     margin-top: 3px;
+}
+.list-header .zoom-to-extents {
+    color: #AAA;
     display: none;
+}
+.list-header .new-field-plus {
+    color: rgb(78,112,212);
 }
 .list-header:hover .zoom-to-extents {
     cursor: pointer;

@@ -238,6 +238,34 @@ table.preview-properties td:first-child {
     height: 400px;
     vertical-align: top;
 }
+.print-links {
+    text-align: center;
+}
+
+.confirmation-message {
+    text-align: center;
+    height: 300px;
+}
+
+.confirmation-message .link-pdf {
+    margin-top: 100px;
+    display: block;
+    position: relative;
+}
+
+.confirmation-message .link-pdf .fa {
+    color: rgb(78,112,212);
+}
+.download-message {
+    margin-top: -150px;
+}
+.download-message p {
+    font-size: 0.8em;
+}
+.download-message p a {
+    text-decoration: underline;
+    color: rgb(78,112,212);
+}
 
 #print_map {
     width: 100%;
@@ -282,12 +310,4 @@ input.fieldname {
     margin-left: 4px;
 }
 
-.print-links {
-    text-align: center;
-}
 
-.download-message {
-    position: relative;
-    top: -150px;
-    color: #666;
-}

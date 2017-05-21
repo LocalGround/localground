@@ -61,7 +61,7 @@ define(["jquery",
                     selectOptions = this.cellProperties.selectOptions;
                     $(this.select).empty();
                     optionElement = document.createElement('OPTION');
-                    optionElement.value = "-100000";
+                    optionElement.value = "";
                     optionElement.innerHTML = "-- Select --";
                     this.select.appendChild(optionElement);
                     for (i = 0; i < selectOptions.length; i++) {
@@ -69,7 +69,7 @@ define(["jquery",
                         optionElement = document.createElement('OPTION');
                         optionElement.value = option.value;
                         optionElement.innerHTML = option.name;
-                        if (option.value === this.originalValue) {
+                        if (option.value == this.originalValue) {
                             optionElement.selected = true;
                         }
                         this.select.appendChild(optionElement);
@@ -83,7 +83,7 @@ define(["jquery",
                 };
                 SelectRatingsEditor.prototype.getValue = function () {
                     var val = this.select.value;
-                    if (val == "-100000" || val == "") {
+                    if (val === "") {
                         val = null;
                     }
                     return val;

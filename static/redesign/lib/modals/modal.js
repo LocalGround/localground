@@ -20,7 +20,6 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
             printButtonText: "Print",
             showSaveButton: true,
             showDeleteButton: true,
-            showPrintButton: false,
             regions: {
                 "modalBodyRegion": '.modal-body'
             },
@@ -28,8 +27,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 'click .close': 'hide',
                 'click .close-modal': 'hide',
                 'click .save-modal-form': 'saveFunction',
-                'click .delete-modal': 'deleteFunction',
-                'click .print-modal': 'printFunction'
+                'click .delete-modal': 'deleteFunction'
             },
             deleteFunction: function () {
                 alert("blah");
@@ -39,7 +37,6 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                 opts = opts || {};
                 _.extend(this, opts);
                 this.saveFunction = opts.saveFunction;
-                this.printFunction = opts.printFunction;
                 if (!$(".modal").get(0)) {
                     this.render();
                     $('body').append(this.$el);
@@ -47,6 +44,7 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                     this.$el = $('<div></div>').append($(".modal"));
                     $('body').append(this.$el);
                 }
+                this.attachEvents();
                 this.appendView();
             },
             templateHelpers: function () {
@@ -56,7 +54,6 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                     height: this.height,
                     showSaveButton: this.showSaveButton,
                     showDeleteButton: this.showDeleteButton,
-                    showPrintButton: this.showPrintButton,
                     closeButtonText: this.closeButtonText,
                     saveButtonText: this.saveButtonText,
                     deleteButtonText: this.deleteButtonText,
@@ -68,15 +65,30 @@ define(["jquery", "underscore", "marionette", "handlebars", "text!../modals/moda
                     this.modalBodyRegion.show(this.view);
                 }
             },
+            attachEvents: function () {
+                if (this.app) {
+                    console.log('adding listener...');
+                    this.listenTo(this.app.vent, 'update-modal-save-button', this.updateSaveButton);
+                }
+            },
             update: function (opts) {
                 opts.closeButtonText = opts.closeButtonText || "Cancel";
                 opts.saveButtonText = opts.saveButtonText || "Save";
                 opts.deleteButtonText = opts.deleteButtonText || "Delete";
                 opts.printButtonText = opts.printButtonText || "Print";
                 _.extend(this, opts);
+                this.attachEvents();
                 this.render();
                 this.delegateEvents();
                 this.appendView();
+            },
+
+            updateSaveButton: function (opts) {
+                console.log('updateSaveButton');
+                this.$el.find('.save-modal-form').css(opts);
+                if (opts.printButtonText) {
+                    this.$el.find('.save-modal-form').html(opts.printButtonText);
+                }
             },
 
             setSize: function () {
