@@ -121,7 +121,7 @@ define([
                 expect(sourceCodeStyleView.hasChanged).toBeTruthy();
                 fixture.find("textarea.source-code").trigger('blur');
 
-                //check that appropriate functions have been called:
+                //check that appropriate functions / triggers have been called:
                 expect(SourceCodeStyleView.prototype.updateModel).toHaveBeenCalledTimes(1);
                 expect(Layer.prototype.set).toHaveBeenCalledTimes(1);
                 expect(Layer.prototype.trigger).toHaveBeenCalledWith("rebuild-markers");

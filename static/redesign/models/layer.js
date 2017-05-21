@@ -36,7 +36,7 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
                 console.warn("Layer Model Warning: without the map_id, the layer can't be saved to database");
             }
             this.buildSymbolMap();
-            this.on("change:symbols", this.rebuildSymbolMap);
+            //this.on("change:symbols", this.rebuildSymbolMap);
 		},
         applyDefaults: function () {
             var currentMetadata = _.clone(this.get("metadata")),
@@ -58,6 +58,7 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             this.buildSymbolMap();
         },
         buildSymbolMap: function () {
+            console.log('building symbol map...');
             //set the basic flag:
             if (this.get("symbols").length == 1) {
                 this.basic = true;
