@@ -248,8 +248,8 @@ define(["jquery",
                 
                 while (currentFloor < max) {
                     this.layerDraft.continuous.add({
-                        "rule": $selected + " >= " + currentFloor.toFixed(2) + " < " + (currentFloor + segmentSize).toFixed(2),
-                        "title": $selected + " greater than " + currentFloor.toFixed(2) + " and less than " + (currentFloor + segmentSize).toFixed(2),
+                        "rule": $selected + " >= " + currentFloor.toFixed(2) + " and " + $selected + " < " + (currentFloor + segmentSize).toFixed(2),
+                        "title": $selected + " between " + currentFloor.toFixed(0) + " and " + (currentFloor + segmentSize).toFixed(0),
                         "fillOpacity": parseFloat(this.$el.find("#palette-opacity").val()),
                         "strokeWeight": parseFloat(this.$el.find("#stroke-weight").val()),
                         "strokeOpacity": parseFloat(this.$el.find("#stroke-opacity").val()),
@@ -343,7 +343,7 @@ define(["jquery",
             },
 
             updateWidth: function(e) {
-                var width = $(e.target).val();
+                var width = parseFloat($(e.target).val());
                 this.updateMetadata("width", width);
                 this.updateMap();
             },

@@ -13,6 +13,7 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
             defaults: {
                 fillOpacity: 1,
                 width: 20,
+                height: 20,
                 fillColor: "#4e70d4",
                 strokeColor: "#4e70d4",
                 strokeWeight: 3,
@@ -32,6 +33,10 @@ define(['backbone', 'underscore', 'lib/sqlParser', 'lib/maps/overlays/icon'],
                     throw new Error("title must be defined");
                 }
                 this.sqlParser = new SqlParser(this.get("rule"));
+                this.on("change:width", this.setHeight);
+            },
+            setHeight: function () {
+                this.set("height", this.get("width"));
             },
             getSymbolJSON: function () {
                 var symbol = this.clone();
