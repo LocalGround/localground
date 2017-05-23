@@ -270,10 +270,14 @@ define([
                     name = field.col_name;
                     title = field.col_alias;
                     switch (type) {
+                    case "date-time":
+                        fields[name] = { type: 'DateTime', title: title };
+                        break;
                     case "boolean":
                         fields[name] = { type: 'Checkbox', title: title };
                         break;
                     case "integer":
+                    case "decimal":
                         fields[name] = { type: 'Number', title: title };
                         break;
                     default:
