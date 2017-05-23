@@ -240,16 +240,16 @@ define(["jquery",
                 });
                 var min = Math.min(...this.continuousData),
                     max = Math.max(...this.continuousData), 
-                    range = max-min,
-                    segmentSize = range/buckets,
+                    range = max - min,
+                    segmentSize = range / buckets,
                     currentFloor = min,
                     counter = 0;
                 this.layerDraft.continuous = new Symbols();
                 
                 while (currentFloor < max) {
                     this.layerDraft.continuous.add({
-                        "rule": $selected + " >= " + currentFloor.toFixed(2) + " and " + $selected + " < " + (currentFloor + segmentSize).toFixed(2),
-                        "title": $selected + " between " + currentFloor.toFixed(0) + " and " + (currentFloor + segmentSize).toFixed(0),
+                        "rule": $selected + " >= " + currentFloor.toFixed(0) + " and " + $selected + " < " + (currentFloor + segmentSize).toFixed(0),
+                        "title": "between " + currentFloor.toFixed(0) + " and " + (currentFloor + segmentSize).toFixed(0),
                         "fillOpacity": parseFloat(this.$el.find("#palette-opacity").val()),
                         "strokeWeight": parseFloat(this.$el.find("#stroke-weight").val()),
                         "strokeOpacity": parseFloat(this.$el.find("#stroke-opacity").val()),
@@ -293,10 +293,35 @@ define(["jquery",
                 this.properties = [];
             },
 
-            updateBuckets: function(e) {
-                var buckets = parseFloat($(e.target).val());
-                this.updateMetadata("buckets", buckets);
-                this.buildPalettes();
+            delayExecution: function (timeoutVar, func, millisecs) {
+                /*
+                 * This method applies a time buffer to whatever
+                 * "func" function is passed in as an argument. So,
+                 * for example, if a user changes the width value,
+                 * and then changes it again before "millisecs"
+                 * milliseconds pass, the new value will "reset the clock,"
+                 * and the "func" function won't fire until the
+                 * user stops changing the value.
+                 */
+                if (this[timeoutVar]) {
+                    clearTimeout(this[timeoutVar]);
+                    this[timeoutVar] = null;
+                }
+                this[timeoutVar] = setTimeout(func, millisecs);
+            },
+
+            updateBuckets: function () {
+                var that = this;
+                this.delayExecution(
+                    "bucketTimer",
+                    function () {
+                        var buckets = parseFloat(that.$el.find("#bucket").val());
+                        that.updateMetadata("buckets", buckets);
+                        that.buildPalettes();
+                        that.$el.find("#bucket").focus();
+                    },
+                    500 //experiment with how many milliseconds to delay
+                );
             },
 
             buildPalettes: function () {
@@ -316,12 +341,10 @@ define(["jquery",
             },
 
             updateMap: function () {
-                // sneaky workaround: delegate the marker rebuild
-                // to an asynchronous process:
                 var that = this;
-                setTimeout(function () {
-                    that.model.trigger('rebuild-markers');
-                }, 1);
+                this.delayExecution("mapTimer", function () {
+                    that.model.trigger('rebuild-markers')
+                }, 250);
             },
 
             updatePaletteOpacity: function() {
