@@ -257,7 +257,7 @@ define(["jquery",
                         "shape": this.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + this.selectedColorPalette[counter],
                       //  "strokeColor": "#" + this.$el.find("#stroke-color").val(),
-                        "strokeColor": "#" + this.model.get("metadata").strokeColor,
+                        "strokeColor": this.model.get("metadata").strokeColor,
                         //"color": "#" + this.selectedColorPalette[counter],
                         "id": (counter + 1)
                     });
