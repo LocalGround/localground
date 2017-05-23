@@ -358,7 +358,7 @@ define(["jquery",
 
             // triggered from colorPicker
             updateStrokeColor: function (hex) {
-                this.updateMetadata("strokeColor", hex);
+                this.updateMetadata("strokeColor", '#' + hex);
                 $('#stroke-color-picker').css('color', '#' + hex);
             },
 
