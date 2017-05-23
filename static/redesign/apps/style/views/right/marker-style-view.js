@@ -162,9 +162,9 @@ define(["jquery",
                 'click .palette-list': 'selectPalette'
             },
 
-            selectDataType: function (e) {
+            selectDataType: function () {
                 //this.dataType = this.$el.find("#data-type-select").val();
-                this.dataType = $(e.target).val();
+                this.dataType = this.$el.find("#data-type-select").val(); //$(e.target).val();
                 this.render();
                 this.buildColumnList();
                 if (this.dataType == "continuous") {
@@ -240,16 +240,16 @@ define(["jquery",
                 });
                 var min = Math.min(...this.continuousData),
                     max = Math.max(...this.continuousData), 
-                    range = max-min,
-                    segmentSize = range/buckets,
+                    range = max - min,
+                    segmentSize = range / buckets,
                     currentFloor = min,
                     counter = 0;
                 this.layerDraft.continuous = new Symbols();
                 
                 while (currentFloor < max) {
                     this.layerDraft.continuous.add({
-                        "rule": $selected + " >= " + currentFloor.toFixed(2) + " < " + (currentFloor + segmentSize).toFixed(2),
-                        "title": $selected + " greater than " + currentFloor.toFixed(2) + " and less than " + (currentFloor + segmentSize).toFixed(2),
+                        "rule": $selected + " >= " + currentFloor.toFixed(0) + " and " + $selected + " < " + (currentFloor + segmentSize).toFixed(0),
+                        "title": "between " + currentFloor.toFixed(0) + " and " + (currentFloor + segmentSize).toFixed(0),
                         "fillOpacity": parseFloat(this.$el.find("#palette-opacity").val()),
                         "strokeWeight": parseFloat(this.$el.find("#stroke-weight").val()),
                         "strokeOpacity": parseFloat(this.$el.find("#stroke-opacity").val()),
@@ -257,8 +257,8 @@ define(["jquery",
                         "shape": this.$el.find(".global-marker-shape").val(),
                         "fillColor": "#" + this.selectedColorPalette[counter],
                       //  "strokeColor": "#" + this.$el.find("#stroke-color").val(),
-                        "strokeColor": "#" + this.model.get("metadata").strokeColor,
-                        "color": "#" + this.selectedColorPalette[counter],
+                        "strokeColor": this.model.get("metadata").strokeColor,
+                        //"color": "#" + this.selectedColorPalette[counter],
                         "id": (counter + 1)
                     });
                     counter++;
@@ -266,7 +266,7 @@ define(["jquery",
                 }
                 this.collection = this.layerDraft.continuous;
                 this.model.set("symbols", this.layerDraft.continuous.toJSON());
-                this.model.trigger('rebuild-markers');
+                this.updateMap();
                 this.render();
             },
 
@@ -293,10 +293,35 @@ define(["jquery",
                 this.properties = [];
             },
 
-            updateBuckets: function(e) {
-                var buckets = parseFloat($(e.target).val());
-                this.updateMetadata("buckets", buckets);
-                this.buildPalettes();
+            delayExecution: function (timeoutVar, func, millisecs) {
+                /*
+                 * This method applies a time buffer to whatever
+                 * "func" function is passed in as an argument. So,
+                 * for example, if a user changes the width value,
+                 * and then changes it again before "millisecs"
+                 * milliseconds pass, the new value will "reset the clock,"
+                 * and the "func" function won't fire until the
+                 * user stops changing the value.
+                 */
+                if (this[timeoutVar]) {
+                    clearTimeout(this[timeoutVar]);
+                    this[timeoutVar] = null;
+                }
+                this[timeoutVar] = setTimeout(func, millisecs);
+            },
+
+            updateBuckets: function () {
+                var that = this;
+                this.delayExecution(
+                    "bucketTimer",
+                    function () {
+                        var buckets = parseFloat(that.$el.find("#bucket").val());
+                        that.updateMetadata("buckets", buckets);
+                        that.buildPalettes();
+                        that.$el.find("#bucket").focus();
+                    },
+                    500 //experiment with how many milliseconds to delay
+                );
             },
 
             buildPalettes: function () {
@@ -312,8 +337,14 @@ define(["jquery",
                 seq6 = palette('tol-dv', buckets);
                 this.allColors = [seq1, seq2, seq3, seq4, seq5, seq6];
                 this.selectedColorPalette = this.allColors[paletteId];
-
                 this.contData();
+            },
+
+            updateMap: function () {
+                var that = this;
+                this.delayExecution("mapTimer", function () {
+                    that.model.trigger('rebuild-markers')
+                }, 250);
             },
 
             updatePaletteOpacity: function() {
@@ -324,32 +355,37 @@ define(["jquery",
                     opacity = 0;
                 } 
                 this.updateMetadata("fillOpacity", opacity);
-                this.render();
+                this.updateMap();
+                //this.render();
             },
 
             updateGlobalShape: function(e) {
                 var shape = $(e.target).val();
                 this.updateMetadata("shape", shape);
+                this.updateMap();
             },
 
             updateWidth: function(e) {
-                var width = $(e.target).val();
+                var width = parseFloat($(e.target).val());
                 this.updateMetadata("width", width);
+                this.updateMap();
             },
 
             updateStrokeWeight: function(e) {
                 var strokeWeight = parseFloat($(e.target).val());
                 this.updateMetadata("strokeWeight", strokeWeight);
+                this.updateMap();
             },
 
             updateStrokeOpacity: function(e) {
-                var opacity = this.$el.find("#stroke-opacity").val();
+                var opacity = parseFloat(this.$el.find("#stroke-opacity").val());
                     if (opacity > 1) {
                         opacity = 1;
                     } else if (opacity < 0 ) {
                         opacity = 0;
                     } 
                 this.updateMetadata("strokeOpacity", opacity);
+                this.updateMap();
             },
 
             showPalettes: function () {
@@ -360,6 +396,7 @@ define(["jquery",
             updateStrokeColor: function (hex) {
                 this.updateMetadata("strokeColor", '#' + hex);
                 $('#stroke-color-picker').css('color', '#' + hex);
+                this.updateMap();
             },
 
             selectPalette: function (e) {
@@ -372,14 +409,14 @@ define(["jquery",
 
             //convenience function
             updateMetadata: function(newKey, newValue) {
-                var localMeta = this.model.get("metadata") || {};
+                var localMeta = this.model.get("metadata") || {},
+                    that = this;
                 localMeta[newKey] = newValue;
                 this.model.set("metadata", localMeta); 
                 
                 this.collection.each(function(symbol) {
                     symbol.set(newKey, newValue);
                 });
-                this.model.trigger('rebuild-markers');
 
             }
 

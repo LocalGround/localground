@@ -48,7 +48,7 @@ define(['underscore',
                 picker;
             if (colorInput.get(0) != null) {
                 picker = new jscolor.color(colorInput.get(0), {});
-                picker.fromString("#" + this.model.get("color"));
+                picker.fromString("#" + this.model.get("fillColor"));
             }
         },
 

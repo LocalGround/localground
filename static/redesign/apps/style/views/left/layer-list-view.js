@@ -63,7 +63,7 @@ define(["marionette",
                     layer_type: "categorical",
                     filters: {},
                     symbols: [{
-                        "color": "#7075FF",
+                        "fillColor": "#7075FF",
                         "width": 30,
                         "rule": "sculptures > 0",
                         "title": "At least 1 sculpture"

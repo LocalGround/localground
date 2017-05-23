@@ -1,4 +1,4 @@
-define(["backbone", "models/base", "models/symbol"], function (Backbone, Base, Symbol) {
+define(["models/base", "models/symbol", "collections/symbols"], function (Base, Symbol, Symbols) {
     "use strict";
     /**
      * A Backbone Model class for the Photo datatype.
@@ -14,15 +14,15 @@ define(["backbone", "models/base", "models/symbol"], function (Backbone, Base, S
                 paletteId: 0,
                 fillOpacity: 1,
                 width: 20,
-                fillColor: "4e70d4",
-                strokeColor: "4e70d4",
-                strokeWeight: 3, 
+                fillColor: "#4e70d4",
+                strokeColor: "#4e70d4",
+                strokeWeight: 3,
                 strokeOpacity: 1,
                 shape: "circle"
-            } 
+            },
+            symbols: []
         }),
         symbolMap: null,
-        //urlRoot: "/api/0/layers/",
         getNamePlural: function () {
             return "layers";
         },
@@ -32,8 +32,11 @@ define(["backbone", "models/base", "models/symbol"], function (Backbone, Base, S
             this.applyDefaults();
             if (data.map_id) {
                 this.urlRoot = "/api/0/maps/" + data.map_id + "/layers/";
+            } else {
+                console.warn("Layer Model Warning: without the map_id, the layer can't be saved to database");
             }
-            this.rebuildSymbolMap();
+            this.buildSymbolMap();
+            this.on("change:symbols", this.rebuildSymbolMap);
 		},
         applyDefaults: function () {
             var currentMetadata = _.clone(this.get("metadata")),
@@ -55,6 +58,7 @@ define(["backbone", "models/base", "models/symbol"], function (Backbone, Base, S
             this.buildSymbolMap();
         },
         buildSymbolMap: function () {
+            //console.log('building symbol map...');
             //set the basic flag:
             if (this.get("symbols").length == 1) {
                 this.basic = true;
@@ -62,25 +66,25 @@ define(["backbone", "models/base", "models/symbol"], function (Backbone, Base, S
             if (!this.symbolMap) {
                 this.symbolMap = {};
                 var i = 0,
-                    symbolList = this.get("symbols"),
+                    symbols = this.get("symbols"),
                     symbol;
-                for (i = 0; i < symbolList.length; i++) {
-                    symbol = symbolList[i];
-                    symbol.id = (i + 1);
-                    this.symbolMap['symbol_' + symbol.id] = new Symbol(symbolList[i]);
+                for (i = 0; i < symbols.length; i++) {
+                    symbol = symbols[i];
+                    symbol.id = symbol.id || (i + 1);
+                    this.symbolMap['symbol_' + symbol.id] = new Symbol(symbols[i]);
                 }
             }
         },
 
         getSymbols: function () {
-            return new Backbone.Collection(_.values(this.symbolMap));
+            return new Symbols(_.values(this.symbolMap));
         },
         getSymbolsJSON: function () {
-            var symbols = this.getSymbols().clone();
-            symbols.each(function (symbol) {
-                symbol.set("icon", null);
+            var symbolsJSON = [];
+            this.getSymbols().each(function (symbol) {
+                symbolsJSON.push(symbol.getSymbolJSON());
             });
-            return symbols.toJSON();
+            return symbolsJSON;
         },
 
         getSymbol: function (id) {
@@ -107,24 +111,12 @@ define(["backbone", "models/base", "models/symbol"], function (Backbone, Base, S
             });
         },
         toJSON: function () {
-            var json = Base.prototype.toJSON.call(this),
-                symbols,
-                metadata;
+            var json = Base.prototype.toJSON.call(this);
 
             // extra code to remove icon references
             // to avoid JSON serialization errors:
-            if (json.symbols !== null) {
-                symbols = new Backbone.Collection(json.symbols).clone();
-                symbols.each(function (symbol) {
-                    symbol.set("icon", null);
-                });
-                json.symbols = JSON.stringify(symbols);
-            }
-
-            if (json.metadata !== null) {
-                metadata = json.metadata;
-                json.metadata = JSON.stringify(metadata);
-            }
+            json.symbols = JSON.stringify(this.getSymbolsJSON());
+            json.metadata = JSON.stringify(json.metadata);
 
             // serialize filters also:
             if (json.filters !== null) {

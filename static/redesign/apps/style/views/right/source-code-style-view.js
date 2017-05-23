@@ -7,12 +7,20 @@ define(["marionette",
 
         var MarkerStyleView = Marionette.CompositeView.extend({
             template: Handlebars.compile(SourceCodeStyleTemplate),
-
+            hasChanged: false,
             initialize: function (opts) {
                 _.extend(this, opts);
             },
+
+            events: {
+                'blur .source-code': 'updateModel',
+                'input .source-code': 'trackChanges',
+                'propertychange .source-code': 'trackChanges',
+                'paste .source-code': 'trackChanges'
+            },
+
             modelEvents: {
-                'change:symbols': 'render'
+                'rebuild-markers': 'render'
             },
 
             templateHelpers: function () {
@@ -21,17 +29,26 @@ define(["marionette",
                 };
             },
 
-            events: {
-                'blur .source-code': 'updateModel'
+            trackChanges: function () {
+                // for efficiency: will only apply "updatedModel" code if
+                // something has actually changed in the textbox:
+                this.hasChanged = true;
+            },
+
+            resetTracking: function () {
+                this.hasChanged = false;
             },
 
             onShow: function () {
-                console.log('showing');
                 this.render();
             },
 
             updateModel: function () {
-                console.log("update model");
+                // if nothing has changed, exit this function
+                if (!this.hasChanged) {
+                    return;
+                }
+                // if something has changed, rebuild the symbols and redraw the map:
                 var sourceCode;
                 try {
                     sourceCode = JSON.parse(this.$el.find(".source-code").val());
@@ -41,21 +58,12 @@ define(["marionette",
                 }
                 try {
                     this.model.set("symbols", sourceCode);
-                    console.log("source code", sourceCode);
-                    console.log(this.model.get("symbols"));
+                    this.model.trigger('rebuild-markers');
                 } catch (e2) {
                     alert('Invalid icon shape specified. Please revert and try again.');
                 }
-            },
-
-            selectDataType: function () {
-                this.dataType = this.$el.find("#data-type-select").val();
-                this.render();
-            },
-
-            displaySymbols: function () {
-                this.collection = new Marionette.Collection(this.model.get("symbols"));
-                this.render();
+                // reset hasChanged flag:
+                this.resetTracking();
             }
 
         });

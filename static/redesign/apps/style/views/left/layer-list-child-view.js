@@ -41,6 +41,7 @@ define(["jquery",
             },
 
             updateMapOverlays: function () {
+                console.log('rebuilding map overlays');
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
                 this.initMapOverlays();
