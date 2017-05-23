@@ -2,14 +2,21 @@ from django.contrib.gis.db import models
 from localground.apps.site.models import Base
 
 class DataType(Base):
-    TEXT = 1
-    INTEGER = 2
-    DATE_TIME = 3
-    BOOL = 4
-    DECIMAL = 5
-    RATING = 6
-    PHOTO = 7
-    AUDIO = 8
+
+    class DataTypes():
+        '''
+        Enum for simplifying field type lookups
+        '''
+        # TODO: Hardcoding in DB = BAD
+        TEXT = 1
+        INTEGER = 2
+        DATETIME = 3
+        BOOLEAN = 4
+        DECIMAL = 5
+        RATING = 6
+        CHOICE = 7
+        PHOTO = 8
+        AUDIO = 9
 
     name = models.CharField(max_length=255, editable=False)
     sql = models.CharField(max_length=500, editable=False)

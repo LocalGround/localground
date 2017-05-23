@@ -2,6 +2,7 @@ from django import test
 from django.core.urlresolvers import resolve
 from rest_framework import status
 from localground.apps.site import models
+from localground.apps.site.models import DataType
 from django.contrib.auth.models import User
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 import os, json
@@ -316,8 +317,9 @@ class ModelMixin(object):
         BOOLEAN = 4
         DECIMAL = 5
         RATING = 6
-        PHOTO = 7
-        AUDIO = 8
+        CHOICE = 7
+        PHOTO = 8
+        AUDIO = 9
         '''
         if user is None:
             user = self.user
@@ -328,7 +330,7 @@ class ModelMixin(object):
             field_name = 'Field %s' % (i + 1)
             if i == 0: field_name = 'name'
             fld = self.create_field(name=field_name,
-                                data_type=models.DataType.objects.get(id=(i + 1)),
+                                data_type=DataType.objects.get(id=(i + 1)),
                                 ordering=(i + 1),
                                 form=f)
             fld.save()
@@ -336,7 +338,7 @@ class ModelMixin(object):
         return f
 
     def create_field(self, form, name='Field 1', data_type=None, ordering=1, is_display_field=False):
-        data_type = data_type or models.DataType.objects.get(id=1)
+        data_type = data_type or DataType.objects.get(id=1)
         f = models.Field(
             col_alias=name,
             data_type=data_type,
@@ -364,22 +366,24 @@ class ModelMixin(object):
         # generate different dummy types depending on the data_type
         for field in form.fields:
             if field.data_type.id in [
-                    models.DataType.INTEGER,
-                    models.DataType.RATING]:
+                    DataType.DataTypes.INTEGER,
+                    DataType.DataTypes.RATING]:
                 setattr(record, field.col_name, 5)
-            elif field.data_type.id == models.DataType.BOOL:
+            elif field.data_type.id == DataType.DataTypes.BOOLEAN:
                 setattr(record, field.col_name, True)
-            elif field.data_type.id == models.DataType.DATE_TIME:
+            elif field.data_type.id == DataType.DataTypes.DATETIME:
                 setattr(
                     record,
                     field.col_name,
                     get_timestamp_no_milliseconds())
-            elif field.data_type.id == models.DataType.DECIMAL:
+            elif field.data_type.id == DataType.DataTypes.DECIMAL:
                 setattr(record, field.col_name, 3.14159)
-            elif field.data_type.id == models.DataType.PHOTO:
+            elif field.data_type.id == DataType.DataTypes.PHOTO:
                 setattr(record, field.col_name, photo)
-            elif field.data_type.id == models.DataType.AUDIO:
+            elif field.data_type.id == DataType.DataTypes.AUDIO:
                 setattr(record, field.col_name, audio)
+            elif field.data_type.id == DataType.DataTypes.CHOICE:
+                setattr(record, field.col_name, 'blue')
             else:
                 setattr(record, field.col_name, name or 'some text')
         record.save(user=self.user)

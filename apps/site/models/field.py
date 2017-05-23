@@ -3,23 +3,9 @@ from localground.apps.site.models import BaseAudit
 from datetime import datetime
 from localground.apps.lib.helpers import get_timestamp_no_milliseconds
 from jsonfield import JSONField
+from localground.apps.site.models import DataType
 
 class Field(BaseAudit):
-
-    class DataTypes():
-        '''
-        Enum for simplifying field type lookups
-        '''
-        # TODO: Hardcoding in DB = BAD
-        TEXT = 1
-        INTEGER = 2
-        DATETIME = 3
-        BOOLEAN = 4
-        DECIMAL = 5
-        RATING = 6
-        CHOICE = 7
-        PHOTO = 8
-        AUDIO = 9
 
     form = models.ForeignKey('Form')
     col_name_db = models.CharField(max_length=255, db_column="col_name")
@@ -110,7 +96,7 @@ class Field(BaseAudit):
                 (self.form.table_name, self.col_name_db, self.data_type.sql)
             )
             # Photo:
-            if self.data_type.id == self.DataTypes.PHOTO:
+            if self.data_type.id == DataType.DataTypes.PHOTO:
                 sql.append('''
                     ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
                     FOREIGN KEY(%(column_name)s)
@@ -123,7 +109,7 @@ class Field(BaseAudit):
                 )
 
             # Audio:
-            if self.data_type.id == self.DataTypes.AUDIO:
+            if self.data_type.id == DataType.DataTypes.AUDIO:
                 sql.append('''
                     ALTER TABLE %(table_name)s ADD CONSTRAINT %(table_name)s_%(column_name)s_fkey
                     FOREIGN KEY(%(column_name)s)

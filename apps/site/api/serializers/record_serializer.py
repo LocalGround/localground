@@ -1,6 +1,6 @@
 from rest_framework import serializers, validators
 from localground.apps.site import models
-from localground.apps.site.models import Field
+from localground.apps.site.models import DataType
 from localground.apps.site.api import fields
 import datetime
 from django.conf import settings
@@ -174,9 +174,9 @@ def create_record_serializer(form, **kwargs):
         if f.is_display_field:
             display_field = f
         field_names.append(f.col_name)
-        if f.data_type.id == Field.DataTypes.PHOTO:
+        if f.data_type.id == DataType.DataTypes.PHOTO:
             photo_fields.extend([f.col_name, f.col_name + "_detail"])
-        elif f.data_type.id == Field.DataTypes.AUDIO:
+        elif f.data_type.id == DataType.DataTypes.AUDIO:
             audio_fields.extend([f.col_name, f.col_name + "_detail"])
     
     #append display name:

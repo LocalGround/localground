@@ -51,12 +51,13 @@ class FormDataTestMixin(object):
         lat, lng, description, color = 54.16, 60.4, \
             'Test description1', 'FF0000'
         vals = [
-            'a different test string',  # TEXT
-            897,  # INTEGER
-            get_timestamp_no_milliseconds(),  # DATE_TIME
-            True,  # BOOL
-            4.5,  # DECIMAL
-            10  # RATING
+            'a different test string',          # TEXT
+            897,                                # INTEGER
+            get_timestamp_no_milliseconds(),    # DATE_TIME
+            True,                               # BOOLEAN
+            4.5,                                # DECIMAL
+            10,                                 # RATING,
+            'red'                               # CHOICE
         ]
         d = {
             'geometry': self.POINT,
@@ -94,7 +95,7 @@ class FormDataTestMixin(object):
         self.assertEqual(rec.geometry, GEOSGeometry(json.dumps(self.POINT)))
         fields = self.form.fields
         length = len(d.keys()) - 1
-        for i in range(0, 5):
+        for i in range(0, len(fields)):
             self.assertEqual(
                 d.get(
                     fields[i].col_name), getattr(
@@ -163,7 +164,7 @@ class ApiFormDataInstanceTest(test.TestCase, FormDataTestMixin, ViewMixinAPI):
         ViewMixinAPI.setUp(self)
         self.metadata = get_metadata_records()
         self.metadata['children'] = {'read_only': True, 'required': False, 'type': 'field' }
-        self.form = self.create_form_with_fields(name="Class Form", num_fields=6)
+        self.form = self.create_form_with_fields(name="Class Form", num_fields=7)
         #requery:
         self.form = models.Form.objects.get(id=self.form.id)
         self.rec_1 = self.insert_form_data_record(form=self.form, project=self.project)
