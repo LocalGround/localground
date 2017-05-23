@@ -291,6 +291,9 @@ define([
                         break;
                     case "date-time":
                         // TODO: make this a date picker / calendar like the spreadsheet
+                        // Samples:
+                        // https://github.com/dbushell/Pikaday
+                        // https://coderwall.com/p/70pw4a/datepicker-for-backbone-form
                         fields[name] = { type: 'DateTime', title: title };
                         break;
                     case "boolean":
