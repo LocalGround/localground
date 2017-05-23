@@ -54,6 +54,7 @@
             <option value="decimal" {{#ifequal data_type "decimal"}} SELECTED {{/ifequal}}>Decimal</option>
             <option value="date-time"{{#ifequal data_type "date-time"}} SELECTED {{/ifequal}}>Date / Time</option>
             <option value="rating"{{#ifequal data_type "rating"}} SELECTED {{/ifequal}}>Rating</option>
+            <option value="choice"{{#ifequal data_type "choice"}} SELECTED {{/ifequal}}>Choice</option>
         </select>
         {{#ifequal data_type "rating"}}
             <span class ="extras">
