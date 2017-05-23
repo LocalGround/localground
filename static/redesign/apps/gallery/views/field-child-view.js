@@ -8,6 +8,7 @@ define([
     'use strict';
     var FieldChildView = Marionette.ItemView.extend({
         ratingsList: [],
+        choicesList: [],
         initialize: function (opts) {
             _.extend(this, opts);
             this.setRatingsFromModel();
@@ -23,7 +24,9 @@ define([
             'blur input.rating-name': 'saveNewRating',
             'change select.fieldType': 'setDataType',
             'click .add-new-rating': 'addNewRating',
-            'click .remove-rating': 'removeRating'
+            'click .remove-rating': 'removeRating',
+            'click .add-new-choice': 'addNewCoice',
+            'click .remove-choice': 'removeChoice'
         },
         templateHelpers: function () {
             var errorMessages = {
@@ -61,6 +64,14 @@ define([
                 this.updateRatingList();
             }
         },
+        removeChoice: function (e) {
+            e.preventDefault();
+            if (window.confirm("Want to remove choice?")){
+                var choice = $(e.target).closest(".choice");
+                $(choice).remove();
+                //this.updateRatingList();
+            }
+        },
 
         updateRatingList: function () {
             //if (!this.ratingsList) return;
@@ -91,9 +102,6 @@ define([
         },
 
         addNewRating: function (e) {
-            //alert("add New Rating");
-            // Need to replace invisible area with append
-            // at the end of the extras html class
             this.ratingsList.push({
                 name: "",
                 value: ""
@@ -102,6 +110,16 @@ define([
             this.render();
             e.preventDefault();
         },
+
+        addNewChoice: function (e) {
+            this.choicesList.push({
+                name: ""
+            });
+            this.saveChoicesToModel();
+            this.render();
+            e.preventDefault();
+        },
+
         setDataType: function () {
             this.model.set("data_type", this.$el.find(".fieldType").val());
             if (this.model.get("data_type") == "rating") {
@@ -109,6 +127,12 @@ define([
             }
         },
         saveRatingsToModel: function () {
+
+            this.model.set("extras", this.ratingsList);
+        },
+
+
+        saveChoicesToModel: function () {
 
             this.model.set("extras", this.ratingsList);
         },
@@ -123,10 +147,16 @@ define([
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);
 
-            this.saveRatingsToModel();
+
 
             if (fieldType) {
                 this.model.set("data_type", fieldType);
+            }
+
+            if (fieldType == "rating"){
+                this.saveRatingsToModel();
+            } else if (fieldType == "choice"){
+                this.saveChoicesToModel();
             }
 
             if (!this.model.errorFieldName && !this.model.errorFieldType &&
@@ -170,6 +200,19 @@ define([
                 }
                 if (isNaN(parseInt(this.ratingsList[i].value))){
                     this.ratingsList[i].errorRatingValue = true;
+                    errors = true;
+                }
+            }
+            return !errors;
+        },
+
+
+        validateChoice: function () {
+            var errors = false;
+            for (var i = 0; i < this.ratingsList.length; ++i){
+                console.log(this.ratingsList[i]);
+                if (this.ratingsList[i].name.trim() === ""){
+                    this.ratingsList[i].errorRatingName = true;
                     errors = true;
                 }
             }
