@@ -17,8 +17,9 @@ class Field(BaseAudit):
         BOOLEAN = 4
         DECIMAL = 5
         RATING = 6
-        PHOTO = 7
-        AUDIO = 8
+        CHOICE = 7
+        PHOTO = 8
+        AUDIO = 9
 
     form = models.ForeignKey('Form')
     col_name_db = models.CharField(max_length=255, db_column="col_name")

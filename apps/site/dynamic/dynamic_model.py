@@ -204,7 +204,7 @@ class ModelClassBuilder(object):
                 'verbose_name': n.col_alias,
                 'db_column': n.col_name_db
             }
-            if n.data_type.id == Field.DataTypes.TEXT:
+            if n.data_type.id in [Field.DataTypes.TEXT, Field.DataTypes.CHOICE]:
                 field = models.CharField(max_length=1000, **kwargs)
             elif n.data_type.id in [Field.DataTypes.INTEGER, Field.DataTypes.RATING]:
                 field = models.IntegerField(**kwargs)

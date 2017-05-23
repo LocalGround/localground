@@ -262,6 +262,7 @@ define([
                 player;
             if (this.dataType.indexOf('form_') != -1) {
                 fields = {};
+                console.log(this.model.get("fields"));
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     /* https://github.com/powmedia/backbone-forms */
                     field = this.model.get("fields")[i];
@@ -270,7 +271,26 @@ define([
                     name = field.col_name;
                     title = field.col_alias;
                     switch (type) {
+                    case "rating":
+                        var options = [],
+                            extras = JSON.parse(field.extras),
+                            j;
+                        for (j = 0; j < extras.length; j++) {
+                            options.push({
+                                val: extras[j].value,
+                                label: extras[j].name
+                            });
+                        }
+                        fields[name] = { type: 'Select', title: title, options: options };
+                        break;
+                    case "choice":
+                        var options = JSON.parse(field.extras);
+                        //dummy options for testing
+                        options = ["red", "orange", "green", "blue", "yellow", "purple"];
+                        fields[name] = { type: 'Select', title: title, options: options };
+                        break;
                     case "date-time":
+                        // TODO: make this a date picker / calendar like the spreadsheet
                         fields[name] = { type: 'DateTime', title: title };
                         break;
                     case "boolean":
