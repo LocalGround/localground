@@ -44,6 +44,15 @@
                 </span>
 
             {{/ifequal}}
+
+            {{ifequal data_type "choice"}}
+                <span class="extras">
+                    <a href="#" class="add-new-choice"><i class="fa fa-plus"></i></a>
+                    {{#each extraList}}
+                        <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />
+                    {{/each}}
+                </span>
+            {{/ifequal}}
         </span>
     {{else}}
         <select class="fieldType">
@@ -64,6 +73,16 @@
                 {{/each}}
             </span>
         {{/ifequal}}
+
+        {{ifequal data_type "choice"}}
+            <span class="extras">
+                <a href="#" class="add-new-choice"><i class="fa fa-plus"></i></a>
+                {{#each extraList}}
+                    <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />
+                {{/each}}
+            </span>
+        {{/ifequal}}
+
         {{#if errorFieldType}}<span>Field Type Missing</span>{{/if}}
     {{/if}}
 </td>
