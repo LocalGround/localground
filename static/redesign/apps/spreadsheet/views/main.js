@@ -68,7 +68,7 @@ define(["jquery",
                         option = selectOptions[i];
                         optionElement = document.createElement('OPTION');
                         optionElement.value = option.value;
-                        optionElement.innerHTML = option.name;
+                        optionElement.innerHTML = option.value + ": " + option.name;
                         if (option.value == this.originalValue) {
                             optionElement.selected = true;
                         }
@@ -403,7 +403,7 @@ define(["jquery",
                     i;
                 for (i = 0; i < extras.length; i++){
                     if (extras[i].value == intVal){
-                        textVal = extras[i].name;
+                        textVal = extras[i].value + ": " + extras[i].name;
                         break;
                     }
                 }
@@ -582,6 +582,13 @@ define(["jquery",
                                     entry = {
                                         type:  "numeric",
                                         format: "0,0.000"
+                                    };
+                                    break;
+                                case "choice":
+                                    entry = {
+                                        type:  "text",
+                                        editor: "select",
+                                        selectOptions: ['red', 'orange', 'yellow'] //this.fields.at(i).get("extras")
                                     };
                                     break;
                                 case "date-time":
