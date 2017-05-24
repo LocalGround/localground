@@ -439,6 +439,19 @@ fieldset > div, .inline-form {
     margin:6px 0;
 }
 
+/* Backbone Forms: Tags */
+button[data-action="remove"] {
+    margin-left: -20px;
+    border: none;
+    background: none;
+    font-weight: bold;
+    font-size: 14px;
+    color: #999;
+}
+input[name="tags"] {
+    width: 60% !important;
+}
+
 /****************************************************************************************/
 /*                                       CARD STYLES                                     */
 /****************************************************************************************/

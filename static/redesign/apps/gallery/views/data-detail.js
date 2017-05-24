@@ -14,7 +14,8 @@ define([
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
-    "form" //extends Backbone
+    "form", //extends Backbone
+    "form-list"
 ], function ($, Backbone, _, Handlebars, Marionette, Association, Audio,
              MediaBrowser, AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
              AudioPlayer, Carousel, Icon) {
@@ -312,10 +313,16 @@ define([
                     schema: fields
                 }).render();
             } else {
-                fields = ['name', 'caption', 'tags', 'attribution'];
+                var fields = {
+                    name: { type: 'TextArea', title: "Name" }, 
+                    caption:  { type: 'TextArea', title: "Caption" },
+                    attribution: { type: 'TextArea', title: "Attribution" },
+                    tags: { type: 'List', itemType: 'Text' }
+                };
+                console.log(this.model.get("tags"));
                 this.form = new Backbone.Form({
                     model: this.model,
-                    fields: fields
+                    schema: fields
                 }).render();
             }
             if (this.dataType.indexOf("form_") != -1 || this.dataType == "markers") {
