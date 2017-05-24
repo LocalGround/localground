@@ -4,13 +4,15 @@ define(["jquery",
         "handlebars",
         "lib/maps/overlays/icon",
         "lib/maps/marker-overlays",
+        "apps/style/visibility-mixin",
         "text!../templates/list-detail.html",
         "text!../templates/list.html"],
-    function ($, Marionette, _, Handlebars, Icon, MarkerOverlays, ItemTemplate, ListTemplate) {
+    function ($, Marionette, _, Handlebars, Icon, MarkerOverlays, PanelVisibilityExtensions, ItemTemplate, ListTemplate) {
         'use strict';
-        var MarkerListing = Marionette.CompositeView.extend({
-
-            //view that controls what each gallery item looks like:
+        var MarkerListing = Marionette.CompositeView.extend(_.extend({}, PanelVisibilityExtensions, {
+            stateKey: 'marker-listing-',
+            isShowing: true,
+            displayOverlays: true,
             overlays: null,
             fields: null, //for custom data types
             title: null,
@@ -19,7 +21,9 @@ define(["jquery",
                     shape: opts.data.collection.key,
                     fillColor: opts.fillColor
                 });
+                this.stateKey += "_" + opts.data.collection.key;
                 _.extend(this, opts);
+                this.restoreState();
                 Marionette.CompositeView.prototype.initialize.call(this);
 
                 this.template = Handlebars.compile(ListTemplate);
@@ -33,7 +37,9 @@ define(["jquery",
                 var d = {
                     title: this.title,
                     typePlural: this.typePlural,
-                    key: this.collection.key
+                    key: this.collection.key,
+                    isShowing: this.isShowing,
+                    displayOverlays: this.displayOverlays
                 };
                 return d;
             },
@@ -99,23 +105,14 @@ define(["jquery",
                 });
             },
             childViewContainer: ".marker-container",
-            events: {
-                'click .zoom-to-extents': 'zoomToExtents',
-                'click .toggle-visibility': 'toggleMarkerVisibility',
-                'click .hide-panel': 'hidePanel',
-                'click .show-panel': 'showPanel',
-                'click .add-new': 'triggerAddNewMap'
+            events: function () {
+                return _.extend({
+                    'click .zoom-to-extents': 'zoomToExtents',
+                    'click .toggle-visibility': 'toggleMarkerVisibility',
+                    'click .add-new': 'triggerAddNewMap'
+                }, PanelVisibilityExtensions.events);
             },
-            hidePanel: function (e) {
-                this.$el.find(".marker-container").hide();
-                $(e.target).removeClass("hide-panel fa-caret-down");
-                $(e.target).addClass("show-panel fa-caret-right");
-            },
-            showPanel: function (e) {
-                this.$el.find(".marker-container").show();
-                $(e.target).removeClass("show-panel fa-caret-right");
-                $(e.target).addClass("hide-panel fa-caret-down");
-            },
+
             zoomToExtents: function () {
                 this.collection.trigger('zoom-to-extents');
             },
@@ -123,12 +120,16 @@ define(["jquery",
             toggleMarkerVisibility: function () {
                 var $i = this.$el.find('.toggle-visibility');
                 if ($i.hasClass('fa-eye')) {
+                    this.displayOverlays = false;
                     this.collection.trigger('hide-markers');
-                    $i.removeClass('fa-eye').addClass('fa-eye-slash');
+                    //$i.removeClass('fa-eye').addClass('fa-eye-slash');
                 } else {
+                    this.displayOverlays = true;
                     this.collection.trigger('show-markers');
-                    $i.removeClass('fa-eye-slash').addClass('fa-eye');
+                    //$i.removeClass('fa-eye-slash').addClass('fa-eye');
                 }
+                this.saveState();
+                this.render();
             },
 
             hideLoadingMessage: function () {
@@ -148,7 +149,7 @@ define(["jquery",
                     app: this.app,
                     dataType: this.typePlural,
                     _icon: this.icon,
-                    isShowing: true
+                    isShowing: this.displayOverlays
                 });
             },
 
@@ -189,11 +190,23 @@ define(["jquery",
                 this.render();
                 this.renderOverlays();
                 this.hideLoadingMessage();
-            }/*,
-            onRender: function () {
-                console.log("rendering...");
-            }*/
+            },
+            saveState: function () {
+                this.app.saveState(this.stateKey, {
+                    isShowing: this.isShowing,
+                    displayOverlays: this.displayOverlays
+                });
+            },
+            restoreState: function () {
+                var state = this.app.restoreState(this.stateKey);
+                if (state) {
+                    this.isShowing = state.isShowing;
+                    if (typeof state.displayOverlays !== 'undefined') {
+                        this.displayOverlays = state.displayOverlays;
+                    }
+                }
+            }
 
-        });
+        }));
         return MarkerListing;
     });

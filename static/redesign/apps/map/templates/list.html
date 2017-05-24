@@ -1,5 +1,5 @@
 <div class="list-header">
-    <i class="fa fa-caret-down hide-panel"></i>
+    <i class="fa {{#if isShowing}} hide-panel fa-caret-down{{else}} show-panel fa-caret-right {{/if}}"></i>
     {{ title }}
     <!-- a class="new-feature-by-type add-{{ title }}" href="#/{{ typePlural }}/new">
         <i class="fa fa-plus" aria-hidden="true" href="#place-marker"></i>
@@ -7,10 +7,10 @@
     <a href="#" class="add-new" data-value="{{ key }}">
         <i class="fa fa-plus new-field-plus"></i>
     </a>
-    <i class="toggle-visibility fa fa-eye"></i>
+    <i class="toggle-visibility fa {{#if displayOverlays}}fa-eye{{else}}fa-eye-slash{{/if}}"></i>
     <i class="fa fa-search zoom-to-extents"></i>
 </div>
 
-<ul class="marker-container list-indent">
+<ul class="marker-container list-indent" style={{#if isShowing}}display: block; {{else}} display:none; {{/if}}">
 </ul>
 <!-- div class="show-hide hide"></div -->
