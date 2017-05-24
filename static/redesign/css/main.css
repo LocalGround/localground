@@ -451,7 +451,7 @@ button[data-action="remove"] {
     margin-top: -27px;
     position: relative;
 }
-button[data-action=add] {
+button[data-action="add"] {
     color: rgb(78,112,212);
     font-weight: bold;
     border: none;
@@ -459,14 +459,12 @@ button[data-action=add] {
     margin-top: 3px;
     text-transform: uppercase;
 }
-button[data-action=add]::before {
+button[data-action="add"]::before {
     content: "+ ";
-    font-weight: bold;
     font-size: 18px;
 }
-button[data-action=add]::after {
+button[data-action="add"]::after {
     content: " tag";
-    font-weight: bold;
     text-transform: uppercase;
 }
 
