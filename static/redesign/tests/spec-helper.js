@@ -418,7 +418,7 @@ define(
                             data: this.map_images.toJSON()
                         },
                         markers: {
-                            name: "Markers",
+                            name: "Sites",
                             id: "markers",
                             overlay_type: "marker",
                             data: this.markers.toJSON()
@@ -445,7 +445,7 @@ define(
                             data: this.form_1.toJSON()
                         },
                         markers: {
-                            name: "Markers",
+                            name: "Sites",
                             id: "markers",
                             overlay_type: "marker",
                             data: this.markers.toJSON()

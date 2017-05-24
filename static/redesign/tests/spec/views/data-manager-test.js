@@ -87,7 +87,7 @@ define([
 
             it("Sets data sources as expected", function () {
                 expect(dataManager.getDataSources()).toEqual([
-                    { value: 'markers', name: 'Markers' },
+                    { value: 'markers', name: 'Sites' },
                     { value: 'form_1', name: 'Team Members' },
                     { value: 'photos', name: 'Photos' },
                     { value: 'audio', name: 'Audio' },
