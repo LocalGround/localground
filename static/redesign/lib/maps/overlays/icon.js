@@ -10,6 +10,9 @@ define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionett
             if (opts.shape) {
                 _.extend(this, IconLookup.getIcon(opts.shape));
             }
+            if (!opts.fillColor) {
+                delete opts.fillColor;
+            }
             _.extend(this, opts);
             this.scale = this.getScale();
             this.viewBox = this.viewBox || this.getViewBox();

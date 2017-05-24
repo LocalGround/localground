@@ -4,7 +4,7 @@ define(["marionette",
         "jquery",
         "apps/map/views/marker-listing"
     ],
-    function (Marionette, _, Handlebars, $, OverlayListView) {
+    function (Marionette, _, Handlebars, $, MarkerListing) {
         'use strict';
         /**
          * A class that handles display and rendering of the
@@ -25,18 +25,29 @@ define(["marionette",
             },
 
             addMarkerListingsToUI: function () {
-                var i = 0,
+                var formColors = ['#84dcc6', '#AB947E', '#CC444B', '#f06543'],
+                    colorCounter = 0,
+                    i = 0,
+                    fillColor,
                     key,
+                    data,
                     selector,
                     overlayView,
                     dm = this.app.dataManager,
                     dataSources = dm.getDataSources();
                 for (i = 0; i < dataSources.length; i++) {
+                    fillColor = null;
                     key = dataSources[i].value;
-                    overlayView = new OverlayListView({
-                        data: dm.getData(key),
+                    data =  dm.getData(key);
+                    if (key.indexOf("form_") != -1) {
+                        fillColor = formColors[colorCounter];
+                        ++colorCounter;
+                    }
+                    overlayView = new MarkerListing({
+                        data: data,
                         app: this.app,
-                        title: dataSources[i].name
+                        title: dataSources[i].name,
+                        fillColor: fillColor
                     });
                     this.overlayViews.push(overlayView);
                     selector = key + '-list';

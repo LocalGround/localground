@@ -102,7 +102,8 @@ define(["jquery",
             },
             initialize: function (opts) {
                 this.icon = new Icon({
-                    shape: opts.data.collection.key
+                    shape: opts.data.collection.key,
+                    fillColor: opts.fillColor
                 });
                 _.extend(this, opts);
                 Marionette.CompositeView.prototype.initialize.call(this);
