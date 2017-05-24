@@ -14,6 +14,21 @@ define(["jquery",
             overlays: null,
             fields: null, //for custom data types
             title: null,
+            initialize: function (opts) {
+                this.icon = new Icon({
+                    shape: opts.data.collection.key,
+                    fillColor: opts.fillColor
+                });
+                _.extend(this, opts);
+                Marionette.CompositeView.prototype.initialize.call(this);
+
+                this.template = Handlebars.compile(ListTemplate);
+                this.displayMedia();
+
+                this.listenTo(this.app.vent, 'show-uploader', this.addMedia);
+                this.listenTo(this.app.vent, 'search-requested', this.doSearch);
+                this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
+            },
             templateHelpers: function () {
                 var d = {
                     title: this.title,
@@ -101,21 +116,6 @@ define(["jquery",
                 $(e.target).removeClass("show-panel fa-caret-right");
                 $(e.target).addClass("hide-panel fa-caret-down");
             },
-            initialize: function (opts) {
-                this.icon = new Icon({
-                    shape: opts.data.collection.key,
-                    fillColor: opts.fillColor
-                });
-                _.extend(this, opts);
-                Marionette.CompositeView.prototype.initialize.call(this);
-
-                this.template = Handlebars.compile(ListTemplate);
-                this.displayMedia();
-
-                this.listenTo(this.app.vent, 'show-uploader', this.addMedia);
-                this.listenTo(this.app.vent, 'search-requested', this.doSearch);
-                this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
-            },
             zoomToExtents: function () {
                 this.collection.trigger('zoom-to-extents');
             },
@@ -181,7 +181,7 @@ define(["jquery",
                 // set important data variables:
                 this.collection = this.data.collection;
                 this.fields = this.data.fields;
-                this.title = this.data.name;
+                this.title = this.title || this.data.name;
                 this.typePlural = this.data.id;
                 _.bindAll(this, 'render');
 

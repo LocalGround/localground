@@ -25,7 +25,7 @@ define(["marionette",
             },
 
             addMarkerListingsToUI: function () {
-                var formColors = ['#84dcc6', '#AB947E', '#CC444B', '#f06543'],
+                var formColors = ['#60C7CC', '#CF2045', '#A3A737', '#F27CA5'],
                     colorCounter = 0,
                     i = 0,
                     fillColor,

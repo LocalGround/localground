@@ -34,7 +34,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
             },
             getDataSources: function () {
                 var dataSources = [
-                    { value: "markers", name: "Markers" }
+                    { value: "markers", name: "Sites" }
                 ];
                 _.each(this.dataDictionary, function (entry, key) {
                     if (key.indexOf("form_") != -1) {

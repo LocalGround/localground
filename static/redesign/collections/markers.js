@@ -6,7 +6,7 @@ function (Marker, BasePageable) {
      */
     var Markers = BasePageable.extend({
         model: Marker,
-        name: 'Markers',
+        name: 'Sites',
         key: 'markers',
         url: '/api/0/markers/',
         parse: function (response) {
