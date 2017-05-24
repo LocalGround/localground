@@ -69,20 +69,23 @@ svg, .fa-question-circle {
 }
 
 .list-header .zoom-to-extents,
-.list-header .new-field-plus {
+.list-header .new-field-plus,
+.list-header .toggle-visibility {
     font-size: 12px;
     margin-right: 6px;
     float: right;
     margin-top: 3px;
 }
-.list-header .zoom-to-extents {
+.list-header .zoom-to-extents,
+.list-header .toggle-visibility {
     color: #AAA;
     display: none;
 }
 .list-header .new-field-plus {
     color: rgb(78,112,212);
 }
-.list-header:hover .zoom-to-extents {
+.list-header:hover .zoom-to-extents,
+.list-header:hover .toggle-visibility {
     cursor: pointer;
     display: block;
 }

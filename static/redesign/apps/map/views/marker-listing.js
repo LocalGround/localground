@@ -86,6 +86,7 @@ define(["jquery",
             childViewContainer: ".marker-container",
             events: {
                 'click .zoom-to-extents': 'zoomToExtents',
+                'click .toggle-visibility': 'toggleMarkerVisibility',
                 'click .hide-panel': 'hidePanel',
                 'click .show-panel': 'showPanel',
                 'click .add-new': 'triggerAddNewMap'
@@ -117,6 +118,17 @@ define(["jquery",
             },
             zoomToExtents: function () {
                 this.collection.trigger('zoom-to-extents');
+            },
+
+            toggleMarkerVisibility: function () {
+                var $i = this.$el.find('.toggle-visibility');
+                if ($i.hasClass('fa-eye')) {
+                    this.collection.trigger('hide-markers');
+                    $i.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    this.collection.trigger('show-markers');
+                    $i.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
             },
 
             hideLoadingMessage: function () {

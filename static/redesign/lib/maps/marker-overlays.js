@@ -25,6 +25,8 @@ define(['marionette',
                 //listen for new data:
                 this.listenTo(this.collection, 'zoom-to-extents', this.zoomToExtents);
                 this.listenTo(this.collection, 'change:geometry', this.geometryUpdated);
+                this.listenTo(this.collection, 'show-markers', this.showAll);
+                this.listenTo(this.collection, 'hide-markers', this.hideAll);
 
                 this.render();
 
