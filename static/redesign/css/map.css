@@ -77,7 +77,7 @@ svg, .fa-question-circle {
     margin-top: 3px;
 }
 .list-header .zoom-to-extents,
-.list-header .toggle-visibility {
+.list-header .fa-eye {
     color: #AAA;
     display: none;
 }
