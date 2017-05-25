@@ -1185,6 +1185,12 @@ tbody .failure-message, tbody .success-message {
 .map-marker-panel .item {
     /**/
 }
+.marker-container a i.fa.fa-eye-slash {
+    float: right;
+    display: inline-block;
+    margin-right: 36px;
+    margin-top: 5px;
+}
 
 .detail-panel {
     /* where individual site / media details are displayed */

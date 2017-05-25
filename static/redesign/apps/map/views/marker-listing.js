@@ -110,8 +110,8 @@ define(["jquery",
             events: function () {
                 return _.extend({
                     'click .zoom-to-extents': 'zoomToExtents',
-                    'click .fa-eye': 'hideMarkers',
-                    'click .fa-eye-slash': 'showMarkers',
+                    'click .list-header > .fa-eye': 'hideMarkers',
+                    'click .list-header > .fa-eye-slash': 'showMarkers',
                     'click .add-new': 'triggerAddNewMap'
                 }, PanelVisibilityExtensions.events);
             },
