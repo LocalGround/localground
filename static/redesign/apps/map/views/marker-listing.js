@@ -110,7 +110,8 @@ define(["jquery",
             events: function () {
                 return _.extend({
                     'click .zoom-to-extents': 'zoomToExtents',
-                    'click .toggle-visibility': 'toggleMarkerVisibility',
+                    'click .fa-eye': 'hideMarkers',
+                    'click .fa-eye-slash': 'showMarkers',
                     'click .add-new': 'triggerAddNewMap'
                 }, PanelVisibilityExtensions.events);
             },
@@ -118,18 +119,15 @@ define(["jquery",
             zoomToExtents: function () {
                 this.collection.trigger('zoom-to-extents');
             },
-
-            toggleMarkerVisibility: function () {
-                var $i = this.$el.find('.toggle-visibility');
-                if ($i.hasClass('fa-eye')) {
-                    this.displayOverlays = false;
-                    this.collection.trigger('hide-markers');
-                    //$i.removeClass('fa-eye').addClass('fa-eye-slash');
-                } else {
-                    this.displayOverlays = true;
-                    this.collection.trigger('show-markers');
-                    //$i.removeClass('fa-eye-slash').addClass('fa-eye');
-                }
+            hideMarkers: function () {
+                this.displayOverlays = false;
+                this.collection.trigger('hide-markers');
+                this.saveState();
+                this.render();
+            },
+            showMarkers: function () {
+                this.displayOverlays = true;
+                this.collection.trigger('show-markers');
                 this.saveState();
                 this.render();
             },
@@ -203,9 +201,7 @@ define(["jquery",
                 var state = this.app.restoreState(this.stateKey);
                 if (state) {
                     this.isShowing = state.isShowing;
-                    if (typeof state.displayOverlays !== 'undefined') {
-                        this.displayOverlays = state.displayOverlays;
-                    }
+                    this.displayOverlays = state.displayOverlays;
                 }
             }
 
