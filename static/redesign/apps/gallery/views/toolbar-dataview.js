@@ -24,8 +24,8 @@ define([
             'click .add-data' : 'showFormList',
             'click #show-media-type' : 'showMediaTypeForm',
             'click #add-row' : 'triggerAddRow',
-            'click #add-media': 'createUploadModal',
-            'click .add-media': 'createUploadModal',
+            'click .add-media': 'createMediaUploadModal',
+            'click .add-map-image': 'createMapImageUploadModal',
             'click .add': 'toggleMenu',
             'click #add-new': 'triggerAddNew',
             'click .add-new': 'triggerAddNewMap'
@@ -51,7 +51,8 @@ define([
             this.template = Handlebars.compile(ToolbarTemplate);
 
             // Collection of listeners
-            this.listenTo(this.app.vent, 'add-media', this.createUploadModal);
+            this.listenTo(this.app.vent, 'add-media', this.createMediaUploadModal);
+            this.listenTo(this.app.vent, 'add-map-image', this.createMapImageUploadModal);
             this.listenTo(this.app.vent, 'add-data', this.showCreateForm);
             this.listenTo(this.app.vent, 'show-media-type', this.showMediaTypeForm);
             this.listenTo(this.app.vent, 'tab-switch', this.changeMode);
@@ -95,7 +96,9 @@ define([
             var mediaType = this.$el.find('.media-type').val(),
                 url = "//" + mediaType + "/new";
             if (mediaType === 'photos' || mediaType === 'audio') {
-                this.createUploadModal();
+                this.createMediaUploadModal();
+            } else if (mediaType === 'map-images') {
+                this.createMapImageUploadModal();
             } else {
                 this.app.router.navigate(url, {
                     trigger: true,
@@ -109,7 +112,9 @@ define([
             var mediaType = $(e.target).attr('data-value'),
                 url = "//" + mediaType + "/new";
             if (mediaType === 'photos' || mediaType === 'audio') {
-                this.createUploadModal();
+                this.createMediaUploadModal();
+            } else if (mediaType === 'map-images') {
+                this.createMapImageUploadModal();
             } else {
                 this.app.router.navigate(url, {
                     trigger: true,
@@ -175,13 +180,32 @@ define([
             this.modal.show();
         },
 
-        createUploadModal: function () {
+        createMediaUploadModal: function () {
             var uploadMediaForm = new CreateMedia({
                 app: this.app
             });
             this.modal.update({
                 view: uploadMediaForm,
                 title: 'Upload Media',
+                width: 800,
+                height: 350,
+                closeButtonText: "Done",
+                showSaveButton: false,
+                showDeleteButton: false
+                // bind the scope of the save function to the source view:
+                //saveFunction: createForm.saveFormSettings.bind(createForm)
+            });
+            this.modal.show();
+        },
+
+        createMapImageUploadModal: function () {
+            var uploadMediaForm = new CreateMedia({
+                app: this.app,
+                dataType: 'map-images'
+            });
+            this.modal.update({
+                view: uploadMediaForm,
+                title: 'Upload Map Images',
                 width: 800,
                 height: 350,
                 closeButtonText: "Done",

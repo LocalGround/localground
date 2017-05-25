@@ -236,6 +236,9 @@ define([
             this.collection = new Backbone.Collection();
             var that = this;
             this.options = this.getOptions();
+            if (opts.dataType) {
+                this.options.dataType = opts.dataType;
+            }
             $('#warning-message-text').empty();
             this.render();
             console.log(this.$el.find("#fileupload"));
