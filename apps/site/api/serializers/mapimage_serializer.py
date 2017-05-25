@@ -13,7 +13,11 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         source='file_name_orig', required=True, style={'base_template': 'file.html'},
         help_text='Valid file types are: ' + ', '.join(ext_whitelist)
     )
-    status = serializers.PrimaryKeyRelatedField(read_only=True)
+    status = serializers.PrimaryKeyRelatedField(
+        read_only=False,
+        required=True,
+        queryset=models.StatusCode.objects.all()
+    )
     project_id = serializers.PrimaryKeyRelatedField(
         queryset=models.Project.objects.all(),
         source='project',
@@ -28,7 +32,7 @@ class MapImageSerializerCreate(BaseNamedSerializer):
         help_text='Assign a GeoJSON string',
         allow_null=True,
         required=False,
-        read_only=True,
+        read_only=False,
         style={'base_template': 'json.html'},
         source='processed_image.extents'
     )
@@ -56,7 +60,7 @@ class MapImageSerializerCreate(BaseNamedSerializer):
             'north', 'south', 'east', 'west', 'geometry', 'zoom', 'overlay_path',
             'media_file', 'file_path', 'file_name', 'uuid', 'status'
         )
-        read_only_fields = ('uuid', 'status', 'geometry')
+        read_only_fields = ('uuid',)
         
     def process_file(self, file, owner):
         #save to disk:
@@ -161,7 +165,7 @@ class MapImageSerializerUpdate(MapImageSerializerCreate):
             'north', 'south', 'east', 'west', 'geometry', 'zoom', 'overlay_path',
             'media_file', 'file_path', 'file_name', 'uuid', 'status'
         )
-        read_only_fields = ('uuid', 'geometry')
+        read_only_fields = ('uuid',)
 
     # overriding update 
     def update(self, instance, validated_data):
