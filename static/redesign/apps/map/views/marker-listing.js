@@ -66,7 +66,8 @@ define(["jquery",
                     dataType: this.typePlural,
                     fields: this.fields,
                     title: this.title,
-                    icon: this.icon
+                    icon: this.icon,
+                    displayOverlays: this.displayOverlays
                 };
             },
             getChildView: function () {
@@ -90,7 +91,8 @@ define(["jquery",
                             icon: this.icon,
                             width: 15 * this.icon.getScale(),
                             height: 15 * this.icon.getScale(),
-                            name: this.model.get("name") || this.model.get("display_name")
+                            name: this.model.get("name") || this.model.get("display_name"),
+                            displayOverlays: this.displayOverlays
                         };
                     },
                     hoverHighlight: function () {
