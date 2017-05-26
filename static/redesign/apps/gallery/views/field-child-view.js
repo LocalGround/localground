@@ -22,6 +22,7 @@ define([
             'blur input.fieldname': 'setAlias',
             'blur input.rating-value': 'saveNewRating',
             'blur input.rating-name': 'saveNewRating',
+            'blur input.choice': 'saveNewRating',
             'change select.fieldType': 'setDataType',
             'click .add-new-rating': 'addNewRating',
             'click .remove-rating': 'removeRating',
@@ -53,9 +54,19 @@ define([
             this.ratingsList = this.model.get("extras") || [];
         },
 
+        setChoicesFromModel: function () {
+            if (this.model.get("data_type") != "choice") { return; }
+            this.choicesList = this.model.get("extras") || [];
+        },
+
         saveNewRating: function () {
             this.updateRatingList();
         },
+
+        saveNewChoice: function () {
+            this.updateChoiceList();
+        },
+
         removeRating: function (e) {
             e.preventDefault();
             if (window.confirm("Want to remove rating?")){
@@ -99,6 +110,31 @@ define([
             });
             console.log(this.ratingsList);
             this.saveRatingsToModel();
+        },
+
+        updateChoiceList: function () {
+            //if (!this.ratingsList) return;
+            //AN attempt to solve the problem, but this.ratingsList is undefined
+            // despite that it is an empty array, therefore nothing can be pushed
+            //console.log("update ratings list called");
+            if (this.$el.find('.choice').length == 0) { return; }
+            this.choicesList = [];
+            var that = this,
+                $rows = this.$el.find('.choice'),
+                $row;
+            $rows.each(function () {
+                $row = $(this);
+
+                console.log($row.val());
+
+                /*
+                that.choicesList.push({
+                    name: $row.val()
+                });
+                */
+            });
+            //console.log(this.choicesList);
+            //this.saveChoicesToModel();
         },
 
         addNewRating: function (e) {
@@ -147,8 +183,6 @@ define([
             this.model.set("col_alias", fieldName);
             this.model.set("is_display_field", isDisplaying);
 
-
-
             if (fieldType) {
                 this.model.set("data_type", fieldType);
             }
@@ -160,7 +194,7 @@ define([
             }
 
             if (!this.model.errorFieldName && !this.model.errorFieldType &&
-                this.validateRating()) {
+                this.validateRating() && this.validateChoice()){
                 console.log('saving...');
                 this.model.save(null, {
                     success: function () {
@@ -191,6 +225,8 @@ define([
         },
 
         validateRating: function () {
+            // No need to check if incorrect type
+            if (this.model.get("data_type") != "rating") return true;
             var errors = false;
             for (var i = 0; i < this.ratingsList.length; ++i){
                 console.log(this.ratingsList[i]);
@@ -208,6 +244,8 @@ define([
 
 
         validateChoice: function () {
+            // No need to check if incorrect type
+            if (this.model.get("data_type") != "choice") return true;
             var errors = false;
             for (var i = 0; i < this.ratingsList.length; ++i){
                 console.log(this.ratingsList[i]);
@@ -224,11 +262,6 @@ define([
             if (this.model.errorFieldType || this.model.errorFieldName || this.model.serverErrorMessage) {
                 this.$el.addClass("failure-message show");
             }
-            // On ratings refresh, save the value for each stored rating
-            //this.updateRatingList();
-            // However, it is plagued from undefined errors at this.ratingsList
-
-            //*
             var that = this;
             if (this.ratingsList){
                 var ratingTextBoxes = this.$el.find('.rating');
@@ -236,7 +269,6 @@ define([
                     $(this).val(that.ratingsList[index]);
                 });
             }
-            //*/
 
         },
         removeModel: function () {

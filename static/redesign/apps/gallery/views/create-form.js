@@ -155,6 +155,7 @@ define([
         },
         addFieldButton: function () {
             this.initCollection();
+            console.log(this.collection);
             this.collection.add(new Field(
                 { ordering: this.collection.length + 1},
                 { form: this.model }
