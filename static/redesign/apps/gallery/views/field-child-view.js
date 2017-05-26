@@ -52,11 +52,13 @@ define([
 
         setRatingsFromModel: function () {
             if (this.model.get("data_type") != "rating") { return; }
+            console.log("Loading Ratings");
             this.ratingsList = this.model.get("extras") || [];
         },
 
         setChoicesFromModel: function () {
             if (this.model.get("data_type") != "choice") { return; }
+            console.log("Loading Choices");
             this.choicesList = this.model.get("extras") || [];
         },
 
@@ -65,7 +67,6 @@ define([
         },
 
         saveNewChoice: function () {
-            console.log("Saving New Choice");
             this.updateChoiceList();
         },
 
@@ -82,7 +83,7 @@ define([
             if (window.confirm("Want to remove choice?")){
                 var choice_row = $(e.target).closest(".choice-row");
                 $(choice_row).remove();
-                //this.updateRatingList();
+                this.updateChoiceList();
             }
         },
 
@@ -128,16 +129,16 @@ define([
                 $row = $(this);
 
                 console.log($row);
-                console.log($row.find("choice").val());
+                console.log($row.find(".choice").val());
 
-                /*
+                ///*
                 that.choicesList.push({
-                    name: $row.find("choice").val()
+                    name: $row.find(".choice").val()
                 });
-                */
+                //*/
             });
-            //console.log(this.choicesList);
-            //this.saveChoicesToModel();
+            console.log(this.choicesList);
+            this.saveChoicesToModel();
         },
 
         addNewRating: function (e) {
@@ -152,7 +153,6 @@ define([
         },
 
         addNewChoice: function (e) {
-            console.log("Add New Choice Pressed");
             this.choicesList.push({
                 name: ""
             });
@@ -177,7 +177,6 @@ define([
 
         saveChoicesToModel: function () {
 
-            console.log("Save Choice To Model")
             this.model.set("extras", this.choicesList);
         },
         saveField: function () {
@@ -229,7 +228,6 @@ define([
             if (fieldType === "-1") {
                 this.model.errorFieldType = true;
             }
-            // Go through an array of rating rows to check for empty names and values
         },
 
         validateRating: function () {
@@ -255,10 +253,10 @@ define([
             // No need to check if incorrect type
             if (this.model.get("data_type") != "choice") return true;
             var errors = false;
-            for (var i = 0; i < this.ratingsList.length; ++i){
-                console.log(this.ratingsList[i]);
-                if (this.ratingsList[i].name.trim() === ""){
-                    this.ratingsList[i].errorRatingName = true;
+            for (var i = 0; i < this.choicesList.length; ++i){
+                console.log(this.choicesList[i]);
+                if (this.choicesList[i].name.trim() === ""){
+                    this.choicesList[i].errorRatingName = true;
                     errors = true;
                 }
             }
@@ -278,14 +276,12 @@ define([
                 });
             }
 
-            //*
             else if (this.choicesList){
                 var choiceTextBoxes = this.$el.find('.choice');
                 choiceTextBoxes.each(function (index) {
                     $(this).val(that.choicesList[index]);
                 });
             }
-            //*/
 
         },
         removeModel: function () {
