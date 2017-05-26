@@ -45,7 +45,7 @@
 
             {{/ifequal}}
 
-            {{ifequal data_type "choice"}}
+            {{#ifequal data_type "choice"}}
                 <span class="extras">
                     <a href="#" class="add-new-choice"><i class="fa fa-plus"></i></a>
                     {{#each extraList}}
@@ -74,7 +74,7 @@
             </span>
         {{/ifequal}}
 
-        {{ifequal data_type "choice"}}
+        {{#ifequal data_type "choice"}}
             <span class="extras">
                 <a href="#" class="add-new-choice"><i class="fa fa-plus"></i></a>
                 {{#each extraList}}
