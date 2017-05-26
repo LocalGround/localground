@@ -48,9 +48,19 @@
             {{#ifequal data_type "choice"}}
                 <span class="extras">
                     <a href="#" class="add-new-choice"><i class="fa fa-plus"></i></a>
-                    {{#each extraList}}
-                        <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />
-                    {{/each}}
+                    <table>
+                        {{#each extraList}}
+                        <tr ="choice-row">
+                            <td>
+                                <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />
+                                {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}
+                            </td>
+                            <td>
+                                <a href="#" class="remove-choice">&times;</a>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </table>
                 </span>
             {{/ifequal}}
         </span>
