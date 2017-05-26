@@ -27,7 +27,7 @@ define([
             'change select.fieldType': 'setDataType',
             'click .add-new-rating': 'addNewRating',
             'click .remove-rating': 'removeRating',
-            'click .add-new-choice': 'addNewCoice',
+            'click .add-new-choice': 'addNewChoice',
             'click .remove-choice': 'removeChoice'
         },
         templateHelpers: function () {
@@ -141,6 +141,7 @@ define([
         },
 
         addNewRating: function (e) {
+
             this.ratingsList.push({
                 name: "",
                 value: ""
@@ -277,12 +278,14 @@ define([
                 });
             }
 
+            //*
             else if (this.choicesList){
                 var choiceTextBoxes = this.$el.find('.choice');
                 choiceTextBoxes.each(function (index) {
                     $(this).val(that.choicesList[index]);
                 });
             }
+            //*/
 
         },
         removeModel: function () {
