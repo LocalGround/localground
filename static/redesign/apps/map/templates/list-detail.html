@@ -1,4 +1,4 @@
-<a href="#/{{dataType}}/{{id}}" {{#if active }}class="highlight"{{/if}}  {{#ifnot displayOverlays}}style="opacity: 0.50"{{/ifnot}}>
+<a href="#/{{dataType}}/{{id}}" {{#if active }}class="highlight"{{/if}}  {{#ifnot displayOverlay}}style="opacity: 0.50"{{/ifnot}}>
     {{#if icon }}
         <svg viewBox="{{ icon.viewBox }}" width="{{ width }}" height="{{ width }}">
             <path fill="{{ icon.fillColor }}" stroke-linejoin="round" stroke-linecap="round" paint-order="stroke"
@@ -8,5 +8,5 @@
         <i class="fa fa-question-circle" aria-hidden="true"></i>
     {{/if}}
 <p>{{truncate name 30}}</p>
-{{#ifnot displayOverlays}}<i class="fa fa-eye-slash"></i>{{/ifnot}}
+{{#ifnot displayOverlay}}<i class="fa fa-eye-slash"></i>{{/ifnot}}
 </a>

@@ -15,6 +15,11 @@ define(["models/base",
 		defaults: _.extend({}, Base.prototype.defaults, {
 			color: "CCCCCC" // rough draft color
 		}),
+        schema: {
+            name: { type: 'TextArea', title: "Name" },
+            caption:  { type: 'TextArea', title: "Caption" },
+            tags: { type: 'List', itemType: 'Text' }
+        },
         getNamePlural: function () {
             return "markers";
         },

@@ -11,6 +11,7 @@ define([
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
     "text!../templates/record-detail.html",
+    "text!../templates/map-image-detail.html",
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
@@ -18,7 +19,7 @@ define([
     "form-list"
 ], function ($, Backbone, _, Handlebars, Marionette, Association, Audio,
              MediaBrowser, AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
-             AudioPlayer, Carousel, Icon) {
+             MapImageTemplate, AudioPlayer, Carousel, Icon) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -40,6 +41,8 @@ define([
                 return Handlebars.compile(PhotoTemplate);
             } else if (this.dataType == "audio") {
                 return Handlebars.compile(AudioTemplate);
+            } else if (this.dataType == "map_images") {
+                return Handlebars.compile(MapImageTemplate);
             }
             return Handlebars.compile(SiteTemplate);
         },
@@ -209,17 +212,13 @@ define([
         },
         templateHelpers: function () {
 
-            var lat, lng;
+            var lat, lng, context;
             //sets filler html string if a marker location has not been set
-            if (this.model.get("geometry") == null) {
-                        lat = "undefined",
-                        lng = "undefined";
-                    } else {
-                       lat =  this.model.get("geometry").coordinates[1].toFixed(4),
-                       lng =  this.model.get("geometry").coordinates[0].toFixed(4)
-                    }
-
-            var context = {
+            if (this.model.get("geometry") && this.model.get("geometry").type === "Point") {
+                lat = this.model.get("geometry").coordinates[1].toFixed(4);
+                lng = this.model.get("geometry").coordinates[0].toFixed(4);
+            }
+            context = {
                 mode: this.app.mode,
                 dataType: this.dataType,
                 audioMode: "detail",
@@ -227,13 +226,12 @@ define([
                 screenType: this.app.screenType,
                 lat: lat,
                 lng: lng
-                
             };
             return context;
         },
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
-            var c, i, f;
+            var c;
             if (this.model.get("children") && this.model.get("children").photos) {
                 c = new Carousel({
                     model: this.model,
@@ -313,16 +311,11 @@ define([
                     schema: fields
                 }).render();
             } else {
-                var fields = {
-                    name: { type: 'TextArea', title: "Name" }, 
-                    caption:  { type: 'TextArea', title: "Caption" },
-                    attribution: { type: 'TextArea', title: "Attribution" },
-                    tags: { type: 'List', itemType: 'Text' }
-                };
-                console.log(this.model.get("tags"));
+                console.log(this.model.getNamePlural());
+                console.log(this.model.schema);
                 this.form = new Backbone.Form({
                     model: this.model,
-                    schema: fields
+                    schema: this.model.schema
                 }).render();
             }
             if (this.dataType.indexOf("form_") != -1 || this.dataType == "markers") {

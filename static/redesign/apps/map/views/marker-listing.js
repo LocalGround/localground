@@ -16,25 +16,39 @@ define(["marionette",
             fields: null, //for custom data types
             title: null,
             initialize: function (opts) {
-                console.log(opts.data.collection.key);
-                if (opts.data.collection.key != "map_images") {
-                    console.log("making an icon", opts.data.collection.key);
+                _.extend(this, opts);
+                this.collection = this.data.collection;
+                this.fields = this.data.fields;
+                this.title = this.title || this.data.name;
+                this.typePlural = this.data.id.replace("-", "_");
+
+                Marionette.CompositeView.prototype.initialize.call(this);
+                this.initDisplayFlags();
+                this.template = Handlebars.compile(ListTemplate);
+
+                if (this.isMapImageCollection()) {
                     this.icon = new Icon({
                         shape: opts.data.collection.key,
                         fillColor: opts.fillColor
                     });
                 }
-                this.stateKey += "_" + opts.data.collection.key;
-                _.extend(this, opts);
-                this.restoreState();
-                Marionette.CompositeView.prototype.initialize.call(this);
-
-                this.template = Handlebars.compile(ListTemplate);
                 this.displayMedia();
 
                 this.listenTo(this.app.vent, 'show-uploader', this.addMedia);
                 this.listenTo(this.app.vent, 'search-requested', this.doSearch);
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
+            },
+            isMapImageCollection: function () {
+                console.log(this.collection);
+                return this.collection.key === "map_images";
+            },
+            initDisplayFlags: function () {
+                if (this.isMapImageCollection()) {
+                    this.isShowing = false;
+                    this.displayOverlays = false;
+                }
+                this.stateKey += "_" + this.collection.key;
+                this.restoreState();
             },
             templateHelpers: function () {
                 return {
@@ -69,7 +83,7 @@ define(["marionette",
                     fields: this.fields,
                     title: this.title,
                     icon: this.icon,
-                    displayOverlays: this.displayOverlays
+                    displayOverlay: this.displayOverlays
                 };
             },
             childView: MarkerListingDetail,
@@ -143,14 +157,6 @@ define(["marionette",
             },
 
             displayMedia: function () {
-                //fetch data from server:
-                //var data = this.app.dataManager.getData(this.app.dataType);
-
-                // set important data variables:
-                this.collection = this.data.collection;
-                this.fields = this.data.fields;
-                this.title = this.title || this.data.name;
-                this.typePlural = this.data.id.replace("-", "_");
                 _.bindAll(this, 'render');
 
                 // redraw CompositeView:

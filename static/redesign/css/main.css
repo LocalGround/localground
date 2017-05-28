@@ -1161,6 +1161,9 @@ tbody .failure-message, tbody .success-message {
 .side-panel .img-card {
     border: none;
 }
+.side-panel .map-image {
+    border: 1px solid #e4e5eb;
+}
 
 /*.side-panel img,
 #marker-detail-panel img{

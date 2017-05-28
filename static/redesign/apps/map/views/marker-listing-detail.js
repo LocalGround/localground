@@ -2,8 +2,9 @@ define(["jquery",
         "marionette",
         "underscore",
         "handlebars",
-        "text!../templates/list-detail.html"],
-    function ($, Marionette, _, Handlebars, ItemTemplate) {
+        "text!../templates/list-detail.html",
+        "text!../templates/list-detail-map-image.html"],
+    function ($, Marionette, _, Handlebars, DefaultTemplate, MapImageTemplate) {
         'use strict';
         var MarkerListingDetail = Marionette.ItemView.extend({
             initialize: function (opts) {
@@ -12,7 +13,16 @@ define(["jquery",
                 this.listenTo(this.model, 'do-hover', this.hoverHighlight);
                 this.listenTo(this.model, 'clear-hover', this.clearHoverHighlight);
             },
-            template: Handlebars.compile(ItemTemplate),
+            getTemplate: function () {
+                if (this.model.get("overlay_type") === "map-image") {
+                    return Handlebars.compile(MapImageTemplate);
+                }
+                return Handlebars.compile(DefaultTemplate);
+            },
+            events: {
+                'click .fa-eye': 'hideMarker',
+                'click .fa-eye-slash': 'showMarker'
+            },
             modelEvents: {
                 'saved': 'render',
                 'change:active': 'render',
@@ -24,7 +34,7 @@ define(["jquery",
                     dataType: this.dataType,
                     icon: this.icon,
                     name: this.model.get("name") || this.model.get("display_name")  || this.model.get("title"),
-                    displayOverlays: this.displayOverlays
+                    displayOverlay: this.displayOverlay
                 };
                 if (this.icon) {
                     _.extend(opts, {
@@ -42,6 +52,18 @@ define(["jquery",
             },
             clearHoverHighlight: function () {
                 $("li").removeClass("hover-highlight");
+            },
+            hideMarker: function (e) {
+                this.displayOverlay = false;
+                this.model.trigger('hide-overlay');
+                this.render();
+                e.preventDefault();
+            },
+            showMarker: function (e) {
+                this.displayOverlay = true;
+                this.model.trigger('show-overlay');
+                this.render();
+                e.preventDefault();
             }
         });
         return MarkerListingDetail;
