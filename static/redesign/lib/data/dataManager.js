@@ -52,6 +52,7 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 return dataSources;
             },
             getData: function (key) {
+                console.log(this.dataDictionary);
                 var entry = this.dataDictionary[key];
                 if (entry) {
                     return entry;

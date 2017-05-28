@@ -1,13 +1,12 @@
-define(["jquery",
-        "marionette",
+define(["marionette",
         "underscore",
         "handlebars",
         "lib/maps/overlays/icon",
         "lib/maps/marker-overlays",
         "apps/style/visibility-mixin",
-        "text!../templates/list-detail.html",
+        "apps/map/views/marker-listing-detail",
         "text!../templates/list.html"],
-    function ($, Marionette, _, Handlebars, Icon, MarkerOverlays, PanelVisibilityExtensions, ItemTemplate, ListTemplate) {
+    function (Marionette, _, Handlebars, Icon, MarkerOverlays, PanelVisibilityExtensions, MarkerListingDetail, ListTemplate) {
         'use strict';
         var MarkerListing = Marionette.CompositeView.extend(_.extend({}, PanelVisibilityExtensions, {
             stateKey: 'marker-listing-',
@@ -17,10 +16,14 @@ define(["jquery",
             fields: null, //for custom data types
             title: null,
             initialize: function (opts) {
-                this.icon = new Icon({
-                    shape: opts.data.collection.key,
-                    fillColor: opts.fillColor
-                });
+                console.log(opts.data.collection.key);
+                if (opts.data.collection.key != "map_images") {
+                    console.log("making an icon", opts.data.collection.key);
+                    this.icon = new Icon({
+                        shape: opts.data.collection.key,
+                        fillColor: opts.fillColor
+                    });
+                }
                 this.stateKey += "_" + opts.data.collection.key;
                 _.extend(this, opts);
                 this.restoreState();
@@ -34,14 +37,13 @@ define(["jquery",
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
             },
             templateHelpers: function () {
-                var d = {
+                return {
                     title: this.title,
                     typePlural: this.typePlural,
                     key: this.collection.key,
                     isShowing: this.isShowing,
                     displayOverlays: this.displayOverlays
                 };
-                return d;
             },
             getEmptyView: function () {
                 //console.log("empty", this.title);
@@ -70,42 +72,7 @@ define(["jquery",
                     displayOverlays: this.displayOverlays
                 };
             },
-            getChildView: function () {
-                return Marionette.ItemView.extend({
-                    initialize: function (opts) {
-                        _.extend(this, opts);
-                        this.model.set("dataType", this.dataType);
-                        this.listenTo(this.model, 'do-hover', this.hoverHighlight);
-                        this.listenTo(this.model, 'clear-hover', this.clearHoverHighlight);
-                    },
-                    template: Handlebars.compile(ItemTemplate),
-                    modelEvents: {
-                        'saved': 'render',
-                        'change:active': 'render',
-                        'change:geometry': 'render'
-                    },
-                    tagName: "li",
-                    templateHelpers: function () {
-                        return {
-                            dataType: this.dataType,
-                            icon: this.icon,
-                            width: 15 * this.icon.getScale(),
-                            height: 15 * this.icon.getScale(),
-                            name: this.model.get("name") || this.model.get("display_name"),
-                            displayOverlays: this.displayOverlays
-                        };
-                    },
-                    hoverHighlight: function () {
-                        this.clearHoverHighlight();
-                        if (!this.$el.hasClass('highlight')) {
-                            this.$el.addClass("hover-highlight");
-                        }
-                    },
-                    clearHoverHighlight: function () {
-                        $("li").removeClass("hover-highlight");
-                    }
-                });
-            },
+            childView: MarkerListingDetail,
             childViewContainer: ".marker-container",
             events: function () {
                 return _.extend({
@@ -183,7 +150,7 @@ define(["jquery",
                 this.collection = this.data.collection;
                 this.fields = this.data.fields;
                 this.title = this.title || this.data.name;
-                this.typePlural = this.data.id;
+                this.typePlural = this.data.id.replace("-", "_");
                 _.bindAll(this, 'render');
 
                 // redraw CompositeView:

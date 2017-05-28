@@ -97,7 +97,7 @@ define([
                 url = "//" + mediaType + "/new";
             if (mediaType === 'photos' || mediaType === 'audio') {
                 this.createMediaUploadModal();
-            } else if (mediaType === 'map-images') {
+            } else if (mediaType === 'map_images') {
                 this.createMapImageUploadModal();
             } else {
                 this.app.router.navigate(url, {
@@ -113,7 +113,7 @@ define([
                 url = "//" + mediaType + "/new";
             if (mediaType === 'photos' || mediaType === 'audio') {
                 this.createMediaUploadModal();
-            } else if (mediaType === 'map-images') {
+            } else if (mediaType === 'map_images') {
                 this.createMapImageUploadModal();
             } else {
                 this.app.router.navigate(url, {
@@ -201,7 +201,7 @@ define([
         createMapImageUploadModal: function () {
             var uploadMediaForm = new CreateMedia({
                 app: this.app,
-                dataType: 'map-images'
+                dataType: 'map_images'
             });
             this.modal.update({
                 view: uploadMediaForm,
