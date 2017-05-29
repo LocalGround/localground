@@ -8,5 +8,9 @@
         <i class="fa fa-question-circle" aria-hidden="true"></i>
     {{/if}}
 <p>{{truncate name 30}}</p>
-{{#ifnot displayOverlay}}<i class="fa fa-eye-slash"></i>{{/ifnot}}
+{{#if displayOverlay}}
+    <i class="fa fa-eye toggle-visibility"></i>
+{{else}}
+    <i class="fa fa-eye-slash toggle-visibility"></i>
+{{/if}}
 </a>

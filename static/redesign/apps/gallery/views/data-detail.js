@@ -311,8 +311,6 @@ define([
                     schema: fields
                 }).render();
             } else {
-                console.log(this.model.getNamePlural());
-                console.log(this.model.schema);
                 this.form = new Backbone.Form({
                     model: this.model,
                     schema: this.model.schema

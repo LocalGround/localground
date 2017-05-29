@@ -26,7 +26,7 @@ define(["marionette",
                 this.initDisplayFlags();
                 this.template = Handlebars.compile(ListTemplate);
 
-                if (this.isMapImageCollection()) {
+                if (!this.isMapImageCollection()) {
                     this.icon = new Icon({
                         shape: opts.data.collection.key,
                         fillColor: opts.fillColor
@@ -39,7 +39,6 @@ define(["marionette",
                 this.listenTo(this.app.vent, 'clear-search', this.clearSearch);
             },
             isMapImageCollection: function () {
-                console.log(this.collection);
                 return this.collection.key === "map_images";
             },
             initDisplayFlags: function () {
@@ -130,7 +129,7 @@ define(["marionette",
                     app: this.app,
                     dataType: this.typePlural,
                     _icon: this.icon,
-                    isShowing: this.displayOverlays
+                    isShowing: false // initialize all overlays as hidden
                 });
             },
 

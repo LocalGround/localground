@@ -52,7 +52,6 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 return dataSources;
             },
             getData: function (key) {
-                console.log(this.dataDictionary);
                 var entry = this.dataDictionary[key];
                 if (entry) {
                     return entry;
@@ -65,7 +64,6 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                     return entry.collection;
                 }
                 throw new Error("No entry found for " + key);
-                return null;
             },
             initCollection: function (key, data) {
                 switch (key) {

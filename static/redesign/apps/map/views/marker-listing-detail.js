@@ -7,11 +7,19 @@ define(["jquery",
     function ($, Marionette, _, Handlebars, DefaultTemplate, MapImageTemplate) {
         'use strict';
         var MarkerListingDetail = Marionette.ItemView.extend({
+            stateKey: 'marker-listing-',
+            displayOverlay: true,
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.model.set("dataType", this.dataType);
+                this.stateKey += "_" + this.model.get("overlay_type") + "_" + this.model.id;
+                this.restoreState();
+
+                //add event listeners:
                 this.listenTo(this.model, 'do-hover', this.hoverHighlight);
                 this.listenTo(this.model, 'clear-hover', this.clearHoverHighlight);
+                this.listenTo(this.model.collection, 'show-markers', this.redrawVisible);
+                this.listenTo(this.model.collection, 'hide-markers', this.redrawHidden);
             },
             getTemplate: function () {
                 if (this.model.get("overlay_type") === "map-image") {
@@ -57,13 +65,39 @@ define(["jquery",
                 this.displayOverlay = false;
                 this.model.trigger('hide-overlay');
                 this.render();
+                this.saveState();
                 e.preventDefault();
             },
             showMarker: function (e) {
                 this.displayOverlay = true;
                 this.model.trigger('show-overlay');
                 this.render();
+                this.saveState();
                 e.preventDefault();
+            },
+            redrawVisible: function () {
+                this.displayOverlay = true;
+                this.saveState();
+                this.render();
+            },
+            redrawHidden: function () {
+                this.displayOverlay = false;
+                this.saveState();
+                this.render();
+            },
+            saveState: function () {
+                this.app.saveState(this.stateKey, {
+                    displayOverlay: this.displayOverlay
+                });
+            },
+            restoreState: function () {
+                var state = this.app.restoreState(this.stateKey);
+                if (state) {
+                    this.displayOverlay = state.displayOverlay;
+                }
+                if (this.displayOverlay) {
+                    this.model.trigger('show-overlay');
+                }
             }
         });
         return MarkerListingDetail;
