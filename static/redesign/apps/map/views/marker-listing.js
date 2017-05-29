@@ -16,7 +16,8 @@ define(["marionette",
             fields: null, //for custom data types
             title: null,
             collectionEvents: {
-                'show-overlay': 'removeHideIconIfExists'
+                'show-overlay': 'removeHideIcon',
+                'hide-overlay': 'showHideIcon'
             },
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -99,8 +100,24 @@ define(["marionette",
                 }, PanelVisibilityExtensions.events);
             },
 
-            removeHideIconIfExists: function () {
+            removeHideIcon: function () {
+                this.displayOverlays = false;
+                this.saveState();
                 this.$el.find('.list-header > .fa-eye-slash').removeClass('fa-eye-slash').addClass('fa-eye');
+            },
+
+            showHideIcon: function () {
+                var invisibilityCount = 0;
+                this.children.each(function (view) {
+                    if (!view.displayOverlay) {
+                        ++invisibilityCount;
+                    }
+                });
+                if (invisibilityCount === this.children.length) {
+                    this.displayOverlays = false;
+                    this.saveState();
+                    this.$el.find('.list-header > .fa-eye').removeClass('fa-eye').addClass('fa-eye-slash');
+                }
             },
 
             zoomToExtents: function () {
