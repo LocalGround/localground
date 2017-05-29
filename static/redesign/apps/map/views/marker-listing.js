@@ -11,7 +11,7 @@ define(["marionette",
         var MarkerListing = Marionette.CompositeView.extend(_.extend({}, PanelVisibilityExtensions, {
             stateKey: 'marker-listing-',
             isShowing: true,
-            displayOverlays: true,
+            displayOverlays: true, // initialize all overlays as hidden. ChildView will override.
             overlays: null,
             fields: null, //for custom data types
             title: null,
@@ -25,10 +25,10 @@ define(["marionette",
                 this.fields = this.data.fields;
                 this.title = this.title || this.data.name;
                 this.typePlural = this.data.id.replace("-", "_");
-
-                Marionette.CompositeView.prototype.initialize.call(this);
                 this.initDisplayFlags();
                 this.template = Handlebars.compile(ListTemplate);
+
+                Marionette.CompositeView.prototype.initialize.call(this);
 
                 if (!this.isMapImageCollection()) {
                     this.icon = new Icon({
@@ -46,9 +46,14 @@ define(["marionette",
                 return this.collection.key === "map_images";
             },
             initDisplayFlags: function () {
-                if (this.isMapImageCollection()) {
-                    this.isShowing = false;
+                console.log("initDisplayFlags:", this.typePlural);
+                if (this.typePlural === "photos" || this.typePlural === "audio" ||
+                        this.typePlural === "map_images") {
                     this.displayOverlays = false;
+                    this.isShowing = false;
+                } else {
+                    this.displayOverlays = true;
+                    this.isShowing = true;
                 }
                 this.stateKey += "_" + this.collection.key;
                 this.restoreState();
@@ -80,7 +85,7 @@ define(["marionette",
             },
 
             childViewOptions: function () {
-                return {
+                var opts = {
                     app: this.app,
                     dataType: this.typePlural,
                     fields: this.fields,
@@ -88,6 +93,7 @@ define(["marionette",
                     icon: this.icon,
                     displayOverlay: this.displayOverlays
                 };
+                return opts;
             },
             childView: MarkerListingDetail,
             childViewContainer: ".marker-container",
@@ -101,12 +107,14 @@ define(["marionette",
             },
 
             removeHideIcon: function () {
-                this.displayOverlays = false;
+                console.log("removeHideIcon");
+                this.displayOverlays = true;
                 this.saveState();
                 this.$el.find('.list-header > .fa-eye-slash').removeClass('fa-eye-slash').addClass('fa-eye');
             },
 
             showHideIcon: function () {
+                console.log("showHideIcon");
                 var invisibilityCount = 0;
                 this.children.each(function (view) {
                     if (!view.displayOverlay) {
@@ -124,6 +132,7 @@ define(["marionette",
                 this.collection.trigger('zoom-to-extents');
             },
             hideMarkers: function () {
+                console.log("hideMarkers");
                 this.displayOverlays = false;
                 this.collection.trigger('hide-markers');
                 this.saveState();
@@ -153,7 +162,7 @@ define(["marionette",
                     app: this.app,
                     dataType: this.typePlural,
                     _icon: this.icon,
-                    isShowing: false // initialize all overlays as hidden
+                    isShowing: this.displayOverlays
                 });
             },
 
@@ -183,7 +192,7 @@ define(["marionette",
                 _.bindAll(this, 'render');
 
                 // redraw CompositeView:
-                this.render();
+                //this.render();
                 this.renderOverlays();
                 this.hideLoadingMessage();
             },
@@ -195,8 +204,10 @@ define(["marionette",
             },
             restoreState: function () {
                 var state = this.app.restoreState(this.stateKey);
-                if (state) {
+                if (state && typeof state.isShowing !== 'undefined') {
                     this.isShowing = state.isShowing;
+                }
+                if (state && typeof state.displayOverlays !== 'undefined') {
                     this.displayOverlays = state.displayOverlays;
                 }
             }

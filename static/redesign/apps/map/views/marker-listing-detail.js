@@ -10,10 +10,13 @@ define(["jquery",
             stateKey: 'marker-listing-',
             displayOverlay: true,
             initialize: function (opts) {
+                console.log(opts);
                 _.extend(this, opts);
-                this.model.set("dataType", this.dataType);
-                this.stateKey += "_" + this.model.get("overlay_type") + "_" + this.model.id;
+                this.stateKey += this.model.get("overlay_type") + "-" + this.model.id;
+                console.log(this.stateKey, this.displayOverlay);
                 this.restoreState();
+                this.model.set("dataType", this.dataType);
+                console.log(this.stateKey, this.displayOverlay);
 
                 //add event listeners:
                 this.listenTo(this.model, 'do-hover', this.hoverHighlight);
@@ -92,7 +95,7 @@ define(["jquery",
             },
             restoreState: function () {
                 var state = this.app.restoreState(this.stateKey);
-                if (state) {
+                if (state && typeof state.displayOverlay !== 'undefined') {
                     this.displayOverlay = state.displayOverlay;
                 }
                 if (this.displayOverlay) {
