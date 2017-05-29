@@ -15,6 +15,9 @@ define(["marionette",
             overlays: null,
             fields: null, //for custom data types
             title: null,
+            collectionEvents: {
+                'show-overlay': 'removeHideIconIfExists'
+            },
             initialize: function (opts) {
                 _.extend(this, opts);
                 this.collection = this.data.collection;
@@ -94,6 +97,10 @@ define(["marionette",
                     'click .list-header > .fa-eye-slash': 'showMarkers',
                     'click .add-new': 'triggerAddNewMap'
                 }, PanelVisibilityExtensions.events);
+            },
+
+            removeHideIconIfExists: function () {
+                this.$el.find('.list-header > .fa-eye-slash').removeClass('fa-eye-slash').addClass('fa-eye');
             },
 
             zoomToExtents: function () {

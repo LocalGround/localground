@@ -14,6 +14,12 @@ define(['marionette',
             /** A google.maps.Map object */
             map: null,
             childView: MarkerOverlay,
+            collectionEvents: {
+                'zoom-to-extents': 'zoomToExtents',
+                'change:geometry': 'geometryUpdated',
+                'show-marker': 'showAll',
+                'hide-markers': 'hideAll'
+            },
 
             initialize: function (opts) {
                 _.extend(this, opts);
@@ -21,12 +27,6 @@ define(['marionette',
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.childViewOptions = opts;
-
-                //listen for new data:
-                this.listenTo(this.collection, 'zoom-to-extents', this.zoomToExtents);
-                this.listenTo(this.collection, 'change:geometry', this.geometryUpdated);
-                this.listenTo(this.collection, 'show-markers', this.showAll);
-                this.listenTo(this.collection, 'hide-markers', this.hideAll);
 
                 this.render();
 
