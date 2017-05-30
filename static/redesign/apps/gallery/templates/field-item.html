@@ -75,28 +75,7 @@
             <option value="rating"{{#ifequal data_type "rating"}} SELECTED {{/ifequal}}>Rating</option>
             <option value="choice"{{#ifequal data_type "choice"}} SELECTED {{/ifequal}}>Choice</option>
         </select>
-        <!--
-        {{#ifequal data_type "rating"}}
-        {{! There are Two Choices to handle this problem of unwatnted text boxes:}}
-        {{! Choice 1: Remove the add and take two steps to actually add content (choices or ratings) }}
-        {{! Choice 2: Copy and Paste the above version to eliminate the problem}}
-            <span class ="extras">
-                <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
-                {{#each extraList}}
-                    <input type="text" class="rating" placeholder="Type new rating" value="{{this.name}}" />
-                {{/each}}
-            </span>
-        {{/ifequal}}
 
-        {{#ifequal data_type "choice"}}
-            <span class="extras">
-                <a href="#" class="add-new-choice"><i class="fa fa-plus"></i></a>
-                {{#each extraList}}
-                    <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />
-                {{/each}}
-            </span>
-        {{/ifequal}}
-    -->
             {{#ifequal data_type "rating"}}
             <!-- Make this list the new extras list to reduce confusion for users -->
                 <span class ="extras">
