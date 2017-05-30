@@ -336,6 +336,26 @@ define(
                             }
                         ],
                         "data_type": "rating"
+                    },
+                    {
+                        "id": 5,
+                        "form": 1,
+                        "col_alias": "Test Choice",
+                        "col_name": "test_choice",
+                        "is_display_field": false,
+                        "ordering": 5,
+                        "extras": [
+                            {
+                                "name": "Red"
+                            },
+                            {
+                                "name": "Green"
+                            },
+                            {
+                                "name": "Blue"
+                            }
+                        ],
+                        "data_type": "choice"
                     }]
             });
             this.photos = new Photos([
