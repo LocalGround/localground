@@ -172,11 +172,11 @@ define(
                 "project_id": 3,
                 "layers": [
                     {
-                        "id": 3,
+                        "id": 1,
                         "title": "layer 1",
                         "data_source": "form_1",
                         "symbol_shape": "fa-circle",
-                        "layer_type": "categorical",
+                        "layer_type": "continuous",
                         "filters": [
                             {
                                 "tag": "nothing"
@@ -187,7 +187,7 @@ define(
                             {
                                 "title": "1 - 5",
                                 "strokeWeight": 1,
-                                "rule": "worm_count > 0 and worm_count < 6",
+                                "rule": "test_integer > 0 and test_integer < 6",
                                 "height": 32,
                                 "width": 32,
                                 "shape": "worm",
@@ -197,7 +197,7 @@ define(
                             {
                                 "title": "6 - 10",
                                 "strokeWeight": 1,
-                                "rule": "worm_count > 5 and worm_count < 11",
+                                "rule": "test_integer > 5 and test_integer < 11",
                                 "height": 32,
                                 "width": 32,
                                 "shape": "worm",
@@ -208,7 +208,7 @@ define(
                             {
                                 "title": "11 or more",
                                 "strokeWeight": 1,
-                                "rule": "worm_count >= 11",
+                                "rule": "test_integer >= 11",
                                 "height": 32,
                                 "width": 32,
                                 "shape": "worm",
@@ -222,7 +222,7 @@ define(
                         "title": "Murals",
                         "data_source": "form_1",
                         "symbol_shape": "fa-circle",
-                        "layer_type": "categorical",
+                        "layer_type": "continuous",
                         "filters": [
                             {
                                 "tag": "nothing"
@@ -233,17 +233,17 @@ define(
                             {
                                 "fillColor": "#7075FF",
                                 "width": 30,
-                                "rule": "sculptures > 0",
+                                "rule": "test_integer > 0",
                                 "title": "At least 1 sculpture"
                             }
                         ]
                     },
                     {
-                        "id": 1,
+                        "id": 3,
                         "title": "Murals",
                         "data_source": "form_1",
                         "symbol_shape": "circle",
-                        "layer_type": "continuous",
+                        "layer_type": "categorical",
                         "metadata": {
                             "newKey": 6,
                             "fillColor": "4e70d4",
@@ -264,14 +264,20 @@ define(
                             {
                                 "fillColor": "#7075FF",
                                 "width": 30,
-                                "rule": "murals > 0",
-                                "title": "At least 1 mural"
+                                "rule": "test_text = 'Blue team'",
+                                "title": "Blue Team"
                             },
                             {
                                 "fillColor": "#F011D9",
                                 "width": 30,
-                                "rule": "murals = 0",
-                                "title": "No murals"
+                                "rule": "test_text = 'Green team'",
+                                "title": "Green Team"
+                            },
+                            {
+                                "fillColor": "#FF0000",
+                                "width": 30,
+                                "rule": "test_text = 'Red team'",
+                                "title": "Red Team"
                             }
                         ]
                     }
@@ -353,9 +359,9 @@ define(
                 new Marker({id: 3, name: "POI 3", tags: ['coffee shop', 'tag1'], project_id: 2, overlay_type: "marker" })
             ]);
             this.form_1 = new Records([
-                new Record({ id: 1, team_name: "Blue team", display_name: "Blue team", tags: ['my house'], worm_count: 4, project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, photo_count: 3, audio_count: 1 }),
-                new Record({id: 2, team_name: "Green team", tags: ['friend\'s house', 'tag1'], worm_count: 8, project_id: 1, overlay_type: "form_1", photo_count: 1, audio_count: 2 }),
-                new Record({id: 3, team_name: "Red team", tags: ['coffee shop'], worm_count: 12, project_id: 2, overlay_type: "form_1", photo_count: 2, audio_count: 3 })
+                new Record({ id: 1, test_text: "Blue team", display_name: "Blue team", tags: ['my house'], test_integer: 4, project_id: 1, overlay_type: "form_1", geometry: {"type": "Point", "coordinates": [-122.294, 37.864]}, photo_count: 3, audio_count: 1 }),
+                new Record({id: 2, test_text: "Green team", tags: ['friend\'s house', 'tag1'], test_integer: 8, project_id: 1, overlay_type: "form_1", photo_count: 1, audio_count: 2 }),
+                new Record({id: 3, test_text: "Red team", tags: ['coffee shop'], test_integer: 12, project_id: 2, overlay_type: "form_1", photo_count: 2, audio_count: 3 })
             ], { 'url': 'dummy/url' });
 
             this.fields = new Fields([

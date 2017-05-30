@@ -149,40 +149,40 @@ define([
 
             it("getSymbolsJSON returns the correct JSON (removing the unserializable icon)", function () {
                 expect(layer.getSymbolsJSON()).toEqual([{
+                    "id": 1,
                     "title": "1 - 5",
                     "strokeWeight": 1,
-                    "rule": "worm_count > 0 and worm_count < 6",
+                    "rule": "test_integer > 0 and test_integer < 6",
                     "height": 32,
                     "width": 32,
                     "shape": "worm",
                     "strokeColor": "#FFF",
                     "fillColor": "#d7b5d8",
-                    "id": 1,
                     "fillOpacity": 1,
                     "strokeOpacity": 1
                 }, {
+                    "id": 2,
                     "title": "6 - 10",
                     "strokeWeight": 1,
-                    "rule": "worm_count > 5 and worm_count < 11",
+                    "rule": "test_integer > 5 and test_integer < 11",
                     "height": 32,
                     "width": 32,
                     "shape": "worm",
                     "strokeColor": "#FFF",
                     "fillColor": "#df65b0",
                     "is_showing": true,
-                    "id": 2,
                     "fillOpacity": 1,
                     "strokeOpacity": 1
                 }, {
+                    "id": 3,
                     "title": "11 or more",
                     "strokeWeight": 1,
-                    "rule": "worm_count >= 11",
+                    "rule": "test_integer >= 11",
                     "height": 32,
                     "width": 32,
                     "shape": "worm",
                     "strokeColor": "#FFF",
                     "fillColor": "#ce1256",
-                    "id": 3,
                     "fillOpacity": 1,
                     "strokeOpacity": 1
                 }]);

@@ -28,7 +28,7 @@ define([
                 //initialize continuous MarkerStyleView object:
                 continuousMarkerStyleView = new MarkerStyleView({
                     app: that.app,
-                    model: that.testMap.get("layers").at(2) 
+                    model: that.testMap.get("layers").at(2)
                 });
                 continuousMarkerStyleView.render();
 
@@ -92,7 +92,7 @@ define([
                 expect(markerStyleView.selectDataType).toHaveBeenCalledTimes(2);
                 expect(markerStyleView.dataType).toEqual("categorical");
             });
-            /*
+
             it("should build the correct column list", function () {
                 //Trying to test that the appropriate list of fields
                 //(categorical or continuous is built, 
@@ -103,7 +103,6 @@ define([
                     col_name: "test_text"
                 });
             });
-            */
 
             it("should select correct color palette", function () {
                 $(continuousFixture.find('#palette_3').click());
