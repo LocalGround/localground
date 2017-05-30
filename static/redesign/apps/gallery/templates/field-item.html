@@ -75,6 +75,7 @@
             <option value="rating"{{#ifequal data_type "rating"}} SELECTED {{/ifequal}}>Rating</option>
             <option value="choice"{{#ifequal data_type "choice"}} SELECTED {{/ifequal}}>Choice</option>
         </select>
+        <!--
         {{#ifequal data_type "rating"}}
         {{! There are Two Choices to handle this problem of unwatnted text boxes:}}
         {{! Choice 1: Remove the add and take two steps to actually add content (choices or ratings) }}
@@ -95,6 +96,50 @@
                 {{/each}}
             </span>
         {{/ifequal}}
+    -->
+            {{#ifequal data_type "rating"}}
+            <!-- Make this list the new extras list to reduce confusion for users -->
+                <span class ="extras">
+                    <a href="#" class="add-new-rating"><i class="fa fa-plus"></i></a>
+                    <table>
+                        {{#each extraList}}
+                        <tr class="rating-row">
+                            <td>
+                                <input type="text" class="rating-value" placeholder="Type rating value" value="{{this.value}}" />
+                                {{#if this.errorRatingValue}}<span class="ratingError">Must Be a Number</span>{{/if}}
+                            </td>
+                            <td>
+                                <input type="text" class="rating-name" placeholder="Type new rating" value="{{this.name}}" />
+                                {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}
+                            </td>
+                            <td>
+                                <a href="#" class="remove-rating">&times;</a>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </table>
+                </span>
+
+            {{/ifequal}}
+
+            {{#ifequal data_type "choice"}}
+                <span class="extras">
+                    <a href="#" class="add-new-choice"><i class="fa fa-plus"></i></a>
+                    <table>
+                        {{#each extraList}}
+                        <tr class="choice-row">
+                            <td>
+                                <input type="text" class="choice" placeholder="Type new choice" value="{{this.name}}" />
+                                {{#if this.errorRatingName}}<span class="ratingError">Must Have Name</span>{{/if}}
+                            </td>
+                            <td>
+                                <a href="#" class="remove-choice">&times;</a>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </table>
+                </span>
+            {{/ifequal}}
 
         {{#if errorFieldType}}<span>Field Type Missing</span>{{/if}}
     {{/if}}
