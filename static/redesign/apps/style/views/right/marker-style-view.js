@@ -185,7 +185,7 @@ define(["jquery",
                 this.continuousList.length = 0;
                 var key = this.model.get('data_source'),
                     dataEntry = this.app.dataManager.getData(key);
-                console.log(dataEntry);
+                console.log("TESTING THIS",dataEntry, key);
                 //still need to account for map-images below...
                 if (key == "photos" || key == "audio") {
                     var list = ["id", "name", "caption", "tags", "owner", "attribution"];
@@ -230,7 +230,6 @@ define(["jquery",
                 console.log("meta change registered");
                 var buckets = this.model.get("metadata").buckets;
                 var key = this.model.get('data_source'); 
-                var valueList = []
                 this.continuousData = [];
                 var dataEntry = this.app.dataManager.getData(key);
                 var $selected = this.$el.find("#cont-prop").val();
@@ -310,12 +309,14 @@ define(["jquery",
                 this[timeoutVar] = setTimeout(func, millisecs);
             },
 
-            updateBuckets: function () {
+            updateBuckets: function (e) {
+                console.log("update buckets triggered");
                 var that = this;
                 this.delayExecution(
                     "bucketTimer",
                     function () {
                         var buckets = parseFloat(that.$el.find("#bucket").val());
+                        console.log("the bucket #: ",buckets);
                         that.updateMetadata("buckets", buckets);
                         that.buildPalettes();
                         that.$el.find("#bucket").focus();

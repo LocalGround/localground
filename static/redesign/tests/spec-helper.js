@@ -244,6 +244,18 @@ define(
                         "data_source": "form_1",
                         "symbol_shape": "circle",
                         "layer_type": "continuous",
+                        "metadata": {
+                            "newKey": 6,
+                            "fillColor": "4e70d4",
+                            "strokeWeight": 1,
+                            "buckets": 3,
+                            "strokeOpacity": "0.7",
+                            "width": "30",
+                            "shape": "circle",
+                            "fillOpacity": 1,
+                            "strokeColor": "ffffff",
+                            "paletteId": 3
+                        },
                         "filters": {
                             "tags": "nothing"
                         },

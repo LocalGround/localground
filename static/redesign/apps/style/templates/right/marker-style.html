@@ -135,7 +135,7 @@
                             <ul>
                                 {{#each allColors}}
                                 <a>
-                                    <li class="palette-list" value="{{@index}}">
+                                    <li class="palette-list" id="palette_{{@index}}" value="{{@index}}">
                                         <ul class="palette-container" value="{{@index}}">
                                             {{#each this}}
                                             <li class="palette-item" value="{{@../index}}" style= "background-color: #{{this}}">
