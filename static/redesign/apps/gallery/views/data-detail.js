@@ -227,7 +227,7 @@ define([
                 screenType: this.app.screenType,
                 lat: lat,
                 lng: lng
-                
+
             };
             return context;
         },
@@ -285,9 +285,14 @@ define([
                         fields[name] = { type: 'Select', title: title, options: options };
                         break;
                     case "choice":
-                        var options = JSON.parse(field.extras);
+                        var options = [],
+                            extras = JSON.parse(field.extras),
+                            j;
+                        for (j = 0; j < extras.length; j++){
+                            options.push(extras[j].name);
+                        }
                         //dummy options for testing
-                        options = ["red", "orange", "green", "blue", "yellow", "purple"];
+                        //options = ["red", "orange", "green", "blue", "yellow", "purple"];
                         fields[name] = { type: 'Select', title: title, options: options };
                         break;
                     case "date-time":
@@ -314,7 +319,7 @@ define([
                 }).render();
             } else {
                 var fields = {
-                    name: { type: 'TextArea', title: "Name" }, 
+                    name: { type: 'TextArea', title: "Name" },
                     caption:  { type: 'TextArea', title: "Caption" },
                     attribution: { type: 'TextArea', title: "Attribution" },
                     tags: { type: 'List', itemType: 'Text' }
