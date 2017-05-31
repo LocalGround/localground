@@ -45,6 +45,7 @@ define([
             spyOn(Spreadsheet.prototype, "audioRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "buttonRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "mediaCountRenderer").and.callThrough();
+            spyOn(Spreadsheet.prototype, "ratingRenderer").and.callThrough();
 
             // column functions
             spyOn(Spreadsheet.prototype, "getColumns").and.callThrough();
@@ -388,6 +389,16 @@ define([
                 newSpreadsheet.collection = this.form_1;
                 newSpreadsheet.renderSpreadsheet();
                 expect(Spreadsheet.prototype.mediaCountRenderer).toHaveBeenCalledTimes(3);
+            });
+
+            it("Go through the Rating renderer", function () {
+                console.log("Testing the Ratings Renderer");
+                fixture.find('.main-panel').append(newSpreadsheet.$el);
+                expect(Spreadsheet.prototype.ratingRenderer).toHaveBeenCalledTimes(0);
+                newSpreadsheet.fields = this.fields;
+                newSpreadsheet.collection = this.form_2;
+                newSpreadsheet.renderSpreadsheet();
+                expect(Spreadsheet.prototype.ratingRenderer).toHaveBeenCalledTimes(2);
             });
         });
 
