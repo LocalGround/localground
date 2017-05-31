@@ -585,10 +585,16 @@ define(["jquery",
                                     };
                                     break;
                                 case "choice":
+                                    var choiceOpts = [],
+                                        j = 0,
+                                        extras = this.fields.at(i).get("extras");
+                                    for (j = 0; j < extras.length; j++) {
+                                        choiceOpts.push(extras[j].name);
+                                    }
                                     entry = {
                                         type:  "text",
                                         editor: "select",
-                                        selectOptions: ["red", "green", "blue"] //this.fields.at(i).get("extras").name
+                                        selectOptions: choiceOpts
                                     };
                                     break;
                                 case "date-time":
