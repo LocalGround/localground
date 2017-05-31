@@ -586,9 +586,9 @@ define(["jquery",
                                     break;
                                 case "choice":
                                     entry = {
-                                        // Let's find out if this thing works
-                                        type:  "dropdown",
-                                        source: this.fields.at(i).get("extras").name || []
+                                        type:  "text",
+                                        editor: "select",
+                                        selectOptions: ["red", "green", "blue"] //this.fields.at(i).get("extras").name
                                     };
                                     break;
                                 case "date-time":
