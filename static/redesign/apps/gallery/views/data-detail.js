@@ -305,13 +305,14 @@ define([
                                     message: 'Invalid Date'
                                 };
                                 var error = false;
-                                /*
+                                //*
                                 try {
-                                    //parseDate(date);
-                                } catch (ex) {
+                                    console.log();
+                                    parseDate(value);
+                                } catch (value) {
                                     error = true;
                                 }
-                                */
+                                //*/
                                 //check that value is a date. If it is, return nothing, else return error
                                 if (error) {
                                     return err;
