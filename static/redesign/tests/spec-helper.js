@@ -379,8 +379,8 @@ define(
                 {
                     "id": 1,
                     "form": 3,
-                    "col_alias": "Team Name",
-                    "col_name": "team_name",
+                    "col_alias": "Test Text",
+                    "col_name": "test_text",
                     "is_display_field": true,
                     "ordering": 1,
                     "data_type": "text"
@@ -388,8 +388,8 @@ define(
                 {
                     "id": 2,
                     "form": 3,
-                    "col_alias": "Worm Count",
-                    "col_name": "worm_count",
+                    "col_alias": "Test Integer",
+                    "col_name": "test_integer",
                     "is_display_field": false,
                     "ordering": 2,
                     "data_type": "integer"
@@ -452,7 +452,8 @@ define(
                             name: "Team Members",
                             id: "form_1",
                             overlay_type: "form_1",
-                            data: this.form_1.toJSON()
+                            data: this.form_1.toJSON(),
+                            fields: this.fields
                         }
                     }}),
                 new Project({

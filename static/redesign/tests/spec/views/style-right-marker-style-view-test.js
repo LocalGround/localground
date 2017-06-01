@@ -194,18 +194,18 @@ define([
             
 
 
-/*
+
             it("should build the correct column list", function () {
                 //Trying to test that the appropriate list of fields
                 //(categorical or continuous is built, 
                 //when the data source is a form).
                 //Having trouble working with the spec-helper data
-                expect(categoricalMarkerStyleView.categoricalList).toEqual({
-                    col_alias: "Test Text",
-                    col_name: "test_text"
-                });
+                expect(categoricalMarkerStyleView.categoricalList).toEqual([{
+                    text: "Test Text",
+                    value: "test_text"
+                }]);
             });
-*/
+
             
         });
 
