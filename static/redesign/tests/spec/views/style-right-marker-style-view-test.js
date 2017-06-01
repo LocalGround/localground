@@ -2,16 +2,16 @@ var rootDir = "../../";
 define([
     "jquery",
     rootDir + "apps/style/views/right/marker-style-view", 
-    rootDir + "apps/style/views/left/layer-list-child-view"
+    rootDir + "models/layer"
 ],
-    function ($, MarkerStyleView, LayerListChild) {
+    function ($, MarkerStyleView, Layer) {
         'use strict';
         var markerStyleView,
             continuousMarkerStyleView,
             categoricalFixture,
             continuousFixture,
             categoricalMarkerStyleView,
-            layerListChild,
+            Layer,
 
             /*
             initView = function (that) {
@@ -60,6 +60,7 @@ define([
                 spyOn(MarkerStyleView.prototype, 'updateStrokeWeight').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'updateStrokeOpacity').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'updateStrokeColor').and.callThrough();
+              //  spyOn(Layer.prototype, 'trigger').and.callThrough();
 
             },
             
@@ -75,11 +76,7 @@ define([
                 continuousFixture = setFixtures('<div></div>');
                 continuousFixture.append(continuousMarkerStyleView.$el);
 
-               layerListChild = new LayerListChild({
-                    app: that.app, 
-                    model: that.layer
-               });
-              // spyOn(LayerListChild.prototype.model, 'rebuild-markers').and.callThrough();
+              
             },
 
             initCategoricalView = function (that) {
@@ -206,7 +203,6 @@ define([
                 }]);
             });
 
-            
         });
 
          describe("Test timed functions", function () {
@@ -228,26 +224,24 @@ define([
             }); 
 
             it(" 'updateStrokeColor()' should update stroke color ", function () {
+                $(continuousFixture.find('#stroke-color-picker').trigger("click"));
 
-                //$(categoricalFixture.find("#stroke-color-picker").css({"color": "#ffffff"}).change());
-                $(categoricalFixture.find('#stroke-color-picker')).trigger("click");
-             //   console.log(categoricalFixture.html());
-             //   $('body').find('.color-picker').trigger('click');
-               // console.log($('body').html());
-              //  $(categoricalFixture.find(".color-picker")).show();
-              //  $(categoricalFixture.find(".color-picker")).css("display", "block");
-              //  $(categoricalFixture.find(".color-picker")).css("display", "none");
+                jasmine.clock().tick(600);
                 $('body').trigger("click");
-                //ColorPicker.setCurrentColor("(145, 129, 65)");
-                expect(categoricalMarkerStyleView.updateStrokeColor).toHaveBeenCalledTimes(1);
+
+                jasmine.clock().tick(600);
+                expect(continuousMarkerStyleView.updateStrokeColor).toHaveBeenCalledTimes(1);
             });
-/*
+    
+    
             it("updateMap should trigger 'rebuild markers' ", function () {
+                spyOn(continuousMarkerStyleView.model, "trigger").and.callThrough();
                 continuousMarkerStyleView.updateMap();
                 jasmine.clock().tick(300);
-                expect(layerListChild.model.trigger).toHaveBeenCalledWith("rebuild-markers");
+               // expect(Layer.prototype.trigger).toHaveBeenCalledWith("rebuild-markers");
+                expect(continuousMarkerStyleView.model.trigger).toHaveBeenCalledWith("rebuild-markers");
             });
-*/
+
         });
 
         describe("Tests specific to a continuous layer", function () {
@@ -274,6 +268,17 @@ define([
                 expect(continuousMarkerStyleView.model.get("metadata").buckets).toEqual(5);  
                 expect(continuousMarkerStyleView.selectedColorPalette).toEqual(["f7f7f7", "cccccc", "969696", "636363", "252525"]);
             });
+/*
+            it("showPalettes function should display and hide list of palettes", function() {
+                console.log($(continuousFixture.find('.palette-wrapper')).css('display'));
+                $(continuousFixture.find('.selected-palette-wrapper').trigger('click'));
+                expect($(continuousFixture.find('.palette-wrapper')).css('display')).toEqual('block');
 
+                console.log($(continuousFixture.find('.palette-wrapper')).css('display'));
+                $(continuousFixture.find('.selected-palette-wrapper').trigger('click'));
+                expect($(continuousFixture.find('.palette-wrapper')).css('display')).toEqual('block');
+                console.log($(continuousFixture.find('.palette-wrapper')).css('display'));
+            });
+*/
         });
     });
