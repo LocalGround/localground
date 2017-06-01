@@ -1,10 +1,12 @@
 define([
     "backbone",
-    "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js",
+    "handlebars",
+    //"https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js",
     "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.0/pikaday.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",
+    "text!../forms/templates/editor-templates.html",
     "form"
-], function (Backbone, Moment, Pikaday, dateFns) {
+], function (Backbone, Handlebars, Pikaday, dateFns, EditorTemplate) {
     "use strict";
     Backbone.Form.editors.DatePicker = Backbone.Form.editors.Text.extend({
 
@@ -31,13 +33,22 @@ define([
 
     Backbone.Form.editors.DateTimePicker = Backbone.Form.editors.Base.extend({
         tagName: "div",
+
         initialize: function (options) {
             Backbone.Form.editors.Text.prototype.initialize.call(this, options);
-            this.$el.append("<input class='datepicker input-small-custom' />")
+            var template = Handlebars.compile(EditorTemplate);
+            this.$el.append(template({
+                dateString: dateFns.format(this.value, 'YYYY-MM-DD'),
+                hoursString: dateFns.format(this.value, 'hh'),
+                minutesString: dateFns.format(this.value, 'mm'),
+                secondsString: dateFns.format(this.value, 'ss')
+            }));
+            /*//d.getMonth().toString() + "/" + d.getDate().toString() + "/" + d.getFullYear().toString();
+            this.$el.append($("<input class='datepicker input-small-custom' />").val(this.dateString));
             //combine all the times together and make the CSS nice:
-            this.$el.append($("<br><label>h</label><input class='hours' />"));
-            this.$el.append($("<label>m</label><input class='minutes' />"));
-            this.$el.append($("<label>s</label><input class='seconds' />"));
+            this.$el.append($("<br><label>h</label><input class='hours' />").val(this.hoursString));
+            this.$el.append($("<label>m</label><input class='minutes' />").val(this.minutesString));
+            this.$el.append($("<label>s</label><input class='seconds' />").val(this.secondsString));*/
         },
         getValue: function () {
             //contatenate the date and time input values
