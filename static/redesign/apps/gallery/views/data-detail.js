@@ -14,11 +14,12 @@ define([
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
+    "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.0/pikaday.min.js",
     "form", //extends Backbone
     "form-list"
 ], function ($, Backbone, _, Handlebars, Marionette, Association, Audio,
              MediaBrowser, AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
-             AudioPlayer, Carousel, Icon) {
+             AudioPlayer, Carousel, Icon, Pikaday) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -296,11 +297,12 @@ define([
                         fields[name] = { type: 'Select', title: title, options: options };
                         break;
                     case "date-time":
-                        // TODO: make this a date picker / calendar like the spreadsheet
+                        fields[name] = { title: title };
+                        /*// TODO: make this a date picker / calendar like the spreadsheet
                         // Samples:
                         // https://github.com/dbushell/Pikaday
                         // https://coderwall.com/p/70pw4a/datepicker-for-backbone-form
-                        fields[name] = { type: 'DateTime', title: title };
+                        fields[name] = { type: 'DateTime', title: title };*/
                         break;
                     case "boolean":
                         fields[name] = { type: 'Checkbox', title: title };
@@ -367,6 +369,11 @@ define([
 
             // The Column arranger functions go here
             this.sortMediaTable();
+            var $dataFields = this.$el.find("input[type='text']"),
+                picker;
+            $dataFields.each(function () {
+                picker = new Pikaday({ field: $(this)[0] });
+            });
         },
 
         sortMediaTable: function(){
