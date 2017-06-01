@@ -295,7 +295,28 @@ define([
                         fields[name] = { type: 'Select', title: title, options: options };
                         break;
                     case "date-time":
-                        fields[name] = { title: title, type: 'DateTimePicker'};
+                        fields[name] = {
+                            title: title,
+                            type: 'DateTimePicker',
+                            validators: [function (value, formValues) {
+                                console.log(value, formValues);
+                                var err = {
+                                    type: 'date',
+                                    message: 'Invalid Date'
+                                };
+                                var error = false;
+                                /*
+                                try {
+                                    //parseDate(date);
+                                } catch (ex) {
+                                    error = true;
+                                }
+                                */
+                                //check that value is a date. If it is, return nothing, else return error
+                                if (error) {
+                                    return err;
+                                }
+                            }]};
                         /*// TODO: make this a date picker / calendar like the spreadsheet
                         // Samples:
                         // https://github.com/dbushell/Pikaday
