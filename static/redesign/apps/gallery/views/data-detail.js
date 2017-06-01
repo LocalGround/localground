@@ -368,20 +368,8 @@ define([
                 this.$el.find(".player-container").append(player.$el);
             }
 
-            // The Column arranger functions go here
             this.sortMediaTable();
-            /*var $dataFields = this.$el.find("input[type='text']"),
-                picker;
-            $dataFields.each(function () {
-                picker = new Pikaday({
-                    field: $(this)[0],
-                    format: "YYYY-MM-DDThh:mm",
-                    toString: function(date, format) {
-                        return dateFns.format(date, format);
-                    }
-                });
-                //picker.toString("YYYY-MM-DDThh:mm"); // That thing does not work
-            });*/
+
         },
 
         sortMediaTable: function(){

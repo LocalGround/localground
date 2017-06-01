@@ -28,22 +28,24 @@ define([
             return this;
         }
     });
-    
+
     Backbone.Form.editors.DateTimePicker = Backbone.Form.editors.Base.extend({
         tagName: "div",
         initialize: function (options) {
             Backbone.Form.editors.Text.prototype.initialize.call(this, options);
             this.$el.append("<input class='datepicker input-small-custom' />")
             //combine all the times together and make the CSS nice:
-            this.$el.append($("<input class='hours' />"));
-            this.$el.append($("<input class='minutes' />"));
-            this.$el.append($("<input class='seconds' />"));
+            this.$el.append($("<br><label>h</label><input class='hours' />"));
+            this.$el.append($("<label>m</label><input class='minutes' />"));
+            this.$el.append($("<label>s</label><input class='seconds' />"));
         },
         getValue: function () {
             //contatenate the date and time input values
             var date = this.$el.find('.datepicker').val(),
-                hours = this.$el.find('.hours').val();
-            return date + hours; // + mins...;
+                hours = this.$el.find('.hours').val(),
+                minutes = this.$el.find('.minutes').val(),
+                seconds = this.$el.find('.seconds').val();
+            return date + hours + minutes + seconds;
         },
         render: function () {
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);

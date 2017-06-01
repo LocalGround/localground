@@ -2105,3 +2105,12 @@ span.plus {
     color: #D22;
     font-weight: bold;
 }
+
+
+/*
+  Date / Time
+*/
+/* Map View */
+.hours, .minutes, .seconds{
+    width: 50px !important;
+}
