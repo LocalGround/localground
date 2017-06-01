@@ -14,13 +14,12 @@ define([
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
-    "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js",
-    "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.0/pikaday.min.js",
     "form", //extends Backbone
-    "form-list"
+    "form-list",
+    "lib/forms/backbone-form-editors"
 ], function ($, Backbone, _, Handlebars, Marionette, Association, Audio,
              MediaBrowser, AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
-             AudioPlayer, Carousel, Icon, Moment, Pikaday) {
+             AudioPlayer, Carousel, Icon) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -296,7 +295,7 @@ define([
                         fields[name] = { type: 'Select', title: title, options: options };
                         break;
                     case "date-time":
-                        fields[name] = { title: title};
+                        fields[name] = { title: title, type: 'DateTimePicker'};
                         /*// TODO: make this a date picker / calendar like the spreadsheet
                         // Samples:
                         // https://github.com/dbushell/Pikaday
@@ -371,12 +370,18 @@ define([
 
             // The Column arranger functions go here
             this.sortMediaTable();
-            var $dataFields = this.$el.find("input[type='text']"),
+            /*var $dataFields = this.$el.find("input[type='text']"),
                 picker;
             $dataFields.each(function () {
-                picker = new Pikaday({field: $(this)[0]});
-                picker.toString("YYYY-MM-DDThh:mm"); // That thing does not work
-            });
+                picker = new Pikaday({
+                    field: $(this)[0],
+                    format: "YYYY-MM-DDThh:mm",
+                    toString: function(date, format) {
+                        return dateFns.format(date, format);
+                    }
+                });
+                //picker.toString("YYYY-MM-DDThh:mm"); // That thing does not work
+            });*/
         },
 
         sortMediaTable: function(){
