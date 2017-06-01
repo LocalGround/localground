@@ -43,9 +43,12 @@ define([
             //contatenate the date and time input values
             var date = this.$el.find('.datepicker').val(),
                 hours = this.$el.find('.hours').val(),
+                hours00 = hours.substr(hours.length - 2, hours.length - 1),
                 minutes = this.$el.find('.minutes').val(),
-                seconds = this.$el.find('.seconds').val();
-            return date + hours + minutes + seconds;
+                minutes00 = minutes.substr(minutes.length - 2, minutes.length - 1),
+                seconds = this.$el.find('.seconds').val(),
+                seconds00 = seconds.substr(seconds.length - 2, seconds.length - 1);
+            return date + "T" + hours00 + ":" + minutes00+ ":" + seconds00;
         },
         render: function () {
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
