@@ -14,12 +14,13 @@ define([
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
+    "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js",
     "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.0/pikaday.min.js",
     "form", //extends Backbone
     "form-list"
 ], function ($, Backbone, _, Handlebars, Marionette, Association, Audio,
              MediaBrowser, AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
-             AudioPlayer, Carousel, Icon, Pikaday) {
+             AudioPlayer, Carousel, Icon, Moment, Pikaday) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -301,6 +302,9 @@ define([
                         // https://github.com/dbushell/Pikaday
                         // https://coderwall.com/p/70pw4a/datepicker-for-backbone-form
                         */
+                        console.log(field, name);
+                        // There has to be a way to add that dataType onto the HTML element that has the name
+                        // As of now, the name is called Untitled
                         break;
                     case "boolean":
                         fields[name] = { type: 'Checkbox', title: title };
@@ -370,10 +374,8 @@ define([
             var $dataFields = this.$el.find("input[type='text']"),
                 picker;
             $dataFields.each(function () {
-                picker = new Pikaday({
-                    field: $(this)[0],
-                    format: "YYYY-MM-DDThh:mm"
-                });
+                picker = new Pikaday({field: $(this)[0]});
+                picker.toString("YYYY-MM-DDThh:mm"); // That thing does not work
             });
         },
 
