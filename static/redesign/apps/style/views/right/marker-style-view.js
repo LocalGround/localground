@@ -94,6 +94,7 @@ define(["jquery",
             onRender: function () {
                 var that = this;
                 var newHex;
+                $(".marker-style-color-picker").remove();
                 this.$el.find('#stroke-color-picker').ColorPicker({
             
                     onShow: function (colpkr) {
@@ -108,8 +109,9 @@ define(["jquery",
                     },
                     onChange: function (hsb, hex, rgb) {
                         newHex = hex;
-                    }
+                    },      
                 });
+                $(".colorpicker:last-child").addClass('marker-style-color-picker');
             },
 
             hideColorRamp: function (e) {
@@ -386,6 +388,7 @@ define(["jquery",
 
             // triggered from colorPicker
             updateStrokeColor: function (hex) {
+                console.log("update stroke color triggered");
                 this.updateMetadata("strokeColor", '#' + hex);
                 $('#stroke-color-picker').css('color', '#' + hex);
                 this.updateMap();
@@ -400,6 +403,7 @@ define(["jquery",
             }, 
 
             showPalettes: function () {
+                console.log("toggle triggered");
                 this.$el.find(".palette-wrapper").toggle();
             },
 
