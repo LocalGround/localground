@@ -192,20 +192,6 @@ define([
                 expect(categoricalMarkerStyleView.updateMetadata).toHaveBeenCalledTimes(3);
             });
             
-            it(" 'updateStrokeColor()' should update stroke color ", function () {
-
-                //$(categoricalFixture.find("#stroke-color-picker").css({"color": "#ffffff"}).change());
-                $(categoricalFixture.find('#stroke-color-picker')).trigger("click");
-             //   console.log(categoricalFixture.html());
-             //   $('body').find('.color-picker').trigger('click');
-               // console.log($('body').html());
-              //  $(categoricalFixture.find(".color-picker")).show();
-              //  $(categoricalFixture.find(".color-picker")).css("display", "block");
-              //  $(categoricalFixture.find(".color-picker")).css("display", "none");
-                $('body').trigger("click");
-                //ColorPicker.setCurrentColor("(145, 129, 65)");
-                expect(categoricalMarkerStyleView.updateStrokeColor).toHaveBeenCalledTimes(1);
-            });
 
 
 /*
@@ -240,6 +226,21 @@ define([
                 jasmine.clock().tick(600);
                 expect(continuousMarkerStyleView.model.get("metadata").buckets).toEqual(7);      
             }); 
+
+            it(" 'updateStrokeColor()' should update stroke color ", function () {
+
+                //$(categoricalFixture.find("#stroke-color-picker").css({"color": "#ffffff"}).change());
+                $(categoricalFixture.find('#stroke-color-picker')).trigger("click");
+             //   console.log(categoricalFixture.html());
+             //   $('body').find('.color-picker').trigger('click');
+               // console.log($('body').html());
+              //  $(categoricalFixture.find(".color-picker")).show();
+              //  $(categoricalFixture.find(".color-picker")).css("display", "block");
+              //  $(categoricalFixture.find(".color-picker")).css("display", "none");
+                $('body').trigger("click");
+                //ColorPicker.setCurrentColor("(145, 129, 65)");
+                expect(categoricalMarkerStyleView.updateStrokeColor).toHaveBeenCalledTimes(1);
+            });
 /*
             it("updateMap should trigger 'rebuild markers' ", function () {
                 continuousMarkerStyleView.updateMap();
