@@ -87,7 +87,6 @@ define(["jquery",
                 this.buildPalettes();
                 this.buildColumnList();
              //   this.displaySymbols();
-                this.listenTo(this.app.vent, 'find-datatype', this.selectDataType);
                 $('body').click(this.hideColorRamp);
                 this.listenTo(this.app.vent, 'update-data-source', this.buildColumnList);
             },
@@ -102,6 +101,7 @@ define(["jquery",
                         return false;
                     },
                     onHide: function (colpkr) {
+                        console.log("colorPicker trigger");
                         that.updateStrokeColor(newHex);
                         $(colpkr).fadeOut(500);
                         return false;
@@ -162,9 +162,11 @@ define(["jquery",
                 'click .palette-list': 'selectPalette'
             },
 
-            selectDataType: function () {
+            selectDataType: function (e) {
+                console.log(this.dataType);
                 //this.dataType = this.$el.find("#data-type-select").val();
-                this.dataType = this.$el.find("#data-type-select").val(); //$(e.target).val();
+                this.dataType = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
+                console.log(this.dataType);
                 this.render();
                 this.buildColumnList();
                 if (this.dataType == "continuous") {
@@ -206,6 +208,7 @@ define(["jquery",
                     }
                 } else if (key.includes("form_")) {
                     var that = this;
+                    console.log(dataEntry.fields.models);
                     dataEntry.fields.models.forEach(function(log) {
                         if (log.get("data_type") == "text") {
                             that.categoricalList.push({
@@ -282,14 +285,6 @@ define(["jquery",
                     }
                 });
                 console.log(list);
-            },
-
-            getPropertiesCategorical: function () {
-                this.properties = [];
-            },
-
-            getPropertiesContinuous: function () {
-                this.properties = [];
             },
 
             delayExecution: function (timeoutVar, func, millisecs) {
@@ -379,7 +374,7 @@ define(["jquery",
             },
 
             updateStrokeOpacity: function(e) {
-                var opacity = parseFloat(this.$el.find("#stroke-opacity").val());
+                var opacity = parseFloat($(e.target).val());
                     if (opacity > 1) {
                         opacity = 1;
                     } else if (opacity < 0 ) {
@@ -387,10 +382,6 @@ define(["jquery",
                     } 
                 this.updateMetadata("strokeOpacity", opacity);
                 this.updateMap();
-            },
-
-            showPalettes: function () {
-                this.$el.find(".palette-wrapper").toggle();
             },
 
             // triggered from colorPicker
@@ -407,6 +398,10 @@ define(["jquery",
                 this.selectedColorPalette = this.allColors[paletteId];
                 this.contData();
             }, 
+
+            showPalettes: function () {
+                this.$el.find(".palette-wrapper").toggle();
+            },
 
             //convenience function
             updateMetadata: function(newKey, newValue) {

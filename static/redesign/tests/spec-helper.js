@@ -177,6 +177,17 @@ define(
                         "data_source": "form_1",
                         "symbol_shape": "fa-circle",
                         "layer_type": "continuous",
+                        "metadata": {
+                            "fillColor": "4e70d4",
+                            "strokeWeight": 1,
+                            "buckets": 5,
+                            "strokeOpacity": "0.7",
+                            "width": "30",
+                            "shape": "circle",
+                            "fillOpacity": 1,
+                            "strokeColor": "ffffff",
+                            "paletteId": 2
+                        },
                         "filters": [
                             {
                                 "tag": "nothing"
