@@ -10,17 +10,12 @@ define(["jquery",
             stateKey: 'marker-listing-',
             displayOverlay: true,
             initialize: function (opts) {
-                console.log(opts);
                 _.extend(this, opts);
                 this.stateKey += this.model.get("overlay_type") + "-" + this.model.id;
-                console.log(this.stateKey, this.displayOverlay);
                 this.restoreState();
                 this.model.set("dataType", this.dataType);
-                console.log(this.stateKey, this.displayOverlay);
 
                 //add event listeners:
-                this.listenTo(this.model, 'do-hover', this.hoverHighlight);
-                this.listenTo(this.model, 'clear-hover', this.clearHoverHighlight);
                 this.listenTo(this.model.collection, 'show-markers', this.redrawVisible);
                 this.listenTo(this.model.collection, 'hide-markers', this.redrawHidden);
             },
@@ -31,11 +26,13 @@ define(["jquery",
                 return Handlebars.compile(DefaultTemplate);
             },
             events: {
-                'click .fa-eye': 'hideMarker',
-                'click .fa-eye-slash': 'showMarker'
+                'click a .fa-eye': 'hideMarker',
+                'click a .fa-eye-slash': 'showMarker'
             },
             modelEvents: {
                 'saved': 'render',
+                'do-hover': 'hoverHighlight',
+                'clear-hover': 'clearHoverHighlight',
                 'change:active': 'render',
                 'change:geometry': 'render'
             },
@@ -66,9 +63,9 @@ define(["jquery",
             },
             hideMarker: function (e) {
                 this.displayOverlay = false;
+                this.saveState();
                 this.model.trigger('hide-overlay');
                 this.render();
-                this.saveState();
                 e.preventDefault();
             },
             showMarker: function (e) {
@@ -100,7 +97,10 @@ define(["jquery",
                 }
                 if (this.displayOverlay) {
                     this.model.trigger('show-overlay');
+                } else {
+                    this.model.trigger('hide-overlay');
                 }
+                this.saveState();
             }
         });
         return MarkerListingDetail;

@@ -39,7 +39,6 @@ define([
             spyOn(Spreadsheet.prototype, 'attachModels').and.callThrough();
 
 
-
             // functions involving renderers
             spyOn(Spreadsheet.prototype, "thumbnailRenderer").and.callThrough();
             spyOn(Spreadsheet.prototype, "audioRenderer").and.callThrough();

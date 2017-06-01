@@ -107,32 +107,28 @@ define(["marionette",
             },
 
             removeHideIcon: function () {
-                console.log("removeHideIcon");
-                this.displayOverlays = true;
-                this.saveState();
                 this.$el.find('.list-header > .fa-eye-slash').removeClass('fa-eye-slash').addClass('fa-eye');
             },
 
             showHideIcon: function () {
-                console.log("showHideIcon");
-                var invisibilityCount = 0;
+                var invisibilityCount = 0,
+                    that = this;
                 this.children.each(function (view) {
                     if (!view.displayOverlay) {
                         ++invisibilityCount;
+                        that.displayOverlays = false;
                     }
                 });
                 if (invisibilityCount === this.children.length) {
-                    this.displayOverlays = false;
-                    this.saveState();
                     this.$el.find('.list-header > .fa-eye').removeClass('fa-eye').addClass('fa-eye-slash');
                 }
+                this.saveState();
             },
 
             zoomToExtents: function () {
                 this.collection.trigger('zoom-to-extents');
             },
             hideMarkers: function () {
-                console.log("hideMarkers");
                 this.displayOverlays = false;
                 this.collection.trigger('hide-markers');
                 this.saveState();
@@ -192,7 +188,6 @@ define(["marionette",
                 _.bindAll(this, 'render');
 
                 // redraw CompositeView:
-                //this.render();
                 this.renderOverlays();
                 this.hideLoadingMessage();
             },
