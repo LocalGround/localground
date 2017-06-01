@@ -292,17 +292,15 @@ define([
                         for (j = 0; j < extras.length; j++){
                             options.push(extras[j].name);
                         }
-                        //dummy options for testing
-                        //options = ["red", "orange", "green", "blue", "yellow", "purple"];
                         fields[name] = { type: 'Select', title: title, options: options };
                         break;
                     case "date-time":
-                        fields[name] = { title: title };
+                        fields[name] = { title: title};
                         /*// TODO: make this a date picker / calendar like the spreadsheet
                         // Samples:
                         // https://github.com/dbushell/Pikaday
                         // https://coderwall.com/p/70pw4a/datepicker-for-backbone-form
-                        fields[name] = { type: 'DateTime', title: title };*/
+                        */
                         break;
                     case "boolean":
                         fields[name] = { type: 'Checkbox', title: title };
@@ -372,7 +370,10 @@ define([
             var $dataFields = this.$el.find("input[type='text']"),
                 picker;
             $dataFields.each(function () {
-                picker = new Pikaday({ field: $(this)[0] });
+                picker = new Pikaday({
+                    field: $(this)[0],
+                    format: "YYYY-MM-DDThh:mm"
+                });
             });
         },
 
