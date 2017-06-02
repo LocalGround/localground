@@ -23,9 +23,6 @@ define(["models/base", "models/symbol", "collections/symbols"], function (Base, 
             symbols: []
         }),
         symbolMap: null,
-        getNamePlural: function () {
-            return "layers";
-        },
         basic: false,
         initialize: function (data, opts) {
 			Base.prototype.initialize.apply(this, arguments);

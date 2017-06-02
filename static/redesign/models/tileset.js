@@ -2,9 +2,6 @@ define(["models/base", "lib/maps/tiles/mapbox", "lib/maps/tiles/stamen"],
     function (Base, MapBox, Stamen) {
         "use strict";
         var TileSet = Base.extend({
-            getNamePlural: function () {
-                return "tilesets";
-            },
             getClientStyles: function () {
                 return this.get("extras") ? this.get("extras").clientStyles : null;
             },

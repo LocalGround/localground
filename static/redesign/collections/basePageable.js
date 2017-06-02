@@ -5,7 +5,9 @@ define([
 ], function (_, BackbonePageableCollection, BaseMixin) {
     "use strict";
     var PageableCollection = BackbonePageableCollection.extend({
-
+        getDataType: function () {
+            return this.key;
+        },
         fillColor: "#ed867d",
         size: 23,
         events: {

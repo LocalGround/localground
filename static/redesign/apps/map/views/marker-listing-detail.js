@@ -8,8 +8,17 @@ define(["jquery",
         'use strict';
         var MarkerListingDetail = Marionette.ItemView.extend({
             stateKey: 'marker-listing-',
-            displayOverlay: true,
+            displayOverlay: false,
             initialize: function (opts) {
+                /* --------------------------
+                 * Initialization Parameters:
+                 * --------------------------
+                 * app
+                 * icon
+                 * model (passed in from CompositeView)
+                 * fields //optional Fields collection
+                 * displayOverlay //optional; defaults to false
+                */
                 _.extend(this, opts);
                 this.stateKey += this.model.get("overlay_type") + "-" + this.model.id;
                 this.restoreState();
@@ -40,7 +49,7 @@ define(["jquery",
             tagName: "li",
             templateHelpers: function () {
                 var opts = {
-                    dataType: this.dataType,
+                    dataType: this.model.getDataTypePlural(),
                     icon: this.icon,
                     name: this.model.get("name") || this.model.get("display_name")  || this.model.get("title"),
                     displayOverlay: this.displayOverlay

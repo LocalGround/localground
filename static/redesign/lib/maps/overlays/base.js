@@ -32,10 +32,9 @@ define(["marionette",
         },
         /** called when object created */
         initialize: function (opts) {
-            this.app = opts.app;
+            _.extend(this, opts);
             this.id = this.model.get('overlay_type') + this.model.get('id');
             this.map = opts.app.getMap();
-            this.model = opts.model;
             this.initInfoBubble(opts);
             this.initOverlayType();
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
@@ -58,6 +57,7 @@ define(["marionette",
                         height: this.model.collection.size
                     };
                 _.extend(iconOpts, this.iconOpts);
+                console.log(iconOpts, this.iconOpts);
                 icon = new Icon(iconOpts);
                 this._icon = icon;
             }
@@ -96,7 +96,7 @@ define(["marionette",
         attachEventHandlers: function () {
             var that = this;
             google.maps.event.addListener(this.getGoogleOverlay(), 'click', function () {
-                that.app.router.navigate("//" + that.model.getNamePlural() + "/" + that.model.get("id"));
+                that.app.router.navigate("//" + that.model.getDataTypePlural() + "/" + that.model.get("id"));
             });
             google.maps.event.addListener(this.getGoogleOverlay(), 'mouseover', function () {
                 that.infoBubble.showTip();

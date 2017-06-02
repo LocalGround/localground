@@ -4,7 +4,7 @@ define(["jquery",
         'lib/maps/marker-overlays',
         "text!../../templates/left/layer-item.html"
     ],
-    function ($, Marionette, Handlebars, OverlayListView, LayerItemTemplate) {
+    function ($, Marionette, Handlebars, MarkerOverlays, LayerItemTemplate) {
         'use strict';
         var LayerListChild =  Marionette.ItemView.extend({
             initialize: function (opts) {
@@ -51,7 +51,7 @@ define(["jquery",
             },
 
             initMapOverlays: function () {
-                // create an OverlayListView for each symbol in the
+                // create an MarkerOverlays for each symbol in the
                 // layer.
                 this.markerOverlayList = [];
                 var matchedCollection,
@@ -67,7 +67,7 @@ define(["jquery",
                             matchedCollection.add(model);
                         }
                     });
-                    overlays = new OverlayListView({
+                    overlays = new MarkerOverlays({
                         collection: matchedCollection,
                         app: that.app,
                         iconOpts: symbol.toJSON(),

@@ -20,9 +20,6 @@ define(["models/base"], function (Base) {
 			"source_print",
             "status"
         ],
-        getNamePlural: function () {
-            return "map images";
-        },
         defaults: _.extend({}, Base.prototype.defaults, {
             checked: false
         })

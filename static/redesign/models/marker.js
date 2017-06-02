@@ -20,9 +20,6 @@ define(["models/base",
             caption:  { type: 'TextArea', title: "Caption" },
             tags: { type: 'List', itemType: 'Text' }
         },
-        getNamePlural: function () {
-            return "markers";
-        },
 		excludeList: [
             "overlay_type",
             "url",

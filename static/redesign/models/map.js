@@ -1,9 +1,6 @@
 define(["models/base", "collections/layers"], function (Base, Layers) {
     "use strict";
     var Map = Base.extend({
-        getNamePlural: function () {
-            return "maps";
-        },
         getMapBySlug: function (opts) {
             this.urlRoot = "/api/0/maps/" + opts.slug + "/";
             this.fetch({
