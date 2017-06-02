@@ -38,6 +38,7 @@ define(["marionette",
             this.initInfoBubble(opts);
             this.initOverlayType();
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
+            console.log(this.isShowing);
         },
         initInfoBubble: function (opts) {
             this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
@@ -114,14 +115,16 @@ define(["marionette",
 
         /** shows the google.maps overlay on the map. */
         show: function () {
+            this.isShowing = true;
+            console.log("show marker");
             var go = this.getGoogleOverlay();
             go.setMap(this.map);
             this.changeMode();
-            this.isShowing = true;
         },
         reRender: function () {
             this.redraw();
             if (this.model.get("geometry")) {
+                console.log('reRender: show');
                 this.show();
             }
             //this.render();
@@ -129,14 +132,15 @@ define(["marionette",
 
         render: function () {
             this.redraw();
+            console.log(this.isShowing, 'render: show');
             if (this.isShowing) {
                 this.show();
             }
         },
 
-
         /** hides the google.maps overlay from the map. */
         hide: function () {
+            console.log("hide marker");
             var go = this.getGoogleOverlay();
             go.setMap(null);
             this.model.trigger("hide-bubble");

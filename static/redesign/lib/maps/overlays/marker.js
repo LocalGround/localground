@@ -12,9 +12,9 @@ define([
     var Marker = Base.extend({
 
         initialize: function (opts) {
-            console.log('blah');
             Base.prototype.initialize.apply(this, arguments);
             _.extend(this, opts);
+            console.log(this.model.get("overlay_type"), this.model.toJSON());
             this.redraw();
         },
 
@@ -23,7 +23,6 @@ define([
         },
 
         redraw: function () {
-            console.log(this.model.get("active"));
             if (this.getShapeType() === "Point") {
                 if (this.model.get("active")) {
                     var icon = {};

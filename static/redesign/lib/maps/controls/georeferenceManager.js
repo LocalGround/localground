@@ -132,6 +132,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
         };
 
         this.addMarker = function (googleOverlay) {
+            console.log('addMarker');
             var that = this,
                 model = new Marker({
                     project_id: this.app.getActiveProjectID(),
