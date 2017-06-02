@@ -1,13 +1,10 @@
 var rootDir = "../../";
 define([
-    "jquery",
     rootDir + "apps/style/views/right/right-panel"
 ],
-    function ($, RightPanelView) {
+    function (RightPanelView) {
         'use strict';
-        var rightPanel, fixture;
-
-        function initView(scope) {
+        var rightPanel, fixture, initView = function (scope) {
             // 1) add spies for all relevant objects:
             spyOn(RightPanelView.prototype, 'initialize').and.callThrough();
             spyOn(RightPanelView.prototype, 'createLayer').and.callThrough();
@@ -16,8 +13,11 @@ define([
             // 2) initialize rightPanel object:
             rightPanel = new RightPanelView({
                 app: scope.app,
-                model: scope.layer
+                model: scope.layer,
+                collection: scope.layer.getSymbols()
             });
+            console.log(scope.layer.get("symbols"));
+            console.log(scope.layer.getSymbols());
 
             // 3) set fixture:
             fixture = setFixtures('<div></div>').append(rightPanel.$el);
@@ -28,12 +28,6 @@ define([
                 initView(this);
             });
 
-            afterEach(function () {
-                //called after each "it" test
-                $("#sandbox").remove();
-                Backbone.history.stop();
-            });
-
             it("should initialize", function () {
                 expect(rightPanel).toEqual(jasmine.any(RightPanelView));
                 expect(rightPanel.initialize).toHaveBeenCalledTimes(1);
@@ -41,7 +35,7 @@ define([
 
             it("should have correct html", function () {
                 //has correct layout template
-                expect(fixture).toContainElement('#data_source_region');    
+                expect(fixture).toContainElement('#data_source_region');
             });
         });
 
@@ -49,6 +43,7 @@ define([
             beforeEach(function () {
                 initView(this);
             });
+
             it("should call createLayer()", function () {
                 expect(rightPanel.createLayer).toHaveBeenCalledTimes(0);
                 rightPanel.app.vent.trigger('edit-layer', this.layer);

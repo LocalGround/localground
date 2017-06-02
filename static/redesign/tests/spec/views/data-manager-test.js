@@ -18,6 +18,7 @@ define([
             // add spies for all relevant objects and initialize dataManager:
             spyOn(DataManager.prototype, 'initialize').and.callThrough();
             spyOn(DataManager.prototype, 'setCollections').and.callThrough();
+            spyOn(DataManager.prototype, 'attachFieldsToRecords').and.callThrough();
             spyOn(Project.prototype, 'fetch').and.callThrough();
             spyOn(Fields.prototype, 'fetch').and.callThrough();
             spyOn(that.app.vent, 'trigger');
@@ -117,7 +118,9 @@ define([
             it("Sets fields property for custom data types in data entry", function () {
                 var entry = dataManager.getData('form_1');
                 expect(entry.fields).toEqual(jasmine.any(Fields));
-                expect(entry.fields.fetch).toHaveBeenCalled();
+                expect(entry.fields.length).toEqual(4);
+                expect(DataManager.prototype.attachFieldsToRecords).toHaveBeenCalledTimes(1);
+                //expect(entry.fields.fetch).toHaveBeenCalled();
                 expect(entry.isSite).toBeTruthy();
                 expect(entry.isCustomType).toBeTruthy();
             });

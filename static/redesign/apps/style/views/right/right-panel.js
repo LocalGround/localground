@@ -13,7 +13,7 @@ define(["jquery",
         var RightPanelLayout = Marionette.LayoutView.extend({
             template: Handlebars.compile(RightPanelLayoutTemplate),
             initialize: function (opts) {
-                this.app = opts.app;
+                _.extend(this, opts);
                 this.render();
                 this.listenTo(this.app.vent, 'edit-layer', this.createLayer);
                 this.listenTo(this.app.vent, 'hide-right-panel', this.hidePanel);
@@ -99,12 +99,13 @@ define(["jquery",
                 var that = this;
                 var title = this.$el.find(".layer-title").val(),
                     dataSource = this.$el.find(".selected-data-source").val(),
-                    layerType = this.$el.find("#data-type-select").val();
+                    layerType = this.$el.find("#data-type-select").val(), 
+                    buckets = this.$el.find("#bucket").val();
                 if (this.model.get("filters") === null) {
                     this.model.set("filters", { 'tag' : 'nothing' });
                 }
-                this.model.set("title", title);
-                this.model.set("data_source", dataSource);
+               // this.model.set("title", title);
+              //  this.model.set("data_source", dataSource);
                 this.model.set("layer_type", layerType);
                 this.model.save(null, {
                     error: function () {
@@ -112,6 +113,7 @@ define(["jquery",
                     },
                     success: function () {
                         console.log('success');
+                        console.log(that.model);
                         that.collection.add(that.model);
                     }
                 });
