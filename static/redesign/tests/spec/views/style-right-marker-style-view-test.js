@@ -267,17 +267,37 @@ define([
                 expect(continuousMarkerStyleView.model.get("metadata").buckets).toEqual(5);  
                 expect(continuousMarkerStyleView.selectedColorPalette).toEqual(["f7f7f7", "cccccc", "969696", "636363", "252525"]);
             });
-/*
+
             it("showPalettes function should display and hide list of palettes", function() {
+            
+              // $(continuousFixture.find('.palette-wrapper')).css('display', 'none');
+            //   expect(continuousFixture.find(".palette-wrapper").css('display')).toEqual('none');
+               console.log("before first click", $(continuousFixture.find(".palette-wrapper")).css("display") );
+                $(continuousFixture.find('.selected-palette-wrapper').click());
+                console.log("after first click", $(continuousFixture.find(".palette-wrapper")).css("display") );
+               // console.log($('body').html());
+                expect(continuousFixture.find(".palette-wrapper").css('display')).toEqual('block');
+                //console.log("after first click", $(continuousFixture.find(".palette-wrapper")).css("display") );
+/*
+                if ($(continuousFixture.find('.palette-wrapper')).css('display') == "block") {
+
+                    $(continuousFixture.find('.selected-palette-wrapper').trigger('click'));
+                    expect($(continuousFixture.find('.palette-wrapper')).css('display')).toEqual('none');
+                  //  console.log("after first click", $(continuousFixture.find('.palette-wrapper')).css('display'));
+
+                    $(continuousFixture.find('.selected-palette-wrapper').trigger('click'));
+                    expect($(continuousFixture.find('.palette-wrapper')).css('display')).toEqual('block');
+                    console.log("after second click", $(continuousFixture.find('.palette-wrapper')).css('display'));
+                }
+                
+                
                 console.log($(continuousFixture.find('.palette-wrapper')).css('display'));
-                $(continuousFixture.find('.selected-palette-wrapper').trigger('click'));
-                expect($(continuousFixture.find('.palette-wrapper')).css('display')).toEqual('block');
+                $('body').click();
+                expect($(continuousFixture.find('.palette-wrapper')).css('display')).toEqual('none');
 
                 console.log($(continuousFixture.find('.palette-wrapper')).css('display'));
-                $(continuousFixture.find('.selected-palette-wrapper').trigger('click'));
-                expect($(continuousFixture.find('.palette-wrapper')).css('display')).toEqual('block');
-                console.log($(continuousFixture.find('.palette-wrapper')).css('display'));
+                */
             });
-*/
+
         });
     });

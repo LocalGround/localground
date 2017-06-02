@@ -116,10 +116,12 @@ define(["jquery",
 
             hideColorRamp: function (e) {
                 var $el = $(e.target);
+
                 if (!$el.hasClass('palette-wrapper') &&
-                        !$el.parent().hasClass('selected-palette-list') &&
-                        !$el.parent().hasClass('selected-palette-wrapper') &&
-                        !$el.parent().hasClass('selected-ul')
+                        !$el.hasClass('selected-palette-list') &&
+                        !$el.hasClass('selected-palette-wrapper') &&
+                        !$el.hasClass('selected-ul') &&
+                        !$el.hasClass('palette-item')
                         ) {
                     $(".palette-wrapper").hide();
                 }
@@ -161,7 +163,8 @@ define(["jquery",
                 'change #stroke-color': 'updateStrokeColor',
                 'change #stroke-opacity': 'updateStrokeOpacity',
                 'click .selected-palette-wrapper': 'showPalettes',
-                'click .palette-list': 'selectPalette'
+                'click .palette-list': 'selectPalette',
+                'click .palette-list *': 'selectPalette'
             },
 
             selectDataType: function (e) {
@@ -403,8 +406,13 @@ define(["jquery",
             }, 
 
             showPalettes: function () {
+                console.log("from view:", this.$el.find(".palette-wrapper").css("display"));
+                console.log($('body').html());
                 console.log("toggle triggered");
-                this.$el.find(".palette-wrapper").toggle();
+                this.$el.find(".palette-wrapper").css({display: 'block'});
+                this.$el.find(".palette-wrapper").addClass("okok");
+                console.log("from view:", this.$el.find(".palette-wrapper").css("display"));
+            //    console.log($('body').html());
             },
 
             //convenience function
