@@ -14,7 +14,6 @@ define(["jquery",
                 this.initMapOverlays();
             },
             template: Handlebars.compile(LayerItemTemplate),
-            modelEvents: {},
             tagName: "div",
             className: "layer-column",
             templateHelpers: function () {
@@ -24,7 +23,7 @@ define(["jquery",
             },
             markerOverlayList: null,
             modelEvents: {
-                'change:symbols': 'updateMapOverlays'
+                'rebuild-markers': 'updateMapOverlays'
             },
             events: {
                 //edit event here, pass the this.model to the right panel
@@ -42,6 +41,7 @@ define(["jquery",
             },
 
             updateMapOverlays: function () {
+                console.log('rebuilding map overlays');
                 this.hideOverlays();
                 this.model.rebuildSymbolMap();
                 this.initMapOverlays();

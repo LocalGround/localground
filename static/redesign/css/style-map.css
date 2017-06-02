@@ -173,6 +173,7 @@ ul {
     display: inline-block;
     border-radius: 3px 0 0 3px;
 }
+
 .toggle-buttons li {
     padding: 4px 6px;
     margin: 0;
@@ -191,10 +192,11 @@ ul {
 }
 
 .symbols-table td {
+    font-size: 11px;
     border-bottom: solid;
     border-width: 1px;
     border-color: #e7e7e7;
-    padding: 4px 0;
+    padding: 4px 4px;
 }
 
 th {
