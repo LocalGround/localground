@@ -89,13 +89,15 @@ define([
 
             if (am_pm == "PM"){
                 var hourInt = parseInt(hours00);
-                hourInt += 12;
+                hourInt = hourInt < 12? hourInt + 12: 12;
                 hours00 = String(hourInt);
             } else {
                 var hourInt = parseInt(hours00);
                 if (hourInt < 10){
                     hours00 = "0" + String(hourInt);
-                }
+                } else if (hourInt == 12{
+                    hours00 == "00";
+                })
             }
 
             return date + "T" + hours00 + ":" + minutes00+ ":" + seconds00;
