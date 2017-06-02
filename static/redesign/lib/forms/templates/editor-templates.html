@@ -8,3 +8,13 @@
 
 <label>s</label>
 <input class="seconds" value="{{ secondsString }}" type="number" />
+
+<!-- Somehow, we have to figure out how to make this AM/PM work because
+    12AM is 0 military and 12PM is 12 military
+    could be achieved by doing 12 modulo (%) but have 0 become 12
+    along with the general 24 modulo to ensure accurate hours
+-->
+<select>
+  <option value="am">AM</option>
+  <option value="pm">PM</option>
+</select>

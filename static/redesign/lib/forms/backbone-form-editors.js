@@ -34,7 +34,34 @@ define([
     Backbone.Form.editors.DateTimePicker = Backbone.Form.editors.Base.extend({
         tagName: "div",
 
+        dateChecker: [
+            function (value, formValues) {
+                console.log(value, formValues);
+                var err = {
+                    type: 'date',
+                    message: 'Invalid Date'
+                };
+                var error = false;
+
+                try {
+                    console.log();
+                    parseDate(value);
+                } catch (value) {
+                    error = true;
+                }
+                //check that value is a date. If it is, return nothing, else return error
+                if (error) {
+                    return err;
+                }
+            }
+        ],
+
         initialize: function (options) {
+
+            this.schema = {};
+
+            this.schema.validators = this.dateChecker;
+
             Backbone.Form.editors.Text.prototype.initialize.call(this, options);
             var template = Handlebars.compile(EditorTemplate);
             this.$el.append(template({
@@ -43,12 +70,8 @@ define([
                 minutesString: dateFns.format(this.value, 'mm'),
                 secondsString: dateFns.format(this.value, 'ss')
             }));
-            /*//d.getMonth().toString() + "/" + d.getDate().toString() + "/" + d.getFullYear().toString();
-            this.$el.append($("<input class='datepicker input-small-custom' />").val(this.dateString));
-            //combine all the times together and make the CSS nice:
-            this.$el.append($("<br><label>h</label><input class='hours' />").val(this.hoursString));
-            this.$el.append($("<label>m</label><input class='minutes' />").val(this.minutesString));
-            this.$el.append($("<label>s</label><input class='seconds' />").val(this.secondsString));*/
+
+            console.log(this);
         },
         getValue: function () {
             //contatenate the date and time input values
