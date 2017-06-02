@@ -40,7 +40,7 @@ define([
             options.schema.validators = [this.dateTimeValidator];
             Backbone.Form.editors.Text.prototype.initialize.call(this, options);
             var template = Handlebars.compile(EditorTemplate);
-            var hours = parseInt(dateFns.format(this.value, 'hh'));
+            var hours = parseInt(dateFns.format(this.value, 'HH'));
             var isPm = hours >= 12 ? true: false;
             this.$el.append(template({
                 dateString: dateFns.format(this.value, 'YYYY-MM-DD'),

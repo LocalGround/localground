@@ -2114,3 +2114,8 @@ span.plus {
 .hours, .minutes, .seconds{
     width: 50px !important;
 }
+
+.time-table td{
+    font-size: 12px;
+    color: #888;
+}
