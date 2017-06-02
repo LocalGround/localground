@@ -34,7 +34,8 @@ define(["jquery",
                 'do-hover': 'hoverHighlight',
                 'clear-hover': 'clearHoverHighlight',
                 'change:active': 'render',
-                'change:geometry': 'render'
+                'change:geometry': 'render',
+                'show-overlay': 'redrawVisible'
             },
             tagName: "li",
             templateHelpers: function () {

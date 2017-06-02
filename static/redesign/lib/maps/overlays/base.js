@@ -19,7 +19,7 @@ define(["marionette",
         model: null,
         _overlay: null,
         template: false,
-        displayOverlay: true,
+        displayOverlay: false,
 
         modelEvents: {
             'change:geometry': 'reRender',
@@ -121,11 +121,12 @@ define(["marionette",
             this.changeMode();
         },
         reRender: function () {
-            this.redraw();
+            console.log('rerender');
+            /*this.redraw();
             if (this.model.get("geometry")) {
                 this.show();
-            }
-            //this.render();
+            }*/
+            this.render();
         },
 
         render: function () {
