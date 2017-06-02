@@ -27,6 +27,7 @@ define(['marionette',
                 this.opts = opts;
                 this.map = this.app.getMap();
                 this.childViewOptions = opts;
+                //this.childViewOptions.displayOverlay = opts.displayOverlays;
 
                 this.render();
 

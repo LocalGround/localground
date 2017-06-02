@@ -19,6 +19,7 @@ define(["marionette",
         model: null,
         _overlay: null,
         template: false,
+        displayOverlay: true,
 
         modelEvents: {
             'change:geometry': 'reRender',
@@ -38,7 +39,6 @@ define(["marionette",
             this.initInfoBubble(opts);
             this.initOverlayType();
             this.listenTo(this.app.vent, "mode-change", this.changeMode);
-            console.log(this.isShowing);
         },
         initInfoBubble: function (opts) {
             this.infoBubble = new Infobubble(_.extend({overlay: this}, opts));
@@ -110,13 +110,12 @@ define(["marionette",
 
         /** determines whether the overlay is visible on the map. */
         isShowingOnMap: function () {
-            return this.getGoogleOverlay().getMap() != null && this.isShowing;
+            return this.getGoogleOverlay().getMap() != null && this.displayOverlay;
         },
 
         /** shows the google.maps overlay on the map. */
         show: function () {
-            this.isShowing = true;
-            console.log("show marker");
+            this.displayOverlay = true;
             var go = this.getGoogleOverlay();
             go.setMap(this.map);
             this.changeMode();
@@ -124,7 +123,6 @@ define(["marionette",
         reRender: function () {
             this.redraw();
             if (this.model.get("geometry")) {
-                console.log('reRender: show');
                 this.show();
             }
             //this.render();
@@ -132,26 +130,23 @@ define(["marionette",
 
         render: function () {
             this.redraw();
-            console.log(this.isShowing, 'render: show');
-            if (this.isShowing) {
+            if (this.displayOverlay) {
                 this.show();
             }
         },
 
         /** hides the google.maps overlay from the map. */
         hide: function () {
-            console.log("hide marker");
             var go = this.getGoogleOverlay();
             go.setMap(null);
             this.model.trigger("hide-bubble");
-            this.isShowing = false;
+            //this.displayOverlay = false;
         },
 
         onBeforeDestroy: function () {
             var go = this.getGoogleOverlay();
             go.setMap(null);
             this.infoBubble.remove();
-            //console.log("onBeforeDestroy", go, this.model.get("id"));
             Base.__super__.remove.apply(this);
         },
 

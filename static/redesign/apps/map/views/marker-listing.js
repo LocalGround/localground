@@ -158,7 +158,7 @@ define(["marionette",
                     app: this.app,
                     dataType: this.typePlural,
                     _icon: this.icon,
-                    isShowing: this.displayOverlays
+                    displayOverlays: this.displayOverlays
                 });
             },
 

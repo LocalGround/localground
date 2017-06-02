@@ -13,8 +13,6 @@ define([
 
         initialize: function (opts) {
             Base.prototype.initialize.apply(this, arguments);
-            _.extend(this, opts);
-            console.log(this.model.get("overlay_type"), this.model.toJSON());
             this.redraw();
         },
 
