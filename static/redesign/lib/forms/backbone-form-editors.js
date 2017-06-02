@@ -34,34 +34,10 @@ define([
     Backbone.Form.editors.DateTimePicker = Backbone.Form.editors.Base.extend({
         tagName: "div",
 
-        dateChecker: [
-            function (value, formValues) {
-                console.log(value, formValues);
-                var err = {
-                    type: 'date',
-                    message: 'Invalid Date'
-                };
-                var error = false;
-
-                try {
-                    console.log();
-                    parseDate(value);
-                } catch (value) {
-                    error = true;
-                }
-                //check that value is a date. If it is, return nothing, else return error
-                if (error) {
-                    return err;
-                }
-            }
-        ],
-
         initialize: function (options) {
-
-            this.schema = {};
-
-            this.schema.validators = this.dateChecker;
-
+            // add date / time validator before calling the
+            // parent initialization function:
+            options.schema.validators = [this.dateTimeValidator];
             Backbone.Form.editors.Text.prototype.initialize.call(this, options);
             var template = Handlebars.compile(EditorTemplate);
             this.$el.append(template({
@@ -70,8 +46,17 @@ define([
                 minutesString: dateFns.format(this.value, 'mm'),
                 secondsString: dateFns.format(this.value, 'ss')
             }));
-
-            console.log(this);
+        },
+        dateTimeValidator: function (value, formValues) {
+            try {
+                parseDate(value);
+            } catch (ex) {
+                return {
+                    type: 'date',
+                    message: 'Invalid date / time value. Please try again.'
+                };
+            }
+            return null;
         },
         getValue: function () {
             //contatenate the date and time input values
