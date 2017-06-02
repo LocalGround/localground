@@ -21,7 +21,7 @@ define(["marionette",
         template: false,
 
         modelEvents: {
-            'change:geometry': 'render',
+            'change:geometry': 'reRender',
             'change:active': 'render',
             //'change': 'render',
             'show-overlay': 'show',
@@ -46,12 +46,15 @@ define(["marionette",
             if (!this._icon) {
                 var icon,
                     iconOpts = {
-                        fillColor: '#ed867d', //this.model.get("color")
+                        //fillColor: '#ed867d', //this.model.get("color")
                         fillOpacity: 1,
                         strokeColor: '#fff',
                         strokeWeight: 1,
                         strokeOpacity: 1,
-                        shape: 'circle'
+                        shape: 'circle',
+                        fillColor: this.model.collection.fillColor,
+                        width: this.model.collection.size,
+                        height: this.model.collection.size
                     };
                 _.extend(iconOpts, this.iconOpts);
                 icon = new Icon(iconOpts);
@@ -115,6 +118,13 @@ define(["marionette",
             go.setMap(this.map);
             this.changeMode();
             this.isShowing = true;
+        },
+        reRender: function () {
+            this.redraw();
+            if (this.model.get("geometry")) {
+                this.show();
+            }
+            //this.render();
         },
 
         render: function () {

@@ -1,12 +1,12 @@
 define([
     "underscore",
-    "backbone-pageable",
+    "collections/basePageable",
     "models/record",
     "jquery",
     "collections/baseMixin"
-], function (_, PageableCollection, Record, $, CollectionMixin) {
+], function (_, BasePageable, Record, $, CollectionMixin) {
     "use strict";
-    var Records = PageableCollection.extend({
+    var Records = BasePageable.extend({
         model: Record,
         columns: null,
         key: 'form_?',
@@ -25,7 +25,7 @@ define([
                 alert("The Records collection requires a key parameter upon initialization");
                 return;
             }
-            PageableCollection.prototype.initialize.apply(this, arguments);
+            BasePageable.prototype.initialize.apply(this, arguments);
         },
         state: {
             currentPage: 1,
@@ -122,7 +122,7 @@ define([
 					query: this.query
 				});
             }
-            PageableCollection.__super__.fetch.apply(this, arguments);
+            BasePageable.__super__.fetch.apply(this, arguments);
         }
     });
     return Records;

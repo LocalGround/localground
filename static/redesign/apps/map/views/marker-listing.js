@@ -29,11 +29,13 @@ define(["marionette",
                 this.template = Handlebars.compile(ListTemplate);
 
                 Marionette.CompositeView.prototype.initialize.call(this);
-
                 if (!this.isMapImageCollection()) {
                     this.icon = new Icon({
                         shape: opts.data.collection.key,
-                        fillColor: opts.fillColor
+                        //fillColor: opts.fillColor,
+                        fillColor: this.collection.fillColor,
+                        width: this.collection.size,
+                        height: this.collection.size
                     });
                 }
                 this.displayMedia();
@@ -46,7 +48,6 @@ define(["marionette",
                 return this.collection.key === "map_images";
             },
             initDisplayFlags: function () {
-                console.log("initDisplayFlags:", this.typePlural);
                 if (this.typePlural === "photos" || this.typePlural === "audio" ||
                         this.typePlural === "map_images") {
                     this.displayOverlays = false;
@@ -68,7 +69,6 @@ define(["marionette",
                 };
             },
             getEmptyView: function () {
-                //console.log("empty", this.title);
                 return Marionette.ItemView.extend({
                     initialize: function (opts) {
                         _.extend(this, opts);

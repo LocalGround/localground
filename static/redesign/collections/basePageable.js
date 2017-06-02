@@ -6,6 +6,8 @@ define([
     "use strict";
     var PageableCollection = BackbonePageableCollection.extend({
 
+        fillColor: "#ed867d",
+        size: 23,
         events: {
             'click #toolbar-search': 'doSearch',
             'click #toolbar-clear': 'clearSearch'

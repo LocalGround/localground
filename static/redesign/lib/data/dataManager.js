@@ -5,6 +5,8 @@ define(["underscore", "marionette", "models/project", "collections/photos",
         'use strict';
         var DataManager = Marionette.ItemView.extend({
             dataDictionary: {},
+            formColors: ['#60C7CC', '#CF2045', '#A3A737', '#F27CA5'],
+            colorCounter: 0,
             template: false,
             isEmpty: function () {
                 return Object.keys(this.dataDictionary).length === 0;
@@ -100,11 +102,13 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                                 record.set('fields', fields.toJSON());
                             });
                         }});
+                        records.fillColor = this.formColors[this.colorCounter++];
                         return {
                             collection: records,
                             fields: fields,
                             isCustomType: true,
-                            isSite: true
+                            isSite: true,
+                            
                         };
                     }
                     throw new Error("case not handled");

@@ -12,16 +12,10 @@ define([
     var Marker = Base.extend({
 
         initialize: function (opts) {
+            console.log('blah');
             Base.prototype.initialize.apply(this, arguments);
             _.extend(this, opts);
             this.redraw();
-        },
-
-        /** shows the google.maps overlay on the map. */
-        show: function () {
-            Base.prototype.show.apply(this);
-            this.redraw();
-            //this.highlight();
         },
 
         initInfoBubble: function (opts) {
@@ -29,6 +23,7 @@ define([
         },
 
         redraw: function () {
+            console.log(this.model.get("active"));
             if (this.getShapeType() === "Point") {
                 if (this.model.get("active")) {
                     var icon = {};

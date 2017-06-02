@@ -99,7 +99,13 @@ define([
                     if (shape.indexOf("form_") != -1) {
                         shape = "marker";
                     }
-                    icon = new Icon({ shape: shape, strokeWeight: 6 }).generateGoogleIcon();
+                    icon = new Icon({
+                        shape: shape,
+                        strokeWeight: 6,
+                        fillColor: that.model.collection.fillColor,
+                        width: that.model.collection.size,
+                        height: that.model.collection.size
+                    }).generateGoogleIcon();
                     icon.width *= 1.5;
                     icon.height *= 1.5;
                     $follower.html(template(icon));
@@ -261,7 +267,6 @@ define([
                 player;
             if (this.dataType.indexOf('form_') != -1) {
                 fields = {};
-                console.log(this.model.get("fields"));
                 for (i = 0; i < this.model.get("fields").length; i++) {
                     /* https://github.com/powmedia/backbone-forms */
                     field = this.model.get("fields")[i];

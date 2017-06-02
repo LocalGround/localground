@@ -40,14 +40,10 @@ define(['marionette',
             geometryUpdated: function (model) {
                 if (!this.children.findByModel(model)) {
                     this.addChild(model, this.childView);
-                    console.log("Adding child");
-                }
-                else if (!model.get("geometry")){
+                } else if (!model.get("geometry")) {
                     var view = this.children.findByModel(model);
                     this.removeChildView(view);
-                    console.log("Removing child");
                 }
-
             },
 
             // overriding the "addChild" method so that data elements w/o
