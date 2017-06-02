@@ -40,17 +40,35 @@ define([
             options.schema.validators = [this.dateTimeValidator];
             Backbone.Form.editors.Text.prototype.initialize.call(this, options);
             var template = Handlebars.compile(EditorTemplate);
+            var hours = parseInt(dateFns.format(this.value, 'hh'));
+            var isPm = hours >= 12 ? true: false;
             this.$el.append(template({
                 dateString: dateFns.format(this.value, 'YYYY-MM-DD'),
                 hoursString: dateFns.format(this.value, 'hh'),
                 minutesString: dateFns.format(this.value, 'mm'),
-                secondsString: dateFns.format(this.value, 'ss')
+                secondsString: dateFns.format(this.value, 'ss'),
+                am_pm_String: dateFns.format(this.value, 'a'),
+                hours: hours,
+                isPm: isPm
             }));
         },
         dateTimeValidator: function (value, formValues) {
+
+
             try {
-                parseDate(value);
+                console.log(value);
+                var d = new Date(value);
+                if (d == "Invalid Date"){
+                    return {
+                        type: 'date',
+                        message: 'Invalid date / time value. Please try again.'
+                    };
+                }
+                console.log(d);
+
             } catch (ex) {
+                console.log(value);
+                console.log(ex);
                 return {
                     type: 'date',
                     message: 'Invalid date / time value. Please try again.'
@@ -61,12 +79,25 @@ define([
         getValue: function () {
             //contatenate the date and time input values
             var date = this.$el.find('.datepicker').val(),
+                am_pm = this.$el.find('.am_pm').val(),
                 hours = this.$el.find('.hours').val(),
-                hours00 = hours.substr(hours.length - 2, hours.length - 1),
+                hours00 = hours.substr(hours.length - 2),
                 minutes = this.$el.find('.minutes').val(),
-                minutes00 = minutes.substr(minutes.length - 2, minutes.length - 1),
+                minutes00 = minutes.substr(minutes.length - 2),
                 seconds = this.$el.find('.seconds').val(),
-                seconds00 = seconds.substr(seconds.length - 2, seconds.length - 1);
+                seconds00 = seconds.substr(seconds.length - 2);
+
+            if (am_pm == "PM"){
+                var hourInt = parseInt(hours00);
+                hourInt += 12;
+                hours00 = String(hourInt);
+            } else {
+                var hourInt = parseInt(hours00);
+                if (hourInt < 10){
+                    hours00 = "0" + String(hourInt);
+                }
+            }
+
             return date + "T" + hours00 + ":" + minutes00+ ":" + seconds00;
         },
         render: function () {
