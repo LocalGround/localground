@@ -12,12 +12,12 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 return Object.keys(this.dataDictionary).length === 0;
             },
             initialize: function (opts) {
+                //todo: remove app dependency and pass in projectID and vent
+                _.extend(this, opts);
                 if (typeof this.projectID === 'undefined') {
                     window.location = '/';
                     return false;
                 }
-                //todo: remove app dependency and pass in projectID and vent
-                _.extend(this, opts);
                 if (!this.model) {
                     this.model = new Project({ id: this.projectID });
                     this.model.fetch({ success: this.setCollections.bind(this) });
