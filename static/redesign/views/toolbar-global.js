@@ -13,9 +13,13 @@ define([
         template: Handlebars.compile(ToolbarTemplate),
         previewURL: null,
         templateHelpers: function () {
+            var name;
+            if (this.model) {
+                name = this.model.get("name") === "Untitled" ? "" : this.model.get("name");
+            }
             return {
                 activeTab: this.app.activeTab,
-                name: this.model.get("name") === "Untitled" ? "" : this.model.get("name"),
+                name: name,
                 previewURL: this.previewURL,
                 screenType: this.app.screenType
             };

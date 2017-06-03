@@ -178,14 +178,14 @@ define(
                         "symbol_shape": "fa-circle",
                         "layer_type": "continuous",
                         "metadata": {
-                            "fillColor": "4e70d4",
+                            "fillColor": "#4e70d4",
                             "strokeWeight": 1,
                             "buckets": 5,
                             "strokeOpacity": "0.7",
                             "width": "30",
                             "shape": "circle",
                             "fillOpacity": 1,
-                            "strokeColor": "ffffff",
+                            "strokeColor": "#ffffff",
                             "paletteId": 2
                         },
                         "filters": [
@@ -202,7 +202,7 @@ define(
                                 "height": 32,
                                 "width": 32,
                                 "shape": "worm",
-                                "strokeColor": "#FFF",
+                                "strokeColor": "#FFFFFF",
                                 "fillColor": "#d7b5d8"
                             },
                             {
@@ -212,7 +212,7 @@ define(
                                 "height": 32,
                                 "width": 32,
                                 "shape": "worm",
-                                "strokeColor": "#FFF",
+                                "strokeColor": "#FFFFFF",
                                 "fillColor": "#df65b0",
                                 "is_showing": true
                             },
@@ -223,7 +223,7 @@ define(
                                 "height": 32,
                                 "width": 32,
                                 "shape": "worm",
-                                "strokeColor": "#FFF",
+                                "strokeColor": "#FFFFFF",
                                 "fillColor": "#ce1256"
                             }
                         ]
@@ -257,14 +257,14 @@ define(
                         "layer_type": "categorical",
                         "metadata": {
                             "newKey": 6,
-                            "fillColor": "4e70d4",
+                            "fillColor": "#4e70d4",
                             "strokeWeight": 1,
                             "buckets": 3,
                             "strokeOpacity": "0.7",
                             "width": "30",
                             "shape": "circle",
                             "fillOpacity": 1,
-                            "strokeColor": "ffffff",
+                            "strokeColor": "#FFFFFF",
                             "paletteId": 3
                         },
                         "filters": {

@@ -13,13 +13,13 @@ define(["jquery",
                 /* --------------------------
                  * Initialization Parameters:
                  * --------------------------
-                 * app
-                 * icon
-                 * model (passed in from CompositeView)
-                 * fields //optional Fields collection
-                 * displayOverlay //optional; defaults to false
+                 * 1. app
+                 * 2. icon
+                 * 3. model
+                 * 4. displayOverlay (optional; defaults to false)
                 */
                 _.extend(this, opts);
+                console.log(this.model);
                 this.stateKey += this.model.get("overlay_type") + "-" + this.model.id;
                 this.restoreState();
 
@@ -50,7 +50,7 @@ define(["jquery",
                 var opts = {
                     dataType: this.model.getDataTypePlural(),
                     icon: this.icon,
-                    name: this.model.get("name") || this.model.get("display_name")  || this.model.get("title"),
+                    name: this.model.get("name") || this.model.get("display_name"),
                     displayOverlay: this.displayOverlay
                 };
                 if (this.icon) {

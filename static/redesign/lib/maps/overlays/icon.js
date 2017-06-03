@@ -1,9 +1,9 @@
 define(["marionette", "underscore", "lib/maps/icon-lookup"], function (Marionette, _, IconLookup) {
     "use strict";
     var Icon = Marionette.ItemView.extend({
-        fillColor: '#ed867d',
+        fillColor: '#ED867D',
         fillOpacity: 1,
-        strokeColor: '#fff',
+        strokeColor: '#FFFFFF',
         strokeWeight: 1,
         strokeOpacity: 1,
         initialize: function (opts) {

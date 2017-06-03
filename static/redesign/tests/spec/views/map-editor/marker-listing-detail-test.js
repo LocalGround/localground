@@ -10,10 +10,11 @@ define([
         'use strict';
         var markerView,
             icon,
+            fixture,
             model,
             i,
             models,
-            counter = 0,
+            modelCounter = 0,
             initSpies = function () {
                 //View Spies:
                 spyOn(MarkerView.prototype, 'initialize').and.callThrough();
@@ -36,7 +37,8 @@ define([
                     that.audioFiles.at(0),
                     that.map_images.at(0)
                 ];
-                model = models[counter];
+                model = models[modelCounter];
+                console.log(modelCounter);
             },
             getIcon = function () {
                 icon = new Icon({
@@ -55,8 +57,15 @@ define([
                     displayOverlay: true
                 });
             },
-            clearLocalStorage = function () {
-                localStorage.mapplication = JSON.stringify({});
+            clearMarkerEntriesFromLocalStorage = function () {
+                var key,
+                    cache = JSON.parse(localStorage.mapplication);
+                for (key in cache) {
+                    if (key.indexOf("marker") != -1) {
+                        delete cache[key];
+                    }
+                }
+                localStorage.mapplication = JSON.stringify(cache);
             };
 
 
@@ -75,7 +84,6 @@ define([
                     expect(markerView.model).toBe(model);
                     expect(markerView.app).toBe(this.app);
                     expect(markerView.icon).toBe(icon);
-                    expect(typeof markerView.fields).toBe('undefined');
                     expect(markerView.displayOverlay).toBeTruthy();
                     markerView.stateKey = model.get("overlay_type") + "-" + model.id;
                 });
@@ -91,7 +99,7 @@ define([
                 });
 
                 it("Restores overlay visibility state on initialization", function () {
-                    clearLocalStorage();
+                    clearMarkerEntriesFromLocalStorage();
 
                     //should initialize overlay turned on
                     initMarkerView(this);
@@ -161,23 +169,135 @@ define([
                     expect(MarkerView.prototype.redrawHidden).toHaveBeenCalledTimes(0);
                     model.trigger('hide-markers');
                     expect(MarkerView.prototype.redrawHidden).toHaveBeenCalledTimes(1);
-                    ++counter;
                 });
 
+                it("initializes startup params successfully", function () {
+                    clearMarkerEntriesFromLocalStorage();
+                    initMarkerView(this);
+                    markerView.render();
+                    fixture = setFixtures('<div></div>').append(markerView.$el);
+
+                    var $a = fixture.find("a"),
+                        $svg = fixture.find("svg"),
+                        $path = fixture.find("path"),
+                        $p = fixture.find("p"),
+                        $i = fixture.find("i");
+                    expect(MarkerView.prototype.render).toHaveBeenCalledTimes(1);
+                    expect(fixture).toContainElement("a");
+                    expect(fixture.find("a")).toContainElement("p");
+                    expect(fixture.find("a")).toContainElement("i");
+                    expect($a.attr("href")).toEqual("#/" + model.getDataTypePlural() + "/" + model.id);
+
+                    //ensure that the icon (svg) has been drawn correctly:
+                    if (model.get("overlay_type") !== "map-image") {
+                        expect(fixture.find("a")).toContainElement("svg");
+                        expect($svg[0].getAttribute("viewBox")).toEqual(icon.getViewBox());
+                        expect($svg.attr("width")).toEqual(icon.width.toString());
+                        expect($svg.attr("height")).toEqual(icon.height.toString());
+                        expect($path.attr("fill")).toEqual(icon.fillColor);
+                        expect($path.attr("stroke")).toEqual("#FFFFFF");
+                        expect($path.attr("stroke-width")).toEqual("2");
+                        expect($path.attr("d")).toEqual(icon.path);
+                        expect($path.attr("stroke-linejoin")).toEqual("round");
+                        expect($path.attr("stroke-linecap")).toEqual("round");
+                        expect($path.attr("paint-order")).toEqual("stroke");
+                    } else {
+                        // no SVGs for Map Overlays:
+                        expect(fixture.find("a")).not.toContainElement("svg");
+                    }
+
+                    //ensure that paragraph has been rendered correctly:
+                    expect($p).toHaveText(model.get("name") || model.get("display_name"));
+
+                    //ensure that eye is showing on initialization:
+                    expect($i.hasClass("toggle-visibility")).toBeTruthy();
+                    expect($i.hasClass("fa-eye")).toBeTruthy();
+                    expect($i.hasClass("fa-eye-slash")).toBeFalsy();
+                    
+                    //important: increments the model modelCounter for the whole block:
+                    ++modelCounter;
+                });
             }
         });
 
-        describe("MarkerListingDetail: Renderer Tests", function () {
+        describe("MarkerListingDetail: UI Tests", function () {
             beforeEach(function () {
-                counter = 0;
+                modelCounter = 0;
                 initSpies();
                 initGlobals(this);
             });
 
-            it("initializes startup params successfully", function () {
-                spyOn(MarkerView.prototype, 'restoreState');
-                initMarkerView(this);
-                expect(markerView.model).toBe(model);
+            it("listens for show / hide marker requests", function () {
+                expect(1).toEqual(1);
+                /*
+                'click a .fa-eye': 'hideMarker',
+                'click a .fa-eye-slash': 'showMarker'
+                */
+            });
+
+            it("highlights when hoverHighlight called", function () {
+                expect(1).toEqual(1);
+                /*
+                hoverHighlight: function () {
+                    this.clearHoverHighlight();
+                    if (!this.$el.hasClass('highlight')) {
+                        this.$el.addClass("hover-highlight");
+                    }
+                }
+                */
+            });
+
+            it("unhighlights when clearHoverHighlight called", function () {
+                expect(1).toEqual(1);
+                // $("li").removeClass("hover-highlight");
+            });
+
+            it("hides marker when hideMarker called", function () {
+                expect(1).toEqual(1);
+                /*
+                hideMarker: function (e) {
+                    this.displayOverlay = false;
+                    this.saveState();
+                    this.model.trigger('hide-marker');
+                    this.render();
+                    e.preventDefault();
+                },
+                */
+            });
+
+            it("shows marker when showMarker called", function () {
+                expect(1).toEqual(1);
+                /*
+                showMarker: function (e) {
+                    this.displayOverlay = true;
+                    this.model.trigger('show-marker');
+                    this.render();
+                    this.saveState();
+                    e.preventDefault();
+                }
+                */
+            });
+
+            it("gives a visual cue that the overlay is visible", function () {
+                expect(1).toEqual(1);
+                /*
+                redrawVisible: function () {
+                    this.displayOverlay = true;
+                    this.saveState();
+                    this.render();
+                }
+                */
+            });
+
+            it("gives a visual cue that the overlay is hidden", function () {
+                expect(1).toEqual(1);
+                /*
+                redrawHidden: function () {
+                    this.displayOverlay = false;
+                    this.saveState();
+                    this.render();
+                }
+                */
             });
         });
 

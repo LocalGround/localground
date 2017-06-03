@@ -87,7 +87,6 @@ define(["marionette",
             childViewOptions: function () {
                 var opts = {
                     app: this.app,
-                    fields: this.fields,
                     title: this.title,
                     icon: this.icon,
                     displayOverlay: this.displayOverlays

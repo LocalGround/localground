@@ -156,7 +156,7 @@ define([
                     "height": 32,
                     "width": 32,
                     "shape": "worm",
-                    "strokeColor": "#FFF",
+                    "strokeColor": "#FFFFFF",
                     "fillColor": "#d7b5d8",
                     "fillOpacity": 1,
                     "strokeOpacity": 1
@@ -168,7 +168,7 @@ define([
                     "height": 32,
                     "width": 32,
                     "shape": "worm",
-                    "strokeColor": "#FFF",
+                    "strokeColor": "#FFFFFF",
                     "fillColor": "#df65b0",
                     "is_showing": true,
                     "fillOpacity": 1,
@@ -181,7 +181,7 @@ define([
                     "height": 32,
                     "width": 32,
                     "shape": "worm",
-                    "strokeColor": "#FFF",
+                    "strokeColor": "#FFFFFF",
                     "fillColor": "#ce1256",
                     "fillOpacity": 1,
                     "strokeOpacity": 1

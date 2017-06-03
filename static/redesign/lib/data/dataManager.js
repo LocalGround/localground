@@ -12,6 +12,10 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 return Object.keys(this.dataDictionary).length === 0;
             },
             initialize: function (opts) {
+                if (typeof this.projectID === 'undefined') {
+                    window.location = '/';
+                    return false;
+                }
                 //todo: remove app dependency and pass in projectID and vent
                 _.extend(this, opts);
                 if (!this.model) {
@@ -27,7 +31,6 @@ define(["underscore", "marionette", "models/project", "collections/photos",
                 var that = this,
                     extras;
                 _.each(this.model.get("children"), function (entry, key) {
-                    console.log(entry.fields);
                     that.dataDictionary[key] = entry;
                     extras = that.initCollection(key, entry.data, entry.fields);
                     _.extend(that.dataDictionary[key], extras);
