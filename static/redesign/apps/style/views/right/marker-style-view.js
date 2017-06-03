@@ -98,18 +98,20 @@ define(["jquery",
                 this.$el.find('#stroke-color-picker').ColorPicker({
             
                     onShow: function (colpkr) {
+                        console.log("colorPicker show");
                         $(colpkr).fadeIn(500);
                         return false;
                     },
                     onHide: function (colpkr) {
-                        console.log("colorPicker trigger");
+                        console.log("colorPicker hide");
                         that.updateStrokeColor(newHex);
                         $(colpkr).fadeOut(500);
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
+                        console.log("colorPicker changed");
                         newHex = hex;
-                    },      
+                    },
                 });
                 $(".colorpicker:last-child").addClass('marker-style-color-picker');
             },

@@ -224,21 +224,24 @@ define([
             }); 
 
             it(" 'updateStrokeColor()' should update stroke color ", function () {
+                //open the color picker:
                 $(continuousFixture.find('#stroke-color-picker').trigger("click"));
+                jasmine.clock().tick(500);
 
-                jasmine.clock().tick(600);
-                $('body').trigger("click");
-
-                jasmine.clock().tick(600);
+                //now close color picker:
+                // Note: I had to comb through the source file to understand what event
+                //       was in charge of calling the hide event:
+                //       /redesign/external/colorpicker/js/colorpicker-forked.js
+                $(document).trigger('mousedown');
                 expect(continuousMarkerStyleView.updateStrokeColor).toHaveBeenCalledTimes(1);
+
             });
-    
-    
+
             it("updateMap should trigger 'rebuild markers' ", function () {
                 spyOn(continuousMarkerStyleView.model, "trigger").and.callThrough();
                 continuousMarkerStyleView.updateMap();
                 jasmine.clock().tick(300);
-               // expect(Layer.prototype.trigger).toHaveBeenCalledWith("rebuild-markers");
+                // expect(Layer.prototype.trigger).toHaveBeenCalledWith("rebuild-markers");
                 expect(continuousMarkerStyleView.model.trigger).toHaveBeenCalledWith("rebuild-markers");
             });
 
