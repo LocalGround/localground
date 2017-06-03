@@ -85,7 +85,7 @@ define(["marionette",
                 }
                 this.targetedModel.setPointFromLatLng(location.lat(), location.lng());
                 this.targetedModel.save();
-                this.targetedModel.trigger('show-overlay');
+                this.targetedModel.trigger('show-marker');
                 this.addMarkerClicked = false;
                 this.targetedModel = null;
             },

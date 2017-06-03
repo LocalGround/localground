@@ -153,7 +153,7 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                         // update map overlays to reflect new state:
                         googleOverlay.setMap(null);
                         that.dm.setDrawingMode(null);
-                        model.trigger("show-overlay");
+                        model.trigger("show-marker");
                         model.trigger("show-item");
                         model.trigger("show-bubble");
                     });
@@ -265,10 +265,10 @@ define(["underscore", "jquery", "models/marker", "config"], function (_, $, Mark
                     this.unHighlight(attachingMarker);
                     //debugger;
                     attachingMarker.model.trigger('show-tip-attaching');
-                    model.trigger('hide-item hide-overlay');
+                    model.trigger('hide-item hide-marker');
                 } else {
                     //debugger;
-                    model.trigger('show-item show-overlay');
+                    model.trigger('show-item show-marker');
                 }
             }
         };

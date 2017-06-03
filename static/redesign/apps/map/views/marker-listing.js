@@ -16,8 +16,8 @@ define(["marionette",
             fields: null, //for custom data types
             title: null,
             collectionEvents: {
-                'show-overlay': 'removeHideIcon',
-                'hide-overlay': 'showHideIcon'
+                'show-marker': 'removeHideIcon',
+                'hide-marker': 'showHideIcon'
             },
             initialize: function (opts) {
                 _.extend(this, opts);

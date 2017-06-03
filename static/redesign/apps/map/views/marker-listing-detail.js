@@ -22,7 +22,6 @@ define(["jquery",
                 _.extend(this, opts);
                 this.stateKey += this.model.get("overlay_type") + "-" + this.model.id;
                 this.restoreState();
-                this.model.set("dataType", this.dataType);
 
                 //add event listeners:
                 this.listenTo(this.model.collection, 'show-markers', this.redrawVisible);
@@ -44,7 +43,7 @@ define(["jquery",
                 'clear-hover': 'clearHoverHighlight',
                 'change:active': 'render',
                 'change:geometry': 'render',
-                'show-overlay': 'redrawVisible'
+                'show-marker': 'redrawVisible'
             },
             tagName: "li",
             templateHelpers: function () {
@@ -74,13 +73,13 @@ define(["jquery",
             hideMarker: function (e) {
                 this.displayOverlay = false;
                 this.saveState();
-                this.model.trigger('hide-overlay');
+                this.model.trigger('hide-marker');
                 this.render();
                 e.preventDefault();
             },
             showMarker: function (e) {
                 this.displayOverlay = true;
-                this.model.trigger('show-overlay');
+                this.model.trigger('show-marker');
                 this.render();
                 this.saveState();
                 e.preventDefault();
@@ -106,9 +105,9 @@ define(["jquery",
                     this.displayOverlay = state.displayOverlay;
                 }
                 if (this.displayOverlay) {
-                    this.model.trigger('show-overlay');
+                    this.model.trigger('show-marker');
                 } else {
-                    this.model.trigger('hide-overlay');
+                    this.model.trigger('hide-marker');
                 }
                 this.saveState();
             }
