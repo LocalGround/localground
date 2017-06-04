@@ -227,7 +227,7 @@ define([
                 $(continuousFixture.find('#stroke-color-picker').trigger("click"));
 
                 jasmine.clock().tick(600);
-                $('body').trigger("click");
+                $(document).trigger("mousedown");
 
                 jasmine.clock().tick(600);
                 expect(continuousMarkerStyleView.updateStrokeColor).toHaveBeenCalledTimes(1);
