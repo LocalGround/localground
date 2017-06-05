@@ -161,11 +161,12 @@ define([
                 //(categorical or continuous is built, 
                 //when the data source is a form).
                 //Having trouble working with the spec-helper data
-                expect(categoricalMarkerStyleView.categoricalList).toEqual({
-                    col_alias: "Test Text",
-                    col_name: "test_text"
-                });
-            });     
+                expect(categoricalMarkerStyleView.categoricalList).toEqual([{
+                    text: "Test Text",
+                    value: "test_text"
+                }]);
+            });
+
         });
 
          describe("Test timed functions", function () {
@@ -190,7 +191,7 @@ define([
                 $(continuousFixture.find('#stroke-color-picker').trigger("click"));
 
                 jasmine.clock().tick(600);
-                $('body').trigger("click");
+                $(document).trigger("mousedown");
 
                 jasmine.clock().tick(600);
                 expect(continuousMarkerStyleView.updateStrokeColor).toHaveBeenCalledTimes(1);

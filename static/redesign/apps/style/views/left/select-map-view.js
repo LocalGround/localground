@@ -32,6 +32,7 @@ define(["jquery",
                 _.extend(this, opts);
                 this.restoreState();
                 if (!this.collection) {
+                    console.log(this.collection);
                     // /api/0/maps/ API Endpoint gets built:
                     this.collection = new Maps();
                     this.collection.setServerQuery("WHERE project = " + this.app.getProjectID());
@@ -39,9 +40,11 @@ define(["jquery",
                         reset: true,
                         success: function (collection) {
                             // setting the current model from 'success' due to asynchronicity
-                            that.setModel(collection);
+                            that.setModel();
                         }
                     });
+                } else {
+                    this.setModel();
                 }
                 this.modal = new Modal();
 
@@ -50,6 +53,7 @@ define(["jquery",
             },
 
             setModel: function () {
+                console.log("setModel")
                 this.app.currentMap = this.collection.at(0);
             },
 
