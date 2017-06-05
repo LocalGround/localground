@@ -114,5 +114,14 @@ define([
             });
         });
 
+        describe("Data Detail: Render Test", function(){
+            beforeEach(function(){
+                initSpies(this);
+            });
+            it ("Initial render test successful", function(){
+                expect("Please write render test code").toEqual(0);
+            });
+        });
+
     }
 );
