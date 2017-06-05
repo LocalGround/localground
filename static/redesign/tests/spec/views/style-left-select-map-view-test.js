@@ -55,24 +55,28 @@ define([
             });
 
             it("select should render correctly", function () {
-                expect(fixture).toContainElement("select");
+                expect(fixture).toContainElement("#map-select'");
                 expect(fixture.find('option').length).toEqual(1);
                 expect(fixture.find('option').length).toEqual(this.maps.length);
             });
 
-            it("should have correct html", function () {
-                expect(fixture).toContainElement('#map-select');
+            it("should have add button", function () {
+                expect(1).toBe(-1);
             });
         });
 
-        describe("Events tests", function () {
+        describe("Events tests:", function () {
             beforeEach(function () {
                 initSpies();
                 initView(this);
                 initFixtures();
             });
 
-            it(": events should trigger correct functions", function () {
+            it("Calls newMap when 'create-new-map' app event is triggered", function () {
+                expect(1).toEqual(-1);
+            });
+
+            it("when user changes the map selection, changeMap should be called", function () {
                 expect(mapView.changeMap).toHaveBeenCalledTimes(0);
                 fixture.find('#map-select').trigger("change");
                 expect(mapView.changeMap).toHaveBeenCalledTimes(1);
@@ -80,13 +84,14 @@ define([
         });
 
         describe("Panel Show / Hide Tests", function () {
+            // runs mixing tests
             Helper.genericChecks({
                 ClassType: SelectMapView,
                 name: "SelectMapView"
             });
         });
 
-        describe("Ensure that class methods work", function () {
+        describe("Ensure that class methods work:", function () {
             beforeEach(function () {
                 initSpies();
                 mapView = new SelectMapView({
@@ -96,32 +101,28 @@ define([
                 initFixtures();
             });
 
-            it("calls newMap when 'create-new-map' app event is triggered", function () {
+            it("Calls success function when save successful", function () {
                 expect(1).toEqual(-1);
             });
 
-            it("When save successful, success function is called", function () {
+            it("Adds new map to the collection when save successful", function () {
                 expect(1).toEqual(-1);
             });
 
-            it("Map save success function should add new map to the collection", function () {
+            it("Creates a collection (if it's undefinedMap) after map save", function () {
                 expect(1).toEqual(-1);
             });
 
-            it("Map save success function should create a new collection if it's undefined", function () {
+            it("Sets this.app.currentMap when map save successful", function () {
+                //*****NOTE: this is the source of the "add layers" bug.
                 expect(1).toEqual(-1);
             });
 
-            it("When save successful, success function sets this.app.currentMap", function () {
-                //note: this is the source of the "add layers" bug.
+            it("Sets this.app.currentMap when setModel method called", function () {
                 expect(1).toEqual(-1);
             });
 
-            it("setModel method sets this.app.currentMap", function () {
-                expect(1).toEqual(-1);
-            });
-
-            it("when drawOnce called, the appropriate properties are set and events are called", function () {
+            it("It renders / calles appropriate methods when drawOnce called.", function () {
                 expect(1).toEqual(-1);
             });
 
@@ -142,7 +143,7 @@ define([
             });
         });
 
-        describe("Ensure that cases are handled when no map is defined", function () {
+        describe("Ensure that cases are handled when no map is defined:", function () {
             beforeEach(function () {
                 initSpies();
                 mapView = new SelectMapView({
@@ -153,12 +154,13 @@ define([
                 initFixtures();
             });
 
-            it("initializes successfully with no maps defined", function () {
+            it("initializes successfully", function () {
+                //*****NOTE: this is the source of no maps defined bug
                 mapView.collection.trigger('reset');
                 expect(1).toEqual(-1);
             });
 
-            it("displays informational message when no maps are defined", function () {
+            it("displays message to user when no maps are defined", function () {
                 expect(fixture.find('p')).toHaveText("informational message about what to do");
             });
         });
