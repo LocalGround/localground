@@ -4,7 +4,6 @@ define([
     "underscore",
     "handlebars",
     "marionette",
-    "models/association",
     "models/audio",
     "apps/gallery/views/media_browser",
     "apps/gallery/views/add-media",
@@ -14,12 +13,10 @@ define([
     "lib/audio/audio-player",
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
-    "form", //extends Backbone
-    "form-list",
-    "lib/forms/backbone-form-editors"
-], function ($, Backbone, _, Handlebars, Marionette, Association, Audio,
+    "lib/forms/backbone-form"
+], function ($, Backbone, _, Handlebars, Marionette, Audio,
              MediaBrowser, AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
-             AudioPlayer, Carousel, Icon) {
+             AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
@@ -212,13 +209,10 @@ define([
 
             var lat, lng;
             //sets filler html string if a marker location has not been set
-            if (this.model.get("geometry") == null) {
-                        lat = "undefined",
-                        lng = "undefined";
-                    } else {
-                       lat =  this.model.get("geometry").coordinates[1].toFixed(4),
-                       lng =  this.model.get("geometry").coordinates[0].toFixed(4)
-                    }
+            if (this.model.get("geometry")) {
+                lat =  this.model.get("geometry").coordinates[1].toFixed(4);
+                lng =  this.model.get("geometry").coordinates[0].toFixed(4);
+            }
 
             var context = {
                 mode: this.app.mode,
@@ -253,90 +247,15 @@ define([
             }
         },
         editRender: function () {
-            var fields,
-                i,
-                field,
-                type,
-                name,
-                title,
-                that = this,
+            var that = this,
                 audio_attachments = [],
                 player;
-            if (this.dataType.indexOf('form_') != -1) {
-                fields = {};
-                console.log(this.model.get("fields"));
-                for (i = 0; i < this.model.get("fields").length; i++) {
-                    /* https://github.com/powmedia/backbone-forms */
-                    field = this.model.get("fields")[i];
-                    field.val = this.model.get(field.col_name);
-                    type = field.data_type.toLowerCase();
-                    name = field.col_name;
-                    title = field.col_alias;
-                    switch (type) {
-                    case "rating":
-                        var options = [],
-                            extras = JSON.parse(field.extras),
-                            j;
-                        for (j = 0; j < extras.length; j++) {
-                            options.push({
-                                val: extras[j].value,
-                                label: extras[j].name
-                            });
-                        }
-                        fields[name] = { type: 'Select', title: title, options: options };
-                        break;
-                    case "choice":
-                        var options = [],
-                            extras = JSON.parse(field.extras),
-                            j;
-                        for (j = 0; j < extras.length; j++){
-                            options.push(extras[j].name);
-                        }
-                        fields[name] = { type: 'Select', title: title, options: options };
-                        break;
-                    case "date-time":
-                        fields[name] = {
-                            title: title,
-                            type: 'DateTimePicker'
-                        };
-                        /*// TODO: make this a date picker / calendar like the spreadsheet
-                        // Samples:
-                        // https://github.com/dbushell/Pikaday
-                        // https://coderwall.com/p/70pw4a/datepicker-for-backbone-form
-                        */
-                        console.log(field, name);
-                        // There has to be a way to add that dataType onto the HTML element that has the name
-                        // As of now, the name is called Untitled
-                        break;
-                    case "boolean":
-                        fields[name] = { type: 'Checkbox', title: title };
-                        break;
-                    case "integer":
-                    case "decimal":
-                        fields[name] = { type: 'Number', title: title };
-                        break;
-                    default:
-                        fields[name] = { type: 'TextArea', title: title };
-                    }
-                }
-                this.form = new Backbone.Form({
-                    model: this.model,
-                    schema: fields
-                }).render();
-            } else {
-                var fields = {
-                    name: { type: 'TextArea', title: "Name" },
-                    caption:  { type: 'TextArea', title: "Caption" },
-                    attribution: { type: 'TextArea', title: "Attribution" },
-                    tags: { type: 'List', itemType: 'Text' }
-                };
-                console.log(this.model.get("tags"));
-                this.form = new Backbone.Form({
-                    model: this.model,
-                    schema: fields
-                }).render();
-            }
-            if (this.dataType.indexOf("form_") != -1 || this.dataType == "markers") {
+            this.form = new DataForm({
+                model: this.model,
+                schema: this.model.getFormSchema()
+            }).render();
+
+            /*if (this.dataType.indexOf("form_") != -1 || this.dataType == "markers") {
                 audio_attachments = [];
                 if (this.model.get("children") && this.model.get("children").audio) {
                     audio_attachments = this.model.get("children").audio.data;
@@ -350,7 +269,7 @@ define([
                     });
                     $elem.append(player.$el[0]);
                 });
-            }
+            }*/
             //https://github.com/powmedia/backbone-forms#custom-editors
             this.$el.find('#model-form').append(this.form.$el);
         },
@@ -361,7 +280,6 @@ define([
             } else {
                 this.editRender();
             }
-            // render audio player if audio mode:
             if (this.dataType == "audio") {
                 var player = new AudioPlayer({
                     model: this.model,
@@ -371,40 +289,10 @@ define([
                 this.$el.find(".player-container").append(player.$el);
             }
 
-            this.sortMediaTable();
-
-        },
-
-        sortMediaTable: function(){
-            //http://stackoverflow.com/questions/13885665/how-to-exclude-an-element-from-being-dragged-in-sortable-list
-            var sortableFields = this.$el.find(".attached-media-container");
-            var that  = this;
-            sortableFields.sortable({
-                helper: this.fixHelper,
-                items : '.attached-container',
-                //cancel: ''//,
-                // Still need work on getting the right models since below code returns undefined error
-                //*
-                update: function (event, ui) {
-                    var newOrder = ui.item.index(),
-                        modelID = ui.item.find('.detach_media').attr('data-id'),
-                        association;
-
-                    association = new Association({
-                        form_id: that.model.get("overlay_type").split("_")[1],
-                        overlay_type: that.model.get("overlay_type"),
-                        record_id: that.model.get("id"),
-                        model_type: "photos",
-                        object_id: modelID,
-                        id: modelID
-                    });
-                    association.save({ ordering: newOrder}, {patch: true});
-                }
-            }).disableSelection();
         },
 
         // Fix helper with preserved width of cells
-        fixHelper: function(e, ui){
+        fixHelper: function(e, ui) {
             // I want to apply changes made to the media only, not the add media
             // However, by default it does sort all the items around,
             // even with target name tag inside children

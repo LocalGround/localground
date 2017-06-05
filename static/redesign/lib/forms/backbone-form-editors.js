@@ -1,12 +1,13 @@
 define([
     "backbone",
     "handlebars",
-    //"https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js",
+    "models/association",
     "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.0/pikaday.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",
-    "text!../forms/templates/editor-templates.html",
+    "text!../forms/templates/date-time-template.html",
+    "text!../forms/templates/media-editor-template.html",
     "form"
-], function (Backbone, Handlebars, Pikaday, dateFns, EditorTemplate) {
+], function (Backbone, Handlebars, Association, Pikaday, dateFns, DateTimeTemplate, MediaTemplate) {
     "use strict";
     Backbone.Form.editors.DatePicker = Backbone.Form.editors.Text.extend({
 
@@ -39,7 +40,7 @@ define([
             // parent initialization function:
             options.schema.validators = [this.dateTimeValidator];
             Backbone.Form.editors.Text.prototype.initialize.call(this, options);
-            var template = Handlebars.compile(EditorTemplate);
+            var template = Handlebars.compile(DateTimeTemplate);
             var hours = parseInt(dateFns.format(this.value, 'HH'));
             var isPm = hours >= 12 ? true: false;
             this.$el.append(template({
@@ -112,6 +113,51 @@ define([
                 }
             });
             return this;
+        }
+    });
+
+    Backbone.Form.editors.MediaEditor = Backbone.Form.editors.Base.extend({
+
+        tagName: "div",
+
+        initialize: function (options) {
+            // add date / time validator before calling the
+            // parent initialization function:
+            Backbone.Form.editors.Base.prototype.initialize.call(this, options);
+            var template = Handlebars.compile(MediaTemplate);
+            this.$el.append(template({
+                children: this.value
+            }));
+        },
+        getValue: function () {
+            return null;
+        },
+        render: function () {
+            Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
+            this.enableMediaReordering();
+            return this;
+        },
+        enableMediaReordering: function () {
+            console.log(this, this.model);
+            var sortableFields = this.$el.find(".attached-media-container"),
+                that = this,
+                newOrder,
+                modelID,
+                association;
+            sortableFields.sortable({
+                helper: this.fixHelper,
+                items : '.attached-container',
+                update: function (event, ui) {
+                    newOrder = ui.item.index();
+                    modelID = ui.item.find('.detach_media').attr('data-id');
+                    association = new Association({
+                        model: that.model,
+                        attachmentType: "photos", //TODO: detect
+                        attachmentID: modelID
+                    });
+                    association.save({ ordering: newOrder}, {patch: true});
+                }
+            }).disableSelection();
         }
     });
 });

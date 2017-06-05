@@ -121,7 +121,12 @@ define(["models/base",
                 source_id: this.id
             });
             association.destroy({success: callback});
-		}
+		},
+        getFormSchema: function () {
+            var schema = Base.prototype.getFormSchema.call(this);
+            schema.children = { type: 'MediaEditor', title: 'children' };
+            return schema;
+        }
     });
     return Marker;
 });

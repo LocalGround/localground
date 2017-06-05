@@ -71,9 +71,10 @@ define([
             sortableFields.sortable({
                 helper: this.fixHelper,
                 update: function (event, ui) {
-                    var $rows = that.$el.find("#fieldList tr"),
+                    var $rows = that.$el.find("#fieldList > tr"),
                         tempID,
                         model;
+                    console.log($rows);
                     $rows.each(function (i) {
                         tempID = $(this).attr("id");
                         model = that.collection.find(function (model) { return model.get('temp_id') === tempID; });

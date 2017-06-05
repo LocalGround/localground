@@ -8,19 +8,33 @@ define(["models/base"], function (Base) {
 	var Association = Base.extend({
 		initialize: function (data, opts) {
 			Base.prototype.initialize.apply(this, arguments);
+            /*
+            Required:
+            model: model to which media is to be attached
+            attachmentType: type of attached media ("photos" or "audio")
+            attachmentID: attached media id (OPTIONAL)
+            */
+            var model = data.model,
+                attachmentType = data.attachmentType,
+                attachmentID = data.attachmentID;
+            if (!model) {
+                console.error("Association requires a 'model' argument.");
+            }
+            if (!attachmentType) {
+                console.error("Association requires a 'attachmentType' argument.");
+            }
             //todo: API change needed to make the model.id param not "id" but object_id.
-			if (data.overlay_type == "marker") {
-	            this.urlRoot = '/api/0/markers/' + data.source_id + '/' + data.model_type + '/';
-			} else if (data.overlay_type.indexOf("form_") != -1) {
-                this.urlRoot = '/api/0/forms/' + data.form_id + '/data/' + data.record_id + "/" + data.model_type + '/';
+			if (model.get("overlay_type") === "marker") {
+	            this.urlRoot = '/api/0/markers/' + model.id + '/' + attachmentType + '/';
+			} else if (model.get("overlay_type").indexOf("form_") != -1) {
+                this.urlRoot = '/api/0/forms/' + model.get("form_id") + '/data/' + model.id + "/" + attachmentType + '/';
 			}
-            if (data.object_id) {
+            if (attachmentID) {
                 this.idAttribute = 'object_id';
-                this.set("object_id", data.object_id);
+                this.set("object_id", attachmentID);
             }
             //console.log(this.urlRoot);
 			this.set("ordering", data.ordering || 1);
-			//this.set("object_id", data.source_id || 1);
 		}
 	});
 	return Association;

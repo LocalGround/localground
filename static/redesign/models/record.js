@@ -87,11 +87,63 @@ define(["models/base",
                     }
                 });
             },
-    
-            save: function (key, val, options) {
-                return Backbone.Model.prototype.save.call(this, key, val, options);
+            getFormSchema: function () {
+                var fields = this.get("fields"),
+                    field,
+                    type,
+                    name,
+                    title,
+                    i,
+                    options,
+                    extras,
+                    j;
+                for (i = 0; i < this.get("fields").length; i++) {
+                    field = this.get("fields")[i];
+                    field.val = this.get(field.col_name);
+                    type = field.data_type.toLowerCase();
+                    name = field.col_name;
+                    title = field.col_alias;
+                    switch (type) {
+                    case "rating":
+                        options = [];
+                        extras = JSON.parse(field.extras);
+                        for (j = 0; j < extras.length; j++) {
+                            options.push({
+                                val: extras[j].value,
+                                label: extras[j].name
+                            });
+                        }
+                        fields[name] = { type: 'Select', title: title, options: options };
+                        break;
+                    case "choice":
+                        options = [];
+                        extras = JSON.parse(field.extras);
+                        for (j = 0; j < extras.length; j++) {
+                            options.push(extras[j].name);
+                        }
+                        fields[name] = { type: 'Select', title: title, options: options };
+                        break;
+                    case "date-time":
+                        fields[name] = {
+                            title: title,
+                            type: 'DateTimePicker'
+                        };
+                        break;
+                    case "boolean":
+                        fields[name] = { type: 'Checkbox', title: title };
+                        break;
+                    case "integer":
+                    case "decimal":
+                        fields[name] = { type: 'Number', title: title };
+                        break;
+                    default:
+                        fields[name] = { type: 'TextArea', title: title };
+                    }
+                }
+                fields.children = { type: 'MediaEditor', title: 'children' };
+                return fields;
             }
-    
+
         });
         return Record;
-});
+    });
