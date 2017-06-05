@@ -12,39 +12,6 @@ define([
             continuousFixture,
             categoricalMarkerStyleView,
             Layer,
-
-            /*
-            initView = function (that) {
-                // 1) add spies for all relevant objects:
-                spyOn(that.app.vent, 'trigger').and.callThrough();
-                spyOn(MarkerStyleView.prototype, 'initialize').and.callThrough();
-                spyOn(MarkerStyleView.prototype, 'buildPalettes').and.callThrough();
-                spyOn(MarkerStyleView.prototype, 'buildColumnList').and.callThrough();
-                spyOn(MarkerStyleView.prototype, 'hideColorRamp').and.callThrough();
-                spyOn(MarkerStyleView.prototype, 'selectDataType').and.callThrough();
-
-                // 2) initialize categorical MarkerStyleView object:
-                markerStyleView = new MarkerStyleView({
-                    app: that.app,
-                    model: that.testMap.get("layers").at(2)
-                });
-                markerStyleView.render();
-
-                //initialize continuous MarkerStyleView object:
-                continuousMarkerStyleView = new MarkerStyleView({
-                    app: that.app,
-                    model: that.testMap.get("layers").at(0)
-                });
-                continuousMarkerStyleView.render();
-
-                // 3) set fixture:
-                fixture = setFixtures('<div></div>');
-                fixture.append(markerStyleView.$el);
-
-                continuousFixture = setFixtures('<div></div>');
-                continuousFixture.append(continuousMarkerStyleView.$el);
-            },
-            */
             initSpies = function (that) {
                 // 1) add spies for all relevant objects:
                 spyOn(that.app.vent, 'trigger').and.callThrough();
@@ -60,7 +27,6 @@ define([
                 spyOn(MarkerStyleView.prototype, 'updateStrokeWeight').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'updateStrokeOpacity').and.callThrough();
                 spyOn(MarkerStyleView.prototype, 'updateStrokeColor').and.callThrough();
-              //  spyOn(Layer.prototype, 'trigger').and.callThrough();
 
             },
             
@@ -93,8 +59,6 @@ define([
 
                 //spies
                 spyOn(categoricalMarkerStyleView, 'updateMetadata').and.callThrough(); 
-             //   spyOn(categoricalMarkerStyleView, 'updateGlobalShape').and.callThrough();
-             //   spyOn(categoricalMarkerStyleView, 'updateWidth').and.callThrough();
             };
 
 
@@ -270,33 +234,14 @@ define([
 
             it("showPalettes function should display and hide list of palettes", function() {
             
-              // $(continuousFixture.find('.palette-wrapper')).css('display', 'none');
-            //   expect(continuousFixture.find(".palette-wrapper").css('display')).toEqual('none');
-               console.log("before first click", $(continuousFixture.find(".palette-wrapper")).css("display") );
+               $(continuousFixture.find('.palette-wrapper')).css('display', 'none');
+               expect(continuousFixture.find(".palette-wrapper").css('display')).toEqual('none');
+
                 $(continuousFixture.find('.selected-palette-wrapper').click());
-                console.log("after first click", $(continuousFixture.find(".palette-wrapper")).css("display") );
-               // console.log($('body').html());
                 expect(continuousFixture.find(".palette-wrapper").css('display')).toEqual('block');
-                //console.log("after first click", $(continuousFixture.find(".palette-wrapper")).css("display") );
-/*
-                if ($(continuousFixture.find('.palette-wrapper')).css('display') == "block") {
 
-                    $(continuousFixture.find('.selected-palette-wrapper').trigger('click'));
-                    expect($(continuousFixture.find('.palette-wrapper')).css('display')).toEqual('none');
-                  //  console.log("after first click", $(continuousFixture.find('.palette-wrapper')).css('display'));
-
-                    $(continuousFixture.find('.selected-palette-wrapper').trigger('click'));
-                    expect($(continuousFixture.find('.palette-wrapper')).css('display')).toEqual('block');
-                    console.log("after second click", $(continuousFixture.find('.palette-wrapper')).css('display'));
-                }
-                
-                
-                console.log($(continuousFixture.find('.palette-wrapper')).css('display'));
                 $('body').click();
                 expect($(continuousFixture.find('.palette-wrapper')).css('display')).toEqual('none');
-
-                console.log($(continuousFixture.find('.palette-wrapper')).css('display'));
-                */
             });
 
         });

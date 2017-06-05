@@ -49,7 +49,7 @@ define(["jquery",
                     tagName: "tr",
                     className: "table-row",
                     templateHelpers: function () {
-                    //    console.log(this.model);
+                       console.log("childview update. selectedProp", this.selectedProp);
                         return {
                             dataType: this.dataType,
                             icons: IconLookup.getIcons(),
@@ -143,7 +143,8 @@ define(["jquery",
                     selectedColorPalette: this.selectedColorPalette,
                     categoricalList: this.categoricalList,
                     continuousList: this.continuousList, 
-                    icons: IconLookup.getIcons()
+                    icons: IconLookup.getIcons(),
+                    selectedProp: this.selectedProp
                 };
                 if (this.fields) {
                     helpers.properties = this.fields.toJSON();
@@ -169,17 +170,13 @@ define(["jquery",
 
             selectDataType: function (e) {
                 console.log(this.dataType);
+                console.log($(e.target).val());
                 //this.dataType = this.$el.find("#data-type-select").val();
                 this.dataType = $(e.target).val() || this.$el.find("#data-type-select").val(); //$(e.target).val();
                 console.log(this.dataType);
                 this.render();
                 this.buildColumnList();
-                if (this.dataType == "continuous") {
-                    this.contData();
-                }
-                if (this.dataType == "categorical") {
-                    this.catData();
-                }
+
             },
 
 
@@ -231,16 +228,21 @@ define(["jquery",
 
                 }
                 this.render();
-                this.contData();
-                this.catData();
+                if (this.dataType == "continuous") {
+                    this.contData();
+                }
+                if (this.dataType == "categorical") {
+                    this.catData();
+                }
             },
             contData: function() {
-                console.log("meta change registered");
+                console.log("cont change registered");
                 var buckets = this.model.get("metadata").buckets;
                 var key = this.model.get('data_source'); 
                 this.continuousData = [];
                 var dataEntry = this.app.dataManager.getData(key);
                 var $selected = this.$el.find("#cont-prop").val();
+                this.selectedProp = $selected;
                 var that = this;
                 dataEntry.collection.models.forEach(function(d) {
                     that.continuousData.push(d.get($selected));
@@ -268,6 +270,7 @@ define(["jquery",
                         //"color": "#" + this.selectedColorPalette[counter],
                         "id": (counter + 1)
                     });
+                    console.log(that.layerDraft.continuous);
                     counter++;
                     currentFloor += segmentSize;
                 }
@@ -277,19 +280,47 @@ define(["jquery",
                 this.render();
             },
 
-            catData: function() {  
-                var list = [];
-                var key = this.model.get('data_source'); 
+            catData: function() { 
+                console.log("catData triggered"); 
+                var that = this,
+                list = [],
+                instanceCount = {},
+                key = this.model.get('data_source'),
+                $selected = this.$el.find("#cat-prop").val(),
+                counter = 0,
+                fillColorList = ["#446e91", "#449169", "#e81502", "#e88401", "#6c00e8"];
                 this.categoricalData = this.app.dataManager.getData(key);
-                var $selected = this.$el.find("#cat-prop").val();
-
-                this.categoricalData.collection.models.forEach(function(d) {
-                    console.log(d.get($selected));
-                    if (!list.includes(d.get($selected))) {
+                this.selectedProp = $selected
+                console.log("updated selected property", this.selectedProp);
+                that.layerDraft.categorical = new Symbols();
+                that.categoricalData.collection.models.forEach(function(d) {
+                    if (!list.includes(d.get($selected)) && d.get($selected)) {
                         list.push(d.get($selected));
-                    }
+                        instanceCount[d.get($selected)] = 1;
+                    } else {
+                        instanceCount[d.get($selected)]++;
+                    }                    
                 });
-                console.log(list);
+               
+                list.forEach(function(item){
+                    that.layerDraft.categorical.add({
+                        "rule": item,
+                        "title": item,
+                        "fillOpacity": parseFloat(that.$el.find("#palette-opacity").val()),
+                        "strokeWeight": parseFloat(that.$el.find("#stroke-weight").val()),
+                        "strokeOpacity": parseFloat(that.$el.find("#stroke-opacity").val()),
+                        "width": parseFloat(that.$el.find("#marker-width").val()) || 20,
+                        "shape": that.$el.find(".global-marker-shape").val(),
+                        "fillColor": "#" + that.selectedColorPalette[counter],
+                        "strokeColor": that.model.get("metadata").strokeColor,
+                        "id": instanceCount.item, 
+                        "instanceCount": instanceCount[item]
+                    });
+                });
+                this.collection = this.layerDraft.categorical;
+                this.model.set("symbols", this.layerDraft.continuous.toJSON());
+                this.updateMap();
+                this.render();
             },
 
             delayExecution: function (timeoutVar, func, millisecs) {

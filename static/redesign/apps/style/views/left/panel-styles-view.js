@@ -33,6 +33,8 @@ define(["marionette",
             
             onRender: function () {
                 var that = this;
+                var newHex;
+                $(".panel-styles-color-picker").remove();
                 this.$el.find('#color-picker').ColorPicker({
             
                     onShow: function (colpkr) {
@@ -40,13 +42,15 @@ define(["marionette",
                         return false;
                     },
                     onHide: function (colpkr) {
+                        that.updateFontColor(newHex);
                         $(colpkr).fadeOut(500);
                         return false;
                     },
                     onChange: function (hsb, hex, rgb) {
-                        that.updateFontColor(hex);
+                        newHex = hex;
                     }
                 });
+                $(".colorpicker:last-child").addClass('panel-styles-color-picker');
             },
             
 
