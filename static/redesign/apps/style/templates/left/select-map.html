@@ -10,3 +10,7 @@
     <option value="{{ this.id }}">{{ this.name }}</option>
 {{/each}}
 </select>
+
+{{#if noItems}}
+    <p>informational message about what to do</p>
+{{/if}}

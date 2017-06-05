@@ -55,7 +55,7 @@ define([
             });
 
             it("select should render correctly", function () {
-                expect(fixture).toContainElement("#map-select'");
+                expect(fixture).toContainElement("#map-select");
                 expect(fixture.find('option').length).toEqual(1);
                 expect(fixture.find('option').length).toEqual(this.maps.length);
             });
@@ -157,7 +157,15 @@ define([
             it("initializes successfully", function () {
                 //*****NOTE: this is the source of no maps defined bug
                 mapView.collection.trigger('reset');
-                expect(1).toEqual(-1);
+                expect(mapView.app.currentMap).toBeUndefined();
+
+                //pretend that the new map modal just created a new map:
+                /*var mapModel = this.maps.at(0);
+                mapView.collection.add(mapModel);
+                mapModel.save();
+                var args = mapModel.mostRecentCall.args;
+                args[1].success();
+                expect(mapView.app.currentMap).toEqual(mapModel);*/
             });
 
             it("displays message to user when no maps are defined", function () {

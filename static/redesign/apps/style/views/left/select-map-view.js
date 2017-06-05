@@ -16,6 +16,13 @@ define(["jquery",
             isShowing: true,
             template: Handlebars.compile(MapTemplate),
 
+            templateHelpers: function () {
+                return {
+                    noItems: (this.collection.length === 0),
+                    isShowing: this.isShowing
+                };
+            },
+
             events: function () {
                 return _.extend(
                     {
@@ -53,8 +60,9 @@ define(["jquery",
             },
 
             setModel: function () {
-                console.log("setModel")
-                this.app.currentMap = this.collection.at(0);
+                if (this.collection.length > 0) {
+                    this.app.selectedMapModel = this.collection.at(0);
+                }
             },
 
             newMap: function (mapAttrs) {
@@ -78,7 +86,7 @@ define(["jquery",
                 this.collection.add(this.map);
                 
                 this.map.save(null, {
-                    success: this.render,
+                    success: this.setMapAndRender.bind(this),
                     error: function (model, response){
                         var messages = JSON.parse(response.responseText);
                         console.log(messages);
@@ -91,9 +99,20 @@ define(["jquery",
                     
                 });
             },
+            
+            setMapAndRender: function () {
+                console.log("setMapAndRender:", this.app.selectedMapModel);
+                if (!this.app.selectedMapModel) {
+                    this.setModel();
+                }
+                this.render();
+            },
 
             drawOnce: function () {
                 this.render();
+                if (this.collection.length == 0) {
+                    return;
+                }
                 var $selected = this.$el.find("#map-select").val(),
                     selectedMapModel = this.collection.get($selected);
 
