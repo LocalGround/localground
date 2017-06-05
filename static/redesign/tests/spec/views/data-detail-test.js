@@ -28,6 +28,8 @@ define([
 
         /* Fixtures will need to be polished so that it is inserted cleanly for rendering purposes
 
+        The example below is a dirty way of having a fixture based on data detail
+
         <div><!-- VIEW MODE -->
 <input type="text" id="datepicker">
 
@@ -67,7 +69,7 @@ define([
 </div>
         */
 
-        var initSpies = function(){
+        var initSpies = function(scope){
             spyOn(DataDetail.prototype, "initialize").and.callThrough();
             spyOn(DataDetail.prototype, "render").and.callThrough();
             //
@@ -98,6 +100,19 @@ define([
             spyOn(DataDetail.prototype, "attachMedia").and.callThrough();
 
         };
+
+        describe("Data Detail: Initialization Test", function(){
+            beforeEach(function(){
+                initSpies(this);
+            });
+
+            it("Data Detail successfully created", function(){
+                newDataDetail = new DataDetail({
+                    app: this.app
+                });
+                expect(newDataDetail).toEqual(jasmine.any(DataDetail));
+            });
+        });
 
     }
 );

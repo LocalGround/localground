@@ -42,6 +42,7 @@ require(['boot'], function () {
         'spec/views/project-item-test.js',
         'spec/views/share-form-test.js',
         'spec/views/project-user-test.js',
+        'spec/views/data-detail-test.js',
 
         // PRINT
 
