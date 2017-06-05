@@ -95,9 +95,9 @@ define([
                 var hourInt = parseInt(hours00);
                 if (hourInt < 10){
                     hours00 = "0" + String(hourInt);
-                } else if (hourInt == 12{
+                } else if (hourInt == 12){
                     hours00 == "00";
-                })
+                }
             }
 
             return date + "T" + hours00 + ":" + minutes00+ ":" + seconds00;
