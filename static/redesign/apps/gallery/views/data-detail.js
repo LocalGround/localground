@@ -1,12 +1,8 @@
 define([
     "jquery",
-    "backbone",
     "underscore",
     "handlebars",
     "marionette",
-    "models/audio",
-    "apps/gallery/views/media_browser",
-    "apps/gallery/views/add-media",
     "text!../templates/photo-detail.html",
     "text!../templates/audio-detail.html",
     "text!../templates/record-detail.html",
@@ -14,8 +10,7 @@ define([
     "lib/carousel/carousel",
     "lib/maps/overlays/icon",
     "lib/forms/backbone-form"
-], function ($, Backbone, _, Handlebars, Marionette, Audio,
-             MediaBrowser, AddMedia, PhotoTemplate, AudioTemplate, SiteTemplate,
+], function ($, _, Handlebars, Marionette, PhotoTemplate, AudioTemplate, SiteTemplate,
              AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
@@ -24,8 +19,6 @@ define([
             'click .edit-mode': 'switchToEditMode',
             'click .save-model': 'saveModel',
             'click .delete-model': 'deleteModel',
-            'click #add-media-button': 'showMediaBrowser',
-            'click .detach_media': 'detachModel',
             'click .hide': 'hideMapPanel',
             'click .show': 'showMapPanel',
             'click .rotate-left': 'rotatePhoto',
@@ -41,33 +34,11 @@ define([
             }
             return Handlebars.compile(SiteTemplate);
         },
-        showMediaBrowser: function () {
-            /*
-              I also made a js class that is like data-list.js but has only
-              photos and audio as options.
-
-              I am likely to set default collection to photos
-              by assigning its data type to be photos
-            */
-            var addMediaLayoutView = new AddMedia({
-                app: this.app
-            });
-            this.app.vent.trigger("show-modal", {
-                title: 'Media Browser',
-                width: 1100,
-                height: 400,
-                view: addMediaLayoutView,
-                saveButtonText: "Add",
-                showSaveButton: true,
-                saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView)
-            });
-        },
         initialize: function (opts) {
             _.extend(this, opts);
             this.bindFields();
             this.dataType = this.dataType || this.app.dataType;
             Marionette.ItemView.prototype.initialize.call(this);
-            this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
             this.listenTo(this.app.vent, 'save-model', this.saveModel);
         },
 
@@ -150,49 +121,6 @@ define([
         modelEvents: {
             change: "render"
         },
-
-        attachModels: function (models) {
-            var that = this;
-            if (this.model.get("id")) {
-                this.attachMedia(models);
-            } else {
-                this.model.save(null, {
-                    success: function () {
-                        that.attachMedia(models);
-                        that.model.collection.add(that.model);
-                    }
-                });
-            }
-            this.app.vent.trigger('hide-modal');
-        },
-
-        attachMedia: function (models) {
-            var that = this, i, ordering;
-            for (i = 0; i < models.length; ++i) {
-                ordering = this.model.get("photo_count") + this.model.get("audio_count");
-                this.model.attach(models[i], (ordering + i + 1), function () {
-                    that.model.fetch({reset: true});
-                });
-            }
-        },
-        /*
-          Problem stems from that the model is undefined
-          and it has to be defined inside the function
-        */
-        detachModel: function (e) {
-            var that = this,
-                $elem = $(e.target),
-                dataType = $elem.attr("data-type"),
-                dataID = $elem.attr("data-id"),
-                name = $elem.attr("media-name");
-            if (!confirm("Are you sure you want to detach " +
-                    name + " from this site? Note that this will not delete the media file -- it just detaches it.")) {
-                return;
-            }
-            this.model.detach(dataID, dataType, function () {
-                that.model.fetch({reset: true});
-            });
-        },
         switchToViewMode: function () {
             this.app.mode = "view";
             this.render();
@@ -207,14 +135,13 @@ define([
         },
         templateHelpers: function () {
 
-            var lat, lng;
+            var lat, lng, context;
             //sets filler html string if a marker location has not been set
             if (this.model.get("geometry")) {
                 lat =  this.model.get("geometry").coordinates[1].toFixed(4);
                 lng =  this.model.get("geometry").coordinates[0].toFixed(4);
             }
-
-            var context = {
+            return {
                 mode: this.app.mode,
                 dataType: this.dataType,
                 audioMode: "detail",
@@ -222,9 +149,7 @@ define([
                 screenType: this.app.screenType,
                 lat: lat,
                 lng: lng
-
             };
-            return context;
         },
         viewRender: function () {
             //any extra view logic. Carousel functionality goes here
@@ -250,9 +175,13 @@ define([
             var that = this,
                 audio_attachments = [],
                 player;
+            if (this.form) {
+                this.form.remove();
+            }
             this.form = new DataForm({
                 model: this.model,
-                schema: this.model.getFormSchema()
+                schema: this.model.getFormSchema(),
+                app: this.app
             }).render();
 
             /*if (this.dataType.indexOf("form_") != -1 || this.dataType == "markers") {
@@ -291,18 +220,7 @@ define([
 
         },
 
-        // Fix helper with preserved width of cells
-        fixHelper: function(e, ui) {
-            // I want to apply changes made to the media only, not the add media
-            // However, by default it does sort all the items around,
-            // even with target name tag inside children
-            ui.children().each(function(){
-                $(this).width($(this).width());
-            });
-            return ui;
-        },
-
-        rotatePhoto: function(e){
+        rotatePhoto: function (e) {
             var $elem = $(e.target);
             var rotation = $elem.attr("rotation");
             this.$el.find(".rotate-message").show();

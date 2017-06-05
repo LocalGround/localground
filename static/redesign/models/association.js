@@ -19,9 +19,11 @@ define(["models/base"], function (Base) {
                 attachmentID = data.attachmentID;
             if (!model) {
                 console.error("Association requires a 'model' argument.");
+                return false;
             }
             if (!attachmentType) {
                 console.error("Association requires a 'attachmentType' argument.");
+                return false;
             }
             //todo: API change needed to make the model.id param not "id" but object_id.
 			if (model.get("overlay_type") === "marker") {

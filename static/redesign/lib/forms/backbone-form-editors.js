@@ -1,13 +1,18 @@
 define([
+    "jquery",
     "backbone",
     "handlebars",
     "models/association",
+    "models/audio",
+    "apps/gallery/views/add-media",
+    "lib/audio/audio-player",
     "https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.6.0/pikaday.min.js",
     "https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.28.5/date_fns.min.js",
     "text!../forms/templates/date-time-template.html",
     "text!../forms/templates/media-editor-template.html",
     "form"
-], function (Backbone, Handlebars, Association, Pikaday, dateFns, DateTimeTemplate, MediaTemplate) {
+], function ($, Backbone, Handlebars, Association, Audio, AddMedia, AudioPlayer,
+             Pikaday, dateFns, DateTimeTemplate, MediaTemplate) {
     "use strict";
     Backbone.Form.editors.DatePicker = Backbone.Form.editors.Text.extend({
 
@@ -118,46 +123,137 @@ define([
 
     Backbone.Form.editors.MediaEditor = Backbone.Form.editors.Base.extend({
 
+        events: {
+            'click #add-media-button': 'showMediaBrowser',
+            'click .detach_media': 'detachModel'
+        },
+
         tagName: "div",
 
         initialize: function (options) {
-            // add date / time validator before calling the
-            // parent initialization function:
             Backbone.Form.editors.Base.prototype.initialize.call(this, options);
+            this.app = this.form.app;
+            this.listenTo(this.app.vent, 'add-models-to-marker', this.attachModels);
             var template = Handlebars.compile(MediaTemplate);
             this.$el.append(template({
                 children: this.value
             }));
+        },
+        attachModels: function (models) {
+            var that = this;
+            if (this.model.get("id")) {
+                this.attachMedia(models);
+            } else {
+                this.model.save(null, {
+                    success: function () {
+                        that.attachMedia(models);
+                        that.model.collection.add(that.model);
+                    }
+                });
+            }
+            this.app.vent.trigger('hide-modal');
+        },
+
+        attachMedia: function (models) {
+            var that = this,
+                i,
+                ordering,
+                fetch = function () {
+                    that.model.fetch({reset: true});
+                };
+            for (i = 0; i < models.length; ++i) {
+                ordering = this.model.get("photo_count") + this.model.get("audio_count");
+                this.model.attach(models[i], (ordering + i + 1));
+            }
+            //fetch and re-render model:
+            if (models.length > 0) { setTimeout(fetch, 800); }
+        },
+        detachModel: function (e) {
+            var that = this,
+                $elem = $(e.target),
+                attachmentType = $elem.attr("data-type"),
+                attachmentID = $elem.attr("data-id"),
+                name = $elem.attr("media-name");
+            if (!confirm("Are you sure you want to detach " +
+                    name + " from this site? Note that this will not delete the media file -- it just detaches it.")) {
+                return;
+            }
+            this.model.detach(attachmentType, attachmentID, function () {
+                that.model.fetch({reset: true});
+            });
+        },
+        showMediaBrowser: function (e) {
+            var addMediaLayoutView = new AddMedia({
+                app: this.app
+            });
+            this.app.vent.trigger("show-modal", {
+                title: 'Media Browser',
+                width: 1100,
+                height: 400,
+                view: addMediaLayoutView,
+                saveButtonText: "Add",
+                showSaveButton: true,
+                saveFunction: addMediaLayoutView.addModels.bind(addMediaLayoutView)
+            });
+            e.preventDefault();
         },
         getValue: function () {
             return null;
         },
         render: function () {
             Backbone.Form.editors.Base.prototype.render.apply(this, arguments);
+            this.renderAudioPlayers();
             this.enableMediaReordering();
             return this;
         },
+        renderAudioPlayers: function () {
+            var audio_attachments = [],
+                that = this,
+                player,
+                $elem;
+            if (this.model.get("children") && this.model.get("children").audio) {
+                audio_attachments = this.model.get("children").audio.data;
+            }
+            _.each(audio_attachments, function (item) {
+                $elem = that.$el.find(".audio-basic[data-id='" + item.id + "']")[0];
+                player = new AudioPlayer({
+                    model: new Audio(item),
+                    audioMode: "basic",
+                    app: that.app
+                });
+                $elem.append(player.$el[0]);
+            });
+        },
         enableMediaReordering: function () {
-            console.log(this, this.model);
             var sortableFields = this.$el.find(".attached-media-container"),
                 that = this,
                 newOrder,
-                modelID,
+                attachmentType,
+                attachmentID,
                 association;
             sortableFields.sortable({
                 helper: this.fixHelper,
                 items : '.attached-container',
                 update: function (event, ui) {
                     newOrder = ui.item.index();
-                    modelID = ui.item.find('.detach_media').attr('data-id');
+                    attachmentType = ui.item.find('.detach_media').attr("data-type");
+                    attachmentID = ui.item.find('.detach_media').attr("data-id");
                     association = new Association({
                         model: that.model,
-                        attachmentType: "photos", //TODO: detect
-                        attachmentID: modelID
+                        attachmentType: attachmentType, //TODO: detect
+                        attachmentID: attachmentID
                     });
                     association.save({ ordering: newOrder}, {patch: true});
                 }
             }).disableSelection();
+        },
+
+        fixHelper: function (e, ui) {
+            //not sure what this does:
+            ui.children().each(function () {
+                $(this).width($(this).width());
+            });
+            return ui;
         }
     });
 });

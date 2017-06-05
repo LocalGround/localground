@@ -1,13 +1,14 @@
 define([
     "backbone",
+    "underscore",
     "form",
     "form-list",
     "lib/forms/backbone-form-editors"
-], function (Backbone) {
+], function (Backbone, _) {
     "use strict";
     var DataForm = Backbone.Form.extend({
-
         initialize: function (options) {
+            _.extend(this, options);
             Backbone.Form.prototype.initialize.call(this, options);
         },
         render: function () {

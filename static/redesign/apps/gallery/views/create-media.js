@@ -435,6 +435,7 @@ define([
         },
 
         addModels: function () {
+            console.log('create-media: addModels');
             var selectedModels = [];
             this.collection.each(function (model) {
                 // if (model.get("isSelected")) {
@@ -442,7 +443,7 @@ define([
                 // }
             });
             this.app.vent.trigger('add-models-to-marker', selectedModels);
-            }
+        }
     });
     return CreateMediaView;
 
