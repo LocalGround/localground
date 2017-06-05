@@ -77,6 +77,7 @@ define([
                     $rows.each(function (i) {
                         tempID = $(this).attr("id");
                         model = that.collection.find(function (model) { return model.get('temp_id') === tempID; });
+                        console.log(model);
                         model.set("ordering", i + 1);
                     });
                     that.collection.sort("ordering");
@@ -149,6 +150,7 @@ define([
                 tempID = $(this).attr("id");
                 model = that.collection.getModelByAttribute('temp_id', tempID);
                 childView = that.children.findByModel(model);
+                console.log(childView);
                 childView.saveField(i + 1);
                 that.wait(100);
             });

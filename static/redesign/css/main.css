@@ -380,9 +380,15 @@ nav .selected{
     text-align: left;
 }
 
-.form-reorder {
+.form-reorder, {
     cursor: move;
 }
+
+/*
+.rating-row, .choice-row {
+    cursor: move;
+}
+*/
 
 #model-form fieldset label,
 .inline-form label {
