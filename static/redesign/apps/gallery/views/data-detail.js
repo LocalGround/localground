@@ -12,7 +12,7 @@ define([
     "lib/maps/overlays/icon",
     "lib/forms/backbone-form"
 ], function ($, _, Handlebars, Marionette, PhotoTemplate, AudioTemplate, SiteTemplate,
-             AudioPlayer, Carousel, Icon, DataForm) {
+        MapImageTemplate, AudioPlayer, Carousel, Icon, DataForm) {
     "use strict";
     var MediaEditor = Marionette.ItemView.extend({
         events: {
