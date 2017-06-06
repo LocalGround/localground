@@ -15,6 +15,12 @@ define(["jquery",
             stateKey: 'select-map',
             isShowing: true,
             template: Handlebars.compile(MapTemplate),
+            templateHelpers: function() {
+                return {
+                    noItem: (this.collection.length === 0),
+                    isShowing: this.isShowing
+                }
+            },
 
             events: function () {
                 return _.extend(
@@ -41,10 +47,14 @@ define(["jquery",
                         success: function (collection) {
                             // setting the current model from 'success' due to asynchronicity
                             that.setModel();
+                            console.log("success: ", that.collection);
                         }
                     });
+                    console.log("drawOnce triggered from 'if' (collection does not exist)");
                 } else {
+                    console.log("drawOnce triggered from 'else' (collection exists)");
                     this.setModel();
+                    this.drawOnce();
                 }
                 this.modal = new Modal();
 
@@ -53,8 +63,12 @@ define(["jquery",
             },
 
             setModel: function () {
-                console.log("setModel")
-                this.app.currentMap = this.collection.at(0);
+                console.log("setModel");
+
+                if (this.collection >0 ) {
+                    this.app.currentMap = this.collection.at(0);
+                }
+
             },
 
             newMap: function (mapAttrs) {
@@ -93,10 +107,13 @@ define(["jquery",
             },
 
             drawOnce: function () {
+                console.log("draw once called");
+                console.log(this.collection);
                 this.render();
                 var $selected = this.$el.find("#map-select").val(),
                     selectedMapModel = this.collection.get($selected);
 
+                console.log($selected, selectedMapModel);
                 this.setCenterZoom(selectedMapModel);
                 this.setMapTypeId(selectedMapModel);
                 this.app.vent.trigger("change-map", selectedMapModel);

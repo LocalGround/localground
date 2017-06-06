@@ -12,6 +12,7 @@ define([
 
             spyOn(SelectMapView.prototype, 'initialize').and.callThrough();
             spyOn(SelectMapView.prototype, 'changeMap');
+            spyOn(SelectMapView.prototype, 'drawOnce');
         };
         initView = function (scope) {
             // 2) initialize rightPanel object:
@@ -43,7 +44,9 @@ define([
             });
 
             it(": drawOnce should have been called", function () {
-                expect(1).toEqual(-1);
+                //expect(1).toEqual(-1);
+                expect(mapView.drawOnce).toHaveBeenCalledTimes(1);
+
             });
         });
         
