@@ -79,25 +79,19 @@ define([
             //
             spyOn(DataDetail.prototype, "saveModel").and.callThrough();
             spyOn(DataDetail.prototype, "deleteModel").and.callThrough();
-            spyOn(DataDetail.prototype, "attachModels").and.callThrough();
-            spyOn(DataDetail.prototype, "detachModel").and.callThrough();
             spyOn(DataDetail.prototype, "activateMarkerTrigger").and.callThrough();
             spyOn(DataDetail.prototype, "deleteMarkerTrigger").and.callThrough();
             //
-            spyOn(DataDetail.prototype, "showMediaBrowser").and.callThrough();
             spyOn(DataDetail.prototype, "showMapPanel").and.callThrough();
             spyOn(DataDetail.prototype, "hideMapPanel").and.callThrough();
             spyOn(DataDetail.prototype, "doNotDisplay").and.callThrough();
             //
             spyOn(DataDetail.prototype, "rotatePhoto").and.callThrough();
-            spyOn(DataDetail.prototype, "sortMediaTable").and.callThrough();
-            spyOn(DataDetail.prototype, "fixHelper").and.callThrough();
             spyOn(DataDetail.prototype, "templateHelpers").and.callThrough();
             //
             spyOn(DataDetail.prototype, "switchToEditMode").and.callThrough();
             spyOn(DataDetail.prototype, "switchToViewMode").and.callThrough();
             spyOn(DataDetail.prototype, "switchToAddMode").and.callThrough();
-            spyOn(DataDetail.prototype, "attachMedia").and.callThrough();
 
         };
 
@@ -123,5 +117,4 @@ define([
             });
         });
 
-    }
-);
+    });
