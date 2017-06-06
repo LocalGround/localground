@@ -79,10 +79,13 @@ define([
             });
 
             it("Sets all form values correctly when time is AM value", function () {
+                //NOTE: '2017-04-21T03:25:51'
                 initRecord(this, timeAM);
                 expect(fixture.find("input.datepicker").val()).toEqual("2017-04-21");
-                //TODO: John, check that all inputs get set correctly
-                expect(1).toEqual(-1);
+                expect(fixture.find("input.hours").val()).toEqual("03");
+                expect(fixture.find("input.minutes").val()).toEqual("25");
+                expect(fixture.find("input.seconds").val()).toEqual("51");
+                expect(fixture.find("select.am_pm").val()).toEqual("AM");
             });
 
             it("Sets all form values correctly when time is PM value", function () {
@@ -95,8 +98,10 @@ define([
             it("Sets all form values to empty when time is null value", function () {
                 initRecord(this, null);
                 expect(fixture.find("input.datepicker").val()).toEqual("");
-                //TODO: John, check that all inputs get set correctly
-                expect(1).toEqual(-1);
+                expect(fixture.find("input.hours").val()).toEqual("00");
+                expect(fixture.find("input.minutes").val()).toEqual("00");
+                expect(fixture.find("input.seconds").val()).toEqual("00");
+                expect(fixture.find("select.am_pm").val()).toEqual("AM");
             });
 
             it("Triggers the calendar popul when the user clicks on the calendar", function () {
