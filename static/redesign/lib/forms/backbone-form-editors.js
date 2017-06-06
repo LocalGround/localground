@@ -49,6 +49,7 @@ define([
             var hours = parseInt(dateFns.format(this.value, 'HH'));
             var isPm = hours >= 12 ? true: false;
             var ds = dateFns.format(this.value, 'YYYY-MM-DD');
+            console.log(ds);
             this.$el.append(template({
                 dateString: ds,
                 hoursString: dateFns.format(this.value, 'hh'),
@@ -99,7 +100,7 @@ define([
                 }
             }
             if (date === '1969-12-31') {
-                return null;
+                return '';
             }
             return date + "T" + hours00 + ":" + minutes00 + ":" + seconds00;
         },
@@ -109,11 +110,9 @@ define([
                 picker = new Pikaday({
                     field: this.$el.find('.datepicker')[0],
                     format: "YYYY-MM-DD",
-                    parse: function (dateString, format) {
-                        return dateFns.parse(dateString);
-                    },
                     toString: function (date, format) {
-                        var s = dateFns.format(that.$el.find('.datepicker').val(), format);
+                        var s = dateFns.format(date, format);
+                        console.log(s);
                         if (s === '1969-12-31') {
                             return "";
                         }
