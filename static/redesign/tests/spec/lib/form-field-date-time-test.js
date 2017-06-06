@@ -74,8 +74,9 @@ define([
                 expect(fixture).toContainElement("input.hours");
                 expect(fixture).toContainElement("input.minutes");
                 expect(fixture).toContainElement("input.seconds");
+                expect(fixture).toContainElement("select.am_pm");
                 //TODO: John, check for all inputs
-                expect(1).toEqual(-1);
+                //expect(1).toEqual(-1);
             });
 
             it("Sets all form values correctly when time is AM value", function () {
@@ -89,10 +90,13 @@ define([
             });
 
             it("Sets all form values correctly when time is PM value", function () {
+                //NOTE: '2017-04-21T23:25:51'
                 initRecord(this, timePM);
                 expect(fixture.find("input.datepicker").val()).toEqual("2017-04-21");
-                //TODO: John, check that all inputs get set correctly
-                expect(1).toEqual(-1);
+                expect(fixture.find("input.hours").val()).toEqual("11");
+                expect(fixture.find("input.minutes").val()).toEqual("25");
+                expect(fixture.find("input.seconds").val()).toEqual("51");
+                expect(fixture.find("select.am_pm").val()).toEqual("PM");
             });
 
             it("Sets all form values to empty when time is null value", function () {
@@ -101,6 +105,37 @@ define([
                 expect(fixture.find("input.hours").val()).toEqual("00");
                 expect(fixture.find("input.minutes").val()).toEqual("00");
                 expect(fixture.find("input.seconds").val()).toEqual("00");
+                expect(fixture.find("select.am_pm").val()).toEqual("AM");
+            });
+
+
+            it("Tests for no zero padding if hour is 10 or 11 at AM", function () {
+                initRecord(this, '2017-04-21T11:00:00');
+                expect(fixture.find("input.hours").val()).toEqual("11");
+                expect(fixture.find("select.am_pm").val()).toEqual("AM");
+            });
+
+            it("Tests for zero padding if hour is less than 10 at AM", function () {
+                initRecord(this, '2017-04-21T09:00:00');
+                expect(fixture.find("input.hours").val()).toEqual("09");
+                expect(fixture.find("select.am_pm").val()).toEqual("AM");
+            });
+
+            it("Tests for hour being less than 12 at PM", function () {
+                initRecord(this, '2017-04-21T15:00:00');
+                expect(fixture.find("input.hours").val()).toEqual("03");
+                expect(fixture.find("select.am_pm").val()).toEqual("PM");
+            });
+
+            it("Tests for hour being 12 at PM", function () {
+                initRecord(this, '2017-04-21T12:00:00');
+                expect(fixture.find("input.hours").val()).toEqual("12");
+                expect(fixture.find("select.am_pm").val()).toEqual("PM");
+            });
+
+            it("Tests for hour being 12 at AM", function () {
+                initRecord(this, '2017-04-21T00:00:00');
+                expect(fixture.find("input.hours").val()).toEqual("12");
                 expect(fixture.find("select.am_pm").val()).toEqual("AM");
             });
 
